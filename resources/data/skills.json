@@ -1,0 +1,164 @@
+{
+	"skill_categories": {
+		"combat": {
+			"name": "Combat Skills",
+			"skills": ["swords", "polearms", "axes", "bows", "unarmed", "shields"]
+		},
+		"magic": {
+			"name": "Magic Skills",
+			"skills": ["fire_magic", "water_magic", "earth_magic", "air_magic", "space_magic", 
+			          "sorcery", "enchantment", "summoning", "white_magic", "black_magic"]
+		},
+		"general": {
+			"name": "General Skills",
+			"skills": ["persuasion", "trade", "stealth", "athletics", "yoga", "logistics", 
+			          "lore", "medicine", "crafting"]
+		}
+	},
+	
+	"skills": {
+		"swords": {
+			"name": "Swords",
+			"category": "combat",
+			"description": "Proficiency with bladed weapons",
+			"primary_attribute": "finesse",
+			"secondary_attribute": "strength",
+			"element": null
+		},
+		
+		"polearms": {
+			"name": "Polearms",
+			"category": "combat",
+			"description": "Proficiency with spears, halberds, and other polearms",
+			"primary_attribute": "strength",
+			"secondary_attribute": "finesse",
+			"element": null
+		},
+		
+		"unarmed": {
+			"name": "Unarmed Combat",
+			"category": "combat",
+			"description": "Fighting with bare hands and natural weapons",
+			"primary_attribute": "strength",
+			"secondary_attribute": "finesse",
+			"element": null
+		},
+		
+		"bows": {
+			"name": "Archery",
+			"category": "combat",
+			"description": "Proficiency with bows and crossbows",
+			"primary_attribute": "finesse",
+			"secondary_attribute": "awareness",
+			"element": null
+		},
+		
+		"fire_magic": {
+			"name": "Fire Magic",
+			"category": "magic",
+			"description": "Command over flames and heat",
+			"primary_attribute": "focus",
+			"secondary_attribute": "strength",
+			"element": "fire"
+		},
+		
+		"water_magic": {
+			"name": "Water Magic",
+			"category": "magic",
+			"description": "Command over water and ice",
+			"primary_attribute": "focus",
+			"secondary_attribute": "awareness",
+			"element": "water"
+		},
+		
+		"earth_magic": {
+			"name": "Earth Magic",
+			"category": "magic",
+			"description": "Command over stone and earth",
+			"primary_attribute": "focus",
+			"secondary_attribute": "constitution",
+			"element": "earth"
+		},
+		
+		"air_magic": {
+			"name": "Air Magic",
+			"category": "magic",
+			"description": "Command over wind and lightning",
+			"primary_attribute": "focus",
+			"secondary_attribute": "finesse",
+			"element": "air"
+		},
+		
+		"space_magic": {
+			"name": "Space Magic",
+			"category": "magic",
+			"description": "Command over void and dimensions",
+			"primary_attribute": "focus",
+			"secondary_attribute": "awareness",
+			"element": "space"
+		},
+		
+		"sorcery": {
+			"name": "Sorcery",
+			"category": "magic",
+			"description": "Direct magical power and destruction",
+			"primary_attribute": "focus",
+			"secondary_attribute": "strength",
+			"element": null
+		},
+		
+		"white_magic": {
+			"name": "White Magic",
+			"category": "magic",
+			"description": "Healing and protective magic",
+			"primary_attribute": "focus",
+			"secondary_attribute": "charm",
+			"element": null
+		},
+		
+		"persuasion": {
+			"name": "Persuasion",
+			"category": "general",
+			"description": "Convince others through words and presence",
+			"primary_attribute": "charm",
+			"secondary_attribute": "awareness",
+			"element": null
+		},
+		
+		"trade": {
+			"name": "Trade",
+			"category": "general",
+			"description": "Negotiate better prices and find rare goods",
+			"primary_attribute": "charm",
+			"secondary_attribute": "awareness",
+			"element": null
+		},
+		
+		"yoga": {
+			"name": "Yoga",
+			"category": "general",
+			"description": "Meditative practices, karma purification, and deity yoga",
+			"primary_attribute": "focus",
+			"secondary_attribute": "constitution",
+			"element": "space"
+		},
+		
+		"logistics": {
+			"name": "Logistics",
+			"category": "general",
+			"description": "Manage party resources and travel efficiently",
+			"primary_attribute": "awareness",
+			"secondary_attribute": "charm",
+			"element": null
+		},
+		
+		"lore": {
+			"name": "Lore",
+			"category": "general",
+			"description": "Knowledge of the realms, monsters, and magic",
+			"primary_attribute": "focus",
+			"secondary_attribute": "awareness",
+			"element": null
+		}
+	}
+}

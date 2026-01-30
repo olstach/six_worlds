@@ -1,0 +1,97 @@
+extends Node
+## GameState - Manages overall run state, world progression, and game flow
+##
+## This singleton tracks:
+## - Current run state (alive/dead, current world, etc.)
+## - Which worlds are unlocked
+## - Save/load functionality
+## - Scene transitions
+
+# Current run data
+var current_world: String = "hell"  # Which world the player is currently in
+var unlocked_worlds: Array[String] = ["hell"]  # Worlds player can travel to
+var is_alive: bool = true
+var current_run_number: int = 1  # How many times player has reincarnated
+
+# World definitions
+const WORLDS: Dictionary = {
+	"hell": {
+		"name": "Hell Realm",
+		"description": "A realm of suffering split between freezing cold and scorching heat",
+		"boss_defeated": false,
+		"next_world": "hungry_ghost"
+	},
+	"hungry_ghost": {
+		"name": "Hungry Ghost Realm", 
+		"description": "A realm of endless craving and dissatisfaction",
+		"boss_defeated": false,
+		"next_world": "animal"
+	},
+	"animal": {
+		"name": "Animal Realm",
+		"description": "A realm of instinct and survival",
+		"boss_defeated": false,
+		"next_world": "human"
+	},
+	"human": {
+		"name": "Human Realm",
+		"description": "A realm of potential and choice",
+		"boss_defeated": false,
+		"next_world": "asura"
+	},
+	"asura": {
+		"name": "Asura Realm",
+		"description": "A realm of conflict and jealousy",
+		"boss_defeated": false,
+		"next_world": "god"
+	},
+	"god": {
+		"name": "God Realm",
+		"description": "A realm of bliss and complacency",
+		"boss_defeated": false,
+		"next_world": null  # Final realm
+	}
+}
+
+func _ready() -> void:
+	print("GameState initialized")
+
+## Defeat a world's boss and unlock the next world
+func defeat_boss(world_name: String) -> void:
+	if world_name in WORLDS:
+		WORLDS[world_name].boss_defeated = true
+		var next_world = WORLDS[world_name].next_world
+		if next_world and next_world not in unlocked_worlds:
+			unlocked_worlds.append(next_world)
+			print("Unlocked world: ", WORLDS[next_world].name)
+
+## Travel to a different world (if unlocked)
+func travel_to_world(world_name: String) -> bool:
+	if world_name in unlocked_worlds:
+		current_world = world_name
+		print("Traveled to ", WORLDS[world_name].name)
+		return true
+	else:
+		print("World not yet unlocked: ", world_name)
+		return false
+
+## Player death - triggers reincarnation
+func player_died() -> void:
+	is_alive = false
+	current_run_number += 1
+	print("Player died. Run #", current_run_number)
+	# KarmaSystem will handle reincarnation logic
+
+## Start new run after reincarnation
+func start_new_run(spawn_world: String) -> void:
+	is_alive = true
+	current_world = spawn_world
+	print("New run started in ", WORLDS[spawn_world].name)
+
+## Get info about current world
+func get_current_world_info() -> Dictionary:
+	return WORLDS[current_world]
+
+## Check if player has reached the final realm
+func has_reached_final_realm() -> bool:
+	return current_world == "god" and WORLDS["god"].boss_defeated
