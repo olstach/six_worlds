@@ -42,16 +42,24 @@ const BASE_CHARACTER: Dictionary = {
 		"luck": 10
 	},
 	
-	# Derived stats (calculated from attributes)
+	# Derived stats (calculated from attributes and equipment)
 	"derived": {
 		"max_hp": 100,
 		"current_hp": 100,
 		"max_mana": 100,
 		"current_mana": 100,
-		"initiative": 10,
+		"max_stamina": 50,
+		"current_stamina": 50,
+		"initiative": 20,
+		"movement": 3,
 		"dodge": 10,
+		"spellpower": 10,
 		"crit_chance": 5,
-		"weight_limit": 100
+		"weight_limit": 100,
+		"damage": 0,
+		"armor": 0,
+		"accuracy": 0,
+		"armor_pierce": 0
 	},
 	
 	# Skills (level 0-5)
@@ -69,16 +77,24 @@ const BASE_CHARACTER: Dictionary = {
 	# Upgrades/perks gained
 	"upgrades": [],
 	
-	# Equipment slots
+	# Equipment slots (12-slot system with weapon sets)
 	"equipment": {
-		"weapon": null,
-		"offhand": null,
-		"armor": null,
-		"accessory": null
+		"head": "",
+		"chest": "",
+		"hand_l": "",
+		"hand_r": "",
+		"legs": "",
+		"feet": "",
+		"weapon_set_1": {"main": "", "off": ""},
+		"weapon_set_2": {"main": "", "off": ""},
+		"ring1": "",
+		"ring2": "",
+		"amulet": "",
+		"trinket": ""
 	},
-	
-	# Inventory
-	"inventory": [],
+
+	# Active weapon set (1 or 2)
+	"active_weapon_set": 1,
 	
 	# Persistent progression data
 	"affinities": [],  # Skills that have reached max level in previous lives
@@ -220,30 +236,59 @@ func grant_xp(character: Dictionary, amount: int) -> void:
 	print(character.name, " gained ", amount, " XP (total: ", character.xp, ")")
 	character_updated.emit(character)
 
-## Update all derived stats based on attributes
+## Update all derived stats based on attributes and equipment
 func update_derived_stats(character: Dictionary) -> void:
 	var attrs = character.attributes
 	var derived = character.derived
-	
-	# HP from Constitution
-	derived.max_hp = 100 + (attrs.constitution - 10) * 10
+
+	# Get equipment bonuses from ItemSystem
+	var equip_bonus: Dictionary = {}
+	if ItemSystem:
+		equip_bonus = ItemSystem.calculate_equipment_stats(character)
+
+	# Apply equipment attribute bonuses first
+	var effective_attrs = {}
+	for attr_key in attrs:
+		effective_attrs[attr_key] = attrs[attr_key] + equip_bonus.get(attr_key, 0)
+
+	# HP from Constitution + equipment
+	derived.max_hp = 100 + (effective_attrs.constitution - 10) * 10 + equip_bonus.get("max_hp", 0)
 	derived.current_hp = min(derived.current_hp, derived.max_hp)
-	
-	# Mana from Awareness
-	derived.max_mana = 100 + (attrs.awareness - 10) * 10
+
+	# Mana from Awareness + equipment
+	derived.max_mana = 100 + (effective_attrs.awareness - 10) * 10 + equip_bonus.get("max_mana", 0)
 	derived.current_mana = min(derived.current_mana, derived.max_mana)
-	
-	# Initiative from Awareness
-	derived.initiative = attrs.awareness
-	
-	# Dodge from Finesse
-	derived.dodge = attrs.finesse
-	
-	# Crit chance from Awareness + Finesse
-	derived.crit_chance = 5 + int((attrs.awareness + attrs.finesse) / 4)
-	
+
+	# Stamina from Constitution + Finesse + equipment
+	derived.max_stamina = 50 + int((effective_attrs.constitution + effective_attrs.finesse - 20) * 2.5) + equip_bonus.get("max_stamina", 0)
+	if not "current_stamina" in derived:
+		derived.current_stamina = derived.max_stamina
+	else:
+		derived.current_stamina = min(derived.current_stamina, derived.max_stamina)
+
+	# Initiative from Finesse + Awareness + equipment
+	derived.initiative = effective_attrs.finesse + effective_attrs.awareness + equip_bonus.get("initiative", 0)
+
+	# Movement from Finesse + equipment
+	derived.movement = int(effective_attrs.finesse / 3) + equip_bonus.get("movement", 0)
+
+	# Dodge from Finesse + equipment
+	derived.dodge = effective_attrs.finesse + equip_bonus.get("dodge", 0)
+
+	# Spellpower from Focus + equipment
+	derived.spellpower = effective_attrs.focus + equip_bonus.get("spellpower", 0)
+
+	# Crit chance from Awareness + Finesse + Luck + equipment
+	derived.crit_chance = 5 + int((effective_attrs.awareness + effective_attrs.finesse + effective_attrs.luck) / 6) + equip_bonus.get("crit_chance", 0)
+
 	# Weight limit from Strength
-	derived.weight_limit = 100 + (attrs.strength - 10) * 10
+	derived.weight_limit = 100 + (effective_attrs.strength - 10) * 10
+
+	# Combat stats from equipment
+	derived.damage = equip_bonus.get("damage", 0)
+	derived.armor = equip_bonus.get("armor", 0)
+	derived.accuracy = equip_bonus.get("accuracy", 0)
+	derived.armor_pierce = equip_bonus.get("armor_pierce", 0)
 
 ## Get player character
 func get_player() -> Dictionary:

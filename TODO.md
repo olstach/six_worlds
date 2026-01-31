@@ -12,6 +12,23 @@
 
 ---
 
+## Known Bugs
+
+- [ ] **Derived stats not displaying** - Stats tab shows 0 for HP, Mana, Stamina, etc. CharacterSystem.update_derived_stats() may not be called or values not stored correctly.
+
+---
+
+## Systems to Implement
+
+- [ ] **Camp Followers System** - Non-combat companions providing passive bonuses
+  - Data structure for followers (name, role, bonus_description, bonus_effects)
+  - GameState.get_followers() function
+  - Follower recruitment through events
+  - Passive bonus application (trade bonuses, carrying capacity, healing, etc.)
+  - UI already in place in Party tab
+
+---
+
 ## Priority Tasks
 
 ### High Priority (Core Gameplay)

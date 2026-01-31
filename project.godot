@@ -24,8 +24,10 @@ config/icon="res://icon.svg"
 
 GameState="*res://scripts/autoload/game_state.gd"
 CharacterSystem="*res://scripts/autoload/character_system.gd"
+ItemSystem="*res://scripts/autoload/item_system.gd"
 KarmaSystem="*res://scripts/autoload/karma_system.gd"
 EventManager="*res://scripts/autoload/event_manager.gd"
+CombatManager="*res://scripts/autoload/combat_manager.gd"
 
 [display]
 

@@ -1,0 +1,193 @@
+[gd_scene format=3 uid="uid://bxk7qp5nfrc2g"]
+
+[ext_resource type="Script" path="res://scripts/combat/combat_arena.gd" id="1_arena"]
+[ext_resource type="Script" path="res://scripts/combat/combat_grid.gd" id="2_grid"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.1, 0.1, 0.12, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.28, 0.25, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="CombatArena" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_arena")
+
+[node name="GridContainer" type="Node2D" parent="."]
+position = Vector2(300, 100)
+
+[node name="CombatGrid" type="Node2D" parent="GridContainer"]
+script = ExtResource("2_grid")
+grid_size = Vector2i(12, 8)
+tile_size = 64
+
+[node name="Camera2D" type="Camera2D" parent="GridContainer"]
+position = Vector2(384, 256)
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="TopBar" type="HBoxContainer" parent="UILayer"]
+offset_right = 1920.0
+offset_bottom = 40.0
+theme_override_constants/separation = 20
+
+[node name="TurnOrderPanel" type="PanelContainer" parent="UILayer/TopBar"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="UILayer/TopBar/TurnOrderPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/TopBar/TurnOrderPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UILayer/TopBar/TurnOrderPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Turn Order"
+horizontal_alignment = 1
+
+[node name="TurnOrderList" type="VBoxContainer" parent="UILayer/TopBar/TurnOrderPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="BottomPanel" type="PanelContainer" parent="UILayer"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -150.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UILayer/BottomPanel"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ActionPanel" type="PanelContainer" parent="UILayer/BottomPanel/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UILayer/BottomPanel/HBoxContainer/ActionPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/BottomPanel/HBoxContainer/ActionPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="UILayer/BottomPanel/HBoxContainer/ActionPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Actions"
+horizontal_alignment = 1
+
+[node name="ButtonGrid" type="GridContainer" parent="UILayer/BottomPanel/HBoxContainer/ActionPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="MoveButton" type="Button" parent="UILayer/BottomPanel/HBoxContainer/ActionPanel/MarginContainer/VBoxContainer/ButtonGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Move"
+
+[node name="AttackButton" type="Button" parent="UILayer/BottomPanel/HBoxContainer/ActionPanel/MarginContainer/VBoxContainer/ButtonGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Attack"
+
+[node name="WaitButton" type="Button" parent="UILayer/BottomPanel/HBoxContainer/ActionPanel/MarginContainer/VBoxContainer/ButtonGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Wait"
+
+[node name="EndTurnButton" type="Button" parent="UILayer/BottomPanel/HBoxContainer/ActionPanel/MarginContainer/VBoxContainer/ButtonGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "End Turn"
+
+[node name="CombatLogPanel" type="PanelContainer" parent="UILayer/BottomPanel/HBoxContainer"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="UILayer/BottomPanel/HBoxContainer/CombatLogPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/BottomPanel/HBoxContainer/CombatLogPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UILayer/BottomPanel/HBoxContainer/CombatLogPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Combat Log"
+
+[node name="CombatLog" type="RichTextLabel" parent="UILayer/BottomPanel/HBoxContainer/CombatLogPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 12
+scroll_following = true
+
+[node name="UnitInfoPanel" type="PanelContainer" parent="UILayer/BottomPanel/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="UILayer/BottomPanel/HBoxContainer/UnitInfoPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/BottomPanel/HBoxContainer/UnitInfoPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="UnitInfoName" type="Label" parent="UILayer/BottomPanel/HBoxContainer/UnitInfoPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Unit Name"
+
+[node name="UnitInfoHP" type="Label" parent="UILayer/BottomPanel/HBoxContainer/UnitInfoPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "HP: 100 / 100"
+
+[node name="UnitInfoActions" type="Label" parent="UILayer/BottomPanel/HBoxContainer/UnitInfoPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Actions: 2 / 2"

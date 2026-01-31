@@ -28,9 +28,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -200.0
-offset_top = -150.0
+offset_top = -200.0
 offset_right = 200.0
-offset_bottom = 150.0
+offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 20
@@ -50,11 +50,17 @@ horizontal_alignment = 1
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
+[node name="MainMenuButton" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Main Menu (NEW)"
+
 [node name="CharacterSheetButton" type="Button" parent="VBoxContainer"]
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "Character Sheet"
+text = "Old Character Sheet"
 
 [node name="EventSystemButton" type="Button" parent="VBoxContainer"]
 custom_minimum_size = Vector2(0, 60)
@@ -62,5 +68,13 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Event System"
 
+[node name="CombatTestButton" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Combat Test"
+
+[connection signal="pressed" from="VBoxContainer/MainMenuButton" to="." method="_on_main_menu_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/CharacterSheetButton" to="." method="_on_character_sheet_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/EventSystemButton" to="." method="_on_event_system_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/CombatTestButton" to="." method="_on_combat_test_button_pressed"]

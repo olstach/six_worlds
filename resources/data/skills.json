@@ -1,164 +1,368 @@
 {
+	"_comment": "All 35 skills organized by element (7 per element). Fill in descriptions and attributes as needed.",
+
 	"skill_categories": {
 		"combat": {
 			"name": "Combat Skills",
-			"skills": ["swords", "polearms", "axes", "bows", "unarmed", "shields"]
+			"skills": ["swords", "martial_arts", "ranged", "daggers", "axes", "unarmed", "spears", "maces", "armor"]
 		},
 		"magic": {
 			"name": "Magic Skills",
-			"skills": ["fire_magic", "water_magic", "earth_magic", "air_magic", "space_magic", 
-			          "sorcery", "enchantment", "summoning", "white_magic", "black_magic"]
+			"skills": ["space_magic", "white_magic", "black_magic", "air_magic", "fire_magic", "sorcery", "water_magic", "enchantment", "earth_magic", "summoning"]
 		},
 		"general": {
 			"name": "General Skills",
-			"skills": ["persuasion", "trade", "stealth", "athletics", "yoga", "logistics", 
-			          "lore", "medicine", "crafting"]
+			"skills": ["persuasion", "yoga", "ritual", "learning", "comedy", "guile", "athletics", "leadership", "performance", "acrobatics", "medicine", "alchemy", "thievery", "logistics", "trade", "crafting"]
 		}
 	},
-	
+
 	"skills": {
 		"swords": {
 			"name": "Swords",
 			"category": "combat",
-			"description": "Proficiency with bladed weapons",
+			"element": "space",
+			"description": "Proficiency with bladed weapons - precision and clarity of strike",
 			"primary_attribute": "finesse",
-			"secondary_attribute": "strength",
-			"element": null
+			"secondary_attribute": "strength"
 		},
-		
-		"polearms": {
-			"name": "Polearms",
+
+		"martial_arts": {
+			"name": "Martial Arts",
 			"category": "combat",
-			"description": "Proficiency with spears, halberds, and other polearms",
-			"primary_attribute": "strength",
-			"secondary_attribute": "finesse",
-			"element": null
-		},
-		
-		"unarmed": {
-			"name": "Unarmed Combat",
-			"category": "combat",
-			"description": "Fighting with bare hands and natural weapons",
-			"primary_attribute": "strength",
-			"secondary_attribute": "finesse",
-			"element": null
-		},
-		
-		"bows": {
-			"name": "Archery",
-			"category": "combat",
-			"description": "Proficiency with bows and crossbows",
+			"element": "space",
+			"description": "Transcendent fighting style - wuxia-inspired flying techniques",
 			"primary_attribute": "finesse",
-			"secondary_attribute": "awareness",
-			"element": null
+			"secondary_attribute": "awareness"
 		},
-		
-		"fire_magic": {
-			"name": "Fire Magic",
-			"category": "magic",
-			"description": "Command over flames and heat",
-			"primary_attribute": "focus",
-			"secondary_attribute": "strength",
-			"element": "fire"
-		},
-		
-		"water_magic": {
-			"name": "Water Magic",
-			"category": "magic",
-			"description": "Command over water and ice",
-			"primary_attribute": "focus",
-			"secondary_attribute": "awareness",
-			"element": "water"
-		},
-		
-		"earth_magic": {
-			"name": "Earth Magic",
-			"category": "magic",
-			"description": "Command over stone and earth",
-			"primary_attribute": "focus",
-			"secondary_attribute": "constitution",
-			"element": "earth"
-		},
-		
-		"air_magic": {
-			"name": "Air Magic",
-			"category": "magic",
-			"description": "Command over wind and lightning",
-			"primary_attribute": "focus",
-			"secondary_attribute": "finesse",
-			"element": "air"
-		},
-		
+
 		"space_magic": {
 			"name": "Space Magic",
 			"category": "magic",
-			"description": "Command over void and dimensions",
+			"element": "space",
+			"description": "Command over void, dimensions, and teleportation",
 			"primary_attribute": "focus",
-			"secondary_attribute": "awareness",
-			"element": "space"
+			"secondary_attribute": "awareness"
 		},
-		
-		"sorcery": {
-			"name": "Sorcery",
-			"category": "magic",
-			"description": "Direct magical power and destruction",
-			"primary_attribute": "focus",
-			"secondary_attribute": "strength",
-			"element": null
-		},
-		
+
 		"white_magic": {
 			"name": "White Magic",
 			"category": "magic",
-			"description": "Healing and protective magic",
+			"element": "space",
+			"description": "Healing, protection, and sacred light",
 			"primary_attribute": "focus",
-			"secondary_attribute": "charm",
-			"element": null
+			"secondary_attribute": "charm"
 		},
-		
+
+		"black_magic": {
+			"name": "Black Magic",
+			"category": "magic",
+			"element": "space",
+			"description": "Debuffs, curses, and necromancy",
+			"primary_attribute": "focus",
+			"secondary_attribute": "constitution"
+		},
+
 		"persuasion": {
 			"name": "Persuasion",
 			"category": "general",
+			"element": "space",
 			"description": "Convince others through words and presence",
 			"primary_attribute": "charm",
-			"secondary_attribute": "awareness",
-			"element": null
+			"secondary_attribute": "awareness"
 		},
-		
-		"trade": {
-			"name": "Trade",
-			"category": "general",
-			"description": "Negotiate better prices and find rare goods",
-			"primary_attribute": "charm",
-			"secondary_attribute": "awareness",
-			"element": null
-		},
-		
+
 		"yoga": {
 			"name": "Yoga",
 			"category": "general",
-			"description": "Meditative practices, karma purification, and deity yoga",
+			"element": "space",
+			"description": "Internal cultivation, mantras, karma insight, pacifist dialogue options",
 			"primary_attribute": "focus",
-			"secondary_attribute": "constitution",
-			"element": "space"
+			"secondary_attribute": "constitution"
 		},
-		
+
+		"ranged": {
+			"name": "Ranged",
+			"category": "combat",
+			"element": "air",
+			"description": "Proficiency with bows, crossbows, and thrown weapons",
+			"primary_attribute": "finesse",
+			"secondary_attribute": "awareness"
+		},
+
+		"daggers": {
+			"name": "Daggers",
+			"category": "combat",
+			"element": "air",
+			"description": "Proficiency with small blades and quick strikes",
+			"primary_attribute": "finesse",
+			"secondary_attribute": "awareness"
+		},
+
+		"air_magic": {
+			"name": "Air Magic",
+			"category": "magic",
+			"element": "air",
+			"description": "Command over wind and lightning",
+			"primary_attribute": "focus",
+			"secondary_attribute": "finesse"
+		},
+
+		"ritual": {
+			"name": "Ritual",
+			"category": "general",
+			"element": "air",
+			"description": "External ceremony - mandala creation, material components to enhance spells",
+			"primary_attribute": "focus",
+			"secondary_attribute": "awareness"
+		},
+
+		"learning": {
+			"name": "Learning",
+			"category": "general",
+			"element": "air",
+			"description": "Knowledge of the realms, monsters, and lore",
+			"primary_attribute": "focus",
+			"secondary_attribute": "awareness"
+		},
+
+		"comedy": {
+			"name": "Comedy",
+			"category": "general",
+			"element": "air",
+			"description": "Wit, humor, and trickster dialogue options",
+			"primary_attribute": "charm",
+			"secondary_attribute": "awareness"
+		},
+
+		"guile": {
+			"name": "Guile",
+			"category": "general",
+			"element": "air",
+			"description": "Stealth, sneaking, and intrigue-based interactions",
+			"primary_attribute": "finesse",
+			"secondary_attribute": "awareness"
+		},
+
+		"axes": {
+			"name": "Axes",
+			"category": "combat",
+			"element": "fire",
+			"description": "Proficiency with axes and heavy chopping weapons",
+			"primary_attribute": "strength",
+			"secondary_attribute": "constitution"
+		},
+
+		"unarmed": {
+			"name": "Unarmed",
+			"category": "combat",
+			"element": "fire",
+			"description": "Fighting with bare hands and natural weapons - passionate combat",
+			"primary_attribute": "strength",
+			"secondary_attribute": "finesse"
+		},
+
+		"fire_magic": {
+			"name": "Fire Magic",
+			"category": "magic",
+			"element": "fire",
+			"description": "Command over flames and heat",
+			"primary_attribute": "focus",
+			"secondary_attribute": "strength"
+		},
+
+		"sorcery": {
+			"name": "Sorcery",
+			"category": "magic",
+			"element": "fire",
+			"description": "Direct magical power - instant effects like Fireball",
+			"primary_attribute": "focus",
+			"secondary_attribute": "strength"
+		},
+
+		"athletics": {
+			"name": "Athletics",
+			"category": "general",
+			"element": "fire",
+			"description": "Physical feats of strength and endurance",
+			"primary_attribute": "strength",
+			"secondary_attribute": "constitution"
+		},
+
+		"leadership": {
+			"name": "Leadership",
+			"category": "general",
+			"element": "fire",
+			"description": "Inspire and command others in battle and beyond",
+			"primary_attribute": "charm",
+			"secondary_attribute": "strength"
+		},
+
+		"performance": {
+			"name": "Performance",
+			"category": "general",
+			"element": "fire",
+			"description": "Passionate artistic expression - song, dance, seduction",
+			"primary_attribute": "charm",
+			"secondary_attribute": "finesse"
+		},
+
+		"spears": {
+			"name": "Spears",
+			"category": "combat",
+			"element": "water",
+			"description": "Proficiency with spears, halberds, and polearms",
+			"primary_attribute": "strength",
+			"secondary_attribute": "finesse"
+		},
+
+		"water_magic": {
+			"name": "Water Magic",
+			"category": "magic",
+			"element": "water",
+			"description": "Command over water and ice",
+			"primary_attribute": "focus",
+			"secondary_attribute": "awareness"
+		},
+
+		"enchantment": {
+			"name": "Enchantment",
+			"category": "magic",
+			"element": "water",
+			"description": "Status changes with duration - buffs like Stone Skin",
+			"primary_attribute": "focus",
+			"secondary_attribute": "charm"
+		},
+
+		"acrobatics": {
+			"name": "Acrobatics",
+			"category": "general",
+			"element": "water",
+			"description": "Agility, balance, and flowing movement",
+			"primary_attribute": "finesse",
+			"secondary_attribute": "awareness"
+		},
+
+		"medicine": {
+			"name": "Medicine",
+			"category": "general",
+			"element": "water",
+			"description": "Healing arts and knowledge of the body - party passive bonus",
+			"primary_attribute": "awareness",
+			"secondary_attribute": "focus"
+		},
+
+		"alchemy": {
+			"name": "Alchemy",
+			"category": "general",
+			"element": "water",
+			"description": "Potion brewing and transmutation",
+			"primary_attribute": "focus",
+			"secondary_attribute": "awareness"
+		},
+
+		"thievery": {
+			"name": "Thievery",
+			"category": "general",
+			"element": "water",
+			"description": "Lockpicking, pickpocketing, and acquiring things",
+			"primary_attribute": "finesse",
+			"secondary_attribute": "luck"
+		},
+
+		"maces": {
+			"name": "Maces",
+			"category": "combat",
+			"element": "earth",
+			"description": "Proficiency with blunt weapons and crushing strikes",
+			"primary_attribute": "strength",
+			"secondary_attribute": "constitution"
+		},
+
+		"armor": {
+			"name": "Armor",
+			"category": "combat",
+			"element": "earth",
+			"description": "Proficiency with shields and protective gear",
+			"primary_attribute": "constitution",
+			"secondary_attribute": "strength"
+		},
+
+		"earth_magic": {
+			"name": "Earth Magic",
+			"category": "magic",
+			"element": "earth",
+			"description": "Command over stone and earth",
+			"primary_attribute": "focus",
+			"secondary_attribute": "constitution"
+		},
+
+		"summoning": {
+			"name": "Summoning",
+			"category": "magic",
+			"element": "earth",
+			"description": "Calling creatures and objects into existence",
+			"primary_attribute": "focus",
+			"secondary_attribute": "charm"
+		},
+
 		"logistics": {
 			"name": "Logistics",
 			"category": "general",
-			"description": "Manage party resources and travel efficiently",
+			"element": "earth",
+			"description": "Manage party resources and travel - party passive bonus",
 			"primary_attribute": "awareness",
-			"secondary_attribute": "charm",
-			"element": null
+			"secondary_attribute": "charm"
 		},
-		
-		"lore": {
-			"name": "Lore",
+
+		"trade": {
+			"name": "Trade",
 			"category": "general",
-			"description": "Knowledge of the realms, monsters, and magic",
+			"element": "earth",
+			"description": "Negotiate better prices and find rare goods",
+			"primary_attribute": "charm",
+			"secondary_attribute": "awareness"
+		},
+
+		"crafting": {
+			"name": "Crafting",
+			"category": "general",
+			"element": "earth",
+			"description": "Create and repair items - party passive bonus",
 			"primary_attribute": "focus",
-			"secondary_attribute": "awareness",
-			"element": null
+			"secondary_attribute": "finesse"
+		}
+	},
+
+	"elements": {
+		"space": {
+			"name": "Space",
+			"color": "#B380E6",
+			"theme": "Clarity, emptiness, consciousness, dharma",
+			"affinity_bonus": "TODO: Define space affinity bonuses"
+		},
+		"air": {
+			"name": "Air",
+			"color": "#99D9EA",
+			"theme": "Movement, intellect, playfulness",
+			"affinity_bonus": "TODO: Define air affinity bonuses"
+		},
+		"fire": {
+			"name": "Fire",
+			"color": "#F2804D",
+			"theme": "Passion, direct action, willpower",
+			"affinity_bonus": "TODO: Define fire affinity bonuses (e.g., Persuasion bonus)"
+		},
+		"water": {
+			"name": "Water",
+			"color": "#4D99E6",
+			"theme": "Fluidity, transformation, healing",
+			"affinity_bonus": "TODO: Define water affinity bonuses"
+		},
+		"earth": {
+			"name": "Earth",
+			"color": "#B39966",
+			"theme": "Stability, materialism, endurance",
+			"affinity_bonus": "TODO: Define earth affinity bonuses (e.g., HP, money)"
 		}
 	}
 }

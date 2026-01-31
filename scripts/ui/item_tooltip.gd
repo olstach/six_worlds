@@ -1,0 +1,149 @@
+extends PanelContainer
+## ItemTooltip - Displays detailed item information on hover
+##
+## Shows item name (colored by rarity), type, description, stats, and requirements.
+## Position this near the mouse cursor when showing.
+
+@onready var item_name_label: Label = $MarginContainer/VBoxContainer/ItemName
+@onready var item_type_label: Label = $MarginContainer/VBoxContainer/ItemType
+@onready var description_label: Label = $MarginContainer/VBoxContainer/Description
+@onready var stats_container: VBoxContainer = $MarginContainer/VBoxContainer/StatsContainer
+@onready var requirements_label: Label = $MarginContainer/VBoxContainer/Requirements
+
+# Stat display names (prettier than raw keys)
+const STAT_NAMES := {
+	"damage": "Damage",
+	"armor": "Armor",
+	"dodge": "Dodge",
+	"accuracy": "Accuracy",
+	"crit_chance": "Crit Chance",
+	"spellpower": "Spellpower",
+	"max_hp": "Max HP",
+	"max_mana": "Max Mana",
+	"max_stamina": "Max Stamina",
+	"initiative": "Initiative",
+	"movement": "Movement",
+	"luck": "Luck",
+	"armor_pierce": "Armor Pierce",
+	"strength": "Strength",
+	"finesse": "Finesse",
+	"constitution": "Constitution",
+	"focus": "Focus",
+	"awareness": "Awareness",
+	"charm": "Charm"
+}
+
+func _ready() -> void:
+	# Start hidden
+	hide()
+	# Make sure tooltip doesn't block mouse
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+## Display item information
+func show_item(item: Dictionary, global_pos: Vector2) -> void:
+	if item.is_empty():
+		hide()
+		return
+
+	var item_id = item.get("id", "")
+
+	# Item name with rarity color
+	var rarity_color = ItemSystem.get_rarity_color(item_id) if item_id != "" else Color.WHITE
+	item_name_label.text = item.get("name", "Unknown Item")
+	item_name_label.add_theme_color_override("font_color", rarity_color)
+
+	# Item type and slot
+	var item_type = item.get("type", "").capitalize()
+	var slot = item.get("slot", "").replace("_", " ").capitalize()
+	var two_handed = " (Two-Handed)" if item.get("two_handed", false) else ""
+	item_type_label.text = item_type + two_handed
+
+	# Rarity
+	var rarity = item.get("rarity", "common").capitalize()
+	item_type_label.text += " - " + rarity
+
+	# Description
+	description_label.text = item.get("description", "")
+
+	# Clear old stats
+	for child in stats_container.get_children():
+		child.queue_free()
+
+	# Add stats
+	var stats = item.get("stats", {})
+	for stat_key in stats:
+		var stat_value = stats[stat_key]
+		if stat_value == 0:
+			continue
+
+		var stat_row = HBoxContainer.new()
+		stats_container.add_child(stat_row)
+
+		var stat_name = Label.new()
+		stat_name.text = STAT_NAMES.get(stat_key, stat_key.capitalize())
+		stat_name.custom_minimum_size.x = 100
+		stat_name.add_theme_font_size_override("font_size", 12)
+		stat_name.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+		stat_row.add_child(stat_name)
+
+		var stat_val = Label.new()
+		var sign = "+" if stat_value > 0 else ""
+		stat_val.text = sign + str(stat_value)
+		stat_val.add_theme_font_size_override("font_size", 12)
+		# Green for positive, red for negative
+		var val_color = Color(0.4, 0.9, 0.4) if stat_value > 0 else Color(0.9, 0.4, 0.4)
+		stat_val.add_theme_color_override("font_color", val_color)
+		stat_row.add_child(stat_val)
+
+	# Requirements
+	var requirements = item.get("requirements", {})
+	if requirements.is_empty():
+		requirements_label.hide()
+	else:
+		requirements_label.show()
+		var req_parts: Array[String] = []
+		for req_key in requirements:
+			req_parts.append("%s %d" % [req_key.capitalize(), requirements[req_key]])
+		requirements_label.text = "Requires: " + ", ".join(req_parts)
+
+		# Check if player meets requirements
+		var player = CharacterSystem.get_player()
+		if not player.is_empty():
+			var can_result = ItemSystem.can_equip(player, item_id)
+			if can_result.can_equip:
+				requirements_label.add_theme_color_override("font_color", Color(0.5, 0.8, 0.5))
+			else:
+				requirements_label.add_theme_color_override("font_color", Color(0.9, 0.4, 0.4))
+
+	# Show and position
+	show()
+
+	# Wait a frame for size to update, then position
+	await get_tree().process_frame
+	_position_tooltip(global_pos)
+
+## Position tooltip near cursor, keeping it on screen
+func _position_tooltip(global_pos: Vector2) -> void:
+	var viewport_size = get_viewport_rect().size
+	var tooltip_size = size
+
+	# Default: show to the right and below cursor
+	var pos = global_pos + Vector2(15, 15)
+
+	# Keep on screen horizontally
+	if pos.x + tooltip_size.x > viewport_size.x - 10:
+		pos.x = global_pos.x - tooltip_size.x - 15
+
+	# Keep on screen vertically
+	if pos.y + tooltip_size.y > viewport_size.y - 10:
+		pos.y = global_pos.y - tooltip_size.y - 15
+
+	# Clamp to viewport
+	pos.x = clamp(pos.x, 10, viewport_size.x - tooltip_size.x - 10)
+	pos.y = clamp(pos.y, 10, viewport_size.y - tooltip_size.y - 10)
+
+	global_position = pos
+
+## Hide the tooltip
+func hide_tooltip() -> void:
+	hide()
