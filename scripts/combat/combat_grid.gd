@@ -15,7 +15,7 @@ signal tile_hovered(grid_pos: Vector2i)
 @export var grid_size: Vector2i = Vector2i(12, 8)
 @export var tile_size: int = 64  # Pixels per tile
 
-# Tile data: Dictionary of Vector2i -> TileData
+# Tile data: Dictionary of Vector2i -> GridTile
 var tiles: Dictionary = {}
 
 # Unit positions: Dictionary of Vector2i -> CombatUnit
@@ -29,6 +29,8 @@ var unit_layer: Node2D
 # Highlight colors
 const COLOR_MOVE_RANGE = Color(0.2, 0.5, 0.8, 0.4)
 const COLOR_ATTACK_RANGE = Color(0.8, 0.2, 0.2, 0.4)
+const COLOR_SPELL_RANGE = Color(0.6, 0.3, 0.8, 0.4)  # Purple for spell range
+const COLOR_AOE_PREVIEW = Color(0.9, 0.5, 0.2, 0.5)  # Orange for AoE preview
 const COLOR_SELECTED = Color(0.9, 0.9, 0.3, 0.5)
 const COLOR_HOVER = Color(1.0, 1.0, 1.0, 0.3)
 
@@ -39,8 +41,8 @@ var current_highlight_color: Color = COLOR_MOVE_RANGE
 # Tile types
 enum TileType { FLOOR, WALL, PIT, WATER }
 
-# TileData structure
-class TileData:
+# GridTile structure (named to avoid conflict with Godot's TileData)
+class GridTile:
 	var type: int = TileType.FLOOR
 	var walkable: bool = true
 	var movement_cost: int = 1
@@ -88,7 +90,7 @@ func _initialize_grid() -> void:
 	for x in range(grid_size.x):
 		for y in range(grid_size.y):
 			var pos = Vector2i(x, y)
-			tiles[pos] = TileData.new(TileType.FLOOR)
+			tiles[pos] = GridTile.new(TileType.FLOOR)
 
 
 ## Set up grid from a map definition
@@ -104,7 +106,7 @@ func setup_from_map(map_data: Dictionary) -> void:
 			var pos = Vector2i(int(parts[0]), int(parts[1]))
 			var tile_type = tile_overrides[pos_str]
 			if pos in tiles:
-				tiles[pos] = TileData.new(tile_type)
+				tiles[pos] = GridTile.new(tile_type)
 
 	_draw_grid()
 
@@ -123,7 +125,7 @@ func _draw_grid() -> void:
 
 
 ## Create visual representation of a tile
-func _create_tile_visual(grid_pos: Vector2i, tile_data: TileData) -> Control:
+func _create_tile_visual(grid_pos: Vector2i, tile_data: GridTile) -> Control:
 	var tile = ColorRect.new()
 	tile.size = Vector2(tile_size - 2, tile_size - 2)
 	tile.position = grid_to_world(grid_pos) + Vector2(1, 1)
@@ -419,6 +421,13 @@ func highlight_attack_range(tiles_to_highlight: Array[Vector2i]) -> void:
 	_show_highlights(tiles_to_highlight)
 
 
+## Highlight tiles for spell range
+func highlight_spell_range(tiles_to_highlight: Array[Vector2i]) -> void:
+	clear_highlights()
+	current_highlight_color = COLOR_SPELL_RANGE
+	_show_highlights(tiles_to_highlight)
+
+
 ## Show highlights on specified tiles
 func _show_highlights(positions: Array[Vector2i]) -> void:
 	highlighted_tiles = positions
@@ -456,3 +465,55 @@ func highlight_tile(grid_pos: Vector2i, color: Color = COLOR_HOVER) -> void:
 	highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	highlight.set_meta("hover", true)
 	highlight_layer.add_child(highlight)
+
+
+## Show AoE preview circle around a position
+func show_aoe_preview(center: Vector2i, radius: int) -> void:
+	# Remove existing AoE preview
+	clear_aoe_preview()
+
+	if not is_valid_position(center):
+		return
+
+	# Highlight all tiles within radius
+	for x in range(-radius, radius + 1):
+		for y in range(-radius, radius + 1):
+			var pos = center + Vector2i(x, y)
+			if not is_valid_position(pos):
+				continue
+
+			# Chebyshev distance
+			var dist = maxi(absi(x), absi(y))
+			if dist <= radius:
+				var highlight = ColorRect.new()
+				highlight.size = Vector2(tile_size - 2, tile_size - 2)
+				highlight.position = grid_to_world(pos) + Vector2(1, 1)
+				highlight.color = COLOR_AOE_PREVIEW
+				highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				highlight.set_meta("aoe_preview", true)
+				highlight_layer.add_child(highlight)
+
+
+## Clear AoE preview highlights
+func clear_aoe_preview() -> void:
+	for child in highlight_layer.get_children():
+		if child.has_meta("aoe_preview"):
+			child.queue_free()
+
+
+## Get tiles within a radius (for AoE spells)
+func get_tiles_in_radius(center: Vector2i, radius: int) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+
+	for x in range(-radius, radius + 1):
+		for y in range(-radius, radius + 1):
+			var pos = center + Vector2i(x, y)
+			if not is_valid_position(pos):
+				continue
+
+			# Chebyshev distance
+			var dist = maxi(absi(x), absi(y))
+			if dist <= radius:
+				result.append(pos)
+
+	return result

@@ -1,0 +1,400 @@
+{
+	"spells": {
+		"stone_spike": {
+			"name": "Stone Spike",
+			"schools": ["earth", "sorcery"],
+			"level": 1,
+			"mana_cost": 4,
+			"range": 4,
+			"targeting": "single",
+			"effects": [
+				{"type": "damage", "element": "earth", "base_value": 8}
+			],
+			"description": "A spike of stone erupts from the ground beneath the target."
+		},
+		"bark_skin": {
+			"name": "Bark Skin",
+			"schools": ["earth", "enchantment"],
+			"level": 1,
+			"mana_cost": 5,
+			"range": 3,
+			"targeting": "single_ally",
+			"effects": [
+				{"type": "buff", "stat": "armor", "value": 3, "duration": 3}
+			],
+			"description": "Target's skin hardens like tree bark, granting armor."
+		},
+		"splash": {
+			"name": "Splash",
+			"schools": ["water", "sorcery"],
+			"level": 1,
+			"mana_cost": 3,
+			"range": 4,
+			"targeting": "single",
+			"effects": [
+				{"type": "damage", "element": "water", "base_value": 6}
+			],
+			"description": "A burst of water strikes the target."
+		},
+		"freeze": {
+			"name": "Freeze",
+			"schools": ["water", "sorcery"],
+			"level": 2,
+			"mana_cost": 8,
+			"range": 4,
+			"targeting": "single",
+			"effects": [
+				{"type": "damage", "element": "water", "base_value": 10},
+				{"type": "status", "status": "frozen", "duration": 1, "chance": 50}
+			],
+			"description": "Intense cold freezes the target in place."
+		},
+		"ice_bolt": {
+			"name": "Ice Bolt",
+			"schools": ["water", "sorcery"],
+			"level": 2,
+			"mana_cost": 6,
+			"range": 5,
+			"targeting": "single",
+			"effects": [
+				{"type": "damage", "element": "water", "base_value": 12}
+			],
+			"description": "A shard of ice hurled at high speed."
+		},
+		"firebolt": {
+			"name": "Firebolt",
+			"schools": ["fire", "sorcery"],
+			"level": 1,
+			"mana_cost": 4,
+			"range": 5,
+			"targeting": "single",
+			"effects": [
+				{"type": "damage", "element": "fire", "base_value": 8}
+			],
+			"description": "A small bolt of fire streaks toward the target."
+		},
+		"fireball": {
+			"name": "Fireball",
+			"schools": ["fire", "sorcery"],
+			"level": 3,
+			"mana_cost": 14,
+			"range": 5,
+			"targeting": "aoe_circle",
+			"aoe_radius": 1,
+			"effects": [
+				{"type": "damage", "element": "fire", "base_value": 18}
+			],
+			"description": "A classic explosive ball of fire that damages all in the area."
+		},
+		"burning_weapon": {
+			"name": "Burning Weapon",
+			"schools": ["fire", "enchantment"],
+			"level": 1,
+			"mana_cost": 5,
+			"range": 2,
+			"targeting": "single_ally",
+			"effects": [
+				{"type": "buff", "stat": "damage", "value": 4, "duration": 3},
+				{"type": "buff", "stat": "fire_damage", "value": 3, "duration": 3}
+			],
+			"description": "Wreath an ally's weapon in flames."
+		},
+		"shocking_grasp": {
+			"name": "Shocking Grasp",
+			"schools": ["air", "sorcery"],
+			"level": 1,
+			"mana_cost": 4,
+			"range": 1,
+			"targeting": "single",
+			"effects": [
+				{"type": "damage", "element": "air", "base_value": 10}
+			],
+			"description": "Deliver a powerful electric shock at touch range."
+		},
+		"lightning": {
+			"name": "Lightning",
+			"schools": ["air", "sorcery"],
+			"level": 3,
+			"mana_cost": 12,
+			"range": 6,
+			"targeting": "single",
+			"effects": [
+				{"type": "damage", "element": "air", "base_value": 22}
+			],
+			"description": "A bolt of lightning strikes the target."
+		},
+		"haste": {
+			"name": "Haste",
+			"schools": ["air", "enchantment"],
+			"level": 2,
+			"mana_cost": 10,
+			"range": 3,
+			"targeting": "single_ally",
+			"effects": [
+				{"type": "buff", "stat": "movement", "value": 2, "duration": 3},
+				{"type": "buff", "stat": "initiative", "value": 5, "duration": 3}
+			],
+			"description": "The target moves with supernatural speed."
+		},
+		"magic_missile": {
+			"name": "Magic Missile",
+			"schools": ["space", "sorcery"],
+			"level": 1,
+			"mana_cost": 5,
+			"range": 6,
+			"targeting": "single",
+			"effects": [
+				{"type": "damage", "element": "space", "base_value": 10, "auto_hit": true}
+			],
+			"description": "An unerring bolt of magical force. Never misses."
+		},
+		"blink": {
+			"name": "Blink",
+			"schools": ["space", "sorcery"],
+			"level": 2,
+			"mana_cost": 8,
+			"range": 0,
+			"targeting": "self",
+			"effects": [
+				{"type": "teleport", "distance": 4}
+			],
+			"description": "Instantly teleport a short distance."
+		},
+		"lesser_heal": {
+			"name": "Lesser Heal",
+			"schools": ["white", "sorcery"],
+			"level": 1,
+			"mana_cost": 6,
+			"range": 3,
+			"targeting": "single_ally",
+			"effects": [
+				{"type": "heal", "base_value": 15}
+			],
+			"description": "Restore a small amount of health."
+		},
+		"greater_heal": {
+			"name": "Greater Heal",
+			"schools": ["white", "sorcery"],
+			"level": 3,
+			"mana_cost": 14,
+			"range": 4,
+			"targeting": "single_ally",
+			"effects": [
+				{"type": "heal", "base_value": 35}
+			],
+			"description": "Restore a significant amount of health."
+		},
+		"cure": {
+			"name": "Cure",
+			"schools": ["white", "sorcery"],
+			"level": 1,
+			"mana_cost": 5,
+			"range": 3,
+			"targeting": "single_ally",
+			"effects": [
+				{"type": "heal", "base_value": 8},
+				{"type": "cleanse", "count": 1}
+			],
+			"description": "Heal a little and attempt to remove one negative effect."
+		},
+		"bless": {
+			"name": "Bless",
+			"schools": ["white", "enchantment"],
+			"level": 2,
+			"mana_cost": 8,
+			"range": 3,
+			"targeting": "single_ally",
+			"effects": [
+				{"type": "buff", "stat": "accuracy", "value": 10, "duration": 3},
+				{"type": "buff", "stat": "armor", "value": 2, "duration": 3}
+			],
+			"description": "Bestow divine favor, improving attack and defense."
+		},
+		"raise_dead": {
+			"name": "Raise Dead",
+			"schools": ["white", "sorcery"],
+			"level": 4,
+			"mana_cost": 25,
+			"range": 2,
+			"targeting": "single_corpse",
+			"effects": [
+				{"type": "revive", "hp_percent": 1}
+			],
+			"description": "Return a fallen ally to life with minimal health."
+		},
+		"gloom": {
+			"name": "Gloom",
+			"schools": ["black", "enchantment"],
+			"level": 1,
+			"mana_cost": 5,
+			"range": 4,
+			"targeting": "single",
+			"effects": [
+				{"type": "debuff", "stat": "armor", "value": -2, "duration": 3},
+				{"type": "debuff", "stat": "movement", "value": -1, "duration": 3}
+			],
+			"description": "A pall of darkness saps the target's vitality."
+		},
+		"curse": {
+			"name": "Curse",
+			"schools": ["black", "enchantment"],
+			"level": 2,
+			"mana_cost": 8,
+			"range": 4,
+			"targeting": "single",
+			"effects": [
+				{"type": "debuff", "stat": "accuracy", "value": -10, "duration": 3},
+				{"type": "debuff", "stat": "damage", "value": -3, "duration": 3}
+			],
+			"description": "A vile curse weakens the target's combat ability."
+		},
+		"vampiric_touch": {
+			"name": "Vampiric Touch",
+			"schools": ["black", "sorcery"],
+			"level": 1,
+			"mana_cost": 6,
+			"range": 1,
+			"targeting": "single",
+			"effects": [
+				{"type": "damage", "element": "black", "base_value": 8},
+				{"type": "lifesteal", "percent": 50}
+			],
+			"description": "Drain life force from a touched enemy."
+		},
+		"voidbolt": {
+			"name": "Voidbolt",
+			"schools": ["black", "sorcery"],
+			"level": 2,
+			"mana_cost": 8,
+			"range": 5,
+			"targeting": "single",
+			"effects": [
+				{"type": "damage", "element": "black", "base_value": 14}
+			],
+			"description": "A bolt of pure negative energy."
+		},
+		"chain_lightning": {
+			"name": "Chain Lightning",
+			"schools": ["air", "sorcery"],
+			"level": 4,
+			"mana_cost": 18,
+			"range": 5,
+			"targeting": "chain",
+			"chain_targets": 3,
+			"effects": [
+				{"type": "damage", "element": "air", "base_value": 16}
+			],
+			"description": "Lightning arcs between multiple enemies."
+		},
+		"blizzard": {
+			"name": "Blizzard",
+			"schools": ["water", "sorcery"],
+			"level": 4,
+			"mana_cost": 20,
+			"range": 5,
+			"targeting": "aoe_circle",
+			"aoe_radius": 2,
+			"effects": [
+				{"type": "damage", "element": "water", "base_value": 14},
+				{"type": "status", "status": "frozen", "duration": 1, "chance": 30}
+			],
+			"description": "A fierce ice storm batters all in the area."
+		},
+		"earthquake": {
+			"name": "Earthquake",
+			"schools": ["earth", "sorcery"],
+			"level": 4,
+			"mana_cost": 22,
+			"range": 0,
+			"targeting": "aoe_circle",
+			"aoe_radius": 3,
+			"aoe_center": "self",
+			"effects": [
+				{"type": "damage", "element": "earth", "base_value": 16},
+				{"type": "status", "status": "knocked_down", "duration": 1, "chance": 40}
+			],
+			"description": "The ground shakes violently, damaging and knocking down enemies."
+		},
+		"stone_skin": {
+			"name": "Stone Skin",
+			"schools": ["earth", "enchantment"],
+			"level": 3,
+			"mana_cost": 12,
+			"range": 2,
+			"targeting": "single_ally",
+			"effects": [
+				{"type": "buff", "stat": "armor", "value": 6, "duration": 4},
+				{"type": "buff", "stat": "physical_resistance", "value": 15, "duration": 4}
+			],
+			"description": "Skin becomes hard as stone, greatly increasing protection."
+		},
+		"slow": {
+			"name": "Slow",
+			"schools": ["earth", "enchantment"],
+			"level": 2,
+			"mana_cost": 7,
+			"range": 4,
+			"targeting": "single",
+			"effects": [
+				{"type": "debuff", "stat": "movement", "value": -2, "duration": 2},
+				{"type": "debuff", "stat": "initiative", "value": -5, "duration": 2}
+			],
+			"description": "The target's movements become sluggish."
+		},
+		"regeneration": {
+			"name": "Regeneration",
+			"schools": ["white", "enchantment"],
+			"level": 3,
+			"mana_cost": 12,
+			"range": 3,
+			"targeting": "single_ally",
+			"effects": [
+				{"type": "status", "status": "regenerating", "value": 5, "duration": 4}
+			],
+			"description": "The target slowly heals over time."
+		}
+	},
+	"status_effects": {
+		"frozen": {
+			"name": "Frozen",
+			"blocks_actions": true,
+			"blocks_movement": true
+		},
+		"burning": {
+			"name": "Burning",
+			"damage_per_turn": 3,
+			"element": "fire"
+		},
+		"poisoned": {
+			"name": "Poisoned",
+			"damage_per_turn": 2,
+			"element": "physical"
+		},
+		"bleeding": {
+			"name": "Bleeding",
+			"damage_per_turn": 2,
+			"element": "physical"
+		},
+		"knocked_down": {
+			"name": "Knocked Down",
+			"blocks_actions": true,
+			"dodge_penalty": -20
+		},
+		"regenerating": {
+			"name": "Regenerating",
+			"heal_per_turn": true
+		},
+		"stunned": {
+			"name": "Stunned",
+			"blocks_actions": true
+		},
+		"feared": {
+			"name": "Feared",
+			"forces_flee": true
+		},
+		"charmed": {
+			"name": "Charmed",
+			"switches_team": true
+		}
+	}
+}

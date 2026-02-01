@@ -9,12 +9,17 @@
 ✅ Karma integration with events
 ✅ Party-wide requirement checking
 ✅ Dice rolling system for yellow choices
+✅ Item System complete (equipment, inventory, stat bonuses)
+✅ Item tooltip on hover
+✅ Combat System Phase 1 (grid, movement, basic attacks)
+✅ Combat System Phase 2 - Spell System (see below)
 
 ---
 
 ## Known Bugs
 
-- [ ] **Derived stats not displaying** - Stats tab shows 0 for HP, Mana, Stamina, etc. CharacterSystem.update_derived_stats() may not be called or values not stored correctly.
+- [x] **Derived stats not displaying** - FIXED: Was using wrong key ("derived_stats" vs "derived")
+- [x] **Combat turn order issues** - FIXED: Removed async/await, using Timer-based delays for enemy turns instead
 
 ---
 
@@ -45,13 +50,36 @@
   - Scene transition to/from events
   - Event outcomes (items, XP, karma, combat trigger)
 
-- [ ] **Tactical Combat System** (Grid-based like Disgaea/FF Tactics)
-  - Combat grid setup
-  - Turn order system
-  - Ability targeting and execution
-  - Basic AI behavior
-  - Status effects
-  - Victory/defeat conditions
+- [x] **Tactical Combat System Phase 1** (Grid-based like Disgaea/FF Tactics)
+  - ✅ Combat grid setup (12x8, top-down)
+  - ✅ Turn order system (initiative-based)
+  - ✅ 2-action system (move/attack/wait in any order)
+  - ✅ Basic attack with hit/miss, damage, crits
+  - ✅ Physical damage with armor reduction
+  - ✅ Basic AI behavior (move toward player, attack)
+  - ✅ Bleed-out system (3 turns to revive)
+  - ✅ Victory/defeat conditions
+  - 🔶 Known bug: turn order occasionally out of sync
+
+- [x] **Tactical Combat System Phase 2 - Spell System**
+  - ✅ Spell database (resources/data/spells.json) with 25+ spells
+  - ✅ Spell casting UI (Spell button, spell panel with scroll)
+  - ✅ Multiple targeting types: self, single, single_ally, aoe_circle, chain
+  - ✅ Purple spell range highlighting
+  - ✅ Orange AoE preview on hover
+  - ✅ Rich spell tooltips (schools, stats, effects, description)
+  - ✅ Elemental damage with resistances (space, air, fire, water, earth)
+  - ✅ Spell effects: damage, heal, buff, debuff, status, lifesteal, revive, cleanse
+  - ✅ Skill requirements (need one school at spell level, bonuses from all schools)
+  - 🔶 Status effect processing on turn start/end (structure in place, needs expansion)
+  - 🔶 AI spell casting (not yet implemented)
+
+- [ ] **Tactical Combat System Phase 3**
+  - Ranged weapon attacks
+  - Terrain obstacles
+  - Height differences
+  - Geo effects (fire on ground, etc.)
+  - More status effects and their tick processing
 
 ### Medium Priority (Content & Polish)
 - [ ] **Expand Data Files**
@@ -207,4 +235,29 @@
 
 ---
 
-Last Updated: 2026-01-30
+Last Updated: 2026-02-01
+
+---
+
+## Session Notes (2026-02-01)
+
+### Spell System Implementation Complete
+- Created `resources/data/spells.json` with 25+ spells across all schools
+- Schools work as ORs for requirements (need ONE at spell level), but bonuses from ALL apply
+- Spell schools: earth, water, fire, air, space (elements) + white, black, sorcery, summoning, enchantment
+- Added spell UI to combat arena (SpellButton, SpellPanel with ScrollContainer)
+- Spell range shows purple highlighting, AoE preview shows orange on hover
+- Rich tooltips show: schools, level/mana/range, targeting type, all effects, description
+
+### Key Files Modified This Session
+- `scripts/autoload/combat_manager.gd` - Added spell casting, get_castable_spells(), effect application
+- `scripts/combat/combat_arena.gd` - Spell UI, targeting, AoE preview, rich tooltips
+- `scripts/combat/combat_grid.gd` - highlight_spell_range(), show_aoe_preview()
+- `scenes/combat/combat_arena.tscn` - Added SpellButton and SpellPanel nodes
+- `scripts/autoload/character_system.gd` - Added test magic skills to wanderer background
+
+### Next Steps
+- Status effect tick processing (burning damage, regeneration healing, etc.)
+- AI spell casting
+- More spells from the design docs (SW3 - Spells.md has full spell list)
+- Ranged weapon attacks

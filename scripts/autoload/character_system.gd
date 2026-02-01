@@ -156,6 +156,9 @@ func apply_background_skills(character: Dictionary, background: String) -> void:
 		"wanderer":
 			set_skill_level(character, "swords", 1)
 			set_skill_level(character, "lore", 1)
+			set_skill_level(character, "fire_magic", 2)  # For testing spells
+			set_skill_level(character, "sorcery", 2)     # For testing spells
+			set_skill_level(character, "white", 1)       # For testing healing
 		"scholar":
 			set_skill_level(character, "focus", 2)
 			set_skill_level(character, "sorcery", 1)

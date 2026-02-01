@@ -111,6 +111,7 @@ func _create_visuals() -> void:
 	sprite.size = UNIT_SIZE
 	sprite.position = -UNIT_SIZE / 2  # Center on position
 	sprite.color = TEAM_COLORS.get(team, Color.WHITE)
+	sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Let clicks pass through to grid
 	add_child(sprite)
 
 	# Health bar background
@@ -118,6 +119,7 @@ func _create_visuals() -> void:
 	health_bar_bg.size = Vector2(UNIT_SIZE.x, HEALTH_BAR_HEIGHT)
 	health_bar_bg.position = Vector2(-UNIT_SIZE.x / 2, -UNIT_SIZE.y / 2 - HEALTH_BAR_HEIGHT - HEALTH_BAR_OFFSET)
 	health_bar_bg.color = Color(0.2, 0.2, 0.2)
+	health_bar_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(health_bar_bg)
 
 	# Health bar fill
@@ -125,6 +127,7 @@ func _create_visuals() -> void:
 	health_bar_fill.size = Vector2(UNIT_SIZE.x, HEALTH_BAR_HEIGHT)
 	health_bar_fill.position = health_bar_bg.position
 	health_bar_fill.color = Color(0.2, 0.8, 0.2)
+	health_bar_fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(health_bar_fill)
 
 	# Name label
@@ -134,6 +137,7 @@ func _create_visuals() -> void:
 	name_label.add_theme_font_size_override("font_size", 10)
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.custom_minimum_size.x = UNIT_SIZE.x
+	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(name_label)
 
 	# Status indicator (for bleed-out, buffs, etc.)
@@ -142,6 +146,7 @@ func _create_visuals() -> void:
 	status_indicator.position = Vector2(UNIT_SIZE.x / 2 - 10, -UNIT_SIZE.y / 2 - 15)
 	status_indicator.add_theme_font_size_override("font_size", 12)
 	status_indicator.add_theme_color_override("font_color", Color.RED)
+	status_indicator.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(status_indicator)
 
 
