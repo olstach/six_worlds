@@ -877,7 +877,7 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 
 		# Casters prefer spells over physical attacks
 		if is_caster and not castable_spells.is_empty():
-			var spell_cast = _try_cast_spell(unit, castable_spells, player_units, nearest)
+			var spell_cast = _ai_try_cast_spell(unit, castable_spells, player_units, nearest)
 			if spell_cast:
 				# Check if target died, find new target
 				if not nearest.is_alive():
@@ -954,7 +954,7 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 
 
 ## AI: Try to cast a spell, returns true if spell was cast
-func _try_cast_spell(unit: CombatUnit, spells: Array[Dictionary], enemies: Array[Node], primary_target: CombatUnit) -> bool:
+func _ai_try_cast_spell(unit: CombatUnit, spells: Array[Dictionary], enemies: Array[Node], primary_target: CombatUnit) -> bool:
 	# Sort spells by damage potential (prefer higher damage spells)
 	spells.sort_custom(func(a, b):
 		var a_dmg = 0
