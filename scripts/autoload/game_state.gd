@@ -4,14 +4,21 @@ extends Node
 ## This singleton tracks:
 ## - Current run state (alive/dead, current world, etc.)
 ## - Which worlds are unlocked
+## - Party gold/currency
 ## - Save/load functionality
 ## - Scene transitions
+
+# Signals
+signal gold_changed(new_amount: int, change: int)
 
 # Current run data
 var current_world: String = "hell"  # Which world the player is currently in
 var unlocked_worlds: Array[String] = ["hell"]  # Worlds player can travel to
 var is_alive: bool = true
 var current_run_number: int = 1  # How many times player has reincarnated
+
+# Party resources
+var gold: int = 100  # Starting gold
 
 # World definitions
 const WORLDS: Dictionary = {
@@ -95,3 +102,46 @@ func get_current_world_info() -> Dictionary:
 ## Check if player has reached the final realm
 func has_reached_final_realm() -> bool:
 	return current_world == "god" and WORLDS["god"].boss_defeated
+
+
+# ============================================
+# GOLD / CURRENCY MANAGEMENT
+# ============================================
+
+## Get current gold amount
+func get_gold() -> int:
+	return gold
+
+
+## Add gold to party
+func add_gold(amount: int) -> void:
+	if amount <= 0:
+		return
+	gold += amount
+	print("Gained %d gold (total: %d)" % [amount, gold])
+	gold_changed.emit(gold, amount)
+
+
+## Spend gold (returns true if successful)
+func spend_gold(amount: int) -> bool:
+	if amount <= 0:
+		return true
+	if gold < amount:
+		print("Not enough gold! Need %d, have %d" % [amount, gold])
+		return false
+	gold -= amount
+	print("Spent %d gold (remaining: %d)" % [amount, gold])
+	gold_changed.emit(gold, -amount)
+	return true
+
+
+## Check if party can afford an amount
+func can_afford(amount: int) -> bool:
+	return gold >= amount
+
+
+## Set gold directly (for save/load)
+func set_gold(amount: int) -> void:
+	var old_gold = gold
+	gold = max(0, amount)
+	gold_changed.emit(gold, gold - old_gold)

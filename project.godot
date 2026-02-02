@@ -28,6 +28,7 @@ ItemSystem="*res://scripts/autoload/item_system.gd"
 KarmaSystem="*res://scripts/autoload/karma_system.gd"
 EventManager="*res://scripts/autoload/event_manager.gd"
 CombatManager="*res://scripts/autoload/combat_manager.gd"
+ShopSystem="*res://scripts/autoload/shop_system.gd"
 
 [display]
 

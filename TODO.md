@@ -107,6 +107,17 @@
   - Height differences
   - Geo effects (fire on ground, etc.)
 
+- [x] **Trading System**
+  - ✅ Party gold tracking in GameState (add/spend/can_afford)
+  - ✅ ShopSystem autoload for managing shops and transactions
+  - ✅ Buy/sell items with price calculations
+  - ✅ Spell learning for gold (trainers)
+  - ✅ Skill/attribute training for gold (rare trainers)
+  - ✅ Trade skill discount (5% per level)
+  - ✅ Shop data structure with tabs (items/spells/training)
+  - ✅ Sample shops in shops.json (merchant, spell trainer, skill trainer, etc.)
+  - 🔶 Shop UI (FTL-style event screens - not yet implemented)
+
 ### Medium Priority (Content & Polish)
 - [ ] **Expand Data Files**
   - All races for all 6 realms (currently have 5 examples)
@@ -266,6 +277,24 @@ Last Updated: 2026-02-02
 ---
 
 ## Session Notes (2026-02-02)
+
+### Trading System Implementation
+- Added party gold tracking to GameState (gold, add_gold, spend_gold, can_afford)
+- Created ShopSystem autoload for all trading functionality
+- Shop types: general (items), spell_trainer (spells), skill_trainer (training), mixed
+- Price calculations with Trade skill discount (5% per skill level)
+- Buy/sell items (sell at 50% value, Trade skill bonus)
+- Learn spells for gold (cost = 50 * spell_level)
+- Train attributes for gold (200 per point)
+- Train skills for gold (50/150/300/500/750 per level)
+- Created shops.json with 5 sample shops (merchant, sorcerer, sage, weapon master, general store)
+- Shop data loaded from JSON on startup
+
+### Key Files Created/Modified (Trading)
+- `scripts/autoload/game_state.gd` - gold tracking, gold_changed signal
+- `scripts/autoload/shop_system.gd` - NEW: full trading system
+- `resources/data/shops.json` - NEW: shop definitions
+- `project.godot` - Added ShopSystem autoload
 
 ### Spellbook System & AI Spell Casting
 - Characters now have `known_spells` array - must learn spells to cast them
