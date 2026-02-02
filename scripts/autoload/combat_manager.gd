@@ -474,12 +474,20 @@ func get_spell(spell_id: String) -> Dictionary:
 	return {}
 
 
-## Get all spells a unit can cast
+## Get all spells a unit can cast (must know spell + meet requirements)
 func get_castable_spells(unit: Node) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	var skills = unit.character_data.get("skills", {})
+	var known_spells = unit.character_data.get("known_spells", [])
 
-	for spell_id in _spell_database:
+	# If no known_spells array, unit can't cast any spells
+	if known_spells.is_empty():
+		return result
+
+	# Only check spells the unit knows
+	for spell_id in known_spells:
+		if not spell_id in _spell_database:
+			continue
 		var spell = _spell_database[spell_id]
 		var can_cast = _can_cast_spell(unit, spell, skills)
 		if can_cast.success:

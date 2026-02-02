@@ -100,6 +100,43 @@ const TEST_RANGED_ENEMY_DEF = {
 	}
 }
 
+# Test mage enemy
+const TEST_MAGE_ENEMY_DEF = {
+	"name": "Demon Mage",
+	"max_hp": 20,
+	"max_mana": 50,
+	"actions": 2,
+	"attributes": {
+		"strength": 6,
+		"finesse": 8,
+		"constitution": 6,
+		"focus": 14,
+		"awareness": 12,
+		"charm": 6,
+		"luck": 8
+	},
+	"skills": {
+		"fire_magic": 2,
+		"sorcery": 2,
+		"black": 1
+	},
+	"derived": {
+		"initiative": 20,
+		"movement": 2,
+		"dodge": 8,
+		"damage": 3,
+		"armor": 0,
+		"spellpower": 14,
+		"crit_chance": 5
+	},
+	"resistances": {
+		"physical": 0,
+		"fire": 50
+	},
+	# Spells this enemy knows
+	"known_spells": ["firebolt", "immolate", "poison_dart"]
+}
+
 func _ready() -> void:
 	# Create AI timer for delayed enemy turns
 	ai_timer = Timer.new()
@@ -175,24 +212,30 @@ func _start_test_combat() -> void:
 		player_units.append(unit)
 		_log_message("Player: %s placed at %s" % [unit.unit_name, player_start_positions[i]])
 
-	# Create test enemies (mix of melee and ranged)
+	# Create test enemies (mix of melee, ranged, and mage)
 	var enemy_start_positions = [Vector2i(10, 2), Vector2i(10, 4), Vector2i(9, 3)]
 
 	for i in range(3):
 		var enemy_def: Dictionary
-		if i == 2:
-			# Make one enemy a ranged archer
-			enemy_def = TEST_RANGED_ENEMY_DEF.duplicate(true)
-		else:
+		var extra_info = ""
+		if i == 0:
+			# Melee demon
 			enemy_def = TEST_ENEMY_DEF.duplicate(true)
-			enemy_def.name = "Demon " + str(i + 1)
+			enemy_def.name = "Demon Warrior"
+		elif i == 1:
+			# Ranged archer
+			enemy_def = TEST_RANGED_ENEMY_DEF.duplicate(true)
+			extra_info = " (range: %d)" % enemy_def.equipped_weapon.stats.range
+		else:
+			# Mage with spells
+			enemy_def = TEST_MAGE_ENEMY_DEF.duplicate(true)
+			extra_info = " (mage)"
 
 		var unit = CombatUnit.new()
 		unit.init_as_enemy(enemy_def)
 		combat_grid.place_unit(unit, enemy_start_positions[i])
 		enemy_units.append(unit)
-		var range_text = " (range: %d)" % unit.get_attack_range() if unit.get_attack_range() > 1 else ""
-		_log_message("Enemy: %s placed at %s%s" % [unit.unit_name, enemy_start_positions[i], range_text])
+		_log_message("Enemy: %s placed at %s%s" % [unit.unit_name, enemy_start_positions[i], extra_info])
 
 	# Start combat
 	CombatManager.start_combat(combat_grid, player_units, enemy_units)
@@ -812,6 +855,10 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 		CombatManager.end_turn()
 		return
 
+	# Check if unit has castable spells
+	var castable_spells = CombatManager.get_castable_spells(unit)
+	var is_caster = not castable_spells.is_empty()
+
 	# Find best target based on range
 	var attack_range = unit.get_attack_range()
 	var is_ranged = attack_range > 1
@@ -825,6 +872,21 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 	while CombatManager.can_act(1) and CombatManager.get_current_unit() == unit:
 		var dist = _grid_distance(unit.grid_position, nearest.grid_position)
 
+		# Refresh castable spells (mana may have changed)
+		castable_spells = CombatManager.get_castable_spells(unit)
+
+		# Casters prefer spells over physical attacks
+		if is_caster and not castable_spells.is_empty():
+			var spell_cast = _try_cast_spell(unit, castable_spells, player_units, nearest)
+			if spell_cast:
+				# Check if target died, find new target
+				if not nearest.is_alive():
+					nearest = _find_nearest_enemy(unit, player_units)
+					if nearest == null:
+						break
+				continue
+
+		# Fall back to physical attack
 		if dist <= attack_range:
 			# In range - attack!
 			var result = CombatManager.attack_unit(unit, nearest)
@@ -846,16 +908,24 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 			var best_tile: Vector2i = unit.grid_position
 			var best_score: int = -999
 
+			# Determine optimal range (casters/ranged stay back, melee gets close)
+			var optimal_range = 1
+			if is_caster:
+				optimal_range = 4  # Casters prefer mid-range
+			elif is_ranged:
+				optimal_range = attack_range
+
 			for tile in move_range:
 				var tile_dist = _grid_distance(tile, nearest.grid_position)
 
-				if is_ranged:
-					# Ranged units prefer to stay at max range (safe distance)
-					# Score: want to be in range but not too close
+				if is_caster or is_ranged:
+					# Prefer staying at optimal range
 					var score = 0
-					if tile_dist <= attack_range:
-						score = 100  # Can attack from here
-						score += mini(tile_dist, attack_range)  # Prefer staying back
+					if tile_dist <= optimal_range and tile_dist >= 2:
+						score = 100  # Good casting/shooting position
+						score += tile_dist  # Prefer staying back
+					elif tile_dist <= optimal_range:
+						score = 50  # Can act from here
 					else:
 						score = -tile_dist  # Get closer if out of range
 					if score > best_score:
@@ -868,7 +938,9 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 
 			if best_tile != unit.grid_position:
 				CombatManager.move_unit(unit, best_tile)
-				if is_ranged:
+				if is_caster:
+					_log_message("%s positions for casting" % unit.unit_name)
+				elif is_ranged:
 					_log_message("%s repositions" % unit.unit_name)
 				else:
 					_log_message("%s moves toward %s" % [unit.unit_name, nearest.unit_name])
@@ -879,6 +951,83 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 	# End turn if we still have control
 	if CombatManager.get_current_unit() == unit:
 		CombatManager.end_turn()
+
+
+## AI: Try to cast a spell, returns true if spell was cast
+func _try_cast_spell(unit: CombatUnit, spells: Array[Dictionary], enemies: Array[Node], primary_target: CombatUnit) -> bool:
+	# Sort spells by damage potential (prefer higher damage spells)
+	spells.sort_custom(func(a, b):
+		var a_dmg = 0
+		var b_dmg = 0
+		for effect in a.get("effects", []):
+			if effect.type == "damage":
+				a_dmg += effect.base_value
+		for effect in b.get("effects", []):
+			if effect.type == "damage":
+				b_dmg += effect.base_value
+		return a_dmg > b_dmg
+	)
+
+	# Try each spell
+	for spell in spells:
+		var spell_id = spell.get("id", "")
+		var spell_range = spell.get("range", 1)
+		var targeting = spell.get("targeting", "single")
+
+		# Find valid target position
+		var target_pos: Vector2i = Vector2i(-1, -1)
+
+		match targeting:
+			"single":
+				# Target nearest enemy in range
+				for enemy in enemies:
+					if not enemy.is_alive():
+						continue
+					var dist = _grid_distance(unit.grid_position, enemy.grid_position)
+					if dist <= spell_range:
+						target_pos = enemy.grid_position
+						break
+
+			"aoe_circle":
+				# Target position with most enemies
+				var aoe_radius = spell.get("aoe_radius", 1)
+				var best_pos = Vector2i(-1, -1)
+				var best_count = 0
+
+				# Check each enemy position as potential center
+				for enemy in enemies:
+					if not enemy.is_alive():
+						continue
+					var dist = _grid_distance(unit.grid_position, enemy.grid_position)
+					if dist > spell_range:
+						continue
+
+					# Count enemies in AoE
+					var count = 0
+					for other in enemies:
+						if not other.is_alive():
+							continue
+						var aoe_dist = _grid_distance(enemy.grid_position, other.grid_position)
+						if aoe_dist <= aoe_radius:
+							count += 1
+
+					if count > best_count:
+						best_count = count
+						best_pos = enemy.grid_position
+
+				if best_count > 0:
+					target_pos = best_pos
+
+			"self":
+				target_pos = unit.grid_position
+
+		# If valid target found, cast the spell
+		if target_pos != Vector2i(-1, -1):
+			var result = CombatManager.cast_spell(unit, spell_id, target_pos)
+			if result.success:
+				return true
+
+	return false
 
 
 ## Find nearest alive enemy unit

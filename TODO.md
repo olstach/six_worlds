@@ -72,7 +72,18 @@
   - ✅ Spell effects: damage, heal, buff, debuff, status, lifesteal, revive, cleanse
   - ✅ Skill requirements (need one school at spell level, bonuses from all schools)
   - ✅ Status effect processing on turn start/end
-  - 🔶 AI spell casting (not yet implemented)
+  - ✅ AI spell casting (enemy mages can cast spells)
+
+- [x] **Spellbook System**
+  - ✅ Characters have `known_spells` array - must learn spells before casting
+  - ✅ `learn_spell()` / `forget_spell()` / `knows_spell()` functions in CharacterSystem
+  - ✅ `get_castable_spells()` filters by known spells
+  - ✅ Starting spells based on background (wanderer gets fire spells)
+  - ✅ Enemies have `known_spells` in their definitions
+  - ✅ AI selects and casts appropriate spells (damage, AoE targeting)
+  - ✅ Test mage enemy (Demon Mage) with fire/black spells
+  - 🔶 Spellbook UI tab in menu (not yet implemented)
+  - 🔶 Spell learning through trade/events (future)
 
 - [x] **Tactical Combat System Phase 3a - Ranged Attacks**
   - ✅ Ranged weapon support (bows, thrown weapons with `range` stat)
@@ -255,6 +266,21 @@ Last Updated: 2026-02-02
 ---
 
 ## Session Notes (2026-02-02)
+
+### Spellbook System & AI Spell Casting
+- Characters now have `known_spells` array - must learn spells to cast them
+- Added CharacterSystem functions: learn_spell(), forget_spell(), knows_spell(), get_known_spells()
+- Starting spells granted based on background (wanderer: firebolt, immolate, lesser_heal, poison_dart)
+- get_castable_spells() now filters by known spells
+- Enemies can have known_spells in their definitions
+- Enemy AI now casts spells: prioritizes damage spells, handles single/AoE targeting
+- Added test "Demon Mage" enemy with fire_magic/sorcery/black skills and fire/poison spells
+- AI positions casters at mid-range for safety
+
+### Key Files Modified (Spellbook/AI Casting)
+- `scripts/autoload/character_system.gd` - known_spells array, spell learning functions, spell_learned signal
+- `scripts/autoload/combat_manager.gd` - get_castable_spells() filters by known_spells
+- `scripts/combat/combat_arena.gd` - _try_cast_spell() AI function, Demon Mage enemy definition
 
 ### Status Effect Tick Processing Implementation
 - Status effects now process at turn start (DoT damage, healing, duration tick)
