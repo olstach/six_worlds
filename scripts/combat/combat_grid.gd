@@ -49,6 +49,15 @@ const COLOR_EFFECT_CURSED = Color(0.3, 0.1, 0.3, 0.5)
 var highlighted_tiles: Array[Vector2i] = []
 var current_highlight_color: Color = COLOR_MOVE_RANGE
 
+# Deployment zone colors
+const COLOR_DEPLOY_FRONT = Color(0.3, 0.6, 0.3, 0.4)  # Green for front line
+const COLOR_DEPLOY_BACK = Color(0.3, 0.3, 0.6, 0.4)   # Blue for back line
+const COLOR_DEPLOY_ENEMY = Color(0.6, 0.3, 0.3, 0.3)  # Red tint for enemy zone
+
+# Deployment zone configuration
+const PLAYER_DEPLOY_COLUMNS: int = 3  # Columns 0-2 for player deployment
+const ENEMY_DEPLOY_COLUMNS: int = 3   # Last 3 columns for enemy deployment
+
 # Tile types (base terrain)
 enum TileType { FLOOR, WALL, PIT, WATER, DIFFICULT }
 
@@ -953,3 +962,132 @@ func create_test_arena() -> void:
 	add_terrain_effect(Vector2i(7, 2), TerrainEffect.FIRE, -1, 5)
 
 	_draw_grid()
+
+
+# ============================================
+# DEPLOYMENT ZONES
+# ============================================
+
+## Get player deployment zone tiles
+## Returns dict with "front" and "back" arrays of positions
+func get_player_deployment_zones() -> Dictionary:
+	var front_tiles: Array[Vector2i] = []
+	var back_tiles: Array[Vector2i] = []
+
+	# Front row is the rightmost column of the deploy zone (closest to enemy)
+	var front_col = PLAYER_DEPLOY_COLUMNS - 1
+
+	for y in range(grid_size.y):
+		# Front column
+		var front_pos = Vector2i(front_col, y)
+		if _is_valid_deployment_tile(front_pos):
+			front_tiles.append(front_pos)
+
+		# Back columns (everything else in deploy zone)
+		for x in range(front_col):
+			var back_pos = Vector2i(x, y)
+			if _is_valid_deployment_tile(back_pos):
+				back_tiles.append(back_pos)
+
+	return {
+		"front": front_tiles,
+		"back": back_tiles,
+		"all": front_tiles + back_tiles
+	}
+
+
+## Get enemy deployment zone tiles
+func get_enemy_deployment_zones() -> Dictionary:
+	var front_tiles: Array[Vector2i] = []
+	var back_tiles: Array[Vector2i] = []
+
+	# Front row is the leftmost column of enemy deploy zone (closest to player)
+	var front_col = grid_size.x - ENEMY_DEPLOY_COLUMNS
+
+	for y in range(grid_size.y):
+		# Front column
+		var front_pos = Vector2i(front_col, y)
+		if _is_valid_deployment_tile(front_pos):
+			front_tiles.append(front_pos)
+
+		# Back columns
+		for x in range(front_col + 1, grid_size.x):
+			var back_pos = Vector2i(x, y)
+			if _is_valid_deployment_tile(back_pos):
+				back_tiles.append(back_pos)
+
+	return {
+		"front": front_tiles,
+		"back": back_tiles,
+		"all": front_tiles + back_tiles
+	}
+
+
+## Check if a tile is valid for unit deployment (walkable, not a hazard)
+func _is_valid_deployment_tile(grid_pos: Vector2i) -> bool:
+	if not is_valid_position(grid_pos):
+		return false
+
+	var tile = tiles.get(grid_pos)
+	if tile == null:
+		return false
+
+	# Must be walkable
+	if not tile.walkable:
+		return false
+
+	# Avoid tiles with damaging effects
+	if tile.effect in [TerrainEffect.FIRE, TerrainEffect.POISON, TerrainEffect.ACID, TerrainEffect.CURSED]:
+		return false
+
+	return true
+
+
+## Highlight deployment zones for visual feedback
+func show_deployment_zones(show_player: bool = true, show_enemy: bool = false) -> void:
+	clear_highlights()
+
+	if show_player:
+		var zones = get_player_deployment_zones()
+		for pos in zones.front:
+			_add_highlight_at(pos, COLOR_DEPLOY_FRONT)
+		for pos in zones.back:
+			_add_highlight_at(pos, COLOR_DEPLOY_BACK)
+
+	if show_enemy:
+		var zones = get_enemy_deployment_zones()
+		for pos in zones.all:
+			_add_highlight_at(pos, COLOR_DEPLOY_ENEMY)
+
+
+## Add a single highlight at position (used by deployment zones)
+func _add_highlight_at(grid_pos: Vector2i, color: Color) -> void:
+	var highlight = ColorRect.new()
+	highlight.size = Vector2(tile_size - 2, tile_size - 2)
+	highlight.position = grid_to_world(grid_pos) + Vector2(1, 1)
+	highlight.color = color
+	highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	highlight_layer.add_child(highlight)
+
+
+## Get a random unoccupied position from a list of positions
+func get_random_unoccupied(positions: Array) -> Vector2i:
+	var available: Array[Vector2i] = []
+	for pos in positions:
+		if not is_occupied(pos):
+			available.append(pos)
+
+	if available.is_empty():
+		return Vector2i(-1, -1)  # Invalid position signals no space
+
+	return available[randi() % available.size()]
+
+
+## Check if a position is in player deployment zone
+func is_in_player_zone(grid_pos: Vector2i) -> bool:
+	return grid_pos.x < PLAYER_DEPLOY_COLUMNS
+
+
+## Check if a position is in enemy deployment zone
+func is_in_enemy_zone(grid_pos: Vector2i) -> bool:
+	return grid_pos.x >= grid_size.x - ENEMY_DEPLOY_COLUMNS

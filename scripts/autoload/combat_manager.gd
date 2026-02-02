@@ -25,6 +25,9 @@ signal status_effect_triggered(unit: Node, effect_name: String, value: int, effe
 signal status_effect_expired(unit: Node, effect_name: String)
 signal terrain_damage(unit: Node, damage: int, effect_name: String)
 signal terrain_heal(unit: Node, amount: int, effect_name: String)
+signal deployment_phase_started(can_manually_place: bool)
+signal deployment_phase_ended()
+signal unit_deployed(unit: Node, position: Vector2i)
 
 # Combat state
 var combat_active: bool = false
@@ -45,6 +48,22 @@ const MAX_ACTIONS: int = 4
 
 # Bleed-out constants
 const BLEED_OUT_TURNS: int = 3
+
+# Combat role constants (for deployment positioning)
+enum CombatRole { MELEE, RANGED, CASTER }
+
+const MELEE_SKILLS: Array[String] = ["swords", "martial_arts", "axes", "unarmed", "maces", "spears", "daggers"]
+const RANGED_SKILLS: Array[String] = ["ranged"]
+const CASTER_SKILLS: Array[String] = ["fire_magic", "water_magic", "earth_magic", "air_magic", "space_magic",
+	"sorcery", "enchantment", "summoning", "white", "black", "ritual"]
+
+# Tactician upgrade ID for manual deployment
+const TACTICIAN_UPGRADE_ID: String = "tactician"
+
+# Deployment state
+var _deployment_phase: bool = false
+var _pending_deployment_units: Array[Node] = []
+var _can_manually_deploy: bool = false
 
 # Spell database
 var _spell_database: Dictionary = {}
@@ -114,6 +133,7 @@ func end_combat(victory: bool) -> void:
 		return
 
 	combat_active = false
+	_deployment_phase = false
 	print("Combat ended - Victory: ", victory)
 	combat_ended.emit(victory)
 
@@ -121,6 +141,288 @@ func end_combat(victory: bool) -> void:
 	all_units.clear()
 	turn_order.clear()
 	combat_grid = null
+
+
+# ============================================
+# DEPLOYMENT SYSTEM
+# ============================================
+
+## Start combat with automatic unit deployment based on roles
+## player_characters: Array of character data dictionaries
+## enemy_units: Array of enemy unit nodes (already created)
+func start_combat_with_deployment(grid: Node, player_characters: Array, enemy_units: Array) -> void:
+	if combat_active:
+		push_warning("CombatManager: Combat already active")
+		return
+
+	combat_active = true
+	combat_grid = grid
+	all_units.clear()
+	turn_order.clear()
+	current_unit_index = 0
+
+	# Check if any party member has Tactician upgrade for manual placement
+	_can_manually_deploy = _party_has_tactician()
+
+	# Deploy enemy units first (they use AI-controlled random placement)
+	_deploy_enemy_units(enemy_units)
+
+	if _can_manually_deploy:
+		# Enter deployment phase for manual placement
+		_deployment_phase = true
+		_pending_deployment_units.clear()
+		# Player will manually place units via deploy_unit_at()
+		deployment_phase_started.emit(true)
+		combat_grid.show_deployment_zones(true, false)
+		print("Deployment phase started - Tactician allows manual placement")
+	else:
+		# Auto-deploy player units based on roles
+		_auto_deploy_player_units(player_characters)
+		_finalize_combat_start()
+
+
+## Auto-deploy player units based on their combat roles
+func _auto_deploy_player_units(player_characters: Array) -> void:
+	if combat_grid == null:
+		return
+
+	var zones = combat_grid.get_player_deployment_zones()
+	var front_tiles = zones.front.duplicate()
+	var back_tiles = zones.back.duplicate()
+
+	# Sort characters by role: casters/ranged first (go to back), melee last (go to front)
+	var sorted_chars = player_characters.duplicate()
+	sorted_chars.sort_custom(func(a, b):
+		var role_a = get_character_combat_role(a)
+		var role_b = get_character_combat_role(b)
+		# Casters and ranged have lower priority (placed first, in back)
+		return role_a > role_b  # MELEE=0, RANGED=1, CASTER=2
+	)
+
+	for char_data in sorted_chars:
+		var role = get_character_combat_role(char_data)
+		var deploy_pos = Vector2i(-1, -1)
+
+		match role:
+			CombatRole.MELEE:
+				# Melee goes to front, or back if front is full
+				deploy_pos = _get_random_from_array(front_tiles)
+				if deploy_pos == Vector2i(-1, -1):
+					deploy_pos = _get_random_from_array(back_tiles)
+			CombatRole.RANGED, CombatRole.CASTER:
+				# Ranged/Casters go to back, or front if back is full
+				deploy_pos = _get_random_from_array(back_tiles)
+				if deploy_pos == Vector2i(-1, -1):
+					deploy_pos = _get_random_from_array(front_tiles)
+
+		if deploy_pos != Vector2i(-1, -1):
+			var unit = _create_combat_unit(char_data, Team.PLAYER)
+			combat_grid.place_unit(unit, deploy_pos)
+			all_units.append(unit)
+			unit_deployed.emit(unit, deploy_pos)
+			print("Deployed ", char_data.name, " (", _role_name(role), ") at ", deploy_pos)
+
+
+## Deploy enemy units (random placement in enemy zone)
+func _deploy_enemy_units(enemy_units: Array) -> void:
+	if combat_grid == null:
+		return
+
+	var zones = combat_grid.get_enemy_deployment_zones()
+	var available_tiles = zones.all.duplicate()
+
+	for unit in enemy_units:
+		var deploy_pos = _get_random_from_array(available_tiles)
+		if deploy_pos != Vector2i(-1, -1):
+			combat_grid.place_unit(unit, deploy_pos)
+			all_units.append(unit)
+			unit_deployed.emit(unit, deploy_pos)
+			print("Enemy deployed at ", deploy_pos)
+
+
+## Manually deploy a unit at a specific position (used during Tactician deployment phase)
+func deploy_unit_manually(char_data: Dictionary, grid_pos: Vector2i) -> bool:
+	if not _deployment_phase:
+		push_warning("Not in deployment phase")
+		return false
+
+	if combat_grid == null:
+		return false
+
+	# Check position is in player deployment zone
+	if not combat_grid.is_in_player_zone(grid_pos):
+		push_warning("Position not in player deployment zone")
+		return false
+
+	# Check position is not occupied
+	if combat_grid.is_occupied(grid_pos):
+		push_warning("Position already occupied")
+		return false
+
+	# Create and place unit
+	var unit = _create_combat_unit(char_data, Team.PLAYER)
+	combat_grid.place_unit(unit, grid_pos)
+	all_units.append(unit)
+	unit_deployed.emit(unit, grid_pos)
+
+	print("Manually deployed ", char_data.name, " at ", grid_pos)
+	return true
+
+
+## End deployment phase and start combat
+func end_deployment_phase() -> void:
+	if not _deployment_phase:
+		return
+
+	_deployment_phase = false
+	combat_grid.clear_highlights()
+	deployment_phase_ended.emit()
+	_finalize_combat_start()
+
+
+## Finalize combat start after deployment
+func _finalize_combat_start() -> void:
+	# Calculate turn order based on initiative
+	_calculate_turn_order()
+
+	print("Combat started with ", all_units.size(), " units")
+	combat_started.emit()
+
+	# Start first turn
+	_start_current_turn()
+
+
+## Get combat role of a character based on their skills
+func get_character_combat_role(char_data: Dictionary) -> int:
+	var skills = char_data.get("skills", {})
+
+	# Check for caster skills first (highest priority for back placement)
+	var caster_total = 0
+	for skill in CASTER_SKILLS:
+		caster_total += skills.get(skill, 0)
+
+	# Check for ranged skill
+	var ranged_total = 0
+	for skill in RANGED_SKILLS:
+		ranged_total += skills.get(skill, 0)
+
+	# Check for melee skills
+	var melee_total = 0
+	for skill in MELEE_SKILLS:
+		melee_total += skills.get(skill, 0)
+
+	# Determine primary role based on highest skill investment
+	# With bias toward ranged/caster for back row placement
+	if caster_total >= 3 or (caster_total > melee_total and caster_total > 0):
+		return CombatRole.CASTER
+	elif ranged_total >= 2 or (ranged_total > melee_total and ranged_total > 0):
+		return CombatRole.RANGED
+	else:
+		return CombatRole.MELEE
+
+
+## Check if any party member has the Tactician upgrade
+func _party_has_tactician() -> bool:
+	if not CharacterSystem:
+		return false
+
+	for character in CharacterSystem.get_party():
+		var upgrades = character.get("upgrades", [])
+		for upgrade in upgrades:
+			if upgrade is Dictionary and upgrade.get("id", "") == TACTICIAN_UPGRADE_ID:
+				return true
+			elif upgrade is String and upgrade == TACTICIAN_UPGRADE_ID:
+				return true
+
+	return false
+
+
+## Create a combat unit node from character data
+func _create_combat_unit(char_data: Dictionary, team: int) -> Node:
+	# For now, create a basic combat unit node
+	# This will be expanded when CombatUnit scene is fully implemented
+	var unit = Node2D.new()
+	unit.name = char_data.get("name", "Unit")
+
+	# Add required combat properties
+	unit.set("character_data", char_data)
+	unit.set("team", team)
+	unit.set("grid_position", Vector2i.ZERO)
+	unit.set("unit_name", char_data.get("name", "Unit"))
+
+	# Set up HP/Mana from derived stats
+	var derived = char_data.get("derived", {})
+	unit.set("max_hp", derived.get("max_hp", 100))
+	unit.set("current_hp", derived.get("current_hp", 100))
+	unit.set("max_mana", derived.get("max_mana", 100))
+	unit.set("current_mana", derived.get("current_mana", 100))
+	unit.set("is_dead", false)
+	unit.set("is_bleeding_out", false)
+	unit.set("bleed_out_turns", 0)
+	unit.set("actions_remaining", BASE_ACTIONS)
+
+	# Add required methods as callables
+	unit.set("is_alive", func(): return not unit.is_dead and not unit.is_bleeding_out)
+	unit.set("get_initiative", func(): return derived.get("initiative", 10))
+	unit.set("get_movement", func(): return derived.get("movement", 3))
+	unit.set("get_max_actions", func(): return BASE_ACTIONS)
+	unit.set("get_accuracy", func(): return derived.get("accuracy", 0))
+	unit.set("get_dodge", func(): return derived.get("dodge", 10))
+	unit.set("get_attack_damage", func(): return derived.get("damage", 5))
+	unit.set("get_attack_range", func(): return 1)  # Default melee
+	unit.set("get_armor", func(): return derived.get("armor", 0))
+	unit.set("get_crit_chance", func(): return derived.get("crit_chance", 5))
+	unit.set("get_spellpower", func(): return derived.get("spellpower", 10))
+	unit.set("get_resistance", func(element): return 0)
+	unit.set("get_magic_skill_bonus", func(element): return 0)
+	unit.set("take_damage", func(amount): unit.current_hp = maxi(0, unit.current_hp - amount))
+	unit.set("heal", func(amount): unit.current_hp = mini(unit.max_hp, unit.current_hp + amount))
+	unit.set("is_ranged_weapon", func(): return false)  # Default melee
+
+	# Visual representation (simple colored rect for now)
+	var visual = ColorRect.new()
+	visual.size = Vector2(48, 48)
+	visual.position = Vector2(-24, -24)
+	visual.color = Color.BLUE if team == Team.PLAYER else Color.RED
+	unit.add_child(visual)
+
+	# Add name label
+	var label = Label.new()
+	label.text = char_data.get("name", "?")
+	label.position = Vector2(-24, 28)
+	label.add_theme_font_size_override("font_size", 10)
+	unit.add_child(label)
+
+	return unit
+
+
+## Helper: Get random position from array and remove it
+func _get_random_from_array(arr: Array) -> Vector2i:
+	if arr.is_empty():
+		return Vector2i(-1, -1)
+	var idx = randi() % arr.size()
+	var pos = arr[idx]
+	arr.remove_at(idx)
+	return pos
+
+
+## Helper: Get role name for debugging
+func _role_name(role: int) -> String:
+	match role:
+		CombatRole.MELEE: return "Melee"
+		CombatRole.RANGED: return "Ranged"
+		CombatRole.CASTER: return "Caster"
+		_: return "Unknown"
+
+
+## Check if currently in deployment phase
+func is_deployment_phase() -> bool:
+	return _deployment_phase
+
+
+## Check if manual deployment is allowed (has Tactician)
+func can_manually_deploy() -> bool:
+	return _can_manually_deploy
 
 
 ## Calculate turn order based on initiative (highest first)

@@ -110,10 +110,19 @@
   - ✅ Terrain damage/healing processed at turn start
   - 🔶 Geo + Spell Integration (spells creating terrain effects, e.g., Fireball leaves fire)
 
-- [ ] **Tactical Combat System Phase 3d - Line of Sight & Height Combat**
-  - Line of sight blocking (walls block ranged, pits don't)
-  - Height advantage for ranged attacks (+range from high ground)
-  - Height disadvantage penalties
+- [x] **Tactical Combat System Phase 3d - Line of Sight & Height Combat**
+  - ✅ Line of sight blocking (walls block ranged, pits don't - Bresenham's algorithm)
+  - ✅ Height advantage for ranged attacks (+1 range per level from high ground)
+  - ✅ Height accuracy bonus (+5% per level above, -5% penalty below)
+  - ✅ Height damage bonus (+1 ranged, +2 melee per level above)
+
+- [x] **Tactical Combat System Phase 3e - Party Deployment**
+  - ✅ Deployment zones (front/back columns for player, enemy zones on opposite side)
+  - ✅ Role-based positioning (melee front, casters/ranged in back)
+  - ✅ Random placement within appropriate zones
+  - ✅ Tactician upgrade enables manual unit placement
+  - ✅ Deployment signals for UI integration
+  - ✅ Upgrades data file (resources/data/upgrades.json)
 
 - [x] **Trading System**
   - ✅ Party gold tracking in GameState (add/spend/can_afford)
@@ -137,7 +146,7 @@
   - Complete backgrounds database with skill distributions
   - Spell definitions (tagged with schools and elements)
   - Item/equipment database
-  - Upgrade/perk database with requirements
+  - ✅ Upgrade/perk database with requirements (resources/data/upgrades.json - 10 starter upgrades)
 
 - [ ] **UI Improvements**
   - Visual redesign (colors, fonts, Buddhist aesthetic)
