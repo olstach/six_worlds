@@ -1,0 +1,150 @@
+{
+	"shops": {
+		"hell_merchant": {
+			"name": "Tormented Peddler",
+			"type": "general",
+			"description": "A twisted soul who trades in suffering... and useful goods.",
+			"price_modifier": 1.2,
+			"buys_items": true,
+			"items": {
+				"iron_sword": 2,
+				"iron_axe": 1,
+				"iron_mace": 1,
+				"leather_vest": 2,
+				"padded_armor": 1,
+				"leather_cap": 2,
+				"leather_boots": 2,
+				"wooden_shield": 1
+			},
+			"spells": [],
+			"training": {
+				"attributes": [],
+				"skills": []
+			}
+		},
+		"demon_sorcerer": {
+			"name": "Infernal Magister",
+			"type": "spell_trainer",
+			"description": "A powerful demon who teaches the dark arts... for a price.",
+			"price_modifier": 1.3,
+			"buys_items": false,
+			"items": {
+				"wooden_staff": 1,
+				"oak_staff": 1,
+				"cloth_robe": 2,
+				"cloth_hood": 2,
+				"prayer_beads": 1
+			},
+			"spells": [
+				"firebolt",
+				"fireball",
+				"immolate",
+				"burning_weapon",
+				"voidbolt",
+				"vampiric_touch",
+				"poison_dart",
+				"gloom",
+				"curse"
+			],
+			"training": {
+				"attributes": [],
+				"skills": []
+			}
+		},
+		"wandering_sage": {
+			"name": "Wandering Sage",
+			"type": "skill_trainer",
+			"description": "A mysterious figure who can unlock your hidden potential.",
+			"price_modifier": 0.9,
+			"buys_items": false,
+			"items": {},
+			"spells": [
+				"lesser_heal",
+				"greater_heal",
+				"cure",
+				"bless",
+				"regeneration",
+				"magic_missile",
+				"blink"
+			],
+			"training": {
+				"attributes": ["focus", "awareness"],
+				"skills": ["white", "sorcery", "yoga"]
+			}
+		},
+		"weapon_master": {
+			"name": "Weapon Master",
+			"type": "skill_trainer",
+			"description": "A grizzled veteran who teaches combat techniques.",
+			"price_modifier": 1.1,
+			"buys_items": true,
+			"accepted_item_types": ["weapon", "armor", "shield"],
+			"items": {
+				"steel_longsword": 1,
+				"iron_axe": 1,
+				"iron_mace": 1,
+				"wooden_spear": 2,
+				"hunting_bow": 1,
+				"longbow": 1,
+				"iron_dagger": 2,
+				"chainmail": 1,
+				"iron_shield": 1
+			},
+			"spells": [],
+			"training": {
+				"attributes": ["strength", "finesse"],
+				"skills": ["swords", "axes", "maces", "spears", "ranged", "daggers", "armor"]
+			}
+		},
+		"general_store": {
+			"name": "General Store",
+			"type": "mixed",
+			"description": "A well-stocked shop with a bit of everything.",
+			"price_modifier": 1.0,
+			"buys_items": true,
+			"items": {
+				"bronze_sword": 3,
+				"iron_sword": 2,
+				"iron_dagger": 3,
+				"short_bow": 2,
+				"throwing_knife": 5,
+				"leather_vest": 3,
+				"leather_boots": 3,
+				"leather_gloves": 3,
+				"copper_ring": 2,
+				"travelers_amulet": 1,
+				"lucky_charm": 1
+			},
+			"spells": [
+				"firebolt",
+				"splash",
+				"shocking_grasp",
+				"stone_spike",
+				"lesser_heal",
+				"magic_missile"
+			],
+			"training": {
+				"attributes": [],
+				"skills": []
+			}
+		}
+	},
+	"shop_types": {
+		"general": {
+			"description": "Sells items only",
+			"tabs": ["items"]
+		},
+		"spell_trainer": {
+			"description": "Teaches spells, may sell magical items",
+			"tabs": ["spells", "items"]
+		},
+		"skill_trainer": {
+			"description": "Trains skills and attributes, may sell items",
+			"tabs": ["training", "items"]
+		},
+		"mixed": {
+			"description": "Offers items, spells, and possibly training",
+			"tabs": ["items", "spells", "training"]
+		}
+	}
+}

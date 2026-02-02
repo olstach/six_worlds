@@ -176,8 +176,54 @@ func _update_visuals() -> void:
 		name_label.text = unit_name
 
 	if status_indicator:
+		var status_text = ""
+
+		# Show bleed-out status
 		if is_bleeding_out:
-			status_indicator.text = "!" + str(bleed_out_turns)
+			status_text = "!" + str(bleed_out_turns)
+			status_indicator.add_theme_color_override("font_color", Color.RED)
+		# Show status effects
+		elif "status_effects" in self and not status_effects.is_empty():
+			var icons: Array[String] = []
+			for effect in status_effects:
+				var status_name = effect.get("status", "")
+				# Use short icons/abbreviations for each status
+				match status_name:
+					"burning":
+						icons.append("🔥")
+					"poisoned":
+						icons.append("☠")
+					"bleeding":
+						icons.append("💧")
+					"frozen":
+						icons.append("❄")
+					"stunned":
+						icons.append("⚡")
+					"knocked_down":
+						icons.append("⬇")
+					"regenerating":
+						icons.append("💚")
+					"feared":
+						icons.append("😨")
+					_:
+						icons.append("•")
+			status_text = "".join(icons)
+			# Color based on effect type (negative = red, positive = green)
+			var has_positive = false
+			var has_negative = false
+			for effect in status_effects:
+				var s = effect.get("status", "")
+				if s == "regenerating":
+					has_positive = true
+				else:
+					has_negative = true
+			if has_negative:
+				status_indicator.add_theme_color_override("font_color", Color(1.0, 0.5, 0.3))
+			elif has_positive:
+				status_indicator.add_theme_color_override("font_color", Color(0.3, 1.0, 0.5))
+
+		if status_text != "":
+			status_indicator.text = status_text
 			status_indicator.show()
 		else:
 			status_indicator.hide()
@@ -214,11 +260,48 @@ func get_max_actions() -> int:
 	return max_actions
 
 
+## Get the equipped main-hand weapon data
+func get_equipped_weapon() -> Dictionary:
+	# For enemies, check if weapon data is in character_data
+	if character_data.has("equipped_weapon"):
+		return character_data.equipped_weapon
+
+	# For player/party units, get from equipment via ItemSystem
+	if ItemSystem and character_data.has("equipment"):
+		var weapon_id = ItemSystem.get_equipped_item(character_data, "weapon_main")
+		if weapon_id != "":
+			return ItemSystem.get_item(weapon_id)
+
+	return {}
+
+
+## Check if equipped weapon is ranged
+func is_ranged_weapon() -> bool:
+	var weapon = get_equipped_weapon()
+	if weapon.is_empty():
+		return false
+
+	var weapon_type = weapon.get("type", "")
+
+	# Check item type info for ranged flag
+	if ItemSystem:
+		var type_info = ItemSystem.get_type_info(weapon_type)
+		if type_info.get("ranged", false):
+			return true
+
+	# Fallback: check if weapon has range > 1 stat
+	var stats = weapon.get("stats", {})
+	return stats.get("range", 1) > 1
+
+
 ## Get attack range (1 for melee, more for ranged)
 func get_attack_range() -> int:
-	# TODO: Check equipped weapon for range
-	# For now, default to melee (adjacent = 1)
-	return 1
+	var weapon = get_equipped_weapon()
+	if weapon.is_empty():
+		return 1  # Default melee range when unarmed
+
+	var stats = weapon.get("stats", {})
+	return stats.get("range", 1)
 
 
 ## Get accuracy bonus
@@ -226,8 +309,15 @@ func get_accuracy() -> int:
 	var derived = character_data.get("derived", {})
 	var accuracy = derived.get("accuracy", 0)
 
-	# Add skill bonus
-	# TODO: Get weapon skill level * 2
+	# Add weapon skill bonus (2 accuracy per level)
+	var skills = character_data.get("skills", {})
+	var weapon = get_equipped_weapon()
+	var weapon_type = weapon.get("type", "")
+	var skill_name = _get_weapon_skill_name(weapon_type)
+
+	if skill_name != "":
+		var skill_level = skills.get(skill_name, 0)
+		accuracy += skill_level * 2
 
 	return accuracy
 
@@ -243,16 +333,53 @@ func get_attack_damage() -> int:
 	var derived = character_data.get("derived", {})
 	var base_damage = derived.get("damage", 5)
 
-	# Add attribute modifier
+	# Add attribute modifier - Finesse for ranged, Strength for melee
 	var attrs = character_data.get("attributes", {})
-	# TODO: Check weapon type for STR vs FIN
-	var str_mod = (attrs.get("strength", 10) - 10)
-	base_damage += str_mod
+	var skills = character_data.get("skills", {})
 
-	# Add skill bonus
-	# TODO: Get weapon skill level * 2
+	if is_ranged_weapon():
+		# Ranged weapons use Finesse
+		var fin_mod = (attrs.get("finesse", 10) - 10)
+		base_damage += fin_mod
+
+		# Add Ranged skill bonus (2 damage per level)
+		var ranged_skill = skills.get("ranged", 0)
+		base_damage += ranged_skill * 2
+	else:
+		# Melee weapons use Strength
+		var str_mod = (attrs.get("strength", 10) - 10)
+		base_damage += str_mod
+
+		# Add weapon skill bonus based on weapon type
+		var weapon = get_equipped_weapon()
+		var weapon_type = weapon.get("type", "")
+		var skill_name = _get_weapon_skill_name(weapon_type)
+		if skill_name != "":
+			var skill_level = skills.get(skill_name, 0)
+			base_damage += skill_level * 2
 
 	return base_damage
+
+
+## Map weapon type to skill name
+func _get_weapon_skill_name(weapon_type: String) -> String:
+	match weapon_type:
+		"sword":
+			return "swords"
+		"dagger":
+			return "daggers"
+		"axe":
+			return "axes"
+		"mace":
+			return "maces"
+		"spear":
+			return "spears"
+		"staff":
+			return "martial_arts"  # Staves use martial arts
+		"bow", "thrown":
+			return "ranged"
+		_:
+			return ""
 
 
 ## Get armor value

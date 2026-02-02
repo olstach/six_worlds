@@ -71,15 +71,74 @@
   - ✅ Elemental damage with resistances (space, air, fire, water, earth)
   - ✅ Spell effects: damage, heal, buff, debuff, status, lifesteal, revive, cleanse
   - ✅ Skill requirements (need one school at spell level, bonuses from all schools)
-  - 🔶 Status effect processing on turn start/end (structure in place, needs expansion)
-  - 🔶 AI spell casting (not yet implemented)
+  - ✅ Status effect processing on turn start/end
+  - ✅ AI spell casting (enemy mages can cast spells)
 
-- [ ] **Tactical Combat System Phase 3**
-  - Ranged weapon attacks
-  - Terrain obstacles
-  - Height differences
-  - Geo effects (fire on ground, etc.)
-  - More status effects and their tick processing
+- [x] **Spellbook System**
+  - ✅ Characters have `known_spells` array - must learn spells before casting
+  - ✅ `learn_spell()` / `forget_spell()` / `knows_spell()` functions in CharacterSystem
+  - ✅ `get_castable_spells()` filters by known spells
+  - ✅ Starting spells based on background (wanderer gets fire spells)
+  - ✅ Enemies have `known_spells` in their definitions
+  - ✅ AI selects and casts appropriate spells (damage, AoE targeting)
+  - ✅ Test mage enemy (Demon Mage) with fire/black spells
+  - 🔶 Spellbook UI tab in menu (not yet implemented)
+  - 🔶 Spell learning through trade/events (future)
+
+- [x] **Tactical Combat System Phase 3a - Ranged Attacks**
+  - ✅ Ranged weapon support (bows, thrown weapons with `range` stat)
+  - ✅ CombatUnit checks equipped weapon for attack range
+  - ✅ Finesse-based damage for ranged (vs Strength for melee)
+  - ✅ Ranged skill bonus to damage and accuracy
+  - ✅ Enemy AI repositioning for ranged units (stay at distance)
+  - ✅ Test ranged enemy (Demon Archer) in combat
+
+- [x] **Tactical Combat System Phase 3b - Status Effect Tick Processing**
+  - ✅ DoT effects (burning, poisoned, bleeding) deal damage at turn start
+  - ✅ Healing over time (regenerating) heals at turn start
+  - ✅ Incapacitating effects (frozen, stunned, knocked_down) skip turn
+  - ✅ Duration tracking and effect expiration
+  - ✅ Visual status indicators on units (emoji icons)
+  - ✅ Buff/debuff duration tick processing
+  - ✅ Test spells: Immolate (burning), Poison Dart (poisoned)
+
+- [x] **Tactical Combat System Phase 3c - Terrain**
+  - ✅ Terrain obstacles (walls, pits, water, difficult terrain)
+  - ✅ Height system with traversal limits
+  - ✅ Terrain effects (fire, ice, poison, acid, blessed, cursed)
+  - ✅ Effect duration tracking and visual overlays
+  - ✅ Terrain damage/healing processed at turn start
+  - 🔶 Geo + Spell Integration (spells creating terrain effects, e.g., Fireball leaves fire)
+
+- [x] **Tactical Combat System Phase 3d - Line of Sight & Height Combat**
+  - ✅ Line of sight blocking (walls block ranged, pits don't - Bresenham's algorithm)
+  - ✅ Height advantage for ranged attacks (+1 range per level from high ground)
+  - ✅ Height accuracy bonus (+5% per level above, -5% penalty below)
+  - ✅ Height damage bonus (+1 ranged, +2 melee per level above)
+
+- [x] **Tactical Combat System Phase 3e - Party Deployment**
+  - ✅ Deployment zones (front/back columns for player, enemy zones on opposite side)
+  - ✅ Role-based positioning (melee front, casters/ranged in back)
+  - ✅ Random placement within appropriate zones
+  - ✅ Tactician upgrade enables manual unit placement
+  - ✅ Deployment signals for UI integration
+  - ✅ Upgrades data file (resources/data/upgrades.json)
+
+- [x] **Trading System**
+  - ✅ Party gold tracking in GameState (add/spend/can_afford)
+  - ✅ ShopSystem autoload for managing shops and transactions
+  - ✅ Buy/sell items with price calculations
+  - ✅ Spell learning for gold (trainers)
+  - ✅ Skill/attribute training for gold (rare trainers)
+  - ✅ Trade skill discount (5% per level)
+  - ✅ Charm attribute discount (2% per point above 10)
+  - ✅ Shop-specific price modifiers (markup/discount)
+  - ✅ Barter system (trade items + gold when short on currency)
+  - ✅ Shop buying restrictions (buys_items flag, accepted_item_types)
+  - ✅ Shop data structure with tabs (items/spells/training)
+  - ✅ Sample shops in shops.json (merchant, spell trainer, skill trainer, etc.)
+  - ✅ Shop UI scene (scenes/ui/shop_ui.tscn) - FTL-style tabbed interface
+  - 🔶 NEEDS TESTING: Shop UI (test buying, selling, spell learning, training)
 
 ### Medium Priority (Content & Polish)
 - [ ] **Expand Data Files**
@@ -87,7 +146,7 @@
   - Complete backgrounds database with skill distributions
   - Spell definitions (tagged with schools and elements)
   - Item/equipment database
-  - Upgrade/perk database with requirements
+  - ✅ Upgrade/perk database with requirements (resources/data/upgrades.json - 10 starter upgrades)
 
 - [ ] **UI Improvements**
   - Visual redesign (colors, fonts, Buddhist aesthetic)
@@ -235,7 +294,78 @@
 
 ---
 
-Last Updated: 2026-02-01
+Last Updated: 2026-02-02
+
+---
+
+## Session Notes (2026-02-02)
+
+### Trading System Implementation
+- Added party gold tracking to GameState (gold, add_gold, spend_gold, can_afford)
+- Created ShopSystem autoload for all trading functionality
+- Shop types: general (items), spell_trainer (spells), skill_trainer (training), mixed
+- Price calculations with Trade skill discount (5% per skill level)
+- Buy/sell items (sell at 50% value, Trade skill bonus)
+- Learn spells for gold (cost = 50 * spell_level)
+- Train attributes for gold (200 per point)
+- Train skills for gold (50/150/300/500/750 per level)
+- Created shops.json with 5 sample shops (merchant, sorcerer, sage, weapon master, general store)
+- Shop data loaded from JSON on startup
+
+### Key Files Created/Modified (Trading)
+- `scripts/autoload/game_state.gd` - gold tracking, gold_changed signal
+- `scripts/autoload/shop_system.gd` - NEW: full trading system
+- `resources/data/shops.json` - NEW: shop definitions
+- `project.godot` - Added ShopSystem autoload
+
+### Spellbook System & AI Spell Casting
+- Characters now have `known_spells` array - must learn spells to cast them
+- Added CharacterSystem functions: learn_spell(), forget_spell(), knows_spell(), get_known_spells()
+- Starting spells granted based on background (wanderer: firebolt, immolate, lesser_heal, poison_dart)
+- get_castable_spells() now filters by known spells
+- Enemies can have known_spells in their definitions
+- Enemy AI now casts spells: prioritizes damage spells, handles single/AoE targeting
+- Added test "Demon Mage" enemy with fire_magic/sorcery/black skills and fire/poison spells
+- AI positions casters at mid-range for safety
+
+### Key Files Modified (Spellbook/AI Casting)
+- `scripts/autoload/character_system.gd` - known_spells array, spell learning functions, spell_learned signal
+- `scripts/autoload/combat_manager.gd` - get_castable_spells() filters by known_spells
+- `scripts/combat/combat_arena.gd` - _try_cast_spell() AI function, Demon Mage enemy definition
+
+### Status Effect Tick Processing Implementation
+- Status effects now process at turn start (DoT damage, healing, duration tick)
+- Damage over time: burning (3 fire/turn), poisoned (2 physical/turn), bleeding (2 physical/turn)
+- Healing over time: regenerating (uses effect value per turn)
+- Incapacitating effects: frozen, stunned, knocked_down - skip turn
+- Visual status icons on units (🔥 burning, ☠ poisoned, ❄ frozen, etc.)
+- Added signals: status_effect_triggered, status_effect_expired
+- New test spells: Immolate (80% burn chance), Poison Dart (70% poison chance)
+- Updated Fireball to have 40% burn chance
+- Wanderer background now has black:1 for testing Poison Dart
+
+### Key Files Modified (Status Effects)
+- `scripts/autoload/combat_manager.gd` - _process_status_effects(), _process_stat_modifiers(), is_unit_incapacitated(), can_unit_move()
+- `scripts/combat/combat_arena.gd` - Status effect signal handlers, visual refresh
+- `scripts/combat/combat_unit.gd` - Status effect visual indicators in _update_visuals()
+- `resources/data/spells.json` - Added Immolate, Poison Dart, updated Fireball
+- `scripts/autoload/character_system.gd` - Added black:1 to wanderer
+
+### Ranged Weapon Attacks Implementation
+- Added `range` stat to ranged weapons in items.json (bows: 4-6 range, throwing: 3 range)
+- Added new weapon types: `longbow`, `throwing_knife`
+- Updated item_types with `ranged: true` flag for bows and thrown weapons
+- CombatUnit now properly checks equipped weapon for attack range
+- Ranged weapons use Finesse for damage (melee uses Strength)
+- Weapon skill bonuses (+2 damage/accuracy per skill level)
+- Enemy AI updated to handle ranged positioning (stay at distance)
+- Test ranged enemy "Demon Archer" with bow (range 5) added to combat
+
+### Key Files Modified (Ranged Attacks)
+- `resources/data/items.json` - Added range stat, longbow, throwing_knife, ranged type flags
+- `scripts/combat/combat_unit.gd` - get_equipped_weapon(), is_ranged_weapon(), updated get_attack_range/damage/accuracy
+- `scripts/combat/combat_arena.gd` - Ranged enemy definition, improved AI movement for ranged
+- `scripts/autoload/item_system.gd` - Added short_bow to starter items
 
 ---
 

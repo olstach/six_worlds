@@ -485,6 +485,7 @@ func get_type_info(item_type: String) -> Dictionary:
 func add_starter_items() -> void:
 	# Give player some basic starting equipment
 	add_to_inventory("bronze_sword")
+	add_to_inventory("short_bow")  # Ranged option
 	add_to_inventory("leather_vest")
 	add_to_inventory("leather_cap")
 	add_to_inventory("leather_boots")

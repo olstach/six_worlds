@@ -1,0 +1,154 @@
+{
+	"upgrades": {
+		"tactician": {
+			"name": "Tactician",
+			"description": "Your strategic mind allows precise positioning of allies before battle. Enables manual deployment of party members.",
+			"category": "leadership",
+			"requirements": {
+				"skills": {"leadership": 2}
+			},
+			"effects": {
+				"enables_manual_deployment": true
+			},
+			"rarity": "uncommon"
+		},
+		"battle_hardened": {
+			"name": "Battle Hardened",
+			"description": "Years of combat have toughened your body. +10% max HP.",
+			"category": "combat",
+			"requirements": {
+				"attributes": {"constitution": 12}
+			},
+			"effects": {
+				"max_hp_percent": 10
+			},
+			"rarity": "common"
+		},
+		"quick_reflexes": {
+			"name": "Quick Reflexes",
+			"description": "Your reactions are lightning fast. +5 Initiative.",
+			"category": "combat",
+			"requirements": {
+				"attributes": {"finesse": 12}
+			},
+			"effects": {
+				"initiative": 5
+			},
+			"rarity": "common"
+		},
+		"arcane_reservoir": {
+			"name": "Arcane Reservoir",
+			"description": "Your magical capacity has expanded. +15% max Mana.",
+			"category": "magic",
+			"requirements": {
+				"attributes": {"awareness": 12}
+			},
+			"effects": {
+				"max_mana_percent": 15
+			},
+			"rarity": "common"
+		},
+		"eagle_eye": {
+			"name": "Eagle Eye",
+			"description": "Your keen sight extends your effective range. +1 Range for ranged attacks.",
+			"category": "combat",
+			"requirements": {
+				"skills": {"ranged": 3}
+			},
+			"effects": {
+				"ranged_range": 1
+			},
+			"rarity": "uncommon"
+		},
+		"nimble_fighter": {
+			"name": "Nimble Fighter",
+			"description": "You dance around your enemies with ease. +5 Dodge.",
+			"category": "combat",
+			"requirements": {
+				"attributes": {"finesse": 14}
+			},
+			"effects": {
+				"dodge": 5
+			},
+			"rarity": "uncommon"
+		},
+		"spell_focus": {
+			"name": "Spell Focus",
+			"description": "Your concentration amplifies your magic. +3 Spellpower.",
+			"category": "magic",
+			"requirements": {
+				"attributes": {"focus": 14}
+			},
+			"effects": {
+				"spellpower": 3
+			},
+			"rarity": "uncommon"
+		},
+		"iron_will": {
+			"name": "Iron Will",
+			"description": "Your mind is a fortress. +10% resistance to all magical damage.",
+			"category": "defense",
+			"requirements": {
+				"attributes": {"focus": 12, "constitution": 12}
+			},
+			"effects": {
+				"magic_resistance_all": 10
+			},
+			"rarity": "rare"
+		},
+		"second_wind": {
+			"name": "Second Wind",
+			"description": "Once per combat, recover 25% HP when reduced below 25% HP.",
+			"category": "defense",
+			"requirements": {
+				"attributes": {"constitution": 14}
+			},
+			"effects": {
+				"second_wind": true,
+				"second_wind_threshold": 25,
+				"second_wind_heal": 25
+			},
+			"rarity": "rare"
+		},
+		"ambush_master": {
+			"name": "Ambush Master",
+			"description": "Strike first, strike hard. +50% damage on first attack in combat.",
+			"category": "combat",
+			"requirements": {
+				"skills": {"guile": 3}
+			},
+			"effects": {
+				"first_strike_damage_percent": 50
+			},
+			"rarity": "rare"
+		}
+	},
+	"categories": {
+		"combat": {
+			"name": "Combat",
+			"description": "Upgrades that improve fighting ability"
+		},
+		"magic": {
+			"name": "Magic",
+			"description": "Upgrades that enhance magical power"
+		},
+		"defense": {
+			"name": "Defense",
+			"description": "Upgrades that improve survivability"
+		},
+		"leadership": {
+			"name": "Leadership",
+			"description": "Upgrades that affect the whole party"
+		},
+		"utility": {
+			"name": "Utility",
+			"description": "Upgrades with various helpful effects"
+		}
+	},
+	"rarities": {
+		"common": {"color": "#9d9d9d", "chance_weight": 60},
+		"uncommon": {"color": "#1eff00", "chance_weight": 25},
+		"rare": {"color": "#0070dd", "chance_weight": 12},
+		"epic": {"color": "#a335ee", "chance_weight": 3}
+	}
+}

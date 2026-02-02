@@ -10,6 +10,8 @@ class_name CombatGrid
 
 signal tile_clicked(grid_pos: Vector2i)
 signal tile_hovered(grid_pos: Vector2i)
+signal terrain_effect_triggered(grid_pos: Vector2i, effect: int, value: int)
+signal terrain_effect_expired(grid_pos: Vector2i, effect: int)
 
 # Grid configuration
 @export var grid_size: Vector2i = Vector2i(12, 8)
@@ -23,6 +25,7 @@ var unit_positions: Dictionary = {}
 
 # Visual layers
 var tile_layer: Node2D
+var effect_layer: Node2D  # For terrain effects (fire, ice, etc.)
 var highlight_layer: Node2D
 var unit_layer: Node2D
 
@@ -34,19 +37,42 @@ const COLOR_AOE_PREVIEW = Color(0.9, 0.5, 0.2, 0.5)  # Orange for AoE preview
 const COLOR_SELECTED = Color(0.9, 0.9, 0.3, 0.5)
 const COLOR_HOVER = Color(1.0, 1.0, 1.0, 0.3)
 
+# Terrain effect colors (overlays)
+const COLOR_EFFECT_FIRE = Color(1.0, 0.4, 0.1, 0.5)
+const COLOR_EFFECT_ICE = Color(0.4, 0.7, 1.0, 0.5)
+const COLOR_EFFECT_POISON = Color(0.4, 0.8, 0.2, 0.5)
+const COLOR_EFFECT_ACID = Color(0.7, 0.9, 0.1, 0.5)
+const COLOR_EFFECT_BLESSED = Color(1.0, 0.95, 0.6, 0.4)
+const COLOR_EFFECT_CURSED = Color(0.3, 0.1, 0.3, 0.5)
+
 # Current highlights
 var highlighted_tiles: Array[Vector2i] = []
 var current_highlight_color: Color = COLOR_MOVE_RANGE
 
-# Tile types
-enum TileType { FLOOR, WALL, PIT, WATER }
+# Deployment zone colors
+const COLOR_DEPLOY_FRONT = Color(0.3, 0.6, 0.3, 0.4)  # Green for front line
+const COLOR_DEPLOY_BACK = Color(0.3, 0.3, 0.6, 0.4)   # Blue for back line
+const COLOR_DEPLOY_ENEMY = Color(0.6, 0.3, 0.3, 0.3)  # Red tint for enemy zone
+
+# Deployment zone configuration
+const PLAYER_DEPLOY_COLUMNS: int = 3  # Columns 0-2 for player deployment
+const ENEMY_DEPLOY_COLUMNS: int = 3   # Last 3 columns for enemy deployment
+
+# Tile types (base terrain)
+enum TileType { FLOOR, WALL, PIT, WATER, DIFFICULT }
+
+# Terrain effects (hazards that can be on tiles)
+enum TerrainEffect { NONE, FIRE, ICE, POISON, ACID, BLESSED, CURSED }
 
 # GridTile structure (named to avoid conflict with Godot's TileData)
 class GridTile:
 	var type: int = TileType.FLOOR
 	var walkable: bool = true
 	var movement_cost: int = 1
-	var height: int = 0  # For future height system
+	var height: int = 0  # For height system (0 = ground level)
+	var effect: int = TerrainEffect.NONE
+	var effect_duration: int = 0  # Turns remaining, -1 = permanent
+	var effect_value: int = 0  # Damage/heal amount
 
 	func _init(tile_type: int = TileType.FLOOR) -> void:
 		type = tile_type
@@ -63,6 +89,22 @@ class GridTile:
 			TileType.WATER:
 				walkable = true
 				movement_cost = 2
+			TileType.DIFFICULT:
+				walkable = true
+				movement_cost = 2
+
+	func set_effect(new_effect: int, duration: int = -1, value: int = 0) -> void:
+		effect = new_effect
+		effect_duration = duration
+		effect_value = value
+
+	func clear_effect() -> void:
+		effect = TerrainEffect.NONE
+		effect_duration = 0
+		effect_value = 0
+
+	func has_effect() -> bool:
+		return effect != TerrainEffect.NONE
 
 
 func _ready() -> void:
@@ -70,6 +112,10 @@ func _ready() -> void:
 	tile_layer = Node2D.new()
 	tile_layer.name = "TileLayer"
 	add_child(tile_layer)
+
+	effect_layer = Node2D.new()
+	effect_layer.name = "EffectLayer"
+	add_child(effect_layer)
 
 	highlight_layer = Node2D.new()
 	highlight_layer.name = "HighlightLayer"
@@ -292,6 +338,10 @@ func get_reachable_tiles(start: Vector2i, movement: int) -> Array[Vector2i]:
 			if tile_data == null or not tile_data.walkable:
 				continue
 
+			# Check height traversal
+			if not can_traverse_height(pos, neighbor):
+				continue
+
 			var new_cost = cost + tile_data.movement_cost
 
 			# Can move through friendly units but not stop on them
@@ -370,6 +420,10 @@ func find_path(start: Vector2i, end: Vector2i) -> Array[Vector2i]:
 
 			var tile_data = tiles.get(neighbor)
 			if tile_data == null or not tile_data.walkable:
+				continue
+
+			# Check height traversal
+			if not can_traverse_height(current, neighbor):
 				continue
 
 			# Can't path through occupied tiles (except destination)
@@ -517,3 +571,523 @@ func get_tiles_in_radius(center: Vector2i, radius: int) -> Array[Vector2i]:
 				result.append(pos)
 
 	return result
+
+
+# ============================================
+# TERRAIN EFFECTS
+# ============================================
+
+## Add a terrain effect to a tile
+func add_terrain_effect(grid_pos: Vector2i, effect: int, duration: int = 3, value: int = 0) -> void:
+	if not is_valid_position(grid_pos):
+		return
+
+	var tile = tiles.get(grid_pos)
+	if tile == null:
+		return
+
+	# Set default values based on effect type
+	if value == 0:
+		match effect:
+			TerrainEffect.FIRE:
+				value = 5  # Fire damage per turn
+			TerrainEffect.ICE:
+				value = 0  # Ice slows movement
+			TerrainEffect.POISON:
+				value = 3  # Poison damage per turn
+			TerrainEffect.ACID:
+				value = 4  # Acid damage per turn
+			TerrainEffect.BLESSED:
+				value = 3  # Healing per turn
+			TerrainEffect.CURSED:
+				value = 2  # Damage per turn
+
+	tile.set_effect(effect, duration, value)
+
+	# Update movement cost for ice
+	if effect == TerrainEffect.ICE:
+		tile.movement_cost = 2
+
+	_update_effect_visuals()
+
+
+## Remove terrain effect from a tile
+func remove_terrain_effect(grid_pos: Vector2i) -> void:
+	if not is_valid_position(grid_pos):
+		return
+
+	var tile = tiles.get(grid_pos)
+	if tile == null:
+		return
+
+	var old_effect = tile.effect
+	tile.clear_effect()
+
+	# Restore movement cost
+	match tile.type:
+		TileType.FLOOR:
+			tile.movement_cost = 1
+		TileType.WATER, TileType.DIFFICULT:
+			tile.movement_cost = 2
+
+	terrain_effect_expired.emit(grid_pos, old_effect)
+	_update_effect_visuals()
+
+
+## Process terrain effects at start of a turn (tick durations, return affected tiles)
+func tick_terrain_effects() -> Array[Vector2i]:
+	var expired_tiles: Array[Vector2i] = []
+
+	for pos in tiles:
+		var tile = tiles[pos]
+		if not tile.has_effect():
+			continue
+
+		# Check if permanent (-1 duration)
+		if tile.effect_duration == -1:
+			continue
+
+		# Decrement duration
+		tile.effect_duration -= 1
+
+		if tile.effect_duration <= 0:
+			expired_tiles.append(pos)
+
+	# Remove expired effects
+	for pos in expired_tiles:
+		remove_terrain_effect(pos)
+
+	_update_effect_visuals()
+	return expired_tiles
+
+
+## Get terrain effect at position
+func get_terrain_effect(grid_pos: Vector2i) -> Dictionary:
+	if not is_valid_position(grid_pos):
+		return {}
+
+	var tile = tiles.get(grid_pos)
+	if tile == null or not tile.has_effect():
+		return {}
+
+	return {
+		"effect": tile.effect,
+		"duration": tile.effect_duration,
+		"value": tile.effect_value
+	}
+
+
+## Check if a tile has a damaging effect
+func has_damaging_effect(grid_pos: Vector2i) -> bool:
+	var tile = tiles.get(grid_pos)
+	if tile == null:
+		return false
+
+	return tile.effect in [TerrainEffect.FIRE, TerrainEffect.POISON, TerrainEffect.ACID, TerrainEffect.CURSED]
+
+
+## Check if a tile has a beneficial effect
+func has_beneficial_effect(grid_pos: Vector2i) -> bool:
+	var tile = tiles.get(grid_pos)
+	if tile == null:
+		return false
+
+	return tile.effect == TerrainEffect.BLESSED
+
+
+## Get effect name for display
+func get_effect_name(effect: int) -> String:
+	match effect:
+		TerrainEffect.FIRE: return "Fire"
+		TerrainEffect.ICE: return "Ice"
+		TerrainEffect.POISON: return "Poison"
+		TerrainEffect.ACID: return "Acid"
+		TerrainEffect.BLESSED: return "Blessed Ground"
+		TerrainEffect.CURSED: return "Cursed Ground"
+		_: return ""
+
+
+## Update visual display of terrain effects
+func _update_effect_visuals() -> void:
+	# Clear existing effect visuals
+	for child in effect_layer.get_children():
+		child.queue_free()
+
+	# Draw effect overlays
+	for pos in tiles:
+		var tile = tiles[pos]
+		if not tile.has_effect():
+			continue
+
+		var effect_visual = _create_effect_visual(pos, tile.effect)
+		effect_layer.add_child(effect_visual)
+
+
+## Create visual for a terrain effect
+func _create_effect_visual(grid_pos: Vector2i, effect: int) -> Control:
+	var visual = ColorRect.new()
+	visual.size = Vector2(tile_size - 2, tile_size - 2)
+	visual.position = grid_to_world(grid_pos) + Vector2(1, 1)
+	visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	match effect:
+		TerrainEffect.FIRE:
+			visual.color = COLOR_EFFECT_FIRE
+		TerrainEffect.ICE:
+			visual.color = COLOR_EFFECT_ICE
+		TerrainEffect.POISON:
+			visual.color = COLOR_EFFECT_POISON
+		TerrainEffect.ACID:
+			visual.color = COLOR_EFFECT_ACID
+		TerrainEffect.BLESSED:
+			visual.color = COLOR_EFFECT_BLESSED
+		TerrainEffect.CURSED:
+			visual.color = COLOR_EFFECT_CURSED
+		_:
+			visual.color = Color(0, 0, 0, 0)
+
+	return visual
+
+
+## Add fire tiles in an area (e.g., from fireball)
+func create_fire_area(center: Vector2i, radius: int, duration: int = 2) -> void:
+	for pos in get_tiles_in_radius(center, radius):
+		var tile = tiles.get(pos)
+		if tile != null and tile.walkable:
+			add_terrain_effect(pos, TerrainEffect.FIRE, duration, 5)
+
+
+## Add ice tiles in an area (e.g., from blizzard)
+func create_ice_area(center: Vector2i, radius: int, duration: int = 3) -> void:
+	for pos in get_tiles_in_radius(center, radius):
+		var tile = tiles.get(pos)
+		if tile != null and tile.walkable:
+			add_terrain_effect(pos, TerrainEffect.ICE, duration, 0)
+
+
+## Add poison tiles in an area
+func create_poison_area(center: Vector2i, radius: int, duration: int = 3) -> void:
+	for pos in get_tiles_in_radius(center, radius):
+		var tile = tiles.get(pos)
+		if tile != null and tile.walkable:
+			add_terrain_effect(pos, TerrainEffect.POISON, duration, 3)
+
+
+# ============================================
+# LINE OF SIGHT
+# ============================================
+
+## Check if there's clear line of sight between two positions
+## Walls block LoS, pits don't (can shoot over them)
+func has_line_of_sight(from_pos: Vector2i, to_pos: Vector2i) -> bool:
+	if from_pos == to_pos:
+		return true
+
+	# Use Bresenham's line algorithm to check tiles along the path
+	var tiles_in_line = _get_line_tiles(from_pos, to_pos)
+
+	# Check each tile (excluding start and end)
+	for i in range(1, tiles_in_line.size() - 1):
+		var pos = tiles_in_line[i]
+		if _blocks_line_of_sight(pos):
+			return false
+
+	return true
+
+
+## Get all tiles along a line (Bresenham's algorithm)
+func _get_line_tiles(from_pos: Vector2i, to_pos: Vector2i) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+
+	var x0 = from_pos.x
+	var y0 = from_pos.y
+	var x1 = to_pos.x
+	var y1 = to_pos.y
+
+	var dx = absi(x1 - x0)
+	var dy = absi(y1 - y0)
+	var sx = 1 if x0 < x1 else -1
+	var sy = 1 if y0 < y1 else -1
+	var err = dx - dy
+
+	while true:
+		result.append(Vector2i(x0, y0))
+
+		if x0 == x1 and y0 == y1:
+			break
+
+		var e2 = 2 * err
+		if e2 > -dy:
+			err -= dy
+			x0 += sx
+		if e2 < dx:
+			err += dx
+			y0 += sy
+
+	return result
+
+
+## Check if a tile blocks line of sight
+func _blocks_line_of_sight(grid_pos: Vector2i) -> bool:
+	if not is_valid_position(grid_pos):
+		return true  # Off-grid blocks LoS
+
+	var tile = tiles.get(grid_pos)
+	if tile == null:
+		return true
+
+	# Walls block LoS, pits and water don't
+	return tile.type == TileType.WALL
+
+
+## Get valid ranged attack targets (within range AND has line of sight)
+func get_ranged_attack_tiles(start: Vector2i, min_range: int, max_range: int) -> Array[Vector2i]:
+	var in_range: Array[Vector2i] = []
+
+	for x in range(-max_range, max_range + 1):
+		for y in range(-max_range, max_range + 1):
+			var pos = start + Vector2i(x, y)
+			if not is_valid_position(pos):
+				continue
+
+			# Chebyshev distance
+			var dist = maxi(absi(x), absi(y))
+			if dist >= min_range and dist <= max_range:
+				# Check line of sight
+				if has_line_of_sight(start, pos):
+					in_range.append(pos)
+
+	return in_range
+
+
+# ============================================
+# HEIGHT SYSTEM
+# ============================================
+
+## Set tile height
+func set_tile_height(grid_pos: Vector2i, height: int) -> void:
+	if not is_valid_position(grid_pos):
+		return
+
+	var tile = tiles.get(grid_pos)
+	if tile:
+		tile.height = height
+
+
+## Get tile height
+func get_tile_height(grid_pos: Vector2i) -> int:
+	if not is_valid_position(grid_pos):
+		return 0
+
+	var tile = tiles.get(grid_pos)
+	return tile.height if tile else 0
+
+
+## Check if unit can move between heights (max 1 height difference)
+func can_traverse_height(from_pos: Vector2i, to_pos: Vector2i) -> bool:
+	var from_height = get_tile_height(from_pos)
+	var to_height = get_tile_height(to_pos)
+	return absi(to_height - from_height) <= 1
+
+
+## Get height advantage bonus (higher ground = +accuracy, +damage)
+func get_height_advantage(attacker_pos: Vector2i, target_pos: Vector2i) -> int:
+	var attacker_height = get_tile_height(attacker_pos)
+	var target_height = get_tile_height(target_pos)
+	return attacker_height - target_height  # Positive = advantage, negative = disadvantage
+
+
+## Get ranged attack range bonus from height (each height level = +1 range)
+func get_height_range_bonus(attacker_pos: Vector2i, target_pos: Vector2i) -> int:
+	var height_diff = get_height_advantage(attacker_pos, target_pos)
+	# Only positive height difference gives range bonus
+	return maxi(0, height_diff)
+
+
+## Get accuracy bonus from height advantage (+5 per level above, -5 per level below)
+func get_height_accuracy_bonus(attacker_pos: Vector2i, target_pos: Vector2i) -> int:
+	return get_height_advantage(attacker_pos, target_pos) * 5
+
+
+## Get damage bonus from height advantage (+1 per level above for ranged, +2 for melee)
+func get_height_damage_bonus(attacker_pos: Vector2i, target_pos: Vector2i, is_ranged: bool) -> int:
+	var advantage = get_height_advantage(attacker_pos, target_pos)
+	if advantage <= 0:
+		return 0
+	return advantage * (1 if is_ranged else 2)
+
+
+# ============================================
+# MAP GENERATION HELPERS
+# ============================================
+
+## Add a wall at position
+func add_wall(grid_pos: Vector2i) -> void:
+	if is_valid_position(grid_pos):
+		tiles[grid_pos] = GridTile.new(TileType.WALL)
+		_draw_grid()
+
+
+## Add a pit at position
+func add_pit(grid_pos: Vector2i) -> void:
+	if is_valid_position(grid_pos):
+		tiles[grid_pos] = GridTile.new(TileType.PIT)
+		_draw_grid()
+
+
+## Add water at position
+func add_water(grid_pos: Vector2i) -> void:
+	if is_valid_position(grid_pos):
+		tiles[grid_pos] = GridTile.new(TileType.WATER)
+		_draw_grid()
+
+
+## Create a simple arena with some obstacles
+func create_test_arena() -> void:
+	_initialize_grid()
+
+	# Add some walls
+	add_wall(Vector2i(5, 3))
+	add_wall(Vector2i(5, 4))
+	add_wall(Vector2i(6, 3))
+
+	# Add a pit
+	add_pit(Vector2i(8, 5))
+
+	# Add some water
+	add_water(Vector2i(3, 6))
+	add_water(Vector2i(4, 6))
+
+	# Add a fire hazard
+	add_terrain_effect(Vector2i(7, 2), TerrainEffect.FIRE, -1, 5)
+
+	_draw_grid()
+
+
+# ============================================
+# DEPLOYMENT ZONES
+# ============================================
+
+## Get player deployment zone tiles
+## Returns dict with "front" and "back" arrays of positions
+func get_player_deployment_zones() -> Dictionary:
+	var front_tiles: Array[Vector2i] = []
+	var back_tiles: Array[Vector2i] = []
+
+	# Front row is the rightmost column of the deploy zone (closest to enemy)
+	var front_col = PLAYER_DEPLOY_COLUMNS - 1
+
+	for y in range(grid_size.y):
+		# Front column
+		var front_pos = Vector2i(front_col, y)
+		if _is_valid_deployment_tile(front_pos):
+			front_tiles.append(front_pos)
+
+		# Back columns (everything else in deploy zone)
+		for x in range(front_col):
+			var back_pos = Vector2i(x, y)
+			if _is_valid_deployment_tile(back_pos):
+				back_tiles.append(back_pos)
+
+	return {
+		"front": front_tiles,
+		"back": back_tiles,
+		"all": front_tiles + back_tiles
+	}
+
+
+## Get enemy deployment zone tiles
+func get_enemy_deployment_zones() -> Dictionary:
+	var front_tiles: Array[Vector2i] = []
+	var back_tiles: Array[Vector2i] = []
+
+	# Front row is the leftmost column of enemy deploy zone (closest to player)
+	var front_col = grid_size.x - ENEMY_DEPLOY_COLUMNS
+
+	for y in range(grid_size.y):
+		# Front column
+		var front_pos = Vector2i(front_col, y)
+		if _is_valid_deployment_tile(front_pos):
+			front_tiles.append(front_pos)
+
+		# Back columns
+		for x in range(front_col + 1, grid_size.x):
+			var back_pos = Vector2i(x, y)
+			if _is_valid_deployment_tile(back_pos):
+				back_tiles.append(back_pos)
+
+	return {
+		"front": front_tiles,
+		"back": back_tiles,
+		"all": front_tiles + back_tiles
+	}
+
+
+## Check if a tile is valid for unit deployment (walkable, not a hazard)
+func _is_valid_deployment_tile(grid_pos: Vector2i) -> bool:
+	if not is_valid_position(grid_pos):
+		return false
+
+	var tile = tiles.get(grid_pos)
+	if tile == null:
+		return false
+
+	# Must be walkable
+	if not tile.walkable:
+		return false
+
+	# Avoid tiles with damaging effects
+	if tile.effect in [TerrainEffect.FIRE, TerrainEffect.POISON, TerrainEffect.ACID, TerrainEffect.CURSED]:
+		return false
+
+	return true
+
+
+## Highlight deployment zones for visual feedback
+func show_deployment_zones(show_player: bool = true, show_enemy: bool = false) -> void:
+	clear_highlights()
+
+	if show_player:
+		var zones = get_player_deployment_zones()
+		for pos in zones.front:
+			_add_highlight_at(pos, COLOR_DEPLOY_FRONT)
+		for pos in zones.back:
+			_add_highlight_at(pos, COLOR_DEPLOY_BACK)
+
+	if show_enemy:
+		var zones = get_enemy_deployment_zones()
+		for pos in zones.all:
+			_add_highlight_at(pos, COLOR_DEPLOY_ENEMY)
+
+
+## Add a single highlight at position (used by deployment zones)
+func _add_highlight_at(grid_pos: Vector2i, color: Color) -> void:
+	var highlight = ColorRect.new()
+	highlight.size = Vector2(tile_size - 2, tile_size - 2)
+	highlight.position = grid_to_world(grid_pos) + Vector2(1, 1)
+	highlight.color = color
+	highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	highlight_layer.add_child(highlight)
+
+
+## Get a random unoccupied position from a list of positions
+func get_random_unoccupied(positions: Array) -> Vector2i:
+	var available: Array[Vector2i] = []
+	for pos in positions:
+		if not is_occupied(pos):
+			available.append(pos)
+
+	if available.is_empty():
+		return Vector2i(-1, -1)  # Invalid position signals no space
+
+	return available[randi() % available.size()]
+
+
+## Check if a position is in player deployment zone
+func is_in_player_zone(grid_pos: Vector2i) -> bool:
+	return grid_pos.x < PLAYER_DEPLOY_COLUMNS
+
+
+## Check if a position is in enemy deployment zone
+func is_in_enemy_zone(grid_pos: Vector2i) -> bool:
+	return grid_pos.x >= grid_size.x - ENEMY_DEPLOY_COLUMNS

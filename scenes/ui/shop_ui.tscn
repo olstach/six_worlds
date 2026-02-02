@@ -1,0 +1,190 @@
+[gd_scene load_steps=3 format=3 uid="uid://cshop1ui2scene"]
+
+[ext_resource type="Script" path="res://scripts/ui/shop_ui.gd" id="1_shop"]
+[ext_resource type="Theme" uid="uid://cbtjc5bhbqyxo" path="res://resources/themes/tibetan_theme.tres" id="2_theme"]
+
+[node name="ShopUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_shop")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.06, 0.12, 0.95)
+
+[node name="ShopPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -550.0
+offset_top = -400.0
+offset_right = 550.0
+offset_bottom = 400.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="ShopPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ShopPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Header" type="VBoxContainer" parent="ShopPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="ShopName" type="Label" parent="ShopPanel/MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.75, 0.2, 1)
+theme_override_font_sizes/font_size = 28
+text = "Shop Name"
+horizontal_alignment = 1
+
+[node name="ShopDescription" type="Label" parent="ShopPanel/MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "Shop description goes here"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="InfoRow" type="HBoxContainer" parent="ShopPanel/MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 40
+
+[node name="GoldDisplay" type="Label" parent="ShopPanel/MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.75, 0.2, 1)
+theme_override_font_sizes/font_size = 18
+text = "Gold: 100"
+horizontal_alignment = 1
+
+[node name="ModifierDisplay" type="Label" parent="ShopPanel/MarginContainer/VBoxContainer/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.8, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "No modifiers"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="ShopPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TabContainer" type="TabContainer" parent="ShopPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Items" type="Control" parent="ShopPanel/MarginContainer/VBoxContainer/TabContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ShopPanel/MarginContainer/VBoxContainer/TabContainer/Items"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ItemsGrid" type="GridContainer" parent="ShopPanel/MarginContainer/VBoxContainer/TabContainer/Items/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 5
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="Spells" type="Control" parent="ShopPanel/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ShopPanel/MarginContainer/VBoxContainer/TabContainer/Spells"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SpellsGrid" type="GridContainer" parent="ShopPanel/MarginContainer/VBoxContainer/TabContainer/Spells/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 4
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="Training" type="Control" parent="ShopPanel/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ShopPanel/MarginContainer/VBoxContainer/TabContainer/Training"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TrainingContainer" type="VBoxContainer" parent="ShopPanel/MarginContainer/VBoxContainer/TabContainer/Training/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="HSeparator2" type="HSeparator" parent="ShopPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="InventoryLabel" type="Label" parent="ShopPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "Your Inventory (sell items here)"
+
+[node name="InventorySection" type="Control" parent="ShopPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ShopPanel/MarginContainer/VBoxContainer/InventorySection"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InventoryGrid" type="GridContainer" parent="ShopPanel/MarginContainer/VBoxContainer/InventorySection/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 5
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="Footer" type="HBoxContainer" parent="ShopPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="CloseButton" type="Button" parent="ShopPanel/MarginContainer/VBoxContainer/Footer"]
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Close Shop"

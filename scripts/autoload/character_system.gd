@@ -12,6 +12,7 @@ signal character_updated(character_data: Dictionary)
 signal skill_upgraded(character_data: Dictionary, skill_name: String, new_level: int)
 signal attribute_increased(character_data: Dictionary, attribute_name: String, new_value: int)
 signal upgrade_gained(character_data: Dictionary, upgrade_data: Dictionary)
+signal spell_learned(character_data: Dictionary, spell_id: String)
 
 # Party data - player is always index 0
 var party: Array[Dictionary] = []
@@ -76,7 +77,10 @@ const BASE_CHARACTER: Dictionary = {
 	
 	# Upgrades/perks gained
 	"upgrades": [],
-	
+
+	# Known spells (spell IDs the character has learned)
+	"known_spells": [],
+
 	# Equipment slots (12-slot system with weapon sets)
 	"equipment": {
 		"head": "",
@@ -149,7 +153,7 @@ func apply_race_modifiers(character: Dictionary, race: String) -> void:
 			character.attributes.charm += 2
 			character.attributes.strength -= 1
 
-## Apply background starting skills
+## Apply background starting skills and spells
 func apply_background_skills(character: Dictionary, background: String) -> void:
 	# TODO: Load from background data files
 	match background:
@@ -159,12 +163,21 @@ func apply_background_skills(character: Dictionary, background: String) -> void:
 			set_skill_level(character, "fire_magic", 2)  # For testing spells
 			set_skill_level(character, "sorcery", 2)     # For testing spells
 			set_skill_level(character, "white", 1)       # For testing healing
+			set_skill_level(character, "black", 1)       # For testing status effects
+			# Starting spells for wanderer (fire mage focus)
+			learn_spell(character, "firebolt")
+			learn_spell(character, "immolate")
+			learn_spell(character, "lesser_heal")
+			learn_spell(character, "poison_dart")
 		"scholar":
 			set_skill_level(character, "focus", 2)
 			set_skill_level(character, "sorcery", 1)
+			# Starting spells for scholar
+			learn_spell(character, "magic_missile")
 		"merchant":
 			set_skill_level(character, "trade", 2)
 			set_skill_level(character, "charm", 1)
+			# Merchants don't start with spells
 
 ## Increase an attribute (costs XP, exponential scaling)
 func increase_attribute(character: Dictionary, attribute: String, amount: int = 1) -> bool:
@@ -238,6 +251,57 @@ func grant_xp(character: Dictionary, amount: int) -> void:
 	character.xp += amount
 	print(character.name, " gained ", amount, " XP (total: ", character.xp, ")")
 	character_updated.emit(character)
+
+
+# ============================================
+# SPELLBOOK MANAGEMENT
+# ============================================
+
+## Learn a spell (add to known_spells)
+func learn_spell(character: Dictionary, spell_id: String) -> bool:
+	if not "known_spells" in character:
+		character["known_spells"] = []
+
+	# Check if already known
+	if spell_id in character.known_spells:
+		print(character.name, " already knows ", spell_id)
+		return false
+
+	character.known_spells.append(spell_id)
+	print(character.name, " learned spell: ", spell_id)
+	spell_learned.emit(character, spell_id)
+	character_updated.emit(character)
+	return true
+
+
+## Forget a spell (remove from known_spells)
+func forget_spell(character: Dictionary, spell_id: String) -> bool:
+	if not "known_spells" in character:
+		return false
+
+	var idx = character.known_spells.find(spell_id)
+	if idx == -1:
+		return false
+
+	character.known_spells.remove_at(idx)
+	print(character.name, " forgot spell: ", spell_id)
+	character_updated.emit(character)
+	return true
+
+
+## Check if character knows a spell
+func knows_spell(character: Dictionary, spell_id: String) -> bool:
+	if not "known_spells" in character:
+		return false
+	return spell_id in character.known_spells
+
+
+## Get all known spells for a character
+func get_known_spells(character: Dictionary) -> Array:
+	if not "known_spells" in character:
+		return []
+	return character.known_spells
+
 
 ## Update all derived stats based on attributes and equipment
 func update_derived_stats(character: Dictionary) -> void:
