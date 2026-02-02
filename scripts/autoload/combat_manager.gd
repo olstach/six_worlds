@@ -23,6 +23,8 @@ signal action_used(unit: Node, actions_remaining: int)
 signal spell_cast(caster: Node, spell: Dictionary, targets: Array, results: Array)
 signal status_effect_triggered(unit: Node, effect_name: String, value: int, effect_type: String)
 signal status_effect_expired(unit: Node, effect_name: String)
+signal terrain_damage(unit: Node, damage: int, effect_name: String)
+signal terrain_heal(unit: Node, amount: int, effect_name: String)
 
 # Combat state
 var combat_active: bool = false
@@ -157,7 +159,10 @@ func _start_current_turn() -> void:
 	# Process status effects at turn start (DoT, healing, duration tick)
 	var skip_turn = _process_status_effects(unit)
 
-	# Check if unit died from status effect damage
+	# Process terrain effects (standing in fire, poison, etc.)
+	_process_terrain_effects(unit)
+
+	# Check if unit died from status effect or terrain damage
 	if unit.current_hp <= 0 and not unit.is_bleeding_out:
 		_start_bleed_out(unit)
 		_advance_turn()
@@ -200,6 +205,10 @@ func _advance_turn() -> void:
 func _start_new_round() -> void:
 	current_unit_index = 0
 	_calculate_turn_order()
+
+	# Tick terrain effect durations
+	if combat_grid:
+		combat_grid.tick_terrain_effects()
 
 	# Check win/lose conditions
 	var result = _check_combat_end()
@@ -905,6 +914,55 @@ func _process_stat_modifiers(unit: Node) -> void:
 	to_remove.reverse()
 	for idx in to_remove:
 		unit.stat_modifiers.remove_at(idx)
+
+
+## Process terrain effects for a unit (fire, poison, blessed ground, etc.)
+func _process_terrain_effects(unit: Node) -> void:
+	if combat_grid == null:
+		return
+
+	var grid_pos = unit.grid_position
+	var terrain = combat_grid.get_terrain_effect(grid_pos)
+
+	if terrain.is_empty():
+		return
+
+	var effect = terrain.effect
+	var value = terrain.value
+	var effect_name = combat_grid.get_effect_name(effect)
+
+	# Apply effect based on type
+	match effect:
+		CombatGrid.TerrainEffect.FIRE:
+			apply_damage(unit, value, "fire")
+			terrain_damage.emit(unit, value, effect_name)
+			print("%s takes %d fire damage from standing in fire!" % [unit.unit_name, value])
+
+		CombatGrid.TerrainEffect.POISON:
+			apply_damage(unit, value, "physical")
+			terrain_damage.emit(unit, value, effect_name)
+			print("%s takes %d poison damage from toxic ground!" % [unit.unit_name, value])
+
+		CombatGrid.TerrainEffect.ACID:
+			apply_damage(unit, value, "physical")
+			terrain_damage.emit(unit, value, effect_name)
+			print("%s takes %d acid damage!" % [unit.unit_name, value])
+
+		CombatGrid.TerrainEffect.CURSED:
+			apply_damage(unit, value, "black")
+			terrain_damage.emit(unit, value, effect_name)
+			print("%s takes %d damage from cursed ground!" % [unit.unit_name, value])
+
+		CombatGrid.TerrainEffect.BLESSED:
+			unit.heal(value)
+			unit_healed.emit(unit, value)
+			terrain_heal.emit(unit, value, effect_name)
+			print("%s heals %d HP from blessed ground!" % [unit.unit_name, value])
+
+		CombatGrid.TerrainEffect.ICE:
+			# Ice doesn't deal damage but could apply slowed effect
+			# For now just print a message
+			print("%s is on icy ground (movement slowed)" % unit.unit_name)
 
 
 ## Check if unit is currently incapacitated by status effects

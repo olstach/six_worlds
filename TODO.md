@@ -114,9 +114,14 @@
   - ✅ Spell learning for gold (trainers)
   - ✅ Skill/attribute training for gold (rare trainers)
   - ✅ Trade skill discount (5% per level)
+  - ✅ Charm attribute discount (2% per point above 10)
+  - ✅ Shop-specific price modifiers (markup/discount)
+  - ✅ Barter system (trade items + gold when short on currency)
+  - ✅ Shop buying restrictions (buys_items flag, accepted_item_types)
   - ✅ Shop data structure with tabs (items/spells/training)
   - ✅ Sample shops in shops.json (merchant, spell trainer, skill trainer, etc.)
-  - 🔶 Shop UI (FTL-style event screens - not yet implemented)
+  - ✅ Shop UI scene (scenes/ui/shop_ui.tscn) - FTL-style tabbed interface
+  - 🔶 NEEDS TESTING: Shop UI (test buying, selling, spell learning, training)
 
 ### Medium Priority (Content & Polish)
 - [ ] **Expand Data Files**
