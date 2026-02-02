@@ -27,6 +27,7 @@ var max_actions: int = 2
 var is_bleeding_out: bool = false
 var bleed_out_turns: int = 0
 var is_dead: bool = false
+var status_effects: Array = []  # Active status effects on this unit
 
 # Resistances (percentage, default 0%)
 var resistances: Dictionary = {
