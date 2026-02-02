@@ -1,260 +1,149 @@
-# Six Worlds - Foundation Build
+# Six Worlds
 
 A tactical RPG roguelike set in the six realms of Tibetan Buddhist cosmology, built in Godot 4.3.
 
-## What's Implemented
+## Overview
 
-This is the **foundational architecture** for the game, focusing on the core progression systems before adding gameplay layers.
+Six Worlds combines grid-based tactical combat with Buddhist-themed progression systems. Players reincarnate through different realms based on hidden karma, developing characters through XP-based attribute and skill systems rather than traditional leveling.
 
-### Core Systems (AutoLoad Singletons)
+**Visual Style**: Tibetan thangka painting aesthetics with pixel art - ornate UI frames with sacred colors (deep reds, golds, indigos).
 
-1. **GameState** (`scripts/autoload/game_state.gd`)
-   - Tracks current world and unlocked worlds
-   - Manages boss defeats and world transitions
-   - Handles run state (alive/dead, run number)
+## Implemented Systems
 
-2. **CharacterSystem** (`scripts/autoload/character_system.gd`)
-   - Complete attribute system (7 attributes: Strength, Finesse, Constitution, Focus, Awareness, Charm, Luck)
-   - Skill progression system (0-5 levels per skill, exponential XP costs)
-   - Derived stats calculation (HP, Mana, Initiative, Dodge, Crit, etc.)
-   - Party management (player + companions)
-   - Equipment and inventory (structure ready)
-   - Upgrade/perk system (hooks in place)
-   - XP and leveling system
+### Core Singletons (7 AutoLoads)
 
-3. **KarmaSystem** (`scripts/autoload/karma_system.gd`)
-   - Hidden karma tracking for all 6 realms
-   - Reincarnation logic (highest karma determines realm)
-   - Weighted race selection within realms
-   - Background selection based on race
-   - Partial karma reset between lives
-   - Karma purification hooks (for future rituals)
+| System | Description | Status |
+|--------|-------------|--------|
+| **GameState** | World/realm tracking, boss defeats, party gold, run state | Complete |
+| **CharacterSystem** | 7 attributes, 35 skills, derived stats, party management, spell learning | Complete |
+| **KarmaSystem** | Hidden karma for 6 realms, reincarnation logic, weighted race selection | Complete |
+| **EventManager** | FTL-style events, 3 choice types (grey/blue/yellow), party-wide checks | Complete |
+| **CombatManager** | Grid combat, initiative, spells, status effects, AI, terrain, LoS | Complete |
+| **ItemSystem** | Equipment database, 12-slot system, inventory, stat bonuses | Complete |
+| **ShopSystem** | Buy/sell items, learn spells, train skills, Trade/Charm discounts | Complete |
 
-4. **EventManager** (`scripts/autoload/event_manager.gd`)
-   - Event loading and presentation
-   - Three choice types: Default (grey), Requirement (blue), Roll (yellow)
-   - Party-wide requirement checking (companions count!)
-   - Dice rolling system (d20 + attribute vs DC)
-   - Outcome processing (XP, items, karma, combat/shop triggers)
-   - Event database with test encounters
+### Combat System
 
-### Test Scenes
+Tactical grid-based combat (12x8 default) with:
 
-**Test Launcher** (`scenes/ui/test_launcher.tscn`)
-- Main menu to access different systems
-- Switch between character sheet and event display
+- **Turn Order**: Initiative-based with 2-action system
+- **Attacks**: Melee and ranged, Strength/Finesse-based damage, weapon skills
+- **326 Spells**: Across 10 schools (5 elements + 5 specializations)
+- **Targeting**: Self, single, AoE circle, chain, with visual previews
+- **Status Effects**: 80+ effects including DoT, buffs, debuffs, CC
+- **Terrain**: Walls, pits, water, difficult terrain; fire/ice/poison/acid/blessed/cursed effects
+- **Height & LoS**: Bresenham's algorithm, height advantages for damage/accuracy
+- **Deployment**: Role-based positioning with Tactician upgrade for manual placement
+- **AI**: Enemies cast spells, reposition for ranged attacks, prioritize targets
 
-**Character Sheet UI** (`scenes/ui/test_character_sheet.tscn`)
-- Displays character name, race, background, total XP
-- Shows all attributes with upgrade buttons (XP cost calculated)
-- Lists skills with upgrade buttons
-- Displays derived stats (auto-calculated from attributes)
-- Debug controls to test systems:
-  - Grant XP button
-  - Add karma buttons (Hell/God realms)
-  - Test reincarnation button
-  - Karma score display
+### Character Progression
 
-**Event Display UI** (`scenes/ui/event_display.tscn`)
-- FTL-style event encounters
-- Three choice types with visual distinction
-- Party-wide requirement checking
-- Dice roll system with results display
-- Karma integration
-- Tibetan thangka-inspired aesthetic
-- Test encounters for Hell and Human realms
+- **No Levels**: XP is pure currency spent freely on attributes/skills
+- **7 Attributes**: Strength, Finesse, Constitution, Focus, Awareness, Charm, Luck
+- **35 Skills**: Combat (9), Magic (10), General (16) - each tagged with element
+- **Elemental Affinities**: Skill points build affinity totals for gradual bonuses
+- **Spellbook**: Characters must learn spells before casting
+
+### Event System
+
+FTL-style encounters with:
+
+- **Grey Choices**: Always available basic options
+- **Blue Choices**: Require attribute/skill thresholds (ANY party member can qualify)
+- **Yellow Choices**: d20 + best party attribute vs DC
+
+### Trading System
+
+- Buy/sell items (50% sell value)
+- Learn spells from trainers
+- Train attributes/skills for gold
+- Trade skill (5%/level) and Charm (2%/point) discounts
 
 ### Data Files
 
-- **races.json** - Race definitions with attribute modifiers, caps, and typical backgrounds
-  - Examples: Red Devil, Blue Devil, Human, Naga, Zombie
-  - Each race has unique stat distributions and caps
-
-- **skills.json** - Skill definitions organized by category
-  - Combat skills (swords, polearms, unarmed, bows, etc.)
-  - Magic skills (5 elements + specialized schools)
-  - General skills (persuasion, trade, yoga, logistics, etc.)
-  - Element associations for building affinities
-
-- **Event database** (embedded in EventManager for now)
-  - Test encounters demonstrating all choice types
-  - Will move to JSON files later
-
-## How to Use
-
-### Opening in Godot
-
-1. Open Godot 4.3+
-2. Import the `six_worlds` folder as a project
-3. The test launcher will load - choose which system to test
-
-### Testing the Character System
-
-From the test launcher, click "Character Sheet" to access:
-
-**Attribute System:**
-- Click "+" buttons next to attributes to spend XP
-- Cost increases exponentially (10→11 costs 100, 11→12 costs 150, etc.)
-- Derived stats auto-update (HP from Constitution, Mana from Awareness, etc.)
-
-**Skill System:**
-- Click "Upgrade" next to skills to level them up
-- Each level costs progressively more XP (100/300/600/1000/1500)
-- Click "+ Learn New Skill" to add a new skill at level 1
-- Skills are capped at level 5
-
-**XP System:**
-- Click "Grant 500 XP" to add experience points
-- XP is a pure currency - spend it freely on attributes or skills
-- No level-ups or barriers - just gradual improvement
-
-**Karma & Reincarnation:**
-- Click "Add Hell Karma" or "Add God Karma" to adjust karma scores
-- Click "Test Reincarnation" to simulate death and rebirth
-  - System determines realm based on highest karma
-  - Selects weighted random race from that realm
-  - Chooses appropriate background
-  - Creates new character with fresh stats
-  - Karma partially resets (30% carried over)
-
-### Testing the Event System
-
-From the test launcher, click "Event System" to access:
-
-**Choice Types:**
-- **Grey choices**: Always available, basic options
-- **Blue choices (⚡)**: Require specific attribute/skill thresholds
-  - If ANY party member meets requirement, choice is available
-  - Shows which character enables the choice
-- **Yellow choices (🎲)**: Require dice roll
-  - d20 + best party attribute vs difficulty number
-  - Shows roll result, success/failure
-
-**Testing Mechanics:**
-1. Read the event description
-2. Notice which choices are available (blue may be greyed out)
-3. Select a choice
-4. For rolls: watch the dice result and roller name
-5. See the outcome with XP/karma rewards
-6. Click "Continue" for another random event
-
-**Party Testing:**
-- Use character sheet to increase attributes
-- Come back to events to unlock blue choices
-- Companions would enable more choices (not yet implemented in test)
-
-### Understanding the Output
-
-Watch the **Godot console** to see:
-- Character creation messages
-- Karma changes
-- Skill/attribute upgrades
-- Reincarnation details
-
-The **karma debug panel** shows exact karma scores (normally hidden from player).
+| File | Contents |
+|------|----------|
+| `spells.json` | 326 spells across all schools |
+| `statuses.json` | 80+ status effect definitions |
+| `items.json` | Weapons, armor, accessories with stats |
+| `races.json` | Race definitions with modifiers and caps |
+| `skills.json` | 35 skills organized by category/element |
+| `shops.json` | 5 sample shops with inventories |
+| `upgrades.json` | 10+ upgrade/perk definitions |
 
 ## Project Structure
 
 ```
 six_worlds/
-├── project.godot           # Godot project config
-├── icon.svg               # Placeholder icon
+├── project.godot
 ├── scenes/
-│   ├── ui/
-│   │   └── test_character_sheet.tscn
-│   ├── overworld/         # Future: HoMM-style map
-│   └── combat/            # Future: tactical grid battles
+│   ├── ui/              # Test launcher, character sheet, event display
+│   ├── combat/          # Combat arena scene
+│   └── overworld/       # (Future: HoMM-style map)
 ├── scripts/
-│   ├── autoload/          # Global singleton systems
-│   │   ├── game_state.gd
-│   │   ├── character_system.gd
-│   │   └── karma_system.gd
-│   ├── components/        # Future: reusable components
-│   ├── data/              # Future: data loading utilities
-│   └── ui/
-│       └── character_sheet.gd
+│   ├── autoload/        # 7 global singletons
+│   ├── combat/          # Arena, grid, unit components
+│   ├── ui/              # UI scripts
+│   └── components/      # (Future: reusable components)
 ├── resources/
-│   ├── data/
-│   │   ├── races.json     # Race definitions
-│   │   └── skills.json    # Skill definitions
-│   └── themes/            # Future: UI themes
+│   └── data/            # JSON data files
 └── assets/
-    ├── sprites/           # Future: pixel art
-    └── audio/             # Future: music/SFX
+    ├── sprites/         # (Future: pixel art)
+    └── audio/           # (Future: music/SFX)
 ```
 
-## Next Steps
+## How to Run
 
-The foundation is ready! Here's what could be added next:
+1. Open Godot 4.3+
+2. Import the project folder
+3. Run the test launcher scene
+4. Choose which system to test (Character Sheet, Events, Combat)
 
-### 1. Expand Data Files
-- More races (all 6 realms)
-- Complete backgrounds list
-- Spell definitions
-- Item/equipment definitions
-- Upgrade/perk database
+## Testing Combat
 
-### 2. UI Improvements
-- Better visual design (colors, fonts, layout)
-- Upgrade selection popup (choose 1 of 4)
-- Skill learning menu
-- Equipment/inventory screens
-- Tooltip system
+From test launcher, enter Combat to:
+- Move units with click-to-move
+- Attack enemies in range
+- Cast spells with targeting previews
+- See status effects tick each turn
+- Test AI spell casting and positioning
 
-### 3. Overworld System
-- HoMM-style tile-based map
-- Movement and exploration
-- Hub/quest/battle nodes
-- World transition logic
+## Testing Events
 
-### 4. Event/Dialogue System
-- FTL-style event nodes
-- Branching choices
-- Karma tagging on choices
-- Scene transitions
+From test launcher, enter Event System to:
+- See choice type color coding
+- Test party-wide requirement checking
+- Roll dice for yellow choices
+- See karma changes (debug panel)
 
-### 5. Combat System
-- Tactical grid
-- Turn-based positioning
-- Ability targeting
-- AI behavior
-- Status effects
+## Roadmap
 
-## Design Notes
+See `TODO.md` for detailed task list.
 
-**Attributes:**
-- Start at 10, can increase exponentially
-- Caps vary by race (e.g., Red Devils have high Strength cap)
-- Each attribute affects multiple derived stats
+**High Priority:**
+- Overworld map (HoMM-style exploration)
+- Load events from JSON files
+- Camp followers system
+- Shop UI testing
 
-**Skills:**
-- Five levels (1-5), with 0 being untrained
-- Progressive XP costs encourage specialization
-- Magic skills tied to elements for affinity building
-- Some skills unlock special abilities (Yoga → pacifist options)
+**Medium Priority:**
+- More content (races, backgrounds, items)
+- Save/load system
+- UI polish and tooltips
 
-**Karma:**
-- Completely invisible to player (thematic!)
-- Every choice/action tagged with realm associations
-- Highest karma determines next life
-- Partial persistence creates karmic patterns
+**Low Priority:**
+- Audio (music/SFX)
+- Visual assets (pixel art sprites)
 
-**Race & Background:**
-- Race determines attribute mods and caps
-- Background determines starting skills
-- Combination creates varied playstyles
-- Some backgrounds only available to certain races
+## Design Philosophy
 
-## Philosophy
-
-This foundation prioritizes **systems thinking**:
-- Everything connects (attributes → derived stats)
-- Progression is consistent (exponential costs)
-- Reincarnation actually uses the character system
-- Data-driven design (JSON for races/skills)
-
-The character sheet demonstrates that the systems **work** before we add combat/exploration complexity.
+- **Buddhist themes**: Karma hidden from player, gradual cultivation, reincarnation cycles
+- **Data-driven**: JSON files for all content
+- **Systems thinking**: Attributes connect to derived stats to combat effectiveness
+- **Player agency**: Free XP spending, no forced builds
 
 ---
 
-**Status:** Foundation complete, ready for next layer (UI polish or gameplay systems)
+**Status:** Core systems complete. Ready for content expansion and overworld implementation.
+
+Last Updated: 2026-02-02
