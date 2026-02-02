@@ -765,6 +765,93 @@ func create_poison_area(center: Vector2i, radius: int, duration: int = 3) -> voi
 
 
 # ============================================
+# LINE OF SIGHT
+# ============================================
+
+## Check if there's clear line of sight between two positions
+## Walls block LoS, pits don't (can shoot over them)
+func has_line_of_sight(from_pos: Vector2i, to_pos: Vector2i) -> bool:
+	if from_pos == to_pos:
+		return true
+
+	# Use Bresenham's line algorithm to check tiles along the path
+	var tiles_in_line = _get_line_tiles(from_pos, to_pos)
+
+	# Check each tile (excluding start and end)
+	for i in range(1, tiles_in_line.size() - 1):
+		var pos = tiles_in_line[i]
+		if _blocks_line_of_sight(pos):
+			return false
+
+	return true
+
+
+## Get all tiles along a line (Bresenham's algorithm)
+func _get_line_tiles(from_pos: Vector2i, to_pos: Vector2i) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+
+	var x0 = from_pos.x
+	var y0 = from_pos.y
+	var x1 = to_pos.x
+	var y1 = to_pos.y
+
+	var dx = absi(x1 - x0)
+	var dy = absi(y1 - y0)
+	var sx = 1 if x0 < x1 else -1
+	var sy = 1 if y0 < y1 else -1
+	var err = dx - dy
+
+	while true:
+		result.append(Vector2i(x0, y0))
+
+		if x0 == x1 and y0 == y1:
+			break
+
+		var e2 = 2 * err
+		if e2 > -dy:
+			err -= dy
+			x0 += sx
+		if e2 < dx:
+			err += dx
+			y0 += sy
+
+	return result
+
+
+## Check if a tile blocks line of sight
+func _blocks_line_of_sight(grid_pos: Vector2i) -> bool:
+	if not is_valid_position(grid_pos):
+		return true  # Off-grid blocks LoS
+
+	var tile = tiles.get(grid_pos)
+	if tile == null:
+		return true
+
+	# Walls block LoS, pits and water don't
+	return tile.type == TileType.WALL
+
+
+## Get valid ranged attack targets (within range AND has line of sight)
+func get_ranged_attack_tiles(start: Vector2i, min_range: int, max_range: int) -> Array[Vector2i]:
+	var in_range: Array[Vector2i] = []
+
+	for x in range(-max_range, max_range + 1):
+		for y in range(-max_range, max_range + 1):
+			var pos = start + Vector2i(x, y)
+			if not is_valid_position(pos):
+				continue
+
+			# Chebyshev distance
+			var dist = maxi(absi(x), absi(y))
+			if dist >= min_range and dist <= max_range:
+				# Check line of sight
+				if has_line_of_sight(start, pos):
+					in_range.append(pos)
+
+	return in_range
+
+
+# ============================================
 # HEIGHT SYSTEM
 # ============================================
 
@@ -799,6 +886,26 @@ func get_height_advantage(attacker_pos: Vector2i, target_pos: Vector2i) -> int:
 	var attacker_height = get_tile_height(attacker_pos)
 	var target_height = get_tile_height(target_pos)
 	return attacker_height - target_height  # Positive = advantage, negative = disadvantage
+
+
+## Get ranged attack range bonus from height (each height level = +1 range)
+func get_height_range_bonus(attacker_pos: Vector2i, target_pos: Vector2i) -> int:
+	var height_diff = get_height_advantage(attacker_pos, target_pos)
+	# Only positive height difference gives range bonus
+	return maxi(0, height_diff)
+
+
+## Get accuracy bonus from height advantage (+5 per level above, -5 per level below)
+func get_height_accuracy_bonus(attacker_pos: Vector2i, target_pos: Vector2i) -> int:
+	return get_height_advantage(attacker_pos, target_pos) * 5
+
+
+## Get damage bonus from height advantage (+1 per level above for ranged, +2 for melee)
+func get_height_damage_bonus(attacker_pos: Vector2i, target_pos: Vector2i, is_ranged: bool) -> int:
+	var advantage = get_height_advantage(attacker_pos, target_pos)
+	if advantage <= 0:
+		return 0
+	return advantage * (1 if is_ranged else 2)
 
 
 # ============================================

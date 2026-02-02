@@ -102,10 +102,18 @@
   - ✅ Buff/debuff duration tick processing
   - ✅ Test spells: Immolate (burning), Poison Dart (poisoned)
 
-- [ ] **Tactical Combat System Phase 3c - Terrain**
-  - Terrain obstacles (walls, pits)
-  - Height differences
-  - Geo effects (fire on ground, etc.)
+- [x] **Tactical Combat System Phase 3c - Terrain**
+  - ✅ Terrain obstacles (walls, pits, water, difficult terrain)
+  - ✅ Height system with traversal limits
+  - ✅ Terrain effects (fire, ice, poison, acid, blessed, cursed)
+  - ✅ Effect duration tracking and visual overlays
+  - ✅ Terrain damage/healing processed at turn start
+  - 🔶 Geo + Spell Integration (spells creating terrain effects, e.g., Fireball leaves fire)
+
+- [ ] **Tactical Combat System Phase 3d - Line of Sight & Height Combat**
+  - Line of sight blocking (walls block ranged, pits don't)
+  - Height advantage for ranged attacks (+range from high ground)
+  - Height disadvantage penalties
 
 - [x] **Trading System**
   - ✅ Party gold tracking in GameState (add/spend/can_afford)

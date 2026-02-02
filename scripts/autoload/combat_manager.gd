@@ -317,9 +317,19 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 	# Check range (adjacent for melee, will expand for ranged later)
 	var distance = _grid_distance(attacker.grid_position, defender.grid_position)
 	var attack_range = attacker.get_attack_range()
+	var is_ranged = attacker.is_ranged_weapon() if attacker.has_method("is_ranged_weapon") else false
+
+	# Add height range bonus for ranged attacks
+	if is_ranged and combat_grid:
+		attack_range += combat_grid.get_height_range_bonus(attacker.grid_position, defender.grid_position)
 
 	if distance > attack_range:
 		return {"success": false, "reason": "Target out of range"}
+
+	# Check line of sight for ranged attacks
+	if is_ranged and combat_grid:
+		if not combat_grid.has_line_of_sight(attacker.grid_position, defender.grid_position):
+			return {"success": false, "reason": "No line of sight"}
 
 	# Calculate hit chance
 	var hit_chance = calculate_hit_chance(attacker, defender)
@@ -357,7 +367,9 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 
 	var hit_chance = base_chance + accuracy - dodge
 
-	# TODO: Add situational modifiers (flanking, cover, etc.)
+	# Height advantage bonus (+5 per level, -5 penalty when lower)
+	if combat_grid:
+		hit_chance += combat_grid.get_height_accuracy_bonus(attacker.grid_position, defender.grid_position)
 
 	# Clamp to 10-95%
 	return clampf(hit_chance, 10.0, 95.0)
@@ -367,6 +379,13 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 func calculate_physical_damage(attacker: Node, defender: Node) -> Dictionary:
 	# Base damage from weapon + attribute + skill
 	var base_damage = attacker.get_attack_damage()
+
+	# Height damage bonus
+	var height_bonus = 0
+	if combat_grid:
+		var is_ranged = attacker.is_ranged_weapon() if attacker.has_method("is_ranged_weapon") else false
+		height_bonus = combat_grid.get_height_damage_bonus(attacker.grid_position, defender.grid_position, is_ranged)
+		base_damage += height_bonus
 
 	# Variance ±15%
 	var variance = randf_range(0.85, 1.15)
@@ -397,6 +416,7 @@ func calculate_physical_damage(attacker: Node, defender: Node) -> Dictionary:
 		"base_damage": base_damage,
 		"crit": crit,
 		"armor_reduced": armor,
+		"height_bonus": height_bonus,
 		"damage_type": "physical"
 	}
 
