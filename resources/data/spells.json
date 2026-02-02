@@ -82,9 +82,36 @@
 			"targeting": "aoe_circle",
 			"aoe_radius": 1,
 			"effects": [
-				{"type": "damage", "element": "fire", "base_value": 18}
+				{"type": "damage", "element": "fire", "base_value": 18},
+				{"type": "status", "status": "burning", "duration": 2, "chance": 40}
 			],
-			"description": "A classic explosive ball of fire that damages all in the area."
+			"description": "A classic explosive ball of fire that damages all in the area. May ignite targets."
+		},
+		"immolate": {
+			"name": "Immolate",
+			"schools": ["fire", "sorcery"],
+			"level": 2,
+			"mana_cost": 8,
+			"range": 4,
+			"targeting": "single",
+			"effects": [
+				{"type": "damage", "element": "fire", "base_value": 6},
+				{"type": "status", "status": "burning", "duration": 3, "chance": 80}
+			],
+			"description": "Set the target ablaze with magical fire."
+		},
+		"poison_dart": {
+			"name": "Poison Dart",
+			"schools": ["black", "sorcery"],
+			"level": 1,
+			"mana_cost": 4,
+			"range": 5,
+			"targeting": "single",
+			"effects": [
+				{"type": "damage", "element": "physical", "base_value": 4},
+				{"type": "status", "status": "poisoned", "duration": 3, "chance": 70}
+			],
+			"description": "A dart coated in vile poison."
 		},
 		"burning_weapon": {
 			"name": "Burning Weapon",

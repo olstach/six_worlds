@@ -133,6 +133,10 @@ func _ready() -> void:
 	# Connect spell cast signal
 	CombatManager.spell_cast.connect(_on_spell_cast)
 
+	# Connect status effect signals
+	CombatManager.status_effect_triggered.connect(_on_status_effect_triggered)
+	CombatManager.status_effect_expired.connect(_on_status_effect_expired)
+
 	# Hide spell panel initially
 	spell_panel.hide()
 
@@ -756,6 +760,9 @@ func _on_spell_cast(caster: Node, spell: Dictionary, targets: Array, results: Ar
 					"status":
 						if effect.applied:
 							_log_message("  %s is now %s!" % [target.unit_name, effect.status])
+							# Update target visuals to show status icon
+							if target.has_method("_update_visuals"):
+								target._update_visuals()
 					"revive":
 						_log_message("  %s is revived with %d HP!" % [target.unit_name, effect.hp])
 					"lifesteal":
@@ -764,6 +771,31 @@ func _on_spell_cast(caster: Node, spell: Dictionary, targets: Array, results: Ar
 	_update_action_buttons()
 	if selected_unit:
 		_show_unit_info(selected_unit)
+
+
+func _on_status_effect_triggered(unit: Node, effect_name: String, value: int, effect_type: String) -> void:
+	# Log status effect damage/healing
+	match effect_type:
+		"damage":
+			_log_message("  %s takes %d damage from %s!" % [unit.unit_name, value, effect_name])
+		"heal":
+			_log_message("  %s regenerates %d HP!" % [unit.unit_name, value])
+
+	# Update unit visuals to show status icons
+	if unit.has_method("_update_visuals"):
+		unit._update_visuals()
+
+	_update_turn_order_display()
+	if selected_unit == unit:
+		_show_unit_info(unit)
+
+
+func _on_status_effect_expired(unit: Node, effect_name: String) -> void:
+	_log_message("  %s is no longer %s" % [unit.unit_name, effect_name])
+
+	# Update unit visuals
+	if unit.has_method("_update_visuals"):
+		unit._update_visuals()
 
 
 # ============================================

@@ -71,7 +71,7 @@
   - ✅ Elemental damage with resistances (space, air, fire, water, earth)
   - ✅ Spell effects: damage, heal, buff, debuff, status, lifesteal, revive, cleanse
   - ✅ Skill requirements (need one school at spell level, bonuses from all schools)
-  - 🔶 Status effect processing on turn start/end (structure in place, needs expansion)
+  - ✅ Status effect processing on turn start/end
   - 🔶 AI spell casting (not yet implemented)
 
 - [x] **Tactical Combat System Phase 3a - Ranged Attacks**
@@ -82,11 +82,19 @@
   - ✅ Enemy AI repositioning for ranged units (stay at distance)
   - ✅ Test ranged enemy (Demon Archer) in combat
 
-- [ ] **Tactical Combat System Phase 3b - Terrain & Status**
-  - Terrain obstacles
+- [x] **Tactical Combat System Phase 3b - Status Effect Tick Processing**
+  - ✅ DoT effects (burning, poisoned, bleeding) deal damage at turn start
+  - ✅ Healing over time (regenerating) heals at turn start
+  - ✅ Incapacitating effects (frozen, stunned, knocked_down) skip turn
+  - ✅ Duration tracking and effect expiration
+  - ✅ Visual status indicators on units (emoji icons)
+  - ✅ Buff/debuff duration tick processing
+  - ✅ Test spells: Immolate (burning), Poison Dart (poisoned)
+
+- [ ] **Tactical Combat System Phase 3c - Terrain**
+  - Terrain obstacles (walls, pits)
   - Height differences
   - Geo effects (fire on ground, etc.)
-  - More status effects and their tick processing
 
 ### Medium Priority (Content & Polish)
 - [ ] **Expand Data Files**
@@ -248,6 +256,24 @@ Last Updated: 2026-02-02
 
 ## Session Notes (2026-02-02)
 
+### Status Effect Tick Processing Implementation
+- Status effects now process at turn start (DoT damage, healing, duration tick)
+- Damage over time: burning (3 fire/turn), poisoned (2 physical/turn), bleeding (2 physical/turn)
+- Healing over time: regenerating (uses effect value per turn)
+- Incapacitating effects: frozen, stunned, knocked_down - skip turn
+- Visual status icons on units (🔥 burning, ☠ poisoned, ❄ frozen, etc.)
+- Added signals: status_effect_triggered, status_effect_expired
+- New test spells: Immolate (80% burn chance), Poison Dart (70% poison chance)
+- Updated Fireball to have 40% burn chance
+- Wanderer background now has black:1 for testing Poison Dart
+
+### Key Files Modified (Status Effects)
+- `scripts/autoload/combat_manager.gd` - _process_status_effects(), _process_stat_modifiers(), is_unit_incapacitated(), can_unit_move()
+- `scripts/combat/combat_arena.gd` - Status effect signal handlers, visual refresh
+- `scripts/combat/combat_unit.gd` - Status effect visual indicators in _update_visuals()
+- `resources/data/spells.json` - Added Immolate, Poison Dart, updated Fireball
+- `scripts/autoload/character_system.gd` - Added black:1 to wanderer
+
 ### Ranged Weapon Attacks Implementation
 - Added `range` stat to ranged weapons in items.json (bows: 4-6 range, throwing: 3 range)
 - Added new weapon types: `longbow`, `throwing_knife`
@@ -258,7 +284,7 @@ Last Updated: 2026-02-02
 - Enemy AI updated to handle ranged positioning (stay at distance)
 - Test ranged enemy "Demon Archer" with bow (range 5) added to combat
 
-### Key Files Modified This Session
+### Key Files Modified (Ranged Attacks)
 - `resources/data/items.json` - Added range stat, longbow, throwing_knife, ranged type flags
 - `scripts/combat/combat_unit.gd` - get_equipped_weapon(), is_ranged_weapon(), updated get_attack_range/damage/accuracy
 - `scripts/combat/combat_arena.gd` - Ranged enemy definition, improved AI movement for ranged

@@ -176,8 +176,54 @@ func _update_visuals() -> void:
 		name_label.text = unit_name
 
 	if status_indicator:
+		var status_text = ""
+
+		# Show bleed-out status
 		if is_bleeding_out:
-			status_indicator.text = "!" + str(bleed_out_turns)
+			status_text = "!" + str(bleed_out_turns)
+			status_indicator.add_theme_color_override("font_color", Color.RED)
+		# Show status effects
+		elif "status_effects" in self and not status_effects.is_empty():
+			var icons: Array[String] = []
+			for effect in status_effects:
+				var status_name = effect.get("status", "")
+				# Use short icons/abbreviations for each status
+				match status_name:
+					"burning":
+						icons.append("🔥")
+					"poisoned":
+						icons.append("☠")
+					"bleeding":
+						icons.append("💧")
+					"frozen":
+						icons.append("❄")
+					"stunned":
+						icons.append("⚡")
+					"knocked_down":
+						icons.append("⬇")
+					"regenerating":
+						icons.append("💚")
+					"feared":
+						icons.append("😨")
+					_:
+						icons.append("•")
+			status_text = "".join(icons)
+			# Color based on effect type (negative = red, positive = green)
+			var has_positive = false
+			var has_negative = false
+			for effect in status_effects:
+				var s = effect.get("status", "")
+				if s == "regenerating":
+					has_positive = true
+				else:
+					has_negative = true
+			if has_negative:
+				status_indicator.add_theme_color_override("font_color", Color(1.0, 0.5, 0.3))
+			elif has_positive:
+				status_indicator.add_theme_color_override("font_color", Color(0.3, 1.0, 0.5))
+
+		if status_text != "":
+			status_indicator.text = status_text
 			status_indicator.show()
 		else:
 			status_indicator.hide()

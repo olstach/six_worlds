@@ -21,6 +21,8 @@ signal unit_died(unit: Node)
 signal unit_bleeding_out(unit: Node, turns_remaining: int)
 signal action_used(unit: Node, actions_remaining: int)
 signal spell_cast(caster: Node, spell: Dictionary, targets: Array, results: Array)
+signal status_effect_triggered(unit: Node, effect_name: String, value: int, effect_type: String)
+signal status_effect_expired(unit: Node, effect_name: String)
 
 # Combat state
 var combat_active: bool = false
@@ -149,6 +151,21 @@ func _start_current_turn() -> void:
 			return
 
 		# Bleeding out units skip their turn
+		_advance_turn()
+		return
+
+	# Process status effects at turn start (DoT, healing, duration tick)
+	var skip_turn = _process_status_effects(unit)
+
+	# Check if unit died from status effect damage
+	if unit.current_hp <= 0 and not unit.is_bleeding_out:
+		_start_bleed_out(unit)
+		_advance_turn()
+		return
+
+	# Skip turn if incapacitated (frozen, stunned, knocked down)
+	if skip_turn:
+		print(unit.unit_name, " is incapacitated and cannot act!")
 		_advance_turn()
 		return
 
@@ -799,6 +816,115 @@ func _cleanse_status_effects(unit: Node, count: int) -> int:
 		unit.status_effects.remove_at(idx)
 
 	return removed
+
+
+## Process status effects at turn start
+## Returns true if the unit should skip their turn (incapacitated)
+func _process_status_effects(unit: Node) -> bool:
+	if not "status_effects" in unit or unit.status_effects.is_empty():
+		return false
+
+	var skip_turn = false
+	var effects_to_remove: Array[int] = []
+
+	for i in range(unit.status_effects.size()):
+		var effect = unit.status_effects[i]
+		var status_name = effect.get("status", "")
+		var effect_def = _status_effects.get(status_name, {})
+
+		# Process effect based on type
+		if effect_def.get("damage_per_turn", 0) > 0:
+			# Damage over time (burning, poisoned, bleeding)
+			var damage = effect_def.damage_per_turn
+			# Use value from effect if present (for variable damage)
+			if effect.get("value", 0) > 0:
+				damage = effect.value
+			var element = effect_def.get("element", "physical")
+			apply_damage(unit, damage, element)
+			status_effect_triggered.emit(unit, status_name, damage, "damage")
+			print("%s takes %d %s damage from %s!" % [unit.unit_name, damage, element, status_name])
+
+		elif effect_def.get("heal_per_turn", false):
+			# Healing over time (regenerating)
+			var heal_amount = effect.get("value", 5)  # Default 5 if not specified
+			unit.heal(heal_amount)
+			unit_healed.emit(unit, heal_amount)
+			status_effect_triggered.emit(unit, status_name, heal_amount, "heal")
+			print("%s regenerates %d HP!" % [unit.unit_name, heal_amount])
+
+		# Check for incapacitating effects
+		if effect_def.get("blocks_actions", false):
+			skip_turn = true
+
+		# Decrement duration
+		effect.duration -= 1
+
+		# Mark for removal if expired
+		if effect.duration <= 0:
+			effects_to_remove.append(i)
+
+	# Remove expired effects (in reverse order to maintain indices)
+	effects_to_remove.reverse()
+	for idx in effects_to_remove:
+		var expired_effect = unit.status_effects[idx]
+		var status_name = expired_effect.get("status", "")
+		unit.status_effects.remove_at(idx)
+		status_effect_expired.emit(unit, status_name)
+		print("%s is no longer %s" % [unit.unit_name, status_name])
+
+	# Also process stat modifiers (buff/debuff duration tick)
+	_process_stat_modifiers(unit)
+
+	return skip_turn
+
+
+## Process stat modifier durations
+func _process_stat_modifiers(unit: Node) -> void:
+	if not "stat_modifiers" in unit or unit.stat_modifiers.is_empty():
+		return
+
+	var to_remove: Array[int] = []
+
+	for i in range(unit.stat_modifiers.size()):
+		var mod = unit.stat_modifiers[i]
+		mod.duration -= 1
+
+		if mod.duration <= 0:
+			to_remove.append(i)
+			print("%s: %s modifier expired" % [unit.unit_name, mod.stat])
+
+	# Remove expired modifiers
+	to_remove.reverse()
+	for idx in to_remove:
+		unit.stat_modifiers.remove_at(idx)
+
+
+## Check if unit is currently incapacitated by status effects
+func is_unit_incapacitated(unit: Node) -> bool:
+	if not "status_effects" in unit:
+		return false
+
+	for effect in unit.status_effects:
+		var status_name = effect.get("status", "")
+		var effect_def = _status_effects.get(status_name, {})
+		if effect_def.get("blocks_actions", false):
+			return true
+
+	return false
+
+
+## Check if unit can move (not blocked by effects)
+func can_unit_move(unit: Node) -> bool:
+	if not "status_effects" in unit:
+		return true
+
+	for effect in unit.status_effects:
+		var status_name = effect.get("status", "")
+		var effect_def = _status_effects.get(status_name, {})
+		if effect_def.get("blocks_movement", false):
+			return false
+
+	return true
 
 
 ## Get valid target positions for a spell
