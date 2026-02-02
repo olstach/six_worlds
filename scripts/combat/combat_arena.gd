@@ -134,7 +134,7 @@ const TEST_MAGE_ENEMY_DEF = {
 		"fire": 50
 	},
 	# Spells this enemy knows
-	"known_spells": ["firebolt", "immolate", "poison_dart"]
+	"known_spells": ["firebolt", "fireball", "poison_sting"]
 }
 
 func _ready() -> void:

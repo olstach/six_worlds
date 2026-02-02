@@ -166,9 +166,9 @@ func apply_background_skills(character: Dictionary, background: String) -> void:
 			set_skill_level(character, "black", 1)       # For testing status effects
 			# Starting spells for wanderer (fire mage focus)
 			learn_spell(character, "firebolt")
-			learn_spell(character, "immolate")
+			learn_spell(character, "fireball")
 			learn_spell(character, "lesser_heal")
-			learn_spell(character, "poison_dart")
+			learn_spell(character, "poison_sting")
 		"scholar":
 			set_skill_level(character, "focus", 2)
 			set_skill_level(character, "sorcery", 1)

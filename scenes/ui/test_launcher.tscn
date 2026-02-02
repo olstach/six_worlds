@@ -60,7 +60,7 @@ text = "Main Menu (NEW)"
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "Old Character Sheet"
+text = "Character Sheet"
 
 [node name="EventSystemButton" type="Button" parent="VBoxContainer"]
 custom_minimum_size = Vector2(0, 60)
