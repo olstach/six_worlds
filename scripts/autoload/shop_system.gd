@@ -13,6 +13,7 @@ signal item_purchased(item_id: String, price: int)
 signal item_sold(item_id: String, price: int)
 signal spell_purchased(spell_id: String, price: int)
 signal training_purchased(training_type: String, target: String, price: int)
+signal barter_completed(items_traded: Array, gold_paid: int, item_received: String)
 
 # Price modifiers
 const SELL_PRICE_RATIO: float = 0.5  # Sell items for 50% of value
@@ -249,6 +250,198 @@ func get_price_modifier_summary() -> String:
 
 
 # ============================================
+# SHOP BUYING RESTRICTIONS
+# ============================================
+
+## Check if current shop buys items at all
+func shop_buys_items() -> bool:
+	if _current_shop.is_empty():
+		return true  # Default: can sell anywhere
+	return _current_shop.get("buys_items", false)
+
+
+## Check if current shop will buy a specific item
+func can_sell_item_here(item_id: String) -> bool:
+	if not shop_buys_items():
+		return false
+
+	# Check for item type restrictions
+	var accepted_types = _current_shop.get("accepted_item_types", [])
+	if accepted_types.is_empty():
+		return true  # No restrictions, accepts all
+
+	var item = ItemSystem.get_item(item_id)
+	if item.is_empty():
+		return false
+
+	var item_type = item.get("type", "misc")
+	return item_type in accepted_types
+
+
+## Get list of item types this shop accepts (empty = all types)
+func get_accepted_item_types() -> Array:
+	if _current_shop.is_empty():
+		return []
+	return _current_shop.get("accepted_item_types", [])
+
+
+# ============================================
+# BARTER SYSTEM
+# ============================================
+
+## Calculate total trade value of offered items
+func get_barter_value(item_ids: Array) -> int:
+	var total = 0
+	for item_id in item_ids:
+		total += get_sell_price(item_id)
+	return total
+
+
+## Check if barter offer covers required price
+## Returns dict with analysis of the barter offer
+func analyze_barter_offer(target_price: int, offered_items: Array, offered_gold: int = 0) -> Dictionary:
+	var items_value = get_barter_value(offered_items)
+	var total_value = items_value + offered_gold
+	var difference = target_price - total_value
+
+	return {
+		"target_price": target_price,
+		"items_value": items_value,
+		"gold_offered": offered_gold,
+		"total_offered": total_value,
+		"difference": difference,
+		"is_sufficient": difference <= 0,
+		"overpayment": max(0, -difference)
+	}
+
+
+## Buy an item using barter (items from inventory + optional gold)
+func barter_buy_item(item_id: String, offered_items: Array, offered_gold: int = 0) -> Dictionary:
+	var price = get_buy_price(item_id)
+
+	# Validate offered items exist in inventory
+	for offered_id in offered_items:
+		if ItemSystem.get_inventory_count(offered_id) <= 0:
+			return {"success": false, "reason": "Item not in inventory: " + offered_id}
+
+	# Check if shop accepts these items
+	if not _current_shop.is_empty() and shop_buys_items():
+		for offered_id in offered_items:
+			if not can_sell_item_here(offered_id):
+				var item = ItemSystem.get_item(offered_id)
+				return {"success": false, "reason": "Shop won't accept: " + item.get("name", offered_id)}
+
+	# Analyze the offer
+	var analysis = analyze_barter_offer(price, offered_items, offered_gold)
+
+	if not analysis.is_sufficient:
+		return {"success": false, "reason": "Offer insufficient by %d gold" % analysis.difference}
+
+	# Check gold portion
+	if offered_gold > 0 and not GameState.can_afford(offered_gold):
+		return {"success": false, "reason": "Not enough gold"}
+
+	# Check if shop has item in stock
+	if not _current_shop.is_empty():
+		var stock = _current_shop.get("items", {})
+		if item_id in stock:
+			if stock[item_id] <= 0:
+				return {"success": false, "reason": "Out of stock"}
+			stock[item_id] -= 1
+
+	# Process the barter - remove offered items
+	for offered_id in offered_items:
+		ItemSystem.remove_from_inventory(offered_id)
+
+	# Spend gold portion
+	if offered_gold > 0:
+		GameState.spend_gold(offered_gold)
+
+	# Give purchased item
+	ItemSystem.add_to_inventory(item_id)
+
+	barter_completed.emit(offered_items, offered_gold, item_id)
+	item_purchased.emit(item_id, price)
+
+	var item = ItemSystem.get_item(item_id)
+	return {
+		"success": true,
+		"item_name": item.get("name", item_id),
+		"price": price,
+		"items_traded": offered_items,
+		"gold_paid": offered_gold,
+		"overpayment": analysis.overpayment
+	}
+
+
+## Buy a spell using barter
+func barter_buy_spell(character: Dictionary, spell_id: String, offered_items: Array, offered_gold: int = 0) -> Dictionary:
+	# Check if character already knows spell
+	if CharacterSystem.knows_spell(character, spell_id):
+		return {"success": false, "reason": "Already knows this spell"}
+
+	# Check skill requirements (same as buy_spell)
+	var spell = CombatManager.get_spell(spell_id)
+	if spell.is_empty():
+		return {"success": false, "reason": "Spell not found"}
+
+	var required_level = spell.get("level", 1)
+	var schools = spell.get("schools", [])
+	var skills = character.get("skills", {})
+	var has_skill = false
+
+	for school in schools:
+		var skill_name = school + "_magic" if school in ["earth", "water", "fire", "air", "space"] else school
+		var skill_level = skills.get(skill_name, 0)
+		if skill_level >= required_level:
+			has_skill = true
+			break
+
+	if not has_skill:
+		return {"success": false, "reason": "Insufficient magic skill"}
+
+	# Check if shop offers this spell
+	if not _current_shop.is_empty():
+		var spells_offered = _current_shop.get("spells", [])
+		if not spells_offered.is_empty() and spell_id not in spells_offered:
+			return {"success": false, "reason": "Spell not available here"}
+
+	var price = get_spell_cost(spell_id)
+
+	# Validate offered items
+	for offered_id in offered_items:
+		if ItemSystem.get_inventory_count(offered_id) <= 0:
+			return {"success": false, "reason": "Item not in inventory: " + offered_id}
+
+	# Check barter offer
+	var analysis = analyze_barter_offer(price, offered_items, offered_gold)
+	if not analysis.is_sufficient:
+		return {"success": false, "reason": "Offer insufficient by %d gold" % analysis.difference}
+
+	if offered_gold > 0 and not GameState.can_afford(offered_gold):
+		return {"success": false, "reason": "Not enough gold"}
+
+	# Process barter
+	for offered_id in offered_items:
+		ItemSystem.remove_from_inventory(offered_id)
+
+	if offered_gold > 0:
+		GameState.spend_gold(offered_gold)
+
+	CharacterSystem.learn_spell(character, spell_id)
+	barter_completed.emit(offered_items, offered_gold, spell_id)
+	spell_purchased.emit(spell_id, price)
+
+	return {
+		"success": true,
+		"spell_name": spell.get("name", spell_id),
+		"price": price,
+		"items_traded": offered_items,
+		"gold_paid": offered_gold
+	}
+
+
+# ============================================
 # BUYING AND SELLING ITEMS
 # ============================================
 
@@ -280,6 +473,15 @@ func buy_item(item_id: String) -> Dictionary:
 
 ## Sell an item from inventory
 func sell_item(item_id: String) -> Dictionary:
+	# Check if shop buys items
+	if not shop_buys_items():
+		return {"success": false, "reason": "This shop doesn't buy items"}
+
+	# Check if shop accepts this item type
+	if not can_sell_item_here(item_id):
+		var item = ItemSystem.get_item(item_id)
+		return {"success": false, "reason": "Shop won't buy this type of item"}
+
 	# Check if item is in inventory
 	if ItemSystem.get_inventory_count(item_id) <= 0:
 		return {"success": false, "reason": "Item not in inventory"}

@@ -5,6 +5,7 @@
 			"type": "general",
 			"description": "A twisted soul who trades in suffering... and useful goods.",
 			"price_modifier": 1.2,
+			"buys_items": true,
 			"items": {
 				"iron_sword": 2,
 				"iron_axe": 1,
@@ -26,6 +27,7 @@
 			"type": "spell_trainer",
 			"description": "A powerful demon who teaches the dark arts... for a price.",
 			"price_modifier": 1.3,
+			"buys_items": false,
 			"items": {
 				"wooden_staff": 1,
 				"oak_staff": 1,
@@ -54,6 +56,7 @@
 			"type": "skill_trainer",
 			"description": "A mysterious figure who can unlock your hidden potential.",
 			"price_modifier": 0.9,
+			"buys_items": false,
 			"items": {},
 			"spells": [
 				"lesser_heal",
@@ -74,6 +77,8 @@
 			"type": "skill_trainer",
 			"description": "A grizzled veteran who teaches combat techniques.",
 			"price_modifier": 1.1,
+			"buys_items": true,
+			"accepted_item_types": ["weapon", "armor", "shield"],
 			"items": {
 				"steel_longsword": 1,
 				"iron_axe": 1,
@@ -96,6 +101,7 @@
 			"type": "mixed",
 			"description": "A well-stocked shop with a bit of everything.",
 			"price_modifier": 1.0,
+			"buys_items": true,
 			"items": {
 				"bronze_sword": 3,
 				"iron_sword": 2,
