@@ -170,6 +170,7 @@
 			"mana_cost": 5,
 			"range": 6,
 			"targeting": "single",
+			"base_cost": 75,
 			"effects": [
 				{"type": "damage", "element": "space", "base_value": 10, "auto_hit": true}
 			],
@@ -182,6 +183,7 @@
 			"mana_cost": 8,
 			"range": 0,
 			"targeting": "self",
+			"base_cost": 150,
 			"effects": [
 				{"type": "teleport", "distance": 4}
 			],
@@ -244,6 +246,7 @@
 			"mana_cost": 25,
 			"range": 2,
 			"targeting": "single_corpse",
+			"base_cost": 300,
 			"effects": [
 				{"type": "revive", "hp_percent": 1}
 			],
@@ -308,6 +311,7 @@
 			"range": 5,
 			"targeting": "chain",
 			"chain_targets": 3,
+			"base_cost": 250,
 			"effects": [
 				{"type": "damage", "element": "air", "base_value": 16}
 			],

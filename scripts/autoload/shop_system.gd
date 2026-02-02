@@ -17,6 +17,8 @@ signal training_purchased(training_type: String, target: String, price: int)
 # Price modifiers
 const SELL_PRICE_RATIO: float = 0.5  # Sell items for 50% of value
 const TRADE_SKILL_DISCOUNT: float = 0.05  # 5% discount per Trade skill level
+const CHARM_DISCOUNT_PER_POINT: float = 0.02  # 2% discount per Charm point above 10
+const CHARM_BASELINE: int = 10  # Charm value considered "neutral"
 
 # Spell pricing (base cost per spell level)
 const SPELL_BASE_COST: int = 50  # Level 1 = 50, Level 2 = 100, etc.
@@ -94,44 +96,52 @@ func open_shop_by_id(shop_id: String) -> bool:
 # PRICE CALCULATIONS
 # ============================================
 
-## Calculate buy price for an item (with Trade skill discount)
+## Calculate buy price for an item (with Trade skill + Charm discount + shop modifier)
 func get_buy_price(item_id: String) -> int:
 	var item = ItemSystem.get_item(item_id)
 	if item.is_empty():
 		return 0
 
 	var base_price = item.get("value", 10)
-	var discount = _get_trade_discount()
-	return int(base_price * (1.0 - discount))
+	var shop_modifier = _get_shop_price_modifier()
+	var discount = _get_total_discount()
+	return int(base_price * shop_modifier * (1.0 - discount))
 
 
-## Calculate sell price for an item
+## Calculate sell price for an item (Trade + Charm improve sell prices)
 func get_sell_price(item_id: String) -> int:
 	var item = ItemSystem.get_item(item_id)
 	if item.is_empty():
 		return 0
 
 	var base_price = item.get("value", 10)
-	var bonus = _get_trade_discount() * 0.5  # Half the discount as bonus to sell price
-	return int(base_price * SELL_PRICE_RATIO * (1.0 + bonus))
+	# For selling, discounts become bonuses (capped at 25% bonus)
+	var bonus = min(_get_total_discount() * 0.5, 0.25)
+	# Shop modifier inverted for selling (high markup shops pay less)
+	var shop_modifier = _get_shop_price_modifier()
+	var sell_modifier = 2.0 - shop_modifier if shop_modifier > 0 else 1.0
+	return int(base_price * SELL_PRICE_RATIO * sell_modifier * (1.0 + bonus))
 
 
-## Calculate cost to learn a spell
+## Calculate cost to learn a spell (uses spell's base_cost or level-based default)
 func get_spell_cost(spell_id: String) -> int:
 	var spell = CombatManager.get_spell(spell_id)
 	if spell.is_empty():
 		return 0
 
 	var level = spell.get("level", 1)
-	var base_cost = SPELL_BASE_COST * level
-	var discount = _get_trade_discount()
-	return int(base_cost * (1.0 - discount))
+	# Use explicit base_cost if defined, otherwise level * SPELL_BASE_COST
+	var base_cost = spell.get("base_cost", SPELL_BASE_COST * level)
+	var shop_modifier = _get_shop_price_modifier()
+	var discount = _get_total_discount()
+	return int(base_cost * shop_modifier * (1.0 - discount))
 
 
 ## Calculate cost to train an attribute
 func get_attribute_training_cost() -> int:
-	var discount = _get_trade_discount()
-	return int(ATTRIBUTE_TRAINING_COST * (1.0 - discount))
+	var shop_modifier = _get_shop_price_modifier()
+	var discount = _get_total_discount()
+	return int(ATTRIBUTE_TRAINING_COST * shop_modifier * (1.0 - discount))
 
 
 ## Calculate cost to train a skill to next level
@@ -140,8 +150,9 @@ func get_skill_training_cost(current_level: int) -> int:
 		return 0  # Max level or invalid
 
 	var base_cost = SKILL_TRAINING_COSTS[current_level]
-	var discount = _get_trade_discount()
-	return int(base_cost * (1.0 - discount))
+	var shop_modifier = _get_shop_price_modifier()
+	var discount = _get_total_discount()
+	return int(base_cost * shop_modifier * (1.0 - discount))
 
 
 ## Get best Trade skill level from party
@@ -155,6 +166,86 @@ func _get_trade_discount() -> float:
 				best_trade = trade_level
 
 	return best_trade * TRADE_SKILL_DISCOUNT
+
+
+## Get Charm-based price modifier from party (best Charm in party)
+func _get_charm_discount() -> float:
+	var best_charm = CHARM_BASELINE
+
+	if CharacterSystem:
+		for character in CharacterSystem.get_party():
+			var charm = character.get("attributes", {}).get("charm", CHARM_BASELINE)
+			if charm > best_charm:
+				best_charm = charm
+
+	# Charm above baseline gives discount, below gives penalty
+	var charm_diff = best_charm - CHARM_BASELINE
+	return charm_diff * CHARM_DISCOUNT_PER_POINT
+
+
+## Get total discount from Trade skill and Charm attribute
+func _get_total_discount() -> float:
+	var trade_discount = _get_trade_discount()
+	var charm_discount = _get_charm_discount()
+	# Combined discount, but cap at 50% max discount
+	return min(trade_discount + charm_discount, 0.50)
+
+
+## Get shop-specific price modifier (markup or discount)
+func _get_shop_price_modifier() -> float:
+	if _current_shop.is_empty():
+		return 1.0
+	return _current_shop.get("price_modifier", 1.0)
+
+
+## Get price breakdown for UI display
+## Returns dict with all modifiers affecting the current price
+func get_price_breakdown(base_price: int) -> Dictionary:
+	var trade_discount = _get_trade_discount()
+	var charm_discount = _get_charm_discount()
+	var total_discount = _get_total_discount()
+	var shop_modifier = _get_shop_price_modifier()
+
+	var final_price = int(base_price * shop_modifier * (1.0 - total_discount))
+
+	return {
+		"base_price": base_price,
+		"shop_modifier": shop_modifier,
+		"shop_name": _current_shop.get("name", ""),
+		"trade_discount": trade_discount,
+		"trade_discount_percent": int(trade_discount * 100),
+		"charm_discount": charm_discount,
+		"charm_discount_percent": int(charm_discount * 100),
+		"total_discount": total_discount,
+		"total_discount_percent": int(total_discount * 100),
+		"final_price": final_price
+	}
+
+
+## Get readable summary of active price modifiers
+func get_price_modifier_summary() -> String:
+	var parts: Array[String] = []
+
+	var trade_discount = _get_trade_discount()
+	if trade_discount > 0:
+		parts.append("Trade -%d%%" % int(trade_discount * 100))
+
+	var charm_discount = _get_charm_discount()
+	if charm_discount > 0:
+		parts.append("Charm -%d%%" % int(charm_discount * 100))
+	elif charm_discount < 0:
+		parts.append("Charm +%d%%" % int(abs(charm_discount) * 100))
+
+	var shop_modifier = _get_shop_price_modifier()
+	if shop_modifier > 1.0:
+		parts.append("Shop +%d%%" % int((shop_modifier - 1.0) * 100))
+	elif shop_modifier < 1.0:
+		parts.append("Shop -%d%%" % int((1.0 - shop_modifier) * 100))
+
+	if parts.is_empty():
+		return "No modifiers"
+
+	return ", ".join(parts)
 
 
 # ============================================
