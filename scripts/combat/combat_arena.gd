@@ -61,6 +61,45 @@ const TEST_ENEMY_DEF = {
 	}
 }
 
+# Test ranged enemy
+const TEST_RANGED_ENEMY_DEF = {
+	"name": "Demon Archer",
+	"max_hp": 25,
+	"max_mana": 0,
+	"actions": 2,
+	"attributes": {
+		"strength": 8,
+		"finesse": 14,
+		"constitution": 8,
+		"focus": 6,
+		"awareness": 12,
+		"charm": 4,
+		"luck": 10
+	},
+	"skills": {
+		"ranged": 2
+	},
+	"derived": {
+		"initiative": 26,
+		"movement": 4,
+		"dodge": 14,
+		"damage": 6,
+		"armor": 0,
+		"accuracy": 10,
+		"crit_chance": 8
+	},
+	"resistances": {
+		"physical": 0,
+		"fire": 25
+	},
+	# Enemy-specific equipped weapon (bypasses ItemSystem)
+	"equipped_weapon": {
+		"name": "Demon Bow",
+		"type": "bow",
+		"stats": {"damage": 6, "accuracy": 10, "range": 5}
+	}
+}
+
 func _ready() -> void:
 	# Create AI timer for delayed enemy turns
 	ai_timer = Timer.new()
@@ -132,18 +171,24 @@ func _start_test_combat() -> void:
 		player_units.append(unit)
 		_log_message("Player: %s placed at %s" % [unit.unit_name, player_start_positions[i]])
 
-	# Create test enemies
+	# Create test enemies (mix of melee and ranged)
 	var enemy_start_positions = [Vector2i(10, 2), Vector2i(10, 4), Vector2i(9, 3)]
 
 	for i in range(3):
-		var enemy_def = TEST_ENEMY_DEF.duplicate(true)
-		enemy_def.name = "Demon " + str(i + 1)
+		var enemy_def: Dictionary
+		if i == 2:
+			# Make one enemy a ranged archer
+			enemy_def = TEST_RANGED_ENEMY_DEF.duplicate(true)
+		else:
+			enemy_def = TEST_ENEMY_DEF.duplicate(true)
+			enemy_def.name = "Demon " + str(i + 1)
 
 		var unit = CombatUnit.new()
 		unit.init_as_enemy(enemy_def)
 		combat_grid.place_unit(unit, enemy_start_positions[i])
 		enemy_units.append(unit)
-		_log_message("Enemy: %s placed at %s" % [unit.unit_name, enemy_start_positions[i]])
+		var range_text = " (range: %d)" % unit.get_attack_range() if unit.get_attack_range() > 1 else ""
+		_log_message("Enemy: %s placed at %s%s" % [unit.unit_name, enemy_start_positions[i], range_text])
 
 	# Start combat
 	CombatManager.start_combat(combat_grid, player_units, enemy_units)
@@ -735,8 +780,11 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 		CombatManager.end_turn()
 		return
 
-	# Find nearest alive player
+	# Find best target based on range
+	var attack_range = unit.get_attack_range()
+	var is_ranged = attack_range > 1
 	var nearest: CombatUnit = _find_nearest_enemy(unit, player_units)
+
 	if nearest == null:
 		CombatManager.end_turn()
 		return
@@ -745,12 +793,13 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 	while CombatManager.can_act(1) and CombatManager.get_current_unit() == unit:
 		var dist = _grid_distance(unit.grid_position, nearest.grid_position)
 
-		if dist <= unit.get_attack_range():
+		if dist <= attack_range:
 			# In range - attack!
 			var result = CombatManager.attack_unit(unit, nearest)
 			if result.success:
 				if result.hit:
-					_log_message("%s attacks %s for %d damage!" % [unit.unit_name, nearest.unit_name, result.damage])
+					var ranged_text = " from range" if dist > 1 else ""
+					_log_message("%s attacks %s%s for %d damage!" % [unit.unit_name, nearest.unit_name, ranged_text, result.damage])
 				else:
 					_log_message("%s attacks %s - MISS!" % [unit.unit_name, nearest.unit_name])
 
@@ -760,22 +809,39 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 					if nearest == null:
 						break  # No more targets
 		else:
-			# Out of range - move closer
+			# Out of range - need to reposition
 			var move_range = CombatManager.get_movement_range(unit)
 			var best_tile: Vector2i = unit.grid_position
-			var best_dist: int = dist
+			var best_score: int = -999
 
 			for tile in move_range:
 				var tile_dist = _grid_distance(tile, nearest.grid_position)
-				if tile_dist < best_dist:
-					best_dist = tile_dist
-					best_tile = tile
+
+				if is_ranged:
+					# Ranged units prefer to stay at max range (safe distance)
+					# Score: want to be in range but not too close
+					var score = 0
+					if tile_dist <= attack_range:
+						score = 100  # Can attack from here
+						score += mini(tile_dist, attack_range)  # Prefer staying back
+					else:
+						score = -tile_dist  # Get closer if out of range
+					if score > best_score:
+						best_score = score
+						best_tile = tile
+				else:
+					# Melee units just want to get close
+					if tile_dist < _grid_distance(best_tile, nearest.grid_position):
+						best_tile = tile
 
 			if best_tile != unit.grid_position:
 				CombatManager.move_unit(unit, best_tile)
-				_log_message("%s moves toward %s" % [unit.unit_name, nearest.unit_name])
+				if is_ranged:
+					_log_message("%s repositions" % unit.unit_name)
+				else:
+					_log_message("%s moves toward %s" % [unit.unit_name, nearest.unit_name])
 			else:
-				# Can't get closer, skip remaining actions
+				# Can't improve position, skip remaining actions
 				break
 
 	# End turn if we still have control

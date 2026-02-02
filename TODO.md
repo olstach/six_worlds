@@ -74,8 +74,15 @@
   - 🔶 Status effect processing on turn start/end (structure in place, needs expansion)
   - 🔶 AI spell casting (not yet implemented)
 
-- [ ] **Tactical Combat System Phase 3**
-  - Ranged weapon attacks
+- [x] **Tactical Combat System Phase 3a - Ranged Attacks**
+  - ✅ Ranged weapon support (bows, thrown weapons with `range` stat)
+  - ✅ CombatUnit checks equipped weapon for attack range
+  - ✅ Finesse-based damage for ranged (vs Strength for melee)
+  - ✅ Ranged skill bonus to damage and accuracy
+  - ✅ Enemy AI repositioning for ranged units (stay at distance)
+  - ✅ Test ranged enemy (Demon Archer) in combat
+
+- [ ] **Tactical Combat System Phase 3b - Terrain & Status**
   - Terrain obstacles
   - Height differences
   - Geo effects (fire on ground, etc.)
@@ -235,7 +242,27 @@
 
 ---
 
-Last Updated: 2026-02-01
+Last Updated: 2026-02-02
+
+---
+
+## Session Notes (2026-02-02)
+
+### Ranged Weapon Attacks Implementation
+- Added `range` stat to ranged weapons in items.json (bows: 4-6 range, throwing: 3 range)
+- Added new weapon types: `longbow`, `throwing_knife`
+- Updated item_types with `ranged: true` flag for bows and thrown weapons
+- CombatUnit now properly checks equipped weapon for attack range
+- Ranged weapons use Finesse for damage (melee uses Strength)
+- Weapon skill bonuses (+2 damage/accuracy per skill level)
+- Enemy AI updated to handle ranged positioning (stay at distance)
+- Test ranged enemy "Demon Archer" with bow (range 5) added to combat
+
+### Key Files Modified This Session
+- `resources/data/items.json` - Added range stat, longbow, throwing_knife, ranged type flags
+- `scripts/combat/combat_unit.gd` - get_equipped_weapon(), is_ranged_weapon(), updated get_attack_range/damage/accuracy
+- `scripts/combat/combat_arena.gd` - Ranged enemy definition, improved AI movement for ranged
+- `scripts/autoload/item_system.gd` - Added short_bow to starter items
 
 ---
 
