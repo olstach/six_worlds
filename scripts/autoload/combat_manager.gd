@@ -842,7 +842,9 @@ func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dicti
 	var has_skill = false
 
 	for school in schools:
-		var skill_name = school + "_magic" if school in ["earth", "water", "fire", "air", "space"] else school
+		# Lowercase school name for comparison (spells.json uses capitalized names)
+		var school_lower = school.to_lower()
+		var skill_name = school_lower + "_magic" if school_lower in ["earth", "water", "fire", "air", "space"] else school_lower
 		var skill_level = skills.get(skill_name, 0)
 		if skill_level >= required_level:
 			has_skill = true
@@ -1004,7 +1006,9 @@ func _calculate_spell_bonus(caster: Node, spell: Dictionary) -> int:
 	var schools = spell.get("schools", [])
 
 	for school in schools:
-		var skill_name = school + "_magic" if school in ["earth", "water", "fire", "air", "space"] else school
+		# Lowercase school name for comparison (spells.json uses capitalized names)
+		var school_lower = school.to_lower()
+		var skill_name = school_lower + "_magic" if school_lower in ["earth", "water", "fire", "air", "space"] else school_lower
 		var skill_level = skills.get(skill_name, 0)
 		total_bonus += skill_level * 2  # Each skill level adds 2 to spell power
 

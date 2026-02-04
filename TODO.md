@@ -1,396 +1,235 @@
-# Six Worlds - TODO & Design Notes
-
-## Current Status
-✅ Core systems foundation complete (GameState, CharacterSystem, KarmaSystem)
-✅ Basic character sheet UI working
-✅ XP-based progression system (no levels)
-✅ Race and skill data structures
-✅ Event/Dialogue System complete with three choice types
-✅ Karma integration with events
-✅ Party-wide requirement checking
-✅ Dice rolling system for yellow choices
-✅ Item System complete (equipment, inventory, stat bonuses)
-✅ Item tooltip on hover
-✅ Combat System Phase 1 (grid, movement, basic attacks)
-✅ Combat System Phase 2 - Spell System (see below)
-
----
-
-## Known Bugs
-
-- [x] **Derived stats not displaying** - FIXED: Was using wrong key ("derived_stats" vs "derived")
-- [x] **Combat turn order issues** - FIXED: Removed async/await, using Timer-based delays for enemy turns instead
-
----
-
-## Systems to Implement
-
-- [ ] **Camp Followers System** - Non-combat companions providing passive bonuses
-  - Data structure for followers (name, role, bonus_description, bonus_effects)
-  - GameState.get_followers() function
-  - Follower recruitment through events
-  - Passive bonus application (trade bonuses, carrying capacity, healing, etc.)
-  - UI already in place in Party tab
-
----
-
-## Priority Tasks
-
-### High Priority (Core Gameplay)
-- [ ] **Overworld Map System** (HoMM-style tile-based exploration)
-  - Tile-based movement
-  - Hub/Quest/Battle node types
-  - World transitions between realms
-  - Save current position
-  
-- [ ] **Event/Dialogue System** (FTL-style encounters)
-  - Event node data structure (JSON)
-  - Choice branching logic
-  - Karma tagging on choices
-  - Scene transition to/from events
-  - Event outcomes (items, XP, karma, combat trigger)
-
-- [x] **Tactical Combat System Phase 1** (Grid-based like Disgaea/FF Tactics)
-  - ✅ Combat grid setup (12x8, top-down)
-  - ✅ Turn order system (initiative-based)
-  - ✅ 2-action system (move/attack/wait in any order)
-  - ✅ Basic attack with hit/miss, damage, crits
-  - ✅ Physical damage with armor reduction
-  - ✅ Basic AI behavior (move toward player, attack)
-  - ✅ Bleed-out system (3 turns to revive)
-  - ✅ Victory/defeat conditions
-  - 🔶 Known bug: turn order occasionally out of sync
-
-- [x] **Tactical Combat System Phase 2 - Spell System**
-  - ✅ Spell database (resources/data/spells.json) with 25+ spells
-  - ✅ Spell casting UI (Spell button, spell panel with scroll)
-  - ✅ Multiple targeting types: self, single, single_ally, aoe_circle, chain
-  - ✅ Purple spell range highlighting
-  - ✅ Orange AoE preview on hover
-  - ✅ Rich spell tooltips (schools, stats, effects, description)
-  - ✅ Elemental damage with resistances (space, air, fire, water, earth)
-  - ✅ Spell effects: damage, heal, buff, debuff, status, lifesteal, revive, cleanse
-  - ✅ Skill requirements (need one school at spell level, bonuses from all schools)
-  - ✅ Status effect processing on turn start/end
-  - ✅ AI spell casting (enemy mages can cast spells)
-
-- [x] **Spellbook System**
-  - ✅ Characters have `known_spells` array - must learn spells before casting
-  - ✅ `learn_spell()` / `forget_spell()` / `knows_spell()` functions in CharacterSystem
-  - ✅ `get_castable_spells()` filters by known spells
-  - ✅ Starting spells based on background (wanderer gets fire spells)
-  - ✅ Enemies have `known_spells` in their definitions
-  - ✅ AI selects and casts appropriate spells (damage, AoE targeting)
-  - ✅ Test mage enemy (Demon Mage) with fire/black spells
-  - 🔶 Spellbook UI tab in menu (not yet implemented)
-  - 🔶 Spell learning through trade/events (future)
-
-- [x] **Tactical Combat System Phase 3a - Ranged Attacks**
-  - ✅ Ranged weapon support (bows, thrown weapons with `range` stat)
-  - ✅ CombatUnit checks equipped weapon for attack range
-  - ✅ Finesse-based damage for ranged (vs Strength for melee)
-  - ✅ Ranged skill bonus to damage and accuracy
-  - ✅ Enemy AI repositioning for ranged units (stay at distance)
-  - ✅ Test ranged enemy (Demon Archer) in combat
-
-- [x] **Tactical Combat System Phase 3b - Status Effect Tick Processing**
-  - ✅ DoT effects (burning, poisoned, bleeding) deal damage at turn start
-  - ✅ Healing over time (regenerating) heals at turn start
-  - ✅ Incapacitating effects (frozen, stunned, knocked_down) skip turn
-  - ✅ Duration tracking and effect expiration
-  - ✅ Visual status indicators on units (emoji icons)
-  - ✅ Buff/debuff duration tick processing
-  - ✅ Test spells: Immolate (burning), Poison Dart (poisoned)
-
-- [x] **Tactical Combat System Phase 3c - Terrain**
-  - ✅ Terrain obstacles (walls, pits, water, difficult terrain)
-  - ✅ Height system with traversal limits
-  - ✅ Terrain effects (fire, ice, poison, acid, blessed, cursed)
-  - ✅ Effect duration tracking and visual overlays
-  - ✅ Terrain damage/healing processed at turn start
-  - 🔶 Geo + Spell Integration (spells creating terrain effects, e.g., Fireball leaves fire)
-
-- [x] **Tactical Combat System Phase 3d - Line of Sight & Height Combat**
-  - ✅ Line of sight blocking (walls block ranged, pits don't - Bresenham's algorithm)
-  - ✅ Height advantage for ranged attacks (+1 range per level from high ground)
-  - ✅ Height accuracy bonus (+5% per level above, -5% penalty below)
-  - ✅ Height damage bonus (+1 ranged, +2 melee per level above)
-
-- [x] **Tactical Combat System Phase 3e - Party Deployment**
-  - ✅ Deployment zones (front/back columns for player, enemy zones on opposite side)
-  - ✅ Role-based positioning (melee front, casters/ranged in back)
-  - ✅ Random placement within appropriate zones
-  - ✅ Tactician upgrade enables manual unit placement
-  - ✅ Deployment signals for UI integration
-  - ✅ Upgrades data file (resources/data/upgrades.json)
-  - 🔶 Upgrade acquisition UI (choose from options on level-up equivalent)
-  - 🔶 Upgrade effects integration (apply bonuses to derived stats)
-  - 🔶 More upgrades (combat perks, magic perks, utility perks)
-
-- [x] **Trading System**
-  - ✅ Party gold tracking in GameState (add/spend/can_afford)
-  - ✅ ShopSystem autoload for managing shops and transactions
-  - ✅ Buy/sell items with price calculations
-  - ✅ Spell learning for gold (trainers)
-  - ✅ Skill/attribute training for gold (rare trainers)
-  - ✅ Trade skill discount (5% per level)
-  - ✅ Charm attribute discount (2% per point above 10)
-  - ✅ Shop-specific price modifiers (markup/discount)
-  - ✅ Barter system (trade items + gold when short on currency)
-  - ✅ Shop buying restrictions (buys_items flag, accepted_item_types)
-  - ✅ Shop data structure with tabs (items/spells/training)
-  - ✅ Sample shops in shops.json (merchant, spell trainer, skill trainer, etc.)
-  - ✅ Shop UI scene (scenes/ui/shop_ui.tscn) - FTL-style tabbed interface
-  - 🔶 NEEDS TESTING: Shop UI (test buying, selling, spell learning, training)
-
-### Medium Priority (Content & Polish)
-- [ ] **Expand Data Files**
-  - All races for all 6 realms (currently have 5 examples)
-  - Complete backgrounds database with skill distributions
-  - Spell definitions (tagged with schools and elements)
-  - Item/equipment database
-  - ✅ Upgrade/perk database with requirements (resources/data/upgrades.json - 10 starter upgrades)
-
-- [ ] **UI Improvements**
-  - Visual redesign (colors, fonts, Buddhist aesthetic)
-  - Upgrade selection popup (choose 1 of 4 perks)
-  - Skill learning menu
-  - Equipment/inventory screens
-  - Tooltip system (hover for detailed info)
-  - Party management screen
-  - World map UI
-
-- [ ] **Data Loading System**
-  - Utility script to load JSON files
-  - Race data loader
-  - Skill data loader
-  - Spell data loader
-  - Item data loader
-  - Event data loader
-
-### Low Priority (Nice to Have)
-- [ ] **Save/Load System**
-  - Save current run state
-  - Save meta-progression (affinities, persistent upgrades)
-  - Multiple save slots
-  - Auto-save functionality
-
-- [ ] **Sound & Music**
-  - Background music for each realm
-  - Combat music
-  - UI sound effects
-  - Spell/ability sounds
-
-- [ ] **Visual Assets**
-  - Character portraits
-  - Enemy sprites
-  - Tile sets for each realm
-  - Spell effects
-  - UI artwork
-
----
-
-## Design Questions & Ideas to Resolve
-
-### Character Power Assessment
-**Problem:** Without levels, how do we quickly judge character strength?
-**Proposed Solution:** Relative XP comparison with descriptive labels
-- Calculate total XP difference between characters
-- Use ranges to determine relationship:
-  - "Vastly weaker" (>2000 XP below)
-  - "Weaker" (500-2000 below)
-  - "Slightly weaker" (100-500 below)
-  - "Equal" (±100 XP)
-  - "Slightly stronger" (100-500 above)
-  - "Stronger" (500-2000 above)
-  - "Vastly stronger" (>2000 above)
-- Display this in mercenary hire UI, enemy assessment, etc.
-- Could also show visual indicator (color-coded skulls/stars?)
-
-**Implementation Notes:**
-- Add `calculate_power_comparison(xp1, xp2) -> String` to CharacterSystem
-- Use in UI tooltips, hiring menus, combat preparation
-- May need to adjust ranges after playtesting
-
-### XP Balance
-- Need to playtest XP costs vs XP rewards
-- Should reaching high attributes feel rare/special?
-- How much XP should typical combat/quests give?
-- Should different worlds give more XP? (god realm = rich rewards?)
-
-### Karma Visibility
-- Currently completely hidden (thematic!)
-- Should player ever see hints? ("You feel drawn to the cold...")
-- Maybe Yoga skill unlocks karma meditation ritual to view rough scores?
-- Or leave it totally mysterious for discovery/experimentation?
-
-### Reincarnation Meta-Progression
-- Skill affinities (max level = cheaper next life) ✅ structure in place
-- Persistent upgrades (rare quest rewards) ✅ structure in place
-- Should there be MORE meta-progression?
-  - Unlock new starting backgrounds?
-  - Unlock special races (white/black devils)?
-  - Unlock tulku mode faster?
-
-### Combat Complexity
-- How many abilities should characters have?
-- Should positioning matter a lot (like Disgaea) or less (like XCOM)?
-- Grid size? (8x8? 10x10? Variable by encounter?)
-- Should enemies have visible stats or be mysterious?
-
-### Realm-Specific Mechanics
-- Hell: Pure combat focus, lots of enemies
-- Hungry Ghost: Resource scarcity, survival mechanics?
-- Animal: Mix of combat and negotiation
-- Human: Heavy dialogue/quest focus, less combat
-- Asura: Competitive events, duels?
-- God: Almost no combat, pure diplomacy/trade?
-
-### Mantras & Deity Yoga
-- How should channeled buffs work mechanically?
-- Should they be pre-battle prep or mid-combat actions?
-- What breaks them? (damage? moving? certain enemy abilities?)
-- Deity yoga achievements = permanent buffs or temporary super-states?
-
----
-
-## Completed Items
-✅ Core AutoLoad singletons (GameState, CharacterSystem, KarmaSystem, EventManager)
-✅ Character data structure with attributes, skills, equipment
-✅ XP-based progression (removed levels)
-✅ Race definitions with modifiers and caps
-✅ Skill definitions with categories and elements
-✅ Basic character sheet UI
-✅ Karma tracking and reincarnation logic
-✅ Derived stats calculation
-✅ Attribute cost scaling (exponential)
-✅ Skill level progression (fixed costs 100/300/600/1000/1500)
-✅ Event/Dialogue System with three choice types:
-  - Default (grey) - always available
-  - Requirement (blue) - needs attribute/skill threshold
-  - Roll (yellow) - requires dice roll against difficulty
-✅ Party-wide requirement checking (any companion can pass test)
-✅ Dice rolling: d20 + best party attribute vs difficulty
-✅ Event outcomes (text, XP rewards, karma changes, combat/shop triggers)
-✅ Tibetan-inspired UI aesthetic with rich colors
-✅ Test launcher to switch between systems
-
----
-
-## Notes for Future Reference
-
-### GDScript Quirks Learned
-- Use `not x in y` instead of `x not in y`
-- Always initialize Array types: `Array[Dictionary]` not just `Array`
-
-### Design Philosophy
-- Data-driven (JSON files for content)
-- Systems thinking (everything connects)
-- Thematic consistency (karma hidden, gradual improvement)
-- Player agency (free XP spending, no forced builds)
-
-### Godot Project Structure
-- AutoLoad for global systems
-- Scenes for gameplay states (overworld, combat, dialogue)
-- Resources folder for data files
-- Scripts organized by function (autoload, ui, components, data)
-
----
+# Six Worlds - TODO
 
 Last Updated: 2026-02-02
 
 ---
 
-## Session Notes (2026-02-02)
+## Completed Systems
 
-### Trading System Implementation
-- Added party gold tracking to GameState (gold, add_gold, spend_gold, can_afford)
-- Created ShopSystem autoload for all trading functionality
-- Shop types: general (items), spell_trainer (spells), skill_trainer (training), mixed
-- Price calculations with Trade skill discount (5% per skill level)
-- Buy/sell items (sell at 50% value, Trade skill bonus)
-- Learn spells for gold (cost = 50 * spell_level)
-- Train attributes for gold (200 per point)
-- Train skills for gold (50/150/300/500/750 per level)
-- Created shops.json with 5 sample shops (merchant, sorcerer, sage, weapon master, general store)
-- Shop data loaded from JSON on startup
+### Core Infrastructure
+- [x] GameState singleton (world tracking, boss defeats, party gold, run state)
+- [x] CharacterSystem singleton (7 attributes, 35 skills, derived stats, party management)
+- [x] KarmaSystem singleton (hidden karma, reincarnation, weighted race selection)
+- [x] EventManager singleton (3 choice types, party-wide checks, dice rolls)
+- [x] ItemSystem singleton (equipment database, 12-slot system, inventory)
+- [x] ShopSystem singleton (buy/sell, spell learning, skill training, discounts)
+- [x] CombatManager singleton (full tactical combat system)
 
-### Key Files Created/Modified (Trading)
-- `scripts/autoload/game_state.gd` - gold tracking, gold_changed signal
-- `scripts/autoload/shop_system.gd` - NEW: full trading system
-- `resources/data/shops.json` - NEW: shop definitions
-- `project.godot` - Added ShopSystem autoload
+### Combat System
+- [x] Grid-based combat (12x8 default, configurable)
+- [x] Initiative-based turn order with 2-action system
+- [x] Melee and ranged attacks with weapon skills
+- [x] 326 spells across 10 schools with full targeting system
+- [x] Spell UI with range highlighting and AoE preview
+- [x] Status effect processing (DoT, HoT, CC, buffs/debuffs)
+- [x] 80+ status effect definitions
+- [x] Terrain system (walls, pits, water, difficult)
+- [x] Terrain effects (fire, ice, poison, acid, blessed, cursed)
+- [x] Height system with traversal limits
+- [x] Line of sight (Bresenham's algorithm)
+- [x] Height advantage bonuses (accuracy, damage, range)
+- [x] Deployment zones with role-based positioning
+- [x] Tactician upgrade for manual placement
+- [x] AI spell casting and ranged repositioning
+- [x] Bleed-out system (3 turns to revive)
+- [x] Victory/defeat conditions
 
-### Spellbook System & AI Spell Casting
-- Characters now have `known_spells` array - must learn spells to cast them
-- Added CharacterSystem functions: learn_spell(), forget_spell(), knows_spell(), get_known_spells()
-- Starting spells granted based on background (wanderer: firebolt, immolate, lesser_heal, poison_dart)
-- get_castable_spells() now filters by known spells
-- Enemies can have known_spells in their definitions
-- Enemy AI now casts spells: prioritizes damage spells, handles single/AoE targeting
-- Added test "Demon Mage" enemy with fire_magic/sorcery/black skills and fire/poison spells
-- AI positions casters at mid-range for safety
+### Character & Progression
+- [x] XP-based progression (no levels)
+- [x] Exponential attribute cost scaling
+- [x] Skill progression (5 levels, costs: 100/300/600/1000/1500)
+- [x] Derived stats calculation
+- [x] Spellbook system (learn/forget spells)
+- [x] Starting spells based on background
+- [x] Elemental affinities tracking
 
-### Key Files Modified (Spellbook/AI Casting)
-- `scripts/autoload/character_system.gd` - known_spells array, spell learning functions, spell_learned signal
-- `scripts/autoload/combat_manager.gd` - get_castable_spells() filters by known_spells
-- `scripts/combat/combat_arena.gd` - _try_cast_spell() AI function, Demon Mage enemy definition
+### UI
+- [x] Character sheet (attributes, skills, derived stats)
+- [x] Event display with choice coloring
+- [x] Combat arena with action buttons
+- [x] Spell panel with tooltips
+- [x] Combat log
+- [x] Turn order display
+- [x] Test launcher
 
-### Status Effect Tick Processing Implementation
-- Status effects now process at turn start (DoT damage, healing, duration tick)
-- Damage over time: burning (3 fire/turn), poisoned (2 physical/turn), bleeding (2 physical/turn)
-- Healing over time: regenerating (uses effect value per turn)
-- Incapacitating effects: frozen, stunned, knocked_down - skip turn
-- Visual status icons on units (🔥 burning, ☠ poisoned, ❄ frozen, etc.)
-- Added signals: status_effect_triggered, status_effect_expired
-- New test spells: Immolate (80% burn chance), Poison Dart (70% poison chance)
-- Updated Fireball to have 40% burn chance
-- Wanderer background now has black:1 for testing Poison Dart
-
-### Key Files Modified (Status Effects)
-- `scripts/autoload/combat_manager.gd` - _process_status_effects(), _process_stat_modifiers(), is_unit_incapacitated(), can_unit_move()
-- `scripts/combat/combat_arena.gd` - Status effect signal handlers, visual refresh
-- `scripts/combat/combat_unit.gd` - Status effect visual indicators in _update_visuals()
-- `resources/data/spells.json` - Added Immolate, Poison Dart, updated Fireball
-- `scripts/autoload/character_system.gd` - Added black:1 to wanderer
-
-### Ranged Weapon Attacks Implementation
-- Added `range` stat to ranged weapons in items.json (bows: 4-6 range, throwing: 3 range)
-- Added new weapon types: `longbow`, `throwing_knife`
-- Updated item_types with `ranged: true` flag for bows and thrown weapons
-- CombatUnit now properly checks equipped weapon for attack range
-- Ranged weapons use Finesse for damage (melee uses Strength)
-- Weapon skill bonuses (+2 damage/accuracy per skill level)
-- Enemy AI updated to handle ranged positioning (stay at distance)
-- Test ranged enemy "Demon Archer" with bow (range 5) added to combat
-
-### Key Files Modified (Ranged Attacks)
-- `resources/data/items.json` - Added range stat, longbow, throwing_knife, ranged type flags
-- `scripts/combat/combat_unit.gd` - get_equipped_weapon(), is_ranged_weapon(), updated get_attack_range/damage/accuracy
-- `scripts/combat/combat_arena.gd` - Ranged enemy definition, improved AI movement for ranged
-- `scripts/autoload/item_system.gd` - Added short_bow to starter items
+### Data Files
+- [x] spells.json (326 spells)
+- [x] statuses.json (80+ status effects)
+- [x] items.json (weapons, armor, accessories)
+- [x] races.json (sample races for Hell realm)
+- [x] skills.json (35 skills by category/element)
+- [x] shops.json (5 sample shops)
+- [x] upgrades.json (10+ upgrades)
 
 ---
 
-## Session Notes (2026-02-01)
+## High Priority (Core Gameplay)
 
-### Spell System Implementation Complete
-- Created `resources/data/spells.json` with 25+ spells across all schools
-- Schools work as ORs for requirements (need ONE at spell level), but bonuses from ALL apply
-- Spell schools: earth, water, fire, air, space (elements) + white, black, sorcery, summoning, enchantment
-- Added spell UI to combat arena (SpellButton, SpellPanel with ScrollContainer)
-- Spell range shows purple highlighting, AoE preview shows orange on hover
-- Rich tooltips show: schools, level/mana/range, targeting type, all effects, description
+### Overworld Map System
+- [ ] HoMM-style tile-based exploration
+- [ ] Tile movement and pathfinding
+- [ ] Node types (hub, quest, battle, shop, event)
+- [ ] World transitions between realms
+- [ ] Position saving/loading
+- [ ] Fog of war (optional)
 
-### Key Files Modified This Session
-- `scripts/autoload/combat_manager.gd` - Added spell casting, get_castable_spells(), effect application
-- `scripts/combat/combat_arena.gd` - Spell UI, targeting, AoE preview, rich tooltips
-- `scripts/combat/combat_grid.gd` - highlight_spell_range(), show_aoe_preview()
-- `scenes/combat/combat_arena.tscn` - Added SpellButton and SpellPanel nodes
-- `scripts/autoload/character_system.gd` - Added test magic skills to wanderer background
+### Event System Improvements
+- [ ] Load events from JSON files (currently hardcoded)
+- [ ] Event files per realm (hell_events.json, human_events.json, etc.)
+- [ ] Event chains and prerequisites
+- [ ] Combat/shop trigger outcomes working
 
-### Next Steps
-- Status effect tick processing (burning damage, regeneration healing, etc.)
+### Camp Followers System
+- [ ] Non-combat companion data structure
+- [ ] Follower recruitment through events
+- [ ] Passive bonus application (trade, healing, carrying capacity)
+- [ ] UI integration (slot already in Party tab)
+
+### Testing & Polish
+- [ ] Test Shop UI thoroughly (buying, selling, spell learning, training)
+- [ ] Test terrain effect interactions with spells
+- [ ] Balance pass on spell mana costs vs effects
+- [ ] Test all 326 spells load and cast correctly
+
+---
+
+## Medium Priority (Content & Polish)
+
+### Content Expansion
+- [ ] Races for all 6 realms (currently only Hell examples)
+- [ ] Background definitions with skill distributions
+- [ ] More items (consumables, rare equipment)
+- [ ] More upgrades/perks
+
+### UI Improvements
+- [ ] Spellbook tab in character sheet
+- [ ] Equipment screen improvements
+- [ ] Tooltip system expansion
+- [ ] Upgrade selection popup (choose 1 of 4)
+- [ ] Party management screen
+- [ ] World map UI
+
+### Spell-Terrain Integration
+- [ ] Spells creating terrain effects (Fireball leaves fire terrain)
+- [ ] Terrain affecting spell power
+- [ ] Environmental spell interactions
+
+---
+
+## Low Priority (Nice to Have)
+
+### Save/Load System
+- [ ] Save current run state
+- [ ] Save meta-progression (affinities, persistent upgrades)
+- [ ] Multiple save slots
+- [ ] Auto-save functionality
+
+### Audio
+- [ ] Background music per realm
+- [ ] Combat music
+- [ ] UI sound effects
+- [ ] Spell/ability sounds
+
+### Visual Assets
+- [ ] Character portraits
+- [ ] Enemy sprites (currently colored rectangles)
+- [ ] Tile sets for each realm
+- [ ] Spell effects
+- [ ] UI artwork (Tibetan thangka style)
+
+---
+
+## Design Questions (Unresolved)
+
+### Karma Visibility
+- Currently completely hidden (thematic)
+- Should Yoga skill unlock karma meditation to see rough scores?
+- Or keep totally mysterious?
+
+### Combat Balance
+- Spell mana costs by level: 15/40/75/135/225 - needs playtesting
+- Status effect durations and tick damage
+- AI difficulty scaling
+
+### Realm-Specific Mechanics
+- Hell: Pure combat focus
+- Hungry Ghost: Resource scarcity?
+- Animal: Mix of combat and negotiation
+- Human: Heavy dialogue/quest focus
+- Asura: Competitive events, duels?
+- God: Almost no combat, diplomacy/trade?
+
+### Mantras & Deity Yoga
+- How should channeled buffs work?
+- Pre-battle prep or mid-combat?
+- What breaks concentration?
+
+---
+
+## Known Issues
+
+- [x] ~~Derived stats not displaying~~ - FIXED (wrong key)
+- [x] ~~Combat turn order issues~~ - FIXED (Timer-based delays instead of async/await)
+- [ ] Turn order occasionally out of sync (rare, needs investigation)
+
+---
+
+## Session Notes
+
+### 2026-02-02: Spell Database Merge
+- Merged 326 spells from previous session work (7 separate files → unified spells.json)
+- Merged 80+ status effects into statuses.json
+- Merged branch with shop system, ranged attacks, terrain, deployment
+- All combat phases complete
+
+### Previous Sessions
+- Spell system with full targeting and tooltips
+- Spellbook system with learning
 - AI spell casting
-- More spells from the design docs (SW3 - Spells.md has full spell list)
+- Status effect tick processing
 - Ranged weapon attacks
+- Terrain system with effects
+- Line of sight and height combat
+- Trading system with discounts
+- Deployment system
+
+---
+
+## Reference
+
+### Mana Costs by Spell Level
+| Level | Mana Cost |
+|-------|-----------|
+| 1 | 15 |
+| 2 | 40 |
+| 3 | 75 |
+| 4 | 135 |
+| 5 | 225 |
+
+### Skill XP Costs
+| Level | Cost |
+|-------|------|
+| 1 | 100 |
+| 2 | 300 |
+| 3 | 600 |
+| 4 | 1000 |
+| 5 | 1500 |
+
+### Attribute XP Costs
+Base cost = 100, multiplier = 1.5x per point above 10
+- 10→11: 100 XP
+- 11→12: 150 XP
+- 12→13: 225 XP
+- etc.
+
+### Spell Schools
+- **Elements**: Earth, Water, Fire, Air, Space
+- **Specializations**: Sorcery, Enchantment, Summoning, White, Black
+- Spells require ONE school at level, gain bonuses from ALL applicable schools
+
+### Status Effect Categories
+- **DoT**: burning, poisoned, bleeding
+- **HoT**: regenerating
+- **CC**: frozen, stunned, knocked_down, feared, charmed
+- **Buffs**: strengthened, hastened, shielded, inspired
+- **Debuffs**: weakened, slowed, cursed, blinded
