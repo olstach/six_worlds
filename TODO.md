@@ -123,6 +123,9 @@
   - ✅ Tactician upgrade enables manual unit placement
   - ✅ Deployment signals for UI integration
   - ✅ Upgrades data file (resources/data/upgrades.json)
+  - 🔶 Upgrade acquisition UI (choose from options on level-up equivalent)
+  - 🔶 Upgrade effects integration (apply bonuses to derived stats)
+  - 🔶 More upgrades (combat perks, magic perks, utility perks)
 
 - [x] **Trading System**
   - ✅ Party gold tracking in GameState (add/spend/can_afford)
