@@ -5,7 +5,7 @@
 	"description": "The icy northern reaches of the Hell Realm, where the cold bites deeper than any flame.",
 	"width": 24,
 	"height": 16,
-	"movement_points": 12,
+	"base_speed": 3.0,
 	"start_position": {"x": 2, "y": 8},
 	"terrain": [
 		8,8,8,8,8,4,4,4,0,0,0,0,0,0,0,0,0,0,4,4,4,8,8,8,
