@@ -26,141 +26,282 @@
 		8,8,8,8,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,8,8,8,8,8
 	],
 	"objects": [
+
+		{"_comment": "=== EVENT OBJECTS (type 0) - open FTL-style dialogs ==="},
+
 		{
 			"id": "demon_patrol_1",
 			"x": 6, "y": 4,
-			"type": 1,
+			"type": 0,
 			"name": "Demon Patrol",
+			"icon": "enemy",
 			"blocking": true,
 			"one_time": true,
 			"visible": true,
 			"data": {
-				"enemy_group": "demon_patrol_weak",
-				"difficulty": "easy",
-				"enemies": [
-					{"type": "demon_grunt", "count": 2},
-					{"type": "demon_archer", "count": 1}
-				]
+				"event_id": "hell_demon_patrol",
+				"description": "A group of demons blocks the path through the forest."
 			}
 		},
 		{
 			"id": "ice_spirit_1",
 			"x": 11, "y": 5,
-			"type": 1,
-			"name": "Ice Spirit",
+			"type": 0,
+			"name": "Ice Spirits",
+			"icon": "enemy",
 			"blocking": true,
 			"one_time": true,
 			"visible": true,
 			"data": {
-				"enemy_group": "ice_spirits",
-				"difficulty": "medium",
-				"enemies": [
-					{"type": "ice_spirit", "count": 3}
-				]
+				"event_id": "hell_ice_spirits",
+				"description": "Translucent figures drift over the frozen lake, guarding something beneath the ice."
 			}
 		},
 		{
 			"id": "frozen_merchant",
 			"x": 10, "y": 1,
-			"type": 3,
+			"type": 0,
 			"name": "Frozen Merchant",
+			"icon": "shop",
 			"blocking": false,
 			"one_time": false,
 			"visible": true,
 			"data": {
-				"shop_id": "hell_merchant_01",
-				"dialogue": "Brrr... care to trade? I have wares that might help in this frozen waste."
-			}
-		},
-		{
-			"id": "abandoned_cart",
-			"x": 4, "y": 3,
-			"type": 4,
-			"name": "Abandoned Cart",
-			"blocking": false,
-			"one_time": true,
-			"visible": true,
-			"data": {
-				"gold": 35,
-				"items": ["health_potion"]
-			}
-		},
-		{
-			"id": "frozen_corpse",
-			"x": 17, "y": 4,
-			"type": 4,
-			"name": "Frozen Corpse",
-			"blocking": false,
-			"one_time": true,
-			"visible": true,
-			"data": {
-				"gold": 20,
-				"items": ["warm_cloak"]
+				"event_id": "hell_frozen_merchant",
+				"description": "A bundled-up trader huddles near a sputtering fire, wares spread on a frost-covered blanket."
 			}
 		},
 		{
 			"id": "wanderer_event",
 			"x": 14, "y": 7,
-			"type": 2,
+			"type": 0,
 			"name": "Lost Wanderer",
+			"icon": "npc",
 			"blocking": false,
 			"one_time": true,
 			"visible": true,
 			"data": {
 				"event_id": "hell_lost_wanderer",
-				"description": "A shivering figure huddles by the roadside."
-			}
-		},
-		{
-			"id": "warm_spring",
-			"x": 20, "y": 6,
-			"type": 7,
-			"name": "Warm Spring",
-			"blocking": false,
-			"one_time": false,
-			"visible": true,
-			"data": {
-				"heal_percent": 30,
-				"description": "A rare hot spring in this frozen land. Steam rises invitingly."
-			}
-		},
-		{
-			"id": "ice_shrine",
-			"x": 3, "y": 11,
-			"type": 6,
-			"name": "Ice Shrine",
-			"blocking": false,
-			"one_time": true,
-			"visible": true,
-			"data": {
-				"buff_type": "cold_resistance",
-				"buff_value": 15,
-				"buff_duration": 10,
-				"description": "An ancient shrine dedicated to a forgotten ice deity."
+				"description": "A shivering figure huddles by the roadside, barely conscious."
 			}
 		},
 		{
 			"id": "lava_guardian",
 			"x": 11, "y": 10,
-			"type": 1,
+			"type": 0,
 			"name": "Lava Guardian",
+			"icon": "enemy_elite",
 			"blocking": true,
 			"one_time": true,
 			"visible": true,
 			"data": {
-				"enemy_group": "lava_guardian",
-				"difficulty": "hard",
-				"enemies": [
-					{"type": "lava_elemental", "count": 1},
-					{"type": "fire_imp", "count": 2}
+				"event_id": "hell_lava_guardian",
+				"description": "A massive elemental of molten rock guards the passage between ice and fire."
+			}
+		},
+		{
+			"id": "hell_boss",
+			"x": 18, "y": 11,
+			"type": 0,
+			"name": "Yama's Lieutenant",
+			"icon": "boss",
+			"blocking": true,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"event_id": "hell_boss_yama_lt",
+				"description": "A towering demon in ornate armor stands before the realm gate, judging all who approach."
+			}
+		},
+		{
+			"id": "frozen_cave",
+			"x": 5, "y": 10,
+			"type": 0,
+			"name": "Frozen Cave",
+			"icon": "dungeon",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"event_id": "hell_frozen_cave",
+				"description": "A dark cave mouth yawns in the hillside, frost glittering at its edges."
+			}
+		},
+		{
+			"id": "tormented_soul",
+			"x": 8, "y": 3,
+			"type": 0,
+			"name": "Tormented Soul",
+			"icon": "npc",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"event_id": "hell_tormented_soul",
+				"description": "A ghostly figure weeps silently, trapped between ice and flame."
+			}
+		},
+		{
+			"id": "demon_crossroads",
+			"x": 12, "y": 8,
+			"type": 0,
+			"name": "Crossroads Shrine",
+			"icon": "event",
+			"blocking": false,
+			"one_time": false,
+			"visible": true,
+			"data": {
+				"event_id": "hell_crossroads_shrine",
+				"description": "An ancient shrine sits where the roads cross, covered in frost and old offerings."
+			}
+		},
+
+		{"_comment": "=== PICKUP OBJECTS (type 1) - immediate rewards ==="},
+
+		{
+			"id": "abandoned_cart",
+			"x": 4, "y": 3,
+			"type": 1,
+			"name": "Abandoned Cart",
+			"icon": "treasure",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"message": "Among the frozen wreckage you find a pouch of coins and a healing draught.",
+				"rewards": [
+					{"type": "gold", "value": 35},
+					{"type": "item", "value": "health_potion"}
 				]
 			}
 		},
 		{
+			"id": "frozen_corpse",
+			"x": 17, "y": 4,
+			"type": 1,
+			"name": "Frozen Corpse",
+			"icon": "treasure",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"message": "The poor soul has no need of worldly possessions anymore. You take what you can use.",
+				"rewards": [
+					{"type": "gold", "value": 20},
+					{"type": "item", "value": "warm_cloak"}
+				]
+			}
+		},
+		{
+			"id": "warm_spring",
+			"x": 20, "y": 6,
+			"type": 1,
+			"name": "Warm Spring",
+			"icon": "rest",
+			"blocking": false,
+			"one_time": false,
+			"visible": true,
+			"data": {
+				"message": "The warm waters soothe your aching muscles. Your party feels refreshed.",
+				"rewards": [
+					{"type": "heal", "value": 30},
+					{"type": "mana", "value": 15}
+				]
+			}
+		},
+		{
+			"id": "ice_shrine",
+			"x": 3, "y": 11,
+			"type": 1,
+			"name": "Ice Shrine",
+			"icon": "shrine",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"message": "You kneel before the frozen altar. A chill passes through you, but it feels... protective.",
+				"rewards": [
+					{"type": "buff", "value": {"stat": "cold_resistance", "amount": 15, "duration": -1}},
+					{"type": "karma", "value": {"realm": "god", "amount": 3}}
+				]
+			}
+		},
+		{
+			"id": "prayer_flags",
+			"x": 7, "y": 7,
+			"type": 1,
+			"name": "Prayer Flags",
+			"icon": "shrine",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"message": "Tattered prayer flags flutter in the icy wind. Reading the mantras brings a moment of peace.",
+				"rewards": [
+					{"type": "xp", "value": 25},
+					{"type": "karma", "value": {"realm": "human", "amount": 5}}
+				]
+			}
+		},
+		{
+			"id": "supply_cache",
+			"x": 15, "y": 12,
+			"type": 1,
+			"name": "Supply Cache",
+			"icon": "treasure",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"message": "Hidden beneath a rock, someone left supplies for fellow travelers. How kind.",
+				"rewards": [
+					{"type": "gold", "value": 15},
+					{"type": "item", "value": "mana_potion"},
+					{"type": "heal", "value": 10}
+				]
+			}
+		},
+		{
+			"id": "lucky_stone",
+			"x": 1, "y": 5,
+			"type": 1,
+			"name": "Strange Stone",
+			"icon": "misc",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"message": "A smooth stone pulses faintly with warmth. Holding it, you feel strangely fortunate.",
+				"rewards": [
+					{"type": "buff", "value": {"stat": "luck", "amount": 2, "duration": -1}}
+				]
+			}
+		},
+		{
+			"id": "frozen_fountain",
+			"x": 16, "y": 8,
+			"type": 1,
+			"name": "Frozen Fountain",
+			"icon": "rest",
+			"blocking": false,
+			"one_time": false,
+			"visible": true,
+			"data": {
+				"message": "Meltwater trickles from a cracked ice formation. It tastes pure and restorative.",
+				"rewards": [
+					{"type": "mana", "value": 25}
+				]
+			}
+		},
+
+		{"_comment": "=== PORTAL OBJECTS (type 2) - realm transitions ==="},
+
+		{
 			"id": "realm_portal",
 			"x": 22, "y": 8,
-			"type": 5,
+			"type": 2,
 			"name": "Realm Gate",
+			"icon": "portal",
 			"blocking": false,
 			"one_time": false,
 			"visible": true,
@@ -169,24 +310,6 @@
 				"destination_map": "hungry_ghost_01",
 				"requires_boss_defeated": true,
 				"description": "A shimmering portal to the Hungry Ghost Realm."
-			}
-		},
-		{
-			"id": "hell_boss",
-			"x": 18, "y": 11,
-			"type": 1,
-			"name": "Yama's Lieutenant",
-			"blocking": true,
-			"one_time": true,
-			"visible": true,
-			"data": {
-				"enemy_group": "hell_boss",
-				"difficulty": "boss",
-				"is_boss": true,
-				"enemies": [
-					{"type": "yama_lieutenant", "count": 1},
-					{"type": "demon_guard", "count": 2}
-				]
 			}
 		}
 	]

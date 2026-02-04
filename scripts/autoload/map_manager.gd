@@ -17,11 +17,9 @@ signal party_position_updated(world_pos: Vector2)  # Emitted every frame during 
 signal movement_started(path: Array)
 signal movement_stopped()
 signal object_interacted(object: Dictionary)
-signal object_approached(object: Dictionary, distance: int)  # When nearby
-signal combat_triggered(enemy_data: Dictionary)
-signal event_triggered(event_id: String)
-signal shop_triggered(shop_id: String)
-signal treasure_collected(loot: Dictionary)
+signal event_triggered(event_id: String, object: Dictionary)  # For event objects -> EventManager
+signal pickup_collected(object: Dictionary, rewards: Array)   # For pickup objects -> show message
+signal portal_entered(destination: Dictionary)                # For portal objects
 signal map_loaded(map_id: String)
 signal map_paused()
 signal map_resumed()
@@ -100,19 +98,28 @@ const TERRAIN_DESCRIPTIONS: Dictionary = {
 	Terrain.RUINS: "Crumbling structures. Reduced movement speed."
 }
 
-# Map object types
+# Map object categories
+# EVENT: Opens an event dialog (FTL-style). Shops, combats, quests, dungeons,
+#        NPCs - all handled through EventManager with branching choices.
+# PICKUP: Gives rewards immediately with a message popup. Treasure chests,
+#         shrines, fountains, supply caches. May or may not disappear.
+# PORTAL: Special - transitions between realm maps.
 enum ObjectType {
-	NONE = 0,
-	ENEMY = 1,
-	EVENT = 2,
-	SHOP = 3,
-	TREASURE = 4,
-	PORTAL = 5,
-	SHRINE = 6,
-	REST_SITE = 7,
-	QUEST_GIVER = 8,
-	DUNGEON = 9
+	EVENT = 0,   # Triggers EventManager dialog (shops, quests, battles, NPCs)
+	PICKUP = 1,  # Immediate reward with message (chests, shrines, fountains)
+	PORTAL = 2   # Realm/map transition
 }
+
+# Pickup reward types for the "rewards" array in pickup data
+# Each reward is a dict: {"type": "gold", "value": 50}
+# Supported types:
+#   gold     - value = amount
+#   xp       - value = amount
+#   item     - value = item_id
+#   heal     - value = percent of max HP (e.g., 25 = 25%)
+#   mana     - value = percent of max mana restored
+#   buff     - value = {stat, amount, duration} dict
+#   karma    - value = {realm, amount} dict (hidden from player)
 
 # ============================================
 # MAP STATE
@@ -434,34 +441,44 @@ func _generate_default_map(map_id: String) -> void:
 	_add_terrain_cluster(Vector2i(19, 11), Terrain.MOUNTAINS, 2)
 	_add_terrain_cluster(Vector2i(3, 10), Terrain.SWAMP, 2)
 
-	# Objects
-	_add_object(Vector2i(6, 5), ObjectType.ENEMY, {
+	# Event objects (open FTL-style dialogs via EventManager)
+	_add_object(Vector2i(6, 5), ObjectType.EVENT, {
 		"name": "Demon Patrol",
-		"enemy_group": "demon_patrol_weak",
-		"difficulty": "easy"
-	}, false, true)
+		"event_id": "default_demon_patrol",
+		"description": "A group of demons blocks the road."
+	}, true, true)
 
 	_add_object(Vector2i(15, 4), ObjectType.EVENT, {
 		"name": "Wandering Monk",
-		"event_id": "random_monk"
-	}, false, false)
-
-	_add_object(Vector2i(9, 11), ObjectType.TREASURE, {
-		"name": "Abandoned Cache",
-		"gold": 50,
-		"items": []
+		"event_id": "default_wandering_monk",
+		"description": "A monk sits by the roadside in meditation."
 	}, true, false)
 
-	_add_object(Vector2i(20, 8), ObjectType.SHOP, {
+	_add_object(Vector2i(20, 8), ObjectType.EVENT, {
 		"name": "Roadside Trader",
-		"shop_id": "roadside_merchant"
+		"event_id": "default_roadside_trader",
+		"description": "A trader has set up a small stall by the road."
 	}, false, false)
 
-	_add_object(Vector2i(2, 14), ObjectType.REST_SITE, {
+	# Pickup objects (immediate rewards with message)
+	_add_object(Vector2i(9, 11), ObjectType.PICKUP, {
+		"name": "Abandoned Cache",
+		"message": "You find a stash of supplies hidden under some rocks.",
+		"rewards": [
+			{"type": "gold", "value": 50},
+			{"type": "item", "value": "health_potion"}
+		]
+	}, true, false)
+
+	_add_object(Vector2i(2, 14), ObjectType.PICKUP, {
 		"name": "Campfire",
-		"heal_percent": 25
+		"message": "You rest by the warm fire. Your party feels refreshed.",
+		"rewards": [
+			{"type": "heal", "value": 25}
+		]
 	}, false, false)
 
+	# Portal objects (realm transitions)
 	_add_object(Vector2i(22, 8), ObjectType.PORTAL, {
 		"name": "Realm Gate",
 		"destination_realm": "hungry_ghost",
@@ -696,27 +713,19 @@ func _interact_with_object(obj: Dictionary) -> void:
 	if obj.is_empty():
 		return
 
-	# Pause movement for blocking interactions
-	if obj.get("blocking", false):
+	# Pause movement for event interactions (they need player attention)
+	if obj.type == ObjectType.EVENT or obj.get("blocking", false):
 		stop_movement()
 
 	object_interacted.emit(obj)
 
 	match obj.type:
-		ObjectType.ENEMY:
-			_trigger_combat(obj)
 		ObjectType.EVENT:
-			_trigger_event(obj)
-		ObjectType.SHOP:
-			_trigger_shop(obj)
-		ObjectType.TREASURE:
-			_collect_treasure(obj)
+			_handle_event_object(obj)
+		ObjectType.PICKUP:
+			_handle_pickup_object(obj)
 		ObjectType.PORTAL:
-			_use_portal(obj)
-		ObjectType.REST_SITE:
-			_rest_at_site(obj)
-		ObjectType.SHRINE:
-			_use_shrine(obj)
+			_handle_portal_object(obj)
 
 	# Remove one-time objects after interaction
 	if obj.one_time:
@@ -724,68 +733,145 @@ func _interact_with_object(obj: Dictionary) -> void:
 		objects.erase(obj.position)
 
 
-func _trigger_combat(obj: Dictionary) -> void:
-	pause_movement()
-	var enemy_data = obj.data
-	print("Combat triggered: ", enemy_data.get("name", "Unknown"))
-	combat_triggered.emit(enemy_data)
+# ============================================
+# EVENT OBJECTS
+# ============================================
+# Event objects open FTL-style dialogs through EventManager.
+# The event_id points to an event definition that can contain:
+# - Dialogue text and choices
+# - Combat encounters (player chooses to fight or flee)
+# - Shop interfaces (through event outcome)
+# - Quest chains (multi-step events)
+# - Dungeon entries (series of combat + events)
 
-
-func _trigger_event(obj: Dictionary) -> void:
+func _handle_event_object(obj: Dictionary) -> void:
 	pause_movement()
 	var event_id = obj.data.get("event_id", "")
-	print("Event triggered: ", event_id)
-	event_triggered.emit(event_id)
+	if event_id.is_empty():
+		push_warning("MapManager: Event object has no event_id: " + obj.get("name", "?"))
+		return
+
+	print("Event: ", obj.get("name", "Unknown"), " -> ", event_id)
+	event_triggered.emit(event_id, obj)
 
 
-func _trigger_shop(obj: Dictionary) -> void:
-	pause_movement()
-	var shop_id = obj.data.get("shop_id", "")
-	print("Shop opened: ", shop_id)
-	shop_triggered.emit(shop_id)
+# ============================================
+# PICKUP OBJECTS
+# ============================================
+# Pickup objects give rewards immediately and show a brief message.
+# They don't open a dialog - just a notification/popup.
+#
+# Pickup data format:
+# {
+#   "message": "You found a cache of gold hidden in the snow!",
+#   "rewards": [
+#     {"type": "gold", "value": 50},
+#     {"type": "item", "value": "health_potion"},
+#     {"type": "heal", "value": 25},
+#     {"type": "buff", "value": {"stat": "luck", "amount": 2, "duration": -1}},
+#     {"type": "karma", "value": {"realm": "god", "amount": 5}}
+#   ]
+# }
+
+func _handle_pickup_object(obj: Dictionary) -> void:
+	var data = obj.data
+	var message = data.get("message", "You found something.")
+	var rewards = data.get("rewards", [])
+
+	print("Pickup: ", obj.get("name", "Unknown"), " - ", message)
+
+	# Apply each reward
+	for reward in rewards:
+		_apply_reward(reward)
+
+	pickup_collected.emit(obj, rewards)
 
 
-func _collect_treasure(obj: Dictionary) -> void:
-	var loot = obj.data
-	print("Treasure collected: ", loot)
+## Apply a single reward from a pickup object
+func _apply_reward(reward: Dictionary) -> void:
+	var reward_type = reward.get("type", "")
+	var value = reward.get("value", 0)
 
-	var gold_amount = loot.get("gold", 0)
-	if gold_amount > 0 and GameState:
-		GameState.add_gold(gold_amount)
+	match reward_type:
+		"gold":
+			if GameState:
+				GameState.add_gold(int(value))
+				print("  +%d gold" % int(value))
 
-	treasure_collected.emit(loot)
+		"xp":
+			# Distribute XP to whole party
+			if CharacterSystem:
+				for character in CharacterSystem.get_party():
+					CharacterSystem.add_xp(character.get("id", ""), int(value))
+				print("  +%d XP to party" % int(value))
+
+		"item":
+			# Add item to party inventory
+			if CharacterSystem:
+				CharacterSystem.add_item_to_inventory(str(value))
+				print("  +item: ", value)
+
+		"heal":
+			# Heal all party members by percentage
+			if CharacterSystem:
+				for character in CharacterSystem.get_party():
+					var max_hp = character.get("derived", {}).get("max_hp", 100)
+					var heal_amount = int(max_hp * int(value) / 100.0)
+					CharacterSystem.heal_character(character.get("id", ""), heal_amount)
+				print("  Healed party %d%%" % int(value))
+
+		"mana":
+			# Restore mana to all party members by percentage
+			if CharacterSystem:
+				for character in CharacterSystem.get_party():
+					var max_mana = character.get("derived", {}).get("max_mana", 100)
+					var restore = int(max_mana * int(value) / 100.0)
+					CharacterSystem.restore_mana(character.get("id", ""), restore)
+				print("  Restored %d%% mana" % int(value))
+
+		"buff":
+			# Apply a temporary (or permanent) stat buff to party
+			# value = {"stat": "luck", "amount": 2, "duration": -1}
+			if value is Dictionary:
+				var stat = value.get("stat", "")
+				var amount = value.get("amount", 0)
+				var duration = value.get("duration", -1)  # -1 = permanent for map
+				print("  Buff: %s +%d (duration: %s)" % [stat, amount,
+					"permanent" if duration == -1 else "%d turns" % duration])
+				# Store on GameState for now - will be processed by systems
+				if GameState:
+					if not GameState.get("active_map_buffs"):
+						GameState.set("active_map_buffs", [])
+					GameState.active_map_buffs.append({
+						"stat": stat, "amount": amount, "duration": duration
+					})
+
+		"karma":
+			# Hidden karma adjustment
+			if value is Dictionary and KarmaSystem:
+				var realm = value.get("realm", "")
+				var amount = value.get("amount", 0)
+				KarmaSystem.add_karma(realm, amount)
+				# No print - karma is hidden from player!
 
 
-func _use_portal(obj: Dictionary) -> void:
+# ============================================
+# PORTAL OBJECTS
+# ============================================
+
+func _handle_portal_object(obj: Dictionary) -> void:
 	stop_movement()
 	var dest_realm = obj.data.get("destination_realm", "")
 	var dest_map = obj.data.get("destination_map", "")
 	print("Portal to: ", dest_realm, " / ", dest_map)
+
+	portal_entered.emit(obj.data)
 
 	if GameState and not dest_realm.is_empty():
 		GameState.travel_to_world(dest_realm)
 
 	if not dest_map.is_empty():
 		load_map(dest_map)
-
-
-func _rest_at_site(obj: Dictionary) -> void:
-	pause_movement()
-	var heal_percent = obj.data.get("heal_percent", 25)
-	print("Resting... healing ", heal_percent, "%")
-
-	if CharacterSystem:
-		for character in CharacterSystem.get_party():
-			var max_hp = character.get("derived", {}).get("max_hp", 100)
-			var heal_amount = int(max_hp * heal_percent / 100.0)
-			CharacterSystem.heal_character(character.get("id", ""), heal_amount)
-
-
-func _use_shrine(obj: Dictionary) -> void:
-	pause_movement()
-	var buff_type = obj.data.get("buff_type", "")
-	var buff_value = obj.data.get("buff_value", 0)
-	print("Shrine blessing: ", buff_type, " +", buff_value)
 
 
 # ============================================
@@ -795,16 +881,28 @@ func _use_shrine(obj: Dictionary) -> void:
 ## Get object type name for display
 func get_object_type_name(type: int) -> String:
 	match type:
-		ObjectType.ENEMY: return "Enemy"
 		ObjectType.EVENT: return "Event"
-		ObjectType.SHOP: return "Shop"
-		ObjectType.TREASURE: return "Treasure"
+		ObjectType.PICKUP: return "Pickup"
 		ObjectType.PORTAL: return "Portal"
-		ObjectType.SHRINE: return "Shrine"
-		ObjectType.REST_SITE: return "Rest Site"
-		ObjectType.QUEST_GIVER: return "Quest"
-		ObjectType.DUNGEON: return "Dungeon"
 		_: return "Unknown"
+
+
+## Build a human-readable summary of pickup rewards (for UI)
+func get_reward_summary(rewards: Array) -> String:
+	var parts: Array[String] = []
+	for reward in rewards:
+		var rtype = reward.get("type", "")
+		var value = reward.get("value", 0)
+		match rtype:
+			"gold": parts.append("+%d gold" % int(value))
+			"xp": parts.append("+%d XP" % int(value))
+			"item": parts.append("+%s" % str(value))
+			"heal": parts.append("Heal %d%%" % int(value))
+			"mana": parts.append("Restore %d%% mana" % int(value))
+			"buff":
+				if value is Dictionary:
+					parts.append("+%d %s" % [value.get("amount", 0), value.get("stat", "")])
+	return ", ".join(parts) if not parts.is_empty() else ""
 
 
 ## Get party grid position
