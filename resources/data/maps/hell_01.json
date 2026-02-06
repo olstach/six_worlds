@@ -312,5 +312,188 @@
 				"description": "A shimmering portal to the Hungry Ghost Realm."
 			}
 		}
+	],
+
+	"mobs": [
+		{"_comment": "=== STATIONARY MOBS ==="},
+
+		{"_comment": "Hostile stationary - ice wraith guarding the frozen lake shore"},
+		{
+			"id": "ice_wraith_1",
+			"name": "Ice Wraith",
+			"icon": "enemy",
+			"x": 9, "y": 6,
+			"mode": 0,
+			"attitude": 1,
+			"speed": 0.0,
+			"data": {
+				"enemy_group": "ice_wraith",
+				"difficulty": "normal",
+				"description": "A spectral figure of frozen mist hovers motionlessly."
+			}
+		},
+
+		{"_comment": "=== PATROL MOBS ==="},
+
+		{"_comment": "Friendly patrol - wandering peddler along the main road"},
+		{
+			"id": "wandering_peddler",
+			"name": "Wandering Peddler",
+			"icon": "merchant",
+			"x": 3, "y": 7,
+			"mode": 1,
+			"attitude": 0,
+			"speed": 0.4,
+			"patrol_route": [
+				{"x": 3, "y": 7},
+				{"x": 5, "y": 7},
+				{"x": 5, "y": 8},
+				{"x": 3, "y": 8}
+			],
+			"data": {
+				"event_id": "hell_wandering_peddler",
+				"description": "A hunched figure dragging a heavy sack along the road, muttering about bargains."
+			}
+		},
+
+		{"_comment": "Hostile patrol - demon sentinels along the river of fire"},
+		{
+			"id": "demon_sentinel_1",
+			"name": "Demon Sentinel",
+			"icon": "enemy",
+			"x": 8, "y": 9,
+			"mode": 1,
+			"attitude": 1,
+			"speed": 0.5,
+			"patrol_route": [
+				{"x": 8, "y": 9},
+				{"x": 8, "y": 10},
+				{"x": 8, "y": 11},
+				{"x": 8, "y": 12}
+			],
+			"data": {
+				"enemy_group": "demon_sentinel",
+				"difficulty": "normal",
+				"description": "An armored demon marches with mechanical precision, guarding the border."
+			}
+		},
+
+		{"_comment": "Hostile patrol - frost imp along northern road"},
+		{
+			"id": "frost_imp_patrol",
+			"name": "Frost Imp",
+			"icon": "enemy",
+			"x": 9, "y": 1,
+			"mode": 1,
+			"attitude": 1,
+			"speed": 0.7,
+			"patrol_route": [
+				{"x": 9, "y": 1},
+				{"x": 13, "y": 1}
+			],
+			"data": {
+				"enemy_group": "frost_imp",
+				"difficulty": "easy",
+				"description": "A small blue-skinned creature skitters back and forth along the road."
+			}
+		},
+
+		{"_comment": "=== ROAMING MOBS ==="},
+
+		{"_comment": "Hostile roaming - lost souls wandering the southern plains"},
+		{
+			"id": "lost_souls_1",
+			"name": "Lost Souls",
+			"icon": "enemy",
+			"x": 3, "y": 13,
+			"mode": 2,
+			"attitude": 1,
+			"speed": 0.3,
+			"roam_radius": 3,
+			"roam_pause": 3.0,
+			"data": {
+				"enemy_group": "lost_souls",
+				"difficulty": "easy",
+				"description": "Translucent figures drift aimlessly, moaning in despair."
+			}
+		},
+
+		{"_comment": "Friendly roaming - hermit monk wanders the hills"},
+		{
+			"id": "hermit_monk",
+			"name": "Hermit Monk",
+			"icon": "npc",
+			"x": 18, "y": 3,
+			"mode": 2,
+			"attitude": 0,
+			"speed": 0.3,
+			"roam_radius": 3,
+			"roam_pause": 4.0,
+			"data": {
+				"event_id": "hell_hermit_monk",
+				"description": "A weathered monk in tattered robes wanders the frozen hills, seemingly at peace."
+			}
+		},
+
+		{"_comment": "=== AGGRESSIVE MOBS ==="},
+
+		{"_comment": "Aggressive roaming - hell hound, fast and persistent"},
+		{
+			"id": "hell_hound_1",
+			"name": "Hell Hound",
+			"icon": "enemy_fast",
+			"x": 15, "y": 10,
+			"mode": 2,
+			"attitude": 2,
+			"speed": 0.9,
+			"roam_radius": 4,
+			"roam_pause": 1.5,
+			"aggression": 0.7,
+			"data": {
+				"enemy_group": "hell_hound",
+				"difficulty": "hard",
+				"description": "A massive hound with smoldering eyes sniffs the air hungrily."
+			}
+		},
+
+		{"_comment": "Aggressive patrol - oni brute, slow but very aggressive"},
+		{
+			"id": "oni_brute",
+			"name": "Oni Brute",
+			"icon": "enemy_elite",
+			"x": 14, "y": 12,
+			"mode": 1,
+			"attitude": 2,
+			"speed": 0.5,
+			"aggression": 0.9,
+			"patrol_route": [
+				{"x": 14, "y": 12},
+				{"x": 14, "y": 13},
+				{"x": 16, "y": 13},
+				{"x": 16, "y": 12}
+			],
+			"data": {
+				"enemy_group": "oni_brute",
+				"difficulty": "hard",
+				"description": "A towering red-skinned ogre with a spiked club. It watches you with malice."
+			}
+		},
+
+		{"_comment": "Aggressive stationary - shadow stalker, ambush predator with high detection"},
+		{
+			"id": "shadow_stalker",
+			"name": "Shadow Stalker",
+			"icon": "enemy",
+			"x": 4, "y": 5,
+			"mode": 0,
+			"attitude": 2,
+			"speed": 0.8,
+			"aggression": 0.4,
+			"data": {
+				"enemy_group": "shadow_stalker",
+				"difficulty": "normal",
+				"description": "Something lurks in the shadows of the trees, barely visible."
+			}
+		}
 	]
 }

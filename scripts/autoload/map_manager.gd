@@ -23,6 +23,11 @@ signal portal_entered(destination: Dictionary)                # For portal objec
 signal map_loaded(map_id: String)
 signal map_paused()
 signal map_resumed()
+signal mob_met_player(mob: Dictionary)          # Any mob reaches player tile
+signal mob_combat_triggered(mob: Dictionary)    # Hostile/aggressive mob forces combat
+signal mob_event_triggered(mob: Dictionary)     # Friendly mob opens event dialog
+signal mob_started_pursuit(mob: Dictionary)     # Aggressive mob spotted player
+signal mob_lost_pursuit(mob: Dictionary)        # Aggressive mob gave up chase
 
 # Terrain types - these are broad categories, biome-specific
 # variants can map to these for movement purposes
@@ -110,6 +115,20 @@ enum ObjectType {
 	PORTAL = 2   # Realm/map transition
 }
 
+# Mob movement modes
+enum MobMode {
+	STATIONARY = 0,  # Stays in place, never moves
+	PATROL = 1,      # Follows a fixed route back and forth
+	ROAMING = 2      # Wanders randomly around home position
+}
+
+# Mob attitudes toward the player
+enum MobAttitude {
+	FRIENDLY = 0,    # Opens an event dialog when met (wandering trader, monk, etc.)
+	HOSTILE = 1,     # Triggers combat when player steps on their tile
+	AGGRESSIVE = 2   # Actively pursues the player when in detection range
+}
+
 # Pickup reward types for the "rewards" array in pickup data
 # Each reward is a dict: {"type": "gold", "value": 50}
 # Supported types:
@@ -131,6 +150,58 @@ var tiles: Dictionary = {}         # Vector2i -> Terrain type
 var objects: Dictionary = {}       # Vector2i -> MapObject data
 var visited_tiles: Dictionary = {} # Vector2i -> bool (fog of war)
 var collected_objects: Array[String] = []  # IDs of consumed one-time objects
+var defeated_mobs: Array[String] = []     # IDs of mobs that won't respawn
+
+# ============================================
+# MOB STATE
+# ============================================
+
+## All active mobs on the current map. Each mob is a Dictionary:
+## {
+##   "id": String,                   # Unique mob identifier
+##   "name": String,                 # Display name
+##   "icon": String,                 # Icon key for rendering
+##   "mode": MobMode,               # STATIONARY, PATROL, or ROAMING
+##   "attitude": MobAttitude,        # FRIENDLY, HOSTILE, or AGGRESSIVE
+##   "speed": float,                 # Movement speed multiplier (relative to base_speed)
+##   "position": Vector2i,           # Current tile position
+##   "home_position": Vector2i,      # Starting position (for roaming radius)
+##   "world_position": Vector2,      # Smooth world-space position for rendering
+##   "data": Dictionary,             # Event/combat data (event_id, enemy_group, etc.)
+##
+##   -- Patrol mode --
+##   "patrol_route": Array[Vector2i],# Waypoints to follow
+##   "patrol_index": int,            # Current waypoint index
+##   "patrol_forward": bool,         # True = advancing, false = returning
+##
+##   -- Roaming mode --
+##   "roam_radius": int,             # Max tiles from home_position
+##   "roam_pause": float,            # Seconds to wait at each tile before moving again
+##   "roam_timer": float,            # Countdown timer for current pause
+##
+##   -- Aggressive attitude --
+##   "aggression": float,            # 0-1 scale affecting detection range and patience
+##   "detect_range": int,            # Tiles away to notice the player (derived from aggression)
+##   "pursuit_patience": float,      # Seconds of pursuit before giving up (derived from aggression)
+##   "leash_range": int,             # Max tiles from home before giving up (derived from aggression)
+##   "is_pursuing": bool,            # Currently chasing the player
+##   "pursuit_timer": float,         # How long this mob has been pursuing
+##   "pursuit_path": Array[Vector2i],# Current path toward player
+##   "pursuit_path_index": int,      # Progress along pursuit path
+##
+##   -- Movement interpolation --
+##   "move_progress": float,         # 0-1 progress between tiles
+##   "move_from": Vector2i,          # Tile moving from
+##   "move_target": Vector2i,        # Tile moving toward
+##   "is_moving": bool               # Currently in motion
+## }
+var mobs: Array[Dictionary] = []
+
+## How often aggressive mobs recalculate path to player (seconds)
+const PURSUIT_REPATH_INTERVAL: float = 1.0
+
+## How often roaming mobs pick a new direction (seconds, base before randomization)
+const ROAM_BASE_PAUSE: float = 2.0
 
 # ============================================
 # REAL-TIME MOVEMENT STATE
@@ -170,6 +241,10 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	# Always process mobs (they move independently of the player)
+	if not _is_paused:
+		_process_mobs(delta)
+
 	if not _is_moving or _is_paused:
 		return
 
@@ -212,6 +287,15 @@ func _process(delta: float) -> void:
 			_interact_with_object(obj)
 			# If object blocks movement (enemy), stop here
 			if obj.get("blocking", false):
+				_finish_movement()
+				return
+
+		# Check for mob interaction on arrival
+		var mob = get_mob_at(target_tile)
+		if not mob.is_empty():
+			_handle_mob_encounter(mob)
+			# Hostile and aggressive mobs stop the player
+			if mob.attitude == MobAttitude.HOSTILE or mob.attitude == MobAttitude.AGGRESSIVE:
 				_finish_movement()
 				return
 
@@ -406,6 +490,12 @@ func _apply_map_data(data: Dictionary) -> void:
 			"name": obj_data.get("name", "Unknown")
 		}
 
+	# Load mobs
+	mobs.clear()
+	var mobs_data = data.get("mobs", [])
+	for mob_data in mobs_data:
+		_spawn_mob_from_data(mob_data)
+
 	# Set party starting position
 	var start_pos = data.get("start_position", {"x": 1, "y": 1})
 	party_position = Vector2i(start_pos.get("x", 1), start_pos.get("y", 1))
@@ -422,6 +512,7 @@ func _generate_default_map(map_id: String) -> void:
 	map_size = Vector2i(24, 16)
 	tiles.clear()
 	objects.clear()
+	mobs.clear()
 
 	# Fill with plains
 	for y in range(map_size.y):
@@ -875,6 +966,372 @@ func _handle_portal_object(obj: Dictionary) -> void:
 
 
 # ============================================
+# MOB SYSTEM
+# ============================================
+# Mobs are mobile entities on the overworld map. Unlike static objects,
+# they move around independently in real-time.
+#
+# Movement modes:
+#   STATIONARY - Never moves. Basically a static object with an icon.
+#   PATROL     - Walks back and forth along a defined route of waypoints.
+#   ROAMING    - Wanders randomly within a radius of its home position.
+#
+# Attitudes:
+#   FRIENDLY   - Opens an event dialog when met (shops, NPCs, quests).
+#   HOSTILE    - Triggers combat on contact. Does not pursue.
+#   AGGRESSIVE - Pursues the player when in range. Triggers combat on contact.
+#                Gives up after running out of patience or straying too far.
+#
+# Aggression (0.0 to 1.0) governs aggressive mobs:
+#   detect_range     = 3 + floor(aggression * 7)    -> 3 to 10 tiles
+#   pursuit_patience = 5 + aggression * 25           -> 5 to 30 seconds
+#   leash_range      = 5 + floor(aggression * 15)    -> 5 to 20 tiles from home
+
+## Spawn a mob from JSON data
+func _spawn_mob_from_data(mob_data: Dictionary) -> void:
+	var mob_id = mob_data.get("id", "mob_%d" % mobs.size())
+
+	# Skip defeated mobs
+	if mob_id in defeated_mobs:
+		return
+
+	var pos = Vector2i(mob_data.get("x", 0), mob_data.get("y", 0))
+	var mode = int(mob_data.get("mode", MobMode.STATIONARY))
+	var attitude = int(mob_data.get("attitude", MobAttitude.HOSTILE))
+	var aggression = clampf(mob_data.get("aggression", 0.5), 0.0, 1.0)
+
+	var mob: Dictionary = {
+		"id": mob_id,
+		"name": mob_data.get("name", "Unknown Creature"),
+		"icon": mob_data.get("icon", "enemy"),
+		"mode": mode,
+		"attitude": attitude,
+		"speed": mob_data.get("speed", 0.6),  # Mobs default to 60% of base_speed
+		"position": pos,
+		"home_position": pos,
+		"world_position": _tile_to_world(pos),
+		"data": mob_data.get("data", {}),
+
+		# Patrol
+		"patrol_route": [],
+		"patrol_index": 0,
+		"patrol_forward": true,
+
+		# Roaming
+		"roam_radius": mob_data.get("roam_radius", 4),
+		"roam_pause": mob_data.get("roam_pause", ROAM_BASE_PAUSE),
+		"roam_timer": randf_range(0.5, ROAM_BASE_PAUSE),  # Stagger initial movement
+
+		# Aggression (only matters for AGGRESSIVE attitude)
+		"aggression": aggression,
+		"detect_range": 3 + int(aggression * 7),
+		"pursuit_patience": 5.0 + aggression * 25.0,
+		"leash_range": 5 + int(aggression * 15),
+		"is_pursuing": false,
+		"pursuit_timer": 0.0,
+		"pursuit_path": [] as Array[Vector2i],
+		"pursuit_path_index": 0,
+		"pursuit_repath_timer": 0.0,
+
+		# Movement interpolation
+		"move_progress": 0.0,
+		"move_from": pos,
+		"move_target": pos,
+		"is_moving": false
+	}
+
+	# Parse patrol route from JSON waypoints
+	if mode == MobMode.PATROL:
+		var route_data = mob_data.get("patrol_route", [])
+		var route: Array[Vector2i] = []
+		for wp in route_data:
+			if wp is Dictionary:
+				route.append(Vector2i(wp.get("x", 0), wp.get("y", 0)))
+		# Prepend home position as first waypoint if not already there
+		if route.is_empty() or route[0] != pos:
+			route.insert(0, pos)
+		mob.patrol_route = route
+
+	mobs.append(mob)
+
+
+## Main mob processing - called every frame from _process()
+func _process_mobs(delta: float) -> void:
+	for mob in mobs:
+		# Update movement interpolation (smooth position)
+		if mob.is_moving:
+			_update_mob_movement(mob, delta)
+
+		# If not currently moving between tiles, decide what to do next
+		if not mob.is_moving:
+			match mob.mode:
+				MobMode.STATIONARY:
+					pass  # Never moves
+				MobMode.PATROL:
+					_process_patrol_mob(mob, delta)
+				MobMode.ROAMING:
+					_process_roaming_mob(mob, delta)
+
+			# Aggressive mobs check for pursuit regardless of movement mode
+			if mob.attitude == MobAttitude.AGGRESSIVE:
+				_process_aggressive_mob(mob, delta)
+
+
+## Update smooth movement interpolation for a mob
+func _update_mob_movement(mob: Dictionary, delta: float) -> void:
+	var speed_mult = get_terrain_speed(mob.move_target)
+	if speed_mult <= 0:
+		# Somehow targeting impassable tile, cancel
+		mob.is_moving = false
+		mob.world_position = _tile_to_world(mob.position)
+		return
+
+	var effective_speed = base_speed * mob.speed * speed_mult
+	mob.move_progress += effective_speed * delta
+
+	# Interpolate world position
+	var from_world = _tile_to_world(mob.move_from)
+	var to_world = _tile_to_world(mob.move_target)
+	mob.world_position = from_world.lerp(to_world, clampf(mob.move_progress, 0.0, 1.0))
+
+	# Arrived at target tile
+	if mob.move_progress >= 1.0:
+		mob.move_progress = 0.0
+		mob.position = mob.move_target
+		mob.is_moving = false
+		mob.world_position = _tile_to_world(mob.position)
+
+		# Check if mob landed on the player's tile
+		if mob.position == party_position:
+			_handle_mob_encounter(mob)
+
+
+## Start a mob moving to an adjacent tile
+func _start_mob_move(mob: Dictionary, target: Vector2i) -> void:
+	if not is_valid_position(target) or not is_passable(target):
+		return
+	mob.move_from = mob.position
+	mob.move_target = target
+	mob.move_progress = 0.0
+	mob.is_moving = true
+
+
+## Process patrol mode: follow waypoints back and forth
+func _process_patrol_mob(mob: Dictionary, _delta: float) -> void:
+	# If pursuing, don't patrol
+	if mob.get("is_pursuing", false):
+		return
+
+	var route = mob.patrol_route as Array
+	if route.size() < 2:
+		return  # Need at least 2 waypoints
+
+	var current_wp = route[mob.patrol_index] as Vector2i
+
+	# If we're at the current waypoint, advance to next
+	if mob.position == current_wp:
+		if mob.patrol_forward:
+			mob.patrol_index += 1
+			if mob.patrol_index >= route.size():
+				mob.patrol_index = route.size() - 2
+				mob.patrol_forward = false
+		else:
+			mob.patrol_index -= 1
+			if mob.patrol_index < 0:
+				mob.patrol_index = 1
+				mob.patrol_forward = true
+
+		# Clamp just in case
+		mob.patrol_index = clampi(mob.patrol_index, 0, route.size() - 1)
+		current_wp = route[mob.patrol_index]
+
+	# Move one step toward the current waypoint
+	var step = _get_step_toward(mob.position, current_wp)
+	if step != mob.position:
+		_start_mob_move(mob, step)
+
+
+## Process roaming mode: wander randomly near home
+func _process_roaming_mob(mob: Dictionary, delta: float) -> void:
+	# If pursuing, don't roam
+	if mob.get("is_pursuing", false):
+		return
+
+	# Wait before picking a new direction
+	mob.roam_timer -= delta
+	if mob.roam_timer > 0:
+		return
+
+	# Reset timer with some randomness
+	mob.roam_timer = mob.roam_pause + randf_range(-0.5, 1.0)
+
+	# Pick a random passable neighbor within roam radius
+	var neighbors: Array[Vector2i] = []
+	for dir in [Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0)]:
+		var candidate = mob.position + dir
+		if not is_valid_position(candidate) or not is_passable(candidate):
+			continue
+		# Check roam radius from home
+		var dist_from_home = absi(candidate.x - mob.home_position.x) + absi(candidate.y - mob.home_position.y)
+		if dist_from_home <= mob.roam_radius:
+			neighbors.append(candidate)
+
+	if not neighbors.is_empty():
+		var chosen = neighbors[randi() % neighbors.size()]
+		_start_mob_move(mob, chosen)
+
+
+## Process aggressive attitude: detect and pursue the player
+func _process_aggressive_mob(mob: Dictionary, delta: float) -> void:
+	var dist_to_player = absi(mob.position.x - party_position.x) + absi(mob.position.y - party_position.y)
+
+	if mob.is_pursuing:
+		# Update pursuit timer
+		mob.pursuit_timer += delta
+
+		# Check if we should give up
+		var dist_from_home = absi(mob.position.x - mob.home_position.x) + absi(mob.position.y - mob.home_position.y)
+		if mob.pursuit_timer >= mob.pursuit_patience or dist_from_home >= mob.leash_range:
+			_end_pursuit(mob)
+			return
+
+		# Periodically recalculate path to player
+		mob.pursuit_repath_timer -= delta
+		if mob.pursuit_repath_timer <= 0:
+			mob.pursuit_repath_timer = PURSUIT_REPATH_INTERVAL
+			mob.pursuit_path = find_path(mob.position, party_position)
+			mob.pursuit_path_index = 0
+
+		# Follow pursuit path
+		if not mob.pursuit_path.is_empty() and mob.pursuit_path_index < mob.pursuit_path.size():
+			var next_tile = mob.pursuit_path[mob.pursuit_path_index]
+			_start_mob_move(mob, next_tile)
+			mob.pursuit_path_index += 1
+	else:
+		# Not pursuing yet - check if player is in detection range
+		if dist_to_player <= mob.detect_range:
+			_start_pursuit(mob)
+
+
+## Begin pursuit of the player
+func _start_pursuit(mob: Dictionary) -> void:
+	mob.is_pursuing = true
+	mob.pursuit_timer = 0.0
+	mob.pursuit_repath_timer = 0.0  # Immediately calculate path
+	mob.pursuit_path = find_path(mob.position, party_position)
+	mob.pursuit_path_index = 0
+	print("Mob '", mob.name, "' spotted the player! Pursuing...")
+	mob_started_pursuit.emit(mob)
+
+
+## End pursuit and return to normal behavior
+func _end_pursuit(mob: Dictionary) -> void:
+	mob.is_pursuing = false
+	mob.pursuit_timer = 0.0
+	mob.pursuit_path.clear()
+	mob.pursuit_path_index = 0
+	print("Mob '", mob.name, "' lost interest and stopped pursuing.")
+	mob_lost_pursuit.emit(mob)
+
+
+## Handle what happens when a mob and the player are on the same tile
+func _handle_mob_encounter(mob: Dictionary) -> void:
+	mob_met_player.emit(mob)
+
+	match mob.attitude:
+		MobAttitude.FRIENDLY:
+			# Open event dialog (same as event objects)
+			stop_movement()
+			var event_id = mob.data.get("event_id", "")
+			if not event_id.is_empty():
+				print("Friendly mob: ", mob.name, " -> ", event_id)
+				mob_event_triggered.emit(mob)
+				event_triggered.emit(event_id, mob)
+			else:
+				push_warning("Friendly mob has no event_id: " + mob.name)
+
+		MobAttitude.HOSTILE, MobAttitude.AGGRESSIVE:
+			# Trigger combat
+			stop_movement()
+			# End pursuit if aggressive
+			if mob.is_pursuing:
+				mob.is_pursuing = false
+				mob.pursuit_path.clear()
+			print("Combat with mob: ", mob.name)
+			mob_combat_triggered.emit(mob)
+
+
+## Get step toward a target position (one tile in the best direction)
+func _get_step_toward(from: Vector2i, to: Vector2i) -> Vector2i:
+	var dx = to.x - from.x
+	var dy = to.y - from.y
+
+	# Pick the axis with the larger difference
+	if absi(dx) >= absi(dy):
+		var step = from + Vector2i(signi(dx), 0)
+		if is_valid_position(step) and is_passable(step):
+			return step
+		# Try the other axis
+		if dy != 0:
+			step = from + Vector2i(0, signi(dy))
+			if is_valid_position(step) and is_passable(step):
+				return step
+	else:
+		var step = from + Vector2i(0, signi(dy))
+		if is_valid_position(step) and is_passable(step):
+			return step
+		# Try the other axis
+		if dx != 0:
+			step = from + Vector2i(signi(dx), 0)
+			if is_valid_position(step) and is_passable(step):
+				return step
+
+	return from  # Can't move
+
+
+## Get mob at a tile position (returns empty dict if none)
+func get_mob_at(pos: Vector2i) -> Dictionary:
+	for mob in mobs:
+		if mob.position == pos:
+			return mob
+	return {}
+
+
+## Get all mobs on the map
+func get_all_mobs() -> Array[Dictionary]:
+	return mobs
+
+
+## Get all visible mobs (for rendering)
+func get_visible_mobs() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for mob in mobs:
+		if is_tile_visited(mob.position):
+			result.append(mob)
+	return result
+
+
+## Remove a mob from the map (e.g., after defeating it)
+func remove_mob(mob_id: String) -> void:
+	for i in range(mobs.size() - 1, -1, -1):
+		if mobs[i].id == mob_id:
+			defeated_mobs.append(mob_id)
+			mobs.remove_at(i)
+			return
+
+
+## Pause all mob movement (e.g., during combat or events)
+func pause_mobs() -> void:
+	# Mobs are paused via _is_paused already (checked in _process)
+	pass
+
+
+## Resume mob movement
+func resume_mobs() -> void:
+	pass
+
+
+# ============================================
 # UTILITY
 # ============================================
 
@@ -938,7 +1395,8 @@ func get_save_data() -> Dictionary:
 		"current_map_id": current_map_id,
 		"party_position": {"x": party_position.x, "y": party_position.y},
 		"visited_tiles": _serialize_positions(visited_tiles.keys()),
-		"collected_objects": collected_objects.duplicate()
+		"collected_objects": collected_objects.duplicate(),
+		"defeated_mobs": defeated_mobs.duplicate()
 	}
 
 
@@ -952,6 +1410,10 @@ func load_save_data(data: Dictionary) -> void:
 	collected_objects.clear()
 	for obj_id in data.get("collected_objects", []):
 		collected_objects.append(obj_id)
+
+	defeated_mobs.clear()
+	for mob_id in data.get("defeated_mobs", []):
+		defeated_mobs.append(mob_id)
 
 	visited_tiles.clear()
 	for pos_str in data.get("visited_tiles", []):
