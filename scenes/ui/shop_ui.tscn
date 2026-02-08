@@ -161,7 +161,7 @@ theme_override_font_sizes/font_size = 14
 text = "Your Inventory (sell items here)"
 
 [node name="InventorySection" type="Control" parent="ShopPanel/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 120)
+custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 
 [node name="ScrollContainer" type="ScrollContainer" parent="ShopPanel/MarginContainer/VBoxContainer/InventorySection"]

@@ -103,6 +103,9 @@ color = Color(0, 0, 0, 0.6)
 [node name="EventDisplay" parent="EventOverlay" instance=ExtResource("3_event")]
 visible = false
 
+[node name="ShopOverlay" type="CanvasLayer" parent="."]
+layer = 25
+
 [node name="CharSheetOverlay" type="CanvasLayer" parent="."]
 layer = 15
 

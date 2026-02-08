@@ -10,6 +10,8 @@ extends Node
 signal event_started(event_data: Dictionary)
 signal event_completed(outcomes: Dictionary)
 signal choice_made(choice_data: Dictionary)
+signal combat_requested(enemy_group: String, outcome: Dictionary)
+signal shop_requested(shop_id: String, outcome: Dictionary)
 
 # Current event being displayed
 var current_event: Dictionary = {}
@@ -28,11 +30,55 @@ func _ready() -> void:
 	print("EventManager initialized")
 	load_event_database()
 
-## Load all events from JSON files
+## Load all events from JSON files in resources/data/events/
 func load_event_database() -> void:
-	# TODO: Load from multiple JSON files (one per realm?)
-	# For now, we'll use test events
-	create_test_events()
+	var events_dir = "res://resources/data/events/"
+	var dir = DirAccess.open(events_dir)
+	if dir:
+		dir.list_dir_begin()
+		var file_name = dir.get_next()
+		while file_name != "":
+			if file_name.ends_with("_events.json"):
+				_load_event_file(events_dir + file_name)
+			file_name = dir.get_next()
+		dir.list_dir_end()
+
+	# Fallback to test events if nothing loaded
+	if event_database.is_empty():
+		print("No event JSON files found, using test events")
+		create_test_events()
+	else:
+		print("Loaded %d events from JSON files" % event_database.size())
+
+
+## Load a single event JSON file and merge into the database
+func _load_event_file(path: String) -> void:
+	var file = FileAccess.open(path, FileAccess.READ)
+	if not file:
+		print("Failed to open event file: ", path)
+		return
+
+	var json = JSON.new()
+	var error = json.parse(file.get_as_text())
+	file.close()
+
+	if error != OK:
+		print("JSON parse error in %s at line %d: %s" % [path, json.get_error_line(), json.get_error_message()])
+		return
+
+	var data = json.data
+	if typeof(data) != TYPE_DICTIONARY or "events" not in data:
+		print("Invalid event file format (missing 'events' key): ", path)
+		return
+
+	var count = 0
+	for event_id in data.events:
+		var event = data.events[event_id]
+		event["id"] = event_id  # Ensure id matches key
+		event_database[event_id] = event
+		count += 1
+
+	print("Loaded %d events from %s" % [count, path.get_file()])
 
 ## Create some test events for development
 func create_test_events() -> void:
@@ -228,7 +274,7 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 			
 			if not meets_req:
 				result.available = false
-				result.reason = "Requires " + first_attr_name.capitalize() + " " + str(first_attr_value)
+				result.reason = "Requires " + first_attr_name.capitalize() + " " + str(int(first_attr_value))
 				return result
 			else:
 				result.passing_character = passing_char
@@ -261,7 +307,7 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 			
 			if not meets_req:
 				result.available = false
-				result.reason = "Requires " + first_skill_name.capitalize().replace("_", " ") + " " + str(first_skill_level)
+				result.reason = "Requires " + first_skill_name.capitalize().replace("_", " ") + " " + str(int(first_skill_level))
 				return result
 			else:
 				result.passing_character = passing_char
@@ -348,19 +394,16 @@ func apply_outcome(outcome: Dictionary) -> void:
 		for realm in outcome.karma:
 			KarmaSystem.add_karma(realm, outcome.karma[realm], "Event choice")
 	
-	# Handle outcome type
+	# Handle outcome type — combat/shop are routed to overworld via signals
 	match outcome.get("type", "text"):
 		"text":
-			# Just display result text
-			pass
+			event_completed.emit(outcome)
 		"combat":
-			# TODO: Trigger combat encounter
-			print("Combat triggered: ", outcome.get("enemy_group", "unknown"))
+			# Overworld will handle scene transition to combat_arena
+			combat_requested.emit(outcome.get("enemy_group", "unknown"), outcome)
 		"shop":
-			# TODO: Open shop interface
-			print("Shop opened: ", outcome.get("shop_id", "unknown"))
-	
-	event_completed.emit(outcome)
+			# Overworld will handle opening shop overlay
+			shop_requested.emit(outcome.get("shop_id", "unknown"), outcome)
 
 ## Get a random event for a specific realm
 func get_random_event_for_realm(realm: String) -> String:

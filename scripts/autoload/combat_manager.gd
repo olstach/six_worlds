@@ -924,7 +924,7 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 
 	# Self-targeting spells don't need range check
 	if targeting != "self":
-		var distance = _grid_distance(caster.grid_position, target_pos)
+		var distance = _spell_distance(caster.grid_position, target_pos)
 		if distance > spell_range:
 			return {"success": false, "reason": "Target out of range"}
 
@@ -1404,13 +1404,13 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 			valid_positions.append(caster.grid_position)
 
 		"single":
-			# Any enemy in range
+			# Any enemy in range (Manhattan/diamond for spells)
 			for unit in all_units:
 				if not unit.is_alive():
 					continue
 				if unit.team == caster.team:
 					continue
-				var dist = _grid_distance(caster.grid_position, unit.grid_position)
+				var dist = _spell_distance(caster.grid_position, unit.grid_position)
 				if dist <= spell_range:
 					valid_positions.append(unit.grid_position)
 
@@ -1421,7 +1421,7 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 					continue
 				if unit.team != caster.team:
 					continue
-				var dist = _grid_distance(caster.grid_position, unit.grid_position)
+				var dist = _spell_distance(caster.grid_position, unit.grid_position)
 				if dist <= spell_range:
 					valid_positions.append(unit.grid_position)
 
@@ -1432,7 +1432,7 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 					continue
 				if unit.team != caster.team:
 					continue
-				var dist = _grid_distance(caster.grid_position, unit.grid_position)
+				var dist = _spell_distance(caster.grid_position, unit.grid_position)
 				if dist <= spell_range:
 					valid_positions.append(unit.grid_position)
 
@@ -1442,7 +1442,7 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 				for x in range(combat_grid.grid_size.x):
 					for y in range(combat_grid.grid_size.y):
 						var pos = Vector2i(x, y)
-						var dist = _grid_distance(caster.grid_position, pos)
+						var dist = _spell_distance(caster.grid_position, pos)
 						if dist <= spell_range:
 							valid_positions.append(pos)
 
@@ -1456,6 +1456,11 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 ## Calculate grid distance (Chebyshev - diagonal = 1)
 func _grid_distance(a: Vector2i, b: Vector2i) -> int:
 	return maxi(absi(a.x - b.x), absi(a.y - b.y))
+
+
+## Manhattan distance (diamond shape — used for spell ranges)
+func _spell_distance(a: Vector2i, b: Vector2i) -> int:
+	return absi(a.x - b.x) + absi(a.y - b.y)
 
 
 ## Get all units on a specific team

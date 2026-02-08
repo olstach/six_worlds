@@ -20,6 +20,9 @@ extends Control
 # Character sheet overlay (child of CharSheetOverlay CanvasLayer)
 @onready var char_sheet: Control = $CharSheetOverlay/MainMenu
 
+# Shop overlay CanvasLayer (shop_ui instanced dynamically)
+@onready var shop_overlay: CanvasLayer = $ShopOverlay
+
 # Toast fade timer
 var _toast_timer: float = 0.0
 const TOAST_DURATION: float = 3.0
@@ -27,9 +30,17 @@ const TOAST_DURATION: float = 3.0
 # Track overlay state (since CanvasLayer has no .visible)
 var _event_open: bool = false
 var _char_sheet_open: bool = false
+var _shop_open: bool = false
 
 # Track current event object so we can remove it after the event chain completes
 var _current_event_object: Dictionary = {}
+
+# Shop instance and pending outcome (for event→shop flow)
+var _shop_instance: Control = null
+var _pending_shop_outcome: Dictionary = {}
+
+# Preload shop scene for event→shop flow
+var _shop_scene: PackedScene = preload("res://scenes/ui/shop_ui.tscn")
 
 
 func _ready() -> void:
@@ -37,11 +48,36 @@ func _ready() -> void:
 	if MapManager.current_map_id.is_empty():
 		MapManager.load_map("hell_01")
 
-	# Handle return from combat - remove defeated mob
-	if not GameState.last_defeated_mob_id.is_empty():
+	# Handle return from combat
+	if not GameState.pending_event_outcome.is_empty():
+		# Returning from event-triggered combat
+		var outcome = GameState.pending_event_outcome.duplicate(true)
+		GameState.pending_event_outcome = {}
+
+		if not GameState.last_defeated_mob_id.is_empty():
+			# Victory — restore event object for cleanup on Continue
+			GameState.last_defeated_mob_id = ""
+			_current_event_object = GameState.pending_event_object.duplicate(true)
+			outcome["text"] = outcome.get("text", "") + "\n\n[b][color=#4ade80]VICTORY![/color][/b]"
+		else:
+			# Defeat — don't restore event object (so it stays on map for retry)
+			outcome["text"] = outcome.get("text", "") + "\n\n[b][color=#ef4444]DEFEAT![/color][/b]\nYou retreat from the battle..."
+		GameState.pending_event_object = {}
+
+		# Show the event result panel
+		_set_event_visible(true)
+		event_display.display_outcome(outcome)
+	elif not GameState.last_defeated_mob_id.is_empty():
+		# Normal mob combat return — victory, remove defeated mob
 		MapManager.remove_mob(GameState.last_defeated_mob_id)
 		GameState.last_defeated_mob_id = ""
 		MapManager.resume_movement()
+	elif GameState.returning_from_combat:
+		# Returning from combat without victory (fled or defeated) — just resume movement
+		MapManager.resume_movement()
+
+	# Clear the combat return flag
+	GameState.returning_from_combat = false
 
 	# Connect MapManager signals for game loop triggers
 	MapManager.event_triggered.connect(_on_event_triggered)
@@ -57,6 +93,10 @@ func _ready() -> void:
 
 	# Connect event display close signal
 	event_display.event_display_closed.connect(_on_event_display_closed)
+
+	# Connect EventManager signals for event→combat and event→shop
+	EventManager.combat_requested.connect(_on_event_combat_requested)
+	EventManager.shop_requested.connect(_on_event_shop_requested)
 
 	# Connect char sheet button and visibility sync
 	char_sheet_button.pressed.connect(_toggle_char_sheet)
@@ -189,6 +229,61 @@ func _on_mob_combat_triggered(mob: Dictionary) -> void:
 	GameState.pending_combat_mob = mob.duplicate(true)
 	GameState.last_defeated_mob_id = mob.get("id", "")
 	get_tree().change_scene_to_file("res://scenes/combat/combat_arena.tscn")
+
+
+## Event outcome triggered combat — store state and transition to combat_arena
+func _on_event_combat_requested(enemy_group: String, outcome: Dictionary) -> void:
+	# Store event state to survive scene change
+	GameState.pending_event_outcome = outcome.duplicate(true)
+	GameState.pending_event_object = _current_event_object.duplicate(true)
+
+	# Build a combat mob dict from the event outcome
+	var combat_mob = {
+		"id": _current_event_object.get("id", "event_combat"),
+		"name": enemy_group.replace("_", " ").capitalize(),
+		"data": {"enemy_group": enemy_group, "difficulty": outcome.get("difficulty", "normal")}
+	}
+
+	# Use last_defeated_mob_id as victory flag (combat_arena clears it on defeat)
+	GameState.pending_combat_mob = combat_mob
+	GameState.last_defeated_mob_id = combat_mob.id
+
+	# Close event overlay and transition to combat
+	_set_event_visible(false)
+	_current_event_object = {}
+	get_tree().change_scene_to_file("res://scenes/combat/combat_arena.tscn")
+
+
+## Event outcome triggered shop — open shop as overlay
+func _on_event_shop_requested(shop_id: String, outcome: Dictionary) -> void:
+	_pending_shop_outcome = outcome.duplicate(true)
+
+	# Hide event display (keep it in memory for result after shop closes)
+	event_display.visible = false
+
+	# Instance and show shop
+	_shop_instance = _shop_scene.instantiate()
+	shop_overlay.add_child(_shop_instance)
+	_shop_instance.shop_closed.connect(_on_event_shop_closed)
+	_shop_open = true
+
+	if not _shop_instance.open_shop_by_id(shop_id):
+		print("Shop '%s' not found, closing shop overlay" % shop_id)
+		_on_event_shop_closed()
+
+
+## Shop closed after event→shop flow — show event result and Continue button
+func _on_event_shop_closed() -> void:
+	# Remove shop instance
+	if _shop_instance:
+		_shop_instance.queue_free()
+		_shop_instance = null
+	_shop_open = false
+
+	# Show event result panel with shop outcome
+	event_display.visible = true
+	event_display.display_outcome(_pending_shop_outcome)
+	_pending_shop_outcome = {}
 
 
 # ============================================

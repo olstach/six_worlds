@@ -141,8 +141,8 @@ func display_outcome(outcome: Dictionary) -> void:
 	# Show roll result if applicable
 	if "roll_result" in outcome:
 		var roll = outcome.roll_result
-		result_text += "[center][b]🎲 ROLL: " + str(roll.roll) + " + " + str(roll.attribute_value) + " (" + roll.attribute.capitalize() + ") = " + str(roll.total) + "[/b][/center]\n"
-		result_text += "[center]Difficulty: " + str(roll.difficulty) + " - "
+		result_text += "[center][b]🎲 ROLL: " + str(int(roll.roll)) + " + " + str(int(roll.attribute_value)) + " (" + roll.attribute.capitalize() + ") = " + str(int(roll.total)) + "[/b][/center]\n"
+		result_text += "[center]Difficulty: " + str(int(roll.difficulty)) + " - "
 		if roll.success:
 			result_text += "[color=#4ade80]SUCCESS![/color][/center]\n\n"
 		else:

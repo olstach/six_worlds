@@ -29,8 +29,8 @@ signal tab_changed(tab_index: int)
 const EQUIPMENT_SLOTS := {
 	"head": {"name": "Head", "types": ["helmet", "hat", "circlet"]},
 	"chest": {"name": "Chest", "types": ["armor", "robe", "vest"]},
-	"hand_l": {"name": "Left Hand", "types": ["gloves", "gauntlets", "bracers"]},
-	"hand_r": {"name": "Right Hand", "types": ["gloves", "gauntlets", "bracers"]},
+	"hand_l": {"name": "Hands (L)", "types": ["gloves", "gauntlets", "bracers"]},
+	"hand_r": {"name": "Hands (R)", "types": ["gloves", "gauntlets", "bracers"]},
 	"legs": {"name": "Legs", "types": ["pants", "greaves", "leggings"]},
 	"feet": {"name": "Feet", "types": ["boots", "shoes", "sandals"]},
 	"weapon_main": {"name": "Main Hand", "types": ["sword", "axe", "mace", "spear", "dagger", "staff", "bow"]},
@@ -104,9 +104,12 @@ func _ready() -> void:
 	if ItemSystem.get_inventory().is_empty():
 		ItemSystem.add_starter_items()
 
-	# Create item tooltip (add to root so it renders on top)
+	# Create item tooltip on a high CanvasLayer so it renders above all overlays
+	var tooltip_layer = CanvasLayer.new()
+	tooltip_layer.layer = 100
+	get_tree().root.add_child.call_deferred(tooltip_layer)
 	item_tooltip = ITEM_TOOLTIP_SCENE.instantiate()
-	get_tree().root.add_child.call_deferred(item_tooltip)
+	tooltip_layer.add_child.call_deferred(item_tooltip)
 
 	# Initial display
 	_refresh_display()
@@ -364,9 +367,13 @@ func _input(event: InputEvent) -> void:
 		hide()
 
 func _exit_tree() -> void:
-	# Clean up tooltip since it's parented to root
+	# Clean up tooltip CanvasLayer (frees tooltip too since it's a child)
 	if item_tooltip and is_instance_valid(item_tooltip):
-		item_tooltip.queue_free()
+		var tooltip_parent = item_tooltip.get_parent()
+		if tooltip_parent and tooltip_parent is CanvasLayer:
+			tooltip_parent.queue_free()
+		else:
+			item_tooltip.queue_free()
 	if perk_popup and is_instance_valid(perk_popup):
 		perk_popup.queue_free()
 
@@ -840,13 +847,20 @@ func _update_equipment_slots() -> void:
 			var rarity_color = ItemSystem.get_rarity_color(equipped_item_id)
 			btn.add_theme_color_override("font_color", rarity_color)
 
-			# Update style to show item equipped
+			# Update style to show item equipped — brighter bg + colored border
 			var style = StyleBoxFlat.new()
-			style.bg_color = Color(0.18, 0.18, 0.22)
-			style.border_color = rarity_color.darkened(0.2)
-			style.set_border_width_all(2)
+			style.bg_color = Color(0.22, 0.22, 0.28)
+			style.border_color = rarity_color.darkened(0.1)
+			style.set_border_width_all(3)
 			style.set_corner_radius_all(4)
 			btn.add_theme_stylebox_override("normal", style)
+
+			var hover_style = StyleBoxFlat.new()
+			hover_style.bg_color = Color(0.28, 0.28, 0.35)
+			hover_style.border_color = rarity_color
+			hover_style.set_border_width_all(3)
+			hover_style.set_corner_radius_all(4)
+			btn.add_theme_stylebox_override("hover", hover_style)
 
 			# Connect hover for tooltip
 			btn.mouse_entered.connect(_on_equipped_slot_hover.bind(slot_id, btn))

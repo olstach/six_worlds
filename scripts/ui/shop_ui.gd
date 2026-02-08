@@ -27,6 +27,10 @@ const ITEM_SLOT_SIZE = Vector2(180, 80)
 var current_shop: Dictionary = {}
 var selected_barter_items: Array = []
 
+# Item tooltip
+var item_tooltip: Control = null
+const ITEM_TOOLTIP_SCENE = preload("res://scenes/ui/item_tooltip.tscn")
+
 
 func _ready() -> void:
 	# Connect signals
@@ -36,6 +40,13 @@ func _ready() -> void:
 	ShopSystem.spell_purchased.connect(_on_spell_purchased)
 	ShopSystem.training_purchased.connect(_on_training_purchased)
 	close_button.pressed.connect(_on_close_pressed)
+
+	# Create item tooltip on a high CanvasLayer so it renders above shop overlay
+	var tooltip_layer = CanvasLayer.new()
+	tooltip_layer.layer = 100
+	get_tree().root.add_child.call_deferred(tooltip_layer)
+	item_tooltip = ITEM_TOOLTIP_SCENE.instantiate()
+	tooltip_layer.add_child.call_deferred(item_tooltip)
 
 	# Hide initially
 	visible = false
@@ -164,10 +175,12 @@ func _create_item_slot(item_id: String, quantity: int, is_shop_item: bool) -> vo
 	vbox.add_theme_constant_override("separation", 4)
 	margin.add_child(vbox)
 
-	# Item name
+	# Item name (colored by rarity)
 	var name_label = Label.new()
 	name_label.text = item_data.get("name", item_id)
 	name_label.add_theme_font_size_override("font_size", 14)
+	var rarity_color = ItemSystem.get_rarity_color(item_id)
+	name_label.add_theme_color_override("font_color", rarity_color)
 	vbox.add_child(name_label)
 
 	# Quantity and price
@@ -209,6 +222,10 @@ func _create_item_slot(item_id: String, quantity: int, is_shop_item: bool) -> vo
 		button.pressed.connect(func(): _on_sell_item_pressed(item_id))
 
 	vbox.add_child(button)
+
+	# Connect hover for item tooltip
+	slot.mouse_entered.connect(_on_item_hover.bind(item_data, slot))
+	slot.mouse_exited.connect(_on_item_hover_end)
 
 	if is_shop_item:
 		items_grid.add_child(slot)
@@ -447,8 +464,9 @@ func _populate_inventory() -> void:
 		inventory_grid.add_child(empty_label)
 		return
 
-	for item_id in inventory:
-		var quantity = inventory[item_id]
+	for entry in inventory:
+		var item_id = entry.item_id
+		var quantity = entry.quantity
 		if quantity > 0:
 			_create_item_slot(item_id, quantity, false)
 
@@ -532,3 +550,23 @@ func _refresh_display() -> void:
 	_populate_spells_tab()
 	_populate_training_tab()
 	_populate_inventory()
+
+
+func _on_item_hover(item: Dictionary, control: Control) -> void:
+	if item_tooltip and not item.is_empty():
+		var mouse_pos = get_global_mouse_position()
+		item_tooltip.show_item(item, mouse_pos)
+
+
+func _on_item_hover_end() -> void:
+	if item_tooltip:
+		item_tooltip.hide_tooltip()
+
+
+func _exit_tree() -> void:
+	if item_tooltip and is_instance_valid(item_tooltip):
+		var tooltip_parent = item_tooltip.get_parent()
+		if tooltip_parent and tooltip_parent is CanvasLayer:
+			tooltip_parent.queue_free()
+		else:
+			item_tooltip.queue_free()

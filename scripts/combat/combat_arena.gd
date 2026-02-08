@@ -17,9 +17,10 @@ extends Control
 @onready var combat_log: RichTextLabel = %CombatLog
 @onready var unit_info_panel: PanelContainer = %UnitInfoPanel
 @onready var unit_info_name: Label = %UnitInfoName
-@onready var unit_info_hp: Label = %UnitInfoHP
-@onready var unit_info_actions: Label = %UnitInfoActions
+@onready var unit_info_bars: VBoxContainer = %UnitInfoBars
+@onready var unit_info_actions: HBoxContainer = %UnitInfoActions
 @onready var spell_button: Button = %SpellButton
+@onready var flee_button: Button = %FleeButton
 @onready var spell_panel: PanelContainer = %SpellPanel
 @onready var spell_list: VBoxContainer = %SpellList
 
@@ -165,6 +166,7 @@ func _ready() -> void:
 	attack_button.pressed.connect(_on_attack_pressed)
 	spell_button.pressed.connect(_on_spell_pressed)
 	wait_button.pressed.connect(_on_wait_pressed)
+	flee_button.pressed.connect(_on_flee_pressed)
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
 
 	# Connect spell cast signal
@@ -559,7 +561,7 @@ func _on_spell_selected(spell: Dictionary) -> void:
 
 	# Get valid targets and full range area
 	var valid_targets = CombatManager.get_spell_targets(unit, spell.id)
-	var range_area = combat_grid.get_attack_range_tiles(unit.grid_position, 1, spell_range)
+	var range_area = combat_grid.get_spell_range_tiles(unit.grid_position, 1, spell_range)
 
 	# Always show range, even if no valid targets
 	current_action_mode = ActionMode.CAST_SPELL
@@ -608,6 +610,62 @@ func _on_end_turn_pressed() -> void:
 		return
 
 	CombatManager.end_turn()
+
+
+## Attempt to flee combat
+## Roll: d20 + party avg finesse vs 10 + enemy avg finesse
+## Success: return to overworld (mob stays on map)
+## Failure: costs 1 action
+func _on_flee_pressed() -> void:
+	if not CombatManager.is_player_turn():
+		return
+
+	if not CombatManager.can_act(1):
+		return
+
+	# Calculate party average finesse
+	var player_units = CombatManager.get_team_units(CombatManager.Team.PLAYER)
+	var enemy_units = CombatManager.get_team_units(CombatManager.Team.ENEMY)
+
+	var party_finesse_sum := 0.0
+	var party_count := 0
+	for unit in player_units:
+		if unit.is_alive():
+			var attrs = unit.character_data.get("attributes", {})
+			party_finesse_sum += attrs.get("finesse", 10)
+			party_count += 1
+
+	var enemy_finesse_sum := 0.0
+	var enemy_count := 0
+	for unit in enemy_units:
+		if unit.is_alive():
+			var attrs = unit.character_data.get("attributes", {})
+			enemy_finesse_sum += attrs.get("finesse", 10)
+			enemy_count += 1
+
+	var party_avg = party_finesse_sum / maxf(party_count, 1)
+	var enemy_avg = enemy_finesse_sum / maxf(enemy_count, 1)
+
+	# Roll: d20 + party avg finesse modifier vs DC 10 + enemy avg finesse modifier
+	# Modifier = (attribute - 10) like standard d20 systems
+	var party_mod = (party_avg - 10.0) / 2.0
+	var enemy_mod = (enemy_avg - 10.0) / 2.0
+	var roll = randi_range(1, 20)
+	var total = roll + party_mod
+	var dc = 12.0 + enemy_mod  # Base DC 12 = "moderately difficult"
+
+	_log_message("Attempting to flee... (rolled %d + %.0f = %.0f vs DC %.0f)" % [roll, party_mod, total, dc])
+
+	# Use 1 action for the attempt
+	CombatManager.use_action(1)
+
+	if total >= dc:
+		# Success - flee combat
+		_log_message("The party escapes!")
+		# End combat as defeat (mob stays on map, same as losing)
+		CombatManager.end_combat(false)
+	else:
+		_log_message("Failed to flee! The enemies block your escape.")
 
 
 ## Try to move to a tile
@@ -675,6 +733,7 @@ func _update_action_buttons() -> void:
 	attack_button.disabled = not is_player or not can_act
 	spell_button.disabled = not is_player or not can_act
 	wait_button.disabled = not is_player or not can_act
+	flee_button.disabled = not is_player or not can_act
 	end_turn_button.disabled = not is_player
 
 	# Highlight active mode
@@ -710,12 +769,90 @@ func _update_turn_order_display() -> void:
 		turn_order_list.add_child(label)
 
 
-## Show unit info panel
+## Show unit info panel with colored bars for HP, mana, stamina
 func _show_unit_info(unit: CombatUnit) -> void:
 	unit_info_panel.show()
 	unit_info_name.text = unit.unit_name
-	unit_info_hp.text = "HP: %d / %d  MP: %d / %d" % [unit.current_hp, unit.max_hp, unit.current_mana, unit.max_mana]
-	unit_info_actions.text = "Actions: %d / %d" % [unit.actions_remaining, unit.max_actions]
+
+	# Clear old bars
+	for child in unit_info_bars.get_children():
+		child.queue_free()
+
+	# HP bar (red)
+	unit_info_bars.add_child(_create_stat_bar("HP", unit.current_hp, unit.max_hp, Color(0.8, 0.2, 0.2)))
+
+	# Mana bar (blue) - only show if unit has mana
+	if unit.max_mana > 0:
+		unit_info_bars.add_child(_create_stat_bar("MP", unit.current_mana, unit.max_mana, Color(0.3, 0.4, 0.9)))
+
+	# Stamina bar (gold) - pull from character derived stats if available
+	var derived = unit.character_data.get("derived", {})
+	var max_stamina = derived.get("max_stamina", 0)
+	if max_stamina > 0:
+		var current_stamina = derived.get("current_stamina", max_stamina)
+		unit_info_bars.add_child(_create_stat_bar("ST", current_stamina, max_stamina, Color(0.9, 0.75, 0.2)))
+
+	# Action circles: green = available, grey = used
+	_update_action_circles(unit.actions_remaining, unit.max_actions)
+
+
+## Create a labeled stat bar (HP/MP/ST) for the unit info panel
+func _create_stat_bar(label_text: String, current: int, maximum: int, color: Color) -> HBoxContainer:
+	var container = HBoxContainer.new()
+	container.add_theme_constant_override("separation", 5)
+
+	# Label (HP/MP/ST)
+	var label = Label.new()
+	label.text = label_text
+	label.add_theme_font_size_override("font_size", 11)
+	label.custom_minimum_size.x = 22
+	container.add_child(label)
+
+	# Bar background
+	var bar_bg = ColorRect.new()
+	bar_bg.color = Color(0.15, 0.15, 0.15)
+	bar_bg.custom_minimum_size = Vector2(100, 14)
+	container.add_child(bar_bg)
+
+	# Bar fill
+	var bar_fill = ColorRect.new()
+	bar_fill.color = color
+	var fill_ratio = float(current) / float(maximum) if maximum > 0 else 0.0
+	bar_fill.custom_minimum_size = Vector2(100 * fill_ratio, 14)
+	bar_fill.position = Vector2.ZERO
+	bar_bg.add_child(bar_fill)
+
+	# Value text
+	var value_label = Label.new()
+	value_label.text = "%d/%d" % [current, maximum]
+	value_label.add_theme_font_size_override("font_size", 10)
+	container.add_child(value_label)
+
+	return container
+
+
+## Update action circle indicators (green = available, grey = used)
+func _update_action_circles(remaining: int, total: int) -> void:
+	# Clear old circles
+	for child in unit_info_actions.get_children():
+		child.queue_free()
+
+	# "Actions" label
+	var label = Label.new()
+	label.text = "Actions:"
+	label.add_theme_font_size_override("font_size", 11)
+	unit_info_actions.add_child(label)
+
+	# Create circles for each action slot using Unicode filled circle
+	for i in range(total):
+		var dot = Label.new()
+		dot.text = "●"
+		dot.add_theme_font_size_override("font_size", 18)
+		if i < remaining:
+			dot.add_theme_color_override("font_color", Color(0.3, 0.85, 0.3))  # Green
+		else:
+			dot.add_theme_color_override("font_color", Color(0.35, 0.35, 0.35))  # Grey
+		unit_info_actions.add_child(dot)
 
 
 ## Add message to combat log
@@ -746,6 +883,7 @@ func _on_combat_ended(victory: bool) -> void:
 
 	# Return to overworld after a short delay
 	if not GameState.last_defeated_mob_id.is_empty() or not victory:
+		GameState.returning_from_combat = true
 		await get_tree().create_timer(2.0).timeout
 		get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
 

@@ -371,8 +371,26 @@ func _get_neighbors(pos: Vector2i) -> Array[Vector2i]:
 	]
 
 
-## Get tiles within attack range (Manhattan distance = diamond shape)
+## Get tiles within attack range (Chebyshev distance = square shape, diagonals count as 1)
 func get_attack_range_tiles(start: Vector2i, min_range: int, max_range: int) -> Array[Vector2i]:
+	var in_range: Array[Vector2i] = []
+
+	for x in range(-max_range, max_range + 1):
+		for y in range(-max_range, max_range + 1):
+			var pos = start + Vector2i(x, y)
+			if not is_valid_position(pos):
+				continue
+
+			# Chebyshev distance (square shape — diagonals count as 1 step)
+			var dist = maxi(absi(x), absi(y))
+			if dist >= min_range and dist <= max_range:
+				in_range.append(pos)
+
+	return in_range
+
+
+## Get tiles in spell range (Manhattan/diamond distance — traditional for spells)
+func get_spell_range_tiles(start: Vector2i, min_range: int, max_range: int) -> Array[Vector2i]:
 	var in_range: Array[Vector2i] = []
 
 	for x in range(-max_range, max_range + 1):
@@ -874,8 +892,8 @@ func get_ranged_attack_tiles(start: Vector2i, min_range: int, max_range: int) ->
 			if not is_valid_position(pos):
 				continue
 
-			# Manhattan distance (diamond shape)
-			var dist = absi(x) + absi(y)
+			# Chebyshev distance (square shape — diagonals count as 1 step)
+			var dist = maxi(absi(x), absi(y))
 			if dist >= min_range and dist <= max_range:
 				# Check line of sight
 				if has_line_of_sight(start, pos):

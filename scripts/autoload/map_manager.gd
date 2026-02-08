@@ -890,40 +890,37 @@ func _apply_reward(reward: Dictionary) -> void:
 
 	match reward_type:
 		"gold":
-			if GameState:
-				GameState.add_gold(int(value))
-				print("  +%d gold" % int(value))
+			GameState.add_gold(int(value))
+			print("  +%d gold" % int(value))
 
 		"xp":
 			# Distribute XP to whole party
-			if CharacterSystem:
-				for character in CharacterSystem.get_party():
-					CharacterSystem.add_xp(character.get("id", ""), int(value))
-				print("  +%d XP to party" % int(value))
+			for character in CharacterSystem.get_party():
+				CharacterSystem.grant_xp(character, int(value))
+			print("  +%d XP to party" % int(value))
 
 		"item":
 			# Add item to party inventory
-			if CharacterSystem:
-				CharacterSystem.add_item_to_inventory(str(value))
-				print("  +item: ", value)
+			ItemSystem.add_to_inventory(str(value))
+			print("  +item: ", value)
 
 		"heal":
 			# Heal all party members by percentage
-			if CharacterSystem:
-				for character in CharacterSystem.get_party():
-					var max_hp = character.get("derived", {}).get("max_hp", 100)
-					var heal_amount = int(max_hp * int(value) / 100.0)
-					CharacterSystem.heal_character(character.get("id", ""), heal_amount)
-				print("  Healed party %d%%" % int(value))
+			for character in CharacterSystem.get_party():
+				var derived = character.get("derived", {})
+				var max_hp = derived.get("max_hp", 100)
+				var heal_amount = int(max_hp * int(value) / 100.0)
+				derived["current_hp"] = min(derived.get("current_hp", max_hp) + heal_amount, max_hp)
+			print("  Healed party %d%%" % int(value))
 
 		"mana":
 			# Restore mana to all party members by percentage
-			if CharacterSystem:
-				for character in CharacterSystem.get_party():
-					var max_mana = character.get("derived", {}).get("max_mana", 100)
-					var restore = int(max_mana * int(value) / 100.0)
-					CharacterSystem.restore_mana(character.get("id", ""), restore)
-				print("  Restored %d%% mana" % int(value))
+			for character in CharacterSystem.get_party():
+				var derived = character.get("derived", {})
+				var max_mana = derived.get("max_mana", 100)
+				var restore = int(max_mana * int(value) / 100.0)
+				derived["current_mana"] = min(derived.get("current_mana", max_mana) + restore, max_mana)
+			print("  Restored %d%% mana" % int(value))
 
 		"buff":
 			# Apply a temporary (or permanent) stat buff to party
