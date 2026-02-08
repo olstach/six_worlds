@@ -656,6 +656,422 @@
 					}
 				}
 			]
+		},
+
+		"hell_ice_yogi": {
+			"id": "hell_ice_yogi",
+			"title": "The Frozen Waterfall Yogi",
+			"realm": "hell",
+			"text": "Before a magnificent frozen waterfall, a yogi sits in perfect stillness. Ice crystals have formed on their eyelashes and hair, but their breathing is steady and deep. The waterfall behind them is frozen mid-cascade, each droplet a perfect crystal.\n\nAs you approach, the yogi opens one eye. 'Ah. A visitor who can see beyond the cold. Come, sit. The water remembers what it was, and what it will become.'",
+			"choices": [
+				{
+					"id": "learn_water",
+					"type": "requirement",
+					"text": "Ask to learn water magic techniques",
+					"requirements": {
+						"skills": {"water_magic": 1}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "The yogi smiles. 'You already speak to water. Let me teach you to listen.'\n\nFor hours, you sit together before the frozen falls. The yogi teaches you to feel the flow within stillness, the movement within ice. Your understanding of water magic deepens profoundly.",
+						"rewards": {"xp": 150},
+						"karma": {"god": 5, "human": 3}
+					}
+				},
+				{
+					"id": "meditate",
+					"type": "requirement",
+					"text": "Meditate together on the nature of impermanence",
+					"requirements": {
+						"skills": {"yoga": 2}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "You settle beside the yogi. Together, your consciousness merges with the frozen waterfall — experiencing every moment of its freezing, from rushing torrent to perfect stillness.\n\n'Water teaches us,' the yogi whispers. 'It does not resist change. It becomes ice, becomes steam, becomes rain. All forms, one essence.'\n\nThe insight burns like cold fire through your mind.",
+						"rewards": {"xp": 120},
+						"karma": {"god": 8, "human": 3}
+					}
+				},
+				{
+					"id": "observe",
+					"type": "default",
+					"text": "Watch the yogi's meditation in silence",
+					"outcome": {
+						"type": "text",
+						"text": "You stand quietly, watching the yogi's perfect stillness. Minutes pass. The cold seems to lessen, not because it grows warmer, but because you stop fighting it.\n\nWhen the yogi finally looks up, they nod approvingly. 'You learn by watching. That is wisdom.'",
+						"rewards": {"xp": 50},
+						"karma": {"god": 2, "human": 2}
+					}
+				},
+				{
+					"id": "leave",
+					"type": "default",
+					"text": "Leave the yogi to their meditation",
+					"outcome": {
+						"type": "text",
+						"text": "You bow respectfully and move on. The yogi closes their eye and returns to perfect stillness, one with the frozen waterfall.",
+						"karma": {"human": 1}
+					}
+				}
+			]
+		},
+
+		"hell_fire_shrine": {
+			"id": "hell_fire_shrine",
+			"title": "The Burning Shrine",
+			"realm": "hell",
+			"text": "A shrine wreathed in eternal flames stands among scorched ruins. Unlike the destructive fires around it, these flames burn with an almost sacred quality — steady, contained, purposeful. Ancient mantras are carved into the shrine's stone base, glowing red with heat.\n\nThe air shimmers with power. You can feel the fire calling to something within you.",
+			"choices": [
+				{
+					"id": "fire_magic",
+					"type": "requirement",
+					"text": "Channel the shrine's power through your fire magic",
+					"requirements": {
+						"skills": {"fire_magic": 2}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "You reach into the flames with your power, and the shrine responds. Fire dances up your arms without burning — instead, it fills you with understanding. The mantras on the base glow brighter as fire magic surges through you.\n\nWhen you release the connection, you can feel the fire's discipline has become part of you. Your control over flame has deepened.",
+						"rewards": {"xp": 120},
+						"karma": {"asura": 3, "human": 2}
+					}
+				},
+				{
+					"id": "read_mantras",
+					"type": "requirement",
+					"text": "Study the ancient mantras carved into the stone",
+					"requirements": {
+						"skills": {"ritual": 2}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "The mantras are written in an archaic script — prayers of purification through fire. As you trace the words with your finger, their meaning unfolds in your mind.\n\nThese are mantras of transformation, teaching how suffering itself can be fuel for enlightenment. The fire does not destroy — it transforms.",
+						"rewards": {"xp": 100},
+						"karma": {"god": 4, "human": 3}
+					}
+				},
+				{
+					"id": "pray",
+					"type": "default",
+					"text": "Kneel and pray before the burning shrine",
+					"outcome": {
+						"type": "text",
+						"text": "You kneel before the flames, feeling their warmth on your face. A prayer rises unbidden — not for protection from fire, but for the strength to face whatever lies ahead.\n\nThe flames flare briefly, and you feel a surge of resolve.",
+						"rewards": {"xp": 40},
+						"karma": {"god": 2, "asura": 2}
+					}
+				},
+				{
+					"id": "leave",
+					"type": "default",
+					"text": "The flames are too intense — move on",
+					"outcome": {
+						"type": "text",
+						"text": "You step back from the searing heat. Some trials require preparation before they can be faced.",
+						"karma": {}
+					}
+				}
+			]
+		},
+
+		"hell_ember_merchant": {
+			"id": "hell_ember_merchant",
+			"title": "The Ember Merchant",
+			"realm": "hell",
+			"text": "A demon merchant sits cross-legged on a fireproof blanket, surrounded by wares that glow faintly with heat. Their skin is deep red, cracked like cooling lava, and their smile reveals obsidian teeth.\n\n'Welcome to the finest establishment in all of burning Naraka! Fire-forged goods, guaranteed to survive anything this realm throws at you. Mostly. No refunds if you fall into lava, that's just poor decision-making.'",
+			"choices": [
+				{
+					"id": "browse",
+					"type": "default",
+					"text": "Browse the ember merchant's fire-forged wares",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "ember_merchant",
+						"text": "The merchant eagerly displays their collection. Everything radiates gentle warmth, from weapons tempered in volcanic forge-fires to armor that drinks in flames.",
+						"karma": {"human": 1}
+					}
+				},
+				{
+					"id": "haggle",
+					"type": "requirement",
+					"text": "Negotiate as a fellow trader",
+					"requirements": {
+						"skills": {"trade": 2}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "'A merchant's eye! I can tell. You know the value of things.' The demon leans forward conspiratorially. 'Between professionals — take this. A little sample of my finest work. Consider it an investment in a return customer.'\n\nThey press a warm vial into your hands.",
+						"rewards": {"xp": 50, "items": ["fire_resistance_potion"]},
+						"karma": {"human": 3}
+					}
+				},
+				{
+					"id": "ask_info",
+					"type": "default",
+					"text": "Ask about the burning realm",
+					"outcome": {
+						"type": "text",
+						"text": "'This side of Naraka? Fire, brimstone, the usual.' The merchant waves a hand dismissively. 'The Oni Brute in the western ruins is trouble — stays clear of him unless you're looking for a fight. The Trial of Flames to the south is where demons test their warriors.'\n\nThey lower their voice. 'Yama's lieutenant guards the realm gate to the southeast. Chitragupta, they call him. Four arms, four weapons. Make sure you're ready before you go that way.'",
+						"rewards": {"xp": 20},
+						"karma": {"human": 1}
+					}
+				},
+				{
+					"id": "leave",
+					"type": "default",
+					"text": "Move on",
+					"outcome": {
+						"type": "text",
+						"text": "'Stay warm! Well, you'll have no choice about that down here!' the merchant cackles as you leave.",
+						"karma": {}
+					}
+				}
+			]
+		},
+
+		"hell_burning_prisoner": {
+			"id": "hell_burning_prisoner",
+			"title": "The Burning Prisoner",
+			"realm": "hell",
+			"text": "A figure writhes in chains of molten metal, suspended above a pit of glowing coals. Their screams have long since faded to hoarse whispers. Despite their torment, their eyes are clear — filled with pain, but also a terrible awareness.\n\n'Please,' they rasp. 'I know what I did. I know why I'm here. But I've suffered enough to understand. Please... if you can...'",
+			"choices": [
+				{
+					"id": "free",
+					"type": "requirement",
+					"text": "Break the chains with your strength",
+					"requirements": {
+						"attributes": {"strength": 14}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "You grab the molten chains, gritting your teeth against the searing pain. With a mighty heave, the links shatter. The prisoner collapses, weeping.\n\n'Thank you. I was a tyrant — I burned villages and tortured innocents. This was my punishment. But you... you showed mercy even to one who showed none.'\n\nThey press something into your blistered hands — a key they'd been clutching all along.",
+						"rewards": {"xp": 100, "items": ["demon_key"]},
+						"karma": {"hell": -8, "human": 5, "god": 5}
+					}
+				},
+				{
+					"id": "heal",
+					"type": "requirement",
+					"text": "Use healing magic to ease their suffering",
+					"requirements": {
+						"skills": {"white_magic": 2}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "You cannot break the chains, but you can mend what they've broken. Healing light flows from your hands, closing burns and numbing pain.\n\nThe prisoner breathes freely for the first time in ages. 'You cannot free me — only I can do that, through true repentance. But this respite... it reminds me what kindness feels like. I had forgotten.' Tears trace clean lines through the soot on their face.",
+						"rewards": {"xp": 80},
+						"karma": {"hell": -5, "human": 5, "god": 8}
+					}
+				},
+				{
+					"id": "talk",
+					"type": "default",
+					"text": "Ask what crime brought them here",
+					"outcome": {
+						"type": "text",
+						"text": "'I was a warlord,' they whisper. 'I burned a hundred homes. I thought fear was power. Now I know — fear is just fear. And cruelty is just cruelty dressed up as strength.'\n\nThey look at you with haunted eyes. 'Don't make my mistakes, traveler. Power without compassion is just a longer chain.'",
+						"rewards": {"xp": 40},
+						"karma": {"human": 3, "hell": -2}
+					}
+				},
+				{
+					"id": "leave",
+					"type": "default",
+					"text": "Turn away — this is their punishment",
+					"outcome": {
+						"type": "text",
+						"text": "You walk on. Behind you, the prisoner's whispers fade back into the crackling of flames. The heat feels heavier on your shoulders.",
+						"karma": {"hell": 3, "asura": 2}
+					}
+				}
+			]
+		},
+
+		"hell_fire_trial": {
+			"id": "hell_fire_trial",
+			"title": "The Trial of Flames",
+			"realm": "hell",
+			"text": "An arena of scorched stone rises from the lava fields, its tiers filled with demons of all shapes and sizes. They roar and stamp at the sight of you — fresh blood for their entertainment.\n\nA massive demon in ceremonial armor stands at the center. 'FRESH CHALLENGER!' it bellows. 'The Trial of Flames awaits! Prove your worth in combat, or prove your wisdom in another way. Choose!'",
+			"choices": [
+				{
+					"id": "fight",
+					"type": "default",
+					"text": "Accept the combat challenge",
+					"outcome": {
+						"type": "combat",
+						"enemy_group": "demon_patrol",
+						"difficulty": "hard",
+						"text": "The crowd erupts as warriors pour into the arena. These are no ordinary demons — they are the arena's champions, hardened by countless trials.",
+						"karma": {"asura": 5, "hell": 2}
+					}
+				},
+				{
+					"id": "perform",
+					"type": "requirement",
+					"text": "Challenge them to a contest of performance instead",
+					"requirements": {
+						"skills": {"performance": 2}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "You step into the arena not with weapons drawn, but with a performance that captures even demonic hearts. You tell the tale of a warrior who conquered not through strength but through art — and the demons listen, rapt.\n\nWhen you finish, even the arena champion is applauding. 'That took more courage than fighting!' they declare. The demons shower you with prizes.",
+						"rewards": {"xp": 120, "items": ["fire_crystal"]},
+						"karma": {"asura": 3, "human": 5}
+					}
+				},
+				{
+					"id": "intimidate",
+					"type": "requirement",
+					"text": "Stare down the champion with raw willpower",
+					"requirements": {
+						"attributes": {"charm": 15}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "You lock eyes with the champion. Neither of you blinks. The crowd falls silent. Seconds stretch into minutes. Something shifts in the champion's gaze — recognition, perhaps respect.\n\n'You have the spirit of a true warrior,' the champion says, breaking the silence. 'You don't need to prove anything in this pit.' They gesture, and the arena opens a path for you, the crowd parting with grudging respect.",
+						"rewards": {"xp": 100},
+						"karma": {"asura": 5, "human": 3}
+					}
+				},
+				{
+					"id": "decline",
+					"type": "default",
+					"text": "Decline and walk away",
+					"outcome": {
+						"type": "text",
+						"text": "You turn your back on the arena. Boos and jeers follow you, but no one moves to stop you. Sometimes the bravest choice is the one that looks like retreat.",
+						"karma": {"human": 2}
+					}
+				}
+			]
+		},
+
+		"hell_volcanic_cave": {
+			"id": "hell_volcanic_cave",
+			"title": "The Volcanic Cave",
+			"realm": "hell",
+			"text": "A cave entrance glows red with the heat of magma flowing within. The walls pulse with veins of liquid fire, casting dancing shadows. Deep within, you can hear a rhythmic sound — like a heartbeat, or the slow breathing of something enormous.\n\nThe heat is nearly unbearable, but you can see the glint of something valuable deeper inside.",
+			"choices": [
+				{
+					"id": "enter",
+					"type": "roll",
+					"text": "Brave the heat and explore the cave",
+					"requirements": {
+						"roll": {
+							"attribute": "constitution",
+							"difficulty": 14
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "You push through the searing heat, your body screaming in protest. The cave opens into a magma chamber where ancient demon forges still glow with purpose.\n\nAmong the abandoned tools, you find fire-forged equipment of remarkable quality and a cache of supplies left by the last smith to work here.",
+						"rewards": {"xp": 100, "items": ["health_potion", "fire_resistance_potion"]},
+						"karma": {"human": 2}
+					},
+					"outcome_failure": {
+						"type": "text",
+						"text": "The heat is too much. You stagger back, skin blistered, gasping for cooler air. You manage to grab a few things near the entrance before retreating, but the deeper treasures remain beyond your endurance.",
+						"rewards": {"xp": 40},
+						"karma": {"animal": 2}
+					}
+				},
+				{
+					"id": "fire_resist",
+					"type": "requirement",
+					"text": "Use fire magic to protect yourself from the heat",
+					"requirements": {
+						"skills": {"fire_magic": 2}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "You weave a barrier of controlled flame around yourself, turning the cave's heat aside like water off oiled cloth. The magma parts before you as you walk deeper.\n\nThe cave holds wonders — natural formations of crystallized fire magic, and at its heart, a forge still burning with the flames that were lit when Naraka was young. You take what you can carry.",
+						"rewards": {"xp": 120, "items": ["fire_crystal", "mana_potion"]},
+						"karma": {"human": 3, "asura": 2}
+					}
+				},
+				{
+					"id": "listen",
+					"type": "requirement",
+					"text": "Listen to the heartbeat sound from the entrance",
+					"requirements": {
+						"skills": {"learning": 2}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "You close your eyes and listen. The rhythm is too regular for a creature, too purposeful for nature. After long study, you realize — it's the pulse of the realm itself. Naraka has a heartbeat, and this cave is one of its arteries.\n\nThe knowledge fills you with a deeper understanding of how the hell realm works. The suffering here isn't random — it has structure, purpose, even a kind of terrible beauty.",
+						"rewards": {"xp": 80},
+						"karma": {"human": 4, "god": 2}
+					}
+				},
+				{
+					"id": "leave",
+					"type": "default",
+					"text": "The heat is too dangerous — move on",
+					"outcome": {
+						"type": "text",
+						"text": "You back away from the cave entrance. The glow within seems to pulse with disappointment, but sometimes survival is its own reward.",
+						"karma": {}
+					}
+				}
+			]
+		},
+
+		"hell_lava_flow": {
+			"id": "hell_lava_flow",
+			"title": "The Lava Flow",
+			"realm": "hell",
+			"text": "A river of molten rock surges across the path ahead, its surface glowing white-hot. The heat creates a shimmering wall of distortion in the air. On the other side, you can see the path continuing — but crossing seems impossible.\n\nThen you notice: the flow pulses. There are moments when it thins, gaps between surges...",
+			"choices": [
+				{
+					"id": "time_it",
+					"type": "roll",
+					"text": "Time the surges and dash across during a gap",
+					"requirements": {
+						"roll": {
+							"attribute": "finesse",
+							"difficulty": 14
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "You watch the rhythm of the flow, counting between surges. Three... two... one... NOW!\n\nYou sprint across the brief gap, heat searing your boots but not quite burning through. You make it to the other side with singed clothes and a racing heart — but alive and ahead of those who would turn back.",
+						"rewards": {"xp": 80},
+						"karma": {"human": 2, "animal": 2}
+					},
+					"outcome_failure": {
+						"type": "text",
+						"text": "You mistime the surge and have to leap back as molten rock splashes where you stood. The attempt leaves you with minor burns and a healthy respect for lava.",
+						"rewards": {"xp": 30},
+						"karma": {"hell": 1}
+					}
+				},
+				{
+					"id": "earth_magic",
+					"type": "requirement",
+					"text": "Use earth magic to create a stone bridge",
+					"requirements": {
+						"skills": {"earth_magic": 2}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "You reach into the bedrock beneath the lava flow and pull. Stone rises, hissing and steaming, forming a crude but solid bridge above the molten river. The lava laps at it furiously but cannot melt it fast enough.\n\nYou cross safely, and the bridge will last long enough for others to follow — a small act of kindness in an unkind place.",
+						"rewards": {"xp": 100},
+						"karma": {"human": 4, "god": 2}
+					}
+				},
+				{
+					"id": "go_around",
+					"type": "default",
+					"text": "Look for a way around the lava flow",
+					"outcome": {
+						"type": "text",
+						"text": "You follow the lava flow downstream until you find a narrow point where the ground is merely scorching rather than deadly. After a careful crossing, you continue on your way — slower, but unburned.",
+						"rewards": {"xp": 20},
+						"karma": {"human": 1}
+					}
+				}
+			]
 		}
 	}
 }
+

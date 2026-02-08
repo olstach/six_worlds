@@ -248,11 +248,71 @@ func _start_test_combat() -> void:
 	CombatManager.start_combat(combat_grid, player_units, enemy_units)
 
 
-## Start combat from overworld mob encounter (uses test enemies for alpha)
+## Start combat from overworld mob encounter using EnemySystem
 func _start_overworld_combat(mob_data: Dictionary) -> void:
 	_log_message("=== %s attacks! ===" % mob_data.get("name", "Enemy"))
-	# For alpha, reuse test enemy setup - later this will read mob_data.enemy_group
-	_start_test_combat()
+
+	# Get encounter info from mob data
+	var mob_inner = mob_data.get("data", {})
+	var enemy_group = mob_inner.get("enemy_group", "demon_patrol")
+	# Region can be on the mob dict (from MapManager) or in its inner data
+	var region = mob_data.get("region", mob_inner.get("region", ""))
+
+	# Generate scaled enemies from EnemySystem
+	var enemy_defs = EnemySystem.generate_encounter(enemy_group, region)
+
+	# Create player units from party
+	var player_units: Array = []
+	var party = CharacterSystem.get_party()
+	var player_start_positions = [Vector2i(1, 2), Vector2i(1, 4), Vector2i(2, 3), Vector2i(0, 3), Vector2i(2, 1), Vector2i(2, 5)]
+
+	for i in range(mini(party.size(), player_start_positions.size())):
+		var char_data = party[i]
+		var unit = CombatUnit.new()
+		unit.init_from_character(char_data, CombatManager.Team.PLAYER)
+		combat_grid.place_unit(unit, player_start_positions[i])
+		player_units.append(unit)
+		_log_message("Player: %s placed at %s" % [unit.unit_name, player_start_positions[i]])
+
+	# Place enemies based on their roles (frontline closer, ranged/caster in back)
+	var enemy_units: Array = []
+	var frontline_positions = [Vector2i(9, 2), Vector2i(9, 4), Vector2i(9, 3)]
+	var backline_positions = [Vector2i(11, 2), Vector2i(11, 4), Vector2i(11, 3)]
+	var front_idx = 0
+	var back_idx = 0
+
+	for enemy_def in enemy_defs:
+		var unit = CombatUnit.new()
+		unit.init_as_enemy(enemy_def)
+
+		# Pick position based on archetype role
+		var archetype_id = enemy_def.get("archetype_id", "")
+		var arch = EnemySystem.archetypes.get(archetype_id, {})
+		var roles = arch.get("roles", [])
+		var is_backline = "ranged" in roles or "caster" in roles or "support" in roles
+
+		var pos: Vector2i
+		if is_backline and back_idx < backline_positions.size():
+			pos = backline_positions[back_idx]
+			back_idx += 1
+		elif front_idx < frontline_positions.size():
+			pos = frontline_positions[front_idx]
+			front_idx += 1
+		elif back_idx < backline_positions.size():
+			pos = backline_positions[back_idx]
+			back_idx += 1
+		else:
+			# Overflow: place in an available spot
+			pos = Vector2i(10, enemy_units.size())
+
+		combat_grid.place_unit(unit, pos)
+		enemy_units.append(unit)
+
+		var role_text = "/".join(roles) if not roles.is_empty() else "fighter"
+		_log_message("Enemy: %s (%s) placed at %s" % [unit.unit_name, role_text, pos])
+
+	# Start combat
+	CombatManager.start_combat(combat_grid, player_units, enemy_units)
 
 
 # ============================================

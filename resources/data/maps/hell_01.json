@@ -1,33 +1,51 @@
 {
 	"id": "hell_01",
-	"name": "Frozen Wastes",
+	"name": "Naraka - The Hell Realm",
 	"realm": "hell",
-	"description": "The icy northern reaches of the Hell Realm, where the cold bites deeper than any flame.",
-	"width": 24,
-	"height": 16,
+	"description": "The Hell Realm of Naraka, split between the frozen wastes of the north and the burning badlands of the south, divided by an impassable mountain range.",
+	"width": 32,
+	"height": 24,
 	"base_speed": 3.0,
-	"start_position": {"x": 2, "y": 8},
+	"start_position": {"x": 2, "y": 5},
+
+	"regions": {
+		"cold_hell": {"tiles_rect": [0, 0, 31, 9]},
+		"mountain_pass": {"tiles_rect": [0, 10, 31, 13]},
+		"fire_hell": {"tiles_rect": [0, 14, 31, 23]}
+	},
+
 	"terrain": [
-		8,8,8,8,8,4,4,4,0,0,0,0,0,0,0,0,0,0,4,4,4,8,8,8,
-		8,8,8,0,0,0,4,0,0,1,1,1,1,1,0,0,0,0,0,4,4,4,8,8,
-		8,8,0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,0,0,4,4,8,8,
-		8,0,0,2,2,0,0,1,1,0,0,0,0,0,1,0,0,2,2,0,0,4,4,8,
-		0,0,0,2,2,2,0,1,0,0,0,5,5,0,1,0,2,2,2,0,0,0,4,4,
-		0,0,0,0,2,0,0,1,0,0,5,5,5,0,1,0,0,2,0,0,0,0,0,4,
-		0,0,0,0,0,0,1,1,0,0,5,5,0,0,1,1,0,0,0,0,3,3,0,0,
-		1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,3,3,0,
-		1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,3,0,0,
-		0,0,0,0,0,0,1,1,0,0,9,9,0,0,1,1,0,0,0,3,3,3,0,0,
-		0,0,0,0,3,0,0,1,0,0,9,9,9,0,1,0,0,3,3,3,0,0,0,4,
-		0,0,0,3,3,3,0,1,0,0,0,9,0,0,1,0,3,3,0,0,0,0,4,4,
-		8,0,0,3,3,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,0,4,4,8,
-		8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,4,4,8,8,
-		8,8,8,0,0,0,4,0,0,0,0,0,0,0,0,0,0,4,4,4,4,8,8,8,
-		8,8,8,8,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,8,8,8,8,8
+		8,8,8,8,8,4,4,4,0,0,0,0,0,0,0,0,0,0,4,4,4,8,8,8,8,8,4,4,0,0,8,8,
+		8,8,8,0,0,0,4,0,0,1,1,1,1,1,0,0,0,0,0,4,4,4,8,8,8,0,0,0,0,0,4,8,
+		8,8,0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,0,0,4,4,8,8,0,0,0,0,11,0,0,8,
+		8,0,0,2,2,0,0,1,1,0,0,0,0,0,1,0,0,2,2,0,0,4,4,0,0,0,11,11,11,0,0,8,
+		0,0,0,2,2,2,0,1,0,0,0,5,5,0,1,0,2,2,2,0,0,0,4,4,0,0,11,5,11,0,0,4,
+		0,0,0,0,2,0,0,1,0,0,5,5,5,0,1,0,0,2,0,0,0,0,0,4,0,0,0,11,0,0,0,4,
+		0,0,0,0,0,0,1,1,0,0,5,5,0,0,1,1,0,0,0,0,3,3,0,0,0,0,0,0,0,3,3,0,
+		1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,3,3,0,0,0,1,1,1,1,3,0,
+		1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,3,0,0,0,0,0,1,1,0,0,0,
+		0,0,0,0,0,0,1,1,0,0,8,8,0,0,1,1,0,0,0,3,3,3,0,0,0,0,0,0,0,0,0,8,
+
+		4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+		4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,0,0,0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+		4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+		4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+
+		12,12,0,0,0,7,7,0,0,0,0,0,0,9,9,0,0,0,7,7,0,0,0,0,12,12,0,0,0,9,9,12,
+		12,0,0,0,7,7,0,0,0,0,0,0,9,9,0,0,0,7,7,0,0,0,0,0,12,0,0,0,9,9,0,12,
+		0,0,0,7,7,7,0,0,13,13,0,0,0,9,0,0,7,7,0,0,0,13,13,0,0,0,0,9,9,0,0,0,
+		0,0,7,7,0,0,0,13,13,0,0,0,0,0,0,7,7,0,0,0,13,13,0,0,0,0,0,0,9,0,0,0,
+		0,0,0,7,0,0,0,13,0,0,0,12,12,0,0,7,0,0,0,0,0,13,0,0,0,12,0,0,0,0,0,9,
+		0,0,0,0,0,0,0,0,0,0,12,12,12,0,0,0,0,0,0,0,0,0,0,0,12,12,0,0,0,0,9,9,
+		9,0,0,0,0,0,0,0,0,0,0,12,0,0,0,0,0,0,0,0,3,3,0,0,0,12,0,0,0,9,9,9,
+		9,9,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,0,0,0,0,0,0,0,9,9,9,9,
+		9,9,9,0,0,7,7,0,0,0,0,0,0,0,0,0,0,0,3,3,0,0,0,0,0,0,0,9,9,9,9,9,
+		9,9,9,9,0,0,7,7,0,0,0,0,0,0,0,0,0,3,3,0,0,0,0,0,0,0,9,9,9,9,9,9
 	],
+
 	"objects": [
 
-		{"_comment": "=== EVENT OBJECTS (type 0) - open FTL-style dialogs ==="},
+		{"_comment": "=== COLD HELL EVENT OBJECTS ==="},
 
 		{
 			"id": "demon_patrol_1",
@@ -40,6 +58,7 @@
 			"visible": true,
 			"data": {
 				"event_id": "hell_demon_patrol",
+				"region": "cold_hell",
 				"description": "A group of demons blocks the path through the forest."
 			}
 		},
@@ -54,6 +73,7 @@
 			"visible": true,
 			"data": {
 				"event_id": "hell_ice_spirits",
+				"region": "cold_hell",
 				"description": "Translucent figures drift over the frozen lake, guarding something beneath the ice."
 			}
 		},
@@ -68,6 +88,7 @@
 			"visible": true,
 			"data": {
 				"event_id": "hell_frozen_merchant",
+				"region": "cold_hell",
 				"description": "A bundled-up trader huddles near a sputtering fire, wares spread on a frost-covered blanket."
 			}
 		},
@@ -82,40 +103,13 @@
 			"visible": true,
 			"data": {
 				"event_id": "hell_lost_wanderer",
+				"region": "cold_hell",
 				"description": "A shivering figure huddles by the roadside, barely conscious."
 			}
 		},
 		{
-			"id": "lava_guardian",
-			"x": 11, "y": 10,
-			"type": 0,
-			"name": "Lava Guardian",
-			"icon": "enemy_elite",
-			"blocking": true,
-			"one_time": true,
-			"visible": true,
-			"data": {
-				"event_id": "hell_lava_guardian",
-				"description": "A massive elemental of molten rock guards the passage between ice and fire."
-			}
-		},
-		{
-			"id": "hell_boss",
-			"x": 18, "y": 11,
-			"type": 0,
-			"name": "Yama's Lieutenant",
-			"icon": "boss",
-			"blocking": true,
-			"one_time": true,
-			"visible": true,
-			"data": {
-				"event_id": "hell_boss_yama_lt",
-				"description": "A towering demon in ornate armor stands before the realm gate, judging all who approach."
-			}
-		},
-		{
 			"id": "frozen_cave",
-			"x": 5, "y": 10,
+			"x": 5, "y": 9,
 			"type": 0,
 			"name": "Frozen Cave",
 			"icon": "dungeon",
@@ -124,6 +118,7 @@
 			"visible": true,
 			"data": {
 				"event_id": "hell_frozen_cave",
+				"region": "cold_hell",
 				"description": "A dark cave mouth yawns in the hillside, frost glittering at its edges."
 			}
 		},
@@ -138,6 +133,7 @@
 			"visible": true,
 			"data": {
 				"event_id": "hell_tormented_soul",
+				"region": "cold_hell",
 				"description": "A ghostly figure weeps silently, trapped between ice and flame."
 			}
 		},
@@ -152,11 +148,153 @@
 			"visible": true,
 			"data": {
 				"event_id": "hell_crossroads_shrine",
+				"region": "cold_hell",
 				"description": "An ancient shrine sits where the roads cross, covered in frost and old offerings."
 			}
 		},
+		{
+			"id": "ice_yogi",
+			"x": 27, "y": 3,
+			"type": 0,
+			"name": "Frozen Waterfall Yogi",
+			"icon": "npc",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"event_id": "hell_ice_yogi",
+				"region": "cold_hell",
+				"description": "A yogi meditates before a frozen waterfall, seemingly oblivious to the bitter cold."
+			}
+		},
 
-		{"_comment": "=== PICKUP OBJECTS (type 1) - immediate rewards ==="},
+		{"_comment": "=== MOUNTAIN PASS EVENT OBJECTS ==="},
+
+		{
+			"id": "lava_guardian",
+			"x": 16, "y": 11,
+			"type": 0,
+			"name": "Lava Guardian",
+			"icon": "enemy_elite",
+			"blocking": true,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"event_id": "hell_lava_guardian",
+				"region": "mountain_pass",
+				"description": "A massive elemental of molten rock guards the only passage through the mountains."
+			}
+		},
+
+		{"_comment": "=== FIRE HELL EVENT OBJECTS ==="},
+
+		{
+			"id": "hell_boss",
+			"x": 20, "y": 20,
+			"type": 0,
+			"name": "Yama's Lieutenant",
+			"icon": "boss",
+			"blocking": true,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"event_id": "hell_boss_yama_lt",
+				"region": "fire_hell",
+				"description": "A towering demon in ornate armor stands before the realm gate, judging all who approach."
+			}
+		},
+		{
+			"id": "fire_shrine",
+			"x": 8, "y": 16,
+			"type": 0,
+			"name": "Burning Shrine",
+			"icon": "event",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"event_id": "hell_fire_shrine",
+				"region": "fire_hell",
+				"description": "A shrine wreathed in eternal flames stands among the scorched ruins."
+			}
+		},
+		{
+			"id": "ember_merchant",
+			"x": 13, "y": 17,
+			"type": 0,
+			"name": "Ember Merchant",
+			"icon": "shop",
+			"blocking": false,
+			"one_time": false,
+			"visible": true,
+			"data": {
+				"event_id": "hell_ember_merchant",
+				"region": "fire_hell",
+				"description": "A demon merchant with fireproof wares has set up shop among the lava flows."
+			}
+		},
+		{
+			"id": "burning_prisoner",
+			"x": 21, "y": 17,
+			"type": 0,
+			"name": "Burning Prisoner",
+			"icon": "npc",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"event_id": "hell_burning_prisoner",
+				"region": "fire_hell",
+				"description": "A figure writhes in chains of molten metal, screaming for release."
+			}
+		},
+		{
+			"id": "fire_trial",
+			"x": 16, "y": 18,
+			"type": 0,
+			"name": "Trial of Flames",
+			"icon": "dungeon",
+			"blocking": true,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"event_id": "hell_fire_trial",
+				"region": "fire_hell",
+				"description": "An arena of scorched stone, where demons gather to watch challengers prove their worth."
+			}
+		},
+		{
+			"id": "volcanic_cave",
+			"x": 5, "y": 17,
+			"type": 0,
+			"name": "Volcanic Cave",
+			"icon": "dungeon",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"event_id": "hell_volcanic_cave",
+				"region": "fire_hell",
+				"description": "A cave entrance glows red with the heat of magma flowing within."
+			}
+		},
+		{
+			"id": "lava_flow_hazard",
+			"x": 9, "y": 14,
+			"type": 0,
+			"name": "Lava Flow",
+			"icon": "event",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"event_id": "hell_lava_flow",
+				"region": "fire_hell",
+				"description": "A river of molten rock surges across the path. The heat is overwhelming."
+			}
+		},
+
+		{"_comment": "=== COLD HELL PICKUP OBJECTS ==="},
 
 		{
 			"id": "abandoned_cart",
@@ -211,7 +349,7 @@
 		},
 		{
 			"id": "ice_shrine",
-			"x": 3, "y": 11,
+			"x": 3, "y": 8,
 			"type": 1,
 			"name": "Ice Shrine",
 			"icon": "shrine",
@@ -244,24 +382,6 @@
 			}
 		},
 		{
-			"id": "supply_cache",
-			"x": 15, "y": 12,
-			"type": 1,
-			"name": "Supply Cache",
-			"icon": "treasure",
-			"blocking": false,
-			"one_time": true,
-			"visible": true,
-			"data": {
-				"message": "Hidden beneath a rock, someone left supplies for fellow travelers. How kind.",
-				"rewards": [
-					{"type": "gold", "value": 15},
-					{"type": "item", "value": "mana_potion"},
-					{"type": "heal", "value": 10}
-				]
-			}
-		},
-		{
 			"id": "lucky_stone",
 			"x": 1, "y": 5,
 			"type": 1,
@@ -279,7 +399,7 @@
 		},
 		{
 			"id": "frozen_fountain",
-			"x": 16, "y": 8,
+			"x": 25, "y": 7,
 			"type": 1,
 			"name": "Frozen Fountain",
 			"icon": "rest",
@@ -294,11 +414,100 @@
 			}
 		},
 
-		{"_comment": "=== PORTAL OBJECTS (type 2) - realm transitions ==="},
+		{"_comment": "=== FIRE HELL PICKUP OBJECTS ==="},
+
+		{
+			"id": "scorched_supplies",
+			"x": 3, "y": 15,
+			"type": 1,
+			"name": "Scorched Supplies",
+			"icon": "treasure",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"message": "Half-melted supplies lie scattered near what was once a camp. Some are still usable.",
+				"rewards": [
+					{"type": "gold", "value": 40},
+					{"type": "item", "value": "health_potion"}
+				]
+			}
+		},
+		{
+			"id": "fire_shrine_pickup",
+			"x": 25, "y": 19,
+			"type": 1,
+			"name": "Flame Shrine",
+			"icon": "shrine",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"message": "The shrine burns with a steady flame. Its heat warms without burning, filling you with resolve.",
+				"rewards": [
+					{"type": "buff", "value": {"stat": "fire_resistance", "amount": 15, "duration": -1}},
+					{"type": "karma", "value": {"realm": "asura", "amount": 3}}
+				]
+			}
+		},
+		{
+			"id": "lava_crystal",
+			"x": 28, "y": 15,
+			"type": 1,
+			"name": "Lava Crystal",
+			"icon": "treasure",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"message": "A brilliant crystal formed in cooling lava. It pulses with fire magic.",
+				"rewards": [
+					{"type": "item", "value": "fire_crystal"},
+					{"type": "xp", "value": 30}
+				]
+			}
+		},
+		{
+			"id": "ember_pool",
+			"x": 11, "y": 19,
+			"type": 1,
+			"name": "Ember Pool",
+			"icon": "rest",
+			"blocking": false,
+			"one_time": false,
+			"visible": true,
+			"data": {
+				"message": "Hot springs bubble in a volcanic pool. The heat is intense but rejuvenating.",
+				"rewards": [
+					{"type": "heal", "value": 25},
+					{"type": "mana", "value": 20}
+				]
+			}
+		},
+		{
+			"id": "supply_cache_fire",
+			"x": 18, "y": 16,
+			"type": 1,
+			"name": "Fireproof Cache",
+			"icon": "treasure",
+			"blocking": false,
+			"one_time": true,
+			"visible": true,
+			"data": {
+				"message": "A cache wrapped in fire-resistant cloth. Someone prepared well for this region.",
+				"rewards": [
+					{"type": "gold", "value": 25},
+					{"type": "item", "value": "mana_potion"},
+					{"type": "heal", "value": 10}
+				]
+			}
+		},
+
+		{"_comment": "=== PORTAL OBJECTS ==="},
 
 		{
 			"id": "realm_portal",
-			"x": 22, "y": 8,
+			"x": 29, "y": 21,
 			"type": 2,
 			"name": "Realm Gate",
 			"icon": "portal",
@@ -315,9 +524,9 @@
 	],
 
 	"mobs": [
-		{"_comment": "=== STATIONARY MOBS ==="},
+		{"_comment": "=== COLD HELL MOBS ==="},
 
-		{"_comment": "Hostile stationary - ice wraith guarding the frozen lake shore"},
+		{"_comment": "Stationary - ice wraith guarding the frozen lake shore"},
 		{
 			"id": "ice_wraith_1",
 			"name": "Ice Wraith",
@@ -328,12 +537,11 @@
 			"speed": 0.0,
 			"data": {
 				"enemy_group": "ice_wraith",
+				"region": "cold_hell",
 				"difficulty": "normal",
 				"description": "A spectral figure of frozen mist hovers motionlessly."
 			}
 		},
-
-		{"_comment": "=== PATROL MOBS ==="},
 
 		{"_comment": "Friendly patrol - wandering peddler along the main road"},
 		{
@@ -352,11 +560,12 @@
 			],
 			"data": {
 				"event_id": "hell_wandering_peddler",
+				"region": "cold_hell",
 				"description": "A hunched figure dragging a heavy sack along the road, muttering about bargains."
 			}
 		},
 
-		{"_comment": "Hostile patrol - demon sentinels along the river of fire"},
+		{"_comment": "Hostile patrol - demon sentinels along the river"},
 		{
 			"id": "demon_sentinel_1",
 			"name": "Demon Sentinel",
@@ -367,12 +576,13 @@
 			"speed": 0.5,
 			"patrol_route": [
 				{"x": 8, "y": 9},
-				{"x": 8, "y": 10},
-				{"x": 8, "y": 11},
-				{"x": 8, "y": 12}
+				{"x": 10, "y": 9},
+				{"x": 12, "y": 9},
+				{"x": 14, "y": 9}
 			],
 			"data": {
 				"enemy_group": "demon_sentinel",
+				"region": "cold_hell",
 				"difficulty": "normal",
 				"description": "An armored demon marches with mechanical precision, guarding the border."
 			}
@@ -393,19 +603,18 @@
 			],
 			"data": {
 				"enemy_group": "frost_imp",
+				"region": "cold_hell",
 				"difficulty": "easy",
 				"description": "A small blue-skinned creature skitters back and forth along the road."
 			}
 		},
 
-		{"_comment": "=== ROAMING MOBS ==="},
-
-		{"_comment": "Hostile roaming - lost souls wandering the southern plains"},
+		{"_comment": "Hostile roaming - lost souls wandering the southern cold plains"},
 		{
-			"id": "lost_souls_1",
+			"id": "lost_souls_cold",
 			"name": "Lost Souls",
 			"icon": "enemy",
-			"x": 3, "y": 13,
+			"x": 22, "y": 8,
 			"mode": 2,
 			"attitude": 1,
 			"speed": 0.3,
@@ -413,6 +622,7 @@
 			"roam_pause": 3.0,
 			"data": {
 				"enemy_group": "lost_souls",
+				"region": "cold_hell",
 				"difficulty": "easy",
 				"description": "Translucent figures drift aimlessly, moaning in despair."
 			}
@@ -431,55 +641,12 @@
 			"roam_pause": 4.0,
 			"data": {
 				"event_id": "hell_hermit_monk",
+				"region": "cold_hell",
 				"description": "A weathered monk in tattered robes wanders the frozen hills, seemingly at peace."
 			}
 		},
 
-		{"_comment": "=== AGGRESSIVE MOBS ==="},
-
-		{"_comment": "Aggressive roaming - hell hound, fast and persistent"},
-		{
-			"id": "hell_hound_1",
-			"name": "Hell Hound",
-			"icon": "enemy_fast",
-			"x": 15, "y": 10,
-			"mode": 2,
-			"attitude": 2,
-			"speed": 0.9,
-			"roam_radius": 4,
-			"roam_pause": 1.5,
-			"aggression": 0.7,
-			"data": {
-				"enemy_group": "hell_hound",
-				"difficulty": "hard",
-				"description": "A massive hound with smoldering eyes sniffs the air hungrily."
-			}
-		},
-
-		{"_comment": "Aggressive patrol - oni brute, slow but very aggressive"},
-		{
-			"id": "oni_brute",
-			"name": "Oni Brute",
-			"icon": "enemy_elite",
-			"x": 14, "y": 12,
-			"mode": 1,
-			"attitude": 2,
-			"speed": 0.5,
-			"aggression": 0.9,
-			"patrol_route": [
-				{"x": 14, "y": 12},
-				{"x": 14, "y": 13},
-				{"x": 16, "y": 13},
-				{"x": 16, "y": 12}
-			],
-			"data": {
-				"enemy_group": "oni_brute",
-				"difficulty": "hard",
-				"description": "A towering red-skinned ogre with a spiked club. It watches you with malice."
-			}
-		},
-
-		{"_comment": "Aggressive stationary - shadow stalker, ambush predator with high detection"},
+		{"_comment": "Aggressive stationary - shadow stalker, ambush predator"},
 		{
 			"id": "shadow_stalker",
 			"name": "Shadow Stalker",
@@ -491,8 +658,150 @@
 			"aggression": 0.4,
 			"data": {
 				"enemy_group": "shadow_stalker",
+				"region": "cold_hell",
 				"difficulty": "normal",
 				"description": "Something lurks in the shadows of the trees, barely visible."
+			}
+		},
+
+		{"_comment": "Stationary - ice wraith in the frozen northeast"},
+		{
+			"id": "ice_wraith_2",
+			"name": "Ice Wraith",
+			"icon": "enemy",
+			"x": 28, "y": 4,
+			"mode": 0,
+			"attitude": 1,
+			"speed": 0.0,
+			"data": {
+				"enemy_group": "ice_wraith",
+				"region": "cold_hell",
+				"difficulty": "normal",
+				"description": "A spectral figure of frozen mist hovers near the icy lake."
+			}
+		},
+
+		{"_comment": "=== FIRE HELL MOBS ==="},
+
+		{"_comment": "Aggressive roaming - hell hound, fast and persistent"},
+		{
+			"id": "hell_hound_1",
+			"name": "Hell Hound",
+			"icon": "enemy_fast",
+			"x": 15, "y": 18,
+			"mode": 2,
+			"attitude": 2,
+			"speed": 0.9,
+			"roam_radius": 4,
+			"roam_pause": 1.5,
+			"aggression": 0.7,
+			"data": {
+				"enemy_group": "hell_hound",
+				"region": "fire_hell",
+				"difficulty": "hard",
+				"description": "A massive hound with smoldering eyes sniffs the air hungrily."
+			}
+		},
+
+		{"_comment": "Aggressive patrol - oni brute, slow but very aggressive"},
+		{
+			"id": "oni_brute",
+			"name": "Oni Brute",
+			"icon": "enemy_elite",
+			"x": 7, "y": 17,
+			"mode": 1,
+			"attitude": 2,
+			"speed": 0.5,
+			"aggression": 0.9,
+			"patrol_route": [
+				{"x": 7, "y": 17},
+				{"x": 9, "y": 17},
+				{"x": 9, "y": 18},
+				{"x": 7, "y": 18}
+			],
+			"data": {
+				"enemy_group": "oni_brute",
+				"region": "fire_hell",
+				"difficulty": "hard",
+				"description": "A towering red-skinned ogre with a spiked club. It watches you with malice."
+			}
+		},
+
+		{"_comment": "Hostile patrol - flame imps along the lava river"},
+		{
+			"id": "flame_imp_patrol",
+			"name": "Flame Imps",
+			"icon": "enemy",
+			"x": 13, "y": 14,
+			"mode": 1,
+			"attitude": 1,
+			"speed": 0.7,
+			"patrol_route": [
+				{"x": 13, "y": 14},
+				{"x": 11, "y": 14},
+				{"x": 9, "y": 14}
+			],
+			"data": {
+				"enemy_group": "frost_imp",
+				"region": "fire_hell",
+				"difficulty": "easy",
+				"description": "Small fiery creatures caper and dance among the lava flows."
+			}
+		},
+
+		{"_comment": "Hostile roaming - lost souls in the fire wastes"},
+		{
+			"id": "lost_souls_fire",
+			"name": "Lost Souls",
+			"icon": "enemy",
+			"x": 24, "y": 17,
+			"mode": 2,
+			"attitude": 1,
+			"speed": 0.3,
+			"roam_radius": 3,
+			"roam_pause": 3.0,
+			"data": {
+				"enemy_group": "lost_souls",
+				"region": "fire_hell",
+				"difficulty": "easy",
+				"description": "Burning spirits wander the scorched earth, too tormented to rest."
+			}
+		},
+
+		{"_comment": "Hostile stationary - demon sentinel guarding ruins"},
+		{
+			"id": "demon_sentinel_fire",
+			"name": "Demon Sentinel",
+			"icon": "enemy",
+			"x": 21, "y": 22,
+			"mode": 0,
+			"attitude": 1,
+			"speed": 0.0,
+			"data": {
+				"enemy_group": "demon_sentinel",
+				"region": "fire_hell",
+				"difficulty": "normal",
+				"description": "An armored demon guards the approach to the realm gate."
+			}
+		},
+
+		{"_comment": "Aggressive roaming - hell hound pack near the boss"},
+		{
+			"id": "hell_hound_2",
+			"name": "Hell Hound Pack",
+			"icon": "enemy_fast",
+			"x": 23, "y": 20,
+			"mode": 2,
+			"attitude": 2,
+			"speed": 0.8,
+			"roam_radius": 3,
+			"roam_pause": 2.0,
+			"aggression": 0.6,
+			"data": {
+				"enemy_group": "hell_hound",
+				"region": "fire_hell",
+				"difficulty": "hard",
+				"description": "A pack of infernal hounds prowls the area, their bodies wreathed in flame."
 			}
 		}
 	]

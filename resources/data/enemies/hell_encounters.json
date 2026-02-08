@@ -1,0 +1,90 @@
+{
+	"encounters": {
+
+		"_comment": "=== EVENT ENCOUNTERS ===",
+
+		"demon_patrol": {
+			"region": "any",
+			"roles": {"frontline": 2, "ranged": 1},
+			"difficulty_range": [0.8, 1.2]
+		},
+
+		"ice_spirits": {
+			"region": "cold_hell",
+			"roles": {"caster": 2, "support": 1},
+			"difficulty_range": [0.9, 1.1]
+		},
+
+		"lava_guardian": {
+			"region": "any",
+			"fixed": true,
+			"enemies": [
+				{"archetype": "hell_mountain_guardian", "count": 1}
+			]
+		},
+
+		"yama_lieutenant": {
+			"region": "fire_hell",
+			"fixed": true,
+			"enemies": [
+				{"archetype": "hell_yama_lieutenant", "count": 1},
+				{"archetype": "hell_demon_elite", "count": 2}
+			]
+		},
+
+		"yama_lieutenant_weakened": {
+			"region": "fire_hell",
+			"fixed": true,
+			"enemies": [
+				{"archetype": "hell_yama_lieutenant_weakened", "count": 1}
+			]
+		},
+
+		"_comment_mobs": "=== MAP MOB ENCOUNTERS ===",
+
+		"ice_wraith": {
+			"region": "cold_hell",
+			"roles": {"caster": 1, "frontline": 1},
+			"difficulty_range": [0.9, 1.0]
+		},
+
+		"demon_sentinel": {
+			"region": "any",
+			"roles": {"frontline": 2},
+			"difficulty_range": [0.9, 1.1]
+		},
+
+		"frost_imp": {
+			"region": "cold_hell",
+			"roles": {"caster": 2},
+			"difficulty_range": [0.6, 0.8]
+		},
+
+		"lost_souls": {
+			"region": "any",
+			"roles": {"caster": 1, "support": 1},
+			"difficulty_range": [0.5, 0.7]
+		},
+
+		"hell_hound": {
+			"region": "any",
+			"roles": {"frontline": 2, "ranged": 1},
+			"difficulty_range": [1.0, 1.3]
+		},
+
+		"oni_brute": {
+			"region": "any",
+			"fixed": true,
+			"enemies": [
+				{"archetype": "hell_demon_brute", "count": 1},
+				{"archetype": "hell_demon_warrior", "count": 2}
+			]
+		},
+
+		"shadow_stalker": {
+			"region": "any",
+			"roles": {"frontline": 1, "ranged": 1},
+			"difficulty_range": [0.8, 1.0]
+		}
+	}
+}

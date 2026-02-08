@@ -152,6 +152,10 @@ var visited_tiles: Dictionary = {} # Vector2i -> bool (fog of war)
 var collected_objects: Array[String] = []  # IDs of consumed one-time objects
 var defeated_mobs: Array[String] = []     # IDs of mobs that won't respawn
 
+# Region definitions loaded from map JSON
+# Each region maps to a rect: {tiles_rect: [x, y, x2, y2]}
+var regions: Dictionary = {}  # region_id -> {tiles_rect: Array}
+
 # ============================================
 # MOB STATE
 # ============================================
@@ -463,6 +467,12 @@ func _apply_map_data(data: Dictionary) -> void:
 
 	tiles.clear()
 	objects.clear()
+	regions.clear()
+
+	# Load regions (if present)
+	var region_data = data.get("regions", {})
+	for region_id in region_data:
+		regions[region_id] = region_data[region_id]
 
 	# Load terrain from flat array
 	var terrain_data = data.get("terrain", [])
@@ -671,6 +681,17 @@ func get_speed_label(pos: Vector2i) -> String:
 ## Check if terrain is passable
 func is_passable(pos: Vector2i) -> bool:
 	return get_terrain_speed(pos) > 0
+
+
+## Get the region name at a tile position (e.g. "cold_hell", "fire_hell")
+## Returns "" if no region is defined for that position
+func get_region_at(pos: Vector2i) -> String:
+	for region_id in regions:
+		var rect = regions[region_id].get("tiles_rect", [])
+		if rect.size() >= 4:
+			if pos.x >= rect[0] and pos.y >= rect[1] and pos.x <= rect[2] and pos.y <= rect[3]:
+				return region_id
+	return ""
 
 
 # ============================================
@@ -1053,6 +1074,9 @@ func _spawn_mob_from_data(mob_data: Dictionary) -> void:
 		if route.is_empty() or route[0] != pos:
 			route.insert(0, pos)
 		mob.patrol_route = route
+
+	# Tag mob with its region based on spawn position
+	mob["region"] = get_region_at(pos)
 
 	mobs.append(mob)
 
