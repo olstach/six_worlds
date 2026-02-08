@@ -91,6 +91,9 @@ func _ready() -> void:
 	# Connect gold changed for HUD updates
 	GameState.gold_changed.connect(_on_gold_changed)
 
+	# Connect discovery signal (hidden finds on ruins/forest/etc.)
+	MapManager.discovery_made.connect(_on_discovery_made)
+
 	# Connect event display close signal
 	event_display.event_display_closed.connect(_on_event_display_closed)
 
@@ -152,9 +155,8 @@ func _update_hud() -> void:
 
 
 func _update_terrain_label() -> void:
-	var terrain_type = MapManager.tiles.get(MapManager.party_position, 0)
-	var terrain_name = MapManager.TERRAIN_NAMES.get(terrain_type, "Unknown")
-	var speed = MapManager.TERRAIN_SPEED.get(terrain_type, 1.0)
+	var terrain_name = MapManager.get_terrain_name(MapManager.party_position)
+	var speed = MapManager.get_terrain_speed(MapManager.party_position)
 	var speed_text = ""
 	if speed >= 2.0:
 		speed_text = " (Fast)"
@@ -228,6 +230,9 @@ func _on_mob_combat_triggered(mob: Dictionary) -> void:
 	MapManager.pause_movement()
 	GameState.pending_combat_mob = mob.duplicate(true)
 	GameState.last_defeated_mob_id = mob.get("id", "")
+	# Capture overworld terrain context for battle map generation
+	GameState.combat_terrain_context = _sample_terrain_context(
+		mob.get("position", MapManager.party_position))
 	get_tree().change_scene_to_file("res://scenes/combat/combat_arena.tscn")
 
 
@@ -247,6 +252,8 @@ func _on_event_combat_requested(enemy_group: String, outcome: Dictionary) -> voi
 	# Use last_defeated_mob_id as victory flag (combat_arena clears it on defeat)
 	GameState.pending_combat_mob = combat_mob
 	GameState.last_defeated_mob_id = combat_mob.id
+	# Capture overworld terrain context for battle map generation
+	GameState.combat_terrain_context = _sample_terrain_context(MapManager.party_position)
 
 	# Close event overlay and transition to combat
 	_set_event_visible(false)
@@ -362,6 +369,38 @@ func _on_party_position_updated(_world_pos: Vector2) -> void:
 
 func _on_gold_changed(new_amount: int, _change: int) -> void:
 	gold_label.text = "Gold: " + str(new_amount)
+
+
+func _on_discovery_made(_pos: Vector2i, discovery: Dictionary) -> void:
+	# Reward is already applied by MapManager._check_discovery()
+	_show_toast(discovery.get("message", "You found something!"))
+	# Update gold display in case gold was found
+	gold_label.text = "Gold: " + str(GameState.gold)
+
+
+## Sample overworld terrain around a position for combat battle map generation
+## Checks a 5x5 area and returns the dominant terrain type and all terrain counts
+func _sample_terrain_context(center: Vector2i) -> Dictionary:
+	var terrain_counts: Dictionary = {}  # Terrain type int -> count
+	for dy in range(-2, 3):
+		for dx in range(-2, 3):
+			var pos = center + Vector2i(dx, dy)
+			var t = MapManager.get_terrain(pos)
+			terrain_counts[t] = terrain_counts.get(t, 0) + 1
+
+	# Find dominant terrain (most common type in the sample area)
+	var dominant = MapManager.Terrain.PLAINS
+	var max_count = 0
+	for t in terrain_counts:
+		if terrain_counts[t] > max_count:
+			max_count = terrain_counts[t]
+			dominant = t
+
+	return {
+		"dominant": dominant,
+		"counts": terrain_counts,
+		"region": MapManager.get_region_at(center)
+	}
 
 
 func _show_toast(msg: String) -> void:

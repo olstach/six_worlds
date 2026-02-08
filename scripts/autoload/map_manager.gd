@@ -28,6 +28,7 @@ signal mob_combat_triggered(mob: Dictionary)    # Hostile/aggressive mob forces 
 signal mob_event_triggered(mob: Dictionary)     # Friendly mob opens event dialog
 signal mob_started_pursuit(mob: Dictionary)     # Aggressive mob spotted player
 signal mob_lost_pursuit(mob: Dictionary)        # Aggressive mob gave up chase
+signal discovery_made(pos: Vector2i, discovery: Dictionary)  # Hidden find on terrain
 
 # Terrain types - these are broad categories, biome-specific
 # variants can map to these for movement purposes
@@ -46,6 +47,14 @@ enum Terrain {
 	ICE = 11,
 	SAND = 12,
 	RUINS = 13
+}
+
+# Terrain -> movement ability required to traverse when normally impassable
+# If the party has the matching ability, the terrain becomes passable at reduced speed
+const TERRAIN_ABILITIES: Dictionary = {
+	Terrain.WATER: "water_walking",
+	Terrain.MOUNTAINS: "flight",
+	Terrain.LAVA: "lava_immunity"   # flight also works (checked separately)
 }
 
 # Speed multipliers for terrain types
@@ -103,6 +112,17 @@ const TERRAIN_DESCRIPTIONS: Dictionary = {
 	Terrain.RUINS: "Crumbling structures. Reduced movement speed."
 }
 
+# Base discovery chances per terrain type (before skill bonuses)
+# When the party enters one of these terrain types for the first time,
+# there's a chance of finding hidden items, gold, XP, or healing
+const DISCOVERY_CHANCES: Dictionary = {
+	Terrain.RUINS: 0.20,    # 20% base — rubble hides many secrets
+	Terrain.FOREST: 0.08,   # 8% base — herbs, abandoned camps
+	Terrain.SWAMP: 0.06,    # 6% base — things lost in the muck
+	Terrain.HILLS: 0.05,    # 5% base — caves, overlooks
+	Terrain.DESERT: 0.04,   # 4% base — buried relics
+}
+
 # Map object categories
 # EVENT: Opens an event dialog (FTL-style). Shops, combats, quests, dungeons,
 #        NPCs - all handled through EventManager with branching choices.
@@ -155,6 +175,13 @@ var defeated_mobs: Array[String] = []     # IDs of mobs that won't respawn
 # Region definitions loaded from map JSON
 # Each region maps to a rect: {tiles_rect: [x, y, x2, y2]}
 var regions: Dictionary = {}  # region_id -> {tiles_rect: Array}
+
+# Active movement abilities (set by buffs, spells, items)
+# When active, these allow traversal of normally impassable terrain
+var movement_abilities: Dictionary = {}  # ability_name -> bool
+
+# Tiles already searched for discoveries (prevents re-rolling)
+var searched_tiles: Dictionary = {}  # Vector2i -> bool
 
 # ============================================
 # MOB STATE
@@ -288,6 +315,9 @@ func _process(delta: float) -> void:
 				visited_tiles[reveal_pos] = true
 
 		party_moved.emit(old_pos, target_tile)
+
+		# Check for hidden discoveries on this terrain
+		_check_discovery(target_tile)
 
 		# Check for object interaction on arrival
 		var obj = get_object_at(target_tile)
@@ -468,6 +498,7 @@ func _apply_map_data(data: Dictionary) -> void:
 	tiles.clear()
 	objects.clear()
 	regions.clear()
+	searched_tiles.clear()
 
 	# Load regions (if present)
 	var region_data = data.get("regions", {})
@@ -656,9 +687,20 @@ func get_terrain_description(pos: Vector2i) -> String:
 
 ## Get speed multiplier for terrain at position
 ## Returns: 2.0 = double speed, 1.0 = normal, 0.5 = half, -1.0 = impassable
+## Accounts for movement abilities (water_walking, flight, etc.)
 func get_terrain_speed(pos: Vector2i) -> float:
 	var terrain = get_terrain(pos)
-	return TERRAIN_SPEED.get(terrain, 1.0)
+	var base_speed = TERRAIN_SPEED.get(terrain, 1.0)
+	if base_speed > 0:
+		return base_speed
+	# Check if a movement ability overrides impassability
+	var required = TERRAIN_ABILITIES.get(terrain, "")
+	if not required.is_empty() and movement_abilities.get(required, false):
+		return 0.75  # Ability-enabled traversal is slower than normal
+	# Flight overrides mountains and lava
+	if movement_abilities.get("flight", false) and terrain in [Terrain.MOUNTAINS, Terrain.LAVA]:
+		return 0.5  # Flying over obstacles is slow
+	return base_speed  # Still impassable
 
 
 ## Get a human-readable speed label for UI
@@ -678,9 +720,24 @@ func get_speed_label(pos: Vector2i) -> String:
 		return "Very Slow"
 
 
-## Check if terrain is passable
+## Check if terrain is passable (accounts for movement abilities)
 func is_passable(pos: Vector2i) -> bool:
 	return get_terrain_speed(pos) > 0
+
+
+## Enable or disable a movement ability (e.g. "water_walking", "flight", "lava_immunity")
+func set_movement_ability(ability: String, active: bool) -> void:
+	movement_abilities[ability] = active
+
+
+## Check if a movement ability is active
+func has_movement_ability(ability: String) -> bool:
+	return movement_abilities.get(ability, false)
+
+
+## Clear all movement abilities (e.g. on map change)
+func clear_movement_abilities() -> void:
+	movement_abilities.clear()
 
 
 ## Get the region name at a tile position (e.g. "cold_hell", "fire_hell")
@@ -1355,6 +1412,109 @@ func pause_mobs() -> void:
 ## Resume mob movement
 func resume_mobs() -> void:
 	pass
+
+
+# ============================================
+# EXPLORATION DISCOVERY
+# ============================================
+# Certain terrain types (ruins, forests, etc.) can yield hidden discoveries
+# when the party walks on them for the first time. Discovery chance is
+# modified by party skills (Learning, Guile) and Awareness attribute.
+
+## Check for a hidden discovery when entering a tile
+func _check_discovery(pos: Vector2i) -> void:
+	if pos in searched_tiles:
+		return
+	searched_tiles[pos] = true
+
+	var terrain = get_terrain(pos)
+	var base_chance = DISCOVERY_CHANCES.get(terrain, 0.0)
+	if base_chance <= 0:
+		return
+
+	# Skill bonus from best party member
+	var skill_bonus = _get_best_party_discovery_bonus()
+	var final_chance = base_chance + skill_bonus
+
+	if randf() < final_chance:
+		var discovery = _generate_discovery(terrain, pos)
+		_apply_reward(discovery)
+		discovery_made.emit(pos, discovery)
+
+
+## Calculate the best discovery bonus from any party member
+## Learning adds 2% per level, Guile adds 1.5% per level
+## Awareness attribute adds 0.5% per point above 10
+func _get_best_party_discovery_bonus() -> float:
+	var best = 0.0
+	for character in CharacterSystem.get_party():
+		var skills = character.get("skills", {})
+		var attrs = character.get("attributes", {})
+		var bonus = skills.get("learning", 0) * 0.02 + skills.get("guile", 0) * 0.015
+		bonus += max(0, (attrs.get("awareness", 10) - 10)) * 0.005
+		best = max(best, bonus)
+	return best
+
+
+## Generate a discovery reward based on terrain type and region
+func _generate_discovery(terrain: int, pos: Vector2i) -> Dictionary:
+	var _region = get_region_at(pos)
+	var roll = randf()
+
+	match terrain:
+		Terrain.RUINS:
+			if roll < 0.3:
+				return {"type": "gold", "value": randi_range(15, 50),
+					"message": "You find coins among the rubble."}
+			elif roll < 0.6:
+				return {"type": "item", "value": _pick_discovery_item(_region),
+					"message": "Something glints in the ruins!"}
+			else:
+				return {"type": "xp", "value": randi_range(5, 20),
+					"message": "Studying the ruins yields insight."}
+		Terrain.FOREST:
+			if roll < 0.4:
+				return {"type": "item", "value": "health_potion",
+					"message": "You find herbs growing in the shade."}
+			elif roll < 0.7:
+				return {"type": "heal", "value": 10,
+					"message": "A peaceful glade restores your spirit."}
+			else:
+				return {"type": "gold", "value": randi_range(5, 25),
+					"message": "An abandoned camp has useful supplies."}
+		Terrain.SWAMP:
+			if roll < 0.5:
+				return {"type": "gold", "value": randi_range(10, 35),
+					"message": "Something valuable is stuck in the mud."}
+			else:
+				return {"type": "item", "value": _pick_discovery_item(_region),
+					"message": "You pull an object from the mire."}
+		Terrain.HILLS:
+			if roll < 0.4:
+				return {"type": "xp", "value": randi_range(5, 15),
+					"message": "The high ground reveals strategic insight."}
+			else:
+				return {"type": "gold", "value": randi_range(8, 30),
+					"message": "You spot a hidden cave with supplies."}
+		_:
+			return {"type": "gold", "value": randi_range(5, 30),
+				"message": "You find something hidden here."}
+
+
+## Pick a discovery item appropriate to the region
+func _pick_discovery_item(region: String) -> String:
+	var cold_items = ["health_potion", "leather_gloves", "leather_boots", "copper_ring"]
+	var fire_items = ["health_potion", "iron_dagger", "leather_vest", "copper_ring"]
+	var default_items = ["health_potion", "copper_ring", "iron_dagger"]
+
+	var pool: Array
+	if region == "cold_hell":
+		pool = cold_items
+	elif region == "fire_hell":
+		pool = fire_items
+	else:
+		pool = default_items
+	return pool[randi() % pool.size()]
 
 
 # ============================================

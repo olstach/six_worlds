@@ -1,0 +1,4 @@
+res://scripts/autoload/game_state.gd
+res://scripts/autoload/map_manager.gd
+res://scripts/combat/combat_arena.gd
+res://scripts/combat/combat_grid.gd

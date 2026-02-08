@@ -252,6 +252,13 @@ func _start_test_combat() -> void:
 func _start_overworld_combat(mob_data: Dictionary) -> void:
 	_log_message("=== %s attacks! ===" % mob_data.get("name", "Enemy"))
 
+	# Generate combat terrain from overworld context (before placing units)
+	var terrain_context = GameState.combat_terrain_context
+	GameState.combat_terrain_context = {}
+	if not terrain_context.is_empty():
+		var map_data = _generate_combat_terrain(terrain_context)
+		combat_grid.setup_from_map(map_data)
+
 	# Get encounter info from mob data
 	var mob_inner = mob_data.get("data", {})
 	var enemy_group = mob_inner.get("enemy_group", "demon_patrol")
@@ -313,6 +320,103 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 
 	# Start combat
 	CombatManager.start_combat(combat_grid, player_units, enemy_units)
+
+
+## Generate combat grid terrain based on overworld terrain context
+## Translates overworld terrain types into combat tile types, effects, and heights
+func _generate_combat_terrain(context: Dictionary) -> Dictionary:
+	var dominant = int(context.get("dominant", 0))
+	var counts = context.get("counts", {})
+	var grid_w = combat_grid.grid_size.x  # 12
+	var grid_h = combat_grid.grid_size.y  # 8
+
+	var tile_overrides: Dictionary = {}  # "x,y" -> TileType
+	var effects: Array[Dictionary] = []
+	var heights: Array[Dictionary] = []
+
+	# Budget obstacles based on overworld terrain counts in the 5x5 sample
+	var obstacle_budget = 0
+	var water_budget = 0
+	var difficult_budget = 0
+
+	for terrain_type in counts:
+		var count = int(counts[terrain_type])
+		match int(terrain_type):
+			4:  # MOUNTAINS -> walls
+				obstacle_budget += count
+			5:  # WATER -> water tiles
+				water_budget += count
+			2, 6:  # FOREST, SWAMP -> difficult terrain
+				difficult_budget += count
+			3:  # HILLS -> height variation
+				for i in range(mini(count, 4)):
+					var hx = randi_range(3, grid_w - 4)
+					var hy = randi_range(1, grid_h - 2)
+					heights.append({"pos": Vector2i(hx, hy), "height": 1})
+			9:  # LAVA -> fire pits
+				for i in range(mini(count / 2, 3)):
+					var lx = randi_range(3, grid_w - 4)
+					var ly = randi_range(1, grid_h - 2)
+					tile_overrides["%d,%d" % [lx, ly]] = CombatGrid.TileType.PIT
+					effects.append({"pos": Vector2i(lx, ly),
+						"effect": CombatGrid.TerrainEffect.FIRE, "value": 5})
+			13:  # RUINS -> difficult terrain with some walls
+				difficult_budget += count / 2
+				obstacle_budget += count / 3
+
+	# Place wall obstacles (from mountains/ruins)
+	var walls_to_place = clampi(obstacle_budget / 4, 0, 6)
+	for i in range(walls_to_place):
+		var wx = randi_range(3, grid_w - 4)
+		var wy = randi_range(1, grid_h - 2)
+		tile_overrides["%d,%d" % [wx, wy]] = CombatGrid.TileType.WALL
+
+	# Place water tiles
+	var water_to_place = clampi(water_budget / 3, 0, 4)
+	for i in range(water_to_place):
+		var wx = randi_range(3, grid_w - 4)
+		var wy = randi_range(1, grid_h - 2)
+		tile_overrides["%d,%d" % [wx, wy]] = CombatGrid.TileType.WATER
+
+	# Place difficult terrain (from forest/swamp)
+	var diff_to_place = clampi(difficult_budget / 3, 0, 6)
+	for i in range(diff_to_place):
+		var dx = randi_range(2, grid_w - 3)
+		var dy = randi_range(0, grid_h - 1)
+		tile_overrides["%d,%d" % [dx, dy]] = CombatGrid.TileType.DIFFICULT
+
+	# Dominant terrain effects (snow/ice -> ice patches, etc.)
+	match dominant:
+		8, 11:  # SNOW, ICE
+			for i in range(randi_range(2, 5)):
+				var ix = randi_range(2, grid_w - 3)
+				var iy = randi_range(0, grid_h - 1)
+				var key = "%d,%d" % [ix, iy]
+				if not key in tile_overrides:
+					effects.append({"pos": Vector2i(ix, iy),
+						"effect": CombatGrid.TerrainEffect.ICE, "value": 0})
+
+	# Safety: never block deployment zones (columns 0-2 for player, last 3 for enemy)
+	for key in tile_overrides.keys():
+		var parts = key.split(",")
+		var kx = int(parts[0])
+		if kx < 3 or kx >= grid_w - 3:
+			tile_overrides.erase(key)
+
+	# Also clear effects from deployment zones
+	var safe_effects: Array[Dictionary] = []
+	for eff in effects:
+		var ex = eff.get("pos", Vector2i(-1, -1)).x
+		if ex >= 3 and ex < grid_w - 3:
+			safe_effects.append(eff)
+	effects = safe_effects
+
+	return {
+		"size": Vector2i(grid_w, grid_h),
+		"tiles": tile_overrides,
+		"effects": effects,
+		"heights": heights
+	}
 
 
 # ============================================

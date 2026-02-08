@@ -29,6 +29,10 @@ var returning_from_combat: bool = false  # Set true when returning to overworld 
 var pending_event_outcome: Dictionary = {}  # Event outcome to display after combat
 var pending_event_object: Dictionary = {}   # Event object for post-combat cleanup
 
+# Overworld terrain context for generating combat battle maps
+# Set by overworld.gd before scene change, consumed by combat_arena.gd
+var combat_terrain_context: Dictionary = {}  # {dominant, counts, region}
+
 # World definitions
 const WORLDS: Dictionary = {
 	"hell": {

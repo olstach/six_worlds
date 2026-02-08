@@ -140,6 +140,8 @@ func _initialize_grid() -> void:
 
 
 ## Set up grid from a map definition
+## Supports: "size" (Vector2i), "tiles" (dict of "x,y" -> TileType),
+##           "effects" (array of {pos, effect, value}), "heights" (array of {pos, height})
 func setup_from_map(map_data: Dictionary) -> void:
 	grid_size = map_data.get("size", Vector2i(12, 8))
 	_initialize_grid()
@@ -153,6 +155,21 @@ func setup_from_map(map_data: Dictionary) -> void:
 			var tile_type = tile_overrides[pos_str]
 			if pos in tiles:
 				tiles[pos] = GridTile.new(tile_type)
+
+	# Apply terrain effects (fire, ice, poison, etc.)
+	var effect_list = map_data.get("effects", [])
+	for eff in effect_list:
+		var pos = eff.get("pos", Vector2i(-1, -1))
+		if is_valid_position(pos):
+			add_terrain_effect(pos, eff.get("effect", TerrainEffect.NONE),
+				-1, eff.get("value", 0))
+
+	# Apply height overrides
+	var height_list = map_data.get("heights", [])
+	for h in height_list:
+		var pos = h.get("pos", Vector2i(-1, -1))
+		if is_valid_position(pos):
+			set_tile_height(pos, h.get("height", 0))
 
 	_draw_grid()
 

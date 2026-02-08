@@ -153,6 +153,8 @@ func _draw() -> void:
 			draw_rect(rect, color)
 			# Grid lines
 			draw_rect(rect, GRID_COLOR, false)
+			# Terrain speed/passability overlay
+			_draw_terrain_overlay(x, y, ts, MapManager.get_terrain_speed(pos))
 
 	# --- Layer 2: Fog of war ---
 	for y in range(map_h):
@@ -240,3 +242,32 @@ func _draw_mob_marker(center: Vector2, attitude: int, is_pursuing: bool, ts: int
 	# Draw mob as a circle with a dark outline
 	draw_circle(center, radius + 1.5, Color(0.1, 0.1, 0.1))
 	draw_circle(center, radius, color)
+
+
+## Draw terrain overlay indicating passability/speed
+## Called per-tile after the base terrain color is drawn
+func _draw_terrain_overlay(x: int, y: int, ts: int, speed: float) -> void:
+	if speed <= 0:
+		# Impassable: X pattern (dark semi-transparent diagonal lines)
+		var x0 = float(x * ts)
+		var y0 = float(y * ts)
+		var x1 = x0 + ts
+		var y1 = y0 + ts
+		var impass_color = Color(0, 0, 0, 0.3)
+		draw_line(Vector2(x0, y0), Vector2(x1, y1), impass_color, 1.5)
+		draw_line(Vector2(x1, y0), Vector2(x0, y1), impass_color, 1.5)
+	elif speed < 1.0:
+		# Slow/difficult: subtle dots pattern
+		var base = Vector2(x * ts, y * ts)
+		var dot_color = Color(0, 0, 0, 0.15)
+		var dot_size = 2.0
+		draw_circle(base + Vector2(ts * 0.25, ts * 0.25), dot_size, dot_color)
+		draw_circle(base + Vector2(ts * 0.75, ts * 0.25), dot_size, dot_color)
+		draw_circle(base + Vector2(ts * 0.25, ts * 0.75), dot_size, dot_color)
+		draw_circle(base + Vector2(ts * 0.75, ts * 0.75), dot_size, dot_color)
+	elif speed >= 1.25:
+		# Fast: subtle center line (road/bridge/ice indicator)
+		var mid_x = float(x * ts) + ts * 0.5
+		var top_y = float(y * ts) + 4.0
+		var bot_y = float(y * ts) + ts - 4.0
+		draw_line(Vector2(mid_x, top_y), Vector2(mid_x, bot_y), Color(1, 1, 1, 0.2), 2.0)
