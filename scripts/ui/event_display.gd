@@ -15,6 +15,8 @@ extends Control
 @onready var result_label: RichTextLabel = $ResultPanel/MarginContainer/VBoxContainer/ResultLabel
 @onready var continue_button: Button = $ResultPanel/MarginContainer/VBoxContainer/ContinueButton
 
+signal event_display_closed
+
 var current_event: Dictionary = {}
 var current_outcome: Dictionary = {}
 
@@ -22,12 +24,16 @@ func _ready() -> void:
 	# Connect to EventManager
 	EventManager.event_started.connect(_on_event_started)
 	EventManager.event_completed.connect(_on_event_completed)
-	
-	# Hide result panel initially
+
+	# Hide panels initially
 	result_panel.visible = false
-	
-	# Start a test event
-	EventManager.start_event("test_encounter_1")
+	event_panel.visible = false
+
+
+## Call this to show and start an event (used by overworld overlay)
+func show_event(event_id: String) -> void:
+	visible = true
+	EventManager.start_event(event_id)
 
 func _on_event_started(event_data: Dictionary) -> void:
 	current_event = event_data
@@ -179,10 +185,8 @@ func display_outcome(outcome: Dictionary) -> void:
 	result_panel.visible = true
 
 func _on_continue_button_pressed() -> void:
-	# For now, just load a random event
-	var random_event = EventManager.get_random_event_for_realm(GameState.current_world)
-	if random_event:
-		EventManager.start_event(random_event)
-	else:
-		# No events available, go to test_encounter_1
-		EventManager.start_event("test_encounter_1")
+	# Hide and notify parent (overworld) that the event is done
+	event_panel.visible = false
+	result_panel.visible = false
+	visible = false
+	event_display_closed.emit()

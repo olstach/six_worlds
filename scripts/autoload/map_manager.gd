@@ -276,8 +276,12 @@ func _process(delta: float) -> void:
 		var old_pos = party_position
 		party_position = target_tile
 
-		# Mark visited
+		# Reveal area around new position (Manhattan distance 1 = diamond)
 		visited_tiles[target_tile] = true
+		for dir in [Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0)]:
+			var reveal_pos = target_tile + dir
+			if is_valid_position(reveal_pos):
+				visited_tiles[reveal_pos] = true
 
 		party_moved.emit(old_pos, target_tile)
 
@@ -818,8 +822,9 @@ func _interact_with_object(obj: Dictionary) -> void:
 		ObjectType.PORTAL:
 			_handle_portal_object(obj)
 
-	# Remove one-time objects after interaction
-	if obj.one_time:
+	# Remove one-time objects after interaction (except EVENTs - those are
+	# removed when the event display closes, so they persist during the event)
+	if obj.one_time and obj.type != ObjectType.EVENT:
 		collected_objects.append(obj.id)
 		objects.erase(obj.position)
 
@@ -1377,14 +1382,13 @@ func is_tile_visited(pos: Vector2i) -> bool:
 	return visited_tiles.get(pos, false)
 
 
-## Reveal tiles around a position
+## Reveal tiles around a position (Manhattan distance = diamond shape)
 func reveal_area(center: Vector2i, radius: int) -> void:
 	for dy in range(-radius, radius + 1):
 		for dx in range(-radius, radius + 1):
 			var pos = center + Vector2i(dx, dy)
 			if is_valid_position(pos):
-				# Use true distance for circular reveal
-				var dist = sqrt(float(dx * dx + dy * dy))
+				var dist = absi(dx) + absi(dy)
 				if dist <= radius:
 					visited_tiles[pos] = true
 

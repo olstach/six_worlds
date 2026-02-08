@@ -371,7 +371,7 @@ func _get_neighbors(pos: Vector2i) -> Array[Vector2i]:
 	]
 
 
-## Get tiles within attack range
+## Get tiles within attack range (Manhattan distance = diamond shape)
 func get_attack_range_tiles(start: Vector2i, min_range: int, max_range: int) -> Array[Vector2i]:
 	var in_range: Array[Vector2i] = []
 
@@ -381,8 +381,8 @@ func get_attack_range_tiles(start: Vector2i, min_range: int, max_range: int) -> 
 			if not is_valid_position(pos):
 				continue
 
-			# Chebyshev distance (diagonal = 1)
-			var dist = maxi(absi(x), absi(y))
+			# Manhattan distance (diamond shape)
+			var dist = absi(x) + absi(y)
 			if dist >= min_range and dist <= max_range:
 				in_range.append(pos)
 
@@ -482,6 +482,30 @@ func highlight_spell_range(tiles_to_highlight: Array[Vector2i]) -> void:
 	_show_highlights(tiles_to_highlight)
 
 
+## Highlight full range area (dim) plus valid targets (bright)
+func highlight_spell_range_and_area(range_tiles: Array[Vector2i], target_tiles: Array[Vector2i]) -> void:
+	clear_highlights()
+	# Dim highlight for the full range area
+	var dim_color = Color(COLOR_SPELL_RANGE.r, COLOR_SPELL_RANGE.g, COLOR_SPELL_RANGE.b, 0.15)
+	for pos in range_tiles:
+		var highlight = ColorRect.new()
+		highlight.size = Vector2(tile_size - 2, tile_size - 2)
+		highlight.position = grid_to_world(pos) + Vector2(1, 1)
+		highlight.color = dim_color
+		highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		highlight_layer.add_child(highlight)
+	# Bright highlight for actual targets
+	current_highlight_color = COLOR_SPELL_RANGE
+	for pos in target_tiles:
+		var highlight = ColorRect.new()
+		highlight.size = Vector2(tile_size - 2, tile_size - 2)
+		highlight.position = grid_to_world(pos) + Vector2(1, 1)
+		highlight.color = COLOR_SPELL_RANGE
+		highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		highlight_layer.add_child(highlight)
+	highlighted_tiles = target_tiles
+
+
 ## Show highlights on specified tiles
 func _show_highlights(positions: Array[Vector2i]) -> void:
 	highlighted_tiles = positions
@@ -529,15 +553,15 @@ func show_aoe_preview(center: Vector2i, radius: int) -> void:
 	if not is_valid_position(center):
 		return
 
-	# Highlight all tiles within radius
+	# Highlight all tiles within radius (Manhattan distance = diamond)
 	for x in range(-radius, radius + 1):
 		for y in range(-radius, radius + 1):
 			var pos = center + Vector2i(x, y)
 			if not is_valid_position(pos):
 				continue
 
-			# Chebyshev distance
-			var dist = maxi(absi(x), absi(y))
+			# Manhattan distance (diamond shape)
+			var dist = absi(x) + absi(y)
 			if dist <= radius:
 				var highlight = ColorRect.new()
 				highlight.size = Vector2(tile_size - 2, tile_size - 2)
@@ -555,7 +579,7 @@ func clear_aoe_preview() -> void:
 			child.queue_free()
 
 
-## Get tiles within a radius (for AoE spells)
+## Get tiles within a radius (for AoE spells, Manhattan distance = diamond)
 func get_tiles_in_radius(center: Vector2i, radius: int) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
 
@@ -565,8 +589,8 @@ func get_tiles_in_radius(center: Vector2i, radius: int) -> Array[Vector2i]:
 			if not is_valid_position(pos):
 				continue
 
-			# Chebyshev distance
-			var dist = maxi(absi(x), absi(y))
+			# Manhattan distance (diamond shape)
+			var dist = absi(x) + absi(y)
 			if dist <= radius:
 				result.append(pos)
 
@@ -850,8 +874,8 @@ func get_ranged_attack_tiles(start: Vector2i, min_range: int, max_range: int) ->
 			if not is_valid_position(pos):
 				continue
 
-			# Chebyshev distance
-			var dist = maxi(absi(x), absi(y))
+			# Manhattan distance (diamond shape)
+			var dist = absi(x) + absi(y)
 			if dist >= min_range and dist <= max_range:
 				# Check line of sight
 				if has_line_of_sight(start, pos):

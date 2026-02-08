@@ -2,23 +2,28 @@ extends Control
 ## New Character Sheet - Clean implementation matching design mockup
 
 # Left panel - top left (Name, Race, Background, XP)
-@onready var name_label: Label = $HBox/LeftPanel/TopRow/TopLeft/NameLabel
-@onready var race_label: Label = $HBox/LeftPanel/TopRow/TopLeft/RaceLabel
-@onready var background_label: Label = $HBox/LeftPanel/TopRow/TopLeft/BackgroundLabel
-@onready var xp_total_label: Label = $HBox/LeftPanel/TopRow/TopLeft/XPTotalLabel
-@onready var xp_free_label: Label = $HBox/LeftPanel/TopRow/TopLeft/XPFreeLabel
+@onready var name_label: Label = $HBox/LeftPanel/TopRow/TopLeft/Margin/Content/NameLabel
+@onready var race_label: Label = $HBox/LeftPanel/TopRow/TopLeft/Margin/Content/RaceLabel
+@onready var background_label: Label = $HBox/LeftPanel/TopRow/TopLeft/Margin/Content/BackgroundLabel
+@onready var xp_total_label: Label = $HBox/LeftPanel/TopRow/TopLeft/Margin/Content/XPTotalLabel
+@onready var xp_free_label: Label = $HBox/LeftPanel/TopRow/TopLeft/Margin/Content/XPFreeLabel
 
 # Left panel - top right (Karma)
-@onready var karma_list: VBoxContainer = $HBox/LeftPanel/TopRow/TopRight/KarmaList
+@onready var karma_list: VBoxContainer = $HBox/LeftPanel/TopRow/TopRight/Margin/Content/KarmaList
 
 # Left panel - bottom left (Main Attributes)
-@onready var attributes_list: VBoxContainer = $HBox/LeftPanel/BottomRow/BottomLeft/AttributesList
+@onready var attributes_list: VBoxContainer = $HBox/LeftPanel/BottomRow/BottomLeft/Margin/Content/AttributesList
 
 # Left panel - bottom right (Derived Stats)
-@onready var derived_list: VBoxContainer = $HBox/LeftPanel/BottomRow/BottomRight/DerivedList
+@onready var derived_list: VBoxContainer = $HBox/LeftPanel/BottomRow/BottomRight/Margin/Content/DerivedList
 
 # Right panel - Skills grid (8 columns x 5 rows)
-@onready var skills_grid: GridContainer = $HBox/RightPanel/SkillsGrid
+@onready var skills_grid: GridContainer = $HBox/RightPanel/Margin/Content/SkillsGrid
+
+# Right panel - Perks list (below skills)
+@onready var perks_list: HFlowContainer = $"HBox/RightPanel/Margin/Content/PerksList"
+@onready var perks_title: Label = $"HBox/RightPanel/Margin/Content/PerksTitle"
+@onready var perks_separator: HSeparator = $"HBox/RightPanel/Margin/Content/PerksSeparator"
 
 var current_character: Dictionary
 
@@ -45,6 +50,7 @@ func refresh_display() -> void:
 	update_attributes()
 	update_derived_stats()
 	update_skills_grid()
+	update_perks_list()
 
 func update_header() -> void:
 	name_label.text = current_character.name
@@ -188,6 +194,32 @@ func get_skills_by_element() -> Dictionary:
 		"water": ["water_magic", "persuasion"],
 		"earth": ["earth_magic", "unarmed", "shields"]
 	}
+
+func update_perks_list() -> void:
+	# Clear existing
+	for child in perks_list.get_children():
+		child.queue_free()
+
+	# Get all perks with full data from PerkSystem
+	var character_perks = PerkSystem.get_character_perks(current_character)
+
+	# Hide section if no perks yet
+	var has_perks = character_perks.size() > 0
+	perks_title.visible = has_perks
+	perks_list.visible = has_perks
+	perks_separator.visible = has_perks
+
+	for perk_entry in character_perks:
+		var perk_data: Dictionary = perk_entry.get("data", {})
+		var perk_name: String = perk_data.get("name", perk_entry.get("id", "???"))
+		var perk_desc: String = perk_data.get("description", "")
+
+		var label = Label.new()
+		label.text = perk_name
+		label.tooltip_text = perk_desc
+		# Mouse filter must be Stop so the tooltip triggers on hover
+		label.mouse_filter = Control.MOUSE_FILTER_STOP
+		perks_list.add_child(label)
 
 func increase_attribute(attr_name: String) -> void:
 	CharacterSystem.increase_attribute(current_character, attr_name, 1)

@@ -821,7 +821,9 @@ func get_spell(spell_id: String) -> Dictionary:
 					spell["targeting"] = "self"
 				"aoe", "circle":
 					spell["targeting"] = "aoe_circle"
-					spell["aoe_radius"] = target.get("radius", 2)
+					# AoE radius can be in target.radius or spell.aoe.base_size
+					var aoe_data = spell.get("aoe", {})
+					spell["aoe_radius"] = target.get("radius", aoe_data.get("base_size", 2))
 				"chain":
 					spell["targeting"] = "chain"
 				_:
@@ -831,10 +833,21 @@ func get_spell(spell_id: String) -> Dictionary:
 		if not "targeting" in spell:
 			spell["targeting"] = "single"
 
-		# Default range based on spell level if missing
-		if not "range" in spell or spell.range is String:
+		# Parse range from target data or default based on level
+		var target_data = spell.get("target", {})
+		var raw_range = target_data.get("range", spell.get("range", ""))
+		if raw_range is String:
+			if raw_range == "melee":
+				spell["range"] = 1
+			else:
+				# Default range based on spell level
+				var level = spell.get("level", 1)
+				spell["range"] = 3 + level  # Range 4-8 based on level
+		elif raw_range is int or raw_range is float:
+			spell["range"] = int(raw_range)
+		else:
 			var level = spell.get("level", 1)
-			spell["range"] = 3 + level  # Range 4-8 based on level
+			spell["range"] = 3 + level
 
 		return spell
 	return {}
@@ -1051,14 +1064,63 @@ func _calculate_spell_bonus(caster: Node, spell: Dictionary) -> int:
 
 
 ## Apply spell effects to a target
+## Reads directly from spells.json format: damage, damage_type, heal, statuses_caused
 func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: int) -> Dictionary:
 	var result = {
 		"target": target,
 		"effects_applied": []
 	}
 
-	var effects = spell.get("effects", [])
+	# --- Direct damage (from spell.damage and spell.damage_type) ---
+	var base_damage = spell.get("damage", null)
+	if base_damage != null and (base_damage is int or base_damage is float):
+		if int(base_damage) > 0:
+			var element = spell.get("damage_type", "physical")
+			var total_damage = int(base_damage) + bonus
 
+			# Variance ±15%
+			var variance = randf_range(0.85, 1.15)
+			total_damage = int(total_damage * variance)
+
+			# Apply resistance
+			var resistance = target.get_resistance(element)
+			total_damage = int(total_damage * (1.0 - resistance / 100.0))
+			total_damage = maxi(1, total_damage)
+
+			apply_damage(target, total_damage, element)
+			result.effects_applied.append({"type": "damage", "amount": total_damage, "element": element})
+
+	# --- Direct healing (from spell.heal) ---
+	var base_heal = spell.get("heal", null)
+	if base_heal != null and (base_heal is int or base_heal is float):
+		if int(base_heal) > 0:
+			var total_heal = int(base_heal) + int(bonus * 0.5)
+			target.heal(total_heal)
+			unit_healed.emit(target, total_heal)
+			result.effects_applied.append({"type": "heal", "amount": total_heal})
+
+	# --- Status effects (from spell.statuses_caused) ---
+	var statuses = spell.get("statuses_caused", [])
+	for status_name in statuses:
+		var duration = 3  # Default duration
+		# Use spellpower-based duration if spell says "spellpower"
+		var dur_field = spell.get("duration", null)
+		if dur_field is int or dur_field is float:
+			duration = int(dur_field)
+		elif dur_field == "spellpower":
+			duration = maxi(1, 2 + int(bonus * 0.1))
+
+		_apply_status_effect(target, status_name, duration, 0)
+		result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
+
+	# --- Status removal (from spell.statuses_removed) ---
+	var statuses_removed = spell.get("statuses_removed", [])
+	if not statuses_removed.is_empty():
+		var cleansed = _cleanse_status_effects(target, statuses_removed.size())
+		result.effects_applied.append({"type": "cleanse", "removed": cleansed})
+
+	# --- Legacy effects array support (for future hand-crafted spells) ---
+	var effects = spell.get("effects", [])
 	for effect in effects:
 		var effect_type = effect.get("type", "")
 		var effect_result = {}
@@ -1068,22 +1130,17 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 				var element = effect.get("element", "physical")
 				var base_value = effect.get("base_value", 10)
 				var total_damage = base_value + bonus
-
-				# Variance ±15%
 				var variance = randf_range(0.85, 1.15)
 				total_damage = int(total_damage * variance)
-
-				# Apply resistance
 				var resistance = target.get_resistance(element)
 				total_damage = int(total_damage * (1.0 - resistance / 100.0))
-				total_damage = maxi(0, total_damage)
-
+				total_damage = maxi(1, total_damage)
 				apply_damage(target, total_damage, element)
 				effect_result = {"type": "damage", "amount": total_damage, "element": element}
 
 			"heal":
 				var base_value = effect.get("base_value", 10)
-				var total_heal = base_value + int(bonus * 0.5)  # Spellpower contributes half to healing
+				var total_heal = base_value + int(bonus * 0.5)
 				target.heal(total_heal)
 				unit_healed.emit(target, total_heal)
 				effect_result = {"type": "heal", "amount": total_heal}
@@ -1099,7 +1156,6 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 				var status = effect.get("status", "")
 				var duration = effect.get("duration", 1)
 				var chance = effect.get("chance", 100)
-
 				if randf() * 100 <= chance:
 					_apply_status_effect(target, status, duration, effect.get("value", 0))
 					effect_result = {"type": "status", "status": status, "applied": true}
@@ -1112,27 +1168,6 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 					var revive_hp = maxi(1, int(target.max_hp * hp_percent / 100.0))
 					revive_unit(target, revive_hp)
 					effect_result = {"type": "revive", "hp": revive_hp}
-
-			"lifesteal":
-				var percent = effect.get("percent", 50)
-				# Lifesteal is calculated based on damage dealt in same spell
-				for prev_effect in result.effects_applied:
-					if prev_effect.get("type") == "damage":
-						var stolen = int(prev_effect.amount * percent / 100.0)
-						caster.heal(stolen)
-						unit_healed.emit(caster, stolen)
-						effect_result = {"type": "lifesteal", "amount": stolen}
-						break
-
-			"teleport":
-				var distance = effect.get("distance", 4)
-				# For now, teleport just marks the effect - UI handles destination
-				effect_result = {"type": "teleport", "max_distance": distance}
-
-			"cleanse":
-				var count = effect.get("count", 1)
-				var cleansed = _cleanse_status_effects(target, count)
-				effect_result = {"type": "cleanse", "removed": cleansed}
 
 		if not effect_result.is_empty():
 			result.effects_applied.append(effect_result)

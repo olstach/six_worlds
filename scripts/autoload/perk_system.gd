@@ -238,7 +238,7 @@ func _check_special_requirement(character: Dictionary, special: String) -> bool:
 
 			# Check if it starts with a number (count required)
 			var count_required := 1
-			var category_str := category_part
+			var category_str: String = category_part
 			var first_underscore = category_part.find("_")
 			if first_underscore > 0 and category_part.substr(0, first_underscore).is_valid_int():
 				count_required = int(category_part.substr(0, first_underscore))

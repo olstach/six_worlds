@@ -16,7 +16,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="Six Worlds"
 config/description="A tactical RPG roguelike set in the six realms of Tibetan Buddhist cosmology"
-run/main_scene="res://scenes/ui/test_launcher.tscn"
+run/main_scene="res://scenes/overworld/overworld.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -30,6 +30,7 @@ KarmaSystem="*res://scripts/autoload/karma_system.gd"
 EventManager="*res://scripts/autoload/event_manager.gd"
 CombatManager="*res://scripts/autoload/combat_manager.gd"
 ShopSystem="*res://scripts/autoload/shop_system.gd"
+MapManager="*res://scripts/autoload/map_manager.gd"
 
 [display]
 

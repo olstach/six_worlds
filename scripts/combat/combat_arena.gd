@@ -180,8 +180,13 @@ func _ready() -> void:
 	# Center camera on grid
 	_center_camera()
 
-	# Start test combat
-	_start_test_combat()
+	# Check if we were launched from the overworld with mob data
+	if not GameState.pending_combat_mob.is_empty():
+		_start_overworld_combat(GameState.pending_combat_mob)
+		GameState.pending_combat_mob = {}
+	else:
+		# Standalone testing fallback
+		_start_test_combat()
 
 
 ## Center camera on the grid
@@ -239,6 +244,13 @@ func _start_test_combat() -> void:
 
 	# Start combat
 	CombatManager.start_combat(combat_grid, player_units, enemy_units)
+
+
+## Start combat from overworld mob encounter (uses test enemies for alpha)
+func _start_overworld_combat(mob_data: Dictionary) -> void:
+	_log_message("=== %s attacks! ===" % mob_data.get("name", "Enemy"))
+	# For alpha, reuse test enemy setup - later this will read mob_data.enemy_group
+	_start_test_combat()
 
 
 # ============================================
@@ -352,9 +364,14 @@ func _on_attack_pressed() -> void:
 		return
 
 	current_action_mode = ActionMode.ATTACK
-	var attack_range = combat_grid.get_attack_range_tiles(unit.grid_position, 1, unit.get_attack_range())
+	var weapon_range = unit.get_attack_range()
+	var attack_range = combat_grid.get_attack_range_tiles(unit.grid_position, 1, weapon_range)
 	combat_grid.highlight_attack_range(attack_range)
-	_log_message("Select target to attack...")
+
+	if weapon_range > 1:
+		_log_message("Select target to attack (range: %d)..." % weapon_range)
+	else:
+		_log_message("Select target to attack...")
 
 
 func _on_spell_pressed() -> void:
@@ -397,21 +414,23 @@ func _show_spell_panel(unit: CombatUnit) -> void:
 				btn.disabled = true
 				btn.text += " [Low Mana]"
 
-			# Color by school
-			var schools = spell.get("schools", [])
-			if "fire" in schools:
+			# Color by school (lowercase for comparison, spells.json uses capitalized names)
+			var schools_lower: Array[String] = []
+			for s in spell.get("schools", []):
+				schools_lower.append(s.to_lower())
+			if "fire" in schools_lower:
 				btn.add_theme_color_override("font_color", Color(1.0, 0.5, 0.3))
-			elif "water" in schools:
+			elif "water" in schools_lower:
 				btn.add_theme_color_override("font_color", Color(0.3, 0.6, 1.0))
-			elif "earth" in schools:
+			elif "earth" in schools_lower:
 				btn.add_theme_color_override("font_color", Color(0.7, 0.6, 0.4))
-			elif "air" in schools:
+			elif "air" in schools_lower:
 				btn.add_theme_color_override("font_color", Color(0.7, 0.9, 1.0))
-			elif "space" in schools:
+			elif "space" in schools_lower:
 				btn.add_theme_color_override("font_color", Color(0.8, 0.5, 1.0))
-			elif "white" in schools:
+			elif "white" in schools_lower:
 				btn.add_theme_color_override("font_color", Color(1.0, 1.0, 0.8))
-			elif "black" in schools:
+			elif "black" in schools_lower:
 				btn.add_theme_color_override("font_color", Color(0.6, 0.3, 0.6))
 
 			btn.pressed.connect(_on_spell_selected.bind(spell))
@@ -529,27 +548,32 @@ func _on_spell_selected(spell: Dictionary) -> void:
 	selected_spell = spell
 	spell_panel.hide()
 
-	# Get valid targets
-	var valid_targets = CombatManager.get_spell_targets(unit, spell.id)
-
-	if valid_targets.is_empty():
-		_log_message("No valid targets for " + spell.name)
-		_cancel_action_mode()
-		return
-
 	# Self-targeting spells cast immediately
 	if spell.get("targeting") == "self":
 		_try_cast_spell(unit.grid_position)
 		return
 
+	# Get the normalized spell data for range info
+	var spell_data = CombatManager.get_spell(spell.id)
+	var spell_range = spell_data.get("range", 1)
+
+	# Get valid targets and full range area
+	var valid_targets = CombatManager.get_spell_targets(unit, spell.id)
+	var range_area = combat_grid.get_attack_range_tiles(unit.grid_position, 1, spell_range)
+
+	# Always show range, even if no valid targets
 	current_action_mode = ActionMode.CAST_SPELL
-	combat_grid.highlight_spell_range(valid_targets)
+	combat_grid.highlight_spell_range_and_area(range_area, valid_targets)
 
 	# Log with range info
-	var range_text = "Range: %d" % spell.get("range", 1)
-	if spell.get("targeting") == "aoe_circle":
-		range_text += ", AoE radius: %d" % spell.get("aoe_radius", 1)
-	_log_message("Select target for %s (%s)..." % [spell.name, range_text])
+	var range_text = "Range: %d" % spell_range
+	if spell_data.get("targeting") == "aoe_circle":
+		range_text += ", AoE radius: %d" % spell_data.get("aoe_radius", 1)
+
+	if valid_targets.is_empty():
+		_log_message("No valid targets in range for %s (%s)" % [spell.name, range_text])
+	else:
+		_log_message("Select target for %s (%s)..." % [spell.name, range_text])
 
 
 func _try_cast_spell(target_pos: Vector2i) -> void:
@@ -716,7 +740,14 @@ func _on_combat_ended(victory: bool) -> void:
 		_log_message("=== VICTORY! ===")
 	else:
 		_log_message("=== DEFEAT ===")
+		# On defeat, clear the mob id so it stays on the map
+		GameState.last_defeated_mob_id = ""
 	_update_action_buttons()
+
+	# Return to overworld after a short delay
+	if not GameState.last_defeated_mob_id.is_empty() or not victory:
+		await get_tree().create_timer(2.0).timeout
+		get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
 
 
 func _on_turn_started(unit: Node) -> void:

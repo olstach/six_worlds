@@ -168,8 +168,13 @@ func create_test_events() -> void:
 ## Start an event by ID
 func start_event(event_id: String) -> bool:
 	if event_id not in event_database:
-		print("Event not found: ", event_id)
-		return false
+		# Alpha fallback: use test event for unknown event IDs
+		if "test_encounter_1" in event_database:
+			print("Event '%s' not found, falling back to test_encounter_1" % event_id)
+			event_id = "test_encounter_1"
+		else:
+			print("Event not found: ", event_id)
+			return false
 	
 	current_event = event_database[event_id].duplicate(true)
 	print("Started event: ", current_event.title)

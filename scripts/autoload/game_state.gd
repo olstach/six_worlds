@@ -20,6 +20,10 @@ var current_run_number: int = 1  # How many times player has reincarnated
 # Party resources
 var gold: int = 100  # Starting gold
 
+# Scene transition state (for passing data across scene changes)
+var pending_combat_mob: Dictionary = {}  # Mob data passed to combat arena
+var last_defeated_mob_id: String = ""    # Mob to remove from map after combat victory
+
 # World definitions
 const WORLDS: Dictionary = {
 	"hell": {
