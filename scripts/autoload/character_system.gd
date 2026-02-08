@@ -13,6 +13,7 @@ signal skill_upgraded(character_data: Dictionary, skill_name: String, new_level:
 signal attribute_increased(character_data: Dictionary, attribute_name: String, new_value: int)
 signal upgrade_gained(character_data: Dictionary, upgrade_data: Dictionary)
 signal spell_learned(character_data: Dictionary, spell_id: String)
+signal perk_selection_requested(character_data: Dictionary, perks: Array)
 
 # Party data - player is always index 0
 var party: Array[Dictionary] = []
@@ -77,6 +78,9 @@ const BASE_CHARACTER: Dictionary = {
 	
 	# Upgrades/perks gained
 	"upgrades": [],
+
+	# Perks from skill progression (perk IDs with names)
+	"perks": [],
 
 	# Known spells (spell IDs the character has learned)
 	"known_spells": [],
@@ -209,36 +213,55 @@ func set_skill_level(character: Dictionary, skill: String, level: int) -> void:
 	character.skills[skill] = level
 
 ## Upgrade a skill (costs XP based on current level)
+## Returns true if the skill was upgraded. Emits perk_selection_requested
+## with 4 random eligible perks for the UI to display.
 func upgrade_skill(character: Dictionary, skill: String) -> bool:
 	var current_level = character.skills.get(skill, 0)
-	
+
 	if current_level >= 5:
 		return false  # Max level
-	
+
 	var cost = SKILL_COSTS[current_level + 1]
-	
+
 	if character.xp >= cost:
 		character.xp -= cost
 		character.skills[skill] = current_level + 1
-		
-		# Update elemental affinity if applicable
-		# TODO: Load skill->element mappings from data
-		
+
+		# Update elemental affinity on the character dict
+		_update_element_affinities(character)
+
 		skill_upgraded.emit(character, skill, current_level + 1)
-		
-		# Offer upgrade selection if skill reached certain levels
-		if (current_level + 1) % 1 == 0:  # Every level for now
-			offer_upgrade_selection(character, skill)
-		
+
+		# Offer perk selection (4 random eligible perks)
+		offer_perk_selection(character)
+
+		update_derived_stats(character)
 		character_updated.emit(character)
 		return true
 	return false
 
-## Offer player choice of upgrades/perks
-func offer_upgrade_selection(character: Dictionary, skill: String) -> void:
-	# TODO: Generate 4 random upgrades based on requirements
-	# For now, just emit signal
-	print("Upgrade selection available for ", character.name, " - ", skill)
+## Update the character's element affinity totals from their skill levels.
+func _update_element_affinities(character: Dictionary) -> void:
+	if not PerkSystem:
+		return
+	var affinities = PerkSystem.calculate_all_affinities(character)
+	for element in affinities:
+		character.elements[element] = affinities[element]
+
+## Offer player choice of perks after a skill level-up.
+## Gets 4 random eligible perks from PerkSystem and emits a signal for the UI.
+func offer_perk_selection(character: Dictionary) -> void:
+	if not PerkSystem:
+		push_warning("CharacterSystem: PerkSystem not available")
+		return
+
+	var selection = PerkSystem.get_perk_selection(character)
+	if selection.is_empty():
+		print("No eligible perks available for ", character.name)
+		return
+
+	print("Perk selection offered to ", character.name, ": ", selection.size(), " options")
+	perk_selection_requested.emit(character, selection)
 
 ## Add upgrade/perk to character
 func add_upgrade(character: Dictionary, upgrade: Dictionary) -> void:
@@ -303,7 +326,7 @@ func get_known_spells(character: Dictionary) -> Array:
 	return character.known_spells
 
 
-## Update all derived stats based on attributes and equipment
+## Update all derived stats based on attributes, equipment, and affinity bonuses
 func update_derived_stats(character: Dictionary) -> void:
 	var attrs = character.attributes
 	var derived = character.derived
@@ -313,13 +336,18 @@ func update_derived_stats(character: Dictionary) -> void:
 	if ItemSystem:
 		equip_bonus = ItemSystem.calculate_equipment_stats(character)
 
+	# Get elemental affinity bonuses from PerkSystem
+	var affinity_bonus: Dictionary = {}
+	if PerkSystem:
+		affinity_bonus = PerkSystem.get_affinity_bonuses(character)
+
 	# Apply equipment attribute bonuses first
 	var effective_attrs = {}
 	for attr_key in attrs:
 		effective_attrs[attr_key] = attrs[attr_key] + equip_bonus.get(attr_key, 0)
 
-	# HP from Constitution + equipment
-	derived.max_hp = 100 + (effective_attrs.constitution - 10) * 10 + equip_bonus.get("max_hp", 0)
+	# HP from Constitution + equipment + earth affinity
+	derived.max_hp = 100 + (effective_attrs.constitution - 10) * 10 + equip_bonus.get("max_hp", 0) + affinity_bonus.get("max_hp", 0)
 	derived.current_hp = min(derived.current_hp, derived.max_hp)
 
 	# Mana from Awareness + equipment
@@ -333,27 +361,27 @@ func update_derived_stats(character: Dictionary) -> void:
 	else:
 		derived.current_stamina = min(derived.current_stamina, derived.max_stamina)
 
-	# Initiative from Finesse + Awareness + equipment
-	derived.initiative = effective_attrs.finesse + effective_attrs.awareness + equip_bonus.get("initiative", 0)
+	# Initiative from Finesse + Awareness + equipment + air affinity
+	derived.initiative = effective_attrs.finesse + effective_attrs.awareness + equip_bonus.get("initiative", 0) + affinity_bonus.get("initiative", 0)
 
-	# Movement from Finesse + equipment
-	derived.movement = int(effective_attrs.finesse / 3) + equip_bonus.get("movement", 0)
+	# Movement from Finesse + equipment + air affinity
+	derived.movement = int(effective_attrs.finesse / 3) + equip_bonus.get("movement", 0) + affinity_bonus.get("movement", 0)
 
-	# Dodge from Finesse + equipment
-	derived.dodge = effective_attrs.finesse + equip_bonus.get("dodge", 0)
+	# Dodge from Finesse + equipment + water affinity
+	derived.dodge = effective_attrs.finesse + equip_bonus.get("dodge", 0) + affinity_bonus.get("dodge", 0)
 
-	# Spellpower from Focus + equipment
-	derived.spellpower = effective_attrs.focus + equip_bonus.get("spellpower", 0)
+	# Spellpower from Focus + equipment + space affinity
+	derived.spellpower = effective_attrs.focus + equip_bonus.get("spellpower", 0) + affinity_bonus.get("spellpower", 0)
 
-	# Crit chance from Awareness + Finesse + Luck + equipment
-	derived.crit_chance = 5 + int((effective_attrs.awareness + effective_attrs.finesse + effective_attrs.luck) / 6) + equip_bonus.get("crit_chance", 0)
+	# Crit chance from Awareness + Finesse + Luck + equipment + fire affinity
+	derived.crit_chance = 5 + int((effective_attrs.awareness + effective_attrs.finesse + effective_attrs.luck) / 6) + equip_bonus.get("crit_chance", 0) + affinity_bonus.get("crit_chance", 0)
 
 	# Weight limit from Strength
 	derived.weight_limit = 100 + (effective_attrs.strength - 10) * 10
 
-	# Combat stats from equipment
+	# Combat stats from equipment + earth affinity
 	derived.damage = equip_bonus.get("damage", 0)
-	derived.armor = equip_bonus.get("armor", 0)
+	derived.armor = equip_bonus.get("armor", 0) + affinity_bonus.get("armor", 0)
 	derived.accuracy = equip_bonus.get("accuracy", 0)
 	derived.armor_pierce = equip_bonus.get("armor_pierce", 0)
 

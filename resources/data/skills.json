@@ -12,7 +12,7 @@
 		},
 		"general": {
 			"name": "General Skills",
-			"skills": ["persuasion", "yoga", "ritual", "learning", "comedy", "guile", "athletics", "leadership", "performance", "acrobatics", "medicine", "alchemy", "thievery", "logistics", "trade", "crafting"]
+			"skills": ["persuasion", "yoga", "ritual", "learning", "comedy", "guile", "might", "leadership", "performance", "grace", "medicine", "alchemy", "thievery", "logistics", "trade", "crafting"]
 		}
 	},
 
@@ -179,8 +179,8 @@
 			"secondary_attribute": "strength"
 		},
 
-		"athletics": {
-			"name": "Athletics",
+		"might": {
+			"name": "Might",
 			"category": "general",
 			"element": "fire",
 			"description": "Physical feats of strength and endurance",
@@ -233,8 +233,8 @@
 			"secondary_attribute": "charm"
 		},
 
-		"acrobatics": {
-			"name": "Acrobatics",
+		"grace": {
+			"name": "Grace",
 			"category": "general",
 			"element": "water",
 			"description": "Agility, balance, and flowing movement",
@@ -338,31 +338,63 @@
 			"name": "Space",
 			"color": "#B380E6",
 			"theme": "Clarity, emptiness, consciousness, dharma",
-			"affinity_bonus": "TODO: Define space affinity bonuses"
+			"affinity_bonus": {
+				"description": "+0.5 Spellpower and +1% Mental Resistance per affinity point",
+				"per_point": {
+					"spellpower": 0.5,
+					"mental_resistance_pct": 1.0
+				}
+			}
 		},
 		"air": {
 			"name": "Air",
 			"color": "#99D9EA",
 			"theme": "Movement, intellect, playfulness",
-			"affinity_bonus": "TODO: Define air affinity bonuses"
+			"affinity_bonus": {
+				"description": "+0.5 Initiative per point, +1 Movement per 10 affinity",
+				"per_point": {
+					"initiative": 0.5
+				},
+				"per_threshold": {
+					"movement": {"every": 10, "amount": 1}
+				}
+			}
 		},
 		"fire": {
 			"name": "Fire",
 			"color": "#F2804D",
 			"theme": "Passion, direct action, willpower",
-			"affinity_bonus": "TODO: Define fire affinity bonuses (e.g., Persuasion bonus)"
+			"affinity_bonus": {
+				"description": "+0.5% Damage and +0.3 Crit Chance per affinity point",
+				"per_point": {
+					"damage_pct": 0.5,
+					"crit_chance": 0.3
+				}
+			}
 		},
 		"water": {
 			"name": "Water",
 			"color": "#4D99E6",
 			"theme": "Fluidity, transformation, healing",
-			"affinity_bonus": "TODO: Define water affinity bonuses"
+			"affinity_bonus": {
+				"description": "+0.5 Dodge and +1% Healing Effectiveness per affinity point",
+				"per_point": {
+					"dodge": 0.5,
+					"healing_pct": 1.0
+				}
+			}
 		},
 		"earth": {
 			"name": "Earth",
 			"color": "#B39966",
 			"theme": "Stability, materialism, endurance",
-			"affinity_bonus": "TODO: Define earth affinity bonuses (e.g., HP, money)"
+			"affinity_bonus": {
+				"description": "+2 Max HP and +0.5 Armor per affinity point",
+				"per_point": {
+					"max_hp": 2,
+					"armor": 0.5
+				}
+			}
 		}
 	}
 }

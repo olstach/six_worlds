@@ -45,6 +45,10 @@ var selected_equipment_slot: String = ""
 var equipment_slot_buttons := {}
 var current_weapon_set: int = 1  # 1 or 2
 
+# Perk selection popup
+var perk_popup: Control = null
+var pending_perk_character: Dictionary = {}  # Character waiting for perk selection
+
 # Item tooltip
 var item_tooltip: Control = null
 const ITEM_TOOLTIP_SCENE = preload("res://scenes/ui/item_tooltip.tscn")
@@ -64,8 +68,8 @@ const ATTRIBUTE_ABBREVS := {
 const ELEMENT_SKILLS := {
 	"space": ["swords", "martial_arts", "space_magic", "white_magic", "black_magic", "persuasion", "yoga"],
 	"air": ["ranged", "daggers", "air_magic", "ritual", "learning", "comedy", "guile"],
-	"fire": ["axes", "unarmed", "fire_magic", "sorcery", "athletics", "leadership", "performance"],
-	"water": ["spears", "water_magic", "enchantment", "acrobatics", "medicine", "alchemy", "thievery"],
+	"fire": ["axes", "unarmed", "fire_magic", "sorcery", "might", "leadership", "performance"],
+	"water": ["spears", "water_magic", "enchantment", "grace", "medicine", "alchemy", "thievery"],
 	"earth": ["maces", "armor", "earth_magic", "summoning", "logistics", "trade", "crafting"]
 }
 
@@ -83,6 +87,7 @@ func _ready() -> void:
 	CharacterSystem.character_updated.connect(_on_character_updated)
 	CharacterSystem.attribute_increased.connect(_on_attribute_increased)
 	CharacterSystem.skill_upgraded.connect(_on_skill_upgraded)
+	CharacterSystem.perk_selection_requested.connect(_on_perk_selection_requested)
 
 	# Connect to ItemSystem signals
 	ItemSystem.inventory_changed.connect(_on_inventory_changed)
@@ -362,6 +367,236 @@ func _exit_tree() -> void:
 	# Clean up tooltip since it's parented to root
 	if item_tooltip and is_instance_valid(item_tooltip):
 		item_tooltip.queue_free()
+	if perk_popup and is_instance_valid(perk_popup):
+		perk_popup.queue_free()
+
+
+# ============================================
+# PERK SELECTION POPUP
+# ============================================
+
+## Element color lookup for cross-skill perks (uses the skill's element)
+func _get_perk_element_color(perk_entry: Dictionary) -> Color:
+	var data = perk_entry.get("data", {})
+	if perk_entry.get("source", "") == "skill":
+		var skill_id = data.get("skill", "")
+		for element in ELEMENT_SKILLS:
+			if skill_id in ELEMENT_SKILLS[element]:
+				return ELEMENT_COLORS[element]
+	# Cross-skill perks: use a gold color
+	return Color(0.85, 0.75, 0.4)
+
+func _on_perk_selection_requested(character: Dictionary, perks: Array) -> void:
+	## Show the perk selection popup with up to 4 perk cards.
+	if perks.is_empty():
+		return
+
+	pending_perk_character = character
+	_show_perk_popup(perks)
+
+func _show_perk_popup(perks: Array) -> void:
+	## Build and display the perk selection popup overlay.
+	# Clean up any existing popup
+	if perk_popup and is_instance_valid(perk_popup):
+		perk_popup.queue_free()
+
+	# Full-screen overlay that blocks input to the rest of the UI
+	perk_popup = Control.new()
+	perk_popup.set_anchors_preset(Control.PRESET_FULL_RECT)
+	perk_popup.mouse_filter = Control.MOUSE_FILTER_STOP
+	get_tree().root.add_child.call_deferred(perk_popup)
+
+	# Semi-transparent dark background
+	var bg = ColorRect.new()
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bg.color = Color(0.05, 0.02, 0.08, 0.85)
+	bg.mouse_filter = Control.MOUSE_FILTER_STOP
+	perk_popup.add_child(bg)
+
+	# Center container for the popup content
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	perk_popup.add_child(center)
+
+	# Main popup panel
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(900, 500)
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.12, 0.08, 0.15)
+	panel_style.border_color = Color(0.75, 0.6, 0.2)  # Gold border
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(8)
+	panel_style.set_content_margin_all(20)
+	panel.add_theme_stylebox_override("panel", panel_style)
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 16)
+	panel.add_child(vbox)
+
+	# Title
+	var title = Label.new()
+	title.text = "Choose a Perk"
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", Color(0.85, 0.75, 0.4))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	# Subtitle
+	var subtitle = Label.new()
+	subtitle.text = "Select one of the following perks for " + pending_perk_character.get("name", "")
+	subtitle.add_theme_font_size_override("font_size", 13)
+	subtitle.add_theme_color_override("font_color", Color(0.7, 0.65, 0.6))
+	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(subtitle)
+
+	# Perk cards in a horizontal row
+	var cards_container = HBoxContainer.new()
+	cards_container.add_theme_constant_override("separation", 12)
+	cards_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(cards_container)
+
+	for perk_entry in perks:
+		var card = _create_perk_card(perk_entry)
+		cards_container.add_child(card)
+
+	# Skip button (in case player doesn't want any)
+	var skip_btn = Button.new()
+	skip_btn.text = "Skip"
+	skip_btn.custom_minimum_size = Vector2(120, 32)
+	skip_btn.add_theme_font_size_override("font_size", 13)
+	skip_btn.add_theme_color_override("font_color", Color(0.6, 0.55, 0.5))
+	skip_btn.pressed.connect(_on_perk_skipped)
+	var skip_container = HBoxContainer.new()
+	skip_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	skip_container.add_child(skip_btn)
+	vbox.add_child(skip_container)
+
+func _create_perk_card(perk_entry: Dictionary) -> PanelContainer:
+	## Create a single perk card for the selection popup.
+	var perk_id = perk_entry.get("id", "")
+	var data = perk_entry.get("data", {})
+	var source = perk_entry.get("source", "skill")
+	var accent_color = _get_perk_element_color(perk_entry)
+
+	# Card panel
+	var card = PanelContainer.new()
+	card.custom_minimum_size = Vector2(200, 280)
+	var card_style = StyleBoxFlat.new()
+	card_style.bg_color = Color(0.15, 0.11, 0.18)
+	card_style.border_color = accent_color.darkened(0.3)
+	card_style.set_border_width_all(1)
+	card_style.set_corner_radius_all(6)
+	card_style.set_content_margin_all(12)
+	card.add_theme_stylebox_override("panel", card_style)
+
+	# Make the card clickable via a transparent button overlay
+	var click_btn = Button.new()
+	click_btn.set_anchors_preset(Control.PRESET_FULL_RECT)
+	click_btn.flat = true
+	click_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	# Hover style
+	var hover_style = StyleBoxFlat.new()
+	hover_style.bg_color = accent_color * Color(1, 1, 1, 0.1)
+	hover_style.border_color = accent_color
+	hover_style.set_border_width_all(2)
+	hover_style.set_corner_radius_all(6)
+	click_btn.add_theme_stylebox_override("hover", hover_style)
+	var normal_style = StyleBoxEmpty.new()
+	click_btn.add_theme_stylebox_override("normal", normal_style)
+	click_btn.add_theme_stylebox_override("pressed", hover_style)
+	click_btn.add_theme_stylebox_override("focus", normal_style)
+	click_btn.pressed.connect(_on_perk_selected.bind(perk_id))
+
+	var content = VBoxContainer.new()
+	content.add_theme_constant_override("separation", 6)
+	card.add_child(content)
+
+	# Perk name
+	var name_label = Label.new()
+	name_label.text = data.get("name", perk_id)
+	name_label.add_theme_font_size_override("font_size", 14)
+	name_label.add_theme_color_override("font_color", accent_color)
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	content.add_child(name_label)
+
+	# Source tag (skill name or "Cross-Skill")
+	var source_label = Label.new()
+	if source == "skill":
+		var skill_name = data.get("skill", "").replace("_", " ").capitalize()
+		source_label.text = skill_name + " " + str(data.get("required_level", 1))
+	else:
+		source_label.text = "Cross-Skill"
+	source_label.add_theme_font_size_override("font_size", 11)
+	source_label.add_theme_color_override("font_color", Color(0.6, 0.55, 0.5))
+	source_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	content.add_child(source_label)
+
+	# Separator
+	var sep = HSeparator.new()
+	sep.add_theme_color_override("separator", accent_color.darkened(0.5))
+	content.add_child(sep)
+
+	# Description
+	var desc_label = RichTextLabel.new()
+	desc_label.text = data.get("description", "No description")
+	desc_label.fit_content = true
+	desc_label.custom_minimum_size = Vector2(176, 120)
+	desc_label.add_theme_font_size_override("normal_font_size", 12)
+	desc_label.add_theme_color_override("default_color", Color(0.85, 0.82, 0.78))
+	desc_label.scroll_active = false
+	desc_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	content.add_child(desc_label)
+
+	# Flavor text (if any)
+	var flavor = data.get("flavor", "")
+	if flavor != "":
+		var flavor_label = Label.new()
+		flavor_label.text = flavor
+		flavor_label.add_theme_font_size_override("font_size", 11)
+		flavor_label.add_theme_color_override("font_color", Color(0.55, 0.5, 0.45))
+		flavor_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		flavor_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+		content.add_child(flavor_label)
+
+	# Mantra indicator
+	if data.get("is_mantra", false):
+		var mantra_label = Label.new()
+		mantra_label.text = "~ Mantra ~"
+		mantra_label.add_theme_font_size_override("font_size", 11)
+		mantra_label.add_theme_color_override("font_color", Color(0.7, 0.6, 0.9))
+		mantra_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		content.add_child(mantra_label)
+
+	# Add the click button on top of everything
+	card.add_child(click_btn)
+
+	return card
+
+func _on_perk_selected(perk_id: String) -> void:
+	## Handle player selecting a perk from the popup.
+	if pending_perk_character.is_empty():
+		return
+
+	PerkSystem.grant_perk(pending_perk_character, perk_id)
+	pending_perk_character = {}
+
+	# Close popup
+	if perk_popup and is_instance_valid(perk_popup):
+		perk_popup.queue_free()
+		perk_popup = null
+
+	# Refresh display to show updated stats
+	_refresh_display()
+
+func _on_perk_skipped() -> void:
+	## Handle player skipping the perk selection.
+	pending_perk_character = {}
+	if perk_popup and is_instance_valid(perk_popup):
+		perk_popup.queue_free()
+		perk_popup = null
+
 
 # ============================================
 # EQUIPMENT TAB

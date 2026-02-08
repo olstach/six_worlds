@@ -23,6 +23,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 GameState="*res://scripts/autoload/game_state.gd"
+PerkSystem="*res://scripts/autoload/perk_system.gd"
 CharacterSystem="*res://scripts/autoload/character_system.gd"
 ItemSystem="*res://scripts/autoload/item_system.gd"
 KarmaSystem="*res://scripts/autoload/karma_system.gd"

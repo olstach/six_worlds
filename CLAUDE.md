@@ -57,8 +57,8 @@ Olaf handles content creation (races, characters, events, spells) during offline
 |---------|--------|
 | **Space** | Swords, Martial Arts, Space magic, White magic, Black magic, Persuasion, Yoga |
 | **Air** | Ranged, Daggers, Air magic, Ritual, Learning, Comedy, Guile |
-| **Fire** | Axes, Unarmed, Fire magic, Sorcery, Athletics, Leadership, Performance |
-| **Water** | Spears, Water magic, Enchantment, Acrobatics, Medicine, Alchemy, Thievery |
+| **Fire** | Axes, Unarmed, Fire magic, Sorcery, Might, Leadership, Performance |
+| **Water** | Spears, Water magic, Enchantment, Grace, Medicine, Alchemy, Thievery |
 | **Earth** | Maces, Armor, Earth magic, Summoning, Logistics, Trade, Crafting |
 
 ### Elemental Affinities
@@ -117,7 +117,7 @@ Instead of levels, use relative XP comparison with descriptive labels ("slightly
 ### Skill Categories
 - Combat: Swords, Martial Arts, Ranged, Daggers, Axes, Unarmed, Spears, Maces, Armor
 - Magic: Space, Air, Fire, Water, Earth, Sorcery, Enchantment, Summoning, White, Black
-- General: Persuasion, Yoga, Ritual, Learning, Comedy, Guile, Athletics, Leadership, Performance, Acrobatics, Medicine, Alchemy, Thievery, Logistics, Trade, Crafting
+- General: Persuasion, Yoga, Ritual, Learning, Comedy, Guile, Might, Leadership, Performance, Grace, Medicine, Alchemy, Thievery, Logistics, Trade, Crafting
 
 ### Ritual vs Yoga
 - **Ritual**: External ceremony - mandala creation, material components to enhance spells

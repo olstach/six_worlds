@@ -796,11 +796,46 @@ func revive_unit(unit: Node, hp_amount: int) -> void:
 # SPELL CASTING
 # ============================================
 
-## Get a spell by ID
+## Get a spell by ID (normalizes data format)
 func get_spell(spell_id: String) -> Dictionary:
 	if spell_id in _spell_database:
 		var spell = _spell_database[spell_id].duplicate(true)
 		spell["id"] = spell_id
+
+		# Normalize targeting format: spell.target.type -> spell.targeting
+		if not "targeting" in spell and "target" in spell:
+			var target = spell.target
+			var target_type = target.get("type", "single")
+			var eligible = target.get("eligible", "enemy")
+
+			# Map to expected targeting values
+			match target_type:
+				"single":
+					if eligible == "ally":
+						spell["targeting"] = "single_ally"
+					elif eligible == "corpse":
+						spell["targeting"] = "single_corpse"
+					else:
+						spell["targeting"] = "single"
+				"self":
+					spell["targeting"] = "self"
+				"aoe", "circle":
+					spell["targeting"] = "aoe_circle"
+					spell["aoe_radius"] = target.get("radius", 2)
+				"chain":
+					spell["targeting"] = "chain"
+				_:
+					spell["targeting"] = target_type
+
+		# Default targeting if still missing
+		if not "targeting" in spell:
+			spell["targeting"] = "single"
+
+		# Default range based on spell level if missing
+		if not "range" in spell or spell.range is String:
+			var level = spell.get("level", 1)
+			spell["range"] = 3 + level  # Range 4-8 based on level
+
 		return spell
 	return {}
 
