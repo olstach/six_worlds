@@ -31,6 +31,7 @@ KarmaSystem="*res://scripts/autoload/karma_system.gd"
 EventManager="*res://scripts/autoload/event_manager.gd"
 CombatManager="*res://scripts/autoload/combat_manager.gd"
 ShopSystem="*res://scripts/autoload/shop_system.gd"
+MapGenerator="*res://scripts/map_gen/map_generator.gd"
 MapManager="*res://scripts/autoload/map_manager.gd"
 
 [display]

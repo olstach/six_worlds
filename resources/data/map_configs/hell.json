@@ -1,0 +1,150 @@
+{
+	"id": "hell",
+	"name": "Naraka - The Hell Realm",
+	"description": "The Hell Realm of Naraka, split between the frozen wastes of the north and the burning badlands of the south, divided by an impassable mountain range.",
+	"width": 96,
+	"height": 72,
+	"base_speed": 3.0,
+
+	"zones": [
+		{
+			"id": "cold_hell",
+			"rows": [0, 29],
+			"terrain_weights": {
+				"0": 30, "8": 25, "2": 8, "3": 8, "5": 10,
+				"11": 8, "1": 5, "13": 3, "4": 3
+			},
+			"road_chance": 0.08,
+			"cluster_min": 2,
+			"cluster_max": 6
+		},
+		{
+			"id": "divider",
+			"rows": [30, 35],
+			"type": "mountain_wall",
+			"pass_width": 3,
+			"pass_count": [1, 2]
+		},
+		{
+			"id": "fire_hell",
+			"rows": [36, 71],
+			"terrain_weights": {
+				"0": 25, "7": 20, "9": 15, "12": 10, "3": 8,
+				"13": 8, "1": 5, "2": 4, "4": 5
+			},
+			"road_chance": 0.06,
+			"cluster_min": 2,
+			"cluster_max": 7
+		}
+	],
+
+	"fixed_landmarks": [
+		{
+			"type": "start",
+			"zone": "cold_hell",
+			"position": "top_left",
+			"clear_radius": 3
+		},
+		{
+			"type": "portal",
+			"zone": "fire_hell",
+			"position": "bottom_right",
+			"clear_radius": 2,
+			"data": {
+				"destination_realm": "hungry_ghost",
+				"destination_map": "hungry_ghost_01",
+				"requires_boss_defeated": true,
+				"description": "A shimmering portal to the Hungry Ghost Realm."
+			}
+		},
+		{
+			"type": "boss",
+			"zone": "fire_hell",
+			"position": "near_portal",
+			"data": {
+				"event_id": "hell_boss_yama_lt",
+				"name": "Yama's Lieutenant",
+				"icon": "boss"
+			}
+		},
+		{
+			"type": "pass_guardian",
+			"zone": "divider",
+			"position": "at_pass",
+			"data": {
+				"event_id": "hell_lava_guardian",
+				"name": "Lava Guardian",
+				"icon": "enemy_elite"
+			}
+		}
+	],
+
+	"object_pools": {
+		"cold_hell": {
+			"events": [
+				{"event_id": "hell_demon_patrol", "name": "Demon Patrol", "icon": "enemy", "blocking": true, "one_time": true, "weight": 3},
+				{"event_id": "hell_ice_spirits", "name": "Ice Spirits", "icon": "enemy", "blocking": true, "one_time": true, "weight": 2},
+				{"event_id": "hell_frozen_merchant", "name": "Frozen Merchant", "icon": "shop", "blocking": false, "one_time": false, "weight": 2, "tag": "shop"},
+				{"event_id": "hell_lost_wanderer", "name": "Lost Wanderer", "icon": "npc", "blocking": false, "one_time": true, "weight": 3},
+				{"event_id": "hell_frozen_cave", "name": "Frozen Cave", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hell_tormented_soul", "name": "Tormented Soul", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hell_crossroads_shrine", "name": "Crossroads Shrine", "icon": "event", "blocking": false, "one_time": false, "weight": 2},
+				{"event_id": "hell_ice_yogi", "name": "Frozen Waterfall Yogi", "icon": "npc", "blocking": false, "one_time": true, "weight": 1}
+			],
+			"pickups": [
+				{"name": "Abandoned Cart", "icon": "treasure", "rewards": [{"type": "gold", "value": [25, 50]}, {"type": "item", "value": "health_potion"}], "weight": 3},
+				{"name": "Frozen Corpse", "icon": "treasure", "rewards": [{"type": "gold", "value": [15, 30]}], "weight": 3},
+				{"name": "Warm Spring", "icon": "rest", "rewards": [{"type": "heal", "value": 30}, {"type": "mana", "value": 15}], "one_time": false, "weight": 2, "tag": "rest"},
+				{"name": "Ice Shrine", "icon": "shrine", "rewards": [{"type": "buff", "value": {"stat": "cold_resistance", "amount": 15, "duration": -1}}, {"type": "karma", "value": {"realm": "god", "amount": 3}}], "weight": 1},
+				{"name": "Prayer Flags", "icon": "shrine", "rewards": [{"type": "xp", "value": [15, 35]}, {"type": "karma", "value": {"realm": "human", "amount": 5}}], "weight": 2},
+				{"name": "Frozen Fountain", "icon": "rest", "rewards": [{"type": "mana", "value": 25}], "one_time": false, "weight": 2, "tag": "rest"}
+			]
+		},
+		"fire_hell": {
+			"events": [
+				{"event_id": "hell_fire_shrine", "name": "Burning Shrine", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hell_ember_merchant", "name": "Ember Merchant", "icon": "shop", "blocking": false, "one_time": false, "weight": 2, "tag": "shop"},
+				{"event_id": "hell_burning_prisoner", "name": "Burning Prisoner", "icon": "npc", "blocking": false, "one_time": true, "weight": 3},
+				{"event_id": "hell_fire_trial", "name": "Trial of Flames", "icon": "dungeon", "blocking": true, "one_time": true, "weight": 2},
+				{"event_id": "hell_volcanic_cave", "name": "Volcanic Cave", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hell_lava_flow", "name": "Lava Flow", "icon": "event", "blocking": false, "one_time": true, "weight": 2}
+			],
+			"pickups": [
+				{"name": "Scorched Supplies", "icon": "treasure", "rewards": [{"type": "gold", "value": [30, 55]}, {"type": "item", "value": "health_potion"}], "weight": 3},
+				{"name": "Flame Shrine", "icon": "shrine", "rewards": [{"type": "buff", "value": {"stat": "fire_resistance", "amount": 15, "duration": -1}}, {"type": "karma", "value": {"realm": "asura", "amount": 3}}], "weight": 1},
+				{"name": "Lava Crystal", "icon": "treasure", "rewards": [{"type": "item", "value": "fire_crystal"}, {"type": "xp", "value": [20, 40]}], "weight": 2},
+				{"name": "Ember Pool", "icon": "rest", "rewards": [{"type": "heal", "value": 25}, {"type": "mana", "value": 20}], "one_time": false, "weight": 2, "tag": "rest"},
+				{"name": "Fireproof Cache", "icon": "treasure", "rewards": [{"type": "gold", "value": [20, 35]}, {"type": "item", "value": "mana_potion"}], "weight": 2}
+			]
+		}
+	},
+
+	"mob_pools": {
+		"cold_hell": [
+			{"name": "Ice Wraith", "icon": "enemy", "mode": 0, "attitude": 1, "speed": 0.0, "enemy_group": "ice_wraith", "difficulty": "normal", "weight": 3},
+			{"name": "Demon Sentinel", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.5, "enemy_group": "demon_sentinel", "difficulty": "normal", "weight": 3},
+			{"name": "Frost Imp", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.7, "enemy_group": "frost_imp", "difficulty": "easy", "weight": 4},
+			{"name": "Lost Souls", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.3, "enemy_group": "lost_souls", "difficulty": "easy", "weight": 3},
+			{"name": "Shadow Stalker", "icon": "enemy", "mode": 0, "attitude": 2, "speed": 0.8, "enemy_group": "shadow_stalker", "difficulty": "normal", "aggression": 0.4, "weight": 2},
+			{"name": "Hermit Monk", "icon": "npc", "mode": 2, "attitude": 0, "speed": 0.3, "event_id": "hell_hermit_monk", "weight": 1},
+			{"name": "Wandering Peddler", "icon": "merchant", "mode": 1, "attitude": 0, "speed": 0.4, "event_id": "hell_wandering_peddler", "weight": 1, "tag": "shop"}
+		],
+		"fire_hell": [
+			{"name": "Hell Hound", "icon": "enemy_fast", "mode": 2, "attitude": 2, "speed": 0.9, "enemy_group": "hell_hound", "difficulty": "hard", "aggression": 0.7, "weight": 2},
+			{"name": "Oni Brute", "icon": "enemy_elite", "mode": 1, "attitude": 2, "speed": 0.5, "enemy_group": "oni_brute", "difficulty": "hard", "aggression": 0.9, "weight": 1},
+			{"name": "Flame Imps", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.7, "enemy_group": "frost_imp", "difficulty": "easy", "weight": 3},
+			{"name": "Lost Souls", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.3, "enemy_group": "lost_souls", "difficulty": "easy", "weight": 3},
+			{"name": "Demon Sentinel", "icon": "enemy", "mode": 0, "attitude": 1, "speed": 0.0, "enemy_group": "demon_sentinel", "difficulty": "normal", "weight": 2},
+			{"name": "Hell Hound Pack", "icon": "enemy_fast", "mode": 2, "attitude": 2, "speed": 0.8, "enemy_group": "hell_hound", "difficulty": "hard", "aggression": 0.6, "weight": 1}
+		]
+	},
+
+	"density": {
+		"events_per_zone": [12, 18],
+		"pickups_per_zone": [15, 25],
+		"mobs_per_zone": [14, 22],
+		"guaranteed_shops": [1, 2],
+		"guaranteed_rest": [1, 2],
+		"min_spacing": 3
+	}
+}

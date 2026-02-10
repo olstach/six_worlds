@@ -143,9 +143,16 @@ func _draw() -> void:
 	if MapManager.tiles.is_empty():
 		return
 
-	# --- Layer 1: Terrain tiles ---
-	for y in range(map_h):
-		for x in range(map_w):
+	# Calculate visible tile range from camera viewport (with margin)
+	var vp_rect = _get_visible_tile_range(ts, map_w, map_h)
+	var vx0 = vp_rect.x
+	var vy0 = vp_rect.y
+	var vx1 = vp_rect.z  # end x (exclusive)
+	var vy1 = vp_rect.w  # end y (exclusive)
+
+	# --- Layer 1: Terrain tiles (only visible) ---
+	for y in range(vy0, vy1):
+		for x in range(vx0, vx1):
 			var pos = Vector2i(x, y)
 			var terrain_type = MapManager.tiles.get(pos, 0)
 			var color = TERRAIN_COLORS.get(terrain_type, TERRAIN_COLORS[0])
@@ -156,9 +163,9 @@ func _draw() -> void:
 			# Terrain speed/passability overlay
 			_draw_terrain_overlay(x, y, ts, MapManager.get_terrain_speed(pos))
 
-	# --- Layer 2: Fog of war ---
-	for y in range(map_h):
-		for x in range(map_w):
+	# --- Layer 2: Fog of war (only visible) ---
+	for y in range(vy0, vy1):
+		for x in range(vx0, vx1):
 			var pos = Vector2i(x, y)
 			if not MapManager.is_tile_visited(pos):
 				draw_rect(Rect2(x * ts, y * ts, ts, ts), FOG_COLOR)
@@ -242,6 +249,27 @@ func _draw_mob_marker(center: Vector2, attitude: int, is_pursuing: bool, ts: int
 	# Draw mob as a circle with a dark outline
 	draw_circle(center, radius + 1.5, Color(0.1, 0.1, 0.1))
 	draw_circle(center, radius, color)
+
+
+## Calculate the range of tiles visible in the current viewport.
+## Returns Vector4i(x_start, y_start, x_end, y_end) — end values are exclusive.
+## Includes a 2-tile margin to avoid pop-in at edges.
+func _get_visible_tile_range(ts: int, map_w: int, map_h: int) -> Vector4i:
+	var canvas_transform = get_viewport().get_canvas_transform()
+	var vp_size = get_viewport_rect().size
+
+	# Top-left corner of viewport in world space
+	var world_tl = canvas_transform.affine_inverse() * Vector2.ZERO
+	# Bottom-right corner
+	var world_br = canvas_transform.affine_inverse() * vp_size
+
+	# Convert to tile coords with 2-tile margin
+	var x0 = maxi(int(world_tl.x / ts) - 2, 0)
+	var y0 = maxi(int(world_tl.y / ts) - 2, 0)
+	var x1 = mini(int(world_br.x / ts) + 3, map_w)
+	var y1 = mini(int(world_br.y / ts) + 3, map_h)
+
+	return Vector4i(x0, y0, x1, y1)
 
 
 ## Draw terrain overlay indicating passability/speed

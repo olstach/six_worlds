@@ -307,12 +307,14 @@ func _process(delta: float) -> void:
 		var old_pos = party_position
 		party_position = target_tile
 
-		# Reveal area around new position (Manhattan distance 1 = diamond)
+		# Reveal area around new position (Manhattan distance 2 = wider diamond)
 		visited_tiles[target_tile] = true
-		for dir in [Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0)]:
-			var reveal_pos = target_tile + dir
-			if is_valid_position(reveal_pos):
-				visited_tiles[reveal_pos] = true
+		for dy in range(-2, 3):
+			for dx in range(-2, 3):
+				if absi(dx) + absi(dy) <= 2:
+					var reveal_pos = target_tile + Vector2i(dx, dy)
+					if is_valid_position(reveal_pos):
+						visited_tiles[reveal_pos] = true
 
 		party_moved.emit(old_pos, target_tile)
 
@@ -461,32 +463,47 @@ func get_remaining_path() -> Array[Vector2i]:
 func load_map(map_id: String) -> bool:
 	stop_movement()
 
+	# Try static JSON map first
 	var file_path = "res://resources/data/maps/%s.json" % map_id
+	if FileAccess.file_exists(file_path):
+		var file = FileAccess.open(file_path, FileAccess.READ)
+		if file == null:
+			push_error("MapManager: Failed to open map file")
+			return false
 
-	if not FileAccess.file_exists(file_path):
-		push_warning("MapManager: Map file not found: " + file_path)
-		_generate_default_map(map_id)
+		var json = JSON.new()
+		var parse_result = json.parse(file.get_as_text())
+		file.close()
+
+		if parse_result != OK:
+			push_error("MapManager: Failed to parse map JSON")
+			return false
+
+		var data = json.get_data()
+		_apply_map_data(data)
+
+		current_map_id = map_id
+		map_loaded.emit(map_id)
+		print("Map loaded (static): ", map_id)
 		return true
 
-	var file = FileAccess.open(file_path, FileAccess.READ)
-	if file == null:
-		push_error("MapManager: Failed to open map file")
-		return false
+	# Try procedural generation from realm config
+	# "hell_01" → realm "hell", "hungry_ghost_01" → realm "hungry_ghost"
+	var parts = map_id.rsplit("_", true, 1)
+	var realm = parts[0] if parts.size() > 1 else map_id
+	var config_path = "res://resources/data/map_configs/%s.json" % realm
+	if FileAccess.file_exists(config_path):
+		var data = MapGenerator.generate_from_config(config_path)
+		if not data.is_empty():
+			_apply_map_data(data)
+			current_map_id = map_id
+			map_loaded.emit(map_id)
+			print("Map loaded (generated): ", map_id)
+			return true
 
-	var json = JSON.new()
-	var parse_result = json.parse(file.get_as_text())
-	file.close()
-
-	if parse_result != OK:
-		push_error("MapManager: Failed to parse map JSON")
-		return false
-
-	var data = json.get_data()
-	_apply_map_data(data)
-
-	current_map_id = map_id
-	map_loaded.emit(map_id)
-	print("Map loaded: ", map_id)
+	# Fallback to default test map
+	push_warning("MapManager: No static map or config found for: " + map_id)
+	_generate_default_map(map_id)
 	return true
 
 
@@ -532,7 +549,8 @@ func _apply_map_data(data: Dictionary) -> void:
 			"one_time": obj_data.get("one_time", false),
 			"blocking": obj_data.get("blocking", false),
 			"visible": obj_data.get("visible", true),
-			"name": obj_data.get("name", "Unknown")
+			"name": obj_data.get("name", "Unknown"),
+			"icon": obj_data.get("icon", "event")
 		}
 
 	# Load mobs
@@ -547,8 +565,11 @@ func _apply_map_data(data: Dictionary) -> void:
 	party_world_position = _tile_to_world(party_position)
 	visited_tiles[party_position] = true
 
-	# Reveal area around starting position
-	reveal_area(party_position, 3)
+	# Reveal area around starting position — scale with map size
+	var reveal_radius = 3
+	if map_size.x > 48 or map_size.y > 48:
+		reveal_radius = 5
+	reveal_area(party_position, reveal_radius)
 
 
 ## Generate a simple default map for testing
