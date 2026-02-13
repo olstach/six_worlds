@@ -19,6 +19,10 @@ signal perk_selection_requested(character_data: Dictionary, perks: Array)
 var party: Array[Dictionary] = []
 var max_party_size: int = 6
 
+# Race and background data loaded from JSON
+var _race_data: Dictionary = {}
+var _background_data: Dictionary = {}
+
 # Attribute costs - linear scaling
 # Each point above 10 costs its rank: 10→11 = 1 XP, 11→12 = 2 XP, etc.
 
@@ -110,9 +114,45 @@ const BASE_CHARACTER: Dictionary = {
 }
 
 func _ready() -> void:
-	print("CharacterSystem initialized")
+	_load_race_data()
+	print("CharacterSystem initialized with ", _race_data.size(), " races, ", _background_data.size(), " backgrounds")
 	# Create a test player character
 	create_player_character("Karma Dorje", "human", "wanderer")
+
+
+## Load race and background definitions from JSON
+func _load_race_data() -> void:
+	var file_path = "res://resources/data/races.json"
+	if not FileAccess.file_exists(file_path):
+		push_warning("CharacterSystem: races.json not found")
+		return
+
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	if file == null:
+		push_error("CharacterSystem: Failed to open races.json")
+		return
+
+	var json = JSON.new()
+	var parse_result = json.parse(file.get_as_text())
+	file.close()
+
+	if parse_result != OK:
+		push_error("CharacterSystem: Failed to parse races.json - ", json.get_error_message())
+		return
+
+	var data = json.get_data()
+	_race_data = data.get("races", {})
+	_background_data = data.get("backgrounds", {})
+
+
+## Get race data dictionary for a given race ID
+func get_race_data(race_id: String) -> Dictionary:
+	return _race_data.get(race_id, {})
+
+
+## Get background data dictionary for a given background ID
+func get_background_data(background_id: String) -> Dictionary:
+	return _background_data.get(background_id, {})
 
 ## Create the player character
 func create_player_character(char_name: String, race: String, background: String) -> void:
@@ -139,49 +179,76 @@ func create_player_character(char_name: String, race: String, background: String
 	print("Created player: ", character.name, " (", race, " ", background, ")")
 	character_updated.emit(character)
 
-## Apply racial attribute modifiers
-func apply_race_modifiers(character: Dictionary, race: String) -> void:
-	# TODO: Load from race data files
-	# For now, simple examples
-	match race:
-		"red_devil":
-			character.attributes.strength += 3
-			character.attributes.finesse += 2
-			character.attributes.awareness -= 2
-			character.attributes.charm -= 2
-		"human":
-			# Humans are balanced, no modifiers
-			pass
-		"naga":
-			character.attributes.awareness += 2
-			character.attributes.charm += 2
-			character.attributes.strength -= 1
 
-## Apply background starting skills and spells
+## Start a new life after reincarnation.
+## Preserves persistent data (affinities, upgrades) from the old character.
+## Clears party, inventory, gold and creates a fresh character.
+func start_new_life(char_name: String, race: String, background: String) -> void:
+	# Save persistent data from old player before wiping
+	var old_player = get_player()
+	var old_affinities: Array = []
+	var old_upgrades: Array = []
+	if not old_player.is_empty():
+		old_affinities = old_player.get("affinities", []).duplicate()
+		old_upgrades = old_player.get("persistent_upgrades", []).duplicate()
+
+	# Clear party and inventory
+	party.clear()
+	ItemSystem.clear_inventory()
+
+	# Create the new character
+	create_player_character(char_name, race, background)
+
+	# Restore persistent progression
+	var new_player = get_player()
+	new_player["affinities"] = old_affinities
+	new_player["persistent_upgrades"] = old_upgrades
+
+	print("New life started: ", char_name, " the ", race, " ", background)
+
+
+## Apply racial attribute modifiers from races.json data
+func apply_race_modifiers(character: Dictionary, race: String) -> void:
+	var data = get_race_data(race)
+	if data.is_empty():
+		return
+
+	var modifiers = data.get("attribute_modifiers", {})
+	for attr_name in modifiers:
+		if attr_name in character.attributes:
+			character.attributes[attr_name] += int(modifiers[attr_name])
+
+	# Apply starting skills from race (level 1 each, unless background overrides)
+	var race_skills = data.get("starting_skills", [])
+	for skill_id in race_skills:
+		if character.skills.get(skill_id, 0) < 1:
+			set_skill_level(character, skill_id, 1)
+
+
+## Apply background starting skills from races.json backgrounds data
 func apply_background_skills(character: Dictionary, background: String) -> void:
-	# TODO: Load from background data files
-	match background:
-		"wanderer":
+	var data = get_background_data(background)
+	if data.is_empty():
+		# Fallback for wanderer (the default test character)
+		if background == "wanderer":
 			set_skill_level(character, "swords", 1)
-			set_skill_level(character, "lore", 1)
-			set_skill_level(character, "fire_magic", 2)  # For testing spells
-			set_skill_level(character, "sorcery", 2)     # For testing spells
-			set_skill_level(character, "white", 1)       # For testing healing
-			set_skill_level(character, "black", 1)       # For testing status effects
-			# Starting spells for wanderer (fire mage focus)
+			set_skill_level(character, "learning", 1)
+			set_skill_level(character, "fire_magic", 2)
+			set_skill_level(character, "sorcery", 2)
+			set_skill_level(character, "white_magic", 1)
+			set_skill_level(character, "black_magic", 1)
 			learn_spell(character, "firebolt")
 			learn_spell(character, "fireball")
 			learn_spell(character, "lesser_heal")
 			learn_spell(character, "poison_sting")
-		"scholar":
-			set_skill_level(character, "focus", 2)
-			set_skill_level(character, "sorcery", 1)
-			# Starting spells for scholar
-			learn_spell(character, "magic_missile")
-		"merchant":
-			set_skill_level(character, "trade", 2)
-			set_skill_level(character, "charm", 1)
-			# Merchants don't start with spells
+		return
+
+	var skills = data.get("starting_skills", {})
+	for skill_id in skills:
+		var level = int(skills[skill_id])
+		# Set to whichever is higher: race skill or background skill
+		if level > character.skills.get(skill_id, 0):
+			set_skill_level(character, skill_id, level)
 
 ## Increase an attribute (costs XP, exponential scaling)
 func increase_attribute(character: Dictionary, attribute: String, amount: int = 1) -> bool:

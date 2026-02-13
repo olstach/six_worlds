@@ -24,6 +24,7 @@ var gold: int = 100  # Starting gold
 var pending_combat_mob: Dictionary = {}  # Mob data passed to combat arena
 var last_defeated_mob_id: String = ""    # Mob to remove from map after combat victory
 var returning_from_combat: bool = false  # Set true when returning to overworld from any combat
+var is_party_wiped: bool = false         # True when all party members died (triggers Bardo)
 
 # Event→combat transition state (persists across scene change to combat_arena)
 var pending_event_outcome: Dictionary = {}  # Event outcome to display after combat

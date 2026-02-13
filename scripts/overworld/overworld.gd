@@ -44,9 +44,15 @@ var _shop_scene: PackedScene = preload("res://scenes/ui/shop_ui.tscn")
 
 
 func _ready() -> void:
-	# Load the map if not already loaded (first launch or returning from combat)
+	# Load the map if not already loaded (first launch or returning from Bardo)
 	if MapManager.current_map_id.is_empty():
-		MapManager.load_map("hell_01")
+		# Use current world to determine which map to load
+		# Only hell has a map config so far — other realms will fall back to hell_01
+		var world = GameState.current_world
+		var map_id = world + "_01"
+		if not MapManager.load_map(map_id):
+			# Fallback to hell if the realm's map doesn't exist yet
+			MapManager.load_map("hell_01")
 
 	# Handle return from combat
 	if not GameState.pending_event_outcome.is_empty():

@@ -1052,12 +1052,26 @@ func _on_combat_ended(victory: bool) -> void:
 		await get_tree().create_timer(2.0).timeout
 		get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
 	else:
-		_log_message("=== DEFEAT ===")
 		# On defeat, clear the mob id so it stays on the map
 		GameState.last_defeated_mob_id = ""
-		GameState.returning_from_combat = true
-		await get_tree().create_timer(2.0).timeout
-		get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
+
+		# Check if this is a party wipe (all dead) vs a flee
+		var any_alive := false
+		for unit in CombatManager.all_units:
+			if unit.team == CombatManager.Team.PLAYER and unit.is_alive():
+				any_alive = true
+				break
+
+		if not any_alive:
+			# Party wipe — show defeat screen, then go to Bardo
+			_log_message("=== ALL HAVE FALLEN ===")
+			_show_defeat_screen()
+		else:
+			# Fled — return to overworld
+			_log_message("=== RETREAT ===")
+			GameState.returning_from_combat = true
+			await get_tree().create_timer(1.5).timeout
+			get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
 
 
 func _on_turn_started(unit: Node) -> void:
@@ -1444,6 +1458,99 @@ func _show_victory_screen(rewards: Dictionary) -> void:
 	btn_container.add_child(continue_btn)
 
 	# Add overlay to scene
+	add_child(overlay)
+
+
+## Show defeat screen when all party members have fallen
+func _show_defeat_screen() -> void:
+	# Full-screen overlay
+	var overlay = Control.new()
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	# Dark background — deeper/redder than victory
+	var bg = ColorRect.new()
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bg.color = Color(0.06, 0.02, 0.02, 0.9)
+	bg.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.add_child(bg)
+
+	# Center container
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.add_child(center)
+
+	# Main panel
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(460, 300)
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.08, 0.04, 0.06)
+	panel_style.border_color = Color(0.6, 0.2, 0.2)
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(8)
+	panel_style.set_content_margin_all(24)
+	panel.add_theme_stylebox_override("panel", panel_style)
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 18)
+	panel.add_child(vbox)
+
+	# Title
+	var title = Label.new()
+	title.text = "ALL HAVE FALLEN"
+	title.add_theme_font_size_override("font_size", 26)
+	title.add_theme_color_override("font_color", Color(0.8, 0.25, 0.2))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	# Flavor text
+	var flavor = Label.new()
+	flavor.text = "The wheel of existence turns.\nYour karma will determine the next life..."
+	flavor.add_theme_font_size_override("font_size", 14)
+	flavor.add_theme_color_override("font_color", Color(0.6, 0.5, 0.45))
+	flavor.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(flavor)
+
+	# Spacer
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 12)
+	vbox.add_child(spacer)
+
+	# Enter the Bardo button
+	var btn_container = HBoxContainer.new()
+	btn_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(btn_container)
+
+	var bardo_btn = Button.new()
+	bardo_btn.text = "Enter the Bardo"
+	bardo_btn.custom_minimum_size = Vector2(200, 44)
+	bardo_btn.add_theme_font_size_override("font_size", 16)
+
+	var btn_style = StyleBoxFlat.new()
+	btn_style.bg_color = Color(0.2, 0.08, 0.08)
+	btn_style.border_color = Color(0.6, 0.2, 0.2)
+	btn_style.set_border_width_all(2)
+	btn_style.set_corner_radius_all(6)
+	btn_style.set_content_margin_all(8)
+	bardo_btn.add_theme_stylebox_override("normal", btn_style)
+
+	var btn_hover = StyleBoxFlat.new()
+	btn_hover.bg_color = Color(0.3, 0.12, 0.1)
+	btn_hover.border_color = Color(0.8, 0.3, 0.25)
+	btn_hover.set_border_width_all(2)
+	btn_hover.set_corner_radius_all(6)
+	btn_hover.set_content_margin_all(8)
+	bardo_btn.add_theme_stylebox_override("hover", btn_hover)
+
+	bardo_btn.pressed.connect(func():
+		overlay.queue_free()
+		GameState.is_party_wiped = true
+		GameState.player_died()
+		get_tree().change_scene_to_file("res://scenes/ui/bardo_screen.tscn")
+	)
+	btn_container.add_child(bardo_btn)
+
 	add_child(overlay)
 
 
