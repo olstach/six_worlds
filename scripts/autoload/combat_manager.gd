@@ -69,6 +69,9 @@ var _can_manually_deploy: bool = false
 var _spell_database: Dictionary = {}
 var _status_effects: Dictionary = {}
 
+# Combat rewards (filled before combat_ended signal, cleared on next combat start)
+var last_combat_rewards: Dictionary = {}
+
 func _ready() -> void:
 	_load_spell_database()
 	print("CombatManager initialized with ", _spell_database.size(), " spells")
@@ -110,6 +113,7 @@ func start_combat(grid: Node, player_units: Array, enemy_units: Array) -> void:
 	all_units.clear()
 	turn_order.clear()
 	current_unit_index = 0
+	last_combat_rewards = {}
 
 	# Add all units
 	for unit in player_units:
@@ -132,6 +136,12 @@ func end_combat(victory: bool) -> void:
 	if not combat_active:
 		return
 
+	# Calculate rewards BEFORE clearing units (need enemy data)
+	if victory:
+		last_combat_rewards = _calculate_combat_rewards()
+	else:
+		last_combat_rewards = {}
+
 	combat_active = false
 	_deployment_phase = false
 	print("Combat ended - Victory: ", victory)
@@ -141,6 +151,111 @@ func end_combat(victory: bool) -> void:
 	all_units.clear()
 	turn_order.clear()
 	combat_grid = null
+
+
+# ============================================
+# COMBAT REWARDS
+# ============================================
+
+## Calculate XP, gold, and item rewards based on enemy difficulty vs party strength.
+## Must be called while all_units is still populated.
+func _calculate_combat_rewards() -> Dictionary:
+	# Count enemies and calculate their total power
+	var enemy_count := 0
+	var enemy_power_total := 0.0
+	for unit in all_units:
+		if unit.team == Team.ENEMY:
+			enemy_count += 1
+			enemy_power_total += _calculate_unit_power(unit)
+
+	# Calculate party power from CharacterSystem
+	var party_power := 0.0
+	var party_size := 0
+	for unit in all_units:
+		if unit.team == Team.PLAYER:
+			party_size += 1
+			party_power += _calculate_unit_power(unit)
+
+	# Difficulty ratio: how tough were the enemies relative to the party?
+	var ratio := 1.0
+	if party_power > 0:
+		ratio = enemy_power_total / party_power
+
+	# --- XP REWARD ---
+	# Base: 2 XP per enemy, scaled by difficulty ratio
+	# Clamped so trivial fights still give something, hard fights give more
+	var base_xp := enemy_count * 2
+	var xp_reward := maxi(1, int(base_xp * clampf(ratio, 0.5, 3.0)))
+
+	# --- GOLD REWARD ---
+	# Base: 5 + 3 per enemy, scaled by difficulty
+	var base_gold := 5 + enemy_count * 3
+	var gold_reward := maxi(1, int(base_gold * clampf(ratio, 0.5, 2.0)))
+
+	# Trade skill bonus: best Trade in party adds 10% per level
+	var best_trade := 0
+	for member in CharacterSystem.get_party():
+		var trade_level = member.get("skills", {}).get("trade", 0)
+		if trade_level > best_trade:
+			best_trade = trade_level
+	if best_trade > 0:
+		gold_reward = int(gold_reward * (1.0 + best_trade * 0.1))
+
+	# --- LUCK JACKPOT ---
+	# Slim chance for a big gold bonus. Luck makes it slightly more likely
+	# but the multiplier is always large - unreliable but consequential.
+	var best_luck := 10
+	for member in CharacterSystem.get_party():
+		var luck = member.get("attributes", {}).get("luck", 10)
+		if luck > best_luck:
+			best_luck = luck
+
+	var jackpot_triggered := false
+	var jackpot_amount := 0
+	# Base 3% chance, +0.5% per Luck above 10 (capped at 10%)
+	var jackpot_chance := clampf(0.03 + (best_luck - 10) * 0.005, 0.03, 0.10)
+	if randf() < jackpot_chance:
+		jackpot_triggered = true
+		# Jackpot: 3x to 5x the normal gold
+		jackpot_amount = gold_reward * randi_range(3, 5)
+		gold_reward += jackpot_amount
+
+	# --- ITEM DROPS ---
+	# Framework for later - returns empty array for now
+	var item_drops: Array[String] = []
+
+	var rewards := {
+		"xp": xp_reward,
+		"gold": gold_reward,
+		"items": item_drops,
+		"enemy_count": enemy_count,
+		"difficulty_ratio": ratio,
+		"jackpot_triggered": jackpot_triggered,
+		"jackpot_amount": jackpot_amount,
+		"trade_bonus": best_trade
+	}
+
+	print("Combat rewards: %d XP, %d gold (jackpot: %s)" % [xp_reward, gold_reward, str(jackpot_triggered)])
+	return rewards
+
+
+## Calculate a unit's power level from its attributes and skills.
+## Uses the same logic for both players and enemies so the ratio is fair.
+func _calculate_unit_power(unit: Node) -> float:
+	var power := 0.0
+	var data = unit.character_data
+
+	# Attribute contribution: each point above 10
+	var attrs = data.get("attributes", {})
+	for attr_name in attrs:
+		power += float(maxi(attrs[attr_name] - 10, 0))
+
+	# Skill contribution: each skill level * 5 (weighted to matter)
+	var skills = data.get("skills", {})
+	for skill_name in skills:
+		power += float(skills[skill_name]) * 5.0
+
+	return power
 
 
 # ============================================

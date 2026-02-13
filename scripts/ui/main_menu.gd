@@ -155,7 +155,7 @@ func _on_item_unequipped(_character: Dictionary, _slot: String, _item_id: String
 func _on_add_xp_pressed() -> void:
 	var player = CharacterSystem.get_player()
 	if not player.is_empty():
-		CharacterSystem.grant_xp(player, 500)
+		CharacterSystem.grant_xp(player, 10)
 
 func _refresh_display() -> void:
 	var character = CharacterSystem.get_player()

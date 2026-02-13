@@ -19,12 +19,12 @@ signal perk_selection_requested(character_data: Dictionary, perks: Array)
 var party: Array[Dictionary] = []
 var max_party_size: int = 6
 
-# Attribute costs - exponential scaling
-const ATTRIBUTE_BASE_COST: int = 100
-const ATTRIBUTE_COST_MULTIPLIER: float = 1.5
+# Attribute costs - linear scaling
+# Each point above 10 costs its rank: 10→11 = 1 XP, 11→12 = 2 XP, etc.
 
-# Skill level costs
-const SKILL_COSTS: Array[int] = [0, 100, 300, 600, 1000, 1500]  # XP cost to reach each level
+# Skill level costs - triangular numbers
+# Level 1 costs 1, level 2 costs 3, level 3 costs 6, level 4 costs 10, level 5 costs 15
+const SKILL_COSTS: Array[int] = [0, 1, 3, 6, 10, 15]  # XP cost to reach each level
 
 # Base character template
 const BASE_CHARACTER: Dictionary = {
@@ -201,11 +201,12 @@ func increase_attribute(character: Dictionary, attribute: String, amount: int = 
 	return false
 
 ## Calculate cost to increase attribute
+## Each point above 10 costs its rank: 10→11 = 1, 11→12 = 2, 12→13 = 3, etc.
 func calculate_attribute_cost(current_value: int, increase_amount: int) -> int:
 	var total_cost = 0
 	for i in range(increase_amount):
-		var level = current_value + i - 9  # Offset since base is 10
-		total_cost += int(ATTRIBUTE_BASE_COST * pow(ATTRIBUTE_COST_MULTIPLIER, level))
+		# Cost = current_value + i - 9 (so value 10→11 costs 1, 11→12 costs 2, etc.)
+		total_cost += maxi(current_value + i - 9, 1)
 	return total_cost
 
 ## Set skill level directly (for initialization)

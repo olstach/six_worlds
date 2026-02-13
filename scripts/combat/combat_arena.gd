@@ -1037,16 +1037,24 @@ func _on_combat_started() -> void:
 
 
 func _on_combat_ended(victory: bool) -> void:
+	_update_action_buttons()
+
 	if victory:
 		_log_message("=== VICTORY! ===")
+		# Apply and show rewards
+		var rewards = CombatManager.last_combat_rewards
+		if not rewards.is_empty():
+			_apply_rewards(rewards)
+			_show_victory_screen(rewards)
+			return  # Victory screen handles scene transition
+		# Fallback if no rewards calculated (shouldn't happen)
+		GameState.returning_from_combat = true
+		await get_tree().create_timer(2.0).timeout
+		get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
 	else:
 		_log_message("=== DEFEAT ===")
 		# On defeat, clear the mob id so it stays on the map
 		GameState.last_defeated_mob_id = ""
-	_update_action_buttons()
-
-	# Return to overworld after a short delay
-	if not GameState.last_defeated_mob_id.is_empty() or not victory:
 		GameState.returning_from_combat = true
 		await get_tree().create_timer(2.0).timeout
 		get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
@@ -1172,6 +1180,271 @@ func _on_status_effect_expired(unit: Node, effect_name: String) -> void:
 	# Update unit visuals
 	if unit.has_method("_update_visuals"):
 		unit._update_visuals()
+
+
+# ============================================
+# COMBAT REWARDS
+# ============================================
+
+## Apply combat rewards: grant XP to all party members, add gold
+func _apply_rewards(rewards: Dictionary) -> void:
+	var xp = rewards.get("xp", 0)
+	var gold = rewards.get("gold", 0)
+
+	# Grant full XP to ALL party members equally
+	for member in CharacterSystem.get_party():
+		CharacterSystem.grant_xp(member, xp)
+
+	# Add gold
+	if gold > 0:
+		GameState.add_gold(gold)
+
+	# Add items to inventory (framework for later)
+	var items = rewards.get("items", [])
+	for item_id in items:
+		ItemSystem.add_to_inventory(item_id)
+
+
+## Show the victory reward screen overlay
+func _show_victory_screen(rewards: Dictionary) -> void:
+	var xp = rewards.get("xp", 0)
+	var gold = rewards.get("gold", 0)
+	var items = rewards.get("items", [])
+	var jackpot = rewards.get("jackpot_triggered", false)
+	var jackpot_amount = rewards.get("jackpot_amount", 0)
+	var trade_bonus = rewards.get("trade_bonus", 0)
+	var enemy_count = rewards.get("enemy_count", 0)
+	var ratio = rewards.get("difficulty_ratio", 1.0)
+
+	# Full-screen overlay
+	var overlay = Control.new()
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	# Dark background
+	var bg = ColorRect.new()
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bg.color = Color(0.03, 0.02, 0.06, 0.88)
+	bg.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.add_child(bg)
+
+	# Center container
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.add_child(center)
+
+	# Main panel
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(500, 400)
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.10, 0.07, 0.13)
+	panel_style.border_color = Color(0.75, 0.6, 0.2)
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(8)
+	panel_style.set_content_margin_all(24)
+	panel.add_theme_stylebox_override("panel", panel_style)
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 14)
+	panel.add_child(vbox)
+
+	# Title
+	var title = Label.new()
+	title.text = "VICTORY"
+	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_color_override("font_color", Color(0.85, 0.75, 0.3))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	# Difficulty description
+	var diff_label = Label.new()
+	var diff_text = ""
+	if ratio < 0.7:
+		diff_text = "Easy fight"
+	elif ratio < 1.0:
+		diff_text = "Fair fight"
+	elif ratio < 1.3:
+		diff_text = "Challenging fight"
+	elif ratio < 2.0:
+		diff_text = "Tough fight"
+	else:
+		diff_text = "Brutal fight!"
+	diff_label.text = "%d enemies defeated - %s" % [enemy_count, diff_text]
+	diff_label.add_theme_font_size_override("font_size", 13)
+	diff_label.add_theme_color_override("font_color", Color(0.65, 0.6, 0.55))
+	diff_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(diff_label)
+
+	# Separator
+	var sep = HSeparator.new()
+	sep.add_theme_color_override("separator", Color(0.5, 0.4, 0.2))
+	vbox.add_child(sep)
+
+	# XP reward
+	var xp_row = HBoxContainer.new()
+	xp_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	xp_row.add_theme_constant_override("separation", 10)
+	vbox.add_child(xp_row)
+
+	var xp_icon = Label.new()
+	xp_icon.text = "XP"
+	xp_icon.add_theme_font_size_override("font_size", 18)
+	xp_icon.add_theme_color_override("font_color", Color(0.5, 0.8, 1.0))
+	xp_row.add_child(xp_icon)
+
+	var xp_amount = Label.new()
+	xp_amount.text = "+%d to each party member" % xp
+	xp_amount.add_theme_font_size_override("font_size", 16)
+	xp_amount.add_theme_color_override("font_color", Color(0.7, 0.9, 1.0))
+	xp_row.add_child(xp_amount)
+
+	# Gold reward
+	var gold_row = HBoxContainer.new()
+	gold_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	gold_row.add_theme_constant_override("separation", 10)
+	vbox.add_child(gold_row)
+
+	var gold_icon = Label.new()
+	gold_icon.text = "Gold"
+	gold_icon.add_theme_font_size_override("font_size", 18)
+	gold_icon.add_theme_color_override("font_color", Color(0.9, 0.8, 0.3))
+	gold_row.add_child(gold_icon)
+
+	var gold_amount = Label.new()
+	var gold_text = "+%d" % gold
+	if trade_bonus > 0:
+		gold_text += " (Trade +%d%%)" % (trade_bonus * 10)
+	gold_amount.text = gold_text
+	gold_amount.add_theme_font_size_override("font_size", 16)
+	gold_amount.add_theme_color_override("font_color", Color(1.0, 0.9, 0.5))
+	gold_row.add_child(gold_amount)
+
+	# Luck jackpot!
+	if jackpot:
+		var jackpot_row = HBoxContainer.new()
+		jackpot_row.alignment = BoxContainer.ALIGNMENT_CENTER
+		jackpot_row.add_theme_constant_override("separation", 10)
+		vbox.add_child(jackpot_row)
+
+		var jackpot_label = Label.new()
+		jackpot_label.text = "LUCKY!"
+		jackpot_label.add_theme_font_size_override("font_size", 20)
+		jackpot_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.0))
+		jackpot_row.add_child(jackpot_label)
+
+		var jackpot_desc = Label.new()
+		jackpot_desc.text = "+%d bonus gold!" % jackpot_amount
+		jackpot_desc.add_theme_font_size_override("font_size", 16)
+		jackpot_desc.add_theme_color_override("font_color", Color(1.0, 0.95, 0.4))
+		jackpot_row.add_child(jackpot_desc)
+
+	# Item drops section (framework for future use)
+	if not items.is_empty():
+		var items_sep = HSeparator.new()
+		items_sep.add_theme_color_override("separator", Color(0.5, 0.4, 0.2))
+		vbox.add_child(items_sep)
+
+		var items_title = Label.new()
+		items_title.text = "Items Found"
+		items_title.add_theme_font_size_override("font_size", 15)
+		items_title.add_theme_color_override("font_color", Color(0.7, 0.65, 0.6))
+		items_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(items_title)
+
+		var items_grid = HBoxContainer.new()
+		items_grid.alignment = BoxContainer.ALIGNMENT_CENTER
+		items_grid.add_theme_constant_override("separation", 8)
+		vbox.add_child(items_grid)
+
+		# Create tooltip for this overlay
+		var tooltip_layer = CanvasLayer.new()
+		tooltip_layer.layer = 110
+		overlay.add_child(tooltip_layer)
+		var tooltip_scene = load("res://scenes/ui/item_tooltip.tscn")
+		var tooltip_inst = tooltip_scene.instantiate()
+		tooltip_layer.add_child(tooltip_inst)
+
+		for item_id in items:
+			var item = ItemSystem.get_item(item_id)
+			if item.is_empty():
+				continue
+
+			var item_btn = Button.new()
+			item_btn.custom_minimum_size = Vector2(56, 56)
+			var item_name = item.get("name", "?")
+			item_btn.text = item_name.substr(0, 3).to_upper() if item_name.length() > 3 else item_name.to_upper()
+			item_btn.add_theme_font_size_override("font_size", 11)
+			item_btn.tooltip_text = ""
+
+			# Style by rarity
+			var rarity_color = ItemSystem.get_rarity_color(item_id)
+			item_btn.add_theme_color_override("font_color", rarity_color)
+			var item_style = StyleBoxFlat.new()
+			item_style.bg_color = Color(0.15, 0.15, 0.2)
+			item_style.border_color = rarity_color.darkened(0.3)
+			item_style.set_border_width_all(2)
+			item_style.set_corner_radius_all(4)
+			item_btn.add_theme_stylebox_override("normal", item_style)
+
+			var item_hover = StyleBoxFlat.new()
+			item_hover.bg_color = Color(0.22, 0.22, 0.28)
+			item_hover.border_color = rarity_color
+			item_hover.set_border_width_all(2)
+			item_hover.set_corner_radius_all(4)
+			item_btn.add_theme_stylebox_override("hover", item_hover)
+
+			# Tooltip on hover
+			item_btn.mouse_entered.connect(func():
+				var pos = item_btn.get_global_mouse_position()
+				tooltip_inst.show_item(item, pos)
+			)
+			item_btn.mouse_exited.connect(func():
+				tooltip_inst.hide_tooltip()
+			)
+
+			items_grid.add_child(item_btn)
+
+	# Spacer
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 8)
+	vbox.add_child(spacer)
+
+	# Continue button
+	var btn_container = HBoxContainer.new()
+	btn_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(btn_container)
+
+	var continue_btn = Button.new()
+	continue_btn.text = "Continue"
+	continue_btn.custom_minimum_size = Vector2(160, 40)
+	continue_btn.add_theme_font_size_override("font_size", 16)
+
+	var btn_style = StyleBoxFlat.new()
+	btn_style.bg_color = Color(0.25, 0.2, 0.1)
+	btn_style.border_color = Color(0.75, 0.6, 0.2)
+	btn_style.set_border_width_all(2)
+	btn_style.set_corner_radius_all(6)
+	btn_style.set_content_margin_all(8)
+	continue_btn.add_theme_stylebox_override("normal", btn_style)
+
+	var btn_hover = StyleBoxFlat.new()
+	btn_hover.bg_color = Color(0.35, 0.28, 0.12)
+	btn_hover.border_color = Color(0.9, 0.75, 0.3)
+	btn_hover.set_border_width_all(2)
+	btn_hover.set_corner_radius_all(6)
+	btn_hover.set_content_margin_all(8)
+	continue_btn.add_theme_stylebox_override("hover", btn_hover)
+
+	continue_btn.pressed.connect(func():
+		overlay.queue_free()
+		GameState.returning_from_combat = true
+		get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
+	)
+	btn_container.add_child(continue_btn)
+
+	# Add overlay to scene
+	add_child(overlay)
 
 
 # ============================================
