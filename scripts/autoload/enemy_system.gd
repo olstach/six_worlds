@@ -189,10 +189,12 @@ func get_party_power() -> float:
 		for attr_name in attrs:
 			member_power += float(attrs[attr_name] - 10)
 
-		# Skill contribution: each skill level × 20
+		# Skill contribution: each skill level × 8
+		# (Skills unlock perks/spells but don't directly add raw combat stats,
+		# so the multiplier is kept moderate to avoid over-inflating enemy attributes)
 		var skills = member.get("skills", {})
 		for skill_name in skills:
-			member_power += float(skills[skill_name]) * 20.0
+			member_power += float(skills[skill_name]) * 8.0
 
 		total_power += member_power
 
@@ -375,7 +377,7 @@ func _generate_equipment(template: Dictionary, power_level: float) -> Dictionary
 
 	# Weapon stats
 	var weapon = template.get("weapon", {})
-	var power_scale = power_level / 50.0  # Normalize around expected mid-game power
+	var power_scale = power_level / 80.0  # Normalize around expected mid-game power
 
 	result.weapon_type = weapon.get("type", "sword")
 	result.weapon_damage = int(weapon.get("base_damage", 5) + power_scale * 2)

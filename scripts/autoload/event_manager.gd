@@ -223,7 +223,6 @@ func start_event(event_id: String) -> bool:
 			return false
 	
 	current_event = event_database[event_id].duplicate(true)
-	print("Started event: ", current_event.title)
 	event_started.emit(current_event)
 	return true
 
@@ -316,7 +315,6 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 
 ## Execute a choice (with roll if needed)
 func make_choice(choice: Dictionary) -> Dictionary:
-	print("Choice made: ", choice.text)
 	choice_made.emit(choice)
 	
 	var outcome = {}
@@ -340,10 +338,6 @@ func make_choice(choice: Dictionary) -> Dictionary:
 		var roll = randi() % 20 + 1
 		var total = roll + best_value
 		var success = total >= difficulty
-		
-		print("Roll: ", roll, " + ", best_value, " (", attribute, ") = ", total, " vs DC ", difficulty)
-		print("Roller: ", roller.name if roller else "unknown")
-		print("Result: ", "SUCCESS" if success else "FAILURE")
 		
 		# Choose appropriate outcome
 		if success and "outcome_success" in choice:
@@ -383,11 +377,10 @@ func apply_outcome(outcome: Dictionary) -> void:
 		if "xp" in rewards:
 			var player = CharacterSystem.get_player()
 			CharacterSystem.grant_xp(player, rewards.xp)
-			print("Granted XP: ", rewards.xp)
-		
+
 		if "items" in rewards:
 			# TODO: Add items to inventory
-			print("Granted items: ", rewards.items)
+			pass
 	
 	# Apply karma changes
 	if "karma" in outcome:

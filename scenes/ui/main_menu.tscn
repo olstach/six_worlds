@@ -112,7 +112,7 @@ size_flags_horizontal = 3
 [node name="AddXPButton" type="Button" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/HeaderSection"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "+500 XP (Debug)"
+text = "+10 XP"
 
 [node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent"]
 layout_mode = 2
@@ -179,31 +179,62 @@ theme_override_constants/separation = 4
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SkillsPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn"]
+[node name="RightScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="SkillsMargin" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/SkillsPanel"]
+[node name="RightScrollContent" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="SkillsPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent"]
+layout_mode = 2
+
+[node name="SkillsMargin" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/SkillsPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 15
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 10
 
-[node name="SkillsVBox" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/SkillsPanel/SkillsMargin"]
+[node name="SkillsVBox" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/SkillsPanel/SkillsMargin"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="SkillsTitle" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/SkillsPanel/SkillsMargin/SkillsVBox"]
+[node name="SkillsTitle" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/SkillsPanel/SkillsMargin/SkillsVBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "SKILLS BY ELEMENT"
 
-[node name="SkillsGrid" type="GridContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/SkillsPanel/SkillsMargin/SkillsVBox"]
+[node name="SkillsGrid" type="GridContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/SkillsPanel/SkillsMargin/SkillsVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 3
 columns = 8
+
+[node name="PerksPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent"]
+layout_mode = 2
+
+[node name="PerksMargin" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/PerksPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 10
+
+[node name="PerksVBox" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/PerksPanel/PerksMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="PerksTitle" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/PerksPanel/PerksMargin/PerksVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "PERKS"
+
+[node name="PerksContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/PerksPanel/PerksMargin/PerksVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 2
 
 [node name="Equipment" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 layout_mode = 2
@@ -338,3 +369,30 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 columns = 6
+
+[node name="Spellbook" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="SpellbookLayout" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Spellbook"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="SpellFilterBar" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Spellbook/SpellbookLayout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SpellbookScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer/TabContainer/Spellbook/SpellbookLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SpellbookList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Spellbook/SpellbookLayout/SpellbookScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8

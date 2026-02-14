@@ -1,0 +1,10 @@
+res://scripts/autoload/character_system.gd
+res://scripts/autoload/combat_manager.gd
+res://scripts/autoload/event_manager.gd
+res://scripts/autoload/game_state.gd
+res://scripts/autoload/karma_system.gd
+res://scripts/autoload/map_manager.gd
+res://scripts/autoload/perk_system.gd
+res://scripts/autoload/shop_system.gd
+res://scripts/map_gen/map_generator.gd
+res://scripts/ui/main_menu.gd

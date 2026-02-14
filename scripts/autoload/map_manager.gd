@@ -946,7 +946,6 @@ func _handle_event_object(obj: Dictionary) -> void:
 		push_warning("MapManager: Event object has no event_id: " + obj.get("name", "?"))
 		return
 
-	print("Event: ", obj.get("name", "Unknown"), " -> ", event_id)
 	event_triggered.emit(event_id, obj)
 
 
@@ -973,8 +972,6 @@ func _handle_pickup_object(obj: Dictionary) -> void:
 	var message = data.get("message", "You found something.")
 	var rewards = data.get("rewards", [])
 
-	print("Pickup: ", obj.get("name", "Unknown"), " - ", message)
-
 	# Apply each reward
 	for reward in rewards:
 		_apply_reward(reward)
@@ -990,18 +987,15 @@ func _apply_reward(reward: Dictionary) -> void:
 	match reward_type:
 		"gold":
 			GameState.add_gold(int(value))
-			print("  +%d gold" % int(value))
 
 		"xp":
 			# Distribute XP to whole party
 			for character in CharacterSystem.get_party():
 				CharacterSystem.grant_xp(character, int(value))
-			print("  +%d XP to party" % int(value))
 
 		"item":
 			# Add item to party inventory
 			ItemSystem.add_to_inventory(str(value))
-			print("  +item: ", value)
 
 		"heal":
 			# Heal all party members by percentage
@@ -1010,7 +1004,6 @@ func _apply_reward(reward: Dictionary) -> void:
 				var max_hp = derived.get("max_hp", 100)
 				var heal_amount = int(max_hp * int(value) / 100.0)
 				derived["current_hp"] = min(derived.get("current_hp", max_hp) + heal_amount, max_hp)
-			print("  Healed party %d%%" % int(value))
 
 		"mana":
 			# Restore mana to all party members by percentage
@@ -1019,7 +1012,6 @@ func _apply_reward(reward: Dictionary) -> void:
 				var max_mana = derived.get("max_mana", 100)
 				var restore = int(max_mana * int(value) / 100.0)
 				derived["current_mana"] = min(derived.get("current_mana", max_mana) + restore, max_mana)
-			print("  Restored %d%% mana" % int(value))
 
 		"buff":
 			# Apply a temporary (or permanent) stat buff to party
@@ -1028,8 +1020,6 @@ func _apply_reward(reward: Dictionary) -> void:
 				var stat = value.get("stat", "")
 				var amount = value.get("amount", 0)
 				var duration = value.get("duration", -1)  # -1 = permanent for map
-				print("  Buff: %s +%d (duration: %s)" % [stat, amount,
-					"permanent" if duration == -1 else "%d turns" % duration])
 				# Store on GameState for now - will be processed by systems
 				if GameState:
 					if not GameState.get("active_map_buffs"):
@@ -1055,8 +1045,6 @@ func _handle_portal_object(obj: Dictionary) -> void:
 	stop_movement()
 	var dest_realm = obj.data.get("destination_realm", "")
 	var dest_map = obj.data.get("destination_map", "")
-	print("Portal to: ", dest_realm, " / ", dest_map)
-
 	portal_entered.emit(obj.data)
 
 	if GameState and not dest_realm.is_empty():
@@ -1324,7 +1312,6 @@ func _start_pursuit(mob: Dictionary) -> void:
 	mob.pursuit_repath_timer = 0.0  # Immediately calculate path
 	mob.pursuit_path = find_path(mob.position, party_position)
 	mob.pursuit_path_index = 0
-	print("Mob '", mob.name, "' spotted the player! Pursuing...")
 	mob_started_pursuit.emit(mob)
 
 
@@ -1334,7 +1321,6 @@ func _end_pursuit(mob: Dictionary) -> void:
 	mob.pursuit_timer = 0.0
 	mob.pursuit_path.clear()
 	mob.pursuit_path_index = 0
-	print("Mob '", mob.name, "' lost interest and stopped pursuing.")
 	mob_lost_pursuit.emit(mob)
 
 
@@ -1348,7 +1334,6 @@ func _handle_mob_encounter(mob: Dictionary) -> void:
 			stop_movement()
 			var event_id = mob.data.get("event_id", "")
 			if not event_id.is_empty():
-				print("Friendly mob: ", mob.name, " -> ", event_id)
 				mob_event_triggered.emit(mob)
 				event_triggered.emit(event_id, mob)
 			else:
@@ -1361,7 +1346,6 @@ func _handle_mob_encounter(mob: Dictionary) -> void:
 			if mob.is_pursuing:
 				mob.is_pursuing = false
 				mob.pursuit_path.clear()
-			print("Combat with mob: ", mob.name)
 			mob_combat_triggered.emit(mob)
 
 

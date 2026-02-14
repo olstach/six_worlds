@@ -123,8 +123,8 @@
 		"cold_hell": [
 			{"name": "Ice Wraith", "icon": "enemy", "mode": 0, "attitude": 1, "speed": 0.0, "enemy_group": "ice_wraith", "difficulty": "normal", "weight": 3},
 			{"name": "Demon Sentinel", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.5, "enemy_group": "demon_sentinel", "difficulty": "normal", "weight": 3},
-			{"name": "Frost Imp", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.7, "enemy_group": "frost_imp", "difficulty": "easy", "weight": 4},
-			{"name": "Lost Souls", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.3, "enemy_group": "lost_souls", "difficulty": "easy", "weight": 3},
+			{"name": "Frost Imp", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.7, "enemy_group": "frost_imp", "difficulty": "easy", "weight": 6},
+			{"name": "Lost Souls", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.3, "enemy_group": "lost_souls", "difficulty": "easy", "weight": 5},
 			{"name": "Shadow Stalker", "icon": "enemy", "mode": 0, "attitude": 2, "speed": 0.8, "enemy_group": "shadow_stalker", "difficulty": "normal", "aggression": 0.4, "weight": 2},
 			{"name": "Hermit Monk", "icon": "npc", "mode": 2, "attitude": 0, "speed": 0.3, "event_id": "hell_hermit_monk", "weight": 1},
 			{"name": "Wandering Peddler", "icon": "merchant", "mode": 1, "attitude": 0, "speed": 0.4, "event_id": "hell_wandering_peddler", "weight": 1, "tag": "shop"}
@@ -132,8 +132,8 @@
 		"fire_hell": [
 			{"name": "Hell Hound", "icon": "enemy_fast", "mode": 2, "attitude": 2, "speed": 0.9, "enemy_group": "hell_hound", "difficulty": "hard", "aggression": 0.7, "weight": 2},
 			{"name": "Oni Brute", "icon": "enemy_elite", "mode": 1, "attitude": 2, "speed": 0.5, "enemy_group": "oni_brute", "difficulty": "hard", "aggression": 0.9, "weight": 1},
-			{"name": "Flame Imps", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.7, "enemy_group": "frost_imp", "difficulty": "easy", "weight": 3},
-			{"name": "Lost Souls", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.3, "enemy_group": "lost_souls", "difficulty": "easy", "weight": 3},
+			{"name": "Flame Imps", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.7, "enemy_group": "frost_imp", "difficulty": "easy", "weight": 6},
+			{"name": "Lost Souls", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.3, "enemy_group": "lost_souls", "difficulty": "easy", "weight": 5},
 			{"name": "Demon Sentinel", "icon": "enemy", "mode": 0, "attitude": 1, "speed": 0.0, "enemy_group": "demon_sentinel", "difficulty": "normal", "weight": 2},
 			{"name": "Hell Hound Pack", "icon": "enemy_fast", "mode": 2, "attitude": 2, "speed": 0.8, "enemy_group": "hell_hound", "difficulty": "hard", "aggression": 0.6, "weight": 1}
 		]
@@ -142,7 +142,7 @@
 	"density": {
 		"events_per_zone": [12, 18],
 		"pickups_per_zone": [15, 25],
-		"mobs_per_zone": [14, 22],
+		"mobs_per_zone": [22, 32],
 		"guaranteed_shops": [1, 2],
 		"guaranteed_rest": [1, 2],
 		"min_spacing": 3

@@ -119,11 +119,7 @@ func generate(config: Dictionary, seed_value: int = 0) -> Dictionary:
 		if zone.get("type", "") == "mountain_wall":
 			continue
 		if zone_id in object_pools:
-			var before = _objects.size()
 			_place_zone_objects(zone, object_pools[zone_id], density)
-			print("  Zone '%s': placed %d objects" % [zone_id, _objects.size() - before])
-		else:
-			print("  Zone '%s': no object pool found" % zone_id)
 
 	# Step 6: Place mobs from pools
 	for zone in zones:
@@ -131,11 +127,7 @@ func generate(config: Dictionary, seed_value: int = 0) -> Dictionary:
 		if zone.get("type", "") == "mountain_wall":
 			continue
 		if zone_id in mob_pools:
-			var before = _mobs.size()
 			_place_zone_mobs(zone, mob_pools[zone_id], density)
-			print("  Zone '%s': placed %d mobs" % [zone_id, _mobs.size() - before])
-		else:
-			print("  Zone '%s': no mob pool found" % zone_id)
 
 	# Step 7-8: Assemble output
 	var result = {
@@ -153,8 +145,6 @@ func generate(config: Dictionary, seed_value: int = 0) -> Dictionary:
 		"mobs": _mobs.duplicate(true)
 	}
 
-	print("MapGenerator: Generated %dx%d map with %d objects and %d mobs" % [
-		_width, _height, _objects.size(), _mobs.size()])
 	return result
 
 
@@ -489,7 +479,6 @@ func _validate_connectivity() -> void:
 		var portal_reachable = _portal_pos in reachable
 
 		if pass_reachable and portal_reachable:
-			print("MapGenerator: Connectivity validated (attempt %d)" % (_attempt + 1))
 			return
 
 		# Carve a path toward the unreachable target
@@ -584,8 +573,6 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 
 	var event_pool = pool.get("events", [])
 	var pickup_pool = pool.get("pickups", [])
-	print("    Object pools — events: %d, pickups: %d" % [event_pool.size(), pickup_pool.size()])
-
 	var event_range = density.get("events_per_zone", [6, 10])
 	var pickup_range = density.get("pickups_per_zone", [8, 14])
 	var shop_range = density.get("guaranteed_shops", [1, 2])
@@ -728,8 +715,6 @@ func _place_zone_mobs(zone: Dictionary, pool: Array, density: Dictionary) -> voi
 
 	var mob_range = density.get("mobs_per_zone", [8, 14])
 	var num_mobs = randi_range(int(mob_range[0]), int(mob_range[1]))
-	print("    Mob pool size: %d, target mobs: %d" % [pool.size(), num_mobs])
-
 	var mob_weights = _build_pool_weight_table(pool)
 	var placed_positions: Array[Vector2i] = []
 

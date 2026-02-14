@@ -625,13 +625,11 @@ func buy_skill_training(character: Dictionary, skill: String) -> Dictionary:
 ## Set the current active shop
 func open_shop(shop_data: Dictionary) -> void:
 	_current_shop = shop_data
-	print("Shop opened: ", shop_data.get("name", "Unknown Shop"))
 
 
 ## Close the current shop
 func close_shop() -> void:
 	_current_shop = {}
-	print("Shop closed")
 
 
 ## Get current shop data

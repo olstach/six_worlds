@@ -338,7 +338,6 @@ func grant_perk(character: Dictionary, perk_id: String) -> bool:
 		"name": perk_data.get("name", perk_id)
 	})
 
-	print(character.name, " gained perk: ", perk_data.get("name", perk_id))
 	perk_granted.emit(character, perk_id, perk_data)
 	return true
 

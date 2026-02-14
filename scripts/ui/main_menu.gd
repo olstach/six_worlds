@@ -2,9 +2,10 @@ extends Control
 ## Main Menu - Tabbed interface for character management
 ##
 ## Tab structure:
-## 1. Stats - Attributes, derived stats, skills grid
-## 2. Equipment - Gear slots and inventory (TODO)
-## 3. Party - Party member management (TODO)
+## 1. Stats - Attributes, derived stats, skills grid, perks list
+## 2. Equipment - Gear slots and inventory
+## 3. Party - Party member management
+## 4. Spellbook - Known spells grouped by level
 
 signal tab_changed(tab_index: int)
 
@@ -18,6 +19,9 @@ signal tab_changed(tab_index: int)
 @onready var attributes_container: VBoxContainer = %AttributesContainer
 @onready var derived_container: VBoxContainer = %DerivedContainer
 @onready var skills_grid: GridContainer = %SkillsGrid
+@onready var perks_container: VBoxContainer = %PerksContainer
+@onready var spellbook_list: VBoxContainer = %SpellbookList
+@onready var spell_filter_bar: HBoxContainer = %SpellFilterBar
 @onready var party_list: VBoxContainer = %PartyList
 @onready var followers_list: VBoxContainer = %FollowersList
 @onready var inventory_grid: GridContainer = %InventoryGrid
@@ -45,13 +49,26 @@ var selected_equipment_slot: String = ""
 var equipment_slot_buttons := {}
 var current_weapon_set: int = 1  # 1 or 2
 
-# Perk selection popup
+# Perk selection popup - uses its own CanvasLayer to render above CharSheetOverlay (layer 15)
+var perk_popup_layer: CanvasLayer = null
 var perk_popup: Control = null
 var pending_perk_character: Dictionary = {}  # Character waiting for perk selection
 
 # Item tooltip
 var item_tooltip: Control = null
 const ITEM_TOOLTIP_SCENE = preload("res://scenes/ui/item_tooltip.tscn")
+
+# Spell database for spellbook display
+var _spell_database: Dictionary = {}
+
+# Spellbook filter state — active school/subschool filters (AND logic)
+var _spell_filters: Dictionary = {}  # filter_name -> bool (true = active)
+var _spell_filter_buttons: Dictionary = {}  # filter_name -> Button reference
+var _spell_filters_built := false
+
+# Schools are stored in spells.json "schools" array; subschools in "subschool" field
+const SPELL_SCHOOLS: Array[String] = ["Space", "Air", "Fire", "Water", "Earth", "White", "Black"]
+const SPELL_SUBSCHOOLS: Array[String] = ["Sorcery", "Enchantment", "Summoning"]
 
 # Attribute display names
 const ATTRIBUTE_ABBREVS := {
@@ -100,6 +117,9 @@ func _ready() -> void:
 	# Connect debug button
 	add_xp_button.pressed.connect(_on_add_xp_pressed)
 
+	# Load spell database for spellbook tab
+	_load_spell_database()
+
 	# Add starter items if inventory is empty
 	if ItemSystem.get_inventory().is_empty():
 		ItemSystem.add_starter_items()
@@ -126,6 +146,10 @@ func _on_tab_changed(tab: int) -> void:
 		_update_party_list()
 		_update_followers_list()
 		_update_inventory()
+	# Refresh spellbook tab when switching to it (tab index 3)
+	elif tab == 3:
+		_build_spell_filters()
+		_update_spellbook()
 
 func _on_character_updated(_character: Dictionary) -> void:
 	_refresh_display()
@@ -166,6 +190,7 @@ func _refresh_display() -> void:
 	_update_attributes(character)
 	_update_derived_stats(character)
 	_update_skills_grid(character)
+	_update_perks_list(character)
 
 func _update_header(character: Dictionary) -> void:
 	name_value.text = character.get("name", "Unknown")
@@ -353,14 +378,408 @@ func _on_skill_pressed(skill_id: String) -> void:
 	var cost = CharacterSystem.SKILL_COSTS[current_level + 1] if current_level < 5 else 0
 
 	if current_level >= 5:
-		print("Skill already at max level")
 		return
 
 	if player.get("xp", 0) < cost:
-		print("Not enough XP (need %d)" % cost)
 		return
 
 	CharacterSystem.upgrade_skill(player, skill_id)
+
+# ============================================
+# PERKS LIST (Stats tab, below skills)
+# ============================================
+
+func _update_perks_list(character: Dictionary) -> void:
+	## Display all acquired perks below the skills grid.
+	for child in perks_container.get_children():
+		child.queue_free()
+
+	var character_perks = PerkSystem.get_character_perks(character)
+
+	if character_perks.is_empty():
+		var empty_label = Label.new()
+		empty_label.text = "No perks acquired"
+		empty_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		empty_label.add_theme_font_size_override("font_size", 12)
+		perks_container.add_child(empty_label)
+		return
+
+	for perk_entry in character_perks:
+		var perk_id = perk_entry.get("id", "")
+		var perk_data = perk_entry.get("data", {})
+
+		var row = HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+
+		# Perk name colored by element
+		var name_label = Label.new()
+		name_label.text = perk_data.get("name", perk_id)
+		name_label.add_theme_font_size_override("font_size", 12)
+		name_label.custom_minimum_size.x = 160
+
+		var skill_id = perk_data.get("skill", "")
+		var color = Color(0.85, 0.75, 0.4)  # Gold default for cross-skill
+		for element in ELEMENT_SKILLS:
+			if skill_id in ELEMENT_SKILLS[element]:
+				color = ELEMENT_COLORS[element]
+				break
+		name_label.add_theme_color_override("font_color", color)
+		row.add_child(name_label)
+
+		# Short description
+		var desc_label = Label.new()
+		desc_label.text = perk_data.get("description", "")
+		desc_label.add_theme_font_size_override("font_size", 11)
+		desc_label.add_theme_color_override("font_color", Color(0.6, 0.55, 0.5))
+		desc_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		desc_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		row.add_child(desc_label)
+
+		perks_container.add_child(row)
+
+
+# ============================================
+# SPELLBOOK TAB
+# ============================================
+
+func _load_spell_database() -> void:
+	## Load spell data from spells.json for the spellbook display.
+	var file_path = "res://resources/data/spells.json"
+	if not FileAccess.file_exists(file_path):
+		push_warning("Spellbook: spells.json not found")
+		return
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	var json_text = file.get_as_text()
+	file.close()
+	var json = JSON.new()
+	if json.parse(json_text) != OK:
+		push_warning("Spellbook: Failed to parse spells.json")
+		return
+	_spell_database = json.get_data().get("spells", {})
+	print("Spellbook: loaded ", _spell_database.size(), " spells")
+
+func _get_school_color(school: String) -> Color:
+	## Get display color for a spell school (elements + white/black).
+	var lower = school.to_lower()
+	if lower in ELEMENT_COLORS:
+		return ELEMENT_COLORS[lower]
+	match lower:
+		"white": return Color(0.9, 0.85, 0.7)
+		"black": return Color(0.6, 0.4, 0.7)
+	return Color(0.7, 0.7, 0.7)
+
+func _build_spell_filters() -> void:
+	## Create the row of school/subschool toggle buttons (built once).
+	if _spell_filters_built:
+		return
+	_spell_filters_built = true
+
+	# Initialize all filters as inactive
+	for school in SPELL_SCHOOLS:
+		_spell_filters[school] = false
+	for sub in SPELL_SUBSCHOOLS:
+		_spell_filters[sub] = false
+
+	# "All" label
+	var all_label = Label.new()
+	all_label.text = "Filter:"
+	all_label.add_theme_font_size_override("font_size", 12)
+	all_label.add_theme_color_override("font_color", Color(0.6, 0.55, 0.5))
+	spell_filter_bar.add_child(all_label)
+
+	# School buttons
+	for school in SPELL_SCHOOLS:
+		var btn = _create_filter_button(school, _get_school_color(school))
+		spell_filter_bar.add_child(btn)
+		_spell_filter_buttons[school] = btn
+
+	# Separator
+	var sep = VSeparator.new()
+	sep.add_theme_constant_override("separation", 8)
+	spell_filter_bar.add_child(sep)
+
+	# Subschool buttons
+	for sub in SPELL_SUBSCHOOLS:
+		var btn = _create_filter_button(sub, Color(0.6, 0.6, 0.55))
+		spell_filter_bar.add_child(btn)
+		_spell_filter_buttons[sub] = btn
+
+	# Clear all button
+	var clear_btn = Button.new()
+	clear_btn.text = "Clear"
+	clear_btn.add_theme_font_size_override("font_size", 11)
+	clear_btn.custom_minimum_size = Vector2(50, 26)
+	clear_btn.pressed.connect(_on_spell_filter_clear)
+	spell_filter_bar.add_child(clear_btn)
+
+func _create_filter_button(filter_name: String, color: Color) -> Button:
+	## Create a single toggle filter button for the spellbook.
+	var btn = Button.new()
+	btn.text = filter_name
+	btn.toggle_mode = true
+	btn.button_pressed = false
+	btn.custom_minimum_size = Vector2(0, 26)
+	btn.add_theme_font_size_override("font_size", 11)
+
+	# Normal style (muted)
+	var style_off = StyleBoxFlat.new()
+	style_off.bg_color = Color(0.15, 0.13, 0.18)
+	style_off.border_color = color.darkened(0.5)
+	style_off.set_border_width_all(1)
+	style_off.set_corner_radius_all(3)
+	style_off.set_content_margin_all(4)
+	btn.add_theme_stylebox_override("normal", style_off)
+
+	# Pressed/active style (bright)
+	var style_on = StyleBoxFlat.new()
+	style_on.bg_color = color.darkened(0.6)
+	style_on.border_color = color
+	style_on.set_border_width_all(2)
+	style_on.set_corner_radius_all(3)
+	style_on.set_content_margin_all(4)
+	btn.add_theme_stylebox_override("pressed", style_on)
+
+	# Hover
+	var style_hover = StyleBoxFlat.new()
+	style_hover.bg_color = Color(0.2, 0.18, 0.22)
+	style_hover.border_color = color.darkened(0.3)
+	style_hover.set_border_width_all(1)
+	style_hover.set_corner_radius_all(3)
+	style_hover.set_content_margin_all(4)
+	btn.add_theme_stylebox_override("hover", style_hover)
+
+	btn.toggled.connect(_on_spell_filter_toggled.bind(filter_name))
+	return btn
+
+func _on_spell_filter_toggled(is_active: bool, filter_name: String) -> void:
+	_spell_filters[filter_name] = is_active
+	_update_spellbook()
+
+func _on_spell_filter_clear() -> void:
+	for filter_name in _spell_filters:
+		_spell_filters[filter_name] = false
+	for filter_name in _spell_filter_buttons:
+		_spell_filter_buttons[filter_name].button_pressed = false
+	_update_spellbook()
+
+func _spell_passes_filter(spell_data: Dictionary) -> bool:
+	## Check if a spell matches all active filters (AND logic).
+	## Schools filter: spell must contain ALL active school filters in its schools array.
+	## Subschool filter: spell's subschool must match ALL active subschool filters
+	## (in practice only one subschool filter can meaningfully be active).
+	var active_schools: Array[String] = []
+	var active_subs: Array[String] = []
+
+	for school in SPELL_SCHOOLS:
+		if _spell_filters.get(school, false):
+			active_schools.append(school)
+	for sub in SPELL_SUBSCHOOLS:
+		if _spell_filters.get(sub, false):
+			active_subs.append(sub)
+
+	# No filters active = show all
+	if active_schools.is_empty() and active_subs.is_empty():
+		return true
+
+	# Check school filters — spell must have ALL active schools
+	var spell_schools = spell_data.get("schools", [])
+	for required_school in active_schools:
+		var found := false
+		for s in spell_schools:
+			if s.to_lower() == required_school.to_lower():
+				found = true
+				break
+		if not found:
+			return false
+
+	# Check subschool filters — spell's subschool must match ALL active ones (AND)
+	# Since a spell has only one subschool, selecting 2+ subschools will show nothing
+	if not active_subs.is_empty():
+		var spell_sub = spell_data.get("subschool", "").to_lower()
+		for required_sub in active_subs:
+			if spell_sub != required_sub.to_lower():
+				return false
+
+	return true
+
+func _update_spellbook() -> void:
+	## Populate the spellbook tab with all known spells grouped by level.
+	for child in spellbook_list.get_children():
+		child.queue_free()
+
+	var character = CharacterSystem.get_player()
+	if character.is_empty():
+		return
+
+	var known_ids = CharacterSystem.get_known_spells(character)
+
+	if known_ids.is_empty():
+		var empty_label = Label.new()
+		empty_label.text = "No spells known"
+		empty_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		empty_label.add_theme_font_size_override("font_size", 14)
+		spellbook_list.add_child(empty_label)
+		return
+
+	# Reload spell database if it's empty (may not have loaded yet)
+	if _spell_database.is_empty():
+		_load_spell_database()
+
+	# Group spells by level, applying active filters
+	var spells_by_level := {}
+	for spell_id in known_ids:
+		var spell_data = _spell_database.get(spell_id, {})
+		if spell_data.is_empty():
+			continue
+		if not _spell_passes_filter(spell_data):
+			continue
+		var level = int(spell_data.get("level", 1))
+		if not spells_by_level.has(level):
+			spells_by_level[level] = []
+		spells_by_level[level].append({"id": spell_id, "data": spell_data})
+
+	# Display by level
+	var levels = spells_by_level.keys()
+	levels.sort()
+
+	if levels.is_empty():
+		var msg = Label.new()
+		if _has_any_filter_active():
+			msg.text = "No spells match the current filters"
+		else:
+			msg.text = "Spells known but spell data not loaded"
+		msg.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		msg.add_theme_font_size_override("font_size", 14)
+		spellbook_list.add_child(msg)
+		return
+
+	for level in levels:
+		# Level header
+		var level_header = Label.new()
+		level_header.text = "— Level " + str(level) + " —"
+		level_header.add_theme_font_size_override("font_size", 16)
+		level_header.add_theme_color_override("font_color", Color(0.85, 0.75, 0.4))
+		spellbook_list.add_child(level_header)
+
+		for spell_entry in spells_by_level[level]:
+			var card = _create_spell_card(spell_entry.id, spell_entry.data)
+			spellbook_list.add_child(card)
+
+		# Spacer between levels
+		var spacer = Control.new()
+		spacer.custom_minimum_size.y = 6
+		spellbook_list.add_child(spacer)
+
+func _has_any_filter_active() -> bool:
+	for filter_name in _spell_filters:
+		if _spell_filters[filter_name]:
+			return true
+	return false
+
+func _create_spell_card(spell_id: String, spell_data: Dictionary) -> PanelContainer:
+	## Create a display card for a single spell in the spellbook.
+	var card = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.1, 0.15)
+	style.border_color = Color(0.3, 0.3, 0.35)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(10)
+	card.add_theme_stylebox_override("panel", style)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	card.add_child(vbox)
+
+	# Top row: spell name + schools + mana cost
+	var top_row = HBoxContainer.new()
+	top_row.add_theme_constant_override("separation", 10)
+	vbox.add_child(top_row)
+
+	# Spell name colored by primary school
+	var schools = spell_data.get("schools", [])
+	var primary_color = _get_school_color(schools[0]) if not schools.is_empty() else Color.WHITE
+
+	var name_label = Label.new()
+	name_label.text = spell_data.get("name", spell_id)
+	name_label.add_theme_font_size_override("font_size", 15)
+	name_label.add_theme_color_override("font_color", primary_color)
+	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top_row.add_child(name_label)
+
+	# School tags
+	for school_name in schools:
+		var school_label = Label.new()
+		school_label.text = school_name
+		school_label.add_theme_color_override("font_color", _get_school_color(school_name))
+		school_label.add_theme_font_size_override("font_size", 12)
+		top_row.add_child(school_label)
+
+	# Subschool
+	var subschool = spell_data.get("subschool", "")
+	if subschool != "":
+		var sub_label = Label.new()
+		sub_label.text = subschool
+		sub_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.55))
+		sub_label.add_theme_font_size_override("font_size", 12)
+		top_row.add_child(sub_label)
+
+	# Mana cost
+	var mana_label = Label.new()
+	mana_label.text = str(int(spell_data.get("mana_cost", 0))) + " MP"
+	mana_label.add_theme_color_override("font_color", Color(0.4, 0.6, 0.9))
+	mana_label.add_theme_font_size_override("font_size", 12)
+	top_row.add_child(mana_label)
+
+	# Stats row: damage, heal, statuses, range
+	var stats_parts: Array[String] = []
+
+	var damage = spell_data.get("damage")
+	if damage != null and damage is float and damage > 0:
+		var dmg_type = spell_data.get("damage_type", "")
+		stats_parts.append(str(int(damage)) + " " + dmg_type + " dmg")
+
+	var heal = spell_data.get("heal")
+	if heal != null and heal is float and heal > 0:
+		stats_parts.append("Heal " + str(int(heal)))
+
+	var statuses = spell_data.get("statuses_caused", [])
+	if not statuses.is_empty():
+		var status_names: Array[String] = []
+		for s in statuses:
+			status_names.append(str(s))
+		stats_parts.append("-> " + ", ".join(status_names))
+
+	var target = spell_data.get("target", {})
+	var range_str = target.get("range", "ranged")
+	stats_parts.append(range_str.capitalize())
+
+	var duration = spell_data.get("duration")
+	if duration != null:
+		if duration is String:
+			stats_parts.append("Dur: " + duration)
+		elif duration is float and duration > 0:
+			stats_parts.append("Dur: " + str(int(duration)) + "t")
+
+	if not stats_parts.is_empty():
+		var stats_label = Label.new()
+		stats_label.text = "  |  ".join(stats_parts)
+		stats_label.add_theme_font_size_override("font_size", 12)
+		stats_label.add_theme_color_override("font_color", Color(0.7, 0.65, 0.6))
+		vbox.add_child(stats_label)
+
+	# Description
+	var desc = spell_data.get("description", "")
+	if desc != "":
+		var desc_label = Label.new()
+		desc_label.text = desc
+		desc_label.add_theme_font_size_override("font_size", 11)
+		desc_label.add_theme_color_override("font_color", Color(0.55, 0.5, 0.48))
+		desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+		vbox.add_child(desc_label)
+
+	return card
+
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
@@ -374,8 +793,8 @@ func _exit_tree() -> void:
 			tooltip_parent.queue_free()
 		else:
 			item_tooltip.queue_free()
-	if perk_popup and is_instance_valid(perk_popup):
-		perk_popup.queue_free()
+	if perk_popup_layer and is_instance_valid(perk_popup_layer):
+		perk_popup_layer.queue_free()
 
 
 # ============================================
@@ -403,15 +822,22 @@ func _on_perk_selection_requested(character: Dictionary, perks: Array) -> void:
 
 func _show_perk_popup(perks: Array) -> void:
 	## Build and display the perk selection popup overlay.
-	# Clean up any existing popup
-	if perk_popup and is_instance_valid(perk_popup):
-		perk_popup.queue_free()
+	# Clean up any existing popup and its CanvasLayer
+	if perk_popup_layer and is_instance_valid(perk_popup_layer):
+		perk_popup_layer.queue_free()
+		perk_popup_layer = null
+		perk_popup = null
+
+	# Create a CanvasLayer above CharSheetOverlay (15) so popup renders on top
+	perk_popup_layer = CanvasLayer.new()
+	perk_popup_layer.layer = 30
+	get_tree().root.add_child(perk_popup_layer)
 
 	# Full-screen overlay that blocks input to the rest of the UI
 	perk_popup = Control.new()
 	perk_popup.set_anchors_preset(Control.PRESET_FULL_RECT)
 	perk_popup.mouse_filter = Control.MOUSE_FILTER_STOP
-	get_tree().root.add_child.call_deferred(perk_popup)
+	perk_popup_layer.add_child(perk_popup)
 
 	# Semi-transparent dark background
 	var bg = ColorRect.new()
@@ -589,9 +1015,10 @@ func _on_perk_selected(perk_id: String) -> void:
 	PerkSystem.grant_perk(pending_perk_character, perk_id)
 	pending_perk_character = {}
 
-	# Close popup
-	if perk_popup and is_instance_valid(perk_popup):
-		perk_popup.queue_free()
+	# Close popup (free the CanvasLayer, which frees the popup too)
+	if perk_popup_layer and is_instance_valid(perk_popup_layer):
+		perk_popup_layer.queue_free()
+		perk_popup_layer = null
 		perk_popup = null
 
 	# Refresh display to show updated stats
@@ -600,8 +1027,9 @@ func _on_perk_selected(perk_id: String) -> void:
 func _on_perk_skipped() -> void:
 	## Handle player skipping the perk selection.
 	pending_perk_character = {}
-	if perk_popup and is_instance_valid(perk_popup):
-		perk_popup.queue_free()
+	if perk_popup_layer and is_instance_valid(perk_popup_layer):
+		perk_popup_layer.queue_free()
+		perk_popup_layer = null
 		perk_popup = null
 
 
@@ -1012,12 +1440,10 @@ func _on_equipment_item_pressed(item: Dictionary) -> void:
 	# Check if player can equip
 	var can_result = ItemSystem.can_equip(player, item_id)
 	if not can_result.can_equip:
-		print("Cannot equip: ", can_result.reason)
 		return
 
 	# Equip the item
 	if ItemSystem.equip_item(player, item_id, selected_equipment_slot):
-		print("Equipped ", item.get("name", ""), " to ", selected_equipment_slot)
 		_update_equipment_slots()
 		_update_equipment_display()
 

@@ -78,9 +78,6 @@ func add_karma(realm: String, amount: int, action_description: String = "") -> v
 	
 	karma_scores[realm] += amount
 	
-	if action_description:
-		print("Karma +", amount, " (", realm, "): ", action_description)
-	
 	karma_changed.emit(realm, karma_scores[realm])
 
 ## Process a choice/action and apply its karma consequences
@@ -102,7 +99,6 @@ func determine_reincarnation_realm() -> String:
 			highest_karma = karma_scores[realm]
 			highest_realm = realm
 	
-	print("Reincarnation realm determined: ", highest_realm, " (karma: ", highest_karma, ")")
 	return highest_realm
 
 ## Select a random race from the reincarnation realm
@@ -137,8 +133,6 @@ func reincarnate() -> Dictionary:
 	var target_realm = determine_reincarnation_realm()
 	var target_race = select_race_from_realm(target_realm)
 	var target_background = select_random_background(target_race)
-	
-	print("Reincarnating as ", target_race, " (", target_background, ") in ", target_realm)
 	
 	reincarnation_determined.emit(target_realm, target_race)
 	
@@ -185,5 +179,4 @@ func can_purify_karma(realm: String, required_items: Array) -> bool:
 func purify_karma(realm: String, amount: int) -> void:
 	if realm in karma_scores:
 		karma_scores[realm] = max(0, karma_scores[realm] - amount)
-		print("Purified ", amount, " karma from ", realm)
 		karma_changed.emit(realm, karma_scores[realm])

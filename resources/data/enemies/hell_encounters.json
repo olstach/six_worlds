@@ -6,13 +6,13 @@
 		"demon_patrol": {
 			"region": "any",
 			"roles": {"frontline": 2, "ranged": 1},
-			"difficulty_range": [0.8, 1.2]
+			"difficulty_range": [0.7, 1.0]
 		},
 
 		"ice_spirits": {
 			"region": "cold_hell",
 			"roles": {"caster": 2, "support": 1},
-			"difficulty_range": [0.9, 1.1]
+			"difficulty_range": [0.7, 1.0]
 		},
 
 		"lava_guardian": {
@@ -51,7 +51,7 @@
 		"demon_sentinel": {
 			"region": "any",
 			"roles": {"frontline": 2},
-			"difficulty_range": [0.9, 1.1]
+			"difficulty_range": [0.7, 1.0]
 		},
 
 		"frost_imp": {
@@ -69,7 +69,7 @@
 		"hell_hound": {
 			"region": "any",
 			"roles": {"frontline": 2, "ranged": 1},
-			"difficulty_range": [1.0, 1.3]
+			"difficulty_range": [0.9, 1.1]
 		},
 
 		"oni_brute": {
@@ -84,7 +84,7 @@
 		"shadow_stalker": {
 			"region": "any",
 			"roles": {"frontline": 1, "ranged": 1},
-			"difficulty_range": [0.8, 1.0]
+			"difficulty_range": [0.7, 0.9]
 		}
 	}
 }

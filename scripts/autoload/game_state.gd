@@ -84,30 +84,25 @@ func defeat_boss(world_name: String) -> void:
 		var next_world = WORLDS[world_name].next_world
 		if next_world and next_world not in unlocked_worlds:
 			unlocked_worlds.append(next_world)
-			print("Unlocked world: ", WORLDS[next_world].name)
 
 ## Travel to a different world (if unlocked)
 func travel_to_world(world_name: String) -> bool:
 	if world_name in unlocked_worlds:
 		current_world = world_name
-		print("Traveled to ", WORLDS[world_name].name)
 		return true
 	else:
-		print("World not yet unlocked: ", world_name)
 		return false
 
 ## Player death - triggers reincarnation
 func player_died() -> void:
 	is_alive = false
 	current_run_number += 1
-	print("Player died. Run #", current_run_number)
 	# KarmaSystem will handle reincarnation logic
 
 ## Start new run after reincarnation
 func start_new_run(spawn_world: String) -> void:
 	is_alive = true
 	current_world = spawn_world
-	print("New run started in ", WORLDS[spawn_world].name)
 
 ## Get info about current world
 func get_current_world_info() -> Dictionary:
@@ -132,7 +127,6 @@ func add_gold(amount: int) -> void:
 	if amount <= 0:
 		return
 	gold += amount
-	print("Gained %d gold (total: %d)" % [amount, gold])
 	gold_changed.emit(gold, amount)
 
 
@@ -141,10 +135,8 @@ func spend_gold(amount: int) -> bool:
 	if amount <= 0:
 		return true
 	if gold < amount:
-		print("Not enough gold! Need %d, have %d" % [amount, gold])
 		return false
 	gold -= amount
-	print("Spent %d gold (remaining: %d)" % [amount, gold])
 	gold_changed.emit(gold, -amount)
 	return true
 

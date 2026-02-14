@@ -124,7 +124,6 @@ func start_combat(grid: Node, player_units: Array, enemy_units: Array) -> void:
 	# Calculate turn order based on initiative
 	_calculate_turn_order()
 
-	print("Combat started with ", all_units.size(), " units")
 	combat_started.emit()
 
 	# Start first turn
@@ -144,7 +143,6 @@ func end_combat(victory: bool) -> void:
 
 	combat_active = false
 	_deployment_phase = false
-	print("Combat ended - Victory: ", victory)
 	combat_ended.emit(victory)
 
 	# Cleanup
@@ -235,7 +233,6 @@ func _calculate_combat_rewards() -> Dictionary:
 		"trade_bonus": best_trade
 	}
 
-	print("Combat rewards: %d XP, %d gold (jackpot: %s)" % [xp_reward, gold_reward, str(jackpot_triggered)])
 	return rewards
 
 
@@ -289,7 +286,6 @@ func start_combat_with_deployment(grid: Node, player_characters: Array, enemy_un
 		# Player will manually place units via deploy_unit_at()
 		deployment_phase_started.emit(true)
 		combat_grid.show_deployment_zones(true, false)
-		print("Deployment phase started - Tactician allows manual placement")
 	else:
 		# Auto-deploy player units based on roles
 		_auto_deploy_player_units(player_characters)
@@ -335,7 +331,6 @@ func _auto_deploy_player_units(player_characters: Array) -> void:
 			combat_grid.place_unit(unit, deploy_pos)
 			all_units.append(unit)
 			unit_deployed.emit(unit, deploy_pos)
-			print("Deployed ", char_data.name, " (", _role_name(role), ") at ", deploy_pos)
 
 
 ## Deploy enemy units (random placement in enemy zone)
@@ -352,7 +347,6 @@ func _deploy_enemy_units(enemy_units: Array) -> void:
 			combat_grid.place_unit(unit, deploy_pos)
 			all_units.append(unit)
 			unit_deployed.emit(unit, deploy_pos)
-			print("Enemy deployed at ", deploy_pos)
 
 
 ## Manually deploy a unit at a specific position (used during Tactician deployment phase)
@@ -380,7 +374,6 @@ func deploy_unit_manually(char_data: Dictionary, grid_pos: Vector2i) -> bool:
 	all_units.append(unit)
 	unit_deployed.emit(unit, grid_pos)
 
-	print("Manually deployed ", char_data.name, " at ", grid_pos)
 	return true
 
 
@@ -400,7 +393,6 @@ func _finalize_combat_start() -> void:
 	# Calculate turn order based on initiative
 	_calculate_turn_order()
 
-	print("Combat started with ", all_units.size(), " units")
 	combat_started.emit()
 
 	# Start first turn
@@ -587,14 +579,12 @@ func _start_current_turn() -> void:
 
 	# Skip turn if incapacitated (frozen, stunned, knocked down)
 	if skip_turn:
-		print(unit.unit_name, " is incapacitated and cannot act!")
 		_advance_turn()
 		return
 
 	# Reset actions for this turn
 	unit.actions_remaining = unit.get_max_actions()
 
-	print("Turn started: ", unit.unit_name, " (", unit.actions_remaining, " actions)")
 	turn_started.emit(unit)
 
 
@@ -877,7 +867,6 @@ func _start_bleed_out(unit: Node) -> void:
 	unit.is_bleeding_out = true
 	unit.bleed_out_turns = BLEED_OUT_TURNS
 	unit.current_hp = 0
-	print(unit.unit_name, " is bleeding out! ", BLEED_OUT_TURNS, " turns to save them.")
 	unit_bleeding_out.emit(unit, BLEED_OUT_TURNS)
 
 
@@ -885,7 +874,6 @@ func _start_bleed_out(unit: Node) -> void:
 func _kill_unit(unit: Node) -> void:
 	unit.is_dead = true
 	unit.is_bleeding_out = false
-	print(unit.unit_name, " has died!")
 	unit_died.emit(unit)
 
 	# Remove from turn order
@@ -904,7 +892,6 @@ func revive_unit(unit: Node, hp_amount: int) -> void:
 	unit.is_bleeding_out = false
 	unit.bleed_out_turns = 0
 	unit.current_hp = hp_amount
-	print(unit.unit_name, " has been revived with ", hp_amount, " HP!")
 
 
 # ============================================
@@ -1304,7 +1291,6 @@ func _apply_stat_modifier(unit: Node, stat: String, value: int, duration: int) -
 
 	# Apply immediate effect to derived stats
 	# This is simplified - full implementation would modify get_* functions
-	print("%s: %s %+d for %d turns" % [unit.unit_name, stat, value, duration])
 
 
 ## Apply a status effect
@@ -1317,8 +1303,6 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 		"duration": duration,
 		"value": value
 	})
-
-	print("%s is now %s for %d turns" % [unit.unit_name, status, duration])
 
 
 ## Remove status effects
@@ -1370,7 +1354,6 @@ func _process_status_effects(unit: Node) -> bool:
 			var element = effect_def.get("element", "physical")
 			apply_damage(unit, damage, element)
 			status_effect_triggered.emit(unit, status_name, damage, "damage")
-			print("%s takes %d %s damage from %s!" % [unit.unit_name, damage, element, status_name])
 
 		elif effect_def.get("heal_per_turn", false):
 			# Healing over time (regenerating)
@@ -1378,7 +1361,6 @@ func _process_status_effects(unit: Node) -> bool:
 			unit.heal(heal_amount)
 			unit_healed.emit(unit, heal_amount)
 			status_effect_triggered.emit(unit, status_name, heal_amount, "heal")
-			print("%s regenerates %d HP!" % [unit.unit_name, heal_amount])
 
 		# Check for incapacitating effects
 		if effect_def.get("blocks_actions", false):
@@ -1398,7 +1380,6 @@ func _process_status_effects(unit: Node) -> bool:
 		var status_name = expired_effect.get("status", "")
 		unit.status_effects.remove_at(idx)
 		status_effect_expired.emit(unit, status_name)
-		print("%s is no longer %s" % [unit.unit_name, status_name])
 
 	# Also process stat modifiers (buff/debuff duration tick)
 	_process_stat_modifiers(unit)
@@ -1419,7 +1400,6 @@ func _process_stat_modifiers(unit: Node) -> void:
 
 		if mod.duration <= 0:
 			to_remove.append(i)
-			print("%s: %s modifier expired" % [unit.unit_name, mod.stat])
 
 	# Remove expired modifiers
 	to_remove.reverse()
@@ -1447,33 +1427,27 @@ func _process_terrain_effects(unit: Node) -> void:
 		CombatGrid.TerrainEffect.FIRE:
 			apply_damage(unit, value, "fire")
 			terrain_damage.emit(unit, value, effect_name)
-			print("%s takes %d fire damage from standing in fire!" % [unit.unit_name, value])
 
 		CombatGrid.TerrainEffect.POISON:
 			apply_damage(unit, value, "physical")
 			terrain_damage.emit(unit, value, effect_name)
-			print("%s takes %d poison damage from toxic ground!" % [unit.unit_name, value])
 
 		CombatGrid.TerrainEffect.ACID:
 			apply_damage(unit, value, "physical")
 			terrain_damage.emit(unit, value, effect_name)
-			print("%s takes %d acid damage!" % [unit.unit_name, value])
 
 		CombatGrid.TerrainEffect.CURSED:
 			apply_damage(unit, value, "black")
 			terrain_damage.emit(unit, value, effect_name)
-			print("%s takes %d damage from cursed ground!" % [unit.unit_name, value])
 
 		CombatGrid.TerrainEffect.BLESSED:
 			unit.heal(value)
 			unit_healed.emit(unit, value)
 			terrain_heal.emit(unit, value, effect_name)
-			print("%s heals %d HP from blessed ground!" % [unit.unit_name, value])
 
 		CombatGrid.TerrainEffect.ICE:
 			# Ice doesn't deal damage but could apply slowed effect
-			# For now just print a message
-			print("%s is on icy ground (movement slowed)" % unit.unit_name)
+			pass
 
 
 ## Check if unit is currently incapacitated by status effects

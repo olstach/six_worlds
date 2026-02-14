@@ -176,7 +176,6 @@ func create_player_character(char_name: String, race: String, background: String
 	else:
 		party[0] = character
 	
-	print("Created player: ", character.name, " (", race, " ", background, ")")
 	character_updated.emit(character)
 
 
@@ -204,7 +203,6 @@ func start_new_life(char_name: String, race: String, background: String) -> void
 	new_player["affinities"] = old_affinities
 	new_player["persistent_upgrades"] = old_upgrades
 
-	print("New life started: ", char_name, " the ", race, " ", background)
 
 
 ## Apply racial attribute modifiers from races.json data
@@ -229,18 +227,16 @@ func apply_race_modifiers(character: Dictionary, race: String) -> void:
 func apply_background_skills(character: Dictionary, background: String) -> void:
 	var data = get_background_data(background)
 	if data.is_empty():
-		# Fallback for wanderer (the default test character)
-		if background == "wanderer":
-			set_skill_level(character, "swords", 1)
-			set_skill_level(character, "learning", 1)
-			set_skill_level(character, "fire_magic", 2)
-			set_skill_level(character, "sorcery", 2)
-			set_skill_level(character, "white_magic", 1)
-			set_skill_level(character, "black_magic", 1)
-			learn_spell(character, "firebolt")
-			learn_spell(character, "fireball")
-			learn_spell(character, "lesser_heal")
-			learn_spell(character, "poison_sting")
+		# No background data in JSON yet — use fallback starting skills/spells
+		# TODO: Replace with proper background data files per background
+		set_skill_level(character, "swords", 1)
+		set_skill_level(character, "learning", 1)
+		set_skill_level(character, "fire_magic", 2)
+		set_skill_level(character, "sorcery", 2)
+		set_skill_level(character, "white_magic", 1)
+		set_skill_level(character, "black_magic", 1)
+		learn_spell(character, "firebolt")
+		learn_spell(character, "lesser_heal")
 		return
 
 	var skills = data.get("starting_skills", {})
@@ -249,6 +245,15 @@ func apply_background_skills(character: Dictionary, background: String) -> void:
 		# Set to whichever is higher: race skill or background skill
 		if level > character.skills.get(skill_id, 0):
 			set_skill_level(character, skill_id, level)
+
+	# Learn starting spells from background data, or defaults if none specified
+	var starting_spells = data.get("starting_spells", [])
+	if starting_spells.is_empty():
+		learn_spell(character, "firebolt")
+		learn_spell(character, "lesser_heal")
+	else:
+		for spell_id in starting_spells:
+			learn_spell(character, spell_id)
 
 ## Increase an attribute (costs XP, exponential scaling)
 func increase_attribute(character: Dictionary, attribute: String, amount: int = 1) -> bool:
@@ -325,10 +330,8 @@ func offer_perk_selection(character: Dictionary) -> void:
 
 	var selection = PerkSystem.get_perk_selection(character)
 	if selection.is_empty():
-		print("No eligible perks available for ", character.name)
 		return
 
-	print("Perk selection offered to ", character.name, ": ", selection.size(), " options")
 	perk_selection_requested.emit(character, selection)
 
 ## Add upgrade/perk to character
@@ -340,7 +343,6 @@ func add_upgrade(character: Dictionary, upgrade: Dictionary) -> void:
 ## Grant XP to character
 func grant_xp(character: Dictionary, amount: int) -> void:
 	character.xp += amount
-	print(character.name, " gained ", amount, " XP (total: ", character.xp, ")")
 	character_updated.emit(character)
 
 
@@ -355,11 +357,9 @@ func learn_spell(character: Dictionary, spell_id: String) -> bool:
 
 	# Check if already known
 	if spell_id in character.known_spells:
-		print(character.name, " already knows ", spell_id)
 		return false
 
 	character.known_spells.append(spell_id)
-	print(character.name, " learned spell: ", spell_id)
 	spell_learned.emit(character, spell_id)
 	character_updated.emit(character)
 	return true
@@ -375,7 +375,6 @@ func forget_spell(character: Dictionary, spell_id: String) -> bool:
 		return false
 
 	character.known_spells.remove_at(idx)
-	print(character.name, " forgot spell: ", spell_id)
 	character_updated.emit(character)
 	return true
 

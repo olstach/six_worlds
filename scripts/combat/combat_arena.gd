@@ -1457,8 +1457,8 @@ func _show_victory_screen(rewards: Dictionary) -> void:
 	)
 	btn_container.add_child(continue_btn)
 
-	# Add overlay to scene
-	add_child(overlay)
+	# Add overlay to UILayer so it renders above all HUD elements
+	$UILayer.add_child(overlay)
 
 
 ## Show defeat screen when all party members have fallen
@@ -1551,7 +1551,8 @@ func _show_defeat_screen() -> void:
 	)
 	btn_container.add_child(bardo_btn)
 
-	add_child(overlay)
+	# Add overlay to UILayer so it renders above all HUD elements
+	$UILayer.add_child(overlay)
 
 
 # ============================================
