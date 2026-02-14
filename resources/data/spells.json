@@ -114,7 +114,7 @@
       ],
       "mana_cost": 15,
       "damage": 15,
-      "damage_type": "physical",
+      "damage_type": "crushing",
       "target": {
         "type": "single",
         "eligible": "enemy",
@@ -452,7 +452,7 @@
       ],
       "mana_cost": 135,
       "damage": 100,
-      "damage_type": "physical",
+      "damage_type": "crushing",
       "duration": "spellpower",
       "statuses_caused": [
         "Entangled"
@@ -765,7 +765,7 @@
       ],
       "mana_cost": 15,
       "damage": 15,
-      "damage_type": "physical",
+      "damage_type": "piercing",
       "target": {
         "type": "single",
         "eligible": "enemy"
@@ -811,7 +811,7 @@
       ],
       "mana_cost": 15,
       "damage": 15,
-      "damage_type": "physical",
+      "damage_type": "slashing",
       "target": {
         "type": "single",
         "eligible": "enemy"
@@ -834,7 +834,7 @@
       ],
       "mana_cost": 40,
       "damage": 35,
-      "damage_type": "physical",
+      "damage_type": "crushing",
       "statuses_caused": [
         "Pushed"
       ],
@@ -861,7 +861,7 @@
       "cost_modifier": 1.5,
       "damage": 53,
       "damage_modifier": 1.5,
-      "damage_type": "physical",
+      "damage_type": "slashing",
       "target": {
         "type": "single",
         "eligible": "enemy"
@@ -883,7 +883,7 @@
       ],
       "mana_cost": 75,
       "damage": 60,
-      "damage_type": "physical",
+      "damage_type": "crushing",
       "target": {
         "type": "aoe",
         "eligible": "enemy"
@@ -911,7 +911,7 @@
       ],
       "mana_cost": 75,
       "damage": 60,
-      "damage_type": "physical",
+      "damage_type": "crushing",
       "target": {
         "type": "aoe",
         "eligible": "enemy"
@@ -942,7 +942,7 @@
       "cost_modifier": 1.5,
       "damage": 90,
       "damage_modifier": 1.5,
-      "damage_type": "physical",
+      "damage_type": "slashing",
       "target": {
         "type": "aoe",
         "eligible": "enemy"
@@ -970,7 +970,7 @@
       ],
       "mana_cost": 135,
       "damage": 100,
-      "damage_type": "physical",
+      "damage_type": "crushing",
       "target": {
         "type": "aoe",
         "eligible": "enemy"
@@ -1030,7 +1030,7 @@
       "cost_modifier": 2.25,
       "damage": 225,
       "damage_modifier": 2.25,
-      "damage_type": "physical",
+      "damage_type": "slashing",
       "target": {
         "type": "single",
         "eligible": "enemy"
@@ -1080,7 +1080,7 @@
       ],
       "mana_cost": 225,
       "damage": "spellpower_scaling",
-      "damage_type": "physical",
+      "damage_type": "crushing",
       "requires": [
         "Sorcery 5"
       ],
@@ -1138,7 +1138,7 @@
       "cost_modifier": 1.5,
       "damage": 225,
       "damage_modifier": 1.5,
-      "damage_type": "physical",
+      "damage_type": "slashing",
       "target": {
         "type": "aoe",
         "eligible": "enemy"
@@ -1310,7 +1310,7 @@
       ],
       "mana_cost": 225,
       "damage": 150,
-      "damage_type": "physical",
+      "damage_type": "crushing",
       "heal": 150,
       "requires": [
         "Sorcery 5"
@@ -1372,7 +1372,7 @@
       ],
       "mana_cost": 40,
       "damage": 1,
-      "damage_type": "physical",
+      "damage_type": "crushing",
       "damage_per_turn": true,
       "duration": "spellpower",
       "statuses_caused": [
@@ -1406,7 +1406,7 @@
       ],
       "mana_cost": 40,
       "damage": 35,
-      "damage_type": "physical",
+      "damage_type": "crushing",
       "special": {
         "delay_turns": 3,
         "summon_on_trigger": "Fungal_Spawn",
@@ -1488,7 +1488,7 @@
       ],
       "mana_cost": 75,
       "damage": 50,
-      "damage_type": "physical",
+      "damage_type": "piercing",
       "target": {
         "type": "single",
         "eligible": "enemy"
@@ -1576,7 +1576,7 @@
       ],
       "mana_cost": 225,
       "damage": 150,
-      "damage_type": "physical",
+      "damage_type": "crushing",
       "target": {
         "type": "aoe",
         "eligible": "all"

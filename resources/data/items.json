@@ -475,17 +475,118 @@
 			"requirements": {},
 			"stats": {"max_mana": 15, "spellpower": 3},
 			"abilities": []
+		},
+		"health_potion": {
+			"name": "Health Potion",
+			"type": "potion",
+			"rarity": "common",
+			"weight": 1,
+			"value": 25,
+			"description": "A red tincture that restores vitality.",
+			"effect": {
+				"type": "heal",
+				"value": 30,
+				"targeting": "self"
+			}
+		},
+		"greater_health_potion": {
+			"name": "Greater Health Potion",
+			"type": "potion",
+			"rarity": "uncommon",
+			"weight": 1,
+			"value": 60,
+			"description": "A concentrated healing draught.",
+			"effect": {
+				"type": "heal",
+				"value": 60,
+				"targeting": "self"
+			}
+		},
+		"mana_potion": {
+			"name": "Mana Potion",
+			"type": "potion",
+			"rarity": "common",
+			"weight": 1,
+			"value": 30,
+			"description": "A shimmering blue elixir that restores magical energy.",
+			"effect": {
+				"type": "restore_mana",
+				"value": 25,
+				"targeting": "self"
+			}
+		},
+		"greater_mana_potion": {
+			"name": "Greater Mana Potion",
+			"type": "potion",
+			"rarity": "uncommon",
+			"weight": 1,
+			"value": 70,
+			"description": "A potent distillation of magical essence.",
+			"effect": {
+				"type": "restore_mana",
+				"value": 50,
+				"targeting": "self"
+			}
+		},
+		"fire_resistance_potion": {
+			"name": "Fire Resistance Potion",
+			"type": "potion",
+			"rarity": "uncommon",
+			"weight": 1,
+			"value": 45,
+			"description": "Grants temporary resistance to flames.",
+			"effect": {
+				"type": "buff",
+				"status": "Fire_Resistant",
+				"resistance": "fire",
+				"value": 25,
+				"duration": 3,
+				"targeting": "self"
+			}
+		},
+		"antidote": {
+			"name": "Antidote",
+			"type": "potion",
+			"rarity": "common",
+			"weight": 1,
+			"value": 20,
+			"description": "Purges poison and stops bleeding.",
+			"effect": {
+				"type": "cleanse",
+				"statuses_removed": ["Poisoned", "Bleeding"],
+				"targeting": "self"
+			}
+		},
+		"scroll_firebolt": {
+			"name": "Scroll of Firebolt",
+			"type": "scroll",
+			"rarity": "common",
+			"weight": 0,
+			"value": 40,
+			"description": "A scroll inscribed with the Firebolt incantation. Usable by anyone.",
+			"spell_id": "firebolt",
+			"spell_bonus": 0
+		},
+		"scroll_lesser_heal": {
+			"name": "Scroll of Lesser Heal",
+			"type": "scroll",
+			"rarity": "common",
+			"weight": 0,
+			"value": 35,
+			"description": "A scroll inscribed with a healing prayer. Usable by anyone.",
+			"spell_id": "lesser_heal",
+			"spell_bonus": 0
 		}
 	},
 	"item_types": {
-		"sword": {"category": "weapon", "slots": ["weapon_main", "weapon_off"], "ranged": false},
-		"dagger": {"category": "weapon", "slots": ["weapon_main", "weapon_off"], "ranged": false},
-		"axe": {"category": "weapon", "slots": ["weapon_main"], "ranged": false},
-		"mace": {"category": "weapon", "slots": ["weapon_main"], "ranged": false},
-		"spear": {"category": "weapon", "slots": ["weapon_main"], "ranged": false},
-		"staff": {"category": "weapon", "slots": ["weapon_main"], "ranged": false},
-		"bow": {"category": "weapon", "slots": ["weapon_main"], "ranged": true, "skill": "ranged"},
-		"thrown": {"category": "weapon", "slots": ["weapon_main"], "ranged": true, "skill": "ranged"},
+		"sword": {"category": "weapon", "slots": ["weapon_main", "weapon_off"], "ranged": false, "damage_type": "slashing"},
+		"dagger": {"category": "weapon", "slots": ["weapon_main", "weapon_off"], "ranged": false, "damage_type": "piercing"},
+		"axe": {"category": "weapon", "slots": ["weapon_main"], "ranged": false, "damage_type": "slashing"},
+		"mace": {"category": "weapon", "slots": ["weapon_main"], "ranged": false, "damage_type": "crushing"},
+		"spear": {"category": "weapon", "slots": ["weapon_main"], "ranged": false, "damage_type": "piercing"},
+		"staff": {"category": "weapon", "slots": ["weapon_main"], "ranged": false, "damage_type": "crushing"},
+		"bow": {"category": "weapon", "slots": ["weapon_main"], "ranged": true, "skill": "ranged", "damage_type": "piercing"},
+		"thrown": {"category": "weapon", "slots": ["weapon_main"], "ranged": true, "skill": "ranged", "damage_type": "piercing"},
 		"shield": {"category": "weapon", "slots": ["weapon_off"], "ranged": false},
 		"armor": {"category": "armor", "slots": ["chest"]},
 		"robe": {"category": "armor", "slots": ["chest"]},
@@ -505,7 +606,9 @@
 		"amulet": {"category": "accessory", "slots": ["amulet"]},
 		"necklace": {"category": "accessory", "slots": ["amulet"]},
 		"trinket": {"category": "accessory", "slots": ["trinket"]},
-		"charm": {"category": "accessory", "slots": ["trinket"]}
+		"charm": {"category": "accessory", "slots": ["trinket"]},
+		"potion": {"category": "consumable", "subcategory": "potion"},
+		"scroll": {"category": "consumable", "subcategory": "scroll"}
 	},
 	"rarities": {
 		"common": {"color": "#AAAAAA", "drop_weight": 100},

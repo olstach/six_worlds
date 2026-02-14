@@ -276,6 +276,29 @@ func get_equipped_weapon() -> Dictionary:
 	return {}
 
 
+## Get the damage type of the equipped weapon (slashing, crushing, piercing)
+## Falls back to "crushing" for unarmed
+func get_weapon_damage_type() -> String:
+	var weapon = get_equipped_weapon()
+	if weapon.is_empty():
+		return "crushing"  # Unarmed = crushing (fists)
+
+	# Check for per-weapon override first
+	var override = weapon.get("damage_type", "")
+	if override != "":
+		return override
+
+	# Look up default from item_types
+	var weapon_type = weapon.get("type", "")
+	if ItemSystem:
+		var type_info = ItemSystem.get_type_info(weapon_type)
+		var type_default = type_info.get("damage_type", "")
+		if type_default != "":
+			return type_default
+
+	return "crushing"
+
+
 ## Check if equipped weapon is ranged
 func is_ranged_weapon() -> bool:
 	var weapon = get_equipped_weapon()
@@ -409,8 +432,18 @@ func get_magic_skill_bonus(element: String) -> int:
 	return skill_level * 2
 
 
+## Physical damage subtypes that fall back to "physical" resistance
+const PHYSICAL_SUBTYPES = ["slashing", "crushing", "piercing"]
+
 ## Get resistance to a damage type
+## For physical subtypes (slashing/crushing/piercing), checks specific first then falls back to "physical"
 func get_resistance(damage_type: String) -> float:
+	if damage_type in PHYSICAL_SUBTYPES:
+		# Check for specific resistance first (e.g., skeleton weak to crushing)
+		if resistances.has(damage_type):
+			return float(resistances[damage_type])
+		# Fall back to generic physical resistance
+		return float(resistances.get("physical", 0))
 	return float(resistances.get(damage_type, 0))
 
 

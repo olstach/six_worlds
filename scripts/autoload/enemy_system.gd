@@ -245,9 +245,11 @@ func _build_enemy(archetype_id: String, power_budget: float) -> Dictionary:
 		resistances[key] = arch_resists[key]
 
 	# Build the weapon dict for CombatUnit
+	var weapon_type = equipment.get("weapon_type", "sword")
 	var equipped_weapon = {
 		"name": archetype.get("name", "Enemy") + "'s Weapon",
-		"type": equipment.get("weapon_type", "sword"),
+		"type": weapon_type,
+		"damage_type": _get_weapon_damage_type(weapon_type),
 		"stats": {
 			"damage": equipment.get("weapon_damage", 5),
 			"accuracy": equipment.get("weapon_accuracy", 3),
@@ -369,6 +371,19 @@ func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dic
 		"accuracy": 0,   # Added later from equipment
 		"armor_pierce": 0
 	}
+
+
+## Map weapon type to physical damage subtype
+func _get_weapon_damage_type(weapon_type: String) -> String:
+	match weapon_type:
+		"sword", "axe":
+			return "slashing"
+		"dagger", "spear", "bow", "thrown":
+			return "piercing"
+		"mace", "staff":
+			return "crushing"
+		_:
+			return "crushing"
 
 
 ## Generate equipment stats based on archetype template + power level

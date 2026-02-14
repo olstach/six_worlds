@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-02-02
+Last Updated: 2026-02-14
 
 ---
 
@@ -33,6 +33,8 @@ Last Updated: 2026-02-02
 - [x] AI spell casting and ranged repositioning
 - [x] Bleed-out system (3 turns to revive)
 - [x] Victory/defeat conditions
+- [x] Physical damage subtypes (slashing, crushing, piercing) with per-weapon types
+- [x] Consumable items in combat (potions and scrolls with Item button/panel UI)
 
 ### Character & Progression
 - [x] XP-based progression (no levels)
@@ -55,7 +57,7 @@ Last Updated: 2026-02-02
 ### Data Files
 - [x] spells.json (326 spells)
 - [x] statuses.json (80+ status effects)
-- [x] items.json (weapons, armor, accessories)
+- [x] items.json (weapons, armor, accessories, consumables)
 - [x] races.json (sample races for Hell realm)
 - [x] skills.json (35 skills by category/element)
 - [x] shops.json (5 sample shops)
@@ -98,7 +100,8 @@ Last Updated: 2026-02-02
 ### Content Expansion
 - [ ] Races for all 6 realms (currently only Hell examples)
 - [ ] Background definitions with skill distributions
-- [ ] More items (consumables, rare equipment)
+- [ ] More consumable items (realm-specific potions, higher-level scrolls)
+- [ ] More equipment (rare/legendary weapons and armor)
 - [ ] More upgrades/perks
 
 ### UI Improvements
@@ -181,6 +184,26 @@ Last Updated: 2026-02-02
 - Merged 80+ status effects into statuses.json
 - Merged branch with shop system, ranged attacks, terrain, deployment
 - All combat phases complete
+
+### 2026-02-14: Weapon Damage Types & Consumable Items
+- Physical damage subtypes: slashing (swords, axes), crushing (maces, staves, unarmed), piercing (daggers, spears, bows)
+- Updated 18 spells and all weapon item_types with proper damage subtypes
+- Resistance system checks specific subtype first, falls back to generic "physical"
+- Enemy system generates weapons with correct damage_type
+- Full consumable item system: 6 potions + 2 scrolls in items.json
+- Combat Item button/panel UI with tooltips and scroll targeting/AoE preview
+- Potion effects: heal, restore mana, buff/resistance, cleanse status effects
+- Scrolls cast spells without mana cost or skill requirements
+- Alchemy skill boosts potion effectiveness (10-75% based on level)
+- Starter items include 3 health potions + 2 mana potions
+
+### Reasonable Next Steps
+- Enemy-specific physical resistances (e.g., skeletons resist piercing, weak to crushing)
+- AI using consumable items (enemy potion/scroll usage)
+- Loot drops: enemies dropping consumables and equipment on defeat
+- Shop integration: consumables purchasable in shops
+- More scroll varieties (AoE scrolls, buff scrolls)
+- Playtest combat with new damage types and items for balance
 
 ### Previous Sessions
 - Spell system with full targeting and tooltips

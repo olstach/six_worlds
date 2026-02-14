@@ -28,6 +28,7 @@ signal terrain_heal(unit: Node, amount: int, effect_name: String)
 signal deployment_phase_started(can_manually_place: bool)
 signal deployment_phase_ended()
 signal unit_deployed(unit: Node, position: Vector2i)
+signal item_used_in_combat(user: Node, item: Dictionary, result: Dictionary)
 
 # Combat state
 var combat_active: bool = false
@@ -743,6 +744,9 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 	var roll = randf() * 100.0
 	var hit = roll <= hit_chance
 
+	# Get weapon damage type (slashing, crushing, piercing)
+	var weapon_dmg_type = attacker.get_weapon_damage_type() if attacker.has_method("get_weapon_damage_type") else "crushing"
+
 	var result = {
 		"success": true,
 		"hit": hit,
@@ -750,12 +754,12 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 		"roll": roll,
 		"damage": 0,
 		"crit": false,
-		"damage_type": "physical"
+		"damage_type": weapon_dmg_type
 	}
 
 	if hit:
 		# Calculate damage
-		var damage_result = calculate_physical_damage(attacker, defender)
+		var damage_result = calculate_physical_damage(attacker, defender, weapon_dmg_type)
 		result.merge(damage_result, true)
 
 		# Apply damage
@@ -782,8 +786,8 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 	return clampf(hit_chance, 10.0, 95.0)
 
 
-## Calculate physical damage
-func calculate_physical_damage(attacker: Node, defender: Node) -> Dictionary:
+## Calculate physical damage (slashing, crushing, or piercing)
+func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String = "crushing") -> Dictionary:
 	# Base damage from weapon + attribute + skill
 	var base_damage = attacker.get_attack_damage()
 
@@ -813,8 +817,8 @@ func calculate_physical_damage(attacker: Node, defender: Node) -> Dictionary:
 
 	damage = maxi(1, damage - armor)
 
-	# Apply physical resistance (percentage)
-	var phys_resist = defender.get_resistance("physical")
+	# Apply physical resistance (checks specific subtype first, then falls back to generic "physical")
+	var phys_resist = defender.get_resistance(dmg_type)
 	damage = int(damage * (1.0 - phys_resist / 100.0))
 	damage = maxi(1, damage)
 
@@ -824,7 +828,7 @@ func calculate_physical_damage(attacker: Node, defender: Node) -> Dictionary:
 		"crit": crit,
 		"armor_reduced": armor,
 		"height_bonus": height_bonus,
-		"damage_type": "physical"
+		"damage_type": dmg_type
 	}
 
 
@@ -1536,6 +1540,177 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 							valid_positions.append(pos)
 
 	return valid_positions
+
+
+# ============================================
+# CONSUMABLE ITEMS
+# ============================================
+
+## Use a consumable item in combat (potion or scroll)
+## For potions: target_pos is ignored (always self-targeting)
+## For scrolls: target_pos is the spell target position
+func use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dictionary:
+	if not can_act(1):
+		return {"success": false, "reason": "No actions remaining"}
+
+	var item = ItemSystem.get_item(item_id)
+	if item.is_empty():
+		return {"success": false, "reason": "Item not found"}
+
+	if ItemSystem.get_inventory_count(item_id) <= 0:
+		return {"success": false, "reason": "None in inventory"}
+
+	var item_type = item.get("type", "")
+
+	# Pre-validate scroll targeting BEFORE consuming the item
+	if item_type == "scroll":
+		var spell_id = item.get("spell_id", "")
+		var spell = get_spell(spell_id)
+		if spell.is_empty():
+			return {"success": false, "reason": "Unknown spell on scroll"}
+		var targeting = spell.get("targeting", "single")
+		if targeting != "self":
+			var spell_range = spell.get("range", 1)
+			var distance = _spell_distance(user.grid_position, target_pos)
+			if distance > spell_range:
+				return {"success": false, "reason": "Target out of range"}
+			var targets = _get_spell_targets(user, spell, target_pos)
+			if targets.is_empty():
+				return {"success": false, "reason": "No valid targets"}
+
+	# Consume the item from inventory
+	var consume_result = ItemSystem.use_consumable(item_id)
+	if not consume_result.success:
+		return consume_result
+
+	# Apply the effect
+	var result: Dictionary = {}
+	if item_type == "potion":
+		result = _apply_potion_effect(user, item)
+	elif item_type == "scroll":
+		result = _use_scroll(user, item, target_pos)
+	else:
+		return {"success": false, "reason": "Unknown consumable type: " + item_type}
+
+	if result.get("success", false):
+		use_action(1)
+		item_used_in_combat.emit(user, item, result)
+
+	return result
+
+
+## Apply potion effects to the user (always self-targeted)
+func _apply_potion_effect(user: Node, item: Dictionary) -> Dictionary:
+	var effect = item.get("effect", {})
+	var effect_type = effect.get("type", "")
+	var result = {"success": true, "effects_applied": []}
+
+	# Alchemy skill bonus: increases potion effectiveness
+	var alchemy_bonus = _get_alchemy_bonus(user)
+
+	match effect_type:
+		"heal":
+			var base_value = effect.get("value", 0)
+			var heal_amount = int(base_value * (1.0 + alchemy_bonus / 100.0))
+			user.heal(heal_amount)
+			unit_healed.emit(user, heal_amount)
+			result.effects_applied.append({"type": "heal", "amount": heal_amount})
+
+		"restore_mana":
+			var base_value = effect.get("value", 0)
+			var mana_amount = int(base_value * (1.0 + alchemy_bonus / 100.0))
+			user.current_mana = mini(user.max_mana, user.current_mana + mana_amount)
+			result.effects_applied.append({"type": "restore_mana", "amount": mana_amount})
+
+		"buff":
+			var value = effect.get("value", 0)
+			var duration = effect.get("duration", 3)
+			# Check if it's a resistance buff
+			var resistance_type = effect.get("resistance", "")
+			if resistance_type != "":
+				# Apply as a status effect with resistance boost
+				var status_name = effect.get("status", "Buffed")
+				_apply_status_effect(user, status_name, duration, value)
+				result.effects_applied.append({
+					"type": "buff", "status": status_name,
+					"resistance": resistance_type, "value": value, "duration": duration
+				})
+			else:
+				var stat = effect.get("stat", "")
+				_apply_stat_modifier(user, stat, value, duration)
+				result.effects_applied.append({
+					"type": "buff", "stat": stat, "value": value, "duration": duration
+				})
+
+		"cleanse":
+			var statuses_to_remove = effect.get("statuses_removed", [])
+			var removed_count = 0
+			for i in range(user.status_effects.size() - 1, -1, -1):
+				var se = user.status_effects[i]
+				if se.get("status", "") in statuses_to_remove:
+					var removed_name = se.get("status", "")
+					user.status_effects.remove_at(i)
+					status_effect_expired.emit(user, removed_name)
+					removed_count += 1
+			result.effects_applied.append({"type": "cleanse", "removed": removed_count})
+
+		_:
+			result.success = false
+			result["reason"] = "Unknown potion effect: " + effect_type
+
+	return result
+
+
+## Use a scroll: cast the referenced spell without mana cost or skill requirement
+func _use_scroll(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var spell_id = item.get("spell_id", "")
+	var spell = get_spell(spell_id)
+	if spell.is_empty():
+		return {"success": false, "reason": "Unknown spell on scroll: " + spell_id}
+
+	# Get targets using existing targeting logic
+	var targets = _get_spell_targets(user, spell, target_pos)
+
+	# Self-targeting spells target the caster
+	if spell.get("targeting", "single") == "self" and targets.is_empty():
+		targets.append(user)
+
+	# Scroll bonus (flat, no spellpower from caster)
+	var scroll_bonus = item.get("spell_bonus", 0)
+
+	# Apply effects using existing spell effect system
+	var results: Array[Dictionary] = []
+	for target in targets:
+		var effect_result = _apply_spell_effects(user, target, spell, scroll_bonus)
+		results.append(effect_result)
+
+	return {
+		"success": true,
+		"spell": spell,
+		"targets": targets,
+		"results": results,
+		"is_scroll": true
+	}
+
+
+## Get valid target positions for a scroll item (wraps spell targeting)
+func get_scroll_targets(user: Node, item_id: String) -> Array[Vector2i]:
+	var item = ItemSystem.get_item(item_id)
+	if item.is_empty() or item.get("type", "") != "scroll":
+		return []
+	var spell_id = item.get("spell_id", "")
+	return get_spell_targets(user, spell_id)
+
+
+## Get Alchemy skill consumable_power bonus percentage
+## Matches perks.json: 10/20/35/50/75 per skill level
+func _get_alchemy_bonus(user: Node) -> float:
+	var skills = user.character_data.get("skills", {})
+	var alchemy_level = skills.get("alchemy", 0)
+	var bonus_table = [0.0, 10.0, 20.0, 35.0, 50.0, 75.0]
+	if alchemy_level >= 0 and alchemy_level < bonus_table.size():
+		return bonus_table[alchemy_level]
+	return 0.0
 
 
 # ============================================

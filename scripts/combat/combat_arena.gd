@@ -23,12 +23,16 @@ extends Control
 @onready var flee_button: Button = %FleeButton
 @onready var spell_panel: PanelContainer = %SpellPanel
 @onready var spell_list: VBoxContainer = %SpellList
+@onready var item_button: Button = %ItemButton
+@onready var item_panel: PanelContainer = %ItemPanel
+@onready var item_list: VBoxContainer = %ItemList
 
 # Combat state
-enum ActionMode { NONE, MOVE, ATTACK, CAST_SPELL }
+enum ActionMode { NONE, MOVE, ATTACK, CAST_SPELL, USE_ITEM }
 var current_action_mode: ActionMode = ActionMode.NONE
 var selected_unit: CombatUnit = null
 var selected_spell: Dictionary = {}
+var selected_item: Dictionary = {}
 
 # AI turn timer
 var ai_timer: Timer
@@ -165,12 +169,17 @@ func _ready() -> void:
 	move_button.pressed.connect(_on_move_pressed)
 	attack_button.pressed.connect(_on_attack_pressed)
 	spell_button.pressed.connect(_on_spell_pressed)
+	item_button.pressed.connect(_on_item_pressed)
 	wait_button.pressed.connect(_on_wait_pressed)
 	flee_button.pressed.connect(_on_flee_pressed)
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
 
-	# Connect spell cast signal
+	# Connect spell cast and item use signals
 	CombatManager.spell_cast.connect(_on_spell_cast)
+	CombatManager.item_used_in_combat.connect(_on_item_used_in_combat)
+
+	# Hide item panel initially
+	item_panel.hide()
 
 	# Connect status effect signals
 	CombatManager.status_effect_triggered.connect(_on_status_effect_triggered)
@@ -445,17 +454,32 @@ func _on_tile_clicked(grid_pos: Vector2i) -> void:
 			# Try to cast selected spell at tile
 			_try_cast_spell(grid_pos)
 
+		ActionMode.USE_ITEM:
+			# Try to use selected item at tile (scrolls need targeting)
+			_try_use_item(grid_pos)
+
 
 func _on_tile_hovered(grid_pos: Vector2i) -> void:
 	# Show hover highlight
 	combat_grid.highlight_tile(grid_pos)
 
-	# Show AoE preview when targeting AoE spells
+	# Show AoE preview when targeting AoE spells or AoE scrolls
 	if current_action_mode == ActionMode.CAST_SPELL and not selected_spell.is_empty():
 		var targeting = selected_spell.get("targeting", "single")
 		if targeting == "aoe_circle":
 			var radius = selected_spell.get("aoe_radius", 1)
 			combat_grid.show_aoe_preview(grid_pos, radius)
+		else:
+			combat_grid.clear_aoe_preview()
+	elif current_action_mode == ActionMode.USE_ITEM and not selected_item.is_empty():
+		if selected_item.get("type", "") == "scroll":
+			var spell_id = selected_item.get("spell_id", "")
+			var spell = CombatManager.get_spell(spell_id)
+			if not spell.is_empty() and spell.get("targeting", "") == "aoe_circle":
+				var radius = spell.get("aoe_radius", 1)
+				combat_grid.show_aoe_preview(grid_pos, radius)
+			else:
+				combat_grid.clear_aoe_preview()
 		else:
 			combat_grid.clear_aoe_preview()
 	else:
@@ -497,9 +521,11 @@ func _deselect_unit() -> void:
 func _cancel_action_mode() -> void:
 	current_action_mode = ActionMode.NONE
 	selected_spell = {}
+	selected_item = {}
 	combat_grid.clear_highlights()
 	combat_grid.clear_aoe_preview()
 	spell_panel.hide()
+	item_panel.hide()
 	_update_action_buttons()
 
 
@@ -602,6 +628,8 @@ func _show_spell_panel(unit: CombatUnit) -> void:
 			btn.pressed.connect(_on_spell_selected.bind(spell))
 			spell_list.add_child(btn)
 
+	# Hide item panel if open, show spell panel
+	item_panel.hide()
 	spell_panel.show()
 
 
@@ -760,6 +788,225 @@ func _try_cast_spell(target_pos: Vector2i) -> void:
 	_cancel_action_mode()
 
 
+# ============================================
+# ITEM ACTIONS
+# ============================================
+
+func _on_item_pressed() -> void:
+	if not CombatManager.is_player_turn():
+		return
+	var unit = CombatManager.get_current_unit()
+	if unit == null:
+		return
+
+	# Toggle item panel
+	if item_panel.visible:
+		item_panel.hide()
+		_cancel_action_mode()
+	else:
+		_show_item_panel(unit)
+
+
+func _show_item_panel(_unit: CombatUnit) -> void:
+	# Clear existing buttons
+	for child in item_list.get_children():
+		child.queue_free()
+
+	# Get consumable items from party inventory
+	var consumables = ItemSystem.get_consumables_in_inventory()
+
+	if consumables.is_empty():
+		var label = Label.new()
+		label.text = "No items available"
+		label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		item_list.add_child(label)
+	else:
+		for item in consumables:
+			var btn = Button.new()
+			var qty = item.get("quantity", 1)
+			btn.text = "%s x%d" % [item.get("name", "???"), qty]
+			btn.tooltip_text = _build_item_tooltip(item)
+
+			# Color by type: green for potions, gold for scrolls
+			var item_type = item.get("type", "")
+			if item_type == "potion":
+				btn.add_theme_color_override("font_color", Color(0.3, 0.85, 0.5))
+			elif item_type == "scroll":
+				btn.add_theme_color_override("font_color", Color(0.85, 0.75, 0.3))
+
+			btn.pressed.connect(_on_item_selected.bind(item))
+			item_list.add_child(btn)
+
+	# Hide spell panel if open, show item panel
+	spell_panel.hide()
+	item_panel.show()
+
+
+func _build_item_tooltip(item: Dictionary) -> String:
+	var lines: Array[String] = []
+	lines.append(item.get("name", "Unknown"))
+	lines.append("")
+
+	var item_type = item.get("type", "")
+	if item_type == "potion":
+		var effect = item.get("effect", {})
+		var effect_type = effect.get("type", "")
+		match effect_type:
+			"heal":
+				lines.append("Restores %d HP" % effect.get("value", 0))
+			"restore_mana":
+				lines.append("Restores %d Mana" % effect.get("value", 0))
+			"buff":
+				var status = effect.get("status", "")
+				var resistance = effect.get("resistance", "")
+				if resistance != "":
+					lines.append("+%d %s resistance for %d turns" % [
+						effect.get("value", 0), resistance.capitalize(), effect.get("duration", 3)
+					])
+				else:
+					lines.append("+%d %s for %d turns" % [
+						effect.get("value", 0), effect.get("stat", "").capitalize(),
+						effect.get("duration", 3)
+					])
+			"cleanse":
+				lines.append("Removes: %s" % ", ".join(effect.get("statuses_removed", [])))
+		lines.append("")
+		lines.append("Target: Self")
+	elif item_type == "scroll":
+		var spell_id = item.get("spell_id", "")
+		var spell = CombatManager.get_spell(spell_id)
+		if not spell.is_empty():
+			lines.append("Casts: %s" % spell.get("name", "?"))
+			lines.append("No mana cost, no skill required")
+			if spell.get("targeting", "single") != "self":
+				lines.append("Range: %d" % spell.get("range", 1))
+			else:
+				lines.append("Target: Self")
+
+	var desc = item.get("description", "")
+	if desc != "":
+		lines.append("")
+		lines.append(desc)
+
+	lines.append("")
+	lines.append("Uses 1 action. Consumed on use.")
+	return "\n".join(lines)
+
+
+func _on_item_selected(item: Dictionary) -> void:
+	var unit = CombatManager.get_current_unit()
+	if unit == null:
+		return
+
+	selected_item = item
+	item_panel.hide()
+
+	var item_type = item.get("type", "")
+
+	if item_type == "potion":
+		# Potions are self-targeting -- use immediately
+		_try_use_item(unit.grid_position)
+	elif item_type == "scroll":
+		# Check if scroll's spell is self-targeting
+		var spell_id = item.get("spell_id", "")
+		var spell = CombatManager.get_spell(spell_id)
+
+		if spell.get("targeting", "single") == "self":
+			# Self-targeting scroll -- use immediately
+			_try_use_item(unit.grid_position)
+		else:
+			# Enter targeting mode, same as spells
+			var spell_range = spell.get("range", 1)
+			var valid_targets = CombatManager.get_scroll_targets(unit, item.get("id", ""))
+			var range_area = combat_grid.get_spell_range_tiles(unit.grid_position, 1, spell_range)
+
+			current_action_mode = ActionMode.USE_ITEM
+			combat_grid.highlight_spell_range_and_area(range_area, valid_targets)
+
+			var range_text = "Range: %d" % spell_range
+			if valid_targets.is_empty():
+				_log_message("No valid targets for %s (%s)" % [item.get("name", "?"), range_text])
+			else:
+				_log_message("Select target for %s (%s)..." % [item.get("name", "?"), range_text])
+
+
+func _try_use_item(target_pos: Vector2i) -> void:
+	var user = CombatManager.get_current_unit()
+	if user == null or selected_item.is_empty():
+		_cancel_action_mode()
+		return
+
+	var result = CombatManager.use_combat_item(user, selected_item.get("id", ""), target_pos)
+
+	if not result.get("success", false):
+		_log_message("Failed to use item: " + result.get("reason", "Unknown"))
+
+	# Success logging handled by _on_item_used_in_combat signal
+	selected_item = {}
+	_cancel_action_mode()
+
+
+func _on_item_used_in_combat(user: Node, item: Dictionary, result: Dictionary) -> void:
+	var item_name = item.get("name", "Unknown Item")
+	var item_type = item.get("type", "")
+
+	if item_type == "potion":
+		_log_message("%s uses %s!" % [user.unit_name, item_name])
+		for effect in result.get("effects_applied", []):
+			var etype = effect.get("type", "")
+			match etype:
+				"heal":
+					_log_message("  Restored %d HP!" % effect.get("amount", 0))
+				"restore_mana":
+					_log_message("  Restored %d Mana!" % effect.get("amount", 0))
+				"buff":
+					var resistance = effect.get("resistance", "")
+					if resistance != "":
+						_log_message("  Gained +%d %s resistance for %d turns!" % [
+							effect.get("value", 0), resistance.capitalize(),
+							effect.get("duration", 0)
+						])
+					else:
+						_log_message("  Gained +%d %s for %d turns!" % [
+							effect.get("value", 0),
+							effect.get("stat", "").capitalize(),
+							effect.get("duration", 0)
+						])
+				"cleanse":
+					var count = effect.get("removed", 0)
+					if count > 0:
+						_log_message("  Cleansed %d effect(s)!" % count)
+					else:
+						_log_message("  No effects to cleanse.")
+
+	elif item_type == "scroll":
+		var spell = result.get("spell", {})
+		var spell_name = spell.get("name", "Unknown Spell")
+		_log_message("%s uses %s! (casts %s)" % [user.unit_name, item_name, spell_name])
+		# Spell effect logging uses same format as _on_spell_cast
+		for res in result.get("results", []):
+			var target = res.get("target")
+			if target == null:
+				continue
+			for effect_applied in res.get("effects_applied", []):
+				var etype = effect_applied.get("type", "")
+				match etype:
+					"damage":
+						_log_message("  %s takes %d %s damage!" % [
+							target.unit_name,
+							effect_applied.get("amount", 0),
+							effect_applied.get("element", "")
+						])
+					"heal":
+						_log_message("  %s healed for %d!" % [
+							target.unit_name, effect_applied.get("amount", 0)
+						])
+
+	_update_action_buttons()
+	if selected_unit:
+		_show_unit_info(selected_unit)
+
+
 func _on_wait_pressed() -> void:
 	if not CombatManager.is_player_turn():
 		return
@@ -896,6 +1143,7 @@ func _update_action_buttons() -> void:
 	move_button.disabled = not is_player or not can_act
 	attack_button.disabled = not is_player or not can_act
 	spell_button.disabled = not is_player or not can_act
+	item_button.disabled = not is_player or not can_act
 	wait_button.disabled = not is_player or not can_act
 	flee_button.disabled = not is_player or not can_act
 	end_turn_button.disabled = not is_player
@@ -904,6 +1152,7 @@ func _update_action_buttons() -> void:
 	move_button.button_pressed = (current_action_mode == ActionMode.MOVE)
 	attack_button.button_pressed = (current_action_mode == ActionMode.ATTACK)
 	spell_button.button_pressed = (current_action_mode == ActionMode.CAST_SPELL)
+	item_button.button_pressed = (current_action_mode == ActionMode.USE_ITEM)
 
 
 ## Update turn order display

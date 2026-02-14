@@ -11,6 +11,7 @@ extends Node
 signal inventory_changed()
 signal item_equipped(character: Dictionary, slot: String, item_id: String)
 signal item_unequipped(character: Dictionary, slot: String, item_id: String)
+signal item_used(item_id: String, item: Dictionary)
 
 # Item database loaded from JSON
 var _item_database: Dictionary = {}
@@ -374,6 +375,42 @@ func get_inventory_count(item_id: String) -> int:
 	return count
 
 
+## Get all consumable items in inventory (with full details and quantity)
+func get_consumables_in_inventory() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for entry in _inventory:
+		var item_id = entry.get("item_id", "")
+		var item = get_item(item_id)
+		if item.is_empty():
+			continue
+		var item_type = item.get("type", "")
+		var type_info = _item_types.get(item_type, {})
+		if type_info.get("category", "") == "consumable":
+			var detailed = item.duplicate(true)
+			detailed["quantity"] = entry.get("quantity", 1)
+			result.append(detailed)
+	return result
+
+
+## Use a consumable item: validates, removes 1 from inventory, emits signal
+func use_consumable(item_id: String) -> Dictionary:
+	var item = get_item(item_id)
+	if item.is_empty():
+		return {"success": false, "reason": "Item not found"}
+
+	var item_type = item.get("type", "")
+	var type_info = _item_types.get(item_type, {})
+	if type_info.get("category", "") != "consumable":
+		return {"success": false, "reason": "Not a consumable"}
+
+	if get_inventory_count(item_id) <= 0:
+		return {"success": false, "reason": "None in inventory"}
+
+	remove_from_inventory(item_id, 1)
+	item_used.emit(item_id, item)
+	return {"success": true, "item": item}
+
+
 ## Get full inventory
 func get_inventory() -> Array[Dictionary]:
 	return _inventory
@@ -491,4 +528,7 @@ func add_starter_items() -> void:
 	add_to_inventory("leather_boots")
 	add_to_inventory("copper_ring")
 	add_to_inventory("travelers_amulet")
+	# Starting consumables
+	add_to_inventory("health_potion", 3)
+	add_to_inventory("mana_potion", 2)
 	print("ItemSystem: Added starter items to inventory")
