@@ -414,18 +414,28 @@ func update_derived_stats(character: Dictionary) -> void:
 		effective_attrs[attr_key] = attrs[attr_key] + equip_bonus.get(attr_key, 0)
 
 	# HP from Constitution + equipment + earth affinity
+	var old_max_hp = derived.get("max_hp", 100)
 	derived.max_hp = 100 + (effective_attrs.constitution - 10) * 10 + equip_bonus.get("max_hp", 0) + affinity_bonus.get("max_hp", 0)
-	derived.current_hp = min(derived.current_hp, derived.max_hp)
+	# When max HP increases, increase current HP by the same amount
+	if derived.max_hp > old_max_hp:
+		derived.current_hp = derived.get("current_hp", derived.max_hp) + (derived.max_hp - old_max_hp)
+	derived.current_hp = min(derived.get("current_hp", derived.max_hp), derived.max_hp)
 
 	# Mana from Awareness + equipment
+	var old_max_mana = derived.get("max_mana", 100)
 	derived.max_mana = 100 + (effective_attrs.awareness - 10) * 10 + equip_bonus.get("max_mana", 0)
-	derived.current_mana = min(derived.current_mana, derived.max_mana)
+	if derived.max_mana > old_max_mana:
+		derived.current_mana = derived.get("current_mana", derived.max_mana) + (derived.max_mana - old_max_mana)
+	derived.current_mana = min(derived.get("current_mana", derived.max_mana), derived.max_mana)
 
 	# Stamina from Constitution + Finesse + equipment
+	var old_max_stamina = derived.get("max_stamina", 50)
 	derived.max_stamina = 50 + int((effective_attrs.constitution + effective_attrs.finesse - 20) * 2.5) + equip_bonus.get("max_stamina", 0)
 	if not "current_stamina" in derived:
 		derived.current_stamina = derived.max_stamina
 	else:
+		if derived.max_stamina > old_max_stamina:
+			derived.current_stamina += (derived.max_stamina - old_max_stamina)
 		derived.current_stamina = min(derived.current_stamina, derived.max_stamina)
 
 	# Initiative from Finesse + Awareness + equipment + air affinity

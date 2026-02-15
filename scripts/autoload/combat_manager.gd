@@ -649,6 +649,16 @@ func _check_combat_end() -> int:
 	return -1  # Combat continues
 
 
+## Check combat end after damage/death — triggers immediately via call_deferred
+## so that the current action finishes logging before the end screen appears
+func _check_immediate_combat_end() -> void:
+	if not combat_active:
+		return
+	var result = _check_combat_end()
+	if result != -1:
+		end_combat.call_deferred(result == Team.PLAYER)
+
+
 ## Use an action from the current unit
 ## Note: Does NOT auto-end turn. Caller must check can_act() and end_turn() as needed.
 func use_action(count: int = 1) -> bool:
@@ -891,6 +901,8 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 
 	if unit.current_hp <= 0 and not unit.is_bleeding_out:
 		_start_bleed_out(unit)
+		# Check if combat should end immediately (all enemies or all players down)
+		_check_immediate_combat_end()
 
 
 ## Start bleed-out state for a unit
@@ -913,6 +925,9 @@ func _kill_unit(unit: Node) -> void:
 		turn_order.remove_at(idx)
 		if current_unit_index > idx:
 			current_unit_index -= 1
+
+	# Check if combat should end immediately
+	_check_immediate_combat_end()
 
 
 ## Revive a bleeding out unit

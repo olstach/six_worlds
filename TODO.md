@@ -182,9 +182,9 @@ Last Updated: 2026-02-15
 - [x] ~~Derived stats not displaying~~ - FIXED (wrong key)
 - [x] ~~Combat turn order issues~~ - FIXED (Timer-based delays instead of async/await)
 - [ ] Turn order occasionally out of sync (rare, needs investigation)
-- [ ] **Raising attributes doesn't increase current HP/MP/Stamina** — only max values update, leaving actual values behind (e.g., CON up → 100/180 HP)
-- [ ] **Same consumable items don't stack in item menu** — should show combined quantity
-- [ ] **Victory screen waits for End Turn** — should trigger immediately when all enemies are defeated
+- [x] ~~**Raising attributes doesn't increase current HP/MP/Stamina**~~ — FIXED (current rises with max)
+- [x] ~~**Same consumable items don't stack in item menu**~~ — FIXED (quantity badge on inventory slots)
+- [x] ~~**Victory screen waits for End Turn**~~ — FIXED (immediate check after damage/death)
 
 ---
 

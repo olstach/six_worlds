@@ -1657,16 +1657,21 @@ func _update_inventory() -> void:
 
 func _create_inventory_slot(item: Variant) -> Control:
 	if item != null and item is Dictionary:
+		# Use a container so we can overlay a quantity label
+		var container = Control.new()
+		container.custom_minimum_size = Vector2(50, 50)
+
 		# Use a button for items so we get proper hover detection
 		var btn = Button.new()
 		btn.custom_minimum_size = Vector2(50, 50)
+		btn.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 		var item_id = item.get("id", "")
 		var rarity_color = ItemSystem.get_rarity_color(item_id) if item_id != "" else Color.WHITE
 
 		# Show abbreviated name
-		var name = item.get("name", "?")
-		btn.text = name.substr(0, 3).to_upper() if name.length() > 3 else name.to_upper()
+		var item_name = item.get("name", "?")
+		btn.text = item_name.substr(0, 3).to_upper() if item_name.length() > 3 else item_name.to_upper()
 		btn.add_theme_font_size_override("font_size", 10)
 		btn.add_theme_color_override("font_color", rarity_color)
 
@@ -1692,7 +1697,25 @@ func _create_inventory_slot(item: Variant) -> Control:
 		btn.mouse_entered.connect(_on_item_hover.bind(item, btn))
 		btn.mouse_exited.connect(_on_item_hover_end)
 
-		return btn
+		container.add_child(btn)
+
+		# Show quantity badge for stacked items (quantity > 1)
+		var quantity = item.get("quantity", 1)
+		if quantity > 1:
+			var qty_label = Label.new()
+			qty_label.text = "x%d" % quantity
+			qty_label.add_theme_font_size_override("font_size", 9)
+			qty_label.add_theme_color_override("font_color", Color(1, 1, 1))
+			qty_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			qty_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+			qty_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			# Small offset from edge
+			qty_label.offset_right = -3
+			qty_label.offset_bottom = -2
+			qty_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			container.add_child(qty_label)
+
+		return container
 	else:
 		# Empty slot - just a panel
 		var slot = PanelContainer.new()
