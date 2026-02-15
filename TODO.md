@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-02-14
+Last Updated: 2026-02-15
 
 ---
 
@@ -35,6 +35,9 @@ Last Updated: 2026-02-14
 - [x] Victory/defeat conditions
 - [x] Physical damage subtypes (slashing, crushing, piercing) with per-weapon types
 - [x] Consumable items in combat (potions and scrolls with Item button/panel UI)
+- [x] Talismans (19 items, mana cost reduction + spellpower boost per school)
+- [x] Bombs (8 items, thrown AoE damage + status effects)
+- [x] Oils (6 items, weapon coating with bonus damage/status procs for N attacks)
 
 ### Character & Progression
 - [x] XP-based progression (no levels)
@@ -100,9 +103,10 @@ Last Updated: 2026-02-14
 ### Content Expansion
 - [ ] Races for all 6 realms (currently only Hell examples)
 - [ ] Background definitions with skill distributions
-- [ ] More consumable items (realm-specific potions, higher-level scrolls)
+- [ ] More consumable items (realm-specific potions, higher-level scrolls, more talisman/bomb/oil tiers)
 - [ ] More equipment (rare/legendary weapons and armor)
 - [ ] More upgrades/perks
+- [ ] Alchemy crafting system (create consumables from ingredients)
 
 ### UI Improvements
 - [ ] Spellbook tab in character sheet
@@ -112,10 +116,14 @@ Last Updated: 2026-02-14
 - [ ] Party management screen
 - [ ] World map UI
 
-### Spell-Terrain Integration
+### Combat Terrain & Environment
+- [ ] More obstacle variety (rocks, pillars, trees, destructible objects)
+- [ ] Terrain height variation in combat maps (elevation changes, high ground)
+- [ ] Geo effects on tiles (fire terrain, ice patches, poison clouds, blessed ground)
 - [ ] Spells creating terrain effects (Fireball leaves fire terrain)
 - [ ] Terrain affecting spell power
 - [ ] Environmental spell interactions
+- [ ] Realm-specific combat terrain themes
 
 ---
 
@@ -174,6 +182,9 @@ Last Updated: 2026-02-14
 - [x] ~~Derived stats not displaying~~ - FIXED (wrong key)
 - [x] ~~Combat turn order issues~~ - FIXED (Timer-based delays instead of async/await)
 - [ ] Turn order occasionally out of sync (rare, needs investigation)
+- [ ] **Raising attributes doesn't increase current HP/MP/Stamina** — only max values update, leaving actual values behind (e.g., CON up → 100/180 HP)
+- [ ] **Same consumable items don't stack in item menu** — should show combined quantity
+- [ ] **Victory screen waits for End Turn** — should trigger immediately when all enemies are defeated
 
 ---
 
@@ -197,7 +208,20 @@ Last Updated: 2026-02-14
 - Alchemy skill boosts potion effectiveness (10-75% based on level)
 - Starter items include 3 health potions + 2 mana potions
 
+### 2026-02-15: Talismans, Bombs, and Oils
+- 19 talismans (4 tiers for White/Fire/Earth + common for other 7 schools)
+- 8 bombs (Fire, Frost, Poison, Smoke, Holy Water, Greater Fire, Acid, Thunder)
+- 6 oils (Flame, Frost, Poison, Holy, Whetstone, Paralyzing)
+- Talisman integration: mana check accounts for reduction, consumed on matching spell cast
+- Bomb targeting: AoE preview, damage scaled by Alchemy, status procs
+- Oil integration: bonus damage + status procs on attacks, crit bonus, Alchemy extends duration
+- Item panel colors: purple (talisman), orange-red (bomb), teal (oil)
+
 ### Reasonable Next Steps
+- Fix: attribute raise should increase current HP/MP/Stamina proportionally
+- Fix: consumable item stacking in combat item panel
+- Fix: victory screen should trigger immediately on last enemy death
+- Combat terrain: more obstacles, height variation, geo effects
 - Enemy-specific physical resistances (e.g., skeletons resist piercing, weak to crushing)
 - AI using consumable items (enemy potion/scroll usage)
 - Loot drops: enemies dropping consumables and equipment on defeat

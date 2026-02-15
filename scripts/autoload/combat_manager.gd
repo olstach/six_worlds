@@ -765,6 +765,31 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 		# Apply damage
 		apply_damage(defender, result.damage, result.damage_type)
 
+		# Apply weapon oil effects (bonus damage + status procs)
+		if attacker.has_method("consume_oil_charge"):
+			var oil = attacker.consume_oil_charge()
+			if not oil.is_empty():
+				var oil_dmg = oil.get("bonus_damage", 0)
+				var oil_dmg_type = oil.get("bonus_damage_type", "fire")
+				if oil_dmg > 0:
+					var resist = defender.get_resistance(oil_dmg_type)
+					var final_oil_dmg = int(oil_dmg * (1.0 - resist / 100.0))
+					final_oil_dmg = maxi(1, final_oil_dmg)
+					apply_damage(defender, final_oil_dmg, oil_dmg_type)
+					result["oil_damage"] = final_oil_dmg
+					result["oil_damage_type"] = oil_dmg_type
+				# Roll for status proc
+				var oil_status = oil.get("status", "")
+				var oil_chance = oil.get("status_chance", 0)
+				if oil_status != "" and oil_chance > 0:
+					if randf() * 100.0 <= oil_chance:
+						var oil_duration = oil.get("status_duration", 2)
+						_apply_status_effect(defender, oil_status, oil_duration)
+						result["oil_status"] = oil_status
+				# Track remaining charges (unit's weapon_oil already decremented)
+				var remaining = attacker.weapon_oil.get("attacks_remaining", 0) if not attacker.weapon_oil.is_empty() else 0
+				result["oil_attacks_left"] = remaining
+
 	use_action(1)
 	unit_attacked.emit(attacker, defender, result)
 	return result
@@ -802,8 +827,10 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 	var variance = randf_range(0.85, 1.15)
 	var damage = int(base_damage * variance)
 
-	# Check for crit
+	# Check for crit (include weapon oil crit bonus if active)
 	var crit_chance = attacker.get_crit_chance()
+	if not attacker.weapon_oil.is_empty():
+		crit_chance += attacker.weapon_oil.get("crit_bonus", 0)
 	var crit = randf() * 100.0 <= crit_chance
 	var crit_multi = 1.5  # TODO: Can be increased by upgrades
 
@@ -985,8 +1012,18 @@ func get_castable_spells(unit: Node) -> Array[Dictionary]:
 
 ## Check if a unit can cast a specific spell
 func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dictionary:
-	# Check mana
+	# Check mana (account for talisman reduction if the unit has a matching one)
 	var mana_cost = spell.get("mana_cost", 0)
+	if unit.has_method("consume_talisman") and not unit.talisman_buff.is_empty():
+		var buff_school = unit.talisman_buff.get("school", "")
+		var spell_schools = spell.get("schools", [])
+		var subschool = spell.get("subschool", "")
+		for school in spell_schools:
+			if school.to_lower() == buff_school:
+				mana_cost = int(mana_cost * (1.0 - unit.talisman_buff.get("mana_reduction", 0.0)))
+				break
+		if subschool.to_lower() == buff_school:
+			mana_cost = int(mana_cost * (1.0 - unit.talisman_buff.get("mana_reduction", 0.0)))
 	if unit.current_mana < mana_cost:
 		return {"success": false, "reason": "Not enough mana"}
 
@@ -1039,12 +1076,33 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	if targets.is_empty() and targeting != "self":
 		return {"success": false, "reason": "No valid targets"}
 
-	# Deduct mana
+	# Calculate base mana cost
 	var mana_cost = spell.get("mana_cost", 0)
+
+	# Check for talisman buff (reduces mana cost and may boost spellpower)
+	var talisman_used: Dictionary = {}
+	if caster.has_method("consume_talisman"):
+		var spell_schools = spell.get("schools", [])
+		# Also check subschool
+		var subschool = spell.get("subschool", "")
+		if subschool != "":
+			spell_schools = spell_schools + [subschool]
+		talisman_used = caster.consume_talisman(spell_schools)
+		if not talisman_used.is_empty():
+			var reduction = talisman_used.get("mana_reduction", 0.0)
+			mana_cost = int(mana_cost * (1.0 - reduction))
+
+	# Deduct mana
 	caster.current_mana -= mana_cost
 
 	# Calculate spell power bonus from all applicable schools
 	var spellpower_bonus = _calculate_spell_bonus(caster, spell)
+
+	# Add talisman spellpower bonus (percentage of base spellpower)
+	if not talisman_used.is_empty():
+		var talisman_sp_pct = talisman_used.get("spellpower_bonus", 0.0)
+		if talisman_sp_pct > 0:
+			spellpower_bonus += int(spellpower_bonus * talisman_sp_pct)
 
 	# Apply effects to each target
 	var results: Array[Dictionary] = []
@@ -1546,9 +1604,9 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 # CONSUMABLE ITEMS
 # ============================================
 
-## Use a consumable item in combat (potion or scroll)
-## For potions: target_pos is ignored (always self-targeting)
-## For scrolls: target_pos is the spell target position
+## Use a consumable item in combat
+## Self-targeting: potions, talismans, oils (target_pos ignored)
+## Targeted: scrolls, bombs (target_pos = aim position)
 func use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dictionary:
 	if not can_act(1):
 		return {"success": false, "reason": "No actions remaining"}
@@ -1562,7 +1620,7 @@ func use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dicti
 
 	var item_type = item.get("type", "")
 
-	# Pre-validate scroll targeting BEFORE consuming the item
+	# Pre-validate targeting BEFORE consuming the item
 	if item_type == "scroll":
 		var spell_id = item.get("spell_id", "")
 		var spell = get_spell(spell_id)
@@ -1577,20 +1635,33 @@ func use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dicti
 			var targets = _get_spell_targets(user, spell, target_pos)
 			if targets.is_empty():
 				return {"success": false, "reason": "No valid targets"}
+	elif item_type == "bomb":
+		var effect = item.get("effect", {})
+		var bomb_range = effect.get("range", 4)
+		var distance = _spell_distance(user.grid_position, target_pos)
+		if distance > bomb_range:
+			return {"success": false, "reason": "Target out of range"}
 
 	# Consume the item from inventory
 	var consume_result = ItemSystem.use_consumable(item_id)
 	if not consume_result.success:
 		return consume_result
 
-	# Apply the effect
+	# Apply the effect based on item type
 	var result: Dictionary = {}
-	if item_type == "potion":
-		result = _apply_potion_effect(user, item)
-	elif item_type == "scroll":
-		result = _use_scroll(user, item, target_pos)
-	else:
-		return {"success": false, "reason": "Unknown consumable type: " + item_type}
+	match item_type:
+		"potion":
+			result = _apply_potion_effect(user, item)
+		"scroll":
+			result = _use_scroll(user, item, target_pos)
+		"talisman":
+			result = _apply_talisman(user, item)
+		"bomb":
+			result = _use_bomb(user, item, target_pos)
+		"oil":
+			result = _apply_oil(user, item)
+		_:
+			return {"success": false, "reason": "Unknown consumable type: " + item_type}
 
 	if result.get("success", false):
 		use_action(1)
@@ -1702,6 +1773,22 @@ func get_scroll_targets(user: Node, item_id: String) -> Array[Vector2i]:
 	return get_spell_targets(user, spell_id)
 
 
+## Get the throw range for a bomb item
+func get_bomb_range(item_id: String) -> int:
+	var item = ItemSystem.get_item(item_id)
+	if item.is_empty() or item.get("type", "") != "bomb":
+		return 0
+	return item.get("effect", {}).get("range", 4)
+
+
+## Get the AoE radius for a bomb item
+func get_bomb_aoe_radius(item_id: String) -> int:
+	var item = ItemSystem.get_item(item_id)
+	if item.is_empty() or item.get("type", "") != "bomb":
+		return 0
+	return item.get("effect", {}).get("aoe_radius", 1)
+
+
 ## Get Alchemy skill consumable_power bonus percentage
 ## Matches perks.json: 10/20/35/50/75 per skill level
 func _get_alchemy_bonus(user: Node) -> float:
@@ -1711,6 +1798,127 @@ func _get_alchemy_bonus(user: Node) -> float:
 	if alchemy_level >= 0 and alchemy_level < bonus_table.size():
 		return bonus_table[alchemy_level]
 	return 0.0
+
+
+## Apply a talisman: stores a buff on the unit that reduces mana cost of the next matching spell
+func _apply_talisman(user: Node, item: Dictionary) -> Dictionary:
+	var effect = item.get("effect", {})
+	var school = effect.get("school", "")
+	var mana_reduction = effect.get("mana_reduction", 0.0)
+	var spellpower_bonus = effect.get("spellpower_bonus", 0.0)
+
+	# Overwrite any existing talisman (only one active at a time)
+	user.talisman_buff = {
+		"school": school,
+		"mana_reduction": mana_reduction,
+		"spellpower_bonus": spellpower_bonus
+	}
+
+	return {
+		"success": true,
+		"effects_applied": [{
+			"type": "talisman",
+			"school": school,
+			"mana_reduction": mana_reduction,
+			"spellpower_bonus": spellpower_bonus
+		}]
+	}
+
+
+## Use a bomb: deal AoE damage at target position, optionally apply status effects
+func _use_bomb(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var effect = item.get("effect", {})
+	var base_damage = effect.get("damage", 0)
+	var damage_type = effect.get("damage_type", "fire")
+	var aoe_radius = effect.get("aoe_radius", 1)
+	var statuses = effect.get("statuses", [])
+	var hits_all = effect.get("hits_all", false)  # true = hits allies too (smoke bomb)
+
+	# Alchemy bonus increases bomb damage
+	var alchemy_bonus = _get_alchemy_bonus(user)
+	var total_damage = int(base_damage * (1.0 + alchemy_bonus / 100.0))
+
+	# Find units in AoE
+	var hit_units: Array[Node] = []
+	for unit in all_units:
+		if not unit.is_alive():
+			continue
+		var dist = _grid_distance(unit.grid_position, target_pos)
+		if dist <= aoe_radius:
+			if hits_all:
+				hit_units.append(unit)
+			elif unit.team != user.team:
+				hit_units.append(unit)
+
+	var results: Array[Dictionary] = []
+	for target in hit_units:
+		var unit_result: Dictionary = {"target": target, "effects_applied": []}
+
+		# Apply damage (respects resistance)
+		if total_damage > 0:
+			var resist = target.get_resistance(damage_type)
+			var final_damage = int(total_damage * (1.0 - resist / 100.0))
+			final_damage = maxi(1, final_damage)
+			apply_damage(target, final_damage, damage_type)
+			unit_result.effects_applied.append({
+				"type": "damage", "amount": final_damage, "element": damage_type
+			})
+
+		# Apply status effects
+		for status_entry in statuses:
+			var chance = status_entry.get("chance", 100)
+			if randf() * 100.0 <= chance:
+				var status_name = status_entry.get("name", "")
+				var duration = status_entry.get("duration", 2)
+				_apply_status_effect(target, status_name, duration)
+				unit_result.effects_applied.append({
+					"type": "status", "status": status_name, "duration": duration
+				})
+
+		results.append(unit_result)
+
+	return {
+		"success": true,
+		"is_bomb": true,
+		"target_pos": target_pos,
+		"aoe_radius": aoe_radius,
+		"hit_units": hit_units,
+		"results": results
+	}
+
+
+## Apply an oil: coats the user's weapon with bonus effects for N attacks
+func _apply_oil(user: Node, item: Dictionary) -> Dictionary:
+	var effect = item.get("effect", {})
+	var attacks = effect.get("attacks", 3)
+
+	# Alchemy bonus adds extra attacks at level 3+ and 5
+	var skills = user.character_data.get("skills", {})
+	var alchemy_level = skills.get("alchemy", 0)
+	if alchemy_level >= 5:
+		attacks += 2
+	elif alchemy_level >= 3:
+		attacks += 1
+
+	# Overwrite any existing oil (only one active at a time)
+	user.weapon_oil = {
+		"bonus_damage": effect.get("bonus_damage", 0),
+		"bonus_damage_type": effect.get("bonus_damage_type", "fire"),
+		"attacks_remaining": attacks,
+		"status": effect.get("status", ""),
+		"status_chance": effect.get("status_chance", 0),
+		"status_duration": effect.get("status_duration", 0),
+		"crit_bonus": effect.get("crit_bonus", 0)
+	}
+
+	return {
+		"success": true,
+		"effects_applied": [{
+			"type": "oil",
+			"bonus_damage_type": effect.get("bonus_damage_type", "fire"),
+			"attacks": attacks
+		}]
+	}
 
 
 # ============================================

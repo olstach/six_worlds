@@ -472,7 +472,8 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 		else:
 			combat_grid.clear_aoe_preview()
 	elif current_action_mode == ActionMode.USE_ITEM and not selected_item.is_empty():
-		if selected_item.get("type", "") == "scroll":
+		var sel_type = selected_item.get("type", "")
+		if sel_type == "scroll":
 			var spell_id = selected_item.get("spell_id", "")
 			var spell = CombatManager.get_spell(spell_id)
 			if not spell.is_empty() and spell.get("targeting", "") == "aoe_circle":
@@ -480,6 +481,9 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 				combat_grid.show_aoe_preview(grid_pos, radius)
 			else:
 				combat_grid.clear_aoe_preview()
+		elif sel_type == "bomb":
+			var radius = selected_item.get("effect", {}).get("aoe_radius", 1)
+			combat_grid.show_aoe_preview(grid_pos, radius)
 		else:
 			combat_grid.clear_aoe_preview()
 	else:
@@ -827,12 +831,19 @@ func _show_item_panel(_unit: CombatUnit) -> void:
 			btn.text = "%s x%d" % [item.get("name", "???"), qty]
 			btn.tooltip_text = _build_item_tooltip(item)
 
-			# Color by type: green for potions, gold for scrolls
+			# Color by type
 			var item_type = item.get("type", "")
-			if item_type == "potion":
-				btn.add_theme_color_override("font_color", Color(0.3, 0.85, 0.5))
-			elif item_type == "scroll":
-				btn.add_theme_color_override("font_color", Color(0.85, 0.75, 0.3))
+			match item_type:
+				"potion":
+					btn.add_theme_color_override("font_color", Color(0.3, 0.85, 0.5))
+				"scroll":
+					btn.add_theme_color_override("font_color", Color(0.85, 0.75, 0.3))
+				"talisman":
+					btn.add_theme_color_override("font_color", Color(0.7, 0.5, 0.9))
+				"bomb":
+					btn.add_theme_color_override("font_color", Color(0.9, 0.45, 0.3))
+				"oil":
+					btn.add_theme_color_override("font_color", Color(0.3, 0.8, 0.8))
 
 			btn.pressed.connect(_on_item_selected.bind(item))
 			item_list.add_child(btn)
@@ -883,6 +894,55 @@ func _build_item_tooltip(item: Dictionary) -> String:
 			else:
 				lines.append("Target: Self")
 
+	elif item_type == "talisman":
+		var effect = item.get("effect", {})
+		var school = effect.get("school", "").capitalize()
+		var reduction = int(effect.get("mana_reduction", 0) * 100)
+		lines.append("School: %s" % school)
+		lines.append("-%d%% mana cost on next %s spell" % [reduction, school])
+		var sp_bonus = effect.get("spellpower_bonus", 0.0)
+		if sp_bonus > 0:
+			lines.append("+%d%% spellpower" % int(sp_bonus * 100))
+		lines.append("")
+		lines.append("Target: Self (lasts until next matching spell)")
+
+	elif item_type == "bomb":
+		var effect = item.get("effect", {})
+		var damage = effect.get("damage", 0)
+		var dmg_type = effect.get("damage_type", "")
+		var radius = effect.get("aoe_radius", 1)
+		var bomb_range = effect.get("range", 4)
+		if damage > 0:
+			lines.append("%d %s damage" % [damage, dmg_type.capitalize()])
+		lines.append("AoE radius: %d, Range: %d" % [radius, bomb_range])
+		var statuses = effect.get("statuses", [])
+		for s in statuses:
+			var chance = s.get("chance", 100)
+			var chance_text = "" if chance >= 100 else " (%d%% chance)" % chance
+			lines.append("Applies %s for %d turns%s" % [s.get("name", ""), s.get("duration", 0), chance_text])
+		if effect.get("hits_all", false):
+			lines.append("(Hits allies too!)")
+		lines.append("")
+		lines.append("Target: Thrown at tile")
+
+	elif item_type == "oil":
+		var effect = item.get("effect", {})
+		var bonus_dmg = effect.get("bonus_damage", 0)
+		var bonus_type = effect.get("bonus_damage_type", "").capitalize()
+		var attacks = effect.get("attacks", 3)
+		lines.append("+%d %s damage per attack" % [bonus_dmg, bonus_type])
+		lines.append("Lasts %d attacks" % attacks)
+		var crit_bonus = effect.get("crit_bonus", 0)
+		if crit_bonus > 0:
+			lines.append("+%d%% crit chance" % crit_bonus)
+		var status = effect.get("status", "")
+		if status != "":
+			lines.append("%d%% chance to apply %s (%d turns)" % [
+				effect.get("status_chance", 0), status, effect.get("status_duration", 0)
+			])
+		lines.append("")
+		lines.append("Target: Self (coats weapon)")
+
 	var desc = item.get("description", "")
 	if desc != "":
 		lines.append("")
@@ -903,31 +963,46 @@ func _on_item_selected(item: Dictionary) -> void:
 
 	var item_type = item.get("type", "")
 
-	if item_type == "potion":
-		# Potions are self-targeting -- use immediately
-		_try_use_item(unit.grid_position)
-	elif item_type == "scroll":
-		# Check if scroll's spell is self-targeting
-		var spell_id = item.get("spell_id", "")
-		var spell = CombatManager.get_spell(spell_id)
-
-		if spell.get("targeting", "single") == "self":
-			# Self-targeting scroll -- use immediately
+	match item_type:
+		"potion", "talisman", "oil":
+			# Self-targeting -- use immediately
 			_try_use_item(unit.grid_position)
-		else:
-			# Enter targeting mode, same as spells
-			var spell_range = spell.get("range", 1)
-			var valid_targets = CombatManager.get_scroll_targets(unit, item.get("id", ""))
-			var range_area = combat_grid.get_spell_range_tiles(unit.grid_position, 1, spell_range)
+
+		"scroll":
+			# Check if scroll's spell is self-targeting
+			var spell_id = item.get("spell_id", "")
+			var spell = CombatManager.get_spell(spell_id)
+
+			if spell.get("targeting", "single") == "self":
+				_try_use_item(unit.grid_position)
+			else:
+				# Enter targeting mode
+				var spell_range = spell.get("range", 1)
+				var valid_targets = CombatManager.get_scroll_targets(unit, item.get("id", ""))
+				var range_area = combat_grid.get_spell_range_tiles(unit.grid_position, 1, spell_range)
+
+				current_action_mode = ActionMode.USE_ITEM
+				combat_grid.highlight_spell_range_and_area(range_area, valid_targets)
+
+				var range_text = "Range: %d" % spell_range
+				if valid_targets.is_empty():
+					_log_message("No valid targets for %s (%s)" % [item.get("name", "?"), range_text])
+				else:
+					_log_message("Select target for %s (%s)..." % [item.get("name", "?"), range_text])
+
+		"bomb":
+			# Enter targeting mode for thrown bomb
+			var effect = item.get("effect", {})
+			var bomb_range = effect.get("range", 4)
+			var range_area = combat_grid.get_spell_range_tiles(unit.grid_position, 1, bomb_range)
 
 			current_action_mode = ActionMode.USE_ITEM
-			combat_grid.highlight_spell_range_and_area(range_area, valid_targets)
+			# Highlight all tiles in range (bombs can target any tile)
+			combat_grid.highlight_spell_range_and_area(range_area, range_area)
 
-			var range_text = "Range: %d" % spell_range
-			if valid_targets.is_empty():
-				_log_message("No valid targets for %s (%s)" % [item.get("name", "?"), range_text])
-			else:
-				_log_message("Select target for %s (%s)..." % [item.get("name", "?"), range_text])
+			_log_message("Select target tile for %s (Range: %d, Radius: %d)..." % [
+				item.get("name", "?"), bomb_range, effect.get("aoe_radius", 1)
+			])
 
 
 func _try_use_item(target_pos: Vector2i) -> void:
@@ -983,7 +1058,6 @@ func _on_item_used_in_combat(user: Node, item: Dictionary, result: Dictionary) -
 		var spell = result.get("spell", {})
 		var spell_name = spell.get("name", "Unknown Spell")
 		_log_message("%s uses %s! (casts %s)" % [user.unit_name, item_name, spell_name])
-		# Spell effect logging uses same format as _on_spell_cast
 		for res in result.get("results", []):
 			var target = res.get("target")
 			if target == null:
@@ -1001,6 +1075,42 @@ func _on_item_used_in_combat(user: Node, item: Dictionary, result: Dictionary) -
 						_log_message("  %s healed for %d!" % [
 							target.unit_name, effect_applied.get("amount", 0)
 						])
+
+	elif item_type == "talisman":
+		var school = ""
+		for effect in result.get("effects_applied", []):
+			school = effect.get("school", "").capitalize()
+		_log_message("%s readies a %s!" % [user.unit_name, item_name])
+		_log_message("  Next %s spell will cost less mana." % school)
+
+	elif item_type == "bomb":
+		_log_message("%s throws %s!" % [user.unit_name, item_name])
+		for res in result.get("results", []):
+			var target = res.get("target")
+			if target == null:
+				continue
+			for effect_applied in res.get("effects_applied", []):
+				var etype = effect_applied.get("type", "")
+				match etype:
+					"damage":
+						_log_message("  %s takes %d %s damage!" % [
+							target.unit_name,
+							effect_applied.get("amount", 0),
+							effect_applied.get("element", "")
+						])
+					"status":
+						_log_message("  %s is %s!" % [
+							target.unit_name, effect_applied.get("status", "")
+						])
+
+	elif item_type == "oil":
+		var oil_type = ""
+		var attacks = 0
+		for effect in result.get("effects_applied", []):
+			oil_type = effect.get("bonus_damage_type", "").capitalize()
+			attacks = effect.get("attacks", 0)
+		_log_message("%s applies %s to weapon!" % [user.unit_name, item_name])
+		_log_message("  +%s damage for %d attacks." % [oil_type, attacks])
 
 	_update_action_buttons()
 	if selected_unit:
@@ -1121,6 +1231,13 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 			_log_message("%s attacks %s for %d damage!%s" % [
 				attacker.unit_name, defender.unit_name, result.damage, crit_text
 			])
+			# Log weapon oil bonus damage
+			if result.has("oil_damage"):
+				_log_message("  +%d %s damage (oil)!" % [
+					result.oil_damage, result.get("oil_damage_type", "").capitalize()
+				])
+			if result.has("oil_status"):
+				_log_message("  %s is %s! (oil)" % [defender.unit_name, result.oil_status])
 		else:
 			_log_message("%s attacks %s - MISS! (rolled %.0f vs %.0f%%)" % [
 				attacker.unit_name, defender.unit_name, result.roll, result.hit_chance

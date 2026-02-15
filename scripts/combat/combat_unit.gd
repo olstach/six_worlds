@@ -29,6 +29,10 @@ var bleed_out_turns: int = 0
 var is_dead: bool = false
 var status_effects: Array = []  # Active status effects on this unit
 
+# Consumable buffs
+var talisman_buff: Dictionary = {}  # {school, mana_reduction, spellpower_bonus} - consumed on next matching spell
+var weapon_oil: Dictionary = {}  # {bonus_damage, bonus_damage_type, attacks_remaining, status, status_chance, status_duration, crit_bonus}
+
 # Resistances (percentage, default 0%)
 var resistances: Dictionary = {
 	"physical": 0,
@@ -297,6 +301,31 @@ func get_weapon_damage_type() -> String:
 			return type_default
 
 	return "crushing"
+
+
+## Check if this unit has an active talisman matching the given spell schools
+## Returns the buff data and clears it (one-shot). Schools should be lowercase.
+func consume_talisman(spell_schools: Array) -> Dictionary:
+	if talisman_buff.is_empty():
+		return {}
+	var buff_school = talisman_buff.get("school", "")
+	for school in spell_schools:
+		if school.to_lower() == buff_school:
+			var result = talisman_buff.duplicate()
+			talisman_buff = {}
+			return result
+	return {}
+
+
+## Consume one weapon oil charge. Returns the oil data or empty dict.
+func consume_oil_charge() -> Dictionary:
+	if weapon_oil.is_empty():
+		return {}
+	var result = weapon_oil.duplicate()
+	weapon_oil["attacks_remaining"] = weapon_oil.get("attacks_remaining", 0) - 1
+	if weapon_oil["attacks_remaining"] <= 0:
+		weapon_oil = {}
+	return result
 
 
 ## Check if equipped weapon is ranged

@@ -576,6 +576,474 @@
 			"description": "A scroll inscribed with a healing prayer. Usable by anyone.",
 			"spell_id": "lesser_heal",
 			"spell_bonus": 0
+		},
+
+		"white_talisman_common": {
+			"name": "Common White Talisman",
+			"type": "talisman",
+			"rarity": "common",
+			"weight": 0,
+			"value": 30,
+			"description": "A blessed prayer bead. Reduces the mana cost of your next White magic spell.",
+			"effect": {
+				"school": "white",
+				"mana_reduction": 0.15,
+				"spellpower_bonus": 0
+			}
+		},
+		"white_talisman_middling": {
+			"name": "Middling White Talisman",
+			"type": "talisman",
+			"rarity": "uncommon",
+			"weight": 0,
+			"value": 60,
+			"description": "A consecrated prayer bead of moderate power.",
+			"effect": {
+				"school": "white",
+				"mana_reduction": 0.30,
+				"spellpower_bonus": 0
+			}
+		},
+		"white_talisman_rare": {
+			"name": "Rare White Talisman",
+			"type": "talisman",
+			"rarity": "rare",
+			"weight": 0,
+			"value": 100,
+			"description": "A sanctified relic that amplifies divine magic.",
+			"effect": {
+				"school": "white",
+				"mana_reduction": 0.45,
+				"spellpower_bonus": 0.10
+			}
+		},
+		"white_talisman_unique": {
+			"name": "Unique White Talisman",
+			"type": "talisman",
+			"rarity": "epic",
+			"weight": 0,
+			"value": 160,
+			"description": "A sacred relic radiating divine light. Greatly empowers White magic.",
+			"effect": {
+				"school": "white",
+				"mana_reduction": 0.60,
+				"spellpower_bonus": 0.20
+			}
+		},
+		"fire_talisman_common": {
+			"name": "Common Fire Talisman",
+			"type": "talisman",
+			"rarity": "common",
+			"weight": 0,
+			"value": 30,
+			"description": "A smoldering ember charm. Reduces the mana cost of your next Fire spell.",
+			"effect": {
+				"school": "fire",
+				"mana_reduction": 0.15,
+				"spellpower_bonus": 0
+			}
+		},
+		"fire_talisman_middling": {
+			"name": "Middling Fire Talisman",
+			"type": "talisman",
+			"rarity": "uncommon",
+			"weight": 0,
+			"value": 60,
+			"description": "A flickering ember charm of moderate intensity.",
+			"effect": {
+				"school": "fire",
+				"mana_reduction": 0.30,
+				"spellpower_bonus": 0
+			}
+		},
+		"fire_talisman_rare": {
+			"name": "Rare Fire Talisman",
+			"type": "talisman",
+			"rarity": "rare",
+			"weight": 0,
+			"value": 100,
+			"description": "A blazing cinder that intensifies flame magic.",
+			"effect": {
+				"school": "fire",
+				"mana_reduction": 0.45,
+				"spellpower_bonus": 0.10
+			}
+		},
+		"fire_talisman_unique": {
+			"name": "Unique Fire Talisman",
+			"type": "talisman",
+			"rarity": "epic",
+			"weight": 0,
+			"value": 160,
+			"description": "A shard of elemental flame. Vastly empowers Fire magic.",
+			"effect": {
+				"school": "fire",
+				"mana_reduction": 0.60,
+				"spellpower_bonus": 0.20
+			}
+		},
+		"earth_talisman_common": {
+			"name": "Common Earth Talisman",
+			"type": "talisman",
+			"rarity": "common",
+			"weight": 0,
+			"value": 30,
+			"description": "A polished stone inscribed with earthen runes. Reduces the mana cost of your next Earth spell.",
+			"effect": {
+				"school": "earth",
+				"mana_reduction": 0.15,
+				"spellpower_bonus": 0
+			}
+		},
+		"earth_talisman_middling": {
+			"name": "Middling Earth Talisman",
+			"type": "talisman",
+			"rarity": "uncommon",
+			"weight": 0,
+			"value": 60,
+			"description": "A dense geode fragment pulsing with earthen power.",
+			"effect": {
+				"school": "earth",
+				"mana_reduction": 0.30,
+				"spellpower_bonus": 0
+			}
+		},
+		"earth_talisman_rare": {
+			"name": "Rare Earth Talisman",
+			"type": "talisman",
+			"rarity": "rare",
+			"weight": 0,
+			"value": 100,
+			"description": "A crystal of living stone that amplifies earth magic.",
+			"effect": {
+				"school": "earth",
+				"mana_reduction": 0.45,
+				"spellpower_bonus": 0.10
+			}
+		},
+		"earth_talisman_unique": {
+			"name": "Unique Earth Talisman",
+			"type": "talisman",
+			"rarity": "epic",
+			"weight": 0,
+			"value": 160,
+			"description": "A fragment of the World Mountain. Vastly empowers Earth magic.",
+			"effect": {
+				"school": "earth",
+				"mana_reduction": 0.60,
+				"spellpower_bonus": 0.20
+			}
+		},
+		"water_talisman_common": {
+			"name": "Common Water Talisman",
+			"type": "talisman",
+			"rarity": "common",
+			"weight": 0,
+			"value": 30,
+			"description": "A vial of enchanted dew. Reduces the mana cost of your next Water spell.",
+			"effect": {
+				"school": "water",
+				"mana_reduction": 0.15,
+				"spellpower_bonus": 0
+			}
+		},
+		"air_talisman_common": {
+			"name": "Common Air Talisman",
+			"type": "talisman",
+			"rarity": "common",
+			"weight": 0,
+			"value": 30,
+			"description": "A feather caught in a perpetual breeze. Reduces the mana cost of your next Air spell.",
+			"effect": {
+				"school": "air",
+				"mana_reduction": 0.15,
+				"spellpower_bonus": 0
+			}
+		},
+		"space_talisman_common": {
+			"name": "Common Space Talisman",
+			"type": "talisman",
+			"rarity": "common",
+			"weight": 0,
+			"value": 30,
+			"description": "A shard of void crystal. Reduces the mana cost of your next Space spell.",
+			"effect": {
+				"school": "space",
+				"mana_reduction": 0.15,
+				"spellpower_bonus": 0
+			}
+		},
+		"black_talisman_common": {
+			"name": "Common Black Talisman",
+			"type": "talisman",
+			"rarity": "common",
+			"weight": 0,
+			"value": 30,
+			"description": "A bone token etched with dark sigils. Reduces the mana cost of your next Black magic spell.",
+			"effect": {
+				"school": "black",
+				"mana_reduction": 0.15,
+				"spellpower_bonus": 0
+			}
+		},
+		"sorcery_talisman_common": {
+			"name": "Common Sorcery Talisman",
+			"type": "talisman",
+			"rarity": "common",
+			"weight": 0,
+			"value": 30,
+			"description": "A glass lens infused with raw magical force. Reduces the mana cost of your next Sorcery spell.",
+			"effect": {
+				"school": "sorcery",
+				"mana_reduction": 0.15,
+				"spellpower_bonus": 0
+			}
+		},
+		"enchantment_talisman_common": {
+			"name": "Common Enchantment Talisman",
+			"type": "talisman",
+			"rarity": "common",
+			"weight": 0,
+			"value": 30,
+			"description": "A woven cord of binding thread. Reduces the mana cost of your next Enchantment spell.",
+			"effect": {
+				"school": "enchantment",
+				"mana_reduction": 0.15,
+				"spellpower_bonus": 0
+			}
+		},
+		"summoning_talisman_common": {
+			"name": "Common Summoning Talisman",
+			"type": "talisman",
+			"rarity": "common",
+			"weight": 0,
+			"value": 30,
+			"description": "A clay figurine of a spirit beast. Reduces the mana cost of your next Summoning spell.",
+			"effect": {
+				"school": "summoning",
+				"mana_reduction": 0.15,
+				"spellpower_bonus": 0
+			}
+		},
+
+		"fire_bomb": {
+			"name": "Fire Bomb",
+			"type": "bomb",
+			"rarity": "common",
+			"weight": 1,
+			"value": 35,
+			"description": "An alchemical incendiary that explodes on impact.",
+			"effect": {
+				"damage": 20,
+				"damage_type": "fire",
+				"aoe_radius": 1,
+				"range": 4,
+				"statuses": []
+			}
+		},
+		"frost_bomb": {
+			"name": "Frost Bomb",
+			"type": "bomb",
+			"rarity": "common",
+			"weight": 1,
+			"value": 35,
+			"description": "A flash-freezing alchemical flask.",
+			"effect": {
+				"damage": 15,
+				"damage_type": "cold",
+				"aoe_radius": 1,
+				"range": 4,
+				"statuses": [{"name": "Chilled", "duration": 2, "chance": 100}]
+			}
+		},
+		"poison_bomb": {
+			"name": "Poison Bomb",
+			"type": "bomb",
+			"rarity": "uncommon",
+			"weight": 1,
+			"value": 50,
+			"description": "A noxious cloud bomb that chokes everything in the area.",
+			"effect": {
+				"damage": 10,
+				"damage_type": "poison",
+				"aoe_radius": 2,
+				"range": 4,
+				"statuses": [{"name": "Poisoned", "duration": 3, "chance": 100}]
+			}
+		},
+		"smoke_bomb": {
+			"name": "Smoke Bomb",
+			"type": "bomb",
+			"rarity": "common",
+			"weight": 1,
+			"value": 25,
+			"description": "A blinding smoke cloud. Affects all units in the area.",
+			"effect": {
+				"damage": 0,
+				"damage_type": "",
+				"aoe_radius": 2,
+				"range": 3,
+				"hits_all": true,
+				"statuses": [{"name": "Blinded", "duration": 2, "chance": 100}]
+			}
+		},
+		"holy_water_bomb": {
+			"name": "Holy Water Bomb",
+			"type": "bomb",
+			"rarity": "uncommon",
+			"weight": 1,
+			"value": 45,
+			"description": "Consecrated water that scalds the unholy.",
+			"effect": {
+				"damage": 25,
+				"damage_type": "holy",
+				"aoe_radius": 1,
+				"range": 4,
+				"statuses": []
+			}
+		},
+		"greater_fire_bomb": {
+			"name": "Greater Fire Bomb",
+			"type": "bomb",
+			"rarity": "rare",
+			"weight": 1,
+			"value": 80,
+			"description": "A volatile alchemical explosive packed with concentrated flame powder.",
+			"effect": {
+				"damage": 40,
+				"damage_type": "fire",
+				"aoe_radius": 2,
+				"range": 5,
+				"statuses": [{"name": "Burning", "duration": 2, "chance": 100}]
+			}
+		},
+		"acid_bomb": {
+			"name": "Acid Bomb",
+			"type": "bomb",
+			"rarity": "uncommon",
+			"weight": 1,
+			"value": 50,
+			"description": "A corrosive splash that eats through armor.",
+			"effect": {
+				"damage": 15,
+				"damage_type": "acid",
+				"aoe_radius": 1,
+				"range": 4,
+				"statuses": [{"name": "Corroded", "duration": 3, "chance": 100}]
+			}
+		},
+		"thunder_bomb": {
+			"name": "Thunder Bomb",
+			"type": "bomb",
+			"rarity": "rare",
+			"weight": 1,
+			"value": 75,
+			"description": "A concussive blast that stuns those caught in the detonation.",
+			"effect": {
+				"damage": 30,
+				"damage_type": "air",
+				"aoe_radius": 1,
+				"range": 5,
+				"statuses": [{"name": "Stunned", "duration": 1, "chance": 100}]
+			}
+		},
+
+		"flame_oil": {
+			"name": "Flame Oil",
+			"type": "oil",
+			"rarity": "common",
+			"weight": 1,
+			"value": 35,
+			"description": "Coats a weapon with alchemical fire. Next 3 attacks deal bonus fire damage.",
+			"effect": {
+				"bonus_damage": 5,
+				"bonus_damage_type": "fire",
+				"attacks": 3,
+				"status": "",
+				"status_chance": 0,
+				"status_duration": 0
+			}
+		},
+		"frost_oil": {
+			"name": "Frost Oil",
+			"type": "oil",
+			"rarity": "common",
+			"weight": 1,
+			"value": 35,
+			"description": "Coats a weapon with bitter cold. Next 3 attacks deal bonus cold damage and may chill.",
+			"effect": {
+				"bonus_damage": 5,
+				"bonus_damage_type": "cold",
+				"attacks": 3,
+				"status": "Chilled",
+				"status_chance": 30,
+				"status_duration": 2
+			}
+		},
+		"poison_oil": {
+			"name": "Poison Oil",
+			"type": "oil",
+			"rarity": "uncommon",
+			"weight": 1,
+			"value": 50,
+			"description": "A venomous coating that lingers on the blade. Next 4 attacks may poison the target.",
+			"effect": {
+				"bonus_damage": 3,
+				"bonus_damage_type": "poison",
+				"attacks": 4,
+				"status": "Poisoned",
+				"status_chance": 50,
+				"status_duration": 3
+			}
+		},
+		"holy_oil": {
+			"name": "Holy Oil",
+			"type": "oil",
+			"rarity": "uncommon",
+			"weight": 1,
+			"value": 50,
+			"description": "Blessed ointment that imbues a weapon with divine wrath.",
+			"effect": {
+				"bonus_damage": 8,
+				"bonus_damage_type": "holy",
+				"attacks": 3,
+				"status": "",
+				"status_chance": 0,
+				"status_duration": 0
+			}
+		},
+		"whetstone_oil": {
+			"name": "Whetstone Oil",
+			"type": "oil",
+			"rarity": "common",
+			"weight": 1,
+			"value": 30,
+			"description": "Hones a blade to razor sharpness. Next 3 attacks deal bonus damage with improved criticals.",
+			"effect": {
+				"bonus_damage": 4,
+				"bonus_damage_type": "physical",
+				"attacks": 3,
+				"crit_bonus": 10,
+				"status": "",
+				"status_chance": 0,
+				"status_duration": 0
+			}
+		},
+		"paralyzing_oil": {
+			"name": "Paralyzing Oil",
+			"type": "oil",
+			"rarity": "rare",
+			"weight": 1,
+			"value": 75,
+			"description": "A numbing toxin extracted from cave spiders. Attacks may stun the target.",
+			"effect": {
+				"bonus_damage": 2,
+				"bonus_damage_type": "poison",
+				"attacks": 3,
+				"status": "Stunned",
+				"status_chance": 40,
+				"status_duration": 1
+			}
 		}
 	},
 	"item_types": {
@@ -608,7 +1076,10 @@
 		"trinket": {"category": "accessory", "slots": ["trinket"]},
 		"charm": {"category": "accessory", "slots": ["trinket"]},
 		"potion": {"category": "consumable", "subcategory": "potion"},
-		"scroll": {"category": "consumable", "subcategory": "scroll"}
+		"scroll": {"category": "consumable", "subcategory": "scroll"},
+		"talisman": {"category": "consumable", "subcategory": "talisman"},
+		"bomb": {"category": "consumable", "subcategory": "bomb"},
+		"oil": {"category": "consumable", "subcategory": "oil"}
 	},
 	"rarities": {
 		"common": {"color": "#AAAAAA", "drop_weight": 100},
