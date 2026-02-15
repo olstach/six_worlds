@@ -476,6 +476,64 @@
 			"stats": {"max_mana": 15, "spellpower": 3},
 			"abilities": []
 		},
+
+		"vajra_thunderbolt": {
+			"name": "Vajra Thunderbolt",
+			"type": "mace",
+			"slot": "weapon_main",
+			"two_handed": false,
+			"rarity": "legendary",
+			"element": "space",
+			"weight": 6,
+			"value": 500,
+			"description": "A diamond sceptre crackling with divine lightning. Symbol of indestructible truth.",
+			"requirements": {"strength": 14, "focus": 12},
+			"stats": {"damage": 18, "accuracy": 10, "spellpower": 10, "armor_pierce": 10},
+			"abilities": []
+		},
+		"yamas_ledger": {
+			"name": "Yama's Ledger",
+			"type": "trinket",
+			"slot": "trinket",
+			"two_handed": false,
+			"rarity": "legendary",
+			"element": "space",
+			"weight": 1,
+			"value": 450,
+			"description": "The book of judgment, recording every deed. Whispers karmic secrets to its bearer.",
+			"requirements": {},
+			"stats": {"luck": 5, "awareness": 3, "spellpower": 8, "max_mana": 20},
+			"abilities": []
+		},
+		"mantle_of_the_undying_flame": {
+			"name": "Mantle of the Undying Flame",
+			"type": "robe",
+			"slot": "chest",
+			"two_handed": false,
+			"rarity": "legendary",
+			"element": "fire",
+			"weight": 4,
+			"value": 480,
+			"description": "Woven from perpetual embers, this robe burns without consuming. Fire cannot harm its wearer.",
+			"requirements": {},
+			"stats": {"armor": 6, "max_mana": 25, "spellpower": 12},
+			"abilities": []
+		},
+		"frozen_heart_amulet": {
+			"name": "Frozen Heart Amulet",
+			"type": "amulet",
+			"slot": "amulet",
+			"two_handed": false,
+			"rarity": "legendary",
+			"element": "water",
+			"weight": 0,
+			"value": 420,
+			"description": "A sapphire heart encased in eternal ice. Slows the wearer's pulse, granting preternatural calm.",
+			"requirements": {},
+			"stats": {"max_hp": 20, "armor": 4, "dodge": 8},
+			"abilities": []
+		},
+
 		"health_potion": {
 			"name": "Health Potion",
 			"type": "potion",

@@ -305,6 +305,7 @@
 			"skill_priorities": ["swords", "armor", "might", "black_magic"],
 			"guaranteed_spells": ["weaken", "fear"],
 			"guaranteed_perks": [],
+			"guaranteed_drops": ["yamas_ledger"],
 			"equipment_template": {
 				"weapon": {"type": "sword", "base_damage": 14, "base_accuracy": 8, "range": 1},
 				"armor_type": "heavy"
@@ -324,6 +325,7 @@
 			"skill_priorities": ["swords", "armor", "might"],
 			"guaranteed_spells": ["weaken"],
 			"guaranteed_perks": [],
+			"guaranteed_drops": [],
 			"equipment_template": {
 				"weapon": {"type": "sword", "base_damage": 11, "base_accuracy": 6, "range": 1},
 				"armor_type": "heavy"
@@ -343,6 +345,7 @@
 			"skill_priorities": ["unarmed", "armor", "might", "fire_magic"],
 			"guaranteed_spells": ["firebolt"],
 			"guaranteed_perks": [],
+			"guaranteed_drops": ["frozen_heart_amulet"],
 			"equipment_template": {
 				"weapon": {"type": "unarmed", "base_damage": 14, "base_accuracy": 4, "range": 1},
 				"armor_type": "heavy"

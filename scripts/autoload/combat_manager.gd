@@ -61,6 +61,23 @@ const CASTER_SKILLS: Array[String] = ["fire_magic", "water_magic", "earth_magic"
 # Tactician upgrade ID for manual deployment
 const TACTICIAN_UPGRADE_ID: String = "tactician"
 
+# Loot drop constants
+# Maps enemy role -> item types that can drop from that role
+const ROLE_LOOT_POOLS: Dictionary = {
+	"frontline": ["sword", "axe", "mace", "spear", "shield", "armor", "helmet", "gauntlets", "greaves", "boots", "pants"],
+	"ranged": ["bow", "thrown", "dagger", "armor", "boots", "gloves", "ring", "hat"],
+	"caster": ["staff", "robe", "hat", "ring", "amulet", "trinket", "talisman", "scroll"],
+	"support": ["staff", "robe", "ring", "amulet", "trinket", "potion", "scroll", "talisman"],
+}
+# Any enemy has a 30% chance to also drop a consumable
+const GLOBAL_CONSUMABLE_TYPES: Array[String] = ["potion", "bomb", "oil"]
+const GLOBAL_CONSUMABLE_CHANCE: float = 0.30
+# Base rarity weights (higher = more likely to drop)
+const RARITY_DROP_WEIGHTS: Dictionary = {
+	"common": 100, "uncommon": 50, "rare": 20, "epic": 5, "legendary": 1
+}
+const MAX_RANDOM_DROPS: int = 5
+
 # Deployment state
 var _deployment_phase: bool = false
 var _pending_deployment_units: Array[Node] = []
@@ -220,8 +237,7 @@ func _calculate_combat_rewards() -> Dictionary:
 		gold_reward += jackpot_amount
 
 	# --- ITEM DROPS ---
-	# Framework for later - returns empty array for now
-	var item_drops: Array[String] = []
+	var item_drops: Array[String] = _generate_loot_drops(enemy_count, ratio, best_luck)
 
 	var rewards := {
 		"xp": xp_reward,
@@ -254,6 +270,148 @@ func _calculate_unit_power(unit: Node) -> float:
 		power += float(skills[skill_name]) * 5.0
 
 	return power
+
+
+## Generate loot drops based on enemy roles, difficulty, and party skills.
+## Returns an array of item_id strings.
+func _generate_loot_drops(enemy_count: int, difficulty_ratio: float, best_luck: int) -> Array[String]:
+	var drops: Array[String] = []
+
+	# Collect enemy roles and boss archetype IDs
+	var enemy_roles: Array[String] = []
+	var boss_archetype_ids: Array[String] = []
+	for unit in all_units:
+		if unit.team != Team.ENEMY:
+			continue
+		var arch_id = unit.character_data.get("archetype_id", "")
+		var archetype = EnemySystem.archetypes.get(arch_id, {})
+		var roles = archetype.get("roles", [])
+		for role in roles:
+			if role == "boss":
+				boss_archetype_ids.append(arch_id)
+			else:
+				enemy_roles.append(role)
+
+	# --- Drop count ---
+	# Base: ceil(enemy_count / 2), minimum 1
+	var drop_count: int = maxi(1, ceili(enemy_count / 2.0))
+	# +1 for hard fights
+	if difficulty_ratio >= 1.3:
+		drop_count += 1
+	# Guile bonus: best Guile in party
+	var best_guile := 0
+	for member in CharacterSystem.get_party():
+		var guile_level = member.get("skills", {}).get("guile", 0)
+		if guile_level > best_guile:
+			best_guile = guile_level
+	if best_guile >= 5:
+		drop_count += 2
+	elif best_guile >= 3:
+		drop_count += 1
+	# Bosses add +1 each
+	drop_count += boss_archetype_ids.size()
+	# Cap random drops (boss guaranteed drops added on top)
+	drop_count = mini(drop_count, MAX_RANDOM_DROPS)
+
+	# Build modified rarity weights for this fight
+	var rarity_weights = _get_modified_rarity_weights(difficulty_ratio, best_luck)
+
+	# --- Generate random role-based drops ---
+	for i in range(drop_count):
+		# Pick a role from the enemies we fought (cycle through if needed)
+		var role: String
+		if not enemy_roles.is_empty():
+			role = enemy_roles[i % enemy_roles.size()]
+		else:
+			# Fallback if only bosses (use frontline pool)
+			role = "frontline"
+
+		var allowed_types: Array[String] = []
+		var pool = ROLE_LOOT_POOLS.get(role, [])
+		for t in pool:
+			allowed_types.append(t)
+
+		# 30% chance to add a global consumable instead
+		if randf() < GLOBAL_CONSUMABLE_CHANCE:
+			allowed_types = GLOBAL_CONSUMABLE_TYPES.duplicate()
+
+		var item_id = _pick_item_from_types(allowed_types, rarity_weights)
+		if item_id != "":
+			drops.append(item_id)
+
+	# --- Boss guaranteed drops ---
+	for arch_id in boss_archetype_ids:
+		var archetype = EnemySystem.archetypes.get(arch_id, {})
+		var guaranteed = archetype.get("guaranteed_drops", [])
+		for item_id in guaranteed:
+			if ItemSystem.item_exists(item_id) and not item_id in drops:
+				drops.append(item_id)
+
+	return drops
+
+
+## Adjust rarity weights based on difficulty ratio and Luck.
+## Higher difficulty shifts weight toward uncommon+.
+## Luck above 10 shifts weight toward rare+.
+func _get_modified_rarity_weights(difficulty_ratio: float, luck: int) -> Dictionary:
+	var weights = RARITY_DROP_WEIGHTS.duplicate()
+
+	# Difficulty bonus: each 0.1 above 1.0 adds 10% to uncommon+ weights
+	var diff_bonus = maxf(0.0, difficulty_ratio - 1.0) * 10.0
+	if diff_bonus > 0:
+		weights["uncommon"] = int(weights["uncommon"] * (1.0 + diff_bonus * 0.10))
+		weights["rare"] = int(weights["rare"] * (1.0 + diff_bonus * 0.15))
+		weights["epic"] = int(weights["epic"] * (1.0 + diff_bonus * 0.20))
+		weights["legendary"] = int(weights["legendary"] * (1.0 + diff_bonus * 0.25))
+
+	# Luck bonus: each point above 10 boosts rare+ weights
+	var luck_bonus = maxi(0, luck - 10)
+	if luck_bonus > 0:
+		weights["rare"] = int(weights["rare"] * (1.0 + luck_bonus * 0.08))
+		weights["epic"] = int(weights["epic"] * (1.0 + luck_bonus * 0.12))
+		weights["legendary"] = int(weights["legendary"] * (1.0 + luck_bonus * 0.15))
+
+	return weights
+
+
+## Roll a rarity tier then pick a random item of that rarity from the allowed types.
+## Falls back to lower rarities if no items exist at the rolled tier.
+func _pick_item_from_types(allowed_types: Array[String], rarity_weights: Dictionary) -> String:
+	# Build weighted rarity list in descending order of quality
+	var rarity_order: Array[String] = ["legendary", "epic", "rare", "uncommon", "common"]
+	var total_weight := 0
+	for rarity in rarity_order:
+		total_weight += rarity_weights.get(rarity, 0)
+
+	if total_weight <= 0:
+		return ""
+
+	# Roll for rarity
+	var roll = randi() % total_weight
+	var rolled_rarity := "common"
+	var cumulative := 0
+	for rarity in rarity_order:
+		cumulative += rarity_weights.get(rarity, 0)
+		if roll < cumulative:
+			rolled_rarity = rarity
+			break
+
+	# Try to find an item at the rolled rarity, fall back to lower
+	var rarity_idx = rarity_order.find(rolled_rarity)
+	for check_idx in range(rarity_idx, rarity_order.size()):
+		var check_rarity = rarity_order[check_idx]
+		var candidates: Array[String] = []
+
+		for item_type in allowed_types:
+			var items = ItemSystem.get_items_by_type(item_type)
+			for item in items:
+				if item.get("rarity", "") == check_rarity:
+					candidates.append(item.get("id", ""))
+
+		if not candidates.is_empty():
+			return candidates[randi() % candidates.size()]
+
+	return ""
 
 
 # ============================================
