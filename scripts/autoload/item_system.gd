@@ -562,3 +562,23 @@ func add_starter_items() -> void:
 	add_to_inventory("health_potion", 3)
 	add_to_inventory("mana_potion", 2)
 	print("ItemSystem: Added starter items to inventory")
+
+
+# ============================================
+# SAVE / LOAD
+# ============================================
+
+## Collect saveable state into a dictionary
+func get_save_data() -> Dictionary:
+	return {
+		"inventory": _inventory.duplicate(true)
+	}
+
+
+## Restore state from a save dictionary
+func load_save_data(data: Dictionary) -> void:
+	_inventory.clear()
+	var saved_inv = data.get("inventory", [])
+	for entry in saved_inv:
+		_inventory.append(entry)
+	inventory_changed.emit()

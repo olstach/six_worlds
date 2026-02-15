@@ -151,3 +151,50 @@ func set_gold(amount: int) -> void:
 	var old_gold = gold
 	gold = max(0, amount)
 	gold_changed.emit(gold, gold - old_gold)
+
+
+# ============================================
+# SAVE / LOAD
+# ============================================
+
+## Collect saveable state into a dictionary
+func get_save_data() -> Dictionary:
+	var boss_states: Dictionary = {}
+	for world_key in WORLDS:
+		boss_states[world_key] = WORLDS[world_key].boss_defeated
+
+	return {
+		"current_world": current_world,
+		"unlocked_worlds": unlocked_worlds.duplicate(),
+		"is_alive": is_alive,
+		"current_run_number": current_run_number,
+		"gold": gold,
+		"boss_defeated": boss_states
+	}
+
+
+## Restore state from a save dictionary
+func load_save_data(data: Dictionary) -> void:
+	current_world = data.get("current_world", "hell")
+	is_alive = data.get("is_alive", true)
+	current_run_number = data.get("current_run_number", 1)
+	gold = data.get("gold", 100)
+
+	# Restore unlocked worlds
+	unlocked_worlds.clear()
+	for w in data.get("unlocked_worlds", ["hell"]):
+		unlocked_worlds.append(w)
+
+	# Restore boss states
+	var boss_states = data.get("boss_defeated", {})
+	for world_key in WORLDS:
+		WORLDS[world_key].boss_defeated = boss_states.get(world_key, false)
+
+	# Clear transient scene-transition state
+	pending_combat_mob = {}
+	last_defeated_mob_id = ""
+	returning_from_combat = false
+	is_party_wiped = false
+	pending_event_outcome = {}
+	pending_event_object = {}
+	combat_terrain_context = {}

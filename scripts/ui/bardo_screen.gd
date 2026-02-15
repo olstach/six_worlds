@@ -307,6 +307,9 @@ func _on_begin_new_life() -> void:
 	# Clear map so overworld generates a fresh one for the new realm
 	MapManager.current_map_id = ""
 
+	# Save progress after reincarnation
+	SaveManager.autosave()
+
 	# Transition to overworld in the new realm
 	get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
 

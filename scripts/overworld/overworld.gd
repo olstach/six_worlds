@@ -225,6 +225,7 @@ func _on_event_display_closed() -> void:
 				if obj_pos in MapManager.objects:
 					MapManager.objects.erase(obj_pos)
 		_current_event_object = {}
+	SaveManager.autosave()
 	MapManager.resume_movement()
 
 

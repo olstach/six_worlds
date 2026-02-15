@@ -1579,24 +1579,34 @@ func reveal_area(center: Vector2i, radius: int) -> void:
 					visited_tiles[pos] = true
 
 
-## Get save data for persistence
+## Get save data for persistence.
+## Saves FULL map state including terrain, objects, and mobs so procedural
+## maps can be restored exactly as they were (they're non-deterministic).
 func get_save_data() -> Dictionary:
 	return {
 		"current_map_id": current_map_id,
+		"map_size": {"x": map_size.x, "y": map_size.y},
+		"base_speed": base_speed,
 		"party_position": {"x": party_position.x, "y": party_position.y},
 		"visited_tiles": _serialize_positions(visited_tiles.keys()),
 		"collected_objects": collected_objects.duplicate(),
-		"defeated_mobs": defeated_mobs.duplicate()
+		"defeated_mobs": defeated_mobs.duplicate(),
+		"terrain": _serialize_terrain(),
+		"objects": _serialize_objects(),
+		"mobs": _serialize_mobs(),
+		"regions": regions.duplicate(true),
+		"movement_abilities": movement_abilities.duplicate(),
+		"searched_tiles": _serialize_positions(searched_tiles.keys())
 	}
 
 
-## Load save data
+## Load save data — restores full map state directly (no regeneration).
 func load_save_data(data: Dictionary) -> void:
-	current_map_id = data.get("current_map_id", "")
-	var pos_data = data.get("party_position", {"x": 1, "y": 1})
-	party_position = Vector2i(pos_data.x, pos_data.y)
-	party_world_position = _tile_to_world(party_position)
+	stop_movement()
 
+	current_map_id = data.get("current_map_id", "")
+
+	# Restore lists that _apply_map_data checks
 	collected_objects.clear()
 	for obj_id in data.get("collected_objects", []):
 		collected_objects.append(obj_id)
@@ -1605,14 +1615,101 @@ func load_save_data(data: Dictionary) -> void:
 	for mob_id in data.get("defeated_mobs", []):
 		defeated_mobs.append(mob_id)
 
+	# Rebuild the map from saved terrain, objects, and mobs.
+	# We construct a data dict matching the format _apply_map_data expects.
+	var size_data = data.get("map_size", {"x": 24, "y": 16})
+	var map_data: Dictionary = {
+		"width": int(size_data.get("x", 24)),
+		"height": int(size_data.get("y", 16)),
+		"base_speed": data.get("base_speed", 3.0),
+		"terrain": data.get("terrain", []),
+		"objects": data.get("objects", []),
+		"mobs": data.get("mobs", []),
+		"regions": data.get("regions", {}),
+		# Use saved party position as start so _apply_map_data sets it
+		"start_position": data.get("party_position", {"x": 1, "y": 1})
+	}
+
+	_apply_map_data(map_data)
+
+	# Now restore state that _apply_map_data doesn't handle:
+	# visited tiles (fog of war)
 	visited_tiles.clear()
 	for pos_str in data.get("visited_tiles", []):
 		var parts = pos_str.split(",")
 		if parts.size() == 2:
 			visited_tiles[Vector2i(int(parts[0]), int(parts[1]))] = true
 
-	if not current_map_id.is_empty():
-		load_map(current_map_id)
+	# Movement abilities
+	movement_abilities.clear()
+	var saved_abilities = data.get("movement_abilities", {})
+	for ability in saved_abilities:
+		movement_abilities[ability] = saved_abilities[ability]
+
+	# Searched tiles
+	searched_tiles.clear()
+	for pos_str in data.get("searched_tiles", []):
+		var parts = pos_str.split(",")
+		if parts.size() == 2:
+			searched_tiles[Vector2i(int(parts[0]), int(parts[1]))] = true
+
+
+## Serialize terrain as a flat int array matching the load format
+func _serialize_terrain() -> Array:
+	var result: Array = []
+	for y in range(map_size.y):
+		for x in range(map_size.x):
+			result.append(tiles.get(Vector2i(x, y), Terrain.PLAINS))
+	return result
+
+
+## Serialize objects to an array of dicts matching the load format
+func _serialize_objects() -> Array:
+	var result: Array = []
+	for pos in objects:
+		var obj = objects[pos]
+		result.append({
+			"id": obj.get("id", ""),
+			"x": pos.x,
+			"y": pos.y,
+			"type": obj.get("type", ObjectType.EVENT),
+			"data": obj.get("data", {}),
+			"one_time": obj.get("one_time", false),
+			"blocking": obj.get("blocking", false),
+			"visible": obj.get("visible", true),
+			"name": obj.get("name", "Unknown"),
+			"icon": obj.get("icon", "event")
+		})
+	return result
+
+
+## Serialize mobs to an array of dicts matching the load format
+func _serialize_mobs() -> Array:
+	var result: Array = []
+	for mob in mobs:
+		var mob_data: Dictionary = {
+			"id": mob.get("id", ""),
+			"x": mob.position.x,
+			"y": mob.position.y,
+			"name": mob.get("name", ""),
+			"icon": mob.get("icon", "enemy"),
+			"mode": mob.get("mode", MobMode.STATIONARY),
+			"attitude": mob.get("attitude", MobAttitude.HOSTILE),
+			"speed": mob.get("speed", 0.6),
+			"aggression": mob.get("aggression", 0.5),
+			"roam_radius": mob.get("roam_radius", 4),
+			"roam_pause": mob.get("roam_pause", ROAM_BASE_PAUSE),
+			"data": mob.get("data", {}),
+			"region": mob.get("region", "")
+		}
+		# Serialize patrol route
+		if mob.get("mode") == MobMode.PATROL:
+			var route: Array = []
+			for wp in mob.get("patrol_route", []):
+				route.append({"x": wp.x, "y": wp.y})
+			mob_data["patrol_route"] = route
+		result.append(mob_data)
+	return result
 
 
 ## Serialize positions for saving

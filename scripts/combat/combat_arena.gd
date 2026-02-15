@@ -1415,6 +1415,7 @@ func _on_combat_ended(victory: bool) -> void:
 			return  # Victory screen handles scene transition
 		# Fallback if no rewards calculated (shouldn't happen)
 		GameState.returning_from_combat = true
+		SaveManager.autosave()
 		await get_tree().create_timer(2.0).timeout
 		get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
 	else:
@@ -1436,6 +1437,7 @@ func _on_combat_ended(victory: bool) -> void:
 			# Fled — return to overworld
 			_log_message("=== RETREAT ===")
 			GameState.returning_from_combat = true
+			SaveManager.autosave()
 			await get_tree().create_timer(1.5).timeout
 			get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
 
@@ -1819,6 +1821,7 @@ func _show_victory_screen(rewards: Dictionary) -> void:
 	continue_btn.pressed.connect(func():
 		overlay.queue_free()
 		GameState.returning_from_combat = true
+		SaveManager.autosave()
 		get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
 	)
 	btn_container.add_child(continue_btn)
@@ -1913,6 +1916,7 @@ func _show_defeat_screen() -> void:
 		overlay.queue_free()
 		GameState.is_party_wiped = true
 		GameState.player_died()
+		SaveManager.autosave()
 		get_tree().change_scene_to_file("res://scenes/ui/bardo_screen.tscn")
 	)
 	btn_container.add_child(bardo_btn)

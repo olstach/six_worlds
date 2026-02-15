@@ -116,8 +116,6 @@ const BASE_CHARACTER: Dictionary = {
 func _ready() -> void:
 	_load_race_data()
 	print("CharacterSystem initialized with ", _race_data.size(), " races, ", _background_data.size(), " backgrounds")
-	# Create a test player character
-	create_player_character("Karma Dorje", "human", "wanderer")
 
 
 ## Load race and background definitions from JSON
@@ -486,3 +484,32 @@ func remove_companion(index: int) -> bool:
 ## Get all party members
 func get_party() -> Array[Dictionary]:
 	return party
+
+
+# ============================================
+# SAVE / LOAD
+# ============================================
+
+## Collect saveable state into a dictionary
+func get_save_data() -> Dictionary:
+	# Deep copy party data so we don't reference live objects
+	var party_copy: Array = []
+	for character in party:
+		party_copy.append(character.duplicate(true))
+	return {
+		"party": party_copy
+	}
+
+
+## Restore state from a save dictionary
+func load_save_data(data: Dictionary) -> void:
+	party.clear()
+	var saved_party = data.get("party", [])
+	for char_data in saved_party:
+		# Ensure it's a proper Dictionary (JSON parse gives untyped)
+		var character: Dictionary = {}
+		for key in char_data:
+			character[key] = char_data[key]
+		# Recalculate derived stats to pick up any formula changes
+		update_derived_stats(character)
+		party.append(character)

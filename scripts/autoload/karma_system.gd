@@ -180,3 +180,21 @@ func purify_karma(realm: String, amount: int) -> void:
 	if realm in karma_scores:
 		karma_scores[realm] = max(0, karma_scores[realm] - amount)
 		karma_changed.emit(realm, karma_scores[realm])
+
+
+# ============================================
+# SAVE / LOAD
+# ============================================
+
+## Collect saveable state into a dictionary
+func get_save_data() -> Dictionary:
+	return {
+		"karma_scores": karma_scores.duplicate()
+	}
+
+
+## Restore state from a save dictionary
+func load_save_data(data: Dictionary) -> void:
+	var saved = data.get("karma_scores", {})
+	for realm in karma_scores:
+		karma_scores[realm] = int(saved.get(realm, 0))
