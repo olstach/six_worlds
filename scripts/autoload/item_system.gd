@@ -315,14 +315,19 @@ func add_to_inventory(item_id: String, quantity: int = 1) -> bool:
 	var is_stackable = category == "consumable"  # Future support
 
 	if is_stackable:
-		# Find existing stack
+		# Find existing stack and add to it, or create one entry with full quantity
 		var existing_index = _find_inventory_item(item_id)
 		if existing_index != -1:
 			_inventory[existing_index]["quantity"] += quantity
-			inventory_changed.emit()
-			return true
+		else:
+			if _inventory.size() >= max_inventory_size:
+				push_warning("ItemSystem: Inventory full")
+				return false
+			_inventory.append({"item_id": item_id, "quantity": quantity})
+		inventory_changed.emit()
+		return true
 
-	# Add new entries
+	# Non-stackable: add separate entries (equipment, etc.)
 	for i in range(quantity):
 		if _inventory.size() >= max_inventory_size:
 			push_warning("ItemSystem: Inventory full")
@@ -516,6 +521,31 @@ func get_rarity_color(item_id: String) -> Color:
 ## Get item type info
 func get_type_info(item_type: String) -> Dictionary:
 	return _item_types.get(item_type, {})
+
+
+## Merge duplicate consumable entries in inventory (fixes pre-stacking data)
+func consolidate_inventory() -> void:
+	var seen: Dictionary = {}  # item_id → index in new array
+	var consolidated: Array[Dictionary] = []
+
+	for entry in _inventory:
+		var item_id = entry.get("item_id", "")
+		var item = get_item(item_id)
+		var item_type = item.get("type", "")
+		var type_info = _item_types.get(item_type, {})
+		var is_stackable = type_info.get("category", "") == "consumable"
+
+		if is_stackable and item_id in seen:
+			# Merge into existing stack
+			consolidated[seen[item_id]]["quantity"] += entry.get("quantity", 1)
+		else:
+			if is_stackable:
+				seen[item_id] = consolidated.size()
+			consolidated.append(entry)
+
+	if consolidated.size() != _inventory.size():
+		_inventory = consolidated
+		inventory_changed.emit()
 
 
 ## Add starter items to inventory (called when starting new game)

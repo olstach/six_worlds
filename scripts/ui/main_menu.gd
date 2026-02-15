@@ -123,6 +123,8 @@ func _ready() -> void:
 	# Add starter items if inventory is empty
 	if ItemSystem.get_inventory().is_empty():
 		ItemSystem.add_starter_items()
+	# Consolidate any fragmented consumable stacks (fixes older inventory data)
+	ItemSystem.consolidate_inventory()
 
 	# Create item tooltip on a high CanvasLayer so it renders above all overlays
 	var tooltip_layer = CanvasLayer.new()
