@@ -29,11 +29,11 @@ position = Vector2(300, 100)
 
 [node name="CombatGrid" type="Node2D" parent="GridContainer"]
 script = ExtResource("2_grid")
-grid_size = Vector2i(12, 8)
-tile_size = 64
+grid_size = Vector2i(16, 10)
+tile_size = 48
 
 [node name="Camera2D" type="Camera2D" parent="GridContainer"]
-position = Vector2(384, 256)
+position = Vector2(384, 240)
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 layer = 10

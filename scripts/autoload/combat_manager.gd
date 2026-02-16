@@ -78,6 +78,18 @@ const RARITY_DROP_WEIGHTS: Dictionary = {
 }
 const MAX_RANDOM_DROPS: int = 5
 
+# Damage type → terrain effect mapping (only elements that leave ground effects)
+const DAMAGE_TYPE_TO_TERRAIN_EFFECT: Dictionary = {
+	"fire": 1,        # TerrainEffect.FIRE
+	"ice": 2,         # TerrainEffect.ICE
+	"cold": 2,        # TerrainEffect.ICE
+	"poison": 3,      # TerrainEffect.POISON
+	"acid": 4,        # TerrainEffect.ACID
+	"white": 5,       # TerrainEffect.BLESSED
+	"holy": 5,        # TerrainEffect.BLESSED
+	"black": 6,       # TerrainEffect.CURSED
+}
+
 # Deployment state
 var _deployment_phase: bool = false
 var _pending_deployment_units: Array[Node] = []
@@ -647,15 +659,15 @@ func _create_combat_unit(char_data: Dictionary, team: int) -> Node:
 
 	# Visual representation (simple colored rect for now)
 	var visual = ColorRect.new()
-	visual.size = Vector2(48, 48)
-	visual.position = Vector2(-24, -24)
+	visual.size = Vector2(38, 38)
+	visual.position = Vector2(-19, -19)
 	visual.color = Color.BLUE if team == Team.PLAYER else Color.RED
 	unit.add_child(visual)
 
 	# Add name label
 	var label = Label.new()
 	label.text = char_data.get("name", "?")
-	label.position = Vector2(-24, 28)
+	label.position = Vector2(-19, 22)
 	label.add_theme_font_size_override("font_size", 10)
 	unit.add_child(label)
 
@@ -1290,6 +1302,13 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		var effect_result = _apply_spell_effects(caster, target, spell, spellpower_bonus)
 		results.append(effect_result)
 
+	# Create ground effects for AoE spells that deal elemental damage
+	if targeting == "aoe_circle":
+		var spell_damage_type = spell.get("damage_type", "")
+		if spell_damage_type != "":
+			var aoe_radius = spell.get("aoe_radius", 1)
+			_create_ground_effects_from_damage(target_pos, aoe_radius, spell_damage_type, 2)
+
 	# Use action
 	use_action(1)
 
@@ -1692,6 +1711,22 @@ func _process_terrain_effects(unit: Node) -> void:
 			pass
 
 
+## Create ground effects on tiles from AoE damage (fire leaves fire, ice leaves ice, etc.)
+func _create_ground_effects_from_damage(center: Vector2i, radius: int, damage_type: String, duration: int = 2) -> void:
+	if combat_grid == null:
+		return
+
+	var effect_type = DAMAGE_TYPE_TO_TERRAIN_EFFECT.get(damage_type, -1)
+	if effect_type < 0:
+		return  # No ground effect for this damage type (physical, air, space, etc.)
+
+	var tiles_in_area = combat_grid.get_tiles_in_radius(center, radius)
+	for pos in tiles_in_area:
+		var tile = combat_grid.tiles.get(pos)
+		if tile != null and tile.walkable:
+			combat_grid.add_terrain_effect(pos, effect_type, duration)
+
+
 ## Check if unit is currently incapacitated by status effects
 func is_unit_incapacitated(unit: Node) -> bool:
 	if not "status_effects" in unit:
@@ -2056,6 +2091,9 @@ func _use_bomb(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictionary
 				})
 
 		results.append(unit_result)
+
+	# Create ground effects from bomb damage type
+	_create_ground_effects_from_damage(target_pos, aoe_radius, damage_type, 2)
 
 	return {
 		"success": true,

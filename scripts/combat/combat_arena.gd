@@ -191,6 +191,10 @@ func _ready() -> void:
 	CombatManager.status_effect_triggered.connect(_on_status_effect_triggered)
 	CombatManager.status_effect_expired.connect(_on_status_effect_expired)
 
+	# Connect terrain effect signals
+	CombatManager.terrain_damage.connect(_on_terrain_damage)
+	CombatManager.terrain_heal.connect(_on_terrain_heal)
+
 	# Hide spell panel initially
 	spell_panel.hide()
 
@@ -224,7 +228,7 @@ func _start_test_combat() -> void:
 
 	# Create player units from party
 	var party = CharacterSystem.get_party()
-	var player_start_positions = [Vector2i(1, 2), Vector2i(1, 4), Vector2i(2, 3)]
+	var player_start_positions = [Vector2i(1, 3), Vector2i(1, 5), Vector2i(2, 4)]
 
 	for i in range(mini(party.size(), player_start_positions.size())):
 		var char_data = party[i]
@@ -235,7 +239,7 @@ func _start_test_combat() -> void:
 		_log_message("Player: %s placed at %s" % [unit.unit_name, player_start_positions[i]])
 
 	# Create test enemies (mix of melee, ranged, and mage)
-	var enemy_start_positions = [Vector2i(10, 2), Vector2i(10, 4), Vector2i(9, 3)]
+	var enemy_start_positions = [Vector2i(14, 3), Vector2i(14, 5), Vector2i(13, 4)]
 
 	for i in range(3):
 		var enemy_def: Dictionary
@@ -286,7 +290,7 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 	# Create player units from party
 	var player_units: Array = []
 	var party = CharacterSystem.get_party()
-	var player_start_positions = [Vector2i(1, 2), Vector2i(1, 4), Vector2i(2, 3), Vector2i(0, 3), Vector2i(2, 1), Vector2i(2, 5)]
+	var player_start_positions = [Vector2i(1, 3), Vector2i(1, 5), Vector2i(2, 4), Vector2i(0, 4), Vector2i(2, 2), Vector2i(2, 6), Vector2i(3, 3), Vector2i(3, 5)]
 
 	for i in range(mini(party.size(), player_start_positions.size())):
 		var char_data = party[i]
@@ -298,8 +302,8 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 
 	# Place enemies based on their roles (frontline closer, ranged/caster in back)
 	var enemy_units: Array = []
-	var frontline_positions = [Vector2i(9, 2), Vector2i(9, 4), Vector2i(9, 3)]
-	var backline_positions = [Vector2i(11, 2), Vector2i(11, 4), Vector2i(11, 3)]
+	var frontline_positions = [Vector2i(12, 3), Vector2i(12, 5), Vector2i(12, 4), Vector2i(12, 2), Vector2i(12, 6)]
+	var backline_positions = [Vector2i(14, 3), Vector2i(14, 5), Vector2i(14, 4), Vector2i(15, 3), Vector2i(15, 5)]
 	var front_idx = 0
 	var back_idx = 0
 
@@ -325,7 +329,7 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 			back_idx += 1
 		else:
 			# Overflow: place in an available spot
-			pos = Vector2i(10, enemy_units.size())
+			pos = Vector2i(13, enemy_units.size())
 
 		combat_grid.place_unit(unit, pos)
 		enemy_units.append(unit)
@@ -342,8 +346,8 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 func _generate_combat_terrain(context: Dictionary) -> Dictionary:
 	var dominant = int(context.get("dominant", 0))
 	var counts = context.get("counts", {})
-	var grid_w = combat_grid.grid_size.x  # 12
-	var grid_h = combat_grid.grid_size.y  # 8
+	var grid_w = combat_grid.grid_size.x  # 16
+	var grid_h = combat_grid.grid_size.y  # 10
 
 	var tile_overrides: Dictionary = {}  # "x,y" -> TileType
 	var effects: Array[Dictionary] = []
@@ -365,12 +369,12 @@ func _generate_combat_terrain(context: Dictionary) -> Dictionary:
 				difficult_budget += count
 			3:  # HILLS -> height variation
 				for i in range(mini(count, 4)):
-					var hx = randi_range(3, grid_w - 4)
+					var hx = randi_range(4, grid_w - 5)
 					var hy = randi_range(1, grid_h - 2)
 					heights.append({"pos": Vector2i(hx, hy), "height": 1})
 			9:  # LAVA -> fire pits
 				for i in range(mini(count / 2, 3)):
-					var lx = randi_range(3, grid_w - 4)
+					var lx = randi_range(4, grid_w - 5)
 					var ly = randi_range(1, grid_h - 2)
 					tile_overrides["%d,%d" % [lx, ly]] = CombatGrid.TileType.PIT
 					effects.append({"pos": Vector2i(lx, ly),
@@ -382,21 +386,21 @@ func _generate_combat_terrain(context: Dictionary) -> Dictionary:
 	# Place wall obstacles (from mountains/ruins)
 	var walls_to_place = clampi(obstacle_budget / 4, 0, 6)
 	for i in range(walls_to_place):
-		var wx = randi_range(3, grid_w - 4)
+		var wx = randi_range(4, grid_w - 5)
 		var wy = randi_range(1, grid_h - 2)
 		tile_overrides["%d,%d" % [wx, wy]] = CombatGrid.TileType.WALL
 
 	# Place water tiles
 	var water_to_place = clampi(water_budget / 3, 0, 4)
 	for i in range(water_to_place):
-		var wx = randi_range(3, grid_w - 4)
+		var wx = randi_range(4, grid_w - 5)
 		var wy = randi_range(1, grid_h - 2)
 		tile_overrides["%d,%d" % [wx, wy]] = CombatGrid.TileType.WATER
 
 	# Place difficult terrain (from forest/swamp)
 	var diff_to_place = clampi(difficult_budget / 3, 0, 6)
 	for i in range(diff_to_place):
-		var dx = randi_range(2, grid_w - 3)
+		var dx = randi_range(4, grid_w - 5)
 		var dy = randi_range(0, grid_h - 1)
 		tile_overrides["%d,%d" % [dx, dy]] = CombatGrid.TileType.DIFFICULT
 
@@ -404,25 +408,25 @@ func _generate_combat_terrain(context: Dictionary) -> Dictionary:
 	match dominant:
 		8, 11:  # SNOW, ICE
 			for i in range(randi_range(2, 5)):
-				var ix = randi_range(2, grid_w - 3)
+				var ix = randi_range(4, grid_w - 5)
 				var iy = randi_range(0, grid_h - 1)
 				var key = "%d,%d" % [ix, iy]
 				if not key in tile_overrides:
 					effects.append({"pos": Vector2i(ix, iy),
 						"effect": CombatGrid.TerrainEffect.ICE, "value": 0})
 
-	# Safety: never block deployment zones (columns 0-2 for player, last 3 for enemy)
+	# Safety: never block deployment zones (columns 0-3 for player, last 4 for enemy)
 	for key in tile_overrides.keys():
 		var parts = key.split(",")
 		var kx = int(parts[0])
-		if kx < 3 or kx >= grid_w - 3:
+		if kx < 4 or kx >= grid_w - 4:
 			tile_overrides.erase(key)
 
 	# Also clear effects from deployment zones
 	var safe_effects: Array[Dictionary] = []
 	for eff in effects:
 		var ex = eff.get("pos", Vector2i(-1, -1)).x
-		if ex >= 3 and ex < grid_w - 3:
+		if ex >= 4 and ex < grid_w - 4:
 			safe_effects.append(eff)
 	effects = safe_effects
 
@@ -1036,6 +1040,10 @@ func _try_use_item(target_pos: Vector2i) -> void:
 func _on_item_used_in_combat(user: Node, item: Dictionary, result: Dictionary) -> void:
 	var item_name = item.get("name", "Unknown Item")
 	var item_type = item.get("type", "")
+
+	# Show floating item name above user
+	if user.has_method("show_action_name"):
+		user.show_action_name(item_name)
 
 	if item_type == "potion":
 		_log_message("%s uses %s!" % [user.unit_name, item_name])
@@ -1653,6 +1661,10 @@ func _on_action_used(unit: Node, actions_remaining: int) -> void:
 func _on_spell_cast(caster: Node, spell: Dictionary, targets: Array, results: Array) -> void:
 	var spell_name = spell.get("name", "Unknown Spell")
 
+	# Show floating spell name above caster
+	if caster.has_method("show_action_name"):
+		caster.show_action_name(spell_name)
+
 	if targets.is_empty():
 		_log_message("%s casts %s!" % [caster.unit_name, spell_name])
 	else:
@@ -1714,6 +1726,14 @@ func _on_status_effect_expired(unit: Node, effect_name: String) -> void:
 	# Update unit visuals
 	if unit.has_method("_update_visuals"):
 		unit._update_visuals()
+
+
+func _on_terrain_damage(unit: Node, damage: int, effect_name: String) -> void:
+	_log_message("  %s takes %d damage from %s!" % [unit.unit_name, damage, effect_name])
+
+
+func _on_terrain_heal(unit: Node, amount: int, effect_name: String) -> void:
+	_log_message("  %s heals %d from %s!" % [unit.unit_name, amount, effect_name])
 
 
 # ============================================

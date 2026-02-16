@@ -54,7 +54,7 @@ var name_label: Label
 var status_indicator: Label
 
 # Visual settings
-const UNIT_SIZE: Vector2 = Vector2(48, 48)
+const UNIT_SIZE: Vector2 = Vector2(38, 38)
 const HEALTH_BAR_HEIGHT: int = 6
 const HEALTH_BAR_OFFSET: int = 4
 
@@ -534,6 +534,26 @@ func _show_heal_number(amount: int) -> void:
 	var tween = create_tween()
 	tween.tween_property(label, "position:y", label.position.y - 30, 0.8)
 	tween.parallel().tween_property(label, "modulate:a", 0, 0.8)
+	tween.tween_callback(label.queue_free)
+
+
+## Show floating action name (spell/item name) above the unit
+## Gold colored, positioned higher and slightly larger than damage numbers
+const COLOR_ACTION_NAME = Color(0.95, 0.85, 0.3)
+
+func show_action_name(text: String) -> void:
+	var label = Label.new()
+	label.text = text
+	label.position = Vector2(0, -UNIT_SIZE.y / 2 - 35)
+	label.add_theme_font_size_override("font_size", 13)
+	label.add_theme_color_override("font_color", COLOR_ACTION_NAME)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	add_child(label)
+
+	# Animate: float up and fade out (longer duration to avoid overlap with damage numbers)
+	var tween = create_tween()
+	tween.tween_property(label, "position:y", label.position.y - 25, 1.0)
+	tween.parallel().tween_property(label, "modulate:a", 0, 1.0)
 	tween.tween_callback(label.queue_free)
 
 

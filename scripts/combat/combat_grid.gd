@@ -14,8 +14,8 @@ signal terrain_effect_triggered(grid_pos: Vector2i, effect: int, value: int)
 signal terrain_effect_expired(grid_pos: Vector2i, effect: int)
 
 # Grid configuration
-@export var grid_size: Vector2i = Vector2i(12, 8)
-@export var tile_size: int = 64  # Pixels per tile
+@export var grid_size: Vector2i = Vector2i(16, 10)
+@export var tile_size: int = 48  # Pixels per tile
 
 # Tile data: Dictionary of Vector2i -> GridTile
 var tiles: Dictionary = {}
@@ -55,8 +55,8 @@ const COLOR_DEPLOY_BACK = Color(0.3, 0.3, 0.6, 0.4)   # Blue for back line
 const COLOR_DEPLOY_ENEMY = Color(0.6, 0.3, 0.3, 0.3)  # Red tint for enemy zone
 
 # Deployment zone configuration
-const PLAYER_DEPLOY_COLUMNS: int = 3  # Columns 0-2 for player deployment
-const ENEMY_DEPLOY_COLUMNS: int = 3   # Last 3 columns for enemy deployment
+const PLAYER_DEPLOY_COLUMNS: int = 4  # Columns 0-3 for player deployment
+const ENEMY_DEPLOY_COLUMNS: int = 4   # Last 4 columns for enemy deployment
 
 # Tile types (base terrain)
 enum TileType { FLOOR, WALL, PIT, WATER, DIFFICULT }
@@ -143,7 +143,7 @@ func _initialize_grid() -> void:
 ## Supports: "size" (Vector2i), "tiles" (dict of "x,y" -> TileType),
 ##           "effects" (array of {pos, effect, value}), "heights" (array of {pos, height})
 func setup_from_map(map_data: Dictionary) -> void:
-	grid_size = map_data.get("size", Vector2i(12, 8))
+	grid_size = map_data.get("size", Vector2i(16, 10))
 	_initialize_grid()
 
 	# Apply tile overrides from map data
@@ -782,30 +782,54 @@ func _update_effect_visuals() -> void:
 		effect_layer.add_child(effect_visual)
 
 
-## Create visual for a terrain effect
+## Create visual for a terrain effect — rotated diamond with pulsing alpha
 func _create_effect_visual(grid_pos: Vector2i, effect: int) -> Control:
-	var visual = ColorRect.new()
-	visual.size = Vector2(tile_size - 2, tile_size - 2)
-	visual.position = grid_to_world(grid_pos) + Vector2(1, 1)
-	visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Container centered on the tile (holds the rotated diamond)
+	var container = Control.new()
+	container.size = Vector2(tile_size, tile_size)
+	container.position = grid_to_world(grid_pos)
+	container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
+	# Diamond shape: a ColorRect rotated 45 degrees, ~45% of tile size
+	var diamond_size = tile_size * 0.45
+	var diamond = ColorRect.new()
+	diamond.size = Vector2(diamond_size, diamond_size)
+	# Center the diamond in the tile, accounting for rotation pivot
+	diamond.position = Vector2(tile_size / 2.0, tile_size / 2.0)
+	diamond.pivot_offset = Vector2(diamond_size / 2.0, diamond_size / 2.0)
+	diamond.position -= diamond.pivot_offset
+	diamond.rotation_degrees = 45
+	diamond.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var color: Color
 	match effect:
 		TerrainEffect.FIRE:
-			visual.color = COLOR_EFFECT_FIRE
+			color = COLOR_EFFECT_FIRE
 		TerrainEffect.ICE:
-			visual.color = COLOR_EFFECT_ICE
+			color = COLOR_EFFECT_ICE
 		TerrainEffect.POISON:
-			visual.color = COLOR_EFFECT_POISON
+			color = COLOR_EFFECT_POISON
 		TerrainEffect.ACID:
-			visual.color = COLOR_EFFECT_ACID
+			color = COLOR_EFFECT_ACID
 		TerrainEffect.BLESSED:
-			visual.color = COLOR_EFFECT_BLESSED
+			color = COLOR_EFFECT_BLESSED
 		TerrainEffect.CURSED:
-			visual.color = COLOR_EFFECT_CURSED
+			color = COLOR_EFFECT_CURSED
 		_:
-			visual.color = Color(0, 0, 0, 0)
+			color = Color(0, 0, 0, 0)
 
-	return visual
+	diamond.color = color
+	container.add_child(diamond)
+
+	# Pulsing alpha animation (looping between 0.3 and full alpha)
+	var tween = container.create_tween()
+	tween.set_loops()
+	var base_alpha = color.a
+	var low_alpha = base_alpha * 0.4
+	tween.tween_property(diamond, "modulate:a", low_alpha, 0.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(diamond, "modulate:a", 1.0, 0.8).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
+	return container
 
 
 ## Add fire tiles in an area (e.g., from fireball)
