@@ -699,7 +699,7 @@ func _calculate_turn_order() -> void:
 
 ## Get the current active unit
 func get_current_unit() -> Node:
-	if turn_order.is_empty():
+	if turn_order.is_empty() or current_unit_index >= turn_order.size():
 		return null
 	return turn_order[current_unit_index]
 
@@ -759,6 +759,10 @@ func end_turn() -> void:
 ## Advance to the next unit in turn order
 func _advance_turn() -> void:
 	current_unit_index += 1
+
+	# Safety: clamp index if it went negative (e.g., unit died and was removed)
+	if current_unit_index < 0:
+		current_unit_index = 0
 
 	# If we've gone through all units, start new round
 	if current_unit_index >= turn_order.size():
@@ -1077,11 +1081,14 @@ func _kill_unit(unit: Node) -> void:
 	unit.is_bleeding_out = false
 	unit_died.emit(unit)
 
-	# Remove from turn order
+	# Remove from turn order and fix the current index
 	var idx = turn_order.find(unit)
 	if idx != -1:
 		turn_order.remove_at(idx)
-		if current_unit_index > idx:
+		# Use >= so that when the current unit dies, the index adjusts correctly:
+		# after removal, the next unit slides into idx, and _advance_turn will
+		# increment from (idx-1) back to idx, landing on the right unit.
+		if current_unit_index >= idx:
 			current_unit_index -= 1
 
 	# Check if combat should end immediately

@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-02-15
+Last Updated: 2026-02-16
 
 ---
 
@@ -14,6 +14,9 @@ Last Updated: 2026-02-15
 - [x] ItemSystem singleton (equipment database, 12-slot system, inventory)
 - [x] ShopSystem singleton (buy/sell, spell learning, skill training, discounts)
 - [x] CombatManager singleton (full tactical combat system)
+- [x] PerkSystem singleton (skill perks, cross perks, base bonuses, affinity bonuses)
+- [x] SaveManager singleton (save/load game state)
+- [x] MapManager singleton (overworld map, pathfinding, mobs, objects)
 
 ### Combat System
 - [x] Grid-based combat (12x8 default, configurable)
@@ -38,6 +41,10 @@ Last Updated: 2026-02-15
 - [x] Talismans (19 items, mana cost reduction + spellpower boost per school)
 - [x] Bombs (8 items, thrown AoE damage + status effects)
 - [x] Oils (6 items, weapon coating with bonus damage/status procs for N attacks)
+- [x] Active Skills panel in combat (shows active perks and mantras)
+- [x] Miss/Dodge/Block floating combat text
+- [x] Attack lunge animation (sprite moves toward target and returns)
+- [x] Enemy loot drops
 
 ### Character & Progression
 - [x] XP-based progression (no levels)
@@ -47,14 +54,33 @@ Last Updated: 2026-02-15
 - [x] Spellbook system (learn/forget spells)
 - [x] Starting spells based on background
 - [x] Elemental affinities tracking
+- [x] Perk system (skill perks at each level, cross-skill perks)
+
+### Overworld Map
+- [x] HoMM-style tile-based exploration
+- [x] A* pathfinding with terrain speed modifiers
+- [x] Object types (events, pickups, portals)
+- [x] Mob system (stationary, patrol, roaming, aggressive pursuit)
+- [x] World transitions between realms (portal objects)
+- [x] Fog of war
+- [x] Map marker overhaul (shapes/colors by type, name labels)
+- [x] Procedural map generation from realm configs
+
+### Event System
+- [x] Load events from JSON files
+- [x] Combat/shop trigger outcomes
+- [x] Hell realm events (hell_events.json)
 
 ### UI
 - [x] Character sheet (attributes, skills, derived stats)
+- [x] Spellbook tab with school filtering
+- [x] Equipment screen with humanoid doll (12 slots, dual weapon sets)
 - [x] Event display with choice coloring
 - [x] Combat arena with action buttons
 - [x] Spell panel with tooltips
 - [x] Combat log
 - [x] Turn order display
+- [x] Title screen with save/load
 - [x] Test launcher
 
 ### Data Files
@@ -65,24 +91,25 @@ Last Updated: 2026-02-15
 - [x] skills.json (35 skills by category/element)
 - [x] shops.json (5 sample shops)
 - [x] upgrades.json (10+ upgrades)
+- [x] perks.json (skill perks + cross perks for all 35 skills)
+- [x] hell.json map config (procedural generation)
+- [x] hell_events.json (realm events)
+- [x] hell_enemies.json (enemy archetypes)
 
 ---
 
 ## High Priority (Core Gameplay)
 
-### Overworld Map System
-- [ ] HoMM-style tile-based exploration
-- [ ] Tile movement and pathfinding
-- [ ] Node types (hub, quest, battle, shop, event)
-- [ ] World transitions between realms
-- [ ] Position saving/loading
-- [ ] Fog of war (optional)
+### Content Expansion (Needed for Playable Loop)
+- [ ] Event files for remaining realms (hungry_ghost, animal, human, asura, god)
+- [ ] Races for all 6 realms (currently only Hell examples)
+- [ ] Background definitions with skill distributions
+- [ ] Map configs for remaining realms
+- [ ] Enemy archetypes for remaining realms
 
 ### Event System Improvements
-- [ ] Load events from JSON files (currently hardcoded)
-- [ ] Event files per realm (hell_events.json, human_events.json, etc.)
 - [ ] Event chains and prerequisites
-- [ ] Combat/shop trigger outcomes working
+- [ ] More events per realm (aim for 20+ per realm)
 
 ### Camp Followers System
 - [ ] Non-combat companion data structure
@@ -100,26 +127,23 @@ Last Updated: 2026-02-15
 
 ## Medium Priority (Content & Polish)
 
-### Content Expansion
-- [ ] Races for all 6 realms (currently only Hell examples)
-- [ ] Background definitions with skill distributions
+### Content
 - [ ] More consumable items (realm-specific potions, higher-level scrolls, more talisman/bomb/oil tiers)
 - [ ] More equipment (rare/legendary weapons and armor)
 - [ ] More upgrades/perks
 - [ ] Alchemy crafting system (create consumables from ingredients)
+- [ ] More scroll varieties (AoE scrolls, buff scrolls)
 
 ### UI Improvements
-- [ ] Spellbook tab in character sheet
-- [ ] Equipment screen improvements
 - [ ] Tooltip system expansion
 - [ ] Upgrade selection popup (choose 1 of 4)
 - [ ] Party management screen
-- [ ] World map UI
 
-### Combat Terrain & Environment
+### Combat Improvements
+- [ ] Active skills fully functional (stamina costs, targeting, effects)
+- [ ] AI using consumable items (enemy potion/scroll usage)
+- [ ] Enemy-specific physical resistances (e.g., skeletons resist piercing, weak to crushing)
 - [ ] More obstacle variety (rocks, pillars, trees, destructible objects)
-- [ ] Terrain height variation in combat maps (elevation changes, high ground)
-- [ ] Geo effects on tiles (fire terrain, ice patches, poison clouds, blessed ground)
 - [ ] Spells creating terrain effects (Fireball leaves fire terrain)
 - [ ] Terrain affecting spell power
 - [ ] Environmental spell interactions
@@ -129,11 +153,10 @@ Last Updated: 2026-02-15
 
 ## Low Priority (Nice to Have)
 
-### Save/Load System
-- [ ] Save current run state
-- [ ] Save meta-progression (affinities, persistent upgrades)
+### Save/Load Improvements
 - [ ] Multiple save slots
 - [ ] Auto-save functionality
+- [ ] Meta-progression (affinities, persistent upgrades across runs)
 
 ### Audio
 - [ ] Background music per realm
@@ -185,16 +208,34 @@ Last Updated: 2026-02-15
 - [x] ~~**Raising attributes doesn't increase current HP/MP/Stamina**~~ — FIXED (current rises with max)
 - [x] ~~**Same consumable items don't stack in item menu**~~ — FIXED (quantity badge on inventory slots)
 - [x] ~~**Victory screen waits for End Turn**~~ — FIXED (immediate check after damage/death)
+- [x] ~~**Skill/spell levels displayed as floats**~~ — FIXED (wrapped str() with int())
 
 ---
 
 ## Session Notes
 
-### 2026-02-02: Spell Database Merge
-- Merged 326 spells from previous session work (7 separate files → unified spells.json)
-- Merged 80+ status effects into statuses.json
-- Merged branch with shop system, ranged attacks, terrain, deployment
-- All combat phases complete
+### 2026-02-16: UI Fixes and Combat Polish
+- Fixed float display of skill levels, affinities, derived stats across all UI screens
+- Added Active Skills panel in combat (perks with "Active" prefix + mantras)
+- Added Miss/Dodge/Block floating combat text (Block = shield equipped, Dodge = high dodge)
+- Added attack lunge animation (sprite lunges toward target and returns)
+- Overhauled worldmap markers: events = squares (green/yellow/red by danger), pickups = rhombuses (yellow gold, green items), name labels on all entities
+- Updated TODO.md — checked off ~15 stale items that were already implemented
+
+### 2026-02-15: Save/Load and Title Screen
+- SaveManager singleton with full save/load system
+- Title screen scene
+- Save/load integration into all major systems
+- Hell enemy archetypes data file
+
+### 2026-02-15: Talismans, Bombs, and Oils
+- 19 talismans (4 tiers for White/Fire/Earth + common for other 7 schools)
+- 8 bombs (Fire, Frost, Poison, Smoke, Holy Water, Greater Fire, Acid, Thunder)
+- 6 oils (Flame, Frost, Poison, Holy, Whetstone, Paralyzing)
+- Talisman integration: mana check accounts for reduction, consumed on matching spell cast
+- Bomb targeting: AoE preview, damage scaled by Alchemy, status procs
+- Oil integration: bonus damage + status procs on attacks, crit bonus, Alchemy extends duration
+- Item panel colors: purple (talisman), orange-red (bomb), teal (oil)
 
 ### 2026-02-14: Weapon Damage Types & Consumable Items
 - Physical damage subtypes: slashing (swords, axes), crushing (maces, staves, unarmed), piercing (daggers, spears, bows)
@@ -208,26 +249,11 @@ Last Updated: 2026-02-15
 - Alchemy skill boosts potion effectiveness (10-75% based on level)
 - Starter items include 3 health potions + 2 mana potions
 
-### 2026-02-15: Talismans, Bombs, and Oils
-- 19 talismans (4 tiers for White/Fire/Earth + common for other 7 schools)
-- 8 bombs (Fire, Frost, Poison, Smoke, Holy Water, Greater Fire, Acid, Thunder)
-- 6 oils (Flame, Frost, Poison, Holy, Whetstone, Paralyzing)
-- Talisman integration: mana check accounts for reduction, consumed on matching spell cast
-- Bomb targeting: AoE preview, damage scaled by Alchemy, status procs
-- Oil integration: bonus damage + status procs on attacks, crit bonus, Alchemy extends duration
-- Item panel colors: purple (talisman), orange-red (bomb), teal (oil)
-
-### Reasonable Next Steps
-- Fix: attribute raise should increase current HP/MP/Stamina proportionally
-- Fix: consumable item stacking in combat item panel
-- Fix: victory screen should trigger immediately on last enemy death
-- Combat terrain: more obstacles, height variation, geo effects
-- Enemy-specific physical resistances (e.g., skeletons resist piercing, weak to crushing)
-- AI using consumable items (enemy potion/scroll usage)
-- Loot drops: enemies dropping consumables and equipment on defeat
-- Shop integration: consumables purchasable in shops
-- More scroll varieties (AoE scrolls, buff scrolls)
-- Playtest combat with new damage types and items for balance
+### 2026-02-02: Spell Database Merge
+- Merged 326 spells from previous session work (7 separate files → unified spells.json)
+- Merged 80+ status effects into statuses.json
+- Merged branch with shop system, ranged attacks, terrain, deployment
+- All combat phases complete
 
 ### Previous Sessions
 - Spell system with full targeting and tooltips

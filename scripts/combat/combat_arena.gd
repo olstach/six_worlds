@@ -1383,14 +1383,8 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 			if result.has("oil_status"):
 				_log_message("  %s is %s! (oil)" % [defender.unit_name, result.oil_status])
 		else:
-			# Show miss/dodge floating text on defender
-			var dodge = defender.get_dodge()
-			var accuracy = attacker.get_accuracy()
-			# If the defender's dodge is contributing significantly, show "Dodge!"
-			if dodge > accuracy:
-				defender.show_combat_text("Dodge!", Color(0.6, 0.85, 1.0))
-			else:
-				defender.show_combat_text("Miss!", Color(0.8, 0.8, 0.8))
+			# Show miss/dodge/block floating text on defender
+			_show_miss_text(attacker, defender)
 			_log_message("%s attacks %s - MISS! (rolled %.0f vs %.0f%%)" % [
 				attacker.unit_name, defender.unit_name, result.roll, result.hit_chance
 			])
@@ -1627,13 +1621,6 @@ func _on_unit_moved(unit: Node, from: Vector2i, to: Vector2i) -> void:
 
 func _on_unit_attacked(attacker: Node, defender: Node, result: Dictionary) -> void:
 	_update_action_buttons()
-	# Show "Block!" text when armor absorbed a significant portion of damage
-	if result.get("hit", false) and result.get("armor_reduced", 0) > 0:
-		var armor_reduced = result.get("armor_reduced", 0)
-		var raw_damage = result.get("damage", 0) + armor_reduced
-		# Show block if armor absorbed more than 40% of pre-armor damage
-		if raw_damage > 0 and float(armor_reduced) / float(raw_damage) > 0.4:
-			defender.show_combat_text("Block!", Color(0.9, 0.75, 0.3))
 
 
 func _on_unit_damaged(unit: Node, damage: int, damage_type: String) -> void:
@@ -2145,13 +2132,8 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 					var ranged_text = " from range" if dist > 1 else ""
 					_log_message("%s attacks %s%s for %d damage!" % [unit.unit_name, nearest.unit_name, ranged_text, result.damage])
 				else:
-					# Show miss/dodge floating text
-					var dodge = nearest.get_dodge()
-					var accuracy = unit.get_accuracy()
-					if dodge > accuracy:
-						nearest.show_combat_text("Dodge!", Color(0.6, 0.85, 1.0))
-					else:
-						nearest.show_combat_text("Miss!", Color(0.8, 0.8, 0.8))
+					# Show miss/dodge/block floating text
+					_show_miss_text(unit, nearest)
 					_log_message("%s attacks %s - MISS!" % [unit.unit_name, nearest.unit_name])
 
 				# Check if target died, find new target
@@ -2305,3 +2287,28 @@ func _find_nearest_enemy(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
 
 func _grid_distance(a: Vector2i, b: Vector2i) -> int:
 	return maxi(absi(a.x - b.x), absi(a.y - b.y))
+
+
+## Show appropriate miss text based on what caused the miss
+## Block = defender has a shield, Dodge = dodge stat high, Miss = generic
+func _show_miss_text(attacker: Node, defender: Node) -> void:
+	if _has_shield_equipped(defender):
+		defender.show_combat_text("Block!", Color(0.9, 0.75, 0.3))
+	elif defender.get_dodge() > attacker.get_accuracy():
+		defender.show_combat_text("Dodge!", Color(0.6, 0.85, 1.0))
+	else:
+		defender.show_combat_text("Miss!", Color(0.8, 0.8, 0.8))
+
+
+## Check if a unit has a shield equipped in the off-hand slot
+func _has_shield_equipped(unit: Node) -> bool:
+	var char_data = unit.character_data
+	if not ItemSystem:
+		return false
+	if not char_data.has("equipment"):
+		return false
+	var off_hand_id = ItemSystem.get_equipped_item(char_data, "weapon_off")
+	if off_hand_id == "":
+		return false
+	var item = ItemSystem.get_item(off_hand_id)
+	return item.get("type", "") == "shield"
