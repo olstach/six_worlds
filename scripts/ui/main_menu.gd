@@ -265,7 +265,7 @@ func _update_derived_stats(character: Dictionary) -> void:
 		["Stamina", derived.get("max_stamina", 0)],
 		["Init", derived.get("initiative", 0)],
 		["Dodge", derived.get("dodge", 0)],
-		["Crit", str(derived.get("crit_chance", 0)) + "%"],
+		["Crit", str(int(derived.get("crit_chance", 0))) + "%"],
 		["Move", derived.get("movement", 0)],
 		["Dmg", derived.get("damage", 0)],
 		["Armor", derived.get("armor", 0)],
@@ -283,7 +283,7 @@ func _update_derived_stats(character: Dictionary) -> void:
 		row.add_child(name_label)
 
 		var value_label = Label.new()
-		value_label.text = str(stat_info[1])
+		value_label.text = str(stat_info[1]) if stat_info[1] is String else str(int(stat_info[1]))
 		value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		row.add_child(value_label)
 
@@ -321,7 +321,7 @@ func _update_skills_grid(character: Dictionary) -> void:
 		header_container.add_child(name_label)
 
 		var affinity_label = Label.new()
-		affinity_label.text = "[" + str(affinities[element]) + "]"
+		affinity_label.text = "[" + str(int(affinities[element])) + "]"
 		affinity_label.add_theme_color_override("font_color", ELEMENT_COLORS[element])
 		affinity_label.add_theme_font_size_override("font_size", 12)
 		affinity_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -348,7 +348,7 @@ func _update_skills_grid(character: Dictionary) -> void:
 			var skill_level = char_skills.get(skill_id, 0)
 
 			var skill_btn = Button.new()
-			skill_btn.text = _format_skill_name(skill_id) + " [" + str(skill_level) + "]"
+			skill_btn.text = _format_skill_name(skill_id) + " [" + str(int(skill_level)) + "]"
 			skill_btn.custom_minimum_size = Vector2(110, 28)
 			skill_btn.add_theme_font_size_override("font_size", 11)
 
@@ -658,7 +658,7 @@ func _update_spellbook() -> void:
 	for level in levels:
 		# Level header
 		var level_header = Label.new()
-		level_header.text = "— Level " + str(level) + " —"
+		level_header.text = "— Level " + str(int(level)) + " —"
 		level_header.add_theme_font_size_override("font_size", 16)
 		level_header.add_theme_color_override("font_color", Color(0.85, 0.75, 0.4))
 		spellbook_list.add_child(level_header)
@@ -960,7 +960,7 @@ func _create_perk_card(perk_entry: Dictionary) -> PanelContainer:
 	var source_label = Label.new()
 	if source == "skill":
 		var skill_name = data.get("skill", "").replace("_", " ").capitalize()
-		source_label.text = skill_name + " " + str(data.get("required_level", 1))
+		source_label.text = skill_name + " " + str(int(data.get("required_level", 1)))
 	else:
 		source_label.text = "Cross-Skill"
 	source_label.add_theme_font_size_override("font_size", 11)

@@ -133,6 +133,12 @@ custom_minimum_size = Vector2(120, 40)
 layout_mode = 2
 text = "Item"
 
+[node name="SkillsButton" type="Button" parent="UILayer/BottomPanel/HBoxContainer/ActionPanel/MarginContainer/VBoxContainer/ButtonGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Skills"
+
 [node name="WaitButton" type="Button" parent="UILayer/BottomPanel/HBoxContainer/ActionPanel/MarginContainer/VBoxContainer/ButtonGrid"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(120, 40)
@@ -285,6 +291,46 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="ItemList" type="VBoxContainer" parent="UILayer/ItemPanel/MarginContainer/VBoxContainer/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="SkillsPanel" type="PanelContainer" parent="UILayer"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 560.0
+offset_top = -400.0
+offset_right = 820.0
+offset_bottom = -160.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="UILayer/SkillsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/SkillsPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SkillsLabel" type="Label" parent="UILayer/SkillsPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Active Skills"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UILayer/SkillsPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SkillsList" type="VBoxContainer" parent="UILayer/SkillsPanel/MarginContainer/VBoxContainer/ScrollContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

@@ -465,6 +465,6 @@ func get_base_skill_bonuses(character: Dictionary, skill_id: String) -> Dictiona
 		return {}
 
 	var per_level = bonus_data.get("per_level", {})
-	var level_str = str(level)
+	var level_str = str(int(level))
 
 	return per_level.get(level_str, {})

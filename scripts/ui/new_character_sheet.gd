@@ -98,12 +98,12 @@ func update_attributes() -> void:
 		hbox.add_child(label)
 		
 		var value_label = Label.new()
-		value_label.text = str(value)
+		value_label.text = str(int(value))
 		value_label.custom_minimum_size.x = 30
 		hbox.add_child(value_label)
-		
+
 		var button = Button.new()
-		button.text = "+" + str(cost)
+		button.text = "+" + str(int(cost))
 		button.custom_minimum_size = Vector2(70, 0)
 		button.disabled = current_character.xp < cost
 		button.pressed.connect(func(): increase_attribute(attr_name))
@@ -118,12 +118,12 @@ func update_derived_stats() -> void:
 	
 	var derived = current_character.derived
 	var stats = [
-		["HP", str(derived.current_hp) + "/" + str(derived.max_hp)],
-		["Mana", str(derived.current_mana) + "/" + str(derived.max_mana)],
-		["Init", str(derived.initiative)],
-		["Dodge", str(derived.dodge)],
-		["Crit", str(derived.crit_chance) + "%"],
-		["Weight", str(derived.weight_limit)]
+		["HP", str(int(derived.current_hp)) + "/" + str(int(derived.max_hp))],
+		["Mana", str(int(derived.current_mana)) + "/" + str(int(derived.max_mana))],
+		["Init", str(int(derived.initiative))],
+		["Dodge", str(int(derived.dodge))],
+		["Crit", str(int(derived.crit_chance)) + "%"],
+		["Weight", str(int(derived.weight_limit))]
 	]
 	
 	for stat in stats:
@@ -154,7 +154,7 @@ func update_skills_grid() -> void:
 	for element in elements:
 		# Column 1: Element name and affinity
 		var element_label = Label.new()
-		element_label.text = element.capitalize() + "\nAff: " + str(current_character.elements[element])
+		element_label.text = element.capitalize() + "\nAff: " + str(int(current_character.elements[element]))
 		element_label.custom_minimum_size = Vector2(100, 60)
 		skills_grid.add_child(element_label)
 		
@@ -167,7 +167,7 @@ func update_skills_grid() -> void:
 				var skill_level = current_character.skills.get(skill_name, 0)
 				
 				var skill_button = Button.new()
-				skill_button.text = skill_name.replace("_", " ").capitalize() + "\nLv " + str(skill_level)
+				skill_button.text = skill_name.replace("_", " ").capitalize() + "\nLv " + str(int(skill_level))
 				skill_button.custom_minimum_size = Vector2(100, 60)
 				
 				if skill_level < 5:

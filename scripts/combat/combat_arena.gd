@@ -26,13 +26,17 @@ extends Control
 @onready var item_button: Button = %ItemButton
 @onready var item_panel: PanelContainer = %ItemPanel
 @onready var item_list: VBoxContainer = %ItemList
+@onready var skills_button: Button = %SkillsButton
+@onready var skills_panel: PanelContainer = %SkillsPanel
+@onready var skills_list: VBoxContainer = %SkillsList
 
 # Combat state
-enum ActionMode { NONE, MOVE, ATTACK, CAST_SPELL, USE_ITEM }
+enum ActionMode { NONE, MOVE, ATTACK, CAST_SPELL, USE_ITEM, USE_SKILL }
 var current_action_mode: ActionMode = ActionMode.NONE
 var selected_unit: CombatUnit = null
 var selected_spell: Dictionary = {}
 var selected_item: Dictionary = {}
+var selected_skill: Dictionary = {}
 
 # AI turn timer
 var ai_timer: Timer
@@ -170,6 +174,7 @@ func _ready() -> void:
 	attack_button.pressed.connect(_on_attack_pressed)
 	spell_button.pressed.connect(_on_spell_pressed)
 	item_button.pressed.connect(_on_item_pressed)
+	skills_button.pressed.connect(_on_skills_pressed)
 	wait_button.pressed.connect(_on_wait_pressed)
 	flee_button.pressed.connect(_on_flee_pressed)
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
@@ -178,8 +183,9 @@ func _ready() -> void:
 	CombatManager.spell_cast.connect(_on_spell_cast)
 	CombatManager.item_used_in_combat.connect(_on_item_used_in_combat)
 
-	# Hide item panel initially
+	# Hide item and skills panels initially
 	item_panel.hide()
+	skills_panel.hide()
 
 	# Connect status effect signals
 	CombatManager.status_effect_triggered.connect(_on_status_effect_triggered)
@@ -526,10 +532,12 @@ func _cancel_action_mode() -> void:
 	current_action_mode = ActionMode.NONE
 	selected_spell = {}
 	selected_item = {}
+	selected_skill = {}
 	combat_grid.clear_highlights()
 	combat_grid.clear_aoe_preview()
 	spell_panel.hide()
 	item_panel.hide()
+	skills_panel.hide()
 	_update_action_buttons()
 
 
@@ -583,6 +591,8 @@ func _on_spell_pressed() -> void:
 		spell_panel.hide()
 		_cancel_action_mode()
 	else:
+		item_panel.hide()
+		skills_panel.hide()
 		_show_spell_panel(unit)
 
 
@@ -808,6 +818,8 @@ func _on_item_pressed() -> void:
 		item_panel.hide()
 		_cancel_action_mode()
 	else:
+		spell_panel.hide()
+		skills_panel.hide()
 		_show_item_panel(unit)
 
 
@@ -1117,6 +1129,135 @@ func _on_item_used_in_combat(user: Node, item: Dictionary, result: Dictionary) -
 		_show_unit_info(selected_unit)
 
 
+# ============================================
+# ACTIVE SKILLS
+# ============================================
+
+func _on_skills_pressed() -> void:
+	if not CombatManager.is_player_turn():
+		return
+
+	var unit = CombatManager.get_current_unit()
+	if unit == null:
+		return
+
+	# Toggle skills panel
+	if skills_panel.visible:
+		skills_panel.hide()
+		_cancel_action_mode()
+	else:
+		_show_skills_panel(unit)
+
+
+func _show_skills_panel(unit: CombatUnit) -> void:
+	# Clear existing
+	for child in skills_list.get_children():
+		child.queue_free()
+
+	# Get active skills from character perks
+	var active_skills = _get_active_skills(unit)
+
+	if active_skills.is_empty():
+		var label = Label.new()
+		label.text = "No active skills"
+		label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		skills_list.add_child(label)
+	else:
+		for skill_data in active_skills:
+			var btn = Button.new()
+			var stamina_cost = skill_data.get("stamina_cost", 0)
+			if stamina_cost > 0:
+				btn.text = "%s (%d ST)" % [skill_data.get("name", "???"), stamina_cost]
+			else:
+				btn.text = skill_data.get("name", "???")
+
+			btn.tooltip_text = skill_data.get("description", "")
+
+			# Color based on type: mantras are purple, combat skills are gold
+			if skill_data.get("is_mantra", false):
+				btn.add_theme_color_override("font_color", Color(0.7, 0.5, 0.9))
+			else:
+				btn.add_theme_color_override("font_color", Color(0.9, 0.75, 0.3))
+
+			btn.pressed.connect(_on_active_skill_selected.bind(skill_data))
+			skills_list.add_child(btn)
+
+	# Hide other panels, show skills
+	spell_panel.hide()
+	item_panel.hide()
+	skills_panel.show()
+
+
+## Get active skills (perks with "Active" in description) for a combat unit
+func _get_active_skills(unit: CombatUnit) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	var character = unit.character_data
+	var perks = PerkSystem.get_character_perks(character)
+
+	for perk_entry in perks:
+		var data = perk_entry.get("data", {})
+		var desc = data.get("description", "")
+		# Active perks start with "Active" in their description
+		if desc.begins_with("Active"):
+			var skill_info: Dictionary = {
+				"id": perk_entry.get("id", ""),
+				"name": data.get("name", perk_entry.get("id", "???")),
+				"description": desc,
+				"is_mantra": data.get("is_mantra", false),
+				"stamina_cost": _parse_stamina_cost(desc),
+				"skill": data.get("skill", ""),
+			}
+			result.append(skill_info)
+
+	# Also include mantras that are active abilities
+	for perk_entry in perks:
+		var data = perk_entry.get("data", {})
+		if data.get("is_mantra", false):
+			var desc = data.get("description", "")
+			# Avoid duplicating active mantras already added
+			var already_added := false
+			for r in result:
+				if r.id == perk_entry.get("id", ""):
+					already_added = true
+					break
+			if not already_added:
+				var skill_info: Dictionary = {
+					"id": perk_entry.get("id", ""),
+					"name": data.get("name", perk_entry.get("id", "???")),
+					"description": desc,
+					"is_mantra": true,
+					"stamina_cost": _parse_stamina_cost(desc),
+					"skill": data.get("skill", ""),
+				}
+				result.append(skill_info)
+
+	return result
+
+
+## Parse stamina cost from perk description, e.g. "Active (3 Stamina)." -> 3
+func _parse_stamina_cost(description: String) -> int:
+	# Match pattern like "(X Stamina)" in the description
+	var regex = RegEx.new()
+	regex.compile("\\((\\d+)\\s*Stamina\\)")
+	var match_result = regex.search(description)
+	if match_result:
+		return int(match_result.get_string(1))
+	return 0
+
+
+func _on_active_skill_selected(skill_data: Dictionary) -> void:
+	# For now, active skills are not fully implemented in CombatManager
+	# Show a placeholder message with the skill's description
+	selected_skill = skill_data
+	skills_panel.hide()
+	_log_message("%s uses %s!" % [
+		CombatManager.get_current_unit().unit_name if CombatManager.get_current_unit() else "???",
+		skill_data.get("name", "Unknown Skill")
+	])
+	_log_message("  [Active skills are not yet fully implemented - stamina/effects coming soon]")
+	_cancel_action_mode()
+
+
 func _on_wait_pressed() -> void:
 	if not CombatManager.is_player_turn():
 		return
@@ -1223,6 +1364,9 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 		_cancel_action_mode()
 		return
 
+	# Play attack lunge animation
+	attacker.play_attack_animation(defender.global_position)
+
 	var result = CombatManager.attack_unit(attacker, defender)
 
 	if result.success:
@@ -1239,11 +1383,23 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 			if result.has("oil_status"):
 				_log_message("  %s is %s! (oil)" % [defender.unit_name, result.oil_status])
 		else:
+			# Show miss/dodge floating text on defender
+			var dodge = defender.get_dodge()
+			var accuracy = attacker.get_accuracy()
+			# If the defender's dodge is contributing significantly, show "Dodge!"
+			if dodge > accuracy:
+				defender.show_combat_text("Dodge!", Color(0.6, 0.85, 1.0))
+			else:
+				defender.show_combat_text("Miss!", Color(0.8, 0.8, 0.8))
 			_log_message("%s attacks %s - MISS! (rolled %.0f vs %.0f%%)" % [
 				attacker.unit_name, defender.unit_name, result.roll, result.hit_chance
 			])
 	else:
-		_log_message("Attack failed: " + result.get("reason", "Unknown"))
+		var reason = result.get("reason", "Unknown")
+		if reason == "No line of sight":
+			_log_message("Attack failed: No line of sight!")
+		else:
+			_log_message("Attack failed: " + reason)
 
 	_cancel_action_mode()
 
@@ -1261,6 +1417,7 @@ func _update_action_buttons() -> void:
 	attack_button.disabled = not is_player or not can_act
 	spell_button.disabled = not is_player or not can_act
 	item_button.disabled = not is_player or not can_act
+	skills_button.disabled = not is_player or not can_act
 	wait_button.disabled = not is_player or not can_act
 	flee_button.disabled = not is_player or not can_act
 	end_turn_button.disabled = not is_player
@@ -1270,6 +1427,7 @@ func _update_action_buttons() -> void:
 	attack_button.button_pressed = (current_action_mode == ActionMode.ATTACK)
 	spell_button.button_pressed = (current_action_mode == ActionMode.CAST_SPELL)
 	item_button.button_pressed = (current_action_mode == ActionMode.USE_ITEM)
+	skills_button.button_pressed = (current_action_mode == ActionMode.USE_SKILL)
 
 
 ## Update turn order display
@@ -1469,6 +1627,13 @@ func _on_unit_moved(unit: Node, from: Vector2i, to: Vector2i) -> void:
 
 func _on_unit_attacked(attacker: Node, defender: Node, result: Dictionary) -> void:
 	_update_action_buttons()
+	# Show "Block!" text when armor absorbed a significant portion of damage
+	if result.get("hit", false) and result.get("armor_reduced", 0) > 0:
+		var armor_reduced = result.get("armor_reduced", 0)
+		var raw_damage = result.get("damage", 0) + armor_reduced
+		# Show block if armor absorbed more than 40% of pre-armor damage
+		if raw_damage > 0 and float(armor_reduced) / float(raw_damage) > 0.4:
+			defender.show_combat_text("Block!", Color(0.9, 0.75, 0.3))
 
 
 func _on_unit_damaged(unit: Node, damage: int, damage_type: String) -> void:
@@ -1972,13 +2137,21 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 
 		# Fall back to physical attack
 		if dist <= attack_range:
-			# In range - attack!
+			# In range - attack with lunge animation!
+			unit.play_attack_animation(nearest.global_position)
 			var result = CombatManager.attack_unit(unit, nearest)
 			if result.success:
 				if result.hit:
 					var ranged_text = " from range" if dist > 1 else ""
 					_log_message("%s attacks %s%s for %d damage!" % [unit.unit_name, nearest.unit_name, ranged_text, result.damage])
 				else:
+					# Show miss/dodge floating text
+					var dodge = nearest.get_dodge()
+					var accuracy = unit.get_accuracy()
+					if dodge > accuracy:
+						nearest.show_combat_text("Dodge!", Color(0.6, 0.85, 1.0))
+					else:
+						nearest.show_combat_text("Miss!", Color(0.8, 0.8, 0.8))
 					_log_message("%s attacks %s - MISS!" % [unit.unit_name, nearest.unit_name])
 
 				# Check if target died, find new target

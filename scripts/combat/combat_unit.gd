@@ -537,6 +537,40 @@ func _show_heal_number(amount: int) -> void:
 	tween.tween_callback(label.queue_free)
 
 
+## Show floating combat text (miss, dodge, block, etc.)
+func show_combat_text(text: String, color: Color = Color(0.9, 0.9, 0.9)) -> void:
+	var label = Label.new()
+	label.text = text
+	label.position = Vector2(0, -UNIT_SIZE.y / 2 - 20)
+	label.add_theme_font_size_override("font_size", 14)
+	label.add_theme_color_override("font_color", color)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	add_child(label)
+
+	# Animate: float up and fade out
+	var tween = create_tween()
+	tween.tween_property(label, "position:y", label.position.y - 30, 0.9)
+	tween.parallel().tween_property(label, "modulate:a", 0, 0.9)
+	tween.tween_callback(label.queue_free)
+
+
+## Play attack lunge animation — move toward target and return
+## target_world_pos is the world position of the defender
+func play_attack_animation(target_world_pos: Vector2) -> void:
+	if sprite == null:
+		return
+
+	# Calculate direction toward target, move 60% of the way (capped at 20px)
+	var direction = (target_world_pos - global_position).normalized()
+	var lunge_distance = minf(20.0, global_position.distance_to(target_world_pos) * 0.6)
+	var lunge_offset = direction * lunge_distance
+
+	# Tween the sprite position: lunge forward, then back
+	var tween = create_tween()
+	tween.tween_property(sprite, "position", sprite.position + lunge_offset, 0.12).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	tween.tween_property(sprite, "position", -UNIT_SIZE / 2, 0.15).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+
+
 # ============================================
 # SELECTION & HIGHLIGHTING
 # ============================================

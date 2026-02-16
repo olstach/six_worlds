@@ -185,8 +185,11 @@ func _draw() -> void:
 		if not MapManager.is_tile_visited(obj_pos):
 			continue
 		var center = Vector2(obj_pos.x * ts + ts * 0.5, obj_pos.y * ts + ts * 0.5)
-		var obj_type = obj.get("type", 0)
-		_draw_object_marker(center, obj_type, ts)
+		_draw_object_marker_v2(center, obj, ts)
+		# Draw name label beneath object
+		var obj_name = obj.get("name", "")
+		if obj_name != "":
+			_draw_entity_label(center, obj_name, ts)
 
 	# --- Layer 5: Mobs ---
 	for mob in MapManager.mobs:
@@ -197,6 +200,10 @@ func _draw() -> void:
 		var center: Vector2 = mob.get("world_position", Vector2(mob.position.x * ts + ts * 0.5, mob.position.y * ts + ts * 0.5))
 		var attitude = mob.get("attitude", 1)
 		_draw_mob_marker(center, attitude, mob.get("is_pursuing", false), ts)
+		# Draw name label beneath mob
+		var mob_name = mob.get("name", "")
+		if mob_name != "":
+			_draw_entity_label(center, mob_name, ts)
 
 	# --- Layer 6: Party marker ---
 	# party_world_position is already tile center (from _tile_to_world), no extra offset
@@ -214,7 +221,7 @@ func _draw() -> void:
 func _draw_object_marker(center: Vector2, obj_type: int, ts: int) -> void:
 	var size = ts * 0.25
 	match obj_type:
-		0:  # EVENT - diamond
+		0:  # EVENT - diamond (legacy, use _draw_object_marker_v2 instead)
 			var points = PackedVector2Array([
 				center + Vector2(0, -size),
 				center + Vector2(size, 0),
@@ -226,6 +233,91 @@ func _draw_object_marker(center: Vector2, obj_type: int, ts: int) -> void:
 			draw_rect(Rect2(center.x - size * 0.7, center.y - size * 0.7, size * 1.4, size * 1.4), PICKUP_COLOR)
 		2:  # PORTAL - circle
 			draw_circle(center, size, PORTAL_COLOR)
+
+
+## Draw object marker with improved visual style based on object data
+func _draw_object_marker_v2(center: Vector2, obj: Dictionary, ts: int) -> void:
+	var obj_type = obj.get("type", 0)
+	var icon = obj.get("icon", "event")
+
+	match obj_type:
+		0:  # EVENT - square, colored by danger level
+			var size = ts * 0.24
+			var color = _get_event_color(icon)
+			# Dark outline
+			draw_rect(Rect2(center.x - size - 1, center.y - size - 1, size * 2 + 2, size * 2 + 2), Color(0.1, 0.1, 0.1))
+			# Fill
+			draw_rect(Rect2(center.x - size, center.y - size, size * 2, size * 2), color)
+
+		1:  # PICKUP - smaller rhombus (diamond), colored by contents
+			var size = ts * 0.16  # Smaller than mob circles
+			var color = _get_pickup_color(obj)
+			var points = PackedVector2Array([
+				center + Vector2(0, -size),
+				center + Vector2(size, 0),
+				center + Vector2(0, size),
+				center + Vector2(-size, 0)
+			])
+			# Dark outline
+			var outline_size = size + 1.5
+			var outline_points = PackedVector2Array([
+				center + Vector2(0, -outline_size),
+				center + Vector2(outline_size, 0),
+				center + Vector2(0, outline_size),
+				center + Vector2(-outline_size, 0)
+			])
+			draw_colored_polygon(outline_points, Color(0.1, 0.1, 0.1))
+			draw_colored_polygon(points, color)
+
+		2:  # PORTAL - circle (unchanged)
+			var size = ts * 0.25
+			draw_circle(center, size + 1.5, Color(0.1, 0.1, 0.1))
+			draw_circle(center, size, PORTAL_COLOR)
+
+
+## Get color for event markers based on icon type
+## Green = friendly/shop, Yellow = neutral/unknown, Red = combat/danger
+func _get_event_color(icon: String) -> Color:
+	match icon:
+		"shop", "merchant", "npc", "rest":
+			return Color(0.3, 0.75, 0.35)     # Green - friendly
+		"event", "shrine", "dungeon":
+			return Color(0.85, 0.8, 0.2)       # Yellow - could go either way
+		"enemy", "enemy_elite", "enemy_fast", "boss":
+			return Color(0.85, 0.25, 0.2)      # Red - combat by default
+		_:
+			return Color(0.85, 0.8, 0.2)       # Yellow fallback
+
+
+## Get color for pickup markers based on reward contents
+## Gold pickups = yellow, item pickups = green, mixed/other = green
+func _get_pickup_color(obj: Dictionary) -> Color:
+	var data = obj.get("data", {})
+	var rewards = data.get("rewards", [])
+
+	# Check if this is primarily a gold pickup
+	var has_gold = false
+	var has_items = false
+	for reward in rewards:
+		var reward_type = reward.get("type", "")
+		if reward_type == "gold":
+			has_gold = true
+		elif reward_type == "item":
+			has_items = true
+
+	if has_gold and not has_items:
+		return Color(0.95, 0.85, 0.2)     # Yellow - gold pile
+	else:
+		return Color(0.35, 0.8, 0.35)     # Green - items/mixed
+
+
+## Draw a small label below an entity marker
+func _draw_entity_label(center: Vector2, text: String, ts: int) -> void:
+	var font = ThemeDB.fallback_font
+	var font_size = 8
+	var text_width = font.get_string_size(text, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size).x
+	var label_pos = Vector2(center.x - text_width * 0.5, center.y + ts * 0.32 + font_size)
+	draw_string(font, label_pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color(0.9, 0.9, 0.85, 0.85))
 
 
 func _draw_mob_marker(center: Vector2, attitude: int, is_pursuing: bool, ts: int) -> void:
