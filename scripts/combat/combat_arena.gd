@@ -37,6 +37,7 @@ var selected_unit: CombatUnit = null
 var selected_spell: Dictionary = {}
 var selected_item: Dictionary = {}
 var selected_skill: Dictionary = {}
+var _last_hovered_tile: Vector2i = Vector2i(-1, -1)  # Track hover to avoid log spam
 
 # AI turn timer
 var ai_timer: Timer
@@ -352,26 +353,36 @@ func _generate_combat_terrain(context: Dictionary) -> Dictionary:
 	var tile_overrides: Dictionary = {}  # "x,y" -> TileType
 	var effects: Array[Dictionary] = []
 	var heights: Array[Dictionary] = []
+	var obstacles: Array[Dictionary] = []
 
 	# Budget obstacles based on overworld terrain counts in the 5x5 sample
-	var obstacle_budget = 0
+	var wall_budget = 0
 	var water_budget = 0
 	var difficult_budget = 0
+	var tree_budget = 0
+	var rock_budget = 0
+	var pillar_budget = 0
 
 	for terrain_type in counts:
 		var count = int(counts[terrain_type])
 		match int(terrain_type):
-			4:  # MOUNTAINS -> walls
-				obstacle_budget += count
+			4:  # MOUNTAINS -> walls + rocks for cover
+				wall_budget += count
+				rock_budget += count
 			5:  # WATER -> water tiles
 				water_budget += count
-			2, 6:  # FOREST, SWAMP -> difficult terrain
+			2:  # FOREST -> difficult terrain + trees for cover
 				difficult_budget += count
-			3:  # HILLS -> height variation
+				tree_budget += count * 2  # Forests generate plenty of trees
+			6:  # SWAMP -> difficult terrain + some trees
+				difficult_budget += count
+				tree_budget += count
+			3:  # HILLS -> height variation + occasional rocks
 				for i in range(mini(count, 4)):
 					var hx = randi_range(4, grid_w - 5)
 					var hy = randi_range(1, grid_h - 2)
 					heights.append({"pos": Vector2i(hx, hy), "height": 1})
+				rock_budget += count / 2
 			9:  # LAVA -> fire pits
 				for i in range(mini(count / 2, 3)):
 					var lx = randi_range(4, grid_w - 5)
@@ -379,30 +390,72 @@ func _generate_combat_terrain(context: Dictionary) -> Dictionary:
 					tile_overrides["%d,%d" % [lx, ly]] = CombatGrid.TileType.PIT
 					effects.append({"pos": Vector2i(lx, ly),
 						"effect": CombatGrid.TerrainEffect.FIRE, "value": 5})
-			13:  # RUINS -> difficult terrain with some walls
+			13:  # RUINS -> difficult terrain + pillars + some walls
 				difficult_budget += count / 2
-				obstacle_budget += count / 3
+				wall_budget += count / 3
+				pillar_budget += count
+
+	# Track occupied positions to avoid overlap
+	var occupied: Dictionary = {}
 
 	# Place wall obstacles (from mountains/ruins)
-	var walls_to_place = clampi(obstacle_budget / 4, 0, 6)
+	var walls_to_place = clampi(wall_budget / 4, 0, 6)
 	for i in range(walls_to_place):
 		var wx = randi_range(4, grid_w - 5)
 		var wy = randi_range(1, grid_h - 2)
-		tile_overrides["%d,%d" % [wx, wy]] = CombatGrid.TileType.WALL
+		var key = "%d,%d" % [wx, wy]
+		tile_overrides[key] = CombatGrid.TileType.WALL
+		occupied[key] = true
 
 	# Place water tiles
 	var water_to_place = clampi(water_budget / 3, 0, 4)
 	for i in range(water_to_place):
 		var wx = randi_range(4, grid_w - 5)
 		var wy = randi_range(1, grid_h - 2)
-		tile_overrides["%d,%d" % [wx, wy]] = CombatGrid.TileType.WATER
+		var key = "%d,%d" % [wx, wy]
+		if not key in occupied:
+			tile_overrides[key] = CombatGrid.TileType.WATER
+			occupied[key] = true
 
 	# Place difficult terrain (from forest/swamp)
 	var diff_to_place = clampi(difficult_budget / 3, 0, 6)
 	for i in range(diff_to_place):
 		var dx = randi_range(4, grid_w - 5)
 		var dy = randi_range(0, grid_h - 1)
-		tile_overrides["%d,%d" % [dx, dy]] = CombatGrid.TileType.DIFFICULT
+		var key = "%d,%d" % [dx, dy]
+		if not key in occupied:
+			tile_overrides[key] = CombatGrid.TileType.DIFFICULT
+			occupied[key] = true
+
+	# Place tree obstacles (from forest/swamp)
+	var trees_to_place = clampi(tree_budget / 4, 0, 5)
+	for i in range(trees_to_place):
+		var tx = randi_range(4, grid_w - 5)
+		var ty = randi_range(1, grid_h - 2)
+		var key = "%d,%d" % [tx, ty]
+		if not key in occupied:
+			obstacles.append({"pos": Vector2i(tx, ty), "obstacle": CombatGrid.ObstacleType.TREE})
+			occupied[key] = true
+
+	# Place rock obstacles (from mountains/hills)
+	var rocks_to_place = clampi(rock_budget / 4, 0, 4)
+	for i in range(rocks_to_place):
+		var rx = randi_range(4, grid_w - 5)
+		var ry = randi_range(1, grid_h - 2)
+		var key = "%d,%d" % [rx, ry]
+		if not key in occupied:
+			obstacles.append({"pos": Vector2i(rx, ry), "obstacle": CombatGrid.ObstacleType.ROCK})
+			occupied[key] = true
+
+	# Place pillar obstacles (from ruins)
+	var pillars_to_place = clampi(pillar_budget / 4, 0, 3)
+	for i in range(pillars_to_place):
+		var px = randi_range(4, grid_w - 5)
+		var py = randi_range(1, grid_h - 2)
+		var key = "%d,%d" % [px, py]
+		if not key in occupied:
+			obstacles.append({"pos": Vector2i(px, py), "obstacle": CombatGrid.ObstacleType.PILLAR})
+			occupied[key] = true
 
 	# Dominant terrain effects (snow/ice -> ice patches, etc.)
 	match dominant:
@@ -422,7 +475,7 @@ func _generate_combat_terrain(context: Dictionary) -> Dictionary:
 		if kx < 4 or kx >= grid_w - 4:
 			tile_overrides.erase(key)
 
-	# Also clear effects from deployment zones
+	# Also clear effects and obstacles from deployment zones
 	var safe_effects: Array[Dictionary] = []
 	for eff in effects:
 		var ex = eff.get("pos", Vector2i(-1, -1)).x
@@ -430,11 +483,19 @@ func _generate_combat_terrain(context: Dictionary) -> Dictionary:
 			safe_effects.append(eff)
 	effects = safe_effects
 
+	var safe_obstacles: Array[Dictionary] = []
+	for obs in obstacles:
+		var ox = obs.get("pos", Vector2i(-1, -1)).x
+		if ox >= 4 and ox < grid_w - 4:
+			safe_obstacles.append(obs)
+	obstacles = safe_obstacles
+
 	return {
 		"size": Vector2i(grid_w, grid_h),
 		"tiles": tile_overrides,
 		"effects": effects,
-		"heights": heights
+		"heights": heights,
+		"obstacles": obstacles
 	}
 
 
@@ -499,6 +560,28 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 	else:
 		combat_grid.clear_aoe_preview()
 
+	# Show cover info when hovering movement destinations
+	if current_action_mode == ActionMode.MOVE:
+		_show_cover_tooltip(grid_pos)
+	else:
+		_hide_cover_tooltip()
+
+	# Show obstacle/height info in log (only when tile changes to avoid spam)
+	if grid_pos != _last_hovered_tile:
+		_last_hovered_tile = grid_pos
+
+		# Show obstacle info when hovering over an obstacle tile
+		var obs_info = combat_grid.get_obstacle_at(grid_pos)
+		if not obs_info.is_empty() and current_action_mode == ActionMode.NONE:
+			_log_message("%s (HP: %d, Cover: +%d%% dodge)" % [
+				obs_info.name, obs_info.hp, obs_info.cover_bonus])
+
+		# Show height info when hovering elevated tiles
+		var tile_height = combat_grid.get_tile_height(grid_pos)
+		if tile_height > 0 and current_action_mode == ActionMode.NONE:
+			_log_message("Height: %d (+%d%% accuracy, +%d range from above)" % [
+				tile_height, tile_height * 5, tile_height])
+
 	# Update unit info if hovering over a unit
 	var unit = combat_grid.get_unit_at(grid_pos)
 	if unit:
@@ -539,6 +622,7 @@ func _cancel_action_mode() -> void:
 	selected_skill = {}
 	combat_grid.clear_highlights()
 	combat_grid.clear_aoe_preview()
+	_hide_cover_tooltip()
 	spell_panel.hide()
 	item_panel.hide()
 	skills_panel.hide()
@@ -1378,6 +1462,12 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 	var result = CombatManager.attack_unit(attacker, defender)
 
 	if result.success:
+		# Log cover info if applicable
+		var cover_data = result.get("cover", {})
+		if cover_data.get("has_cover", false):
+			_log_message("  %s has cover from %s (-%d%% hit)" % [
+				defender.unit_name, cover_data.obstacle_name, cover_data.dodge_bonus])
+
 		if result.hit:
 			var crit_text = " CRITICAL!" if result.crit else ""
 			_log_message("%s attacks %s for %d damage!%s" % [
@@ -1393,8 +1483,11 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 		else:
 			# Show miss/dodge/block floating text on defender
 			_show_miss_text(attacker, defender)
-			_log_message("%s attacks %s - MISS! (rolled %.0f vs %.0f%%)" % [
-				attacker.unit_name, defender.unit_name, result.roll, result.hit_chance
+			var cover_text = ""
+			if cover_data.get("has_cover", false):
+				cover_text = " [behind %s]" % cover_data.obstacle_name
+			_log_message("%s attacks %s - MISS!%s (rolled %.0f vs %.0f%%)" % [
+				attacker.unit_name, defender.unit_name, cover_text, result.roll, result.hit_chance
 			])
 	else:
 		var reason = result.get("reason", "Unknown")
@@ -1543,6 +1636,55 @@ func _update_action_circles(remaining: int, total: int) -> void:
 		else:
 			dot.add_theme_color_override("font_color", Color(0.35, 0.35, 0.35))  # Grey
 		unit_info_actions.add_child(dot)
+
+
+# ============================================
+# COVER TOOLTIP
+# ============================================
+
+## Floating label shown when hovering over movement tiles near cover
+var _cover_tooltip: Label = null
+
+## Show cover tooltip at a tile position when in movement mode
+func _show_cover_tooltip(grid_pos: Vector2i) -> void:
+	_hide_cover_tooltip()
+
+	# Only show for valid movement destinations
+	if not grid_pos in combat_grid.highlighted_tiles:
+		return
+
+	var current_unit = CombatManager.get_current_unit()
+	if current_unit == null:
+		return
+
+	# Check what cover this position would provide
+	var cover_info = combat_grid.get_cover_info_at(grid_pos, current_unit.team)
+	if not cover_info.has_cover:
+		return
+
+	# Also check height advantage at this position
+	var height = combat_grid.get_tile_height(grid_pos)
+
+	# Build tooltip text
+	var tooltip_text = "+%d%% dodge (cover: %s)" % [cover_info.dodge_bonus, cover_info.obstacle_name]
+	if height > 0:
+		tooltip_text += "\nHeight %d (+%d%% accuracy)" % [height, height * 5]
+
+	# Create floating label above the tile
+	_cover_tooltip = Label.new()
+	_cover_tooltip.text = tooltip_text
+	_cover_tooltip.add_theme_font_size_override("font_size", 11)
+	_cover_tooltip.add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))
+	_cover_tooltip.position = combat_grid.grid_to_world(grid_pos) + Vector2(0, -20)
+	_cover_tooltip.z_index = 100
+	combat_grid.add_child(_cover_tooltip)
+
+
+## Hide the cover tooltip
+func _hide_cover_tooltip() -> void:
+	if _cover_tooltip != null:
+		_cover_tooltip.queue_free()
+		_cover_tooltip = null
 
 
 ## Add message to combat log

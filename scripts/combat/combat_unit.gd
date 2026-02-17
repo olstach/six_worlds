@@ -328,6 +328,28 @@ func consume_oil_charge() -> Dictionary:
 	return result
 
 
+## Get the unit's movement mode based on active status effects
+## Returns CombatGrid.MovementMode enum value
+func get_movement_mode() -> int:
+	for effect in status_effects:
+		var status_name = effect.get("status", "").to_lower()
+		if status_name == "flying" or status_name == "storm_lord":
+			return CombatGrid.MovementMode.FLYING
+	for effect in status_effects:
+		var status_name = effect.get("status", "").to_lower()
+		if status_name == "levitating":
+			return CombatGrid.MovementMode.LEVITATE
+	return CombatGrid.MovementMode.NORMAL
+
+
+## Check if unit has a specific status effect (case-insensitive)
+func has_status(status_name: String) -> bool:
+	for effect in status_effects:
+		if effect.get("status", "").to_lower() == status_name.to_lower():
+			return true
+	return false
+
+
 ## Check if equipped weapon is ranged
 func is_ranged_weapon() -> bool:
 	var weapon = get_equipped_weapon()

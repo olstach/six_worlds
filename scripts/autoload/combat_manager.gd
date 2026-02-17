@@ -873,7 +873,8 @@ func get_movement_range(unit: Node) -> Array[Vector2i]:
 		return []
 
 	var movement = unit.get_movement()
-	return combat_grid.get_reachable_tiles(unit.grid_position, movement)
+	var movement_mode = unit.get_movement_mode() if unit.has_method("get_movement_mode") else CombatGrid.MovementMode.NORMAL
+	return combat_grid.get_reachable_tiles(unit.grid_position, movement, movement_mode)
 
 
 ## Move a unit to a target position
@@ -938,7 +939,8 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 		"roll": roll,
 		"damage": 0,
 		"crit": false,
-		"damage_type": weapon_dmg_type
+		"damage_type": weapon_dmg_type,
+		"cover": _last_cover_result
 	}
 
 	if hit:
@@ -980,6 +982,9 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 
 
 ## Calculate hit chance (percentage)
+## Returns the hit chance and stores cover info in _last_cover_result for logging
+var _last_cover_result: Dictionary = {}
+
 func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 	var base_chance = 80.0
 	var accuracy = attacker.get_accuracy()
@@ -990,6 +995,15 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 	# Height advantage bonus (+5 per level, -5 penalty when lower)
 	if combat_grid:
 		hit_chance += combat_grid.get_height_accuracy_bonus(attacker.grid_position, defender.grid_position)
+
+	# Cover penalty for ranged attacks — obstacles between attacker and defender
+	_last_cover_result = {}
+	var is_ranged = attacker.is_ranged_weapon() if attacker.has_method("is_ranged_weapon") else false
+	if is_ranged and combat_grid:
+		var cover = combat_grid.get_cover_bonus(attacker.grid_position, defender.grid_position)
+		if cover.has_cover:
+			hit_chance -= cover.dodge_bonus
+			_last_cover_result = cover
 
 	# Clamp to 10-95%
 	return clampf(hit_chance, 10.0, 95.0)
@@ -1669,9 +1683,16 @@ func _process_stat_modifiers(unit: Node) -> void:
 
 
 ## Process terrain effects for a unit (fire, poison, blessed ground, etc.)
+## Flying units are completely immune. Levitating units are immune to damaging effects
+## but still benefit from blessed ground.
 func _process_terrain_effects(unit: Node) -> void:
 	if combat_grid == null:
 		return
+
+	# Check movement mode for terrain immunity
+	var movement_mode = unit.get_movement_mode() if unit.has_method("get_movement_mode") else CombatGrid.MovementMode.NORMAL
+	if movement_mode == CombatGrid.MovementMode.FLYING:
+		return  # Flying units are fully immune to all ground effects
 
 	var grid_pos = unit.grid_position
 	var terrain = combat_grid.get_terrain_effect(grid_pos)
@@ -1682,6 +1703,11 @@ func _process_terrain_effects(unit: Node) -> void:
 	var effect = terrain.effect
 	var value = terrain.value
 	var effect_name = combat_grid.get_effect_name(effect)
+
+	# Levitating units are immune to damaging ground effects (still get blessed)
+	if movement_mode == CombatGrid.MovementMode.LEVITATE:
+		if effect != CombatGrid.TerrainEffect.BLESSED:
+			return
 
 	# Apply effect based on type
 	match effect:
@@ -1712,15 +1738,24 @@ func _process_terrain_effects(unit: Node) -> void:
 
 
 ## Create ground effects on tiles from AoE damage (fire leaves fire, ice leaves ice, etc.)
+## Also damages obstacles caught in the area
 func _create_ground_effects_from_damage(center: Vector2i, radius: int, damage_type: String, duration: int = 2) -> void:
 	if combat_grid == null:
 		return
+
+	var tiles_in_area = combat_grid.get_tiles_in_radius(center, radius)
+
+	# Damage obstacles in the area (AoE hits everything)
+	for pos in tiles_in_area:
+		var tile = combat_grid.tiles.get(pos)
+		if tile != null and tile.obstacle != CombatGrid.ObstacleType.NONE and tile.obstacle_hp > 0:
+			# AoE deals roughly 10 damage to obstacles
+			combat_grid.damage_obstacle(pos, 10, damage_type)
 
 	var effect_type = DAMAGE_TYPE_TO_TERRAIN_EFFECT.get(damage_type, -1)
 	if effect_type < 0:
 		return  # No ground effect for this damage type (physical, air, space, etc.)
 
-	var tiles_in_area = combat_grid.get_tiles_in_radius(center, radius)
 	for pos in tiles_in_area:
 		var tile = combat_grid.tiles.get(pos)
 		if tile != null and tile.walkable:
