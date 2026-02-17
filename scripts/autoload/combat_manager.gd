@@ -2305,6 +2305,12 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 	if stamina_cost > 0 and user.current_stamina < stamina_cost:
 		return {"success": false, "reason": "Not enough stamina (%d/%d)" % [user.current_stamina, stamina_cost]}
 
+	# Check weapon requirement — weapon skills need the matching weapon equipped
+	var perk_skill = skill_data.get("skill", "")
+	if not unit_has_required_weapon(user, perk_skill):
+		var required = get_required_weapon_types(perk_skill)
+		return {"success": false, "reason": "Requires %s weapon equipped" % "/".join(required)}
+
 	var effect_type = combat_data.get("effect", "")
 	var targeting = combat_data.get("targeting", "self")
 
@@ -2766,3 +2772,49 @@ func get_active_skill_targets(user: Node, combat_data: Dictionary) -> Array[Vect
 					result.append(unit.grid_position)
 
 	return result
+
+
+## Map a perk's skill name to the weapon types that satisfy it.
+## Returns an empty array if the skill doesn't require a specific weapon.
+func get_required_weapon_types(skill_name: String) -> Array:
+	match skill_name:
+		"swords":
+			return ["sword"]
+		"axes":
+			return ["axe"]
+		"maces":
+			return ["mace"]
+		"spears":
+			return ["spear"]
+		"daggers":
+			return ["dagger"]
+		"ranged":
+			return ["bow", "thrown"]
+		"unarmed":
+			return ["unarmed"]  # Special: must have NO weapon equipped
+		"martial_arts":
+			return ["staff", "unarmed"]  # Staff or bare-handed
+		_:
+			return []  # Non-weapon skills (might, medicine, etc.) — no requirement
+
+
+## Check if a unit has the right weapon equipped for a given perk skill.
+## Returns true if the weapon requirement is satisfied.
+func unit_has_required_weapon(unit: Node, skill_name: String) -> bool:
+	var required = get_required_weapon_types(skill_name)
+	if required.is_empty():
+		return true  # No weapon requirement
+
+	var weapon = unit.get_equipped_weapon()
+	var weapon_type = weapon.get("type", "") if not weapon.is_empty() else ""
+
+	# "unarmed" means no weapon equipped
+	if "unarmed" in required:
+		if weapon.is_empty() or weapon_type == "":
+			return true
+
+	# Check if the equipped weapon type is in the required list
+	if weapon_type in required:
+		return true
+
+	return false

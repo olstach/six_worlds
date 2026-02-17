@@ -122,6 +122,34 @@ Last Updated: 2026-02-16
 - [ ] Passive bonus application (trade, healing, carrying capacity)
 - [ ] UI integration (slot already in Party tab)
 
+### Skill Scale Refactor (1-5 → 1-10)
+Expand the skill scale from 5 levels to 10 for better granularity. Currently level 3/5 = 60% mastery, which makes starting characters feel too skilled. With 10 levels, starting at 3/10 feels appropriately novice.
+
+**Key changes:**
+- [ ] Skill levels 1-10 across all systems (CharacterSystem, PerkSystem, spells, items, events, enemies)
+- [ ] Perks at every 2nd level (levels 2, 4, 6, 8, 10) — same number of perks, just more spread out
+- [ ] Spell level requirements remapped (currently 1-5, scale to 1-10)
+- [ ] Event/dialogue skill checks adjusted to new scale
+- [ ] Enemy archetype skill levels adjusted
+- [ ] New XP cost curve — proposed triangular: level 1 = 1 XP, level 2 = 3 XP, level 3 = 6 XP, etc. (needs playtesting/tweaking)
+- [ ] Update all data files: spells.json (326 spells), perks.json, items.json, events, enemies
+
+**XP cost proposal (triangular numbers, needs tuning):**
+| Level | Cost | Cumulative |
+|-------|------|------------|
+| 1 | 1 | 1 |
+| 2 | 3 | 4 |
+| 3 | 6 | 10 |
+| 4 | 10 | 20 |
+| 5 | 15 | 35 |
+| 6 | 21 | 56 |
+| 7 | 28 | 84 |
+| 8 | 36 | 120 |
+| 9 | 45 | 165 |
+| 10 | 55 | 220 |
+
+*Note: These costs are placeholder and need balancing. The pattern is level N costs N*(N+1)/2 XP. May need scaling factor (e.g., multiply all by 10 for 10/30/60/100/150...).*
+
 ### Testing & Polish
 - [ ] Test Shop UI thoroughly (buying, selling, spell learning, training)
 - [ ] Test terrain effect interactions with spells
@@ -219,6 +247,15 @@ Last Updated: 2026-02-16
 ---
 
 ## Session Notes
+
+### 2026-02-17 (later): Weapon Requirements for Active Skills
+- **Weapon type checks**: Active skills from weapon trees now require the matching weapon equipped
+  - Swords perks need a sword, Axes perks need an axe, etc.
+  - Unarmed perks require no weapon; Martial Arts allows staff or unarmed
+  - Non-weapon skills (Might, Medicine) have no weapon requirement
+  - Check in 3 places: CombatManager.use_active_skill(), UI panel (greyed + "[Wrong Weapon]"), AI filtering
+  - Helper functions: `get_required_weapon_types()`, `unit_has_required_weapon()` on CombatManager
+- **1-10 Skill Scale Refactor**: Added detailed plan to TODO for future session
 
 ### 2026-02-17: Active Skills, AI Combat Intelligence, Terrain
 - **Active Skills System**: Stamina tracking on CombatUnit, cooldown management, 25+ skills with structured combat_data

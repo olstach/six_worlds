@@ -1298,6 +1298,9 @@ func _show_skills_panel(unit: CombatUnit) -> void:
 				can_use = false
 			elif not CombatManager.can_act(1):
 				can_use = false
+			elif not CombatManager.unit_has_required_weapon(unit, skill_data.get("skill", "")):
+				can_use = false
+				btn.text += " [Wrong Weapon]"
 
 			# Color based on type and usability
 			if not can_use:
@@ -1401,6 +1404,13 @@ func _on_active_skill_selected(skill_data: Dictionary) -> void:
 	if unit.is_skill_on_cooldown(perk_id):
 		_log_message("%s is on cooldown (%d turns)!" % [
 			skill_data.get("name", "???"), unit.skill_cooldowns.get(perk_id, 0)])
+		return
+
+	# Check weapon requirement
+	var perk_skill = skill_data.get("skill", "")
+	if not CombatManager.unit_has_required_weapon(unit, perk_skill):
+		var required = CombatManager.get_required_weapon_types(perk_skill)
+		_log_message("Requires %s weapon equipped!" % "/".join(required))
 		return
 
 	selected_skill = skill_data
@@ -2775,6 +2785,11 @@ func _ai_try_use_active_skill(unit: CombatUnit, player_units: Array[Node], neare
 		if stamina_cost > 0 and unit.current_stamina < stamina_cost:
 			continue
 
+		# Check weapon requirement
+		var perk_skill = perk_data.get("skill", "")
+		if not CombatManager.unit_has_required_weapon(unit, perk_skill):
+			continue
+
 		var effect = combat_data.get("effect", "")
 		var targeting = combat_data.get("targeting", "self")
 		var skill_range = combat_data.get("range", 1)
@@ -2862,7 +2877,7 @@ func _ai_try_use_active_skill(unit: CombatUnit, player_units: Array[Node], neare
 
 		if score > best_score:
 			best_score = score
-			best_skill = {"id": perk_id, "name": perk_data.get("name", perk_id), "combat_data": combat_data}
+			best_skill = {"id": perk_id, "name": perk_data.get("name", perk_id), "skill": perk_data.get("skill", ""), "combat_data": combat_data}
 			best_target_pos = target_pos
 
 	# Only use if score is meaningful (avoid wasting skills)
