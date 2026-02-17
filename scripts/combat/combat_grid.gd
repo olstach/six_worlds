@@ -303,6 +303,20 @@ func is_valid_position(grid_pos: Vector2i) -> bool:
 		   grid_pos.y >= 0 and grid_pos.y < grid_size.y
 
 
+## Check if a tile is walkable (valid, passable terrain, no blocking obstacle)
+func is_tile_walkable(grid_pos: Vector2i) -> bool:
+	if not is_valid_position(grid_pos):
+		return false
+	var tile = tiles.get(grid_pos, null)
+	if tile == null:
+		return false
+	if not tile.walkable:
+		return false
+	if has_blocking_obstacle(grid_pos):
+		return false
+	return true
+
+
 # ============================================
 # UNIT MANAGEMENT
 # ============================================

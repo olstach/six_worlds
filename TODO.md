@@ -145,8 +145,9 @@ Last Updated: 2026-02-16
 - [ ] Party management screen
 
 ### Combat Improvements
-- [ ] Active skills fully functional (stamina costs, targeting, effects)
-- [ ] AI using consumable items (enemy potion/scroll usage)
+- [x] ~~Active skills fully functional (stamina costs, targeting, effects)~~ — DONE (25+ skills with combat_data, stamina/cooldown system)
+- [x] ~~AI using consumable items (enemy potion/scroll usage)~~ — DONE (AI health/mana potions, bombs, oils)
+- [x] ~~AI using active skills~~ — DONE (scoring system, prioritized decision tree)
 - [ ] Enemy-specific physical resistances (e.g., skeletons resist piercing, weak to crushing)
 - [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
 - [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
@@ -219,7 +220,22 @@ Last Updated: 2026-02-16
 
 ## Session Notes
 
-### 2026-02-17: Terrain Height, Obstacles & Cover System
+### 2026-02-17: Active Skills, AI Combat Intelligence, Terrain
+- **Active Skills System**: Stamina tracking on CombatUnit, cooldown management, 25+ skills with structured combat_data
+  - 8 effect types: attack_with_bonus, dash_attack, buff_self, debuff_target, aoe_attack, teleport, stance, heal_self
+  - Full targeting flow: select skill -> highlight valid targets -> resolve effect -> combat log
+  - Greyed out skills when insufficient stamina/on cooldown/no combat_data
+  - Stamina regen per turn (5 + Finesse/5)
+- **AI Consumable Usage**: Enemies now generate and use consumable items
+  - Inventory generation in EnemySystem based on archetype roles + power level
+  - Health potions at <35% HP, mana potions for casters at <30% mana
+  - Bombs when 2+ player units clustered, oils before melee attacks
+- **AI Active Skills**: Enemies use their perks intelligently
+  - Scoring system evaluates each skill based on situation (HP%, distance, enemy count)
+  - Prioritized decision tree: emergency heal -> mana restore -> active skills -> spells -> bombs -> oils -> attacks -> reposition
+- Terrain Height/Obstacles/Cover (from earlier in session)
+
+### 2026-02-17 (earlier): Terrain Height, Obstacles & Cover System
 - Height movement costs: climbing up +1 per level, dropping down free
 - Three movement modes: Normal (max 1 height), Levitate (max 2, partial geo immunity), Flying (any height, +1 cost, full geo/melee immunity)
 - Obstacle system: TREE (20 HP), ROCK (50 HP), PILLAR (30 HP), BARRICADE (16 HP)

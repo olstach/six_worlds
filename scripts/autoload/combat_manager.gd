@@ -29,6 +29,7 @@ signal deployment_phase_started(can_manually_place: bool)
 signal deployment_phase_ended()
 signal unit_deployed(unit: Node, position: Vector2i)
 signal item_used_in_combat(user: Node, item: Dictionary, result: Dictionary)
+signal active_skill_used(user: Node, skill_data: Dictionary, result: Dictionary)
 
 # Combat state
 var combat_active: bool = false
@@ -755,6 +756,14 @@ func _start_current_turn() -> void:
 
 	# Reset actions for this turn
 	unit.actions_remaining = unit.get_max_actions()
+
+	# Restore stamina each turn (base 5 + Finesse/5, so characters recover ~7-12/turn)
+	var finesse = unit.character_data.get("attributes", {}).get("finesse", 10)
+	var stamina_regen = 5 + int(finesse / 5)
+	unit.restore_stamina(stamina_regen)
+
+	# Tick skill cooldowns
+	unit.tick_cooldowns()
 
 	turn_started.emit(unit)
 
@@ -2211,3 +2220,549 @@ func get_unit_at(pos: Vector2i) -> Node:
 	if combat_grid:
 		return combat_grid.get_unit_at(pos)
 	return null
+
+
+# ============================================
+# AI CONSUMABLE USAGE
+# ============================================
+
+## Use a combat item from an AI unit's own combat_inventory (not the player shared inventory).
+## Works like use_combat_item but consumes from the unit's personal stash.
+func ai_use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dictionary:
+	if not can_act(1):
+		return {"success": false, "reason": "No actions remaining"}
+
+	var item = ItemSystem.get_item(item_id)
+	if item.is_empty():
+		return {"success": false, "reason": "Item not found: " + item_id}
+
+	# Check the unit's personal inventory
+	var inv_index = -1
+	for i in range(user.combat_inventory.size()):
+		if user.combat_inventory[i].get("item_id", "") == item_id:
+			if user.combat_inventory[i].get("quantity", 0) > 0:
+				inv_index = i
+				break
+	if inv_index == -1:
+		return {"success": false, "reason": "Not in inventory"}
+
+	var item_type = item.get("type", "")
+
+	# Validate targeting for bombs
+	if item_type == "bomb":
+		var effect = item.get("effect", {})
+		var bomb_range = effect.get("range", 4)
+		var distance = _spell_distance(user.grid_position, target_pos)
+		if distance > bomb_range:
+			return {"success": false, "reason": "Target out of range"}
+
+	# Consume from personal inventory
+	user.combat_inventory[inv_index].quantity -= 1
+	if user.combat_inventory[inv_index].quantity <= 0:
+		user.combat_inventory.remove_at(inv_index)
+
+	# Apply the effect
+	var result: Dictionary = {}
+	match item_type:
+		"potion":
+			result = _apply_potion_effect(user, item)
+		"bomb":
+			result = _use_bomb(user, item, target_pos)
+		"oil":
+			result = _apply_oil(user, item)
+		_:
+			return {"success": false, "reason": "AI cannot use item type: " + item_type}
+
+	if result.get("success", false):
+		use_action(1)
+		item_used_in_combat.emit(user, item, result)
+
+	return result
+
+
+# ============================================
+# ACTIVE SKILLS
+# ============================================
+
+## Use an active skill. skill_data comes from perks.json with added combat_data.
+## target_pos is used for targeted skills (single_enemy, aoe); ignored for self skills.
+func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	if not can_act(1):
+		return {"success": false, "reason": "No actions remaining"}
+
+	var combat_data = skill_data.get("combat_data", {})
+	if combat_data.is_empty():
+		return {"success": false, "reason": "Skill has no combat data"}
+
+	var perk_id = skill_data.get("id", "")
+	var stamina_cost = combat_data.get("stamina_cost", 0)
+
+	# Check cooldown
+	if user.is_skill_on_cooldown(perk_id):
+		return {"success": false, "reason": "Skill on cooldown (%d turns)" % user.skill_cooldowns.get(perk_id, 0)}
+
+	# Check stamina
+	if stamina_cost > 0 and user.current_stamina < stamina_cost:
+		return {"success": false, "reason": "Not enough stamina (%d/%d)" % [user.current_stamina, stamina_cost]}
+
+	var effect_type = combat_data.get("effect", "")
+	var targeting = combat_data.get("targeting", "self")
+
+	# Resolve the skill effect
+	var result: Dictionary = {"success": true, "effects": []}
+
+	match effect_type:
+		"attack_with_bonus":
+			result = _resolve_attack_skill(user, combat_data, target_pos)
+		"dash_attack":
+			result = _resolve_dash_attack(user, combat_data, target_pos)
+		"buff_self":
+			result = _resolve_buff_self(user, combat_data)
+		"debuff_target":
+			result = _resolve_debuff_target(user, combat_data, target_pos)
+		"aoe_attack":
+			result = _resolve_aoe_skill(user, combat_data, target_pos)
+		"teleport":
+			result = _resolve_teleport(user, combat_data, target_pos)
+		"stance":
+			result = _resolve_stance(user, combat_data)
+		"heal_self":
+			result = _resolve_heal_self(user, combat_data)
+		_:
+			return {"success": false, "reason": "Unknown skill effect: " + effect_type}
+
+	if result.get("success", false):
+		# Deduct stamina
+		if stamina_cost > 0:
+			user.use_stamina(stamina_cost)
+		# Use action
+		use_action(1)
+		# Apply cooldown
+		var cooldown = combat_data.get("cooldown", 0)
+		if cooldown > 0:
+			user.set_skill_cooldown(perk_id, cooldown)
+		# Once-per-combat skills get a huge cooldown
+		if combat_data.get("once_per_combat", false):
+			user.set_skill_cooldown(perk_id, 999)
+		# Emit signal
+		active_skill_used.emit(user, skill_data, result)
+
+	return result
+
+
+## Attack with accuracy/damage bonuses (Measured Strike, Aimed Shot, Final Cut, etc.)
+func _resolve_attack_skill(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var target = get_unit_at(target_pos)
+	if target == null or not target.is_alive():
+		return {"success": false, "reason": "No valid target"}
+	if target.team == user.team:
+		return {"success": false, "reason": "Cannot target allies"}
+
+	var distance = _grid_distance(user.grid_position, target_pos)
+	var max_range = combat_data.get("range", user.get_attack_range())
+	if distance > max_range:
+		return {"success": false, "reason": "Out of range"}
+
+	# Calculate hit with bonus accuracy
+	var accuracy_bonus = combat_data.get("accuracy_bonus", 0)
+	var damage_bonus_pct = combat_data.get("damage_bonus_pct", 0)
+	var armor_ignore_pct = combat_data.get("armor_ignore_pct", 0)
+	var resist_ignore_pct = combat_data.get("resist_ignore_pct", 0)
+	var ignore_dodge = combat_data.get("ignore_dodge", false)
+
+	# Roll to hit
+	var hit_chance = calculate_hit_chance(user, target) + accuracy_bonus
+	if ignore_dodge:
+		hit_chance = 95.0  # Near guaranteed but not immune to nat 1
+	var roll = randf() * 100.0
+	var hit = roll <= hit_chance
+
+	if not hit:
+		return {"success": true, "hit": false, "roll": roll, "hit_chance": hit_chance, "target": target, "effects": []}
+
+	# Calculate damage
+	var dmg_type = user.get_weapon_damage_type()
+	var dmg_result = calculate_physical_damage(user, target, dmg_type)
+	var damage = dmg_result.damage
+
+	# Apply damage bonus
+	if damage_bonus_pct > 0:
+		damage = int(damage * (1.0 + damage_bonus_pct / 100.0))
+
+	# Apply armor/resist ignore
+	if armor_ignore_pct > 0:
+		# Recalculate without some armor
+		var armor = target.get_armor()
+		var armor_reduced = int(armor * armor_ignore_pct / 100.0)
+		damage += armor_reduced  # Add back the armor that was subtracted
+
+	# Apply damage
+	apply_damage(target, damage, dmg_type)
+	_check_immediate_combat_end()
+
+	var result = {
+		"success": true, "hit": true, "damage": damage, "target": target,
+		"roll": roll, "hit_chance": hit_chance, "crit": dmg_result.crit,
+		"effects": []
+	}
+
+	# Apply on-hit buff to self
+	var self_buff = combat_data.get("self_buff", {})
+	if not self_buff.is_empty():
+		var stat = self_buff.get("stat", "")
+		var value = self_buff.get("value", 0)
+		var duration = self_buff.get("duration", 1)
+		_apply_stat_modifier(user, stat, value, duration)
+		result.effects.append({"type": "self_buff", "stat": stat, "value": value, "duration": duration})
+
+	# Apply on-hit debuff to target
+	var target_debuff = combat_data.get("target_debuff", {})
+	if not target_debuff.is_empty() and target.is_alive():
+		var stat = target_debuff.get("stat", "")
+		var value = target_debuff.get("value", 0)
+		var duration = target_debuff.get("duration", 2)
+		_apply_stat_modifier(target, stat, -value, duration)
+		result.effects.append({"type": "target_debuff", "stat": stat, "value": value, "duration": duration})
+
+	# Stamina refund on kill
+	var refund_on_kill = combat_data.get("refund_on_kill", 0)
+	if refund_on_kill > 0 and not target.is_alive():
+		user.restore_stamina(refund_on_kill)
+		result.effects.append({"type": "refund", "amount": refund_on_kill})
+
+	return result
+
+
+## Dash + Attack (Lunge, Whirling Advance, etc.)
+func _resolve_dash_attack(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var target = get_unit_at(target_pos)
+	if target == null or not target.is_alive():
+		return {"success": false, "reason": "No valid target"}
+	if target.team == user.team:
+		return {"success": false, "reason": "Cannot target allies"}
+
+	var dash_range = combat_data.get("dash_range", 2)
+	var distance = _grid_distance(user.grid_position, target_pos)
+	if distance > dash_range + user.get_attack_range():
+		return {"success": false, "reason": "Target too far to dash-attack"}
+
+	# Move toward target (find closest adjacent tile)
+	var best_tile = user.grid_position
+	var best_dist = 999
+	if combat_grid:
+		var movement_mode = user.get_movement_mode() if user.has_method("get_movement_mode") else 0
+		var reachable = combat_grid.get_reachable_tiles(user.grid_position, dash_range, movement_mode)
+		for tile in reachable:
+			var d = _grid_distance(tile, target_pos)
+			if d > 0 and d <= user.get_attack_range() and d < best_dist:
+				best_dist = d
+				best_tile = tile
+
+	# Move without using an action (it's part of the skill)
+	if best_tile != user.grid_position and combat_grid:
+		var from = user.grid_position
+		combat_grid.move_unit(user, best_tile)
+		unit_moved.emit(user, from, best_tile)
+
+	# Now attack
+	var damage_bonus_pct = combat_data.get("damage_bonus_pct", 0)
+	var hit_chance = calculate_hit_chance(user, target)
+	var roll = randf() * 100.0
+	var hit = roll <= hit_chance
+
+	if not hit:
+		return {"success": true, "hit": false, "roll": roll, "hit_chance": hit_chance,
+				"target": target, "moved_to": best_tile, "effects": []}
+
+	var dmg_type = user.get_weapon_damage_type()
+	var dmg_result = calculate_physical_damage(user, target, dmg_type)
+	var damage = int(dmg_result.damage * (1.0 + damage_bonus_pct / 100.0))
+
+	apply_damage(target, damage, dmg_type)
+	_check_immediate_combat_end()
+
+	return {
+		"success": true, "hit": true, "damage": damage, "target": target,
+		"moved_to": best_tile, "roll": roll, "hit_chance": hit_chance,
+		"crit": dmg_result.crit, "effects": []
+	}
+
+
+## Buff self (Cloud Step, defensive stances, etc.)
+func _resolve_buff_self(user: Node, combat_data: Dictionary) -> Dictionary:
+	var buffs = combat_data.get("buffs", [])
+	var effects: Array = []
+
+	for buff in buffs:
+		var stat = buff.get("stat", "")
+		var value = buff.get("value", 0)
+		var duration = buff.get("duration", 1)
+
+		if stat == "movement_mode":
+			# Special: grant a movement mode status
+			var status_name = buff.get("status", "levitating")
+			_apply_status_effect(user, status_name, duration)
+			effects.append({"type": "status", "status": status_name, "duration": duration})
+		elif stat != "":
+			_apply_stat_modifier(user, stat, value, duration)
+			effects.append({"type": "buff", "stat": stat, "value": value, "duration": duration})
+
+	# Apply status effects from skill
+	var statuses = combat_data.get("statuses", [])
+	for status_entry in statuses:
+		var status_name = status_entry.get("status", "")
+		var duration = status_entry.get("duration", 2)
+		var value = status_entry.get("value", 0)
+		_apply_status_effect(user, status_name, duration, value)
+		effects.append({"type": "status", "status": status_name, "duration": duration})
+
+	return {"success": true, "effects": effects}
+
+
+## Debuff a target (Disrupting Palm, etc.)
+func _resolve_debuff_target(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var target = get_unit_at(target_pos)
+	if target == null or not target.is_alive():
+		return {"success": false, "reason": "No valid target"}
+
+	var max_range = combat_data.get("range", 1)
+	var distance = _grid_distance(user.grid_position, target_pos)
+	if distance > max_range:
+		return {"success": false, "reason": "Out of range"}
+
+	# Some debuff skills still attack first
+	var deals_damage = combat_data.get("deals_damage", false)
+	var damage = 0
+	var hit = true
+
+	if deals_damage:
+		var hit_chance = calculate_hit_chance(user, target)
+		var roll = randf() * 100.0
+		hit = roll <= hit_chance
+
+		if hit:
+			var dmg_type = user.get_weapon_damage_type()
+			var dmg_result = calculate_physical_damage(user, target, dmg_type)
+			damage = dmg_result.damage
+			apply_damage(target, damage, dmg_type)
+			_check_immediate_combat_end()
+
+	if not hit:
+		return {"success": true, "hit": false, "target": target, "effects": []}
+
+	# Apply debuffs
+	var debuffs = combat_data.get("debuffs", [])
+	var effects: Array = []
+	for debuff in debuffs:
+		var stat = debuff.get("stat", "")
+		var value = debuff.get("value", 0)
+		var duration = debuff.get("duration", 2)
+		if stat != "" and target.is_alive():
+			_apply_stat_modifier(target, stat, -value, duration)
+			effects.append({"type": "debuff", "stat": stat, "value": value, "duration": duration})
+
+	# Apply status effects
+	var statuses = combat_data.get("statuses", [])
+	for status_entry in statuses:
+		var status_name = status_entry.get("status", "")
+		var duration = status_entry.get("duration", 2)
+		if target.is_alive():
+			_apply_status_effect(target, status_name, duration)
+			effects.append({"type": "status", "status": status_name, "duration": duration})
+
+	return {"success": true, "hit": true, "damage": damage, "target": target, "effects": effects}
+
+
+## AoE skill (Volley, Ground Slam, etc.)
+func _resolve_aoe_skill(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var max_range = combat_data.get("range", 4)
+	var distance = _grid_distance(user.grid_position, target_pos)
+	if distance > max_range:
+		return {"success": false, "reason": "Out of range"}
+
+	var aoe_radius = combat_data.get("aoe_radius", 1)
+	var damage_pct = combat_data.get("damage_pct", 60)  # % of normal damage
+
+	# Find all enemy units in AoE
+	var hit_targets: Array = []
+	for unit in all_units:
+		if not unit.is_alive() or unit.team == user.team:
+			continue
+		var d = _grid_distance(target_pos, unit.grid_position)
+		if d <= aoe_radius:
+			hit_targets.append(unit)
+
+	var effects: Array = []
+	for target in hit_targets:
+		var dmg_type = user.get_weapon_damage_type()
+		var dmg_result = calculate_physical_damage(user, target, dmg_type)
+		var damage = int(dmg_result.damage * damage_pct / 100.0)
+		apply_damage(target, damage, dmg_type)
+		effects.append({"type": "aoe_damage", "target": target, "damage": damage})
+
+	_check_immediate_combat_end()
+	return {"success": true, "hit_count": hit_targets.size(), "effects": effects}
+
+
+## Teleport (Step Between Moments, etc.)
+func _resolve_teleport(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var teleport_range = combat_data.get("teleport_range", 3)
+	var distance = _grid_distance(user.grid_position, target_pos)
+	if distance > teleport_range:
+		return {"success": false, "reason": "Teleport destination too far"}
+
+	# Check tile is walkable and unoccupied
+	if combat_grid:
+		var unit_there = combat_grid.get_unit_at(target_pos)
+		if unit_there != null:
+			return {"success": false, "reason": "Tile occupied"}
+		if not combat_grid.is_tile_walkable(target_pos):
+			return {"success": false, "reason": "Tile not walkable"}
+
+	# Teleport
+	var from = user.grid_position
+	if combat_grid:
+		combat_grid.move_unit(user, target_pos)
+	unit_moved.emit(user, from, target_pos)
+
+	# Apply post-teleport buffs
+	var effects: Array = []
+	var buffs = combat_data.get("buffs", [])
+	for buff in buffs:
+		var stat = buff.get("stat", "")
+		var value = buff.get("value", 0)
+		var duration = buff.get("duration", 1)
+		_apply_stat_modifier(user, stat, value, duration)
+		effects.append({"type": "buff", "stat": stat, "value": value, "duration": duration})
+
+	return {"success": true, "teleported_to": target_pos, "effects": effects}
+
+
+## Stance (Stand in the Gap, Counterstrike — end turn, gain defensive effect)
+func _resolve_stance(user: Node, combat_data: Dictionary) -> Dictionary:
+	var effects: Array = []
+
+	# Apply stance buffs
+	var buffs = combat_data.get("buffs", [])
+	for buff in buffs:
+		var stat = buff.get("stat", "")
+		var value = buff.get("value", 0)
+		var duration = buff.get("duration", 1)
+		_apply_stat_modifier(user, stat, value, duration)
+		effects.append({"type": "buff", "stat": stat, "value": value, "duration": duration})
+
+	# Apply stance status effects
+	var statuses = combat_data.get("statuses", [])
+	for status_entry in statuses:
+		_apply_status_effect(user, status_entry.get("status", ""), status_entry.get("duration", 1))
+		effects.append({"type": "status", "status": status_entry.status, "duration": status_entry.duration})
+
+	# Stances end your turn — use all remaining actions
+	var unit = get_current_unit()
+	if unit == user:
+		while unit.actions_remaining > 1:  # Leave 1 for the use_action call in use_active_skill
+			unit.actions_remaining -= 1
+
+	return {"success": true, "ends_turn": true, "effects": effects}
+
+
+## Heal self (Mantra of Healing, etc.)
+func _resolve_heal_self(user: Node, combat_data: Dictionary) -> Dictionary:
+	var base_heal = combat_data.get("heal_value", 20)
+	# Scale with spellpower or other stat
+	var scale_stat = combat_data.get("scale_stat", "")
+	var heal_amount = base_heal
+	if scale_stat == "spellpower":
+		heal_amount += int(user.get_spellpower() * 0.5)
+	elif scale_stat == "focus":
+		var focus = user.character_data.get("attributes", {}).get("focus", 10)
+		heal_amount += (focus - 10) * 2
+
+	var effects: Array = []
+
+	if heal_amount > 0:
+		user.heal(heal_amount)
+		unit_healed.emit(user, heal_amount)
+		effects.append({"type": "heal", "amount": heal_amount})
+
+	# Stamina restore (for skills like Second Wind)
+	var stamina_restore_pct = combat_data.get("stamina_restore_pct", 0)
+	if stamina_restore_pct > 0:
+		var stamina_amount = int(user.max_stamina * stamina_restore_pct / 100.0)
+		user.restore_stamina(stamina_amount)
+		effects.append({"type": "stamina_restore", "amount": stamina_amount})
+
+	# Apply any buffs from the skill (e.g., damage resistance from Second Wind)
+	var buffs = combat_data.get("buffs", [])
+	for buff in buffs:
+		var stat = buff.get("stat", "")
+		var value = buff.get("value", 0)
+		var duration = buff.get("duration", 1)
+		if stat != "":
+			_apply_stat_modifier(user, stat, value, duration)
+			effects.append({"type": "buff", "stat": stat, "value": value, "duration": duration})
+
+	return {"success": true, "heal_amount": heal_amount, "effects": effects}
+
+
+## Get the targeting type for a skill's combat_data
+func get_skill_targeting(combat_data: Dictionary) -> String:
+	return combat_data.get("targeting", "self")
+
+
+## Get valid target tiles for an active skill based on its targeting type
+func get_active_skill_targets(user: Node, combat_data: Dictionary) -> Array[Vector2i]:
+	var targeting = combat_data.get("targeting", "self")
+	var skill_range = combat_data.get("range", 1)
+	var result: Array[Vector2i] = []
+
+	match targeting:
+		"self":
+			result.append(user.grid_position)
+		"single_enemy":
+			# All enemy tiles within range
+			for unit in all_units:
+				if not unit.is_alive() or unit.team == user.team:
+					continue
+				var dist = _grid_distance(user.grid_position, unit.grid_position)
+				if dist <= skill_range:
+					result.append(unit.grid_position)
+		"single_ally":
+			for unit in all_units:
+				if not unit.is_alive() or unit.team != user.team:
+					continue
+				var dist = _grid_distance(user.grid_position, unit.grid_position)
+				if dist <= skill_range:
+					result.append(unit.grid_position)
+		"aoe_point":
+			# Any tile within range
+			if combat_grid:
+				for x in range(combat_grid.grid_width):
+					for y in range(combat_grid.grid_height):
+						var tile = Vector2i(x, y)
+						var dist = _grid_distance(user.grid_position, tile)
+						if dist <= skill_range:
+							result.append(tile)
+		"teleport":
+			# Any walkable unoccupied tile within range
+			if combat_grid:
+				for x in range(combat_grid.grid_width):
+					for y in range(combat_grid.grid_height):
+						var tile = Vector2i(x, y)
+						var dist = _grid_distance(user.grid_position, tile)
+						if dist <= skill_range and combat_grid.is_tile_walkable(tile):
+							var unit_at = combat_grid.get_unit_at(tile)
+							if unit_at == null or unit_at == user:
+								result.append(tile)
+		"dash_attack":
+			# All enemy tiles within dash_range + attack_range
+			var dash_range = combat_data.get("dash_range", 2)
+			var attack_range = user.get_attack_range()
+			for unit in all_units:
+				if not unit.is_alive() or unit.team == user.team:
+					continue
+				var dist = _grid_distance(user.grid_position, unit.grid_position)
+				if dist <= dash_range + attack_range:
+					result.append(unit.grid_position)
+
+	return result

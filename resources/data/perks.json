@@ -997,7 +997,16 @@
 			"requires_perks": [],
 			"description": "Active (3 Stamina). Make an attack with +20% accuracy. On hit, gain +15% Armor for 1 turn.",
 			"flavor": "The sword teaches restraint before aggression.",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 3,
+				"targeting": "single_enemy",
+				"range": 1,
+				"effect": "attack_with_bonus",
+				"accuracy_bonus": 20,
+				"damage_bonus_pct": 0,
+				"self_buff": {"stat": "armor", "value": 15, "duration": 1}
+			}
 		},
 		"lunge": {
 			"name": "Lunge",
@@ -1006,7 +1015,14 @@
 			"requires_perks": [],
 			"description": "Active (4 Stamina). Leap up to 2 tiles toward an enemy and make a sword attack with +25% damage.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 4,
+				"targeting": "dash_attack",
+				"effect": "dash_attack",
+				"dash_range": 2,
+				"damage_bonus_pct": 25
+			}
 		},
 		"riposte": {
 			"name": "Riposte",
@@ -1024,7 +1040,14 @@
 			"requires_perks": [],
 			"description": "Active. End your turn. Until your next turn, enemies moving past or attacking allies within 1 tile of you provoke a free sword attack.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 0,
+				"targeting": "self",
+				"effect": "stance",
+				"buffs": [{"stat": "armor", "value": 10, "duration": 1}],
+				"statuses": [{"status": "guarding", "duration": 1}]
+			}
 		},
 		"counterstrike": {
 			"name": "Counterstrike",
@@ -1033,7 +1056,15 @@
 			"requires_perks": [],
 			"description": "Active (6 Stamina, 3-turn cooldown). Until your next turn, each melee attack against you triggers a counterattack (once per attacker per round).",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 6,
+				"cooldown": 3,
+				"targeting": "self",
+				"effect": "stance",
+				"buffs": [{"stat": "armor", "value": 15, "duration": 1}],
+				"statuses": [{"status": "counterstriking", "duration": 1}]
+			}
 		},
 		"final_cut": {
 			"name": "Final Cut",
@@ -1042,7 +1073,18 @@
 			"requires_perks": [],
 			"description": "Active (8 Stamina). A precise strike that ignores 50% of Armor and 50% of Resistances. If it kills the target, refund 4 Stamina.",
 			"flavor": "Conflict ends when the line is drawn cleanly.",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 8,
+				"targeting": "single_enemy",
+				"range": 1,
+				"effect": "attack_with_bonus",
+				"accuracy_bonus": 0,
+				"damage_bonus_pct": 0,
+				"armor_ignore_pct": 50,
+				"resist_ignore_pct": 50,
+				"refund_on_kill": 4
+			}
 		},
 		"centered_stance": {
 			"name": "Centered Stance",
@@ -1108,7 +1150,14 @@
 			"requires_perks": [],
 			"description": "Active (3 Stamina). Move through enemies and difficult terrain this turn without penalty.",
 			"flavor": "Two inches above the ground.",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 3,
+				"targeting": "self",
+				"effect": "buff_self",
+				"buffs": [{"stat": "movement", "value": 2, "duration": 1}],
+				"statuses": [{"status": "levitating", "duration": 1}]
+			}
 		},
 		"whirling_advance": {
 			"name": "Whirling Advance",
@@ -1117,7 +1166,14 @@
 			"requires_perks": [],
 			"description": "Active (4 Stamina). Move up to your full Speed and make a melee attack at any point during the movement.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 4,
+				"targeting": "dash_attack",
+				"effect": "dash_attack",
+				"dash_range": 4,
+				"damage_bonus_pct": 0
+			}
 		},
 		"disrupting_palm": {
 			"name": "Disrupting Palm",
@@ -1126,7 +1182,15 @@
 			"requires_perks": [],
 			"description": "Active (4 Stamina). Make an unarmed or light-weapon attack. On hit, choose one: -15% Armor, -15% Focus, or -3 Initiative for 2 turns.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 4,
+				"targeting": "single_enemy",
+				"range": 1,
+				"effect": "debuff_target",
+				"deals_damage": true,
+				"debuffs": [{"stat": "armor", "value": 15, "duration": 2}]
+			}
 		},
 		"step_between_moments": {
 			"name": "Step Between Moments",
@@ -1135,7 +1199,17 @@
 			"requires_perks": [],
 			"description": "Active (6 Stamina). Teleport up to 3 tiles. Your next attack this round has +20% crit chance and ignores Dodge. After teleporting, gain +15% Dodge until your next turn.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 6,
+				"targeting": "teleport",
+				"effect": "teleport",
+				"teleport_range": 3,
+				"buffs": [
+					{"stat": "crit_chance", "value": 20, "duration": 1},
+					{"stat": "dodge", "value": 15, "duration": 1}
+				]
+			}
 		},
 		"heavenly_counterflow": {
 			"name": "Heavenly Counterflow",
@@ -1144,7 +1218,14 @@
 			"requires_perks": [],
 			"description": "Active (8 Stamina, once per combat). Until your next turn, the first melee attack against you is automatically Dodged, and you immediately reposition up to 2 tiles and counterattack with +30% damage.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 8,
+				"once_per_combat": true,
+				"targeting": "self",
+				"effect": "stance",
+				"buffs": [{"stat": "dodge", "value": 50, "duration": 1}]
+			}
 		},
 		"body_as_conduit": {
 			"name": "Body as Conduit",
@@ -1740,7 +1821,15 @@
 			"requires_perks": [],
 			"description": "Active (4 Stamina). Gain +25% accuracy and +20% damage on your next ranged attack this turn.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 4,
+				"targeting": "single_enemy",
+				"range": 6,
+				"effect": "attack_with_bonus",
+				"accuracy_bonus": 25,
+				"damage_bonus_pct": 20
+			}
 		},
 		"pinning_shot": {
 			"name": "Pinning Shot",
@@ -1749,7 +1838,15 @@
 			"requires_perks": [],
 			"description": "Active (5 Stamina). Make a ranged attack. On hit, target's Movement is reduced to 0 for 1 turn (Constitution save negates the pin, damage still applies).",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 5,
+				"targeting": "single_enemy",
+				"range": 6,
+				"effect": "debuff_target",
+				"deals_damage": true,
+				"debuffs": [{"stat": "movement", "value": 10, "duration": 1}]
+			}
 		},
 		"volley": {
 			"name": "Volley",
@@ -1758,7 +1855,15 @@
 			"requires_perks": [],
 			"description": "Active (6 Stamina). Attack all enemies in a 2-tile-wide, 3-tile-long cone at 60% damage.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 6,
+				"targeting": "aoe_point",
+				"range": 5,
+				"aoe_radius": 2,
+				"effect": "aoe_attack",
+				"damage_pct": 60
+			}
 		},
 		"kill_zone": {
 			"name": "Kill Zone",
@@ -1767,7 +1872,14 @@
 			"requires_perks": [],
 			"description": "Active (7 Stamina). End your turn. Until your next turn, make a free ranged attack against each enemy that moves within your weapon range (max 3 attacks).",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 7,
+				"targeting": "self",
+				"effect": "stance",
+				"buffs": [{"stat": "accuracy", "value": 10, "duration": 1}],
+				"statuses": [{"status": "overwatch", "duration": 1}]
+			}
 		},
 		"no_safe_angle": {
 			"name": "No Safe Angle",
@@ -1776,7 +1888,14 @@
 			"requires_perks": [],
 			"description": "Active (once per combat). Your next ranged attack is a guaranteed critical hit.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 0,
+				"once_per_combat": true,
+				"targeting": "self",
+				"effect": "buff_self",
+				"buffs": [{"stat": "crit_chance", "value": 100, "duration": 1}]
+			}
 		},
 		"soft_step": {
 			"name": "Soft Step",
@@ -2577,7 +2696,15 @@
 			"requires_perks": [],
 			"description": "Active (8 Stamina). Attack all enemies in a 180-degree arc for full damage with +15% crit chance.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 8,
+				"targeting": "aoe_point",
+				"range": 1,
+				"aoe_radius": 1,
+				"effect": "aoe_attack",
+				"damage_pct": 100
+			}
 		},
 		"sundering_blow": {
 			"name": "Sundering Blow",
@@ -2586,7 +2713,15 @@
 			"requires_perks": [],
 			"description": "Active (4 Stamina). Make an attack that reduces target's Armor by 30% for 3 turns.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 4,
+				"targeting": "single_enemy",
+				"range": 1,
+				"effect": "debuff_target",
+				"deals_damage": true,
+				"debuffs": [{"stat": "armor", "value": 30, "duration": 3}]
+			}
 		},
 		"crack_the_line": {
 			"name": "Crack the Line",
@@ -2613,7 +2748,17 @@
 			"requires_perks": [],
 			"description": "Active (3 Stamina). A slow attack with +30% damage and +15% armor penetration, but you suffer -15% Dodge until next turn.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 3,
+				"targeting": "single_enemy",
+				"range": 1,
+				"effect": "attack_with_bonus",
+				"accuracy_bonus": 0,
+				"damage_bonus_pct": 30,
+				"armor_ignore_pct": 15,
+				"self_buff": {"stat": "dodge", "value": -15, "duration": 1}
+			}
 		},
 		"all_in": {
 			"name": "All In",
@@ -2667,7 +2812,15 @@
 			"requires_perks": [],
 			"description": "Active (3 Stamina). A heavy strike that knocks an enemy prone for 1 turn (Constitution save negates).",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 3,
+				"targeting": "single_enemy",
+				"range": 1,
+				"effect": "debuff_target",
+				"deals_damage": true,
+				"statuses": [{"status": "knocked_down", "duration": 1}]
+			}
 		},
 		"rattle_the_cage": {
 			"name": "Rattle the Cage",
@@ -2757,7 +2910,18 @@
 			"requires_perks": [],
 			"description": "Active (once per combat, 8 Stamina). Deal triple damage with an unarmed strike that cannot be Dodged or blocked by Armor.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 8,
+				"once_per_combat": true,
+				"targeting": "single_enemy",
+				"range": 1,
+				"effect": "attack_with_bonus",
+				"accuracy_bonus": 0,
+				"damage_bonus_pct": 200,
+				"armor_ignore_pct": 100,
+				"ignore_dodge": true
+			}
 		},
 		"kindled": {
 			"name": "Kindled",
@@ -3099,7 +3263,15 @@
 			"requires_perks": [],
 			"description": "Active (5 Stamina). Double the Strength bonus on your next melee attack.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 5,
+				"targeting": "single_enemy",
+				"range": 1,
+				"effect": "attack_with_bonus",
+				"accuracy_bonus": 0,
+				"damage_bonus_pct": 50
+			}
 		},
 		"hard_to_tire": {
 			"name": "Hard to Tire",
@@ -3117,7 +3289,17 @@
 			"requires_perks": [],
 			"description": "Active (3-turn cooldown). Recover 30% of max Stamina and gain +10% damage resistance for 2 turns.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 0,
+				"cooldown": 3,
+				"targeting": "self",
+				"effect": "heal_self",
+				"heal_value": 0,
+				"scale_stat": "",
+				"stamina_restore_pct": 30,
+				"buffs": [{"stat": "armor", "value": 10, "duration": 2}]
+			}
 		},
 		"breath_control": {
 			"name": "Breath Control",
@@ -3545,7 +3727,13 @@
 			"requires_perks": [],
 			"description": "Active. End your turn. If an enemy moves into your reach before your next turn, your reaction attack deals double damage.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 0,
+				"targeting": "self",
+				"effect": "stance",
+				"buffs": [{"stat": "damage", "value": 25, "duration": 1}]
+			}
 		},
 		"none_shall_pass": {
 			"name": "None Shall Pass",
@@ -3554,7 +3742,13 @@
 			"requires_perks": [],
 			"description": "Active. End your turn. Until your next turn, enemies cannot move through your threatened area (2-tile reach) without taking a free attack and suffering -2 Movement for 1 turn.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 0,
+				"targeting": "self",
+				"effect": "stance",
+				"buffs": [{"stat": "armor", "value": 15, "duration": 1}, {"stat": "damage", "value": 20, "duration": 1}]
+			}
 		},
 		"wall_of_points": {
 			"name": "Wall of Points",
@@ -3583,7 +3777,15 @@
 			"requires_perks": [],
 			"description": "Active (5 Stamina). Make a spear attack. On hit, target's Movement is reduced to 0 for 2 turns (Constitution save negates the pin, damage still applies).",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 5,
+				"targeting": "single_enemy",
+				"range": 2,
+				"effect": "debuff_target",
+				"deals_damage": true,
+				"debuffs": [{"stat": "movement", "value": 10, "duration": 2}]
+			}
 		},
 		"disciplined_formation": {
 			"name": "Disciplined Formation",
@@ -3610,7 +3812,15 @@
 			"requires_perks": [],
 			"description": "Active (4 Stamina). Attack all enemies within reach in a 180-degree arc at 75% damage.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 4,
+				"targeting": "aoe_point",
+				"range": 0,
+				"aoe_radius": 2,
+				"effect": "aoe_attack",
+				"damage_pct": 75
+			}
 		},
 		"impaling_strike": {
 			"name": "Impaling Strike",
@@ -3619,7 +3829,15 @@
 			"requires_perks": [],
 			"description": "Active (6 Stamina). Attack in a line, hitting up to 2 enemies. Full damage to the first, 60% to the second.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 6,
+				"targeting": "single_enemy",
+				"range": 2,
+				"effect": "attack_with_bonus",
+				"accuracy_bonus": 0,
+				"damage_bonus_pct": 0
+			}
 		},
 		"water_finds_the_gap": {
 			"name": "Water Finds the Gap",
@@ -4052,7 +4270,15 @@
 			"requires_perks": [],
 			"description": "Active (1 action). Heal an adjacent ally for 25% of your Awareness as HP.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 0,
+				"targeting": "single_ally",
+				"range": 1,
+				"effect": "heal_self",
+				"heal_value": 15,
+				"scale_stat": "focus"
+			}
 		},
 		"triage": {
 			"name": "Triage",
@@ -4503,7 +4729,15 @@
 			"requires_perks": [],
 			"description": "Active (3 Stamina). Make an attack that pushes the enemy 1 tile. If they can't be pushed (wall, another unit), they take +25% damage instead.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 3,
+				"targeting": "single_enemy",
+				"range": 1,
+				"effect": "attack_with_bonus",
+				"accuracy_bonus": 0,
+				"damage_bonus_pct": 25
+			}
 		},
 		"follow_through": {
 			"name": "Follow Through",
@@ -4521,7 +4755,15 @@
 			"requires_perks": [],
 			"description": "Active (5 Stamina). Strike the ground, dealing 60% damage to all enemies within 1 tile. Enemies must pass a Finesse save or be knocked prone.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 5,
+				"targeting": "aoe_point",
+				"range": 0,
+				"aoe_radius": 1,
+				"effect": "aoe_attack",
+				"damage_pct": 60
+			}
 		},
 		"earthquake": {
 			"name": "Earthquake",
@@ -4541,7 +4783,17 @@
 			"requires_perks": [],
 			"description": "Active (10 Stamina, once per combat). Devastating overhead strike dealing 200% damage. Target must pass a Constitution save at -20% or be Stunned for 2 turns. All enemies within 1 tile take 50% damage.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"stamina_cost": 10,
+				"once_per_combat": true,
+				"targeting": "single_enemy",
+				"range": 1,
+				"effect": "attack_with_bonus",
+				"accuracy_bonus": 0,
+				"damage_bonus_pct": 200,
+				"target_debuff": {"stat": "armor", "value": 20, "duration": 2}
+			}
 		},
 		"relentless_advance": {
 			"name": "Relentless Advance",
