@@ -28,9 +28,13 @@ Last Updated: 2026-02-16
 - [x] 80+ status effect definitions
 - [x] Terrain system (walls, pits, water, difficult)
 - [x] Terrain effects (fire, ice, poison, acid, blessed, cursed)
-- [x] Height system with traversal limits
+- [x] Height system with traversal limits and climbing movement costs
 - [x] Line of sight (Bresenham's algorithm)
 - [x] Height advantage bonuses (accuracy, damage, range)
+- [x] Obstacle cover system (trees, rocks, pillars, barricades with dodge bonuses)
+- [x] Obstacle destruction (HP-based, aftermath terrain effects)
+- [x] Movement modes: normal, levitate (height 2, geo partial immunity), flying (any height, full immunity)
+- [x] Cover tooltip on movement hover, cover info in combat log
 - [x] Deployment zones with role-based positioning
 - [x] Tactician upgrade for manual placement
 - [x] AI spell casting and ranged repositioning
@@ -45,6 +49,7 @@ Last Updated: 2026-02-16
 - [x] Miss/Dodge/Block floating combat text
 - [x] Attack lunge animation (sprite moves toward target and returns)
 - [x] Enemy loot drops
+- [x] AoE spells damage obstacles and create ground effects
 
 ### Character & Progression
 - [x] XP-based progression (no levels)
@@ -143,11 +148,11 @@ Last Updated: 2026-02-16
 - [ ] Active skills fully functional (stamina costs, targeting, effects)
 - [ ] AI using consumable items (enemy potion/scroll usage)
 - [ ] Enemy-specific physical resistances (e.g., skeletons resist piercing, weak to crushing)
-- [ ] More obstacle variety (rocks, pillars, trees, destructible objects)
-- [ ] Spells creating terrain effects (Fireball leaves fire terrain)
+- [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
+- [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
 - [ ] Terrain affecting spell power
 - [ ] Environmental spell interactions
-- [ ] Realm-specific combat terrain themes
+- [x] ~~Realm-specific combat terrain themes~~ — DONE (overworld terrain generates realm-appropriate obstacles)
 
 ---
 
@@ -213,6 +218,17 @@ Last Updated: 2026-02-16
 ---
 
 ## Session Notes
+
+### 2026-02-17: Terrain Height, Obstacles & Cover System
+- Height movement costs: climbing up +1 per level, dropping down free
+- Three movement modes: Normal (max 1 height), Levitate (max 2, partial geo immunity), Flying (any height, +1 cost, full geo/melee immunity)
+- Obstacle system: TREE (20 HP), ROCK (50 HP), PILLAR (30 HP), BARRICADE (16 HP)
+- Cover mechanic: obstacles between attacker/defender grant dodge bonus vs ranged (15-20%)
+- Obstacle destruction: trees burn into fire terrain, rocks/pillars become rubble
+- AoE spells damage obstacles in blast radius
+- Terrain generation creates realm-appropriate obstacles (forest→trees, mountains→rocks, ruins→pillars)
+- Cover tooltip on movement hover, cover/height info in combat log
+- Height shading on tiles (lighter = higher)
 
 ### 2026-02-16: UI Fixes and Combat Polish
 - Fixed float display of skill levels, affinities, derived stats across all UI screens
