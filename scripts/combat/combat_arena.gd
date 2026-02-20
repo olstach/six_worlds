@@ -37,6 +37,7 @@ var selected_unit: CombatUnit = null
 var selected_spell: Dictionary = {}
 var selected_item: Dictionary = {}
 var selected_skill: Dictionary = {}
+var _last_hovered_tile: Vector2i = Vector2i(-1, -1)  # Track hover to avoid log spam
 
 # AI turn timer
 var ai_timer: Timer
@@ -352,26 +353,36 @@ func _generate_combat_terrain(context: Dictionary) -> Dictionary:
 	var tile_overrides: Dictionary = {}  # "x,y" -> TileType
 	var effects: Array[Dictionary] = []
 	var heights: Array[Dictionary] = []
+	var obstacles: Array[Dictionary] = []
 
 	# Budget obstacles based on overworld terrain counts in the 5x5 sample
-	var obstacle_budget = 0
+	var wall_budget = 0
 	var water_budget = 0
 	var difficult_budget = 0
+	var tree_budget = 0
+	var rock_budget = 0
+	var pillar_budget = 0
 
 	for terrain_type in counts:
 		var count = int(counts[terrain_type])
 		match int(terrain_type):
-			4:  # MOUNTAINS -> walls
-				obstacle_budget += count
+			4:  # MOUNTAINS -> walls + rocks for cover
+				wall_budget += count
+				rock_budget += count
 			5:  # WATER -> water tiles
 				water_budget += count
-			2, 6:  # FOREST, SWAMP -> difficult terrain
+			2:  # FOREST -> difficult terrain + trees for cover
 				difficult_budget += count
-			3:  # HILLS -> height variation
+				tree_budget += count * 2  # Forests generate plenty of trees
+			6:  # SWAMP -> difficult terrain + some trees
+				difficult_budget += count
+				tree_budget += count
+			3:  # HILLS -> height variation + occasional rocks
 				for i in range(mini(count, 4)):
 					var hx = randi_range(4, grid_w - 5)
 					var hy = randi_range(1, grid_h - 2)
 					heights.append({"pos": Vector2i(hx, hy), "height": 1})
+				rock_budget += count / 2
 			9:  # LAVA -> fire pits
 				for i in range(mini(count / 2, 3)):
 					var lx = randi_range(4, grid_w - 5)
@@ -379,30 +390,72 @@ func _generate_combat_terrain(context: Dictionary) -> Dictionary:
 					tile_overrides["%d,%d" % [lx, ly]] = CombatGrid.TileType.PIT
 					effects.append({"pos": Vector2i(lx, ly),
 						"effect": CombatGrid.TerrainEffect.FIRE, "value": 5})
-			13:  # RUINS -> difficult terrain with some walls
+			13:  # RUINS -> difficult terrain + pillars + some walls
 				difficult_budget += count / 2
-				obstacle_budget += count / 3
+				wall_budget += count / 3
+				pillar_budget += count
+
+	# Track occupied positions to avoid overlap
+	var occupied: Dictionary = {}
 
 	# Place wall obstacles (from mountains/ruins)
-	var walls_to_place = clampi(obstacle_budget / 4, 0, 6)
+	var walls_to_place = clampi(wall_budget / 4, 0, 6)
 	for i in range(walls_to_place):
 		var wx = randi_range(4, grid_w - 5)
 		var wy = randi_range(1, grid_h - 2)
-		tile_overrides["%d,%d" % [wx, wy]] = CombatGrid.TileType.WALL
+		var key = "%d,%d" % [wx, wy]
+		tile_overrides[key] = CombatGrid.TileType.WALL
+		occupied[key] = true
 
 	# Place water tiles
 	var water_to_place = clampi(water_budget / 3, 0, 4)
 	for i in range(water_to_place):
 		var wx = randi_range(4, grid_w - 5)
 		var wy = randi_range(1, grid_h - 2)
-		tile_overrides["%d,%d" % [wx, wy]] = CombatGrid.TileType.WATER
+		var key = "%d,%d" % [wx, wy]
+		if not key in occupied:
+			tile_overrides[key] = CombatGrid.TileType.WATER
+			occupied[key] = true
 
 	# Place difficult terrain (from forest/swamp)
 	var diff_to_place = clampi(difficult_budget / 3, 0, 6)
 	for i in range(diff_to_place):
 		var dx = randi_range(4, grid_w - 5)
 		var dy = randi_range(0, grid_h - 1)
-		tile_overrides["%d,%d" % [dx, dy]] = CombatGrid.TileType.DIFFICULT
+		var key = "%d,%d" % [dx, dy]
+		if not key in occupied:
+			tile_overrides[key] = CombatGrid.TileType.DIFFICULT
+			occupied[key] = true
+
+	# Place tree obstacles (from forest/swamp)
+	var trees_to_place = clampi(tree_budget / 4, 0, 5)
+	for i in range(trees_to_place):
+		var tx = randi_range(4, grid_w - 5)
+		var ty = randi_range(1, grid_h - 2)
+		var key = "%d,%d" % [tx, ty]
+		if not key in occupied:
+			obstacles.append({"pos": Vector2i(tx, ty), "obstacle": CombatGrid.ObstacleType.TREE})
+			occupied[key] = true
+
+	# Place rock obstacles (from mountains/hills)
+	var rocks_to_place = clampi(rock_budget / 4, 0, 4)
+	for i in range(rocks_to_place):
+		var rx = randi_range(4, grid_w - 5)
+		var ry = randi_range(1, grid_h - 2)
+		var key = "%d,%d" % [rx, ry]
+		if not key in occupied:
+			obstacles.append({"pos": Vector2i(rx, ry), "obstacle": CombatGrid.ObstacleType.ROCK})
+			occupied[key] = true
+
+	# Place pillar obstacles (from ruins)
+	var pillars_to_place = clampi(pillar_budget / 4, 0, 3)
+	for i in range(pillars_to_place):
+		var px = randi_range(4, grid_w - 5)
+		var py = randi_range(1, grid_h - 2)
+		var key = "%d,%d" % [px, py]
+		if not key in occupied:
+			obstacles.append({"pos": Vector2i(px, py), "obstacle": CombatGrid.ObstacleType.PILLAR})
+			occupied[key] = true
 
 	# Dominant terrain effects (snow/ice -> ice patches, etc.)
 	match dominant:
@@ -422,7 +475,7 @@ func _generate_combat_terrain(context: Dictionary) -> Dictionary:
 		if kx < 4 or kx >= grid_w - 4:
 			tile_overrides.erase(key)
 
-	# Also clear effects from deployment zones
+	# Also clear effects and obstacles from deployment zones
 	var safe_effects: Array[Dictionary] = []
 	for eff in effects:
 		var ex = eff.get("pos", Vector2i(-1, -1)).x
@@ -430,11 +483,19 @@ func _generate_combat_terrain(context: Dictionary) -> Dictionary:
 			safe_effects.append(eff)
 	effects = safe_effects
 
+	var safe_obstacles: Array[Dictionary] = []
+	for obs in obstacles:
+		var ox = obs.get("pos", Vector2i(-1, -1)).x
+		if ox >= 4 and ox < grid_w - 4:
+			safe_obstacles.append(obs)
+	obstacles = safe_obstacles
+
 	return {
 		"size": Vector2i(grid_w, grid_h),
 		"tiles": tile_overrides,
 		"effects": effects,
-		"heights": heights
+		"heights": heights,
+		"obstacles": obstacles
 	}
 
 
@@ -468,6 +529,10 @@ func _on_tile_clicked(grid_pos: Vector2i) -> void:
 			# Try to use selected item at tile (scrolls need targeting)
 			_try_use_item(grid_pos)
 
+		ActionMode.USE_SKILL:
+			# Try to use active skill at tile
+			_resolve_active_skill(grid_pos)
+
 
 func _on_tile_hovered(grid_pos: Vector2i) -> void:
 	# Show hover highlight
@@ -496,8 +561,37 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 			combat_grid.show_aoe_preview(grid_pos, radius)
 		else:
 			combat_grid.clear_aoe_preview()
+	elif current_action_mode == ActionMode.USE_SKILL and not selected_skill.is_empty():
+		var skill_cd = selected_skill.get("combat_data", {})
+		var aoe_r = skill_cd.get("aoe_radius", 0)
+		if aoe_r > 0:
+			combat_grid.show_aoe_preview(grid_pos, aoe_r)
+		else:
+			combat_grid.clear_aoe_preview()
 	else:
 		combat_grid.clear_aoe_preview()
+
+	# Show cover info when hovering movement destinations
+	if current_action_mode == ActionMode.MOVE:
+		_show_cover_tooltip(grid_pos)
+	else:
+		_hide_cover_tooltip()
+
+	# Show obstacle/height info in log (only when tile changes to avoid spam)
+	if grid_pos != _last_hovered_tile:
+		_last_hovered_tile = grid_pos
+
+		# Show obstacle info when hovering over an obstacle tile
+		var obs_info = combat_grid.get_obstacle_at(grid_pos)
+		if not obs_info.is_empty() and current_action_mode == ActionMode.NONE:
+			_log_message("%s (HP: %d, Cover: +%d%% dodge)" % [
+				obs_info.name, obs_info.hp, obs_info.cover_bonus])
+
+		# Show height info when hovering elevated tiles
+		var tile_height = combat_grid.get_tile_height(grid_pos)
+		if tile_height > 0 and current_action_mode == ActionMode.NONE:
+			_log_message("Height: %d (+%d%% accuracy, +%d range from above)" % [
+				tile_height, tile_height * 5, tile_height])
 
 	# Update unit info if hovering over a unit
 	var unit = combat_grid.get_unit_at(grid_pos)
@@ -539,6 +633,7 @@ func _cancel_action_mode() -> void:
 	selected_skill = {}
 	combat_grid.clear_highlights()
 	combat_grid.clear_aoe_preview()
+	_hide_cover_tooltip()
 	spell_panel.hide()
 	item_panel.hide()
 	skills_panel.hide()
@@ -1174,15 +1269,44 @@ func _show_skills_panel(unit: CombatUnit) -> void:
 		for skill_data in active_skills:
 			var btn = Button.new()
 			var stamina_cost = skill_data.get("stamina_cost", 0)
+			var has_combat_data = not skill_data.get("combat_data", {}).is_empty()
+			var perk_id = skill_data.get("id", "")
+
+			# Build button text with stamina cost
 			if stamina_cost > 0:
 				btn.text = "%s (%d ST)" % [skill_data.get("name", "???"), stamina_cost]
 			else:
 				btn.text = skill_data.get("name", "???")
 
+			# Show cooldown
+			if unit.is_skill_on_cooldown(perk_id):
+				var cd = unit.skill_cooldowns.get(perk_id, 0)
+				if cd >= 999:
+					btn.text += " [Used]"
+				else:
+					btn.text += " [CD: %d]" % cd
+
 			btn.tooltip_text = skill_data.get("description", "")
 
-			# Color based on type: mantras are purple, combat skills are gold
-			if skill_data.get("is_mantra", false):
+			# Determine if usable
+			var can_use = true
+			if not has_combat_data:
+				can_use = false
+			elif stamina_cost > 0 and unit.current_stamina < stamina_cost:
+				can_use = false
+			elif unit.is_skill_on_cooldown(perk_id):
+				can_use = false
+			elif not CombatManager.can_act(1):
+				can_use = false
+			elif not CombatManager.unit_has_required_weapon(unit, skill_data.get("skill", "")):
+				can_use = false
+				btn.text += " [Wrong Weapon]"
+
+			# Color based on type and usability
+			if not can_use:
+				btn.add_theme_color_override("font_color", Color(0.45, 0.45, 0.45))
+				btn.disabled = true
+			elif skill_data.get("is_mantra", false):
 				btn.add_theme_color_override("font_color", Color(0.7, 0.5, 0.9))
 			else:
 				btn.add_theme_color_override("font_color", Color(0.9, 0.75, 0.3))
@@ -1214,6 +1338,7 @@ func _get_active_skills(unit: CombatUnit) -> Array[Dictionary]:
 				"is_mantra": data.get("is_mantra", false),
 				"stamina_cost": _parse_stamina_cost(desc),
 				"skill": data.get("skill", ""),
+				"combat_data": data.get("combat_data", {}),
 			}
 			result.append(skill_info)
 
@@ -1236,6 +1361,7 @@ func _get_active_skills(unit: CombatUnit) -> Array[Dictionary]:
 					"is_mantra": true,
 					"stamina_cost": _parse_stamina_cost(desc),
 					"skill": data.get("skill", ""),
+					"combat_data": data.get("combat_data", {}),
 				}
 				result.append(skill_info)
 
@@ -1254,15 +1380,156 @@ func _parse_stamina_cost(description: String) -> int:
 
 
 func _on_active_skill_selected(skill_data: Dictionary) -> void:
-	# For now, active skills are not fully implemented in CombatManager
-	# Show a placeholder message with the skill's description
+	var unit = CombatManager.get_current_unit()
+	if unit == null:
+		return
+
+	var combat_data = skill_data.get("combat_data", {})
+
+	# If no combat_data, this skill isn't wired up yet
+	if combat_data.is_empty():
+		skills_panel.hide()
+		_log_message("%s tries to use %s... [Skill not yet implemented]" % [
+			unit.unit_name, skill_data.get("name", "???")])
+		return
+
+	# Check stamina
+	var stamina_cost = combat_data.get("stamina_cost", 0)
+	if stamina_cost > 0 and unit.current_stamina < stamina_cost:
+		_log_message("Not enough stamina! (%d/%d)" % [unit.current_stamina, stamina_cost])
+		return
+
+	# Check cooldown
+	var perk_id = skill_data.get("id", "")
+	if unit.is_skill_on_cooldown(perk_id):
+		_log_message("%s is on cooldown (%d turns)!" % [
+			skill_data.get("name", "???"), unit.skill_cooldowns.get(perk_id, 0)])
+		return
+
+	# Check weapon requirement
+	var perk_skill = skill_data.get("skill", "")
+	if not CombatManager.unit_has_required_weapon(unit, perk_skill):
+		var required = CombatManager.get_required_weapon_types(perk_skill)
+		_log_message("Requires %s weapon equipped!" % "/".join(required))
+		return
+
 	selected_skill = skill_data
 	skills_panel.hide()
-	_log_message("%s uses %s!" % [
-		CombatManager.get_current_unit().unit_name if CombatManager.get_current_unit() else "???",
-		skill_data.get("name", "Unknown Skill")
-	])
-	_log_message("  [Active skills are not yet fully implemented - stamina/effects coming soon]")
+
+	var targeting = CombatManager.get_skill_targeting(combat_data)
+
+	# Self-targeting and stance skills resolve immediately
+	if targeting == "self":
+		_resolve_active_skill(unit.grid_position)
+	else:
+		# Enter targeting mode
+		current_action_mode = ActionMode.USE_SKILL
+		var valid_targets = CombatManager.get_active_skill_targets(unit, combat_data)
+		if valid_targets.is_empty():
+			_log_message("No valid targets for %s!" % skill_data.get("name", "???"))
+			_cancel_action_mode()
+			return
+		combat_grid.highlight_attack_range(valid_targets)
+		_log_message("Select target for %s..." % skill_data.get("name", "???"))
+
+
+## Resolve an active skill at a target position
+func _resolve_active_skill(target_pos: Vector2i) -> void:
+	var unit = CombatManager.get_current_unit()
+	if unit == null or selected_skill.is_empty():
+		_cancel_action_mode()
+		return
+
+	var skill_name = selected_skill.get("name", "???")
+
+	# Play attack animation for offensive skills
+	var combat_data = selected_skill.get("combat_data", {})
+	var effect = combat_data.get("effect", "")
+	if effect in ["attack_with_bonus", "dash_attack", "debuff_target", "aoe_attack"]:
+		var target_unit = CombatManager.get_unit_at(target_pos)
+		if target_unit:
+			unit.play_attack_animation(target_unit.global_position)
+
+	# Show action name
+	unit.show_action_name(skill_name)
+
+	var result = CombatManager.use_active_skill(unit, selected_skill, target_pos)
+
+	if result.get("success", false):
+		var stamina_cost = combat_data.get("stamina_cost", 0)
+		var stamina_text = " (%d ST)" % stamina_cost if stamina_cost > 0 else ""
+		_log_message("%s uses %s%s!" % [unit.unit_name, skill_name, stamina_text])
+
+		# Log specific effects
+		match effect:
+			"attack_with_bonus", "dash_attack":
+				if result.get("hit", false):
+					var damage = result.get("damage", 0)
+					var target = result.get("target", null)
+					var target_name = target.unit_name if target else "???"
+					var crit_text = " CRITICAL!" if result.get("crit", false) else ""
+					_log_message("  Hit %s for %d damage!%s" % [target_name, damage, crit_text])
+					# Log sub-effects
+					for fx in result.get("effects", []):
+						if fx.type == "self_buff":
+							_log_message("  Gained +%d%% %s for %d turn(s)" % [fx.value, fx.stat, fx.duration])
+						elif fx.type == "target_debuff":
+							_log_message("  %s: -%d%% %s for %d turn(s)" % [target_name, fx.value, fx.stat, fx.duration])
+						elif fx.type == "refund":
+							_log_message("  Refunded %d stamina!" % fx.amount)
+				elif result.has("hit"):
+					_log_message("  Missed! (%.0f vs %.0f%%)" % [result.get("roll", 0), result.get("hit_chance", 0)])
+					var target = result.get("target", null)
+					if target:
+						_show_miss_text(unit, target)
+
+			"buff_self", "stance", "heal_self":
+				for fx in result.get("effects", []):
+					if fx.type == "buff":
+						_log_message("  +%d%% %s for %d turn(s)" % [fx.value, fx.stat, fx.duration])
+					elif fx.type == "status":
+						_log_message("  Status: %s for %d turn(s)" % [fx.status, fx.duration])
+					elif fx.type == "heal":
+						_log_message("  Healed for %d HP!" % fx.amount)
+					elif fx.type == "stamina_restore":
+						_log_message("  Restored %d stamina!" % fx.amount)
+				if result.get("ends_turn", false):
+					_log_message("  [Stance active until next turn]")
+
+			"debuff_target":
+				var target = result.get("target", null)
+				var target_name = target.unit_name if target else "???"
+				if result.get("hit", true):
+					if result.get("damage", 0) > 0:
+						_log_message("  Hit %s for %d damage!" % [target_name, result.damage])
+					for fx in result.get("effects", []):
+						if fx.type == "debuff":
+							_log_message("  %s: -%d%% %s for %d turn(s)" % [target_name, fx.value, fx.stat, fx.duration])
+						elif fx.type == "status":
+							_log_message("  %s: %s for %d turn(s)" % [target_name, fx.status, fx.duration])
+				else:
+					_log_message("  Missed!")
+
+			"aoe_attack":
+				var count = result.get("hit_count", 0)
+				_log_message("  Hit %d enemies!" % count)
+				for fx in result.get("effects", []):
+					if fx.type == "aoe_damage":
+						var t = fx.get("target", null)
+						_log_message("    %s: %d damage" % [t.unit_name if t else "???", fx.damage])
+
+			"teleport":
+				var dest = result.get("teleported_to", Vector2i.ZERO)
+				_log_message("  Teleported to %s" % str(dest))
+				for fx in result.get("effects", []):
+					if fx.type == "buff":
+						_log_message("  +%d%% %s for %d turn(s)" % [fx.value, fx.stat, fx.duration])
+
+		# Update UI
+		_show_unit_info(unit)
+	else:
+		_log_message("  Failed: %s" % result.get("reason", "Unknown"))
+
 	_cancel_action_mode()
 
 
@@ -1378,6 +1645,12 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 	var result = CombatManager.attack_unit(attacker, defender)
 
 	if result.success:
+		# Log cover info if applicable
+		var cover_data = result.get("cover", {})
+		if cover_data.get("has_cover", false):
+			_log_message("  %s has cover from %s (-%d%% hit)" % [
+				defender.unit_name, cover_data.obstacle_name, cover_data.dodge_bonus])
+
 		if result.hit:
 			var crit_text = " CRITICAL!" if result.crit else ""
 			_log_message("%s attacks %s for %d damage!%s" % [
@@ -1393,8 +1666,11 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 		else:
 			# Show miss/dodge/block floating text on defender
 			_show_miss_text(attacker, defender)
-			_log_message("%s attacks %s - MISS! (rolled %.0f vs %.0f%%)" % [
-				attacker.unit_name, defender.unit_name, result.roll, result.hit_chance
+			var cover_text = ""
+			if cover_data.get("has_cover", false):
+				cover_text = " [behind %s]" % cover_data.obstacle_name
+			_log_message("%s attacks %s - MISS!%s (rolled %.0f vs %.0f%%)" % [
+				attacker.unit_name, defender.unit_name, cover_text, result.roll, result.hit_chance
 			])
 	else:
 		var reason = result.get("reason", "Unknown")
@@ -1543,6 +1819,55 @@ func _update_action_circles(remaining: int, total: int) -> void:
 		else:
 			dot.add_theme_color_override("font_color", Color(0.35, 0.35, 0.35))  # Grey
 		unit_info_actions.add_child(dot)
+
+
+# ============================================
+# COVER TOOLTIP
+# ============================================
+
+## Floating label shown when hovering over movement tiles near cover
+var _cover_tooltip: Label = null
+
+## Show cover tooltip at a tile position when in movement mode
+func _show_cover_tooltip(grid_pos: Vector2i) -> void:
+	_hide_cover_tooltip()
+
+	# Only show for valid movement destinations
+	if not grid_pos in combat_grid.highlighted_tiles:
+		return
+
+	var current_unit = CombatManager.get_current_unit()
+	if current_unit == null:
+		return
+
+	# Check what cover this position would provide
+	var cover_info = combat_grid.get_cover_info_at(grid_pos, current_unit.team)
+	if not cover_info.has_cover:
+		return
+
+	# Also check height advantage at this position
+	var height = combat_grid.get_tile_height(grid_pos)
+
+	# Build tooltip text
+	var tooltip_text = "+%d%% dodge (cover: %s)" % [cover_info.dodge_bonus, cover_info.obstacle_name]
+	if height > 0:
+		tooltip_text += "\nHeight %d (+%d%% accuracy)" % [height, height * 5]
+
+	# Create floating label above the tile
+	_cover_tooltip = Label.new()
+	_cover_tooltip.text = tooltip_text
+	_cover_tooltip.add_theme_font_size_override("font_size", 11)
+	_cover_tooltip.add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))
+	_cover_tooltip.position = combat_grid.grid_to_world(grid_pos) + Vector2(0, -20)
+	_cover_tooltip.z_index = 100
+	combat_grid.add_child(_cover_tooltip)
+
+
+## Hide the cover tooltip
+func _hide_cover_tooltip() -> void:
+	if _cover_tooltip != null:
+		_cover_tooltip.queue_free()
+		_cover_tooltip = null
 
 
 ## Add message to combat log
@@ -2124,53 +2449,98 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 		CombatManager.end_turn()
 		return
 
+	# Track flags to avoid repeating certain actions in a turn
+	var used_consumable_this_turn = false
+	var used_active_skill_this_turn = false
+
 	# Use all actions
 	while CombatManager.can_act(1) and CombatManager.get_current_unit() == unit:
 		var dist = _grid_distance(unit.grid_position, nearest.grid_position)
 
-		# Refresh castable spells (mana may have changed)
-		castable_spells = CombatManager.get_castable_spells(unit)
+		# --- PRIORITY 1: Emergency consumable (health potion at low HP) ---
+		if not used_consumable_this_turn:
+			var hp_pct = float(unit.current_hp) / float(unit.max_hp)
+			if hp_pct < 0.35:
+				if _ai_try_use_potion(unit, "heal"):
+					used_consumable_this_turn = true
+					continue
 
-		# Casters prefer spells over physical attacks
-		if is_caster and not castable_spells.is_empty():
-			var spell_cast = _ai_try_cast_spell(unit, castable_spells, player_units, nearest)
-			if spell_cast:
-				# Check if target died, find new target
+		# --- PRIORITY 2: Mana potion if caster is low on mana ---
+		if not used_consumable_this_turn and is_caster:
+			var mana_pct = float(unit.current_mana) / float(unit.max_mana) if unit.max_mana > 0 else 1.0
+			if mana_pct < 0.3:
+				if _ai_try_use_potion(unit, "restore_mana"):
+					used_consumable_this_turn = true
+					continue
+
+		# --- PRIORITY 3: Active skills ---
+		if not used_active_skill_this_turn:
+			if _ai_try_use_active_skill(unit, player_units, nearest):
+				used_active_skill_this_turn = true
+				# Check if target died
 				if not nearest.is_alive():
 					nearest = _find_nearest_enemy(unit, player_units)
 					if nearest == null:
 						break
 				continue
 
-		# Fall back to physical attack
+		# --- PRIORITY 4: Spells ---
+		# Refresh castable spells (mana may have changed)
+		castable_spells = CombatManager.get_castable_spells(unit)
+		if is_caster and not castable_spells.is_empty():
+			var spell_cast = _ai_try_cast_spell(unit, castable_spells, player_units, nearest)
+			if spell_cast:
+				if not nearest.is_alive():
+					nearest = _find_nearest_enemy(unit, player_units)
+					if nearest == null:
+						break
+				continue
+
+		# --- PRIORITY 5: Bomb if multiple enemies clustered ---
+		if not used_consumable_this_turn:
+			if _ai_try_use_bomb(unit, player_units):
+				used_consumable_this_turn = true
+				# Refresh nearest after potential kills
+				if not nearest.is_alive():
+					nearest = _find_nearest_enemy(unit, player_units)
+					if nearest == null:
+						break
+				continue
+
+		# --- PRIORITY 6: Oil before attacking (if in range and no oil active) ---
+		if not used_consumable_this_turn and unit.weapon_oil.is_empty() and dist <= attack_range:
+			if _ai_try_use_oil(unit):
+				used_consumable_this_turn = true
+				continue
+
+		# --- PRIORITY 7: Physical attack ---
 		if dist <= attack_range:
-			# In range - attack with lunge animation!
 			unit.play_attack_animation(nearest.global_position)
 			var result = CombatManager.attack_unit(unit, nearest)
 			if result.success:
 				if result.hit:
 					var ranged_text = " from range" if dist > 1 else ""
 					_log_message("%s attacks %s%s for %d damage!" % [unit.unit_name, nearest.unit_name, ranged_text, result.damage])
+					if result.has("oil_damage"):
+						_log_message("  +%d %s damage (oil)!" % [
+							result.oil_damage, result.get("oil_damage_type", "").capitalize()])
 				else:
-					# Show miss/dodge/block floating text
 					_show_miss_text(unit, nearest)
 					_log_message("%s attacks %s - MISS!" % [unit.unit_name, nearest.unit_name])
 
-				# Check if target died, find new target
 				if not nearest.is_alive():
 					nearest = _find_nearest_enemy(unit, player_units)
 					if nearest == null:
-						break  # No more targets
+						break
 		else:
-			# Out of range - need to reposition
+			# --- PRIORITY 8: Reposition if out of range ---
 			var move_range = CombatManager.get_movement_range(unit)
 			var best_tile: Vector2i = unit.grid_position
 			var best_score: int = -999
 
-			# Determine optimal range (casters/ranged stay back, melee gets close)
 			var optimal_range = 1
 			if is_caster:
-				optimal_range = 4  # Casters prefer mid-range
+				optimal_range = 4
 			elif is_ranged:
 				optimal_range = attack_range
 
@@ -2178,20 +2548,18 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 				var tile_dist = _grid_distance(tile, nearest.grid_position)
 
 				if is_caster or is_ranged:
-					# Prefer staying at optimal range
 					var score = 0
 					if tile_dist <= optimal_range and tile_dist >= 2:
-						score = 100  # Good casting/shooting position
-						score += tile_dist  # Prefer staying back
+						score = 100
+						score += tile_dist
 					elif tile_dist <= optimal_range:
-						score = 50  # Can act from here
+						score = 50
 					else:
-						score = -tile_dist  # Get closer if out of range
+						score = -tile_dist
 					if score > best_score:
 						best_score = score
 						best_tile = tile
 				else:
-					# Melee units just want to get close
 					if tile_dist < _grid_distance(best_tile, nearest.grid_position):
 						best_tile = tile
 
@@ -2204,7 +2572,6 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 				else:
 					_log_message("%s moves toward %s" % [unit.unit_name, nearest.unit_name])
 			else:
-				# Can't improve position, skip remaining actions
 				break
 
 	# End turn if we still have control
@@ -2290,6 +2657,269 @@ func _ai_try_cast_spell(unit: CombatUnit, spells: Array[Dictionary], enemies: Ar
 
 
 ## Find nearest alive enemy unit
+## AI: Try to use a potion of a given effect type from combat_inventory.
+## Returns true if a potion was used.
+func _ai_try_use_potion(unit: CombatUnit, effect_type: String) -> bool:
+	for inv_entry in unit.combat_inventory:
+		var item_id = inv_entry.get("item_id", "")
+		var qty = inv_entry.get("quantity", 0)
+		if qty <= 0:
+			continue
+
+		var item = ItemSystem.get_item(item_id)
+		if item.is_empty() or item.get("type", "") != "potion":
+			continue
+
+		var effect = item.get("effect", {})
+		if effect.get("type", "") == effect_type:
+			var result = CombatManager.ai_use_combat_item(unit, item_id, unit.grid_position)
+			if result.get("success", false):
+				var item_name = item.get("name", item_id)
+				_log_message("%s uses %s!" % [unit.unit_name, item_name])
+				for fx in result.get("effects_applied", []):
+					if fx.get("type", "") == "heal":
+						_log_message("  Healed for %d HP" % fx.amount)
+					elif fx.get("type", "") == "restore_mana":
+						_log_message("  Restored %d mana" % fx.amount)
+				return true
+	return false
+
+
+## AI: Try to use a bomb on clustered player units. Uses if 2+ enemies in blast radius.
+func _ai_try_use_bomb(unit: CombatUnit, player_units: Array[Node]) -> bool:
+	for inv_entry in unit.combat_inventory:
+		var item_id = inv_entry.get("item_id", "")
+		var qty = inv_entry.get("quantity", 0)
+		if qty <= 0:
+			continue
+
+		var item = ItemSystem.get_item(item_id)
+		if item.is_empty() or item.get("type", "") != "bomb":
+			continue
+
+		var effect = item.get("effect", {})
+		var bomb_range = effect.get("range", 4)
+		var aoe_radius = effect.get("aoe_radius", 1)
+
+		# Find best bomb target (position that hits the most enemies)
+		var best_pos = Vector2i(-1, -1)
+		var best_count = 0
+
+		for target in player_units:
+			if not target.is_alive():
+				continue
+			var dist = _grid_distance(unit.grid_position, target.grid_position)
+			if dist > bomb_range:
+				continue
+			# Count enemies in AoE
+			var count = 0
+			for other in player_units:
+				if other.is_alive() and _grid_distance(target.grid_position, other.grid_position) <= aoe_radius:
+					count += 1
+			if count > best_count:
+				best_count = count
+				best_pos = target.grid_position
+
+		# Only use bomb if hitting 2+ enemies
+		if best_count >= 2 and best_pos != Vector2i(-1, -1):
+			var result = CombatManager.ai_use_combat_item(unit, item_id, best_pos)
+			if result.get("success", false):
+				var item_name = item.get("name", item_id)
+				_log_message("%s throws %s!" % [unit.unit_name, item_name])
+				var total_damage = result.get("total_damage", 0)
+				var hit_count = result.get("hit_count", 0)
+				if hit_count > 0:
+					_log_message("  Hit %d targets for %d total damage!" % [hit_count, total_damage])
+				return true
+	return false
+
+
+## AI: Try to apply a weapon oil from combat_inventory.
+func _ai_try_use_oil(unit: CombatUnit) -> bool:
+	for inv_entry in unit.combat_inventory:
+		var item_id = inv_entry.get("item_id", "")
+		var qty = inv_entry.get("quantity", 0)
+		if qty <= 0:
+			continue
+
+		var item = ItemSystem.get_item(item_id)
+		if item.is_empty() or item.get("type", "") != "oil":
+			continue
+
+		var result = CombatManager.ai_use_combat_item(unit, item_id, unit.grid_position)
+		if result.get("success", false):
+			_log_message("%s coats weapon with %s!" % [unit.unit_name, item.get("name", item_id)])
+			return true
+	return false
+
+
+## AI: Try to use an active skill. Evaluates available perks and picks the best one.
+## Returns true if a skill was used.
+func _ai_try_use_active_skill(unit: CombatUnit, player_units: Array[Node], nearest: CombatUnit) -> bool:
+	var perks = unit.character_data.get("perks", [])
+	if perks.is_empty():
+		return false
+
+	var dist = _grid_distance(unit.grid_position, nearest.grid_position)
+	var hp_pct = float(unit.current_hp) / float(unit.max_hp)
+	var best_skill: Dictionary = {}
+	var best_score: float = 0.0
+	var best_target_pos: Vector2i = unit.grid_position
+
+	for perk_entry in perks:
+		var perk_id = perk_entry.get("id", "")
+		var perk_data = PerkSystem.get_perk_data(perk_id)
+		if perk_data.is_empty():
+			continue
+
+		var combat_data = perk_data.get("combat_data", {})
+		if combat_data.is_empty():
+			continue
+
+		# Check cooldown
+		if unit.is_skill_on_cooldown(perk_id):
+			continue
+
+		# Check stamina
+		var stamina_cost = combat_data.get("stamina_cost", 0)
+		if stamina_cost > 0 and unit.current_stamina < stamina_cost:
+			continue
+
+		# Check weapon requirement
+		var perk_skill = perk_data.get("skill", "")
+		if not CombatManager.unit_has_required_weapon(unit, perk_skill):
+			continue
+
+		var effect = combat_data.get("effect", "")
+		var targeting = combat_data.get("targeting", "self")
+		var skill_range = combat_data.get("range", 1)
+		var score: float = 0.0
+		var target_pos: Vector2i = unit.grid_position
+
+		# Score each skill type based on situation
+		match effect:
+			"attack_with_bonus":
+				# Good when in melee range and want to deal extra damage
+				if dist <= skill_range:
+					var dmg_bonus = combat_data.get("damage_bonus_pct", 0)
+					var acc_bonus = combat_data.get("accuracy_bonus", 0)
+					score = 30.0 + dmg_bonus * 0.3 + acc_bonus * 0.2
+					# Extra value for armor-piercing against armored targets
+					if combat_data.get("armor_ignore_pct", 0) > 0:
+						score += 15.0
+					# Extra value for finishers (refund_on_kill) when target is low HP
+					if combat_data.get("refund_on_kill", 0) > 0:
+						var target_hp_pct = float(nearest.current_hp) / float(nearest.max_hp)
+						if target_hp_pct < 0.3:
+							score += 20.0
+					target_pos = nearest.grid_position
+
+			"dash_attack":
+				# Good when out of melee range but within dash range
+				var dash_range = combat_data.get("dash_range", 2) + unit.get_attack_range()
+				if dist > unit.get_attack_range() and dist <= dash_range:
+					score = 45.0  # High value for closing distance + attacking
+					target_pos = nearest.grid_position
+				elif dist <= unit.get_attack_range():
+					score = 20.0  # Still usable in melee, but less value
+					target_pos = nearest.grid_position
+
+			"buff_self":
+				# Use buffs when about to engage (within 3 tiles of enemy)
+				if dist <= 3:
+					score = 20.0
+				# Higher score at start of combat (no enemies attacked yet)
+				if dist > 4:
+					score = 5.0  # Less valuable when far away
+
+			"debuff_target":
+				# Good against strong enemies when in range
+				if dist <= skill_range:
+					score = 25.0
+					target_pos = nearest.grid_position
+
+			"aoe_attack":
+				# Count enemies in AoE range
+				var aoe_r = combat_data.get("aoe_radius", 1)
+				# For self-centered AoE (range 0), use own position
+				var center = unit.grid_position if skill_range == 0 else nearest.grid_position
+				if skill_range > 0 and dist > skill_range:
+					continue  # Out of range
+				var hit_count = 0
+				for target in player_units:
+					if target.is_alive() and _grid_distance(center, target.grid_position) <= aoe_r:
+						hit_count += 1
+				if hit_count >= 2:
+					score = 35.0 + hit_count * 10.0  # Very good if hitting multiple
+					target_pos = center
+				elif hit_count == 1 and skill_range == 0:
+					score = 15.0  # Still okay for self-centered AoE
+					target_pos = center
+
+			"stance":
+				# Stances end your turn — use when already in position to defend
+				if dist <= 2 and hp_pct < 0.6:
+					score = 25.0  # Defensive when hurt and enemies close
+				elif dist <= 1:
+					score = 15.0
+
+			"teleport":
+				# Use when surrounded or need to reposition badly
+				if dist <= 1 and hp_pct < 0.4:
+					score = 35.0  # Escape when hurt in melee
+
+			"heal_self":
+				# Use when hurt
+				if hp_pct < 0.5:
+					score = 30.0 + (1.0 - hp_pct) * 20.0
+				if combat_data.get("stamina_restore_pct", 0) > 0 and unit.current_stamina < unit.max_stamina * 0.3:
+					score = 25.0  # Stamina recovery
+
+		if score > best_score:
+			best_score = score
+			best_skill = {"id": perk_id, "name": perk_data.get("name", perk_id), "skill": perk_data.get("skill", ""), "combat_data": combat_data}
+			best_target_pos = target_pos
+
+	# Only use if score is meaningful (avoid wasting skills)
+	if best_score >= 15.0 and not best_skill.is_empty():
+		var skill_name = best_skill.get("name", "???")
+		var result = CombatManager.use_active_skill(unit, best_skill, best_target_pos)
+
+		if result.get("success", false):
+			var stamina_cost = best_skill.combat_data.get("stamina_cost", 0)
+			var stamina_text = " (%d ST)" % stamina_cost if stamina_cost > 0 else ""
+			_log_message("%s uses %s%s!" % [unit.unit_name, skill_name, stamina_text])
+
+			var effect = best_skill.combat_data.get("effect", "")
+			match effect:
+				"attack_with_bonus", "dash_attack":
+					if result.get("hit", false):
+						var target = result.get("target", null)
+						var target_name = target.unit_name if target else "???"
+						_log_message("  Hit %s for %d damage!" % [target_name, result.get("damage", 0)])
+					elif result.has("hit"):
+						_log_message("  Missed!")
+				"buff_self", "stance", "heal_self":
+					for fx in result.get("effects", []):
+						if fx.type == "buff":
+							_log_message("  +%d%% %s" % [fx.value, fx.stat])
+						elif fx.type == "heal":
+							_log_message("  Healed %d HP" % fx.amount)
+						elif fx.type == "stamina_restore":
+							_log_message("  Restored %d stamina" % fx.amount)
+				"debuff_target":
+					var target = result.get("target", null)
+					if target and result.get("hit", true):
+						_log_message("  Debuffed %s" % target.unit_name)
+				"aoe_attack":
+					_log_message("  Hit %d enemies!" % result.get("hit_count", 0))
+				"teleport":
+					_log_message("  Teleported!")
+			return true
+
+	return false
+
+
 func _find_nearest_enemy(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
 	var nearest: CombatUnit = null
 	var nearest_dist: int = 999

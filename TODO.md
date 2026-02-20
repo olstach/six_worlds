@@ -28,9 +28,13 @@ Last Updated: 2026-02-16
 - [x] 80+ status effect definitions
 - [x] Terrain system (walls, pits, water, difficult)
 - [x] Terrain effects (fire, ice, poison, acid, blessed, cursed)
-- [x] Height system with traversal limits
+- [x] Height system with traversal limits and climbing movement costs
 - [x] Line of sight (Bresenham's algorithm)
 - [x] Height advantage bonuses (accuracy, damage, range)
+- [x] Obstacle cover system (trees, rocks, pillars, barricades with dodge bonuses)
+- [x] Obstacle destruction (HP-based, aftermath terrain effects)
+- [x] Movement modes: normal, levitate (height 2, geo partial immunity), flying (any height, full immunity)
+- [x] Cover tooltip on movement hover, cover info in combat log
 - [x] Deployment zones with role-based positioning
 - [x] Tactician upgrade for manual placement
 - [x] AI spell casting and ranged repositioning
@@ -45,6 +49,7 @@ Last Updated: 2026-02-16
 - [x] Miss/Dodge/Block floating combat text
 - [x] Attack lunge animation (sprite moves toward target and returns)
 - [x] Enemy loot drops
+- [x] AoE spells damage obstacles and create ground effects
 
 ### Character & Progression
 - [x] XP-based progression (no levels)
@@ -117,6 +122,34 @@ Last Updated: 2026-02-16
 - [ ] Passive bonus application (trade, healing, carrying capacity)
 - [ ] UI integration (slot already in Party tab)
 
+### Skill Scale Refactor (1-5 → 1-10)
+Expand the skill scale from 5 levels to 10 for better granularity. Currently level 3/5 = 60% mastery, which makes starting characters feel too skilled. With 10 levels, starting at 3/10 feels appropriately novice.
+
+**Key changes:**
+- [ ] Skill levels 1-10 across all systems (CharacterSystem, PerkSystem, spells, items, events, enemies)
+- [ ] Perks at every 2nd level (levels 2, 4, 6, 8, 10) — same number of perks, just more spread out
+- [ ] Spell level requirements remapped (currently 1-5, scale to 1-10)
+- [ ] Event/dialogue skill checks adjusted to new scale
+- [ ] Enemy archetype skill levels adjusted
+- [ ] New XP cost curve — proposed triangular: level 1 = 1 XP, level 2 = 3 XP, level 3 = 6 XP, etc. (needs playtesting/tweaking)
+- [ ] Update all data files: spells.json (326 spells), perks.json, items.json, events, enemies
+
+**XP cost proposal (triangular numbers, needs tuning):**
+| Level | Cost | Cumulative |
+|-------|------|------------|
+| 1 | 1 | 1 |
+| 2 | 3 | 4 |
+| 3 | 6 | 10 |
+| 4 | 10 | 20 |
+| 5 | 15 | 35 |
+| 6 | 21 | 56 |
+| 7 | 28 | 84 |
+| 8 | 36 | 120 |
+| 9 | 45 | 165 |
+| 10 | 55 | 220 |
+
+*Note: These costs are placeholder and need balancing. The pattern is level N costs N*(N+1)/2 XP. May need scaling factor (e.g., multiply all by 10 for 10/30/60/100/150...).*
+
 ### Testing & Polish
 - [ ] Test Shop UI thoroughly (buying, selling, spell learning, training)
 - [ ] Test terrain effect interactions with spells
@@ -140,14 +173,15 @@ Last Updated: 2026-02-16
 - [ ] Party management screen
 
 ### Combat Improvements
-- [ ] Active skills fully functional (stamina costs, targeting, effects)
-- [ ] AI using consumable items (enemy potion/scroll usage)
+- [x] ~~Active skills fully functional (stamina costs, targeting, effects)~~ — DONE (25+ skills with combat_data, stamina/cooldown system)
+- [x] ~~AI using consumable items (enemy potion/scroll usage)~~ — DONE (AI health/mana potions, bombs, oils)
+- [x] ~~AI using active skills~~ — DONE (scoring system, prioritized decision tree)
 - [ ] Enemy-specific physical resistances (e.g., skeletons resist piercing, weak to crushing)
-- [ ] More obstacle variety (rocks, pillars, trees, destructible objects)
-- [ ] Spells creating terrain effects (Fireball leaves fire terrain)
+- [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
+- [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
 - [ ] Terrain affecting spell power
 - [ ] Environmental spell interactions
-- [ ] Realm-specific combat terrain themes
+- [x] ~~Realm-specific combat terrain themes~~ — DONE (overworld terrain generates realm-appropriate obstacles)
 
 ---
 
@@ -213,6 +247,41 @@ Last Updated: 2026-02-16
 ---
 
 ## Session Notes
+
+### 2026-02-17 (later): Weapon Requirements for Active Skills
+- **Weapon type checks**: Active skills from weapon trees now require the matching weapon equipped
+  - Swords perks need a sword, Axes perks need an axe, etc.
+  - Unarmed perks require no weapon; Martial Arts allows staff or unarmed
+  - Non-weapon skills (Might, Medicine) have no weapon requirement
+  - Check in 3 places: CombatManager.use_active_skill(), UI panel (greyed + "[Wrong Weapon]"), AI filtering
+  - Helper functions: `get_required_weapon_types()`, `unit_has_required_weapon()` on CombatManager
+- **1-10 Skill Scale Refactor**: Added detailed plan to TODO for future session
+
+### 2026-02-17: Active Skills, AI Combat Intelligence, Terrain
+- **Active Skills System**: Stamina tracking on CombatUnit, cooldown management, 25+ skills with structured combat_data
+  - 8 effect types: attack_with_bonus, dash_attack, buff_self, debuff_target, aoe_attack, teleport, stance, heal_self
+  - Full targeting flow: select skill -> highlight valid targets -> resolve effect -> combat log
+  - Greyed out skills when insufficient stamina/on cooldown/no combat_data
+  - Stamina regen per turn (5 + Finesse/5)
+- **AI Consumable Usage**: Enemies now generate and use consumable items
+  - Inventory generation in EnemySystem based on archetype roles + power level
+  - Health potions at <35% HP, mana potions for casters at <30% mana
+  - Bombs when 2+ player units clustered, oils before melee attacks
+- **AI Active Skills**: Enemies use their perks intelligently
+  - Scoring system evaluates each skill based on situation (HP%, distance, enemy count)
+  - Prioritized decision tree: emergency heal -> mana restore -> active skills -> spells -> bombs -> oils -> attacks -> reposition
+- Terrain Height/Obstacles/Cover (from earlier in session)
+
+### 2026-02-17 (earlier): Terrain Height, Obstacles & Cover System
+- Height movement costs: climbing up +1 per level, dropping down free
+- Three movement modes: Normal (max 1 height), Levitate (max 2, partial geo immunity), Flying (any height, +1 cost, full geo/melee immunity)
+- Obstacle system: TREE (20 HP), ROCK (50 HP), PILLAR (30 HP), BARRICADE (16 HP)
+- Cover mechanic: obstacles between attacker/defender grant dodge bonus vs ranged (15-20%)
+- Obstacle destruction: trees burn into fire terrain, rocks/pillars become rubble
+- AoE spells damage obstacles in blast radius
+- Terrain generation creates realm-appropriate obstacles (forest→trees, mountains→rocks, ruins→pillars)
+- Cover tooltip on movement hover, cover/height info in combat log
+- Height shading on tiles (lighter = higher)
 
 ### 2026-02-16: UI Fixes and Combat Polish
 - Fixed float display of skill levels, affinities, derived stats across all UI screens

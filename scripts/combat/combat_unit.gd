@@ -20,6 +20,8 @@ var current_hp: int = 100
 var max_hp: int = 100
 var current_mana: int = 50
 var max_mana: int = 50
+var current_stamina: int = 50
+var max_stamina: int = 50
 var actions_remaining: int = 2
 var max_actions: int = 2
 
@@ -29,9 +31,15 @@ var bleed_out_turns: int = 0
 var is_dead: bool = false
 var status_effects: Array = []  # Active status effects on this unit
 
+# Active skill cooldowns: perk_id -> turns remaining (0 = ready)
+var skill_cooldowns: Dictionary = {}
+
 # Consumable buffs
 var talisman_buff: Dictionary = {}  # {school, mana_reduction, spellpower_bonus} - consumed on next matching spell
 var weapon_oil: Dictionary = {}  # {bonus_damage, bonus_damage_type, attacks_remaining, status, status_chance, status_duration, crit_bonus}
+
+# Inventory for AI consumable use (Array of {item_id, quantity})
+var combat_inventory: Array = []
 
 # Resistances (percentage, default 0%)
 var resistances: Dictionary = {
@@ -81,6 +89,8 @@ func init_from_character(char_data: Dictionary, unit_team: int) -> void:
 	current_hp = derived.get("current_hp", max_hp)
 	max_mana = derived.get("max_mana", 50)
 	current_mana = derived.get("current_mana", max_mana)
+	max_stamina = derived.get("max_stamina", 50)
+	current_stamina = derived.get("current_stamina", max_stamina)
 
 	# Calculate max actions (base 2, can be modified)
 	max_actions = CombatManager.BASE_ACTIONS
@@ -99,12 +109,18 @@ func init_as_enemy(enemy_def: Dictionary) -> void:
 	current_hp = max_hp
 	max_mana = enemy_def.get("max_mana", 0)
 	current_mana = max_mana
+	var derived_stats = enemy_def.get("derived", {})
+	max_stamina = derived_stats.get("max_stamina", 50)
+	current_stamina = max_stamina
 	max_actions = enemy_def.get("actions", 2)
 
 	# Set resistances from enemy definition
 	var enemy_resists = enemy_def.get("resistances", {})
 	for resist_type in enemy_resists:
 		resistances[resist_type] = enemy_resists[resist_type]
+
+	# Load consumable inventory
+	combat_inventory = enemy_def.get("inventory", []).duplicate(true)
 
 	_update_visuals()
 
@@ -328,6 +344,28 @@ func consume_oil_charge() -> Dictionary:
 	return result
 
 
+## Get the unit's movement mode based on active status effects
+## Returns CombatGrid.MovementMode enum value
+func get_movement_mode() -> int:
+	for effect in status_effects:
+		var status_name = effect.get("status", "").to_lower()
+		if status_name == "flying" or status_name == "storm_lord":
+			return CombatGrid.MovementMode.FLYING
+	for effect in status_effects:
+		var status_name = effect.get("status", "").to_lower()
+		if status_name == "levitating":
+			return CombatGrid.MovementMode.LEVITATE
+	return CombatGrid.MovementMode.NORMAL
+
+
+## Check if unit has a specific status effect (case-insensitive)
+func has_status(status_name: String) -> bool:
+	for effect in status_effects:
+		if effect.get("status", "").to_lower() == status_name.to_lower():
+			return true
+	return false
+
+
 ## Check if equipped weapon is ranged
 func is_ranged_weapon() -> bool:
 	var weapon = get_equipped_weapon()
@@ -445,6 +483,50 @@ func get_armor() -> int:
 func get_crit_chance() -> float:
 	var derived = character_data.get("derived", {})
 	return float(derived.get("crit_chance", 5))
+
+
+## Get current stamina
+func get_stamina() -> int:
+	return current_stamina
+
+
+## Use stamina - returns true if had enough
+func use_stamina(amount: int) -> bool:
+	if current_stamina < amount:
+		return false
+	current_stamina -= amount
+	# Keep character_data in sync for UI display
+	var derived = character_data.get("derived", {})
+	derived["current_stamina"] = current_stamina
+	return true
+
+
+## Restore stamina (e.g. at start of turn)
+func restore_stamina(amount: int) -> void:
+	current_stamina = mini(max_stamina, current_stamina + amount)
+	var derived = character_data.get("derived", {})
+	derived["current_stamina"] = current_stamina
+
+
+## Tick cooldowns at start of turn — reduces all by 1, removes expired
+func tick_cooldowns() -> void:
+	var expired: Array[String] = []
+	for perk_id in skill_cooldowns:
+		skill_cooldowns[perk_id] -= 1
+		if skill_cooldowns[perk_id] <= 0:
+			expired.append(perk_id)
+	for perk_id in expired:
+		skill_cooldowns.erase(perk_id)
+
+
+## Check if a skill is on cooldown
+func is_skill_on_cooldown(perk_id: String) -> bool:
+	return skill_cooldowns.has(perk_id) and skill_cooldowns[perk_id] > 0
+
+
+## Set a cooldown on a skill (turns remaining)
+func set_skill_cooldown(perk_id: String, turns: int) -> void:
+	skill_cooldowns[perk_id] = turns
 
 
 ## Get spellpower

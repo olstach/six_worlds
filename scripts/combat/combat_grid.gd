@@ -26,6 +26,7 @@ var unit_positions: Dictionary = {}
 # Visual layers
 var tile_layer: Node2D
 var effect_layer: Node2D  # For terrain effects (fire, ice, etc.)
+var obstacle_layer: Node2D  # For obstacle visuals (trees, rocks, etc.)
 var highlight_layer: Node2D
 var unit_layer: Node2D
 
@@ -64,6 +65,34 @@ enum TileType { FLOOR, WALL, PIT, WATER, DIFFICULT }
 # Terrain effects (hazards that can be on tiles)
 enum TerrainEffect { NONE, FIRE, ICE, POISON, ACID, BLESSED, CURSED }
 
+# Obstacle types (objects sitting on tiles that provide cover)
+enum ObstacleType { NONE, TREE, ROCK, PILLAR, BARRICADE }
+
+# Movement modes (affect height traversal rules)
+enum MovementMode { NORMAL, LEVITATE, FLYING }
+
+# Cover bonus values per obstacle type (dodge bonus vs ranged attacks)
+const OBSTACLE_COVER_BONUS: Dictionary = {
+	ObstacleType.TREE: 15,
+	ObstacleType.ROCK: 20,
+	ObstacleType.PILLAR: 15,
+	ObstacleType.BARRICADE: 15,
+}
+
+# Default HP per obstacle type (0 = indestructible)
+const OBSTACLE_DEFAULT_HP: Dictionary = {
+	ObstacleType.TREE: 20,
+	ObstacleType.ROCK: 50,
+	ObstacleType.PILLAR: 30,
+	ObstacleType.BARRICADE: 16,
+}
+
+# Obstacle visual colors
+const COLOR_OBSTACLE_TREE = Color(0.2, 0.55, 0.2)
+const COLOR_OBSTACLE_ROCK = Color(0.45, 0.42, 0.38)
+const COLOR_OBSTACLE_PILLAR = Color(0.6, 0.55, 0.4)
+const COLOR_OBSTACLE_BARRICADE = Color(0.5, 0.35, 0.15)
+
 # GridTile structure (named to avoid conflict with Godot's TileData)
 class GridTile:
 	var type: int = TileType.FLOOR
@@ -73,6 +102,8 @@ class GridTile:
 	var effect: int = TerrainEffect.NONE
 	var effect_duration: int = 0  # Turns remaining, -1 = permanent
 	var effect_value: int = 0  # Damage/heal amount
+	var obstacle: int = 0  # ObstacleType enum - object on this tile
+	var obstacle_hp: int = 0  # 0 = indestructible, >0 = destructible
 
 	func _init(tile_type: int = TileType.FLOOR) -> void:
 		type = tile_type
@@ -116,6 +147,10 @@ func _ready() -> void:
 	effect_layer = Node2D.new()
 	effect_layer.name = "EffectLayer"
 	add_child(effect_layer)
+
+	obstacle_layer = Node2D.new()
+	obstacle_layer.name = "ObstacleLayer"
+	add_child(obstacle_layer)
 
 	highlight_layer = Node2D.new()
 	highlight_layer.name = "HighlightLayer"
@@ -171,6 +206,14 @@ func setup_from_map(map_data: Dictionary) -> void:
 		if is_valid_position(pos):
 			set_tile_height(pos, h.get("height", 0))
 
+	# Apply obstacles (trees, rocks, pillars, barricades)
+	var obstacle_list = map_data.get("obstacles", [])
+	for obs in obstacle_list:
+		var pos = obs.get("pos", Vector2i(-1, -1))
+		if is_valid_position(pos):
+			set_tile_obstacle(pos, obs.get("obstacle", ObstacleType.NONE),
+				obs.get("hp", -1))  # -1 means use default HP
+
 	_draw_grid()
 
 
@@ -185,6 +228,9 @@ func _draw_grid() -> void:
 		var tile_data = tiles[pos]
 		var tile_visual = _create_tile_visual(pos, tile_data)
 		tile_layer.add_child(tile_visual)
+
+	# Also refresh obstacle visuals
+	_update_obstacle_visuals()
 
 
 ## Create visual representation of a tile
@@ -207,6 +253,10 @@ func _create_tile_visual(grid_pos: Vector2i, tile_data: GridTile) -> Control:
 			tile.color = Color(0.05, 0.05, 0.08)
 		TileType.WATER:
 			tile.color = Color(0.2, 0.3, 0.5)
+
+	# Height shading: lighter tiles for higher ground (+0.04 per height level)
+	if tile_data.height > 0:
+		tile.color = tile.color.lightened(tile_data.height * 0.04)
 
 	# Make clickable
 	tile.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -251,6 +301,20 @@ func get_tile_center(grid_pos: Vector2i) -> Vector2:
 func is_valid_position(grid_pos: Vector2i) -> bool:
 	return grid_pos.x >= 0 and grid_pos.x < grid_size.x and \
 		   grid_pos.y >= 0 and grid_pos.y < grid_size.y
+
+
+## Check if a tile is walkable (valid, passable terrain, no blocking obstacle)
+func is_tile_walkable(grid_pos: Vector2i) -> bool:
+	if not is_valid_position(grid_pos):
+		return false
+	var tile = tiles.get(grid_pos, null)
+	if tile == null:
+		return false
+	if not tile.walkable:
+		return false
+	if has_blocking_obstacle(grid_pos):
+		return false
+	return true
 
 
 # ============================================
@@ -325,7 +389,8 @@ func is_occupied(grid_pos: Vector2i) -> bool:
 # ============================================
 
 ## Get all tiles reachable within movement range
-func get_reachable_tiles(start: Vector2i, movement: int) -> Array[Vector2i]:
+## movement_mode: MovementMode enum - affects height traversal and cost
+func get_reachable_tiles(start: Vector2i, movement: int, movement_mode: int = MovementMode.NORMAL) -> Array[Vector2i]:
 	var reachable: Array[Vector2i] = []
 	var visited: Dictionary = {}
 	var frontier: Array = [[start, 0]]  # [position, cost]
@@ -338,9 +403,11 @@ func get_reachable_tiles(start: Vector2i, movement: int) -> Array[Vector2i]:
 		var cost: int = current[1]
 
 		if cost <= movement and pos != start:
-			# Don't include tiles with enemies (can't move through)
+			# Don't include tiles with enemies or obstacles (can't move through)
 			var unit_at = get_unit_at(pos)
-			if unit_at == null:
+			var tile_data = tiles.get(pos)
+			var has_blocking_obstacle = tile_data != null and tile_data.obstacle != ObstacleType.NONE and tile_data.obstacle != ObstacleType.BARRICADE
+			if unit_at == null and not has_blocking_obstacle:
 				reachable.append(pos)
 
 		if cost >= movement:
@@ -355,11 +422,27 @@ func get_reachable_tiles(start: Vector2i, movement: int) -> Array[Vector2i]:
 			if tile_data == null or not tile_data.walkable:
 				continue
 
-			# Check height traversal
-			if not can_traverse_height(pos, neighbor):
+			# Check height traversal (movement mode affects max climb)
+			if not can_traverse_height(pos, neighbor, movement_mode):
 				continue
 
+			# Can't walk through obstacles (except barricades, and flyers/levitators ignore)
+			if tile_data.obstacle != ObstacleType.NONE and tile_data.obstacle != ObstacleType.BARRICADE:
+				if movement_mode == MovementMode.NORMAL:
+					continue
+				# Levitate and flying can pass over obstacles
+
 			var new_cost = cost + tile_data.movement_cost
+
+			# Add climbing cost: going UP costs +1 per height level
+			# Going DOWN is free for normal and levitate; flying pays +1 for any height change
+			var height_diff = get_tile_height(neighbor) - get_tile_height(pos)
+			if height_diff > 0:
+				# Climbing up — everyone pays +1 per level
+				new_cost += height_diff
+			elif height_diff < 0 and movement_mode == MovementMode.FLYING:
+				# Flying pays +1 even going down (maintaining altitude control)
+				new_cost += absi(height_diff)
 
 			# Can move through friendly units but not stop on them
 			var unit_at = get_unit_at(neighbor)
@@ -425,7 +508,8 @@ func get_spell_range_tiles(start: Vector2i, min_range: int, max_range: int) -> A
 
 
 ## Find path between two points (A* pathfinding)
-func find_path(start: Vector2i, end: Vector2i) -> Array[Vector2i]:
+## movement_mode: MovementMode enum - affects height traversal and cost
+func find_path(start: Vector2i, end: Vector2i, movement_mode: int = MovementMode.NORMAL) -> Array[Vector2i]:
 	if not is_valid_position(start) or not is_valid_position(end):
 		return []
 
@@ -457,15 +541,29 @@ func find_path(start: Vector2i, end: Vector2i) -> Array[Vector2i]:
 			if tile_data == null or not tile_data.walkable:
 				continue
 
-			# Check height traversal
-			if not can_traverse_height(current, neighbor):
+			# Check height traversal (movement mode affects max climb)
+			if not can_traverse_height(current, neighbor, movement_mode):
 				continue
+
+			# Can't path through obstacles (except barricades, flyers/levitators can pass)
+			if tile_data.obstacle != ObstacleType.NONE and tile_data.obstacle != ObstacleType.BARRICADE:
+				if movement_mode == MovementMode.NORMAL:
+					if neighbor != end:
+						continue
+				# Levitate/flying can path over obstacles
 
 			# Can't path through occupied tiles (except destination)
 			if neighbor != end and is_occupied(neighbor):
 				continue
 
 			var tentative_g = g_score.get(current, INF) + tile_data.movement_cost
+
+			# Add climbing cost
+			var height_diff = get_tile_height(neighbor) - get_tile_height(current)
+			if height_diff > 0:
+				tentative_g += height_diff
+			elif height_diff < 0 and movement_mode == MovementMode.FLYING:
+				tentative_g += absi(height_diff)
 
 			if tentative_g < g_score.get(neighbor, INF):
 				came_from[neighbor] = current
@@ -966,11 +1064,22 @@ func get_tile_height(grid_pos: Vector2i) -> int:
 	return tile.height if tile else 0
 
 
-## Check if unit can move between heights (max 1 height difference)
-func can_traverse_height(from_pos: Vector2i, to_pos: Vector2i) -> bool:
+## Check if unit can move between heights based on movement mode
+## NORMAL: max 1 height difference
+## LEVITATE: max 2 height difference (can also cross water/pits)
+## FLYING: unlimited height difference
+func can_traverse_height(from_pos: Vector2i, to_pos: Vector2i, movement_mode: int = MovementMode.NORMAL) -> bool:
 	var from_height = get_tile_height(from_pos)
 	var to_height = get_tile_height(to_pos)
-	return absi(to_height - from_height) <= 1
+	var diff = absi(to_height - from_height)
+
+	match movement_mode:
+		MovementMode.FLYING:
+			return true  # Flying units can traverse any height
+		MovementMode.LEVITATE:
+			return diff <= 2  # Levitating units can climb up to 2 levels
+		_:
+			return diff <= 1  # Normal units max 1 level
 
 
 ## Get height advantage bonus (higher ground = +accuracy, +damage)
@@ -998,6 +1107,299 @@ func get_height_damage_bonus(attacker_pos: Vector2i, target_pos: Vector2i, is_ra
 	if advantage <= 0:
 		return 0
 	return advantage * (1 if is_ranged else 2)
+
+
+# ============================================
+# OBSTACLE SYSTEM
+# ============================================
+
+## Place an obstacle on a tile
+## hp: pass -1 to use default HP for the obstacle type
+func set_tile_obstacle(grid_pos: Vector2i, obstacle_type: int, hp: int = -1) -> void:
+	if not is_valid_position(grid_pos):
+		return
+
+	var tile = tiles.get(grid_pos)
+	if tile == null:
+		return
+
+	tile.obstacle = obstacle_type
+	if hp == -1:
+		tile.obstacle_hp = OBSTACLE_DEFAULT_HP.get(obstacle_type, 0)
+	else:
+		tile.obstacle_hp = hp
+
+	_update_obstacle_visuals()
+
+
+## Remove an obstacle from a tile
+func remove_obstacle(grid_pos: Vector2i) -> void:
+	if not is_valid_position(grid_pos):
+		return
+
+	var tile = tiles.get(grid_pos)
+	if tile == null:
+		return
+
+	tile.obstacle = ObstacleType.NONE
+	tile.obstacle_hp = 0
+	_update_obstacle_visuals()
+
+
+## Get obstacle info at a position
+func get_obstacle_at(grid_pos: Vector2i) -> Dictionary:
+	if not is_valid_position(grid_pos):
+		return {}
+
+	var tile = tiles.get(grid_pos)
+	if tile == null or tile.obstacle == ObstacleType.NONE:
+		return {}
+
+	return {
+		"type": tile.obstacle,
+		"name": get_obstacle_name(tile.obstacle),
+		"hp": tile.obstacle_hp,
+		"cover_bonus": OBSTACLE_COVER_BONUS.get(tile.obstacle, 0)
+	}
+
+
+## Check if a tile has an obstacle that blocks movement
+func has_blocking_obstacle(grid_pos: Vector2i) -> bool:
+	var tile = tiles.get(grid_pos)
+	if tile == null:
+		return false
+	# Barricades don't block movement (units can stand on them)
+	return tile.obstacle != ObstacleType.NONE and tile.obstacle != ObstacleType.BARRICADE
+
+
+## Damage an obstacle. Returns true if destroyed.
+## When destroyed, applies aftermath effects (tree -> fire terrain, rock -> difficult terrain)
+signal obstacle_destroyed(grid_pos: Vector2i, obstacle_type: int)
+
+func damage_obstacle(grid_pos: Vector2i, damage: int, damage_type: String = "physical") -> bool:
+	var tile = tiles.get(grid_pos)
+	if tile == null or tile.obstacle == ObstacleType.NONE:
+		return false
+
+	if tile.obstacle_hp <= 0:
+		return false  # Indestructible
+
+	tile.obstacle_hp -= damage
+	if tile.obstacle_hp <= 0:
+		var destroyed_type = tile.obstacle
+		_on_obstacle_destroyed(grid_pos, destroyed_type, damage_type)
+		return true
+
+	return false
+
+
+## Handle aftermath when an obstacle is destroyed
+func _on_obstacle_destroyed(grid_pos: Vector2i, obstacle_type: int, damage_type: String) -> void:
+	# Remove the obstacle first
+	var tile = tiles.get(grid_pos)
+	if tile:
+		tile.obstacle = ObstacleType.NONE
+		tile.obstacle_hp = 0
+
+	# Apply aftermath based on obstacle type
+	match obstacle_type:
+		ObstacleType.TREE:
+			# Trees destroyed by fire leave fire terrain
+			if damage_type == "fire":
+				add_terrain_effect(grid_pos, TerrainEffect.FIRE, 3, 5)
+			# Otherwise just becomes difficult terrain (fallen branches)
+			elif tile:
+				tile.type = TileType.DIFFICULT
+				tile.movement_cost = 2
+		ObstacleType.ROCK:
+			# Rocks become difficult terrain (rubble)
+			if tile:
+				tile.type = TileType.DIFFICULT
+				tile.movement_cost = 2
+		ObstacleType.PILLAR:
+			# Pillars become difficult terrain (debris)
+			if tile:
+				tile.type = TileType.DIFFICULT
+				tile.movement_cost = 2
+		ObstacleType.BARRICADE:
+			pass  # Barricades just disappear
+
+	obstacle_destroyed.emit(grid_pos, obstacle_type)
+	_update_obstacle_visuals()
+	_draw_grid()
+
+
+## Get obstacle name for display
+func get_obstacle_name(obstacle_type: int) -> String:
+	match obstacle_type:
+		ObstacleType.TREE: return "Tree"
+		ObstacleType.ROCK: return "Rock"
+		ObstacleType.PILLAR: return "Pillar"
+		ObstacleType.BARRICADE: return "Barricade"
+		_: return ""
+
+
+# ============================================
+# COVER SYSTEM
+# ============================================
+
+## Check if a defender has cover from an attacker (obstacle between them)
+## Returns: {"has_cover": bool, "dodge_bonus": int, "obstacle_pos": Vector2i, "obstacle_name": String}
+func get_cover_bonus(attacker_pos: Vector2i, defender_pos: Vector2i) -> Dictionary:
+	var result = {
+		"has_cover": false,
+		"dodge_bonus": 0,
+		"obstacle_pos": Vector2i(-1, -1),
+		"obstacle_name": ""
+	}
+
+	if attacker_pos == defender_pos:
+		return result
+
+	# Trace the line between attacker and defender
+	var tiles_in_line = _get_line_tiles(attacker_pos, defender_pos)
+
+	# Check tiles between them (skip endpoints)
+	var best_cover = 0
+	for i in range(1, tiles_in_line.size() - 1):
+		var pos = tiles_in_line[i]
+		var tile = tiles.get(pos)
+		if tile == null:
+			continue
+
+		if tile.obstacle != ObstacleType.NONE:
+			var bonus = OBSTACLE_COVER_BONUS.get(tile.obstacle, 0)
+			if bonus > best_cover:
+				best_cover = bonus
+				result.obstacle_pos = pos
+				result.obstacle_name = get_obstacle_name(tile.obstacle)
+
+	if best_cover > 0:
+		result.has_cover = true
+		result.dodge_bonus = best_cover
+
+	return result
+
+
+## Check what cover a unit would have at a given position from all enemy positions
+## Useful for showing cover info when hovering over movement destinations
+func get_cover_info_at(grid_pos: Vector2i, team: int) -> Dictionary:
+	# Find the best cover this position provides against any enemy
+	var best_cover = 0
+	var best_obstacle_name = ""
+
+	for pos in unit_positions:
+		var unit = unit_positions[pos]
+		if unit.team != team:
+			# This is an enemy — check if we'd have cover from them
+			var cover = get_cover_bonus(pos, grid_pos)
+			if cover.has_cover and cover.dodge_bonus > best_cover:
+				best_cover = cover.dodge_bonus
+				best_obstacle_name = cover.obstacle_name
+
+	return {
+		"has_cover": best_cover > 0,
+		"dodge_bonus": best_cover,
+		"obstacle_name": best_obstacle_name
+	}
+
+
+# ============================================
+# OBSTACLE VISUALS
+# ============================================
+
+## Update visual display of obstacles
+func _update_obstacle_visuals() -> void:
+	# Clear existing obstacle visuals
+	for child in obstacle_layer.get_children():
+		child.queue_free()
+
+	# Draw obstacle shapes
+	for pos in tiles:
+		var tile = tiles[pos]
+		if tile.obstacle == ObstacleType.NONE:
+			continue
+
+		var obs_visual = _create_obstacle_visual(pos, tile.obstacle)
+		obstacle_layer.add_child(obs_visual)
+
+
+## Create visual for an obstacle
+## TREE = triangle (top), ROCK = square, PILLAR = circle, BARRICADE = horizontal bar
+func _create_obstacle_visual(grid_pos: Vector2i, obstacle_type: int) -> Control:
+	var container = Control.new()
+	container.size = Vector2(tile_size, tile_size)
+	container.position = grid_to_world(grid_pos)
+	container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var color: Color
+	match obstacle_type:
+		ObstacleType.TREE:
+			color = COLOR_OBSTACLE_TREE
+		ObstacleType.ROCK:
+			color = COLOR_OBSTACLE_ROCK
+		ObstacleType.PILLAR:
+			color = COLOR_OBSTACLE_PILLAR
+		ObstacleType.BARRICADE:
+			color = COLOR_OBSTACLE_BARRICADE
+		_:
+			color = Color.WHITE
+
+	match obstacle_type:
+		ObstacleType.TREE:
+			# Triangle shape (represented as a small colored rect with distinct shape)
+			# Top portion = foliage (green diamond rotated)
+			var foliage = ColorRect.new()
+			var foliage_size = tile_size * 0.5
+			foliage.size = Vector2(foliage_size, foliage_size)
+			foliage.position = Vector2(tile_size / 2.0, tile_size * 0.3)
+			foliage.pivot_offset = Vector2(foliage_size / 2.0, foliage_size / 2.0)
+			foliage.position -= foliage.pivot_offset
+			foliage.rotation_degrees = 45
+			foliage.color = color
+			foliage.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			container.add_child(foliage)
+			# Trunk (small brown rect)
+			var trunk = ColorRect.new()
+			trunk.size = Vector2(4, 8)
+			trunk.position = Vector2(tile_size / 2.0 - 2, tile_size * 0.65)
+			trunk.color = Color(0.35, 0.22, 0.1)
+			trunk.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			container.add_child(trunk)
+
+		ObstacleType.ROCK:
+			# Solid square, slightly smaller and centered
+			var rock = ColorRect.new()
+			var rock_size = tile_size * 0.55
+			rock.size = Vector2(rock_size, rock_size)
+			rock.position = Vector2((tile_size - rock_size) / 2.0, (tile_size - rock_size) / 2.0)
+			rock.color = color
+			rock.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			container.add_child(rock)
+
+		ObstacleType.PILLAR:
+			# Tall narrow rect (pillar shape)
+			var pillar = ColorRect.new()
+			var pw = tile_size * 0.3
+			var ph = tile_size * 0.7
+			pillar.size = Vector2(pw, ph)
+			pillar.position = Vector2((tile_size - pw) / 2.0, (tile_size - ph) / 2.0)
+			pillar.color = color
+			pillar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			container.add_child(pillar)
+
+		ObstacleType.BARRICADE:
+			# Low horizontal bar
+			var bar = ColorRect.new()
+			var bw = tile_size * 0.7
+			var bh = tile_size * 0.2
+			bar.size = Vector2(bw, bh)
+			bar.position = Vector2((tile_size - bw) / 2.0, tile_size * 0.55)
+			bar.color = color
+			bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			container.add_child(bar)
+
+	return container
 
 
 # ============================================
@@ -1043,6 +1445,17 @@ func create_test_arena() -> void:
 
 	# Add a fire hazard
 	add_terrain_effect(Vector2i(7, 2), TerrainEffect.FIRE, -1, 5)
+
+	# Add cover obstacles
+	set_tile_obstacle(Vector2i(7, 4), ObstacleType.TREE)
+	set_tile_obstacle(Vector2i(9, 3), ObstacleType.ROCK)
+	set_tile_obstacle(Vector2i(6, 7), ObstacleType.PILLAR)
+
+	# Add height variation
+	set_tile_height(Vector2i(10, 2), 1)
+	set_tile_height(Vector2i(10, 3), 1)
+	set_tile_height(Vector2i(11, 2), 1)
+	set_tile_height(Vector2i(11, 3), 2)
 
 	_draw_grid()
 
@@ -1106,7 +1519,7 @@ func get_enemy_deployment_zones() -> Dictionary:
 	}
 
 
-## Check if a tile is valid for unit deployment (walkable, not a hazard)
+## Check if a tile is valid for unit deployment (walkable, not a hazard, no obstacle)
 func _is_valid_deployment_tile(grid_pos: Vector2i) -> bool:
 	if not is_valid_position(grid_pos):
 		return false
@@ -1117,6 +1530,10 @@ func _is_valid_deployment_tile(grid_pos: Vector2i) -> bool:
 
 	# Must be walkable
 	if not tile.walkable:
+		return false
+
+	# Can't deploy on blocking obstacles
+	if tile.obstacle != ObstacleType.NONE and tile.obstacle != ObstacleType.BARRICADE:
 		return false
 
 	# Avoid tiles with damaging effects

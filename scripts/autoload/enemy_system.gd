@@ -257,6 +257,9 @@ func _build_enemy(archetype_id: String, power_budget: float) -> Dictionary:
 		}
 	}
 
+	# Generate consumable inventory based on role and power
+	var inventory = _generate_enemy_inventory(archetype, effective_budget)
+
 	# Assemble final enemy dict matching CombatUnit.init_as_enemy() expectations
 	var enemy: Dictionary = {
 		"name": archetype.get("name", "Enemy"),
@@ -270,7 +273,8 @@ func _build_enemy(archetype_id: String, power_budget: float) -> Dictionary:
 		"resistances": resistances,
 		"equipped_weapon": equipped_weapon,
 		"known_spells": spells,
-		"perks": perks
+		"perks": perks,
+		"inventory": inventory
 	}
 
 	return enemy
@@ -479,6 +483,66 @@ func _build_perks(guaranteed: Array) -> Array:
 				perk_name = perk_data.get("name", perk_id)
 		perks.append({"id": perk_id, "name": perk_name})
 	return perks
+
+
+## Generate consumable inventory for an enemy based on archetype and power level.
+## Higher power enemies get more/better items. Roles determine item types.
+func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Array:
+	var inventory: Array = []
+	var roles = archetype.get("roles", [])
+
+	# Chance to have items at all increases with power
+	var item_chance = clampf(power_level / 100.0, 0.2, 0.9)
+	if randf() > item_chance:
+		return inventory  # No items this enemy
+
+	# All enemies: chance for a health potion
+	if randf() < 0.6:
+		if power_level > 60:
+			inventory.append({"item_id": "greater_health_potion", "quantity": 1})
+		else:
+			inventory.append({"item_id": "health_potion", "quantity": 1})
+
+	# Casters get mana potions
+	var has_magic = false
+	for role in roles:
+		if role in ["caster", "support"]:
+			has_magic = true
+			break
+	if has_magic and randf() < 0.5:
+		if power_level > 60:
+			inventory.append({"item_id": "greater_mana_potion", "quantity": 1})
+		else:
+			inventory.append({"item_id": "mana_potion", "quantity": 1})
+
+	# Frontline/melee enemies may have bombs or oils
+	var is_melee = false
+	for role in roles:
+		if role in ["frontline", "melee", "brute"]:
+			is_melee = true
+			break
+
+	if is_melee and randf() < 0.3:
+		# Pick a random bomb
+		var bombs = ["fire_bomb", "smoke_bomb", "acid_flask"]
+		inventory.append({"item_id": bombs[randi() % bombs.size()], "quantity": 1})
+
+	# Ranged/assassin enemies may have oils
+	var is_ranged_type = false
+	for role in roles:
+		if role in ["ranged", "assassin", "skirmisher"]:
+			is_ranged_type = true
+			break
+
+	if is_ranged_type and randf() < 0.25:
+		var oils = ["flame_oil", "frost_oil", "poison_oil"]
+		inventory.append({"item_id": oils[randi() % oils.size()], "quantity": 1})
+
+	# Higher power enemies get an extra potion
+	if power_level > 80 and randf() < 0.4:
+		inventory.append({"item_id": "health_potion", "quantity": 1})
+
+	return inventory
 
 
 ## Pick a random archetype that matches a given role and region.
