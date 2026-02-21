@@ -33,7 +33,10 @@ func _ready() -> void:
 ## Call this to show and start an event (used by overworld overlay)
 func show_event(event_id: String) -> void:
 	visible = true
-	EventManager.start_event(event_id)
+	if not EventManager.start_event(event_id):
+		# Event not found — close immediately so movement isn't paused forever
+		visible = false
+		event_display_closed.emit()
 
 func _on_event_started(event_data: Dictionary) -> void:
 	current_event = event_data

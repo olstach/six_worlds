@@ -88,7 +88,9 @@ func show_item(item: Dictionary, global_pos: Vector2) -> void:
 
 		var stat_val = Label.new()
 		var sign = "+" if stat_value > 0 else ""
-		stat_val.text = sign + str(stat_value)
+		# Show as integer if the value is a whole number (avoids "5.0" display)
+		var display = int(stat_value) if float(stat_value) == int(stat_value) else stat_value
+		stat_val.text = sign + str(display)
 		stat_val.add_theme_font_size_override("font_size", 12)
 		# Green for positive, red for negative
 		var val_color = Color(0.4, 0.9, 0.4) if stat_value > 0 else Color(0.9, 0.4, 0.4)

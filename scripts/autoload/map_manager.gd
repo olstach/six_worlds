@@ -1653,6 +1653,9 @@ func load_save_data(data: Dictionary) -> void:
 		if parts.size() == 2:
 			searched_tiles[Vector2i(int(parts[0]), int(parts[1]))] = true
 
+	# Notify renderer and other listeners that the map is ready
+	map_loaded.emit(current_map_id)
+
 
 ## Serialize terrain as a flat int array matching the load format
 func _serialize_terrain() -> Array:

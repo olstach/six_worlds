@@ -51,6 +51,9 @@ var hover_tile: Vector2i = Vector2i(-1, -1)
 # Pulsing animation for aggressive mobs
 var _pulse_time: float = 0.0
 
+# Used to force a redraw on the first frame tiles are available
+var _initial_draw_done: bool = false
+
 
 func _ready() -> void:
 	# Connect to MapManager signals to know when to redraw
@@ -62,6 +65,8 @@ func _ready() -> void:
 	MapManager.mob_met_player.connect(_on_needs_redraw_dict)
 	MapManager.mob_started_pursuit.connect(_on_needs_redraw_dict)
 	MapManager.mob_lost_pursuit.connect(_on_needs_redraw_dict)
+	# Initial draw — needed when loading a save (map_loaded signal already fired)
+	queue_redraw()
 
 
 # Signal callbacks that just trigger redraw (different signatures)
@@ -89,6 +94,11 @@ func _process(delta: float) -> void:
 	# Redraw every frame during movement for smooth animation
 	if MapManager._is_moving or not MapManager.mobs.is_empty():
 		queue_redraw()
+	# Ensure initial draw happens once tiles are available (handles Load Game timing)
+	elif not _initial_draw_done:
+		if not MapManager.tiles.is_empty():
+			_initial_draw_done = true
+			queue_redraw()
 
 	# Continuous arrow key movement: queue next tile when party stops moving
 	if not MapManager._is_moving and not MapManager._is_paused:

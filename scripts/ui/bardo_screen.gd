@@ -51,7 +51,7 @@ const RESULT_STEP_DELAY: float = 1.5  # Seconds between realm -> race -> backgro
 
 # State
 var _reincarnation_result: Dictionary = {}  # {realm, race, background}
-var _karma_lines: Array[Label] = []         # Labels for each karma row
+var _karma_lines: Array[Control] = []       # HBoxContainers for each karma row
 var _content_vbox: VBoxContainer            # Main content column
 var _result_section: VBoxContainer          # Where realm/race/background appear
 var _begin_btn: Button                      # "Begin New Life" button

@@ -1071,7 +1071,10 @@ func calculate_magic_damage(caster: Node, target: Node, base_spell_damage: int, 
 	var spellpower = caster.get_spellpower()
 	var skill_bonus = caster.get_magic_skill_bonus(element)
 
-	var base_damage = base_spell_damage + spellpower + skill_bonus
+	# Spellpower contributes at half value — prevents it dominating over spell base damage.
+	# Formula: spell_base + (spellpower / 2) + skill_bonus
+	# Example: Firebolt(15) + spellpower 10 → 15+5+10=30, not 15+10+10=35
+	var base_damage = base_spell_damage + (spellpower / 2) + skill_bonus
 
 	# Variance ±15%
 	var variance = randf_range(0.85, 1.15)
@@ -1250,7 +1253,7 @@ func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dicti
 	for school in schools:
 		# Lowercase school name for comparison (spells.json uses capitalized names)
 		var school_lower = school.to_lower()
-		var skill_name = school_lower + "_magic" if school_lower in ["earth", "water", "fire", "air", "space"] else school_lower
+		var skill_name = school_lower + "_magic" if school_lower in ["earth", "water", "fire", "air", "space", "white", "black"] else school_lower
 		var skill_level = skills.get(skill_name, 0)
 		if skill_level >= required_level:
 			has_skill = true
@@ -1442,7 +1445,7 @@ func _calculate_spell_bonus(caster: Node, spell: Dictionary) -> int:
 	for school in schools:
 		# Lowercase school name for comparison (spells.json uses capitalized names)
 		var school_lower = school.to_lower()
-		var skill_name = school_lower + "_magic" if school_lower in ["earth", "water", "fire", "air", "space"] else school_lower
+		var skill_name = school_lower + "_magic" if school_lower in ["earth", "water", "fire", "air", "space", "white", "black"] else school_lower
 		var skill_level = skills.get(skill_name, 0)
 		total_bonus += skill_level * 2  # Each skill level adds 2 to spell power
 
@@ -1567,7 +1570,7 @@ func _apply_stat_modifier(unit: Node, stat: String, value: int, duration: int) -
 	if not "stat_modifiers" in unit:
 		unit.set("stat_modifiers", [])
 
-	unit.stat_modifiers.append({
+	unit.get("stat_modifiers").append({
 		"stat": stat,
 		"value": value,
 		"duration": duration
@@ -1582,7 +1585,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	if not "status_effects" in unit:
 		unit.set("status_effects", [])
 
-	unit.status_effects.append({
+	unit.get("status_effects").append({
 		"status": status,
 		"duration": duration,
 		"value": value

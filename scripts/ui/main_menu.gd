@@ -92,11 +92,11 @@ const ELEMENT_SKILLS := {
 
 # Element colors for visual distinction
 const ELEMENT_COLORS := {
-	"space": Color(0.7, 0.5, 0.9),   # Purple
-	"air": Color(0.6, 0.85, 0.95),   # Light blue
-	"fire": Color(0.95, 0.5, 0.3),   # Orange-red
-	"water": Color(0.3, 0.6, 0.9),   # Blue
-	"earth": Color(0.7, 0.6, 0.4)    # Brown
+	"space": Color(0.6, 0.3, 0.9),   # Deep purple
+	"air": Color(0.2, 0.85, 0.35),   # Vibrant green
+	"fire": Color(0.95, 0.2, 0.15),  # Red
+	"water": Color(0.5, 0.82, 0.98), # Light blue
+	"earth": Color(0.85, 0.72, 0.15) # Golden yellow
 }
 
 func _ready() -> void:
@@ -113,6 +113,8 @@ func _ready() -> void:
 
 	# Connect tab change signal
 	tab_container.tab_changed.connect(_on_tab_changed)
+	# Rename the first tab to "Character" (node is named "Stats" in the scene)
+	tab_container.set_tab_title(0, "Character")
 
 	# Connect debug button
 	add_xp_button.pressed.connect(_on_add_xp_pressed)
@@ -136,6 +138,13 @@ func _ready() -> void:
 	# Initial display
 	_refresh_display()
 
+## Called by overworld to open a specific tab (0=Stats, 1=Equipment, 2=Party, 3=Spellbook)
+func open_to_tab(tab_index: int) -> void:
+	tab_container.current_tab = tab_index
+
+func get_current_tab() -> int:
+	return tab_container.current_tab
+
 func _on_tab_changed(tab: int) -> void:
 	tab_changed.emit(tab)
 	# Refresh equipment tab when switching to it (tab index 1)
@@ -156,10 +165,10 @@ func _on_tab_changed(tab: int) -> void:
 func _on_character_updated(_character: Dictionary) -> void:
 	_refresh_display()
 
-func _on_attribute_increased(_attr_name: String, _new_value: int) -> void:
+func _on_attribute_increased(_character: Dictionary, _attr_name: String, _new_value: int) -> void:
 	_refresh_display()
 
-func _on_skill_upgraded(_skill_name: String, _new_level: int) -> void:
+func _on_skill_upgraded(_character: Dictionary, _skill_name: String, _new_level: int) -> void:
 	_refresh_display()
 
 func _on_inventory_changed() -> void:
@@ -351,6 +360,15 @@ func _update_skills_grid(character: Dictionary) -> void:
 			skill_btn.text = _format_skill_name(skill_id) + " [" + str(int(skill_level)) + "]"
 			skill_btn.custom_minimum_size = Vector2(110, 28)
 			skill_btn.add_theme_font_size_override("font_size", 11)
+
+			# Tooltip: show XP cost to advance (or max level)
+			var player = CharacterSystem.get_player()
+			var player_xp = player.get("xp", 0)
+			if skill_level >= 5:
+				skill_btn.tooltip_text = "Max level"
+			else:
+				var advance_cost = CharacterSystem.SKILL_COSTS[int(skill_level) + 1]
+				skill_btn.tooltip_text = "XP to advance: %d (have %d)" % [advance_cost, player_xp]
 
 			# Color based on level
 			if skill_level > 0:
@@ -784,8 +802,9 @@ func _create_spell_card(spell_id: String, spell_data: Dictionary) -> PanelContai
 
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
+	if event.is_action_pressed("ui_cancel") and visible:
 		hide()
+		get_viewport().set_input_as_handled()
 
 func _exit_tree() -> void:
 	# Clean up tooltip CanvasLayer (frees tooltip too since it's a child)

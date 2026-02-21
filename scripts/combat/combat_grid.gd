@@ -71,6 +71,10 @@ enum ObstacleType { NONE, TREE, ROCK, PILLAR, BARRICADE }
 # Movement modes (affect height traversal rules)
 enum MovementMode { NORMAL, LEVITATE, FLYING }
 
+# Max tiles from the defender that an obstacle can be and still grant cover.
+# Beyond this, the obstacle is "too far away to meaningfully hide behind".
+const MAX_COVER_RADIUS: int = 3
+
 # Cover bonus values per obstacle type (dodge bonus vs ranged attacks)
 const OBSTACLE_COVER_BONUS: Dictionary = {
 	ObstacleType.TREE: 15,
@@ -1268,6 +1272,10 @@ func get_cover_bonus(attacker_pos: Vector2i, defender_pos: Vector2i) -> Dictiona
 			continue
 
 		if tile.obstacle != ObstacleType.NONE:
+			# Obstacle must be close to the defender to provide meaningful cover
+			var dist_to_defender = (defender_pos - pos).length()
+			if dist_to_defender > MAX_COVER_RADIUS:
+				continue
 			var bonus = OBSTACLE_COVER_BONUS.get(tile.obstacle, 0)
 			if bonus > best_cover:
 				best_cover = bonus

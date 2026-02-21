@@ -303,8 +303,8 @@ func upgrade_skill(character: Dictionary, skill: String) -> bool:
 
 		skill_upgraded.emit(character, skill, current_level + 1)
 
-		# Offer perk selection (4 random eligible perks)
-		offer_perk_selection(character)
+		# Offer perk selection (4 random eligible perks, weighted toward the upgraded skill)
+		offer_perk_selection(character, skill)
 
 		update_derived_stats(character)
 		character_updated.emit(character)
@@ -321,12 +321,13 @@ func _update_element_affinities(character: Dictionary) -> void:
 
 ## Offer player choice of perks after a skill level-up.
 ## Gets 4 random eligible perks from PerkSystem and emits a signal for the UI.
-func offer_perk_selection(character: Dictionary) -> void:
+## last_skill: the skill just upgraded — perks for it appear with higher weight.
+func offer_perk_selection(character: Dictionary, last_skill: String = "") -> void:
 	if not PerkSystem:
 		push_warning("CharacterSystem: PerkSystem not available")
 		return
 
-	var selection = PerkSystem.get_perk_selection(character)
+	var selection = PerkSystem.get_perk_selection(character, PerkSystem.PERKS_OFFERED, last_skill)
 	if selection.is_empty():
 		return
 

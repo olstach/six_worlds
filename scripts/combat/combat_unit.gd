@@ -421,33 +421,33 @@ func get_dodge() -> int:
 
 ## Get attack damage
 func get_attack_damage() -> int:
-	var derived = character_data.get("derived", {})
-	var base_damage = derived.get("damage", 5)
-
-	# Add attribute modifier - Finesse for ranged, Strength for melee
 	var attrs = character_data.get("attributes", {})
 	var skills = character_data.get("skills", {})
 
+	# Read weapon damage directly from the equipped weapon (avoids stale derived stats)
+	var weapon = get_equipped_weapon()
+	var weapon_damage = weapon.get("stats", {}).get("damage", 2)
+	var base_damage = weapon_damage
+
 	if is_ranged_weapon():
-		# Ranged weapons use Finesse
-		var fin_mod = (attrs.get("finesse", 10) - 10)
+		# Ranged weapons: Finesse as primary attribute (starts contributing at 10)
+		var fin_mod = (attrs.get("finesse", 10) - 5)
 		base_damage += fin_mod
 
-		# Add Ranged skill bonus (2 damage per level)
+		# Ranged skill bonus (3 damage per level)
 		var ranged_skill = skills.get("ranged", 0)
-		base_damage += ranged_skill * 2
+		base_damage += ranged_skill * 3
 	else:
-		# Melee weapons use Strength
-		var str_mod = (attrs.get("strength", 10) - 10)
+		# Melee weapons: Strength as primary attribute (starts contributing at 10)
+		var str_mod = (attrs.get("strength", 10) - 5)
 		base_damage += str_mod
 
-		# Add weapon skill bonus based on weapon type
-		var weapon = get_equipped_weapon()
+		# Weapon skill bonus (3 damage per level)
 		var weapon_type = weapon.get("type", "")
 		var skill_name = _get_weapon_skill_name(weapon_type)
 		if skill_name != "":
 			var skill_level = skills.get(skill_name, 0)
-			base_damage += skill_level * 2
+			base_damage += skill_level * 3
 
 	return base_damage
 
@@ -669,8 +669,8 @@ func play_attack_animation(target_world_pos: Vector2) -> void:
 
 	# Tween the sprite position: lunge forward, then back
 	var tween = create_tween()
-	tween.tween_property(sprite, "position", sprite.position + lunge_offset, 0.12).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
-	tween.tween_property(sprite, "position", -UNIT_SIZE / 2, 0.15).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+	tween.tween_property(sprite, "position", sprite.position + lunge_offset, 0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	tween.tween_property(sprite, "position", -UNIT_SIZE / 2, 0.30).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
 
 
 # ============================================

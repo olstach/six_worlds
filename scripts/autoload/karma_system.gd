@@ -91,14 +91,18 @@ func process_choice(choice_data: Dictionary) -> void:
 ## Determine which realm player reincarnates into
 func determine_reincarnation_realm() -> String:
 	var highest_realm = "hell"  # Default fallback
-	var highest_karma = karma_scores["hell"]
-	
-	# Find realm with highest karma
+	var highest_karma = -INF
+
+	# Only consider realms the player has actually visited/unlocked
+	var unlocked = GameState.unlocked_worlds if GameState else ["hell"]
+
 	for realm in karma_scores:
+		if realm not in unlocked:
+			continue  # Can't be reborn somewhere you've never been
 		if karma_scores[realm] > highest_karma:
 			highest_karma = karma_scores[realm]
 			highest_realm = realm
-	
+
 	return highest_realm
 
 ## Select a random race from the reincarnation realm

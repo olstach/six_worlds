@@ -276,17 +276,33 @@ func _get_skills_for_category(category: String) -> Array:
 # PERK SELECTION
 # ============================================
 
-func get_perk_selection(character: Dictionary, count: int = PERKS_OFFERED) -> Array[Dictionary]:
+func get_perk_selection(character: Dictionary, count: int = PERKS_OFFERED, last_skill: String = "") -> Array[Dictionary]:
 	## Get a random selection of eligible perks for the character to choose from.
 	## Returns an array of {id, data, source} dicts.
+	## last_skill: perks belonging to this skill appear 3x in the pool (higher chance).
 	var eligible = get_eligible_perks(character)
 
-	# Shuffle and pick up to `count`
-	eligible.shuffle()
-	var selected: Array[Dictionary] = []
+	# Build weighted pool: perks for last_skill appear 3 times, all others once.
+	# After shuffling and deduplicating, this gives last_skill perks ~3x the chance.
+	var weighted_pool: Array[String] = []
+	for perk_id in eligible:
+		weighted_pool.append(perk_id)
+		if last_skill != "" and perk_id in _skill_perks:
+			if _skill_perks[perk_id].get("skill", "") == last_skill:
+				weighted_pool.append(perk_id)
+				weighted_pool.append(perk_id)
 
-	for i in range(min(count, eligible.size())):
-		var perk_id = eligible[i]
+	weighted_pool.shuffle()
+
+	# Pick up to `count` unique perks from the shuffled weighted pool
+	var selected: Array[Dictionary] = []
+	var seen: Array[String] = []
+
+	for perk_id in weighted_pool:
+		if perk_id in seen:
+			continue
+		seen.append(perk_id)
+
 		var perk_data: Dictionary
 		var source: String
 
@@ -304,6 +320,9 @@ func get_perk_selection(character: Dictionary, count: int = PERKS_OFFERED) -> Ar
 			"data": perk_data,
 			"source": source
 		})
+
+		if selected.size() >= count:
+			break
 
 	return selected
 

@@ -303,8 +303,12 @@ func _on_slot_pressed(slot: int) -> void:
 	if _delete_mode:
 		SaveManager.delete_save(slot)
 		_delete_mode = false
-		_hide_load_panel()
-		# Refresh main buttons visibility
+		# Stay on the panel — just refresh slots and reset the delete button
+		_refresh_slot_buttons()
+		if _delete_btn:
+			_delete_btn.text = "Delete Save"
+			_delete_btn.remove_theme_color_override("font_color")
+		# Refresh main buttons visibility in case all saves are gone
 		var recent = SaveManager.get_most_recent_slot()
 		_continue_btn.visible = recent > 0
 		_load_btn.visible = recent > 0

@@ -668,8 +668,14 @@ func _on_attack_pressed() -> void:
 
 	current_action_mode = ActionMode.ATTACK
 	var weapon_range = unit.get_attack_range()
-	var attack_range = combat_grid.get_attack_range_tiles(unit.grid_position, 1, weapon_range)
-	combat_grid.highlight_attack_range(attack_range)
+	# Use Manhattan/diamond distance (same as spell targeting) instead of Chebyshev square
+	var range_area = combat_grid.get_spell_range_tiles(unit.grid_position, 1, weapon_range)
+	# Highlight enemies in range as bright targets, rest of range as dim area
+	var valid_targets: Array[Vector2i] = []
+	for other in CombatManager.all_units:
+		if other.is_alive() and other.team != unit.team and other.grid_position in range_area:
+			valid_targets.append(other.grid_position)
+	combat_grid.highlight_spell_range_and_area(range_area, valid_targets)
 
 	if weapon_range > 1:
 		_log_message("Select target to attack (range: %d)..." % weapon_range)
@@ -1429,7 +1435,10 @@ func _on_active_skill_selected(skill_data: Dictionary) -> void:
 			_log_message("No valid targets for %s!" % skill_data.get("name", "???"))
 			_cancel_action_mode()
 			return
-		combat_grid.highlight_attack_range(valid_targets)
+		# Show full range area (dim) plus valid targets (bright), same as spell targeting
+		var skill_range = combat_data.get("range", 1)
+		var range_area = combat_grid.get_spell_range_tiles(unit.grid_position, 0, skill_range)
+		combat_grid.highlight_spell_range_and_area(range_area, valid_targets)
 		_log_message("Select target for %s..." % skill_data.get("name", "???"))
 
 

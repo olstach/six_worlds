@@ -842,18 +842,17 @@ func _find_placement_tile(row_start: int, row_end: int, min_spacing: int,
 		if _manhattan_dist(pos, _portal_pos) < min_spacing:
 			continue
 
-		# Score: prefer interesting terrain, avoid roads
-		var score = 1
+		# Score: prefer interesting terrain, plains acceptable, roads least preferred
+		var score = 2  # Plains baseline
 		if terrain in INTERESTING_TERRAIN:
 			score = 3
 		elif terrain == T_ROAD:
-			score = 0  # Don't place on roads
+			score = 1
 
-		if score > best_score:
+		# Use >= so tied tiles can replace each other, giving spread across equally-good positions
+		if score >= best_score:
 			best_score = score
 			best_pos = pos
-			if score >= 3:
-				break  # Good enough, stop searching
 
 	return best_pos
 

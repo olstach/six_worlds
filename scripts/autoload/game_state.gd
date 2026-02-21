@@ -35,7 +35,7 @@ var pending_event_object: Dictionary = {}   # Event object for post-combat clean
 var combat_terrain_context: Dictionary = {}  # {dominant, counts, region}
 
 # World definitions
-const WORLDS: Dictionary = {
+var WORLDS: Dictionary = {
 	"hell": {
 		"name": "Hell Realm",
 		"description": "A realm of suffering split between freezing cold and scorching heat",

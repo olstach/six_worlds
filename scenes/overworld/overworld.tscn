@@ -71,6 +71,21 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Character (C)"
 
+[node name="EquipmentButton" type="Button" parent="HUDLayer/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Equipment (E)"
+
+[node name="PartyButton" type="Button" parent="HUDLayer/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Party (P)"
+
+[node name="SpellbookButton" type="Button" parent="HUDLayer/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Spellbook (S)"
+
 [node name="ToastLabel" type="Label" parent="HUDLayer"]
 unique_name_in_owner = true
 anchors_preset = 7

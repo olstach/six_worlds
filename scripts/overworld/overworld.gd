@@ -11,6 +11,9 @@ extends Control
 @onready var gold_label: Label = %GoldLabel
 @onready var terrain_label: Label = %TerrainLabel
 @onready var char_sheet_button: Button = %CharSheetButton
+@onready var equipment_button: Button = %EquipmentButton
+@onready var party_button: Button = %PartyButton
+@onready var spellbook_button: Button = %SpellbookButton
 @onready var toast_label: Label = %ToastLabel
 
 # Event overlay controls (children of EventOverlay CanvasLayer)
@@ -31,6 +34,13 @@ const TOAST_DURATION: float = 3.0
 var _event_open: bool = false
 var _char_sheet_open: bool = false
 var _shop_open: bool = false
+var _main_menu_open: bool = false
+
+# Main menu overlay (built in code, opened with Esc)
+var _main_menu_layer: CanvasLayer = null
+var _abandon_btn: Button = null
+var _abandon_confirm: bool = false
+var _abandon_timer: float = 0.0
 
 # Track current event object so we can remove it after the event chain completes
 var _current_event_object: Dictionary = {}
@@ -109,11 +119,17 @@ func _ready() -> void:
 
 	# Connect char sheet button and visibility sync
 	char_sheet_button.pressed.connect(_toggle_char_sheet)
+	equipment_button.pressed.connect(func(): _open_char_sheet_to_tab(1))
+	party_button.pressed.connect(func(): _open_char_sheet_to_tab(2))
+	spellbook_button.pressed.connect(func(): _open_char_sheet_to_tab(3))
 	char_sheet.visibility_changed.connect(_on_char_sheet_visibility_changed)
 
 	# Ensure overlays start hidden
 	_set_event_visible(false)
 	_set_char_sheet_visible(false)
+
+	# Build the Esc main menu overlay
+	_build_main_menu_panel()
 
 	# Initialize HUD
 	_update_hud()
@@ -134,17 +150,44 @@ func _process(delta: float) -> void:
 		elif _toast_timer < 1.0:
 			toast_label.modulate.a = _toast_timer
 
+	# Abandon run confirmation timeout
+	if _abandon_confirm and _abandon_timer > 0:
+		_abandon_timer -= delta
+		if _abandon_timer <= 0:
+			_abandon_confirm = false
+			if _abandon_btn:
+				_abandon_btn.text = "Abandon Run"
+
 
 func _unhandled_input(event: InputEvent) -> void:
-	# C key toggles character sheet
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_C:
-			_toggle_char_sheet()
-			get_viewport().set_input_as_handled()
-		elif event.keycode == KEY_ESCAPE:
-			if _char_sheet_open:
-				_toggle_char_sheet()
+		match event.keycode:
+			KEY_C:
+				# Stats tab (index 0)
+				_open_char_sheet_to_tab(0)
 				get_viewport().set_input_as_handled()
+			KEY_E:
+				# Equipment tab (index 1)
+				_open_char_sheet_to_tab(1)
+				get_viewport().set_input_as_handled()
+			KEY_P:
+				# Party tab (index 2)
+				_open_char_sheet_to_tab(2)
+				get_viewport().set_input_as_handled()
+			KEY_S:
+				# Spellbook tab (index 3)
+				_open_char_sheet_to_tab(3)
+				get_viewport().set_input_as_handled()
+			KEY_ESCAPE:
+				if _main_menu_open:
+					_close_main_menu()
+					get_viewport().set_input_as_handled()
+				elif _char_sheet_open:
+					_toggle_char_sheet()
+					get_viewport().set_input_as_handled()
+				elif not _event_open and not _shop_open:
+					_open_main_menu()
+					get_viewport().set_input_as_handled()
 
 
 func _update_camera() -> void:
@@ -354,6 +397,17 @@ func _toggle_char_sheet() -> void:
 			MapManager.resume_movement()
 
 
+## Open the character sheet to a specific tab. If already on that tab, toggle closed.
+func _open_char_sheet_to_tab(tab_idx: int) -> void:
+	if _char_sheet_open and char_sheet.get_current_tab() == tab_idx:
+		# Same tab — toggle closed
+		_toggle_char_sheet()
+	else:
+		char_sheet.open_to_tab(tab_idx)
+		if not _char_sheet_open:
+			_toggle_char_sheet()
+
+
 func _on_char_sheet_visibility_changed() -> void:
 	# Sync state if main_menu hides itself (e.g. via ESC in its own _input)
 	if not char_sheet.visible and _char_sheet_open:
@@ -415,3 +469,148 @@ func _show_toast(msg: String) -> void:
 	toast_label.visible = true
 	toast_label.modulate.a = 1.0
 	_toast_timer = TOAST_DURATION
+
+
+# ============================================
+# MAIN MENU OVERLAY (Esc)
+# ============================================
+
+## Build the Esc-activated pause/menu panel entirely in code
+func _build_main_menu_panel() -> void:
+	_main_menu_layer = CanvasLayer.new()
+	_main_menu_layer.layer = 30  # Above everything else
+	add_child(_main_menu_layer)
+
+	# Dim background
+	var dimmer = ColorRect.new()
+	dimmer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dimmer.color = Color(0, 0, 0, 0.65)
+	_main_menu_layer.add_child(dimmer)
+
+	# Center the panel
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_main_menu_layer.add_child(center)
+
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(320, 0)
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.07, 0.05, 0.1)
+	panel_style.border_color = Color(0.45, 0.3, 0.55)
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(10)
+	panel_style.set_content_margin_all(28)
+	panel.add_theme_stylebox_override("panel", panel_style)
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 12)
+	panel.add_child(vbox)
+
+	# Title
+	var title = Label.new()
+	title.text = "MENU"
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", Color(0.7, 0.6, 0.85))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	var sep = HSeparator.new()
+	sep.add_theme_color_override("separator", Color(0.45, 0.3, 0.55, 0.5))
+	vbox.add_child(sep)
+
+	# Helper to build styled buttons
+	var btn_style_base = StyleBoxFlat.new()
+	btn_style_base.bg_color = Color(0.12, 0.08, 0.18)
+	btn_style_base.border_color = Color(0.4, 0.28, 0.52)
+	btn_style_base.set_border_width_all(1)
+	btn_style_base.set_corner_radius_all(5)
+	btn_style_base.set_content_margin_all(10)
+
+	var btn_hover_style = btn_style_base.duplicate()
+	btn_hover_style.bg_color = Color(0.2, 0.13, 0.28)
+	btn_hover_style.border_color = Color(0.6, 0.45, 0.75)
+
+	for btn_def in [
+		["Save & Return to Title", "_on_main_menu_return_title"],
+		["Save & Exit to Desktop", "_on_main_menu_exit_desktop"],
+		["Abandon Run", "_on_main_menu_abandon"],
+		["Settings", ""],  # Empty string = disabled
+	]:
+		var btn = Button.new()
+		btn.text = btn_def[0]
+		btn.custom_minimum_size = Vector2(0, 44)
+		btn.add_theme_font_size_override("font_size", 15)
+		var ns = btn_style_base.duplicate()
+		btn.add_theme_stylebox_override("normal", ns)
+		btn.add_theme_stylebox_override("hover", btn_hover_style.duplicate())
+		btn.add_theme_stylebox_override("pressed", btn_hover_style.duplicate())
+		btn.add_theme_color_override("font_color", Color.WHITE)
+		btn.add_theme_color_override("font_hover_color", Color.WHITE)
+		if btn_def[1] == "":
+			btn.disabled = true
+			btn.add_theme_color_override("font_disabled_color", Color(0.4, 0.4, 0.4))
+		else:
+			btn.pressed.connect(Callable(self, btn_def[1]))
+		vbox.add_child(btn)
+		# Keep a reference to the abandon button for two-click confirm
+		if btn_def[0] == "Abandon Run":
+			_abandon_btn = btn
+
+	# Resume button
+	var resume_sep = HSeparator.new()
+	resume_sep.add_theme_color_override("separator", Color(0.45, 0.3, 0.55, 0.5))
+	vbox.add_child(resume_sep)
+
+	var resume_btn = Button.new()
+	resume_btn.text = "Resume  [Esc]"
+	resume_btn.custom_minimum_size = Vector2(0, 44)
+	resume_btn.add_theme_font_size_override("font_size", 15)
+	resume_btn.add_theme_stylebox_override("normal", btn_style_base.duplicate())
+	resume_btn.add_theme_stylebox_override("hover", btn_hover_style.duplicate())
+	resume_btn.add_theme_color_override("font_color", Color(0.7, 0.9, 0.7))
+	resume_btn.add_theme_color_override("font_hover_color", Color(0.7, 0.9, 0.7))
+	resume_btn.pressed.connect(_close_main_menu)
+	vbox.add_child(resume_btn)
+
+	# Start hidden
+	_main_menu_layer.visible = false
+
+
+func _open_main_menu() -> void:
+	_main_menu_open = true
+	_main_menu_layer.visible = true
+	MapManager.pause_movement()
+
+
+func _close_main_menu() -> void:
+	_main_menu_open = false
+	_main_menu_layer.visible = false
+	if not _event_open and not _char_sheet_open and not _shop_open:
+		MapManager.resume_movement()
+
+
+func _on_main_menu_return_title() -> void:
+	SaveManager.autosave()
+	_close_main_menu()
+	get_tree().change_scene_to_file("res://scenes/ui/title_screen.tscn")
+
+
+func _on_main_menu_exit_desktop() -> void:
+	SaveManager.autosave()
+	get_tree().quit()
+
+
+func _on_main_menu_abandon() -> void:
+	if not _abandon_confirm:
+		# First click — ask for confirmation
+		_abandon_confirm = true
+		_abandon_timer = 3.0
+		if _abandon_btn:
+			_abandon_btn.text = "Abandon? Click again to confirm"
+	else:
+		# Second click — do it
+		_abandon_confirm = false
+		# Delete the current save slot and return to title
+		SaveManager.delete_save(SaveManager.current_slot)
+		get_tree().change_scene_to_file("res://scenes/ui/title_screen.tscn")
