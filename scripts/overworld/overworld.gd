@@ -140,6 +140,9 @@ func _ready() -> void:
 	# Center camera on party
 	_update_camera()
 
+	# Fade in from black when entering this scene
+	_fade_in_from_black()
+
 
 func _process(delta: float) -> void:
 	# Update camera to follow party smoothly
@@ -351,6 +354,9 @@ func _on_event_shop_closed() -> void:
 # ============================================
 
 func _on_pickup_collected(obj: Dictionary, rewards: Array) -> void:
+	# Flavor text first (if the pickup has a message/description)
+	var flavor: String = obj.get("data", {}).get("message", obj.get("message", ""))
+
 	var parts: Array[String] = []
 	for reward in rewards:
 		var rtype: String = reward.get("type", "")
@@ -386,8 +392,10 @@ func _on_pickup_collected(obj: Dictionary, rewards: Array) -> void:
 				pass  # karma and other silent rewards don't show in toast
 
 	var msg: String = obj.get("name", "Pickup")
+	if not flavor.is_empty():
+		msg += "\n" + flavor
 	if parts.size() > 0:
-		msg += ": " + ", ".join(parts)
+		msg += "\n" + ", ".join(parts)
 	_show_toast(msg)
 	gold_label.text = "Gold: " + str(GameState.gold)
 
@@ -408,6 +416,19 @@ func _buff_stat_label(stat: String) -> String:
 		"loot_chance_pct": return "Loot Chance"
 		"xp_gain_pct": return "XP Gain"
 		_: return stat.replace("_", " ").capitalize()
+
+
+## Fade in from black on scene enter — covers abrupt pop-in.
+func _fade_in_from_black() -> void:
+	var overlay = ColorRect.new()
+	overlay.color = Color.BLACK
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.z_index = 100
+	add_child(overlay)
+	var tween = create_tween()
+	tween.tween_property(overlay, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(overlay.queue_free)
 
 
 ## Decrement combat-duration map buffs and re-derive party stats.

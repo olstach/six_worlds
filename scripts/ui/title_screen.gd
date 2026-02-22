@@ -273,7 +273,7 @@ func _on_continue_pressed() -> void:
 	if slot < 1:
 		return
 	if SaveManager.load_game(slot):
-		get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
+		_fade_and_goto("res://scenes/overworld/overworld.tscn")
 
 
 ## New Game: find an empty slot (or overwrite oldest), start fresh
@@ -329,7 +329,7 @@ func _on_slot_pressed(slot: int) -> void:
 		if SaveManager.has_save(slot):
 			_hide_load_panel()
 			if SaveManager.load_game(slot):
-				get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
+				_fade_and_goto("res://scenes/overworld/overworld.tscn")
 
 
 ## Toggle delete mode (next slot click deletes instead of loading)
@@ -362,7 +362,22 @@ func _on_load_back_pressed() -> void:
 func _start_new_game_in_slot(slot: int) -> void:
 	SaveManager.start_new_game(slot)
 	SaveManager.autosave()
-	get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
+	_fade_and_goto("res://scenes/overworld/overworld.tscn")
+
+
+## Fade to black then change scene. Prevents buttons being clicked during fade.
+func _fade_and_goto(scene_path: String) -> void:
+	# Block further input during transition
+	set_process_input(false)
+	var overlay = ColorRect.new()
+	overlay.color = Color.BLACK
+	overlay.modulate.a = 0.0
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP  # Eat clicks during fade
+	add_child(overlay)
+	var tween = create_tween()
+	tween.tween_property(overlay, "modulate:a", 1.0, 0.5)
+	tween.tween_callback(func(): get_tree().change_scene_to_file(scene_path))
 
 
 ## Show the load panel overlay

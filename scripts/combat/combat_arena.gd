@@ -2423,7 +2423,7 @@ func _show_defeat_screen() -> void:
 		GameState.is_party_wiped = true
 		GameState.player_died()
 		SaveManager.autosave()
-		get_tree().change_scene_to_file("res://scenes/ui/bardo_screen.tscn")
+		_fade_and_goto("res://scenes/ui/bardo_screen.tscn")
 	)
 	btn_container.add_child(bardo_btn)
 
@@ -2548,7 +2548,8 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 			var best_score: int = -999
 
 			var optimal_range = 1
-			if is_caster:
+			if not castable_spells.is_empty():
+				# Has spells to cast — stay at range to use them
 				optimal_range = 4
 			elif is_ranged:
 				optimal_range = attack_range
@@ -2957,6 +2958,19 @@ func _show_miss_text(attacker: Node, defender: Node) -> void:
 		defender.show_combat_text("Dodge!", Color(0.6, 0.85, 1.0))
 	else:
 		defender.show_combat_text("Miss!", Color(0.8, 0.8, 0.8))
+
+
+## Fade to black then change scene. Used for death → bardo transition.
+func _fade_and_goto(scene_path: String) -> void:
+	var overlay = ColorRect.new()
+	overlay.color = Color.BLACK
+	overlay.modulate.a = 0.0
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	$UILayer.add_child(overlay)
+	var tween = create_tween()
+	tween.tween_property(overlay, "modulate:a", 1.0, 0.5)
+	tween.tween_callback(func(): get_tree().change_scene_to_file(scene_path))
 
 
 ## Check if a unit has a shield equipped in the off-hand slot

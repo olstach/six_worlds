@@ -820,12 +820,11 @@ func _generate_patrol_route(start: Vector2i, row_min: int, row_max: int) -> Arra
 
 ## Find a valid tile for placing an object/mob in a zone row range.
 ## Must be walkable, not occupied, and min_spacing from existing placements.
-## Prefers interesting terrain (forest, ruins, hills) over plains.
+## Uses reservoir sampling so all valid tiles have equal probability (no terrain bias).
 func _find_placement_tile(row_start: int, row_end: int, min_spacing: int,
 		placed: Array[Vector2i]) -> Vector2i:
-	# Try up to 100 random positions, preferring interesting terrain
 	var best_pos = Vector2i(-1, -1)
-	var best_score = -1
+	var valid_count = 0  # How many valid candidates seen so far (for reservoir sampling)
 
 	for _try in range(100):
 		var x = randi_range(1, _width - 2)
@@ -854,16 +853,10 @@ func _find_placement_tile(row_start: int, row_end: int, min_spacing: int,
 		if _manhattan_dist(pos, _portal_pos) < min_spacing:
 			continue
 
-		# Score: prefer interesting terrain, plains acceptable, roads least preferred
-		var score = 2  # Plains baseline
-		if terrain in INTERESTING_TERRAIN:
-			score = 3
-		elif terrain == T_ROAD:
-			score = 1
-
-		# Use >= so tied tiles can replace each other, giving spread across equally-good positions
-		if score >= best_score:
-			best_score = score
+		# Reservoir sampling: replace current selection with probability 1/n
+		# This gives uniform distribution across all valid tiles, spreading mobs evenly
+		valid_count += 1
+		if randi() % valid_count == 0:
 			best_pos = pos
 
 	return best_pos

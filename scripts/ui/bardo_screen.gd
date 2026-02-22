@@ -60,6 +60,7 @@ var _begin_btn: Button                      # "Begin New Life" button
 func _ready() -> void:
 	_build_ui()
 	_run_bardo_sequence()
+	_fade_in_from_black()
 
 
 ## Build the full UI layout programmatically
@@ -281,10 +282,37 @@ func _add_result_line(prefix: String, value: String, color: Color, description: 
 	_fade_in(container)
 
 
-## Fade a node from invisible to visible over 0.4 seconds
+## Fade a node from invisible to visible over 0.4 seconds (used for bardo reveal steps)
 func _fade_in(node: Control) -> void:
 	var tween = create_tween()
 	tween.tween_property(node, "modulate:a", 1.0, 0.4)
+
+
+## Full-screen fade-in from black when entering this scene
+func _fade_in_from_black() -> void:
+	var overlay = ColorRect.new()
+	overlay.color = Color.BLACK
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.z_index = 100
+	add_child(overlay)
+	var tween = create_tween()
+	tween.tween_property(overlay, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(overlay.queue_free)
+
+
+## Fade to black then change scene
+func _fade_and_goto(scene_path: String) -> void:
+	var overlay = ColorRect.new()
+	overlay.color = Color.BLACK
+	overlay.modulate.a = 0.0
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.z_index = 100
+	add_child(overlay)
+	var tween = create_tween()
+	tween.tween_property(overlay, "modulate:a", 1.0, 0.5)
+	tween.tween_callback(func(): get_tree().change_scene_to_file(scene_path))
 
 
 ## Player clicks "Begin New Life" — create new character and start new run
@@ -310,8 +338,8 @@ func _on_begin_new_life() -> void:
 	# Save progress after reincarnation
 	SaveManager.autosave()
 
-	# Transition to overworld in the new realm
-	get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
+	# Transition to overworld in the new realm (fade out first)
+	_fade_and_goto("res://scenes/overworld/overworld.tscn")
 
 
 ## Generate a thematic name based on race/realm
