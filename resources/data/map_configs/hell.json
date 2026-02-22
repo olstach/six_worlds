@@ -92,12 +92,29 @@
 				{"event_id": "hell_ice_yogi", "name": "Frozen Waterfall Yogi", "icon": "npc", "blocking": false, "one_time": true, "weight": 1}
 			],
 			"pickups": [
-				{"name": "Abandoned Cart", "icon": "treasure", "rewards": [{"type": "gold", "value": [25, 50]}, {"type": "item", "value": "health_potion"}], "weight": 3},
-				{"name": "Frozen Corpse", "icon": "treasure", "rewards": [{"type": "gold", "value": [15, 30]}], "weight": 3},
-				{"name": "Warm Spring", "icon": "rest", "rewards": [{"type": "heal", "value": 30}, {"type": "mana", "value": 15}], "one_time": false, "weight": 2, "tag": "rest"},
-				{"name": "Ice Shrine", "icon": "shrine", "rewards": [{"type": "buff", "value": {"stat": "cold_resistance", "amount": 15, "duration": -1}}, {"type": "karma", "value": {"realm": "god", "amount": 3}}], "weight": 1},
-				{"name": "Prayer Flags", "icon": "shrine", "rewards": [{"type": "xp", "value": [15, 35]}, {"type": "karma", "value": {"realm": "human", "amount": 5}}], "weight": 2},
-				{"name": "Frozen Fountain", "icon": "rest", "rewards": [{"type": "mana", "value": 25}], "one_time": false, "weight": 2, "tag": "rest"}
+				{"name": "Abandoned Cart", "icon": "treasure", "message": "A cart left behind by someone in a hurry.", "rewards": [{"type": "gold", "value": [25, 50]}, {"type": "item", "value": "health_potion"}], "weight": 3},
+				{"name": "Frozen Corpse", "icon": "treasure", "message": "Someone didn't make it. They left a little gold.", "rewards": [{"type": "gold", "value": [15, 30]}], "weight": 3},
+				{"name": "Warm Spring", "icon": "rest", "message": "A rare pocket of warmth in the frozen wastes.", "rewards": [{"type": "heal", "value": 30}, {"type": "mana", "value": 15}], "one_time": false, "weight": 2, "tag": "rest"},
+				{"name": "Prayer Flags", "icon": "shrine", "message": "Someone planted these here. The effort means something.", "rewards": [{"type": "xp", "value": [15, 35]}, {"type": "karma", "value": {"realm": "human", "amount": 3}}], "weight": 2},
+				{"name": "Frozen Fountain", "icon": "rest", "message": "The water beneath the ice is still flowing.", "rewards": [{"type": "mana", "value": 25}], "one_time": false, "weight": 2, "tag": "rest"},
+
+				{"name": "Frozen Spring", "icon": "rest", "message": "A pool trapped under ice, faintly warm at the center.", "rewards": [{"type": "mana", "value": 40}], "weight": 4},
+				{"name": "Mourning Flame", "icon": "shrine", "message": "A small fire that never goes out, tended by a weeping shade.", "rewards": [{"type": "heal", "value": 30}], "weight": 4},
+				{"name": "Ice Shrine", "icon": "shrine", "message": "A frozen stupa, offerings still visible inside the ice.", "rewards": [{"type": "buff", "value": {"stat": "awareness", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 2}}], "weight": 3},
+				{"name": "Frosted Relic", "icon": "shrine", "message": "A fragment of something holy, long corrupted by cold.", "rewards": [{"type": "item_random", "value": ["scroll_firebolt", "scroll_lesser_heal"]}], "weight": 2},
+				{"name": "Shivering Cairn", "icon": "shrine", "message": "Stones stacked by countless suffering hands.", "rewards": [{"type": "buff", "value": {"stat": "loot_chance_pct", "amount": 15, "combats_remaining": 1}}], "weight": 3},
+				{"name": "Sorrow Pool", "icon": "rest", "message": "Tears of the damned, gathered over eons.", "rewards": [{"type": "cleanse", "value": 1}], "weight": 2},
+
+				{"name": "Soul Well", "icon": "shrine", "message": "You can feel the outlines of strange memories.", "rewards": [{"type": "buff", "value": {"stat": ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"], "amount": 2, "combats_remaining": 1}}], "weight": 3},
+				{"name": "Forgotten Grave", "icon": "shrine", "message": "A rare act of caring for the dead in the Hells.", "rewards": [{"type": "xp", "value": 10}], "weight": 3},
+				{"name": "Devil's Talisman", "icon": "treasure", "message": "Still humming with whispered mantras.", "rewards": [{"type": "item_random", "value": ["fire_talisman_common", "black_talisman_common", "sorcery_talisman_common", "white_talisman_common", "earth_talisman_common"]}], "weight": 2},
+				{"name": "Magic Well", "icon": "rest", "message": "Shimmering with power.", "rewards": [{"type": "mana", "value": 100}], "weight": 3},
+				{"name": "Twisted Idol", "icon": "shrine", "message": "You feel sick looking into its eyes.", "rewards": [{"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "constitution", "amount": -2, "combats_remaining": 1}}], "weight": 2},
+				{"name": "Old Battlefield", "icon": "shrine", "message": "Carrion crows pick what's left from the fallen.", "rewards": [{"type": "buff", "value": {"stat": "initiative", "amount": 3, "combats_remaining": 1}}], "weight": 2},
+				{"name": "Wayside Shrine", "icon": "shrine", "message": "If you want a good omen, you have to make it yourself.", "rewards": [{"type": "buff", "value": {"stat": "luck", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 1}}], "weight": 2},
+
+				{"name": "Eerie Cold Patch", "icon": "rest", "message": "The cold here feels different. Wrong.", "rewards": [{"type": "buff", "value": {"stat": "constitution", "amount": -3, "combats_remaining": 1}}], "weight": 1},
+				{"name": "Warm Glow", "icon": "shrine", "message": "It looks like a flame shrine. Something is off.", "rewards": [{"type": "damage", "value": 20}], "weight": 1}
 			]
 		},
 		"fire_hell": {
@@ -110,11 +127,28 @@
 				{"event_id": "hell_lava_flow", "name": "Lava Flow", "icon": "event", "blocking": false, "one_time": true, "weight": 2}
 			],
 			"pickups": [
-				{"name": "Scorched Supplies", "icon": "treasure", "rewards": [{"type": "gold", "value": [30, 55]}, {"type": "item", "value": "health_potion"}], "weight": 3},
-				{"name": "Flame Shrine", "icon": "shrine", "rewards": [{"type": "buff", "value": {"stat": "fire_resistance", "amount": 15, "duration": -1}}, {"type": "karma", "value": {"realm": "asura", "amount": 3}}], "weight": 1},
-				{"name": "Lava Crystal", "icon": "treasure", "rewards": [{"type": "item", "value": "fire_crystal"}, {"type": "xp", "value": [20, 40]}], "weight": 2},
-				{"name": "Ember Pool", "icon": "rest", "rewards": [{"type": "heal", "value": 25}, {"type": "mana", "value": 20}], "one_time": false, "weight": 2, "tag": "rest"},
-				{"name": "Fireproof Cache", "icon": "treasure", "rewards": [{"type": "gold", "value": [20, 35]}, {"type": "item", "value": "mana_potion"}], "weight": 2}
+				{"name": "Scorched Supplies", "icon": "treasure", "message": "Someone's emergency stash, half-melted.", "rewards": [{"type": "gold", "value": [30, 55]}, {"type": "item", "value": "health_potion"}], "weight": 3},
+				{"name": "Lava Crystal", "icon": "treasure", "message": "A chunk of solidified magma with a gem inside.", "rewards": [{"type": "gold", "value": [20, 40]}, {"type": "xp", "value": [10, 25]}], "weight": 2},
+				{"name": "Ember Pool", "icon": "rest", "message": "Tepid, grey, but restorative in this land of extremes.", "rewards": [{"type": "heal", "value": 25}, {"type": "mana", "value": 20}], "one_time": false, "weight": 2, "tag": "rest"},
+				{"name": "Fireproof Cache", "icon": "treasure", "message": "Whoever hid this planned ahead.", "rewards": [{"type": "gold", "value": [20, 35]}, {"type": "item", "value": "mana_potion"}], "weight": 2},
+
+				{"name": "Lava Vent", "icon": "shrine", "message": "The air quivers with heat above the cracked rock.", "rewards": [{"type": "buff", "value": {"stat": "strength", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "fire_resistance", "amount": 20, "combats_remaining": 1}}], "weight": 4},
+				{"name": "Burning Altar", "icon": "shrine", "message": "The offerings still smolder upon the black stone.", "rewards": [{"type": "buff", "value": {"stat": "spellpower_fire", "amount": 3, "combats_remaining": 1}}], "weight": 3},
+				{"name": "Pain Altar", "icon": "shrine", "message": "Clarity through pain.", "rewards": [{"type": "buff", "value": {"stat": "awareness", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}, {"type": "damage", "value": 15}], "weight": 2},
+				{"name": "Ember Cache", "icon": "treasure", "message": "A hidden stash, kept warm in volcanic rock.", "rewards": [{"type": "item_random", "value": ["health_potion", "mana_potion", "fire_bomb", "frost_bomb", "poison_bomb", "flame_oil", "frost_oil"]}], "weight": 3},
+				{"name": "Experience Stone", "icon": "shrine", "message": "When you touch it, your mind becomes strangely sparkly.", "rewards": [{"type": "buff", "value": {"stat": "xp_gain_pct", "amount": 20, "combats_remaining": 1}}], "weight": 3},
+				{"name": "Ashen Spring", "icon": "rest", "message": "In a land of fire, ash brings cool relief.", "rewards": [{"type": "heal", "value": 30}, {"type": "mana", "value": 20}], "weight": 4},
+
+				{"name": "Soul Well", "icon": "shrine", "message": "You can feel the outlines of strange memories.", "rewards": [{"type": "buff", "value": {"stat": ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"], "amount": 2, "combats_remaining": 1}}], "weight": 3},
+				{"name": "Forgotten Grave", "icon": "shrine", "message": "A rare act of caring for the dead in the Hells.", "rewards": [{"type": "xp", "value": 10}], "weight": 3},
+				{"name": "Devil's Talisman", "icon": "treasure", "message": "Still humming with whispered mantras.", "rewards": [{"type": "item_random", "value": ["fire_talisman_common", "black_talisman_common", "sorcery_talisman_common", "white_talisman_common", "earth_talisman_common"]}], "weight": 2},
+				{"name": "Magic Well", "icon": "rest", "message": "Shimmering with power.", "rewards": [{"type": "mana", "value": 100}], "weight": 3},
+				{"name": "Twisted Idol", "icon": "shrine", "message": "You feel sick looking into its eyes.", "rewards": [{"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "constitution", "amount": -2, "combats_remaining": 1}}], "weight": 2},
+				{"name": "Old Battlefield", "icon": "shrine", "message": "Carrion crows pick what's left from the fallen.", "rewards": [{"type": "buff", "value": {"stat": "initiative", "amount": 3, "combats_remaining": 1}}], "weight": 2},
+				{"name": "Wayside Shrine", "icon": "shrine", "message": "If you want a good omen, you have to make it yourself.", "rewards": [{"type": "buff", "value": {"stat": "luck", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 1}}], "weight": 2},
+
+				{"name": "Flickering Light", "icon": "shrine", "message": "It looks like a burning altar. It is not.", "rewards": [{"type": "damage", "value": 15}], "weight": 1},
+				{"name": "Cracked Stone", "icon": "treasure", "message": "Looks like a cache. It's a trap.", "rewards": [{"type": "damage", "value": 20}], "weight": 1}
 			]
 		}
 	},

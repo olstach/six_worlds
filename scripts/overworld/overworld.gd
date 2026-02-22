@@ -83,14 +83,17 @@ func _ready() -> void:
 		# Show the event result panel
 		_set_event_visible(true)
 		event_display.display_outcome(outcome)
+		_expire_combat_buffs()
 	elif not GameState.last_defeated_mob_id.is_empty():
 		# Normal mob combat return — victory, remove defeated mob
 		MapManager.remove_mob(GameState.last_defeated_mob_id)
 		GameState.last_defeated_mob_id = ""
 		MapManager.resume_movement()
+		_expire_combat_buffs()
 	elif GameState.returning_from_combat:
 		# Returning from combat without victory (fled or defeated) — just resume movement
 		MapManager.resume_movement()
+		_expire_combat_buffs()
 
 	# Clear the combat return flag
 	GameState.returning_from_combat = false
@@ -350,25 +353,71 @@ func _on_event_shop_closed() -> void:
 func _on_pickup_collected(obj: Dictionary, rewards: Array) -> void:
 	var parts: Array[String] = []
 	for reward in rewards:
-		match reward.get("type", ""):
+		var rtype: String = reward.get("type", "")
+		var rval = reward.get("value", 0)
+		match rtype:
 			"gold":
-				parts.append("+" + str(reward.value) + " gold")
+				parts.append("+" + str(rval) + " gold")
 			"xp":
-				parts.append("+" + str(reward.value) + " XP")
+				parts.append("+" + str(rval) + " XP")
 			"heal":
-				parts.append("Healed " + str(reward.value) + "%")
+				parts.append("Healed " + str(rval) + "%")
 			"mana":
-				parts.append("Mana +" + str(reward.value) + "%")
+				parts.append("Mana +" + str(rval) + "%")
 			"item":
-				parts.append(str(reward.value).replace("_", " ").capitalize())
+				parts.append(str(rval).replace("_", " ").capitalize())
+			"item_random":
+				var chosen: String = reward.get("chosen", str(rval))
+				parts.append(chosen.replace("_", " ").capitalize())
+			"buff":
+				if rval is Dictionary:
+					var stat: String = rval.get("stat", "")
+					var amount = rval.get("amount", 0)
+					var combats: int = rval.get("combats_remaining", 1)
+					var duration_str: String = "(permanent)" if combats == -1 \
+						else ("(%d battle)" % combats if combats == 1 else "(%d battles)" % combats)
+					var sign: String = "+" if amount >= 0 else ""
+					parts.append("%s%s %s %s" % [sign, str(amount), _buff_stat_label(stat), duration_str])
+			"damage":
+				parts.append("[color=#ef4444]-%d HP (cursed!)[/color]" % int(rval))
+			"cleanse":
+				parts.append("Statuses cleared")
 			_:
-				parts.append(str(reward.get("type", "?")))
+				pass  # karma and other silent rewards don't show in toast
 
-	var msg = obj.get("name", "Pickup")
+	var msg: String = obj.get("name", "Pickup")
 	if parts.size() > 0:
 		msg += ": " + ", ".join(parts)
 	_show_toast(msg)
 	gold_label.text = "Gold: " + str(GameState.gold)
+
+
+## Translate a buff stat key to a short human-readable label for the toast.
+func _buff_stat_label(stat: String) -> String:
+	match stat:
+		"strength": return "STR"
+		"constitution": return "CON"
+		"finesse": return "FIN"
+		"focus": return "FOC"
+		"awareness": return "AWA"
+		"charm": return "CHA"
+		"luck": return "LCK"
+		"fire_resistance": return "Fire Resist"
+		"spellpower_fire": return "Fire Spellpower"
+		"initiative": return "Initiative"
+		"loot_chance_pct": return "Loot Chance"
+		"xp_gain_pct": return "XP Gain"
+		_: return stat.replace("_", " ").capitalize()
+
+
+## Decrement combat-duration map buffs and re-derive party stats.
+## Called after every combat resolves (win, loss, or flee).
+func _expire_combat_buffs() -> void:
+	if GameState.active_map_buffs.is_empty():
+		return
+	GameState.decrement_combat_buffs()
+	for char in CharacterSystem.get_party():
+		CharacterSystem.update_derived_stats(char)
 
 
 # ============================================

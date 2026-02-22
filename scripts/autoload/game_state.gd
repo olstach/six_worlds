@@ -34,6 +34,11 @@ var pending_event_object: Dictionary = {}   # Event object for post-combat clean
 # Set by overworld.gd before scene change, consumed by combat_arena.gd
 var combat_terrain_context: Dictionary = {}  # {dominant, counts, region}
 
+# Active map buffs from simples and shrines.
+# Each entry: {"stat": String, "amount": int/float, "combats_remaining": int}
+# combats_remaining == -1 means permanent (rare).
+var active_map_buffs: Array = []
+
 # World definitions
 var WORLDS: Dictionary = {
 	"hell": {
@@ -128,6 +133,22 @@ func add_gold(amount: int) -> void:
 		return
 	gold += amount
 	gold_changed.emit(gold, amount)
+
+
+## Decrement combat-duration map buffs after a combat resolves.
+## Buffs with combats_remaining == 1 are removed; -1 is permanent and never decrements.
+func decrement_combat_buffs() -> void:
+	var remaining: Array = []
+	for buf in active_map_buffs:
+		var count: int = buf.get("combats_remaining", -1)
+		if count == -1:
+			remaining.append(buf)       # permanent
+		elif count > 1:
+			var updated: Dictionary = buf.duplicate()
+			updated["combats_remaining"] = count - 1
+			remaining.append(updated)
+		# count == 1: expired, drop it
+	active_map_buffs = remaining
 
 
 ## Spend gold (returns true if successful)

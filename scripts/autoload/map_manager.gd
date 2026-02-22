@@ -961,11 +961,18 @@ func _handle_event_object(obj: Dictionary) -> void:
 #   "rewards": [
 #     {"type": "gold", "value": 50},
 #     {"type": "item", "value": "health_potion"},
-#     {"type": "heal", "value": 25},
-#     {"type": "buff", "value": {"stat": "luck", "amount": 2, "duration": -1}},
+#     {"type": "item_random", "value": ["health_potion", "mana_potion"]},
+#     {"type": "heal", "value": 25},         # percentage of max HP
+#     {"type": "mana", "value": 20},         # percentage of max mana
+#     {"type": "damage", "value": 15},       # flat HP damage to all party (cursed simples)
+#     {"type": "buff", "value": {"stat": "strength", "amount": 2, "combats_remaining": 1}},
+#     {"type": "cleanse", "value": 1},       # future: clear N map statuses from party
 #     {"type": "karma", "value": {"realm": "god", "amount": 5}}
 #   ]
 # }
+# buff.stat can be an attribute name (strength/constitution/finesse/focus/awareness/charm/luck)
+# or a derived stat name (fire_resistance, spellpower_fire, initiative, loot_chance_pct, xp_gain_pct).
+# combats_remaining: 1 = next combat only, 3 = up to 3 combats, -1 = permanent (use sparingly).
 
 func _handle_pickup_object(obj: Dictionary) -> void:
 	var data = obj.data
@@ -1014,19 +1021,36 @@ func _apply_reward(reward: Dictionary) -> void:
 				derived["current_mana"] = min(derived.get("current_mana", max_mana) + restore, max_mana)
 
 		"buff":
-			# Apply a temporary (or permanent) stat buff to party
-			# value = {"stat": "luck", "amount": 2, "duration": -1}
+			# Temporary stat buff stored in GameState.active_map_buffs.
+			# value = {"stat": "strength", "amount": 2, "combats_remaining": 1}
 			if value is Dictionary:
-				var stat = value.get("stat", "")
+				var stat: String = value.get("stat", "")
 				var amount = value.get("amount", 0)
-				var duration = value.get("duration", -1)  # -1 = permanent for map
-				# Store on GameState for now - will be processed by systems
-				if GameState:
-					if not GameState.get("active_map_buffs"):
-						GameState.set("active_map_buffs", [])
+				var combats: int = value.get("combats_remaining", 1)
+				if GameState and stat != "":
 					GameState.active_map_buffs.append({
-						"stat": stat, "amount": amount, "duration": duration
+						"stat": stat, "amount": amount, "combats_remaining": combats
 					})
+					# Re-derive stats for all party so buff is reflected immediately
+					for char in CharacterSystem.get_party():
+						CharacterSystem.update_derived_stats(char)
+
+		"damage":
+			# Cursed simple: flat HP damage to all party members (minimum 1 HP left)
+			for char in CharacterSystem.get_party():
+				var derived = char.get("derived", {})
+				derived["current_hp"] = max(derived.get("current_hp", 1) - int(value), 1)
+
+		"item_random":
+			# Pick a random item from the provided array of item IDs
+			if value is Array and value.size() > 0:
+				var chosen: String = str(value[randi() % value.size()])
+				reward["chosen"] = chosen  # store for toast display
+				ItemSystem.add_to_inventory(chosen)
+
+		"cleanse":
+			# Clear map status effects from party — placeholder for future map-status system
+			pass
 
 		"karma":
 			# Hidden karma adjustment

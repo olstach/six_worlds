@@ -605,6 +605,44 @@ func update_derived_stats(character: Dictionary) -> void:
 			if bonus.has("initiative_bonus"):
 				derived["initiative"] = derived.get("initiative", 0) + int(bonus.get("initiative_bonus", 0))
 
+	# Apply active map buffs from simples/shrines.
+	# Attribute-type buffs translate to their most direct derived-stat effects
+	# (we don't modify attributes themselves to avoid HP/mana tracking confusion).
+	if GameState:
+		for buf in GameState.active_map_buffs:
+			var stat: String = buf.get("stat", "")
+			var amount = buf.get("amount", 0)
+			match stat:
+				"strength":
+					derived["damage"] = derived.get("damage", 0) + amount
+					derived["max_stamina"] = derived.get("max_stamina", 50) + amount
+				"constitution":
+					derived["max_stamina"] = derived.get("max_stamina", 50) + amount * 2
+				"finesse":
+					derived["dodge"] = derived.get("dodge", 0) + amount
+					derived["initiative"] = derived.get("initiative", 0) + amount
+				"focus":
+					derived["spellpower"] = derived.get("spellpower", 0) + amount
+				"awareness":
+					derived["initiative"] = derived.get("initiative", 0) + amount
+					derived["crit_chance"] = derived.get("crit_chance", 0.0) + amount * 0.5
+				"charm":
+					pass  # future: social/event roll bonuses
+				"luck":
+					derived["crit_chance"] = derived.get("crit_chance", 0.0) + amount
+				"fire_resistance":
+					if not "resistances" in derived:
+						derived["resistances"] = {}
+					derived["resistances"]["fire"] = derived["resistances"].get("fire", 0) + amount
+				"spellpower_fire":
+					derived["spellpower_fire"] = derived.get("spellpower_fire", 0) + amount
+				"initiative":
+					derived["initiative"] = derived.get("initiative", 0) + amount
+				"loot_chance_pct":
+					derived["loot_chance_pct"] = derived.get("loot_chance_pct", 0) + amount
+				"xp_gain_pct":
+					derived["xp_gain_pct"] = derived.get("xp_gain_pct", 0) + amount
+
 ## Get player character
 func get_player() -> Dictionary:
 	if party.is_empty():

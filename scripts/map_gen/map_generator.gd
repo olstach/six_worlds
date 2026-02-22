@@ -689,14 +689,26 @@ func _place_pickup_object(zone_id: String, template: Dictionary, pos: Vector2i) 
 	_occupied[pos] = true
 
 
-## Resolve reward values — if a value is an array [min, max], roll a random int
+## Resolve reward values at placement time.
+## - Numeric array [min, max]: roll a random int in range.
+## - For "buff" rewards: if stat is an array of strings, pick one at random.
+## - For "item_random": value array stays as-is (chosen at activation time in map_manager).
 func _resolve_rewards(rewards_template: Array) -> Array:
 	var resolved: Array = []
 	for reward in rewards_template:
 		var r = reward.duplicate(true)
-		if r.has("value") and r["value"] is Array:
-			var range_arr = r["value"]
-			r["value"] = randi_range(int(range_arr[0]), int(range_arr[1]))
+		if r.has("value") and r["value"] is Array and r.get("type", "") != "item_random":
+			var arr = r["value"]
+			if arr.size() >= 2 and (arr[0] is int or arr[0] is float):
+				# Numeric range [min, max] — roll at placement time
+				r["value"] = randi_range(int(arr[0]), int(arr[1]))
+		elif r.get("type", "") == "buff" and r.get("value", null) is Dictionary:
+			# Buff with random stat pool: if stat is an array, pick one now
+			var bval: Dictionary = r["value"].duplicate(true)
+			if bval.get("stat") is Array:
+				var pool: Array = bval["stat"]
+				bval["stat"] = pool[randi() % pool.size()]
+				r["value"] = bval
 		resolved.append(r)
 	return resolved
 
