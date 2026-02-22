@@ -2554,10 +2554,13 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 			elif is_ranged:
 				optimal_range = attack_range
 
+			# Whether to use range-keeping movement (spells or ranged weapon) vs just close in
+			var wants_range = not castable_spells.is_empty() or is_ranged
+
 			for tile in move_range:
 				var tile_dist = _grid_distance(tile, nearest.grid_position)
 
-				if is_caster or is_ranged:
+				if wants_range:
 					var score = 0
 					if tile_dist <= optimal_range and tile_dist >= 2:
 						score = 100
@@ -2575,7 +2578,7 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 
 			if best_tile != unit.grid_position:
 				CombatManager.move_unit(unit, best_tile)
-				if is_caster:
+				if not castable_spells.is_empty():
 					_log_message("%s positions for casting" % unit.unit_name)
 				elif is_ranged:
 					_log_message("%s repositions" % unit.unit_name)
