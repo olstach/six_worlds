@@ -344,6 +344,9 @@ func _update_skills_grid(character: Dictionary) -> void:
 		skills_grid.add_child(spacer)
 
 	# Skill rows (7 rows, one for each skill slot per element)
+	var player = CharacterSystem.get_player()
+	var player_xp = player.get("xp", 0)
+
 	for skill_index in range(7):
 		# Row number label
 		var row_label = Label.new()
@@ -354,25 +357,29 @@ func _update_skills_grid(character: Dictionary) -> void:
 		# Skills for each element
 		for element in ELEMENT_SKILLS.keys():
 			var skill_id = ELEMENT_SKILLS[element][skill_index]
-			var skill_level = char_skills.get(skill_id, 0)
+			var trained = char_skills.get(skill_id, 0)
+
+			# Sum item/race bonuses for this skill
+			var bonus_sources = player.get("skill_bonuses", {}).get(skill_id, {})
+			var bonus = 0
+			for src in bonus_sources:
+				bonus += int(bonus_sources[src])
+			var effective = trained + bonus
 
 			var skill_btn = Button.new()
-			skill_btn.text = _format_skill_name(skill_id) + " [" + str(int(skill_level)) + "]"
+			skill_btn.text = _format_skill_name(skill_id) + " [" + str(int(effective)) + "]"
 			skill_btn.custom_minimum_size = Vector2(110, 28)
 			skill_btn.add_theme_font_size_override("font_size", 11)
 
-			# Tooltip: show XP cost to advance (or max level)
-			var player = CharacterSystem.get_player()
-			var player_xp = player.get("xp", 0)
-			if skill_level >= 5:
-				skill_btn.tooltip_text = "Max level"
-			else:
-				var advance_cost = CharacterSystem.SKILL_COSTS[int(skill_level) + 1]
-				skill_btn.tooltip_text = "XP to advance: %d (have %d)" % [advance_cost, player_xp]
+			# Color: yellow if boosted by item/race, element color if just trained, muted if 0
+			if effective > 0:
+				if bonus > 0:
+					skill_btn.add_theme_color_override("font_color", Color.YELLOW)
+				else:
+					skill_btn.add_theme_color_override("font_color", ELEMENT_COLORS[element])
 
-			# Color based on level
-			if skill_level > 0:
-				skill_btn.add_theme_color_override("font_color", ELEMENT_COLORS[element])
+			# Tooltip: XP cost + what next level grants
+			skill_btn.tooltip_text = _build_skill_tooltip(skill_id, trained, bonus, player_xp)
 
 			skill_btn.pressed.connect(_on_skill_pressed.bind(skill_id))
 			skills_grid.add_child(skill_btn)
@@ -389,16 +396,78 @@ func _format_skill_name(skill_id: String) -> String:
 		return parts[0].capitalize()
 	return skill_id.capitalize()
 
+
+func _build_skill_tooltip(skill_id: String, trained: int, bonus: int, player_xp: int) -> String:
+	## Build a tooltip string for a skill button showing cost and next-level bonuses.
+	if trained >= CharacterSystem.SKILL_MAX_LEVEL:
+		if bonus > 0:
+			return "Max level (trained)\nItem/race bonus: +%d" % bonus
+		return "Max level"
+
+	var next_cost = CharacterSystem.SKILL_COSTS[trained + 1]
+	var next_bonuses = PerkSystem.get_base_skill_bonuses_at_level(skill_id, trained + 1)
+
+	var lines: Array[String] = []
+
+	if bonus > 0:
+		lines.append("Trained: %d | Bonus: +%d" % [trained, bonus])
+
+	lines.append("XP to advance: %d (have %d)" % [next_cost, player_xp])
+
+	if not next_bonuses.is_empty():
+		lines.append("Next level grants: " + _format_bonus_preview(next_bonuses))
+
+	return "\n".join(lines)
+
+
+func _format_bonus_preview(bonuses: Dictionary) -> String:
+	## Convert a bonus dict into a short human-readable string.
+	## e.g. {"attack": 10.0, "damage": 7.0} -> "+10 accuracy, +7 damage"
+	const BONUS_LABELS := {
+		"attack": "accuracy",
+		"damage": "damage",
+		"crit_chance": "crit%",
+		"armor_bonus": "armor",
+		"damage_reduction_pct": "dmg resist%",
+		"armor_penetration": "armor pierce",
+		"spellpower": "spellpower",
+		"mana_cost_reduction_pct": "mana cost%",
+		"dodge_bonus": "dodge",
+		"max_stamina": "stamina",
+		"initiative_bonus": "initiative",
+		"event_roll_bonus": "event bonus",
+		"mental_resistance_pct": "mental resist%",
+		"xp_gain_pct": "XP gain%",
+		"heal_effectiveness_pct": "heal%",
+		"melee_damage_bonus": "melee dmg",
+		"gold_gain_pct": "gold%",
+		"shop_discount_pct": "discount%",
+		"gold_bonus_pct": "loot gold%",
+		"stamina_recovery_bonus": "stamina regen",
+		"potion_effectiveness_pct": "potion%",
+		"equipment_quality_pct": "craft quality%",
+		"mandala_bonus": "mandala%",
+	}
+	var parts: Array[String] = []
+	for key in bonuses:
+		var val = bonuses[key]
+		if val == 0:
+			continue
+		var label = BONUS_LABELS.get(key, key)
+		parts.append("+%s %s" % [str(int(val)), label])
+	return ", ".join(parts) if not parts.is_empty() else "(no change)"
+
 func _on_skill_pressed(skill_id: String) -> void:
 	var player = CharacterSystem.get_player()
 	if player.is_empty():
 		return
 
 	var current_level = player.get("skills", {}).get(skill_id, 0)
-	var cost = CharacterSystem.SKILL_COSTS[current_level + 1] if current_level < 5 else 0
 
-	if current_level >= 5:
+	if current_level >= CharacterSystem.SKILL_MAX_LEVEL:
 		return
+
+	var cost = CharacterSystem.SKILL_COSTS[current_level + 1]
 
 	if player.get("xp", 0) < cost:
 		return

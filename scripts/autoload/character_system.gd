@@ -23,12 +23,20 @@ var max_party_size: int = 6
 var _race_data: Dictionary = {}
 var _background_data: Dictionary = {}
 
-# Attribute costs - linear scaling
-# Each point above 10 costs its rank: 10→11 = 1 XP, 11→12 = 2 XP, etc.
+# Spell database for random starting spell selection
+var _spell_database: Dictionary = {}
 
-# Skill level costs - triangular numbers
-# Level 1 costs 1, level 2 costs 3, level 3 costs 6, level 4 costs 10, level 5 costs 15
-const SKILL_COSTS: Array[int] = [0, 1, 3, 6, 10, 15]  # XP cost to reach each level
+# Attribute costs - tripled linear scaling (rank * 3 per step)
+# 10→11 = 3 XP, 11→12 = 6 XP, ..., 19→20 = 30 XP, 29→30 = 60 XP
+# 10→20 total = 165 XP, 10→30 total = 630 XP (endgame godlike, ≈ skill L10)
+
+# Skill level costs — 10-level scale
+# Index = level to reach, value = XP cost for that level
+# Total to max a skill: 660 XP (vs 35 on the old 1-5 scale)
+const SKILL_COSTS: Array[int] = [0, 5, 10, 18, 28, 42, 59, 80, 106, 137, 175]
+
+# Maximum purchasable skill level (items/race can push effective level up to 15)
+const SKILL_MAX_LEVEL: int = 10
 
 # Base character template
 const BASE_CHARACTER: Dictionary = {
@@ -68,8 +76,16 @@ const BASE_CHARACTER: Dictionary = {
 		"armor_pierce": 0
 	},
 	
-	# Skills (level 0-5)
+	# Skills (level 0-10 purchasable; up to 15 with item/race bonuses)
 	"skills": {},
+
+	# Per-skill bonuses from items, race, or other sources
+	# Format: {"skill_id": {"source_name": amount, ...}, ...}
+	"skill_bonuses": {},
+
+	# Innate elemental affinity from race (independent of skills)
+	# Format: {"fire": 5, "water": 3, ...}
+	"racial_affinity_bonuses": {},
 	
 	# Elemental affinities (built up through skill usage)
 	"elements": {
@@ -115,7 +131,9 @@ const BASE_CHARACTER: Dictionary = {
 
 func _ready() -> void:
 	_load_race_data()
-	print("CharacterSystem initialized with ", _race_data.size(), " races, ", _background_data.size(), " backgrounds")
+	_load_spell_database()
+	print("CharacterSystem initialized with ", _race_data.size(), " races, ",
+		_background_data.size(), " backgrounds, ", _spell_database.size(), " spells")
 
 
 ## Load race and background definitions from JSON
@@ -141,6 +159,46 @@ func _load_race_data() -> void:
 	var data = json.get_data()
 	_race_data = data.get("races", {})
 	_background_data = data.get("backgrounds", {})
+
+
+## Load spell definitions from spells.json for random starting spell selection
+func _load_spell_database() -> void:
+	var file_path = "res://resources/data/spells.json"
+	if not FileAccess.file_exists(file_path):
+		push_warning("CharacterSystem: spells.json not found, random starting spells unavailable")
+		return
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		push_error("CharacterSystem: Failed to parse spells.json: ", json.get_error_message())
+		file.close()
+		return
+	file.close()
+	_spell_database = json.get_data().get("spells", {})
+
+
+## Pick a random spell matching any of the given schools at the given level.
+## Excludes spells the character already knows to avoid duplicates.
+## schools: Array of school name strings (e.g. ["Fire"] or ["Black", "Space"])
+## Returns spell_id string, or "" if none found.
+func _pick_random_spell(schools: Array, level: int, already_known: Array) -> String:
+	var candidates: Array[String] = []
+	for spell_id in _spell_database:
+		if spell_id in already_known:
+			continue
+		var spell = _spell_database[spell_id]
+		if int(spell.get("level", 0)) != level:
+			continue
+		var spell_schools = spell.get("schools", [])
+		for required in schools:
+			for s in spell_schools:
+				if s.to_lower() == required.to_lower():
+					candidates.append(spell_id)
+					break
+	if candidates.is_empty():
+		return ""
+	candidates.shuffle()
+	return candidates[0]
 
 
 ## Get race data dictionary for a given race ID
@@ -209,19 +267,54 @@ func apply_race_modifiers(character: Dictionary, race: String) -> void:
 	if data.is_empty():
 		return
 
+	# Apply attribute modifiers
 	var modifiers = data.get("attribute_modifiers", {})
 	for attr_name in modifiers:
 		if attr_name in character.attributes:
 			character.attributes[attr_name] += int(modifiers[attr_name])
 
-	# Apply starting skills from race (level 1 each, unless background overrides)
-	var race_skills = data.get("starting_skills", [])
-	for skill_id in race_skills:
-		if character.skills.get(skill_id, 0) < 1:
-			set_skill_level(character, skill_id, 1)
+	# Apply innate elemental affinity bonuses (stored on character, added to affinity calculation)
+	var affinity_bonuses = data.get("elemental_affinity_bonuses", {})
+	if not affinity_bonuses.is_empty():
+		character["racial_affinity_bonuses"] = affinity_bonuses.duplicate()
+
+	# Apply starting skills from race.
+	# starting_skills may be a dict {skill_id: level} or legacy array [skill_id, ...].
+	# Background skills are applied afterward and may override with higher levels.
+	var race_skills = data.get("starting_skills", {})
+	if race_skills is Dictionary:
+		for skill_id in race_skills:
+			var lvl = int(race_skills[skill_id])
+			if character.skills.get(skill_id, 0) < lvl:
+				set_skill_level(character, skill_id, lvl)
+	else:
+		# Legacy array format: give level 1 in each listed skill
+		for skill_id in race_skills:
+			if character.skills.get(skill_id, 0) < 1:
+				set_skill_level(character, skill_id, 1)
+
+	# Apply random starting spells from race definition.
+	# Each entry: {school: "Fire", level: 1, count: 1}
+	#          or {schools: ["Black","Space"], level: 1, count: 1} (picks from either school)
+	var starting_spells = data.get("starting_spells", [])
+	for spell_spec in starting_spells:
+		var schools: Array = []
+		if spell_spec.has("school"):
+			schools = [spell_spec["school"]]
+		elif spell_spec.has("schools"):
+			schools = spell_spec["schools"]
+		else:
+			continue
+
+		var level = int(spell_spec.get("level", 1))
+		var count = int(spell_spec.get("count", 1))
+		for _i in range(count):
+			var spell_id = _pick_random_spell(schools, level, character.get("known_spells", []))
+			if spell_id != "":
+				learn_spell(character, spell_id)
 
 
-## Apply background starting skills from races.json backgrounds data
+## Apply background starting skills and attribute tweaks from races.json backgrounds data
 func apply_background_skills(character: Dictionary, background: String) -> void:
 	var data = get_background_data(background)
 	if data.is_empty():
@@ -237,10 +330,16 @@ func apply_background_skills(character: Dictionary, background: String) -> void:
 		learn_spell(character, "lesser_heal")
 		return
 
+	# Apply small background attribute tweaks on top of race modifiers
+	var bg_modifiers = data.get("attribute_modifiers", {})
+	for attr_name in bg_modifiers:
+		if attr_name in character.attributes:
+			character.attributes[attr_name] += int(bg_modifiers[attr_name])
+
+	# Apply starting skills — take the higher of race or background level
 	var skills = data.get("starting_skills", {})
 	for skill_id in skills:
 		var level = int(skills[skill_id])
-		# Set to whichever is higher: race skill or background skill
 		if level > character.skills.get(skill_id, 0):
 			set_skill_level(character, skill_id, level)
 
@@ -270,13 +369,16 @@ func increase_attribute(character: Dictionary, attribute: String, amount: int = 
 		return true
 	return false
 
-## Calculate cost to increase attribute
-## Each point above 10 costs its rank: 10→11 = 1, 11→12 = 2, 12→13 = 3, etc.
+## Calculate cost to increase attribute.
+## Cost per step = rank * 3, where rank = current_value - 9.
+## 10→11 costs 3, 11→12 costs 6, 20→21 costs 33, 29→30 costs 60.
+## Cumulative from 10: value 20 = 165 XP (≈ skill L6), value 30 = 630 XP (≈ skill L10).
+## Floor of 2 ensures attributes below 10 (racial penalties) still cost something.
 func calculate_attribute_cost(current_value: int, increase_amount: int) -> int:
 	var total_cost = 0
 	for i in range(increase_amount):
-		# Cost = current_value + i - 9 (so value 10→11 costs 1, 11→12 costs 2, etc.)
-		total_cost += maxi(current_value + i - 9, 1)
+		# rank * 3, minimum 2 (handles attributes below 10 from racial modifiers)
+		total_cost += maxi((current_value + i - 9) * 3, 2)
 	return total_cost
 
 ## Set skill level directly (for initialization)
@@ -289,7 +391,7 @@ func set_skill_level(character: Dictionary, skill: String, level: int) -> void:
 func upgrade_skill(character: Dictionary, skill: String) -> bool:
 	var current_level = character.skills.get(skill, 0)
 
-	if current_level >= 5:
+	if current_level >= SKILL_MAX_LEVEL:
 		return false  # Max level
 
 	var cost = SKILL_COSTS[current_level + 1]
@@ -310,6 +412,17 @@ func upgrade_skill(character: Dictionary, skill: String) -> bool:
 		character_updated.emit(character)
 		return true
 	return false
+
+## Get effective skill level including item/race bonuses (capped at 15 for display).
+## skill_bonuses format: {"skill_id": {"source_name": amount, ...}, ...}
+func _get_effective_skill_level(character: Dictionary, skill_id: String) -> int:
+	var base = character.get("skills", {}).get(skill_id, 0)
+	var bonus_sources = character.get("skill_bonuses", {}).get(skill_id, {})
+	var bonus = 0
+	for source in bonus_sources:
+		bonus += int(bonus_sources[source])
+	return mini(base + bonus, 15)
+
 
 ## Update the character's element affinity totals from their skill levels.
 func _update_element_affinities(character: Dictionary) -> void:
@@ -460,6 +573,37 @@ func update_derived_stats(character: Dictionary) -> void:
 	derived.armor = equip_bonus.get("armor", 0) + affinity_bonus.get("armor", 0)
 	derived.accuracy = equip_bonus.get("accuracy", 0)
 	derived.armor_pierce = equip_bonus.get("armor_pierce", 0)
+
+	# Apply base skill bonuses from PerkSystem (data-driven per_level tables)
+	# Each skill contributes its cumulative bonuses at the character's effective level.
+	if PerkSystem:
+		var all_skills = character.get("skills", {})
+		for skill_id in all_skills:
+			var effective_level = _get_effective_skill_level(character, skill_id)
+			if effective_level == 0:
+				continue
+			var bonus = PerkSystem.get_base_skill_bonuses_at_level(skill_id, effective_level)
+			if bonus.is_empty():
+				continue
+			# Combat skill bonuses
+			derived["accuracy"] = derived.get("accuracy", 0) + bonus.get("attack", 0)
+			derived["damage"] = derived.get("damage", 0) + bonus.get("damage", 0)
+			derived["crit_chance"] = derived.get("crit_chance", 0.0) + bonus.get("crit_chance", 0.0)
+			derived["armor"] = derived.get("armor", 0) + bonus.get("armor_bonus", 0)
+			derived["armor_pierce"] = derived.get("armor_pierce", 0) + bonus.get("armor_penetration", 0)
+			# Armor skill: damage reduction
+			if bonus.has("damage_reduction_pct"):
+				derived["damage_reduction_pct"] = derived.get("damage_reduction_pct", 0.0) + bonus.get("damage_reduction_pct", 0.0)
+			# Magic school bonuses
+			if bonus.has("spellpower"):
+				derived["spellpower"] = derived.get("spellpower", 0) + int(bonus.get("spellpower", 0))
+			# General skill bonuses that directly affect derived stats
+			if bonus.has("dodge_bonus"):
+				derived["dodge"] = derived.get("dodge", 0) + int(bonus.get("dodge_bonus", 0))
+			if bonus.has("max_stamina"):
+				derived["max_stamina"] = derived.get("max_stamina", 50) + int(bonus.get("max_stamina", 0))
+			if bonus.has("initiative_bonus"):
+				derived["initiative"] = derived.get("initiative", 0) + int(bonus.get("initiative_bonus", 0))
 
 ## Get player character
 func get_player() -> Dictionary:

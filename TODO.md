@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-02-16
+Last Updated: 2026-02-22
 
 ---
 
@@ -54,12 +54,14 @@ Last Updated: 2026-02-16
 ### Character & Progression
 - [x] XP-based progression (no levels)
 - [x] Exponential attribute cost scaling
-- [x] Skill progression (5 levels, costs: 100/300/600/1000/1500)
+- [x] Skill progression (10 levels, costs: 5/10/18/28/42/59/80/106/137/175)
+- [x] 0-10 skill scale refactor (15-level base bonus tables wired into derived stats, perk/spell levels remapped)
 - [x] Derived stats calculation
 - [x] Spellbook system (learn/forget spells)
 - [x] Starting spells based on background
 - [x] Elemental affinities tracking
 - [x] Perk system (skill perks at each level, cross-skill perks)
+- [x] Races and backgrounds for Hell realm (6 devils + 23 backgrounds with available_races and weights)
 
 ### Overworld Map
 - [x] HoMM-style tile-based exploration
@@ -112,8 +114,46 @@ Last Updated: 2026-02-16
 - [ ] Map configs for remaining realms
 - [ ] Enemy archetypes for remaining realms
 
+### Map Interactibles System
+Three categories of interactive map objects. Hell is the target realm for initial content.
+
+**Category 1 — Simples** (one-time activation, permanent after use)
+- [ ] Simple object type in MapManager (flag: used, no reset on return)
+- [ ] Effect types: mana restore, HP restore, temp stat/skill bonus (lasts until next combat or event with checks), temp loot chance buff
+- [ ] Cursed simples: look identical but deal a negative effect (penalty to a stat, drain XP, apply status) — rare, visually distinct after triggered
+- [ ] Hell content: frozen spring (mana), ice shrine (cold resist), burning altar (fire spellpower), bone pile (find weapon), lava vent (fire resist), pain altar (STR buff at HP cost)
+
+**Category 2 — Traders** (peaceful default, with steal/attack/donate karma branches)
+Roles to fulfill per realm (not specific object types):
+- [ ] General shop (basic items)
+- [ ] Blacksmith (weapons, armor, weapon oils)
+- [ ] Fletcher (ranged weapons, throwables, light armor)
+- [ ] Healer (healing potions, white magic scrolls; rare locations only: raise dead companion for high gold cost + karma implications)
+- [ ] Alchemist (potions, bombs, oils)
+- [ ] Magic shop (scrolls, charms, magic foci — see magic foci TODO below)
+- [ ] Trainer (teaches 1-3 skills or attributes; one-time per trainer instance; cap = max level trainer can teach, e.g. a wandering apprentice might cap at Lv 3, a master at Lv 7)
+- [ ] Multi-function locations (towns, camps) use tab UI in event window — 3-4 functions per location
+- [ ] First-visit event hook for towns (simple choice: rumors, discount, hidden object)
+- [ ] Hell content: Wretched Market (general), Infernal Forge (blacksmith + trainer: Axes/Might), Bone Archer Camp (fletcher + trainer: Ranged/Guile), Mercy Ward (healer, ironic name), Brimstone Lab (alchemist), Void Scribe's Den (magic shop + trainer: Black Magic), Warden's Pit (trainer: Spears/Armor + Might cap 5)
+
+**Category 3 — Event Chains** (1-3 choices deep, world/subregion specific)
+- [ ] Event chain data format (prerequisites, follow-up event IDs, outcome state flags)
+- [ ] Ability to reference other map objects in outcomes (e.g., "bring them to the healer on this map")
+- [ ] Hell-specific chains: bandit ambush of a soul caravan, devil deserter encounter, contraband deal gone wrong, corrupted simple (looks helpful, is cursed), chained pilgrim (penitent NPC — rescue or ignore or exploit), rival party encounter
+- [ ] Chains should NOT be reused across realms — always write realm-specific flavor
+
+### Quest System
+*(Design phase — implement after event chains are solid)*
+- [ ] Quest data structure (active quests, state flags, completion conditions)
+- [ ] Quest giver NPCs (subset of trader/event chain interactions)
+- [ ] Quest log UI tab in character sheet
+- [ ] Quest outcomes: XP rewards, karma, unique items, unlocking new map locations
+- [ ] Multi-map quests (state persists across map transitions)
+- [ ] Event chains can reference and advance quests
+- [ ] Town first-visit hooks can initiate quests
+
 ### Event System Improvements
-- [ ] Event chains and prerequisites
+- [ ] Event chains and prerequisites (see Map Interactibles above)
 - [ ] More events per realm (aim for 20+ per realm)
 
 ### Camp Followers System
@@ -122,33 +162,12 @@ Last Updated: 2026-02-16
 - [ ] Passive bonus application (trade, healing, carrying capacity)
 - [ ] UI integration (slot already in Party tab)
 
-### Skill Scale Refactor (1-5 → 1-10)
-Expand the skill scale from 5 levels to 10 for better granularity. Currently level 3/5 = 60% mastery, which makes starting characters feel too skilled. With 10 levels, starting at 3/10 feels appropriately novice.
-
-**Key changes:**
-- [ ] Skill levels 1-10 across all systems (CharacterSystem, PerkSystem, spells, items, events, enemies)
-- [ ] Perks at every 2nd level (levels 2, 4, 6, 8, 10) — same number of perks, just more spread out
-- [ ] Spell level requirements remapped (currently 1-5, scale to 1-10)
-- [ ] Event/dialogue skill checks adjusted to new scale
-- [ ] Enemy archetype skill levels adjusted
-- [ ] New XP cost curve — proposed triangular: level 1 = 1 XP, level 2 = 3 XP, level 3 = 6 XP, etc. (needs playtesting/tweaking)
-- [ ] Update all data files: spells.json (326 spells), perks.json, items.json, events, enemies
-
-**XP cost proposal (triangular numbers, needs tuning):**
-| Level | Cost | Cumulative |
-|-------|------|------------|
-| 1 | 1 | 1 |
-| 2 | 3 | 4 |
-| 3 | 6 | 10 |
-| 4 | 10 | 20 |
-| 5 | 15 | 35 |
-| 6 | 21 | 56 |
-| 7 | 28 | 84 |
-| 8 | 36 | 120 |
-| 9 | 45 | 165 |
-| 10 | 55 | 220 |
-
-*Note: These costs are placeholder and need balancing. The pattern is level N costs N*(N+1)/2 XP. May need scaling factor (e.g., multiply all by 10 for 10/30/60/100/150...).*
+### ~~Skill Scale Refactor (1-5 → 1-10)~~ DONE
+- [x] Skill levels 1-10 (purchasable); 11-15 accessible via items/race bonuses (display only, yellow in UI)
+- [x] Spell unlock tiers at levels 1/3/5/7/9
+- [x] 15-level base bonus tables for all 35 skills wired into derived stats via PerkSystem
+- [x] Perk required_level remapped (old 1→1, 2→3, 3→5, 4→7, 5→9)
+- [x] Attribute cost formula: `max((value - 9) * 3, 2)` per step (10→20 = 165 XP; 10→30 = 630 XP)
 
 ### Testing & Polish
 - [ ] Test Shop UI thoroughly (buying, selling, spell learning, training)
@@ -166,6 +185,8 @@ Expand the skill scale from 5 levels to 10 for better granularity. Currently lev
 - [ ] More upgrades/perks
 - [ ] Alchemy crafting system (create consumables from ingredients)
 - [ ] More scroll varieties (AoE scrolls, buff scrolls)
+- [ ] **Magic foci**: equippable items that boost spellpower/mana cost reduction for one or more schools (e.g., a Fire Crystal boosts fire_magic; a Void Shard boosts black_magic + space_magic). Sold at magic shops. Needs new item slot and CharacterSystem integration.
+- [ ] **Cursed items**: equipment that applies a passive debuff alongside its stats. Player may not know an item is cursed until equipped (reveal on ID or Alchemy skill check). Separate from cursed terrain/simples.
 
 ### UI Improvements
 - [ ] Tooltip system expansion
@@ -247,6 +268,14 @@ Expand the skill scale from 5 levels to 10 for better granularity. Currently lev
 ---
 
 ## Session Notes
+
+### 2026-02-22: 0-10 Skill Refactor, Hell Races & Backgrounds, Interactibles Design
+- **0-10 Skill Scale**: Fully implemented — SKILL_COSTS, 15-level base_bonuses for all 35 skills wired into derived stats, perk/spell level remapping, yellow enhanced-level display in character sheet
+- **Attribute costs**: New formula `max((value-9)*3, 2)` — 10→20 costs 165 XP, 10→30 costs 630 XP
+- **Hell races complete**: All 6 devils (red/blue/yellow/green/black/white) with stats, caps, elemental_affinity_bonuses (+5), starting_skills/spells, reincarnation_weights (red/blue=30, green/yellow=20, black/white=5)
+- **23 backgrounds complete**: All have attribute_modifiers, starting_skills, `available_races` (thematic whitelists, empty=universal), and `weight`. New backgrounds: torturer, soul_jailer, infernal_scribe, penitent, spy
+- **Interactibles design decided**: 3 categories — Simples (once-use, temp buffs + cursed variants), Traders (roles not objects, tab UI for towns, trainer caps, rare raise-dead), Event Chains (1-3 deep, realm-specific, can reference map objects/quests). Hell content list written in TODO.
+- **New TODO items**: Magic Foci, Cursed Items, Quest System
 
 ### 2026-02-17 (later): Weapon Requirements for Active Skills
 - **Weapon type checks**: Active skills from weapon trees now require the matching weapon equipped
@@ -340,29 +369,37 @@ Expand the skill scale from 5 levels to 10 for better granularity. Currently lev
 ## Reference
 
 ### Mana Costs by Spell Level
+Spell levels now use 1/3/5/7/9 scale (remapped from old 1-5).
 | Level | Mana Cost |
 |-------|-----------|
-| 1 | 15 |
-| 2 | 40 |
-| 3 | 75 |
-| 4 | 135 |
-| 5 | 225 |
+| 1     | 15        |
+| 3     | 40        |
+| 5     | 75        |
+| 7     | 135       |
+| 9     | 225       |
 
-### Skill XP Costs
-| Level | Cost |
-|-------|------|
-| 1 | 100 |
-| 2 | 300 |
-| 3 | 600 |
-| 4 | 1000 |
-| 5 | 1500 |
+### Skill XP Costs (0-10 scale)
+| To Level | Cost | Cumulative |
+|----------|------|------------|
+| 1        | 5    | 5          |
+| 2        | 10   | 15         |
+| 3        | 18   | 33         |
+| 4        | 28   | 61         |
+| 5        | 42   | 103        |
+| 6        | 59   | 162        |
+| 7        | 80   | 242        |
+| 8        | 106  | 348        |
+| 9        | 137  | 485        |
+| 10       | 175  | 660        |
+
+Levels 11-15 are item/race bonus only — not purchasable. Displayed in yellow on character sheet.
 
 ### Attribute XP Costs
-Base cost = 100, multiplier = 1.5x per point above 10
-- 10→11: 100 XP
-- 11→12: 150 XP
-- 12→13: 225 XP
-- etc.
+Formula: `max((current_value - 9) * 3, 2)` per step (minimum 2 XP/step)
+- 10→11: 3 XP
+- 10→20: 165 XP total (≈ skill level 6)
+- 10→30: 630 XP total (≈ skill level 10, endgame godlike)
+- Below 10: 2 XP/step flat
 
 ### Spell Schools
 - **Elements**: Earth, Water, Fire, Air, Space

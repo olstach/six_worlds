@@ -155,7 +155,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "stone",
       "tags": [
         "stone",
@@ -181,7 +181,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "stone",
       "tags": [
         "stone",
@@ -207,7 +207,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "plant",
       "tags": [
         "plant",
@@ -232,7 +232,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "gold",
       "tags": [
         "gold",
@@ -259,7 +259,7 @@
         "Earth",
         "Space"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "blade",
       "tags": [
         "blade",
@@ -286,7 +286,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "stone",
       "tags": [
         "stone",
@@ -312,7 +312,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "stone",
       "tags": [
         "stone",
@@ -338,7 +338,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "stone",
       "tags": [
         "stone",
@@ -364,7 +364,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "gold",
       "tags": [
         "gold",
@@ -390,7 +390,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "stone",
       "tags": [
         "stone",
@@ -417,7 +417,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "stone",
       "tags": [
         "stone",
@@ -443,7 +443,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "plant",
       "tags": [
         "plant",
@@ -470,7 +470,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "stone",
       "tags": [
         "stone",
@@ -555,7 +555,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "stone",
       "tags": [
         "summon",
@@ -574,7 +574,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "stone",
       "tags": [
         "summon",
@@ -593,7 +593,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "stone",
       "tags": [
         "stone",
@@ -613,7 +613,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "stone",
       "tags": [
         "summon",
@@ -632,7 +632,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "stone",
       "tags": [
         "stone",
@@ -653,7 +653,7 @@
         "Earth",
         "Air"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "stone",
       "tags": [
         "stone",
@@ -673,7 +673,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "stone",
       "tags": [
         "stone",
@@ -696,7 +696,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "stone",
       "tags": [
         "summon",
@@ -716,7 +716,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "stone",
       "tags": [
         "stone",
@@ -737,7 +737,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "stone",
       "tags": [
         "summon",
@@ -824,7 +824,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "stone",
       "tags": [
         "stone",
@@ -851,7 +851,7 @@
         "Earth",
         "Space"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "blade",
       "tags": [
         "blade",
@@ -874,7 +874,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "stone",
       "tags": [
         "stone",
@@ -902,7 +902,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "stone",
       "tags": [
         "stone",
@@ -931,7 +931,7 @@
         "Earth",
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "blade",
       "tags": [
         "blade",
@@ -961,7 +961,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "stone",
       "tags": [
         "stone",
@@ -990,7 +990,7 @@
         "Earth",
         "Fire"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "stone",
       "tags": [
         "stone",
@@ -1019,7 +1019,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "gold",
       "tags": [
         "gold",
@@ -1043,7 +1043,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "gold",
       "tags": [
         "gold",
@@ -1071,7 +1071,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "stone",
       "tags": [
         "stone",
@@ -1097,7 +1097,7 @@
         "Earth",
         "Fire"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "stone",
       "tags": [
         "stone",
@@ -1127,7 +1127,7 @@
         "Earth",
         "Space"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "blade",
       "tags": [
         "blade",
@@ -1157,7 +1157,7 @@
       "schools": [
         "Earth"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "gold",
       "tags": [
         "gold",
@@ -1212,7 +1212,7 @@
         "Earth",
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "stone",
       "tags": [
         "stone",
@@ -1241,7 +1241,7 @@
         "Earth",
         "White"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "stone",
       "tags": [
         "stone",
@@ -1273,7 +1273,7 @@
         "Earth",
         "White"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "stone",
       "tags": [
         "stone",
@@ -1300,7 +1300,7 @@
         "Earth",
         "White"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "stone",
       "tags": [
         "stone",
@@ -1363,7 +1363,7 @@
         "Earth",
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "plant",
       "tags": [
         "plant",
@@ -1396,7 +1396,7 @@
         "Earth",
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "plant",
       "tags": [
         "plant",
@@ -1429,7 +1429,7 @@
         "Earth",
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "undead",
       "tags": [
         "undead",
@@ -1460,7 +1460,7 @@
         "Earth",
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "plant",
       "tags": [
         "plant",
@@ -1480,7 +1480,7 @@
         "Earth",
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "undead",
       "tags": [
         "undead",
@@ -1506,7 +1506,7 @@
         "Earth",
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "plant",
       "tags": [
         "plant",
@@ -1528,7 +1528,7 @@
         "Earth",
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "undead",
       "tags": [
         "undead",
@@ -1566,7 +1566,7 @@
         "Earth",
         "Black"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "plant",
       "tags": [
         "plant",
@@ -1652,7 +1652,7 @@
       "schools": [
         "Water"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "ice",
       "tags": [
         "ice",
@@ -1682,7 +1682,7 @@
       "schools": [
         "Water"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "water",
       "tags": [
         "water",
@@ -1714,7 +1714,7 @@
       "schools": [
         "Water"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "water",
       "tags": [
         "water",
@@ -1740,7 +1740,7 @@
       "schools": [
         "Water"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "water",
       "tags": [
         "water",
@@ -1768,7 +1768,7 @@
       "schools": [
         "Water"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "ice",
       "tags": [
         "ice",
@@ -1794,7 +1794,7 @@
       "schools": [
         "Water"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "water",
       "tags": [
         "water",
@@ -1864,7 +1864,7 @@
       "schools": [
         "Water"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "water",
       "tags": [
         "water",
@@ -1884,7 +1884,7 @@
       "schools": [
         "Water"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "ice",
       "tags": [
         "ice",
@@ -1904,7 +1904,7 @@
       "schools": [
         "Water"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "ice",
       "tags": [
         "ice",
@@ -1928,7 +1928,7 @@
       "schools": [
         "Water"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "water",
       "tags": [
         "water",
@@ -1948,7 +1948,7 @@
       "schools": [
         "Water"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "water",
       "tags": [
         "water",
@@ -1969,7 +1969,7 @@
       "schools": [
         "Water"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "water",
       "tags": [
         "water",
@@ -2008,7 +2008,7 @@
       "schools": [
         "Water"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "water",
       "tags": [
         "water",
@@ -2088,7 +2088,7 @@
       "schools": [
         "Water"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "water",
       "tags": [
         "water",
@@ -2121,7 +2121,7 @@
       "schools": [
         "Water"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "ice",
       "tags": [
         "ice",
@@ -2148,7 +2148,7 @@
       "schools": [
         "Water"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "ice",
       "tags": [
         "ice",
@@ -2175,7 +2175,7 @@
       "schools": [
         "Water"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "water",
       "tags": [
         "water",
@@ -2209,7 +2209,7 @@
       "schools": [
         "Water"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "ice",
       "tags": [
         "ice",
@@ -2243,7 +2243,7 @@
       "schools": [
         "Water"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "water",
       "tags": [
         "water",
@@ -2274,7 +2274,7 @@
       "schools": [
         "Water"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "ice",
       "tags": [
         "ice",
@@ -2308,7 +2308,7 @@
       "schools": [
         "Water"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "ice",
       "tags": [
         "ice",
@@ -2342,7 +2342,7 @@
       "schools": [
         "Water"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "water",
       "tags": [
         "water",
@@ -2374,7 +2374,7 @@
       "schools": [
         "Water"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "ice",
       "tags": [
         "ice",
@@ -2434,7 +2434,7 @@
         "Water",
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "water",
       "tags": [
         "water",
@@ -2465,7 +2465,7 @@
       "schools": [
         "White"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "heal",
       "tags": [
         "cleanse",
@@ -2489,7 +2489,7 @@
         "Water",
         "White"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "water",
       "tags": [
         "water",
@@ -2522,7 +2522,7 @@
         "Water",
         "White"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "water",
       "tags": [
         "water",
@@ -2603,7 +2603,7 @@
         "Water",
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "water",
       "tags": [
         "water",
@@ -2631,7 +2631,7 @@
         "Water",
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "poison",
       "tags": [
         "poison",
@@ -2660,7 +2660,7 @@
         "Water",
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "poison",
       "tags": [
         "poison",
@@ -2692,7 +2692,7 @@
         "Water",
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "ice",
       "tags": [
         "ice",
@@ -2725,7 +2725,7 @@
         "Water",
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "ice",
       "tags": [
         "ice",
@@ -2746,7 +2746,7 @@
         "Water",
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "poison",
       "tags": [
         "poison",
@@ -2784,7 +2784,7 @@
         "Water",
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "water",
       "tags": [
         "water",
@@ -2821,7 +2821,7 @@
         "Water",
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "poison",
       "tags": [
         "poison",
@@ -2860,7 +2860,7 @@
         "Water",
         "Black"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "water",
       "tags": [
         "water",
@@ -2892,7 +2892,7 @@
         "Water",
         "Black"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "poison",
       "tags": [
         "poison",
@@ -2931,7 +2931,7 @@
         "Water",
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "vajra",
       "tags": [
         "vajra",
@@ -2960,7 +2960,7 @@
         "Water",
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "vajra",
       "tags": [
         "vajra",
@@ -2990,7 +2990,7 @@
         "Water",
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "vajra",
       "tags": [
         "vajra",
@@ -3029,7 +3029,7 @@
         "Water",
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "vajra",
       "tags": [
         "vajra",
@@ -3056,7 +3056,7 @@
         "Water",
         "Space"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "vajra",
       "tags": [
         "vajra",
@@ -3117,7 +3117,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3142,7 +3142,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3170,7 +3170,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "mental",
       "tags": [
         "mental",
@@ -3196,7 +3196,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3226,7 +3226,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3257,7 +3257,7 @@
         "Fire",
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "mental",
       "tags": [
         "mental",
@@ -3283,7 +3283,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "mental",
       "tags": [
         "mental",
@@ -3312,7 +3312,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "smoke",
       "tags": [
         "smoke",
@@ -3344,7 +3344,7 @@
         "Fire",
         "White"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "solar",
       "tags": [
         "solar",
@@ -3372,7 +3372,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "mental",
       "tags": [
         "mental",
@@ -3422,7 +3422,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3442,7 +3442,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3462,7 +3462,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "smoke",
       "tags": [
         "smoke",
@@ -3482,7 +3482,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3504,7 +3504,7 @@
         "Fire",
         "White"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "solar",
       "tags": [
         "solar",
@@ -3525,7 +3525,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3547,7 +3547,7 @@
         "Fire",
         "Air"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3646,7 +3646,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3677,7 +3677,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3710,7 +3710,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3744,7 +3744,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3775,7 +3775,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3808,7 +3808,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3835,7 +3835,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "smoke",
       "tags": [
         "smoke",
@@ -3869,7 +3869,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3895,7 +3895,7 @@
         "Fire",
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "solar",
       "tags": [
         "solar",
@@ -3924,7 +3924,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3963,7 +3963,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "fire",
       "tags": [
         "fire",
@@ -3994,7 +3994,7 @@
       "schools": [
         "Fire"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "fire",
       "tags": [
         "fire",
@@ -4046,7 +4046,7 @@
         "Fire",
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "solar",
       "tags": [
         "solar",
@@ -4074,7 +4074,7 @@
         "Fire",
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "solar",
       "tags": [
         "solar",
@@ -4114,7 +4114,7 @@
         "Fire",
         "White"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "solar",
       "tags": [
         "solar",
@@ -4136,7 +4136,7 @@
         "Fire",
         "White"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "fire",
       "tags": [
         "fire",
@@ -4161,7 +4161,7 @@
         "Fire",
         "White"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "solar",
       "tags": [
         "solar",
@@ -4194,7 +4194,7 @@
         "Fire",
         "White"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "fire",
       "tags": [
         "fire",
@@ -4220,7 +4220,7 @@
         "Fire",
         "White"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "solar",
       "tags": [
         "solar",
@@ -4279,7 +4279,7 @@
         "Fire",
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "fire",
       "tags": [
         "fire",
@@ -4305,7 +4305,7 @@
         "Fire",
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "fire",
       "tags": [
         "fire",
@@ -4335,7 +4335,7 @@
         "Fire",
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "fire",
       "tags": [
         "fire",
@@ -4364,7 +4364,7 @@
         "Fire",
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "fire",
       "tags": [
         "fire",
@@ -4385,7 +4385,7 @@
         "Fire",
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "fire",
       "tags": [
         "fire",
@@ -4418,7 +4418,7 @@
         "Fire",
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "fire",
       "tags": [
         "fire",
@@ -4440,7 +4440,7 @@
         "Fire",
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "fire",
       "tags": [
         "fire",
@@ -4471,7 +4471,7 @@
         "Fire",
         "Black"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "fire",
       "tags": [
         "fire",
@@ -4540,7 +4540,7 @@
       "schools": [
         "Air"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "wind",
       "tags": [
         "wind",
@@ -4565,7 +4565,7 @@
       "schools": [
         "Air"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "wind",
       "tags": [
         "wind",
@@ -4593,7 +4593,7 @@
       "schools": [
         "Air"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "wind",
       "tags": [
         "wind",
@@ -4623,7 +4623,7 @@
       "schools": [
         "Air"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "wind",
       "tags": [
         "wind",
@@ -4651,7 +4651,7 @@
       "schools": [
         "Air"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "wind",
       "tags": [
         "wind",
@@ -4682,7 +4682,7 @@
       "schools": [
         "Air"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "wind",
       "tags": [
         "wind",
@@ -4712,7 +4712,7 @@
       "schools": [
         "Air"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "lightning",
       "tags": [
         "lightning",
@@ -4761,7 +4761,7 @@
       "schools": [
         "Air"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "wind",
       "tags": [
         "wind",
@@ -4781,7 +4781,7 @@
       "schools": [
         "Air"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "wind",
       "tags": [
         "wind",
@@ -4806,7 +4806,7 @@
       "schools": [
         "Air"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "wind",
       "tags": [
         "wind",
@@ -4827,7 +4827,7 @@
         "Air",
         "White"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "wind",
       "tags": [
         "wind",
@@ -4853,7 +4853,7 @@
         "Air",
         "White"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "wind",
       "tags": [
         "wind",
@@ -4879,7 +4879,7 @@
       "schools": [
         "Air"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "wind",
       "tags": [
         "wind",
@@ -4900,7 +4900,7 @@
       "schools": [
         "Air"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "wind",
       "tags": [
         "wind",
@@ -4921,7 +4921,7 @@
       "schools": [
         "Air"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5022,7 +5022,7 @@
       "schools": [
         "Air"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5056,7 +5056,7 @@
       "schools": [
         "Air"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "lightning",
       "tags": [
         "lightning",
@@ -5092,7 +5092,7 @@
       "schools": [
         "Air"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5125,7 +5125,7 @@
       "schools": [
         "Air"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "lightning",
       "tags": [
         "lightning",
@@ -5153,7 +5153,7 @@
       "schools": [
         "Air"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "lightning",
       "tags": [
         "lightning",
@@ -5187,7 +5187,7 @@
       "schools": [
         "Air"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "lightning",
       "tags": [
         "lightning",
@@ -5217,7 +5217,7 @@
       "schools": [
         "Air"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5252,7 +5252,7 @@
       "schools": [
         "Air"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "lightning",
       "tags": [
         "lightning",
@@ -5284,7 +5284,7 @@
       "schools": [
         "Air"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5314,7 +5314,7 @@
       "schools": [
         "Air"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "lightning",
       "tags": [
         "lightning",
@@ -5350,7 +5350,7 @@
         "Air",
         "Space"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5378,7 +5378,7 @@
         "Air",
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5413,7 +5413,7 @@
         "Air",
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5469,7 +5469,7 @@
         "Air",
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5502,7 +5502,7 @@
         "Air",
         "White"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5531,7 +5531,7 @@
         "Air",
         "White"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5555,7 +5555,7 @@
         "Air",
         "White"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5614,7 +5614,7 @@
         "Air",
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5641,7 +5641,7 @@
         "Air",
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5678,7 +5678,7 @@
         "Air",
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5710,7 +5710,7 @@
         "Air",
         "Black"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "wind",
       "tags": [
         "wind",
@@ -5797,7 +5797,7 @@
       "schools": [
         "Space"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "space",
       "tags": [
         "space",
@@ -5825,7 +5825,7 @@
       "schools": [
         "Space"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "illusion",
       "tags": [
         "illusion",
@@ -5854,7 +5854,7 @@
       "schools": [
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "illusion",
       "tags": [
         "illusion",
@@ -5879,7 +5879,7 @@
       "schools": [
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "illusion",
       "tags": [
         "illusion",
@@ -5909,7 +5909,7 @@
       "schools": [
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "space",
       "tags": [
         "space",
@@ -5939,7 +5939,7 @@
       "schools": [
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "space",
       "tags": [
         "space",
@@ -5968,7 +5968,7 @@
       "schools": [
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "illusion",
       "tags": [
         "illusion",
@@ -5999,7 +5999,7 @@
       "schools": [
         "Space"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "space",
       "tags": [
         "space",
@@ -6057,7 +6057,7 @@
       "schools": [
         "Space"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "illusion",
       "tags": [
         "illusion",
@@ -6081,7 +6081,7 @@
       "schools": [
         "Space"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "dagger",
       "tags": [
         "dagger",
@@ -6105,7 +6105,7 @@
       "schools": [
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "space",
       "tags": [
         "space",
@@ -6129,7 +6129,7 @@
       "schools": [
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "illusion",
       "tags": [
         "illusion",
@@ -6153,7 +6153,7 @@
       "schools": [
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "illusion",
       "tags": [
         "illusion",
@@ -6178,7 +6178,7 @@
       "schools": [
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "dagger",
       "tags": [
         "dagger",
@@ -6203,7 +6203,7 @@
       "schools": [
         "Space"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "space",
       "tags": [
         "space",
@@ -6275,7 +6275,7 @@
       "schools": [
         "Space"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "dagger",
       "tags": [
         "dagger",
@@ -6306,7 +6306,7 @@
       "schools": [
         "Space"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "space",
       "tags": [
         "space",
@@ -6328,7 +6328,7 @@
       "schools": [
         "Space"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "space",
       "tags": [
         "space",
@@ -6355,7 +6355,7 @@
       "schools": [
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "dagger",
       "tags": [
         "dagger",
@@ -6390,7 +6390,7 @@
       "schools": [
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "space",
       "tags": [
         "space",
@@ -6418,7 +6418,7 @@
       "schools": [
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "space",
       "tags": [
         "space",
@@ -6440,7 +6440,7 @@
       "schools": [
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "space",
       "tags": [
         "space",
@@ -6468,7 +6468,7 @@
       "schools": [
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "illusion",
       "tags": [
         "illusion",
@@ -6498,7 +6498,7 @@
       "schools": [
         "Space"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "dagger",
       "tags": [
         "dagger",
@@ -6524,7 +6524,7 @@
       "schools": [
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "space",
       "tags": [
         "space",
@@ -6547,7 +6547,7 @@
       "schools": [
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "dagger",
       "tags": [
         "dagger",
@@ -6581,7 +6581,7 @@
       "schools": [
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "space",
       "tags": [
         "space",
@@ -6604,7 +6604,7 @@
       "schools": [
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "space",
       "tags": [
         "space",
@@ -6632,7 +6632,7 @@
       "schools": [
         "Space"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "space",
       "tags": [
         "space",
@@ -6657,7 +6657,7 @@
       "schools": [
         "Space"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "dagger",
       "tags": [
         "dagger",
@@ -6683,7 +6683,7 @@
       "schools": [
         "Space"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "space",
       "tags": [
         "space",
@@ -6707,7 +6707,7 @@
       "schools": [
         "Space"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "space",
       "tags": [
         "space",
@@ -6733,7 +6733,7 @@
       "schools": [
         "Space"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "space",
       "tags": [
         "space",
@@ -6791,7 +6791,7 @@
         "Space",
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "space",
       "tags": [
         "space",
@@ -6819,7 +6819,7 @@
         "Space",
         "White"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "space",
       "tags": [
         "space",
@@ -6850,7 +6850,7 @@
         "Space",
         "White"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "space",
       "tags": [
         "space",
@@ -6909,7 +6909,7 @@
         "Space",
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "space",
       "tags": [
         "space",
@@ -6936,7 +6936,7 @@
         "Space",
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "space",
       "tags": [
         "space",
@@ -6963,7 +6963,7 @@
         "Space",
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "space",
       "tags": [
         "space",
@@ -6990,7 +6990,7 @@
         "Space",
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "space",
       "tags": [
         "space",
@@ -7016,7 +7016,7 @@
         "Space",
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "space",
       "tags": [
         "space",
@@ -7042,7 +7042,7 @@
         "Space",
         "Black"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "space",
       "tags": [
         "space",
@@ -7123,7 +7123,7 @@
       "schools": [
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "heal",
       "tags": [
         "heal",
@@ -7149,7 +7149,7 @@
       "schools": [
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "buff",
       "tags": [
         "cc",
@@ -7177,7 +7177,7 @@
       "schools": [
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "buff",
       "tags": [
         "buff",
@@ -7205,7 +7205,7 @@
       "schools": [
         "White"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "heal",
       "tags": [
         "heal",
@@ -7233,7 +7233,7 @@
       "schools": [
         "White"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "buff",
       "tags": [
         "buff",
@@ -7262,7 +7262,7 @@
       "schools": [
         "White"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "buff",
       "tags": [
         "buff",
@@ -7290,7 +7290,7 @@
       "schools": [
         "White"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "buff",
       "tags": [
         "cc",
@@ -7326,7 +7326,7 @@
       "schools": [
         "White"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "buff",
       "tags": [
         "buff",
@@ -7354,7 +7354,7 @@
       "schools": [
         "White"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "buff",
       "tags": [
         "buff",
@@ -7379,7 +7379,7 @@
       "schools": [
         "White"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "buff",
       "tags": [
         "buff",
@@ -7431,7 +7431,7 @@
       "schools": [
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "support",
       "tags": [
         "summon",
@@ -7457,7 +7457,7 @@
       "schools": [
         "White"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "support",
       "tags": [
         "summon",
@@ -7484,7 +7484,7 @@
       "schools": [
         "White"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "heal",
       "tags": [
         "summon",
@@ -7508,7 +7508,7 @@
       "schools": [
         "White"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "support",
       "tags": [
         "summon",
@@ -7535,7 +7535,7 @@
       "schools": [
         "White"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "combat",
       "tags": [
         "summon",
@@ -7627,7 +7627,7 @@
       "schools": [
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "damage",
       "tags": [
         "damage",
@@ -7665,7 +7665,7 @@
       "schools": [
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "utility",
       "tags": [
         "dispel",
@@ -7688,7 +7688,7 @@
       "schools": [
         "White"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "heal",
       "tags": [
         "heal"
@@ -7708,7 +7708,7 @@
       "schools": [
         "White"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "damage",
       "tags": [
         "damage",
@@ -7739,7 +7739,7 @@
       "schools": [
         "White"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "heal",
       "tags": [
         "resurrect"
@@ -7760,7 +7760,7 @@
       "schools": [
         "White"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "heal",
       "tags": [
         "heal",
@@ -7783,7 +7783,7 @@
       "schools": [
         "White"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "heal",
       "tags": [
         "resurrect"
@@ -7804,7 +7804,7 @@
       "schools": [
         "White"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "damage",
       "tags": [
         "damage",
@@ -7889,7 +7889,7 @@
         "White",
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "ancestral",
       "tags": [
         "ancestral",
@@ -7914,7 +7914,7 @@
         "White",
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "ancestral",
       "tags": [
         "ancestral",
@@ -7945,7 +7945,7 @@
         "White",
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "ancestral",
       "tags": [
         "ancestral",
@@ -7974,7 +7974,7 @@
         "White",
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "ancestral",
       "tags": [
         "ancestral",
@@ -8003,7 +8003,7 @@
         "White",
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "ancestral",
       "tags": [
         "ancestral",
@@ -8040,7 +8040,7 @@
         "White",
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "ancestral",
       "tags": [
         "ancestral",
@@ -8070,7 +8070,7 @@
         "White",
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "ancestral",
       "tags": [
         "ancestral",
@@ -8096,7 +8096,7 @@
         "White",
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "ancestral",
       "tags": [
         "ancestral",
@@ -8125,7 +8125,7 @@
         "White",
         "Black"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "ancestral",
       "tags": [
         "ancestral",
@@ -8152,7 +8152,7 @@
         "White",
         "Black"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "ancestral",
       "tags": [
         "ancestral",
@@ -8205,7 +8205,7 @@
       "schools": [
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "vampiric",
       "tags": [
         "vampiric",
@@ -8232,7 +8232,7 @@
       "schools": [
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "debuff",
       "tags": [
         "debuff",
@@ -8256,7 +8256,7 @@
       "schools": [
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "debuff",
       "tags": [
         "debuff",
@@ -8280,7 +8280,7 @@
       "schools": [
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "shadow",
       "tags": [
         "shadow",
@@ -8309,7 +8309,7 @@
       "schools": [
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "debuff",
       "tags": [
         "debuff",
@@ -8338,7 +8338,7 @@
       "schools": [
         "Black"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "debuff",
       "tags": [
         "debuff",
@@ -8413,7 +8413,7 @@
       "schools": [
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "undead",
       "tags": [
         "undead",
@@ -8432,7 +8432,7 @@
       "schools": [
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "vampiric",
       "tags": [
         "vampiric",
@@ -8456,7 +8456,7 @@
       "schools": [
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "undead",
       "tags": [
         "undead",
@@ -8482,7 +8482,7 @@
       "schools": [
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "undead",
       "tags": [
         "undead",
@@ -8502,7 +8502,7 @@
       "schools": [
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "demon",
       "tags": [
         "demon",
@@ -8529,7 +8529,7 @@
       "schools": [
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "demon",
       "tags": [
         "demon",
@@ -8549,7 +8549,7 @@
       "schools": [
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "undead",
       "tags": [
         "undead",
@@ -8569,7 +8569,7 @@
       "schools": [
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "undead",
       "tags": [
         "undead",
@@ -8596,7 +8596,7 @@
       "schools": [
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "demon",
       "tags": [
         "demon",
@@ -8623,7 +8623,7 @@
       "schools": [
         "Black"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "undead",
       "tags": [
         "undead",
@@ -8644,7 +8644,7 @@
       "schools": [
         "Black"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "demon",
       "tags": [
         "demon",
@@ -8665,7 +8665,7 @@
       "schools": [
         "Black"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "demon",
       "tags": [
         "demon",
@@ -8689,7 +8689,7 @@
       "schools": [
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "void",
       "tags": [
         "void",
@@ -8710,7 +8710,7 @@
       "schools": [
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "undead",
       "tags": [
         "undead",
@@ -8734,7 +8734,7 @@
       "schools": [
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "shadow",
       "tags": [
         "shadow",
@@ -8757,7 +8757,7 @@
       "schools": [
         "Black"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "vampiric",
       "tags": [
         "vampiric",
@@ -8783,7 +8783,7 @@
       "schools": [
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "undead",
       "tags": [
         "undead",
@@ -8816,7 +8816,7 @@
       "schools": [
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "curse",
       "tags": [
         "curse",
@@ -8840,7 +8840,7 @@
       "schools": [
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "shadow",
       "tags": [
         "shadow",
@@ -8871,7 +8871,7 @@
       "schools": [
         "Black"
       ],
-      "level": 3,
+      "level": 5,
       "theme": "curse",
       "tags": [
         "curse",
@@ -8895,7 +8895,7 @@
       "schools": [
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "void",
       "tags": [
         "void",
@@ -8921,7 +8921,7 @@
       "schools": [
         "Black"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "void",
       "tags": [
         "void",
@@ -8951,7 +8951,7 @@
       "schools": [
         "Black"
       ],
-      "level": 5,
+      "level": 9,
       "theme": "void",
       "tags": [
         "void",

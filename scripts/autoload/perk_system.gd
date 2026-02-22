@@ -218,7 +218,7 @@ func _check_special_requirement(character: Dictionary, special: String) -> bool:
 	## Check special requirements like "any_3_weapon_skills_at_3" or "fire_affinity_25".
 	var skills = character.get("skills", {})
 
-	# Affinity requirements: "space_affinity_25"
+	# Affinity requirements: "space_affinity_40" (threshold raised to 40 for 10-level scale)
 	var affinity_match := special.split("_affinity_")
 	if affinity_match.size() == 2:
 		var element = affinity_match[0]
@@ -410,13 +410,18 @@ func get_perk_data(perk_id: String) -> Dictionary:
 # ============================================
 
 func calculate_element_affinity(character: Dictionary, element: String) -> int:
-	## Calculate total affinity for an element (sum of all skill levels in that element).
+	## Calculate total affinity for an element.
+	## Includes skill levels in that element plus innate racial affinity bonus.
 	var total := 0
 	var skills = character.get("skills", {})
 	var element_skill_list = _element_skills.get(element, [])
 
 	for skill_id in element_skill_list:
 		total += skills.get(skill_id, 0)
+
+	# Add innate racial affinity (e.g. Red Devil has fire: 5 from birth)
+	var racial = character.get("racial_affinity_bonuses", {})
+	total += racial.get(element, 0)
 
 	return total
 
@@ -474,9 +479,18 @@ func get_affinity_bonuses(character: Dictionary) -> Dictionary:
 
 func get_base_skill_bonuses(character: Dictionary, skill_id: String) -> Dictionary:
 	## Get the base stat bonuses for a skill at the character's current level.
-	## Returns a dict like {"attack": 30.0, "damage": 30.0} for Swords level 3.
+	## Returns a dict like {"attack": 86.0, "damage": 75.0} for Swords level 10.
 	var level = character.get("skills", {}).get(skill_id, 0)
 	if level == 0:
+		return {}
+	return get_base_skill_bonuses_at_level(skill_id, level)
+
+
+func get_base_skill_bonuses_at_level(skill_id: String, level: int) -> Dictionary:
+	## Get base stat bonuses for a skill at the specified level (1-15).
+	## Level 11-15 is for item/race-enhanced display only.
+	## Returns empty dict if no bonus data or level is 0.
+	if level <= 0:
 		return {}
 
 	var bonus_data = _base_bonuses.get(skill_id, {})
@@ -484,6 +498,5 @@ func get_base_skill_bonuses(character: Dictionary, skill_id: String) -> Dictiona
 		return {}
 
 	var per_level = bonus_data.get("per_level", {})
-	var level_str = str(int(level))
-
-	return per_level.get(level_str, {})
+	var clamped = mini(level, 15)  # cap at 15 (max item-enhanced range)
+	return per_level.get(str(clamped), {})

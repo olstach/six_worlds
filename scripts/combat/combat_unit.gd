@@ -396,21 +396,10 @@ func get_attack_range() -> int:
 
 
 ## Get accuracy bonus
+## Weapon skill bonuses are now included in derived.accuracy via CharacterSystem.update_derived_stats()
 func get_accuracy() -> int:
 	var derived = character_data.get("derived", {})
-	var accuracy = derived.get("accuracy", 0)
-
-	# Add weapon skill bonus (2 accuracy per level)
-	var skills = character_data.get("skills", {})
-	var weapon = get_equipped_weapon()
-	var weapon_type = weapon.get("type", "")
-	var skill_name = _get_weapon_skill_name(weapon_type)
-
-	if skill_name != "":
-		var skill_level = skills.get(skill_name, 0)
-		accuracy += skill_level * 2
-
-	return accuracy
+	return derived.get("accuracy", 0)
 
 
 ## Get dodge value
@@ -420,34 +409,27 @@ func get_dodge() -> int:
 
 
 ## Get attack damage
+## Weapon skill bonuses (damage column) now flow through derived.damage via
+## CharacterSystem.update_derived_stats() + PerkSystem.get_base_skill_bonuses_at_level().
+## derived.damage already includes skill-based damage at unit creation time.
 func get_attack_damage() -> int:
 	var attrs = character_data.get("attributes", {})
-	var skills = character_data.get("skills", {})
+	var derived = character_data.get("derived", {})
 
-	# Read weapon damage directly from the equipped weapon (avoids stale derived stats)
+	# Read weapon damage directly from the equipped weapon
 	var weapon = get_equipped_weapon()
 	var weapon_damage = weapon.get("stats", {}).get("damage", 2)
 	var base_damage = weapon_damage
 
 	if is_ranged_weapon():
 		# Ranged weapons: Finesse as primary attribute (starts contributing at 10)
-		var fin_mod = (attrs.get("finesse", 10) - 5)
-		base_damage += fin_mod
-
-		# Ranged skill bonus (3 damage per level)
-		var ranged_skill = skills.get("ranged", 0)
-		base_damage += ranged_skill * 3
+		base_damage += (attrs.get("finesse", 10) - 5)
 	else:
 		# Melee weapons: Strength as primary attribute (starts contributing at 10)
-		var str_mod = (attrs.get("strength", 10) - 5)
-		base_damage += str_mod
+		base_damage += (attrs.get("strength", 10) - 5)
 
-		# Weapon skill bonus (3 damage per level)
-		var weapon_type = weapon.get("type", "")
-		var skill_name = _get_weapon_skill_name(weapon_type)
-		if skill_name != "":
-			var skill_level = skills.get(skill_name, 0)
-			base_damage += skill_level * 3
+	# Add skill-based damage bonus from derived stats (set by update_derived_stats)
+	base_damage += derived.get("damage", 0)
 
 	return base_damage
 
@@ -535,12 +517,13 @@ func get_spellpower() -> int:
 	return derived.get("spellpower", 0)
 
 
-## Get magic skill bonus for an element
+## Get magic skill bonus for an element (spellpower from the skill's base_bonuses table)
+## Falls back to checking all magic schools for the element if the direct skill isn't found.
 func get_magic_skill_bonus(element: String) -> int:
-	var skills = character_data.get("skills", {})
-	var skill_name = element + "_magic"  # e.g., "fire_magic"
-	var skill_level = skills.get(skill_name, 0)
-	return skill_level * 2
+	# Spellpower bonuses are now included in derived.spellpower via CharacterSystem.
+	# This function is kept for callers that need per-school bonuses beyond spellpower.
+	# Return 0 since the data-driven spellpower is already in get_spellpower().
+	return 0
 
 
 ## Physical damage subtypes that fall back to "physical" resistance
