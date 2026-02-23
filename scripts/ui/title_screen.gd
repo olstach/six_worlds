@@ -269,6 +269,7 @@ func _make_button(text: String, min_size: Vector2, font_size: int = 18) -> Butto
 
 ## Continue: load the most recently saved slot and go to overworld
 func _on_continue_pressed() -> void:
+	AudioManager.play("ui_click")
 	var slot = SaveManager.get_most_recent_slot()
 	if slot < 1:
 		return
@@ -278,6 +279,7 @@ func _on_continue_pressed() -> void:
 
 ## New Game: find an empty slot (or overwrite oldest), start fresh
 func _on_new_game_pressed() -> void:
+	AudioManager.play("ui_click")
 	var slot = SaveManager.find_empty_slot()
 	if slot < 1:
 		# All slots full — show load panel in "pick slot to overwrite" mode
@@ -289,17 +291,20 @@ func _on_new_game_pressed() -> void:
 
 ## Load Game: show slot selection panel
 func _on_load_pressed() -> void:
+	AudioManager.play("ui_click")
 	_delete_mode = false
 	_show_load_panel("Load Game")
 
 
 ## Exit the game
 func _on_exit_pressed() -> void:
+	AudioManager.play("ui_click")
 	get_tree().quit()
 
 
 ## Slot clicked in the load/overwrite panel
 func _on_slot_pressed(slot: int) -> void:
+	AudioManager.play("ui_click")
 	if _delete_mode:
 		SaveManager.delete_save(slot)
 		_delete_mode = false
@@ -334,6 +339,7 @@ func _on_slot_pressed(slot: int) -> void:
 
 ## Toggle delete mode (next slot click deletes instead of loading)
 func _on_delete_toggled() -> void:
+	AudioManager.play("ui_click")
 	_delete_mode = not _delete_mode
 	if _delete_btn:
 		if _delete_mode:
@@ -350,6 +356,7 @@ func _on_delete_toggled() -> void:
 
 ## Back button in load panel
 func _on_load_back_pressed() -> void:
+	AudioManager.play("ui_click")
 	_delete_mode = false
 	_hide_load_panel()
 

@@ -40,6 +40,8 @@ var _main_menu_open: bool = false
 var _main_menu_layer: CanvasLayer = null
 var _abandon_btn: Button = null
 var _abandon_confirm: bool = false
+var _esc_main_panel: PanelContainer = null  # Main panel in the pause menu
+var _esc_settings_panel: Control = null     # Settings sub-panel (hidden by default)
 var _abandon_timer: float = 0.0
 
 # Track current event object so we can remove it after the event chain completes
@@ -584,6 +586,7 @@ func _build_main_menu_panel() -> void:
 	panel_style.set_content_margin_all(28)
 	panel.add_theme_stylebox_override("panel", panel_style)
 	center.add_child(panel)
+	_esc_main_panel = panel
 
 	var vbox = VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 12)
@@ -591,7 +594,7 @@ func _build_main_menu_panel() -> void:
 
 	# Title
 	var title = Label.new()
-	title.text = "MENU"
+	title.text = "PAUSE"
 	title.add_theme_font_size_override("font_size", 22)
 	title.add_theme_color_override("font_color", Color(0.7, 0.6, 0.85))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -617,7 +620,7 @@ func _build_main_menu_panel() -> void:
 		["Save & Return to Title", "_on_main_menu_return_title"],
 		["Save & Exit to Desktop", "_on_main_menu_exit_desktop"],
 		["Abandon Run", "_on_main_menu_abandon"],
-		["Settings", ""],  # Empty string = disabled
+		["Settings", "_on_main_menu_settings"],
 	]:
 		var btn = Button.new()
 		btn.text = btn_def[0]
@@ -652,11 +655,15 @@ func _build_main_menu_panel() -> void:
 	resume_btn.add_theme_stylebox_override("hover", btn_hover_style.duplicate())
 	resume_btn.add_theme_color_override("font_color", Color(0.7, 0.9, 0.7))
 	resume_btn.add_theme_color_override("font_hover_color", Color(0.7, 0.9, 0.7))
-	resume_btn.pressed.connect(_close_main_menu)
+	resume_btn.pressed.connect(func():
+		AudioManager.play("ui_click")
+		_close_main_menu())
 	vbox.add_child(resume_btn)
 
 	# Start hidden
 	_main_menu_layer.visible = false
+	# Build the settings sub-panel (hidden until opened)
+	_build_settings_panel()
 
 
 func _open_main_menu() -> void:
@@ -673,17 +680,20 @@ func _close_main_menu() -> void:
 
 
 func _on_main_menu_return_title() -> void:
+	AudioManager.play("ui_click")
 	SaveManager.autosave()
 	_close_main_menu()
 	get_tree().change_scene_to_file("res://scenes/ui/title_screen.tscn")
 
 
 func _on_main_menu_exit_desktop() -> void:
+	AudioManager.play("ui_click")
 	SaveManager.autosave()
 	get_tree().quit()
 
 
 func _on_main_menu_abandon() -> void:
+	AudioManager.play("ui_click")
 	if not _abandon_confirm:
 		# First click — ask for confirmation
 		_abandon_confirm = true
@@ -696,3 +706,121 @@ func _on_main_menu_abandon() -> void:
 		# Delete the current save slot and return to title
 		SaveManager.delete_save(SaveManager.current_slot)
 		get_tree().change_scene_to_file("res://scenes/ui/title_screen.tscn")
+
+
+func _on_main_menu_settings() -> void:
+	AudioManager.play("ui_click")
+	if _esc_main_panel:
+		_esc_main_panel.hide()
+	if _esc_settings_panel:
+		_esc_settings_panel.show()
+
+
+func _on_settings_back() -> void:
+	AudioManager.play("ui_click")
+	if _esc_settings_panel:
+		_esc_settings_panel.hide()
+	if _esc_main_panel:
+		_esc_main_panel.show()
+
+
+## Build the settings sub-panel (SFX volume, etc.) inside the pause menu layer.
+func _build_settings_panel() -> void:
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.visible = false
+	_main_menu_layer.add_child(center)
+	_esc_settings_panel = center
+
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(320, 0)
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.07, 0.05, 0.1)
+	panel_style.border_color = Color(0.45, 0.3, 0.55)
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(10)
+	panel_style.set_content_margin_all(28)
+	panel.add_theme_stylebox_override("panel", panel_style)
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 16)
+	panel.add_child(vbox)
+
+	# Title
+	var title = Label.new()
+	title.text = "SETTINGS"
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", Color(0.7, 0.6, 0.85))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	var sep = HSeparator.new()
+	sep.add_theme_color_override("separator", Color(0.45, 0.3, 0.55, 0.5))
+	vbox.add_child(sep)
+
+	# SFX Volume section
+	var sfx_section = VBoxContainer.new()
+	sfx_section.add_theme_constant_override("separation", 8)
+	vbox.add_child(sfx_section)
+
+	var sfx_label = Label.new()
+	sfx_label.text = "SFX Volume"
+	sfx_label.add_theme_font_size_override("font_size", 15)
+	sfx_label.add_theme_color_override("font_color", Color(0.8, 0.75, 0.7))
+	sfx_section.add_child(sfx_label)
+
+	var slider_row = HBoxContainer.new()
+	slider_row.add_theme_constant_override("separation", 10)
+	sfx_section.add_child(slider_row)
+
+	var slider = HSlider.new()
+	slider.min_value = -24.0
+	slider.max_value = 0.0
+	slider.step = 1.0
+	slider.value = AudioManager.sfx_volume_db
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider_row.add_child(slider)
+
+	var val_label = Label.new()
+	val_label.text = _sfx_db_to_label(AudioManager.sfx_volume_db)
+	val_label.add_theme_font_size_override("font_size", 13)
+	val_label.add_theme_color_override("font_color", Color(0.7, 0.65, 0.6))
+	val_label.custom_minimum_size.x = 44
+	val_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	slider_row.add_child(val_label)
+
+	slider.value_changed.connect(func(v: float):
+		AudioManager.sfx_volume_db = v
+		val_label.text = _sfx_db_to_label(v))
+
+	vbox.add_child(HSeparator.new())
+
+	# Back button
+	var btn_style = StyleBoxFlat.new()
+	btn_style.bg_color = Color(0.12, 0.08, 0.18)
+	btn_style.border_color = Color(0.4, 0.28, 0.52)
+	btn_style.set_border_width_all(1)
+	btn_style.set_corner_radius_all(5)
+	btn_style.set_content_margin_all(10)
+	var btn_hover = btn_style.duplicate()
+	btn_hover.bg_color = Color(0.2, 0.13, 0.28)
+	btn_hover.border_color = Color(0.6, 0.45, 0.75)
+
+	var back_btn = Button.new()
+	back_btn.text = "← Back"
+	back_btn.custom_minimum_size = Vector2(0, 44)
+	back_btn.add_theme_font_size_override("font_size", 15)
+	back_btn.add_theme_stylebox_override("normal", btn_style)
+	back_btn.add_theme_stylebox_override("hover", btn_hover)
+	back_btn.add_theme_color_override("font_color", Color(0.7, 0.9, 0.7))
+	back_btn.add_theme_color_override("font_hover_color", Color(0.7, 0.9, 0.7))
+	back_btn.pressed.connect(_on_settings_back)
+	vbox.add_child(back_btn)
+
+
+func _sfx_db_to_label(db: float) -> String:
+	if db <= -24.0:
+		return "0%"
+	var pct = int(((db + 24.0) / 24.0) * 100.0)
+	return str(pct) + "%"

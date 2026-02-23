@@ -979,11 +979,20 @@ func _handle_pickup_object(obj: Dictionary) -> void:
 	var message = data.get("message", "You found something.")
 	var rewards = data.get("rewards", [])
 
-	# Apply each reward
+	# Resolve any array ranges [min, max] → rolled values (e.g. "value": [25, 50])
+	var resolved_rewards: Array = []
 	for reward in rewards:
+		var r = reward.duplicate()
+		var v = r.get("value", 0)
+		if v is Array and v.size() == 2:
+			r["value"] = randi_range(int(v[0]), int(v[1]))
+		resolved_rewards.append(r)
+
+	# Apply each reward
+	for reward in resolved_rewards:
 		_apply_reward(reward)
 
-	pickup_collected.emit(obj, rewards)
+	pickup_collected.emit(obj, resolved_rewards)
 
 
 ## Apply a single reward from a pickup object

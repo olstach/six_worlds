@@ -13,8 +13,20 @@ extends Node
 
 const SFX_PATH := "res://resources/audio/sfx/"
 
-## Master SFX volume in dB.  0 = full, -6 ≈ half, -80 = silent.
-var sfx_volume_db: float = 0.0
+## Master SFX volume in dB.  0 = full, -7 ≈ 70%, -24 = off.
+var sfx_volume_db: float = -7.0
+
+## ============================================================
+## DIRECT SOUNDS  —  logical event name → single filename
+## ============================================================
+## These bypass the variant system: one file, played as-is.
+## Takes priority over SOUND_MAP when the same name appears in both.
+## ============================================================
+const DIRECT_SOUNDS: Dictionary = {
+	"ui_click":      "ui_click_kenney.ogg",   # Kenney UI click3
+	"ui_denied":     "ui_denied_rpg.wav",      # RPG Sound Pack interface6
+	"buff_stats_up": "buff_upgrade_bird.wav",  # Helton Yan Bird Buff 002
+}
 
 ## ============================================================
 ## SOUND MAP  —  logical event name → file prefix
@@ -70,13 +82,30 @@ var _cache: Dictionary = {}
 
 
 func _ready() -> void:
-	# Preload all streams now so first-play has no stutter
+	# Preload direct single-file sounds
+	for filename in DIRECT_SOUNDS.values():
+		_load_direct(filename)
+	# Preload all variant sounds so first-play has no stutter
 	for prefix in SOUND_MAP.values():
 		_load_variants(prefix)
 
 
 ## Play a named sound.  volume_offset_db is added on top of sfx_volume_db.
 func play(sound_name: String, volume_offset_db: float = 0.0) -> void:
+	# Check direct (single-file) sounds first
+	if sound_name in DIRECT_SOUNDS:
+		var stream: AudioStream = _load_direct(DIRECT_SOUNDS[sound_name])
+		if stream == null:
+			return
+		var player := AudioStreamPlayer.new()
+		player.stream = stream
+		player.volume_db = sfx_volume_db + volume_offset_db
+		add_child(player)
+		player.play()
+		player.finished.connect(player.queue_free)
+		return
+
+	# Fall back to variant system
 	var prefix: String = SOUND_MAP.get(sound_name, "")
 	if prefix.is_empty():
 		push_warning("AudioManager.play: unknown sound '%s'" % sound_name)
@@ -97,6 +126,22 @@ func play(sound_name: String, volume_offset_db: float = 0.0) -> void:
 # ----------------------------------------------------------------
 # Internal helpers
 # ----------------------------------------------------------------
+
+## Load and cache a single direct-path sound file.
+func _load_direct(filename: String) -> AudioStream:
+	var cache_key := "@" + filename
+	if cache_key in _cache:
+		var arr: Array = _cache[cache_key]
+		return arr[0] if not arr.is_empty() else null
+	var path := SFX_PATH + filename
+	if not ResourceLoader.exists(path):
+		push_warning("AudioManager: direct sound not found: %s" % path)
+		_cache[cache_key] = []
+		return null
+	var s: AudioStream = load(path)
+	_cache[cache_key] = [s] if s else []
+	return s
+
 
 ## Load and cache all variant files for a given prefix.
 func _load_variants(prefix: String) -> Array:

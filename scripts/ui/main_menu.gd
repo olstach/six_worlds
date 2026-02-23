@@ -146,6 +146,7 @@ func get_current_tab() -> int:
 	return tab_container.current_tab
 
 func _on_tab_changed(tab: int) -> void:
+	AudioManager.play("ui_click")
 	tab_changed.emit(tab)
 	# Refresh equipment tab when switching to it (tab index 1)
 	if tab == 1:
@@ -645,10 +646,12 @@ func _create_filter_button(filter_name: String, color: Color) -> Button:
 	return btn
 
 func _on_spell_filter_toggled(is_active: bool, filter_name: String) -> void:
+	AudioManager.play("ui_click")
 	_spell_filters[filter_name] = is_active
 	_update_spellbook()
 
 func _on_spell_filter_clear() -> void:
+	AudioManager.play("ui_click")
 	for filter_name in _spell_filters:
 		_spell_filters[filter_name] = false
 	for filter_name in _spell_filter_buttons:
@@ -1106,7 +1109,7 @@ func _on_perk_selected(perk_id: String) -> void:
 	if pending_perk_character.is_empty():
 		return
 
-	AudioManager.play("buff_apply")
+	AudioManager.play("buff_apply", -3.0)
 	PerkSystem.grant_perk(pending_perk_character, perk_id)
 	pending_perk_character = {}
 
@@ -1121,6 +1124,7 @@ func _on_perk_selected(perk_id: String) -> void:
 
 func _on_perk_skipped() -> void:
 	## Handle player skipping the perk selection.
+	AudioManager.play("ui_click")
 	pending_perk_character = {}
 	if perk_popup_layer and is_instance_valid(perk_popup_layer):
 		perk_popup_layer.queue_free()
@@ -1295,6 +1299,7 @@ func _create_equipment_slot(slot_id: String, pos: Vector2, size: Vector2) -> voi
 	doll_layout.add_child(btn)
 
 func _on_equipment_slot_pressed(slot_id: String) -> void:
+	AudioManager.play("ui_click")
 	var player = CharacterSystem.get_player()
 
 	# If slot has an item equipped, offer to unequip on double-click or show items
@@ -1415,6 +1420,7 @@ func _on_equipped_slot_hover(slot_id: String, control: Control) -> void:
 			item_tooltip.show_item(item, mouse_pos)
 
 func _on_weapon_set_pressed(set_num: int) -> void:
+	AudioManager.play("ui_click")
 	current_weapon_set = set_num
 	_update_weapon_set_buttons()
 
@@ -1521,9 +1527,24 @@ func _create_equipment_item_button(item: Dictionary) -> Button:
 	btn.mouse_entered.connect(_on_item_hover.bind(item, btn))
 	btn.mouse_exited.connect(_on_item_hover_end)
 
+	# Dim button if player doesn't meet requirements
+	var player := CharacterSystem.get_player()
+	if not player.is_empty():
+		var can_result := ItemSystem.can_equip(player, item.get("id", ""))
+		if not can_result.can_equip:
+			btn.add_theme_color_override("font_color", Color(0.45, 0.4, 0.4))
+			var dim_style = StyleBoxFlat.new()
+			dim_style.bg_color = Color(0.08, 0.08, 0.1)
+			dim_style.border_color = Color(0.3, 0.25, 0.25)
+			dim_style.set_border_width_all(2)
+			dim_style.set_corner_radius_all(4)
+			btn.add_theme_stylebox_override("normal", dim_style)
+			btn.add_theme_stylebox_override("hover", dim_style.duplicate())
+
 	return btn
 
 func _on_equipment_item_pressed(item: Dictionary) -> void:
+	AudioManager.play("ui_click")
 	var player = CharacterSystem.get_player()
 	if player.is_empty():
 		return
@@ -1535,6 +1556,7 @@ func _on_equipment_item_pressed(item: Dictionary) -> void:
 	# Check if player can equip
 	var can_result = ItemSystem.can_equip(player, item_id)
 	if not can_result.can_equip:
+		AudioManager.play("ui_denied")
 		return
 
 	# Equip the item

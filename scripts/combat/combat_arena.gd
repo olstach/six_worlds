@@ -652,6 +652,7 @@ func _on_move_pressed() -> void:
 	if unit == null or not CombatManager.can_act(1):
 		return
 
+	AudioManager.play("ui_click")
 	current_action_mode = ActionMode.MOVE
 	var move_range = CombatManager.get_movement_range(unit)
 	combat_grid.highlight_movement_range(move_range)
@@ -666,6 +667,7 @@ func _on_attack_pressed() -> void:
 	if unit == null or not CombatManager.can_act(1):
 		return
 
+	AudioManager.play("ui_click")
 	current_action_mode = ActionMode.ATTACK
 	var weapon_range = unit.get_attack_range()
 	# Use Manhattan/diamond distance (same as spell targeting) instead of Chebyshev square
@@ -691,6 +693,7 @@ func _on_spell_pressed() -> void:
 	if unit == null:
 		return
 
+	AudioManager.play("ui_click")
 	# Toggle spell panel
 	if spell_panel.visible:
 		spell_panel.hide()
@@ -918,6 +921,7 @@ func _on_item_pressed() -> void:
 	if unit == null:
 		return
 
+	AudioManager.play("ui_click")
 	# Toggle item panel
 	if item_panel.visible:
 		item_panel.hide()
@@ -1250,6 +1254,7 @@ func _on_skills_pressed() -> void:
 	if unit == null:
 		return
 
+	AudioManager.play("ui_click")
 	# Toggle skills panel
 	if skills_panel.visible:
 		skills_panel.hide()
@@ -1546,6 +1551,7 @@ func _on_wait_pressed() -> void:
 	if not CombatManager.is_player_turn():
 		return
 
+	AudioManager.play("ui_click")
 	# Use one action to wait (skip action but not whole turn)
 	CombatManager.use_action(1)
 	_log_message("Waiting...")
@@ -1555,6 +1561,7 @@ func _on_end_turn_pressed() -> void:
 	if not CombatManager.is_player_turn():
 		return
 
+	AudioManager.play("ui_click")
 	CombatManager.end_turn()
 
 
@@ -1569,6 +1576,7 @@ func _on_flee_pressed() -> void:
 	if not CombatManager.can_act(1):
 		return
 
+	AudioManager.play("ui_click")
 	# Calculate party average finesse
 	var player_units = CombatManager.get_team_units(CombatManager.Team.PLAYER)
 	var enemy_units = CombatManager.get_team_units(CombatManager.Team.ENEMY)
@@ -2006,9 +2014,9 @@ func _on_spell_cast(caster: Node, spell: Dictionary, targets: Array, results: Ar
 	# Cast sound: fire spells get a richer cast sound, everything else uses generic
 	var schools: Array = spell.get("schools", [])
 	if "Fire" in schools:
-		AudioManager.play("spell_cast_fire")
+		AudioManager.play("spell_cast_fire", -4.0)
 	else:
-		AudioManager.play("spell_cast")
+		AudioManager.play("spell_cast", -4.0)
 
 	if targets.is_empty():
 		_log_message("%s casts %s!" % [caster.unit_name, spell_name])
@@ -2574,15 +2582,20 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 			var best_tile: Vector2i = unit.grid_position
 			var best_score: int = -999
 
+			# Find max effective range across all castable spells (handles melee vs ranged spells)
+			var max_spell_range := 0
+			for sp in castable_spells:
+				max_spell_range = max(max_spell_range, _get_spell_ai_range(sp))
+
 			var optimal_range = 1
-			if not castable_spells.is_empty():
-				# Has spells to cast — stay at range to use them
-				optimal_range = 4
+			if max_spell_range > 1:
+				# Has ranged spells — stay at range to use them
+				optimal_range = max_spell_range
 			elif is_ranged:
 				optimal_range = attack_range
 
 			# Whether to use range-keeping movement (spells or ranged weapon) vs just close in
-			var wants_range = not castable_spells.is_empty() or is_ranged
+			var wants_range = max_spell_range > 1 or is_ranged
 
 			for tile in move_range:
 				var tile_dist = _grid_distance(tile, nearest.grid_position)
@@ -2619,6 +2632,22 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 		CombatManager.end_turn()
 
 
+## Get effective range for a spell for AI use.
+## Mirrors CombatManager.get_spell() range normalization so both movement and
+## casting use the same numbers (raw spell data stores range inside target.range).
+func _get_spell_ai_range(spell: Dictionary) -> int:
+	var target_data = spell.get("target", {})
+	var raw_range = target_data.get("range", spell.get("range", ""))
+	if raw_range == "melee":
+		return 1
+	elif raw_range is int or raw_range is float:
+		return int(raw_range)
+	else:
+		# No range specified — default by level (level 1 = range 4, level 3 = range 6, etc.)
+		var level = spell.get("level", 1)
+		return 3 + level
+
+
 ## AI: Try to cast a spell, returns true if spell was cast
 func _ai_try_cast_spell(unit: CombatUnit, spells: Array[Dictionary], enemies: Array[Node], primary_target: CombatUnit) -> bool:
 	# Sort spells by damage potential (prefer higher damage spells)
@@ -2637,7 +2666,7 @@ func _ai_try_cast_spell(unit: CombatUnit, spells: Array[Dictionary], enemies: Ar
 	# Try each spell
 	for spell in spells:
 		var spell_id = spell.get("id", "")
-		var spell_range = spell.get("range", 1)
+		var spell_range = _get_spell_ai_range(spell)
 		var targeting = spell.get("targeting", "single")
 
 		# Find valid target position
@@ -2993,7 +3022,7 @@ func _show_miss_text(attacker: Node, defender: Node) -> void:
 ## Return the AudioManager sound name for a unit's equipped weapon.
 ## Used for both player and AI attack sounds.
 func _get_attack_sound(unit: Node) -> String:
-	var weapon := unit.get_equipped_weapon() if unit.has_method("get_equipped_weapon") else {}
+	var weapon: Dictionary = unit.get_equipped_weapon() if unit.has_method("get_equipped_weapon") else {}
 	match weapon.get("type", "unarmed"):
 		"sword":   return "attack_sword"
 		"spear":   return "attack_sword"    # spears share the slashing sound

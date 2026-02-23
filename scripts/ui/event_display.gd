@@ -118,7 +118,9 @@ func create_choice_button(choice: Dictionary, availability: Dictionary) -> void:
 	button.disabled = not availability.available
 	
 	# Connect to choice handler
-	button.pressed.connect(func(): _on_choice_selected(choice))
+	button.pressed.connect(func():
+		AudioManager.play("ui_click")
+		_on_choice_selected(choice))
 	
 	# Add icon based on type
 	match choice.type:
@@ -188,6 +190,7 @@ func display_outcome(outcome: Dictionary) -> void:
 	result_panel.visible = true
 
 func _on_continue_button_pressed() -> void:
+	AudioManager.play("ui_click")
 	# Hide and notify parent (overworld) that the event is done
 	event_panel.visible = false
 	result_panel.visible = false

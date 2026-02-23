@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-02-22
+Last Updated: 2026-02-23
 
 ---
 
@@ -154,7 +154,11 @@ Roles to fulfill per realm (not specific object types):
 
 ### Event System Improvements
 - [ ] Event chains and prerequisites (see Map Interactibles above)
-- [ ] More events per realm (aim for 20+ per realm)
+- [x] Hell realm events: 26 total (18 original + 8 new: Ancient Stupa, Demon Checkpoint, Ice Oracle, Ghost Village, Lava Swimmer, Demon Dojo, Infernal Archive, Fire Pilgrim)
+- [ ] More hell events: continue adding until both zones feel dense and varied — aiming for ~15 events per zone (cold_hell and fire_hell each). Next batch ideas: bone arena, suffering sage, suspicious gift, ice demon toll (cold); pyromancer duel, demon marketplace, burning library, sinner gang (fire)
+- [ ] Category 2 traders for hell (Wretched Market, Infernal Forge, Bone Archer Camp, Mercy Ward, Brimstone Lab, Void Scribe's Den, Warden's Pit)
+- [ ] Category 3 event chains for hell (soul caravan ambush, devil deserter, contraband deal, chained pilgrim, rival party)
+- [ ] More events per realm (aim for 20+ per remaining realm)
 
 ### Camp Followers System
 - [ ] Non-combat companion data structure

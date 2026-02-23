@@ -2008,8 +2008,17 @@ func _use_scroll(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictiona
 	if spell.get("targeting", "single") == "self" and targets.is_empty():
 		targets.append(user)
 
-	# Scroll bonus (flat, no spellpower from caster)
-	var scroll_bonus = item.get("spell_bonus", 0)
+	# Baseline scroll power: equivalent to Focus 16 + max(5, spell level) per school
+	# This makes scrolls useful regardless of who casts them
+	var baseline_spellpower := 16
+	var spell_schools: Array = spell.get("schools", [])
+	var baseline_school_bonus := 0
+	for school in spell_schools:
+		var school_lower: String = str(school).to_lower()
+		var skill_name: String = school_lower + "_magic" if school_lower in ["earth", "water", "fire", "air", "space", "white", "black"] else school_lower
+		var min_skill_level := maxi(5, spell.get("level", 1))
+		baseline_school_bonus += min_skill_level * 2
+	var scroll_bonus = baseline_spellpower + baseline_school_bonus + item.get("spell_bonus", 0)
 
 	# Apply effects using existing spell effect system
 	var results: Array[Dictionary] = []
