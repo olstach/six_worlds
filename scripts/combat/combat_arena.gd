@@ -1665,6 +1665,9 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 			_log_message("%s attacks %s for %d damage!%s" % [
 				attacker.unit_name, defender.unit_name, result.damage, crit_text
 			])
+			AudioManager.play(_get_attack_sound(attacker))
+			if result.crit:
+				AudioManager.play("hit_crit", -3.0)
 			# Log weapon oil bonus damage
 			if result.has("oil_damage"):
 				_log_message("  +%d %s damage (oil)!" % [
@@ -1675,6 +1678,7 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 		else:
 			# Show miss/dodge/block floating text on defender
 			_show_miss_text(attacker, defender)
+			AudioManager.play("hit_miss", -3.0)
 			var cover_text = ""
 			if cover_data.get("has_cover", false):
 				cover_text = " [behind %s]" % cover_data.obstacle_name
@@ -1999,6 +2003,13 @@ func _on_spell_cast(caster: Node, spell: Dictionary, targets: Array, results: Ar
 	if caster.has_method("show_action_name"):
 		caster.show_action_name(spell_name)
 
+	# Cast sound: fire spells get a richer cast sound, everything else uses generic
+	var schools: Array = spell.get("schools", [])
+	if "Fire" in schools:
+		AudioManager.play("spell_cast_fire")
+	else:
+		AudioManager.play("spell_cast")
+
 	if targets.is_empty():
 		_log_message("%s casts %s!" % [caster.unit_name, spell_name])
 	else:
@@ -2008,27 +2019,33 @@ func _on_spell_cast(caster: Node, spell: Dictionary, targets: Array, results: Ar
 
 		_log_message("%s casts %s on %s!" % [caster.unit_name, spell_name, ", ".join(target_names)])
 
-		# Log individual effects
+		# Log individual effects and play impact sounds
 		for result in results:
 			var target = result.target
 			for effect in result.effects_applied:
 				match effect.type:
 					"damage":
 						_log_message("  %s takes %d %s damage!" % [target.unit_name, effect.amount, effect.element])
+						AudioManager.play(_get_spell_impact_sound(effect.element), -2.0)
 					"heal":
 						_log_message("  %s healed for %d!" % [target.unit_name, effect.amount])
+						AudioManager.play("heal", -3.0)
 					"buff":
 						_log_message("  %s gains %+d %s!" % [target.unit_name, effect.value, effect.stat])
+						AudioManager.play("buff_apply", -4.0)
 					"debuff":
 						_log_message("  %s suffers %d %s!" % [target.unit_name, effect.value, effect.stat])
+						AudioManager.play("debuff_apply", -4.0)
 					"status":
 						if effect.applied:
 							_log_message("  %s is now %s!" % [target.unit_name, effect.status])
+							AudioManager.play("debuff_apply", -4.0)
 							# Update target visuals to show status icon
 							if target.has_method("_update_visuals"):
 								target._update_visuals()
 					"revive":
 						_log_message("  %s is revived with %d HP!" % [target.unit_name, effect.hp])
+						AudioManager.play("heal")
 					"lifesteal":
 						_log_message("  %s drains %d life!" % [caster.unit_name, effect.amount])
 
@@ -2530,11 +2547,15 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 				if result.hit:
 					var ranged_text = " from range" if dist > 1 else ""
 					_log_message("%s attacks %s%s for %d damage!" % [unit.unit_name, nearest.unit_name, ranged_text, result.damage])
+					AudioManager.play(_get_attack_sound(unit))
+					if result.crit:
+						AudioManager.play("hit_crit", -3.0)
 					if result.has("oil_damage"):
 						_log_message("  +%d %s damage (oil)!" % [
 							result.oil_damage, result.get("oil_damage_type", "").capitalize()])
 				else:
 					_show_miss_text(unit, nearest)
+					AudioManager.play("hit_miss", -3.0)
 					_log_message("%s attacks %s - MISS!" % [unit.unit_name, nearest.unit_name])
 
 				if not nearest.is_alive():
@@ -2961,6 +2982,31 @@ func _show_miss_text(attacker: Node, defender: Node) -> void:
 		defender.show_combat_text("Dodge!", Color(0.6, 0.85, 1.0))
 	else:
 		defender.show_combat_text("Miss!", Color(0.8, 0.8, 0.8))
+
+
+## Return the AudioManager sound name for a unit's equipped weapon.
+## Used for both player and AI attack sounds.
+func _get_attack_sound(unit: Node) -> String:
+	var weapon := unit.get_equipped_weapon() if unit.has_method("get_equipped_weapon") else {}
+	match weapon.get("type", "unarmed"):
+		"sword":   return "attack_sword"
+		"spear":   return "attack_sword"    # spears share the slashing sound
+		"dagger":  return "attack_dagger"
+		"axe":     return "attack_axe"
+		"mace":    return "attack_mace"
+		"bow", "crossbow": return "attack_ranged"
+		"unarmed": return "attack_unarmed"
+		"fist":    return "attack_martial_arts"
+		_:         return "attack_generic"
+
+
+## Return the AudioManager impact sound for a spell damage element.
+func _get_spell_impact_sound(element: String) -> String:
+	match element:
+		"fire":                          return "spell_impact_fire"
+		"lightning", "electric", "air":  return "spell_impact_electric"
+		"piercing":                      return "spell_impact_pierce"
+		_:                               return "spell_impact_generic"
 
 
 ## Fade to black then change scene. Used for death → bardo transition.

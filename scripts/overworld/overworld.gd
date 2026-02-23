@@ -391,6 +391,17 @@ func _on_pickup_collected(obj: Dictionary, rewards: Array) -> void:
 			_:
 				pass  # karma and other silent rewards don't show in toast
 
+	# Play a contextual pickup sound based on what was found
+	var is_cursed := rewards.any(func(r): return r.get("type", "") == "damage")
+	if is_cursed:
+		AudioManager.play("pickup_cursed")
+	elif rewards.any(func(r): return r.get("type", "") in ["item", "item_random"]):
+		AudioManager.play("pickup_item")
+	elif rewards.any(func(r): return r.get("type", "") == "gold"):
+		AudioManager.play("pickup_gold")
+	elif rewards.any(func(r): return r.get("type", "") == "buff"):
+		AudioManager.play("pickup_buff")
+
 	var msg: String = obj.get("name", "Pickup")
 	if not flavor.is_empty():
 		msg += "\n" + flavor
