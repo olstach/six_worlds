@@ -187,6 +187,7 @@ Roles to fulfill per realm (not specific object types):
 - [ ] More scroll varieties (AoE scrolls, buff scrolls)
 - [ ] **Magic foci**: equippable items that boost spellpower/mana cost reduction for one or more schools (e.g., a Fire Crystal boosts fire_magic; a Void Shard boosts black_magic + space_magic). Sold at magic shops. Needs new item slot and CharacterSystem integration.
 - [ ] **Cursed items**: equipment that applies a passive debuff alongside its stats. Player may not know an item is cursed until equipped (reveal on ID or Alchemy skill check). Separate from cursed terrain/simples.
+- [ ] **Talisman effects audit**: some talismans have no stat effects (e.g. found in play). All talismans need mana_cost_reduction and/or spellpower values filled in items.json before the item system is complete.
 
 ### UI Improvements
 - [ ] Tooltip system expansion
@@ -214,10 +215,45 @@ Roles to fulfill per realm (not specific object types):
 - [ ] Meta-progression (affinities, persistent upgrades across runs)
 
 ### Audio
+- [x] SFX system wired (AudioManager autoload, 28 sounds × 6 variants from Helton Yan Pixel Combat pack)
 - [ ] Background music per realm
 - [ ] Combat music
-- [ ] UI sound effects
-- [ ] Spell/ability sounds
+- [ ] UI click sounds wired to buttons (defined in SOUND_MAP but not yet connected)
+- [ ] More spell school variety (currently fire vs generic cast only)
+- [ ] Active skill sounds
+- [ ] Death / unit kill sound
+
+#### SFX Assignment Reference
+All sounds defined in `scripts/autoload/audio_manager.gd` → `SOUND_MAP`.
+Change any prefix string there to swap a sound without touching other code.
+Files live in `resources/audio/sfx/` (6 variants each, picked randomly).
+
+| Event | Sound file prefix |
+|---|---|
+| Sword / spear hit | `DSGNMisc_MELEE-Sword Slash` |
+| Dagger hit | `DSGNMisc_MELEE-Bit Sword` |
+| Axe hit | `DSGNImpt_MELEE-Homerunner` |
+| Mace hit | `FGHTImpt_HIT-Strong Smack` |
+| Unarmed hit | `DSGNImpt_MELEE-Hollow Punch` |
+| Martial arts hit | `DSGNImpt_MELEE-Magic Kick` |
+| Bow / crossbow | `DSGNMisc_PROJECTILE-Hollow Point` |
+| Critical strike stinger | `DSGNMisc_SKILL IMPACT-Critical Strike` |
+| Miss / dodge | `DSGNMisc_MOVEMENT-Phase Swish` |
+| Spell cast (generic) | `MAGSpel_CAST-Sphere Up` |
+| Spell cast (fire school) | `MAGSpel_CAST-Aura Rise` |
+| Fire spell impact | `DSGNImpt_EXPLOSION-Fire Hit` |
+| Lightning / air impact | `DSGNImpt_EXPLOSION-Electric Hit` |
+| Piercing spell impact | `DSGNImpt_EXPLOSION-Mecha Piercing Punch` |
+| Generic magic impact | `DSGNMisc_HIT-Spell Hit` |
+| Buff applied | `DSGNSynth_BUFF-Generic Buff` |
+| Debuff / status | `DSGNSynth_BUFF-Enemy Debuff` |
+| Heal received | `MAGAngl_BUFF-Simple Heal` |
+| Gold pickup | `DSGNTonl_USABLE-Coin Toss` |
+| Item pickup | `DSGNTonl_USABLE-Magic Item` |
+| Buff pickup | `DSGNTonl_USABLE-Coin Spend` |
+| Cursed pickup | `DSGNSynth_BUFF-Failed Buff` |
+| UI click (unwired) | `UIClick_INTERFACE-Positive Click` |
+| UI denied (unwired) | `UIMisc_INTERFACE-Denied` |
 
 ### Visual Assets
 - [ ] Character portraits
