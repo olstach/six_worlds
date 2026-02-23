@@ -258,6 +258,7 @@ func _create_attribute_row(attr_key: String, value: int) -> HBoxContainer:
 func _on_attribute_upgrade_pressed(attr_key: String) -> void:
 	var player = CharacterSystem.get_player()
 	if not player.is_empty():
+		AudioManager.play("buff_stats_up")
 		CharacterSystem.increase_attribute(player, attr_key)
 
 func _update_derived_stats(character: Dictionary) -> void:
@@ -465,13 +466,16 @@ func _on_skill_pressed(skill_id: String) -> void:
 	var current_level = player.get("skills", {}).get(skill_id, 0)
 
 	if current_level >= CharacterSystem.SKILL_MAX_LEVEL:
+		AudioManager.play("ui_denied")
 		return
 
 	var cost = CharacterSystem.SKILL_COSTS[current_level + 1]
 
 	if player.get("xp", 0) < cost:
+		AudioManager.play("ui_denied")
 		return
 
+	AudioManager.play("buff_stats_up")
 	CharacterSystem.upgrade_skill(player, skill_id)
 
 # ============================================
@@ -1102,6 +1106,7 @@ func _on_perk_selected(perk_id: String) -> void:
 	if pending_perk_character.is_empty():
 		return
 
+	AudioManager.play("buff_apply")
 	PerkSystem.grant_perk(pending_perk_character, perk_id)
 	pending_perk_character = {}
 

@@ -121,7 +121,7 @@ func _ready() -> void:
 	EventManager.shop_requested.connect(_on_event_shop_requested)
 
 	# Connect char sheet button and visibility sync
-	char_sheet_button.pressed.connect(_toggle_char_sheet)
+	char_sheet_button.pressed.connect(func(): _open_char_sheet_to_tab(0))
 	equipment_button.pressed.connect(func(): _open_char_sheet_to_tab(1))
 	party_button.pressed.connect(func(): _open_char_sheet_to_tab(2))
 	spellbook_button.pressed.connect(func(): _open_char_sheet_to_tab(3))
@@ -480,6 +480,7 @@ func _toggle_char_sheet() -> void:
 
 ## Open the character sheet to a specific tab. If already on that tab, toggle closed.
 func _open_char_sheet_to_tab(tab_idx: int) -> void:
+	AudioManager.play("ui_click")
 	if _char_sheet_open and char_sheet.get_current_tab() == tab_idx:
 		# Same tab — toggle closed
 		_toggle_char_sheet()

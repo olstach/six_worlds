@@ -2479,8 +2479,14 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 	var used_consumable_this_turn = false
 	var used_active_skill_this_turn = false
 
-	# Use all actions
+	# Use all actions (safety counter prevents infinite loops if an action path
+	# fails to consume an action — max 20 iterations before forcing turn end)
+	var _safety = 0
 	while CombatManager.can_act(1) and CombatManager.get_current_unit() == unit:
+		_safety += 1
+		if _safety > 20:
+			push_warning("AI safety limit hit for %s — ending turn" % unit.unit_name)
+			break
 		var dist = _grid_distance(unit.grid_position, nearest.grid_position)
 
 		# --- PRIORITY 1: Emergency consumable (health potion at low HP) ---
