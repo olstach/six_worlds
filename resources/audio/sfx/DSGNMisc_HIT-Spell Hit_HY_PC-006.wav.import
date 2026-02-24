@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bosi64xr7s7ng"
+path="res://.godot/imported/DSGNMisc_HIT-Spell Hit_HY_PC-006.wav-6c5dc400cb9509021065c9c9c3ef99ee.sample"
+
+[deps]
+
+source_file="res://resources/audio/sfx/DSGNMisc_HIT-Spell Hit_HY_PC-006.wav"
+dest_files=["res://.godot/imported/DSGNMisc_HIT-Spell Hit_HY_PC-006.wav-6c5dc400cb9509021065c9c9c3ef99ee.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

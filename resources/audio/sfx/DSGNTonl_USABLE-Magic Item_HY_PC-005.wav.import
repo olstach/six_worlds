@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://b100ffui5bpmq"
+path="res://.godot/imported/DSGNTonl_USABLE-Magic Item_HY_PC-005.wav-9c3f31ad3a94de345b14d9aa72a130c4.sample"
+
+[deps]
+
+source_file="res://resources/audio/sfx/DSGNTonl_USABLE-Magic Item_HY_PC-005.wav"
+dest_files=["res://.godot/imported/DSGNTonl_USABLE-Magic Item_HY_PC-005.wav-9c3f31ad3a94de345b14d9aa72a130c4.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

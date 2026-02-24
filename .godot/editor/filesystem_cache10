@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1771186076
+::res://::1771882733
 CLAUDE.md::TextFile::-1::1770393948::0::1::::<><><>0<>0<><>::
 default_env.tres::Environment::-1::1769795398::0::1::::<><><>0<>0<><>::
 EVENT_SYSTEM.md::TextFile::-1::1769791566::0::1::::<><><>0<>0<><>::
@@ -9,36 +9,209 @@ PERKS.md::TextFile::-1::1770476331::0::1::::<><><>0<>0<><>::
 README.md::TextFile::-1::1770059807::0::1::::<><><>0<>0<><>::
 six worlds - spells.md::TextFile::-1::1769900036::0::1::::<><><>0<>0<><>::
 TEST_FILE.txt::TextFile::-1::1769796472::0::1::::<><><>0<>0<><>::
-TODO.md::TextFile::-1::1771167928::0::1::::<><><>0<>0<><>::
+TODO.md::TextFile::-1::1771866135::0::1::::<><><>0<>0<><>::
 updated_spell_list.md::TextFile::-1::1769900238::0::1::::<><><>0<>0<><>::
 ::res://assets/::1769794779
 ::res://assets/audio/::1769794779
 ::res://assets/sprites/::1769794773
-::res://resources/::1769787373
-::res://resources/data/::1771169095
+::res://resources/::1771865488
+::res://resources/audio/::1771865488
+::res://resources/audio/sfx/::1771868524
+buff_upgrade_bird.wav::AudioStreamWAV::1131304674045546167::1771868479::1771868524::1::::<><><>0<>0<>d9c68ed7073146b91b4852043ba84f31<>res://.godot/imported/buff_upgrade_bird.wav-9314f353132c505450588f315fd0699a.sample::
+DSGNImpt_EXPLOSION-Electric Hit_HY_PC-001.wav::AudioStreamWAV::5991472559540363200::1771865488::1771866133::1::::<><><>0<>0<>3af4343b830d777db4e19dafeaacde2d<>res://.godot/imported/DSGNImpt_EXPLOSION-Electric Hit_HY_PC-001.wav-c668456c241636f9a844f177c6915189.sample::
+DSGNImpt_EXPLOSION-Electric Hit_HY_PC-002.wav::AudioStreamWAV::2867501703088865269::1771865488::1771866133::1::::<><><>0<>0<>41121fd425b5f6d9275f623b2f830d90<>res://.godot/imported/DSGNImpt_EXPLOSION-Electric Hit_HY_PC-002.wav-7241891a04508dd8f1c2c5ccf3183225.sample::
+DSGNImpt_EXPLOSION-Electric Hit_HY_PC-003.wav::AudioStreamWAV::6013650032169358717::1771865488::1771866133::1::::<><><>0<>0<>4c44bc3d8bbe519213ebfeb54853f7f7<>res://.godot/imported/DSGNImpt_EXPLOSION-Electric Hit_HY_PC-003.wav-a6dfe0a515b6ca5819ed0b27b3d8e875.sample::
+DSGNImpt_EXPLOSION-Electric Hit_HY_PC-004.wav::AudioStreamWAV::7739790957171298093::1771865488::1771866133::1::::<><><>0<>0<>b61de1fe41a25bd1957df692aa5d56da<>res://.godot/imported/DSGNImpt_EXPLOSION-Electric Hit_HY_PC-004.wav-c17e3f516534196c3fa15b314c801ddb.sample::
+DSGNImpt_EXPLOSION-Electric Hit_HY_PC-005.wav::AudioStreamWAV::8192372227470423117::1771865488::1771866133::1::::<><><>0<>0<>801ce7d748d7a94c11eae20874ab9c10<>res://.godot/imported/DSGNImpt_EXPLOSION-Electric Hit_HY_PC-005.wav-92997b52a18bd279bca7b77299ae1750.sample::
+DSGNImpt_EXPLOSION-Electric Hit_HY_PC-006.wav::AudioStreamWAV::3642685301683444700::1771865488::1771866133::1::::<><><>0<>0<>1b47c76e88fbdcdc08f92608de72babb<>res://.godot/imported/DSGNImpt_EXPLOSION-Electric Hit_HY_PC-006.wav-c54aaf8827f83f03aef96e5991687af8.sample::
+DSGNImpt_EXPLOSION-Fire Hit_HY_PC-001.wav::AudioStreamWAV::6469030058981214954::1771865488::1771866133::1::::<><><>0<>0<>a2bbfb826a23a265f87a7031206b31b4<>res://.godot/imported/DSGNImpt_EXPLOSION-Fire Hit_HY_PC-001.wav-a685f727f031ae861905294396506acc.sample::
+DSGNImpt_EXPLOSION-Fire Hit_HY_PC-002.wav::AudioStreamWAV::7595644275299680284::1771865488::1771866133::1::::<><><>0<>0<>6ef50e4a88dff1ab201988b4fa066ee9<>res://.godot/imported/DSGNImpt_EXPLOSION-Fire Hit_HY_PC-002.wav-d086d863feff70b1b3ba4280f914b673.sample::
+DSGNImpt_EXPLOSION-Fire Hit_HY_PC-003.wav::AudioStreamWAV::4792592358004494133::1771865488::1771866133::1::::<><><>0<>0<>6374f82ef9321841cfb78a196822017f<>res://.godot/imported/DSGNImpt_EXPLOSION-Fire Hit_HY_PC-003.wav-a9c6b0cc032120c1241bf409f5b663b4.sample::
+DSGNImpt_EXPLOSION-Fire Hit_HY_PC-004.wav::AudioStreamWAV::5869782408220220756::1771865488::1771866133::1::::<><><>0<>0<>42d5006fb522ede2821445dc349fc0ac<>res://.godot/imported/DSGNImpt_EXPLOSION-Fire Hit_HY_PC-004.wav-4986d9a43d3388a6d06409e1d86b20f9.sample::
+DSGNImpt_EXPLOSION-Fire Hit_HY_PC-005.wav::AudioStreamWAV::8656245729933447008::1771865488::1771866133::1::::<><><>0<>0<>4d481df8ff7dc0b2c7b3cbb434058807<>res://.godot/imported/DSGNImpt_EXPLOSION-Fire Hit_HY_PC-005.wav-567f35a101ec9d8bc34a1ac8f81b1678.sample::
+DSGNImpt_EXPLOSION-Fire Hit_HY_PC-006.wav::AudioStreamWAV::6735689885432814916::1771865488::1771866133::1::::<><><>0<>0<>a49e20f34b1912ab34eb641621b0fbd2<>res://.godot/imported/DSGNImpt_EXPLOSION-Fire Hit_HY_PC-006.wav-25d5e82e3192e1986aa54af8d2a2c062.sample::
+DSGNImpt_EXPLOSION-Mecha Piercing Punch_HY_PC-001.wav::AudioStreamWAV::821554932031559587::1771865488::1771866133::1::::<><><>0<>0<>047e2693de33a566bb49da4ff9bdaa61<>res://.godot/imported/DSGNImpt_EXPLOSION-Mecha Piercing Punch_HY_PC-001.wav-4c39a5040835d138cb1c13964e88c95d.sample::
+DSGNImpt_EXPLOSION-Mecha Piercing Punch_HY_PC-002.wav::AudioStreamWAV::6279168974818963636::1771865488::1771866133::1::::<><><>0<>0<>31f8851bcd4cb94810e1cf0142a5e809<>res://.godot/imported/DSGNImpt_EXPLOSION-Mecha Piercing Punch_HY_PC-002.wav-10d4ce7a8f2a17548a296c2f6a14216a.sample::
+DSGNImpt_EXPLOSION-Mecha Piercing Punch_HY_PC-003.wav::AudioStreamWAV::6718161591790581439::1771865488::1771866133::1::::<><><>0<>0<>8b531ea246dbb5fd28246b93714625dd<>res://.godot/imported/DSGNImpt_EXPLOSION-Mecha Piercing Punch_HY_PC-003.wav-bbb5b6cf94efd09040a98abf54d449b1.sample::
+DSGNImpt_EXPLOSION-Mecha Piercing Punch_HY_PC-004.wav::AudioStreamWAV::8329425571978517972::1771865488::1771866133::1::::<><><>0<>0<>d5b5e1afa7ed892b52fb1957e68a31a7<>res://.godot/imported/DSGNImpt_EXPLOSION-Mecha Piercing Punch_HY_PC-004.wav-c0f399896dec9854d17cf38aa872e9de.sample::
+DSGNImpt_EXPLOSION-Mecha Piercing Punch_HY_PC-005.wav::AudioStreamWAV::7948702527653936557::1771865488::1771866133::1::::<><><>0<>0<>bd8f9b810940c76a95bfefc7c7ff7ec7<>res://.godot/imported/DSGNImpt_EXPLOSION-Mecha Piercing Punch_HY_PC-005.wav-5c9795acedcc040602650db3b37c7975.sample::
+DSGNImpt_EXPLOSION-Mecha Piercing Punch_HY_PC-006.wav::AudioStreamWAV::4069970405026471652::1771865488::1771866133::1::::<><><>0<>0<>102308ffa5b563b3999fe5c67e0cfb91<>res://.godot/imported/DSGNImpt_EXPLOSION-Mecha Piercing Punch_HY_PC-006.wav-143fab368f2b4cce557df74c3ecff2a6.sample::
+DSGNImpt_EXPLOSION-Thud_HY_PC-001.wav::AudioStreamWAV::7720243594674292249::1771865488::1771866133::1::::<><><>0<>0<>39c15d6ea809b7c4e4e2b5863012667c<>res://.godot/imported/DSGNImpt_EXPLOSION-Thud_HY_PC-001.wav-1316af7c43a57767426cf2b155f0f647.sample::
+DSGNImpt_EXPLOSION-Thud_HY_PC-002.wav::AudioStreamWAV::8855880838524880085::1771865488::1771866133::1::::<><><>0<>0<>5b190fab868ba3dfa9e970d9b214defd<>res://.godot/imported/DSGNImpt_EXPLOSION-Thud_HY_PC-002.wav-50de97ff25f7b96260b70f3bbc71c01f.sample::
+DSGNImpt_EXPLOSION-Thud_HY_PC-003.wav::AudioStreamWAV::3567971619483808612::1771865488::1771866133::1::::<><><>0<>0<>bb47b2aee6a900eef3bff1595fd87af9<>res://.godot/imported/DSGNImpt_EXPLOSION-Thud_HY_PC-003.wav-283ca46ae9d00003c516386aa19f7105.sample::
+DSGNImpt_EXPLOSION-Thud_HY_PC-004.wav::AudioStreamWAV::1423072488451936648::1771865488::1771866133::1::::<><><>0<>0<>be034d2a076a5744514a33ef0e495bf7<>res://.godot/imported/DSGNImpt_EXPLOSION-Thud_HY_PC-004.wav-16c260c71cedeab73f7b4673927fd657.sample::
+DSGNImpt_EXPLOSION-Thud_HY_PC-005.wav::AudioStreamWAV::6535325612713514793::1771865488::1771866133::1::::<><><>0<>0<>576f0aeca145cb5be099ba82d7715e93<>res://.godot/imported/DSGNImpt_EXPLOSION-Thud_HY_PC-005.wav-5770fffbc90da286926164273af1b015.sample::
+DSGNImpt_EXPLOSION-Thud_HY_PC-006.wav::AudioStreamWAV::2694878134032871316::1771865488::1771866133::1::::<><><>0<>0<>5e6a9fc7db2fb1831f912b9bae125b99<>res://.godot/imported/DSGNImpt_EXPLOSION-Thud_HY_PC-006.wav-73c474c04944de021ed79c11815442a9.sample::
+DSGNImpt_MELEE-Hollow Punch_HY_PC-001.wav::AudioStreamWAV::3667393182698106465::1771865488::1771866133::1::::<><><>0<>0<>41923076b7fef702b18301bf1f43beb6<>res://.godot/imported/DSGNImpt_MELEE-Hollow Punch_HY_PC-001.wav-a581e5153cfbfa6ad7825a7779c5cbb3.sample::
+DSGNImpt_MELEE-Hollow Punch_HY_PC-002.wav::AudioStreamWAV::2364288293400164852::1771865488::1771866133::1::::<><><>0<>0<>b14a61dd7c9eda799214dd12552ae83f<>res://.godot/imported/DSGNImpt_MELEE-Hollow Punch_HY_PC-002.wav-347aa3a0e221145fb0f5d205db5c50a7.sample::
+DSGNImpt_MELEE-Hollow Punch_HY_PC-003.wav::AudioStreamWAV::7654094567021649207::1771865488::1771866133::1::::<><><>0<>0<>b8dba2d75790b1787fa89b4c10ffb358<>res://.godot/imported/DSGNImpt_MELEE-Hollow Punch_HY_PC-003.wav-003fe3028f1b02edfbee7bff8c6aadb5.sample::
+DSGNImpt_MELEE-Hollow Punch_HY_PC-004.wav::AudioStreamWAV::527716496822460713::1771865488::1771866133::1::::<><><>0<>0<>a3bd861c7b2b69150b6f5da713ffaba4<>res://.godot/imported/DSGNImpt_MELEE-Hollow Punch_HY_PC-004.wav-14352e87175be6e5157eb2f965185838.sample::
+DSGNImpt_MELEE-Hollow Punch_HY_PC-005.wav::AudioStreamWAV::5704047650220050685::1771865488::1771866133::1::::<><><>0<>0<>aab7994343dad1aa5d279f44057dda98<>res://.godot/imported/DSGNImpt_MELEE-Hollow Punch_HY_PC-005.wav-5826cbb2f6888b1a2beb45241b1182e8.sample::
+DSGNImpt_MELEE-Hollow Punch_HY_PC-006.wav::AudioStreamWAV::6904564364466336071::1771865488::1771866133::1::::<><><>0<>0<>2eb508a58f653947bd70a3925a76f892<>res://.godot/imported/DSGNImpt_MELEE-Hollow Punch_HY_PC-006.wav-f76f864eddfe9d42d06fc4da069dfe8a.sample::
+DSGNImpt_MELEE-Homerunner_HY_PC-001.wav::AudioStreamWAV::1209976962806426398::1771865488::1771866133::1::::<><><>0<>0<>2476f342a5921646b73e52203ecdb1fa<>res://.godot/imported/DSGNImpt_MELEE-Homerunner_HY_PC-001.wav-c289f5d76c4bc292d24f939d1301eac1.sample::
+DSGNImpt_MELEE-Homerunner_HY_PC-002.wav::AudioStreamWAV::3502507834767135475::1771865488::1771866133::1::::<><><>0<>0<>f17c4e836158c951353015c398c1d954<>res://.godot/imported/DSGNImpt_MELEE-Homerunner_HY_PC-002.wav-08f84098ae14bb1d04565e8fb5c3b709.sample::
+DSGNImpt_MELEE-Homerunner_HY_PC-003.wav::AudioStreamWAV::2744703307233683549::1771865488::1771866133::1::::<><><>0<>0<>ea2e69cb78489dacf1fce5ab36b287fa<>res://.godot/imported/DSGNImpt_MELEE-Homerunner_HY_PC-003.wav-580a5eff81a81c97ec73ea1311578740.sample::
+DSGNImpt_MELEE-Homerunner_HY_PC-004.wav::AudioStreamWAV::1231528453214764717::1771865488::1771866133::1::::<><><>0<>0<>e541801b8ae34a338e9e969dc214537b<>res://.godot/imported/DSGNImpt_MELEE-Homerunner_HY_PC-004.wav-98e5ca71387ee3093717c0e491956098.sample::
+DSGNImpt_MELEE-Homerunner_HY_PC-005.wav::AudioStreamWAV::3672557700000078716::1771865488::1771866133::1::::<><><>0<>0<>b3a36f653c764751e4bce7312d0baadc<>res://.godot/imported/DSGNImpt_MELEE-Homerunner_HY_PC-005.wav-897e1b678947ae90c480c4c19059f91e.sample::
+DSGNImpt_MELEE-Homerunner_HY_PC-006.wav::AudioStreamWAV::6686815664232175166::1771865488::1771866133::1::::<><><>0<>0<>9ef9f7377fe1135862c9d57a67643266<>res://.godot/imported/DSGNImpt_MELEE-Homerunner_HY_PC-006.wav-d880774ac6b71a313c8f6bdcf1aab261.sample::
+DSGNImpt_MELEE-Magic Kick_HY_PC-001.wav::AudioStreamWAV::6537470686853315258::1771865488::1771866133::1::::<><><>0<>0<>c1ab8611df1846c62b4001a1e160392c<>res://.godot/imported/DSGNImpt_MELEE-Magic Kick_HY_PC-001.wav-c9e8d1e76b53959548f4bdcc6c2c3cc2.sample::
+DSGNImpt_MELEE-Magic Kick_HY_PC-002.wav::AudioStreamWAV::7749409761835620835::1771865488::1771866133::1::::<><><>0<>0<>a906b1e38de7662c244283066326e1d7<>res://.godot/imported/DSGNImpt_MELEE-Magic Kick_HY_PC-002.wav-b63691285de50c3bf15d70a45a4d2747.sample::
+DSGNImpt_MELEE-Magic Kick_HY_PC-003.wav::AudioStreamWAV::9045975915102676974::1771865488::1771866133::1::::<><><>0<>0<>a6efa03b334dcfed0900543c218140b3<>res://.godot/imported/DSGNImpt_MELEE-Magic Kick_HY_PC-003.wav-2217bd2caedca1c62bcbe71352f11dd1.sample::
+DSGNImpt_MELEE-Magic Kick_HY_PC-004.wav::AudioStreamWAV::7463327816411983100::1771865488::1771866133::1::::<><><>0<>0<>c62f903e2a880b105ab9bf25a232893c<>res://.godot/imported/DSGNImpt_MELEE-Magic Kick_HY_PC-004.wav-246be6305b3d5c33a679d167c54ddcd7.sample::
+DSGNImpt_MELEE-Magic Kick_HY_PC-005.wav::AudioStreamWAV::3632736554483143258::1771865488::1771866133::1::::<><><>0<>0<>e00cef9e29bcced6c7e5e4dc42d771f6<>res://.godot/imported/DSGNImpt_MELEE-Magic Kick_HY_PC-005.wav-23f88dbd5bd9ac8b3fe768772e3ca162.sample::
+DSGNImpt_MELEE-Magic Kick_HY_PC-006.wav::AudioStreamWAV::3159316868108431473::1771865488::1771866133::1::::<><><>0<>0<>b473865a1f02b93fdd99b0f366f9c45f<>res://.godot/imported/DSGNImpt_MELEE-Magic Kick_HY_PC-006.wav-6e2b282c6ad3cbc9ad8219c48fa186e8.sample::
+DSGNMisc_HIT-Noisy Hit_HY_PC-001.wav::AudioStreamWAV::3366892278693779711::1771865488::1771866133::1::::<><><>0<>0<>18d27a280c9671cab71ab5d69117c2e6<>res://.godot/imported/DSGNMisc_HIT-Noisy Hit_HY_PC-001.wav-5b0b61f5bd91a2a5d3a2af194c15a6e7.sample::
+DSGNMisc_HIT-Noisy Hit_HY_PC-002.wav::AudioStreamWAV::858454249239548156::1771865488::1771866133::1::::<><><>0<>0<>1924fe1a0d2850d7db8bf931775461f5<>res://.godot/imported/DSGNMisc_HIT-Noisy Hit_HY_PC-002.wav-167c1bb2ae45114e5545120cdafb8267.sample::
+DSGNMisc_HIT-Noisy Hit_HY_PC-003.wav::AudioStreamWAV::6877325555779129564::1771865488::1771866133::1::::<><><>0<>0<>a6cb76090c6df76c09c2ed44db37a475<>res://.godot/imported/DSGNMisc_HIT-Noisy Hit_HY_PC-003.wav-0f036320c29a25045efb32befb6519a8.sample::
+DSGNMisc_HIT-Noisy Hit_HY_PC-004.wav::AudioStreamWAV::886034706582755101::1771865488::1771866133::1::::<><><>0<>0<>ecb8d0497dd93d6b0e4bf1a44486f6c7<>res://.godot/imported/DSGNMisc_HIT-Noisy Hit_HY_PC-004.wav-1acae8f530d36a6c5e0109ed966aa53f.sample::
+DSGNMisc_HIT-Noisy Hit_HY_PC-005.wav::AudioStreamWAV::5649810791455936232::1771865488::1771866133::1::::<><><>0<>0<>e132f676cdd0cf461a5c83abf2bd96d4<>res://.godot/imported/DSGNMisc_HIT-Noisy Hit_HY_PC-005.wav-fd7c09745c1dc9dfdd0774632919f245.sample::
+DSGNMisc_HIT-Noisy Hit_HY_PC-006.wav::AudioStreamWAV::459388428637903374::1771865488::1771866133::1::::<><><>0<>0<>f615b9978e2401afe6510630a2bb7774<>res://.godot/imported/DSGNMisc_HIT-Noisy Hit_HY_PC-006.wav-94f0b648b14fe4fc9f1ea7b2d13cf376.sample::
+DSGNMisc_HIT-Spell Hit_HY_PC-001.wav::AudioStreamWAV::2076579790952649352::1771865488::1771866133::1::::<><><>0<>0<>539d5a23d63746bfba0eb87e8da74dc9<>res://.godot/imported/DSGNMisc_HIT-Spell Hit_HY_PC-001.wav-382483aa77ae52df72d38b7061f4539c.sample::
+DSGNMisc_HIT-Spell Hit_HY_PC-002.wav::AudioStreamWAV::410903783313782791::1771865488::1771866133::1::::<><><>0<>0<>e22f175b3d7ec2148308164cd6df4d50<>res://.godot/imported/DSGNMisc_HIT-Spell Hit_HY_PC-002.wav-5f651c2d6be543b1973f5c58d8b6c323.sample::
+DSGNMisc_HIT-Spell Hit_HY_PC-003.wav::AudioStreamWAV::8399162268000657886::1771865488::1771866133::1::::<><><>0<>0<>4b6f17f4463929faef5d1a9ab429e633<>res://.godot/imported/DSGNMisc_HIT-Spell Hit_HY_PC-003.wav-22c5b32ae2a132fef2ec0b442f310f5a.sample::
+DSGNMisc_HIT-Spell Hit_HY_PC-004.wav::AudioStreamWAV::3750480601074916851::1771865488::1771866133::1::::<><><>0<>0<>10a84f3d08b59daba74503ba01ab6311<>res://.godot/imported/DSGNMisc_HIT-Spell Hit_HY_PC-004.wav-9a60b3614d019eadbe8343b4d6312393.sample::
+DSGNMisc_HIT-Spell Hit_HY_PC-005.wav::AudioStreamWAV::8984495820090080673::1771865488::1771866133::1::::<><><>0<>0<>8ccddf5c895b619d123b6ce696e217b8<>res://.godot/imported/DSGNMisc_HIT-Spell Hit_HY_PC-005.wav-f80401c43d1af30ea3b153c966e2439c.sample::
+DSGNMisc_HIT-Spell Hit_HY_PC-006.wav::AudioStreamWAV::3406765949275379504::1771865488::1771866133::1::::<><><>0<>0<>458e3cfc0e9be786e539618f014dc4e1<>res://.godot/imported/DSGNMisc_HIT-Spell Hit_HY_PC-006.wav-6c5dc400cb9509021065c9c9c3ef99ee.sample::
+DSGNMisc_MELEE-Bit Sword_HY_PC-001.wav::AudioStreamWAV::3080941473512716325::1771865488::1771866133::1::::<><><>0<>0<>b915e807ee748ed88528590ef769ebde<>res://.godot/imported/DSGNMisc_MELEE-Bit Sword_HY_PC-001.wav-60989af1f921ae31bb5aa08350f7f595.sample::
+DSGNMisc_MELEE-Bit Sword_HY_PC-002.wav::AudioStreamWAV::5208524309750501045::1771865488::1771866133::1::::<><><>0<>0<>39b6c6ef0e34183600f12b2319940ec7<>res://.godot/imported/DSGNMisc_MELEE-Bit Sword_HY_PC-002.wav-534ce5fe8e4217e64c7a54a9b11e62a0.sample::
+DSGNMisc_MELEE-Bit Sword_HY_PC-003.wav::AudioStreamWAV::5690955070398395921::1771865488::1771866133::1::::<><><>0<>0<>e6148bd23c3b5355a9a4e6dc22df1df9<>res://.godot/imported/DSGNMisc_MELEE-Bit Sword_HY_PC-003.wav-22c8e2e83d04ed9720496337ce62fca6.sample::
+DSGNMisc_MELEE-Bit Sword_HY_PC-004.wav::AudioStreamWAV::8888119770987396411::1771865488::1771866133::1::::<><><>0<>0<>6ee1f495542e236ab627489963266d21<>res://.godot/imported/DSGNMisc_MELEE-Bit Sword_HY_PC-004.wav-d3c406a93fab3204f451054370694345.sample::
+DSGNMisc_MELEE-Bit Sword_HY_PC-005.wav::AudioStreamWAV::7166428506258721276::1771865488::1771866133::1::::<><><>0<>0<>835ad1d953df02bacd06bc0aa778f4eb<>res://.godot/imported/DSGNMisc_MELEE-Bit Sword_HY_PC-005.wav-dacce78031894dc4e4f807621f176fe2.sample::
+DSGNMisc_MELEE-Bit Sword_HY_PC-006.wav::AudioStreamWAV::7961375665681613037::1771865488::1771866133::1::::<><><>0<>0<>8a70a7e449f3d99a840e28b0e6e25c26<>res://.godot/imported/DSGNMisc_MELEE-Bit Sword_HY_PC-006.wav-db9174546d41822e0e693c68f0ad8db2.sample::
+DSGNMisc_MELEE-Sword Slash_HY_PC-001.wav::AudioStreamWAV::2355986628470075572::1771865488::1771866133::1::::<><><>0<>0<>65c1ac7dd0f063a4bd71bcbb08e46347<>res://.godot/imported/DSGNMisc_MELEE-Sword Slash_HY_PC-001.wav-e25a78c2d01613c17a3d65cc4deb3bfc.sample::
+DSGNMisc_MELEE-Sword Slash_HY_PC-002.wav::AudioStreamWAV::8749548961613163916::1771865488::1771866133::1::::<><><>0<>0<>573025f435cdd3be92f3e6823c4e37b9<>res://.godot/imported/DSGNMisc_MELEE-Sword Slash_HY_PC-002.wav-7e03e811a8d92d897a5b98a61a7aab13.sample::
+DSGNMisc_MELEE-Sword Slash_HY_PC-003.wav::AudioStreamWAV::3549944304029950690::1771865488::1771866134::1::::<><><>0<>0<>19f3e7355524beeaa360bf0ff27549ed<>res://.godot/imported/DSGNMisc_MELEE-Sword Slash_HY_PC-003.wav-16e67de697a099a3d65c8956b6b42eca.sample::
+DSGNMisc_MELEE-Sword Slash_HY_PC-004.wav::AudioStreamWAV::5960763306490454265::1771865488::1771866133::1::::<><><>0<>0<>9c00e79804ac955fa79932271d5dc493<>res://.godot/imported/DSGNMisc_MELEE-Sword Slash_HY_PC-004.wav-5a30e8c26cb89016be2db9fa3ab2c272.sample::
+DSGNMisc_MELEE-Sword Slash_HY_PC-005.wav::AudioStreamWAV::8740077863992197946::1771865488::1771866133::1::::<><><>0<>0<>5b2dac42c3982f58277419ac023c9973<>res://.godot/imported/DSGNMisc_MELEE-Sword Slash_HY_PC-005.wav-f33fd080508292853672cdbfdd9341be.sample::
+DSGNMisc_MELEE-Sword Slash_HY_PC-006.wav::AudioStreamWAV::5659910452832246787::1771865488::1771866133::1::::<><><>0<>0<>a23b7f5669a9e5f3cb938d0afd721318<>res://.godot/imported/DSGNMisc_MELEE-Sword Slash_HY_PC-006.wav-8694197be04f567d723da5c9c6fe27ee.sample::
+DSGNMisc_MOVEMENT-Phase Swish_HY_PC-001.wav::AudioStreamWAV::7653427998960055470::1771865488::1771866133::1::::<><><>0<>0<>bc9423eafa8490b11f5c6b6d1a5b45c0<>res://.godot/imported/DSGNMisc_MOVEMENT-Phase Swish_HY_PC-001.wav-45323ed45758f3bcfa72434e73484af8.sample::
+DSGNMisc_MOVEMENT-Phase Swish_HY_PC-002.wav::AudioStreamWAV::5878249534822629953::1771865488::1771866133::1::::<><><>0<>0<>2f8c2539271b37d17d3d62fcb7e3326c<>res://.godot/imported/DSGNMisc_MOVEMENT-Phase Swish_HY_PC-002.wav-10cf6a2c70d7c220ca5700e52b047646.sample::
+DSGNMisc_MOVEMENT-Phase Swish_HY_PC-003.wav::AudioStreamWAV::5851428428868706970::1771865488::1771866133::1::::<><><>0<>0<>a278f536f950bc1ef15ed827a86cb715<>res://.godot/imported/DSGNMisc_MOVEMENT-Phase Swish_HY_PC-003.wav-be493b37a564f9b93654e22e08fb7ca9.sample::
+DSGNMisc_MOVEMENT-Phase Swish_HY_PC-004.wav::AudioStreamWAV::8009047933423605497::1771865488::1771866133::1::::<><><>0<>0<>4d806844b7ea23ac9f67971033cbe982<>res://.godot/imported/DSGNMisc_MOVEMENT-Phase Swish_HY_PC-004.wav-b718644b7c3b098ecee56d66e9504c55.sample::
+DSGNMisc_MOVEMENT-Phase Swish_HY_PC-005.wav::AudioStreamWAV::1569247020867577243::1771865488::1771866133::1::::<><><>0<>0<>8d5a7fe917c155bfa117c7d4a16691b5<>res://.godot/imported/DSGNMisc_MOVEMENT-Phase Swish_HY_PC-005.wav-b04edf08834302c7351d465c4380c863.sample::
+DSGNMisc_MOVEMENT-Phase Swish_HY_PC-006.wav::AudioStreamWAV::6342814942717212991::1771865488::1771866133::1::::<><><>0<>0<>a4c39bfdfdef523ff3c6fc59029fc6f6<>res://.godot/imported/DSGNMisc_MOVEMENT-Phase Swish_HY_PC-006.wav-1b2cdc49d14e57a6bb737baf91cf8dc3.sample::
+DSGNMisc_PROJECTILE-Hollow Point_HY_PC-001.wav::AudioStreamWAV::3101535361656035811::1771865488::1771866133::1::::<><><>0<>0<>a5cb1d5e5578392208cbcff4f3595653<>res://.godot/imported/DSGNMisc_PROJECTILE-Hollow Point_HY_PC-001.wav-373d9967da4d98f76b6c4c44ffd1a461.sample::
+DSGNMisc_PROJECTILE-Hollow Point_HY_PC-002.wav::AudioStreamWAV::2245531773935805179::1771865488::1771866133::1::::<><><>0<>0<>87388f4a8137ba72fd2821f416263951<>res://.godot/imported/DSGNMisc_PROJECTILE-Hollow Point_HY_PC-002.wav-9ab587c8513dc5c26517bad780a10877.sample::
+DSGNMisc_PROJECTILE-Hollow Point_HY_PC-003.wav::AudioStreamWAV::9107563882113428608::1771865488::1771866133::1::::<><><>0<>0<>4164d9d01d0c0ea04ddf84fac3550076<>res://.godot/imported/DSGNMisc_PROJECTILE-Hollow Point_HY_PC-003.wav-83b350b231b9d24170d832d7cd53c450.sample::
+DSGNMisc_PROJECTILE-Hollow Point_HY_PC-004.wav::AudioStreamWAV::6119194159931581587::1771865488::1771866133::1::::<><><>0<>0<>7def61a93e330dde8c46a8c28a2b18c7<>res://.godot/imported/DSGNMisc_PROJECTILE-Hollow Point_HY_PC-004.wav-0e45e08f0583c41458bc6fb4931826b8.sample::
+DSGNMisc_PROJECTILE-Hollow Point_HY_PC-005.wav::AudioStreamWAV::4167590032285524341::1771865488::1771866133::1::::<><><>0<>0<>8bed36a24c0c7c4c32838fdbb86a63a7<>res://.godot/imported/DSGNMisc_PROJECTILE-Hollow Point_HY_PC-005.wav-62f8af8889d4f6b864899c217925dda8.sample::
+DSGNMisc_PROJECTILE-Hollow Point_HY_PC-006.wav::AudioStreamWAV::6228523106168264412::1771865488::1771866133::1::::<><><>0<>0<>c7ac7c0c4d75b1799dc923ddb9d70aae<>res://.godot/imported/DSGNMisc_PROJECTILE-Hollow Point_HY_PC-006.wav-cb9ab822151e0718e08261cfdb892308.sample::
+DSGNMisc_SKILL IMPACT-Critical Strike_HY_PC-001.wav::AudioStreamWAV::3624953239046338496::1771865488::1771866133::1::::<><><>0<>0<>20273b3b2e63526173ec1afdf332b3ac<>res://.godot/imported/DSGNMisc_SKILL IMPACT-Critical Strike_HY_PC-001.wav-9a67e39e92ab8b38f5090082b04a2f0e.sample::
+DSGNMisc_SKILL IMPACT-Critical Strike_HY_PC-002.wav::AudioStreamWAV::9011331219216617175::1771865488::1771866133::1::::<><><>0<>0<>6294ac96d89df1bb0303a73d14a113e3<>res://.godot/imported/DSGNMisc_SKILL IMPACT-Critical Strike_HY_PC-002.wav-04ae55155dd95998249c285d95eacb09.sample::
+DSGNMisc_SKILL IMPACT-Critical Strike_HY_PC-003.wav::AudioStreamWAV::2223945939589950483::1771865488::1771866133::1::::<><><>0<>0<>9e59c460e5db86f16583fa91433b3aba<>res://.godot/imported/DSGNMisc_SKILL IMPACT-Critical Strike_HY_PC-003.wav-7683cd91e171bc84881d6dc13295dd9b.sample::
+DSGNMisc_SKILL IMPACT-Critical Strike_HY_PC-004.wav::AudioStreamWAV::7364260444802743004::1771865488::1771866133::1::::<><><>0<>0<>7e09af1a7b9d979fdfae1c50bea0c2e5<>res://.godot/imported/DSGNMisc_SKILL IMPACT-Critical Strike_HY_PC-004.wav-2143a6924363719a22841fe6b1de3e76.sample::
+DSGNMisc_SKILL IMPACT-Critical Strike_HY_PC-005.wav::AudioStreamWAV::8108755275679971034::1771865488::1771866133::1::::<><><>0<>0<>eb1169c5c03e7a39115052c687df2f76<>res://.godot/imported/DSGNMisc_SKILL IMPACT-Critical Strike_HY_PC-005.wav-697584e20e182c87ddaa60ec31256ff9.sample::
+DSGNMisc_SKILL IMPACT-Critical Strike_HY_PC-006.wav::AudioStreamWAV::5680770912206438796::1771865488::1771866133::1::::<><><>0<>0<>0e28d2c2d4ea6a15e1183a237ee99386<>res://.godot/imported/DSGNMisc_SKILL IMPACT-Critical Strike_HY_PC-006.wav-14a05695b2a5c5a58f0d91e8335cd87c.sample::
+DSGNSynth_BUFF-Enemy Debuff_HY_PC-001.wav::AudioStreamWAV::6210211338388065739::1771865488::1771866133::1::::<><><>0<>0<>bd033835ad6583967cdd1d5092dcc1d3<>res://.godot/imported/DSGNSynth_BUFF-Enemy Debuff_HY_PC-001.wav-258a8efd528bcc277c8a5f779093a686.sample::
+DSGNSynth_BUFF-Enemy Debuff_HY_PC-002.wav::AudioStreamWAV::2017835378157420823::1771865488::1771866133::1::::<><><>0<>0<>61a1510a8ed109b85a64261daf1a1cf2<>res://.godot/imported/DSGNSynth_BUFF-Enemy Debuff_HY_PC-002.wav-4fc8a07b234a4c3e9726ac3152500f3c.sample::
+DSGNSynth_BUFF-Enemy Debuff_HY_PC-003.wav::AudioStreamWAV::5224820659435061922::1771865488::1771866133::1::::<><><>0<>0<>ce76e561c5d02467e02d819300b8143b<>res://.godot/imported/DSGNSynth_BUFF-Enemy Debuff_HY_PC-003.wav-9208979f2b525c432746eb8367a0ccc1.sample::
+DSGNSynth_BUFF-Enemy Debuff_HY_PC-004.wav::AudioStreamWAV::358495758813830759::1771865488::1771866133::1::::<><><>0<>0<>b8e5930e42d3c57fa8156272c9e1f4bd<>res://.godot/imported/DSGNSynth_BUFF-Enemy Debuff_HY_PC-004.wav-c1d645eb33579ed72b16e743b6a29bbb.sample::
+DSGNSynth_BUFF-Enemy Debuff_HY_PC-005.wav::AudioStreamWAV::8852779220672243349::1771865488::1771866133::1::::<><><>0<>0<>61d94bed36a05bfcd3d6fdfcf3a0a080<>res://.godot/imported/DSGNSynth_BUFF-Enemy Debuff_HY_PC-005.wav-9ba5662f997c3b27a208f850300da315.sample::
+DSGNSynth_BUFF-Enemy Debuff_HY_PC-006.wav::AudioStreamWAV::4868879212181837627::1771865488::1771866133::1::::<><><>0<>0<>38998c9c5897f0d5cbcf836ebafa67f3<>res://.godot/imported/DSGNSynth_BUFF-Enemy Debuff_HY_PC-006.wav-fdc716f6dafde409f7eec21578b413ca.sample::
+DSGNSynth_BUFF-Failed Buff_HY_PC-001.wav::AudioStreamWAV::6260631069447050861::1771865488::1771866133::1::::<><><>0<>0<>970b1f7ae527d9b9925f320faf083e3f<>res://.godot/imported/DSGNSynth_BUFF-Failed Buff_HY_PC-001.wav-10d7f1ca652160ea47866db55fd836b7.sample::
+DSGNSynth_BUFF-Failed Buff_HY_PC-002.wav::AudioStreamWAV::1675379326491021964::1771865488::1771866133::1::::<><><>0<>0<>292837871edc7293842901fd41d314b1<>res://.godot/imported/DSGNSynth_BUFF-Failed Buff_HY_PC-002.wav-6c1505792e8d151a1e4d19936557e83d.sample::
+DSGNSynth_BUFF-Failed Buff_HY_PC-003.wav::AudioStreamWAV::4403107135382023579::1771865488::1771866133::1::::<><><>0<>0<>61a4c7030330b68ed86f206131559441<>res://.godot/imported/DSGNSynth_BUFF-Failed Buff_HY_PC-003.wav-55668578562e422aec8dac0c47c2d499.sample::
+DSGNSynth_BUFF-Failed Buff_HY_PC-004.wav::AudioStreamWAV::4612467816164404479::1771865488::1771866133::1::::<><><>0<>0<>526ae3938a0ba1c5901d9d40d50578f1<>res://.godot/imported/DSGNSynth_BUFF-Failed Buff_HY_PC-004.wav-c13c086386368543b6b5f8d76e5031ae.sample::
+DSGNSynth_BUFF-Failed Buff_HY_PC-005.wav::AudioStreamWAV::7202832052765607696::1771865488::1771866133::1::::<><><>0<>0<>87828ead859aeb0b1d8c383b133b314a<>res://.godot/imported/DSGNSynth_BUFF-Failed Buff_HY_PC-005.wav-ae4e2a257baa3ee7224c88e2b751382b.sample::
+DSGNSynth_BUFF-Failed Buff_HY_PC-006.wav::AudioStreamWAV::2689116249557987386::1771865488::1771866133::1::::<><><>0<>0<>52c758500f633851ff7dabc1d9af8de8<>res://.godot/imported/DSGNSynth_BUFF-Failed Buff_HY_PC-006.wav-b86f24945549ffa7b81117fdd02568b7.sample::
+DSGNSynth_BUFF-Generic Buff_HY_PC-001.wav::AudioStreamWAV::106243699430380728::1771865488::1771866133::1::::<><><>0<>0<>66178a5abc51bca33847ede84c3809c7<>res://.godot/imported/DSGNSynth_BUFF-Generic Buff_HY_PC-001.wav-a3d4ec147822454b83d2713ff6f91789.sample::
+DSGNSynth_BUFF-Generic Buff_HY_PC-002.wav::AudioStreamWAV::2136278053952575441::1771865488::1771866133::1::::<><><>0<>0<>d65c34e0e2c2a0bbc50f222ae39bcbb4<>res://.godot/imported/DSGNSynth_BUFF-Generic Buff_HY_PC-002.wav-b76a26ec63c9a6427fcc50ea0e583581.sample::
+DSGNSynth_BUFF-Generic Buff_HY_PC-003.wav::AudioStreamWAV::1533285260161984136::1771865488::1771866133::1::::<><><>0<>0<>ef26a2634c3e2a018f12f16f79450937<>res://.godot/imported/DSGNSynth_BUFF-Generic Buff_HY_PC-003.wav-785763e32c34c5bd1e4cc1c3b61bac72.sample::
+DSGNSynth_BUFF-Generic Buff_HY_PC-004.wav::AudioStreamWAV::1935700575463091548::1771865488::1771866133::1::::<><><>0<>0<>c0ba2682f24135c52b58b0630f0fd245<>res://.godot/imported/DSGNSynth_BUFF-Generic Buff_HY_PC-004.wav-588b92d968f1fe6c50ad4c3b23f8f5ff.sample::
+DSGNSynth_BUFF-Generic Buff_HY_PC-005.wav::AudioStreamWAV::8163139624493178022::1771865488::1771866133::1::::<><><>0<>0<>48a64176a08fab973ea502fcdc2cf97c<>res://.godot/imported/DSGNSynth_BUFF-Generic Buff_HY_PC-005.wav-a5972b249890aeb59de6d7e830da0dc5.sample::
+DSGNSynth_BUFF-Generic Buff_HY_PC-006.wav::AudioStreamWAV::2426079071973506583::1771865488::1771866133::1::::<><><>0<>0<>b7d154a78448f3594f155bad21fd64f5<>res://.godot/imported/DSGNSynth_BUFF-Generic Buff_HY_PC-006.wav-47bea293d79e163605d81f80518dde52.sample::
+DSGNSynth_BUFF-Stats Up_HY_PC-001.wav::AudioStreamWAV::8391574745329259985::1771865488::1771866133::1::::<><><>0<>0<>f4a3a156f2bcbe7afd14a7d0998d7adb<>res://.godot/imported/DSGNSynth_BUFF-Stats Up_HY_PC-001.wav-868ff7a41d4dc6634c176080f3aaa618.sample::
+DSGNSynth_BUFF-Stats Up_HY_PC-002.wav::AudioStreamWAV::8882086942486468345::1771865488::1771866133::1::::<><><>0<>0<>e2aeb468e61e2fedf6923e4b5b464d89<>res://.godot/imported/DSGNSynth_BUFF-Stats Up_HY_PC-002.wav-c7a8fa75a27e62ceb7f903719ef6d42c.sample::
+DSGNSynth_BUFF-Stats Up_HY_PC-003.wav::AudioStreamWAV::8335056407923956842::1771865488::1771866133::1::::<><><>0<>0<>5bd16fa0c1603cdc8c64eac6030204a5<>res://.godot/imported/DSGNSynth_BUFF-Stats Up_HY_PC-003.wav-a8a58bd573bf667c0a923bc3d802684f.sample::
+DSGNSynth_BUFF-Stats Up_HY_PC-004.wav::AudioStreamWAV::4897897340625436017::1771865488::1771866133::1::::<><><>0<>0<>5876dfd0b00ccb11f8dd576acac0f513<>res://.godot/imported/DSGNSynth_BUFF-Stats Up_HY_PC-004.wav-9cbfd827113388cc89ffa72d1d028cc8.sample::
+DSGNSynth_BUFF-Stats Up_HY_PC-005.wav::AudioStreamWAV::2947439370868276022::1771865488::1771866133::1::::<><><>0<>0<>81e0af8b74cdb45d5ce4df0c89fa8143<>res://.godot/imported/DSGNSynth_BUFF-Stats Up_HY_PC-005.wav-39e5bd5f9e787d435552f10ee32ba818.sample::
+DSGNSynth_BUFF-Stats Up_HY_PC-006.wav::AudioStreamWAV::8950404832995889646::1771865488::1771866133::1::::<><><>0<>0<>6ee01d60afe171177b38168e15c00b89<>res://.godot/imported/DSGNSynth_BUFF-Stats Up_HY_PC-006.wav-d3149f8043ed3a7f741807039b5ee3d4.sample::
+DSGNTonl_USABLE-Coin Spend_HY_PC-001.wav::AudioStreamWAV::548758274748593661::1771865488::1771866133::1::::<><><>0<>0<>5ba8c7a732efbb8fdbf5edfda1249302<>res://.godot/imported/DSGNTonl_USABLE-Coin Spend_HY_PC-001.wav-0ac301c2041988cc441b62b20fc10918.sample::
+DSGNTonl_USABLE-Coin Spend_HY_PC-002.wav::AudioStreamWAV::547141475963265741::1771865488::1771866133::1::::<><><>0<>0<>db2c77d6f62649e6bf0bb82d9c79bdbc<>res://.godot/imported/DSGNTonl_USABLE-Coin Spend_HY_PC-002.wav-08ad7ecbd4f222d0467cf6bb3d4a9132.sample::
+DSGNTonl_USABLE-Coin Spend_HY_PC-003.wav::AudioStreamWAV::413595798280638290::1771865488::1771866133::1::::<><><>0<>0<>13e944f50ee3910ff8542366b82f9c10<>res://.godot/imported/DSGNTonl_USABLE-Coin Spend_HY_PC-003.wav-1f7597b1dc501e8935a858a0ed89b9da.sample::
+DSGNTonl_USABLE-Coin Spend_HY_PC-004.wav::AudioStreamWAV::3120832183018424717::1771865488::1771866133::1::::<><><>0<>0<>c6b51f1657cbfa2a411014e6f7400790<>res://.godot/imported/DSGNTonl_USABLE-Coin Spend_HY_PC-004.wav-ed30831bbeeb46ae394f41be428375dc.sample::
+DSGNTonl_USABLE-Coin Spend_HY_PC-005.wav::AudioStreamWAV::6556842591304388298::1771865488::1771866133::1::::<><><>0<>0<>19c3be66c78d310ffda89dff7aee063d<>res://.godot/imported/DSGNTonl_USABLE-Coin Spend_HY_PC-005.wav-dfb10964d182911638fa03d0e460ac58.sample::
+DSGNTonl_USABLE-Coin Spend_HY_PC-006.wav::AudioStreamWAV::4390052888024824233::1771865488::1771866133::1::::<><><>0<>0<>bccee9520d571dde1f182673a50359f8<>res://.godot/imported/DSGNTonl_USABLE-Coin Spend_HY_PC-006.wav-23ce577a42cbc4e3fa88cd3d4000383d.sample::
+DSGNTonl_USABLE-Coin Toss_HY_PC-001.wav::AudioStreamWAV::2365213040235941462::1771865488::1771866133::1::::<><><>0<>0<>0f6409c4cd235aaa52388d12d50ee2a1<>res://.godot/imported/DSGNTonl_USABLE-Coin Toss_HY_PC-001.wav-b978353b911a6f5d5ddb986e6fed710a.sample::
+DSGNTonl_USABLE-Coin Toss_HY_PC-002.wav::AudioStreamWAV::5397150006673212633::1771865488::1771866133::1::::<><><>0<>0<>ce61073a3d5fa6398d9bd836bd9bf0c7<>res://.godot/imported/DSGNTonl_USABLE-Coin Toss_HY_PC-002.wav-f720470584df856746af4fd30537ba9c.sample::
+DSGNTonl_USABLE-Coin Toss_HY_PC-003.wav::AudioStreamWAV::5446116952117700832::1771865488::1771866133::1::::<><><>0<>0<>7fb2a5db205b93a13daefcc1159b361e<>res://.godot/imported/DSGNTonl_USABLE-Coin Toss_HY_PC-003.wav-c9455dc644a34d035b5914f100ba77e6.sample::
+DSGNTonl_USABLE-Coin Toss_HY_PC-004.wav::AudioStreamWAV::5000234882518945677::1771865488::1771866133::1::::<><><>0<>0<>575be21d73160f02056cce29ca1fc6ac<>res://.godot/imported/DSGNTonl_USABLE-Coin Toss_HY_PC-004.wav-ce0c923ed2a25c4268a8a036b847ab0e.sample::
+DSGNTonl_USABLE-Coin Toss_HY_PC-005.wav::AudioStreamWAV::3413377318957218387::1771865488::1771866133::1::::<><><>0<>0<>780fc6d8a1d3b30d20b43a7481a7af6b<>res://.godot/imported/DSGNTonl_USABLE-Coin Toss_HY_PC-005.wav-0966c4fdce5ed94952248aef04875f94.sample::
+DSGNTonl_USABLE-Coin Toss_HY_PC-006.wav::AudioStreamWAV::9142824558495272246::1771865488::1771866133::1::::<><><>0<>0<>45a0f9b12aaf6d9fd81e69dbdf989e03<>res://.godot/imported/DSGNTonl_USABLE-Coin Toss_HY_PC-006.wav-b1bdc7c3fcd32211f13e65581143c189.sample::
+DSGNTonl_USABLE-Magic Item_HY_PC-001.wav::AudioStreamWAV::8034463925551206241::1771865488::1771866133::1::::<><><>0<>0<>9d0d8937aff3381abe60d24e4bacc447<>res://.godot/imported/DSGNTonl_USABLE-Magic Item_HY_PC-001.wav-5e0ee75094a2399230868252ccde4534.sample::
+DSGNTonl_USABLE-Magic Item_HY_PC-002.wav::AudioStreamWAV::6254034593349502889::1771865488::1771866133::1::::<><><>0<>0<>891bce1b41d7649edd0afafb11fd87eb<>res://.godot/imported/DSGNTonl_USABLE-Magic Item_HY_PC-002.wav-bedbf3857ad0cf5fd04481b67f8292d4.sample::
+DSGNTonl_USABLE-Magic Item_HY_PC-003.wav::AudioStreamWAV::9001775242563135303::1771865488::1771866133::1::::<><><>0<>0<>a95f60dc96e885c975880d02a53139fd<>res://.godot/imported/DSGNTonl_USABLE-Magic Item_HY_PC-003.wav-2dfbc65484a85a2746993570a89167f1.sample::
+DSGNTonl_USABLE-Magic Item_HY_PC-004.wav::AudioStreamWAV::6514682865146891910::1771865488::1771866133::1::::<><><>0<>0<>6b803eaaae9ffcfb5b3a4722a13bd16a<>res://.godot/imported/DSGNTonl_USABLE-Magic Item_HY_PC-004.wav-a222060192572329c2a8af113d3397eb.sample::
+DSGNTonl_USABLE-Magic Item_HY_PC-005.wav::AudioStreamWAV::4264467209838593100::1771865488::1771866133::1::::<><><>0<>0<>bd2196c6bdf93f87eef04ea548803d48<>res://.godot/imported/DSGNTonl_USABLE-Magic Item_HY_PC-005.wav-9c3f31ad3a94de345b14d9aa72a130c4.sample::
+DSGNTonl_USABLE-Magic Item_HY_PC-006.wav::AudioStreamWAV::3010076940126894017::1771865488::1771866133::1::::<><><>0<>0<>8120db04d94fa034b1794fe6891492c2<>res://.godot/imported/DSGNTonl_USABLE-Magic Item_HY_PC-006.wav-a2d9c6955a1be3153da8ed77de93326f.sample::
+FGHTImpt_HIT-Strong Smack_HY_PC-001.wav::AudioStreamWAV::2100078326583010435::1771865488::1771866133::1::::<><><>0<>0<>fa9b771e13aa3afbeb0f5efe9db1cb3b<>res://.godot/imported/FGHTImpt_HIT-Strong Smack_HY_PC-001.wav-9eb2442d96e93195d3e024699b73acb4.sample::
+FGHTImpt_HIT-Strong Smack_HY_PC-002.wav::AudioStreamWAV::8527706607204693868::1771865488::1771866133::1::::<><><>0<>0<>26ce268052b0174c1e2d73fc152e47ad<>res://.godot/imported/FGHTImpt_HIT-Strong Smack_HY_PC-002.wav-bd7b9ea6b4258cb2e9c44eb72aa9b06b.sample::
+FGHTImpt_HIT-Strong Smack_HY_PC-003.wav::AudioStreamWAV::7058579814445021245::1771865488::1771866133::1::::<><><>0<>0<>9935d0ea71927f819fa9ff77ebe6ae21<>res://.godot/imported/FGHTImpt_HIT-Strong Smack_HY_PC-003.wav-a88b90cce2f9cce3ee9e66832d980c3b.sample::
+FGHTImpt_HIT-Strong Smack_HY_PC-004.wav::AudioStreamWAV::433133918045335863::1771865488::1771866133::1::::<><><>0<>0<>86be20d730ac43cea87e034141e3d0b2<>res://.godot/imported/FGHTImpt_HIT-Strong Smack_HY_PC-004.wav-ee058244a4b3c5490d380321d3e258bc.sample::
+FGHTImpt_HIT-Strong Smack_HY_PC-005.wav::AudioStreamWAV::1883003605123333093::1771865488::1771866133::1::::<><><>0<>0<>bf805018b6a9277c3d6671a8ff25cfcf<>res://.godot/imported/FGHTImpt_HIT-Strong Smack_HY_PC-005.wav-fd61463b3e6217879307dfd68e3903c3.sample::
+FGHTImpt_HIT-Strong Smack_HY_PC-006.wav::AudioStreamWAV::8082973901831850002::1771865488::1771866133::1::::<><><>0<>0<>d36d6fcaea0f08ae264bc8b0a4f86781<>res://.godot/imported/FGHTImpt_HIT-Strong Smack_HY_PC-006.wav-f0dcba1bdce1b38d2c9ff66ef6349ec5.sample::
+FGHTImpt_MELEE-Gut Punch_HY_PC-001.wav::AudioStreamWAV::3912699664126306787::1771865488::1771866133::1::::<><><>0<>0<>06f74a503493ae6f46ab26ff7e89061e<>res://.godot/imported/FGHTImpt_MELEE-Gut Punch_HY_PC-001.wav-448e4372d370267be9d1fe7426473801.sample::
+FGHTImpt_MELEE-Gut Punch_HY_PC-002.wav::AudioStreamWAV::1575548017930712379::1771865488::1771866133::1::::<><><>0<>0<>dfe256058c1035feea7c80dda11337da<>res://.godot/imported/FGHTImpt_MELEE-Gut Punch_HY_PC-002.wav-5a3fc6ce1d7fbf8e79fccf066668e6fe.sample::
+FGHTImpt_MELEE-Gut Punch_HY_PC-003.wav::AudioStreamWAV::5589846363751633509::1771865488::1771866133::1::::<><><>0<>0<>7a89b4fd957bc8e3a5abc3a3fb9693c1<>res://.godot/imported/FGHTImpt_MELEE-Gut Punch_HY_PC-003.wav-63b9f851015d403b4fd874bc6e2f053b.sample::
+FGHTImpt_MELEE-Gut Punch_HY_PC-004.wav::AudioStreamWAV::5576342529965152979::1771865488::1771866133::1::::<><><>0<>0<>2482e06f08cbf49793f8c8de46a082da<>res://.godot/imported/FGHTImpt_MELEE-Gut Punch_HY_PC-004.wav-62e7280a6a3711235d0e6261c9b745fe.sample::
+FGHTImpt_MELEE-Gut Punch_HY_PC-005.wav::AudioStreamWAV::5666074532569389890::1771865488::1771866133::1::::<><><>0<>0<>ae7041951069315d27599483bcfd5d3b<>res://.godot/imported/FGHTImpt_MELEE-Gut Punch_HY_PC-005.wav-3937aca5c50554e948b1ca0318b3dc26.sample::
+FGHTImpt_MELEE-Gut Punch_HY_PC-006.wav::AudioStreamWAV::6406782111323062779::1771865488::1771866133::1::::<><><>0<>0<>7085ec9515cda339a0372ce786c4ad33<>res://.godot/imported/FGHTImpt_MELEE-Gut Punch_HY_PC-006.wav-82ba7788b06921ec41c958215888dd4b.sample::
+MAGAngl_BUFF-Simple Heal_HY_PC-001.wav::AudioStreamWAV::3546705825212669592::1771865488::1771866133::1::::<><><>0<>0<>52b963584faa7224ea27c5108df36c8b<>res://.godot/imported/MAGAngl_BUFF-Simple Heal_HY_PC-001.wav-723c31b2476e5db11e2eb972ee636d4e.sample::
+MAGAngl_BUFF-Simple Heal_HY_PC-002.wav::AudioStreamWAV::7088514459710804852::1771865488::1771866133::1::::<><><>0<>0<>de6a9bc46ba3e28e5b79a7fcce67d611<>res://.godot/imported/MAGAngl_BUFF-Simple Heal_HY_PC-002.wav-ba0244a9ab6a4e4b1372ee8cc0b95a05.sample::
+MAGAngl_BUFF-Simple Heal_HY_PC-003.wav::AudioStreamWAV::5298935485555623341::1771865488::1771866133::1::::<><><>0<>0<>4da5e7634d57c23937acce949ec1f839<>res://.godot/imported/MAGAngl_BUFF-Simple Heal_HY_PC-003.wav-31e68c375c259c7fb634f9065f9d0505.sample::
+MAGAngl_BUFF-Simple Heal_HY_PC-004.wav::AudioStreamWAV::3311818761016159385::1771865488::1771866133::1::::<><><>0<>0<>7d573118e4b6b9ac7473745e17c82e93<>res://.godot/imported/MAGAngl_BUFF-Simple Heal_HY_PC-004.wav-0be83f5f0a4b9a81008ee93508407b98.sample::
+MAGAngl_BUFF-Simple Heal_HY_PC-005.wav::AudioStreamWAV::3571416410792361771::1771865488::1771866133::1::::<><><>0<>0<>68d55e83ff5c9813756e807fca3513b2<>res://.godot/imported/MAGAngl_BUFF-Simple Heal_HY_PC-005.wav-b3f8891c7b7bfc4a4ce09cb32c938686.sample::
+MAGAngl_BUFF-Simple Heal_HY_PC-006.wav::AudioStreamWAV::1640066917332821862::1771865488::1771866133::1::::<><><>0<>0<>a95638483825e59b39b0eccfaea1ffce<>res://.godot/imported/MAGAngl_BUFF-Simple Heal_HY_PC-006.wav-5935011bbaf2760fcd13b59bec2e7325.sample::
+MAGSpel_CAST-Aura Rise_HY_PC-001.wav::AudioStreamWAV::613633092271711998::1771865488::1771866133::1::::<><><>0<>0<>11984dbb0bc6ed1f17a6b93b895c568b<>res://.godot/imported/MAGSpel_CAST-Aura Rise_HY_PC-001.wav-818c450a590d6460a51afbbea525ea79.sample::
+MAGSpel_CAST-Aura Rise_HY_PC-002.wav::AudioStreamWAV::6156443340782015681::1771865488::1771866133::1::::<><><>0<>0<>f95cde5c8113865c0d6029c7b72da7dd<>res://.godot/imported/MAGSpel_CAST-Aura Rise_HY_PC-002.wav-d307259650ec498b0319e6d7f003225b.sample::
+MAGSpel_CAST-Aura Rise_HY_PC-003.wav::AudioStreamWAV::3434984259470054099::1771865488::1771866133::1::::<><><>0<>0<>ce44ba17f609f5b98e4c3825cd40dbda<>res://.godot/imported/MAGSpel_CAST-Aura Rise_HY_PC-003.wav-15b024af2942e4db2a8ff83b96548b82.sample::
+MAGSpel_CAST-Aura Rise_HY_PC-004.wav::AudioStreamWAV::5263732651369663338::1771865488::1771866133::1::::<><><>0<>0<>c8e52e039e8fb9304f3c358453f6e467<>res://.godot/imported/MAGSpel_CAST-Aura Rise_HY_PC-004.wav-4786cde8a59cab13a77b31ec3cfae6e9.sample::
+MAGSpel_CAST-Aura Rise_HY_PC-005.wav::AudioStreamWAV::3035240830814753335::1771865488::1771866133::1::::<><><>0<>0<>30ccdfdf97537b0ce4c292702577e23e<>res://.godot/imported/MAGSpel_CAST-Aura Rise_HY_PC-005.wav-02fcd18aa80c0b55ba005f927cbcd3d6.sample::
+MAGSpel_CAST-Aura Rise_HY_PC-006.wav::AudioStreamWAV::6290572538002259023::1771865488::1771866133::1::::<><><>0<>0<>4459e0a67a387fd7fc0d9cdd6b473a59<>res://.godot/imported/MAGSpel_CAST-Aura Rise_HY_PC-006.wav-5a31f9d0214acdf3f4810250039866bb.sample::
+MAGSpel_CAST-Sphere Up_HY_PC-001.wav::AudioStreamWAV::8862982824754802598::1771865488::1771866133::1::::<><><>0<>0<>7f0f21d89c9774b6f6415031dcdfc0b0<>res://.godot/imported/MAGSpel_CAST-Sphere Up_HY_PC-001.wav-057d765d7ee1d6fa91a83bb4b4392447.sample::
+MAGSpel_CAST-Sphere Up_HY_PC-002.wav::AudioStreamWAV::1933177930343561195::1771865488::1771866133::1::::<><><>0<>0<>963d8fa1c6982eba22adfc9068643215<>res://.godot/imported/MAGSpel_CAST-Sphere Up_HY_PC-002.wav-2e33e1219a3065fbc506ad9259759dd3.sample::
+MAGSpel_CAST-Sphere Up_HY_PC-003.wav::AudioStreamWAV::7461385212798752310::1771865488::1771866133::1::::<><><>0<>0<>70d3c2835bb94eba1c28161992308610<>res://.godot/imported/MAGSpel_CAST-Sphere Up_HY_PC-003.wav-c14cc549ea2ee678d6b54357494a1a43.sample::
+MAGSpel_CAST-Sphere Up_HY_PC-004.wav::AudioStreamWAV::45500968596620361::1771865488::1771866133::1::::<><><>0<>0<>63080030cda7b58977682a8391a6eaf7<>res://.godot/imported/MAGSpel_CAST-Sphere Up_HY_PC-004.wav-deb47b4fb1a38ce2ac34f7ffc9b91d35.sample::
+MAGSpel_CAST-Sphere Up_HY_PC-005.wav::AudioStreamWAV::4485107518414241846::1771865488::1771866133::1::::<><><>0<>0<>e7837ad7796127d82d492256cd8bd4ab<>res://.godot/imported/MAGSpel_CAST-Sphere Up_HY_PC-005.wav-05baa5bcea4306eb4d6fbfc73c2fd67d.sample::
+MAGSpel_CAST-Sphere Up_HY_PC-006.wav::AudioStreamWAV::1036086890604426648::1771865488::1771866133::1::::<><><>0<>0<>a09bb1076fb7f0a7c16579af43aa2201<>res://.godot/imported/MAGSpel_CAST-Sphere Up_HY_PC-006.wav-ef4cf818e479cc73582a74d4f0e0ea43.sample::
+UIClick_INTERFACE-Positive Click_HY_PC-001.wav::AudioStreamWAV::8835994397299807780::1771865488::1771866133::1::::<><><>0<>0<>9dfa6e4e950602700bbb8e655ae53a96<>res://.godot/imported/UIClick_INTERFACE-Positive Click_HY_PC-001.wav-53fa67fad5c77b48b706630122d005de.sample::
+UIClick_INTERFACE-Positive Click_HY_PC-002.wav::AudioStreamWAV::1999499087359509731::1771865488::1771866133::1::::<><><>0<>0<>401ef8fae4e3c29b8b69f1be03e762b0<>res://.godot/imported/UIClick_INTERFACE-Positive Click_HY_PC-002.wav-1e637b816b5a808a4141edf6cfa4fb80.sample::
+UIClick_INTERFACE-Positive Click_HY_PC-003.wav::AudioStreamWAV::4625407096929840845::1771865488::1771866133::1::::<><><>0<>0<>aa7375b171d58349a23ce1f6a25846a6<>res://.godot/imported/UIClick_INTERFACE-Positive Click_HY_PC-003.wav-de199b5ca2ca191b30854e9c8b5ff492.sample::
+UIClick_INTERFACE-Positive Click_HY_PC-004.wav::AudioStreamWAV::561444876626990548::1771865488::1771866133::1::::<><><>0<>0<>ebd3c925bcc1450024c7bc1f0fb063d2<>res://.godot/imported/UIClick_INTERFACE-Positive Click_HY_PC-004.wav-805c85a9b1a2c2f4d88b33d517fbf863.sample::
+UIClick_INTERFACE-Positive Click_HY_PC-005.wav::AudioStreamWAV::3672424307574724382::1771865488::1771866133::1::::<><><>0<>0<>7425946cbd0ef4d81036a54ba581c3cf<>res://.godot/imported/UIClick_INTERFACE-Positive Click_HY_PC-005.wav-4322e51122f9ff66294ab7d2192d5fc4.sample::
+UIClick_INTERFACE-Positive Click_HY_PC-006.wav::AudioStreamWAV::8582255522470760089::1771865488::1771866133::1::::<><><>0<>0<>498fa60a9a6eaaf1ecff2984953bdbfe<>res://.godot/imported/UIClick_INTERFACE-Positive Click_HY_PC-006.wav-d3822c6db52288a834174fdc14b9ed38.sample::
+UIMisc_INTERFACE-Denied_HY_PC-001.wav::AudioStreamWAV::6365572906434945260::1771865488::1771866133::1::::<><><>0<>0<>5432d24b15662e57fe2ac2d57983b64a<>res://.godot/imported/UIMisc_INTERFACE-Denied_HY_PC-001.wav-1a8a47d3c8a8ef97131c64a1625b33a4.sample::
+UIMisc_INTERFACE-Denied_HY_PC-002.wav::AudioStreamWAV::7322578455294289054::1771865488::1771866133::1::::<><><>0<>0<>9e7b0be71a3a1ebcf74cc8f49e3e6c0c<>res://.godot/imported/UIMisc_INTERFACE-Denied_HY_PC-002.wav-38877a35063bcf7a77aabb37dd4f3f23.sample::
+UIMisc_INTERFACE-Denied_HY_PC-003.wav::AudioStreamWAV::6744344200838791814::1771865488::1771866133::1::::<><><>0<>0<>888776503a711db6c6a8a1237506de71<>res://.godot/imported/UIMisc_INTERFACE-Denied_HY_PC-003.wav-e9b3a8ede112de95950eb329f212024d.sample::
+UIMisc_INTERFACE-Denied_HY_PC-004.wav::AudioStreamWAV::2890251998159543231::1771865488::1771866133::1::::<><><>0<>0<>a5eb72d7bc04a3795d5193b09812c012<>res://.godot/imported/UIMisc_INTERFACE-Denied_HY_PC-004.wav-24623a808f49bc35a4c608a9696c2658.sample::
+UIMisc_INTERFACE-Denied_HY_PC-005.wav::AudioStreamWAV::5205401378127415387::1771865488::1771866133::1::::<><><>0<>0<>68ef92cf97d56dddf476f369bc61dd3d<>res://.godot/imported/UIMisc_INTERFACE-Denied_HY_PC-005.wav-3f9bec94c71bab8889f68240b76f78b3.sample::
+UIMisc_INTERFACE-Denied_HY_PC-006.wav::AudioStreamWAV::2568462651001909781::1771865488::1771866133::1::::<><><>0<>0<>17716e0b9e996d4852e1aebcc18d8019<>res://.godot/imported/UIMisc_INTERFACE-Denied_HY_PC-006.wav-d461798f34d3202160d41eaa30968375.sample::
+ui_click_kenney.ogg::AudioStreamOggVorbis::7508665845821957092::1771868479::1771868524::1::::<><><>0<>0<>0d45ab937f3c4bbebc7142e42e16d4b6<>res://.godot/imported/ui_click_kenney.ogg-ab726d00fec687184d03d4f3b862debc.oggvorbisstr::
+ui_denied_rpg.wav::AudioStreamWAV::8810246673452239910::1771868479::1771868524::1::::<><><>0<>0<>8c8db1e284bdc81b4865887b1eb2423c<>res://.godot/imported/ui_denied_rpg.wav-ba47045c5b80eeb38efb5327f76074da.sample::
+::res://resources/data/::1771870205
 items.json::JSON::-1::1771169095::0::1::::<><><>0<>0<><>::
-perks.json::JSON::-1::1770480481::0::1::::<><><>0<>0<><>::
-races.json::JSON::-1::1769859282::0::1::::<><><>0<>0<><>::
+perks.json::JSON::-1::1771767481::0::1::::<><><>0<>0<><>::
+races.json::JSON::-1::1771870205::0::1::::<><><>0<>0<><>::
 shops.json::JSON::-1::1770575613::0::1::::<><><>0<>0<><>::
 skills.json::JSON::-1::1770480747::0::1::::<><><>0<>0<><>::
-spells.json::JSON::-1::1771081158::0::1::::<><><>0<>0<><>::
+spells.json::JSON::-1::1771767390::0::1::::<><><>0<>0<><>::
 statuses.json::JSON::-1::1770059227::0::1::::<><><>0<>0<><>::
 upgrades.json::JSON::-1::1770059368::0::1::::<><><>0<>0<><>::
 ::res://resources/data/enemies/::1771169122
 hell_archetypes.json::JSON::-1::1771169122::0::1::::<><><>0<>0<><>::
 hell_encounters.json::JSON::-1::1771020625::0::1::::<><><>0<>0<><>::
 ::res://resources/data/events/::1770575589
-hell_events.json::JSON::-1::1770575589::0::1::::<><><>0<>0<><>::
+hell_events.json::JSON::-1::1771785910::0::1::::<><><>0<>0<><>::
 ::res://resources/data/maps/::1770587590
-::res://resources/data/map_configs/::1771020609
-hell.json::JSON::-1::1771020609::0::1::::<><><>0<>0<><>::
+::res://resources/data/map_configs/::1771872182
+hell.json::JSON::-1::1771872182::0::1::::<><><>0<>0<><>::
 ::res://resources/themes/::1769795293
 tibetan_theme.tres::Theme::-1::1769791566::0::1::::<><><>0<>0<><>::
 ::res://scenes/::1769787331
-::res://scenes/combat/::1771082266
-combat_arena.tscn::PackedScene::4023380216171847068::1771082266::0::1::::<><><>0<>0<><>::res://scripts/combat/combat_arena.gd<>res://scripts/combat/combat_grid.gd
-::res://scenes/overworld/::1770569295
-overworld.tscn::PackedScene::-1::1770569295::0::1::::<><><>0<>0<><>::res://scripts/overworld/overworld.gd<>res://scripts/overworld/map_renderer.gd<>res://scenes/ui/event_display.tscn<>res://scenes/ui/main_menu.tscn
+::res://scenes/combat/::1771273431
+combat_arena.tscn::PackedScene::4023380216171847068::1771273431::0::1::::<><><>0<>0<><>::res://scripts/combat/combat_arena.gd<>res://scripts/combat/combat_grid.gd
+::res://scenes/overworld/::1771621900
+overworld.tscn::PackedScene::-1::1771621900::0::1::::<><><>0<>0<><>::res://scripts/overworld/overworld.gd<>res://scripts/overworld/map_renderer.gd<>res://scenes/ui/event_display.tscn<>res://scenes/ui/main_menu.tscn
 ::res://scenes/ui/::1771185748
 bardo_screen.tscn::PackedScene::-1::1770997812::0::1::::<><><>0<>0<><>::res://scripts/ui/bardo_screen.gd
 event_display.tscn::PackedScene::5911273040406448764::1770570949::0::1::::<><><>0<>0<><>::res://scripts/ui/event_display.gd<>uid://cbtjc5bhbqyxo::::res://resources/themes/tibetan_theme.tres
@@ -49,36 +222,37 @@ shop_ui.tscn::PackedScene::2839175430434043230::1770572142::0::1::::<><><>0<>0<>
 test_launcher.tscn::PackedScene::8764502808255896020::1770060567::0::1::::<><><>0<>0<><>::res://scripts/ui/test_launcher.gd
 title_screen.tscn::PackedScene::-1::1771185748::0::1::::<><><>0<>0<><>::res://scripts/ui/title_screen.gd
 ::res://scripts/::1770587428
-::res://scripts/autoload/::1771185962
-character_system.gd::GDScript::7166909571195287516::1771185687::0::1::::<>Node<><>0<>0<><>::
-combat_manager.gd::GDScript::7077642017800152450::1771169169::0::1::::<>Node<><>0<>0<><>::
-enemy_system.gd::GDScript::3946210192602560410::1771081230::0::1::::<>Node<><>0<>0<><>::
+::res://scripts/autoload/::1771872189
+audio_manager.gd::GDScript::5763987429746959863::1771872189::0::1::::<>Node<><>0<>0<><>::
+character_system.gd::GDScript::7166909571195287516::1771784894::0::1::::<>Node<><>0<>0<><>::
+combat_manager.gd::GDScript::7077642017800152450::1771871515::0::1::::<>Node<><>0<>0<><>::
+enemy_system.gd::GDScript::3946210192602560410::1771614864::0::1::::<>Node<><>0<>0<><>::
 event_manager.gd::GDScript::1680622712491115820::1771001185::0::1::::<>Node<><>0<>0<><>::
-game_state.gd::GDScript::6819991590003307718::1771185671::0::1::::<>Node<><>0<>0<><>::
+game_state.gd::GDScript::6819991590003307718::1771784847::0::1::::<>Node<><>0<>0<><>::
 item_system.gd::GDScript::4717611590695501788::1771185696::0::1::::<>Node<><>0<>0<><>::
-karma_system.gd::GDScript::2064758420227008056::1771185702::0::1::::<>Node<><>0<>0<><>::
-map_manager.gd::GDScript::1303469201040473717::1771185730::0::1::::<>Node<><>0<>0<><>::
-perk_system.gd::GDScript::6444672386948975022::1771001256::0::1::::<>Node<><>0<>0<><>::
+karma_system.gd::GDScript::2064758420227008056::1771618975::0::1::::<>Node<><>0<>0<><>::
+map_manager.gd::GDScript::1303469201040473717::1771871273::0::1::::<>Node<><>0<>0<><>::
+perk_system.gd::GDScript::6444672386948975022::1771769972::0::1::::<>Node<><>0<>0<><>::
 save_manager.gd::GDScript::2554808343672569271::1771185655::0::1::::<>Node<><>0<>0<><>::
 shop_system.gd::GDScript::7200373881169624971::1771001262::0::1::::<>Node<><>0<>0<><>::
-::res://scripts/combat/::1771185847
-combat_arena.gd::GDScript::5877830409830945722::1771185847::0::1::::<>Control<><>0<>0<><>::
-combat_grid.gd::GDScript::1838233631827662690::1770585946::0::1::::CombatGrid<>Node2D<><>0<>0<><>::
-combat_unit.gd::GDScript::81530689394297090::1771165629::0::1::::CombatUnit<>Node2D<><>0<>0<><>::
+::res://scripts/combat/::1771871294
+combat_arena.gd::GDScript::5877830409830945722::1771871294::0::1::::<>Control<><>0<>0<><>::
+combat_grid.gd::GDScript::1838233631827662690::1771622762::0::1::::CombatGrid<>Node2D<><>0<>0<><>::
+combat_unit.gd::GDScript::81530689394297090::1771767511::0::1::::CombatUnit<>Node2D<><>0<>0<><>::
 ::res://scripts/components/::1769787347
 ::res://scripts/data/::1769787354
-::res://scripts/map_gen/::1771001278
-map_generator.gd::GDScript::2256100598261207534::1771001278::0::1::::<>Node<><>0<>0<><>::
-::res://scripts/overworld/::1771185855
-map_renderer.gd::GDScript::3260936503554800124::1770588712::0::1::::<>Node2D<><>0<>0<><>::
-overworld.gd::GDScript::1583601820200021344::1771185855::0::1::::<>Control<><>0<>0<><>::
-::res://scripts/ui/::1771185962
-bardo_screen.gd::GDScript::2064785158032934314::1771185861::0::1::::<>Control<><>0<>0<><>::
-event_display.gd::GDScript::979428157473947580::1770571993::0::1::::<>Control<><>0<>0<><>::
-item_tooltip.gd::GDScript::3839432426171435560::1769881453::0::1::::<>PanelContainer<><>0<>0<><>::
-main_menu.gd::GDScript::3283231810999639538::1771168301::0::1::::<>Control<><>0<>0<><>::
-new_character_sheet.gd::GDScript::4742117264245399704::1770554229::0::1::::<>Control<><>0<>0<><>::
+::res://scripts/map_gen/::1771786380
+map_generator.gd::GDScript::2256100598261207534::1771786380::0::1::::<>Node<><>0<>0<><>::
+::res://scripts/overworld/::1771871282
+map_renderer.gd::GDScript::3260936503554800124::1771621889::0::1::::<>Node2D<><>0<>0<><>::
+overworld.gd::GDScript::1583601820200021344::1771871282::0::1::::<>Control<><>0<>0<><>::
+::res://scripts/ui/::1771871306
+bardo_screen.gd::GDScript::2064785158032934314::1771786495::0::1::::<>Control<><>0<>0<><>::
+event_display.gd::GDScript::979428157473947580::1771869928::0::1::::<>Control<><>0<>0<><>::
+item_tooltip.gd::GDScript::3839432426171435560::1771622740::0::1::::<>PanelContainer<><>0<>0<><>::
+main_menu.gd::GDScript::3283231810999639538::1771871306::0::1::::<>Control<><>0<>0<><>::
+new_character_sheet.gd::GDScript::4742117264245399704::1771272128::0::1::::<>Control<><>0<>0<><>::
 shop_ui.gd::GDScript::1608467993524428577::1770573164::0::1::::<>Control<><>0<>0<><>::
 test_launcher.gd::GDScript::2927394851222360305::1770060182::0::1::::<>Control<><>0<>0<><>::
-title_screen.gd::GDScript::6824833664979764296::1771185954::0::1::::<>Control<><>0<>0<><>::
-::res://tools/::1770480476
+title_screen.gd::GDScript::6824833664979764296::1771869288::0::1::::<>Control<><>0<>0<><>::
+::res://tools/::1771767383

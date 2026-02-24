@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://c0ogie41vo8ta"
+path="res://.godot/imported/DSGNTonl_USABLE-Coin Spend_HY_PC-005.wav-dfb10964d182911638fa03d0e460ac58.sample"
+
+[deps]
+
+source_file="res://resources/audio/sfx/DSGNTonl_USABLE-Coin Spend_HY_PC-005.wav"
+dest_files=["res://.godot/imported/DSGNTonl_USABLE-Coin Spend_HY_PC-005.wav-dfb10964d182911638fa03d0e460ac58.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://c78y2d6gwtryi"
+path="res://.godot/imported/MAGAngl_BUFF-Simple Heal_HY_PC-002.wav-ba0244a9ab6a4e4b1372ee8cc0b95a05.sample"
+
+[deps]
+
+source_file="res://resources/audio/sfx/MAGAngl_BUFF-Simple Heal_HY_PC-002.wav"
+dest_files=["res://.godot/imported/MAGAngl_BUFF-Simple Heal_HY_PC-002.wav-ba0244a9ab6a4e4b1372ee8cc0b95a05.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://dwwl1716s5u3u"
+path="res://.godot/imported/DSGNMisc_MELEE-Sword Slash_HY_PC-002.wav-7e03e811a8d92d897a5b98a61a7aab13.sample"
+
+[deps]
+
+source_file="res://resources/audio/sfx/DSGNMisc_MELEE-Sword Slash_HY_PC-002.wav"
+dest_files=["res://.godot/imported/DSGNMisc_MELEE-Sword Slash_HY_PC-002.wav-7e03e811a8d92d897a5b98a61a7aab13.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

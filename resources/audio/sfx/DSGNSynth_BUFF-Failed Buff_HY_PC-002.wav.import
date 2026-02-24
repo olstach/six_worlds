@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://x4tiufl74vfg"
+path="res://.godot/imported/DSGNSynth_BUFF-Failed Buff_HY_PC-002.wav-6c1505792e8d151a1e4d19936557e83d.sample"
+
+[deps]
+
+source_file="res://resources/audio/sfx/DSGNSynth_BUFF-Failed Buff_HY_PC-002.wav"
+dest_files=["res://.godot/imported/DSGNSynth_BUFF-Failed Buff_HY_PC-002.wav-6c1505792e8d151a1e4d19936557e83d.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

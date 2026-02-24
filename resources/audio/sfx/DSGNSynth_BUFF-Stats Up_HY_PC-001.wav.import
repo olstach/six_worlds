@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://drs7alui87uhd"
+path="res://.godot/imported/DSGNSynth_BUFF-Stats Up_HY_PC-001.wav-868ff7a41d4dc6634c176080f3aaa618.sample"
+
+[deps]
+
+source_file="res://resources/audio/sfx/DSGNSynth_BUFF-Stats Up_HY_PC-001.wav"
+dest_files=["res://.godot/imported/DSGNSynth_BUFF-Stats Up_HY_PC-001.wav-868ff7a41d4dc6634c176080f3aaa618.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2
