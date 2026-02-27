@@ -360,33 +360,115 @@ func make_choice(choice: Dictionary) -> Dictionary:
 		# Non-roll choice, use standard outcome
 		outcome = choice.outcome.duplicate(true) if "outcome" in choice else {}
 	
+	# Carry the choice's cost into the outcome so apply_outcome can deduct it
+	if "cost" in choice:
+		outcome["cost"] = choice.cost
+
 	# Apply outcome
 	apply_outcome(outcome)
-	
+
 	return outcome
 
 ## Apply the outcome of a choice
 func apply_outcome(outcome: Dictionary) -> void:
 	if outcome.is_empty():
 		return
-	
+
 	# Grant rewards
 	if "rewards" in outcome:
 		var rewards = outcome.rewards
-		
+
 		if "xp" in rewards:
 			var player = CharacterSystem.get_player()
 			CharacterSystem.grant_xp(player, rewards.xp)
 
+		if "gold" in rewards:
+			GameState.add_gold(int(rewards.gold))
+
 		if "items" in rewards:
-			# TODO: Add items to inventory
-			pass
-	
+			for item_id in rewards.items:
+				if ItemSystem.item_exists(item_id):
+					ItemSystem.add_to_inventory(item_id)
+				else:
+					print("EventManager: Unknown item '%s', skipping" % item_id)
+
+		# Skill gain — e.g. {"skill": "water_magic", "amount": 1, "cap": 6}
+		if "skill_up" in rewards:
+			var su = rewards.skill_up
+			var skill_name: String = su.get("skill", "")
+			var amount: int = int(su.get("amount", 1))
+			var cap: int = int(su.get("cap", 10))
+			if skill_name != "":
+				# Apply to the party member who enabled the choice (or player)
+				var target = CharacterSystem.get_player()
+				var current_level: int = target.skills.get(skill_name, 0)
+				if current_level < cap:
+					CharacterSystem.set_skill_level(target, skill_name, min(current_level + amount, cap))
+					print("EventManager: %s gained +%d %s (now %d)" % [target.name, amount, skill_name, target.skills[skill_name]])
+
+		# Temporary combat buffs — e.g. [{"stat": "constitution", "amount": 2, "combats_remaining": 1}]
+		if "buffs" in rewards:
+			for buff in rewards.buffs:
+				var stat: String = buff.get("stat", "")
+				var amount = buff.get("amount", 0)
+				var combats: int = int(buff.get("combats_remaining", 1))
+				if stat != "":
+					GameState.active_map_buffs.append({
+						"stat": stat, "amount": amount, "combats_remaining": combats
+					})
+					# Re-derive stats so buff is reflected immediately
+					for char in CharacterSystem.get_party():
+						CharacterSystem.derive_stats(char)
+					print("EventManager: Applied buff +%d %s for %d combat(s)" % [amount, stat, combats])
+
+		# HP/Mana restore — e.g. {"hp_percent": 50, "mana_percent": 50}
+		if "restore" in rewards:
+			var restore = rewards.restore
+			for char in CharacterSystem.get_party():
+				if "hp_percent" in restore:
+					var heal_amount = int(char.derived.max_hp * restore.hp_percent / 100.0)
+					char.derived.current_hp = min(char.derived.current_hp + heal_amount, char.derived.max_hp)
+				if "mana_percent" in restore:
+					var mana_amount = int(char.derived.max_mana * restore.mana_percent / 100.0)
+					char.derived.current_mana = min(char.derived.current_mana + mana_amount, char.derived.max_mana)
+			print("EventManager: Restored party HP/mana")
+
+		# Learn a random spell — e.g. {"school": "white_magic", "level_range": [1, 2]}
+		# Future: pick from spell database. For now, log intent.
+		if "learn_spell" in rewards:
+			var ls = rewards.learn_spell
+			print("EventManager: Learn spell pending — school=%s, levels=%s" % [ls.get("school", "?"), str(ls.get("level_range", []))])
+
+		# Gamble — e.g. {"type": "gold", "win_chance": 0.5, "win_multiplier": 2}
+		# The cost is handled by the choice's "cost" field; this handles the payout.
+		if "gamble" in rewards:
+			var gamble = rewards.gamble
+			var win_chance: float = gamble.get("win_chance", 0.5)
+			if randf() <= win_chance:
+				# Won — cost was already deducted, return double
+				var payout_str: String = str(gamble.get("win_multiplier", 2)) + "x"
+				print("EventManager: Gamble won! (%s payout)" % payout_str)
+				# Actual gold amounts need the cost system to be fleshed out
+			else:
+				print("EventManager: Gamble lost.")
+
+	# Apply gold/resource costs from the choice
+	# Cost amounts are descriptive strings for now ("small", "moderate", etc.)
+	# that will map to concrete values when the economy is tuned.
+	# For now, use rough defaults so the system is functional.
+	if "cost" in outcome:
+		var cost = outcome.cost
+		if "gold" in cost:
+			var gold_amount = _resolve_gold_cost(cost.gold)
+			if gold_amount > 0:
+				GameState.spend_gold(gold_amount)
+				print("EventManager: Spent %d gold" % gold_amount)
+
 	# Apply karma changes
 	if "karma" in outcome:
 		for realm in outcome.karma:
 			KarmaSystem.add_karma(realm, outcome.karma[realm], "Event choice")
-	
+
 	# Handle outcome type — combat/shop are routed to overworld via signals
 	match outcome.get("type", "text"):
 		"text":
@@ -397,6 +479,25 @@ func apply_outcome(outcome: Dictionary) -> void:
 		"shop":
 			# Overworld will handle opening shop overlay
 			shop_requested.emit(outcome.get("shop_id", "unknown"), outcome)
+
+## Convert descriptive gold cost strings to concrete amounts.
+## These can be retuned as the economy matures.
+func _resolve_gold_cost(amount) -> int:
+	if amount is int or amount is float:
+		return int(amount)
+	match str(amount):
+		"small":
+			return 10
+		"small_moderate":
+			return 20
+		"moderate":
+			return 35
+		"large":
+			return 60
+		"some":
+			return 15  # "some gold and food"
+		_:
+			return 0
 
 ## Get a random event for a specific realm
 func get_random_event_for_realm(realm: String) -> String:
