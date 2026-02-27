@@ -976,26 +976,22 @@ An ornate envelope rests on a flat rock in the middle of a lava field, sealed wi
 
 ---
 
-## Ideas — Next Batch
-
-*(empty for now — add new ideas here)*
-
 ### A SIGH OF RELIEF
-*Not blocking | One-time | Icon: npc | Weight: 2*
+*Not blocking | One-time | Icon: shrine | Weight: 1 | Spawns in both zones*
 
-You feel strangely drawn towards a clearing, where among the bleakness a figure stands shining softly. A bodhisattva from the higher realms came to the Hells to give offerings and teach the suffering shades. As you come closer you see piles of food, drink and medicine manifseting from thin air, dimps swarming around and swallowing mouthfuls.
+You feel strangely drawn towards a clearing, where among the bleakness a figure stands shining softly. A bodhisattva from the higher realms has come to the Hells to give offerings and teach the suffering shades. As you come closer you see piles of food, drink, and medicine manifesting from thin air, imps swarming around and swallowing mouthfuls.
 
 **[Yoga 2] Meditate in the presence of the Bodhisattva**
-→ Success: As you settle down and focus you recognize there is no boundary betwen you. The teacher smiles and raises their hand to bless you.
-| XP: 12 | Karma: hell-5, human+3, god+5
+→ Text — As you settle down and focus you recognize there is no boundary between you. The teacher smiles and raises their hand to bless you.
+→ XP: 12 | Karma: hell-5, human+3, god+5
 
 **[Focus 14] Listen to the teachings**
-→ Text — Impermanence, compassion, joy. It seems like you have heard these words before, but long forgotten their meaning. 
+→ Text — Impermanence, compassion, joy. It seems like you have heard these words before, but long forgotten their meaning.
 → XP: 10 | Karma: hell-3, human+3, god+3
 
 **[Default] Come and take your fill**
 → Text — for a moment, all your fears and hopes dissolve into the present moment. You are content.
-Effect: party HP, mana and stamina are refilled 100%
+→ Effect: party HP, mana, and stamina are refilled 100%
 → XP: 8 | Karma: hell-3, hungry_ghost+2, animal+2, human+2
 
 **[Default] Rush in and take as much as you can**
@@ -1004,49 +1000,8 @@ Effect: party HP, mana and stamina are refilled 100%
 
 ---
 
-### 
-*Not blocking | One-time | Icon: npc | Weight: 3*
+## Ideas — Next Batch
 
-**[Default] Share a meal and hear their stories**
-→ Text — what they did, what they understand now, what they're still working out; none of them are done, but they're thinking clearly; you leave feeling less alone
-→ XP: 8 | Karma: human+5, hell-3
+*(add new ideas here)*
 
-**[Default] Trade supplies with them**
-→ Text — fair exchange; the merchant among them negotiates with professional precision, which makes everyone laugh, including the merchant: "Habits. Even here."
-→ XP: 4 | Items: health_potion | Karma: human+3
-
-**[Persuasion 2] Inspire them to give their suffering more purpose**
-→ Text — words land differently here; one of them cries; another: "We could actually do something with our time here"; when you leave they're still talking; their camp looks like the beginning of something
-→ XP: 12 | Karma: human+6, god+4, hell-5
-
-**[Default] Watch from a distance without disturbing them**
-→ Text — one of them looks up and sees you; they raise a hand; you raise yours; they return to their conversation; that is enough for both of you
-→ XP: 2 | Karma: human+2
-
----
-
-### FORGE SPIRIT
-*Not blocking | One-time | Icon: npc | Weight: 2*
-
-An abandoned forge glows with ancient heat — the fire here has not gone out in centuries. A translucent figure works the bellows with practiced rhythm, hammer rising and falling on metal that is not there.
-
-She stops as you approach. *"Oh. A visitor. Forgive me — I lose track of... everything. What day is it?"*
-
-**[Default] Tell her what you know of the current state of the realm**
-→ Text — she processes each piece of news slowly; then: "Thank you. No one has told me anything in... I genuinely don't know how long. You forget there is news to be had." She works the bellows harder.
-→ XP: 5 | Karma: human+4, god+2
-
-**[White Magic 2] Help her find the peace she is missing**
-→ Text — long conversation about what she made, who she made it for; the hammer and bellows slow; "I kept thinking there was one more thing to finish. But it was already finished." She looks up: "Oh. There it is." And then she is simply gone — complete. Her tools left behind, solid now.
-→ XP: 14 | Items: fire_crystal | Karma: god+8, hell-8, human+5
-
-**[Crafting 2] Ask to learn her craft techniques**
-→ Text — ancient methods based on relationship with material rather than mastery; she shows you how to hear what a metal wants to become; your hands remember what your mind can't quite hold
-→ XP: 10 | Karma: human+4, asura+3
-
-**[Default] Leave the spirit to her work**
-→ Text — bow at the entrance; she does not look up, but the rhythm of the hammer changes briefly — a different beat, just for a moment — then returns; a greeting, in the only language available
-→ XP: 2 | Karma: human+1
-
-
-*Last updated: 2026-02-24*
+*Last updated: 2026-02-27*

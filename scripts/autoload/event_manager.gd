@@ -421,7 +421,7 @@ func apply_outcome(outcome: Dictionary) -> void:
 						CharacterSystem.derive_stats(char)
 					print("EventManager: Applied buff +%d %s for %d combat(s)" % [amount, stat, combats])
 
-		# HP/Mana restore — e.g. {"hp_percent": 50, "mana_percent": 50}
+		# HP/Mana/Stamina restore — e.g. {"hp_percent": 50, "mana_percent": 50, "stamina_percent": 100}
 		if "restore" in rewards:
 			var restore = rewards.restore
 			for char in CharacterSystem.get_party():
@@ -431,7 +431,10 @@ func apply_outcome(outcome: Dictionary) -> void:
 				if "mana_percent" in restore:
 					var mana_amount = int(char.derived.max_mana * restore.mana_percent / 100.0)
 					char.derived.current_mana = min(char.derived.current_mana + mana_amount, char.derived.max_mana)
-			print("EventManager: Restored party HP/mana")
+				if "stamina_percent" in restore:
+					var stam_amount = int(char.derived.max_stamina * restore.stamina_percent / 100.0)
+					char.derived.current_stamina = min(char.derived.current_stamina + stam_amount, char.derived.max_stamina)
+			print("EventManager: Restored party HP/mana/stamina")
 
 		# Learn a random spell — e.g. {"school": "white_magic", "level_range": [1, 2]}
 		# Future: pick from spell database. For now, log intent.

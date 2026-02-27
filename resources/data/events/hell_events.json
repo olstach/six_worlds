@@ -3213,6 +3213,97 @@
 					}
 				}
 			]
+		},
+		"hell_sigh_of_relief": {
+			"id": "hell_sigh_of_relief",
+			"title": "A Sigh of Relief",
+			"realm": "hell",
+			"text": "You feel strangely drawn towards a clearing, where among the bleakness a figure stands shining softly. A bodhisattva from the higher realms has come to the Hells to give offerings and teach the suffering shades.\n\nAs you come closer you see piles of food, drink, and medicine manifesting from thin air, imps swarming around and swallowing mouthfuls.",
+			"choices": [
+				{
+					"id": "meditate",
+					"type": "requirement",
+					"text": "Meditate in the presence of the Bodhisattva",
+					"requirements": {
+						"skills": {
+							"yoga": 2
+						}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "As you settle down and focus, you recognize there is no boundary between you. The teacher smiles and raises their hand to bless you.\n\nA warmth spreads through your body — not the burning heat of this realm, but something gentler. Something remembered.",
+						"rewards": {
+							"xp": 12
+						},
+						"karma": {
+							"hell": -5,
+							"human": 3,
+							"god": 5
+						}
+					}
+				},
+				{
+					"id": "listen",
+					"type": "requirement",
+					"text": "Listen to the teachings",
+					"requirements": {
+						"attributes": {
+							"focus": 14
+						}
+					},
+					"outcome": {
+						"type": "text",
+						"text": "Impermanence, compassion, joy. It seems like you have heard these words before, but long forgotten their meaning.\n\nThe bodhisattva speaks without urgency, as though time here is different — and perhaps it is. When the teaching ends, the words continue to resonate somewhere you cannot quite locate.",
+						"rewards": {
+							"xp": 10
+						},
+						"karma": {
+							"hell": -3,
+							"human": 3,
+							"god": 3
+						}
+					}
+				},
+				{
+					"id": "partake",
+					"type": "default",
+					"text": "Come and take your fill",
+					"outcome": {
+						"type": "text",
+						"text": "For a moment, all your fears and hopes dissolve into the present moment. You are content.\n\nThe food tastes like nothing you have eaten in this realm — clean, simple, nourishing. Your wounds close. Your mind clears. Your body remembers what it feels like to be whole.",
+						"rewards": {
+							"xp": 8,
+							"restore": {
+								"hp_percent": 100,
+								"mana_percent": 100,
+								"stamina_percent": 100
+							}
+						},
+						"karma": {
+							"hell": -3,
+							"hungry_ghost": 2,
+							"animal": 2,
+							"human": 2
+						}
+					}
+				},
+				{
+					"id": "grab",
+					"type": "default",
+					"text": "Rush in and take as much as you can",
+					"outcome": {
+						"type": "text",
+						"text": "You shove past the imps and grab armfuls of food and medicine — but as your hands close around them, they dissolve like mist. The clearing shimmers. The bodhisattva regards you with an expression that is not disappointment but something closer to recognition.\n\nThe scene vanishes as if it was never there.",
+						"rewards": {
+							"xp": 0
+						},
+						"karma": {
+							"hell": 5,
+							"hungry_ghost": 5
+						}
+					}
+				}
+			]
 		}
 	}
 }
