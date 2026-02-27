@@ -82,7 +82,7 @@
 	"object_pools": {
 		"cold_hell": {
 			"events": [
-				{"event_id": "hell_demon_patrol", "name": "Demon Patrol", "icon": "enemy", "blocking": true, "one_time": true, "weight": 3},
+				{"event_id": "hell_demon_patrol", "name": "Demon Patrol", "icon": "enemy", "blocking": true, "one_time": true, "weight": 2},
 				{"event_id": "hell_ice_spirits", "name": "Ice Spirits", "icon": "enemy", "blocking": true, "one_time": true, "weight": 2},
 				{"event_id": "hell_frozen_merchant", "name": "Frozen Merchant", "icon": "shop", "blocking": false, "one_time": false, "weight": 2, "tag": "shop"},
 				{"event_id": "hell_lost_wanderer", "name": "Lost Wanderer", "icon": "npc", "blocking": false, "one_time": true, "weight": 3},
@@ -180,7 +180,7 @@
 			{"name": "Frost Imp", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.7, "enemy_group": "frost_imp", "difficulty": "normal", "weight": 4},
 			{"name": "Lost Souls", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.3, "enemy_group": "lost_souls", "difficulty": "normal", "weight": 8},
 			{"name": "Shadow Stalker", "icon": "enemy", "mode": 0, "attitude": 2, "speed": 0.8, "enemy_group": "shadow_stalker", "difficulty": "hard", "aggression": 0.4, "weight": 1},
-			{"name": "Hermit Monk", "icon": "npc", "mode": 2, "attitude": 0, "speed": 0.3, "event_id": "hell_hermit_monk", "weight": 3},
+			{"name": "Wandering Hermit", "icon": "npc", "mode": 2, "attitude": 0, "speed": 0.3, "event_id": "hell_hermit_monk", "weight": 3},
 			{"name": "Wandering Peddler", "icon": "merchant", "mode": 2, "attitude": 0, "speed": 0.4, "event_id": "hell_wandering_peddler", "weight": 2, "tag": "shop"},
 			{"name": "Tormented Shade", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.2, "enemy_group": "lost_souls", "difficulty": "normal", "weight": 5}
 		],

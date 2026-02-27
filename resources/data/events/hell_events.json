@@ -4,7 +4,7 @@
 			"id": "hell_demon_patrol",
 			"title": "Demon Patrol",
 			"realm": "hell",
-			"text": "Three demons in frost-crusted armor block the path ahead. Their captain, a horned brute with blue-black skin, raises a jagged halberd.\n\n'No one passes without the Warden's permission,' it snarls. 'State your business or prepare to suffer.'",
+			"text": "Three demons in frost-crusted armor block the path ahead. Their captain, a horned brute with blue-black skin, raises a jagged halberd.\n\n\"No one passes without the Warden's permission. State your business or prepare to suffer.\"",
 			"choices": [
 				{
 					"id": "fight",
@@ -13,12 +13,11 @@
 					"outcome": {
 						"type": "combat",
 						"enemy_group": "demon_patrol",
-						"text": "The demons bare their fangs and charge. Steel clashes against frozen stone.",
+						"difficulty": "hard",
 						"karma": {
 							"hell": 3,
 							"asura": 2
-						},
-						"difficulty": "hard"
+						}
 					}
 				},
 				{
@@ -27,12 +26,12 @@
 					"text": "Convince them you serve the Warden",
 					"requirements": {
 						"attributes": {
-							"charm": 14
+							"charm": 15
 						}
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You speak with authority, weaving a convincing tale of servitude to the Warden. The captain eyes you suspiciously but ultimately waves you through.\n\n'Move quickly. We don't tolerate liars.'",
+						"text": "\"Well, if you say so.\"",
 						"rewards": {
 							"xp": 8
 						},
@@ -45,16 +44,19 @@
 				{
 					"id": "sneak",
 					"type": "roll",
-					"text": "Slip past while they argue amongst themselves",
+					"text": "Throw a bag of gold and slip past while they argue amongst themselves",
 					"requirements": {
 						"roll": {
 							"attribute": "finesse",
-							"difficulty": 13
+							"difficulty": 14
 						}
+					},
+					"cost": {
+						"gold": "small"
 					},
 					"outcome_success": {
 						"type": "text",
-						"text": "You time your movement perfectly, sliding through the shadows while the demons bicker about rations. They never notice your passing.",
+						"text": "Maybe sometimes it's true that greed is good.",
 						"rewards": {
 							"xp": 6
 						},
@@ -66,7 +68,7 @@
 					"outcome_failure": {
 						"type": "combat",
 						"enemy_group": "demon_patrol",
-						"text": "A demon spots you mid-step. 'SPY!' it shrieks. They attack in a frenzy.",
+						"text": "They look on you with confused pity and draw their weapons.",
 						"karma": {
 							"hell": 5
 						},
@@ -77,15 +79,18 @@
 					"id": "bribe",
 					"type": "default",
 					"text": "Offer them gold to look the other way",
+					"cost": {
+						"gold": "moderate"
+					},
 					"outcome": {
 						"type": "text",
-						"text": "You hold out a pouch of coins. The captain's eyes gleam with greed. 'Fine. But if anyone asks, we never saw you.' The patrol steps aside, pocketing your gold.",
+						"text": "They quickly pocket the gold and step aside.",
 						"rewards": {
 							"xp": 3
 						},
 						"karma": {
 							"hungry_ghost": 5,
-							"hell": -1
+							"human": 2
 						}
 					}
 				}
@@ -93,9 +98,9 @@
 		},
 		"hell_ice_spirits": {
 			"id": "hell_ice_spirits",
-			"title": "Spirits of the Frozen Lake",
+			"title": "Ice Spirits",
 			"realm": "hell",
-			"text": "Translucent figures drift above the frozen surface of a vast lake. Their forms shimmer between beautiful and terrible — frozen souls trapped in an eternal dance. One turns toward you, its hollow eyes filled with ancient sorrow.\n\n'We guard what lies beneath,' it whispers, voice like cracking ice. 'The dreaming dead must not be disturbed.'",
+			"text": "Translucent figures drift above the frozen surface of a vast lake. Their forms shimmer, beautiful and terrible, trapped in an eternal dance. One turns toward you, its hollow eyes filled with sorrow.\n\n\"Do not disturb those dreaming below.\"",
 			"choices": [
 				{
 					"id": "fight",
@@ -104,12 +109,11 @@
 					"outcome": {
 						"type": "combat",
 						"enemy_group": "ice_spirits",
-						"text": "The spirits shriek and crystallize into jagged forms of ice and rage.",
+						"difficulty": "hard",
 						"karma": {
 							"hell": 5,
 							"asura": 3
-						},
-						"difficulty": "hard"
+						}
 					}
 				},
 				{
@@ -118,12 +122,12 @@
 					"text": "Speak to them in the language of water and cold",
 					"requirements": {
 						"skills": {
-							"water_magic": 2
+							"water_magic": 3
 						}
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You weave a gentle spell, letting frost patterns form words on your breath. The spirits recognize a kindred soul. They part like a curtain of snow, revealing the path ahead.\n\nThe lead spirit presses something cold into your hand — a shard of living ice that hums with power.",
+						"text": "They recognize a kindred soul and part. Before you leave, the lead spirit shoves an ice shard in your hand.",
 						"rewards": {
 							"xp": 10,
 							"items": [
@@ -147,7 +151,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You settle into stillness, letting your awareness expand. The spirits gather close, drawn by your calm. Through meditation, you glimpse their memories — lives lived, suffering endured, and the wisdom that comes from accepting impermanence.\n\nWhen you open your eyes, the spirits have parted, and you carry their stories with you.",
+						"text": "Through stillness you glimpse their memories. They become transparent and vanish into the cold mist.",
 						"rewards": {
 							"xp": 12
 						},
@@ -163,7 +167,7 @@
 					"text": "Leave an offering at the lake's edge and pray",
 					"outcome": {
 						"type": "text",
-						"text": "You kneel at the frozen shore and place a small offering. The spirits watch in silence. One drifts close and touches your forehead — a sensation of cold so deep it becomes warmth.\n\nThe path opens before you. They remember kindness.",
+						"text": "One spirit touches your forehead: a sensation of cold so deep it becomes warm. They part and let you through.",
 						"rewards": {
 							"xp": 5
 						},
@@ -178,9 +182,9 @@
 		},
 		"hell_frozen_merchant": {
 			"id": "hell_frozen_merchant",
-			"title": "The Frozen Merchant",
+			"title": "Frozen Merchant",
 			"realm": "hell",
-			"text": "A bundled figure huddles near a sputtering fire, surrounded by frost-covered wares. Despite the brutal cold, the merchant seems oddly cheerful.\n\n'Welcome, welcome! Don't mind the cold — it keeps the thieves away! I've got everything a traveler needs to survive this frozen wasteland. Well, almost everything. Can't sell warmth, sadly.'",
+			"text": "A bundled figure huddles near a sputtering fire, surrounded by tattered bags. Despite the brutal cold, the merchant seems oddly cheerful.\n\n\"Welcome, welcome! Don't mind the cold — it keeps the thieves away! I've got everything a traveler needs to survive this frozen wasteland. Well, almost everything.\"",
 			"choices": [
 				{
 					"id": "browse",
@@ -189,7 +193,6 @@
 					"outcome": {
 						"type": "shop",
 						"shop_id": "frozen_merchant",
-						"text": "You spend some time examining the merchant's collection. Despite the harsh conditions, the goods are surprisingly well-preserved.",
 						"karma": {
 							"human": 1
 						}
@@ -198,7 +201,7 @@
 				{
 					"id": "haggle",
 					"type": "requirement",
-					"text": "Use your trade knowledge to negotiate better prices",
+					"text": "Try to negotiate better prices",
 					"requirements": {
 						"skills": {
 							"trade": 2
@@ -206,7 +209,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "Your expertise impresses the merchant. 'Ah, a fellow professional! I respect that.' After some friendly haggling, you come away with useful supplies at a fair price — and the merchant's respect.",
+						"text": "The merchant nods his head, impressed.",
 						"rewards": {
 							"xp": 5,
 							"items": [
@@ -224,7 +227,7 @@
 					"text": "Ask about the region",
 					"outcome": {
 						"type": "text",
-						"text": "'This place? The Frozen Wastes — Naraka's cold side. You've got ice wraiths, lost souls, and worse. But the real danger is the Lava Guardian to the south. That one's been here since the realm formed, they say.'\n\nThe merchant lowers their voice. 'Yama's lieutenant guards the realm gate to the east. Nasty piece of work. If you're heading that way, you'd best be prepared.'",
+						"text": "He warns you about ice wraiths, the Lava Guardian, and Yama's lieutenant standing guard in the far south.",
 						"rewards": {
 							"xp": 2
 						},
@@ -239,7 +242,7 @@
 					"text": "Move on",
 					"outcome": {
 						"type": "text",
-						"text": "'Safe travels! Try not to freeze!' the merchant calls after you.",
+						"text": "\"Safe travels! Try not to freeze!\"",
 						"karma": {}
 					}
 				}
@@ -247,14 +250,14 @@
 		},
 		"hell_lost_wanderer": {
 			"id": "hell_lost_wanderer",
-			"title": "The Lost Wanderer",
+			"title": "Lost Wanderer",
 			"realm": "hell",
-			"text": "A shivering figure huddles by the roadside, barely conscious. Their robes are torn and frostbitten skin shows through. They look up with desperate eyes.\n\n'Please... I've been wandering for so long. I can't feel my hands anymore. Is this... is this what I deserve?'",
+			"text": "A shivering figure huddles by the roadside, barely conscious. Their robes are torn and frostbitten skin shows through.\n\n\"Please... I've been wandering for so long. I can't feel my hands anymore. Is this... is this what I deserve?\"",
 			"choices": [
 				{
 					"id": "heal",
 					"type": "requirement",
-					"text": "Tend to their wounds with your medical knowledge",
+					"text": "Tend to their wounds",
 					"requirements": {
 						"skills": {
 							"medicine": 1
@@ -262,7 +265,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You kneel beside them, treating frostbite and wrapping their wounds. Color slowly returns to their face.\n\n'Thank you,' they whisper. 'I was a merchant who cheated the poor. This is my penance. But your kindness... it reminds me that mercy still exists.' They press a trinket into your hands before shuffling away, something lighter in their step.",
+						"text": "Color returns to their face. When you rise to leave, they press a mala into your hands.",
 						"rewards": {
 							"xp": 8,
 							"items": [
@@ -280,9 +283,12 @@
 					"id": "give_gold",
 					"type": "default",
 					"text": "Give them some gold and food",
+					"cost": {
+						"gold_and_food": "some"
+					},
 					"outcome": {
 						"type": "text",
-						"text": "You share what provisions you can spare. The wanderer weeps with gratitude.\n\n'I spent my life hoarding wealth while others starved. This cold is my punishment. But you — you give freely. May your kindness echo through your next life.'",
+						"text": "They weep with gratitude, whispering memories of hoarding wealth while others starved.",
 						"rewards": {
 							"xp": 4
 						},
@@ -299,7 +305,7 @@
 					"text": "Ask how they came to be here",
 					"outcome": {
 						"type": "text",
-						"text": "'I was a tax collector,' they say, eyes distant. 'I took more than was owed and kept it for myself. Families went hungry because of my greed. When I died, I found myself here — forever cold, forever hungry, just as I made others feel.'\n\nThey manage a bitter smile. 'At least I understand now. Understanding is something.'",
+						"text": "They were a tax collector. Now they better understand their victims' suffering.",
 						"rewards": {
 							"xp": 3
 						},
@@ -314,7 +320,7 @@
 					"text": "Walk past without stopping",
 					"outcome": {
 						"type": "text",
-						"text": "You avert your eyes and continue on. The wanderer watches you go in silence. The cold feels a little sharper.",
+						"text": "They watch you go in silence; the cold feels a little sharper.",
 						"karma": {
 							"hell": 2,
 							"animal": 2
@@ -325,9 +331,9 @@
 		},
 		"hell_lava_guardian": {
 			"id": "hell_lava_guardian",
-			"title": "The Lava Guardian",
+			"title": "Lava Guardian",
 			"realm": "hell",
-			"text": "A massive elemental of molten rock blocks the passage between the ice fields and the volcanic badlands. Heat radiates from it in waves, melting the frost for meters around. It speaks with a voice of grinding stone.\n\n'NONE SHALL PASS between the realms of fire and ice. This is the law since the First Suffering. Prove your worth or be consumed.'",
+			"text": "A massive elemental of molten rock blocks the passage between the ice fields and the volcanic badlands. Heat radiates from it in waves, melting the frost for meters around. It speaks with a voice of grinding stone.\n\n\"NONE SHALL PASS between the realms of fire and ice. This has been the law for beginningless aeons. Prove your worth or be consumed.\"",
 			"choices": [
 				{
 					"id": "fight",
@@ -337,7 +343,6 @@
 						"type": "combat",
 						"enemy_group": "lava_guardian",
 						"difficulty": "hard",
-						"text": "The guardian roars, lava surging through cracks in its stone body. The ground itself trembles as it charges.",
 						"karma": {
 							"asura": 3,
 							"hell": 2
@@ -357,7 +362,7 @@
 						"type": "combat",
 						"enemy_group": "lava_guardian",
 						"difficulty": "normal",
-						"text": "The guardian pauses, impressed by your martial bearing. 'A warrior of discipline. Very well — we fight with honor.' It shapes itself into a more humanoid form, meeting you on equal terms.",
+						"text": "It fights fairly, with reduced ferocity.",
 						"karma": {
 							"asura": 5,
 							"human": 2
@@ -367,7 +372,7 @@
 				{
 					"id": "find_path",
 					"type": "roll",
-					"text": "Search for an alternate route around the guardian",
+					"text": "Search for an alternate route",
 					"requirements": {
 						"roll": {
 							"attribute": "awareness",
@@ -376,7 +381,7 @@
 					},
 					"outcome_success": {
 						"type": "text",
-						"text": "Your keen eyes spot a narrow passage through the rocks, hidden by steam and shadow. You slip through while the guardian watches its main approach. On the other side, you find an old offering left by a previous traveler.",
+						"text": "You find a hidden passage and discover a charm left by a previous traveler.",
 						"rewards": {
 							"xp": 10,
 							"items": [
@@ -392,7 +397,7 @@
 						"type": "combat",
 						"enemy_group": "lava_guardian",
 						"difficulty": "hard",
-						"text": "Your attempt to circle around draws the guardian's attention. 'COWARD!' it bellows, cutting off your escape. Magma erupts from the ground around you.",
+						"text": "Spotted! The guardian attacks.",
 						"karma": {
 							"hell": 3
 						}
@@ -401,7 +406,7 @@
 				{
 					"id": "meditate",
 					"type": "requirement",
-					"text": "Meditate on the nature of boundaries and suffering",
+					"text": "Sit before it in meditation",
 					"requirements": {
 						"skills": {
 							"yoga": 3
@@ -409,7 +414,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You sit before the elemental and close your eyes. The heat is terrible, but you breathe through it, accepting the pain as just another sensation.\n\nMinutes pass. Hours. The guardian watches, then slowly, almost reverently, steps aside.\n\n'You understand,' it rumbles. 'The boundary between suffering and liberation is thinner than the skin between fire and ice. Pass, seeker.'",
+						"text": "Hours pass; the guardian recognizes your understanding and silently steps aside.",
 						"rewards": {
 							"xp": 15
 						},
@@ -426,7 +431,7 @@
 			"id": "hell_boss_yama_lt",
 			"title": "Yama's Lieutenant",
 			"realm": "hell",
-			"text": "A towering demon in ornate black and gold armor stands before the Realm Gate, a massive stone arch crackling with otherworldly energy. Its four arms hold different weapons — sword, mace, spear, and a mirror that shows nothing.\n\n'I am Chitragupta, Lieutenant of Yama, Lord of Death,' it announces. 'I have judged every soul that passes through this gate. Tell me, mortal — do you believe your deeds merit passage?'",
+			"text": "A towering demon in ornate black and gold armor stands before the Realm Gate. Its four arms hold different weapons — sword, mace, spear, and a mirror that shows nothing.\n\n\"I am Chitragupta, Lieutenant of Yama, Lord of Death. I have judged every soul that passes through this gate. Tell me, mortal — do you believe your deeds merit passage?\"",
 			"choices": [
 				{
 					"id": "fight",
@@ -436,7 +441,6 @@
 						"type": "combat",
 						"enemy_group": "yama_lieutenant",
 						"difficulty": "boss",
-						"text": "Chitragupta sighs — a sound like wind through a graveyard. 'So be it. Violence is the language of those who have not yet learned.' All four arms raise their weapons simultaneously.",
 						"karma": {
 							"hell": 5,
 							"asura": 5
@@ -454,7 +458,7 @@
 					},
 					"outcome": {
 						"type": "combat",
-						"text": "You speak at length about your journey, your intentions, your desire to understand the suffering of all realms. Chitragupta listens impassively, then raises the mirror.\n\nIn it, you see your own reflection — but changed, somehow more luminous.\n\n'Your words carry weight,' it concedes. 'But words alone do not open gates.' It lowers two of its weapons. 'We shall test your resolve — but I will judge fairly.'\n\nThe lieutenant assumes a fighting stance, but with diminished ferocity.",
+						"text": "It listens, lowers two weapons, giving you a fair chance.",
 						"rewards": {
 							"xp": 10
 						},
@@ -472,7 +476,7 @@
 					"text": "Confess your doubts honestly",
 					"outcome": {
 						"type": "combat",
-						"text": "'I don't know if I deserve passage,' you admit. 'I've done what I could, but I've also made mistakes. I ask only for the chance to keep trying.'\n\nThe mirror flashes. Chitragupta studies it for a long moment.\n\n'Honesty. Rare, in any realm.' A pause. 'You may not pass without combat — that is the law. But I will remember your humility.' The lieutenant raises only two weapons, the sword and mirror.",
+						"text": "Honesty impresses him, reduced ferocity.",
 						"rewards": {
 							"xp": 8
 						},
@@ -491,12 +495,12 @@
 					"text": "Sit before the gate and meditate on the nature of death",
 					"requirements": {
 						"skills": {
-							"yoga": 4
+							"yoga": 5
 						}
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You sit before the Realm Gate, closing your eyes. The lieutenant watches, weapons ready. Hours pass. Days, perhaps — time has no meaning in Naraka.\n\nSlowly, the boundary between self and gate dissolves. You are the stone, the energy, the judgment itself. Chitragupta lowers all four weapons.\n\n'You have passed through death without moving,' it says softly. 'The gate was never locked. It was only ever your own fear.' The arch blazes with light, and the path to the next realm opens.",
+						"text": "Hours dissolve into the earth, days dissolve into the sky, finally the boundary dissolves into space.",
 						"rewards": {
 							"xp": 20
 						},
@@ -511,9 +515,9 @@
 		},
 		"hell_frozen_cave": {
 			"id": "hell_frozen_cave",
-			"title": "The Frozen Cave",
+			"title": "Frozen Cave",
 			"realm": "hell",
-			"text": "A dark cave mouth yawns in the hillside, rimmed with glittering ice crystals. From deep within comes a faint glow and the distant sound of dripping water — warm water, impossibly, in this frozen waste.\n\nScratches on the cave walls suggest others have entered before. Not all of the scratches point inward.",
+			"text": "A dark cave rimmed with glittering ice crystals yawns in the hillside like a great mouth. From deep within comes a faint glow and the distant sound of dripping water — warm water, impossibly, in this frozen waste.",
 			"choices": [
 				{
 					"id": "enter",
@@ -522,12 +526,12 @@
 					"requirements": {
 						"roll": {
 							"attribute": "awareness",
-							"difficulty": 12
+							"difficulty": 14
 						}
 					},
 					"outcome_success": {
 						"type": "text",
-						"text": "You move carefully through the passage, noting the telltale signs of a trap — loose stones, an unnatural silence. You step around the deadfall and find a hidden chamber warmed by a geothermal spring.\n\nAmong the bones of less fortunate explorers, you discover useful supplies and a journal describing safe routes through the frozen wastes.",
+						"text": "You spot the trap and walk around it. Soon you find a hidden chamber and leave with a couple potions.",
 						"rewards": {
 							"xp": 8,
 							"items": [
@@ -541,7 +545,7 @@
 					},
 					"outcome_failure": {
 						"type": "text",
-						"text": "The cave floor gives way beneath you! You tumble into a lower chamber, bruised but alive. After climbing back up by a different route, you find a small cache of supplies — but the fall took its toll.",
+						"text": "You fall into a lower chamber, find a cache but take a knock.",
 						"rewards": {
 							"xp": 4,
 							"items": [
@@ -564,9 +568,9 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "Your trained eye reads the cave like a book. The scratches are warnings in an old demon script: 'Trap below, treasure within.' You navigate the hazards with ease and find the hidden chamber.\n\nThe warm spring is a natural wonder — a pocket of heat in the frozen realm. Among the stones, you find preserved artifacts and scrolls of surprising value.",
+						"text": "You notice a warning in old demon script among the scratch marks on the cave wall. Taking it to heart, you carefully descend into the cave along its left-hand wall and soon emerge back with loot.",
 						"rewards": {
-							"xp": 10,
+							"xp": 8,
 							"items": [
 								"health_potion",
 								"mana_potion"
@@ -583,17 +587,20 @@
 					"text": "The cave looks dangerous — best to move on",
 					"outcome": {
 						"type": "text",
-						"text": "Discretion is the better part of valor. You leave the cave to whatever sleeps within and continue on your way.",
-						"karma": {}
+						"text": "Discretion is the better part of valor.",
+						"karma": {
+							"hungry_ghost": 1,
+							"animal": 1
+						}
 					}
 				}
 			]
 		},
 		"hell_tormented_soul": {
 			"id": "hell_tormented_soul",
-			"title": "The Tormented Soul",
+			"title": "Tormented Soul",
 			"realm": "hell",
-			"text": "A ghostly figure sits amid the frost, weeping silently. Unlike the mindless lost souls that wander the wastes, this one retains its form — the shape of an old woman in tattered robes. She looks up with eyes that hold centuries of regret.\n\n'Can you see me? Truly see me? So few can anymore...'",
+			"text": "A ghostly figure sits amid the frost, weeping silently. Unlike the mindless lost souls, this one retains its form — the shape of an old woman in tattered robes.\n\n\"Can you see me? Truly see me? So few can anymore...\"",
 			"choices": [
 				{
 					"id": "help",
@@ -606,14 +613,14 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You channel healing light, letting it wash over the spirit. She gasps — not in pain, but in recognition.\n\n'I was a healer once, too,' she whispers as her form begins to shimmer and dissolve. 'I turned away a sick child because his family couldn't pay. I've been trapped here by that single act of cruelty.'\n\nAs she fades, she smiles. 'Your compassion has freed me. Take my blessing — may you never turn away from those in need.'\n\nA warmth settles into your bones that the cold cannot touch.",
+						"text": "She dissolves into light with a sigh. In life, she was a healer who once turned away a sick wanderer for a lack of payment.",
 						"rewards": {
 							"xp": 10
 						},
 						"karma": {
-							"hell": -8,
-							"human": 5,
-							"god": 5
+							"hell": -5,
+							"human": 3,
+							"god": 3
 						}
 					}
 				},
@@ -623,12 +630,12 @@
 					"text": "Sit beside her and listen",
 					"outcome": {
 						"type": "text",
-						"text": "You sit quietly on the frozen ground. The spirit speaks — haltingly at first, then in a rush, as though a dam has broken.\n\nShe tells you of her life, her mistakes, her understanding of why she suffers. It is a story of small cruelties compounded, of good intentions corrupted by fear.\n\n'Thank you for listening,' she says when the words run dry. 'No one has listened in... I don't remember how long.' She seems a little more solid, a little more at peace.",
+						"text": "She speaks of small cruelties compounded until her breath grows a little longer and slower.",
 						"rewards": {
 							"xp": 6
 						},
 						"karma": {
-							"human": 5,
+							"human": 3,
 							"god": 2,
 							"hell": -3
 						}
@@ -640,16 +647,16 @@
 					"text": "Perform a ritual to release her spirit",
 					"requirements": {
 						"skills": {
-							"ritual": 2
+							"ritual": 3
 						}
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You trace sacred symbols in the frost and begin the rite of release. The spirit watches with growing wonder as the ritual takes shape — a mandala of liberation.\n\n'You understand the old ways,' she breathes. As the ritual completes, her form dissolves into motes of light that drift upward through the frozen sky.\n\nWhere she sat, a small crystal remains — condensed from the purity of a soul finally freed.",
+						"text": "You write a mandala of liberation by sight around her. She dissolves into light, leaving a piece of turquoise behind.",
 						"rewards": {
 							"xp": 12,
 							"items": [
-								"soul_crystal"
+								"soul_stone"
 							]
 						},
 						"karma": {
@@ -662,10 +669,10 @@
 				{
 					"id": "ignore",
 					"type": "default",
-					"text": "Walk past — ghosts are none of your concern",
+					"text": "Walk past — you have enough of your own problems",
 					"outcome": {
 						"type": "text",
-						"text": "You walk past without acknowledging her. The spirit's weeping grows quieter, then stops. When you glance back, she is staring at you with empty eyes.\n\nThe cold deepens.",
+						"text": "The weeping grows quieter, then stops. The cold deepens.",
 						"karma": {
 							"hell": 3,
 							"animal": 2
@@ -678,7 +685,7 @@
 			"id": "hell_crossroads_shrine",
 			"title": "Crossroads Shrine",
 			"realm": "hell",
-			"text": "An ancient shrine sits where the roads cross, half-buried in frost and old offerings. Despite the cold, incense sticks still smolder in cracked holders, filling the air with sandalwood. A faded mandala is painted on the stone base.\n\nThe shrine radiates a faint warmth — a tiny island of peace in the frozen waste.",
+			"text": "An ancient shrine sits where the roads cross, half-buried in snow and old offerings. Incense sticks still smolder in cracked holders, faded ribbons hang stiffly in the wind.",
 			"choices": [
 				{
 					"id": "pray",
@@ -686,20 +693,20 @@
 					"text": "Offer a prayer for safe passage",
 					"outcome": {
 						"type": "text",
-						"text": "You clasp your hands and bow before the shrine. The words come easily — a simple prayer for safety, for guidance, for the strength to endure.\n\nThe incense flares briefly, and a feeling of calm settles over you.",
+						"text": "Incense flares briefly, your breath deepens.",
 						"rewards": {
 							"xp": 2
 						},
 						"karma": {
 							"god": 2,
-							"human": 1
+							"human": 2
 						}
 					}
 				},
 				{
 					"id": "meditate",
 					"type": "requirement",
-					"text": "Enter deep meditation at the sacred crossroads",
+					"text": "Meditate",
 					"requirements": {
 						"skills": {
 							"yoga": 1
@@ -707,9 +714,9 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You settle into a meditative posture before the shrine. The crossroads — a meeting point of paths, choices, possibilities — becomes a metaphor for existence itself.\n\nAs your breathing deepens, the mandala seems to glow. Energy flows through you, restoring what the cold has drained.",
+						"text": "The shrine seems to glow, a tiny lamp of Dharma lost among the wasteland.",
 						"rewards": {
-							"xp": 3
+							"xp": 4
 						},
 						"karma": {
 							"god": 3,
@@ -720,34 +727,44 @@
 				{
 					"id": "offering",
 					"type": "default",
-					"text": "Leave a small offering of gold",
+					"text": "Leave a small offering",
+					"cost": {
+						"gold": "small"
+					},
 					"outcome": {
 						"type": "text",
-						"text": "You place a few coins at the shrine's base. The offering joins dozens of others — some ancient, some fresh. It seems you are not the only traveler who finds comfort here.\n\nGenerosity, even in small amounts, carries weight in a realm defined by selfishness.",
+						"text": "Your coins join dozens of others, united in the intent for a better world.",
 						"rewards": {
 							"xp": 2
 						},
 						"karma": {
 							"god": 3,
 							"hungry_ghost": -2,
-							"hell": -1
+							"hell": -2
 						}
 					}
 				},
 				{
-					"id": "study_mandala",
+					"id": "protection",
 					"type": "requirement",
-					"text": "Study the mandala's intricate patterns",
+					"text": "Implore the shrine's guardians for protection",
 					"requirements": {
 						"skills": {
-							"ritual": 1
+							"ritual": 2
 						}
 					},
 					"outcome": {
 						"type": "text",
-						"text": "The mandala is ancient but the geometry is precise — a pattern of protection and purification. As you trace the lines with your eyes, you begin to understand its construction, adding to your own ritual knowledge.\n\nThis shrine was built by someone who understood the deep structure of suffering and how to transform it.",
+						"text": "Vows outlast bodies. The incense smoke briefly dances in the still air.",
 						"rewards": {
-							"xp": 5
+							"xp": 4,
+							"buffs": [
+								{
+									"stat": "constitution",
+									"amount": 2,
+									"combats_remaining": 1
+								}
+							]
 						},
 						"karma": {
 							"human": 3,
@@ -761,7 +778,7 @@
 					"text": "Continue on your way",
 					"outcome": {
 						"type": "text",
-						"text": "You nod respectfully at the shrine and continue walking. Sometimes the journey itself is the practice.",
+						"text": "You nod respectfully and continue on your way.",
 						"karma": {}
 					}
 				}
@@ -769,9 +786,9 @@
 		},
 		"hell_wandering_peddler": {
 			"id": "hell_wandering_peddler",
-			"title": "The Wandering Peddler",
+			"title": "Wandering Peddler",
 			"realm": "hell",
-			"text": "A hunched figure dragging a heavy sack waves you down. Despite the brutal conditions, the peddler seems almost cheerful, rattling with trinkets and tools.\n\n'Psst! Traveler! You look like you could use some supplies. I've got just the things — pulled from the frozen dead, cleaned up nice. Don't look at me like that, they don't need them anymore!'",
+			"text": "A hunched figure dragging a heavy sack waves you down.\n\n\"Psst! Traveler! You look like you could use some supplies. I've got just the things — all cleaned up nice.\"",
 			"choices": [
 				{
 					"id": "browse",
@@ -780,7 +797,6 @@
 					"outcome": {
 						"type": "shop",
 						"shop_id": "wandering_peddler",
-						"text": "The peddler eagerly spreads out their wares. The collection is eclectic — some things genuinely useful, others of questionable origin.",
 						"karma": {
 							"human": 1
 						}
@@ -792,12 +808,12 @@
 					"text": "Ask for directions and local knowledge",
 					"outcome": {
 						"type": "text",
-						"text": "'Directions? Sure, sure!' The peddler gestures wildly. 'North road leads to the merchant camp — good prices there. The frozen lake is dangerous, ice spirits and all. South is lava country, watch your step.'\n\nThey lean in conspiratorially. 'Between you and me, the hermit monk up in the eastern hills knows things. Old things. Worth a visit if you've got the time.'",
+						"text": "He starts talking a lot but making little sense. You catch bits and pieces about frozen ghosts on the lake, wandering monks and torture chambers.",
 						"rewards": {
-							"xp": 2
+							"xp": 3
 						},
 						"karma": {
-							"human": 1
+							"human": 2
 						}
 					}
 				},
@@ -807,7 +823,7 @@
 					"text": "Decline politely and move on",
 					"outcome": {
 						"type": "text",
-						"text": "'Your loss!' the peddler shrugs, hoisting the sack back over their shoulder. 'If you change your mind, I'll be around. Always around...'",
+						"text": "\"Your loss! If you change your mind, I'll be around. I'm always around.\"",
 						"karma": {}
 					}
 				}
@@ -815,9 +831,9 @@
 		},
 		"hell_hermit_monk": {
 			"id": "hell_hermit_monk",
-			"title": "The Hermit Monk",
+			"title": "Wandering Hermit",
 			"realm": "hell",
-			"text": "A weathered monk in tattered robes approaches, seemingly at peace despite the frozen wasteland around him. His eyes are bright and clear, and he walks with the measured steps of one who has traveled very far indeed.\n\n'Ah, a fellow traveler,' he says with a warm smile. 'How rare to meet someone with open eyes in this place. Most who wander here are too consumed by their suffering to see clearly.'",
+			"text": "A weathered monk in tattered robes approaches, seemingly at peace despite the frozen wasteland. His eyes are bright and clear.\n\n\"Ah, hello. How rare to meet someone with open eyes.\"",
 			"choices": [
 				{
 					"id": "teaching",
@@ -830,9 +846,9 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "'You have begun the inner journey — good,' the monk says, seeing your practice. He sits on a frost-covered stone and speaks for what feels like hours.\n\nHe teaches about the nature of suffering — how the cold of this realm is not punishment but a mirror, reflecting the frozen hearts of those who dwell here.\n\n'The way out is not through the gate,' he says finally. 'The way out is through understanding. Every realm is a classroom.'",
+						"text": "He teaches about suffering and its root, the poisons of ignorance, desire and aversion.",
 						"rewards": {
-							"xp": 10
+							"xp": 4
 						},
 						"karma": {
 							"god": 5,
@@ -842,13 +858,22 @@
 				},
 				{
 					"id": "meditate",
-					"type": "default",
+					"type": "requirement",
 					"text": "Sit with him in meditation",
+					"requirements": {
+						"skills": {
+							"yoga": 3
+						}
+					},
 					"outcome": {
 						"type": "text",
-						"text": "Without a word, you both settle into meditation. The monk's presence is calming — like sitting near a fire in the cold. Time passes in comfortable silence.\n\nWhen you open your eyes, you feel restored. The monk smiles. 'Sometimes the best teaching is simply being present with another.'",
+						"text": "You sit in comfortable silence. Afterwards, you feel restored and somehow warmed.",
 						"rewards": {
-							"xp": 4
+							"xp": 6,
+							"restore": {
+								"hp_percent": 50,
+								"mana_percent": 50
+							}
 						},
 						"karma": {
 							"god": 3,
@@ -859,15 +884,15 @@
 				{
 					"id": "ask_karma",
 					"type": "requirement",
-					"text": "Ask the monk about the workings of karma",
+					"text": "Ask about the workings of karma",
 					"requirements": {
 						"attributes": {
-							"awareness": 14
+							"awareness": 16
 						}
 					},
 					"outcome": {
 						"type": "text",
-						"text": "The monk studies you carefully. 'You have perceptive eyes. Very well — I will tell you what I can.'\n\nHe speaks of the six realms, the wheel of becoming, and the subtle forces that draw souls from one life to the next. 'Your actions create ripples,' he explains. 'Not just the grand gestures — every small kindness, every moment of patience, every choice to help rather than harm. These ripples determine where the current carries you.'\n\nHe pauses. 'I cannot tell you your karma — no being can see their own clearly. But I will say this: the fact that you asked shows you are on the right path.'",
+						"text": "\"Every action, word and thought creates ripples throughout the thousandfold universe.\"",
 						"rewards": {
 							"xp": 8
 						},
@@ -880,10 +905,10 @@
 				{
 					"id": "move_on",
 					"type": "default",
-					"text": "Wish him well and continue your journey",
+					"text": "Wish him well and continue on your journey",
 					"outcome": {
 						"type": "text",
-						"text": "'Go well,' the monk says with a gentle bow. 'And remember — the cold cannot touch a warm heart.'\n\nHe turns and walks into the frost, his footsteps leaving no trace in the snow.",
+						"text": "He bows slightly and walks away. You notice there are no footprints left in his path.",
 						"rewards": {
 							"xp": 2
 						},
@@ -896,9 +921,9 @@
 		},
 		"hell_ice_yogi": {
 			"id": "hell_ice_yogi",
-			"title": "The Frozen Waterfall Yogi",
+			"title": "Frozen Waterfall Yogi",
 			"realm": "hell",
-			"text": "Before a magnificent frozen waterfall, a yogi sits in perfect stillness. Ice crystals have formed on their eyelashes and hair, but their breathing is steady and deep. The waterfall behind them is frozen mid-cascade, each droplet a perfect crystal.\n\nAs you approach, the yogi opens one eye. 'Ah. A visitor who can see beyond the cold. Come, sit. The water remembers what it was, and what it will become.'",
+			"text": "Before a magnificent frozen waterfall, a yogi sits in stillness. Ice crystals have formed on their eyelashes and hair, icicles hang from their beard.",
 			"choices": [
 				{
 					"id": "learn_water",
@@ -911,9 +936,14 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "The yogi smiles. 'You already speak to water. Let me teach you to listen.'\n\nFor hours, you sit together before the frozen falls. The yogi teaches you to feel the flow within stillness, the movement within ice. Your understanding of water magic deepens profoundly.",
+						"text": "Hours pass until you notice the movement hidden in the stillness.",
 						"rewards": {
-							"xp": 15
+							"xp": 5,
+							"skill_up": {
+								"skill": "water_magic",
+								"amount": 1,
+								"cap": 6
+							}
 						},
 						"karma": {
 							"god": 5,
@@ -924,7 +954,7 @@
 				{
 					"id": "meditate",
 					"type": "requirement",
-					"text": "Meditate together on the nature of impermanence",
+					"text": "Meditate together on impermanence",
 					"requirements": {
 						"skills": {
 							"yoga": 2
@@ -932,12 +962,12 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You settle beside the yogi. Together, your consciousness merges with the frozen waterfall — experiencing every moment of its freezing, from rushing torrent to perfect stillness.\n\n'Water teaches us,' the yogi whispers. 'It does not resist change. It becomes ice, becomes steam, becomes rain. All forms, one essence.'\n\nThe insight burns like cold fire through your mind.",
+						"text": "Time dissolves into the frozen cascades.",
 						"rewards": {
-							"xp": 12
+							"xp": 10
 						},
 						"karma": {
-							"god": 8,
+							"god": 5,
 							"human": 3
 						}
 					}
@@ -948,7 +978,7 @@
 					"text": "Watch the yogi's meditation in silence",
 					"outcome": {
 						"type": "text",
-						"text": "You stand quietly, watching the yogi's perfect stillness. Minutes pass. The cold seems to lessen, not because it grows warmer, but because you stop fighting it.\n\nWhen the yogi finally looks up, they nod approvingly. 'You learn by watching. That is wisdom.'",
+						"text": "The cold seems to lessen when you stop fighting it.",
 						"rewards": {
 							"xp": 5
 						},
@@ -961,10 +991,10 @@
 				{
 					"id": "leave",
 					"type": "default",
-					"text": "Leave the yogi to their meditation",
+					"text": "Leave the yogi to their practice",
 					"outcome": {
 						"type": "text",
-						"text": "You bow respectfully and move on. The yogi closes their eye and returns to perfect stillness, one with the frozen waterfall.",
+						"text": "You bow respectfully and depart.",
 						"karma": {
 							"human": 1
 						}
@@ -1460,7 +1490,7 @@
 			"id": "hell_ancient_stupa",
 			"title": "Ancient Stupa",
 			"realm": "hell",
-			"text": "A crumbling stupa rises from the frost, its dome still intact after ages beyond counting. Prayer flags — impossibly — still flutter from the crown, faded but unbroken. Faint mantras are carved into every stone.\n\nIt radiates a stillness entirely at odds with everything else in this frozen wasteland. Something about it invites you to stop.",
+			"text": "A crumbling stupa rises from the snow, its dome still intact after countless ages. Tattered prayer flags still flutter from the crown, faded but unbroken. Mantras are carved into every stone.",
 			"choices": [
 				{
 					"id": "circumambulate",
@@ -1468,14 +1498,14 @@
 					"text": "Walk around it three times in devotion",
 					"outcome": {
 						"type": "text",
-						"text": "You circle the stupa three times, keeping it to your right in the traditional way. The cold seems to lessen with each circuit. By the third pass, something has shifted — not outside, but inside you.\n\nYou pause at a small offering shelf and place whatever you have at hand. The flags flutter though there is no wind.",
+						"text": "As you circle it clockwise three times; the cold seems to lessen. You place a small offering at the base and leave.",
 						"rewards": {
 							"xp": 5
 						},
 						"karma": {
 							"god": 3,
-							"human": 2,
-							"hell": -2
+							"human": 3,
+							"hell": -3
 						}
 					}
 				},
@@ -1485,12 +1515,12 @@
 					"text": "Meditate at the stupa's base",
 					"requirements": {
 						"skills": {
-							"yoga": 1
+							"yoga": 2
 						}
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You settle at the base of the stupa and let your awareness expand. The structure seems to hum — not with sound, but with intention. Someone built this with great care and greater faith.\n\nMinutes become hours. When you return, your mana is restored, and the cold has not touched you.",
+						"text": "Seeing the work of so many hands towards creating a better tomorrow fills you with determination.",
 						"rewards": {
 							"xp": 8
 						},
@@ -1507,14 +1537,21 @@
 					"text": "Study the carved mantras closely",
 					"requirements": {
 						"skills": {
-							"ritual": 1
+							"ritual": 2
 						}
 					},
 					"outcome": {
 						"type": "text",
-						"text": "The mantras are Tibetan, old dialect but still readable — prayers of purification, liberation, and compassionate transformation. Whoever carved them believed deeply that even a hell realm could be changed by the persistent presence of sacred intention.\n\nYou copy several lines into your memory. They may be useful later.",
+						"text": "You study the faded letters until they become clearer.",
 						"rewards": {
-							"xp": 10
+							"xp": 6,
+							"learn_spell": {
+								"school": "white_magic",
+								"level_range": [
+									1,
+									2
+								]
+							}
 						},
 						"karma": {
 							"god": 4,
@@ -1526,15 +1563,19 @@
 					"id": "leave_offering",
 					"type": "default",
 					"text": "Leave a small offering and move on",
+					"cost": {
+						"gold": "small"
+					},
 					"outcome": {
 						"type": "text",
-						"text": "You leave a few coins on the offering shelf. Such a small thing. But this stupa has stood here receiving small kindnesses for ages beyond counting, and each one has mattered.\n\nThe flags flutter once in farewell.",
+						"text": "You leave a few coins. The flags flutter in farewell.",
 						"rewards": {
-							"xp": 2
+							"xp": 4
 						},
 						"karma": {
 							"god": 2,
-							"hell": -1
+							"human": 2,
+							"hell": -2
 						}
 					}
 				}
@@ -1544,7 +1585,7 @@
 			"id": "hell_demon_checkpoint",
 			"title": "Demon Checkpoint",
 			"realm": "hell",
-			"text": "A wobbly table has been set up across the path. Behind it, a bureaucratic demon in a stained uniform holds a quill the size of a sword.\n\n'Halt. Passage permit, please.' It peers over the desk. 'Standard Form 7-B, the one authorizing inter-zone traversal for non-damned entities. You do have a Form 7-B, yes?'\n\nYou do not have a Form 7-B. Form 7-B does not exist.",
+			"text": "A wobbly table has been set up across the path. Behind it, a bureaucratic demon in a stained uniform holds a quill the size of a sword.\n\n\"Halt. Passage permit, please. Standard Form 7-B, the one authorizing inter-zone traversal for damned entities. You do have a Form 7-B, yes?\"\n\nYou do not have a Form 7-B. Form 7-B does not exist.",
 			"choices": [
 				{
 					"id": "fight",
@@ -1554,7 +1595,7 @@
 						"type": "combat",
 						"enemy_group": "demon_patrol",
 						"difficulty": "normal",
-						"text": "The bureaucrat demon shrieks with indignation and blows a horn. Its colleagues materialize from nowhere, armed with swords and an impressive quantity of righteous anger over procedural violations.",
+						"text": "The bureaucrat sounds a horn taken seemingly out of thin air.",
 						"karma": {
 							"asura": 2,
 							"hell": 2
@@ -1572,7 +1613,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You rummage through your pack and produce some parchment, which you fold into a very official-looking shape. You hand it over with absolute confidence.\n\nThe demon examines it upside down for a long time. 'This... appears to be in order,' it finally admits, stamping it with an enormous seal. 'Everything is in order. You may pass. Sorry for the inconvenience. Have a terrible day.'",
+						"text": "You manage to quickly fold some parchment into an official-looking shape; the demon examines it upside down with a bored expression and stamps it.",
 						"rewards": {
 							"xp": 8
 						},
@@ -1586,15 +1627,18 @@
 					"id": "bribe",
 					"type": "default",
 					"text": "Slip the demon a bribe",
+					"cost": {
+						"gold": "small_moderate"
+					},
 					"outcome": {
 						"type": "text",
-						"text": "You slide a pouch of gold across the desk. The demon's eyes light up. It stamps the air above where the nonexistent document would be.\n\n'Everything checks out. Move along.' It pockets the gold with practiced speed. 'Between you and me, no one's checked a Form 7-B in three hundred years. Don't tell my supervisor.'",
+						"text": "Gold changes hands; \"Everything checks out. Move along.\"",
 						"rewards": {
-							"xp": 3
+							"xp": 4
 						},
 						"karma": {
 							"hungry_ghost": 4,
-							"hell": -1
+							"asura": 1
 						}
 					}
 				},
@@ -1604,18 +1648,18 @@
 					"text": "Challenge the checkpoint's legal legitimacy",
 					"requirements": {
 						"skills": {
-							"persuasion": 2
+							"persuasion": 3
 						}
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You spend forty minutes delivering a forensically precise argument that the checkpoint lacks mandate under the Third Compact of Yama's Administrative Code, subsection IV.\n\nThe bureaucrat demon is shaken. It has never been out-argued before. It stamps a form, signs another, and gestures you through with the haunted eyes of an entity confronting the limits of its own power.\n\n'You... you're free to go.' A pause. 'Please don't come back.'",
+						"text": "A 40-minute forensic argument takes place. The bureaucrat is shaken and visibly tired. Finally, he waves you through, muttering to himself.",
 						"rewards": {
 							"xp": 10
 						},
 						"karma": {
 							"human": 4,
-							"hell": -3
+							"hell": -2
 						}
 					}
 				}
@@ -1623,9 +1667,9 @@
 		},
 		"hell_ice_oracle": {
 			"id": "hell_ice_oracle",
-			"title": "The Ice Oracle",
+			"title": "Ice Oracle",
 			"realm": "hell",
-			"text": "A figure is frozen solid inside a pillar of ice — upright, arms folded, expression serene. Its eyes, impossibly, are still moving.\n\nAs you approach, a voice enters your mind without using sound: 'I have been here since the realm formed. I have watched every soul pass through. Ask, and I may answer. I have learned patience.'",
+			"text": "A figure is frozen solid inside a pillar of ice — upright, arms folded, expression serene. When you come near, you hear a strange voice from within your head:\n\n\"I have been here since time lost to memory. I have watched many pass through, time and time again. Ask, and I may answer.\"",
 			"choices": [
 				{
 					"id": "ask_ahead",
@@ -1633,12 +1677,13 @@
 					"text": "Ask what lies ahead on your path",
 					"outcome": {
 						"type": "text",
-						"text": "The oracle's eyes move slowly, as if reading something only it can see.\n\n'You will face a moment where mercy and survival seem to contradict each other,' it says. 'Choose mercy. The cost is smaller than it appears.' A pause. 'Also: the tall one with the orange eyes is not your enemy. Remember that.'\n\nYou are unsure what any of this means. You suspect you will find out.",
+						"text": "\"Fear and hope, then hope and fear. Until one day the natural state blooms in your awareness, and you shall be free, as you always really were.\"",
 						"rewards": {
 							"xp": 6
 						},
 						"karma": {
-							"human": 2
+							"human": 3,
+							"god": 3
 						}
 					}
 				},
@@ -1648,14 +1693,14 @@
 					"text": "Open your mind and commune with it directly",
 					"requirements": {
 						"skills": {
-							"white_magic": 2
+							"space_magic": 3
 						}
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You reach out with your awareness, and the oracle reaches back. For a moment, you see through its frozen eyes — centuries of passing souls, all their fears and small kindnesses, the slow erosion of hatred into understanding.\n\nThe contact ends, leaving you with a clarity that will outlast this realm.",
+						"text": "You sense countless centuries of sentient beings passing to and fro, their fears and small kindnesses. You settle in a deep clarity.",
 						"rewards": {
-							"xp": 12
+							"xp": 10
 						},
 						"karma": {
 							"god": 5,
@@ -1664,17 +1709,17 @@
 					}
 				},
 				{
-					"id": "ask_karma",
+					"id": "ask_realm",
 					"type": "requirement",
 					"text": "Ask about the nature of this realm",
 					"requirements": {
 						"attributes": {
-							"awareness": 13
+							"awareness": 15
 						}
 					},
 					"outcome": {
 						"type": "text",
-						"text": "'This realm is a mirror,' the oracle says. 'The cold you feel outside is the cold these souls carried within them. The suffering here is not punishment in the way you might think. It is recognition. When a soul fully recognizes what they did and why, the cold thaws.'\n\nIts eyes focus on you with sudden intensity. 'You are not here by accident. You already know this.'",
+						"text": "\"This realm, like all realms, is a mirror.\"",
 						"rewards": {
 							"xp": 10
 						},
@@ -1691,9 +1736,13 @@
 					"text": "Thank it for its time and move on",
 					"outcome": {
 						"type": "text",
-						"text": "'Go well,' the oracle says. 'The path is yours.'\n\nAs you leave, you feel its gaze on your back — not threatening, but attentive. It has watched many travelers. It watches you with something that might be hope.",
+						"text": "\"Seek out situations to exercise compassion.\"",
+						"rewards": {
+							"xp": 4
+						},
 						"karma": {
-							"human": 1
+							"human": 1,
+							"god": 1
 						}
 					}
 				}
@@ -2118,9 +2167,9 @@
 		},
 		"hell_bone_arena": {
 			"id": "hell_bone_arena",
-			"title": "The Bone Arena",
+			"title": "Bone Arena",
 			"realm": "hell",
-			"text": "A frozen pit ringed with bones rises from the wasteland — a combat arena, its tiers packed with ice demons howling for blood. Two poor souls fight below, stumbling with exhaustion.\n\nA massive demon in the gatekeeper's post blocks the exit path, its grin revealing too many teeth.\n\n'Fresh challenger! Enter the pit or find another road. There is no other road.'",
+			"text": "A frozen pit ringed with bones rises from the wasteland — a combat arena, its tiers packed with demons howling for blood. Two poor souls fight below, stumbling with exhaustion.\n\nA massive gatekeeper blocks the exit path, grinning with entirely too many rows of teeth. \"Welcome, welcome! Do you come to bet or to fight?\"",
 			"choices": [
 				{
 					"id": "fight",
@@ -2130,10 +2179,12 @@
 						"type": "combat",
 						"enemy_group": "demon_patrol",
 						"difficulty": "hard",
-						"text": "The crowd erupts. The gatekeeper signals, and arena champions pour in from the gates.",
 						"karma": {
 							"hell": 2,
 							"asura": 5
+						},
+						"rewards": {
+							"gold_reward": "moderate"
 						}
 					}
 				},
@@ -2143,16 +2194,20 @@
 					"text": "Issue a formal challenge to the current champion",
 					"requirements": {
 						"attributes": {
-							"strength": 13
+							"strength": 15
 						}
 					},
 					"outcome": {
 						"type": "combat",
-						"enemy_group": "demon_patrol",
-						"difficulty": "normal",
-						"text": "The crowd hushes. The champion steps forward — single combat, honorable rules. The gatekeeper watches with something like respect.",
+						"enemy_group": "demon_elite",
+						"difficulty": "hard",
+						"text": "The gatekeeper nods with respect and lets you in.",
 						"rewards": {
-							"xp": 12
+							"xp": 12,
+							"gold_reward": "moderate",
+							"items": [
+								"good_iron_weapon"
+							]
 						},
 						"karma": {
 							"asura": 5,
@@ -2171,28 +2226,38 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You step onto the announcer's perch and begin calling the fight — every blow, every stumble, every desperate reversal. The crowd shifts from baying for blood to hanging on your words. The champion wins but stands looking confused at his own victory. The gatekeeper is laughing so hard it opens the gate without remembering to demand payment.",
+						"text": "The crowd shifts from baying for blood to hanging on your words; gatekeeper laughs hard enough to let you through without charging.",
 						"rewards": {
 							"xp": 10
 						},
 						"karma": {
-							"asura": 3,
+							"asura": 2,
 							"human": 5
 						}
 					}
 				},
 				{
-					"id": "bribe",
+					"id": "bet",
 					"type": "default",
-					"text": "Bribe the gatekeeper to look the other way",
+					"text": "Bet on one of the fighters",
+					"cost": {
+						"gold": "moderate"
+					},
 					"outcome": {
 						"type": "text",
-						"text": "Gold changes hands. The gatekeeper pockets it with practiced ease and gestures toward the exit path. 'Don't tell the crowd,' it says. 'It ruins the atmosphere.'",
+						"text": "\"Sure, take a seat in the tiers.\"",
 						"rewards": {
-							"xp": 3
+							"xp": 5,
+							"gamble": {
+								"type": "gold",
+								"win_chance": 0.5,
+								"win_multiplier": 2
+							}
 						},
 						"karma": {
-							"hungry_ghost": 4
+							"hell": 2,
+							"asura": 2,
+							"human": 2
 						}
 					}
 				}
@@ -2200,9 +2265,9 @@
 		},
 		"hell_suffering_sage": {
 			"id": "hell_suffering_sage",
-			"title": "The Suffering Sage",
+			"title": "Suffering Sage",
 			"realm": "hell",
-			"text": "A figure sits at the summit of a frozen ridge, encased in ice to the neck — only their face remains free, eyes open and clear. They have been here longer than the realm itself, or so it seems. Their expression holds no suffering, only the far-off calm of someone who has understood everything there is to understand about pain.\n\n'Ah. A visitor who can walk. How rare.' Their breath fogs in the frozen air. 'Ask. I have time.'",
+			"text": "A figure sits at the summit of a frozen ridge, encased in ice up to the neck — only their face remains free, eyes open and clear. The oldest devils have forgotten when he appeared. Their expression is that of endless patience. As you come closer, they open their eyes a little.",
 			"choices": [
 				{
 					"id": "suffering",
@@ -2210,7 +2275,7 @@
 					"text": "Ask about the nature of suffering",
 					"outcome": {
 						"type": "text",
-						"text": "'All suffering comes from resistance to what is,' they say. 'The cold is not suffering. The resistance to the cold is suffering. Even here, that distinction holds.'\n\nThey let that sit for a moment. 'The beings in this realm are not suffering because they are cold. They are suffering because they cannot accept that they chose what led them here. Acceptance is not surrender. It is the beginning of movement.'\n\nYou sit with that for a long time.",
+						"text": "\"All suffering comes from resistance to what is. The cold is not suffering. The resistance to the cold is suffering.\"",
 						"rewards": {
 							"xp": 8
 						},
@@ -2231,14 +2296,14 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You sit before them and let your awareness settle. After a time — minutes or hours — a current passes between you. Not words. Not images. Something beyond these: the shape of suffering itself, its exact texture, the precise moment when resistance becomes release.\n\nWhen you open your eyes, the ice around the sage has cracked slightly. They look at you with something that might be gratitude.\n\n'You carried that well,' they say. 'Go. You have more to do than I do.'",
+						"text": "Shivering from the cold gives way to stillness and stillness to a direct transmission beyond words. You see the endless wheels of resistance and acceptance turning. They have been here for a long time, and yet a long time they will stay.",
 						"rewards": {
-							"xp": 18
+							"xp": 12
 						},
 						"karma": {
-							"god": 10,
+							"god": 7,
 							"human": 5,
-							"hell": -5
+							"hell": -3
 						}
 					}
 				},
@@ -2253,9 +2318,9 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "Their eyes go distant in a way that suggests they are looking across time rather than space.\n\n'I was here before the first demon arrived. The realm formed around certain patterns of mind — cold certainty, rigid self-justification — and those patterns needed a home. The first being who entered was a judge who had convinced himself he was perfectly just. He was here for a very long time.'\n\nA pause. 'Most leave eventually. Suffering is educational, when witnessed with open eyes. That is the purpose. Not punishment. Curriculum.'",
+						"text": "\"I was here when the realm was still young. The first being who entered was a judge convinced he attained true justice. He was here for a very long time.\"",
 						"rewards": {
-							"xp": 12
+							"xp": 10
 						},
 						"karma": {
 							"god": 4,
@@ -2269,7 +2334,7 @@
 					"text": "Leave them to their vigil",
 					"outcome": {
 						"type": "text",
-						"text": "'Go well,' they say as you turn away. 'You carry more wisdom than you know. The knowing will come in its own time.'\n\nTheir eyes return to whatever they have been watching since the realm began.",
+						"text": "Their eyes close again.",
 						"karma": {
 							"human": 1
 						}
@@ -2281,7 +2346,7 @@
 			"id": "hell_suspicious_gift",
 			"title": "Suspicious Gift",
 			"realm": "hell",
-			"text": "A neatly wrapped package sits in the center of the path, as though placed deliberately. The wrapping is red cloth, tied with a black cord. A tag reads: 'For whoever needs this most.'\n\nThe package is warm to the touch. Nothing else in the cold hell is warm.",
+			"text": "A neatly wrapped package sits in the center of the path, as though placed deliberately. Red cloth, black cord. A tag: \"For whoever needs this most.\"\n\nThe package is warm to the touch. Nothing else in the cold hell is warm.",
 			"choices": [
 				{
 					"id": "inspect",
@@ -2290,12 +2355,12 @@
 					"requirements": {
 						"roll": {
 							"attribute": "awareness",
-							"difficulty": 12
+							"difficulty": 13
 						}
 					},
 					"outcome_success": {
 						"type": "text",
-						"text": "You run your hands along the edges without touching the cord and find what you were looking for — a thin thread connected to a pressure plate inside. A trap, but a crude one. You disarm it carefully and open the package.\n\nInside: a small fortune in gold, a health potion, and a note: 'Congratulations on your caution. That is the correct approach to kindness from unknown sources in the hells.'\n\nSomewhere, you suspect, a small devil is both annoyed and impressed.",
+						"text": "Congratulations on your caution. The trap disarmed, you retrieve your loot safely.",
 						"rewards": {
 							"xp": 8,
 							"items": [
@@ -2309,7 +2374,7 @@
 					},
 					"outcome_failure": {
 						"type": "text",
-						"text": "You reach for the cord. The package trembles. A flash of cold and a sharp, unpleasant sound — then you're sitting on the ground, ears ringing.\n\nThe package is empty. A small card flutters down: 'Better luck with the next one.'\n\nYou are, somehow, fine. The trap was theatrical rather than lethal. A small devil's sense of humor.",
+						"text": "Triggered; theatrical but not lethal; package empty; a card: \"Better luck with the next one.\"",
 						"rewards": {
 							"xp": 3
 						},
@@ -2330,7 +2395,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "Your trained eye finds the inscription on the underside — a binding rune designed to trigger on opening. Amateur work. You neutralize it with a flick of your fingers and open the package properly.\n\nInside: a health potion and gold. Maybe someone left it in sincerity. Maybe a devil left it and you ruined its day. Either way, you got the contents.",
+						"text": "You find a magic seal and quickly scratch it until it's unrecognizable. The package opens cleanly with a health potion and some coins inside.",
 						"rewards": {
 							"xp": 6,
 							"items": [
@@ -2349,7 +2414,7 @@
 					"text": "Open it with reckless optimism",
 					"outcome": {
 						"type": "text",
-						"text": "You pull the cord.\n\nA flash. A sound. A moment of blinding cold.\n\nThen you're standing there holding a health potion and forty gold pieces, entirely unharmed. The package was just a package. The warmth was just warmth. The suspicious circumstances were just circumstances.\n\nSometimes things are exactly what they appear to be.",
+						"text": "A flash, a sound, blinding cold — then you're standing there holding a health potion and forty gold, entirely unharmed. Sometimes things are exactly what they appear to be.",
 						"rewards": {
 							"xp": 4,
 							"items": [
@@ -2369,8 +2434,9 @@
 					"text": "Leave it — gifts in hell are seldom genuine",
 					"outcome": {
 						"type": "text",
-						"text": "You step around it carefully and continue on your way.\n\nBehind you, the package remains in the center of the path. Warm. Patient. Waiting for someone either braver or more foolish than you.",
+						"text": "You step around it cautiously; behind you, the package waits warm and patient.",
 						"karma": {
+							"animal": 1,
 							"human": 1
 						}
 					}
@@ -2381,7 +2447,7 @@
 			"id": "hell_ice_demon_toll",
 			"title": "Ice Demon Toll",
 			"realm": "hell",
-			"text": "Three squat ice demons have stretched a rope of frozen chain across the path. They look bored, cold, and deeply optimistic about shakedowns. The largest one holds a sign reading 'TOLL — 10 GOLD' in letters of varying sizes.\n\n'Passage fee,' says the leader, with the confidence of someone who has never questioned their own authority. 'Ten gold. Standard Hell Traversal Rate, Section 7, Paragraph 4.'\n\n'There is no Section 7, Paragraph 4,' you say.\n\n'There will be,' it replies, 'if you don't pay.'",
+			"text": "Three squat ice demons have stretched a chain across the path. The leader holds a sign reading \"TOLL — 10 GOLD\" in letters of varying sizes.\n\n\"Passage fee. Standard Hell Traversal Rate, Section 7, Paragraph 4.\"\n\"There is no Section 7, Paragraph 4.\"\n\"For you there is.\"",
 			"choices": [
 				{
 					"id": "fight",
@@ -2391,7 +2457,6 @@
 						"type": "combat",
 						"enemy_group": "demon_patrol",
 						"difficulty": "normal",
-						"text": "The demons drop the chain and reach for their weapons. The leader manages to look both threatening and personally offended.",
 						"karma": {
 							"asura": 2,
 							"hell": 2
@@ -2404,7 +2469,7 @@
 					"text": "Pay the toll and move on",
 					"outcome": {
 						"type": "text",
-						"text": "You hand over the gold. The leader counts it with elaborate care, biting each coin, then unclips the chain and bows with a courtliness completely at odds with everything else about the situation.\n\n'Passage granted. Safe travels. Watch out for the unofficial toll three roads further on — those ones are criminals.'",
+						"text": "The gold is counted with elaborate care, the chain unhurriedly unclipped. \"Watch out for the unofficial toll three roads further on — those ones are criminals.\"",
 						"rewards": {
 							"xp": 2
 						},
@@ -2424,7 +2489,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You spend forty minutes in forensic argument. You point out the absence of any hell bylaw authorizing such a toll, the lack of official seals, the three different handwritings on the sign, and the suspicious provision that payment 'may be rendered in gold, goods, or goods that are also gold.'\n\nThe lead demon's expression passes through outrage, uncertainty, and finally hollow defeat.\n\n'You can go,' it says. 'But only because we choose to be magnanimous.'\n\nBehind it, one of the other demons quietly folds the sign.",
+						"text": "An argument ensues, moving from the absence of appropriate seals though three different handwritings on the sign, to suspicious provisions. Finally you hear: \"You can go. But only because we choose to be magnanimous.\"",
 						"rewards": {
 							"xp": 8
 						},
@@ -2445,7 +2510,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You offer to pay in entertainment instead of gold and, before anyone can object, launch into a performance. The demons are transfixed. When it ends, the leader is applauding.\n\n'Right, fine, that's payment,' it says, still clapping. The chain is unclipped. One of the other demons presses a coin into your hand on the way past — 'Keep it. Best thing that's happened here in a century.'",
+						"text": "The demons are transfixed, their leader applauding. One demon presses a coin into your hand: \"Best thing that's happened here in a century.\"",
 						"rewards": {
 							"xp": 5,
 							"gold": 5
@@ -2460,9 +2525,9 @@
 		},
 		"hell_cursed_pilgrim": {
 			"id": "hell_cursed_pilgrim",
-			"title": "The Cursed Pilgrim",
+			"title": "Cursed Pilgrim",
 			"realm": "hell",
-			"text": "A person trudges forward pulling a massive stone block behind them — literally. A chain of black iron links ankle to stone, the stone gouging a furrow in the frozen ground. They are making slow but genuine progress.\n\nThey look up with exhausted, intelligent eyes.\n\n'Oh. A living one. That's rare.' A pause for breath. 'I made a deal with a small devil. The small ones are the worst. You can fight the big ones.'",
+			"text": "A person trudges forward pulling a massive stone block behind them, gouging a furrow in the frozen ground. They are making slow, painful progress.",
 			"choices": [
 				{
 					"id": "break",
@@ -2475,11 +2540,11 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You grip the chain and heave. The iron bites into your palms. The chain flexes. You heave again, and again, and — with a sound like the cold itself breaking — a link shatters.\n\nThe pilgrim sits down heavily and simply breathes for a long moment. Then they look at their free ankle with an expression you cannot quite name.\n\n'Thank you,' they say. 'I had forgotten what it felt like to stop.'\n\nThey press a carved token into your hands before you leave.",
+						"text": "After a long struggle, a link in the chain shatters. The pilgrim sits down heavily and breathes, then presses a carved token into your hands: \"I had forgotten what it felt like to rest.\"",
 						"rewards": {
 							"xp": 12,
 							"items": [
-								"prayer_beads"
+								"random_common_talisman"
 							]
 						},
 						"karma": {
@@ -2492,15 +2557,15 @@
 				{
 					"id": "examine",
 					"type": "requirement",
-					"text": "Examine the curse and explain the mechanism",
+					"text": "Examine the curse",
 					"requirements": {
 						"skills": {
-							"black_magic": 1
+							"black_magic": 2
 						}
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You study the chain. Devil's work — a specific class of binding, not unbreakable but resistant to direct force. Vulnerable to patient unraveling from within. You explain the mechanism in careful detail.\n\nThe pilgrim listens, asking precise questions. By the end, their posture has changed. They look like someone with a plan.\n\n'I think I understand now,' they say. 'It wasn't cleverer than me. It was just more patient. I can be patient too.'",
+						"text": "You recognize a particular class of binding spells, resistant to direct force but vulnerable to patient unraveling from within. Once you explain it to the pilgrim you see a glimmer of hope in their eyes. \"So there is a way!\"",
 						"rewards": {
 							"xp": 10
 						},
@@ -2516,7 +2581,7 @@
 					"text": "Walk with them a while and listen",
 					"outcome": {
 						"type": "text",
-						"text": "You fall into step beside the pilgrim, matching their slow progress. They tell the story of the deal — a small devil with elaborate contracts and patient eyes. 'I thought I was clever,' they say. 'I thought I had found a loophole. I had found the loophole it wanted me to find.'\n\nYou walk for perhaps an hour. When you part, the stone seems no lighter, but the pilgrim's expression has shifted from defeat to something that might, eventually, become acceptance.\n\n'It helps,' they say, 'to be reminded that someone can walk freely.'",
+						"text": "You hear a story of a deal with the devil. \"I thought I was clever. I had found the loophole. The one it wanted me to find, unfortunately.\" You walk together for a while and leave them with a faint feeling of relief.",
 						"rewards": {
 							"xp": 5
 						},
@@ -2532,7 +2597,7 @@
 					"text": "Try to help break the chain",
 					"outcome": {
 						"type": "text",
-						"text": "You try everything you can reach for — brute force, striking at joints, looking for a weak link. The chain is absolutely indifferent to your efforts.\n\nThe pilgrim watches with tired gratitude. 'It's all right,' they say. 'The trying matters. I had forgotten anyone would bother.'\n\nYou part with a handshake. Their grip is stronger than you expected.",
+						"text": "You try everything, but the chain remains indifferent. The pilgrim watches with tired gratitude. Their goodbye handshake is stronger than you expected.",
 						"rewards": {
 							"xp": 3
 						},
@@ -2546,9 +2611,9 @@
 		},
 		"hell_frozen_army": {
 			"id": "hell_frozen_army",
-			"title": "The Frozen Army",
+			"title": "Frozen Army",
 			"realm": "hell",
-			"text": "The valley below is filled with an army, frozen mid-march — thousands of soldiers preserved in ice, weapons raised, banners still flying. The armor is from no civilization you recognize. They are marching toward something that is no longer there.\n\nThey do not look like they are suffering. They look like they are waiting.",
+			"text": "The valley below is filled with an army, frozen mid-march — thousands of soldiers preserved in ice, banners still flying. The armor is from no civilization you recognize. They are marching toward something that is no longer there.\n\nThey look like they are waiting.",
 			"choices": [
 				{
 					"id": "respect",
@@ -2556,7 +2621,7 @@
 					"text": "Pay your respects to the fallen",
 					"outcome": {
 						"type": "text",
-						"text": "You stand at the valley's edge and bow your head. A long silence.\n\nSomething shifts in the ice — barely perceptible. In the front rank, a soldier's hand tightens almost imperceptibly around their weapon. A small acknowledgment. They are aware you are there. They appreciate that you noticed them.\n\nYou bow again before you leave.",
+						"text": "You stand at the valley's edge and bow. Barely perceptible: in the front rank, a soldier's hand tightens slightly on their weapon.",
 						"rewards": {
 							"xp": 5
 						},
@@ -2571,13 +2636,13 @@
 					"type": "requirement",
 					"text": "Study the banners and try to identify them",
 					"requirements": {
-						"attributes": {
-							"awareness": 12
+						"skills": {
+							"learning": 2
 						}
 					},
 					"outcome": {
 						"type": "text",
-						"text": "The banners show a sun bisected by a spear — a symbol from before recorded history. The armor style is wrong for any hell-native force. These were mortals.\n\nThe realization comes slowly: this army marched here deliberately. They came to fight their way into hell to rescue someone. By the marks on their armor, they were winning.\n\nThen something stopped them. Not defeated — frozen mid-advance.\n\nThis is not a punishment. This is grief, suspended. Whoever they came for is gone, and they never got the message.",
+						"text": "Sun bisected by a spear; armor wrong for any hell-native force. These were mortals who marched here deliberately to rescue someone. They were winning; then stopped. You leave with a feeling of grief without closure.",
 						"rewards": {
 							"xp": 10
 						},
@@ -2590,32 +2655,25 @@
 				},
 				{
 					"id": "release",
-					"type": "roll",
+					"type": "requirement",
 					"text": "Search for a way to end their vigil",
 					"requirements": {
-						"roll": {
-							"attribute": "awareness",
-							"difficulty": 13
+						"skills": {
+							"ritual": 3
 						}
 					},
-					"outcome_success": {
+					"outcome": {
 						"type": "text",
-						"text": "You find it at the base of the lead soldier's standard — a binding mark, old enough that the ice has grown over it. You speak the words of release, slowly.\n\nThe ice begins to melt. Not violently — gently, like morning frost. The army's forms become translucent, then luminous, then gone. In the valley below, the ice is clean and empty.\n\nBefore the last soldier fades, they turn their head toward you and nod. It is a gesture of ancient and absolute gratitude.",
+						"text": "You find a binding mark at the standard's base and speak words of release. The ice melts gently, the army dissolves into light, armor clanking on the icy ground. The last soldier turns their head toward you and bows with ancient gratitude.",
 						"rewards": {
-							"xp": 15
+							"xp": 15,
+							"items": [
+								"good_iron_armor"
+							]
 						},
 						"karma": {
 							"god": 8,
 							"hell": -8
-						}
-					},
-					"outcome_failure": {
-						"type": "combat",
-						"enemy_group": "lost_souls",
-						"difficulty": "normal",
-						"text": "Your touch disturbs something in the binding. One soldier wrenches free of the ice and turns toward you — not with recognition, but with the automatic response of someone who has been on watch for ten thousand years.",
-						"karma": {
-							"hell": 2
 						}
 					}
 				},
@@ -2625,10 +2683,8 @@
 					"text": "Take the ridge path to avoid the valley",
 					"outcome": {
 						"type": "text",
-						"text": "You take the ridge path, skirting the valley. It costs you time.\n\nAt the far end, you glance back. Ten thousand frozen soldiers stand in perfect formation below, waiting for a war that ended without them.\n\nYou walk on.",
-						"karma": {
-							"human": 1
-						}
+						"text": "At the far end, you glance back at ten thousand frozen soldiers in perfect formation, rays of light glittering on their helmets.",
+						"karma": {}
 					}
 				}
 			]
