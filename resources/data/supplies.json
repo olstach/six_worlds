@@ -52,7 +52,7 @@
 
 	"logistics_overworld": {
 		"_comment": "Each Logistics level reduces food consumption and increases overworld movement speed.",
-		"food_cost_reduction_pct_per_level": 3,
+		"food_cost_reduction_pct_per_level": 7.5,
 		"speed_bonus_pct_per_level": 2
 	},
 

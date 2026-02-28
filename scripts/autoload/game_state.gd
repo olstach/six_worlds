@@ -245,8 +245,9 @@ func consume_supply(supply_type: String, amount: int) -> bool:
 ## Returns a dictionary describing what happened this step:
 ##   {food_consumed, is_starving, starvation_damage_pct, healing_active}
 func process_food_step(party_size: int, logistics_level: int, lowest_con: int) -> Dictionary:
-	# Calculate food cost: 1 per member, reduced by Logistics (3% per level)
-	var reduction_pct: float = logistics_level * 3.0  # from supplies.json
+	# Calculate food cost: 1 per member, reduced by Logistics (7.5% per level)
+	# At level 5 = 37.5% reduction, level 10 = 75% — food becomes a non-issue at high levels
+	var reduction_pct: float = minf(logistics_level * 7.5, 90.0)  # Cap at 90% to always cost at least something
 	var raw_cost: float = party_size * 1.0
 	var reduced_cost: float = raw_cost * (1.0 - reduction_pct / 100.0)
 	var actual_cost: int = max(1, ceili(reduced_cost))  # Always costs at least 1

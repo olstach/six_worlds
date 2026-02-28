@@ -73,6 +73,9 @@ const ROLE_LOOT_POOLS: Dictionary = {
 # Any enemy has a 30% chance to also drop a consumable
 const GLOBAL_CONSUMABLE_TYPES: Array[String] = ["potion", "bomb", "oil"]
 const GLOBAL_CONSUMABLE_CHANCE: float = 0.30
+# Supplies drop alongside normal loot — common, ~half the value of gold
+const SUPPLY_DROP_IDS: Array[String] = ["rations", "herb_bundle", "scrap_metal"]
+const SUPPLY_DROP_CHANCE: float = 0.50  # 50% chance per combat to drop a supply item
 # Base rarity weights (higher = more likely to drop)
 const RARITY_DROP_WEIGHTS: Dictionary = {
 	"common": 100, "uncommon": 50, "rare": 20, "epic": 5, "legendary": 1
@@ -351,6 +354,14 @@ func _generate_loot_drops(enemy_count: int, difficulty_ratio: float, best_luck: 
 		var item_id = _pick_item_from_types(allowed_types, rarity_weights)
 		if item_id != "":
 			drops.append(item_id)
+
+	# --- Supply drops (common, roughly half the value of gold) ---
+	# 50% base chance, +1 extra supply per 2 enemies beyond the first
+	if randf() < SUPPLY_DROP_CHANCE:
+		var supply_count: int = 1 + (enemy_count / 3)
+		for i in range(supply_count):
+			var supply_id = SUPPLY_DROP_IDS[randi() % SUPPLY_DROP_IDS.size()]
+			drops.append(supply_id)
 
 	# --- Boss guaranteed drops ---
 	for arch_id in boss_archetype_ids:

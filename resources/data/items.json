@@ -81,7 +81,7 @@
 			"value": 40,
 			"description": "A simple bow for hunting game.",
 			"requirements": {"finesse": 10},
-			"stats": {"damage": 7, "accuracy": 10, "range": 5},
+			"stats": {"damage": 7, "accuracy": 10, "range": 5, "ammo": 20},
 			"abilities": []
 		},
 		"short_bow": {
@@ -95,7 +95,7 @@
 			"value": 30,
 			"description": "A compact bow, easy to carry.",
 			"requirements": {"finesse": 8},
-			"stats": {"damage": 5, "accuracy": 15, "range": 4},
+			"stats": {"damage": 5, "accuracy": 15, "range": 4, "ammo": 20},
 			"abilities": []
 		},
 		"longbow": {
@@ -109,7 +109,7 @@
 			"value": 80,
 			"description": "A powerful bow requiring great skill to draw.",
 			"requirements": {"finesse": 12, "strength": 10},
-			"stats": {"damage": 10, "accuracy": 5, "range": 6},
+			"stats": {"damage": 10, "accuracy": 5, "range": 6, "ammo": 20},
 			"abilities": []
 		},
 		"throwing_knife": {
@@ -123,7 +123,7 @@
 			"value": 15,
 			"description": "A balanced knife designed for throwing.",
 			"requirements": {"finesse": 8},
-			"stats": {"damage": 4, "accuracy": 10, "range": 3, "crit_chance": 5},
+			"stats": {"damage": 4, "accuracy": 10, "range": 3, "crit_chance": 5, "ammo": 5},
 			"abilities": []
 		},
 		"iron_dagger": {
@@ -1191,6 +1191,67 @@
 				"status_chance": 40,
 				"status_duration": 1
 			}
+		},
+
+		"rations": {
+			"name": "Rations",
+			"type": "supply",
+			"rarity": "common",
+			"weight": 1,
+			"value": 2,
+			"description": "Dried meat and grain. Keeps the party fed on the road.",
+			"supply_type": "food",
+			"supply_amount": 5
+		},
+		"travel_provisions": {
+			"name": "Travel Provisions",
+			"type": "supply",
+			"rarity": "common",
+			"weight": 2,
+			"value": 8,
+			"description": "A well-packed bundle of preserved food.",
+			"supply_type": "food",
+			"supply_amount": 15
+		},
+		"herb_bundle": {
+			"name": "Herb Bundle",
+			"type": "supply",
+			"rarity": "common",
+			"weight": 1,
+			"value": 5,
+			"description": "Assorted medicinal herbs, roots, and dried flowers.",
+			"supply_type": "herbs",
+			"supply_amount": 5
+		},
+		"apothecary_pouch": {
+			"name": "Apothecary Pouch",
+			"type": "supply",
+			"rarity": "uncommon",
+			"weight": 2,
+			"value": 15,
+			"description": "A leather pouch packed with carefully sorted remedies.",
+			"supply_type": "herbs",
+			"supply_amount": 12
+		},
+		"scrap_metal": {
+			"name": "Scrap Metal",
+			"type": "supply",
+			"rarity": "common",
+			"weight": 2,
+			"value": 5,
+			"description": "Bent nails, broken fittings, and salvageable metal scraps.",
+			"supply_type": "scrap",
+			"supply_amount": 5
+		},
+		"salvage_kit": {
+			"name": "Salvage Kit",
+			"type": "supply",
+			"rarity": "uncommon",
+			"weight": 3,
+			"value": 15,
+			"description": "Usable metal, leather strips, and repair materials.",
+			"supply_type": "scrap",
+			"supply_amount": 12
 		}
 	},
 	"item_types": {
@@ -1226,7 +1287,8 @@
 		"scroll": {"category": "consumable", "subcategory": "scroll"},
 		"charm": {"category": "consumable", "subcategory": "charm"},
 		"bomb": {"category": "consumable", "subcategory": "bomb"},
-		"oil": {"category": "consumable", "subcategory": "oil"}
+		"oil": {"category": "consumable", "subcategory": "oil"},
+		"supply": {"category": "supply"}
 	},
 	"rarities": {
 		"common": {"color": "#AAAAAA", "drop_weight": 100},

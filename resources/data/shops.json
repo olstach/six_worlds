@@ -88,7 +88,9 @@
 				"longbow": 1,
 				"iron_dagger": 2,
 				"chainmail": 1,
-				"iron_shield": 1
+				"iron_shield": 1,
+				"scrap_metal": 8,
+				"salvage_kit": 2
 			},
 			"spells": [],
 			"training": {
@@ -173,7 +175,11 @@
 				"leather_gloves": 3,
 				"copper_ring": 2,
 				"travelers_amulet": 1,
-				"lucky_charm": 1
+				"lucky_charm": 1,
+				"rations": 10,
+				"travel_provisions": 3,
+				"herb_bundle": 5,
+				"scrap_metal": 5
 			},
 			"spells": [
 				"firebolt",
