@@ -1252,6 +1252,26 @@
 			"description": "Usable metal, leather strips, and repair materials.",
 			"supply_type": "scrap",
 			"supply_amount": 12
+		},
+		"raw_reagents": {
+			"name": "Raw Reagents",
+			"type": "supply",
+			"rarity": "uncommon",
+			"weight": 1,
+			"value": 8,
+			"description": "Mineral salts, dried fungi, and alchemical base compounds.",
+			"supply_type": "reagents",
+			"supply_amount": 3
+		},
+		"alchemists_pouch": {
+			"name": "Alchemist's Pouch",
+			"type": "supply",
+			"rarity": "rare",
+			"weight": 2,
+			"value": 20,
+			"description": "A carefully prepared kit of distilled essences and reactive powders.",
+			"supply_type": "reagents",
+			"supply_amount": 8
 		}
 	},
 	"item_types": {

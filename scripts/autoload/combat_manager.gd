@@ -76,6 +76,10 @@ const GLOBAL_CONSUMABLE_CHANCE: float = 0.30
 # Supplies drop alongside normal loot — common, ~half the value of gold
 const SUPPLY_DROP_IDS: Array[String] = ["rations", "herb_bundle", "scrap_metal"]
 const SUPPLY_DROP_CHANCE: float = 0.50  # 50% chance per combat to drop a supply item
+# Reagents are rarer — only 25% base chance, but 50% from casters/supports
+const REAGENT_DROP_ID: String = "raw_reagents"
+const REAGENT_DROP_CHANCE: float = 0.25
+const REAGENT_DROP_CHANCE_CASTER: float = 0.50
 # Base rarity weights (higher = more likely to drop)
 const RARITY_DROP_WEIGHTS: Dictionary = {
 	"common": 100, "uncommon": 50, "rare": 20, "epic": 5, "legendary": 1
@@ -362,6 +366,16 @@ func _generate_loot_drops(enemy_count: int, difficulty_ratio: float, best_luck: 
 		for i in range(supply_count):
 			var supply_id = SUPPLY_DROP_IDS[randi() % SUPPLY_DROP_IDS.size()]
 			drops.append(supply_id)
+
+	# --- Reagent drops (rarer, weighted toward caster/support enemies) ---
+	var has_casters := false
+	for role in enemy_roles:
+		if role == "caster" or role == "support":
+			has_casters = true
+			break
+	var reagent_chance := REAGENT_DROP_CHANCE_CASTER if has_casters else REAGENT_DROP_CHANCE
+	if randf() < reagent_chance:
+		drops.append(REAGENT_DROP_ID)
 
 	# --- Boss guaranteed drops ---
 	for arch_id in boss_archetype_ids:

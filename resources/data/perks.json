@@ -6021,6 +6021,15 @@
       "flavor": "",
       "is_mantra": false
     },
+    "herbalist": {
+      "name": "Herbalist",
+      "skill": "medicine",
+      "required_level": 3,
+      "requires_perks": [],
+      "description": "After combat, gather bonus Herbs from the environment (1-3 per encounter, more in natural terrain).",
+      "flavor": "The bounty of nature.",
+      "is_mantra": false
+    },
     "quick_brew": {
       "name": "Quick Brew",
       "skill": "alchemy",
@@ -6151,6 +6160,90 @@
       "requires_perks": [],
       "description": "Thrown potions (healing, buff) also affect allies within 1 tile of the target at 50% effectiveness.",
       "flavor": "",
+      "is_mantra": false
+    },
+    "apprentice_apothecary": {
+      "name": "Apprentice Apothecary",
+      "skill": "alchemy",
+      "required_level": 1,
+      "requires_perks": [],
+      "description": "Unlocks brewing of basic remedies: Health Potion, Mana Potion, Antidote. Can be brewed actively on the overworld or passively while travelling (costs 1 Reagent each).",
+      "flavor": "Every alchemist starts with three flasks and a prayer.",
+      "is_mantra": false
+    },
+    "journeyman_apothecary": {
+      "name": "Journeyman Apothecary",
+      "skill": "alchemy",
+      "required_level": 5,
+      "requires_perks": [
+        "apprentice_apothecary"
+      ],
+      "description": "Unlocks brewing of improved remedies: Greater Health Potion, Greater Mana Potion, Stamina Tonic, Cure-All (costs 2 Reagents each).",
+      "flavor": "Knowing what to mix is easy. Knowing when to stop is the art.",
+      "is_mantra": false
+    },
+    "master_apothecary": {
+      "name": "Master Apothecary",
+      "skill": "alchemy",
+      "required_level": 9,
+      "requires_perks": [
+        "journeyman_apothecary"
+      ],
+      "description": "Unlocks brewing of masterwork remedies: Elixir of Vitality, Elixir of Power, Panacea (costs 4 Reagents each).",
+      "flavor": "The line between poison and panacea is a matter of dosage.",
+      "is_mantra": false
+    },
+    "demolitions_expert": {
+      "name": "Demolitions Expert",
+      "skill": "alchemy",
+      "required_level": 5,
+      "requires_perks": [
+        "bomb_maker"
+      ],
+      "description": "Unlocks brewing of advanced munitions: Acid Flask, Thunder Bomb, Flashbang (costs 2 Reagents each).",
+      "flavor": "Bigger is not always better. But it usually is.",
+      "is_mantra": false
+    },
+    "master_demolitionist": {
+      "name": "Master Demolitionist",
+      "skill": "alchemy",
+      "required_level": 9,
+      "requires_perks": [
+        "demolitions_expert"
+      ],
+      "description": "Unlocks brewing of devastating munitions: Inferno Bomb, Void Grenade, Plague Flask (costs 4 Reagents each).",
+      "flavor": "At this point, you no longer throw bombs. You deliver verdicts.",
+      "is_mantra": false
+    },
+    "advanced_coatings": {
+      "name": "Advanced Coatings",
+      "skill": "alchemy",
+      "required_level": 5,
+      "requires_perks": [
+        "applied_toxicology"
+      ],
+      "description": "Unlocks brewing of advanced weapon coatings: Whetstone Oil, Paralyzing Oil, Warding Oil (costs 2 Reagents each).",
+      "flavor": "The blade remembers what it was fed.",
+      "is_mantra": false
+    },
+    "master_coatings": {
+      "name": "Master Coatings",
+      "skill": "alchemy",
+      "required_level": 9,
+      "requires_perks": [
+        "advanced_coatings"
+      ],
+      "description": "Unlocks brewing of masterwork coatings: Dragon's Blood Oil, Void Oil, Sovereign Oil (costs 4 Reagents each).",
+      "flavor": "These are not coatings. They are transformations.",
+      "is_mantra": false
+    },
+    "alchemical_recycling": {
+      "name": "Alchemical Recycling",
+      "skill": "alchemy",
+      "required_level": 3,
+      "requires_perks": [],
+      "description": "After combat, gain bonus Reagents from defeated enemies (1-2 per enemy, higher from magic-using enemies).",
+      "flavor": "Waste not, want not.",
       "is_mantra": false
     },
     "nimble_fingers": {
@@ -7280,6 +7373,15 @@
       "requires_perks": [],
       "description": "Crafted weapons gain +10% Damage and +5% accuracy.",
       "flavor": "",
+      "is_mantra": false
+    },
+    "scavenger": {
+      "name": "Scavenger",
+      "skill": "smithing",
+      "required_level": 3,
+      "requires_perks": [],
+      "description": "After combat, salvage bonus Scrap from defeated enemies and broken equipment (1-3 per encounter).",
+      "flavor": "That looks shiny enough.",
       "is_mantra": false
     }
   },

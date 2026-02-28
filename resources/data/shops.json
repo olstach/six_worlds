@@ -33,7 +33,9 @@
 				"oak_staff": 1,
 				"cloth_robe": 2,
 				"cloth_hood": 2,
-				"prayer_beads": 1
+				"prayer_beads": 1,
+				"raw_reagents": 5,
+				"alchemists_pouch": 2
 			},
 			"spells": [
 				"firebolt",
@@ -57,7 +59,10 @@
 			"description": "A mysterious figure who can unlock your hidden potential.",
 			"price_modifier": 0.9,
 			"buys_items": false,
-			"items": {},
+			"items": {
+				"raw_reagents": 3,
+				"alchemists_pouch": 1
+			},
 			"spells": [
 				"lesser_heal",
 				"greater_heal",

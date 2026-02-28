@@ -1,5 +1,5 @@
 {
-	"_comment": "Supply system: three resources consumed on the overworld, each tied to a passive skill",
+	"_comment": "Supply system: four resources consumed on the overworld, each tied to a passive skill",
 
 	"supply_types": {
 		"food": {
@@ -34,6 +34,17 @@
 			"loot_drop_weight": "uncommon",
 			"base_cost_per_step": 1,
 			"linked_skill": "smithing"
+		},
+		"reagents": {
+			"name": "Reagents",
+			"description": "Consumed by Alchemy to passively brew potions, bombs, and oils on the overworld. Can be toggled off to save for active crafting.",
+			"icon": "reagents",
+			"starting_amount": 10,
+			"max_stack": 999,
+			"shop_price": 8,
+			"loot_drop_weight": "uncommon",
+			"base_cost_per_brew": 1,
+			"linked_skill": "alchemy"
 		}
 	},
 
@@ -61,6 +72,69 @@
 		"repair_durability_pct_per_level": 1.0,
 		"ammo_restore_per_step_base": 1,
 		"ammo_restore_bonus_per_3_levels": 1
+	},
+
+	"alchemy_overworld": {
+		"_comment": "Alchemy passively brews items from unlocked tiers while travelling (costs reagents). Can be toggled off. Higher Alchemy = better odds of brewing higher-tier items.",
+		"brew_chance_per_step_pct": 15,
+		"brew_chance_bonus_per_level_pct": 3,
+		"reagent_cost_per_brew": 1,
+		"high_tier_reagent_cost": 3
+	},
+
+	"alchemy_crafting_tiers": {
+		"_comment": "Items unlocked by Alchemy perks. Each tier grants access to a group of items for both passive and active crafting. Reagent cost listed per item.",
+		"remedies": {
+			"tier_1": {
+				"perk": "apprentice_apothecary",
+				"items": ["health_potion", "mana_potion", "antidote"],
+				"reagent_cost": 1
+			},
+			"tier_2": {
+				"perk": "journeyman_apothecary",
+				"items": ["greater_health_potion", "greater_mana_potion", "stamina_tonic", "cure_all"],
+				"reagent_cost": 2
+			},
+			"tier_3": {
+				"perk": "master_apothecary",
+				"items": ["elixir_of_vitality", "elixir_of_power", "panacea"],
+				"reagent_cost": 4
+			}
+		},
+		"munitions": {
+			"tier_1": {
+				"perk": "bomb_maker",
+				"items": ["fire_bomb", "frost_bomb", "smoke_bomb"],
+				"reagent_cost": 1
+			},
+			"tier_2": {
+				"perk": "demolitions_expert",
+				"items": ["acid_flask", "thunder_bomb", "flashbang"],
+				"reagent_cost": 2
+			},
+			"tier_3": {
+				"perk": "master_demolitionist",
+				"items": ["inferno_bomb", "void_grenade", "plague_flask"],
+				"reagent_cost": 4
+			}
+		},
+		"applications": {
+			"tier_1": {
+				"perk": "applied_toxicology",
+				"items": ["flame_oil", "frost_oil", "poison_oil"],
+				"reagent_cost": 1
+			},
+			"tier_2": {
+				"perk": "advanced_coatings",
+				"items": ["whetstone_oil", "paralyzing_oil", "warding_oil"],
+				"reagent_cost": 2
+			},
+			"tier_3": {
+				"perk": "master_coatings",
+				"items": ["dragons_blood_oil", "void_oil", "sovereign_oil"],
+				"reagent_cost": 4
+			}
+		}
 	},
 
 	"ammo_limits": {

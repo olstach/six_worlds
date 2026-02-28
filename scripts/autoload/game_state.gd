@@ -24,9 +24,13 @@ var current_run_number: int = 1  # How many times player has reincarnated
 var gold: int = 100  # Starting gold
 
 # Supplies — see resources/data/supplies.json for system config
-var food: int = 50    # Consumed per party member per overworld step; Logistics reduces cost
-var herbs: int = 20   # Consumed by Medicine passive to boost healing rate
-var scrap: int = 15   # Consumed by Smithing passive to repair gear and restore ammo
+var food: int = 50      # Consumed per party member per overworld step; Logistics reduces cost
+var herbs: int = 20     # Consumed by Medicine passive to boost healing rate
+var scrap: int = 15     # Consumed by Smithing passive to repair gear and restore ammo
+var reagents: int = 10  # Consumed by Alchemy passive to brew items; can be toggled off
+
+# Alchemy passive toggle — player can disable to hoard reagents for active crafting
+var alchemy_passive_enabled: bool = true
 
 # Starvation tracking — when food hits 0, a grace period starts before HP drain
 var steps_without_food: int = 0  # Counts up while food == 0
@@ -196,6 +200,7 @@ func get_supply(supply_type: String) -> int:
 		"food": return food
 		"herbs": return herbs
 		"scrap": return scrap
+		"reagents": return reagents
 		_:
 			push_warning("Unknown supply type: " + supply_type)
 			return 0
@@ -217,6 +222,8 @@ func add_supply(supply_type: String, amount: int) -> void:
 			herbs += amount
 		"scrap":
 			scrap += amount
+		"reagents":
+			reagents += amount
 		_:
 			push_warning("Unknown supply type: " + supply_type)
 			return
@@ -234,6 +241,7 @@ func consume_supply(supply_type: String, amount: int) -> bool:
 		"food": food -= amount
 		"herbs": herbs -= amount
 		"scrap": scrap -= amount
+		"reagents": reagents -= amount
 	supply_changed.emit(supply_type, get_supply(supply_type), -amount)
 	return true
 
@@ -319,6 +327,33 @@ func process_scrap_step(smithing_level: int) -> Dictionary:
 	return {"repair_pct": repair_pct, "ammo_restore": ammo_restore}
 
 
+## Toggle alchemy passive brewing on/off (player choice to hoard reagents)
+func set_alchemy_passive(enabled: bool) -> void:
+	alchemy_passive_enabled = enabled
+
+
+## Process alchemy passive brewing. Each step has a chance to brew an item
+## from the alchemist's unlocked tiers.
+## alchemy_level: best Alchemy skill in party
+## unlocked_item_ids: Array of item IDs the party can brew (from perk tiers)
+## Returns the item_id brewed, or "" if nothing was brewed this step
+func process_alchemy_step(alchemy_level: int, unlocked_item_ids: Array) -> String:
+	if not alchemy_passive_enabled:
+		return ""
+	if alchemy_level <= 0 or reagents <= 0 or unlocked_item_ids.is_empty():
+		return ""
+	# Brew chance: 15% base + 3% per Alchemy level
+	var brew_chance: float = (15.0 + alchemy_level * 3.0) / 100.0
+	if randf() > brew_chance:
+		return ""
+	# Pick a random item from the unlocked pool
+	var brewed_id: String = unlocked_item_ids[randi() % unlocked_item_ids.size()]
+	# Consume reagents (1 for basic, more for high-tier handled by caller if needed)
+	reagents -= 1
+	supply_changed.emit("reagents", reagents, -1)
+	return brewed_id
+
+
 # ============================================
 # SAVE / LOAD
 # ============================================
@@ -338,6 +373,8 @@ func get_save_data() -> Dictionary:
 		"food": food,
 		"herbs": herbs,
 		"scrap": scrap,
+		"reagents": reagents,
+		"alchemy_passive_enabled": alchemy_passive_enabled,
 		"steps_without_food": steps_without_food,
 		"is_starving": is_starving,
 		"boss_defeated": boss_states
@@ -353,6 +390,8 @@ func load_save_data(data: Dictionary) -> void:
 	food = data.get("food", 50)
 	herbs = data.get("herbs", 20)
 	scrap = data.get("scrap", 15)
+	reagents = data.get("reagents", 10)
+	alchemy_passive_enabled = data.get("alchemy_passive_enabled", true)
 	steps_without_food = data.get("steps_without_food", 0)
 	is_starving = data.get("is_starving", false)
 
