@@ -4,12 +4,15 @@ extends Node
 ## This singleton tracks:
 ## - Current run state (alive/dead, current world, etc.)
 ## - Which worlds are unlocked
-## - Party gold/currency
+## - Party gold/currency and supplies (Food, Herbs, Scrap)
 ## - Save/load functionality
 ## - Scene transitions
 
 # Signals
 signal gold_changed(new_amount: int, change: int)
+signal supply_changed(supply_type: String, new_amount: int, change: int)
+signal starvation_started()   # Emitted when food runs out and grace period expires
+signal starvation_ended()     # Emitted when food is obtained while starving
 
 # Current run data
 var current_world: String = "hell"  # Which world the player is currently in
@@ -19,6 +22,15 @@ var current_run_number: int = 1  # How many times player has reincarnated
 
 # Party resources
 var gold: int = 100  # Starting gold
+
+# Supplies — see resources/data/supplies.json for system config
+var food: int = 50    # Consumed per party member per overworld step; Logistics reduces cost
+var herbs: int = 20   # Consumed by Medicine passive to boost healing rate
+var scrap: int = 15   # Consumed by Smithing passive to repair gear and restore ammo
+
+# Starvation tracking — when food hits 0, a grace period starts before HP drain
+var steps_without_food: int = 0  # Counts up while food == 0
+var is_starving: bool = false    # True once grace period expires and HP is draining
 
 # Scene transition state (for passing data across scene changes)
 var pending_combat_mob: Dictionary = {}  # Mob data passed to combat arena
@@ -175,6 +187,138 @@ func set_gold(amount: int) -> void:
 
 
 # ============================================
+# SUPPLY MANAGEMENT (Food, Herbs, Scrap)
+# ============================================
+
+## Get current amount of a supply type
+func get_supply(supply_type: String) -> int:
+	match supply_type:
+		"food": return food
+		"herbs": return herbs
+		"scrap": return scrap
+		_:
+			push_warning("Unknown supply type: " + supply_type)
+			return 0
+
+
+## Add supplies (from loot, shops, events)
+func add_supply(supply_type: String, amount: int) -> void:
+	if amount <= 0:
+		return
+	match supply_type:
+		"food":
+			food += amount
+			# If we were starving and just got food, reset starvation
+			if is_starving:
+				is_starving = false
+				steps_without_food = 0
+				starvation_ended.emit()
+		"herbs":
+			herbs += amount
+		"scrap":
+			scrap += amount
+		_:
+			push_warning("Unknown supply type: " + supply_type)
+			return
+	supply_changed.emit(supply_type, get_supply(supply_type), amount)
+
+
+## Consume supplies (returns true if enough were available)
+func consume_supply(supply_type: String, amount: int) -> bool:
+	if amount <= 0:
+		return true
+	var current := get_supply(supply_type)
+	if current < amount:
+		return false
+	match supply_type:
+		"food": food -= amount
+		"herbs": herbs -= amount
+		"scrap": scrap -= amount
+	supply_changed.emit(supply_type, get_supply(supply_type), -amount)
+	return true
+
+
+## Called each overworld step — handles food consumption and starvation tracking.
+## party_size: number of members in party
+## logistics_level: best Logistics skill in party (reduces food cost)
+## lowest_con: lowest Constitution in party (determines starvation grace period)
+## Returns a dictionary describing what happened this step:
+##   {food_consumed, is_starving, starvation_damage_pct, healing_active}
+func process_food_step(party_size: int, logistics_level: int, lowest_con: int) -> Dictionary:
+	# Calculate food cost: 1 per member, reduced by Logistics (3% per level)
+	var reduction_pct: float = logistics_level * 3.0  # from supplies.json
+	var raw_cost: float = party_size * 1.0
+	var reduced_cost: float = raw_cost * (1.0 - reduction_pct / 100.0)
+	var actual_cost: int = max(1, ceili(reduced_cost))  # Always costs at least 1
+
+	var result := {
+		"food_consumed": 0,
+		"is_starving": false,
+		"starvation_damage_pct": 0.0,
+		"healing_active": true
+	}
+
+	if food >= actual_cost:
+		food -= actual_cost
+		result.food_consumed = actual_cost
+		steps_without_food = 0
+		if is_starving:
+			is_starving = false
+			starvation_ended.emit()
+		supply_changed.emit("food", food, -actual_cost)
+	else:
+		# Eat whatever's left, then go hungry
+		var eaten := food
+		food = 0
+		if eaten > 0:
+			supply_changed.emit("food", 0, -eaten)
+		result.food_consumed = eaten
+		result.healing_active = false  # No food = no passive healing
+
+		# Track starvation
+		steps_without_food += 1
+		# Grace period: base 10 + 2 per lowest CON in party
+		var grace: int = 10 + (lowest_con * 2)
+		if steps_without_food > grace:
+			is_starving = true
+			result.is_starving = true
+			result.starvation_damage_pct = 2.0  # 2% max HP per step
+			if steps_without_food == grace + 1:
+				starvation_started.emit()
+
+	return result
+
+
+## Process herb consumption for Medicine passive healing.
+## medicine_level: best Medicine skill in party
+## Returns bonus heal percentage (0.0 if no herbs or no Medicine skill)
+func process_herbs_step(medicine_level: int) -> float:
+	if medicine_level <= 0 or herbs <= 0:
+		return 0.0
+	# Consume 1 herb per step when Medicine is active
+	herbs -= 1
+	supply_changed.emit("herbs", herbs, -1)
+	# Bonus healing: 0.5% per Medicine level (on top of base 1% from food)
+	return medicine_level * 0.5
+
+
+## Process scrap consumption for Smithing passive repair/ammo restore.
+## smithing_level: best Smithing skill in party
+## Returns dictionary with repair and ammo restore rates (0 if no scrap or no Smithing)
+func process_scrap_step(smithing_level: int) -> Dictionary:
+	if smithing_level <= 0 or scrap <= 0:
+		return {"repair_pct": 0.0, "ammo_restore": 0}
+	# Consume 1 scrap per step when Smithing is active
+	scrap -= 1
+	supply_changed.emit("scrap", scrap, -1)
+	# Repair: 1% durability per Smithing level
+	var repair_pct: float = smithing_level * 1.0
+	# Ammo restore: 1 base + 1 per 3 Smithing levels
+	var ammo_restore: int = 1 + (smithing_level / 3)
+	return {"repair_pct": repair_pct, "ammo_restore": ammo_restore}
+
+
+# ============================================
 # SAVE / LOAD
 # ============================================
 
@@ -190,6 +334,11 @@ func get_save_data() -> Dictionary:
 		"is_alive": is_alive,
 		"current_run_number": current_run_number,
 		"gold": gold,
+		"food": food,
+		"herbs": herbs,
+		"scrap": scrap,
+		"steps_without_food": steps_without_food,
+		"is_starving": is_starving,
 		"boss_defeated": boss_states
 	}
 
@@ -200,6 +349,11 @@ func load_save_data(data: Dictionary) -> void:
 	is_alive = data.get("is_alive", true)
 	current_run_number = data.get("current_run_number", 1)
 	gold = data.get("gold", 100)
+	food = data.get("food", 50)
+	herbs = data.get("herbs", 20)
+	scrap = data.get("scrap", 15)
+	steps_without_food = data.get("steps_without_food", 0)
+	is_starving = data.get("is_starving", false)
 
 	# Restore unlocked worlds
 	unlocked_worlds.clear()

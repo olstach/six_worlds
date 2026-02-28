@@ -246,7 +246,7 @@
 			"name": "Medicine",
 			"category": "general",
 			"element": "water",
-			"description": "Healing arts and knowledge of the body - party passive bonus",
+			"description": "Boosts party healing rate and potion effectiveness - consumes Herbs",
 			"primary_attribute": "awareness",
 			"secondary_attribute": "focus"
 		},
@@ -309,7 +309,7 @@
 			"name": "Logistics",
 			"category": "general",
 			"element": "earth",
-			"description": "Manage party resources and travel - party passive bonus",
+			"description": "Reduces food consumption, increases overworld speed - consumes Food",
 			"primary_attribute": "awareness",
 			"secondary_attribute": "charm"
 		},
@@ -327,7 +327,7 @@
 			"name": "Smithing",
 			"category": "general",
 			"element": "earth",
-			"description": "Repair and maintain equipment - party passive bonus",
+			"description": "Passively repairs equipment and restores ammo - consumes Scrap",
 			"primary_attribute": "focus",
 			"secondary_attribute": "finesse"
 		}
