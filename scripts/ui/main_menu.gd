@@ -22,6 +22,9 @@ signal tab_changed(tab_index: int)
 @onready var perks_container: VBoxContainer = %PerksContainer
 @onready var spellbook_list: VBoxContainer = %SpellbookList
 @onready var spell_filter_bar: HBoxContainer = %SpellFilterBar
+@onready var crafter_panel: HBoxContainer = %CrafterPanel
+@onready var craft_filter_bar: HBoxContainer = %CraftFilterBar
+@onready var crafting_list: VBoxContainer = %CraftingList
 @onready var party_list: VBoxContainer = %PartyList
 @onready var followers_list: VBoxContainer = %FollowersList
 @onready var inventory_grid: GridContainer = %InventoryGrid
@@ -33,17 +36,16 @@ signal tab_changed(tab_index: int)
 const EQUIPMENT_SLOTS := {
 	"head": {"name": "Head", "types": ["helmet", "hat", "circlet"]},
 	"chest": {"name": "Chest", "types": ["armor", "robe", "vest"]},
-	"hand_l": {"name": "Hands (L)", "types": ["gloves", "gauntlets", "bracers"]},
-	"hand_r": {"name": "Hands (R)", "types": ["gloves", "gauntlets", "bracers"]},
+	"hand_l": {"name": "Hands", "types": ["gloves", "gauntlets", "bracers"]},
+	"hand_r": {"name": "Hands", "types": ["gloves", "gauntlets", "bracers"]},
 	"legs": {"name": "Legs", "types": ["pants", "greaves", "leggings"]},
 	"feet": {"name": "Feet", "types": ["boots", "shoes", "sandals"]},
 	"weapon_main": {"name": "Main Hand", "types": ["sword", "axe", "mace", "spear", "dagger", "staff", "bow"]},
 	"weapon_off": {"name": "Off Hand", "types": ["sword", "dagger", "shield"]},
 	"ring1": {"name": "Ring", "types": ["ring"]},
 	"ring2": {"name": "Ring", "types": ["ring"]},
-	"amulet": {"name": "Amulet", "types": ["amulet", "necklace"]},
-	"trinket1": {"name": "Trinket", "types": ["trinket", "talisman"]},
-	"trinket2": {"name": "Trinket", "types": ["trinket", "talisman"]}
+	"trinket1": {"name": "Trinket", "types": ["trinket", "talisman", "amulet", "necklace"]},
+	"trinket2": {"name": "Trinket", "types": ["trinket", "talisman", "amulet", "necklace"]}
 }
 
 var selected_equipment_slot: String = ""
@@ -70,6 +72,22 @@ var _spell_filters_built := false
 # Schools are stored in spells.json "schools" array; subschools in "subschool" field
 const SPELL_SCHOOLS: Array[String] = ["Space", "Air", "Fire", "Water", "Earth", "White", "Black"]
 const SPELL_SUBSCHOOLS: Array[String] = ["Sorcery", "Enchantment", "Summoning"]
+
+# Crafting tab state
+var _craft_tiers: Dictionary = {}           # Loaded from supplies.json alchemy_crafting_tiers
+var _craft_filter: String = ""              # Active category: "" = all, or remedies/munitions/applications
+var _craft_character: Dictionary = {}       # Selected alchemist character
+var _craft_filter_buttons: Dictionary = {}  # category -> Button reference
+var _craft_built: bool = false              # True after first build
+
+# Map crafting categories to display names
+const CRAFT_CATEGORY_LABELS := {
+	"remedies": "Potions",
+	"munitions": "Bombs",
+	"applications": "Oils"
+}
+# Water-element color for alchemy (alchemy is a Water skill)
+const CRAFT_COLOR := Color(0.5, 0.82, 0.98)
 
 # Attribute display names
 const ATTRIBUTE_ABBREVS := {
@@ -163,6 +181,11 @@ func _on_tab_changed(tab: int) -> void:
 	elif tab == 3:
 		_build_spell_filters()
 		_update_spellbook()
+	# Refresh crafting tab when switching to it (tab index 4)
+	elif tab == 4:
+		_load_craft_tiers()
+		_build_craft_filters()
+		_update_crafting_tab()
 
 func _on_character_updated(_character: Dictionary) -> void:
 	_refresh_display()
@@ -878,6 +901,388 @@ func _create_spell_card(spell_id: String, spell_data: Dictionary) -> PanelContai
 	return card
 
 
+# ============================================
+# CRAFTING TAB
+# ============================================
+
+func _load_craft_tiers() -> void:
+	## Load alchemy_crafting_tiers from supplies.json (once).
+	if not _craft_tiers.is_empty():
+		return
+	var file_path = "res://resources/data/supplies.json"
+	if not FileAccess.file_exists(file_path):
+		push_warning("Crafting: supplies.json not found")
+		return
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	var json_text = file.get_as_text()
+	file.close()
+	var json = JSON.new()
+	if json.parse(json_text) != OK:
+		push_warning("Crafting: Failed to parse supplies.json")
+		return
+	_craft_tiers = json.get_data().get("alchemy_crafting_tiers", {})
+
+func _build_craft_filters() -> void:
+	## Build the Potions / Bombs / Oils radio filter buttons (built once).
+	if _craft_built:
+		return
+	_craft_built = true
+
+	var label = Label.new()
+	label.text = "Filter:"
+	label.add_theme_font_size_override("font_size", 12)
+	label.add_theme_color_override("font_color", Color(0.6, 0.55, 0.5))
+	craft_filter_bar.add_child(label)
+
+	for category in ["remedies", "munitions", "applications"]:
+		var display = CRAFT_CATEGORY_LABELS[category]
+		var btn = Button.new()
+		btn.text = display
+		btn.toggle_mode = true
+		btn.button_pressed = false  # Nothing active by default
+		btn.custom_minimum_size = Vector2(80, 26)
+		btn.add_theme_font_size_override("font_size", 12)
+
+		# Pressed/active style
+		var style_on = StyleBoxFlat.new()
+		style_on.bg_color = CRAFT_COLOR.darkened(0.6)
+		style_on.border_color = CRAFT_COLOR
+		style_on.set_border_width_all(2)
+		style_on.set_corner_radius_all(3)
+		style_on.set_content_margin_all(4)
+		btn.add_theme_stylebox_override("pressed", style_on)
+
+		# Normal style
+		var style_off = StyleBoxFlat.new()
+		style_off.bg_color = Color(0.15, 0.13, 0.18)
+		style_off.border_color = CRAFT_COLOR.darkened(0.5)
+		style_off.set_border_width_all(1)
+		style_off.set_corner_radius_all(3)
+		style_off.set_content_margin_all(4)
+		btn.add_theme_stylebox_override("normal", style_off)
+
+		var style_hover = StyleBoxFlat.new()
+		style_hover.bg_color = Color(0.2, 0.18, 0.22)
+		style_hover.border_color = CRAFT_COLOR.darkened(0.3)
+		style_hover.set_border_width_all(1)
+		style_hover.set_corner_radius_all(3)
+		style_hover.set_content_margin_all(4)
+		btn.add_theme_stylebox_override("hover", style_hover)
+
+		# Use pressed (not toggled) so programmatic button_pressed changes don't
+		# retrigger the handler and cause a recursive stack overflow.
+		btn.pressed.connect(_on_craft_filter_pressed.bind(category))
+		craft_filter_bar.add_child(btn)
+		_craft_filter_buttons[category] = btn
+
+func _on_craft_filter_pressed(category: String) -> void:
+	## Radio-button logic: clicking the active filter deselects (shows all);
+	## clicking another filter selects it exclusively.
+	AudioManager.play("ui_click")
+	if _craft_filter == category:
+		# Toggle off — show everything
+		_craft_filter = ""
+		_craft_filter_buttons[category].button_pressed = false
+	else:
+		_craft_filter = category
+		# Deactivate all other buttons without triggering their handlers
+		for cat in _craft_filter_buttons:
+			_craft_filter_buttons[cat].button_pressed = (cat == category)
+	_update_craft_list()
+
+func _update_crafting_tab() -> void:
+	## Refresh the full crafting tab (character panel + item list).
+	_update_crafter_panel()
+	_update_craft_list()
+
+func _update_crafter_panel() -> void:
+	## Populate the character picker at the top with alchemist party members.
+	for child in crafter_panel.get_children():
+		child.queue_free()
+
+	var party = CharacterSystem.get_party()
+	var alchemists: Array[Dictionary] = []
+	for character in party:
+		var alch_level = character.get("skills", {}).get("alchemy", 0)
+		if alch_level > 0:
+			alchemists.append(character)
+
+	if alchemists.is_empty():
+		var msg = Label.new()
+		msg.text = "No one in your party knows Alchemy."
+		msg.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		msg.add_theme_font_size_override("font_size", 13)
+		crafter_panel.add_child(msg)
+		# Deselect
+		_craft_character = {}
+		return
+
+	# Auto-select the first alchemist if none selected or selected left party
+	var still_valid := false
+	for a in alchemists:
+		if a.get("name", "") == _craft_character.get("name", ""):
+			still_valid = true
+			_craft_character = a  # Refresh reference
+			break
+	if not still_valid:
+		_craft_character = alchemists[0]
+
+	# Build a card for each alchemist
+	for character in alchemists:
+		var is_selected = (character.get("name", "") == _craft_character.get("name", ""))
+		var card = _create_crafter_card(character, is_selected)
+		crafter_panel.add_child(card)
+
+func _create_crafter_card(character: Dictionary, selected: bool) -> PanelContainer:
+	## Create a small character card for the crafter picker.
+	var card = PanelContainer.new()
+	card.custom_minimum_size = Vector2(90, 60)
+
+	var border_col = CRAFT_COLOR if selected else Color(0.35, 0.35, 0.4)
+	var bg_col = CRAFT_COLOR.darkened(0.75) if selected else Color(0.12, 0.1, 0.15)
+
+	var style = StyleBoxFlat.new()
+	style.bg_color = bg_col
+	style.border_color = border_col
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(6)
+	card.add_theme_stylebox_override("panel", style)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 2)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	card.add_child(vbox)
+
+	# Character name
+	var name_label = Label.new()
+	name_label.text = character.get("name", "?")
+	name_label.add_theme_font_size_override("font_size", 13)
+	name_label.add_theme_color_override("font_color", CRAFT_COLOR if selected else Color(0.85, 0.82, 0.78))
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(name_label)
+
+	# Alchemy level
+	var alch = character.get("skills", {}).get("alchemy", 0)
+	var level_label = Label.new()
+	level_label.text = "Alchemy %d" % alch
+	level_label.add_theme_font_size_override("font_size", 11)
+	level_label.add_theme_color_override("font_color", Color(0.6, 0.55, 0.5))
+	level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(level_label)
+
+	# Transparent click button overlay
+	var btn = Button.new()
+	btn.set_anchors_preset(Control.PRESET_FULL_RECT)
+	btn.flat = true
+	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var hover_style = StyleBoxFlat.new()
+	hover_style.bg_color = CRAFT_COLOR * Color(1, 1, 1, 0.15)
+	hover_style.border_color = CRAFT_COLOR
+	hover_style.set_border_width_all(2)
+	hover_style.set_corner_radius_all(4)
+	btn.add_theme_stylebox_override("hover", hover_style)
+	btn.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+	btn.add_theme_stylebox_override("pressed", hover_style)
+	btn.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	btn.pressed.connect(_on_crafter_selected.bind(character))
+	card.add_child(btn)
+
+	return card
+
+func _on_crafter_selected(character: Dictionary) -> void:
+	AudioManager.play("ui_click")
+	_craft_character = character
+	_update_crafter_panel()
+	_update_craft_list()
+
+func _update_craft_list() -> void:
+	## Populate the item list for the active filter category and selected crafter.
+	for child in crafting_list.get_children():
+		child.queue_free()
+
+	if _craft_tiers.is_empty() or _craft_character.is_empty():
+		var msg = Label.new()
+		msg.text = "Select an alchemist above to craft items."
+		msg.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		msg.add_theme_font_size_override("font_size", 13)
+		crafting_list.add_child(msg)
+		return
+
+	# Determine which categories to show
+	var categories_to_show: Array[String] = []
+	if _craft_filter == "":
+		categories_to_show = ["remedies", "munitions", "applications"]
+	else:
+		categories_to_show = [_craft_filter]
+
+	var reagents: int = GameState.get_supply("reagents")
+
+	# Gather all rows across relevant categories: craftable ones first, then locked
+	var craftable_rows: Array[Dictionary] = []
+	var locked_rows: Array[Dictionary] = []
+
+	for category in categories_to_show:
+		var category_data = _craft_tiers.get(category, {})
+		if category_data.is_empty():
+			continue
+		for tier_key in ["tier_1", "tier_2", "tier_3"]:
+			var tier_data = category_data.get(tier_key, {})
+			if tier_data.is_empty():
+				continue
+			var required_perk: String = tier_data.get("perk", "")
+			var cost: int = int(tier_data.get("reagent_cost", 1))
+			var item_ids: Array = tier_data.get("items", [])
+
+			# Check if the selected character has this tier's perk
+			var has_tier = PerkSystem.has_perk(_craft_character, required_perk)
+
+			for item_id in item_ids:
+				var item_data = ItemSystem.get_item(item_id)
+				var row_info := {
+					"item_id": item_id,
+					"item_data": item_data,
+					"cost": cost,
+					"has_tier": has_tier,
+					"required_perk": required_perk
+				}
+				if has_tier:
+					craftable_rows.append(row_info)
+				else:
+					locked_rows.append(row_info)
+
+	# Sort each group by reagent cost ascending
+	craftable_rows.sort_custom(func(a, b): return a["cost"] < b["cost"])
+	locked_rows.sort_custom(func(a, b): return a["cost"] < b["cost"])
+
+	# Craftable items first
+	if not craftable_rows.is_empty():
+		var header = Label.new()
+		header.text = "— Available —"
+		header.add_theme_font_size_override("font_size", 13)
+		header.add_theme_color_override("font_color", Color(0.85, 0.75, 0.4))
+		crafting_list.add_child(header)
+
+		for row_info in craftable_rows:
+			var row = _create_craft_row(row_info, reagents, true)
+			crafting_list.add_child(row)
+
+	# Locked items below
+	if not locked_rows.is_empty():
+		var spacer = Control.new()
+		spacer.custom_minimum_size.y = 4
+		crafting_list.add_child(spacer)
+
+		var header = Label.new()
+		header.text = "— Locked —"
+		header.add_theme_font_size_override("font_size", 13)
+		header.add_theme_color_override("font_color", Color(0.45, 0.42, 0.4))
+		crafting_list.add_child(header)
+
+		for row_info in locked_rows:
+			var row = _create_craft_row(row_info, reagents, false)
+			crafting_list.add_child(row)
+
+func _create_craft_row(row_info: Dictionary, reagents: int, craftable: bool) -> PanelContainer:
+	## Create a single craftable item row.
+	var item_id: String = row_info["item_id"]
+	var item_data: Dictionary = row_info["item_data"]
+	var cost: int = row_info["cost"]
+	var required_perk: String = row_info["required_perk"]
+
+	var can_afford: bool = reagents >= cost
+	var clickable: bool = craftable and can_afford
+
+	var card = PanelContainer.new()
+
+	var bg_alpha = 0.9 if craftable else 0.4
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.1, 0.15, bg_alpha)
+	style.border_color = CRAFT_COLOR.darkened(0.4) if craftable else Color(0.28, 0.28, 0.3)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(8)
+	card.add_theme_stylebox_override("panel", style)
+
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 8)
+	card.add_child(hbox)
+
+	# Item name
+	var name_col = VBoxContainer.new()
+	name_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.add_child(name_col)
+
+	var item_name = item_data.get("name", item_id.replace("_", " ").capitalize())
+	var name_label = Label.new()
+	name_label.text = item_name
+	name_label.add_theme_font_size_override("font_size", 14)
+	if craftable:
+		name_label.add_theme_color_override("font_color", Color(0.9, 0.87, 0.82))
+	else:
+		name_label.add_theme_color_override("font_color", Color(0.45, 0.43, 0.4))
+	name_col.add_child(name_label)
+
+	# Item description (short)
+	var desc = item_data.get("description", "")
+	if desc != "":
+		var desc_label = Label.new()
+		desc_label.text = desc
+		desc_label.add_theme_font_size_override("font_size", 11)
+		desc_label.add_theme_color_override("font_color", Color(0.5, 0.48, 0.44) if craftable else Color(0.35, 0.33, 0.3))
+		desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+		desc_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		name_col.add_child(desc_label)
+
+	# Locked reason
+	if not craftable:
+		var perk_display = required_perk.replace("_", " ").capitalize()
+		var lock_label = Label.new()
+		lock_label.text = "Requires: " + perk_display
+		lock_label.add_theme_font_size_override("font_size", 10)
+		lock_label.add_theme_color_override("font_color", Color(0.45, 0.42, 0.4))
+		name_col.add_child(lock_label)
+
+	# Reagent cost (right side)
+	var cost_label = Label.new()
+	cost_label.text = str(cost) + " ⬡"
+	cost_label.add_theme_font_size_override("font_size", 14)
+	if not craftable:
+		cost_label.add_theme_color_override("font_color", Color(0.4, 0.38, 0.35))
+	elif can_afford:
+		cost_label.add_theme_color_override("font_color", CRAFT_COLOR)
+	else:
+		cost_label.add_theme_color_override("font_color", Color(0.9, 0.2, 0.15))  # Red = can't afford
+	cost_label.custom_minimum_size.x = 50
+	cost_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	hbox.add_child(cost_label)
+
+	# Craft button (only for craftable items)
+	if craftable:
+		var craft_btn = Button.new()
+		craft_btn.text = "Craft"
+		craft_btn.custom_minimum_size = Vector2(60, 28)
+		craft_btn.add_theme_font_size_override("font_size", 12)
+		craft_btn.disabled = not can_afford
+		craft_btn.pressed.connect(_on_craft_pressed.bind(item_id, cost))
+		hbox.add_child(craft_btn)
+
+	return card
+
+func _on_craft_pressed(item_id: String, cost: int) -> void:
+	## Spend reagents and add the item to the party inventory.
+	if not GameState.consume_supply("reagents", cost):
+		AudioManager.play("ui_denied")
+		return
+
+	# Add item to party inventory
+	ItemSystem.add_to_inventory(item_id, 1)
+	AudioManager.play("buff_apply")
+
+	# Refresh the list so reagent count and button states update
+	_update_craft_list()
+
+
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel") and visible:
 		hide()
@@ -1177,12 +1582,13 @@ func _setup_equipment_doll() -> void:
 	# Feet - bottom center
 	_create_equipment_slot("feet", Vector2(center_x - slot_size.x/2, 205), slot_size)
 
-	# Magic item slots - closer to the figure, flanking head/chest area
-	_create_equipment_slot("ring1", Vector2(center_x - slot_size.x/2 - 60, 15), small_slot)
-	_create_equipment_slot("amulet", Vector2(center_x + slot_size.x/2 + 16, 15), small_slot)
-	_create_equipment_slot("ring2", Vector2(center_x - slot_size.x/2 - 60, 145), small_slot)
-	_create_equipment_slot("trinket1", Vector2(center_x + slot_size.x/2 + 16, 145), small_slot)
-	_create_equipment_slot("trinket2", Vector2(center_x + slot_size.x/2 + 16, 195), small_slot)
+	# Ring slots - beside the hand slots, with a small outward gap
+	_create_equipment_slot("ring1", Vector2(center_x - slot_size.x/2 - 65 - small_slot.x - 8, 84), small_slot)
+	_create_equipment_slot("ring2", Vector2(center_x + slot_size.x/2 + 13 + slot_size.x + 8, 84), small_slot)
+
+	# Trinket slots - flanking the head slot, side by side ("square" grouping at the top)
+	_create_equipment_slot("trinket1", Vector2(center_x - slot_size.x/2 - small_slot.x - 8, 14), small_slot)
+	_create_equipment_slot("trinket2", Vector2(center_x + slot_size.x/2 + 8, 14), small_slot)
 
 	# Weapon slots - below the figure
 	_create_equipment_slot("weapon_main", Vector2(center_x - slot_size.x - 10, 270), slot_size)
@@ -1289,7 +1695,6 @@ func _create_equipment_slot(slot_id: String, pos: Vector2, size: Vector2) -> voi
 		"weapon_off": "OFF",
 		"ring1": "R1",
 		"ring2": "R2",
-		"amulet": "AMU",
 		"trinket1": "T1",
 		"trinket2": "T2"
 	}
@@ -1305,6 +1710,10 @@ func _on_equipment_slot_pressed(slot_id: String) -> void:
 	AudioManager.play("ui_click")
 	var player = CharacterSystem.get_player()
 
+	# hand_r is a visual mirror of hand_l — redirect all clicks to hand_l
+	if slot_id == "hand_r":
+		slot_id = "hand_l"
+
 	# If slot has an item equipped, offer to unequip on double-click or show items
 	var equipped_item_id = ""
 	if not player.is_empty():
@@ -1313,6 +1722,9 @@ func _on_equipment_slot_pressed(slot_id: String) -> void:
 	# If clicking already selected slot with equipped item, unequip it
 	if selected_equipment_slot == slot_id and equipped_item_id != "":
 		ItemSystem.unequip_item(player, slot_id)
+		# Also clear the mirror slot (no inventory return — gloves are one item)
+		if slot_id == "hand_l":
+			player.get("equipment", {})["hand_r"] = ""
 		_update_equipment_slots()
 		_update_equipment_display()
 		return
@@ -1350,7 +1762,6 @@ func _update_equipment_slots() -> void:
 		"weapon_off": "OFF",
 		"ring1": "R1",
 		"ring2": "R2",
-		"amulet": "AMU",
 		"trinket1": "T1",
 		"trinket2": "T2"
 	}
@@ -1565,6 +1976,9 @@ func _on_equipment_item_pressed(item: Dictionary) -> void:
 
 	# Equip the item
 	if ItemSystem.equip_item(player, item_id, selected_equipment_slot):
+		# Mirror gloves/gauntlets/bracers to hand_r (one pair = one inventory item)
+		if selected_equipment_slot == "hand_l":
+			player.get("equipment", {})["hand_r"] = item_id
 		_update_equipment_slots()
 		_update_equipment_display()
 

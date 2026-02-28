@@ -9,11 +9,16 @@ extends Control
 @onready var camera: Camera2D = $Camera2D
 @onready var realm_label: Label = %RealmLabel
 @onready var gold_label: Label = %GoldLabel
+@onready var food_label: Label = %FoodLabel
+@onready var herbs_label: Label = %HerbsLabel
+@onready var scrap_label: Label = %ScrapLabel
+@onready var reagents_label: Label = %ReagentsLabel
 @onready var terrain_label: Label = %TerrainLabel
 @onready var char_sheet_button: Button = %CharSheetButton
 @onready var equipment_button: Button = %EquipmentButton
 @onready var party_button: Button = %PartyButton
 @onready var spellbook_button: Button = %SpellbookButton
+@onready var crafting_button: Button = %CraftingButton
 @onready var toast_label: Label = %ToastLabel
 
 # Event overlay controls (children of EventOverlay CanvasLayer)
@@ -109,8 +114,9 @@ func _ready() -> void:
 	MapManager.party_moved.connect(_on_party_moved)
 	MapManager.party_position_updated.connect(_on_party_position_updated)
 
-	# Connect gold changed for HUD updates
+	# Connect gold and supply changes for HUD updates
 	GameState.gold_changed.connect(_on_gold_changed)
+	GameState.supply_changed.connect(_on_supply_changed)
 
 	# Connect discovery signal (hidden finds on ruins/forest/etc.)
 	MapManager.discovery_made.connect(_on_discovery_made)
@@ -127,6 +133,7 @@ func _ready() -> void:
 	equipment_button.pressed.connect(func(): _open_char_sheet_to_tab(1))
 	party_button.pressed.connect(func(): _open_char_sheet_to_tab(2))
 	spellbook_button.pressed.connect(func(): _open_char_sheet_to_tab(3))
+	crafting_button.pressed.connect(func(): _open_char_sheet_to_tab(4))
 	char_sheet.visibility_changed.connect(_on_char_sheet_visibility_changed)
 
 	# Ensure overlays start hidden
@@ -171,8 +178,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_C:
-				# Stats tab (index 0)
-				_open_char_sheet_to_tab(0)
+				# Crafting tab (index 4)
+				_open_char_sheet_to_tab(4)
 				get_viewport().set_input_as_handled()
 			KEY_E:
 				# Equipment tab (index 1)
@@ -208,6 +215,10 @@ func _update_hud() -> void:
 	var map_name = MapManager.current_map_id.replace("_", " ").capitalize()
 	realm_label.text = world_data.get("name", "Unknown") + " - " + map_name
 	gold_label.text = "Gold: " + str(GameState.gold)
+	food_label.text = "Food: " + str(GameState.food)
+	herbs_label.text = "Herbs: " + str(GameState.herbs)
+	scrap_label.text = "Scrap: " + str(GameState.scrap)
+	reagents_label.text = "Reagents: " + str(GameState.reagents)
 	_update_terrain_label()
 
 
@@ -251,7 +262,7 @@ func _on_event_triggered(event_id: String, object: Dictionary) -> void:
 	_current_event_object = object
 	MapManager.pause_movement()
 	_set_event_visible(true)
-	event_display.show_event(event_id)
+	event_display.show_event(event_id, object.get("id", ""), object.get("one_time", false))
 
 
 func _on_mob_event_triggered(_mob: Dictionary) -> void:
@@ -514,6 +525,14 @@ func _on_party_position_updated(_world_pos: Vector2) -> void:
 
 func _on_gold_changed(new_amount: int, _change: int) -> void:
 	gold_label.text = "Gold: " + str(new_amount)
+
+
+func _on_supply_changed(supply_type: String, new_amount: int, _change: int) -> void:
+	match supply_type:
+		"food":     food_label.text = "Food: " + str(new_amount)
+		"herbs":    herbs_label.text = "Herbs: " + str(new_amount)
+		"scrap":    scrap_label.text = "Scrap: " + str(new_amount)
+		"reagents": reagents_label.text = "Reagents: " + str(new_amount)
 
 
 func _on_discovery_made(_pos: Vector2i, discovery: Dictionary) -> void:

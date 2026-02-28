@@ -43,7 +43,7 @@ const BASE_CHARACTER: Dictionary = {
 	"name": "Unnamed",
 	"race": "human",
 	"background": "wanderer",
-	"xp": 0,
+	"xp": 50,  # Starting XP — enough to pick up two skills at level 2 or dabble in several
 	
 	# Core attributes (start at 10)
 	"attributes": {

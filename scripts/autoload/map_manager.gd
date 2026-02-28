@@ -980,11 +980,13 @@ func _handle_pickup_object(obj: Dictionary) -> void:
 	var rewards = data.get("rewards", [])
 
 	# Resolve any array ranges [min, max] → rolled values (e.g. "value": [25, 50])
+	# Only treat a 2-element array as a numeric range when both elements are numbers.
+	# String arrays (e.g. item_random lists with exactly 2 items) must NOT be resolved.
 	var resolved_rewards: Array = []
 	for reward in rewards:
 		var r = reward.duplicate()
 		var v = r.get("value", 0)
-		if v is Array and v.size() == 2:
+		if v is Array and v.size() == 2 and (v[0] is int or v[0] is float):
 			r["value"] = randi_range(int(v[0]), int(v[1]))
 		resolved_rewards.append(r)
 

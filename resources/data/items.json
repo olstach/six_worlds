@@ -423,7 +423,7 @@
 		"travelers_amulet": {
 			"name": "Traveler's Amulet",
 			"type": "amulet",
-			"slot": "amulet",
+			"slot": "trinket1",
 			"two_handed": false,
 			"rarity": "common",
 			"element": "space",
@@ -437,7 +437,7 @@
 		"bone_amulet": {
 			"name": "Bone Amulet",
 			"type": "amulet",
-			"slot": "amulet",
+			"slot": "trinket1",
 			"two_handed": false,
 			"rarity": "uncommon",
 			"element": "space",
@@ -522,7 +522,7 @@
 		"frozen_heart_amulet": {
 			"name": "Frozen Heart Amulet",
 			"type": "amulet",
-			"slot": "amulet",
+			"slot": "trinket1",
 			"two_handed": false,
 			"rarity": "legendary",
 			"element": "water",
@@ -1192,6 +1192,225 @@
 				"status_duration": 1
 			}
 		},
+		"warding_oil": {
+			"name": "Warding Oil",
+			"type": "oil",
+			"rarity": "rare",
+			"weight": 1,
+			"value": 80,
+			"description": "A shimmering oil that grants weapons the ability to pierce magical defenses. Next 3 attacks bypass magic resistance.",
+			"effect": {
+				"bonus_damage": 2,
+				"bonus_damage_type": "physical",
+				"attacks": 3,
+				"magic_penetration": 30,
+				"status": "",
+				"status_chance": 0,
+				"status_duration": 0
+			}
+		},
+		"dragons_blood_oil": {
+			"name": "Dragon's Blood Oil",
+			"type": "oil",
+			"rarity": "epic",
+			"weight": 1,
+			"value": 200,
+			"description": "Rendered from dragonfire glands. Weapons coated in it burst into flame, and each wound fuels the wielder.",
+			"effect": {
+				"bonus_damage": 15,
+				"bonus_damage_type": "fire",
+				"attacks": 4,
+				"lifesteal_pct": 20,
+				"status": "Burning",
+				"status_chance": 60,
+				"status_duration": 2
+			}
+		},
+		"void_oil": {
+			"name": "Void Oil",
+			"type": "oil",
+			"rarity": "epic",
+			"weight": 1,
+			"value": 220,
+			"description": "Distilled from extraplanar essence. Strikes from a voided blade silence spellcasters.",
+			"effect": {
+				"bonus_damage": 12,
+				"bonus_damage_type": "void",
+				"attacks": 4,
+				"status": "Silenced",
+				"status_chance": 50,
+				"status_duration": 2
+			}
+		},
+		"sovereign_oil": {
+			"name": "Sovereign Oil",
+			"type": "oil",
+			"rarity": "legendary",
+			"weight": 1,
+			"value": 350,
+			"description": "The pinnacle of applied alchemy. Deals fire, frost, and void damage simultaneously, bypassing all resistances.",
+			"effect": {
+				"bonus_damage": 18,
+				"bonus_damage_type": "prismatic",
+				"attacks": 5,
+				"pierce_all_resistance": true,
+				"status": "",
+				"status_chance": 0,
+				"status_duration": 0
+			}
+		},
+		"stamina_tonic": {
+			"name": "Stamina Tonic",
+			"type": "potion",
+			"rarity": "uncommon",
+			"weight": 1,
+			"value": 45,
+			"description": "A bracing brew that floods the body with energy. Restores stamina and delays fatigue.",
+			"effect": {
+				"type": "restore_stamina",
+				"value": 40,
+				"targeting": "self"
+			}
+		},
+		"cure_all": {
+			"name": "Cure-All",
+			"type": "potion",
+			"rarity": "uncommon",
+			"weight": 1,
+			"value": 60,
+			"description": "A bitter draught that purges poison, disease, and curse alike.",
+			"effect": {
+				"type": "cleanse",
+				"statuses_removed": ["Poisoned", "Bleeding", "Burned", "Chilled", "Stunned", "Cursed", "Diseased"],
+				"targeting": "self"
+			}
+		},
+		"elixir_of_vitality": {
+			"name": "Elixir of Vitality",
+			"type": "potion",
+			"rarity": "rare",
+			"weight": 1,
+			"value": 150,
+			"description": "A deep crimson elixir that surges through the blood. Heals massively and temporarily increases maximum HP.",
+			"effect": {
+				"type": "heal",
+				"value": 100,
+				"max_hp_bonus": 20,
+				"max_hp_duration": 5,
+				"targeting": "self"
+			}
+		},
+		"elixir_of_power": {
+			"name": "Elixir of Power",
+			"type": "potion",
+			"rarity": "rare",
+			"weight": 1,
+			"value": 150,
+			"description": "A blazing golden elixir that ignites the mind. Restores mana fully and boosts spellpower for several turns.",
+			"effect": {
+				"type": "restore_mana",
+				"value": 999,
+				"spellpower_bonus": 15,
+				"spellpower_duration": 5,
+				"targeting": "self"
+			}
+		},
+		"panacea": {
+			"name": "Panacea",
+			"type": "potion",
+			"rarity": "legendary",
+			"weight": 1,
+			"value": 400,
+			"description": "The alchemist's masterwork. Heals all wounds, purges all ailments, and restores body and mind to peak condition.",
+			"effect": {
+				"type": "full_restore",
+				"heals_hp": true,
+				"heals_mana": true,
+				"heals_stamina": true,
+				"cleanses_all": true,
+				"targeting": "self"
+			}
+		},
+		"acid_flask": {
+			"name": "Acid Flask",
+			"type": "bomb",
+			"rarity": "uncommon",
+			"weight": 1,
+			"value": 70,
+			"description": "A flask of corrosive alchemical acid. Dissolves armor on impact.",
+			"effect": {
+				"damage": 15,
+				"damage_type": "acid",
+				"aoe_radius": 1,
+				"range": 4,
+				"statuses": ["Corroded"],
+				"armor_reduction": 5
+			}
+		},
+		"flashbang": {
+			"name": "Flashbang",
+			"type": "bomb",
+			"rarity": "uncommon",
+			"weight": 1,
+			"value": 65,
+			"description": "A blinding alchemical burst. Disorients all enemies in the area.",
+			"effect": {
+				"damage": 5,
+				"damage_type": "light",
+				"aoe_radius": 2,
+				"range": 4,
+				"statuses": ["Blinded", "Stunned"],
+				"status_duration": 1
+			}
+		},
+		"inferno_bomb": {
+			"name": "Inferno Bomb",
+			"type": "bomb",
+			"rarity": "rare",
+			"weight": 2,
+			"value": 180,
+			"description": "An unstable alchemical charge that detonates in a massive fireball, leaving burning ground.",
+			"effect": {
+				"damage": 60,
+				"damage_type": "fire",
+				"aoe_radius": 3,
+				"range": 5,
+				"statuses": ["Burning"],
+				"terrain_effect": "fire"
+			}
+		},
+		"void_grenade": {
+			"name": "Void Grenade",
+			"type": "bomb",
+			"rarity": "rare",
+			"weight": 1,
+			"value": 200,
+			"description": "Compressed extraplanar energy. On detonation, creates a spatial rift that disrupts all magic in the area.",
+			"effect": {
+				"damage": 45,
+				"damage_type": "void",
+				"aoe_radius": 2,
+				"range": 5,
+				"statuses": ["Silenced"],
+				"status_duration": 2
+			}
+		},
+		"plague_flask": {
+			"name": "Plague Flask",
+			"type": "bomb",
+			"rarity": "epic",
+			"weight": 1,
+			"value": 250,
+			"description": "A biohazardous alchemical concoction. Spreads a fast-acting disease that jumps between enemies.",
+			"effect": {
+				"damage": 20,
+				"damage_type": "poison",
+				"aoe_radius": 2,
+				"range": 4,
+				"statuses": ["Diseased", "Poisoned"],
+				"contagious": true
+			}
+		},
 
 		"rations": {
 			"name": "Rations",
@@ -1299,8 +1518,8 @@
 		"shoes": {"category": "armor", "slots": ["feet"]},
 		"sandals": {"category": "armor", "slots": ["feet"]},
 		"ring": {"category": "accessory", "slots": ["ring1", "ring2"]},
-		"amulet": {"category": "accessory", "slots": ["amulet"]},
-		"necklace": {"category": "accessory", "slots": ["amulet"]},
+		"amulet": {"category": "accessory", "slots": ["trinket1", "trinket2"]},
+		"necklace": {"category": "accessory", "slots": ["trinket1", "trinket2"]},
 		"trinket": {"category": "accessory", "slots": ["trinket1", "trinket2"]},
 		"talisman": {"category": "accessory", "slots": ["trinket1", "trinket2"]},
 		"potion": {"category": "consumable", "subcategory": "potion"},

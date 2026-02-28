@@ -16,6 +16,12 @@ signal shop_requested(shop_id: String, outcome: Dictionary)
 # Current event being displayed
 var current_event: Dictionary = {}
 
+# Context for the map object that triggered this event.
+# Set by overworld before calling show_event so choice-use tracking works.
+var current_event_object_id: String = ""
+var current_event_one_time: bool = false
+var _current_choice_id: String = ""  # Recorded when make_choice is called
+
 # Event database (will load from JSON)
 var event_database: Dictionary = {}
 
@@ -234,7 +240,17 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 		"reason": "",
 		"passing_character": null  # Which party member meets requirements
 	}
-	
+
+	# For persistent (non-one_time) event objects, block choices that have
+	# already been used (non-shop outcomes only) to prevent XP farming.
+	if not current_event_one_time and not current_event_object_id.is_empty():
+		var choice_id = choice.get("id", "")
+		var used = GameState.used_event_choices.get(current_event_object_id, [])
+		if choice_id in used:
+			result.available = false
+			result.reason = "Already done"
+			return result
+
 	# Default and roll choices are always visible
 	if choice.type == "default" or choice.type == "roll":
 		return result
@@ -366,6 +382,19 @@ func make_choice(choice: Dictionary) -> Dictionary:
 
 	# Apply outcome
 	apply_outcome(outcome)
+
+	# Record this choice as used for persistent (non-one_time) objects so the
+	# player can't farm XP by repeatedly visiting the same shrine/merchant.
+	# Shop outcomes stay available (handled by the shop flow, not re-selectable here).
+	var outcome_type = outcome.get("type", "text")
+	if outcome_type != "shop" and not current_event_one_time and not current_event_object_id.is_empty():
+		var choice_id = choice.get("id", "")
+		if not choice_id.is_empty():
+			if not current_event_object_id in GameState.used_event_choices:
+				GameState.used_event_choices[current_event_object_id] = []
+			var used: Array = GameState.used_event_choices[current_event_object_id]
+			if not choice_id in used:
+				used.append(choice_id)
 
 	return outcome
 

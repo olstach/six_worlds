@@ -790,6 +790,10 @@ func _start_current_turn() -> void:
 	# Tick skill cooldowns
 	unit.tick_cooldowns()
 
+	# Tick active mantras (increment turn counter; per-turn effects applied by combat_arena)
+	if not unit.active_mantras.is_empty():
+		unit.tick_mantras()
+
 	turn_started.emit(unit)
 
 
