@@ -184,14 +184,18 @@ Roles to fulfill per realm (not specific object types):
 ## Medium Priority (Content & Polish)
 
 ### Content
-- [ ] More consumable items (realm-specific potions, higher-level scrolls, more talisman/bomb/oil tiers)
+- [ ] More consumable items (realm-specific potions, higher-level scrolls, more charm/bomb/oil tiers)
 - [ ] More equipment (rare/legendary weapons and armor)
 - [ ] More upgrades/perks
 - [ ] Alchemy crafting system (create consumables from ingredients)
 - [ ] More scroll varieties (AoE scrolls, buff scrolls)
-- [ ] **Magic foci**: equippable items that boost spellpower/mana cost reduction for one or more schools (e.g., a Fire Crystal boosts fire_magic; a Void Shard boosts black_magic + space_magic). Sold at magic shops. Needs new item slot and CharacterSystem integration.
 - [ ] **Cursed items**: equipment that applies a passive debuff alongside its stats. Player may not know an item is cursed until equipped (reveal on ID or Alchemy skill check). Separate from cursed terrain/simples.
-- [ ] **Talisman effects audit**: some talismans have no stat effects (e.g. found in play). All talismans need mana_cost_reduction and/or spellpower values filled in items.json before the item system is complete.
+- [x] ~~**Equipment generation system**~~: procedural weapons, armor, and talismans — DONE
+- [x] ~~**Talisman system**~~: persistent equippable trinket-slot items with stat/skill/perk bonuses — DONE
+- [x] ~~**Equipment traits**~~: weapon/armor modifier system (sharp, reinforced, etc.) — DONE
+- [ ] Wire up `random_generate` template items to use the new procedural generation
+- [ ] Integrate talisman perk effects into combat (poison_immune, regen, thorns, etc.)
+- [ ] Add talisman/equipment generation to shop and loot systems
 
 ### UI Improvements
 - [ ] Tooltip system expansion
@@ -366,14 +370,26 @@ Files live in `resources/audio/sfx/` (6 variants each, picked randomly).
 - Save/load integration into all major systems
 - Hell enemy archetypes data file
 
-### 2026-02-15: Talismans, Bombs, and Oils
-- 19 talismans (4 tiers for White/Fire/Earth + common for other 7 schools)
+### 2026-02-28: Equipment & Talisman Generation System
+- Renamed consumable talismans → charms (19 items: mana cost reduction consumables)
+- Retyped equippable charms → talismans (persistent trinket-slot accessories)
+- Added trinket2 slot (characters now have trinket1 + trinket2 for dual accessories)
+- Runtime item infrastructure: hybrid inventory supports procedural gen_XXXX items
+- Procedural talisman generation: budget-based with rarity scaling, 4 effect pools
+  (attributes, derived stats, skills, resistances), perk system, Buddhist naming
+- Equipment trait system: 12 weapon traits + 12 armor traits
+- Procedural weapon generation: 7 weapon types × 6 materials × 5 quality levels + traits
+- Procedural armor generation: 10 armor types × 6 materials × 5 quality levels + traits
+- Data files: talisman_tables.json, equipment_tables.json
+
+### 2026-02-15: Charms (formerly Talismans), Bombs, and Oils
+- 19 charms (4 tiers for White/Fire/Earth + common for other 7 schools)
 - 8 bombs (Fire, Frost, Poison, Smoke, Holy Water, Greater Fire, Acid, Thunder)
 - 6 oils (Flame, Frost, Poison, Holy, Whetstone, Paralyzing)
-- Talisman integration: mana check accounts for reduction, consumed on matching spell cast
+- Charm integration: mana check accounts for reduction, consumed on matching spell cast
 - Bomb targeting: AoE preview, damage scaled by Alchemy, status procs
 - Oil integration: bonus damage + status procs on attacks, crit bonus, Alchemy extends duration
-- Item panel colors: purple (talisman), orange-red (bomb), teal (oil)
+- Item panel colors: purple (charm), orange-red (bomb), teal (oil)
 
 ### 2026-02-14: Weapon Damage Types & Consumable Items
 - Physical damage subtypes: slashing (swords, axes), crushing (maces, staves, unarmed), piercing (daggers, spears, bows)
