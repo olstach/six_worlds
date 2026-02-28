@@ -118,7 +118,8 @@ const BASE_CHARACTER: Dictionary = {
 		"ring1": "",
 		"ring2": "",
 		"amulet": "",
-		"trinket": ""
+		"trinket1": "",
+		"trinket2": ""
 	},
 
 	# Active weapon set (1 or 2)

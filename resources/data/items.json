@@ -451,7 +451,7 @@
 		"lucky_charm": {
 			"name": "Lucky Charm",
 			"type": "trinket",
-			"slot": "trinket",
+			"slot": "trinket1",
 			"two_handed": false,
 			"rarity": "common",
 			"element": "air",
@@ -465,7 +465,7 @@
 		"prayer_beads": {
 			"name": "Prayer Beads",
 			"type": "trinket",
-			"slot": "trinket",
+			"slot": "trinket1",
 			"two_handed": false,
 			"rarity": "uncommon",
 			"element": "space",
@@ -494,7 +494,7 @@
 		"yamas_ledger": {
 			"name": "Yama's Ledger",
 			"type": "trinket",
-			"slot": "trinket",
+			"slot": "trinket1",
 			"two_handed": false,
 			"rarity": "legendary",
 			"element": "space",
@@ -887,7 +887,7 @@
 		"ice_shard": {
 			"name": "Ice Shard",
 			"type": "talisman",
-			"slot": "trinket",
+			"slot": "trinket1",
 			"two_handed": false,
 			"rarity": "uncommon",
 			"element": "water",
@@ -901,7 +901,7 @@
 		"soul_stone": {
 			"name": "Soul Stone",
 			"type": "talisman",
-			"slot": "trinket",
+			"slot": "trinket1",
 			"two_handed": false,
 			"rarity": "uncommon",
 			"element": "space",
@@ -915,7 +915,7 @@
 		"fire_resistance_talisman": {
 			"name": "Fire Resistance Talisman",
 			"type": "talisman",
-			"slot": "trinket",
+			"slot": "trinket1",
 			"two_handed": false,
 			"rarity": "uncommon",
 			"element": "fire",
@@ -960,7 +960,7 @@
 		"random_common_talisman": {
 			"name": "Carved Token",
 			"type": "talisman",
-			"slot": "trinket",
+			"slot": "trinket1",
 			"two_handed": false,
 			"rarity": "common",
 			"element": "space",
@@ -1220,8 +1220,8 @@
 		"ring": {"category": "accessory", "slots": ["ring1", "ring2"]},
 		"amulet": {"category": "accessory", "slots": ["amulet"]},
 		"necklace": {"category": "accessory", "slots": ["amulet"]},
-		"trinket": {"category": "accessory", "slots": ["trinket"]},
-		"talisman": {"category": "accessory", "slots": ["trinket"]},
+		"trinket": {"category": "accessory", "slots": ["trinket1", "trinket2"]},
+		"talisman": {"category": "accessory", "slots": ["trinket1", "trinket2"]},
 		"potion": {"category": "consumable", "subcategory": "potion"},
 		"scroll": {"category": "consumable", "subcategory": "scroll"},
 		"charm": {"category": "consumable", "subcategory": "charm"},

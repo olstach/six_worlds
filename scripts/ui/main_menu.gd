@@ -42,7 +42,8 @@ const EQUIPMENT_SLOTS := {
 	"ring1": {"name": "Ring", "types": ["ring"]},
 	"ring2": {"name": "Ring", "types": ["ring"]},
 	"amulet": {"name": "Amulet", "types": ["amulet", "necklace"]},
-	"trinket": {"name": "Trinket", "types": ["trinket", "charm"]}
+	"trinket1": {"name": "Trinket", "types": ["trinket", "talisman"]},
+	"trinket2": {"name": "Trinket", "types": ["trinket", "talisman"]}
 }
 
 var selected_equipment_slot: String = ""
@@ -1180,7 +1181,8 @@ func _setup_equipment_doll() -> void:
 	_create_equipment_slot("ring1", Vector2(center_x - slot_size.x/2 - 60, 15), small_slot)
 	_create_equipment_slot("amulet", Vector2(center_x + slot_size.x/2 + 16, 15), small_slot)
 	_create_equipment_slot("ring2", Vector2(center_x - slot_size.x/2 - 60, 145), small_slot)
-	_create_equipment_slot("trinket", Vector2(center_x + slot_size.x/2 + 16, 145), small_slot)
+	_create_equipment_slot("trinket1", Vector2(center_x + slot_size.x/2 + 16, 145), small_slot)
+	_create_equipment_slot("trinket2", Vector2(center_x + slot_size.x/2 + 16, 195), small_slot)
 
 	# Weapon slots - below the figure
 	_create_equipment_slot("weapon_main", Vector2(center_x - slot_size.x - 10, 270), slot_size)
@@ -1288,7 +1290,8 @@ func _create_equipment_slot(slot_id: String, pos: Vector2, size: Vector2) -> voi
 		"ring1": "R1",
 		"ring2": "R2",
 		"amulet": "AMU",
-		"trinket": "TRI"
+		"trinket1": "T1",
+		"trinket2": "T2"
 	}
 	btn.text = short_labels.get(slot_id, "?")
 	btn.add_theme_font_size_override("font_size", 10)
@@ -1348,7 +1351,8 @@ func _update_equipment_slots() -> void:
 		"ring1": "R1",
 		"ring2": "R2",
 		"amulet": "AMU",
-		"trinket": "TRI"
+		"trinket1": "T1",
+		"trinket2": "T2"
 	}
 
 	for slot_id in equipment_slot_buttons:
