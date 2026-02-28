@@ -812,6 +812,392 @@ func _generate_talisman_description(stats: Dictionary, skill_bonuses: Dictionary
 
 
 # ============================================
+# EQUIPMENT GENERATION
+# ============================================
+
+# Equipment generation tables (loaded from JSON)
+var _equipment_tables: Dictionary = {}
+
+## Load equipment generation tables
+func _load_equipment_tables() -> void:
+	var file_path = "res://resources/data/equipment_tables.json"
+	if not FileAccess.file_exists(file_path):
+		push_warning("ItemSystem: equipment_tables.json not found")
+		return
+
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	if file == null:
+		return
+
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) == OK:
+		_equipment_tables = json.get_data()
+	file.close()
+
+
+## Pick a weighted random key from a {key: weight} dictionary
+func _weighted_pick(weights: Dictionary) -> String:
+	var total: float = 0.0
+	for k in weights:
+		total += float(weights[k])
+	var roll: float = randf() * total
+	var cumulative: float = 0.0
+	var last_key: String = ""
+	for k in weights:
+		cumulative += float(weights[k])
+		last_key = k
+		if roll <= cumulative:
+			return k
+	return last_key
+
+
+## Generate a procedural weapon. Returns the gen_XXXX item ID.
+## weapon_type: "sword", "dagger", "axe", etc. (or "" for random)
+## rarity: controls quality/material weighting
+## material_override: force a specific material (or "" for random)
+## quality_override: force a specific quality (or "" for random)
+func generate_weapon(weapon_type: String = "", rarity: String = "common",
+		material_override: String = "", quality_override: String = "") -> String:
+	if _equipment_tables.is_empty():
+		_load_equipment_tables()
+	if _equipment_tables.is_empty():
+		push_error("ItemSystem: Cannot generate weapon - no tables loaded")
+		return ""
+
+	var weapon_bases = _equipment_tables.get("weapon_bases", {})
+	var materials = _equipment_tables.get("materials", {})
+	var quality_levels = _equipment_tables.get("quality_levels", {})
+	var weapon_traits = _equipment_tables.get("weapon_traits", {})
+	var rarity_quality = _equipment_tables.get("rarity_to_quality_weights", {})
+	var tier_materials = _equipment_tables.get("tier_to_material_weights", {})
+
+	# Pick weapon type if not specified
+	if weapon_type == "" or not weapon_type in weapon_bases:
+		var types = weapon_bases.keys()
+		weapon_type = types[randi() % types.size()]
+
+	var base = weapon_bases[weapon_type]
+
+	# Pick quality
+	var quality: String = quality_override
+	if quality == "" or not quality in quality_levels:
+		var q_weights = rarity_quality.get(rarity, {"common": 100})
+		quality = _weighted_pick(q_weights)
+	var q_info = quality_levels[quality]
+
+	# Pick material — use tier based on rarity
+	var material: String = material_override
+	if material == "" or not material in materials:
+		var rarity_tiers = {"common": "1", "uncommon": "2", "rare": "3", "epic": "4", "legendary": "5"}
+		var tier_key = rarity_tiers.get(rarity, "2")
+		var m_weights = tier_materials.get(tier_key, {"iron": 100})
+		material = _weighted_pick(m_weights)
+	var mat_info = materials[material]
+
+	# Calculate stats
+	var stat_mult: float = q_info.get("stat_mult", 1.0)
+	var final_stats: Dictionary = {}
+
+	var base_damage = base.get("damage", 5)
+	final_stats["damage"] = int(base_damage * mat_info.get("damage_mult", 1.0) * stat_mult)
+
+	var base_accuracy = base.get("accuracy", 0)
+	if base_accuracy != 0:
+		final_stats["accuracy"] = int(base_accuracy * stat_mult)
+
+	# Copy special stats from base (spellpower, range, crit_chance, armor_pierce)
+	for special in ["spellpower", "range", "crit_chance", "armor_pierce"]:
+		if special in base:
+			final_stats[special] = int(base[special] * stat_mult)
+
+	# Weight and value
+	var final_weight: int = maxi(1, int(base.get("weight", 5) * mat_info.get("weight_mult", 1.0)))
+	var final_value: int = int(base.get("value", 50) * mat_info.get("value_mult", 1.0) * q_info.get("value_mult", 1.0))
+
+	# Apply traits
+	var trait_slots: int = q_info.get("trait_slots", 0)
+	var applied_traits: Array[String] = []
+	var passive: Dictionary = {}
+
+	if trait_slots > 0:
+		# Find valid traits for this weapon type
+		var valid_traits: Array = []
+		for trait_name in weapon_traits:
+			var trait_info = weapon_traits[trait_name]
+			if weapon_type in trait_info.get("types", []):
+				valid_traits.append({"name": trait_name, "info": trait_info})
+
+		# Pick traits
+		valid_traits.shuffle()
+		for i in range(mini(trait_slots, valid_traits.size())):
+			var trait_entry = valid_traits[i]
+			var trait_info = trait_entry.info
+			applied_traits.append(trait_entry.name)
+
+			# Apply trait stat bonuses
+			for key in trait_info:
+				if key in ["budget_cost", "types"]:
+					continue
+				# Special combat passives
+				if key in ["poison_chance", "stun_chance", "lifesteal"]:
+					passive[key] = trait_info[key]
+				elif key in final_stats:
+					final_stats[key] += trait_info[key]
+				else:
+					final_stats[key] = trait_info[key]
+
+			final_value += int(trait_info.get("budget_cost", 0) * 15)
+
+	# Build name
+	var name_parts: Array[String] = []
+	var q_prefix = q_info.get("name_prefix", "")
+	if q_prefix != "":
+		name_parts.append(q_prefix)
+	name_parts.append(mat_info.get("name_prefix", "Iron"))
+	name_parts.append(weapon_type.capitalize())
+
+	# Trait suffix
+	if not applied_traits.is_empty():
+		# Use first trait as descriptor
+		var trait_display = applied_traits[0].capitalize()
+		# Prepend trait before weapon type for natural phrasing
+		name_parts.insert(name_parts.size() - 1, trait_display)
+
+	var item_name = " ".join(name_parts)
+
+	# Build description
+	var desc_parts: Array[String] = []
+	if q_prefix != "":
+		desc_parts.append("A %s %s %s." % [q_prefix.to_lower(), mat_info.get("name_prefix", "").to_lower(), weapon_type])
+	else:
+		desc_parts.append("A %s %s." % [mat_info.get("name_prefix", "").to_lower(), weapon_type])
+	if not applied_traits.is_empty():
+		var trait_names: Array[String] = []
+		for t in applied_traits:
+			trait_names.append(t.capitalize())
+		desc_parts.append("Traits: %s." % ", ".join(trait_names))
+
+	# Requirements — scale with material tier
+	var requirements: Dictionary = {}
+	var tier: int = mat_info.get("tier", 2)
+	if weapon_type in ["axe", "mace", "sword"]:
+		requirements["strength"] = 8 + tier * 2
+	elif weapon_type in ["bow", "dagger", "spear"]:
+		requirements["finesse"] = 8 + tier * 2
+	elif weapon_type == "staff":
+		requirements["focus"] = 8 + tier * 2
+
+	# Build item data
+	var item_data: Dictionary = {
+		"name": item_name,
+		"type": weapon_type,
+		"slot": "weapon_main",
+		"two_handed": base.get("two_handed", false),
+		"rarity": rarity,
+		"element": base.get("element", "earth"),
+		"weight": final_weight,
+		"value": final_value,
+		"description": " ".join(desc_parts),
+		"requirements": requirements,
+		"stats": final_stats,
+		"abilities": [],
+		"generated": {
+			"material": material,
+			"quality": quality,
+			"traits": applied_traits
+		}
+	}
+
+	if not passive.is_empty():
+		item_data["passive"] = passive
+
+	return register_runtime_item(item_data)
+
+
+## Generate a procedural armor piece. Returns the gen_XXXX item ID.
+## armor_type: "armor", "helmet", "boots", etc. (or "" for random)
+func generate_armor(armor_type: String = "", rarity: String = "common",
+		material_override: String = "", quality_override: String = "") -> String:
+	if _equipment_tables.is_empty():
+		_load_equipment_tables()
+	if _equipment_tables.is_empty():
+		push_error("ItemSystem: Cannot generate armor - no tables loaded")
+		return ""
+
+	var armor_bases = _equipment_tables.get("armor_bases", {})
+	var materials = _equipment_tables.get("materials", {})
+	var quality_levels = _equipment_tables.get("quality_levels", {})
+	var armor_traits = _equipment_tables.get("armor_traits", {})
+	var rarity_quality = _equipment_tables.get("rarity_to_quality_weights", {})
+	var tier_materials = _equipment_tables.get("tier_to_material_weights", {})
+
+	# Pick armor type if not specified
+	if armor_type == "" or not armor_type in armor_bases:
+		var types = armor_bases.keys()
+		armor_type = types[randi() % types.size()]
+
+	var base = armor_bases[armor_type]
+
+	# Pick quality
+	var quality: String = quality_override
+	if quality == "" or not quality in quality_levels:
+		var q_weights = rarity_quality.get(rarity, {"common": 100})
+		quality = _weighted_pick(q_weights)
+	var q_info = quality_levels[quality]
+
+	# Pick material
+	var material: String = material_override
+	if material == "" or not material in materials:
+		var rarity_tiers = {"common": "1", "uncommon": "2", "rare": "3", "epic": "4", "legendary": "5"}
+		var tier_key = rarity_tiers.get(rarity, "2")
+		var m_weights = tier_materials.get(tier_key, {"iron": 100})
+		material = _weighted_pick(m_weights)
+	var mat_info = materials[material]
+
+	# Calculate stats
+	var stat_mult: float = q_info.get("stat_mult", 1.0)
+	var final_stats: Dictionary = {}
+
+	var base_armor = base.get("armor", 2)
+	if base_armor > 0:
+		final_stats["armor"] = int(base_armor * mat_info.get("armor_mult", 1.0) * stat_mult)
+
+	var base_dodge = base.get("dodge", 0)
+	if base_dodge != 0:
+		final_stats["dodge"] = int(base_dodge * stat_mult)
+
+	# Copy special stats
+	for special in ["max_mana", "max_hp", "damage", "movement", "spellpower"]:
+		if special in base:
+			final_stats[special] = int(base[special] * stat_mult)
+
+	var final_weight: int = maxi(1, int(base.get("weight", 5) * mat_info.get("weight_mult", 1.0)))
+	var final_value: int = int(base.get("value", 50) * mat_info.get("value_mult", 1.0) * q_info.get("value_mult", 1.0))
+
+	# Determine slot
+	var slot: String = base.get("slot", "chest")
+
+	# Apply traits
+	var trait_slots: int = q_info.get("trait_slots", 0)
+	var applied_traits: Array[String] = []
+	var passive: Dictionary = {}
+
+	if trait_slots > 0:
+		var valid_traits: Array = []
+		for trait_name in armor_traits:
+			var trait_info = armor_traits[trait_name]
+			if armor_type in trait_info.get("types", []):
+				valid_traits.append({"name": trait_name, "info": trait_info})
+
+		valid_traits.shuffle()
+		for i in range(mini(trait_slots, valid_traits.size())):
+			var trait_entry = valid_traits[i]
+			var trait_info = trait_entry.info
+			applied_traits.append(trait_entry.name)
+
+			for key in trait_info:
+				if key in ["budget_cost", "types"]:
+					continue
+				if key.ends_with("_resistance"):
+					passive[key] = trait_info[key]
+				elif key in final_stats:
+					final_stats[key] += trait_info[key]
+				else:
+					final_stats[key] = trait_info[key]
+
+			final_value += int(trait_info.get("budget_cost", 0) * 15)
+
+	# Build name
+	var name_parts_arr: Array[String] = []
+	var q_prefix = q_info.get("name_prefix", "")
+	if q_prefix != "":
+		name_parts_arr.append(q_prefix)
+
+	if not applied_traits.is_empty():
+		name_parts_arr.append(applied_traits[0].capitalize())
+
+	name_parts_arr.append(mat_info.get("name_prefix", "Iron"))
+	name_parts_arr.append(armor_type.capitalize())
+	var item_name = " ".join(name_parts_arr)
+
+	# Build description
+	var desc_parts: Array[String] = []
+	if q_prefix != "":
+		desc_parts.append("A %s %s %s." % [q_prefix.to_lower(), mat_info.get("name_prefix", "").to_lower(), armor_type])
+	else:
+		desc_parts.append("A %s %s." % [mat_info.get("name_prefix", "").to_lower(), armor_type])
+	if not applied_traits.is_empty():
+		var trait_names: Array[String] = []
+		for t in applied_traits:
+			trait_names.append(t.capitalize())
+		desc_parts.append("Traits: %s." % ", ".join(trait_names))
+
+	# Requirements
+	var requirements: Dictionary = {}
+	var tier: int = mat_info.get("tier", 2)
+	# Heavy armor needs strength
+	if armor_type in ["armor", "gauntlets", "greaves", "helmet", "shield"]:
+		if base_armor >= 3:
+			requirements["strength"] = 8 + tier * 2
+
+	var item_data: Dictionary = {
+		"name": item_name,
+		"type": armor_type,
+		"slot": slot,
+		"two_handed": false,
+		"rarity": rarity,
+		"element": "earth",
+		"weight": final_weight,
+		"value": final_value,
+		"description": " ".join(desc_parts),
+		"requirements": requirements,
+		"stats": final_stats,
+		"abilities": [],
+		"generated": {
+			"material": material,
+			"quality": quality,
+			"traits": applied_traits
+		}
+	}
+
+	if not passive.is_empty():
+		item_data["passive"] = passive
+
+	return register_runtime_item(item_data)
+
+
+## Generate equipment matching a party member's best weapon skill.
+## Inspects the party and picks a weapon type that someone can use.
+func generate_weapon_for_party(rarity: String = "common",
+		material_override: String = "", quality_override: String = "") -> String:
+	var party = CharacterSystem.get_party() if CharacterSystem else []
+	var best_type: String = ""
+	var best_level: int = 0
+
+	# Map weapon types to their skill names
+	var type_to_skill = {
+		"sword": "swords", "dagger": "daggers", "axe": "axes",
+		"mace": "maces", "spear": "spears", "staff": "martial_arts",
+		"bow": "ranged"
+	}
+
+	for member in party:
+		var skills = member.get("skills", {})
+		for wtype in type_to_skill:
+			var skill_name = type_to_skill[wtype]
+			var level = skills.get(skill_name, 0)
+			if level > best_level:
+				best_level = level
+				best_type = wtype
+
+	# Fallback to random if no skills found
+	if best_type == "":
+		best_type = ""
+
+	return generate_weapon(best_type, rarity, material_override, quality_override)
+
+
+# ============================================
 # SAVE / LOAD
 # ============================================
 

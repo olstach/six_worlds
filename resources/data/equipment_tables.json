@@ -1,0 +1,90 @@
+{
+	"_comment": "Equipment generation tables: materials, quality, traits, and base stats for procedural weapons/armor",
+
+	"materials": {
+		"wood":         {"tier": 0, "damage_mult": 0.6, "armor_mult": 0.5, "weight_mult": 0.7, "value_mult": 0.4, "name_prefix": "Wooden"},
+		"bronze":       {"tier": 1, "damage_mult": 0.8, "armor_mult": 0.8, "weight_mult": 0.9, "value_mult": 0.7, "name_prefix": "Bronze"},
+		"iron":         {"tier": 2, "damage_mult": 1.0, "armor_mult": 1.0, "weight_mult": 1.0, "value_mult": 1.0, "name_prefix": "Iron"},
+		"steel":        {"tier": 3, "damage_mult": 1.2, "armor_mult": 1.2, "weight_mult": 0.95,"value_mult": 1.5, "name_prefix": "Steel"},
+		"mithril":      {"tier": 4, "damage_mult": 1.3, "armor_mult": 1.4, "weight_mult": 0.6, "value_mult": 3.0, "name_prefix": "Mithril"},
+		"demon_forged": {"tier": 5, "damage_mult": 1.5, "armor_mult": 1.5, "weight_mult": 1.1, "value_mult": 4.0, "name_prefix": "Demon-forged"}
+	},
+
+	"quality_levels": {
+		"poor":       {"stat_mult": 0.7, "value_mult": 0.5, "trait_slots": 0, "name_prefix": "Crude"},
+		"common":     {"stat_mult": 1.0, "value_mult": 1.0, "trait_slots": 0, "name_prefix": ""},
+		"good":       {"stat_mult": 1.15,"value_mult": 1.4, "trait_slots": 1, "name_prefix": "Good"},
+		"fine":       {"stat_mult": 1.3, "value_mult": 2.0, "trait_slots": 1, "name_prefix": "Fine"},
+		"masterwork": {"stat_mult": 1.5, "value_mult": 3.0, "trait_slots": 2, "name_prefix": "Masterwork"}
+	},
+
+	"weapon_bases": {
+		"sword":  {"damage": 8,  "accuracy": 0,  "weight": 8,  "value": 50,  "element": "earth", "two_handed": false, "skill": "swords"},
+		"dagger": {"damage": 4,  "accuracy": 15, "weight": 2,  "value": 25,  "element": "air",   "two_handed": false, "skill": "daggers", "crit_chance": 5},
+		"axe":    {"damage": 10, "accuracy": -5, "weight": 10, "value": 55,  "element": "fire",  "two_handed": false, "skill": "axes"},
+		"mace":   {"damage": 9,  "accuracy": 0,  "weight": 9,  "value": 50,  "element": "earth", "two_handed": false, "skill": "maces", "armor_pierce": 5},
+		"spear":  {"damage": 6,  "accuracy": 5,  "weight": 5,  "value": 35,  "element": "water", "two_handed": true,  "skill": "spears"},
+		"staff":  {"damage": 4,  "accuracy": 0,  "weight": 4,  "value": 30,  "element": "space", "two_handed": true,  "skill": "martial_arts", "spellpower": 8},
+		"bow":    {"damage": 7,  "accuracy": 10, "weight": 3,  "value": 40,  "element": "air",   "two_handed": true,  "skill": "ranged", "range": 5}
+	},
+
+	"armor_bases": {
+		"helmet":    {"armor": 2,  "dodge": 0,  "weight": 4,  "value": 40,  "slot": "head"},
+		"hat":       {"armor": 0,  "dodge": 0,  "weight": 1,  "value": 20,  "slot": "head", "max_mana": 5},
+		"armor":     {"armor": 6,  "dodge": -3, "weight": 20, "value": 100, "slot": "chest"},
+		"robe":      {"armor": 1,  "dodge": 0,  "weight": 3,  "value": 40,  "slot": "chest", "max_mana": 10},
+		"gloves":    {"armor": 1,  "dodge": 0,  "weight": 2,  "value": 20,  "slot": "hand_l"},
+		"gauntlets": {"armor": 2,  "dodge": 0,  "weight": 4,  "value": 45,  "slot": "hand_l", "damage": 1},
+		"pants":     {"armor": 2,  "dodge": 0,  "weight": 5,  "value": 30,  "slot": "legs"},
+		"greaves":   {"armor": 4,  "dodge": -2, "weight": 8,  "value": 65,  "slot": "legs"},
+		"boots":     {"armor": 1,  "dodge": 0,  "weight": 3,  "value": 25,  "slot": "feet"},
+		"shield":    {"armor": 3,  "dodge": 5,  "weight": 8,  "value": 50,  "slot": "weapon_off"}
+	},
+
+	"weapon_traits": {
+		"sharp":       {"damage": 2,                          "budget_cost": 2, "types": ["sword", "dagger", "axe"]},
+		"serrated":    {"damage": 1, "crit_chance": 3,        "budget_cost": 2, "types": ["sword", "dagger", "axe"]},
+		"balanced":    {"accuracy": 8,                        "budget_cost": 2, "types": ["sword", "dagger", "spear", "mace"]},
+		"heavy":       {"damage": 3, "accuracy": -5,          "budget_cost": 2, "types": ["axe", "mace", "sword"]},
+		"swift":       {"accuracy": 5, "initiative": 1,       "budget_cost": 2, "types": ["dagger", "sword", "spear"]},
+		"brutal":      {"damage": 2, "armor_pierce": 3,       "budget_cost": 3, "types": ["axe", "mace"]},
+		"precise":     {"accuracy": 3, "crit_chance": 3,      "budget_cost": 3, "types": ["dagger", "sword", "bow"]},
+		"venomous":    {"poison_chance": 15,                   "budget_cost": 3, "types": ["dagger", "spear"]},
+		"blessed":     {"damage": 1, "spellpower": 3,         "budget_cost": 3, "types": ["staff", "mace"]},
+		"longshot":    {"range": 1, "accuracy": 3,            "budget_cost": 3, "types": ["bow"]},
+		"vampiric":    {"lifesteal": 10,                       "budget_cost": 4, "types": ["sword", "dagger", "axe"]},
+		"thundering":  {"damage": 2, "stun_chance": 10,       "budget_cost": 4, "types": ["mace", "axe", "staff"]}
+	},
+
+	"armor_traits": {
+		"reinforced":  {"armor": 2,                            "budget_cost": 2, "types": ["armor", "helmet", "gauntlets", "greaves", "shield"]},
+		"padded":      {"armor": 1, "dodge": 1,               "budget_cost": 2, "types": ["armor", "robe", "gloves", "pants"]},
+		"light":       {"dodge": 2, "movement": 1,            "budget_cost": 2, "types": ["armor", "boots", "gloves", "pants"]},
+		"sturdy":      {"max_hp": 5,                           "budget_cost": 2, "types": ["armor", "helmet", "shield", "greaves"]},
+		"enchanted":   {"max_mana": 8,                         "budget_cost": 2, "types": ["robe", "hat", "gloves"]},
+		"resilient":   {"max_stamina": 5,                      "budget_cost": 2, "types": ["armor", "boots", "pants", "greaves"]},
+		"warded":      {"spellpower": 3,                       "budget_cost": 3, "types": ["robe", "hat", "shield"]},
+		"spiked":      {"damage": 2,                           "budget_cost": 2, "types": ["gauntlets", "shield"]},
+		"fleet":       {"movement": 1, "dodge": 2,            "budget_cost": 3, "types": ["boots"]},
+		"fireproof":   {"fire_resistance": 15,                 "budget_cost": 2, "types": ["armor", "robe", "shield"]},
+		"insulated":   {"air_resistance": 15,                  "budget_cost": 2, "types": ["armor", "robe", "hat"]},
+		"grounded":    {"earth_resistance": 15,                "budget_cost": 2, "types": ["boots", "greaves", "armor"]}
+	},
+
+	"rarity_to_quality_weights": {
+		"common":    {"poor": 30, "common": 60, "good": 10},
+		"uncommon":  {"common": 40, "good": 45, "fine": 15},
+		"rare":      {"good": 30, "fine": 50, "masterwork": 20},
+		"epic":      {"fine": 40, "masterwork": 60},
+		"legendary": {"masterwork": 100}
+	},
+
+	"tier_to_material_weights": {
+		"0": {"wood": 70, "bronze": 30},
+		"1": {"wood": 20, "bronze": 50, "iron": 30},
+		"2": {"bronze": 20, "iron": 50, "steel": 30},
+		"3": {"iron": 20, "steel": 50, "mithril": 30},
+		"4": {"steel": 20, "mithril": 50, "demon_forged": 30},
+		"5": {"mithril": 30, "demon_forged": 70}
+	}
+}
