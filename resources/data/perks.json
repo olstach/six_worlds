@@ -3784,6 +3784,15 @@
       "flavor": "",
       "is_mantra": false
     },
+    "unstruck_sound": {
+      "name": "Unstruck Sound",
+      "skill": "ritual",
+      "required_level": 5,
+      "requires_perks": [],
+      "description": "You may cast spells while Silenced, but all spells cost 20% more mana.",
+      "flavor": "The nadabindu — the sound that needs no voice.",
+      "is_mantra": false
+    },
     "inscribed_circle": {
       "name": "Inscribed Circle",
       "skill": "ritual",
