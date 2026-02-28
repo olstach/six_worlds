@@ -18,6 +18,11 @@ var _item_database: Dictionary = {}
 var _item_types: Dictionary = {}
 var _rarities: Dictionary = {}
 
+# Runtime-generated items (procedural equipment/talismans)
+# Keyed by "gen_XXXX" IDs, same schema as _item_database entries
+var _runtime_items: Dictionary = {}
+var _next_runtime_id: int = 1
+
 # Party-wide shared inventory: Array of {item_id: String, quantity: int}
 # Equipment doesn't stack, so quantity is always 1 for equipment
 var _inventory: Array[Dictionary] = []
@@ -60,18 +65,22 @@ func _load_item_database() -> void:
 	_rarities = data.get("rarities", {})
 
 
-## Get an item definition by ID
+## Get an item definition by ID (checks static DB first, then runtime items)
 func get_item(item_id: String) -> Dictionary:
 	if item_id in _item_database:
 		var item = _item_database[item_id].duplicate(true)
-		item["id"] = item_id  # Include the ID in the returned data
+		item["id"] = item_id
+		return item
+	if item_id in _runtime_items:
+		var item = _runtime_items[item_id].duplicate(true)
+		item["id"] = item_id
 		return item
 	return {}
 
 
-## Check if an item exists
+## Check if an item exists (static or runtime)
 func item_exists(item_id: String) -> bool:
-	return item_id in _item_database
+	return item_id in _item_database or item_id in _runtime_items
 
 
 ## Get all items of a specific type (e.g., "sword", "helmet")
@@ -436,6 +445,7 @@ func get_inventory_with_details() -> Array[Dictionary]:
 ## Clear inventory (for new game)
 func clear_inventory() -> void:
 	_inventory.clear()
+	clear_runtime_items()
 	inventory_changed.emit()
 
 
@@ -565,13 +575,44 @@ func add_starter_items() -> void:
 
 
 # ============================================
+# RUNTIME ITEM GENERATION
+# ============================================
+
+## Register a procedurally generated item and return its unique ID
+## item_data should follow the same schema as static items in items.json
+func register_runtime_item(item_data: Dictionary) -> String:
+	var gen_id = "gen_%04d" % _next_runtime_id
+	_next_runtime_id += 1
+	_runtime_items[gen_id] = item_data.duplicate(true)
+	return gen_id
+
+
+## Remove a runtime item (e.g. when sold or destroyed)
+func remove_runtime_item(item_id: String) -> void:
+	_runtime_items.erase(item_id)
+
+
+## Check if an item is runtime-generated
+func is_runtime_item(item_id: String) -> bool:
+	return item_id.begins_with("gen_")
+
+
+## Clear all runtime items (for new game)
+func clear_runtime_items() -> void:
+	_runtime_items.clear()
+	_next_runtime_id = 1
+
+
+# ============================================
 # SAVE / LOAD
 # ============================================
 
 ## Collect saveable state into a dictionary
 func get_save_data() -> Dictionary:
 	return {
-		"inventory": _inventory.duplicate(true)
+		"inventory": _inventory.duplicate(true),
+		"runtime_items": _runtime_items.duplicate(true),
+		"next_runtime_id": _next_runtime_id
 	}
 
 
@@ -581,4 +622,9 @@ func load_save_data(data: Dictionary) -> void:
 	var saved_inv = data.get("inventory", [])
 	for entry in saved_inv:
 		_inventory.append(entry)
+
+	# Restore runtime-generated items
+	_runtime_items = data.get("runtime_items", {}).duplicate(true)
+	_next_runtime_id = data.get("next_runtime_id", 1)
+
 	inventory_changed.emit()
