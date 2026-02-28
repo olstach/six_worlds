@@ -89,12 +89,12 @@
 		{"id": "stun_immune",     "name": "Stun Immunity",      "cost": 6, "description": "Immune to Stun"},
 		{"id": "mental_immune",   "name": "Mind Fortress",      "cost": 7, "description": "Immune to all mental effects (Fear, Charm, Confusion, Berserk)"},
 
-		{"id": "regen_minor",     "name": "Minor Regeneration",    "cost": 4,  "description": "Regenerate 2 HP per turn"},
-		{"id": "regen_moderate",  "name": "Moderate Regeneration", "cost": 7,  "description": "Regenerate 4 HP per turn"},
-		{"id": "regen_greater",   "name": "Greater Regeneration",  "cost": 10, "description": "Regenerate 7 HP per turn"},
-		{"id": "mana_trickle",    "name": "Mana Trickle",         "cost": 4,  "description": "Regenerate 3 mana per turn"},
-		{"id": "mana_stream",     "name": "Mana Stream",          "cost": 7,  "description": "Regenerate 6 mana per turn"},
-		{"id": "mana_cascade",    "name": "Mana Cascade",         "cost": 10, "description": "Regenerate 10 mana per turn"},
+		{"id": "regen_minor",     "name": "Minor Regeneration",    "cost": 4,  "description": "Regenerate 2% of max HP per turn, rounded up"},
+		{"id": "regen_moderate",  "name": "Moderate Regeneration", "cost": 7,  "description": "Regenerate 4% of max HP per turn, rounded up"},
+		{"id": "regen_greater",   "name": "Greater Regeneration",  "cost": 10, "description": "Regenerate 7% of max HP per turn, rounded up"},
+		{"id": "mana_trickle",    "name": "Mana Trickle",         "cost": 4,  "description": "Regenerate 2% of max mana per turn, rounded up"},
+		{"id": "mana_stream",     "name": "Mana Stream",          "cost": 7,  "description": "Regenerate 4% of max mana per turn, rounded up"},
+		{"id": "mana_cascade",    "name": "Mana Cascade",         "cost": 10, "description": "Regenerate 7% of max mana per turn, rounded up"},
 
 		{"id": "thorns",          "name": "Thorns",             "cost": 5, "description": "Reflect 3 damage to melee attackers"},
 		{"id": "lucky_escape",    "name": "Lucky Escape",       "cost": 4, "description": "+15% dodge when below 25% HP"},
