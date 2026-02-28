@@ -80,12 +80,27 @@
 		{"id": "poison_immune",   "name": "Poison Immunity",    "cost": 4, "description": "Immune to Poisoned status"},
 		{"id": "bleed_immune",    "name": "Bleed Immunity",     "cost": 3, "description": "Immune to Bleeding status"},
 		{"id": "fear_immune",     "name": "Fear Immunity",      "cost": 3, "description": "Immune to Feared status"},
+		{"id": "charm_immune",    "name": "Charm Immunity",     "cost": 3, "description": "Immune to Charmed status"},
+		{"id": "mental_immune",   "name": "Mind Fortress",      "cost": 7, "description": "Immune to all mental effects (Fear, Charm, Confusion, Berserk)"},
 		{"id": "stun_resist",     "name": "Stun Resistance",    "cost": 5, "description": "50% chance to resist Stun"},
 		{"id": "regen_minor",     "name": "Minor Regeneration", "cost": 4, "description": "Regenerate 2 HP per turn"},
 		{"id": "mana_regen",      "name": "Mana Trickle",       "cost": 4, "description": "Regenerate 3 mana per turn"},
 		{"id": "thorns",          "name": "Thorns",             "cost": 5, "description": "Reflect 3 damage to melee attackers"},
 		{"id": "lucky_escape",    "name": "Lucky Escape",       "cost": 4, "description": "+15% dodge when below 25% HP"},
-		{"id": "karma_sight",     "name": "Karma Sight",        "cost": 3, "description": "Reveals karma changes in events"}
+		{"id": "karma_sight",     "name": "Karma Sight",        "cost": 3, "description": "Reveals karma changes in events"},
+
+		{"id": "fire_brand",      "name": "Ember Brand",        "cost": 3, "description": "Attacks deal +2 bonus fire damage"},
+		{"id": "water_brand",     "name": "Frost Brand",        "cost": 3, "description": "Attacks deal +2 bonus water damage"},
+		{"id": "earth_brand",     "name": "Stone Brand",        "cost": 3, "description": "Attacks deal +2 bonus earth damage"},
+		{"id": "air_brand",       "name": "Storm Brand",        "cost": 3, "description": "Attacks deal +2 bonus air damage"},
+		{"id": "space_brand",     "name": "Void Brand",         "cost": 3, "description": "Attacks deal +2 bonus space damage"},
+		{"id": "phys_brand",      "name": "Iron Brand",         "cost": 3, "description": "Attacks deal +2 bonus physical damage"},
+		{"id": "poison_brand",    "name": "Venom Brand",        "cost": 3, "description": "Attacks deal +2 poison damage and 10% chance to inflict Poisoned"},
+
+		{"id": "risen_dead",      "name": "Hungry Ghost Binding", "cost": 6, "description": "15% chance that enemies slain by this character rise as allied undead for the remainder of combat"},
+		{"id": "magic_mirror",    "name": "Magic Mirror",       "cost": 5, "description": "10% chance to reflect hostile incoming spells back at the caster"},
+		{"id": "blur",            "name": "Blur",               "cost": 4, "description": "+10% dodge chance"},
+		{"id": "lifesteal",       "name": "Lifesteal",          "cost": 5, "description": "Heal for 15% of damage dealt by attacks"}
 	],
 
 	"name_parts": {
