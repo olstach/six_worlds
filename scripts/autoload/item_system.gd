@@ -604,6 +604,214 @@ func clear_runtime_items() -> void:
 
 
 # ============================================
+# TALISMAN GENERATION
+# ============================================
+
+# Talisman generation tables (loaded from JSON)
+var _talisman_tables: Dictionary = {}
+
+## Load talisman generation tables
+func _load_talisman_tables() -> void:
+	var file_path = "res://resources/data/talisman_tables.json"
+	if not FileAccess.file_exists(file_path):
+		push_warning("ItemSystem: talisman_tables.json not found")
+		return
+
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	if file == null:
+		return
+
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) == OK:
+		_talisman_tables = json.get_data()
+	file.close()
+
+
+## Generate a random talisman and register it. Returns the gen_XXXX item ID.
+## rarity: "common", "uncommon", "rare", "epic", "legendary"
+func generate_talisman(rarity: String = "common") -> String:
+	if _talisman_tables.is_empty():
+		_load_talisman_tables()
+	if _talisman_tables.is_empty():
+		push_error("ItemSystem: Cannot generate talisman - no tables loaded")
+		return ""
+
+	var budgets = _talisman_tables.get("rarity_budgets", {})
+	var budget_info = budgets.get(rarity, budgets.get("common", {}))
+	var total_budget: float = budget_info.get("points", 3)
+	var max_effects: int = budget_info.get("max_effects", 1)
+	var perk_chance: float = budget_info.get("perk_chance", 0.0)
+
+	var effect_pools = _talisman_tables.get("effect_pools", {})
+	var perks_list = _talisman_tables.get("perks", [])
+	var name_parts = _talisman_tables.get("name_parts", {})
+	var element_map = _talisman_tables.get("element_by_stat", {})
+	var value_per_point: float = _talisman_tables.get("value_per_budget_point", 12)
+
+	var stats: Dictionary = {}
+	var skill_bonuses: Dictionary = {}
+	var passive: Dictionary = {}
+	var chosen_perk: Dictionary = {}
+	var remaining_budget: float = total_budget
+	var primary_stat: String = ""
+
+	# Maybe roll a perk first (costs budget)
+	if randf() < perk_chance and not perks_list.is_empty():
+		var affordable_perks: Array = []
+		for p in perks_list:
+			if p.get("cost", 99) <= remaining_budget:
+				affordable_perks.append(p)
+		if not affordable_perks.is_empty():
+			chosen_perk = affordable_perks[randi() % affordable_perks.size()]
+			remaining_budget -= chosen_perk.get("cost", 0)
+			passive["perk"] = chosen_perk.get("id", "")
+
+	# Build weighted pool list for stat selection
+	var pool_entries: Array = []
+	var pool_weight_total: float = 0.0
+	for pool_name in effect_pools:
+		var pool = effect_pools[pool_name]
+		var w: float = pool.get("weight", 1)
+		pool_entries.append({"name": pool_name, "pool": pool, "weight": w})
+		pool_weight_total += w
+
+	# Roll stat effects
+	var effects_added: int = 0
+	var used_stats: Array = []  # Prevent duplicates
+
+	while effects_added < max_effects and remaining_budget >= 1.0:
+		# Weighted random pool selection
+		var roll: float = randf() * pool_weight_total
+		var selected_pool: Dictionary = pool_entries[0]
+		var cumulative: float = 0.0
+		for entry in pool_entries:
+			cumulative += entry.weight
+			if roll <= cumulative:
+				selected_pool = entry
+				break
+
+		var options = selected_pool.pool.get("options", [])
+		if options.is_empty():
+			break
+
+		# Filter to affordable and unused options
+		var valid_options: Array = []
+		for opt in options:
+			var cost_per = opt.get("cost_per_point", 1.0)
+			var min_val = opt.get("min", 1)
+			if opt.get("stat", "") not in used_stats and cost_per * min_val <= remaining_budget:
+				valid_options.append(opt)
+
+		if valid_options.is_empty():
+			# Try another pool next iteration
+			effects_added += 1
+			continue
+
+		var chosen = valid_options[randi() % valid_options.size()]
+		var stat_name: String = chosen.get("stat", "")
+		var cost_per: float = chosen.get("cost_per_point", 1.0)
+		var min_val: int = chosen.get("min", 1)
+		var max_val: int = chosen.get("max", 5)
+
+		# Calculate how many points we can afford
+		var max_affordable: int = int(remaining_budget / cost_per)
+		var actual_max: int = mini(max_val, max_affordable)
+		if actual_max < min_val:
+			effects_added += 1
+			continue
+
+		var value: int = min_val + (randi() % (actual_max - min_val + 1))
+		remaining_budget -= value * cost_per
+		used_stats.append(stat_name)
+
+		# Store the stat in the right place
+		if selected_pool.name == "skill":
+			skill_bonuses[stat_name] = value
+		elif selected_pool.name == "resistance":
+			passive[stat_name] = value
+		else:
+			stats[stat_name] = value
+
+		# Track primary stat for naming
+		if primary_stat == "":
+			primary_stat = stat_name
+
+		effects_added += 1
+
+	# Generate name
+	var prefixes = name_parts.get("prefixes", ["Inscribed"])
+	var bases = name_parts.get("bases", ["Talisman"])
+	var suffixes = name_parts.get("suffixes", {})
+
+	var talisman_name: String = prefixes[randi() % prefixes.size()] + " " + bases[randi() % bases.size()]
+	if primary_stat in suffixes:
+		talisman_name += " " + suffixes[primary_stat]
+	elif not chosen_perk.is_empty():
+		talisman_name += " of " + chosen_perk.get("name", "Power")
+
+	# Determine element from primary stat
+	var element: String = element_map.get(primary_stat, "space")
+
+	# Calculate gold value
+	var gold_value: int = int(total_budget * value_per_point)
+
+	# Build item data
+	var item_data: Dictionary = {
+		"name": talisman_name,
+		"type": "talisman",
+		"slot": "trinket1",
+		"two_handed": false,
+		"rarity": rarity,
+		"element": element,
+		"weight": 0,
+		"value": gold_value,
+		"description": _generate_talisman_description(stats, skill_bonuses, passive, chosen_perk),
+		"requirements": {},
+		"stats": stats,
+		"abilities": []
+	}
+
+	# Add skill bonuses if any
+	if not skill_bonuses.is_empty():
+		item_data["skill_bonuses"] = skill_bonuses
+
+	# Add passive effects if any (resistances, perks)
+	if not passive.is_empty():
+		item_data["passive"] = passive
+
+	# Register and return
+	return register_runtime_item(item_data)
+
+
+## Build a readable description for a generated talisman
+func _generate_talisman_description(stats: Dictionary, skill_bonuses: Dictionary,
+		passive: Dictionary, perk: Dictionary) -> String:
+	var parts: Array[String] = ["A written talisman inscribed with sacred mantras."]
+
+	for stat in stats:
+		var val = stats[stat]
+		var label = stat.replace("_", " ").capitalize()
+		parts.append("+%d %s" % [val, label])
+
+	for skill in skill_bonuses:
+		var val = skill_bonuses[skill]
+		var label = skill.replace("_", " ").capitalize()
+		parts.append("+%d %s skill" % [val, label])
+
+	for key in passive:
+		if key == "perk":
+			continue
+		var val = passive[key]
+		var label = key.replace("_", " ").capitalize()
+		parts.append("+%d%% %s" % [val, label])
+
+	if not perk.is_empty():
+		parts.append(perk.get("description", ""))
+
+	return " ".join(parts)
+
+
+# ============================================
 # SAVE / LOAD
 # ============================================
 

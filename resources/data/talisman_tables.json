@@ -1,0 +1,153 @@
+{
+	"_comment": "Talisman generation tables for procedural equippable talismans (trinket slot accessories)",
+
+	"rarity_budgets": {
+		"common":    {"points": 3, "max_effects": 1, "perk_chance": 0.0},
+		"uncommon":  {"points": 6, "max_effects": 2, "perk_chance": 0.05},
+		"rare":      {"points": 10, "max_effects": 2, "perk_chance": 0.15},
+		"epic":      {"points": 15, "max_effects": 3, "perk_chance": 0.30},
+		"legendary": {"points": 22, "max_effects": 3, "perk_chance": 0.50}
+	},
+
+	"effect_pools": {
+		"attribute": {
+			"weight": 40,
+			"options": [
+				{"stat": "strength",     "cost_per_point": 1, "min": 1, "max": 5},
+				{"stat": "constitution", "cost_per_point": 1, "min": 1, "max": 5},
+				{"stat": "finesse",      "cost_per_point": 1, "min": 1, "max": 5},
+				{"stat": "focus",        "cost_per_point": 1, "min": 1, "max": 5},
+				{"stat": "awareness",    "cost_per_point": 1, "min": 1, "max": 5},
+				{"stat": "charm",        "cost_per_point": 1, "min": 1, "max": 5},
+				{"stat": "luck",         "cost_per_point": 1, "min": 1, "max": 5}
+			]
+		},
+		"derived": {
+			"weight": 30,
+			"options": [
+				{"stat": "max_hp",       "cost_per_point": 0.3, "min": 3,  "max": 25},
+				{"stat": "max_mana",     "cost_per_point": 0.3, "min": 3,  "max": 25},
+				{"stat": "max_stamina",  "cost_per_point": 0.3, "min": 3,  "max": 20},
+				{"stat": "spellpower",   "cost_per_point": 0.5, "min": 2,  "max": 15},
+				{"stat": "armor",        "cost_per_point": 0.5, "min": 1,  "max": 8},
+				{"stat": "dodge",        "cost_per_point": 0.5, "min": 1,  "max": 8},
+				{"stat": "initiative",   "cost_per_point": 0.5, "min": 1,  "max": 6},
+				{"stat": "crit_chance",  "cost_per_point": 0.5, "min": 1,  "max": 8}
+			]
+		},
+		"skill": {
+			"weight": 20,
+			"options": [
+				{"stat": "swords",        "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "martial_arts",  "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "ranged",        "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "daggers",       "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "axes",          "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "unarmed",       "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "spears",        "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "maces",         "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "armor_skill",   "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "fire_magic",    "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "water_magic",   "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "earth_magic",   "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "air_magic",     "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "space_magic",   "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "sorcery",       "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "enchantment",   "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "summoning",     "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "white",         "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "black",         "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "medicine",      "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "alchemy",       "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "persuasion",    "cost_per_point": 2, "min": 1, "max": 2},
+				{"stat": "yoga",          "cost_per_point": 2, "min": 1, "max": 2}
+			]
+		},
+		"resistance": {
+			"weight": 10,
+			"options": [
+				{"stat": "fire_resistance",    "cost_per_point": 0.2, "min": 5, "max": 25},
+				{"stat": "water_resistance",   "cost_per_point": 0.2, "min": 5, "max": 25},
+				{"stat": "earth_resistance",   "cost_per_point": 0.2, "min": 5, "max": 25},
+				{"stat": "air_resistance",     "cost_per_point": 0.2, "min": 5, "max": 25},
+				{"stat": "space_resistance",   "cost_per_point": 0.2, "min": 5, "max": 25},
+				{"stat": "physical_resistance","cost_per_point": 0.3, "min": 3, "max": 15}
+			]
+		}
+	},
+
+	"perks": [
+		{"id": "poison_immune",   "name": "Poison Immunity",    "cost": 4, "description": "Immune to Poisoned status"},
+		{"id": "bleed_immune",    "name": "Bleed Immunity",     "cost": 3, "description": "Immune to Bleeding status"},
+		{"id": "fear_immune",     "name": "Fear Immunity",      "cost": 3, "description": "Immune to Feared status"},
+		{"id": "stun_resist",     "name": "Stun Resistance",    "cost": 5, "description": "50% chance to resist Stun"},
+		{"id": "regen_minor",     "name": "Minor Regeneration", "cost": 4, "description": "Regenerate 2 HP per turn"},
+		{"id": "mana_regen",      "name": "Mana Trickle",       "cost": 4, "description": "Regenerate 3 mana per turn"},
+		{"id": "thorns",          "name": "Thorns",             "cost": 5, "description": "Reflect 3 damage to melee attackers"},
+		{"id": "lucky_escape",    "name": "Lucky Escape",       "cost": 4, "description": "+15% dodge when below 25% HP"},
+		{"id": "karma_sight",     "name": "Karma Sight",        "cost": 3, "description": "Reveals karma changes in events"}
+	],
+
+	"name_parts": {
+		"prefixes": [
+			"Blessed", "Inscribed", "Sacred", "Warding", "Binding",
+			"Whispered", "Sealed", "Mantra-etched", "Spirit-bound", "Crimson",
+			"Golden", "Jade", "Iron", "Paper", "Bone",
+			"Painted", "Carved", "Woven", "Pressed", "Folded"
+		],
+		"bases": [
+			"Talisman", "Sutra", "Scroll", "Ward", "Seal",
+			"Prayer Strip", "Ofuda", "Yantra", "Mandala", "Token",
+			"Charm Strip", "Spirit Paper", "Blessing", "Sigil", "Glyph"
+		],
+		"suffixes": {
+			"strength":     "of Might",
+			"constitution": "of Fortitude",
+			"finesse":      "of Swiftness",
+			"focus":        "of Clarity",
+			"awareness":    "of Insight",
+			"charm":        "of Presence",
+			"luck":         "of Fortune",
+			"max_hp":       "of Vitality",
+			"max_mana":     "of the Mystic",
+			"max_stamina":  "of Endurance",
+			"spellpower":   "of Power",
+			"armor":        "of Protection",
+			"dodge":        "of Evasion",
+			"crit_chance":  "of Precision",
+			"initiative":   "of Haste",
+			"fire_resistance":    "of Flame Ward",
+			"water_resistance":   "of Tide Ward",
+			"earth_resistance":   "of Stone Ward",
+			"air_resistance":     "of Wind Ward",
+			"space_resistance":   "of Void Ward",
+			"physical_resistance":"of Iron Skin"
+		}
+	},
+
+	"element_by_stat": {
+		"strength": "fire",
+		"constitution": "earth",
+		"finesse": "air",
+		"focus": "space",
+		"awareness": "air",
+		"charm": "space",
+		"luck": "space",
+		"max_hp": "earth",
+		"max_mana": "space",
+		"max_stamina": "earth",
+		"spellpower": "space",
+		"armor": "earth",
+		"dodge": "air",
+		"crit_chance": "air",
+		"initiative": "air",
+		"fire_resistance": "fire",
+		"water_resistance": "water",
+		"earth_resistance": "earth",
+		"air_resistance": "air",
+		"space_resistance": "space",
+		"physical_resistance": "earth"
+	},
+
+	"value_per_budget_point": 12
+}
