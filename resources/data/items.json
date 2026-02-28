@@ -636,9 +636,9 @@
 			"spell_bonus": 0
 		},
 
-		"white_talisman_common": {
-			"name": "Common White Talisman",
-			"type": "talisman",
+		"white_charm_common": {
+			"name": "Common White Charm",
+			"type": "charm",
 			"rarity": "common",
 			"weight": 0,
 			"value": 30,
@@ -649,9 +649,9 @@
 				"spellpower_bonus": 0
 			}
 		},
-		"white_talisman_middling": {
-			"name": "Middling White Talisman",
-			"type": "talisman",
+		"white_charm_middling": {
+			"name": "Middling White Charm",
+			"type": "charm",
 			"rarity": "uncommon",
 			"weight": 0,
 			"value": 60,
@@ -662,9 +662,9 @@
 				"spellpower_bonus": 0
 			}
 		},
-		"white_talisman_rare": {
-			"name": "Rare White Talisman",
-			"type": "talisman",
+		"white_charm_rare": {
+			"name": "Rare White Charm",
+			"type": "charm",
 			"rarity": "rare",
 			"weight": 0,
 			"value": 100,
@@ -675,9 +675,9 @@
 				"spellpower_bonus": 0.10
 			}
 		},
-		"white_talisman_unique": {
-			"name": "Unique White Talisman",
-			"type": "talisman",
+		"white_charm_unique": {
+			"name": "Unique White Charm",
+			"type": "charm",
 			"rarity": "epic",
 			"weight": 0,
 			"value": 160,
@@ -688,9 +688,9 @@
 				"spellpower_bonus": 0.20
 			}
 		},
-		"fire_talisman_common": {
-			"name": "Common Fire Talisman",
-			"type": "talisman",
+		"fire_charm_common": {
+			"name": "Common Fire Charm",
+			"type": "charm",
 			"rarity": "common",
 			"weight": 0,
 			"value": 30,
@@ -701,9 +701,9 @@
 				"spellpower_bonus": 0
 			}
 		},
-		"fire_talisman_middling": {
-			"name": "Middling Fire Talisman",
-			"type": "talisman",
+		"fire_charm_middling": {
+			"name": "Middling Fire Charm",
+			"type": "charm",
 			"rarity": "uncommon",
 			"weight": 0,
 			"value": 60,
@@ -714,9 +714,9 @@
 				"spellpower_bonus": 0
 			}
 		},
-		"fire_talisman_rare": {
-			"name": "Rare Fire Talisman",
-			"type": "talisman",
+		"fire_charm_rare": {
+			"name": "Rare Fire Charm",
+			"type": "charm",
 			"rarity": "rare",
 			"weight": 0,
 			"value": 100,
@@ -727,9 +727,9 @@
 				"spellpower_bonus": 0.10
 			}
 		},
-		"fire_talisman_unique": {
-			"name": "Unique Fire Talisman",
-			"type": "talisman",
+		"fire_charm_unique": {
+			"name": "Unique Fire Charm",
+			"type": "charm",
 			"rarity": "epic",
 			"weight": 0,
 			"value": 160,
@@ -740,9 +740,9 @@
 				"spellpower_bonus": 0.20
 			}
 		},
-		"earth_talisman_common": {
-			"name": "Common Earth Talisman",
-			"type": "talisman",
+		"earth_charm_common": {
+			"name": "Common Earth Charm",
+			"type": "charm",
 			"rarity": "common",
 			"weight": 0,
 			"value": 30,
@@ -753,9 +753,9 @@
 				"spellpower_bonus": 0
 			}
 		},
-		"earth_talisman_middling": {
-			"name": "Middling Earth Talisman",
-			"type": "talisman",
+		"earth_charm_middling": {
+			"name": "Middling Earth Charm",
+			"type": "charm",
 			"rarity": "uncommon",
 			"weight": 0,
 			"value": 60,
@@ -766,9 +766,9 @@
 				"spellpower_bonus": 0
 			}
 		},
-		"earth_talisman_rare": {
-			"name": "Rare Earth Talisman",
-			"type": "talisman",
+		"earth_charm_rare": {
+			"name": "Rare Earth Charm",
+			"type": "charm",
 			"rarity": "rare",
 			"weight": 0,
 			"value": 100,
@@ -779,9 +779,9 @@
 				"spellpower_bonus": 0.10
 			}
 		},
-		"earth_talisman_unique": {
-			"name": "Unique Earth Talisman",
-			"type": "talisman",
+		"earth_charm_unique": {
+			"name": "Unique Earth Charm",
+			"type": "charm",
 			"rarity": "epic",
 			"weight": 0,
 			"value": 160,
@@ -792,9 +792,9 @@
 				"spellpower_bonus": 0.20
 			}
 		},
-		"water_talisman_common": {
-			"name": "Common Water Talisman",
-			"type": "talisman",
+		"water_charm_common": {
+			"name": "Common Water Charm",
+			"type": "charm",
 			"rarity": "common",
 			"weight": 0,
 			"value": 30,
@@ -805,9 +805,9 @@
 				"spellpower_bonus": 0
 			}
 		},
-		"air_talisman_common": {
-			"name": "Common Air Talisman",
-			"type": "talisman",
+		"air_charm_common": {
+			"name": "Common Air Charm",
+			"type": "charm",
 			"rarity": "common",
 			"weight": 0,
 			"value": 30,
@@ -818,9 +818,9 @@
 				"spellpower_bonus": 0
 			}
 		},
-		"space_talisman_common": {
-			"name": "Common Space Talisman",
-			"type": "talisman",
+		"space_charm_common": {
+			"name": "Common Space Charm",
+			"type": "charm",
 			"rarity": "common",
 			"weight": 0,
 			"value": 30,
@@ -831,9 +831,9 @@
 				"spellpower_bonus": 0
 			}
 		},
-		"black_talisman_common": {
-			"name": "Common Black Talisman",
-			"type": "talisman",
+		"black_charm_common": {
+			"name": "Common Black Charm",
+			"type": "charm",
 			"rarity": "common",
 			"weight": 0,
 			"value": 30,
@@ -844,9 +844,9 @@
 				"spellpower_bonus": 0
 			}
 		},
-		"sorcery_talisman_common": {
-			"name": "Common Sorcery Talisman",
-			"type": "talisman",
+		"sorcery_charm_common": {
+			"name": "Common Sorcery Charm",
+			"type": "charm",
 			"rarity": "common",
 			"weight": 0,
 			"value": 30,
@@ -857,9 +857,9 @@
 				"spellpower_bonus": 0
 			}
 		},
-		"enchantment_talisman_common": {
-			"name": "Common Enchantment Talisman",
-			"type": "talisman",
+		"enchantment_charm_common": {
+			"name": "Common Enchantment Charm",
+			"type": "charm",
 			"rarity": "common",
 			"weight": 0,
 			"value": 30,
@@ -870,9 +870,9 @@
 				"spellpower_bonus": 0
 			}
 		},
-		"summoning_talisman_common": {
-			"name": "Common Summoning Talisman",
-			"type": "talisman",
+		"summoning_charm_common": {
+			"name": "Common Summoning Charm",
+			"type": "charm",
 			"rarity": "common",
 			"weight": 0,
 			"value": 30,
@@ -886,7 +886,7 @@
 
 		"ice_shard": {
 			"name": "Ice Shard",
-			"type": "charm",
+			"type": "talisman",
 			"slot": "trinket",
 			"two_handed": false,
 			"rarity": "uncommon",
@@ -900,7 +900,7 @@
 		},
 		"soul_stone": {
 			"name": "Soul Stone",
-			"type": "charm",
+			"type": "talisman",
 			"slot": "trinket",
 			"two_handed": false,
 			"rarity": "uncommon",
@@ -912,9 +912,9 @@
 			"stats": {"spellpower": 6, "max_mana": 8},
 			"abilities": []
 		},
-		"fire_resistance_charm": {
-			"name": "Fire Resistance Charm",
-			"type": "charm",
+		"fire_resistance_talisman": {
+			"name": "Fire Resistance Talisman",
+			"type": "talisman",
 			"slot": "trinket",
 			"two_handed": false,
 			"rarity": "uncommon",
@@ -959,7 +959,7 @@
 		},
 		"random_common_talisman": {
 			"name": "Carved Token",
-			"type": "charm",
+			"type": "talisman",
 			"slot": "trinket",
 			"two_handed": false,
 			"rarity": "common",
@@ -1221,10 +1221,10 @@
 		"amulet": {"category": "accessory", "slots": ["amulet"]},
 		"necklace": {"category": "accessory", "slots": ["amulet"]},
 		"trinket": {"category": "accessory", "slots": ["trinket"]},
-		"charm": {"category": "accessory", "slots": ["trinket"]},
+		"talisman": {"category": "accessory", "slots": ["trinket"]},
 		"potion": {"category": "consumable", "subcategory": "potion"},
 		"scroll": {"category": "consumable", "subcategory": "scroll"},
-		"talisman": {"category": "consumable", "subcategory": "talisman"},
+		"charm": {"category": "consumable", "subcategory": "charm"},
 		"bomb": {"category": "consumable", "subcategory": "bomb"},
 		"oil": {"category": "consumable", "subcategory": "oil"}
 	},

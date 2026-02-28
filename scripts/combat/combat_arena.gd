@@ -959,7 +959,7 @@ func _show_item_panel(_unit: CombatUnit) -> void:
 					btn.add_theme_color_override("font_color", Color(0.3, 0.85, 0.5))
 				"scroll":
 					btn.add_theme_color_override("font_color", Color(0.85, 0.75, 0.3))
-				"talisman":
+				"charm":
 					btn.add_theme_color_override("font_color", Color(0.7, 0.5, 0.9))
 				"bomb":
 					btn.add_theme_color_override("font_color", Color(0.9, 0.45, 0.3))
@@ -1015,7 +1015,7 @@ func _build_item_tooltip(item: Dictionary) -> String:
 			else:
 				lines.append("Target: Self")
 
-	elif item_type == "talisman":
+	elif item_type == "charm":
 		var effect = item.get("effect", {})
 		var school = effect.get("school", "").capitalize()
 		var reduction = int(effect.get("mana_reduction", 0) * 100)
@@ -1085,7 +1085,7 @@ func _on_item_selected(item: Dictionary) -> void:
 	var item_type = item.get("type", "")
 
 	match item_type:
-		"potion", "talisman", "oil":
+		"potion", "charm", "oil":
 			# Self-targeting -- use immediately
 			_try_use_item(unit.grid_position)
 
@@ -1201,7 +1201,7 @@ func _on_item_used_in_combat(user: Node, item: Dictionary, result: Dictionary) -
 							target.unit_name, effect_applied.get("amount", 0)
 						])
 
-	elif item_type == "talisman":
+	elif item_type == "charm":
 		var school = ""
 		for effect in result.get("effects_applied", []):
 			school = effect.get("school", "").capitalize()

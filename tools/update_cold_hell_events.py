@@ -60,11 +60,11 @@ UPDATED_EVENTS = {
                 },
                 "outcome_success": {
                     "type": "text",
-                    "text": "You find a hidden passage and discover a charm left by a previous traveler.",
+                    "text": "You find a hidden passage and discover a talisman left by a previous traveler.",
                     "rewards": {
                         "xp": 10,
                         "items": [
-                            "fire_resistance_charm"
+                            "fire_resistance_talisman"
                         ]
                     },
                     "karma": {

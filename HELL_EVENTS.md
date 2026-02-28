@@ -31,7 +31,7 @@ A massive elemental of molten rock blocks the passage between the ice fields and
 → Karma: asura+5, human+2
 
 **[Roll: Awareness DC 15] Search for an alternate route**
-→ Success: Text — find hidden passage, discover fire_resistance_charm | XP: 10 | Karma: animal+3, human+2
+→ Success: Text — find hidden passage, discover fire_resistance_talisman | XP: 10 | Karma: animal+3, human+2
 → Failure: Combat: lava_guardian (hard) — spotted, it attacks | Karma: hell+3
 
 **[Yoga 3] Sit before it in meditation**

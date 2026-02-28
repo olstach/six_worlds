@@ -118,7 +118,7 @@
 
 				{"name": "Soul Well", "icon": "shrine", "message": "You can feel the outlines of strange memories.", "rewards": [{"type": "buff", "value": {"stat": ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"], "amount": 2, "combats_remaining": 1}}], "weight": 3},
 				{"name": "Forgotten Grave", "icon": "shrine", "message": "A rare act of caring for the dead in the Hells.", "rewards": [{"type": "xp", "value": 10}], "weight": 3},
-				{"name": "Devil's Talisman", "icon": "treasure", "message": "Still humming with whispered mantras.", "rewards": [{"type": "item_random", "value": ["fire_talisman_common", "black_talisman_common", "sorcery_talisman_common", "white_talisman_common", "earth_talisman_common"]}], "weight": 2},
+				{"name": "Devil's Charm", "icon": "treasure", "message": "Still humming with whispered mantras.", "rewards": [{"type": "item_random", "value": ["fire_charm_common", "black_charm_common", "sorcery_charm_common", "white_charm_common", "earth_charm_common"]}], "weight": 2},
 				{"name": "Magic Well", "icon": "rest", "message": "Shimmering with power.", "rewards": [{"type": "mana", "value": 100}], "weight": 3},
 				{"name": "Twisted Idol", "icon": "shrine", "message": "You feel sick looking into its eyes.", "rewards": [{"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "constitution", "amount": -2, "combats_remaining": 1}}], "weight": 2},
 				{"name": "Old Battlefield", "icon": "shrine", "message": "Carrion crows pick what's left from the fallen.", "rewards": [{"type": "buff", "value": {"stat": "initiative", "amount": 3, "combats_remaining": 1}}], "weight": 2},
@@ -163,7 +163,7 @@
 
 				{"name": "Soul Well", "icon": "shrine", "message": "You can feel the outlines of strange memories.", "rewards": [{"type": "buff", "value": {"stat": ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"], "amount": 2, "combats_remaining": 1}}], "weight": 3},
 				{"name": "Forgotten Grave", "icon": "shrine", "message": "A rare act of caring for the dead in the Hells.", "rewards": [{"type": "xp", "value": 10}], "weight": 3},
-				{"name": "Devil's Talisman", "icon": "treasure", "message": "Still humming with whispered mantras.", "rewards": [{"type": "item_random", "value": ["fire_talisman_common", "black_talisman_common", "sorcery_talisman_common", "white_talisman_common", "earth_talisman_common"]}], "weight": 2},
+				{"name": "Devil's Charm", "icon": "treasure", "message": "Still humming with whispered mantras.", "rewards": [{"type": "item_random", "value": ["fire_charm_common", "black_charm_common", "sorcery_charm_common", "white_charm_common", "earth_charm_common"]}], "weight": 2},
 				{"name": "Magic Well", "icon": "rest", "message": "Shimmering with power.", "rewards": [{"type": "mana", "value": 100}], "weight": 3},
 				{"name": "Twisted Idol", "icon": "shrine", "message": "You feel sick looking into its eyes.", "rewards": [{"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "constitution", "amount": -2, "combats_remaining": 1}}], "weight": 2},
 				{"name": "Old Battlefield", "icon": "shrine", "message": "Carrion crows pick what's left from the fallen.", "rewards": [{"type": "buff", "value": {"stat": "initiative", "amount": 3, "combats_remaining": 1}}], "weight": 2},

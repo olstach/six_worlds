@@ -35,7 +35,7 @@ var status_effects: Array = []  # Active status effects on this unit
 var skill_cooldowns: Dictionary = {}
 
 # Consumable buffs
-var talisman_buff: Dictionary = {}  # {school, mana_reduction, spellpower_bonus} - consumed on next matching spell
+var charm_buff: Dictionary = {}  # {school, mana_reduction, spellpower_bonus} - consumed on next matching spell
 var weapon_oil: Dictionary = {}  # {bonus_damage, bonus_damage_type, attacks_remaining, status, status_chance, status_duration, crit_bonus}
 
 # Inventory for AI consumable use (Array of {item_id, quantity})
@@ -319,16 +319,16 @@ func get_weapon_damage_type() -> String:
 	return "crushing"
 
 
-## Check if this unit has an active talisman matching the given spell schools
+## Check if this unit has an active charm matching the given spell schools
 ## Returns the buff data and clears it (one-shot). Schools should be lowercase.
-func consume_talisman(spell_schools: Array) -> Dictionary:
-	if talisman_buff.is_empty():
+func consume_charm(spell_schools: Array) -> Dictionary:
+	if charm_buff.is_empty():
 		return {}
-	var buff_school = talisman_buff.get("school", "")
+	var buff_school = charm_buff.get("school", "")
 	for school in spell_schools:
 		if school.to_lower() == buff_school:
-			var result = talisman_buff.duplicate()
-			talisman_buff = {}
+			var result = charm_buff.duplicate()
+			charm_buff = {}
 			return result
 	return {}
 

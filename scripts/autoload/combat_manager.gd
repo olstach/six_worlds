@@ -67,8 +67,8 @@ const TACTICIAN_UPGRADE_ID: String = "tactician"
 const ROLE_LOOT_POOLS: Dictionary = {
 	"frontline": ["sword", "axe", "mace", "spear", "shield", "armor", "helmet", "gauntlets", "greaves", "boots", "pants"],
 	"ranged": ["bow", "thrown", "dagger", "armor", "boots", "gloves", "ring", "hat"],
-	"caster": ["staff", "robe", "hat", "ring", "amulet", "trinket", "talisman", "scroll"],
-	"support": ["staff", "robe", "ring", "amulet", "trinket", "potion", "scroll", "talisman"],
+	"caster": ["staff", "robe", "hat", "ring", "amulet", "trinket", "charm", "scroll"],
+	"support": ["staff", "robe", "ring", "amulet", "trinket", "potion", "scroll", "charm"],
 }
 # Any enemy has a 30% chance to also drop a consumable
 const GLOBAL_CONSUMABLE_TYPES: Array[String] = ["potion", "bomb", "oil"]
@@ -1230,18 +1230,18 @@ func get_castable_spells(unit: Node) -> Array[Dictionary]:
 
 ## Check if a unit can cast a specific spell
 func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dictionary:
-	# Check mana (account for talisman reduction if the unit has a matching one)
+	# Check mana (account for charm reduction if the unit has a matching one)
 	var mana_cost = spell.get("mana_cost", 0)
-	if unit.has_method("consume_talisman") and not unit.talisman_buff.is_empty():
-		var buff_school = unit.talisman_buff.get("school", "")
+	if unit.has_method("consume_charm") and not unit.charm_buff.is_empty():
+		var buff_school = unit.charm_buff.get("school", "")
 		var spell_schools = spell.get("schools", [])
 		var subschool = spell.get("subschool", "")
 		for school in spell_schools:
 			if school.to_lower() == buff_school:
-				mana_cost = int(mana_cost * (1.0 - unit.talisman_buff.get("mana_reduction", 0.0)))
+				mana_cost = int(mana_cost * (1.0 - unit.charm_buff.get("mana_reduction", 0.0)))
 				break
 		if subschool.to_lower() == buff_school:
-			mana_cost = int(mana_cost * (1.0 - unit.talisman_buff.get("mana_reduction", 0.0)))
+			mana_cost = int(mana_cost * (1.0 - unit.charm_buff.get("mana_reduction", 0.0)))
 	if unit.current_mana < mana_cost:
 		return {"success": false, "reason": "Not enough mana"}
 
@@ -1297,17 +1297,17 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	# Calculate base mana cost
 	var mana_cost = spell.get("mana_cost", 0)
 
-	# Check for talisman buff (reduces mana cost and may boost spellpower)
-	var talisman_used: Dictionary = {}
-	if caster.has_method("consume_talisman"):
+	# Check for charm buff (reduces mana cost and may boost spellpower)
+	var charm_used: Dictionary = {}
+	if caster.has_method("consume_charm"):
 		var spell_schools = spell.get("schools", [])
 		# Also check subschool
 		var subschool = spell.get("subschool", "")
 		if subschool != "":
 			spell_schools = spell_schools + [subschool]
-		talisman_used = caster.consume_talisman(spell_schools)
-		if not talisman_used.is_empty():
-			var reduction = talisman_used.get("mana_reduction", 0.0)
+		charm_used = caster.consume_charm(spell_schools)
+		if not charm_used.is_empty():
+			var reduction = charm_used.get("mana_reduction", 0.0)
 			mana_cost = int(mana_cost * (1.0 - reduction))
 
 	# Deduct mana
@@ -1316,11 +1316,11 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	# Calculate spell power bonus from all applicable schools
 	var spellpower_bonus = _calculate_spell_bonus(caster, spell)
 
-	# Add talisman spellpower bonus (percentage of base spellpower)
-	if not talisman_used.is_empty():
-		var talisman_sp_pct = talisman_used.get("spellpower_bonus", 0.0)
-		if talisman_sp_pct > 0:
-			spellpower_bonus += int(spellpower_bonus * talisman_sp_pct)
+	# Add charm spellpower bonus (percentage of base spellpower)
+	if not charm_used.is_empty():
+		var charm_sp_pct = charm_used.get("spellpower_bonus", 0.0)
+		if charm_sp_pct > 0:
+			spellpower_bonus += int(spellpower_bonus * charm_sp_pct)
 
 	# Apply effects to each target
 	var results: Array[Dictionary] = []
@@ -1867,7 +1867,7 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 # ============================================
 
 ## Use a consumable item in combat
-## Self-targeting: potions, talismans, oils (target_pos ignored)
+## Self-targeting: potions, charms, oils (target_pos ignored)
 ## Targeted: scrolls, bombs (target_pos = aim position)
 func use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dictionary:
 	if not can_act(1):
@@ -1916,8 +1916,8 @@ func use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dicti
 			result = _apply_potion_effect(user, item)
 		"scroll":
 			result = _use_scroll(user, item, target_pos)
-		"talisman":
-			result = _apply_talisman(user, item)
+		"charm":
+			result = _apply_charm(user, item)
 		"bomb":
 			result = _use_bomb(user, item, target_pos)
 		"oil":
@@ -2071,15 +2071,15 @@ func _get_alchemy_bonus(user: Node) -> float:
 	return 0.0
 
 
-## Apply a talisman: stores a buff on the unit that reduces mana cost of the next matching spell
-func _apply_talisman(user: Node, item: Dictionary) -> Dictionary:
+## Apply a charm: stores a buff on the unit that reduces mana cost of the next matching spell
+func _apply_charm(user: Node, item: Dictionary) -> Dictionary:
 	var effect = item.get("effect", {})
 	var school = effect.get("school", "")
 	var mana_reduction = effect.get("mana_reduction", 0.0)
 	var spellpower_bonus = effect.get("spellpower_bonus", 0.0)
 
-	# Overwrite any existing talisman (only one active at a time)
-	user.talisman_buff = {
+	# Overwrite any existing charm (only one active at a time)
+	user.charm_buff = {
 		"school": school,
 		"mana_reduction": mana_reduction,
 		"spellpower_bonus": spellpower_bonus
@@ -2088,7 +2088,7 @@ func _apply_talisman(user: Node, item: Dictionary) -> Dictionary:
 	return {
 		"success": true,
 		"effects_applied": [{
-			"type": "talisman",
+			"type": "charm",
 			"school": school,
 			"mana_reduction": mana_reduction,
 			"spellpower_bonus": spellpower_bonus
