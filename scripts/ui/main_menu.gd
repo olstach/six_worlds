@@ -88,7 +88,7 @@ const ELEMENT_SKILLS := {
 	"air": ["ranged", "daggers", "air_magic", "ritual", "learning", "comedy", "guile"],
 	"fire": ["axes", "unarmed", "fire_magic", "sorcery", "might", "leadership", "performance"],
 	"water": ["spears", "water_magic", "enchantment", "grace", "medicine", "alchemy", "thievery"],
-	"earth": ["maces", "armor", "earth_magic", "summoning", "logistics", "trade", "crafting"]
+	"earth": ["maces", "armor", "earth_magic", "summoning", "logistics", "trade", "smithing"]
 }
 
 # Element colors for visual distinction

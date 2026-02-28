@@ -152,14 +152,14 @@
 			"Paper":         ["air", "speed", "finesse"],
 			"Bone":          ["black", "undead", "earth"],
 			"Painted":       ["enchantment", "fire", "charm"],
-			"Carved":        ["earth", "physical", "crafting"],
+			"Carved":        ["earth", "physical", "smithing"],
 			"Woven":         ["water", "enchantment", "protection"],
 			"Pressed":       ["earth", "air", "alchemy"],
 			"Folded":        ["air", "space", "finesse"],
 			"Conch":         ["white", "healing", "protection"],
 			"Copper":        ["charm", "social", "fire"],
 			"Turquoise":     ["healing", "hp", "soul", "water"],
-			"Lacquer":       ["protection", "earth", "crafting"]
+			"Lacquer":       ["protection", "earth", "smithing"]
 		},
 		"bases": [
 			"Talisman", "Sutra", "Scroll", "Ward", "Seal",

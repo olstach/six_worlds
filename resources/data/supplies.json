@@ -1,0 +1,73 @@
+{
+	"_comment": "Supply system: three resources consumed on the overworld, each tied to a passive skill",
+
+	"supply_types": {
+		"food": {
+			"name": "Food",
+			"description": "Consumed each overworld step per party member. Without food, passive healing stops; prolonged starvation drains HP.",
+			"icon": "food",
+			"starting_amount": 50,
+			"max_stack": 999,
+			"shop_price": 2,
+			"loot_drop_weight": "common",
+			"base_cost_per_step_per_member": 1,
+			"linked_skill": "logistics"
+		},
+		"herbs": {
+			"name": "Herbs",
+			"description": "Consumed by the Medicine passive to boost party healing on the overworld. When depleted, bonus healing stops but base healing continues.",
+			"icon": "herbs",
+			"starting_amount": 20,
+			"max_stack": 999,
+			"shop_price": 5,
+			"loot_drop_weight": "common",
+			"base_cost_per_step": 1,
+			"linked_skill": "medicine"
+		},
+		"scrap": {
+			"name": "Scrap",
+			"description": "Consumed by the Smithing passive to repair equipment durability and restore ranged ammo. When depleted, repair and ammo restore stop.",
+			"icon": "scrap",
+			"starting_amount": 15,
+			"max_stack": 999,
+			"shop_price": 5,
+			"loot_drop_weight": "uncommon",
+			"base_cost_per_step": 1,
+			"linked_skill": "smithing"
+		}
+	},
+
+	"overworld_healing": {
+		"_comment": "Base passive healing happens as long as party has food. Medicine bonus stacks on top but costs herbs.",
+		"base_heal_rate_pct": 1.0,
+		"medicine_bonus_per_level_pct": 0.5
+	},
+
+	"starvation": {
+		"_comment": "When food hits 0: healing stops immediately. Grace period before HP drain based on LOWEST party Constitution.",
+		"grace_period_base_steps": 10,
+		"grace_period_per_constitution": 2,
+		"damage_per_step_pct": 2.0
+	},
+
+	"logistics_overworld": {
+		"_comment": "Each Logistics level reduces food consumption and increases overworld movement speed.",
+		"food_cost_reduction_pct_per_level": 3,
+		"speed_bonus_pct_per_level": 2
+	},
+
+	"smithing_overworld": {
+		"_comment": "Smithing passively repairs durability and restores ammo each overworld step (costs scrap).",
+		"repair_durability_pct_per_level": 1.0,
+		"ammo_restore_per_step_base": 1,
+		"ammo_restore_bonus_per_3_levels": 1
+	},
+
+	"ammo_limits": {
+		"_comment": "Max ammo by weapon type. Restored passively via Smithing+Scrap, or to full at shops for gold.",
+		"bow": 20,
+		"crossbow": 20,
+		"javelin": 5,
+		"thrown": 5
+	}
+}

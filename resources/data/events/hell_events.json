@@ -3101,7 +3101,7 @@
 					"text": "Ask to learn her craft techniques",
 					"requirements": {
 						"skills": {
-							"crafting": 2
+							"smithing": 2
 						}
 					},
 					"outcome": {

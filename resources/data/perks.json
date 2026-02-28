@@ -2123,68 +2123,68 @@
     "alchemy": {
       "stats": [
         "potion_effectiveness_pct",
-        "crafting_bonus"
+        "smithing_bonus"
       ],
       "per_level": {
         "1": {
           "potion_effectiveness_pct": 3.0,
-          "crafting_bonus": 1.0
+          "smithing_bonus": 1.0
         },
         "2": {
           "potion_effectiveness_pct": 7.0,
-          "crafting_bonus": 2.0
+          "smithing_bonus": 2.0
         },
         "3": {
           "potion_effectiveness_pct": 12.0,
-          "crafting_bonus": 4.0
+          "smithing_bonus": 4.0
         },
         "4": {
           "potion_effectiveness_pct": 18.0,
-          "crafting_bonus": 6.0
+          "smithing_bonus": 6.0
         },
         "5": {
           "potion_effectiveness_pct": 25.0,
-          "crafting_bonus": 9.0
+          "smithing_bonus": 9.0
         },
         "6": {
           "potion_effectiveness_pct": 33.0,
-          "crafting_bonus": 12.0
+          "smithing_bonus": 12.0
         },
         "7": {
           "potion_effectiveness_pct": 42.0,
-          "crafting_bonus": 16.0
+          "smithing_bonus": 16.0
         },
         "8": {
           "potion_effectiveness_pct": 52.0,
-          "crafting_bonus": 20.0
+          "smithing_bonus": 20.0
         },
         "9": {
           "potion_effectiveness_pct": 63.0,
-          "crafting_bonus": 25.0
+          "smithing_bonus": 25.0
         },
         "10": {
           "potion_effectiveness_pct": 75.0,
-          "crafting_bonus": 30.0
+          "smithing_bonus": 30.0
         },
         "11": {
           "potion_effectiveness_pct": 88.0,
-          "crafting_bonus": 35.0
+          "smithing_bonus": 35.0
         },
         "12": {
           "potion_effectiveness_pct": 102.0,
-          "crafting_bonus": 40.0
+          "smithing_bonus": 40.0
         },
         "13": {
           "potion_effectiveness_pct": 117.0,
-          "crafting_bonus": 45.0
+          "smithing_bonus": 45.0
         },
         "14": {
           "potion_effectiveness_pct": 133.0,
-          "crafting_bonus": 50.0
+          "smithing_bonus": 50.0
         },
         "15": {
           "potion_effectiveness_pct": 150.0,
-          "crafting_bonus": 55.0
+          "smithing_bonus": 55.0
         }
       }
     },
@@ -2392,7 +2392,7 @@
         }
       }
     },
-    "crafting": {
+    "smithing": {
       "stats": [
         "equipment_quality_pct",
         "material_efficiency"
@@ -3790,7 +3790,7 @@
       "required_level": 5,
       "requires_perks": [],
       "description": "You may cast spells while Silenced, but all spells cost 20% more mana.",
-      "flavor": "The nadabindu — the sound that needs no voice.",
+      "flavor": "Nadabindu, the sound you hear with your mind.",
       "is_mantra": false
     },
     "inscribed_circle": {
@@ -7152,7 +7152,7 @@
     },
     "apprentice_smith": {
       "name": "Apprentice Smith",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 1,
       "requires_perks": [],
       "description": "Can craft basic weapons and armor from common materials.",
@@ -7161,7 +7161,7 @@
     },
     "journeymans_touch": {
       "name": "Journeyman's Touch",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 3,
       "requires_perks": [],
       "description": "Crafted items gain a random minor bonus (+5% to one stat).",
@@ -7170,7 +7170,7 @@
     },
     "master_craftsman": {
       "name": "Master Craftsman",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 7,
       "requires_perks": [
         "journeymans_touch"
@@ -7181,7 +7181,7 @@
     },
     "legendary_artisan": {
       "name": "Legendary Artisan",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 9,
       "requires_perks": [],
       "description": "Once per rest, craft an item of rare quality with a unique name and enhanced bonuses.",
@@ -7190,7 +7190,7 @@
     },
     "reinforce": {
       "name": "Reinforce",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 1,
       "requires_perks": [],
       "description": "Active (out of combat). Upgrade an existing piece of equipment, granting +10% to its primary stat permanently.",
@@ -7199,7 +7199,7 @@
     },
     "socket": {
       "name": "Socket",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 5,
       "requires_perks": [],
       "description": "Add a gem socket to a piece of equipment. Sockets hold gems, charms, or essences for additional bonuses.",
@@ -7208,7 +7208,7 @@
     },
     "masterwork_enhancement": {
       "name": "Masterwork Enhancement",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 9,
       "requires_perks": [
         "socket"
@@ -7219,7 +7219,7 @@
     },
     "field_repair": {
       "name": "Field Repair",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 1,
       "requires_perks": [],
       "description": "Active (1 action in combat, 3-turn cooldown). Restore 25% of an ally's Armor value, countering sunder effects.",
@@ -7228,7 +7228,7 @@
     },
     "improvised_barricade": {
       "name": "Improvised Barricade",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 3,
       "requires_perks": [],
       "description": "Active (1 action). Create a 1-tile barricade at an adjacent position. Provides half cover (+15% Armor) for anyone behind it. Lasts 3 turns.",
@@ -7237,7 +7237,7 @@
     },
     "trap_maker": {
       "name": "Trap Maker",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 5,
       "requires_perks": [],
       "description": "Active (1 action). Place a trap on an adjacent tile. The first enemy to enter takes damage equal to 30% of your Focus and is immobilized for 1 turn.",
@@ -7246,7 +7246,7 @@
     },
     "salvage": {
       "name": "Salvage",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 3,
       "requires_perks": [],
       "description": "Break down unwanted items for materials, recovering 50% of the item's material value.",
@@ -7255,7 +7255,7 @@
     },
     "efficient_salvage": {
       "name": "Efficient Salvage",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 7,
       "requires_perks": [
         "salvage"
@@ -7266,7 +7266,7 @@
     },
     "armor_specialist": {
       "name": "Armor Specialist",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 5,
       "requires_perks": [],
       "description": "Crafted armor gains +10% Armor and -10% Movement penalty.",
@@ -7275,7 +7275,7 @@
     },
     "weapon_specialist": {
       "name": "Weapon Specialist",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 5,
       "requires_perks": [],
       "description": "Crafted weapons gain +10% Damage and +5% accuracy.",
@@ -7605,7 +7605,7 @@
       "requirements": {
         "alchemy": 3,
         "guile": 3,
-        "crafting": 3
+        "smithing": 3
       },
       "description": "Can create trapped objects that deal damage and apply a status effect when enemies interact with them. During events, can sabotage enemy equipment \u2014 reducing their Attack or Armor by 15% for the next encounter.",
       "flavor": "",
@@ -7772,7 +7772,7 @@
       "name": "Field Workshop",
       "category": "crafter_merchant",
       "requirements": {
-        "crafting": 5,
+        "smithing": 5,
         "logistics": 3
       },
       "description": "Can craft and repair during travel without stopping. Repair costs reduced by 50%.",
@@ -7794,7 +7794,7 @@
       "name": "Master Enchanter",
       "category": "crafter_merchant",
       "requirements": {
-        "crafting": 5,
+        "smithing": 5,
         "enchantment": 5
       },
       "description": "Can permanently enchant one piece of equipment per rest. Adds a minor elemental bonus (+5% damage or +5% resistance of a chosen element). One enchantment per item.",

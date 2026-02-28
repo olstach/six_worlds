@@ -12,7 +12,7 @@
 		},
 		"general": {
 			"name": "General Skills",
-			"skills": ["persuasion", "yoga", "ritual", "learning", "comedy", "guile", "might", "leadership", "performance", "grace", "medicine", "alchemy", "thievery", "logistics", "trade", "crafting"]
+			"skills": ["persuasion", "yoga", "ritual", "learning", "comedy", "guile", "might", "leadership", "performance", "grace", "medicine", "alchemy", "thievery", "logistics", "trade", "smithing"]
 		}
 	},
 
@@ -323,11 +323,11 @@
 			"secondary_attribute": "awareness"
 		},
 
-		"crafting": {
-			"name": "Crafting",
+		"smithing": {
+			"name": "Smithing",
 			"category": "general",
 			"element": "earth",
-			"description": "Create and repair items - party passive bonus",
+			"description": "Repair and maintain equipment - party passive bonus",
 			"primary_attribute": "focus",
 			"secondary_attribute": "finesse"
 		}
