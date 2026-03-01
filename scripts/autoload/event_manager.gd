@@ -510,6 +510,12 @@ func apply_outcome(outcome: Dictionary) -> void:
 		"shop":
 			# Overworld will handle opening shop overlay
 			shop_requested.emit(outcome.get("shop_id", "unknown"), outcome)
+		"recruit_companion":
+			# Recruit a named companion into the party
+			var companion_id: String = outcome.get("companion_id", "")
+			if companion_id != "":
+				CompanionSystem.recruit(companion_id)
+			event_completed.emit(outcome)
 
 ## Convert descriptive gold cost strings to concrete amounts.
 ## These can be retuned as the economy matures.

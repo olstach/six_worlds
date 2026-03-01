@@ -4,6 +4,7 @@
 			"name": "Tormented Peddler",
 			"type": "general",
 			"description": "A twisted soul who trades in suffering... and useful goods.",
+			"_todo_companions": "Add available_companions array for companion recruitment tab",
 			"price_modifier": 1.2,
 			"buys_items": true,
 			"items": {
