@@ -513,8 +513,12 @@ func apply_outcome(outcome: Dictionary) -> void:
 		"recruit_companion":
 			# Recruit a named companion into the party
 			var companion_id: String = outcome.get("companion_id", "")
-			if companion_id != "":
-				CompanionSystem.recruit(companion_id)
+			if companion_id == "":
+				push_error("EventManager: recruit_companion outcome missing 'companion_id' field")
+			else:
+				var recruited: Dictionary = CompanionSystem.recruit(companion_id)
+				if recruited.is_empty():
+					push_warning("EventManager: CompanionSystem.recruit() failed for id: %s" % companion_id)
 			event_completed.emit(outcome)
 
 ## Convert descriptive gold cost strings to concrete amounts.

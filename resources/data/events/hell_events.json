@@ -3313,7 +3313,7 @@
 			"choices": [
 				{
 					"id": "recruit",
-					"type": "grey",
+					"type": "default",
 					"text": "Take him with you.",
 					"outcome": {
 						"type": "recruit_companion",
@@ -3322,7 +3322,7 @@
 				},
 				{
 					"id": "walk_on",
-					"type": "grey",
+					"type": "default",
 					"text": "Not your problem. Walk on.",
 					"outcome": {
 						"type": "text",
