@@ -17,6 +17,9 @@ func _load_companion_data() -> void:
 		push_warning("CompanionSystem: companions.json not found")
 		return
 	var file = FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		push_error("CompanionSystem: Failed to open companions.json")
+		return
 	var json = JSON.new()
 	if json.parse(file.get_as_text()) != OK:
 		push_error("CompanionSystem: Failed to parse companions.json: ", json.get_error_message())
