@@ -15,6 +15,7 @@ signal shop_closed
 @onready var items_grid: GridContainer = $ShopPanel/MarginContainer/VBoxContainer/TabContainer/Items/ScrollContainer/ItemsGrid
 @onready var spells_grid: GridContainer = $ShopPanel/MarginContainer/VBoxContainer/TabContainer/Spells/ScrollContainer/SpellsGrid
 @onready var training_container: VBoxContainer = $ShopPanel/MarginContainer/VBoxContainer/TabContainer/Training/ScrollContainer/TrainingContainer
+@onready var companions_container: VBoxContainer = $ShopPanel/MarginContainer/VBoxContainer/TabContainer/Companions/ScrollContainer/CompanionsContainer
 @onready var inventory_grid: GridContainer = $ShopPanel/MarginContainer/VBoxContainer/InventorySection/ScrollContainer/InventoryGrid
 @onready var close_button: Button = $ShopPanel/MarginContainer/VBoxContainer/Footer/CloseButton
 
@@ -70,6 +71,7 @@ func open_shop(shop_data: Dictionary) -> void:
 	_populate_items_tab()
 	_populate_spells_tab()
 	_populate_training_tab()
+	_populate_companions_tab()
 	_populate_inventory()
 
 	visible = true
@@ -95,9 +97,14 @@ func close_shop() -> void:
 func _setup_tabs() -> void:
 	var shop_type = current_shop.get("type", "general")
 	var type_info = ShopSystem._shop_types.get(shop_type, {})
-	var tabs = type_info.get("tabs", ["items"])
+	var tabs: Array = type_info.get("tabs", ["items"]).duplicate()
 
-	# Show/hide tabs based on shop type
+	# Always show companions tab if the shop has available companions
+	if not current_shop.get("available_companions", []).is_empty():
+		if not "companions" in tabs:
+			tabs.append("companions")
+
+	# Show/hide tabs based on resolved list
 	for i in range(tab_container.get_tab_count()):
 		var tab_name = tab_container.get_tab_title(i).to_lower()
 		tab_container.set_tab_hidden(i, tab_name not in tabs)
@@ -441,6 +448,126 @@ func _create_skill_training_option(skill: String) -> void:
 
 
 # ============================================
+# COMPANIONS TAB
+# ============================================
+
+func _populate_companions_tab() -> void:
+	for child in companions_container.get_children():
+		child.queue_free()
+
+	var available: Array = current_shop.get("available_companions", [])
+	if available.is_empty():
+		return
+
+	# Build set of companion_ids already in the party
+	var party_companion_ids: Array[String] = []
+	for member in CharacterSystem.get_party():
+		if member.has("companion_id"):
+			party_companion_ids.append(member.companion_id)
+
+	var shown := 0
+	for companion_id in available:
+		if companion_id in party_companion_ids:
+			continue  # Already recruited — hide them (they're unique people)
+		var def: Dictionary = CompanionSystem.get_definition(companion_id)
+		if def.is_empty():
+			push_warning("shop_ui: unknown companion id in shop: %s" % companion_id)
+			continue
+		_create_companion_panel(companion_id, def)
+		shown += 1
+
+	if shown == 0:
+		var empty_label = Label.new()
+		empty_label.text = "No companions available"
+		empty_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+		companions_container.add_child(empty_label)
+
+
+func _create_companion_panel(companion_id: String, def: Dictionary) -> void:
+	var cost: int = def.get("recruitment_cost", 0)
+	var can_afford: bool = GameState.can_afford(cost)
+	var party_full: bool = CharacterSystem.get_party().size() >= CharacterSystem.max_party_size
+
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(0, 140)
+
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.1, 0.18, 0.9)
+	style.border_width_left = 2
+	style.border_width_right = 2
+	style.border_width_top = 2
+	style.border_width_bottom = 2
+	style.border_color = Color(0.4, 0.3, 0.55, 1)
+	style.corner_radius_top_left = 4
+	style.corner_radius_top_right = 4
+	style.corner_radius_bottom_right = 4
+	style.corner_radius_bottom_left = 4
+	panel.add_theme_stylebox_override("panel", style)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_right", 12)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	panel.add_child(margin)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 6)
+	margin.add_child(vbox)
+
+	# Name row: name left, cost right
+	var name_row = HBoxContainer.new()
+	vbox.add_child(name_row)
+
+	var name_label = Label.new()
+	name_label.text = def.get("name", companion_id)
+	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	name_label.add_theme_font_size_override("font_size", 18)
+	name_label.add_theme_color_override("font_color", Color(0.95, 0.9, 0.75))
+	name_row.add_child(name_label)
+
+	var cost_label = Label.new()
+	cost_label.text = "%d gold" % cost
+	cost_label.add_theme_font_size_override("font_size", 14)
+	cost_label.add_theme_color_override("font_color",
+		GOLD_COLOR if can_afford else UNAFFORDABLE_COLOR)
+	name_row.add_child(cost_label)
+
+	# Race · Background identity line
+	var race_name: String = def.get("race", "").replace("_", " ").capitalize()
+	var bg_name: String = def.get("background", "").replace("_", " ").capitalize()
+	var identity_label = Label.new()
+	identity_label.text = "%s · %s" % [race_name, bg_name]
+	identity_label.add_theme_font_size_override("font_size", 12)
+	identity_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.7))
+	vbox.add_child(identity_label)
+
+	vbox.add_child(HSeparator.new())
+
+	# Flavor text
+	var flavor_label = Label.new()
+	flavor_label.text = def.get("flavor_text", "")
+	flavor_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	flavor_label.add_theme_font_size_override("font_size", 12)
+	flavor_label.add_theme_color_override("font_color", Color(0.7, 0.68, 0.65))
+	vbox.add_child(flavor_label)
+
+	# Recruit button, right-aligned
+	var btn_row = HBoxContainer.new()
+	btn_row.alignment = BoxContainer.ALIGNMENT_END
+	vbox.add_child(btn_row)
+
+	var recruit_btn = Button.new()
+	recruit_btn.text = "Party Full" if party_full else "Recruit"
+	recruit_btn.add_theme_font_size_override("font_size", 13)
+	recruit_btn.disabled = not can_afford or party_full
+	recruit_btn.pressed.connect(func(): _on_recruit_companion_pressed(companion_id))
+	btn_row.add_child(recruit_btn)
+
+	companions_container.add_child(panel)
+
+
+# ============================================
 # INVENTORY (for selling)
 # ============================================
 
@@ -544,11 +671,18 @@ func _on_training_purchased(_type: String, _target: String, _price: int) -> void
 	_refresh_display()
 
 
+func _on_recruit_companion_pressed(companion_id: String) -> void:
+	var result: Dictionary = CompanionSystem.recruit(companion_id)
+	if not result.is_empty():
+		_refresh_display()
+
+
 func _refresh_display() -> void:
 	_update_gold_display()
 	_populate_items_tab()
 	_populate_spells_tab()
 	_populate_training_tab()
+	_populate_companions_tab()
 	_populate_inventory()
 
 
