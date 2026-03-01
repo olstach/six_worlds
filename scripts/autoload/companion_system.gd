@@ -301,6 +301,9 @@ func recruit(companion_id: String) -> Dictionary:
 
 	# 6. Auto-distribute XP budget matching the player's power level
 	var player := CharacterSystem.get_player()
+	if player.is_empty():
+		push_error("CompanionSystem: recruit() called with no player character")
+		return {}
 	var budget := _calculate_spent_xp(player)
 	_auto_distribute(companion, budget, def.get("build_weights", {}))
 
