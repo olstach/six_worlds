@@ -128,6 +128,9 @@ func _ready() -> void:
 	EventManager.combat_requested.connect(_on_event_combat_requested)
 	EventManager.shop_requested.connect(_on_event_shop_requested)
 
+	# Connect companion overflow signal to show mastery popup
+	CompanionSystem.companion_overflow.connect(_on_companion_overflow)
+
 	# Connect char sheet button and visibility sync
 	char_sheet_button.pressed.connect(func(): _open_char_sheet_to_tab(0))
 	equipment_button.pressed.connect(func(): _open_char_sheet_to_tab(1))
@@ -360,6 +363,17 @@ func _on_event_shop_closed() -> void:
 	event_display.visible = true
 	event_display.display_outcome(_pending_shop_outcome)
 	_pending_shop_outcome = {}
+
+
+## Show a popup when a companion's build_weights are all maxed out (overflow mode).
+func _on_companion_overflow(companion: Dictionary) -> void:
+	var companion_name: String = companion.get("name", "Your companion")
+	var dialog := AcceptDialog.new()
+	dialog.title = "Mastery Achieved"
+	dialog.dialog_text = "%s has mastered their calling.\nYou can direct their growth, or let them find their own way." % companion_name
+	add_child(dialog)
+	dialog.popup_centered()
+	dialog.confirmed.connect(dialog.queue_free)
 
 
 # ============================================

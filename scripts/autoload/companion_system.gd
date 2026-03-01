@@ -376,7 +376,7 @@ func _try_autodevelop(companion: Dictionary) -> void:
 	if companion.get("free_xp", 0) <= 0:
 		return
 	if _is_overflow_mode(companion):
-		# Overflow mode is handled separately in Task 8
+		_autodevelop_overflow(companion)
 		return
 	var weights: Dictionary = companion.get("build_weights", {})
 	if weights.is_empty():
@@ -385,6 +385,56 @@ func _try_autodevelop(companion: Dictionary) -> void:
 	companion.free_xp = 0
 	CharacterSystem.update_derived_stats(companion)
 	CharacterSystem.character_updated.emit(companion)
+
+
+## Overflow mode: all build_weights maxed. Use overflow_investments for weights,
+## or randomly seed if none exist.
+func _autodevelop_overflow(companion: Dictionary) -> void:
+	var overflow: Dictionary = companion.get("overflow_investments", {})
+
+	# If no manual investments yet, pick one at random to seed
+	if overflow.is_empty():
+		var improvable: Array[String] = []
+		for attr in ATTR_NAMES:
+			if companion.attributes.get(attr, 10) < ATTR_HARD_CAP:
+				improvable.append(attr)
+		# Check all known skill IDs from the base character template
+		for skill_id in CharacterSystem.BASE_CHARACTER.get("skills", {}).keys():
+			if companion.get("skills", {}).get(skill_id, 0) < CharacterSystem.SKILL_MAX_LEVEL:
+				improvable.append(skill_id)
+		if improvable.is_empty():
+			return
+		var seed_key: String = improvable[randi() % improvable.size()]
+		companion.overflow_investments[seed_key] = 1
+
+	# Build dynamic weights: invested stats get count+1, improvable others get 1
+	var dynamic_weights: Dictionary = {}
+	for attr in ATTR_NAMES:
+		if companion.attributes.get(attr, 10) < ATTR_HARD_CAP:
+			dynamic_weights[attr] = 1
+	for skill_id in CharacterSystem.BASE_CHARACTER.get("skills", {}).keys():
+		if companion.get("skills", {}).get(skill_id, 0) < CharacterSystem.SKILL_MAX_LEVEL:
+			dynamic_weights[skill_id] = 1
+	for key in overflow.keys():
+		if key in dynamic_weights:
+			dynamic_weights[key] = overflow[key] + 1
+
+	var to_spend := companion.get("free_xp", 0)
+	if to_spend <= 0:
+		return
+	_auto_distribute(companion, to_spend, dynamic_weights)
+	companion.free_xp = 0
+	CharacterSystem.update_derived_stats(companion)
+	CharacterSystem.character_updated.emit(companion)
+
+
+## Call when the player manually spends XP on a companion stat while in overflow mode.
+## Updates overflow_investments to track the player's intent for autodevelop.
+func record_overflow_investment(companion: Dictionary, stat_key: String) -> void:
+	if not companion.has("overflow_investments"):
+		return
+	var overflow: Dictionary = companion.overflow_investments
+	overflow[stat_key] = overflow.get(stat_key, 0) + 1
 
 
 ## Award XP to the entire party with the size multiplier applied.
