@@ -49,8 +49,6 @@ func _calculate_spent_xp(character: Dictionary) -> int:
 		var val: int = character.attributes[attr]
 		for v in range(10, val):
 			total += maxi(int((v - 9) * 3), 2)
-		for v in range(val, 10):
-			total += 2
 	for skill in character.get("skills", {}).keys():
 		var level: int = character.skills[skill]
 		for l in range(1, level + 1):
