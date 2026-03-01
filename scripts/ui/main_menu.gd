@@ -31,6 +31,11 @@ signal tab_changed(tab_index: int)
 @onready var doll_layout: Control = %DollLayout
 @onready var slot_title: Label = %SlotTitle
 @onready var equipment_grid: GridContainer = %EquipmentGrid
+@onready var character_selector_panel: HBoxContainer = %CharacterSelectorPanel
+
+# Currently displayed character (player or companion)
+var _current_character: Dictionary = {}
+var _selector_group: ButtonGroup = null
 
 # Equipment slot definitions
 const EQUIPMENT_SLOTS := {
@@ -141,6 +146,11 @@ func _ready() -> void:
 	# Load spell database for spellbook tab
 	_load_spell_database()
 
+	# Initialize character selector
+	_current_character = CharacterSystem.get_player()
+	_build_character_selector()
+	CompanionSystem.companion_recruited.connect(_on_companion_recruited)
+
 	# Add starter items if inventory is empty
 	if ItemSystem.get_inventory().is_empty():
 		ItemSystem.add_starter_items()
@@ -218,7 +228,8 @@ func _on_add_xp_pressed() -> void:
 		CharacterSystem.grant_xp(player, 10)
 
 func _refresh_display() -> void:
-	var character = CharacterSystem.get_player()
+	# If no current character set yet, fall back to the player
+	var character = _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
 	if character.is_empty():
 		return
 
@@ -370,8 +381,7 @@ func _update_skills_grid(character: Dictionary) -> void:
 		skills_grid.add_child(spacer)
 
 	# Skill rows (7 rows, one for each skill slot per element)
-	var player = CharacterSystem.get_player()
-	var player_xp = player.get("xp", 0)
+	var char_xp = character.get("xp", 0)
 
 	for skill_index in range(7):
 		# Row number label
@@ -386,7 +396,7 @@ func _update_skills_grid(character: Dictionary) -> void:
 			var trained = char_skills.get(skill_id, 0)
 
 			# Sum item/race bonuses for this skill
-			var bonus_sources = player.get("skill_bonuses", {}).get(skill_id, {})
+			var bonus_sources = character.get("skill_bonuses", {}).get(skill_id, {})
 			var bonus = 0
 			for src in bonus_sources:
 				bonus += int(bonus_sources[src])
@@ -405,7 +415,7 @@ func _update_skills_grid(character: Dictionary) -> void:
 					skill_btn.add_theme_color_override("font_color", ELEMENT_COLORS[element])
 
 			# Tooltip: XP cost + what next level grants
-			skill_btn.tooltip_text = _build_skill_tooltip(skill_id, trained, bonus, player_xp)
+			skill_btn.tooltip_text = _build_skill_tooltip(skill_id, trained, bonus, char_xp)
 
 			skill_btn.pressed.connect(_on_skill_pressed.bind(skill_id))
 			skills_grid.add_child(skill_btn)
@@ -727,7 +737,7 @@ func _update_spellbook() -> void:
 	for child in spellbook_list.get_children():
 		child.queue_free()
 
-	var character = CharacterSystem.get_player()
+	var character = _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
 	if character.is_empty():
 		return
 
@@ -1536,6 +1546,72 @@ func _on_perk_skipped() -> void:
 		perk_popup_layer.queue_free()
 		perk_popup_layer = null
 		perk_popup = null
+
+
+# ============================================
+# CHARACTER SELECTOR
+# ============================================
+
+func _build_character_selector() -> void:
+	## Rebuild the party selector buttons above the tab container.
+	for child in character_selector_panel.get_children():
+		child.queue_free()
+
+	if _selector_group == null:
+		_selector_group = ButtonGroup.new()
+
+	var party := CharacterSystem.get_party()
+	for i in range(party.size()):
+		var member: Dictionary = party[i]
+		var btn := Button.new()
+		btn.text = member.get("name", "Unknown")
+		btn.toggle_mode = true
+		btn.button_group = _selector_group
+		var flavor: String = member.get("flavor_text", "")
+		if flavor != "":
+			btn.tooltip_text = flavor
+		btn.pressed.connect(_on_character_selected.bind(member))
+		character_selector_panel.add_child(btn)
+		if member == _current_character:
+			btn.set_pressed_no_signal(true)
+
+
+func _on_character_selected(character: Dictionary) -> void:
+	## Switch the displayed character and refresh all tabs.
+	_current_character = character
+	refresh_all_tabs()
+
+
+func refresh_all_tabs() -> void:
+	## Refresh stats, equipment, and spellbook tabs to show _current_character.
+	_refresh_stats_tab()
+	_refresh_equipment_tab()
+	_refresh_spellbook_tab()
+
+
+func _refresh_stats_tab() -> void:
+	## Refresh the Stats tab content for _current_character.
+	_refresh_display()
+
+
+func _refresh_equipment_tab() -> void:
+	## Refresh the Equipment tab content for _current_character.
+	## Only refresh if the tab is currently visible to avoid unnecessary work.
+	if tab_container.current_tab == 1:
+		_update_equipment_slots()
+		_update_equipment_display()
+
+
+func _refresh_spellbook_tab() -> void:
+	## Refresh the Spellbook tab content for _current_character.
+	## Only rebuild if the tab is currently visible; otherwise it will refresh on switch.
+	if tab_container.current_tab == 3:
+		_update_spellbook()
+
+
+func _on_companion_recruited(_companion: Dictionary) -> void:
+	## Called when a new companion joins — rebuild selector so the new member appears.
+	_build_character_selector()
 
 
 # ============================================
