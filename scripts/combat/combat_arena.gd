@@ -2137,15 +2137,12 @@ func _apply_rewards(rewards: Dictionary) -> void:
 	var xp = rewards.get("xp", 0)
 	var gold = rewards.get("gold", 0)
 
-	# Grant full XP to ALL party members equally
-	for member in CharacterSystem.get_party():
-		CharacterSystem.grant_xp(member, xp)
+	if xp > 0:
+		CompanionSystem.apply_party_xp(xp)
 
-	# Add gold
 	if gold > 0:
 		GameState.add_gold(gold)
 
-	# Add items to inventory (framework for later)
 	var items = rewards.get("items", [])
 	for item_id in items:
 		ItemSystem.add_to_inventory(item_id)

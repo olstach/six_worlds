@@ -408,8 +408,7 @@ func apply_outcome(outcome: Dictionary) -> void:
 		var rewards = outcome.rewards
 
 		if "xp" in rewards:
-			var player = CharacterSystem.get_player()
-			CharacterSystem.grant_xp(player, rewards.xp)
+			CompanionSystem.apply_party_xp(int(rewards.xp))
 
 		if "gold" in rewards:
 			GameState.add_gold(int(rewards.gold))

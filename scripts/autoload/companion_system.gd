@@ -343,3 +343,24 @@ func show_recruit_popup(companion: Dictionary) -> void:
 	var popup = RECRUIT_POPUP_SCENE.instantiate()
 	get_tree().current_scene.add_child(popup)
 	popup.show_companion(companion)
+
+
+## Returns XP multiplier based on current party size.
+func get_xp_multiplier() -> float:
+	var size := CharacterSystem.get_party().size()
+	if size <= 1: return 1.5
+	if size == 2: return 1.25
+	if size <= 4: return 1.0
+	if size <= 6: return 0.85
+	return 0.7
+
+
+## Award XP to the entire party with the size multiplier applied.
+## Also adds to free_xp for companions and triggers autodevelop.
+func apply_party_xp(base_amount: int) -> void:
+	var multiplier := get_xp_multiplier()
+	var final_amount := maxi(1, int(float(base_amount) * multiplier))
+	for member in CharacterSystem.get_party():
+		CharacterSystem.grant_xp(member, final_amount)
+		if member.has("free_xp"):
+			member.free_xp += final_amount

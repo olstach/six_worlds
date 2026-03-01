@@ -17,7 +17,7 @@ signal perk_selection_requested(character_data: Dictionary, perks: Array)
 
 # Party data - player is always index 0
 var party: Array[Dictionary] = []
-var max_party_size: int = 6
+var max_party_size: int = 8
 
 # Race and background data loaded from JSON
 var _race_data: Dictionary = {}
