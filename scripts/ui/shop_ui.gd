@@ -457,7 +457,7 @@ func _populate_companions_tab() -> void:
 
 	var available: Array = current_shop.get("available_companions", [])
 	if available.is_empty():
-		return
+		return  # Tab is hidden by _setup_tabs() when no companions — no label needed
 
 	# Build set of companion_ids already in the party
 	var party_companion_ids: Array[String] = []
@@ -675,6 +675,8 @@ func _on_recruit_companion_pressed(companion_id: String) -> void:
 	var result: Dictionary = CompanionSystem.recruit(companion_id)
 	if not result.is_empty():
 		_refresh_display()
+	else:
+		print("shop_ui: recruitment failed for companion: ", companion_id)
 
 
 func _refresh_display() -> void:
