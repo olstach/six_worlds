@@ -1784,7 +1784,7 @@ func _create_equipment_slot(slot_id: String, pos: Vector2, size: Vector2) -> voi
 
 func _on_equipment_slot_pressed(slot_id: String) -> void:
 	AudioManager.play("ui_click")
-	var player = CharacterSystem.get_player()
+	var player = _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
 
 	# hand_r is a visual mirror of hand_l — redirect all clicks to hand_l
 	if slot_id == "hand_r":
@@ -1822,7 +1822,7 @@ func _on_equipment_slot_pressed(slot_id: String) -> void:
 
 ## Update equipment slot buttons to show equipped items
 func _update_equipment_slots() -> void:
-	var player = CharacterSystem.get_player()
+	var player = _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
 	if player.is_empty():
 		return
 
@@ -1899,7 +1899,7 @@ func _update_equipment_slots() -> void:
 
 ## Show tooltip for equipped item in slot
 func _on_equipped_slot_hover(slot_id: String, control: Control) -> void:
-	var player = CharacterSystem.get_player()
+	var player = _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
 	if player.is_empty():
 		return
 
@@ -2018,8 +2018,8 @@ func _create_equipment_item_button(item: Dictionary) -> Button:
 	btn.mouse_entered.connect(_on_item_hover.bind(item, btn))
 	btn.mouse_exited.connect(_on_item_hover_end)
 
-	# Dim button if player doesn't meet requirements
-	var player := CharacterSystem.get_player()
+	# Dim button if selected character doesn't meet requirements
+	var player := _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
 	if not player.is_empty():
 		var can_result := ItemSystem.can_equip(player, item.get("id", ""))
 		if not can_result.can_equip:
@@ -2036,7 +2036,7 @@ func _create_equipment_item_button(item: Dictionary) -> Button:
 
 func _on_equipment_item_pressed(item: Dictionary) -> void:
 	AudioManager.play("ui_click")
-	var player = CharacterSystem.get_player()
+	var player = _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
 	if player.is_empty():
 		return
 
@@ -2044,7 +2044,7 @@ func _on_equipment_item_pressed(item: Dictionary) -> void:
 	if item_id == "":
 		return
 
-	# Check if player can equip
+	# Check if selected character can equip
 	var can_result = ItemSystem.can_equip(player, item_id)
 	if not can_result.can_equip:
 		AudioManager.play("ui_denied")
