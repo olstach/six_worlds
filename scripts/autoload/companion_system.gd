@@ -332,4 +332,14 @@ func recruit(companion_id: String) -> Dictionary:
 	CharacterSystem.add_companion(companion)
 
 	companion_recruited.emit(companion)
+	show_recruit_popup(companion)
 	return companion
+
+
+const RECRUIT_POPUP_SCENE = preload("res://scenes/ui/companion_recruit_popup.tscn")
+
+## Show the recruitment introduction popup for a companion.
+func show_recruit_popup(companion: Dictionary) -> void:
+	var popup = RECRUIT_POPUP_SCENE.instantiate()
+	get_tree().current_scene.add_child(popup)
+	popup.show_companion(companion)
