@@ -328,7 +328,7 @@ func process_scrap_step(smithing_level: int) -> Dictionary:
 	# Repair: 1% durability per Smithing level
 	var repair_pct: float = smithing_level * 1.0
 	# Ammo restore: 1 base + 1 per 3 Smithing levels
-	var ammo_restore: int = 1 + (smithing_level / 3)
+	var ammo_restore: int = 1 + int(smithing_level / 3.0)
 	return {"repair_pct": repair_pct, "ammo_restore": ammo_restore}
 
 

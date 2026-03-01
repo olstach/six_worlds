@@ -8,6 +8,7 @@ extends Node
 ## - Elemental affinity calculation and bonuses
 
 # Signals
+@warning_ignore("unused_signal")
 signal perk_selection_ready(character: Dictionary, perks: Array)
 signal perk_granted(character: Dictionary, perk_id: String, perk_data: Dictionary)
 

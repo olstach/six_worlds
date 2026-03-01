@@ -698,9 +698,9 @@ func generate_talisman(rarity: String = "common") -> String:
 		# Filter to affordable and unused options
 		var valid_options: Array = []
 		for opt in options:
-			var cost_per = opt.get("cost_per_point", 1.0)
-			var min_val = opt.get("min", 1)
-			if opt.get("stat", "") not in used_stats and cost_per * min_val <= remaining_budget:
+			var opt_cost_per = opt.get("cost_per_point", 1.0)
+			var opt_min_val = opt.get("min", 1)
+			if opt.get("stat", "") not in used_stats and opt_cost_per * opt_min_val <= remaining_budget:
 				valid_options.append(opt)
 
 		if valid_options.is_empty():
