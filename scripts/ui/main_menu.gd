@@ -32,6 +32,9 @@ signal tab_changed(tab_index: int)
 @onready var slot_title: Label = %SlotTitle
 @onready var equipment_grid: GridContainer = %EquipmentGrid
 @onready var character_selector_panel: HBoxContainer = %CharacterSelectorPanel
+@onready var free_xp_row: HBoxContainer = %FreeXPRow
+@onready var free_xp_value: Label = %FreeXPValue
+@onready var autodevelop_toggle: CheckButton = %AutodevelopToggle
 
 # Currently displayed character (player or companion)
 var _current_character: Dictionary = {}
@@ -143,6 +146,9 @@ func _ready() -> void:
 	# Connect debug button
 	add_xp_button.pressed.connect(_on_add_xp_pressed)
 
+	# Connect companion-only UI
+	autodevelop_toggle.toggled.connect(_on_autodevelop_toggled)
+
 	# Load spell database for spellbook tab
 	_load_spell_database()
 
@@ -223,9 +229,17 @@ func _on_item_unequipped(_character: Dictionary, _slot: String, _item_id: String
 		_update_equipment_slots()
 
 func _on_add_xp_pressed() -> void:
-	var player = CharacterSystem.get_player()
-	if not player.is_empty():
-		CharacterSystem.grant_xp(player, 10)
+	var target := _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
+	if target.is_empty():
+		return
+	CharacterSystem.grant_xp(target, 100)
+	if target.has("free_xp"):
+		target.free_xp += 100
+	_refresh_stats_tab()
+
+func _on_autodevelop_toggled(enabled: bool) -> void:
+	if _current_character.has("autodevelop"):
+		_current_character.autodevelop = enabled
 
 func _refresh_display() -> void:
 	# If no current character set yet, fall back to the player
@@ -238,6 +252,20 @@ func _refresh_display() -> void:
 	_update_derived_stats(character)
 	_update_skills_grid(character)
 	_update_perks_list(character)
+	_update_companion_ui(character)
+
+
+func _update_companion_ui(character: Dictionary) -> void:
+	## Show or hide companion-only UI elements (free_xp display, autodevelop toggle).
+	var is_companion := character.has("companion_id")
+	if free_xp_row != null:
+		free_xp_row.visible = is_companion
+		if is_companion:
+			free_xp_value.text = str(character.get("free_xp", 0))
+	if autodevelop_toggle != null:
+		autodevelop_toggle.visible = is_companion
+		if is_companion:
+			autodevelop_toggle.set_pressed_no_signal(character.get("autodevelop", false))
 
 func _update_header(character: Dictionary) -> void:
 	name_value.text = character.get("name", "Unknown")
@@ -275,7 +303,7 @@ func _create_attribute_row(attr_key: String, value: int) -> HBoxContainer:
 	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	row.add_child(value_label)
 
-	# Upgrade button
+	# Upgrade button — for companions check free_xp, for player check xp
 	var upgrade_btn = Button.new()
 	var cost = CharacterSystem.calculate_attribute_cost(value, 1)
 	upgrade_btn.text = "+  (%d XP)" % cost
@@ -283,8 +311,10 @@ func _create_attribute_row(attr_key: String, value: int) -> HBoxContainer:
 	upgrade_btn.pressed.connect(_on_attribute_upgrade_pressed.bind(attr_key))
 
 	# Disable if can't afford
-	var player = CharacterSystem.get_player()
-	if player.get("xp", 0) < cost:
+	var target = _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
+	var is_companion := target.has("companion_id")
+	var spendable := target.get("free_xp", 0) if is_companion else target.get("xp", 0)
+	if spendable < cost:
 		upgrade_btn.disabled = true
 
 	row.add_child(upgrade_btn)
@@ -292,10 +322,36 @@ func _create_attribute_row(attr_key: String, value: int) -> HBoxContainer:
 	return row
 
 func _on_attribute_upgrade_pressed(attr_key: String) -> void:
-	var player = CharacterSystem.get_player()
-	if not player.is_empty():
+	var target := _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
+	if target.is_empty():
+		return
+
+	var is_companion := target.has("companion_id")
+	if is_companion:
+		# Companions spend free_xp; manually deduct it then call increase_attribute which deducts xp.
+		# We temporarily set xp equal to free_xp so increase_attribute's check passes,
+		# then deduct free_xp by the same cost afterward.
+		var current_val = target.get("attributes", {}).get(attr_key, 10)
+		var cost = CharacterSystem.calculate_attribute_cost(current_val, 1)
+		if target.get("free_xp", 0) < cost:
+			AudioManager.play("ui_denied")
+			return
+		# Perform the upgrade (deducts from xp)
+		var old_xp: int = target.xp
+		target.xp = cost  # Ensure xp check passes in CharacterSystem.increase_attribute
+		var success := CharacterSystem.increase_attribute(target, attr_key)
+		if success:
+			# Restore xp and deduct from free_xp instead
+			target.xp = old_xp
+			target.free_xp -= cost
+			if CompanionSystem._is_overflow_mode(target):
+				CompanionSystem.record_overflow_investment(target, attr_key)
+			AudioManager.play("buff_stats_up")
+		else:
+			target.xp = old_xp
+	else:
 		AudioManager.play("buff_stats_up")
-		CharacterSystem.increase_attribute(player, attr_key)
+		CharacterSystem.increase_attribute(target, attr_key)
 
 func _update_derived_stats(character: Dictionary) -> void:
 	# Clear existing
@@ -381,7 +437,9 @@ func _update_skills_grid(character: Dictionary) -> void:
 		skills_grid.add_child(spacer)
 
 	# Skill rows (7 rows, one for each skill slot per element)
-	var char_xp = character.get("xp", 0)
+	# For companions, the spendable pool is free_xp, not total xp
+	var is_companion := character.has("companion_id")
+	var char_xp = character.get("free_xp", 0) if is_companion else character.get("xp", 0)
 
 	for skill_index in range(7):
 		# Row number label
@@ -494,11 +552,11 @@ func _format_bonus_preview(bonuses: Dictionary) -> String:
 	return ", ".join(parts) if not parts.is_empty() else "(no change)"
 
 func _on_skill_pressed(skill_id: String) -> void:
-	var player = CharacterSystem.get_player()
-	if player.is_empty():
+	var target := _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
+	if target.is_empty():
 		return
 
-	var current_level = player.get("skills", {}).get(skill_id, 0)
+	var current_level = target.get("skills", {}).get(skill_id, 0)
 
 	if current_level >= CharacterSystem.SKILL_MAX_LEVEL:
 		AudioManager.play("ui_denied")
@@ -506,12 +564,30 @@ func _on_skill_pressed(skill_id: String) -> void:
 
 	var cost = CharacterSystem.SKILL_COSTS[current_level + 1]
 
-	if player.get("xp", 0) < cost:
-		AudioManager.play("ui_denied")
-		return
-
-	AudioManager.play("buff_stats_up")
-	CharacterSystem.upgrade_skill(player, skill_id)
+	var is_companion := target.has("companion_id")
+	if is_companion:
+		# Companions spend free_xp for skill upgrades
+		if target.get("free_xp", 0) < cost:
+			AudioManager.play("ui_denied")
+			return
+		# upgrade_skill deducts from xp; set xp temporarily so the check passes
+		var old_xp: int = target.xp
+		target.xp = cost
+		var success := CharacterSystem.upgrade_skill(target, skill_id)
+		if success:
+			target.xp = old_xp
+			target.free_xp -= cost
+			if CompanionSystem._is_overflow_mode(target):
+				CompanionSystem.record_overflow_investment(target, skill_id)
+			AudioManager.play("buff_stats_up")
+		else:
+			target.xp = old_xp
+	else:
+		if target.get("xp", 0) < cost:
+			AudioManager.play("ui_denied")
+			return
+		AudioManager.play("buff_stats_up")
+		CharacterSystem.upgrade_skill(target, skill_id)
 
 # ============================================
 # PERKS LIST (Stats tab, below skills)
