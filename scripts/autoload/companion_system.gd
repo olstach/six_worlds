@@ -355,6 +355,38 @@ func get_xp_multiplier() -> float:
 	return 0.7
 
 
+## Returns true if all stats in build_weights have hit their caps.
+func _is_overflow_mode(companion: Dictionary) -> bool:
+	var weights: Dictionary = companion.get("build_weights", {})
+	if weights.is_empty():
+		return true
+	for key in weights.keys():
+		if key in ATTR_NAMES:
+			if companion.attributes.get(key, 10) < ATTR_HARD_CAP:
+				return false
+		else:
+			if companion.get("skills", {}).get(key, 0) < CharacterSystem.SKILL_MAX_LEVEL:
+				return false
+	return true
+
+
+## Spend companion's free_xp automatically according to build_weights.
+## Call this when autodevelop is on and new XP arrives.
+func _try_autodevelop(companion: Dictionary) -> void:
+	if companion.get("free_xp", 0) <= 0:
+		return
+	if _is_overflow_mode(companion):
+		# Overflow mode is handled separately in Task 8
+		return
+	var weights: Dictionary = companion.get("build_weights", {})
+	if weights.is_empty():
+		return
+	_auto_distribute(companion, companion.free_xp, weights)
+	companion.free_xp = 0
+	CharacterSystem.update_derived_stats(companion)
+	CharacterSystem.character_updated.emit(companion)
+
+
 ## Award XP to the entire party with the size multiplier applied.
 ## Also adds to free_xp for companions and triggers autodevelop.
 func apply_party_xp(base_amount: int) -> void:
@@ -364,3 +396,9 @@ func apply_party_xp(base_amount: int) -> void:
 		CharacterSystem.grant_xp(member, final_amount)
 		if member.has("free_xp"):
 			member.free_xp += final_amount
+			if member.get("autodevelop", false) and not _is_overflow_mode(member):
+				_try_autodevelop(member)
+			if member.get("autodevelop", false) and _is_overflow_mode(member):
+				if not member.get("overflow_popup_shown", false):
+					member["overflow_popup_shown"] = true
+					companion_overflow.emit(member)
