@@ -99,10 +99,11 @@ func _setup_tabs() -> void:
 	var type_info = ShopSystem._shop_types.get(shop_type, {})
 	var tabs: Array = type_info.get("tabs", ["items"]).duplicate()
 
-	# Always show companions tab if the shop has available companions
+	# Always show companions tab first if the shop has available companions,
+	# so it opens as the default tab rather than an empty Items tab
 	if not current_shop.get("available_companions", []).is_empty():
 		if not "companions" in tabs:
-			tabs.append("companions")
+			tabs.push_front("companions")
 
 	# Show/hide tabs based on resolved list
 	for i in range(tab_container.get_tab_count()):
