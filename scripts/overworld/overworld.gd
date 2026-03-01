@@ -374,6 +374,7 @@ func _on_companion_overflow(companion: Dictionary) -> void:
 	add_child(dialog)
 	dialog.popup_centered()
 	dialog.confirmed.connect(dialog.queue_free)
+	dialog.canceled.connect(dialog.queue_free)
 
 
 # ============================================
