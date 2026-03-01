@@ -1007,9 +1007,8 @@ func _apply_reward(reward: Dictionary) -> void:
 			GameState.add_gold(int(value))
 
 		"xp":
-			# Distribute XP to whole party
-			for character in CharacterSystem.get_party():
-				CharacterSystem.grant_xp(character, int(value))
+			# Distribute XP to whole party via CompanionSystem (applies party multiplier and updates companion free_xp)
+			CompanionSystem.apply_party_xp(int(value))
 
 		"item":
 			# Add item to party inventory
