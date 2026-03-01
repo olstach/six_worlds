@@ -338,17 +338,20 @@ func _on_attribute_upgrade_pressed(attr_key: String) -> void:
 			return
 		# Perform the upgrade (deducts from xp)
 		var old_xp: int = target.xp
+		var old_free_xp: int = target.get("free_xp", 0)
 		target.xp = cost  # Ensure xp check passes in CharacterSystem.increase_attribute
+		target.free_xp = old_free_xp - cost  # Deduct BEFORE signals fire so UI reads correct value
 		var success := CharacterSystem.increase_attribute(target, attr_key)
 		if success:
-			# Restore xp and deduct from free_xp instead
+			# Restore xp (free_xp already deducted above)
 			target.xp = old_xp
-			target.free_xp -= cost
 			if CompanionSystem._is_overflow_mode(target):
 				CompanionSystem.record_overflow_investment(target, attr_key)
 			AudioManager.play("buff_stats_up")
+			_refresh_stats_tab()
 		else:
 			target.xp = old_xp
+			target.free_xp = old_free_xp  # Restore on failure
 	else:
 		AudioManager.play("buff_stats_up")
 		CharacterSystem.increase_attribute(target, attr_key)
@@ -572,16 +575,20 @@ func _on_skill_pressed(skill_id: String) -> void:
 			return
 		# upgrade_skill deducts from xp; set xp temporarily so the check passes
 		var old_xp: int = target.xp
+		var old_free_xp: int = target.get("free_xp", 0)
 		target.xp = cost
+		target.free_xp = old_free_xp - cost  # Deduct BEFORE signals fire so UI reads correct value
 		var success := CharacterSystem.upgrade_skill(target, skill_id)
 		if success:
 			target.xp = old_xp
-			target.free_xp -= cost
+			# free_xp already deducted above
 			if CompanionSystem._is_overflow_mode(target):
 				CompanionSystem.record_overflow_investment(target, skill_id)
 			AudioManager.play("buff_stats_up")
+			_refresh_stats_tab()
 		else:
 			target.xp = old_xp
+			target.free_xp = old_free_xp  # Restore on failure
 	else:
 		if target.get("xp", 0) < cost:
 			AudioManager.play("ui_denied")
