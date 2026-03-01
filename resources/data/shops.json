@@ -4,7 +4,6 @@
 			"name": "Tormented Peddler",
 			"type": "general",
 			"description": "A twisted soul who trades in suffering... and useful goods.",
-			"_todo_companions": "Add available_companions array for companion recruitment tab",
 			"price_modifier": 1.2,
 			"buys_items": true,
 			"items": {
@@ -195,6 +194,20 @@
 				"lesser_heal",
 				"magic_missile"
 			],
+			"training": {
+				"attributes": [],
+				"skills": []
+			}
+		},
+		"hell_tavern": {
+			"name": "Devil's Rest",
+			"type": "general",
+			"description": "A dim roadhouse where the desperate gather. Someone at the bar looks like they're between allegiances.",
+			"price_modifier": 1.0,
+			"buys_items": false,
+			"available_companions": ["karnak"],
+			"items": {},
+			"spells": [],
 			"training": {
 				"attributes": [],
 				"skills": []
