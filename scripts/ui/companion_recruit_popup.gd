@@ -25,5 +25,5 @@ func _ready() -> void:
 
 
 func _on_continue_pressed() -> void:
-	hide()
 	confirmed.emit()
+	queue_free()
