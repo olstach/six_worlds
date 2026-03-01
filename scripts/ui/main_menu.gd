@@ -345,7 +345,7 @@ func _on_attribute_upgrade_pressed(attr_key: String) -> void:
 		if success:
 			# Restore xp (free_xp already deducted above)
 			target.xp = old_xp
-			if CompanionSystem._is_overflow_mode(target):
+			if CompanionSystem.is_companion_in_overflow(target):
 				CompanionSystem.record_overflow_investment(target, attr_key)
 			AudioManager.play("buff_stats_up")
 			_refresh_stats_tab()
@@ -582,7 +582,7 @@ func _on_skill_pressed(skill_id: String) -> void:
 		if success:
 			target.xp = old_xp
 			# free_xp already deducted above
-			if CompanionSystem._is_overflow_mode(target):
+			if CompanionSystem.is_companion_in_overflow(target):
 				CompanionSystem.record_overflow_investment(target, skill_id)
 			AudioManager.play("buff_stats_up")
 			_refresh_stats_tab()

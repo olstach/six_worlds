@@ -48,7 +48,7 @@ func _calculate_spent_xp(character: Dictionary) -> int:
 	for attr in character.get("attributes", {}).keys():
 		var val: int = character.attributes[attr]
 		for v in range(10, val):
-			total += maxi(int((v - 9) * 3), 2)
+			total += CharacterSystem.calculate_attribute_cost(v, 1)
 	for skill in character.get("skills", {}).keys():
 		var level: int = character.skills[skill]
 		for l in range(1, level + 1):
@@ -64,7 +64,7 @@ func _spend_on_attribute(character: Dictionary, attr: String, budget: int) -> in
 		var current: int = character.attributes.get(attr, 10)
 		if current >= ATTR_HARD_CAP:
 			break
-		var cost := maxi(int((current - 9) * 3), 2)
+		var cost := CharacterSystem.calculate_attribute_cost(current, 1)
 		if spent + cost > budget:
 			break
 		character.attributes[attr] = current + 1
@@ -295,6 +295,7 @@ func recruit(companion_id: String) -> Dictionary:
 	companion["autodevelop"] = false
 	companion["free_xp"] = 0
 	companion["overflow_investments"] = {}
+	companion["overflow_popup_shown"] = false
 
 	# 5. Fixed starter skills/spells
 	_apply_fixed_starter(companion, def.get("fixed_starter", {}))
@@ -353,6 +354,12 @@ func get_xp_multiplier() -> float:
 	if size <= 4: return 1.0
 	if size <= 6: return 0.85
 	return 0.7
+
+
+## Public wrapper: returns true if companion has maxed all build_weight stats.
+## Use this from UI code — do not call _is_overflow_mode directly.
+func is_companion_in_overflow(companion: Dictionary) -> bool:
+	return _is_overflow_mode(companion)
 
 
 ## Returns true if all stats in build_weights have hit their caps.
@@ -446,9 +453,10 @@ func apply_party_xp(base_amount: int) -> void:
 		CharacterSystem.grant_xp(member, final_amount)
 		if member.has("free_xp"):
 			member.free_xp += final_amount
-			if member.get("autodevelop", false) and not _is_overflow_mode(member):
-				_try_autodevelop(member)
-			if member.get("autodevelop", false) and _is_overflow_mode(member):
-				if not member.get("overflow_popup_shown", false):
+			if member.get("autodevelop", false):
+				if not _is_overflow_mode(member):
+					_try_autodevelop(member)
+				# Check again after spending — may have just crossed into overflow
+				if _is_overflow_mode(member) and not member.get("overflow_popup_shown", false):
 					member["overflow_popup_shown"] = true
 					companion_overflow.emit(member)
