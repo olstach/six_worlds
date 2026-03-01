@@ -1,0 +1,35 @@
+{
+  "companions": {
+    "karnak": {
+      "id": "karnak",
+      "name": "Brother Karnak",
+      "race": "red_devil",
+      "background": "soldier",
+      "flavor_text": "A red devil cast out of the Infernal Guard for showing mercy to a damned soul. He carries the contradiction quietly.",
+      "portrait": "",
+      "recruitment_cost": 150,
+      "build_weights": {
+        "strength": 3,
+        "constitution": 2,
+        "finesse": 1,
+        "awareness": 1,
+        "martial_arts": 5,
+        "unarmed": 3,
+        "yoga": 2,
+        "fire_magic": 1
+      },
+      "fixed_starter": {
+        "skills": { "martial_arts": 2 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "sword", "off": "" },
+        "chest": "light_armor"
+      },
+      "fixed_items": ["health_potion"]
+    }
+  }
+}
