@@ -676,7 +676,12 @@ func get_party() -> Array[Dictionary]:
 
 ## Collect saveable state into a dictionary
 func get_save_data() -> Dictionary:
-	# Deep copy party data so we don't reference live objects
+	# Deep copy party data so we don't reference live objects.
+	# duplicate(true) copies the entire character dict, including any fields that
+	# are not part of BASE_CHARACTER — companion-specific fields (companion_id,
+	# flavor_text, portrait, build_weights, autodevelop, free_xp,
+	# overflow_investments, overflow_popup_shown) are therefore preserved
+	# automatically with no extra handling needed here.
 	var party_copy: Array = []
 	for character in party:
 		party_copy.append(character.duplicate(true))
@@ -690,7 +695,11 @@ func load_save_data(data: Dictionary) -> void:
 	party.clear()
 	var saved_party = data.get("party", [])
 	for char_data in saved_party:
-		# Ensure it's a proper Dictionary (JSON parse gives untyped)
+		# Ensure it's a proper Dictionary (JSON parse gives untyped).
+		# We copy every key rather than reconstructing via create_character(),
+		# so companion-specific fields (companion_id, flavor_text, portrait,
+		# build_weights, autodevelop, free_xp, overflow_investments,
+		# overflow_popup_shown) come back intact.  No whitelist is used.
 		var character: Dictionary = {}
 		for key in char_data:
 			character[key] = char_data[key]
