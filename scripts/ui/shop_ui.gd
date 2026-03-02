@@ -16,6 +16,7 @@ signal shop_closed
 @onready var spells_grid: GridContainer = $ShopPanel/MarginContainer/VBoxContainer/TabContainer/Spells/ScrollContainer/SpellsGrid
 @onready var training_container: VBoxContainer = $ShopPanel/MarginContainer/VBoxContainer/TabContainer/Training/ScrollContainer/TrainingContainer
 @onready var companions_container: VBoxContainer = $ShopPanel/MarginContainer/VBoxContainer/TabContainer/Companions/ScrollContainer/CompanionsContainer
+@onready var rest_container: VBoxContainer = $ShopPanel/MarginContainer/VBoxContainer/TabContainer/Rest/ScrollContainer/RestContainer
 @onready var inventory_grid: GridContainer = $ShopPanel/MarginContainer/VBoxContainer/InventorySection/ScrollContainer/InventoryGrid
 @onready var close_button: Button = $ShopPanel/MarginContainer/VBoxContainer/Footer/CloseButton
 
@@ -27,6 +28,7 @@ const ITEM_SLOT_SIZE = Vector2(180, 80)
 
 var current_shop: Dictionary = {}
 var selected_barter_items: Array = []
+var _location_data: Dictionary = {}
 
 # Item tooltip
 var item_tooltip: Control = null
@@ -72,16 +74,18 @@ func open_shop(shop_data: Dictionary) -> void:
 	_populate_spells_tab()
 	_populate_training_tab()
 	_populate_companions_tab()
+	_populate_rest_tab()
 	_populate_inventory()
 
 	visible = true
 
 
 ## Open shop by ID from database
-func open_shop_by_id(shop_id: String) -> bool:
+func open_shop_by_id(shop_id: String, location_data: Dictionary = {}) -> bool:
 	var shop_data = ShopSystem.get_shop(shop_id)
 	if shop_data.is_empty():
 		return false
+	_location_data = location_data
 	open_shop(shop_data)
 	return true
 
@@ -569,6 +573,100 @@ func _create_companion_panel(companion_id: String, def: Dictionary) -> void:
 
 
 # ============================================
+# REST TAB
+# ============================================
+
+func _populate_rest_tab() -> void:
+	for child in rest_container.get_children():
+		child.queue_free()
+
+	var rest_data: Dictionary = current_shop.get("rest", {})
+	if rest_data.is_empty():
+		return
+
+	var price_mod: float = current_shop.get("price_modifier", 1.0)
+	var teapot_cost: int = int(rest_data.get("teapot_cost", 30) * price_mod)
+	var night_cost: int = int(rest_data.get("night_cost", 80) * price_mod)
+	var teapot_pct: int = rest_data.get("teapot_restore_pct", 50)
+	var night_pct: int = rest_data.get("night_restore_pct", 100)
+
+	# Party status summary
+	for character in CharacterSystem.get_party():
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+
+		var name_lbl := Label.new()
+		name_lbl.text = character.get("name", "?")
+		name_lbl.custom_minimum_size.x = 90
+		row.add_child(name_lbl)
+
+		var derived: Dictionary = character.get("derived", {})
+		var max_hp: int = derived.get("max_hp", 0)
+		var max_mp: int = derived.get("max_mana", 0)
+		var max_st: int = derived.get("max_stamina", 0)
+		var cur_hp: int = derived.get("current_hp", max_hp)
+		var cur_mp: int = derived.get("current_mana", max_mp)
+		var cur_st: int = derived.get("current_stamina", max_st)
+
+		var status_lbl := Label.new()
+		status_lbl.text = "HP %d/%d   MP %d/%d   ST %d/%d" % [cur_hp, max_hp, cur_mp, max_mp, cur_st, max_st]
+		status_lbl.add_theme_font_size_override("font_size", 12)
+		row.add_child(status_lbl)
+		rest_container.add_child(row)
+
+	rest_container.add_child(HSeparator.new())
+
+	_add_rest_option("Order a teapot", teapot_pct, teapot_cost)
+	_add_rest_option("Stay for the night", night_pct, night_cost)
+
+
+func _add_rest_option(label: String, restore_pct: int, cost: int) -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	rest_container.add_child(row)
+
+	var lbl := Label.new()
+	lbl.text = "%s  (%d%% restore)" % [label, restore_pct]
+	lbl.custom_minimum_size.x = 220
+	row.add_child(lbl)
+
+	var cost_lbl := Label.new()
+	cost_lbl.text = "%d gold" % cost
+	var can_afford: bool = GameState.can_afford(cost)
+	cost_lbl.add_theme_color_override("font_color", AFFORDABLE_COLOR if can_afford else UNAFFORDABLE_COLOR)
+	cost_lbl.custom_minimum_size.x = 70
+	row.add_child(cost_lbl)
+
+	var btn := Button.new()
+	btn.text = "Rest"
+	btn.disabled = not can_afford
+	btn.pressed.connect(func(): _on_rest_pressed(restore_pct, cost))
+	row.add_child(btn)
+
+
+func _on_rest_pressed(restore_pct: int, cost: int) -> void:
+	if not GameState.can_afford(cost):
+		return
+	GameState.spend_gold(cost)
+
+	for character in CharacterSystem.get_party():
+		var derived: Dictionary = character.get("derived", {})
+		var max_hp: int = derived.get("max_hp", 0)
+		var max_mp: int = derived.get("max_mana", 0)
+		var max_st: int = derived.get("max_stamina", 0)
+		var cur_hp: int = derived.get("current_hp", max_hp)
+		var cur_mp: int = derived.get("current_mana", max_mp)
+		var cur_st: int = derived.get("current_stamina", max_st)
+
+		character.derived["current_hp"] = mini(cur_hp + int(float(max_hp - cur_hp) * restore_pct / 100.0), max_hp)
+		character.derived["current_mana"] = mini(cur_mp + int(float(max_mp - cur_mp) * restore_pct / 100.0), max_mp)
+		character.derived["current_stamina"] = mini(cur_st + int(float(max_st - cur_st) * restore_pct / 100.0), max_st)
+
+	_update_gold_display()
+	_populate_rest_tab()
+
+
+# ============================================
 # INVENTORY (for selling)
 # ============================================
 
@@ -686,6 +784,7 @@ func _refresh_display() -> void:
 	_populate_spells_tab()
 	_populate_training_tab()
 	_populate_companions_tab()
+	_populate_rest_tab()
 	_populate_inventory()
 
 
