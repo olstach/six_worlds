@@ -100,7 +100,14 @@
 			{"event_id": "hell_ice_demon_toll", "name": "Ice Demon Toll", "icon": "enemy", "blocking": true, "one_time": true, "weight": 3},
 			{"event_id": "hell_cursed_pilgrim", "name": "Cursed Pilgrim", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
 			{"event_id": "hell_frozen_army", "name": "Frozen Army", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
-			{"event_id": "hell_sigh_of_relief", "name": "A Sigh of Relief", "icon": "shrine", "blocking": false, "one_time": true, "weight": 1}
+			{"event_id": "hell_sigh_of_relief", "name": "A Sigh of Relief", "icon": "shrine", "blocking": false, "one_time": true, "weight": 1},
+			{"event_id": "hell_teahouse_cold", "name": "Teahouse", "icon": "rest", "blocking": false, "one_time": false, "weight": 2, "tag": "rest"},
+			{"event_id": "hell_mercenary_guild", "name": "Mercenary Guild", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+			{"event_id": "hell_veterans_camp", "name": "Veterans' Camp", "icon": "npc", "blocking": false, "one_time": false, "weight": 2, "training_pool": ["swords", "martial_arts", "ranged", "daggers", "axes", "unarmed", "spears", "maces", "armor"]},
+			{"event_id": "hell_yogini_circle", "name": "Yogini Circle", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1},
+			{"event_id": "hell_town_weapons", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+			{"event_id": "hell_town_magic", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+			{"event_id": "hell_town_supplies", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"}
 			],
 			"pickups": [
 				{"name": "Abandoned Cart", "icon": "treasure", "message": "A cart left behind by someone in a hurry.", "rewards": [{"type": "gold", "value": [25, 50]}, {"type": "item", "value": "health_potion"}], "weight": 3},
@@ -146,7 +153,14 @@
 			{"event_id": "hell_sinner_gang", "name": "Sinner Gang", "icon": "npc", "blocking": false, "one_time": true, "weight": 3},
 			{"event_id": "hell_forge_spirit", "name": "Forge Spirit", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
 			{"event_id": "hell_the_invitation", "name": "The Invitation", "icon": "event", "blocking": false, "one_time": true, "weight": 1},
-			{"event_id": "hell_sigh_of_relief", "name": "A Sigh of Relief", "icon": "shrine", "blocking": false, "one_time": true, "weight": 1}
+			{"event_id": "hell_sigh_of_relief", "name": "A Sigh of Relief", "icon": "shrine", "blocking": false, "one_time": true, "weight": 1},
+			{"event_id": "hell_teahouse_fire", "name": "Teahouse", "icon": "rest", "blocking": false, "one_time": false, "weight": 2, "tag": "rest"},
+			{"event_id": "hell_mercenary_guild", "name": "Mercenary Guild", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+			{"event_id": "hell_veterans_camp", "name": "Veterans' Camp", "icon": "npc", "blocking": false, "one_time": false, "weight": 2, "training_pool": ["swords", "martial_arts", "ranged", "daggers", "axes", "unarmed", "spears", "maces", "armor"]},
+			{"event_id": "hell_yogini_circle", "name": "Yogini Circle", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1},
+			{"event_id": "hell_town_weapons", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+			{"event_id": "hell_town_magic", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+			{"event_id": "hell_town_supplies", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"}
 			],
 			"pickups": [
 				{"name": "Scorched Supplies", "icon": "treasure", "message": "Someone's emergency stash, half-melted.", "rewards": [{"type": "gold", "value": [30, 55]}, {"type": "item", "value": "health_potion"}], "weight": 3},
