@@ -114,6 +114,17 @@ Last Updated: 2026-02-28
 
 ## High Priority (Core Gameplay)
 
+### Companions — Post-JSON Cleanup
+- [ ] Verify `smithing` matches the exact skill key in skills.json
+- [ ] Check all `background` values in companions.json against backgrounds.json (hunter, laborer, peasant, etc. may not exist)
+- [ ] Verify Karnak's updated `starting_equipment` item IDs (`iron_sword`, `leather_vest`) match items.json
+- [ ] Wire all 23 new companions into the available_companions lists for the new hell locations (currently only karnak is listed)
+
+### Companion Auto-Development Refactor
+- [ ] Add `"primary_attrs": [...]` to each skill entry in skills.json (35 skills × 2-3 attributes)
+- [ ] Replace per-skill/attribute weights in companions.json with `"attr_ratio": 0.3` (fraction of auto-XP going to attributes)
+- [ ] Update `companion_system.gd` auto-distribute logic: derive attribute targets from active skill weights × primary_attrs, invest proportionally
+
 ### Companions / Party Members ← NEXT
 Recruiting companions is the single highest-impact missing feature for a playable loop.
 - [ ] Companion data structure (NPC characters with attributes, skills, equipment)
