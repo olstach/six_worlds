@@ -280,10 +280,7 @@
 			"buys_items": false,
 			"items": {},
 			"spells": [],
-			"training": {
-				"attributes": [],
-				"skills": ["swords", "martial_arts", "ranged", "daggers", "axes", "unarmed", "spears", "maces", "armor"]
-			},
+			"training": { "attributes": [], "skills": [] },
 			"available_companions": ["karnak"]
 		},
 		"hell_yogini_circle": {
