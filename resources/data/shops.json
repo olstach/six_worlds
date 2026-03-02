@@ -212,6 +212,176 @@
 				"attributes": [],
 				"skills": []
 			}
+		},
+		"hell_teahouse_cold": {
+			"name": "Teahouse",
+			"type": "teahouse",
+			"description": "A dim waystation where the desperate catch their breath. The barkeeper keeps a pot of Lapsang Souchong going — its smoke is the closest thing to warmth in the frozen wastes.",
+			"price_modifier": 1.2,
+			"buys_items": false,
+			"items": {},
+			"spells": [],
+			"training": { "attributes": [], "skills": [] },
+			"available_companions": ["karnak"],
+			"rest": {
+				"teapot_cost": 30,
+				"teapot_restore_pct": 50,
+				"night_cost": 80,
+				"night_restore_pct": 100
+			}
+		},
+		"hell_teahouse_fire": {
+			"name": "Teahouse",
+			"type": "teahouse",
+			"description": "The tea here is brewed in volcanic water. It tastes like char and smoke and something almost familiar. The barkeeper doesn't ask where you've been.",
+			"price_modifier": 1.2,
+			"buys_items": false,
+			"items": {},
+			"spells": [],
+			"training": { "attributes": [], "skills": [] },
+			"available_companions": ["karnak"],
+			"rest": {
+				"teapot_cost": 30,
+				"teapot_restore_pct": 50,
+				"night_cost": 80,
+				"night_restore_pct": 100
+			}
+		},
+		"hell_mercenary_guild": {
+			"name": "Mercenary Guild",
+			"type": "mercenary_guild",
+			"description": "A fortified post where demonic soldiers hire out between assignments. Their equipment is functional, their prices are fair, their loyalty is negotiable.",
+			"price_modifier": 1.1,
+			"buys_items": true,
+			"accepted_item_types": ["weapon", "armor", "shield"],
+			"items": {
+				"iron_sword": 2,
+				"steel_longsword": 1,
+				"iron_axe": 2,
+				"iron_mace": 1,
+				"iron_dagger": 2,
+				"wooden_spear": 2,
+				"hunting_bow": 1,
+				"chainmail": 1,
+				"leather_vest": 2,
+				"iron_shield": 1,
+				"leather_boots": 2,
+				"leather_gloves": 2
+			},
+			"spells": [],
+			"training": { "attributes": [], "skills": [] },
+			"available_companions": ["karnak"]
+		},
+		"hell_veterans_camp": {
+			"name": "Veterans' Camp",
+			"type": "veteran_camp",
+			"description": "A camp of soldiers who survived long enough to have something to teach. They charge for lessons — nothing is free in hell.",
+			"price_modifier": 1.0,
+			"buys_items": false,
+			"items": {},
+			"spells": [],
+			"training": {
+				"attributes": [],
+				"skills": ["swords", "martial_arts", "ranged", "daggers", "axes", "unarmed", "spears", "maces", "armor"]
+			},
+			"available_companions": ["karnak"]
+		},
+		"hell_yogini_circle": {
+			"name": "Yogini Circle",
+			"type": "yogini_circle",
+			"description": "A circle of Dakinis — fierce, half-wild tantric practitioners. They trade knowledge for gold and ask no questions about what you plan to do with it.",
+			"price_modifier": 1.15,
+			"buys_items": false,
+			"items": {
+				"raw_reagents": 8,
+				"alchemists_pouch": 3,
+				"prayer_beads": 2,
+				"oak_staff": 1,
+				"cloth_robe": 1,
+				"cloth_hood": 1
+			},
+			"spells": [
+				"lesser_heal", "greater_heal", "bless", "regeneration",
+				"magic_missile", "blink",
+				"voidbolt", "gloom", "curse"
+			],
+			"training": { "attributes": [], "skills": [] },
+			"available_companions": ["karnak"]
+		},
+		"hell_town_weapons": {
+			"name": "Town",
+			"type": "town",
+			"description": "A cluster of hovels that qualifies as a settlement. The main trade here is war.",
+			"price_modifier": 1.1,
+			"buys_items": true,
+			"items": {
+				"iron_sword": 2,
+				"steel_longsword": 1,
+				"iron_axe": 2,
+				"iron_mace": 2,
+				"iron_dagger": 3,
+				"wooden_spear": 2,
+				"hunting_bow": 1,
+				"chainmail": 1,
+				"leather_vest": 2,
+				"iron_shield": 2,
+				"leather_boots": 2,
+				"leather_gloves": 2,
+				"rations": 5,
+				"herb_bundle": 3,
+				"scrap_metal": 5
+			},
+			"spells": [],
+			"training": { "attributes": [], "skills": [] },
+			"available_companions": ["karnak"]
+		},
+		"hell_town_magic": {
+			"name": "Town",
+			"type": "town",
+			"description": "A settlement that has drawn more than its share of sorcerers and wandering scholars. The apothecary is always busy.",
+			"price_modifier": 1.15,
+			"buys_items": true,
+			"items": {
+				"raw_reagents": 8,
+				"alchemists_pouch": 3,
+				"prayer_beads": 2,
+				"oak_staff": 1,
+				"cloth_robe": 2,
+				"cloth_hood": 2,
+				"iron_dagger": 2,
+				"rations": 5,
+				"herb_bundle": 5
+			},
+			"spells": [
+				"firebolt", "lesser_heal", "magic_missile", "gloom", "curse", "blink"
+			],
+			"training": { "attributes": [], "skills": [] },
+			"available_companions": ["karnak"]
+		},
+		"hell_town_supplies": {
+			"name": "Town",
+			"type": "town",
+			"description": "A trading post that survives on practicality. The sign reads: FOOD. TOOLS. NO CREDIT. It is the most honest thing you have seen in hell.",
+			"price_modifier": 1.05,
+			"buys_items": true,
+			"items": {
+				"rations": 12,
+				"travel_provisions": 5,
+				"herb_bundle": 8,
+				"raw_reagents": 5,
+				"alchemists_pouch": 2,
+				"iron_dagger": 2,
+				"leather_vest": 2,
+				"leather_boots": 3,
+				"leather_gloves": 3,
+				"health_potion": 3,
+				"mana_potion": 2,
+				"scrap_metal": 8,
+				"salvage_kit": 3
+			},
+			"spells": [],
+			"training": { "attributes": [], "skills": [] },
+			"available_companions": ["karnak"]
 		}
 	},
 	"shop_types": {
@@ -230,6 +400,26 @@
 		"mixed": {
 			"description": "Offers items, spells, and possibly training",
 			"tabs": ["items", "spells", "training"]
+		},
+		"teahouse": {
+			"description": "Rest and recruit companions",
+			"tabs": ["rest", "companions"]
+		},
+		"mercenary_guild": {
+			"description": "Weapons, armour, and fighters for hire",
+			"tabs": ["items", "companions"]
+		},
+		"veteran_camp": {
+			"description": "Combat skill training and veterans for hire",
+			"tabs": ["training", "companions"]
+		},
+		"yogini_circle": {
+			"description": "Spells, magic supplies, and spiritual companions",
+			"tabs": ["spells", "items", "companions"]
+		},
+		"town": {
+			"description": "General goods and companions",
+			"tabs": ["items", "companions"]
 		}
 	}
 }
