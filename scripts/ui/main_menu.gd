@@ -313,7 +313,7 @@ func _create_attribute_row(attr_key: String, value: int) -> HBoxContainer:
 	# Disable if can't afford
 	var target = _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
 	var is_companion := target.has("companion_id")
-	var spendable := target.get("free_xp", 0) if is_companion else target.get("xp", 0)
+	var spendable: int = target.get("free_xp", 0) if is_companion else target.get("xp", 0)
 	if spendable < cost:
 		upgrade_btn.disabled = true
 

@@ -174,7 +174,7 @@ func _apply_random_spells(character: Dictionary, random_cfg: Dictionary,
 	var school_pool: Array[String] = []
 	for skill in build_weights.keys():
 		if skill in SKILL_TO_SCHOOL:
-			var school := SKILL_TO_SCHOOL[skill]
+			var school: String = SKILL_TO_SCHOOL[skill]
 			var weight: int = int(build_weights[skill])
 			for _i in range(weight):
 				school_pool.append(school)
@@ -426,7 +426,7 @@ func _autodevelop_overflow(companion: Dictionary) -> void:
 		if key in dynamic_weights:
 			dynamic_weights[key] = overflow[key] + 1
 
-	var to_spend := companion.get("free_xp", 0)
+	var to_spend: int = companion.get("free_xp", 0)
 	if to_spend <= 0:
 		return
 	_auto_distribute(companion, to_spend, dynamic_weights)

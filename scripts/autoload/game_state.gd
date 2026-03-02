@@ -101,6 +101,7 @@ var WORLDS: Dictionary = {
 }
 
 func _ready() -> void:
+	RenderingServer.set_default_clear_color(Color.BLACK)
 	print("GameState initialized")
 
 ## Defeat a world's boss and unlock the next world

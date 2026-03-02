@@ -12,8 +12,10 @@ signal confirmed
 
 func show_companion(companion: Dictionary) -> void:
 	name_label.text = companion.get("name", "Companion")
-	var race_display := companion.get("race", "").replace("_", " ").capitalize()
-	var bg_display := companion.get("background", "").replace("_", " ").capitalize()
+	var race_display: String = companion.get("race", "")
+	race_display = race_display.replace("_", " ").capitalize()
+	var bg_display: String = companion.get("background", "")
+	bg_display = bg_display.replace("_", " ").capitalize()
 	identity_label.text = race_display + " · " + bg_display
 	flavor_label.text = companion.get("flavor_text", "")
 	show()
