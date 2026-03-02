@@ -509,7 +509,9 @@ func _on_veteran_train_pressed(slot_index: int, character: Dictionary, skill: St
 	if not GameState.can_afford(price):
 		return
 
-	ShopSystem.buy_skill_training(character, skill)
+	var result: Dictionary = ShopSystem.buy_skill_training(character, skill)
+	if not result.get("success", false):
+		return
 
 	# Persist claimed state in the map object
 	var obj_id: String = _location_data.get("_object_id", "")
