@@ -9,10 +9,6 @@
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
-        "strength": 3,
-        "constitution": 2,
-        "finesse": 1,
-        "awareness": 1,
         "martial_arts": 5,
         "unarmed": 3,
         "yoga": 2,
@@ -26,10 +22,628 @@
       "random_spells": { "count": 1 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "sword", "off": "" },
-        "chest": "light_armor"
+        "weapon_set_1": { "main": "iron_sword", "off": "" },
+        "chest": "leather_vest"
       },
       "fixed_items": ["health_potion"]
+    },
+
+    "serji": {
+      "id": "serji",
+      "name": "Serji",
+      "race": "red_devil",
+      "background": "soldier",
+      "flavor_text": "The biggest man in the hot hell gym — and the one who walked out. Not because he won, but because winning there stopped meaning anything.",
+      "portrait": "",
+      "recruitment_cost": 650,
+      "build_weights": {
+        "unarmed": 4,
+        "might": 4,
+        "leadership": 3
+      },
+      "fixed_starter": {
+        "skills": { "unarmed": 2, "might": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "leather_vest"
+      },
+      "fixed_items": []
+    },
+
+    "red_peony": {
+      "id": "red_peony",
+      "name": "Red Peony",
+      "race": "red_devil",
+      "background": "soldier",
+      "flavor_text": "She carries a two-handed club the size of a small tree and moves like she knows exactly how much space she takes up. A lot.",
+      "portrait": "",
+      "recruitment_cost": 600,
+      "build_weights": {
+        "maces": 5,
+        "might": 3,
+        "armor": 3
+      },
+      "fixed_starter": {
+        "skills": { "maces": 2 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_mace", "off": "" },
+        "chest": "chainmail"
+      },
+      "fixed_items": []
+    },
+
+    "raktamatta": {
+      "id": "raktamatta",
+      "name": "Raktamatta",
+      "race": "red_devil",
+      "background": "laborer",
+      "flavor_text": "A law-abiding butcher who followed every regulation, filed every permit, and enjoyed his work with a thoroughness that made inspectors nervous.",
+      "portrait": "",
+      "recruitment_cost": 550,
+      "build_weights": {
+        "axes": 5,
+        "spears": 3,
+        "smithing": 3
+      },
+      "fixed_starter": {
+        "skills": { "axes": 2 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_axe", "off": "" },
+        "chest": "leather_vest"
+      },
+      "fixed_items": []
+    },
+
+    "jawbreaker": {
+      "id": "jawbreaker",
+      "name": "Jawbreaker",
+      "race": "red_devil",
+      "background": "criminal",
+      "flavor_text": "Fast, reckless, and deeply committed to the principle that the best defence is a fractured orbital bone. Also picks pockets while they're down.",
+      "portrait": "",
+      "recruitment_cost": 500,
+      "build_weights": {
+        "unarmed": 5,
+        "daggers": 3,
+        "thievery": 2
+      },
+      "fixed_starter": {
+        "skills": { "unarmed": 2, "daggers": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_dagger", "off": "" }
+      },
+      "fixed_items": []
+    },
+
+    "tejasimha": {
+      "id": "tejasimha",
+      "name": "Tejasimha",
+      "race": "red_devil",
+      "background": "criminal",
+      "flavor_text": "First matches, then houses, then whole districts. He died laughing in a fire he started — hearty, genuine laughter, right to the end.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "fire_magic": 5,
+        "ritual": 3,
+        "sorcery": 3
+      },
+      "fixed_starter": {
+        "skills": { "fire_magic": 2 },
+        "known_spells": []
+      },
+      "fixed_spells": ["firebolt"],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "oak_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "water_lily": {
+      "id": "water_lily",
+      "name": "Water Lily",
+      "race": "blue_devil",
+      "background": "peasant",
+      "flavor_text": "A village girl drowned as punishment for being found in bed with another girl. She has been very quiet ever since, but her stillness is not grief.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "water_magic": 4,
+        "yoga": 4,
+        "white_magic": 3
+      },
+      "fixed_starter": {
+        "skills": { "water_magic": 2, "yoga": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": ["lesser_heal"],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "oak_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "dvijihva": {
+      "id": "dvijihva",
+      "name": "Dvijihva",
+      "race": "blue_devil",
+      "background": "scholar",
+      "flavor_text": "A sorcerer for hire who worked for two rival clients simultaneously, studying both thoroughly. He was killed when they compared notes. He considers this an occupational hazard.",
+      "portrait": "",
+      "recruitment_cost": 800,
+      "build_weights": {
+        "enchantment": 4,
+        "sorcery": 4,
+        "learning": 3
+      },
+      "fixed_starter": {
+        "skills": { "enchantment": 2, "sorcery": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 2 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "oak_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "yaga_mataji": {
+      "id": "yaga_mataji",
+      "name": "Yaga Mataji",
+      "race": "blue_devil",
+      "background": "merchant",
+      "flavor_text": "An old innkeeper who poisoned guests she found sinful. Her criteria were specific, her dosing was precise, and she kept excellent records.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "alchemy": 5,
+        "black_magic": 4,
+        "ritual": 2
+      },
+      "fixed_starter": {
+        "skills": { "alchemy": 2, "black_magic": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_dagger", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": ["health_potion"]
+    },
+
+    "niyamendra": {
+      "id": "niyamendra",
+      "name": "Niyamendra",
+      "race": "blue_devil",
+      "background": "noble",
+      "flavor_text": "Court bureaucrat of a petty king, who found his true calling in the invention of regulations. He can freeze any ordinary process in place — paperwork is eternal.",
+      "portrait": "",
+      "recruitment_cost": 600,
+      "build_weights": {
+        "water_magic": 3,
+        "persuasion": 4,
+        "logistics": 4
+      },
+      "fixed_starter": {
+        "skills": { "persuasion": 2, "logistics": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "oak_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "leraya": {
+      "id": "leraya",
+      "name": "Leraya",
+      "race": "green_devil",
+      "background": "hunter",
+      "flavor_text": "A huntsman who grew bored with animals and started tracking people instead. The challenge was the point. He is still tracking.",
+      "portrait": "",
+      "recruitment_cost": 650,
+      "build_weights": {
+        "ranged": 5,
+        "guile": 3,
+        "daggers": 3
+      },
+      "fixed_starter": {
+        "skills": { "ranged": 2, "guile": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "hunting_bow", "off": "" },
+        "chest": "leather_vest"
+      },
+      "fixed_items": []
+    },
+
+    "samvibrahmi": {
+      "id": "samvibrahmi",
+      "name": "Samvibrahmi",
+      "race": "green_devil",
+      "background": "noble",
+      "flavor_text": "Driven by constant suspicion of assassination, he prepared obsessively for every conceivable threat. He was ultimately killed by a cabbage cart. He still doesn't know how they did it.",
+      "portrait": "",
+      "recruitment_cost": 600,
+      "build_weights": {
+        "guile": 4,
+        "daggers": 4,
+        "learning": 3
+      },
+      "fixed_starter": {
+        "skills": { "guile": 2, "daggers": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_dagger", "off": "" },
+        "chest": "leather_vest"
+      },
+      "fixed_items": []
+    },
+
+    "vayuvega": {
+      "id": "vayuvega",
+      "name": "Vāyuvega",
+      "race": "green_devil",
+      "background": "soldier",
+      "flavor_text": "Battle mage for a gang in life — a firm believer in hitting hard first and letting the questions sort themselves out among the survivors.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "air_magic": 5,
+        "sorcery": 4,
+        "ritual": 2
+      },
+      "fixed_starter": {
+        "skills": { "air_magic": 2, "sorcery": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 2 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "oak_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "angulimala": {
+      "id": "angulimala",
+      "name": "Angulimāla",
+      "race": "green_devil",
+      "background": "criminal",
+      "flavor_text": "Executioner of a crime syndicate, known for a particular professional habit involving fingers. He is fast, precise, and oddly graceful about it.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "swords": 4,
+        "ranged": 3,
+        "grace": 4
+      },
+      "fixed_starter": {
+        "skills": { "swords": 2, "grace": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_sword", "off": "" },
+        "chest": "leather_vest"
+      },
+      "fixed_items": []
+    },
+
+    "kanjus": {
+      "id": "kanjus",
+      "name": "Kanjus",
+      "race": "yellow_devil",
+      "background": "merchant",
+      "flavor_text": "Owner of a textile manufactory, maximiser of profit, minimiser of worker wellbeing. In hell he applies the same efficiency to whatever operation he finds himself part of.",
+      "portrait": "",
+      "recruitment_cost": 600,
+      "build_weights": {
+        "trade": 4,
+        "logistics": 5,
+        "smithing": 3
+      },
+      "fixed_starter": {
+        "skills": { "trade": 2, "logistics": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_dagger", "off": "" },
+        "chest": "leather_vest"
+      },
+      "fixed_items": []
+    },
+
+    "sarpatailaka": {
+      "id": "sarpatailaka",
+      "name": "Sarpatailaka",
+      "race": "yellow_devil",
+      "background": "merchant",
+      "flavor_text": "A trader in snake oil and false cures, who offered hope where real treatment was available. The daggers are for customers who want a refund.",
+      "portrait": "",
+      "recruitment_cost": 650,
+      "build_weights": {
+        "trade": 4,
+        "earth_magic": 3,
+        "daggers": 4
+      },
+      "fixed_starter": {
+        "skills": { "trade": 2, "daggers": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_dagger", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "shiny_needle": {
+      "id": "shiny_needle",
+      "name": "Shiny Needle",
+      "race": "yellow_devil",
+      "background": "noble",
+      "flavor_text": "She prided herself on being the prettiest. When age threatened that, she found an elegant solution — draining the lifeforce of rivals through carefully rehearsed enchantments. She called it skincare.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "performance": 4,
+        "enchantment": 4,
+        "earth_magic": 3
+      },
+      "fixed_starter": {
+        "skills": { "performance": 2, "enchantment": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "oak_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "princess_spiderface": {
+      "id": "princess_spiderface",
+      "name": "Princess Spiderface",
+      "race": "black_devil",
+      "background": "noble",
+      "flavor_text": "Actually rather nice, though the face doesn't help first impressions. She calls the spirits she summons by name and asks how they've been.",
+      "portrait": "",
+      "recruitment_cost": 800,
+      "build_weights": {
+        "space_magic": 4,
+        "white_magic": 4,
+        "persuasion": 3
+      },
+      "fixed_starter": {
+        "skills": { "space_magic": 2, "white_magic": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": ["lesser_heal"],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "oak_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "sineater_thirteen": {
+      "id": "sineater_thirteen",
+      "name": "Sineater Thirteen",
+      "race": "black_devil",
+      "background": "penitent",
+      "flavor_text": "Born from a splinter of dark energy left when a primordial Srid was shattered by a wrathful Buddha. It has absorbed twelve previous identities and is still hungry.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "black_magic": 5,
+        "space_magic": 4,
+        "ritual": 3
+      },
+      "fixed_starter": {
+        "skills": { "black_magic": 2, "ritual": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 2 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "oak_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "dyutapati": {
+      "id": "dyutapati",
+      "name": "Dyūtapati",
+      "race": "black_devil",
+      "background": "merchant",
+      "flavor_text": "Owner of a casino in hell — cigar always lit, odds always in his favour, smile always present. The house wins. He is the house.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "persuasion": 4,
+        "trade": 4,
+        "guile": 4
+      },
+      "fixed_starter": {
+        "skills": { "persuasion": 2, "guile": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_dagger", "off": "" },
+        "chest": "leather_vest"
+      },
+      "fixed_items": []
+    },
+
+    "coolhead_hotblood": {
+      "id": "coolhead_hotblood",
+      "name": "Coolhead Hotblood",
+      "race": "black_devil",
+      "background": "infernal_scribe",
+      "flavor_text": "A people-pleasing librarian who let frustration build in his innards like an alchemical retort. One day the seal broke. He found the experience clarifying.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "black_magic": 4,
+        "sorcery": 4,
+        "unarmed": 3
+      },
+      "fixed_starter": {
+        "skills": { "black_magic": 2, "sorcery": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "ayurmangala": {
+      "id": "ayurmangala",
+      "name": "Ayurmangala",
+      "race": "white_devil",
+      "background": "scholar",
+      "flavor_text": "Fascinated by humanoid anatomy the way a botanist is fascinated by plants. Can be persuaded to forego vivisection of party members — keeping them alive is, after all, a more interesting experiment.",
+      "portrait": "",
+      "recruitment_cost": 850,
+      "build_weights": {
+        "medicine": 5,
+        "daggers": 3,
+        "alchemy": 3
+      },
+      "fixed_starter": {
+        "skills": { "medicine": 2, "daggers": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_dagger", "off": "" },
+        "chest": "leather_vest"
+      },
+      "fixed_items": ["health_potion", "health_potion"]
+    },
+
+    "amlamarjari": {
+      "id": "amlamarjari",
+      "name": "Amlamarjari",
+      "race": "white_devil",
+      "background": "laborer",
+      "flavor_text": "Party girl who found ways to patch up her comrades long after they couldn't go on. Her healing is excellent. Her bedside manner is chaotic.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "white_magic": 5,
+        "comedy": 3,
+        "alchemy": 3
+      },
+      "fixed_starter": {
+        "skills": { "white_magic": 2, "comedy": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": ["lesser_heal"],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "oak_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": ["health_potion"]
+    },
+
+    "vimohini": {
+      "id": "vimohini",
+      "name": "Vimohini",
+      "race": "white_devil",
+      "background": "penitent",
+      "flavor_text": "In life, a mystic whose visions were so vivid that entire communities reshaped themselves around her prophecies. She wasn't lying. She genuinely saw another reality. In hell, the visions have teeth.",
+      "portrait": "",
+      "recruitment_cost": 850,
+      "build_weights": {
+        "enchantment": 5,
+        "summoning": 4,
+        "guile": 2
+      },
+      "fixed_starter": {
+        "skills": { "enchantment": 2, "summoning": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "oak_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
     }
   }
 }
