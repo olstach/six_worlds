@@ -3330,6 +3330,206 @@
 					}
 				}
 			]
+		},
+		"hell_teahouse_cold": {
+			"id": "hell_teahouse_cold",
+			"title": "Teahouse",
+			"realm": "hell",
+			"text": "A low building crouches at the edge of the frozen waste, smoke leaking from the roof. Inside, a few silent figures nurse cups of something warm. The barkeeper glances up without expression.",
+			"choices": [
+				{
+					"text": "Sit down",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_teahouse_cold",
+						"text": "You take a seat. Nobody bothers you."
+					}
+				},
+				{
+					"text": "Move on",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You keep walking. The smell of smoke follows you longer than it should."
+					}
+				}
+			]
+		},
+		"hell_teahouse_fire": {
+			"id": "hell_teahouse_fire",
+			"title": "Teahouse",
+			"realm": "hell",
+			"text": "A squat building half-buried in ash. The sign is burned off but the smell of tea — strong, smoky, almost pleasant — cuts through the sulphur. The door is open.",
+			"choices": [
+				{
+					"text": "Step inside",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_teahouse_fire",
+						"text": "The heat inside is almost comfortable compared to outside."
+					}
+				},
+				{
+					"text": "Move on",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You leave the warmth behind."
+					}
+				}
+			]
+		},
+		"hell_mercenary_guild": {
+			"id": "hell_mercenary_guild",
+			"title": "Mercenary Guild",
+			"realm": "hell",
+			"text": "A fortified outpost flying a plain black banner. A board outside lists rates for services rendered. Inside, armoured figures sharpen weapons or sleep. They look up when you enter.",
+			"choices": [
+				{
+					"text": "Browse their wares",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_mercenary_guild",
+						"text": "The quartermaster unlocks a case and waits."
+					}
+				},
+				{
+					"text": "Move on",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You leave the mercenaries to their sharpening."
+					}
+				}
+			]
+		},
+		"hell_veterans_camp": {
+			"id": "hell_veterans_camp",
+			"title": "Veterans' Camp",
+			"realm": "hell",
+			"text": "A sparse camp around a fire. The people here are old — old for hell, which means they have survived something most haven't. One of them watches you approach with calculating eyes.",
+			"choices": [
+				{
+					"text": "Ask about training",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_veterans_camp",
+						"text": "\"We can teach two things. Once each. Make your choices.\""
+					}
+				},
+				{
+					"text": "Move on",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "The veteran returns to staring into the fire."
+					}
+				}
+			]
+		},
+		"hell_yogini_circle": {
+			"id": "hell_yogini_circle",
+			"title": "Yogini Circle",
+			"realm": "hell",
+			"text": "A ring of figures seated in the dirt, chanting in a language that makes your teeth itch. One of them opens her eyes and looks directly at you before you've made a sound.",
+			"choices": [
+				{
+					"text": "Approach the circle",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_yogini_circle",
+						"text": "She gestures for you to sit. The chanting doesn't stop."
+					}
+				},
+				{
+					"text": "Move on",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You back away slowly. The chanting follows you for a while."
+					}
+				}
+			]
+		},
+		"hell_town_weapons": {
+			"id": "hell_town_weapons",
+			"title": "Town",
+			"realm": "hell",
+			"text": "A settlement built from salvaged iron and spite. The biggest building is the armoury. Someone is always selling something in the street, and half of it is sharp.",
+			"choices": [
+				{
+					"text": "Enter the town",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_town_weapons",
+						"text": "You push through the crowd."
+					}
+				},
+				{
+					"text": "Move on",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You skirt the settlement and keep moving."
+					}
+				}
+			]
+		},
+		"hell_town_magic": {
+			"id": "hell_town_magic",
+			"title": "Town",
+			"realm": "hell",
+			"text": "A settlement where more windows glow than can be explained by candlelight. Strange smells drift from the apothecary. A scholar argues with a demon outside the library.",
+			"choices": [
+				{
+					"text": "Enter the town",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_town_magic",
+						"text": "You find the market square."
+					}
+				},
+				{
+					"text": "Move on",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You leave the scholars to their arguments."
+					}
+				}
+			]
+		},
+		"hell_town_supplies": {
+			"id": "hell_town_supplies",
+			"title": "Town",
+			"realm": "hell",
+			"text": "A trading post that survives on practicality. The sign reads: FOOD. TOOLS. NO CREDIT. It is the most honest thing you have seen in hell.",
+			"choices": [
+				{
+					"text": "Enter the town",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_town_supplies",
+						"text": "The shopkeeper nods without looking up."
+					}
+				},
+				{
+					"text": "Move on",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You keep walking."
+					}
+				}
+			]
 		}
 	}
 }
