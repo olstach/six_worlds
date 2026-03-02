@@ -181,6 +181,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_C:
+				# Character / Stats tab (index 0)
+				_open_char_sheet_to_tab(0)
+				get_viewport().set_input_as_handled()
+			KEY_R:
 				# Crafting tab (index 4)
 				_open_char_sheet_to_tab(4)
 				get_viewport().set_input_as_handled()
@@ -346,7 +350,9 @@ func _on_event_shop_requested(shop_id: String, outcome: Dictionary) -> void:
 	_shop_instance.shop_closed.connect(_on_event_shop_closed)
 	_shop_open = true
 
-	if not _shop_instance.open_shop_by_id(shop_id):
+	var loc_data: Dictionary = _current_event_object.get("data", {}).duplicate()
+	loc_data["_object_id"] = _current_event_object.get("id", "")
+	if not _shop_instance.open_shop_by_id(shop_id, loc_data):
 		print("Shop '%s' not found, closing shop overlay" % shop_id)
 		_on_event_shop_closed()
 
