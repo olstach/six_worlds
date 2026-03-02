@@ -660,6 +660,12 @@ func _place_event_object(zone_id: String, template: Dictionary, pos: Vector2i) -
 			"description": template.get("description", "Something catches your attention.")
 		}
 	})
+	# Veteran's Camp: inject random skills from training_pool
+	if "training_pool" in template:
+		var pool: Array = template["training_pool"].duplicate()
+		pool.shuffle()
+		_objects[-1]["data"]["selected_skills"] = [pool[0], pool[1]]
+		_objects[-1]["data"]["claimed"] = [false, false]
 	_occupied[pos] = true
 
 
