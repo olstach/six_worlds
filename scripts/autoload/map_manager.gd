@@ -892,6 +892,16 @@ func get_visible_objects() -> Array[Dictionary]:
 	return result
 
 
+## Update a field in a specific map object's data dict.
+## Used by shop_ui to persist veteran's camp claimed training slots.
+func update_object_data(obj_id: String, key: String, value) -> void:
+	for pos in objects:
+		if objects[pos].get("id", "") == obj_id:
+			objects[pos]["data"][key] = value
+			return
+	push_warning("MapManager.update_object_data: object not found: " + obj_id)
+
+
 ## Remove an object from the map (e.g., after defeating enemy)
 func remove_object(obj_id: String) -> void:
 	for pos in objects.keys():

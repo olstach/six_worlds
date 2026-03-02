@@ -359,6 +359,12 @@ func _populate_training_tab() -> void:
 	for child in training_container.get_children():
 		child.queue_free()
 
+	# Veteran's Camp mode: skills are chosen at map-gen time, each slot one-use
+	var selected_skills: Array = _location_data.get("selected_skills", [])
+	if not selected_skills.is_empty():
+		_populate_veteran_training(selected_skills, _location_data.get("claimed", []))
+		return
+
 	var training = current_shop.get("training", {})
 	var attributes = training.get("attributes", [])
 	var skills = training.get("skills", [])
@@ -454,6 +460,66 @@ func _create_skill_training_option(skill: String) -> void:
 		btn.disabled = not can_afford
 		btn.pressed.connect(func(): _on_train_skill_pressed(character, skill))
 		hbox.add_child(btn)
+
+
+func _populate_veteran_training(selected_skills: Array, claimed: Array) -> void:
+	var header := Label.new()
+	header.text = "Combat Training  (one character per slot)"
+	header.add_theme_font_size_override("font_size", 16)
+	header.add_theme_color_override("font_color", GOLD_COLOR)
+	training_container.add_child(header)
+	training_container.add_child(HSeparator.new())
+
+	for i in range(selected_skills.size()):
+		var skill: String = selected_skills[i]
+		var is_claimed: bool = i < claimed.size() and claimed[i]
+
+		var hbox := HBoxContainer.new()
+		hbox.add_theme_constant_override("separation", 10)
+
+		var lbl := Label.new()
+		lbl.text = skill.replace("_", " ").capitalize()
+		lbl.custom_minimum_size.x = 110
+		hbox.add_child(lbl)
+
+		if is_claimed:
+			var taken := Label.new()
+			taken.text = "[ Taken ]"
+			taken.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+			hbox.add_child(taken)
+		else:
+			for character in CharacterSystem.get_party():
+				var current_level: int = character.get("skills", {}).get(skill, 0)
+				var price: int = ShopSystem.get_skill_training_cost(current_level)
+				var can_afford: bool = GameState.can_afford(price) and price > 0
+
+				var btn := Button.new()
+				btn.text = "%s (Lv.%d) — %dg" % [character.get("name", "?"), current_level, price]
+				btn.add_theme_font_size_override("font_size", 11)
+				btn.disabled = not can_afford
+				btn.pressed.connect(func(): _on_veteran_train_pressed(i, character, skill))
+				hbox.add_child(btn)
+
+		training_container.add_child(hbox)
+
+
+func _on_veteran_train_pressed(slot_index: int, character: Dictionary, skill: String) -> void:
+	var current_level: int = character.get("skills", {}).get(skill, 0)
+	var price: int = ShopSystem.get_skill_training_cost(current_level)
+	if not GameState.can_afford(price):
+		return
+
+	ShopSystem.buy_skill_training(character, skill)
+
+	# Persist claimed state in the map object
+	var obj_id: String = _location_data.get("_object_id", "")
+	if obj_id != "":
+		var new_claimed: Array = _location_data.get("claimed", [false, false]).duplicate()
+		new_claimed[slot_index] = true
+		_location_data["claimed"] = new_claimed
+		MapManager.update_object_data(obj_id, "claimed", new_claimed)
+
+	_populate_training_tab()
 
 
 # ============================================
