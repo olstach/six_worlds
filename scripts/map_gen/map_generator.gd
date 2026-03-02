@@ -663,9 +663,12 @@ func _place_event_object(zone_id: String, template: Dictionary, pos: Vector2i) -
 	# Veteran's Camp: inject random skills from training_pool
 	if "training_pool" in template:
 		var pool: Array = template["training_pool"].duplicate()
-		pool.shuffle()
-		_objects[-1]["data"]["selected_skills"] = [pool[0], pool[1]]
-		_objects[-1]["data"]["claimed"] = [false, false]
+		if pool.size() >= 2:
+			pool.shuffle()
+			_objects[-1]["data"]["selected_skills"] = [pool[0], pool[1]]
+			_objects[-1]["data"]["claimed"] = [false, false]
+		else:
+			push_warning("MapGenerator: training_pool has fewer than 2 entries in template: " + str(template.get("name", "?")))
 	_occupied[pos] = true
 
 
