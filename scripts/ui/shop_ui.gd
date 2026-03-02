@@ -109,6 +109,10 @@ func _setup_tabs() -> void:
 		if not "companions" in tabs:
 			tabs.push_front("companions")
 
+	# Hide rest tab when the shop has no rest data
+	if current_shop.get("rest", {}).is_empty():
+		tabs.erase("rest")
+
 	# Show/hide tabs based on resolved list
 	for i in range(tab_container.get_tab_count()):
 		var tab_name = tab_container.get_tab_title(i).to_lower()
