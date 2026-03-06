@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-02-23
+Last Updated: 2026-03-06
 
 ---
 
@@ -11,12 +11,13 @@ Last Updated: 2026-02-23
 - [x] CharacterSystem singleton (7 attributes, 35 skills, derived stats, party management)
 - [x] KarmaSystem singleton (hidden karma, reincarnation, weighted race selection)
 - [x] EventManager singleton (3 choice types, party-wide checks, dice rolls)
-- [x] ItemSystem singleton (equipment database, 12-slot system, inventory)
+- [x] ItemSystem singleton (equipment database, 12-slot system, inventory, procedural generation)
 - [x] ShopSystem singleton (buy/sell, spell learning, skill training, discounts)
-- [x] CombatManager singleton (full tactical combat system)
+- [x] CombatManager singleton (full tactical combat system, loot drops with supply/reagent integration)
 - [x] PerkSystem singleton (skill perks, cross perks, base bonuses, affinity bonuses)
 - [x] SaveManager singleton (save/load game state)
 - [x] MapManager singleton (overworld map, pathfinding, mobs, objects)
+- [x] Supply system (Food/Herbs/Scrap/Reagents with passive consumption, starvation, save/load)
 
 ### Combat System
 - [x] Grid-based combat (12x8 default, configurable)
@@ -48,8 +49,9 @@ Last Updated: 2026-02-23
 - [x] Active Skills panel in combat (shows active perks and mantras)
 - [x] Miss/Dodge/Block floating combat text
 - [x] Attack lunge animation (sprite moves toward target and returns)
-- [x] Enemy loot drops
+- [x] Enemy loot drops (supplies, reagents with caster-weighting)
 - [x] AoE spells damage obstacles and create ground effects
+- [x] Ammo system (ranged weapons consume ammo, crossbow/javelin subtypes)
 
 ### Character & Progression
 - [x] XP-based progression (no levels)
@@ -102,6 +104,9 @@ Last Updated: 2026-02-23
 - [x] hell.json map config (procedural generation)
 - [x] hell_events.json (realm events)
 - [x] hell_enemies.json (enemy archetypes)
+- [x] supplies.json (4 supply types with passive effects, consumption, starvation)
+- [x] equipment_tables.json (procedural weapon/armor generation tables)
+- [x] talisman_tables.json (procedural talisman generation tables)
 
 ---
 
@@ -187,7 +192,9 @@ Roles to fulfill per realm (not specific object types):
 - [ ] More consumable items (realm-specific potions, higher-level scrolls, more charm/bomb/oil tiers)
 - [ ] More equipment (rare/legendary weapons and armor)
 - [ ] More upgrades/perks
-- [ ] Alchemy crafting system (create consumables from ingredients)
+- [x] ~~Alchemy crafting system~~: Reagents supply type, 3 crafting branches (Remedies/Munitions/Applications) × 3 tiers, perk-unlocked, passive brewing toggle — DONE
+- [x] ~~Resource-gathering perks~~: Alchemical Recycling (Alchemy 3), Herbalist (Medicine 3), Scavenger (Smithing 3) — DONE
+- [ ] Crafting UI tab (key: C) with character selector, filter buttons, recipe list
 - [ ] More scroll varieties (AoE scrolls, buff scrolls)
 - [ ] **Cursed items**: equipment that applies a passive debuff alongside its stats. Player may not know an item is cursed until equipped (reveal on ID or Alchemy skill check). Separate from cursed terrain/simples.
 - [x] ~~**Equipment generation system**~~: procedural weapons, armor, and talismans — DONE
@@ -369,6 +376,17 @@ Files live in `resources/audio/sfx/` (6 variants each, picked randomly).
 - Title screen scene
 - Save/load integration into all major systems
 - Hell enemy archetypes data file
+
+### 2026-03-06: Reagents, Alchemy Crafting Tiers, Resource-Gathering Perks
+- **Reagents (4th supply type)**: Added to supplies.json, game_state.gd, items.json. Starting amount 10, shop price 8g (scarcer than herbs/scrap). Toggle for alchemy passive brewing.
+- **Alchemy crafting tiers** (perk-unlocked, 3 branches × 3 tiers):
+  - Remedies: Apprentice Apothecary (Alch 1, 1 reagent) → Journeyman (5, 2) → Master (9, 4)
+  - Munitions: Bomb Maker (1, 1) → Demolitions Expert (5, 2) → Master Demolitionist (9, 4)
+  - Applications: Applied Toxicology (3, 1) → Advanced Coatings (5, 2) → Master Coatings (9, 4)
+- **Passive brewing**: process_alchemy_step() — 15% + 3%/level per overworld step, toggleable
+- **Resource-gathering perks**: Alchemical Recycling (Alchemy 3), Herbalist (Medicine 3), Scavenger (Smithing 3) — each feeds its own supply chain from combat
+- **Loot integration**: Reagent drops 25% base / 50% from casters. Raw Reagents + Alchemist's Pouch items. Available in magic shops only.
+- **Supply system polish**: Renamed Crafting → Smithing across skills/perks. Ammo on all ranged weapons. Steeper Logistics scaling. Supply loot drops in combat_manager.
 
 ### 2026-02-28: Equipment & Talisman Generation System
 - Renamed consumable talismans → charms (19 items: mana cost reduction consumables)
