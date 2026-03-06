@@ -15,8 +15,10 @@ Last Updated: 2026-03-06
 - [x] ShopSystem singleton (buy/sell, spell learning, skill training, discounts)
 - [x] CombatManager singleton (full tactical combat system, loot drops with supply/reagent integration)
 - [x] PerkSystem singleton (skill perks, cross perks, base bonuses, affinity bonuses)
+- [x] EnemySystem singleton (enemy archetypes, role-based stats, inventory generation)
 - [x] SaveManager singleton (save/load game state)
 - [x] MapManager singleton (overworld map, pathfinding, mobs, objects)
+- [x] AudioManager singleton (SFX system, 28 sounds × 6 variants)
 - [x] Supply system (Food/Herbs/Scrap/Reagents with passive consumption, starvation, save/load)
 
 ### Combat System

@@ -10,7 +10,7 @@ Six Worlds combines grid-based tactical combat with Buddhist-themed progression 
 
 ## Implemented Systems
 
-### Core Singletons (10 AutoLoads)
+### Core Singletons (12 AutoLoads)
 
 | System | Description |
 |--------|-------------|
@@ -20,10 +20,12 @@ Six Worlds combines grid-based tactical combat with Buddhist-themed progression 
 | **EventManager** | FTL-style events, 3 choice types (grey/blue/yellow), party-wide checks, combat/shop triggers |
 | **CombatManager** | Grid combat, initiative, spells, status effects, AI, terrain, LoS, loot drops |
 | **ItemSystem** | Equipment database, 12-slot system, inventory, procedural weapon/armor/talisman generation |
+| **EnemySystem** | Enemy archetypes, role-based stats, inventory generation, power scaling |
 | **ShopSystem** | Buy/sell items, learn spells, train skills, Trade/Charm discounts |
 | **PerkSystem** | Skill perks (all 35 skills), cross perks, base bonuses, affinity bonuses |
 | **SaveManager** | Full save/load across all systems |
 | **MapManager** | HoMM-style overworld, A* pathfinding, mobs, objects, fog of war, procedural generation |
+| **AudioManager** | SFX system (28 sounds × 6 variants), per-weapon/spell/UI sound mapping |
 
 ### Combat System
 
@@ -137,7 +139,7 @@ six_worlds/
 │   ├── combat/          # Combat arena scene
 │   └── overworld/       # HoMM-style map
 ├── scripts/
-│   ├── autoload/        # 10 global singletons
+│   ├── autoload/        # 12 global singletons
 │   ├── combat/          # Arena, grid, unit components
 │   ├── ui/              # UI scripts
 │   └── overworld/       # Map scripts
