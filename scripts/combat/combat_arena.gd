@@ -1779,6 +1779,48 @@ func _show_unit_info(unit: CombatUnit) -> void:
 		var current_stamina = derived.get("current_stamina", max_stamina)
 		unit_info_bars.add_child(_create_stat_bar("ST", current_stamina, max_stamina, Color(0.9, 0.75, 0.2)))
 
+	# Status effects section — show each active status with name, duration, and color
+	if not unit.status_effects.is_empty():
+		# Separator
+		var sep = HSeparator.new()
+		sep.custom_minimum_size.y = 4
+		unit_info_bars.add_child(sep)
+
+		for effect in unit.status_effects:
+			var status_name = effect.get("status", "")
+			var duration = effect.get("duration", 0)
+			var def = CombatManager.get_status_definition(status_name)
+			var display_name = status_name.replace("_", " ")
+			var stype = def.get("type", "debuff")
+
+			var status_row = HBoxContainer.new()
+			status_row.add_theme_constant_override("separation", 4)
+
+			# Status name label (colored by buff/debuff)
+			var name_lbl = Label.new()
+			name_lbl.text = display_name
+			name_lbl.add_theme_font_size_override("font_size", 10)
+			if stype == "buff":
+				name_lbl.add_theme_color_override("font_color", Color(0.3, 0.9, 0.5))
+			else:
+				name_lbl.add_theme_color_override("font_color", Color(0.95, 0.5, 0.3))
+			status_row.add_child(name_lbl)
+
+			# Duration label
+			var dur_lbl = Label.new()
+			var dur_type = def.get("duration_type", "turns")
+			if dur_type == "permanent":
+				dur_lbl.text = "(permanent)"
+			elif dur_type == "until_save":
+				dur_lbl.text = "(save to end)"
+			else:
+				dur_lbl.text = "(%d turns)" % duration
+			dur_lbl.add_theme_font_size_override("font_size", 9)
+			dur_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+			status_row.add_child(dur_lbl)
+
+			unit_info_bars.add_child(status_row)
+
 	# Action circles: green = available, grey = used
 	_update_action_circles(unit.actions_remaining, unit.max_actions)
 
@@ -2063,12 +2105,17 @@ func _on_spell_cast(caster: Node, spell: Dictionary, targets: Array, results: Ar
 
 
 func _on_status_effect_triggered(unit: Node, effect_name: String, value: int, effect_type: String) -> void:
-	# Log status effect damage/healing
+	# Log status effect damage/healing/reactive
 	match effect_type:
 		"damage":
 			_log_message("  %s takes %d damage from %s!" % [unit.unit_name, value, effect_name])
 		"heal":
 			_log_message("  %s regenerates %d HP!" % [unit.unit_name, value])
+		"reactive":
+			if value > 0:
+				_log_message("  %s's %s deals %d damage!" % [unit.unit_name, effect_name.replace("_", " "), value])
+			else:
+				_log_message("  %s's %s triggers!" % [unit.unit_name, effect_name.replace("_", " ")])
 
 	# Update unit visuals to show status icons
 	if unit.has_method("_update_visuals"):
@@ -2080,11 +2127,15 @@ func _on_status_effect_triggered(unit: Node, effect_name: String, value: int, ef
 
 
 func _on_status_effect_expired(unit: Node, effect_name: String) -> void:
-	_log_message("  %s is no longer %s" % [unit.unit_name, effect_name])
+	_log_message("  %s is no longer %s" % [unit.unit_name, effect_name.replace("_", " ")])
 
 	# Update unit visuals
 	if unit.has_method("_update_visuals"):
 		unit._update_visuals()
+
+	# Refresh hover panel if this unit is selected
+	if selected_unit == unit:
+		_show_unit_info(unit)
 
 
 func _on_terrain_damage(unit: Node, damage: int, effect_name: String) -> void:

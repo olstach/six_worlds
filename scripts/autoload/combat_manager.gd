@@ -1737,6 +1737,14 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 		"value": value
 	})
 
+	# Show floating status applied text on the unit
+	if unit.has_method("show_status_applied"):
+		unit.show_status_applied(status)
+
+	# Update visuals to show new status icon
+	if unit.has_method("_update_visuals"):
+		unit._update_visuals()
+
 
 ## Remove negative status effects using the dispellable flag from status definitions.
 ## Only removes debuffs that are marked dispellable. Returns the count removed.
@@ -1761,8 +1769,12 @@ func _cleanse_status_effects(unit: Node, count: int) -> int:
 	to_remove.reverse()
 	for idx in to_remove:
 		var expired = unit.status_effects[idx]
+		var sname = expired.get("status", "")
 		unit.status_effects.remove_at(idx)
-		status_effect_expired.emit(unit, expired.get("status", ""))
+		# Show expired visual
+		if unit.has_method("show_status_expired"):
+			unit.show_status_expired(sname)
+		status_effect_expired.emit(unit, sname)
 
 	return removed
 
@@ -1826,6 +1838,9 @@ func _process_status_effects(unit: Node) -> bool:
 			if roll >= 15:  # DC 15 base save
 				saved = true
 				effect.duration = 0  # Will be removed below
+				# Show "Resisted!" floating text
+				if unit.has_method("show_resisted_text"):
+					unit.show_resisted_text()
 
 		# --- Duration: "until_save" statuses only expire on save ---
 		if effect_def.get("duration_type", "") == "until_save":
@@ -1850,6 +1865,9 @@ func _process_status_effects(unit: Node) -> bool:
 		# Process expiry callbacks before removing
 		_on_status_expired(unit, status_name, effect_def)
 		unit.status_effects.remove_at(idx)
+		# Show expired visual (grey strikethrough)
+		if unit.has_method("show_status_expired"):
+			unit.show_status_expired(status_name)
 		status_effect_expired.emit(unit, status_name)
 
 	# Process status spread (e.g. Burning can spread to adjacent units)

@@ -782,6 +782,150 @@ func show_combat_text(text: String, color: Color = Color(0.9, 0.9, 0.9)) -> void
 	tween.tween_callback(label.queue_free)
 
 
+# ============================================
+# STATUS EFFECT VISUALS
+# ============================================
+
+## Element/school → color mapping for status effect floating text
+const STATUS_ELEMENT_COLORS: Dictionary = {
+	"fire": Color(1.0, 0.4, 0.1),       # Orange-red
+	"water": Color(0.2, 0.6, 1.0),      # Blue
+	"ice": Color(0.5, 0.85, 1.0),       # Light blue
+	"cold": Color(0.5, 0.85, 1.0),      # Light blue
+	"earth": Color(0.7, 0.55, 0.3),     # Brown
+	"air": Color(0.7, 0.9, 1.0),        # Pale blue
+	"space": Color(0.8, 0.6, 1.0),      # Purple
+	"black": Color(0.6, 0.2, 0.6),      # Dark purple
+	"white": Color(1.0, 0.95, 0.7),     # Warm white
+	"holy": Color(1.0, 0.95, 0.7),      # Warm white
+	"poison": Color(0.4, 0.8, 0.2),     # Green
+	"physical": Color(0.9, 0.85, 0.8),  # Off-white
+}
+
+## Status category → color mapping for statuses without a clear element
+const STATUS_TYPE_COLORS: Dictionary = {
+	"cc": Color(0.9, 0.7, 0.2),         # Gold (crowd control)
+	"dot": Color(1.0, 0.4, 0.1),        # Orange (damage over time)
+	"hot": Color(0.3, 1.0, 0.5),        # Green (heal over time)
+	"buff": Color(0.3, 0.85, 1.0),      # Cyan (buffs)
+	"debuff": Color(0.9, 0.3, 0.3),     # Red (debuffs)
+	"vulnerability": Color(0.9, 0.5, 0.2),  # Dark orange
+	"immunity": Color(1.0, 0.95, 0.5),  # Bright yellow
+	"protection": Color(0.5, 0.7, 1.0), # Light blue
+	"aura": Color(0.8, 0.7, 1.0),       # Lavender
+	"shield": Color(0.6, 0.8, 1.0),     # Steel blue
+	"transformation": Color(0.9, 0.6, 1.0),  # Pink-purple
+	"resistance": Color(0.6, 0.8, 0.4), # Olive green
+	"divine": Color(1.0, 0.9, 0.4),     # Gold
+	"stealth": Color(0.5, 0.5, 0.6),    # Grey
+	"disruption": Color(0.8, 0.4, 0.2), # Rust
+	"delayed": Color(0.7, 0.3, 0.5),    # Maroon
+}
+
+## Color used for "Resisted!" text — same shade as "Miss!" (grey)
+const COLOR_RESISTED = Color(0.8, 0.8, 0.8)
+
+## Color used for expired status text (grey, faded)
+const COLOR_STATUS_EXPIRED = Color(0.6, 0.6, 0.6)
+
+
+## Get the appropriate color for a status effect name.
+## Uses the status definition's element or category to pick a color.
+func _get_status_color(status_name: String) -> Color:
+	var def = CombatManager.get_status_definition(status_name)
+	if def.is_empty():
+		return Color(0.9, 0.9, 0.9)  # Default white-ish
+
+	# Check if the status has an explicit element (for DoTs)
+	var element = def.get("element", "")
+	if element != "" and STATUS_ELEMENT_COLORS.has(element):
+		return STATUS_ELEMENT_COLORS[element]
+
+	# Infer element from the effects array
+	var effects = def.get("effects", [])
+	for fx in effects:
+		if "fire" in fx:
+			return STATUS_ELEMENT_COLORS["fire"]
+		if "poison" in fx:
+			return STATUS_ELEMENT_COLORS["poison"]
+		if "water" in fx:
+			return STATUS_ELEMENT_COLORS["water"]
+		if "ice" in fx or "frozen" in fx or "cold" in fx:
+			return STATUS_ELEMENT_COLORS["ice"]
+		if "air" in fx or "lightning" in fx:
+			return STATUS_ELEMENT_COLORS["air"]
+		if "space" in fx:
+			return STATUS_ELEMENT_COLORS["space"]
+		if "black" in fx:
+			return STATUS_ELEMENT_COLORS["black"]
+		if "holy" in fx or "white" in fx or "blessed" in fx:
+			return STATUS_ELEMENT_COLORS["white"]
+		if "physical" in fx:
+			return STATUS_ELEMENT_COLORS["physical"]
+
+	# Fall back to category color
+	var category = def.get("category", "")
+	if STATUS_TYPE_COLORS.has(category):
+		return STATUS_TYPE_COLORS[category]
+
+	# Fall back to type (buff/debuff)
+	var stype = def.get("type", "debuff")
+	if stype == "buff":
+		return STATUS_TYPE_COLORS["buff"]
+	return STATUS_TYPE_COLORS["debuff"]
+
+
+## Show floating text when a status effect is applied.
+## Displays the status name in the color associated with its element/category.
+## Positioned slightly higher than damage numbers to avoid overlap.
+func show_status_applied(status_name: String) -> void:
+	var color = _get_status_color(status_name)
+	# Use a human-readable name (replace underscores, capitalize)
+	var display_name = status_name.replace("_", " ")
+
+	var label = Label.new()
+	label.text = "+" + display_name
+	label.position = Vector2(0, -UNIT_SIZE.y / 2 - 28)
+	label.add_theme_font_size_override("font_size", 12)
+	label.add_theme_color_override("font_color", color)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	add_child(label)
+
+	var tween = create_tween()
+	tween.tween_property(label, "position:y", label.position.y - 25, 1.0)
+	tween.parallel().tween_property(label, "modulate:a", 0, 1.0)
+	tween.tween_callback(label.queue_free)
+
+
+## Show floating text when a status effect expires.
+## Displays the status name with strikethrough in grey, floating up and fading.
+func show_status_expired(status_name: String) -> void:
+	var display_name = status_name.replace("_", " ")
+
+	var label = RichTextLabel.new()
+	label.bbcode_enabled = true
+	# Strikethrough via BBCode
+	label.text = "[color=#999999][s]" + display_name + "[/s][/color]"
+	label.fit_content = true
+	label.scroll_active = false
+	label.position = Vector2(-30, -UNIT_SIZE.y / 2 - 28)
+	label.custom_minimum_size = Vector2(60, 20)
+	label.add_theme_font_size_override("normal_font_size", 12)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(label)
+
+	var tween = create_tween()
+	tween.tween_property(label, "position:y", label.position.y - 25, 1.2)
+	tween.parallel().tween_property(label, "modulate:a", 0, 1.2)
+	tween.tween_callback(label.queue_free)
+
+
+## Show "Resisted!" floating text when a saving throw succeeds.
+## Uses the same grey color as "Miss!" for consistency.
+func show_resisted_text() -> void:
+	show_combat_text("Resisted!", COLOR_RESISTED)
+
+
 ## Play attack lunge animation — move toward target and return
 ## target_world_pos is the world position of the defender
 func play_attack_animation(target_world_pos: Vector2) -> void:
