@@ -112,7 +112,9 @@ var last_combat_rewards: Dictionary = {}
 
 func _ready() -> void:
 	_load_spell_database()
-	print("CombatManager initialized with ", _spell_database.size(), " spells")
+	_load_status_definitions()
+	print("CombatManager initialized with ", _spell_database.size(), " spells, ",
+		_status_effects.size(), " status effects")
 
 
 ## Load spell definitions from JSON
@@ -137,7 +139,74 @@ func _load_spell_database() -> void:
 
 	var data = json.get_data()
 	_spell_database = data.get("spells", {})
-	_status_effects = data.get("status_effects", {})
+
+
+## Load status effect definitions from statuses.json and index by name.
+## Also derives blocks_actions / blocks_movement flags from the effects array
+## so _process_status_effects() and is_unit_incapacitated() work correctly.
+func _load_status_definitions() -> void:
+	var file_path = "res://resources/data/statuses.json"
+	if not FileAccess.file_exists(file_path):
+		push_warning("CombatManager: statuses.json not found")
+		return
+
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	if file == null:
+		return
+
+	var json = JSON.new()
+	var parse_result = json.parse(file.get_as_text())
+	file.close()
+
+	if parse_result != OK:
+		push_error("CombatManager: Failed to parse statuses.json")
+		return
+
+	var data = json.get_data()
+	var statuses_array = data.get("statuses", [])
+
+	# Index by name for O(1) lookup
+	for status in statuses_array:
+		var sname = status.get("name", "")
+		if sname == "":
+			continue
+
+		var effects = status.get("effects", [])
+
+		# Derive blocks_actions from effects array
+		if not status.has("blocks_actions"):
+			for fx in effects:
+				if fx in ["skip_turn", "cannot_act"]:
+					status["blocks_actions"] = true
+					break
+
+		# Derive blocks_movement from effects array
+		if not status.has("blocks_movement"):
+			for fx in effects:
+				if fx in ["cannot_move", "immobilized", "rooted"]:
+					status["blocks_movement"] = true
+					break
+
+		# Derive blocks_casting from effects array
+		if not status.has("blocks_casting"):
+			for fx in effects:
+				if fx in ["cannot_cast", "silenced"]:
+					status["blocks_casting"] = true
+					break
+
+		# Derive blocks_attacks from effects array
+		if not status.has("blocks_attacks"):
+			for fx in effects:
+				if fx in ["cannot_attack", "will_not_attack"]:
+					status["blocks_attacks"] = true
+					break
+
+		_status_effects[sname] = status
+
+
+## Get a status definition by name (for external use by CombatUnit, etc.)
+func get_status_definition(status_name: String) -> Dictionary:
+	return _status_effects.get(status_name, {})
 
 
 ## Start a new combat encounter
@@ -790,6 +859,9 @@ func _start_current_turn() -> void:
 	# Tick skill cooldowns
 	unit.tick_cooldowns()
 
+	# Process passive perk turn-start effects
+	_process_turn_start_perks(unit)
+
 	turn_started.emit(unit)
 
 
@@ -941,6 +1013,18 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 	if not can_act(1):
 		return {"success": false, "reason": "No actions remaining"}
 
+	# Forgetful / Pacified units cannot attack
+	if not can_unit_attack(attacker):
+		return {"success": false, "reason": "Cannot attack in current state"}
+
+	# Blinded units cannot use ranged attacks
+	var is_ranged_check = attacker.is_ranged_weapon() if attacker.has_method("is_ranged_weapon") else false
+	if is_ranged_check:
+		for fx in attacker.status_effects:
+			var fx_def = _status_effects.get(fx.get("status", ""), {})
+			if "cannot_use_ranged" in fx_def.get("effects", []):
+				return {"success": false, "reason": "Cannot use ranged attacks while blinded"}
+
 	# Check range (adjacent for melee, will expand for ranged later)
 	var distance = _grid_distance(attacker.grid_position, defender.grid_position)
 	var attack_range = attacker.get_attack_range()
@@ -1009,6 +1093,24 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 				# Track remaining charges (unit's weapon_oil already decremented)
 				var remaining = attacker.weapon_oil.get("attacks_remaining", 0) if not attacker.weapon_oil.is_empty() else 0
 				result["oil_attacks_left"] = remaining
+
+		# --- Reactive status effects on hit ---
+		_process_reactive_statuses(attacker, defender, result)
+
+		# --- Attacker lifesteal statuses ---
+		if attacker.has_status("Lifelink") or attacker.has_status("Blood_Hunger"):
+			var steal = int(result.damage * 0.5)
+			if steal > 0:
+				attacker.heal(steal)
+				unit_healed.emit(attacker, steal)
+				result["lifesteal"] = steal
+
+		# --- Passive perk on-hit effects ---
+		_process_on_hit_perks(attacker, defender, result)
+
+	else:
+		# Attack missed — check dodge/parry perks on defender
+		_process_on_dodge_perks(defender, attacker)
 
 	use_action(1)
 	unit_attacked.emit(attacker, defender, result)
@@ -1294,6 +1396,10 @@ func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dicti
 func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Dictionary:
 	if not can_act(1):
 		return {"success": false, "reason": "No actions remaining"}
+
+	# Silenced / blinded units cannot cast spells
+	if not can_unit_cast(caster):
+		return {"success": false, "reason": "Cannot cast while silenced"}
 
 	var spell = get_spell(spell_id)
 	if spell.is_empty():
@@ -1605,10 +1711,25 @@ func _apply_stat_modifier(unit: Node, stat: String, value: int, duration: int) -
 	# This is simplified - full implementation would modify get_* functions
 
 
-## Apply a status effect
+## Apply a status effect.
+## Non-stackable statuses refresh duration instead of stacking.
+## Stackable statuses (e.g. Burning) add additional instances.
 func _apply_status_effect(unit: Node, status: String, duration: int, value: int = 0) -> void:
 	if not "status_effects" in unit:
 		unit.set("status_effects", [])
+
+	var def = _status_effects.get(status, {})
+
+	# Check if already present and handle stacking
+	if unit.has_status(status):
+		if not def.get("stackable", false):
+			# Non-stackable: refresh to the longer duration
+			for existing in unit.status_effects:
+				if existing.get("status", "").to_lower() == status.to_lower():
+					existing.duration = maxi(existing.duration, duration)
+					if value > 0:
+						existing.value = value
+					return
 
 	unit.get("status_effects").append({
 		"status": status,
@@ -1617,7 +1738,8 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	})
 
 
-## Remove status effects
+## Remove negative status effects using the dispellable flag from status definitions.
+## Only removes debuffs that are marked dispellable. Returns the count removed.
 func _cleanse_status_effects(unit: Node, count: int) -> int:
 	if not "status_effects" in unit:
 		return 0
@@ -1628,22 +1750,27 @@ func _cleanse_status_effects(unit: Node, count: int) -> int:
 	for i in range(unit.status_effects.size()):
 		if removed >= count:
 			break
-		# Only cleanse negative effects
-		var status = unit.status_effects[i].status
-		if status in ["poisoned", "burning", "bleeding", "frozen", "stunned", "feared", "cursed"]:
+		var status_name = unit.status_effects[i].get("status", "")
+		var def = _status_effects.get(status_name, {})
+		# Only cleanse debuffs that are marked as dispellable
+		if def.get("type", "") == "debuff" and def.get("dispellable", false):
 			to_remove.append(i)
 			removed += 1
 
 	# Remove in reverse order to maintain indices
 	to_remove.reverse()
 	for idx in to_remove:
+		var expired = unit.status_effects[idx]
 		unit.status_effects.remove_at(idx)
+		status_effect_expired.emit(unit, expired.get("status", ""))
 
 	return removed
 
 
-## Process status effects at turn start
-## Returns true if the unit should skip their turn (incapacitated)
+## Process status effects at turn start.
+## Handles DoT, HoT, incapacitation, saving throws, escalating damage,
+## expiry callbacks, and status spread.
+## Returns true if the unit should skip their turn (incapacitated).
 func _process_status_effects(unit: Node) -> bool:
 	if not "status_effects" in unit or unit.status_effects.is_empty():
 		return false
@@ -1656,30 +1783,59 @@ func _process_status_effects(unit: Node) -> bool:
 		var status_name = effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})
 
-		# Process effect based on type
-		if effect_def.get("damage_per_turn", 0) > 0:
-			# Damage over time (burning, poisoned, bleeding)
-			var damage = effect_def.damage_per_turn
-			# Use value from effect if present (for variable damage)
+		# --- Damage over time ---
+		var dot = effect_def.get("damage_per_turn", 0)
+		if dot > 0:
+			var damage = dot
+			# Use per-instance value if present (for variable damage)
 			if effect.get("value", 0) > 0:
 				damage = effect.value
+			# Escalating DoT (Festering: damage increases each turn)
+			var escalation = effect_def.get("damage_increase_per_turn", 0)
+			if escalation > 0:
+				# Store accumulated escalation on the effect instance
+				var extra = effect.get("_escalation_ticks", 0) * escalation
+				damage += extra
+				effect["_escalation_ticks"] = effect.get("_escalation_ticks", 0) + 1
 			var element = effect_def.get("element", "physical")
 			apply_damage(unit, damage, element)
 			status_effect_triggered.emit(unit, status_name, damage, "damage")
 
-		elif effect_def.get("heal_per_turn", false):
-			# Healing over time (regenerating)
-			var heal_amount = effect.get("value", 5)  # Default 5 if not specified
-			unit.heal(heal_amount)
-			unit_healed.emit(unit, heal_amount)
-			status_effect_triggered.emit(unit, status_name, heal_amount, "heal")
+		# --- Heal over time ---
+		var hot_val = effect_def.get("heal_per_turn", 0)
+		if hot_val is bool:
+			hot_val = 0  # Legacy: some entries used true/false
+		if hot_val > 0 or "heal_per_turn" in effect_def:
+			var heal_amount = hot_val if hot_val > 0 else effect.get("value", 5)
+			if heal_amount > 0:
+				unit.heal(heal_amount)
+				unit_healed.emit(unit, heal_amount)
+				status_effect_triggered.emit(unit, status_name, heal_amount, "heal")
 
-		# Check for incapacitating effects
+		# --- Incapacitation check ---
 		if effect_def.get("blocks_actions", false):
 			skip_turn = true
 
-		# Decrement duration
-		effect.duration -= 1
+		# --- Saving throw (end-of-turn save to shake off CC) ---
+		var saved = false
+		if effect_def.get("save_at_end_of_turn", false) or "save_at_end_of_turn" in effect_def.get("effects", []):
+			var save_type = effect_def.get("save_type", "Constitution")
+			var attrs = unit.character_data.get("attributes", {})
+			var save_attr = attrs.get(save_type.to_lower(), 10)
+			var roll = randi_range(1, 20) + save_attr
+			if roll >= 15:  # DC 15 base save
+				saved = true
+				effect.duration = 0  # Will be removed below
+
+		# --- Duration: "until_save" statuses only expire on save ---
+		if effect_def.get("duration_type", "") == "until_save":
+			if not saved:
+				# Don't decrement — only saves can remove this
+				pass
+			# If saved, duration is already 0 from above
+		else:
+			# Normal duration decrement
+			effect.duration -= 1
 
 		# Mark for removal if expired
 		if effect.duration <= 0:
@@ -1690,13 +1846,143 @@ func _process_status_effects(unit: Node) -> bool:
 	for idx in effects_to_remove:
 		var expired_effect = unit.status_effects[idx]
 		var status_name = expired_effect.get("status", "")
+		var effect_def = _status_effects.get(status_name, {})
+		# Process expiry callbacks before removing
+		_on_status_expired(unit, status_name, effect_def)
 		unit.status_effects.remove_at(idx)
 		status_effect_expired.emit(unit, status_name)
+
+	# Process status spread (e.g. Burning can spread to adjacent units)
+	_process_status_spread(unit)
 
 	# Also process stat modifiers (buff/debuff duration tick)
 	_process_stat_modifiers(unit)
 
 	return skip_turn
+
+
+## Handle special effects that trigger when a status expires.
+## E.g. Doomed kills the unit, Infected spawns a fungal creature and applies Bleeding.
+func _on_status_expired(unit: Node, status_name: String, def: Dictionary) -> void:
+	var effects = def.get("effects", [])
+	if effects.is_empty():
+		return
+
+	if "death_on_expire" in effects:
+		# Doomed — instant kill
+		apply_damage(unit, unit.max_hp * 10, "black")
+
+	if "damage_on_expire" in effects:
+		var expire_dmg = def.get("expire_damage", 20)
+		apply_damage(unit, expire_dmg, "physical")
+
+	if "bleed_on_expire" in effects:
+		_apply_status_effect(unit, "Bleeding", 3)
+
+	# Spawn-on-expire effects (Infected spawns fungal creature) — emit signal for
+	# encounter system to handle, since we don't create units directly here
+	if "spawn_fungal_spawn_on_expire" in effects:
+		# TODO: Wire to encounter spawn system
+		push_warning("Status expired with spawn effect: ", status_name, " on ", unit.unit_name)
+
+
+## Process status spread — statuses with "spread" data can jump to adjacent units.
+## Called once per unit per turn, after normal status processing.
+func _process_status_spread(unit: Node) -> void:
+	if not "status_effects" in unit or unit.status_effects.is_empty():
+		return
+
+	for effect in unit.status_effects:
+		var status_name = effect.get("status", "")
+		var def = _status_effects.get(status_name, {})
+		var spread = def.get("spread", {})
+		if spread.is_empty():
+			continue
+
+		var chance = _spread_chance_to_float(spread.get("chance", "none"))
+		if chance <= 0.0 or randf() > chance:
+			continue
+
+		# Find adjacent units to spread to
+		var adjacent = _get_units_in_range(unit, 1)
+		for adj in adjacent:
+			if adj.is_dead or adj.is_bleeding_out:
+				continue
+			if not adj.has_status(status_name):
+				var spread_duration = def.get("default_duration", 2)
+				_apply_status_effect(adj, status_name, spread_duration)
+				break  # Spread to one unit per tick
+
+
+## Convert spread chance string to float probability
+func _spread_chance_to_float(chance_str: String) -> float:
+	match chance_str:
+		"low":
+			return 0.15
+		"medium":
+			return 0.30
+		"high":
+			return 0.50
+		_:
+			return 0.0
+
+
+## Get all alive units within a given range of a source unit
+func _get_units_in_range(source: Node, radius: int) -> Array[Node]:
+	var result: Array[Node] = []
+	for u in all_units:
+		if u == source or u.is_dead:
+			continue
+		if _grid_distance(source.grid_position, u.grid_position) <= radius:
+			result.append(u)
+	return result
+
+
+## Process reactive status effects when a unit is hit by a melee/ranged attack.
+## Handles Fireshield, Poison_Skin, Pain_Mirror, and similar "on-hit" effects.
+func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictionary) -> void:
+	if not "status_effects" in defender:
+		return
+
+	var is_melee = _grid_distance(attacker.grid_position, defender.grid_position) <= 1
+
+	for effect in defender.status_effects:
+		var status_name = effect.get("status", "")
+		var def = _status_effects.get(status_name, {})
+		var effects = def.get("effects", [])
+
+		# Fireshield — deal fire damage to melee attackers
+		if "fire_damage_to_melee_attackers" in effects and is_melee:
+			var fire_dmg = 5 + effect.get("value", 0)
+			apply_damage(attacker, fire_dmg, "fire")
+			status_effect_triggered.emit(defender, status_name, fire_dmg, "reactive")
+
+		# Poison Skin — poison melee attackers
+		if "poisons_melee_attackers" in effects and is_melee:
+			if not attacker.has_status("Poisoned"):
+				_apply_status_effect(attacker, "Poisoned", 3)
+				status_effect_triggered.emit(defender, status_name, 0, "reactive")
+
+		# Pain Mirror — reflect 50% damage to attacker
+		if "deal_50_percent_damage_taken_to_attacker" in effects:
+			var reflect = int(result.damage * 0.5)
+			if reflect > 0:
+				apply_damage(attacker, reflect, "physical")
+				status_effect_triggered.emit(defender, status_name, reflect, "reactive")
+
+		# Lightning aura — damages (and optionally stuns) melee attackers
+		if "lightning_aura_damages_attackers" in effects and is_melee:
+			var lightning_dmg = 8 + effect.get("value", 0)
+			apply_damage(attacker, lightning_dmg, "air")
+			status_effect_triggered.emit(defender, status_name, lightning_dmg, "reactive")
+
+		if "lightning_aura_damages_and_stuns" in effects and is_melee:
+			var lightning_dmg = 10 + effect.get("value", 0)
+			apply_damage(attacker, lightning_dmg, "air")
+			# 30% chance to stun
+			if randf() < 0.3:
+				_apply_status_effect(attacker, "Stunned", 1)
+			status_effect_triggered.emit(defender, status_name, lightning_dmg, "reactive")
 
 
 ## Process stat modifier durations
@@ -1746,14 +2032,18 @@ func _process_terrain_effects(unit: Node) -> void:
 		if effect != CombatGrid.TerrainEffect.BLESSED:
 			return
 
-	# Apply effect based on type
+	# Apply effect based on type — terrain now also applies matching status effects
 	match effect:
 		CombatGrid.TerrainEffect.FIRE:
 			apply_damage(unit, value, "fire")
+			if not unit.has_status("Burning"):
+				_apply_status_effect(unit, "Burning", 2)
 			terrain_damage.emit(unit, value, effect_name)
 
 		CombatGrid.TerrainEffect.POISON:
 			apply_damage(unit, value, "physical")
+			if not unit.has_status("Poisoned"):
+				_apply_status_effect(unit, "Poisoned", 3)
 			terrain_damage.emit(unit, value, effect_name)
 
 		CombatGrid.TerrainEffect.ACID:
@@ -1762,6 +2052,9 @@ func _process_terrain_effects(unit: Node) -> void:
 
 		CombatGrid.TerrainEffect.CURSED:
 			apply_damage(unit, value, "black")
+			# 30% chance to apply Cursed debuff
+			if randf() < 0.3 and not unit.has_status("Cursed"):
+				_apply_status_effect(unit, "Cursed", 2)
 			terrain_damage.emit(unit, value, effect_name)
 
 		CombatGrid.TerrainEffect.BLESSED:
@@ -1770,8 +2063,9 @@ func _process_terrain_effects(unit: Node) -> void:
 			terrain_heal.emit(unit, value, effect_name)
 
 		CombatGrid.TerrainEffect.ICE:
-			# Ice doesn't deal damage but could apply slowed effect
-			pass
+			# Ice applies Slowed (no damage)
+			if not unit.has_status("Slowed") and not unit.has_status("Frozen"):
+				_apply_status_effect(unit, "Slowed", 1)
 
 
 ## Create ground effects on tiles from AoE damage (fire leaves fire, ice leaves ice, etc.)
@@ -1822,6 +2116,34 @@ func can_unit_move(unit: Node) -> bool:
 		var status_name = effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})
 		if effect_def.get("blocks_movement", false):
+			return false
+
+	return true
+
+
+## Check if unit can cast spells (not silenced/blinded)
+func can_unit_cast(unit: Node) -> bool:
+	if not "status_effects" in unit:
+		return true
+
+	for effect in unit.status_effects:
+		var status_name = effect.get("status", "")
+		var effect_def = _status_effects.get(status_name, {})
+		if effect_def.get("blocks_casting", false):
+			return false
+
+	return true
+
+
+## Check if unit can make weapon attacks (not Forgetful/Pacified)
+func can_unit_attack(unit: Node) -> bool:
+	if not "status_effects" in unit:
+		return true
+
+	for effect in unit.status_effects:
+		var status_name = effect.get("status", "")
+		var effect_def = _status_effects.get(status_name, {})
+		if effect_def.get("blocks_attacks", false):
 			return false
 
 	return true
@@ -2855,3 +3177,143 @@ func unit_has_required_weapon(unit: Node, skill_name: String) -> bool:
 		return true
 
 	return false
+
+
+# ============================================
+# PASSIVE PERK COMBAT INTEGRATION
+# ============================================
+# Framework for checking passive perks during combat events.
+# Passive perks (no combat_data) describe effects in text; this section
+# implements the mechanical effects for the most impactful ones.
+#
+# Perk checking helpers:
+# - _unit_has_perk(unit, perk_id) -> bool
+# - _get_passive_stat_bonus(unit, stat) -> int/float
+# - _process_on_hit_perks(attacker, defender, result) -> void
+# - _process_on_dodge_perks(unit, attacker) -> void
+# - _process_turn_start_perks(unit) -> void
+
+
+## Check if a combat unit has a specific perk.
+## Works for both CombatUnit nodes and basic unit nodes with character_data.
+func _unit_has_perk(unit: Node, perk_id: String) -> bool:
+	var char_data = unit.character_data if "character_data" in unit else {}
+	return PerkSystem.has_perk(char_data, perk_id)
+
+
+## Get passive perk stat bonuses for a unit.
+## Called by CombatUnit stat getters to include perk effects.
+## Returns the total bonus/penalty for the given stat.
+func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
+	var total := 0
+	var char_data = unit.character_data if "character_data" in unit else {}
+	if not char_data.has("perks"):
+		return 0
+
+	match stat:
+		"armor":
+			# Parry: 20% of Attack added to Armor while wielding a sword
+			if PerkSystem.has_perk(char_data, "parry"):
+				if unit.has_method("get_equipped_weapon"):
+					var weapon = unit.get_equipped_weapon()
+					if weapon.get("type", "") == "sword":
+						var attack = unit.get_accuracy() if unit.has_method("get_accuracy") else 0
+						total += int(attack * 0.2)
+			# Improved Parry: 40% of Attack added to Armor
+			if PerkSystem.has_perk(char_data, "improved_parry"):
+				if unit.has_method("get_equipped_weapon"):
+					var weapon = unit.get_equipped_weapon()
+					if weapon.get("type", "") == "sword":
+						var attack = unit.get_accuracy() if unit.has_method("get_accuracy") else 0
+						# Improved replaces base parry bonus (not additive)
+						total += int(attack * 0.2)  # Extra 20% on top of parry's 20%
+			# Stone Adept: +10% Armor (use base derived armor to avoid recursion)
+			if PerkSystem.has_perk(char_data, "stone_adept"):
+				var derived = char_data.get("derived", {})
+				total += int(derived.get("armor", 0) * 0.1)
+
+		"damage":
+			# Use base derived damage to avoid recursion (get_attack_damage calls us)
+			var derived_dmg = char_data.get("derived", {}).get("damage", 0)
+			# All In: +25% axe damage below 50% HP
+			if PerkSystem.has_perk(char_data, "all_in"):
+				if "current_hp" in unit and "max_hp" in unit:
+					if unit.current_hp < unit.max_hp / 2:
+						if unit.has_method("get_equipped_weapon"):
+							if unit.get_equipped_weapon().get("type", "") == "axe":
+								total += int(derived_dmg * 0.25)
+			# Weapon Master: +10% all weapon damage
+			if PerkSystem.has_perk(char_data, "weapon_master"):
+				total += int(derived_dmg * 0.1)
+
+		"max_hp":
+			# Stone Adept: +10% max HP
+			if PerkSystem.has_perk(char_data, "stone_adept"):
+				total += int(unit.max_hp * 0.1) if "max_hp" in unit else 0
+
+		"movement":
+			# Wind Adept: +1 permanent Movement
+			if PerkSystem.has_perk(char_data, "wind_adept"):
+				total += 1
+
+		"crit_chance":
+			# Flame Fist: crits cause 3-turn burn (checked in on_hit, but crit bonus here)
+			pass
+
+	return total
+
+
+## Process passive perks that trigger when a unit hits an enemy.
+## Called from attack_unit() after damage is applied.
+func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -> void:
+	if not result.get("hit", false):
+		return
+
+	# Flame Fist: crits cause 3-turn burn on unarmed attacks
+	if _unit_has_perk(attacker, "flame_fist") and result.get("crit", false):
+		if attacker.has_method("get_equipped_weapon"):
+			var weapon = attacker.get_equipped_weapon()
+			if weapon.is_empty() or weapon.get("type", "") in ["", "unarmed"]:
+				_apply_status_effect(defender, "Burning", 3)
+
+	# Thunder Breaker: stuns also silence
+	if _unit_has_perk(attacker, "thunder_breaker"):
+		if attacker.has_method("get_equipped_weapon"):
+			if attacker.get_equipped_weapon().get("type", "") == "mace":
+				if defender.has_status("Stunned"):
+					_apply_status_effect(defender, "Silenced", 1)
+
+	# Anatomy Knowledge: +10% damage vs biological enemies (already calculated in damage)
+	# Shadow Strike: stealth attacks +50% damage & Silence (stealth system not yet implemented)
+	# Blood in the Wind: +movement when enemies bleeding (checked in stat getter)
+
+
+## Process passive perks that trigger when a unit dodges an attack.
+## Called from attack_unit() when the attack misses.
+func _process_on_dodge_perks(unit: Node, attacker: Node) -> void:
+	# Riposte: When you dodge or parry, next sword attack costs -2 Stamina and +25% damage
+	if _unit_has_perk(unit, "riposte"):
+		if unit.has_method("get_equipped_weapon"):
+			if unit.get_equipped_weapon().get("type", "") == "sword":
+				# Apply a temporary riposte buff (stored as status effect for tracking)
+				_apply_status_effect(unit, "Riposte_Ready", 1, 25)  # value = damage bonus %
+
+
+## Process passive perks at the start of a unit's turn.
+## Called from _start_current_turn().
+func _process_turn_start_perks(unit: Node) -> void:
+	# Diamond Body: +25% status resist (handled via saving throw bonuses)
+	# Field Commander: companions reposition — only applies round 1 (handled in deployment)
+
+	# Blood in the Wind: +movement when enemies are bleeding
+	if _unit_has_perk(unit, "blood_in_the_wind"):
+		var any_bleeding = false
+		for enemy in get_team_units(1 - unit.team if "team" in unit else 1):
+			if enemy.has_status("Bleeding"):
+				any_bleeding = true
+				break
+		if any_bleeding:
+			_apply_stat_modifier(unit, "movement", 1, 1)
+
+	# Soothing Presence aura (perk-granted, not status-granted)
+	# Handled via status effect system — the status applies the aura
