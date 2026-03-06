@@ -125,23 +125,26 @@ Last Updated: 2026-03-06
 Three categories of interactive map objects. Hell is the target realm for initial content.
 
 **Category 1 — Simples** (one-time activation, permanent after use)
-- [ ] Simple object type in MapManager (flag: used, no reset on return)
-- [ ] Effect types: mana restore, HP restore, temp stat/skill bonus (lasts until next combat or event with checks), temp loot chance buff
-- [ ] Cursed simples: look identical but deal a negative effect (penalty to a stat, drain XP, apply status) — rare, visually distinct after triggered
-- [ ] Hell content: frozen spring (mana), ice shrine (cold resist), burning altar (fire spellpower), bone pile (find weapon), lava vent (fire resist), pain altar (STR buff at HP cost)
+- [x] ~~Simple object type in MapManager~~ — DONE (PICKUP ObjectType with one_time flag, reward system: gold/xp/item/heal/mana/buff/damage/cleanse/karma)
+- [x] ~~Effect types~~ — DONE (mana restore, HP restore, temp stat/skill buff with combats_remaining, loot chance buff, XP gain buff, item drops)
+- [x] ~~Cursed simples~~ — DONE (damage reward type, hell config has "Warm Glow" and "Flickering Light" cursed pickups)
+- [x] ~~Hell content~~ — DONE (25+ pickup templates in hell.json map config: Frozen Fountain, Ice Shrine, Burning Altar, Pain Altar, Lava Vent, Mourning Flame, Prayer Flags, etc.)
+- [ ] Bone pile (find weapon) simple — not yet in hell pickup pool
 
 **Category 2 — Traders** (peaceful default, with steal/attack/donate karma branches)
 Roles to fulfill per realm (not specific object types):
-- [ ] General shop (basic items)
-- [ ] Blacksmith (weapons, armor, weapon oils)
-- [ ] Fletcher (ranged weapons, throwables, light armor)
+- [x] ~~General shop (basic items)~~ — DONE (hell_merchant, frozen_merchant, ember_merchant, wandering_peddler, general_store in shops.json)
+- [ ] Blacksmith (weapons, armor, weapon oils) — not yet a distinct shop
+- [ ] Fletcher (ranged weapons, throwables, light armor) — not yet a distinct shop
 - [ ] Healer (healing potions, white magic scrolls; rare locations only: raise dead companion for high gold cost + karma implications)
-- [ ] Alchemist (potions, bombs, oils)
-- [ ] Magic shop (scrolls, charms, magic foci — see magic foci TODO below)
-- [ ] Trainer (teaches 1-3 skills or attributes; one-time per trainer instance; cap = max level trainer can teach, e.g. a wandering apprentice might cap at Lv 3, a master at Lv 7)
+- [ ] Alchemist (potions, bombs, oils) — not yet a distinct shop
+- [x] ~~Magic shop (scrolls, charms, magic foci)~~ — DONE (demon_sorcerer in shops.json sells spells + reagents)
+- [x] ~~Trainer (teaches skills/attributes)~~ — DONE (wandering_sage trains White/Sorcery/Yoga + Focus/Awareness; weapon_master trains 7 combat skills + Str/Fin; ShopSystem has full training tab)
 - [ ] Multi-function locations (towns, camps) use tab UI in event window — 3-4 functions per location
 - [ ] First-visit event hook for towns (simple choice: rumors, discount, hidden object)
-- [ ] Hell content: Wretched Market (general), Infernal Forge (blacksmith + trainer: Axes/Might), Bone Archer Camp (fletcher + trainer: Ranged/Guile), Mercy Ward (healer, ironic name), Brimstone Lab (alchemist), Void Scribe's Den (magic shop + trainer: Black Magic), Warden's Pit (trainer: Spears/Armor + Might cap 5)
+- [ ] Steal/attack/donate karma branches on trader interactions
+- [ ] Trainer caps (limit max level a trainer can teach)
+- [ ] Hell-specific named locations: Infernal Forge (blacksmith + trainer: Axes/Might), Bone Archer Camp (fletcher + trainer: Ranged/Guile), Mercy Ward (healer), Brimstone Lab (alchemist), Warden's Pit (trainer: Spears/Armor + Might cap 5)
 
 **Category 3 — Event Chains** (1-3 choices deep, world/subregion specific)
 - [ ] Event chain data format (prerequisites, follow-up event IDs, outcome state flags)
@@ -163,7 +166,7 @@ Roles to fulfill per realm (not specific object types):
 - [ ] Event chains and prerequisites (see Map Interactibles above)
 - [x] Hell realm events: 39 total across both zones (19 cold_hell pool + 17 fire_hell pool + 2 fixed landmarks + 1 shared). Includes: Bone Arena, Suffering Sage, Suspicious Gift, Ice Demon Toll, Cursed Pilgrim, Frozen Army (cold); Pyromancer's Challenge, Demon Marketplace, Burning Library, Sinner Gang, Forge Spirit, The Invitation (fire); A Sigh of Relief (both zones)
 - [ ] More hell events: both zones at target density (~15+ each). Next focus: event chains and trader NPCs
-- [ ] Category 2 traders for hell (Wretched Market, Infernal Forge, Bone Archer Camp, Mercy Ward, Brimstone Lab, Void Scribe's Den, Warden's Pit)
+- [ ] Remaining Category 2 traders for hell: Infernal Forge (blacksmith), Bone Archer Camp (fletcher), Mercy Ward (healer), Brimstone Lab (alchemist), Warden's Pit (trainer) — general shops and magic/trainer shops already exist (frozen_merchant, ember_merchant, wandering_peddler, demon_sorcerer, wandering_sage, weapon_master)
 - [ ] Category 3 event chains for hell (soul caravan ambush, devil deserter, contraband deal, chained pilgrim, rival party)
 - [ ] More events per realm (aim for 20+ per remaining realm)
 
@@ -185,6 +188,7 @@ Roles to fulfill per realm (not specific object types):
 - [ ] Test terrain effect interactions with spells
 - [ ] Balance pass on spell mana costs vs effects
 - [ ] Test all 326 spells load and cast correctly
+- [ ] **Perk effect audit**: Verify all passive perks are actually wired into gameplay. PerkSystem stores perks on characters and provides base skill bonuses + affinity bonuses, but combat_manager.gd never references PerkSystem — passive perk effects (damage bonuses, resistances, proc chances, etc.) may be data-only with no combat integration. Active skills (with combat_data) work. Need to check each perk's effect_type and confirm it's applied somewhere.
 
 ---
 
