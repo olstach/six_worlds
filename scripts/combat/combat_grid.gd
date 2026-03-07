@@ -64,7 +64,7 @@ const ENEMY_DEPLOY_COLUMNS: int = 4   # Last 4 columns for enemy deployment
 enum TileType { FLOOR, WALL, PIT, WATER, DIFFICULT }
 
 # Terrain effects (hazards that can be on tiles)
-enum TerrainEffect { NONE, FIRE, ICE, POISON, ACID, BLESSED, CURSED }
+enum TerrainEffect { NONE, FIRE, ICE, POISON, ACID, BLESSED, CURSED, WET, STORMY, VOID }
 
 # Obstacle types (objects sitting on tiles that provide cover)
 enum ObstacleType { NONE, TREE, ROCK, PILLAR, BARRICADE }
@@ -765,11 +765,17 @@ func add_terrain_effect(grid_pos: Vector2i, effect: int, duration: int = 3, valu
 				value = 3  # Healing per turn
 			TerrainEffect.CURSED:
 				value = 2  # Damage per turn
+			TerrainEffect.WET:
+				value = 0  # No damage, slows and grants water vulnerability
+			TerrainEffect.STORMY:
+				value = 3  # Air damage per turn, stun chance
+			TerrainEffect.VOID:
+				value = 5  # Space damage per turn
 
 	tile.set_effect(effect, duration, value)
 
-	# Update movement cost for ice
-	if effect == TerrainEffect.ICE:
+	# Update movement cost for ice/wet terrain
+	if effect == TerrainEffect.ICE or effect == TerrainEffect.WET:
 		tile.movement_cost = 2
 
 	_update_effect_visuals()
@@ -847,7 +853,7 @@ func has_damaging_effect(grid_pos: Vector2i) -> bool:
 	if tile == null:
 		return false
 
-	return tile.effect in [TerrainEffect.FIRE, TerrainEffect.POISON, TerrainEffect.ACID, TerrainEffect.CURSED]
+	return tile.effect in [TerrainEffect.FIRE, TerrainEffect.POISON, TerrainEffect.ACID, TerrainEffect.CURSED, TerrainEffect.STORMY, TerrainEffect.VOID]
 
 
 ## Check if a tile has a beneficial effect
@@ -868,6 +874,9 @@ func get_effect_name(effect: int) -> String:
 		TerrainEffect.ACID: return "Acid"
 		TerrainEffect.BLESSED: return "Blessed Ground"
 		TerrainEffect.CURSED: return "Cursed Ground"
+		TerrainEffect.WET: return "Wet Ground"
+		TerrainEffect.STORMY: return "Storm"
+		TerrainEffect.VOID: return "Void Rift"
 		_: return ""
 
 

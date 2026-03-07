@@ -87,6 +87,7 @@ const RARITY_DROP_WEIGHTS: Dictionary = {
 const MAX_RANDOM_DROPS: int = 5
 
 # Damage type → terrain effect mapping (only elements that leave ground effects)
+# Physical subtypes (slashing/crushing/piercing/physical) intentionally excluded — no terrain.
 const DAMAGE_TYPE_TO_TERRAIN_EFFECT: Dictionary = {
 	"fire": 1,        # TerrainEffect.FIRE
 	"ice": 2,         # TerrainEffect.ICE
@@ -96,6 +97,10 @@ const DAMAGE_TYPE_TO_TERRAIN_EFFECT: Dictionary = {
 	"white": 5,       # TerrainEffect.BLESSED
 	"holy": 5,        # TerrainEffect.BLESSED
 	"black": 6,       # TerrainEffect.CURSED
+	"water": 7,       # TerrainEffect.WET
+	"air": 8,         # TerrainEffect.STORMY
+	"space": 9,       # TerrainEffect.VOID
+	"solar": 1,       # TerrainEffect.FIRE (solar leaves fire)
 }
 
 # Deployment state
@@ -2355,6 +2360,24 @@ func _process_terrain_effects(unit: Node) -> void:
 			if not unit.has_status("Slowed") and not unit.has_status("Frozen"):
 				_apply_status_effect(unit, "Slowed", 1)
 
+		CombatGrid.TerrainEffect.WET:
+			# Wet ground slows and makes units vulnerable to ice/air damage
+			if not unit.has_status("Slowed"):
+				_apply_status_effect(unit, "Slowed", 1)
+			terrain_damage.emit(unit, 0, effect_name)
+
+		CombatGrid.TerrainEffect.STORMY:
+			# Storm terrain deals air damage and has a chance to stun
+			apply_damage(unit, value, "air")
+			if randf() < 0.2 and not unit.has_status("Stunned"):
+				_apply_status_effect(unit, "Stunned", 1)
+			terrain_damage.emit(unit, value, effect_name)
+
+		CombatGrid.TerrainEffect.VOID:
+			# Void terrain deals space damage
+			apply_damage(unit, value, "space")
+			terrain_damage.emit(unit, value, effect_name)
+
 
 ## Create ground effects on tiles from AoE damage (fire leaves fire, ice leaves ice, etc.)
 ## Also damages obstacles caught in the area
@@ -2372,8 +2395,14 @@ func _create_ground_effects_from_damage(center: Vector2i, radius: int, damage_ty
 			combat_grid.damage_obstacle(pos, 10, damage_type)
 
 	var effect_type = DAMAGE_TYPE_TO_TERRAIN_EFFECT.get(damage_type, -1)
+	# Handle composite damage types (e.g., "fire_black" → fire terrain, "physical_fire" → fire)
+	if effect_type < 0 and "_" in damage_type:
+		for part in damage_type.split("_"):
+			effect_type = DAMAGE_TYPE_TO_TERRAIN_EFFECT.get(part, -1)
+			if effect_type >= 0:
+				break  # Use the first element that maps to a terrain effect
 	if effect_type < 0:
-		return  # No ground effect for this damage type (physical, air, space, etc.)
+		return  # No ground effect for this damage type (physical, etc.)
 
 	for pos in tiles_in_area:
 		var tile = combat_grid.tiles.get(pos)
