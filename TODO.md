@@ -1,11 +1,6 @@
 # Six Worlds - TODO
 
-<<<<<<< HEAD
-Last Updated: 2026-02-28
-=======
 Last Updated: 2026-03-06
->>>>>>> origin/claude/implement-cold-hell-events-P5yc0
-
 ---
 
 ## Completed Systems
@@ -19,12 +14,8 @@ Last Updated: 2026-03-06
 - [x] ShopSystem singleton (buy/sell, spell learning, skill training, discounts)
 - [x] CombatManager singleton (full tactical combat system, loot drops with supply/reagent integration)
 - [x] PerkSystem singleton (skill perks, cross perks, base bonuses, affinity bonuses)
-<<<<<<< HEAD
-- [x] SaveManager singleton (save/load game state, 3 slots + autosave)
-=======
 - [x] EnemySystem singleton (enemy archetypes, role-based stats, inventory generation)
-- [x] SaveManager singleton (save/load game state)
->>>>>>> origin/claude/implement-cold-hell-events-P5yc0
+- [x] SaveManager singleton (save/load game state, 3 slots + autosave)
 - [x] MapManager singleton (overworld map, pathfinding, mobs, objects)
 - [x] AudioManager singleton (SFX system, 28 sounds × 6 variants)
 - [x] Supply system (Food/Herbs/Scrap/Reagents with passive consumption, starvation, save/load)
@@ -428,7 +419,6 @@ Still needed:
 - Save/load integration into all major systems
 - Hell enemy archetypes data file
 
-<<<<<<< HEAD
 ### 2026-02-28: Bug Fixes, Mantra Toggle, Hands Mirroring, Supply HUD
 - **Supply system** completed: Food/Herbs/Scrap/Reagents with per-step overworld consumption, starvation, passive skill processing (Medicine/Smithing/Alchemy), HUD counters on overworld
 - **Alchemy crafting tiers**: passive per-step brewing from unlocked item pools; player-togglable
@@ -440,7 +430,6 @@ Still needed:
 - **Attack range** fixed: melee now highlights all 8 adjacent tiles (Chebyshev square) not just 4 (diamond)
 - **Frozen Stupa "0"**: fixed pickup range resolver misidentifying 2-string item arrays as numeric ranges
 - **Charm tooltips**: now show mana reduction % and spellpower bonus % in item tooltip
-=======
 ### 2026-03-06: Reagents, Alchemy Crafting Tiers, Resource-Gathering Perks
 - **Reagents (4th supply type)**: Added to supplies.json, game_state.gd, items.json. Starting amount 10, shop price 8g (scarcer than herbs/scrap). Toggle for alchemy passive brewing.
 - **Alchemy crafting tiers** (perk-unlocked, 3 branches × 3 tiers):
@@ -451,7 +440,6 @@ Still needed:
 - **Resource-gathering perks**: Alchemical Recycling (Alchemy 3), Herbalist (Medicine 3), Scavenger (Smithing 3) — each feeds its own supply chain from combat
 - **Loot integration**: Reagent drops 25% base / 50% from casters. Raw Reagents + Alchemist's Pouch items. Available in magic shops only.
 - **Supply system polish**: Renamed Crafting → Smithing across skills/perks. Ammo on all ranged weapons. Steeper Logistics scaling. Supply loot drops in combat_manager.
->>>>>>> origin/claude/implement-cold-hell-events-P5yc0
 
 ### 2026-02-28: Equipment & Talisman Generation System
 - Renamed consumable talismans → charms (19 items: mana cost reduction consumables)

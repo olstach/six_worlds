@@ -630,7 +630,6 @@ func set_skill_cooldown(perk_id: String, turns: int) -> void:
 	skill_cooldowns[perk_id] = turns
 
 
-<<<<<<< HEAD
 ## Toggle a mantra on/off. Returns true if the mantra is now active.
 func toggle_mantra(perk_id: String) -> bool:
 	if perk_id in active_mantras:
@@ -647,10 +646,7 @@ func tick_mantras() -> void:
 		active_mantras[perk_id] += 1
 
 
-## Get spellpower
-=======
 ## Get spellpower (includes status effect bonuses)
->>>>>>> origin/claude/implement-cold-hell-events-P5yc0
 func get_spellpower() -> int:
 	var derived = character_data.get("derived", {})
 	return derived.get("spellpower", 0) + _get_status_stat_bonus("spellpower")
