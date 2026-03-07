@@ -1981,7 +1981,7 @@
       "damage": 100,
       "damage_type": "water",
       "statuses_caused": [
-        "Confusion"
+        "Confused"
       ],
       "special": {
         "status_duration_range": [

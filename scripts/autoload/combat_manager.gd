@@ -87,6 +87,7 @@ const RARITY_DROP_WEIGHTS: Dictionary = {
 const MAX_RANDOM_DROPS: int = 5
 
 # Damage type → terrain effect mapping (only elements that leave ground effects)
+# Physical subtypes (slashing/crushing/piercing/physical) intentionally excluded — no terrain.
 const DAMAGE_TYPE_TO_TERRAIN_EFFECT: Dictionary = {
 	"fire": 1,        # TerrainEffect.FIRE
 	"ice": 2,         # TerrainEffect.ICE
@@ -96,6 +97,10 @@ const DAMAGE_TYPE_TO_TERRAIN_EFFECT: Dictionary = {
 	"white": 5,       # TerrainEffect.BLESSED
 	"holy": 5,        # TerrainEffect.BLESSED
 	"black": 6,       # TerrainEffect.CURSED
+	"water": 7,       # TerrainEffect.WET
+	"air": 8,         # TerrainEffect.STORMY
+	"space": 9,       # TerrainEffect.VOID
+	"solar": 1,       # TerrainEffect.FIRE (solar leaves fire)
 }
 
 # Deployment state
@@ -482,7 +487,8 @@ func _get_modified_rarity_weights(difficulty_ratio: float, luck: int) -> Diction
 
 
 ## Roll a rarity tier then pick a random item of that rarity from the allowed types.
-## Falls back to lower rarities if no items exist at the rolled tier.
+## Uses procedural generation when no static items match or when the rarity roll
+## favors a generated item (higher rarities are more likely to be procedural).
 func _pick_item_from_types(allowed_types: Array[String], rarity_weights: Dictionary) -> String:
 	# Build weighted rarity list in descending order of quality
 	var rarity_order: Array[String] = ["legendary", "epic", "rare", "uncommon", "common"]
@@ -503,7 +509,22 @@ func _pick_item_from_types(allowed_types: Array[String], rarity_weights: Diction
 			rolled_rarity = rarity
 			break
 
-	# Try to find an item at the rolled rarity, fall back to lower
+	# Check if we should generate a procedural item instead of picking static
+	# Higher rarities have a higher chance of being procedural
+	var proc_chance: float = ItemSystem.PROCEDURAL_CHANCE_BY_RARITY.get(rolled_rarity, 0.15)
+	var generatable_types: Array[String] = []
+	for item_type in allowed_types:
+		if ItemSystem.can_generate_type(item_type):
+			generatable_types.append(item_type)
+
+	if not generatable_types.is_empty() and randf() < proc_chance:
+		# Generate a procedural item of a random allowed type
+		var gen_type = generatable_types[randi() % generatable_types.size()]
+		var gen_id = ItemSystem.generate_item_for_type(gen_type, rolled_rarity)
+		if gen_id != "":
+			return gen_id
+
+	# Try to find a static item at the rolled rarity, fall back to lower
 	var rarity_idx = rarity_order.find(rolled_rarity)
 	for check_idx in range(rarity_idx, rarity_order.size()):
 		var check_rarity = rarity_order[check_idx]
@@ -512,11 +533,21 @@ func _pick_item_from_types(allowed_types: Array[String], rarity_weights: Diction
 		for item_type in allowed_types:
 			var items = ItemSystem.get_items_by_type(item_type)
 			for item in items:
+				# Skip template items — they're blueprints, not real drops
+				if ItemSystem.is_template_item(item.get("id", "")):
+					continue
 				if item.get("rarity", "") == check_rarity:
 					candidates.append(item.get("id", ""))
 
 		if not candidates.is_empty():
 			return candidates[randi() % candidates.size()]
+
+	# Last resort: if no static items matched at any rarity, try procedural generation
+	if not generatable_types.is_empty():
+		var gen_type = generatable_types[randi() % generatable_types.size()]
+		var gen_id = ItemSystem.generate_item_for_type(gen_type, rolled_rarity)
+		if gen_id != "":
+			return gen_id
 
 	return ""
 
@@ -2163,11 +2194,25 @@ func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictiona
 		var def = _status_effects.get(status_name, {})
 		var effects = def.get("effects", [])
 
-		# Fireshield — deal fire damage to melee attackers
-		if "fire_damage_to_melee_attackers" in effects and is_melee:
-			var fire_dmg = 5 + effect.get("value", 0)
-			apply_damage(attacker, fire_dmg, "fire")
-			status_effect_triggered.emit(defender, status_name, fire_dmg, "reactive")
+		# Elemental damage to melee attackers (Fireshield, Tongues of Fire, etc.)
+		# Supports any "X_damage_to_melee_attackers" pattern
+		if is_melee:
+			var reactive_dmg_map = {
+				"fire_damage_to_melee_attackers": "fire",
+				"air_damage_to_melee_attackers": "air",
+				"water_damage_to_melee_attackers": "water",
+				"earth_damage_to_melee_attackers": "earth",
+				"space_damage_to_melee_attackers": "space",
+				"poison_damage_to_melee_attackers": "poison",
+				"black_damage_to_melee_attackers": "black",
+				"white_damage_to_melee_attackers": "white",
+			}
+			for reactive_effect in reactive_dmg_map:
+				if reactive_effect in effects:
+					var element = reactive_dmg_map[reactive_effect]
+					var reactive_dmg = 5 + effect.get("value", 0)
+					apply_damage(attacker, reactive_dmg, element)
+					status_effect_triggered.emit(defender, status_name, reactive_dmg, "reactive")
 
 		# Poison Skin — poison melee attackers
 		if "poisons_melee_attackers" in effects and is_melee:
@@ -2202,6 +2247,38 @@ func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictiona
 			if randf() < 0.25:
 				_apply_status_effect(attacker, "Charmed", 1)
 				status_effect_triggered.emit(defender, status_name, 0, "reactive")
+
+
+## Process status-based weapon enchant effects when a unit lands an attack.
+## Checks for any "adds_X_damage_to_attacks" effect and applies bonus elemental damage.
+func _process_status_weapon_enchants(attacker: Node, defender: Node, result: Dictionary) -> void:
+	if not "status_effects" in attacker:
+		return
+	# Map effect strings to their damage element
+	var enchant_map = {
+		"adds_fire_damage_to_attacks": "fire",
+		"adds_air_damage_to_attacks": "air",
+		"adds_water_damage_to_attacks": "water",
+		"adds_earth_damage_to_attacks": "earth",
+		"adds_space_damage_to_attacks": "space",
+		"adds_poison_damage_to_attacks": "poison",
+		"adds_black_damage_to_attacks": "black",
+		"adds_white_damage_to_attacks": "white",
+	}
+	var enchant_base = result.get("damage", 0)
+	for effect in attacker.status_effects:
+		var sname = effect.get("status", "")
+		var sdef = get_status_definition(sname)
+		var seffects = sdef.get("effects", [])
+		for enchant_effect in enchant_map:
+			if enchant_effect in seffects:
+				var element = enchant_map[enchant_effect]
+				var bonus_dmg = maxi(1, ceili(enchant_base * 0.20))  # +20% as elemental damage
+				var resist = defender.get_resistance(element)
+				bonus_dmg = maxi(1, int(bonus_dmg * (1.0 - resist / 100.0)))
+				apply_damage(defender, bonus_dmg, element)
+				var key = "enchant_%s_damage" % element
+				result[key] = result.get(key, 0) + bonus_dmg
 
 
 ## Process stat modifier durations
@@ -2286,6 +2363,24 @@ func _process_terrain_effects(unit: Node) -> void:
 			if not unit.has_status("Slowed") and not unit.has_status("Frozen"):
 				_apply_status_effect(unit, "Slowed", 1)
 
+		CombatGrid.TerrainEffect.WET:
+			# Wet ground slows and makes units vulnerable to ice/air damage
+			if not unit.has_status("Slowed"):
+				_apply_status_effect(unit, "Slowed", 1)
+			terrain_damage.emit(unit, 0, effect_name)
+
+		CombatGrid.TerrainEffect.STORMY:
+			# Storm terrain deals air damage and has a chance to stun
+			apply_damage(unit, value, "air")
+			if randf() < 0.2 and not unit.has_status("Stunned"):
+				_apply_status_effect(unit, "Stunned", 1)
+			terrain_damage.emit(unit, value, effect_name)
+
+		CombatGrid.TerrainEffect.VOID:
+			# Void terrain deals space damage
+			apply_damage(unit, value, "space")
+			terrain_damage.emit(unit, value, effect_name)
+
 
 ## Create ground effects on tiles from AoE damage (fire leaves fire, ice leaves ice, etc.)
 ## Also damages obstacles caught in the area
@@ -2303,8 +2398,14 @@ func _create_ground_effects_from_damage(center: Vector2i, radius: int, damage_ty
 			combat_grid.damage_obstacle(pos, 10, damage_type)
 
 	var effect_type = DAMAGE_TYPE_TO_TERRAIN_EFFECT.get(damage_type, -1)
+	# Handle composite damage types (e.g., "fire_black" → fire terrain, "physical_fire" → fire)
+	if effect_type < 0 and "_" in damage_type:
+		for part in damage_type.split("_"):
+			effect_type = DAMAGE_TYPE_TO_TERRAIN_EFFECT.get(part, -1)
+			if effect_type >= 0:
+				break  # Use the first element that maps to a terrain effect
 	if effect_type < 0:
-		return  # No ground effect for this damage type (physical, air, space, etc.)
+		return  # No ground effect for this damage type (physical, etc.)
 
 	for pos in tiles_in_area:
 		var tile = combat_grid.tiles.get(pos)
@@ -3648,6 +3749,10 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 				attacker.heal(steal)
 				unit_healed.emit(attacker, steal)
 				result["talisman_lifesteal"] = steal
+
+	# --- Status-based weapon enchant on-hit effects ---
+	# Handles any "adds_X_damage_to_attacks" effect (fire, air, etc.)
+	_process_status_weapon_enchants(attacker, defender, result)
 
 
 ## Process passive perks that trigger when a unit dodges an attack.
