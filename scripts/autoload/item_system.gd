@@ -1199,6 +1199,90 @@ func generate_weapon_for_party(rarity: String = "common",
 
 
 # ============================================
+# PROCEDURAL GENERATION INTEGRATION
+# ============================================
+
+# Item types that can be procedurally generated as weapons
+const WEAPON_TYPES: Array[String] = [
+	"sword", "dagger", "axe", "mace", "spear", "staff", "bow", "crossbow", "javelin"
+]
+
+# Item types that can be procedurally generated as armor
+const ARMOR_TYPES: Array[String] = [
+	"helmet", "hat", "armor", "robe", "gloves", "gauntlets", "pants",
+	"greaves", "boots", "shield"
+]
+
+# Talisman types
+const TALISMAN_TYPES: Array[String] = ["talisman", "trinket", "amulet", "ring", "charm"]
+
+# Chance to generate procedural instead of picking static, by rarity
+# Higher rarities are more likely to be procedural (fewer static items exist)
+const PROCEDURAL_CHANCE_BY_RARITY: Dictionary = {
+	"common": 0.15, "uncommon": 0.35, "rare": 0.60, "epic": 0.85, "legendary": 0.95
+}
+
+
+## Resolve a random_generate template item into a real procedural item.
+## Returns the gen_XXXX ID of the generated item, or "" on failure.
+func resolve_random_generate(item_id: String) -> String:
+	var item = get_item(item_id)
+	if item.is_empty():
+		return ""
+
+	var gen_config = item.get("random_generate", {})
+	if gen_config.is_empty():
+		return ""
+
+	var category = gen_config.get("category", "")
+	match category:
+		"weapon":
+			var quality = gen_config.get("quality", "")
+			var material = gen_config.get("material", "")
+			var rarity = gen_config.get("rarity", "common")
+			if gen_config.get("match_party_skill", false):
+				return generate_weapon_for_party(rarity, material, quality)
+			else:
+				var weapon_type = gen_config.get("type", "")
+				return generate_weapon(weapon_type, rarity, material, quality)
+		"armor":
+			var quality = gen_config.get("quality", "")
+			var material = gen_config.get("material", "")
+			var rarity = gen_config.get("rarity", "common")
+			var armor_type = gen_config.get("type", "")
+			return generate_armor(armor_type, rarity, material, quality)
+		"talisman":
+			var rarity = gen_config.get("rarity", "common")
+			return generate_talisman(rarity)
+
+	return ""
+
+
+## Generate a procedural item for a given item type and rarity.
+## Used by loot drops and shops to create appropriate procedural items.
+## Returns the gen_XXXX ID, or "" if the type can't be procedurally generated.
+func generate_item_for_type(item_type: String, rarity: String = "common") -> String:
+	if item_type in WEAPON_TYPES:
+		return generate_weapon(item_type, rarity)
+	elif item_type in ARMOR_TYPES:
+		return generate_armor(item_type, rarity)
+	elif item_type in TALISMAN_TYPES:
+		return generate_talisman(rarity)
+	return ""
+
+
+## Check if a given item type can be procedurally generated
+func can_generate_type(item_type: String) -> bool:
+	return item_type in WEAPON_TYPES or item_type in ARMOR_TYPES or item_type in TALISMAN_TYPES
+
+
+## Check if a static item is a random_generate template
+func is_template_item(item_id: String) -> bool:
+	var item = _item_database.get(item_id, {})
+	return item.has("random_generate")
+
+
+# ============================================
 # SAVE / LOAD
 # ============================================
 

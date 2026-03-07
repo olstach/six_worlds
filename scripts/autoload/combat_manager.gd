@@ -482,7 +482,8 @@ func _get_modified_rarity_weights(difficulty_ratio: float, luck: int) -> Diction
 
 
 ## Roll a rarity tier then pick a random item of that rarity from the allowed types.
-## Falls back to lower rarities if no items exist at the rolled tier.
+## Uses procedural generation when no static items match or when the rarity roll
+## favors a generated item (higher rarities are more likely to be procedural).
 func _pick_item_from_types(allowed_types: Array[String], rarity_weights: Dictionary) -> String:
 	# Build weighted rarity list in descending order of quality
 	var rarity_order: Array[String] = ["legendary", "epic", "rare", "uncommon", "common"]
@@ -503,7 +504,22 @@ func _pick_item_from_types(allowed_types: Array[String], rarity_weights: Diction
 			rolled_rarity = rarity
 			break
 
-	# Try to find an item at the rolled rarity, fall back to lower
+	# Check if we should generate a procedural item instead of picking static
+	# Higher rarities have a higher chance of being procedural
+	var proc_chance: float = ItemSystem.PROCEDURAL_CHANCE_BY_RARITY.get(rolled_rarity, 0.15)
+	var generatable_types: Array[String] = []
+	for item_type in allowed_types:
+		if ItemSystem.can_generate_type(item_type):
+			generatable_types.append(item_type)
+
+	if not generatable_types.is_empty() and randf() < proc_chance:
+		# Generate a procedural item of a random allowed type
+		var gen_type = generatable_types[randi() % generatable_types.size()]
+		var gen_id = ItemSystem.generate_item_for_type(gen_type, rolled_rarity)
+		if gen_id != "":
+			return gen_id
+
+	# Try to find a static item at the rolled rarity, fall back to lower
 	var rarity_idx = rarity_order.find(rolled_rarity)
 	for check_idx in range(rarity_idx, rarity_order.size()):
 		var check_rarity = rarity_order[check_idx]
@@ -512,11 +528,21 @@ func _pick_item_from_types(allowed_types: Array[String], rarity_weights: Diction
 		for item_type in allowed_types:
 			var items = ItemSystem.get_items_by_type(item_type)
 			for item in items:
+				# Skip template items — they're blueprints, not real drops
+				if ItemSystem.is_template_item(item.get("id", "")):
+					continue
 				if item.get("rarity", "") == check_rarity:
 					candidates.append(item.get("id", ""))
 
 		if not candidates.is_empty():
 			return candidates[randi() % candidates.size()]
+
+	# Last resort: if no static items matched at any rarity, try procedural generation
+	if not generatable_types.is_empty():
+		var gen_type = generatable_types[randi() % generatable_types.size()]
+		var gen_id = ItemSystem.generate_item_for_type(gen_type, rolled_rarity)
+		if gen_id != "":
+			return gen_id
 
 	return ""
 

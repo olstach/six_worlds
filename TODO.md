@@ -222,9 +222,9 @@ Roles to fulfill per realm (not specific object types):
 - [x] ~~**Equipment generation system**~~: procedural weapons, armor, and talismans — DONE
 - [x] ~~**Talisman system**~~: persistent equippable trinket-slot items with stat/skill/perk bonuses — DONE
 - [x] ~~**Equipment traits**~~: weapon/armor modifier system (sharp, reinforced, etc.) — DONE
-- [ ] Wire up `random_generate` template items to use the new procedural generation
+- [x] ~~Wire up `random_generate` template items to use the new procedural generation~~ — DONE
 - [ ] Integrate talisman perk effects into combat (poison_immune, regen, thorns, etc.)
-- [ ] Add talisman/equipment generation to shop and loot systems
+- [x] ~~Add talisman/equipment generation to shop and loot systems~~ — DONE (procedural items in loot drops + auto-generated shop stock)
 
 ### UI Improvements
 - [ ] Tooltip system expansion

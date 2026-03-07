@@ -622,13 +622,22 @@ func buy_skill_training(character: Dictionary, skill: String) -> Dictionary:
 # SHOP MANAGEMENT
 # ============================================
 
-## Set the current active shop
+## Set the current active shop. Generates procedural inventory if configured.
 func open_shop(shop_data: Dictionary) -> void:
 	_current_shop = shop_data
+	_generate_procedural_stock()
+	_resolve_template_items()
 
 
-## Close the current shop
+## Close the current shop and clean up any unsold procedural items
 func close_shop() -> void:
+	# Clean up runtime items that were generated for this shop but not purchased
+	var items = _current_shop.get("items", {})
+	for item_id in items:
+		if ItemSystem.is_runtime_item(item_id):
+			# Only remove from runtime registry if it's not in the player's inventory
+			if ItemSystem.get_inventory_count(item_id) <= 0:
+				ItemSystem.remove_runtime_item(item_id)
 	_current_shop = {}
 
 
@@ -656,6 +665,119 @@ static func create_shop(shop_name: String, shop_type: String = "general") -> Dic
 		}
 	}
 	return shop
+
+
+## Generate procedural items for a shop based on its procedural_slots config.
+## procedural_slots is an array of generation rules, e.g.:
+##   [{"category": "weapon", "rarity": "uncommon", "count": 2},
+##    {"category": "talisman", "rarity": "common", "count": 1}]
+## If no procedural_slots are defined, shops get auto-generated stock
+## based on their type and existing inventory categories.
+func _generate_procedural_stock() -> void:
+	var slots = _current_shop.get("procedural_slots", [])
+
+	# If no explicit config, auto-generate based on shop type
+	if slots.is_empty():
+		slots = _get_default_procedural_slots()
+
+	if slots.is_empty():
+		return
+
+	var items = _current_shop.get("items", {})
+	for slot in slots:
+		var category: String = slot.get("category", "")
+		var rarity: String = slot.get("rarity", "common")
+		var item_type: String = slot.get("type", "")
+		var count: int = slot.get("count", 1)
+
+		for i in range(count):
+			var gen_id: String = ""
+			match category:
+				"weapon":
+					if slot.get("match_party_skill", false):
+						gen_id = ItemSystem.generate_weapon_for_party(rarity)
+					else:
+						gen_id = ItemSystem.generate_weapon(item_type, rarity)
+				"armor":
+					gen_id = ItemSystem.generate_armor(item_type, rarity)
+				"talisman":
+					gen_id = ItemSystem.generate_talisman(rarity)
+
+			if gen_id != "":
+				items[gen_id] = 1  # Procedural items are unique, qty 1
+
+	_current_shop["items"] = items
+
+
+## Resolve any random_generate template items in the shop inventory,
+## replacing them with actual procedural items.
+func _resolve_template_items() -> void:
+	var items = _current_shop.get("items", {})
+	var to_remove: Array[String] = []
+	var to_add: Dictionary = {}
+
+	for item_id in items:
+		if ItemSystem.is_template_item(item_id):
+			var qty = items[item_id]
+			to_remove.append(item_id)
+			# Generate one procedural item per quantity
+			for i in range(qty):
+				var gen_id = ItemSystem.resolve_random_generate(item_id)
+				if gen_id != "":
+					to_add[gen_id] = 1
+
+	# Swap templates for generated items
+	for item_id in to_remove:
+		items.erase(item_id)
+	for item_id in to_add:
+		items[item_id] = to_add[item_id]
+
+	_current_shop["items"] = items
+
+
+## Determine default procedural slots based on shop type and existing stock.
+## General/mixed shops get a few procedural weapons and armor.
+## Spell trainers get a talisman. Weapon masters get procedural weapons.
+func _get_default_procedural_slots() -> Array:
+	var shop_type = _current_shop.get("type", "general")
+	var slots: Array = []
+
+	# Pick a rarity weighted toward common/uncommon for standard shops
+	var rarity_pool: Array[String] = ["common", "common", "uncommon"]
+	var pick_rarity := func() -> String:
+		return rarity_pool[randi() % rarity_pool.size()]
+
+	match shop_type:
+		"general":
+			# 1-2 procedural weapons + 1 armor piece
+			slots.append({"category": "weapon", "match_party_skill": true,
+				"rarity": pick_rarity.call(), "count": 1 + randi() % 2})
+			slots.append({"category": "armor", "rarity": pick_rarity.call(), "count": 1})
+		"spell_trainer":
+			# 1 talisman (casters want trinkets)
+			slots.append({"category": "talisman", "rarity": pick_rarity.call(), "count": 1})
+		"skill_trainer":
+			# Check if this is a combat trainer — if so, add weapons
+			var training = _current_shop.get("training", {})
+			var skills = training.get("skills", [])
+			var has_combat = false
+			for s in skills:
+				if s in ["swords", "axes", "maces", "spears", "ranged", "daggers"]:
+					has_combat = true
+					break
+			if has_combat:
+				slots.append({"category": "weapon", "match_party_skill": true,
+					"rarity": pick_rarity.call(), "count": 1 + randi() % 2})
+			else:
+				slots.append({"category": "talisman", "rarity": pick_rarity.call(), "count": 1})
+		"mixed":
+			# A bit of everything
+			slots.append({"category": "weapon", "match_party_skill": true,
+				"rarity": pick_rarity.call(), "count": 1})
+			slots.append({"category": "armor", "rarity": pick_rarity.call(), "count": 1})
+			slots.append({"category": "talisman", "rarity": pick_rarity.call(), "count": 1})
+
+	return slots
 
 
 ## Add items to a shop's inventory
