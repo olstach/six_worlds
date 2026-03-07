@@ -896,16 +896,6 @@
       "dispel_methods": ["cleanse", "freedom"]
     },
     {
-      "name": "Confusion",
-      "type": "debuff",
-      "category": "cc",
-      "effects": ["random_movement", "random_target"],
-      "duration_type": "spellpower",
-      "default_duration_range": [1, 3],
-      "dispellable": true,
-      "dispel_methods": ["cleanse", "clarity"]
-    },
-    {
       "name": "Constitution_Buff",
       "type": "buff",
       "category": "buff",
