@@ -94,7 +94,20 @@ func init_from_character(char_data: Dictionary, unit_team: int) -> void:
 
 	# Calculate max actions (base 2, can be modified)
 	max_actions = CombatManager.BASE_ACTIONS
-	# TODO: Check for haste buffs, finesse upgrades
+
+	# Load talisman resistance bonuses from equipped trinkets
+	var equipment = char_data.get("equipment", {})
+	for slot in ["trinket1", "trinket2"]:
+		var item_id = equipment.get(slot, "")
+		if item_id == "":
+			continue
+		var item = ItemSystem.get_item(item_id)
+		var passive = item.get("passive", {})
+		for key in passive:
+			if key.ends_with("_resistance") and key != "perk":
+				# e.g. "fire_resistance": 15 -> resistances["fire"] += 15
+				var element = key.replace("_resistance", "")
+				resistances[element] = resistances.get(element, 0) + passive[key]
 
 	_update_visuals()
 
@@ -495,7 +508,7 @@ func get_accuracy() -> int:
 ## Get dodge value (includes status effect bonuses)
 func get_dodge() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge")
+	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge")
 
 
 ## Get attack damage
@@ -584,6 +597,13 @@ func restore_stamina(amount: int) -> void:
 	current_stamina = mini(max_stamina, current_stamina + amount)
 	var derived = character_data.get("derived", {})
 	derived["current_stamina"] = current_stamina
+
+
+## Restore mana (clamped to max)
+func restore_mana(amount: int) -> void:
+	current_mana = mini(max_mana, current_mana + amount)
+	var derived = character_data.get("derived", {})
+	derived["current_mana"] = current_mana
 
 
 ## Tick cooldowns at start of turn — reduces all by 1, removes expired

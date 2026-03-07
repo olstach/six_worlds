@@ -1119,6 +1119,12 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 					defender.show_status_expired("Charmed")
 				status_effect_expired.emit(defender, "Charmed")
 
+		# --- Talisman: Thorns — reflect 3 damage to melee attackers ---
+		var is_melee_attack = _grid_distance(attacker.grid_position, defender.grid_position) <= 1
+		if is_melee_attack and _unit_has_talisman_perk(defender, "thorns"):
+			apply_damage(attacker, 3, "physical")
+			result["thorns_damage"] = 3
+
 		# --- Attacker lifesteal statuses ---
 		if attacker.has_status("Lifelink") or attacker.has_status("Blood_Hunger"):
 			var steal = int(result.damage * 0.5)
@@ -1283,6 +1289,9 @@ func _kill_unit(unit: Node) -> void:
 	unit.is_dead = true
 	unit.is_bleeding_out = false
 	unit_died.emit(unit)
+
+	# TODO: Talisman perk "risen_dead" — 15% chance slain enemies rise as allied undead
+	# Needs: track who killed this unit, spawn a new CombatUnit mid-combat
 
 	# Remove from turn order and fix the current index
 	var idx = turn_order.find(unit)
@@ -1493,7 +1502,19 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 
 	# Apply effects to each target
 	var results: Array[Dictionary] = []
+	var is_offensive = _spell_is_offensive(spell)
 	for target in targets:
+		# Talisman: Magic Mirror — 10% chance to reflect hostile spells back at caster
+		if is_offensive and target != caster and _unit_has_talisman_perk(target, "magic_mirror"):
+			if randf() < 0.10:
+				# Reflect! Apply spell to caster instead
+				var reflect_result = _apply_spell_effects(caster, caster, spell, spellpower_bonus)
+				reflect_result["reflected"] = true
+				results.append(reflect_result)
+				if target.has_method("show_combat_text"):
+					target.show_combat_text("Reflected!", Color(0.6, 0.3, 1.0))
+				continue
+
 		var effect_result = _apply_spell_effects(caster, target, spell, spellpower_bonus)
 		results.append(effect_result)
 
@@ -1749,6 +1770,48 @@ func _apply_stat_modifier(unit: Node, stat: String, value: int, duration: int) -
 	# This is simplified - full implementation would modify get_* functions
 
 
+## Check if a unit's talisman perks grant immunity or resistance to a status.
+## Returns true if the status should be blocked entirely.
+func _check_talisman_status_immunity(unit: Node, status: String) -> bool:
+	var perks = _get_talisman_perks(unit)
+	if perks.is_empty():
+		return false
+
+	var status_lower = status.to_lower()
+
+	# Full immunity perks
+	var immunity_map = {
+		"bleed_immune": ["bleeding"],
+		"poison_immune": ["poisoned"],
+		"fear_immune": ["feared"],
+		"charm_immune": ["charmed"],
+		"stun_immune": ["stunned"],
+		"mental_immune": ["feared", "charmed", "confused", "berserk"],
+	}
+
+	for perk_id in perks:
+		if perk_id in immunity_map:
+			if status_lower in immunity_map[perk_id]:
+				return true
+
+	# 50% resistance perks
+	var resist_map = {
+		"bleed_resist": ["bleeding"],
+		"poison_resist": ["poisoned"],
+		"fear_resist": ["feared"],
+		"charm_resist": ["charmed"],
+		"stun_resist": ["stunned"],
+	}
+
+	for perk_id in perks:
+		if perk_id in resist_map:
+			if status_lower in resist_map[perk_id]:
+				if randf() < 0.5:
+					return true
+
+	return false
+
+
 ## Apply a status effect.
 ## Non-stackable statuses refresh duration instead of stacking.
 ## Stackable statuses (e.g. Burning) add additional instances.
@@ -1757,6 +1820,12 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 		unit.set("status_effects", [])
 
 	var def = _status_effects.get(status, {})
+
+	# --- Talisman perk immunity/resistance checks ---
+	if _check_talisman_status_immunity(unit, status):
+		if unit.has_method("show_resisted_text"):
+			unit.show_resisted_text()
+		return
 
 	# Check if already present and handle stacking
 	if unit.has_status(status):
@@ -3416,6 +3485,27 @@ func _unit_has_perk(unit: Node, perk_id: String) -> bool:
 	return PerkSystem.has_perk(char_data, perk_id)
 
 
+## Get all talisman perk IDs for a unit (from trinket1 and trinket2 slots)
+func _get_talisman_perks(unit: Node) -> Array[String]:
+	var perks: Array[String] = []
+	var char_data = unit.character_data if "character_data" in unit else {}
+	var equipment = char_data.get("equipment", {})
+	for slot in ["trinket1", "trinket2"]:
+		var item_id = equipment.get(slot, "")
+		if item_id == "":
+			continue
+		var item = ItemSystem.get_item(item_id)
+		var perk_id = item.get("passive", {}).get("perk", "")
+		if perk_id != "":
+			perks.append(perk_id)
+	return perks
+
+
+## Check if a unit has a specific talisman perk
+func _unit_has_talisman_perk(unit: Node, perk_id: String) -> bool:
+	return perk_id in _get_talisman_perks(unit)
+
+
 ## Get passive perk stat bonuses for a unit.
 ## Called by CombatUnit stat getters to include perk effects.
 ## Returns the total bonus/penalty for the given stat.
@@ -3475,6 +3565,16 @@ func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 			# Flame Fist: crits cause 3-turn burn (checked in on_hit, but crit bonus here)
 			pass
 
+		"dodge":
+			# Talisman: Blur — +10% dodge chance
+			if _unit_has_talisman_perk(unit, "blur"):
+				total += 10
+			# Talisman: Lucky Escape — +15% dodge below 25% HP
+			if _unit_has_talisman_perk(unit, "lucky_escape"):
+				if "current_hp" in unit and "max_hp" in unit:
+					if unit.current_hp < unit.max_hp * 0.25:
+						total += 15
+
 	return total
 
 
@@ -3501,6 +3601,49 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 	# Anatomy Knowledge: +10% damage vs biological enemies (already calculated in damage)
 	# Shadow Strike: stealth attacks +50% damage & Silence (stealth system not yet implemented)
 	# Blood in the Wind: +movement when enemies bleeding (checked in stat getter)
+
+	# --- Talisman perk on-hit effects ---
+	var talisman_perks = _get_talisman_perks(attacker)
+	if not talisman_perks.is_empty():
+		var base_damage = result.get("damage", 0)
+
+		# Elemental brands: +X% of base damage as bonus elemental damage
+		var brand_map = {
+			"fire_brand_minor": ["fire", 0.05], "fire_brand": ["fire", 0.10], "fire_brand_greater": ["fire", 0.15],
+			"water_brand_minor": ["water", 0.05], "water_brand": ["water", 0.10], "water_brand_greater": ["water", 0.15],
+			"earth_brand_minor": ["earth", 0.05], "earth_brand": ["earth", 0.10], "earth_brand_greater": ["earth", 0.15],
+			"air_brand_minor": ["air", 0.05], "air_brand": ["air", 0.10], "air_brand_greater": ["air", 0.15],
+			"space_brand_minor": ["space", 0.05], "space_brand": ["space", 0.10], "space_brand_greater": ["space", 0.15],
+			"phys_brand_minor": ["physical", 0.05], "phys_brand": ["physical", 0.10], "phys_brand_greater": ["physical", 0.15],
+			"poison_brand_minor": ["poison", 0.05], "poison_brand": ["poison", 0.10], "poison_brand_greater": ["poison", 0.15],
+		}
+
+		for perk_id in talisman_perks:
+			if perk_id in brand_map:
+				var element = brand_map[perk_id][0]
+				var pct = brand_map[perk_id][1]
+				var bonus_dmg = ceili(base_damage * pct)
+				if bonus_dmg > 0:
+					# Apply resistance to bonus damage
+					var resist = defender.get_resistance(element)
+					bonus_dmg = maxi(1, int(bonus_dmg * (1.0 - resist / 100.0)))
+					apply_damage(defender, bonus_dmg, element)
+					result["brand_damage"] = result.get("brand_damage", 0) + bonus_dmg
+					result["brand_element"] = element
+
+				# Poison brands also have a chance to inflict Poisoned
+				if element == "poison":
+					var poison_chance = pct  # 5/10/15%
+					if randf() < poison_chance:
+						_apply_status_effect(defender, "Poisoned", 3)
+
+		# Lifesteal: heal 15% of attack damage dealt
+		if "lifesteal" in talisman_perks:
+			var steal = int(base_damage * 0.15)
+			if steal > 0:
+				attacker.heal(steal)
+				unit_healed.emit(attacker, steal)
+				result["talisman_lifesteal"] = steal
 
 
 ## Process passive perks that trigger when a unit dodges an attack.
@@ -3532,3 +3675,57 @@ func _process_turn_start_perks(unit: Node) -> void:
 
 	# Soothing Presence aura (perk-granted, not status-granted)
 	# Handled via status effect system — the status applies the aura
+
+	# --- Talisman perk turn-start effects ---
+	var talisman_perks = _get_talisman_perks(unit)
+
+	# HP regeneration: regen_minor (+2%), regen_moderate (+4%), regen_greater (+7%)
+	var regen_pct = 0.0
+	if "regen_greater" in talisman_perks:
+		regen_pct = maxf(regen_pct, 0.07)
+	if "regen_moderate" in talisman_perks:
+		regen_pct = maxf(regen_pct, 0.04)
+	if "regen_minor" in talisman_perks:
+		regen_pct = maxf(regen_pct, 0.02)
+	# If unit has two trinkets with regen, use the better one (already maxf'd)
+	# but also add the lesser one at half value for stacking
+	if talisman_perks.count("regen_greater") + talisman_perks.count("regen_moderate") + talisman_perks.count("regen_minor") > 1:
+		var second_pct = 0.0
+		for tp in talisman_perks:
+			var val = 0.0
+			match tp:
+				"regen_greater": val = 0.07
+				"regen_moderate": val = 0.04
+				"regen_minor": val = 0.02
+			if val > 0.0 and val < regen_pct:
+				second_pct = maxf(second_pct, val * 0.5)
+		regen_pct += second_pct
+
+	if regen_pct > 0.0 and unit.current_hp < unit.max_hp:
+		var heal_amount = ceili(unit.max_hp * regen_pct)
+		unit.heal(heal_amount)
+		unit_healed.emit(unit, heal_amount)
+
+	# Mana regeneration: mana_trickle (+2%), mana_stream (+4%), mana_cascade (+7%)
+	var mana_pct = 0.0
+	if "mana_cascade" in talisman_perks:
+		mana_pct = maxf(mana_pct, 0.07)
+	if "mana_stream" in talisman_perks:
+		mana_pct = maxf(mana_pct, 0.04)
+	if "mana_trickle" in talisman_perks:
+		mana_pct = maxf(mana_pct, 0.02)
+	if talisman_perks.count("mana_cascade") + talisman_perks.count("mana_stream") + talisman_perks.count("mana_trickle") > 1:
+		var second_pct = 0.0
+		for tp in talisman_perks:
+			var val = 0.0
+			match tp:
+				"mana_cascade": val = 0.07
+				"mana_stream": val = 0.04
+				"mana_trickle": val = 0.02
+			if val > 0.0 and val < mana_pct:
+				second_pct = maxf(second_pct, val * 0.5)
+		mana_pct += second_pct
+
+	if mana_pct > 0.0 and unit.current_mana < unit.max_mana:
+		var mana_amount = ceili(unit.max_mana * mana_pct)
+		unit.restore_mana(mana_amount)
