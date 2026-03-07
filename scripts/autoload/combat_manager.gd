@@ -1873,6 +1873,9 @@ func _process_status_effects(unit: Node) -> bool:
 	# Process status spread (e.g. Burning can spread to adjacent units)
 	_process_status_spread(unit)
 
+	# Process aura effects (buff nearby allies each turn)
+	_process_aura_effects(unit)
+
 	# Also process stat modifiers (buff/debuff duration tick)
 	_process_stat_modifiers(unit)
 
@@ -1945,6 +1948,81 @@ func _spread_chance_to_float(chance_str: String) -> float:
 			return 0.0
 
 
+## Process aura status effects — statuses that buff/heal nearby allies each turn.
+## Called once per unit per turn during status processing.
+## Aura effects:
+##   - Favorable_Wind: grants Hasted + Precision to allies within 2 tiles
+##   - Aura_of_Blessing: grants Blessed to allies within 2 tiles
+##   - Soothing_Presence: heals allies within 2 tiles for heal_per_turn
+##   - Magnetizing_Aura: chance to charm enemies who end turn adjacent (handled separately)
+##   - Storm_Lord / Lightning_Form: lightning aura damages melee attackers (handled in reactive)
+func _process_aura_effects(unit: Node) -> void:
+	if not "status_effects" in unit or unit.status_effects.is_empty():
+		return
+
+	for effect in unit.status_effects:
+		var status_name = effect.get("status", "")
+		var def = _status_effects.get(status_name, {})
+		var effects = def.get("effects", [])
+
+		# Favorable Wind — grant Hasted and Precision to nearby allies
+		if "aura_grants_haste" in effects or "aura_grants_precision" in effects:
+			var allies = _get_allies_in_range(unit, 2)
+			for ally in allies:
+				if "aura_grants_haste" in effects and not ally.has_status("Hasted"):
+					_apply_status_effect(ally, "Hasted", 2)
+					status_effect_triggered.emit(unit, "Favorable_Wind", 0, "aura")
+				if "aura_grants_precision" in effects and not ally.has_status("Precision"):
+					_apply_status_effect(ally, "Precision", 2)
+
+		# Aura of Blessing — grant Blessed to nearby allies
+		if "grants_blessed_to_nearby_allies" in effects:
+			var allies = _get_allies_in_range(unit, 2)
+			for ally in allies:
+				if not ally.has_status("Blessed"):
+					_apply_status_effect(ally, "Blessed", 2)
+					status_effect_triggered.emit(unit, "Aura_of_Blessing", 0, "aura")
+
+		# Soothing Presence — heal nearby allies each turn
+		if "heal_allies_per_turn_in_aura" in effects:
+			var heal_amount = def.get("heal_per_turn", 5)
+			var allies = _get_allies_in_range(unit, 2)
+			for ally in allies:
+				if ally.current_hp < ally.max_hp:
+					ally.heal(heal_amount)
+					unit_healed.emit(ally, heal_amount)
+					status_effect_triggered.emit(unit, "Soothing_Presence", heal_amount, "aura")
+
+		# Magnetizing Aura — charm chance when enemy moves adjacent
+		# This is handled reactively in movement processing, not per-turn
+		# (charm_chance_on_enemy_melee_approach)
+
+		# Lightning auras (Storm_Lord, Lightning_Form) are reactive,
+		# handled in _process_reactive_statuses
+
+
+## Get all alive allied units within range of source (same team, excludes self)
+func _get_allies_in_range(source: Node, radius: int) -> Array[Node]:
+	var result: Array[Node] = []
+	for u in all_units:
+		if u == source or u.is_dead:
+			continue
+		if u.team == source.team and _grid_distance(source.grid_position, u.grid_position) <= radius:
+			result.append(u)
+	return result
+
+
+## Get all alive enemy units within range of source (different team)
+func _get_enemies_in_range(source: Node, radius: int) -> Array[Node]:
+	var result: Array[Node] = []
+	for u in all_units:
+		if u == source or u.is_dead:
+			continue
+		if u.team != source.team and _grid_distance(source.grid_position, u.grid_position) <= radius:
+			result.append(u)
+	return result
+
+
 ## Get all alive units within a given range of a source unit
 func _get_units_in_range(source: Node, radius: int) -> Array[Node]:
 	var result: Array[Node] = []
@@ -2001,6 +2079,13 @@ func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictiona
 			if randf() < 0.3:
 				_apply_status_effect(attacker, "Stunned", 1)
 			status_effect_triggered.emit(defender, status_name, lightning_dmg, "reactive")
+
+		# Magnetizing Aura — chance to charm melee attackers
+		if "charm_chance_on_enemy_melee_approach" in effects and is_melee:
+			# 25% chance to charm the attacker for 1 turn
+			if randf() < 0.25:
+				_apply_status_effect(attacker, "Charmed", 1)
+				status_effect_triggered.emit(defender, status_name, 0, "reactive")
 
 
 ## Process stat modifier durations
