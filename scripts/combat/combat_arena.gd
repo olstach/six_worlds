@@ -1712,14 +1712,25 @@ func _update_action_buttons() -> void:
 	var is_player = CombatManager.is_player_turn()
 	var can_act = CombatManager.can_act(1)
 
-	move_button.disabled = not is_player or not can_act
-	attack_button.disabled = not is_player or not can_act
-	spell_button.disabled = not is_player or not can_act
-	item_button.disabled = not is_player or not can_act
-	skills_button.disabled = not is_player or not can_act
-	wait_button.disabled = not is_player or not can_act
-	flee_button.disabled = not is_player or not can_act
-	end_turn_button.disabled = not is_player
+	# CC'd player units can't use buttons (AI controls them)
+	var cc_behavior = ""
+	var current_unit = CombatManager.get_current_unit()
+	if current_unit:
+		cc_behavior = CombatManager.get_cc_behavior(current_unit)
+
+	# Fully CC'd units (feared, confused, berserk, pacified) lose all control
+	var cc_locked = cc_behavior != "" and cc_behavior != "charmed"
+	# Charmed units can act but can't attack the caster (enforced at attack time)
+	# Pacified is handled by cc_locked — they skip combat actions automatically
+
+	move_button.disabled = not is_player or not can_act or cc_locked
+	attack_button.disabled = not is_player or not can_act or cc_locked or not CombatManager.can_unit_attack(current_unit) if current_unit else true
+	spell_button.disabled = not is_player or not can_act or cc_locked or not CombatManager.can_unit_cast(current_unit) if current_unit else true
+	item_button.disabled = not is_player or not can_act or cc_locked
+	skills_button.disabled = not is_player or not can_act or cc_locked
+	wait_button.disabled = not is_player or not can_act or cc_locked
+	flee_button.disabled = not is_player or not can_act or cc_locked
+	end_turn_button.disabled = not is_player or cc_locked
 
 	# Highlight active mode
 	move_button.button_pressed = (current_action_mode == ActionMode.MOVE)
@@ -1996,6 +2007,15 @@ func _on_turn_started(unit: Node) -> void:
 	_update_action_buttons()
 	_select_unit(unit)
 
+	# Check for CC behavior override — affects both player and enemy units
+	var cc_behavior = CombatManager.get_cc_behavior(unit)
+	if cc_behavior != "" and cc_behavior != "charmed":
+		# CC'd units (except Charmed) are fully AI-controlled
+		# Charmed units can still act freely, just can't attack the caster
+		_log_message("%s is %s!" % [unit.unit_name, cc_behavior.capitalize()])
+		ai_timer.start(0.4)
+		return
+
 	# AI turn handling - use timer for delay between enemy turns
 	if unit.team == CombatManager.Team.ENEMY:
 		ai_timer.start(0.4)  # Delay before enemy acts
@@ -2003,7 +2023,16 @@ func _on_turn_started(unit: Node) -> void:
 
 func _on_ai_timer_timeout() -> void:
 	var unit = CombatManager.get_current_unit()
-	if unit and unit.team == CombatManager.Team.ENEMY:
+	if unit == null:
+		return
+
+	# CC behavior overrides take priority over normal AI
+	var cc_behavior = CombatManager.get_cc_behavior(unit)
+	if cc_behavior != "" and cc_behavior != "charmed":
+		_do_cc_turn(unit, cc_behavior)
+		return
+
+	if unit.team == CombatManager.Team.ENEMY:
 		_do_enemy_turn(unit)
 
 
@@ -2511,6 +2540,181 @@ func _show_defeat_screen() -> void:
 # ENEMY AI (Simple)
 # ============================================
 
+## Handle a CC-controlled turn. The unit's actions are determined by their CC status.
+## Works for both player and enemy units.
+func _do_cc_turn(unit: CombatUnit, cc_behavior: String) -> void:
+	if CombatManager.get_current_unit() != unit:
+		return
+
+	match cc_behavior:
+		"feared":
+			_do_feared_turn(unit)
+		"confused":
+			_do_confused_turn(unit)
+		"berserk":
+			_do_berserk_turn(unit)
+		"pacified":
+			_do_pacified_turn(unit)
+		_:
+			# Unknown CC — just end turn
+			CombatManager.end_turn()
+
+
+## Feared: flee away from the source of fear. Move as far as possible from the
+## fear source each turn, then end turn (no attacks).
+func _do_feared_turn(unit: CombatUnit) -> void:
+	var source = CombatManager.get_cc_source(unit, "feared")
+	var flee_from = source.grid_position if source != null and is_instance_valid(source) else Vector2i.ZERO
+
+	# Try to move as far from the fear source as possible
+	while CombatManager.can_act(1):
+		var move_range = CombatManager.get_movement_range(unit)
+		if move_range.is_empty():
+			break
+
+		var best_tile = unit.grid_position
+		var best_dist = _grid_distance(unit.grid_position, flee_from)
+
+		for tile in move_range:
+			var dist = _grid_distance(tile, flee_from)
+			if dist > best_dist:
+				best_dist = dist
+				best_tile = tile
+
+		if best_tile != unit.grid_position:
+			CombatManager.move_unit(unit, best_tile)
+			_log_message("%s flees in terror!" % unit.unit_name)
+		else:
+			# Can't move further away — cornered
+			_log_message("%s cowers in fear!" % unit.unit_name)
+			break
+
+	if CombatManager.get_current_unit() == unit:
+		CombatManager.end_turn()
+
+
+## Confused: move to a random valid tile, then attack a random adjacent target
+## (ally or enemy). If no adjacent targets, just wander.
+func _do_confused_turn(unit: CombatUnit) -> void:
+	var _safety = 0
+	while CombatManager.can_act(1):
+		_safety += 1
+		if _safety > 10:
+			break
+
+		# Step 1: Move to a random tile
+		var move_range = CombatManager.get_movement_range(unit)
+		if not move_range.is_empty():
+			var random_tile = move_range[randi() % move_range.size()]
+			if random_tile != unit.grid_position:
+				CombatManager.move_unit(unit, random_tile)
+				_log_message("%s stumbles around in confusion!" % unit.unit_name)
+
+		# Step 2: Attack random adjacent unit (ally or enemy)
+		if CombatManager.can_act(1):
+			var adjacent: Array[Node] = []
+			for u in CombatManager.all_units:
+				if u == unit or u.is_dead:
+					continue
+				if _grid_distance(unit.grid_position, u.grid_position) <= unit.get_attack_range():
+					adjacent.append(u)
+
+			if not adjacent.is_empty():
+				var random_target = adjacent[randi() % adjacent.size()]
+				unit.play_attack_animation(random_target.global_position)
+				var result = CombatManager.attack_unit(unit, random_target)
+				if result.success:
+					if result.hit:
+						_log_message("%s lashes out at %s for %d damage!" % [
+							unit.unit_name, random_target.unit_name, result.damage])
+					else:
+						_show_miss_text(unit, random_target)
+						_log_message("%s swings wildly at %s - MISS!" % [
+							unit.unit_name, random_target.unit_name])
+			else:
+				break  # Nothing to attack, stop
+
+	if CombatManager.get_current_unit() == unit:
+		CombatManager.end_turn()
+
+
+## Berserk: attack the nearest creature regardless of team. Move toward them
+## if not in range.
+func _do_berserk_turn(unit: CombatUnit) -> void:
+	# Find nearest living unit regardless of team
+	var nearest: CombatUnit = null
+	var nearest_dist: int = 999
+	for u in CombatManager.all_units:
+		if u == unit or u.is_dead:
+			continue
+		var dist = _grid_distance(unit.grid_position, u.grid_position)
+		if dist < nearest_dist:
+			nearest_dist = dist
+			nearest = u
+
+	if nearest == null:
+		CombatManager.end_turn()
+		return
+
+	var _safety = 0
+	while CombatManager.can_act(1) and CombatManager.get_current_unit() == unit:
+		_safety += 1
+		if _safety > 20:
+			break
+
+		var dist = _grid_distance(unit.grid_position, nearest.grid_position)
+
+		if dist <= unit.get_attack_range():
+			# Attack!
+			unit.play_attack_animation(nearest.global_position)
+			var result = CombatManager.attack_unit(unit, nearest)
+			if result.success:
+				var ally_text = " (ally!)" if nearest.team == unit.team else ""
+				if result.hit:
+					_log_message("%s attacks %s%s in a blind rage for %d damage!" % [
+						unit.unit_name, nearest.unit_name, ally_text, result.damage])
+				else:
+					_show_miss_text(unit, nearest)
+					_log_message("%s rages at %s%s - MISS!" % [
+						unit.unit_name, nearest.unit_name, ally_text])
+
+			# Re-find nearest if target died
+			if not nearest.is_alive():
+				nearest = null
+				nearest_dist = 999
+				for u in CombatManager.all_units:
+					if u == unit or u.is_dead:
+						continue
+					var d = _grid_distance(unit.grid_position, u.grid_position)
+					if d < nearest_dist:
+						nearest_dist = d
+						nearest = u
+				if nearest == null:
+					break
+		else:
+			# Move toward nearest
+			var move_range = CombatManager.get_movement_range(unit)
+			var best_tile = unit.grid_position
+			for tile in move_range:
+				if _grid_distance(tile, nearest.grid_position) < _grid_distance(best_tile, nearest.grid_position):
+					best_tile = tile
+			if best_tile != unit.grid_position:
+				CombatManager.move_unit(unit, best_tile)
+				_log_message("%s charges toward %s!" % [unit.unit_name, nearest.unit_name])
+			else:
+				break
+
+	if CombatManager.get_current_unit() == unit:
+		CombatManager.end_turn()
+
+
+## Pacified: won't attack. Can only stand idle. Damage breaks the effect
+## (handled in status processing via dispel_methods: taking_damage).
+func _do_pacified_turn(unit: CombatUnit) -> void:
+	_log_message("%s stands peacefully, unwilling to fight." % unit.unit_name)
+	CombatManager.end_turn()
+
+
 func _do_enemy_turn(unit: CombatUnit) -> void:
 	# Safety check - make sure it's still this unit's turn
 	if CombatManager.get_current_unit() != unit:
@@ -2520,6 +2724,19 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 	if player_units.is_empty():
 		CombatManager.end_turn()
 		return
+
+	# Charmed enemies exclude the charm caster from valid targets
+	var charm_source = CombatManager.get_cc_source(unit, "charmed")
+	if charm_source != null:
+		var filtered: Array[Node] = []
+		for pu in player_units:
+			if pu != charm_source:
+				filtered.append(pu)
+		player_units = filtered
+		if player_units.is_empty():
+			_log_message("%s is charmed and has no valid targets." % unit.unit_name)
+			CombatManager.end_turn()
+			return
 
 	# Check if unit has castable spells
 	var castable_spells = CombatManager.get_castable_spells(unit)

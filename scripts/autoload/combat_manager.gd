@@ -1017,6 +1017,11 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 	if not can_unit_attack(attacker):
 		return {"success": false, "reason": "Cannot attack in current state"}
 
+	# Charmed units cannot attack the caster who charmed them
+	var charm_source = get_cc_source(attacker, "charmed")
+	if charm_source == defender:
+		return {"success": false, "reason": "Cannot attack — charmed by this target"}
+
 	# Blinded units cannot use ranged attacks
 	var is_ranged_check = attacker.is_ranged_weapon() if attacker.has_method("is_ranged_weapon") else false
 	if is_ranged_check:
@@ -1096,6 +1101,23 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 
 		# --- Reactive status effects on hit ---
 		_process_reactive_statuses(attacker, defender, result)
+
+		# --- Damage from caster breaks Charmed ---
+		# If the attacker was the one who charmed the defender, break charm
+		if "status_effects" in defender:
+			var charm_to_remove: Array[int] = []
+			for ci in range(defender.status_effects.size()):
+				var se = defender.status_effects[ci]
+				if se.get("status", "") == "Charmed":
+					var src = se.get("source", null)
+					if src == attacker:
+						charm_to_remove.append(ci)
+			charm_to_remove.reverse()
+			for cidx in charm_to_remove:
+				defender.status_effects.remove_at(cidx)
+				if defender.has_method("show_status_expired"):
+					defender.show_status_expired("Charmed")
+				status_effect_expired.emit(defender, "Charmed")
 
 		# --- Attacker lifesteal statuses ---
 		if attacker.has_status("Lifelink") or attacker.has_status("Blood_Hunger"):
@@ -1225,6 +1247,22 @@ func calculate_magic_damage(caster: Node, target: Node, base_spell_damage: int, 
 func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 	unit.take_damage(damage)
 	unit_damaged.emit(unit, damage, damage_type)
+
+	# Taking damage breaks Pacified (dispel_methods includes "taking_damage")
+	if damage > 0 and "status_effects" in unit:
+		var to_remove: Array[int] = []
+		for i in range(unit.status_effects.size()):
+			var sname = unit.status_effects[i].get("status", "")
+			var sdef = _status_effects.get(sname, {})
+			if "taking_damage" in sdef.get("dispel_methods", []):
+				to_remove.append(i)
+		to_remove.reverse()
+		for idx in to_remove:
+			var sname = unit.status_effects[idx].get("status", "")
+			unit.status_effects.remove_at(idx)
+			if unit.has_method("show_status_expired"):
+				unit.show_status_expired(sname)
+			status_effect_expired.emit(unit, sname)
 
 	if unit.current_hp <= 0 and not unit.is_bleeding_out:
 		_start_bleed_out(unit)
@@ -1630,7 +1668,7 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 		elif dur_field == "spellpower":
 			duration = maxi(1, 2 + int(bonus * 0.1))
 
-		_apply_status_effect(target, status_name, duration, 0)
+		_apply_status_effect(target, status_name, duration, 0, caster)
 		result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
 
 	# --- Status removal (from spell.statuses_removed) ---
@@ -1677,7 +1715,7 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 				var duration = effect.get("duration", 1)
 				var chance = effect.get("chance", 100)
 				if randf() * 100 <= chance:
-					_apply_status_effect(target, status, duration, effect.get("value", 0))
+					_apply_status_effect(target, status, duration, effect.get("value", 0), caster)
 					effect_result = {"type": "status", "status": status, "applied": true}
 				else:
 					effect_result = {"type": "status", "status": status, "applied": false}
@@ -1714,7 +1752,7 @@ func _apply_stat_modifier(unit: Node, stat: String, value: int, duration: int) -
 ## Apply a status effect.
 ## Non-stackable statuses refresh duration instead of stacking.
 ## Stackable statuses (e.g. Burning) add additional instances.
-func _apply_status_effect(unit: Node, status: String, duration: int, value: int = 0) -> void:
+func _apply_status_effect(unit: Node, status: String, duration: int, value: int = 0, source: Node = null) -> void:
 	if not "status_effects" in unit:
 		unit.set("status_effects", [])
 
@@ -1729,13 +1767,18 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 					existing.duration = maxi(existing.duration, duration)
 					if value > 0:
 						existing.value = value
+					if source != null:
+						existing["source"] = source
 					return
 
-	unit.get("status_effects").append({
+	var effect_entry = {
 		"status": status,
 		"duration": duration,
 		"value": value
-	})
+	}
+	if source != null:
+		effect_entry["source"] = source
+	unit.get("status_effects").append(effect_entry)
 
 	# Show floating status applied text on the unit
 	if unit.has_method("show_status_applied"):
@@ -2250,6 +2293,75 @@ func can_unit_attack(unit: Node) -> bool:
 			return false
 
 	return true
+
+
+## Get the CC behavior override for a unit, if any.
+## Returns a string indicating forced behavior, or "" for no CC override.
+## CC behaviors (checked in priority order):
+##   "stunned"  — skip turn (already handled by blocks_actions)
+##   "feared"   — flee away from fear source each turn
+##   "confused" — move randomly, attack random adjacent target
+##   "berserk"  — attack nearest creature regardless of team
+##   "charmed"  — won't attack the caster, treats them as ally
+##   "pacified" — won't attack anyone, can only move or end turn
+func get_cc_behavior(unit: Node) -> String:
+	if not "status_effects" in unit:
+		return ""
+
+	for effect in unit.status_effects:
+		var status_name = effect.get("status", "")
+		var effect_def = _status_effects.get(status_name, {})
+		var effects = effect_def.get("effects", [])
+
+		# Feared — flee from source (highest priority after stun)
+		if "flee_from_source" in effects:
+			return "feared"
+
+		# Confused — random movement and targeting
+		if "random_movement" in effects or "random_target" in effects:
+			return "confused"
+
+		# Berserk — attack nearest regardless of allegiance
+		if "attacks_closest_creature" in effects or "ignores_allegiance" in effects:
+			return "berserk"
+
+		# Charmed — won't attack caster
+		if "will_not_attack_caster" in effects or "treats_caster_as_ally" in effects:
+			return "charmed"
+
+		# Pacified — won't fight
+		if "will_not_attack" in effects or "disengaged_from_combat" in effects:
+			return "pacified"
+
+	return ""
+
+
+## Get the source unit of a CC effect (the caster who applied it).
+## Used for Feared (flee from source) and Charmed (won't attack caster).
+func get_cc_source(unit: Node, cc_type: String) -> Node:
+	if not "status_effects" in unit:
+		return null
+
+	var target_effects: Array[String] = []
+	match cc_type:
+		"feared":
+			target_effects = ["flee_from_source"]
+		"charmed":
+			target_effects = ["will_not_attack_caster", "treats_caster_as_ally"]
+
+	for effect in unit.status_effects:
+		var status_name = effect.get("status", "")
+		var effect_def = _status_effects.get(status_name, {})
+		var effects = effect_def.get("effects", [])
+
+		for te in target_effects:
+			if te in effects:
+				# The source is stored on the effect instance when applied
+				var source_ref = effect.get("source", null)
+				if source_ref is Node and is_instance_valid(source_ref):
+					return source_ref
+
+	return null
 
 
 ## Get valid target positions for a spell
