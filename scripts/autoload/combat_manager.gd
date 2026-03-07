@@ -891,13 +891,13 @@ func _start_current_turn() -> void:
 	unit.tick_cooldowns()
 
 # Tick active mantras (increment turn counter; per-turn effects applied by combat_arena)
-if not unit.active_mantras.is_empty():
-    unit.tick_mantras()
+	if not unit.active_mantras.is_empty():
+		unit.tick_mantras()
 
-# Process passive perk turn-start effects
-_process_turn_start_perks(unit)
+	# Process passive perk turn-start effects
+	_process_turn_start_perks(unit)
 
-turn_started.emit(unit)
+	turn_started.emit(unit)
 
 
 ## End current unit's turn and advance to next
