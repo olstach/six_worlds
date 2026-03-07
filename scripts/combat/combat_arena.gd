@@ -30,6 +30,13 @@ extends Control
 @onready var skills_panel: PanelContainer = %SkillsPanel
 @onready var skills_list: VBoxContainer = %SkillsList
 
+# Context menu and examine window (created in code)
+var context_menu: PopupMenu = null
+var examine_panel: PanelContainer = null
+var examine_scroll: ScrollContainer = null
+var examine_content: VBoxContainer = null
+var _context_menu_unit: CombatUnit = null
+
 # Combat state
 enum ActionMode { NONE, MOVE, ATTACK, CAST_SPELL, USE_ITEM, USE_SKILL }
 var current_action_mode: ActionMode = ActionMode.NONE
@@ -168,7 +175,12 @@ func _ready() -> void:
 
 	# Connect grid signals
 	combat_grid.tile_clicked.connect(_on_tile_clicked)
+	combat_grid.tile_right_clicked.connect(_on_tile_right_clicked)
 	combat_grid.tile_hovered.connect(_on_tile_hovered)
+
+	# Create context menu and examine window
+	_create_context_menu()
+	_create_examine_panel()
 
 	# Connect button signals
 	move_button.pressed.connect(_on_move_pressed)
@@ -600,9 +612,17 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	# Cancel current action mode with right click or escape
-	if event.is_action_pressed("ui_cancel") or \
-	   (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed):
+	# Cancel current action mode with escape
+	if event.is_action_pressed("ui_cancel"):
+		if examine_panel and examine_panel.visible:
+			examine_panel.hide()
+		else:
+			_cancel_action_mode()
+	# Right click: if not on a unit tile, cancel action mode
+	# (right-click on unit tiles is handled by _on_tile_right_clicked)
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		# The grid's tile_right_clicked handles unit context menus
+		# This catches right-clicks outside the grid
 		_cancel_action_mode()
 
 
@@ -3337,3 +3357,472 @@ func _has_shield_equipped(unit: Node) -> bool:
 		return false
 	var item = ItemSystem.get_item(off_hand_id)
 	return item.get("type", "") == "shield"
+
+
+# ============================================
+# RIGHT-CLICK CONTEXT MENU & EXAMINE WINDOW
+# ============================================
+
+## Handle right-click on a grid tile
+func _on_tile_right_clicked(grid_pos: Vector2i) -> void:
+	var unit = combat_grid.get_unit_at(grid_pos)
+	if unit:
+		_context_menu_unit = unit
+		context_menu.clear()
+		context_menu.add_item("Examine", 0)
+		# Position near the mouse
+		context_menu.position = Vector2i(get_viewport().get_mouse_position())
+		context_menu.popup()
+	else:
+		_cancel_action_mode()
+
+
+## Create the right-click context popup menu
+func _create_context_menu() -> void:
+	context_menu = PopupMenu.new()
+	context_menu.id_pressed.connect(_on_context_menu_pressed)
+	add_child(context_menu)
+
+
+## Handle context menu selection
+func _on_context_menu_pressed(id: int) -> void:
+	match id:
+		0:  # Examine
+			if _context_menu_unit:
+				_show_examine_window(_context_menu_unit)
+
+
+## Create the examine window (built once, populated on demand)
+func _create_examine_panel() -> void:
+	# Semi-transparent background overlay that closes on click
+	var overlay = ColorRect.new()
+	overlay.name = "ExamineOverlay"
+	overlay.color = Color(0, 0, 0, 0.5)
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.gui_input.connect(func(event):
+		if event is InputEventMouseButton and event.pressed:
+			examine_panel.hide()
+			overlay.hide()
+	)
+	overlay.hide()
+	$UILayer.add_child(overlay)
+
+	# Main panel — centered, sized to content
+	examine_panel = PanelContainer.new()
+	examine_panel.name = "ExaminePanel"
+	examine_panel.custom_minimum_size = Vector2(400, 300)
+	examine_panel.set_anchors_preset(Control.PRESET_CENTER)
+	examine_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	examine_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
+	examine_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	# Tibetan-style panel styling
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.08, 0.05, 0.12, 0.95)
+	panel_style.border_color = Color(0.75, 0.55, 0.2)
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(8)
+	panel_style.set_content_margin_all(16)
+	examine_panel.add_theme_stylebox_override("panel", panel_style)
+	examine_panel.hide()
+
+	# Inner margin container
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_top", 4)
+	margin.add_theme_constant_override("margin_bottom", 4)
+	examine_panel.add_child(margin)
+
+	# Scroll container for long content
+	examine_scroll = ScrollContainer.new()
+	examine_scroll.custom_minimum_size = Vector2(380, 280)
+	examine_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	margin.add_child(examine_scroll)
+
+	# VBox for all content
+	examine_content = VBoxContainer.new()
+	examine_content.add_theme_constant_override("separation", 6)
+	examine_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	examine_scroll.add_child(examine_content)
+
+	$UILayer.add_child(examine_panel)
+
+
+## Show the examine window for a unit
+func _show_examine_window(unit: CombatUnit) -> void:
+	# Clear previous content
+	for child in examine_content.get_children():
+		child.queue_free()
+
+	var char_data = unit.character_data
+	var is_enemy = unit.team == CombatManager.Team.ENEMY
+	var is_player = not is_enemy
+
+	# Determine what the player can see based on Learning/Medicine perks
+	var player_party = CombatManager.get_team_units(CombatManager.Team.PLAYER)
+	var can_see_stats = is_player  # Always see your own stats
+	var can_see_skills = is_player
+	var can_see_resistances = false
+	var can_see_statuses = true  # Always visible (player should know what's happening)
+
+	# Check if any player party member has relevant perks
+	for pu in player_party:
+		var pchar = pu.character_data if "character_data" in pu else {}
+		# observe_carefully (Learning 1): reveals HP, armor, resistances, weakness
+		if PerkSystem.has_perk(pchar, "observe_carefully"):
+			can_see_resistances = true
+		# diagnosis (Medicine 1): reveals status effects, durations, HP, vulnerabilities
+		# (statuses already visible, but this adds detail)
+
+	# --- HEADER: Name ---
+	var name_label = Label.new()
+	name_label.text = unit.unit_name
+	name_label.add_theme_font_size_override("font_size", 18)
+	name_label.add_theme_color_override("font_color", Color(0.95, 0.85, 0.5))
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	examine_content.add_child(name_label)
+
+	# --- FLAVOR TEXT ---
+	var flavor = ""
+	if is_player:
+		# Player: show race description
+		var race_id = char_data.get("race", "")
+		if race_id != "":
+			var races_data = _get_races_data()
+			var race_def = races_data.get(race_id, {})
+			flavor = race_def.get("description", "")
+		var bg_id = char_data.get("background", "")
+		if bg_id != "" and flavor == "":
+			flavor = bg_id.replace("_", " ").capitalize()
+	else:
+		# Enemy: show archetype if available
+		var archetype_id = char_data.get("archetype_id", "")
+		if archetype_id != "":
+			flavor = archetype_id.replace("_", " ").capitalize()
+
+	if flavor != "":
+		var flavor_label = Label.new()
+		flavor_label.text = flavor
+		flavor_label.add_theme_font_size_override("font_size", 11)
+		flavor_label.add_theme_color_override("font_color", Color(0.65, 0.6, 0.55))
+		flavor_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		flavor_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		examine_content.add_child(flavor_label)
+
+	_add_examine_separator()
+
+	# --- HP / MANA / STAMINA BARS ---
+	var hp_row = _create_examine_stat_row("HP", "%d / %d" % [unit.current_hp, unit.max_hp], Color(0.8, 0.2, 0.2))
+	examine_content.add_child(hp_row)
+
+	if unit.max_mana > 0:
+		var mp_row = _create_examine_stat_row("Mana", "%d / %d" % [unit.current_mana, unit.max_mana], Color(0.3, 0.4, 0.9))
+		examine_content.add_child(mp_row)
+
+	var derived = char_data.get("derived", {})
+	var max_st = derived.get("max_stamina", 0)
+	if max_st > 0:
+		var cur_st = derived.get("current_stamina", max_st)
+		var st_row = _create_examine_stat_row("Stamina", "%d / %d" % [cur_st, max_st], Color(0.9, 0.75, 0.2))
+		examine_content.add_child(st_row)
+
+	# --- COMBAT STATS (always visible — armor, dodge, accuracy, damage, crit, movement) ---
+	_add_examine_separator()
+	var combat_header = _create_examine_section_header("Combat Stats")
+	examine_content.add_child(combat_header)
+
+	var combat_stats = [
+		["Armor", str(unit.get_armor())],
+		["Dodge", str(unit.get_dodge())],
+		["Accuracy", str(unit.get_accuracy())],
+		["Damage", str(unit.get_attack_damage())],
+		["Crit", "%d%%" % unit.get_crit_chance()],
+		["Movement", str(unit.get_movement())],
+		["Initiative", str(derived.get("initiative", 10))],
+	]
+	if unit.max_mana > 0:
+		combat_stats.append(["Spellpower", str(unit.get_spellpower())])
+
+	var stats_grid = _create_examine_stats_grid(combat_stats)
+	examine_content.add_child(stats_grid)
+
+	# --- ATTRIBUTES (controlled by perks for enemies) ---
+	if can_see_stats:
+		var attributes = char_data.get("attributes", {})
+		if not attributes.is_empty():
+			_add_examine_separator()
+			var attr_header = _create_examine_section_header("Attributes")
+			examine_content.add_child(attr_header)
+
+			var attr_pairs: Array = []
+			var attr_order = ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"]
+			for attr in attr_order:
+				if attr in attributes:
+					attr_pairs.append([attr.capitalize(), str(attributes[attr])])
+			var attr_grid = _create_examine_stats_grid(attr_pairs)
+			examine_content.add_child(attr_grid)
+
+	# --- SKILLS (controlled by perks for enemies) ---
+	if can_see_skills:
+		var skills = char_data.get("skills", {})
+		# Filter to non-zero skills
+		var trained: Array = []
+		for skill_id in skills:
+			var level = skills[skill_id]
+			if level > 0:
+				trained.append([skill_id.replace("_", " ").capitalize(), str(int(level))])
+		if not trained.is_empty():
+			_add_examine_separator()
+			var skill_header = _create_examine_section_header("Skills")
+			examine_content.add_child(skill_header)
+			var skill_grid = _create_examine_stats_grid(trained)
+			examine_content.add_child(skill_grid)
+
+	# --- RESISTANCES (requires observe_carefully perk for enemies) ---
+	if can_see_resistances or is_player:
+		var resistances = unit.resistances if "resistances" in unit else {}
+		# Filter non-zero
+		var res_pairs: Array = []
+		for element in resistances:
+			var val = resistances[element]
+			if val != 0:
+				var prefix = "+" if val > 0 else ""
+				res_pairs.append([element.capitalize(), prefix + str(val) + "%"])
+		if not res_pairs.is_empty():
+			_add_examine_separator()
+			var res_header = _create_examine_section_header("Resistances")
+			examine_content.add_child(res_header)
+			var res_grid = _create_examine_stats_grid(res_pairs)
+			examine_content.add_child(res_grid)
+
+	# --- STATUS EFFECTS (always visible) ---
+	var all_statuses = _gather_all_statuses(unit)
+	if not all_statuses.is_empty():
+		_add_examine_separator()
+		var status_header = _create_examine_section_header("Status Effects")
+		examine_content.add_child(status_header)
+
+		for status_info in all_statuses:
+			var status_row = _create_examine_status_row(status_info)
+			examine_content.add_child(status_row)
+
+	# --- CLOSE HINT ---
+	_add_examine_separator()
+	var close_hint = Label.new()
+	close_hint.text = "Click outside or press Esc to close"
+	close_hint.add_theme_font_size_override("font_size", 9)
+	close_hint.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+	close_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	examine_content.add_child(close_hint)
+
+	# Show overlay and panel
+	$UILayer.get_node("ExamineOverlay").show()
+	examine_panel.show()
+
+	# Resize panel to fit content (capped)
+	await get_tree().process_frame
+	var content_height = examine_content.get_combined_minimum_size().y + 48
+	examine_panel.custom_minimum_size.y = minf(content_height, 500)
+	examine_panel.size = Vector2(420, minf(content_height, 500))
+	# Re-center after resize
+	examine_panel.position = (get_viewport_rect().size - examine_panel.size) / 2
+
+
+## Gather all status effects for a unit, including equipment-granted persistent effects
+func _gather_all_statuses(unit: CombatUnit) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+
+	# Active status effects from combat
+	for effect in unit.status_effects:
+		var status_name = effect.get("status", "")
+		var duration = effect.get("duration", 0)
+		var def = CombatManager.get_status_definition(status_name)
+		var stype = def.get("type", "debuff")
+		var dur_type = def.get("duration_type", "turns")
+
+		var dur_text = ""
+		if dur_type == "permanent":
+			dur_text = "Permanent"
+		elif dur_type == "until_save":
+			dur_text = "Until save"
+		else:
+			dur_text = "%d turns" % duration
+
+		result.append({
+			"name": status_name.replace("_", " "),
+			"type": stype,
+			"duration": dur_text,
+			"source": "status"
+		})
+
+	# Equipment-granted persistent effects (talisman perks)
+	var char_data = unit.character_data if "character_data" in unit else {}
+	var equipment = char_data.get("equipment", {})
+	for slot in ["trinket1", "trinket2"]:
+		var item_id = equipment.get(slot, "")
+		if item_id == "":
+			continue
+		var item = ItemSystem.get_item(item_id)
+		var perk_id = item.get("passive", {}).get("perk", "")
+		if perk_id != "":
+			var perk_name = perk_id.replace("_", " ").capitalize()
+			var item_name = item.get("name", slot)
+			result.append({
+				"name": perk_name,
+				"type": "equipment",
+				"duration": item_name,
+				"source": "equipment"
+			})
+
+		# Also show resistance bonuses from equipment
+		var passive = item.get("passive", {})
+		for key in passive:
+			if key.ends_with("_resistance") and passive[key] != 0:
+				var element = key.replace("_resistance", "").capitalize()
+				var val = passive[key]
+				var prefix = "+" if val > 0 else ""
+				result.append({
+					"name": "%s Res %s%d%%" % [element, prefix, val],
+					"type": "equipment",
+					"duration": item.get("name", slot),
+					"source": "equipment"
+				})
+
+	# Stat modifiers (temporary buffs/debuffs from spells etc.)
+	if "stat_modifiers" in unit:
+		for mod in unit.stat_modifiers:
+			var stat = mod.get("stat", "")
+			var value = mod.get("value", 0)
+			var duration = mod.get("duration", 0)
+			if stat != "" and value != 0:
+				var prefix = "+" if value > 0 else ""
+				var mod_type = "buff" if value > 0 else "debuff"
+				result.append({
+					"name": "%s%d %s" % [prefix, value, stat.capitalize()],
+					"type": mod_type,
+					"duration": "%d turns" % duration,
+					"source": "modifier"
+				})
+
+	return result
+
+
+## Create a status row for the examine window (name left, duration right)
+func _create_examine_status_row(status_info: Dictionary) -> HBoxContainer:
+	var row = HBoxContainer.new()
+
+	var name_lbl = Label.new()
+	name_lbl.text = status_info.name
+	name_lbl.add_theme_font_size_override("font_size", 11)
+	name_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	# Color by type
+	match status_info.type:
+		"buff":
+			name_lbl.add_theme_color_override("font_color", Color(0.3, 0.9, 0.5))
+		"debuff":
+			name_lbl.add_theme_color_override("font_color", Color(0.95, 0.5, 0.3))
+		"equipment":
+			name_lbl.add_theme_color_override("font_color", Color(0.6, 0.7, 0.9))
+		_:
+			name_lbl.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8))
+
+	row.add_child(name_lbl)
+
+	var dur_lbl = Label.new()
+	dur_lbl.text = status_info.duration
+	dur_lbl.add_theme_font_size_override("font_size", 10)
+	dur_lbl.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	dur_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	row.add_child(dur_lbl)
+
+	return row
+
+
+## Create a stat row for the examine window (label left, value right)
+func _create_examine_stat_row(label: String, value: String, color: Color) -> HBoxContainer:
+	var row = HBoxContainer.new()
+
+	var name_lbl = Label.new()
+	name_lbl.text = label
+	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_color_override("font_color", color)
+	name_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(name_lbl)
+
+	var val_lbl = Label.new()
+	val_lbl.text = value
+	val_lbl.add_theme_font_size_override("font_size", 12)
+	val_lbl.add_theme_color_override("font_color", color)
+	val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	row.add_child(val_lbl)
+
+	return row
+
+
+## Create a section header label
+func _create_examine_section_header(text: String) -> Label:
+	var label = Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", 13)
+	label.add_theme_color_override("font_color", Color(0.85, 0.7, 0.4))
+	return label
+
+
+## Create a grid of stat name-value pairs (two columns per row)
+func _create_examine_stats_grid(pairs: Array) -> GridContainer:
+	var grid = GridContainer.new()
+	grid.columns = 4  # name1, val1, name2, val2
+	grid.add_theme_constant_override("h_separation", 12)
+	grid.add_theme_constant_override("v_separation", 2)
+
+	for i in range(pairs.size()):
+		var pair = pairs[i]
+		var name_lbl = Label.new()
+		name_lbl.text = pair[0]
+		name_lbl.add_theme_font_size_override("font_size", 11)
+		name_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+		name_lbl.custom_minimum_size.x = 80
+		grid.add_child(name_lbl)
+
+		var val_lbl = Label.new()
+		val_lbl.text = pair[1]
+		val_lbl.add_theme_font_size_override("font_size", 11)
+		val_lbl.add_theme_color_override("font_color", Color(0.95, 0.92, 0.85))
+		val_lbl.custom_minimum_size.x = 40
+		grid.add_child(val_lbl)
+
+	# If odd number of pairs, add empty cells to fill last row
+	if pairs.size() % 2 == 1:
+		var empty1 = Control.new()
+		empty1.custom_minimum_size.x = 80
+		grid.add_child(empty1)
+		var empty2 = Control.new()
+		empty2.custom_minimum_size.x = 40
+		grid.add_child(empty2)
+
+	return grid
+
+
+## Add a separator line to the examine content
+func _add_examine_separator() -> void:
+	var sep = HSeparator.new()
+	sep.custom_minimum_size.y = 4
+	sep.add_theme_stylebox_override("separator", StyleBoxLine.new())
+	examine_content.add_child(sep)
+
+
+## Cache for races data (loaded once)
+var _cached_races_data: Dictionary = {}
+
+## Load races data for flavor text lookup
+func _get_races_data() -> Dictionary:
+	if not _cached_races_data.is_empty():
+		return _cached_races_data
+	var file = FileAccess.open("res://resources/data/races.json", FileAccess.READ)
+	if file:
+		var json = JSON.new()
+		if json.parse(file.get_as_text()) == OK:
+			_cached_races_data = json.data.get("races", {})
+		file.close()
+	return _cached_races_data
