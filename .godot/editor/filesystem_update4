@@ -1,5 +1,0 @@
-res://scenes/ui/shop_ui.tscn
-res://scripts/autoload/map_manager.gd
-res://scripts/map_gen/map_generator.gd
-res://scripts/overworld/overworld.gd
-res://scripts/ui/shop_ui.gd

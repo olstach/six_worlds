@@ -9,6 +9,7 @@ class_name CombatGrid
 ## - Tile types (walkable, obstacles, etc.)
 
 signal tile_clicked(grid_pos: Vector2i)
+signal tile_right_clicked(grid_pos: Vector2i)
 signal tile_hovered(grid_pos: Vector2i)
 signal terrain_effect_triggered(grid_pos: Vector2i, effect: int, value: int)
 signal terrain_effect_expired(grid_pos: Vector2i, effect: int)
@@ -275,6 +276,8 @@ func _on_tile_input(event: InputEvent, grid_pos: Vector2i) -> void:
 	if event is InputEventMouseButton:
 		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			tile_clicked.emit(grid_pos)
+		elif event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+			tile_right_clicked.emit(grid_pos)
 
 
 ## Handle tile hover
