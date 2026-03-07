@@ -97,7 +97,20 @@ func init_from_character(char_data: Dictionary, unit_team: int) -> void:
 
 	# Calculate max actions (base 2, can be modified)
 	max_actions = CombatManager.BASE_ACTIONS
-	# TODO: Check for haste buffs, finesse upgrades
+
+	# Load talisman resistance bonuses from equipped trinkets
+	var equipment = char_data.get("equipment", {})
+	for slot in ["trinket1", "trinket2"]:
+		var item_id = equipment.get(slot, "")
+		if item_id == "":
+			continue
+		var item = ItemSystem.get_item(item_id)
+		var passive = item.get("passive", {})
+		for key in passive:
+			if key.ends_with("_resistance") and key != "perk":
+				# e.g. "fire_resistance": 15 -> resistances["fire"] += 15
+				var element = key.replace("_resistance", "")
+				resistances[element] = resistances.get(element, 0) + passive[key]
 
 	_update_visuals()
 
@@ -212,36 +225,55 @@ func _update_visuals() -> void:
 			for effect in status_effects:
 				var status_name = effect.get("status", "")
 				# Use short icons/abbreviations for each status
-				match status_name:
+				match status_name.to_lower():
 					"burning":
 						icons.append("🔥")
-					"poisoned":
+					"poisoned", "festering", "diseased":
 						icons.append("☠")
 					"bleeding":
 						icons.append("💧")
 					"frozen":
 						icons.append("❄")
-					"stunned":
+					"stunned", "paralyzed":
 						icons.append("⚡")
-					"knocked_down":
+					"knocked_down", "prone":
 						icons.append("⬇")
 					"regenerating":
 						icons.append("💚")
 					"feared":
 						icons.append("😨")
+					"silenced":
+						icons.append("🤐")
+					"confused", "chaotic":
+						icons.append("❓")
+					"blinded":
+						icons.append("👁")
+					"rooted", "held":
+						icons.append("⛓")
+					"blessed", "hasted":
+						icons.append("✨")
+					"invisible":
+						icons.append("👻")
+					"cursed":
+						icons.append("💀")
+					"doomed":
+						icons.append("⏳")
 					_:
 						icons.append("•")
 			status_text = "".join(icons)
-			# Color based on effect type (negative = red, positive = green)
+			# Color based on effect type using status definitions
 			var has_positive = false
 			var has_negative = false
 			for effect in status_effects:
-				var s = effect.get("status", "")
-				if s == "regenerating":
+				var sname = effect.get("status", "")
+				var def = CombatManager.get_status_definition(sname)
+				if def.get("type", "debuff") == "buff":
 					has_positive = true
 				else:
 					has_negative = true
-			if has_negative:
+			if has_negative and has_positive:
+				status_indicator.add_theme_color_override("font_color", Color(1.0, 0.8, 0.3))
+			elif has_negative:
 				status_indicator.add_theme_color_override("font_color", Color(1.0, 0.5, 0.3))
 			elif has_positive:
 				status_indicator.add_theme_color_override("font_color", Color(0.3, 1.0, 0.5))
@@ -257,26 +289,97 @@ func _update_visuals() -> void:
 # STAT GETTERS
 # ============================================
 
+## Get the total bonus/penalty to a stat from active status effects.
+## Checks status definitions loaded in CombatManager for stat_modifiers.
+func _get_status_stat_bonus(stat: String) -> int:
+	var total := 0
+	for effect in status_effects:
+		var status_name = effect.get("status", "")
+		var def = CombatManager.get_status_definition(status_name)
+		var effects = def.get("effects", [])
+		# Map effect strings to stat bonuses
+		match stat:
+			"accuracy":
+				if "attack_bonus" in effects:
+					total += 10
+				if "attack_penalty" in effects:
+					total -= 10
+				if "melee_hit_chance_halved" in effects:
+					total -= 40  # Large accuracy penalty from Blinded
+				if "accuracy_bonus" in effects:
+					total += 10
+			"armor":
+				if "defense_bonus" in effects:
+					total += 10
+				if "defense_penalty" in effects:
+					total -= 10
+			"dodge":
+				if "dodge_bonus" in effects:
+					total += 15
+				if "minor_dodge_bonus" in effects:
+					total += 5
+				if "evasion_bonus" in effects:
+					total += 25
+			"movement":
+				if "speed_bonus" in effects:
+					total += 2
+				if "speed_penalty" in effects:
+					total -= 1
+				if "movement_reduced_50" in effects:
+					# Use base movement (not get_movement() to avoid recursion)
+					var base_move = character_data.get("derived", {}).get("movement", 3)
+					total -= base_move / 2
+				if "major_speed_boost" in effects:
+					total += 4
+			"initiative":
+				if "initiative_bonus" in effects:
+					total += 5
+				if "initiative_penalty" in effects:
+					total -= 5
+			"damage":
+				if "melee_damage_bonus" in effects:
+					total += 5
+				if "damage_bonus" in effects:
+					total += 5
+			"crit_chance":
+				if "critical_boost" in effects:
+					total += 10
+				if "critical_bonus_ranged" in effects:
+					total += 8
+			"spellpower":
+				if "awareness_bonus" in effects or "focus_bonus" in effects:
+					total += 3
+	return total
+
+
 ## Check if unit is alive (not dead and not bleeding out)
 func is_alive() -> bool:
 	return not is_dead and not is_bleeding_out
 
 
-## Check if unit can be targeted
+## Check if unit can be targeted (not dead, not invisible, not in sanctuary)
 func is_targetable() -> bool:
-	return not is_dead
+	if is_dead:
+		return false
+	# Invisible and Sanctuary grant cannot_be_targeted
+	for effect in status_effects:
+		var status_name = effect.get("status", "")
+		var def = CombatManager.get_status_definition(status_name)
+		if "cannot_be_targeted" in def.get("effects", []):
+			return false
+	return true
 
 
-## Get initiative for turn order
+## Get initiative for turn order (includes status effect bonuses)
 func get_initiative() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("initiative", 10)
+	return derived.get("initiative", 10) + _get_status_stat_bonus("initiative")
 
 
-## Get movement range
+## Get movement range (includes status effect and perk bonuses)
 func get_movement() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("movement", 3)
+	return maxi(0, derived.get("movement", 3) + _get_status_stat_bonus("movement") + CombatManager.get_passive_perk_stat_bonus(self, "movement"))
 
 
 ## Get maximum actions per turn
@@ -398,17 +501,17 @@ func get_attack_range() -> int:
 	return stats.get("range", 1)
 
 
-## Get accuracy bonus
+## Get accuracy bonus (includes status effect bonuses)
 ## Weapon skill bonuses are now included in derived.accuracy via CharacterSystem.update_derived_stats()
 func get_accuracy() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("accuracy", 0)
+	return derived.get("accuracy", 0) + _get_status_stat_bonus("accuracy")
 
 
-## Get dodge value
+## Get dodge value (includes status effect bonuses)
 func get_dodge() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("dodge", 10)
+	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge")
 
 
 ## Get attack damage
@@ -434,6 +537,12 @@ func get_attack_damage() -> int:
 	# Add skill-based damage bonus from derived stats (set by update_derived_stats)
 	base_damage += derived.get("damage", 0)
 
+	# Add status effect damage bonuses (Bloodlust, etc.)
+	base_damage += _get_status_stat_bonus("damage")
+
+	# Add passive perk damage bonuses
+	base_damage += CombatManager.get_passive_perk_stat_bonus(self, "damage")
+
 	return base_damage
 
 
@@ -458,16 +567,16 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 			return ""
 
 
-## Get armor value
+## Get armor value (includes status effect and perk bonuses)
 func get_armor() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("armor", 0)
+	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_passive_perk_stat_bonus(self, "armor")
 
 
-## Get crit chance (percentage)
+## Get crit chance (percentage, includes status effect bonuses)
 func get_crit_chance() -> float:
 	var derived = character_data.get("derived", {})
-	return float(derived.get("crit_chance", 5))
+	return float(derived.get("crit_chance", 5)) + float(_get_status_stat_bonus("crit_chance"))
 
 
 ## Get current stamina
@@ -491,6 +600,13 @@ func restore_stamina(amount: int) -> void:
 	current_stamina = mini(max_stamina, current_stamina + amount)
 	var derived = character_data.get("derived", {})
 	derived["current_stamina"] = current_stamina
+
+
+## Restore mana (clamped to max)
+func restore_mana(amount: int) -> void:
+	current_mana = mini(max_mana, current_mana + amount)
+	var derived = character_data.get("derived", {})
+	derived["current_mana"] = current_mana
 
 
 ## Tick cooldowns at start of turn — reduces all by 1, removes expired
@@ -533,7 +649,7 @@ func tick_mantras() -> void:
 ## Get spellpower
 func get_spellpower() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("spellpower", 0)
+	return derived.get("spellpower", 0) + _get_status_stat_bonus("spellpower")
 
 
 ## Get magic skill bonus for an element (spellpower from the skill's base_bonuses table)
@@ -548,16 +664,63 @@ func get_magic_skill_bonus(element: String) -> int:
 ## Physical damage subtypes that fall back to "physical" resistance
 const PHYSICAL_SUBTYPES = ["slashing", "crushing", "piercing"]
 
-## Get resistance to a damage type
-## For physical subtypes (slashing/crushing/piercing), checks specific first then falls back to "physical"
+## Get resistance to a damage type (includes status effect modifiers).
+## For physical subtypes (slashing/crushing/piercing), checks specific first then falls back to "physical".
 func get_resistance(damage_type: String) -> float:
+	var base: float
 	if damage_type in PHYSICAL_SUBTYPES:
 		# Check for specific resistance first (e.g., skeleton weak to crushing)
 		if resistances.has(damage_type):
-			return float(resistances[damage_type])
-		# Fall back to generic physical resistance
-		return float(resistances.get("physical", 0))
-	return float(resistances.get(damage_type, 0))
+			base = float(resistances[damage_type])
+		else:
+			# Fall back to generic physical resistance
+			base = float(resistances.get("physical", 0))
+	else:
+		base = float(resistances.get(damage_type, 0))
+
+	# Apply status effect resistance modifiers
+	for effect in status_effects:
+		var status_name = effect.get("status", "")
+		var def = CombatManager.get_status_definition(status_name)
+		var effects = def.get("effects", [])
+
+		# Vulnerability effects (lower resistance)
+		if damage_type == "physical" or damage_type in PHYSICAL_SUBTYPES:
+			if "vulnerable_to_physical" in effects:
+				base -= 50.0  # Frozen makes you take 50% more physical
+			if "physical_immunity" in effects:
+				base = 100.0  # Petrified: immune to physical
+			if "physical_resist_50" in effects:
+				base += 50.0
+			if "physical_damage_negation_50_percent" in effects:
+				base += 50.0
+
+		if damage_type == "fire":
+			if "fire_resistance_minus_50" in effects:
+				base -= 50.0
+		if damage_type == "water":
+			if "water_resistance_minus_25" in effects:
+				base -= 25.0
+			if "water_resistance_minus_50" in effects:
+				base -= 50.0
+		if damage_type == "air":
+			if "air_damage_immunity" in effects:
+				base = 100.0
+
+		# grants_vulnerability field (used by Smoke_Form, Lightning_Form)
+		var vuln = def.get("grants_vulnerability", {})
+		if vuln.has(damage_type):
+			base -= float(vuln[damage_type])
+
+		# General elemental resistance boost
+		if "elemental_resistance_25" in effects and damage_type not in PHYSICAL_SUBTYPES and damage_type != "physical":
+			base += 25.0
+
+		# Immune to all damage (Invulnerable)
+		if "immune_to_all_damage" in effects:
+			base = 100.0
+
+	return base
 
 
 ## Set resistance (for buffs/debuffs)
@@ -656,6 +819,150 @@ func show_combat_text(text: String, color: Color = Color(0.9, 0.9, 0.9)) -> void
 	tween.tween_property(label, "position:y", label.position.y - 30, 0.9)
 	tween.parallel().tween_property(label, "modulate:a", 0, 0.9)
 	tween.tween_callback(label.queue_free)
+
+
+# ============================================
+# STATUS EFFECT VISUALS
+# ============================================
+
+## Element/school → color mapping for status effect floating text
+const STATUS_ELEMENT_COLORS: Dictionary = {
+	"fire": Color(1.0, 0.4, 0.1),       # Orange-red
+	"water": Color(0.2, 0.6, 1.0),      # Blue
+	"ice": Color(0.5, 0.85, 1.0),       # Light blue
+	"cold": Color(0.5, 0.85, 1.0),      # Light blue
+	"earth": Color(0.7, 0.55, 0.3),     # Brown
+	"air": Color(0.7, 0.9, 1.0),        # Pale blue
+	"space": Color(0.8, 0.6, 1.0),      # Purple
+	"black": Color(0.6, 0.2, 0.6),      # Dark purple
+	"white": Color(1.0, 0.95, 0.7),     # Warm white
+	"holy": Color(1.0, 0.95, 0.7),      # Warm white
+	"poison": Color(0.4, 0.8, 0.2),     # Green
+	"physical": Color(0.9, 0.85, 0.8),  # Off-white
+}
+
+## Status category → color mapping for statuses without a clear element
+const STATUS_TYPE_COLORS: Dictionary = {
+	"cc": Color(0.9, 0.7, 0.2),         # Gold (crowd control)
+	"dot": Color(1.0, 0.4, 0.1),        # Orange (damage over time)
+	"hot": Color(0.3, 1.0, 0.5),        # Green (heal over time)
+	"buff": Color(0.3, 0.85, 1.0),      # Cyan (buffs)
+	"debuff": Color(0.9, 0.3, 0.3),     # Red (debuffs)
+	"vulnerability": Color(0.9, 0.5, 0.2),  # Dark orange
+	"immunity": Color(1.0, 0.95, 0.5),  # Bright yellow
+	"protection": Color(0.5, 0.7, 1.0), # Light blue
+	"aura": Color(0.8, 0.7, 1.0),       # Lavender
+	"shield": Color(0.6, 0.8, 1.0),     # Steel blue
+	"transformation": Color(0.9, 0.6, 1.0),  # Pink-purple
+	"resistance": Color(0.6, 0.8, 0.4), # Olive green
+	"divine": Color(1.0, 0.9, 0.4),     # Gold
+	"stealth": Color(0.5, 0.5, 0.6),    # Grey
+	"disruption": Color(0.8, 0.4, 0.2), # Rust
+	"delayed": Color(0.7, 0.3, 0.5),    # Maroon
+}
+
+## Color used for "Resisted!" text — same shade as "Miss!" (grey)
+const COLOR_RESISTED = Color(0.8, 0.8, 0.8)
+
+## Color used for expired status text (grey, faded)
+const COLOR_STATUS_EXPIRED = Color(0.6, 0.6, 0.6)
+
+
+## Get the appropriate color for a status effect name.
+## Uses the status definition's element or category to pick a color.
+func _get_status_color(status_name: String) -> Color:
+	var def = CombatManager.get_status_definition(status_name)
+	if def.is_empty():
+		return Color(0.9, 0.9, 0.9)  # Default white-ish
+
+	# Check if the status has an explicit element (for DoTs)
+	var element = def.get("element", "")
+	if element != "" and STATUS_ELEMENT_COLORS.has(element):
+		return STATUS_ELEMENT_COLORS[element]
+
+	# Infer element from the effects array
+	var effects = def.get("effects", [])
+	for fx in effects:
+		if "fire" in fx:
+			return STATUS_ELEMENT_COLORS["fire"]
+		if "poison" in fx:
+			return STATUS_ELEMENT_COLORS["poison"]
+		if "water" in fx:
+			return STATUS_ELEMENT_COLORS["water"]
+		if "ice" in fx or "frozen" in fx or "cold" in fx:
+			return STATUS_ELEMENT_COLORS["ice"]
+		if "air" in fx or "lightning" in fx:
+			return STATUS_ELEMENT_COLORS["air"]
+		if "space" in fx:
+			return STATUS_ELEMENT_COLORS["space"]
+		if "black" in fx:
+			return STATUS_ELEMENT_COLORS["black"]
+		if "holy" in fx or "white" in fx or "blessed" in fx:
+			return STATUS_ELEMENT_COLORS["white"]
+		if "physical" in fx:
+			return STATUS_ELEMENT_COLORS["physical"]
+
+	# Fall back to category color
+	var category = def.get("category", "")
+	if STATUS_TYPE_COLORS.has(category):
+		return STATUS_TYPE_COLORS[category]
+
+	# Fall back to type (buff/debuff)
+	var stype = def.get("type", "debuff")
+	if stype == "buff":
+		return STATUS_TYPE_COLORS["buff"]
+	return STATUS_TYPE_COLORS["debuff"]
+
+
+## Show floating text when a status effect is applied.
+## Displays the status name in the color associated with its element/category.
+## Positioned slightly higher than damage numbers to avoid overlap.
+func show_status_applied(status_name: String) -> void:
+	var color = _get_status_color(status_name)
+	# Use a human-readable name (replace underscores, capitalize)
+	var display_name = status_name.replace("_", " ")
+
+	var label = Label.new()
+	label.text = "+" + display_name
+	label.position = Vector2(0, -UNIT_SIZE.y / 2 - 28)
+	label.add_theme_font_size_override("font_size", 12)
+	label.add_theme_color_override("font_color", color)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	add_child(label)
+
+	var tween = create_tween()
+	tween.tween_property(label, "position:y", label.position.y - 25, 1.0)
+	tween.parallel().tween_property(label, "modulate:a", 0, 1.0)
+	tween.tween_callback(label.queue_free)
+
+
+## Show floating text when a status effect expires.
+## Displays the status name with strikethrough in grey, floating up and fading.
+func show_status_expired(status_name: String) -> void:
+	var display_name = status_name.replace("_", " ")
+
+	var label = RichTextLabel.new()
+	label.bbcode_enabled = true
+	# Strikethrough via BBCode
+	label.text = "[color=#999999][s]" + display_name + "[/s][/color]"
+	label.fit_content = true
+	label.scroll_active = false
+	label.position = Vector2(-30, -UNIT_SIZE.y / 2 - 28)
+	label.custom_minimum_size = Vector2(60, 20)
+	label.add_theme_font_size_override("normal_font_size", 12)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(label)
+
+	var tween = create_tween()
+	tween.tween_property(label, "position:y", label.position.y - 25, 1.2)
+	tween.parallel().tween_property(label, "modulate:a", 0, 1.2)
+	tween.tween_callback(label.queue_free)
+
+
+## Show "Resisted!" floating text when a saving throw succeeds.
+## Uses the same grey color as "Miss!" for consistency.
+func show_resisted_text() -> void:
+	show_combat_text("Resisted!", COLOR_RESISTED)
 
 
 ## Play attack lunge animation — move toward target and return

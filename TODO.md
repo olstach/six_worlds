@@ -11,12 +11,14 @@ Last Updated: 2026-02-28
 - [x] CharacterSystem singleton (7 attributes, 35 skills, derived stats, party management)
 - [x] KarmaSystem singleton (hidden karma, reincarnation, weighted race selection)
 - [x] EventManager singleton (3 choice types, party-wide checks, dice rolls)
-- [x] ItemSystem singleton (equipment database, 12-slot system, inventory)
+- [x] ItemSystem singleton (equipment database, 12-slot system, inventory, procedural generation)
 - [x] ShopSystem singleton (buy/sell, spell learning, skill training, discounts)
-- [x] CombatManager singleton (full tactical combat system)
+- [x] CombatManager singleton (full tactical combat system, loot drops with supply/reagent integration)
 - [x] PerkSystem singleton (skill perks, cross perks, base bonuses, affinity bonuses)
 - [x] SaveManager singleton (save/load game state, 3 slots + autosave)
 - [x] MapManager singleton (overworld map, pathfinding, mobs, objects)
+- [x] AudioManager singleton (SFX system, 28 sounds × 6 variants)
+- [x] Supply system (Food/Herbs/Scrap/Reagents with passive consumption, starvation, save/load)
 
 ### Combat System
 - [x] Grid-based combat (12x8 default, configurable)
@@ -50,8 +52,9 @@ Last Updated: 2026-02-28
 - [x] Active Skills panel in combat (shows active perks and mantras)
 - [x] Miss/Dodge/Block floating combat text
 - [x] Attack lunge animation (sprite moves toward target and returns)
-- [x] Enemy loot drops
+- [x] Enemy loot drops (supplies, reagents with caster-weighting)
 - [x] AoE spells damage obstacles and create ground effects
+- [x] Ammo system (ranged weapons consume ammo, crossbow/javelin subtypes)
 
 ### Character & Progression
 - [x] XP-based progression (no levels; player starts with 50 XP)
@@ -109,6 +112,9 @@ Last Updated: 2026-02-28
 - [x] hell.json map config (procedural generation)
 - [x] hell_events.json (realm events)
 - [x] hell_enemies.json (enemy archetypes)
+- [x] supplies.json (4 supply types with passive effects, consumption, starvation)
+- [x] equipment_tables.json (procedural weapon/armor generation tables)
+- [x] talisman_tables.json (procedural talisman generation tables)
 
 ---
 
@@ -135,23 +141,26 @@ Recruiting companions is the single highest-impact missing feature for a playabl
 Three categories of interactive map objects. Hell is the target realm for initial content.
 
 **Category 1 — Simples** (one-time activation, permanent after use)
-- [ ] Simple object type in MapManager (flag: used, no reset on return)
-- [ ] Effect types: mana restore, HP restore, temp stat/skill bonus (lasts until next combat or event with checks), temp loot chance buff
-- [ ] Cursed simples: look identical but deal a negative effect (penalty to a stat, drain XP, apply status) — rare, visually distinct after triggered
-- [ ] Hell content: frozen spring (mana), ice shrine (cold resist), burning altar (fire spellpower), bone pile (find weapon), lava vent (fire resist), pain altar (STR buff at HP cost)
+- [x] ~~Simple object type in MapManager~~ — DONE (PICKUP ObjectType with one_time flag, reward system: gold/xp/item/heal/mana/buff/damage/cleanse/karma)
+- [x] ~~Effect types~~ — DONE (mana restore, HP restore, temp stat/skill buff with combats_remaining, loot chance buff, XP gain buff, item drops)
+- [x] ~~Cursed simples~~ — DONE (damage reward type, hell config has "Warm Glow" and "Flickering Light" cursed pickups)
+- [x] ~~Hell content~~ — DONE (25+ pickup templates in hell.json map config: Frozen Fountain, Ice Shrine, Burning Altar, Pain Altar, Lava Vent, Mourning Flame, Prayer Flags, etc.)
+- [ ] Bone pile (find weapon) simple — not yet in hell pickup pool
 
 **Category 2 — Traders** (peaceful default, with steal/attack/donate karma branches)
 Roles to fulfill per realm (not specific object types):
-- [ ] General shop (basic items)
-- [ ] Blacksmith (weapons, armor, weapon oils)
-- [ ] Fletcher (ranged weapons, throwables, light armor)
+- [x] ~~General shop (basic items)~~ — DONE (hell_merchant, frozen_merchant, ember_merchant, wandering_peddler, general_store in shops.json)
+- [ ] Blacksmith (weapons, armor, weapon oils) — not yet a distinct shop
+- [ ] Fletcher (ranged weapons, throwables, light armor) — not yet a distinct shop
 - [ ] Healer (healing potions, white magic scrolls; rare locations only: raise dead companion for high gold cost + karma implications)
-- [ ] Alchemist (potions, bombs, oils)
-- [ ] Magic shop (scrolls, charms, magic foci — see magic foci TODO below)
-- [ ] Trainer (teaches 1-3 skills or attributes; one-time per trainer instance; cap = max level trainer can teach, e.g. a wandering apprentice might cap at Lv 3, a master at Lv 7)
+- [ ] Alchemist (potions, bombs, oils) — not yet a distinct shop
+- [x] ~~Magic shop (scrolls, charms, magic foci)~~ — DONE (demon_sorcerer in shops.json sells spells + reagents)
+- [x] ~~Trainer (teaches skills/attributes)~~ — DONE (wandering_sage trains White/Sorcery/Yoga + Focus/Awareness; weapon_master trains 7 combat skills + Str/Fin; ShopSystem has full training tab)
 - [ ] Multi-function locations (towns, camps) use tab UI in event window — 3-4 functions per location
 - [ ] First-visit event hook for towns (simple choice: rumors, discount, hidden object)
-- [ ] Hell content: Wretched Market (general), Infernal Forge (blacksmith + trainer: Axes/Might), Bone Archer Camp (fletcher + trainer: Ranged/Guile), Mercy Ward (healer, ironic name), Brimstone Lab (alchemist), Void Scribe's Den (magic shop + trainer: Black Magic), Warden's Pit (trainer: Spears/Armor + Might cap 5)
+- [ ] Steal/attack/donate karma branches on trader interactions
+- [ ] Trainer caps (limit max level a trainer can teach)
+- [ ] Hell-specific named locations: Infernal Forge (blacksmith + trainer: Axes/Might), Bone Archer Camp (fletcher + trainer: Ranged/Guile), Mercy Ward (healer), Brimstone Lab (alchemist), Warden's Pit (trainer: Spears/Armor + Might cap 5)
 
 **Category 3 — Event Chains** (1-3 choices deep, world/subregion specific)
 - [ ] Event chain data format (prerequisites, follow-up event IDs, outcome state flags)
@@ -173,7 +182,7 @@ Roles to fulfill per realm (not specific object types):
 - [ ] Event chains and prerequisites (see Map Interactibles above)
 - [x] Hell realm events: 39 total across both zones (19 cold_hell pool + 17 fire_hell pool + 2 fixed landmarks + 1 shared). Includes: Bone Arena, Suffering Sage, Suspicious Gift, Ice Demon Toll, Cursed Pilgrim, Frozen Army (cold); Pyromancer's Challenge, Demon Marketplace, Burning Library, Sinner Gang, Forge Spirit, The Invitation (fire); A Sigh of Relief (both zones)
 - [ ] More hell events: both zones at target density (~15+ each). Next focus: event chains and trader NPCs
-- [ ] Category 2 traders for hell (Wretched Market, Infernal Forge, Bone Archer Camp, Mercy Ward, Brimstone Lab, Void Scribe's Den, Warden's Pit)
+- [ ] Remaining Category 2 traders for hell: Infernal Forge (blacksmith), Bone Archer Camp (fletcher), Mercy Ward (healer), Brimstone Lab (alchemist), Warden's Pit (trainer) — general shops and magic/trainer shops already exist (frozen_merchant, ember_merchant, wandering_peddler, demon_sorcerer, wandering_sage, weapon_master)
 - [ ] Category 3 event chains for hell (soul caravan ambush, devil deserter, contraband deal, chained pilgrim, rival party)
 - [ ] More events per realm (aim for 20+ per remaining realm)
 
@@ -195,6 +204,7 @@ Roles to fulfill per realm (not specific object types):
 - [ ] Test terrain effect interactions with spells
 - [ ] Balance pass on spell mana costs vs effects
 - [ ] Test all 326 spells load and cast correctly
+- [ ] **Perk effect audit**: Verify all passive perks are actually wired into gameplay. PerkSystem stores perks on characters and provides base skill bonuses + affinity bonuses, but combat_manager.gd never references PerkSystem — passive perk effects (damage bonuses, resistances, proc chances, etc.) may be data-only with no combat integration. Active skills (with combat_data) work. Need to check each perk's effect_type and confirm it's applied somewhere.
 
 ---
 
@@ -204,7 +214,9 @@ Roles to fulfill per realm (not specific object types):
 - [ ] More consumable items (realm-specific potions, higher-level scrolls, more charm/bomb/oil tiers)
 - [ ] More equipment (rare/legendary weapons and armor)
 - [ ] More upgrades/perks
-- [ ] Alchemy crafting system (create consumables from ingredients)
+- [x] ~~Alchemy crafting system~~: Reagents supply type, 3 crafting branches (Remedies/Munitions/Applications) × 3 tiers, perk-unlocked, passive brewing toggle — DONE
+- [x] ~~Resource-gathering perks~~: Alchemical Recycling (Alchemy 3), Herbalist (Medicine 3), Scavenger (Smithing 3) — DONE
+- [ ] Crafting UI tab (key: C) with character selector, filter buttons, recipe list
 - [ ] More scroll varieties (AoE scrolls, buff scrolls)
 - [ ] **Cursed items**: equipment that applies a passive debuff alongside its stats. Player may not know an item is cursed until equipped (reveal on ID or Alchemy skill check). Separate from cursed terrain/simples.
 - [x] ~~**Equipment generation system**~~: procedural weapons, armor, and talismans — DONE
