@@ -2186,11 +2186,25 @@ func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictiona
 		var def = _status_effects.get(status_name, {})
 		var effects = def.get("effects", [])
 
-		# Fireshield — deal fire damage to melee attackers
-		if "fire_damage_to_melee_attackers" in effects and is_melee:
-			var fire_dmg = 5 + effect.get("value", 0)
-			apply_damage(attacker, fire_dmg, "fire")
-			status_effect_triggered.emit(defender, status_name, fire_dmg, "reactive")
+		# Elemental damage to melee attackers (Fireshield, Tongues of Fire, etc.)
+		# Supports any "X_damage_to_melee_attackers" pattern
+		if is_melee:
+			var reactive_dmg_map = {
+				"fire_damage_to_melee_attackers": "fire",
+				"air_damage_to_melee_attackers": "air",
+				"water_damage_to_melee_attackers": "water",
+				"earth_damage_to_melee_attackers": "earth",
+				"space_damage_to_melee_attackers": "space",
+				"poison_damage_to_melee_attackers": "poison",
+				"black_damage_to_melee_attackers": "black",
+				"white_damage_to_melee_attackers": "white",
+			}
+			for reactive_effect in reactive_dmg_map:
+				if reactive_effect in effects:
+					var element = reactive_dmg_map[reactive_effect]
+					var reactive_dmg = 5 + effect.get("value", 0)
+					apply_damage(attacker, reactive_dmg, element)
+					status_effect_triggered.emit(defender, status_name, reactive_dmg, "reactive")
 
 		# Poison Skin — poison melee attackers
 		if "poisons_melee_attackers" in effects and is_melee:
@@ -2225,6 +2239,38 @@ func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictiona
 			if randf() < 0.25:
 				_apply_status_effect(attacker, "Charmed", 1)
 				status_effect_triggered.emit(defender, status_name, 0, "reactive")
+
+
+## Process status-based weapon enchant effects when a unit lands an attack.
+## Checks for any "adds_X_damage_to_attacks" effect and applies bonus elemental damage.
+func _process_status_weapon_enchants(attacker: Node, defender: Node, result: Dictionary) -> void:
+	if not "status_effects" in attacker:
+		return
+	# Map effect strings to their damage element
+	var enchant_map = {
+		"adds_fire_damage_to_attacks": "fire",
+		"adds_air_damage_to_attacks": "air",
+		"adds_water_damage_to_attacks": "water",
+		"adds_earth_damage_to_attacks": "earth",
+		"adds_space_damage_to_attacks": "space",
+		"adds_poison_damage_to_attacks": "poison",
+		"adds_black_damage_to_attacks": "black",
+		"adds_white_damage_to_attacks": "white",
+	}
+	var enchant_base = result.get("damage", 0)
+	for effect in attacker.status_effects:
+		var sname = effect.get("status", "")
+		var sdef = get_status_definition(sname)
+		var seffects = sdef.get("effects", [])
+		for enchant_effect in enchant_map:
+			if enchant_effect in seffects:
+				var element = enchant_map[enchant_effect]
+				var bonus_dmg = maxi(1, ceili(enchant_base * 0.20))  # +20% as elemental damage
+				var resist = defender.get_resistance(element)
+				bonus_dmg = maxi(1, int(bonus_dmg * (1.0 - resist / 100.0)))
+				apply_damage(defender, bonus_dmg, element)
+				var key = "enchant_%s_damage" % element
+				result[key] = result.get(key, 0) + bonus_dmg
 
 
 ## Process stat modifier durations
@@ -3671,6 +3717,10 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 				attacker.heal(steal)
 				unit_healed.emit(attacker, steal)
 				result["talisman_lifesteal"] = steal
+
+	# --- Status-based weapon enchant on-hit effects ---
+	# Handles any "adds_X_damage_to_attacks" effect (fire, air, etc.)
+	_process_status_weapon_enchants(attacker, defender, result)
 
 
 ## Process passive perks that trigger when a unit dodges an attack.

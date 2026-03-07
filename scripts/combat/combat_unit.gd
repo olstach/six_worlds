@@ -308,11 +308,17 @@ func _get_status_stat_bonus(stat: String) -> int:
 					total -= 40  # Large accuracy penalty from Blinded
 				if "accuracy_bonus" in effects:
 					total += 10
+				if "ranged_hit_chance_halved" in effects:
+					total -= 40  # Ranged accuracy penalty (Rot Wood)
 			"armor":
 				if "defense_bonus" in effects:
 					total += 10
 				if "defense_penalty" in effects:
 					total -= 10
+				if "armor_reduced_50" in effects:
+					total -= 20  # Significant armor reduction (Rust Metal)
+				if "armor_reduced" in effects:
+					total -= 10  # Moderate armor reduction (Melt Armor)
 			"dodge":
 				if "dodge_bonus" in effects:
 					total += 15
@@ -320,6 +326,10 @@ func _get_status_stat_bonus(stat: String) -> int:
 					total += 5
 				if "evasion_bonus" in effects:
 					total += 25
+				if "dodge_penalty" in effects:
+					total -= 15  # Dodge penalty (Bone Chill, Entangled)
+				if "major_dodge_bonus" in effects:
+					total += 30  # Major evasion (Be Like Water)
 			"movement":
 				if "speed_bonus" in effects:
 					total += 2
@@ -341,14 +351,29 @@ func _get_status_stat_bonus(stat: String) -> int:
 					total += 5
 				if "damage_bonus" in effects:
 					total += 5
+				if "damage_reduction" in effects:
+					total -= 5  # Damage debuff (Bone Chill)
+				if "strength_bonus" in effects:
+					total += 3  # Strength adds to physical damage
+				if "strength_bonus_major" in effects:
+					total += 8  # Major strength buff (Yaksha Strength)
+				if "ranged_damage_halved" in effects:
+					total -= 10  # Ranged damage penalty (Rot Wood)
 			"crit_chance":
 				if "critical_boost" in effects:
 					total += 10
 				if "critical_bonus_ranged" in effects:
 					total += 8
+				if "luck_bonus" in effects:
+					total += 5  # Lucky (Golden Ring)
 			"spellpower":
 				if "awareness_bonus" in effects or "focus_bonus" in effects:
 					total += 3
+				if "focus_bonus_major" in effects:
+					total += 8  # Major focus buff (Inner Fire)
+			"range":
+				if "range_penalty" in effects:
+					total -= 2  # Range reduction (Rain)
 	return total
 
 
@@ -689,20 +714,36 @@ func get_resistance(damage_type: String) -> float:
 			if "vulnerable_to_physical" in effects:
 				base -= 50.0  # Frozen makes you take 50% more physical
 			if "physical_immunity" in effects:
-				base = 100.0  # Petrified: immune to physical
+				base = 100.0  # Petrified/Fluid Form: immune to physical
 			if "physical_resist_50" in effects:
 				base += 50.0
 			if "physical_damage_negation_50_percent" in effects:
 				base += 50.0
+			if "physical_damage_reduction_25" in effects:
+				base += 25.0  # Bark Skin
+			if "physical_damage_reduction_50" in effects:
+				base += 50.0  # Stone Skin
+			if "physical_damage_reduction_75" in effects:
+				base += 75.0  # Steel Skin
+			if "physical_resistance_plus_25" in effects:
+				base += 25.0  # Fortified
+			if "physical_resistance_plus_50" in effects:
+				base += 50.0  # Golden Defense
 
 		if damage_type == "fire":
 			if "fire_resistance_minus_50" in effects:
 				base -= 50.0
+			if "fire_damage_immunity" in effects:
+				base = 100.0  # Solar Form / Fire Immune
+			if "fire_resistance_plus_25" in effects:
+				base += 25.0  # Cooling Mist
 		if damage_type == "water":
 			if "water_resistance_minus_25" in effects:
 				base -= 25.0
 			if "water_resistance_minus_50" in effects:
 				base -= 50.0
+			if "water_damage_immunity" in effects:
+				base = 100.0  # Fluid Form
 		if damage_type == "air":
 			if "air_damage_immunity" in effects:
 				base = 100.0
