@@ -30,11 +30,19 @@ func _ready() -> void:
 	event_panel.visible = false
 
 
-## Call this to show and start an event (used by overworld overlay)
-func show_event(event_id: String) -> void:
+## Call this to show and start an event (used by overworld overlay).
+## object_id and one_time are forwarded to EventManager so it can track
+## which choices have been used on persistent map objects (prevents XP farming).
+func show_event(event_id: String, object_id: String = "", one_time: bool = false) -> void:
+	# Set context on EventManager BEFORE start_event so evaluate_choice_availability
+	# can immediately check used_event_choices when building the choice list.
+	EventManager.current_event_object_id = object_id
+	EventManager.current_event_one_time = one_time
 	visible = true
 	if not EventManager.start_event(event_id):
 		# Event not found — close immediately so movement isn't paused forever
+		EventManager.current_event_object_id = ""
+		EventManager.current_event_one_time = false
 		visible = false
 		event_display_closed.emit()
 

@@ -1,0 +1,11 @@
+res://scripts/ui/main_menu.gd
+res://scripts/overworld/overworld.gd
+res://scripts/autoload/character_system.gd
+res://scripts/autoload/combat_manager.gd
+res://scripts/autoload/event_manager.gd
+res://scripts/autoload/game_state.gd
+res://scripts/autoload/item_system.gd
+res://scripts/autoload/map_manager.gd
+res://scripts/combat/combat_arena.gd
+res://scripts/combat/combat_unit.gd
+res://scripts/ui/item_tooltip.gd

@@ -16,6 +16,12 @@ signal shop_requested(shop_id: String, outcome: Dictionary)
 # Current event being displayed
 var current_event: Dictionary = {}
 
+# Context for the map object that triggered this event.
+# Set by overworld before calling show_event so choice-use tracking works.
+var current_event_object_id: String = ""
+var current_event_one_time: bool = false
+var _current_choice_id: String = ""  # Recorded when make_choice is called
+
 # Event database (will load from JSON)
 var event_database: Dictionary = {}
 
@@ -234,7 +240,17 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 		"reason": "",
 		"passing_character": null  # Which party member meets requirements
 	}
-	
+
+	# For persistent (non-one_time) event objects, block choices that have
+	# already been used (non-shop outcomes only) to prevent XP farming.
+	if not current_event_one_time and not current_event_object_id.is_empty():
+		var choice_id = choice.get("id", "")
+		var used = GameState.used_event_choices.get(current_event_object_id, [])
+		if choice_id in used:
+			result.available = false
+			result.reason = "Already done"
+			return result
+
 	# Default and roll choices are always visible
 	if choice.type == "default" or choice.type == "roll":
 		return result
@@ -367,6 +383,19 @@ func make_choice(choice: Dictionary) -> Dictionary:
 	# Apply outcome
 	apply_outcome(outcome)
 
+	# Record this choice as used for persistent (non-one_time) objects so the
+	# player can't farm XP by repeatedly visiting the same shrine/merchant.
+	# Shop outcomes stay available (handled by the shop flow, not re-selectable here).
+	var outcome_type = outcome.get("type", "text")
+	if outcome_type != "shop" and not current_event_one_time and not current_event_object_id.is_empty():
+		var choice_id = choice.get("id", "")
+		if not choice_id.is_empty():
+			if not current_event_object_id in GameState.used_event_choices:
+				GameState.used_event_choices[current_event_object_id] = []
+			var used: Array = GameState.used_event_choices[current_event_object_id]
+			if not choice_id in used:
+				used.append(choice_id)
+
 	return outcome
 
 ## Apply the outcome of a choice
@@ -379,8 +408,7 @@ func apply_outcome(outcome: Dictionary) -> void:
 		var rewards = outcome.rewards
 
 		if "xp" in rewards:
-			var player = CharacterSystem.get_player()
-			CharacterSystem.grant_xp(player, rewards.xp)
+			CompanionSystem.apply_party_xp(int(rewards.xp))
 
 		if "gold" in rewards:
 			GameState.add_gold(int(rewards.gold))
@@ -482,6 +510,16 @@ func apply_outcome(outcome: Dictionary) -> void:
 		"shop":
 			# Overworld will handle opening shop overlay
 			shop_requested.emit(outcome.get("shop_id", "unknown"), outcome)
+		"recruit_companion":
+			# Recruit a named companion into the party
+			var companion_id: String = outcome.get("companion_id", "")
+			if companion_id == "":
+				push_error("EventManager: recruit_companion outcome missing 'companion_id' field")
+			else:
+				var recruited: Dictionary = CompanionSystem.recruit(companion_id)
+				if recruited.is_empty():
+					push_warning("EventManager: CompanionSystem.recruit() failed for id: %s" % companion_id)
+			event_completed.emit(outcome)
 
 ## Convert descriptive gold cost strings to concrete amounts.
 ## These can be retuned as the economy matures.

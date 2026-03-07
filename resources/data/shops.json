@@ -198,6 +198,20 @@
 				"attributes": [],
 				"skills": []
 			}
+		},
+		"hell_tavern": {
+			"name": "Devil's Rest",
+			"type": "general",
+			"description": "A dim roadhouse where the desperate gather. Someone at the bar looks like they're between allegiances.",
+			"price_modifier": 1.0,
+			"buys_items": false,
+			"available_companions": ["karnak"],
+			"items": {},
+			"spells": [],
+			"training": {
+				"attributes": [],
+				"skills": []
+			}
 		}
 	},
 	"shop_types": {

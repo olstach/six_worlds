@@ -32,6 +32,11 @@ theme_override_constants/margin_bottom = 40
 layout_mode = 2
 theme_override_constants/separation = 20
 
+[node name="CharacterSelectorPanel" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 36)
+
 [node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -112,10 +117,39 @@ size_flags_horizontal = 3
 [node name="AddXPButton" type="Button" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/HeaderSection"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "+10 XP"
+text = "+100 XP [DEV]"
 
 [node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent"]
 layout_mode = 2
+
+[node name="CompanionInfoRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="FreeXPRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/CompanionInfoRow"]
+unique_name_in_owner = true
+layout_mode = 2
+visible = false
+theme_override_constants/separation = 8
+
+[node name="FreeXPLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/CompanionInfoRow/FreeXPRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+text = "Distributable XP:"
+
+[node name="FreeXPValue" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/CompanionInfoRow/FreeXPRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.85, 0.75, 0.4, 1)
+text = "0"
+
+[node name="AutodevelopToggle" type="CheckButton" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/CompanionInfoRow"]
+unique_name_in_owner = true
+layout_mode = 2
+visible = false
+text = "Autodevelop"
 
 [node name="MainContent" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent"]
 layout_mode = 2
@@ -396,3 +430,35 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
+
+[node name="Crafting" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="CraftingLayout" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Crafting"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="CrafterPanel" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Crafting/CraftingLayout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CraftFilterBar" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Crafting/CraftingLayout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="CraftingScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer/TabContainer/Crafting/CraftingLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CraftingList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Crafting/CraftingLayout/CraftingScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6

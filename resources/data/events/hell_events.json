@@ -3304,6 +3304,32 @@
 					}
 				}
 			]
+		},
+		"devil_deserter": {
+			"id": "devil_deserter",
+			"title": "A Familiar Face",
+			"realm": "any",
+			"text": "A red devil sits by the road, stripped of his armor. He looks up at you. 'I'm done with the Guard,' he says simply. 'Done with all of it. I just need somewhere to be.'",
+			"choices": [
+				{
+					"id": "recruit",
+					"type": "default",
+					"text": "Take him with you.",
+					"outcome": {
+						"type": "recruit_companion",
+						"companion_id": "karnak"
+					}
+				},
+				{
+					"id": "walk_on",
+					"type": "default",
+					"text": "Not your problem. Walk on.",
+					"outcome": {
+						"type": "text",
+						"text": "You leave him by the road. Some distances can't be closed."
+					}
+				}
+			]
 		}
 	}
 }

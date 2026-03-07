@@ -477,7 +477,8 @@ func calculate_equipment_stats(character: Dictionary) -> Dictionary:
 	var equipment = character.get("equipment", {})
 
 	# Standard slots
-	var slots_to_check = ["head", "chest", "hand_l", "hand_r", "legs", "feet",
+	# hand_r is a visual mirror of hand_l (gloves come in pairs), so only hand_l counts for stats
+	var slots_to_check = ["head", "chest", "hand_l", "legs", "feet",
 						  "ring1", "ring2", "amulet", "trinket1", "trinket2"]
 
 	for slot in slots_to_check:

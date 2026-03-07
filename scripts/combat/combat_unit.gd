@@ -34,6 +34,9 @@ var status_effects: Array = []  # Active status effects on this unit
 # Active skill cooldowns: perk_id -> turns remaining (0 = ready)
 var skill_cooldowns: Dictionary = {}
 
+# Mantras being chanted: perk_id -> turns_active (increments each turn)
+var active_mantras: Dictionary = {}
+
 # Consumable buffs
 var charm_buff: Dictionary = {}  # {school, mana_reduction, spellpower_bonus} - consumed on next matching spell
 var weapon_oil: Dictionary = {}  # {bonus_damage, bonus_damage_type, attacks_remaining, status, status_chance, status_duration, crit_bonus}
@@ -627,7 +630,23 @@ func set_skill_cooldown(perk_id: String, turns: int) -> void:
 	skill_cooldowns[perk_id] = turns
 
 
-## Get spellpower (includes status effect bonuses)
+## Toggle a mantra on/off. Returns true if the mantra is now active.
+func toggle_mantra(perk_id: String) -> bool:
+	if perk_id in active_mantras:
+		active_mantras.erase(perk_id)
+		return false
+	else:
+		active_mantras[perk_id] = 0
+		return true
+
+
+## Tick all active mantras at the start of this unit's turn (increment counter).
+func tick_mantras() -> void:
+	for perk_id in active_mantras:
+		active_mantras[perk_id] += 1
+
+
+## Get spellpower
 func get_spellpower() -> int:
 	var derived = character_data.get("derived", {})
 	return derived.get("spellpower", 0) + _get_status_stat_bonus("spellpower")

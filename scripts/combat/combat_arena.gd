@@ -690,8 +690,8 @@ func _on_attack_pressed() -> void:
 	AudioManager.play("ui_click")
 	current_action_mode = ActionMode.ATTACK
 	var weapon_range = unit.get_attack_range()
-	# Use Manhattan/diamond distance (same as spell targeting) instead of Chebyshev square
-	var range_area = combat_grid.get_spell_range_tiles(unit.grid_position, 1, weapon_range)
+	# Use Chebyshev/square distance so diagonals are included (melee can attack diagonally)
+	var range_area = combat_grid.get_attack_range_tiles(unit.grid_position, 1, weapon_range)
 	# Highlight enemies in range as bright targets, rest of range as dim area
 	var valid_targets: Array[Vector2i] = []
 	for other in CombatManager.all_units:
@@ -1319,9 +1319,15 @@ func _show_skills_panel(unit: CombatUnit) -> void:
 
 			btn.tooltip_text = skill_data.get("description", "")
 
+			var is_mantra = skill_data.get("is_mantra", false)
+			var mantra_active = is_mantra and unit.active_mantras.has(perk_id)
+			if mantra_active:
+				btn.text += " [ACTIVE]"
+
 			# Determine if usable
 			var can_use = true
-			if not has_combat_data:
+			if not has_combat_data and not is_mantra:
+				# Non-mantra with no combat_data = not yet implemented
 				can_use = false
 			elif stamina_cost > 0 and unit.current_stamina < stamina_cost:
 				can_use = false
@@ -1329,7 +1335,8 @@ func _show_skills_panel(unit: CombatUnit) -> void:
 				can_use = false
 			elif not CombatManager.can_act(1):
 				can_use = false
-			elif not CombatManager.unit_has_required_weapon(unit, skill_data.get("skill", "")):
+			elif not is_mantra and not CombatManager.unit_has_required_weapon(unit, skill_data.get("skill", "")):
+				# Mantras are mental/spiritual — skip weapon check
 				can_use = false
 				btn.text += " [Wrong Weapon]"
 
@@ -1337,8 +1344,10 @@ func _show_skills_panel(unit: CombatUnit) -> void:
 			if not can_use:
 				btn.add_theme_color_override("font_color", Color(0.45, 0.45, 0.45))
 				btn.disabled = true
-			elif skill_data.get("is_mantra", false):
-				btn.add_theme_color_override("font_color", Color(0.7, 0.5, 0.9))
+			elif mantra_active:
+				btn.add_theme_color_override("font_color", Color(0.95, 0.6, 1.0))  # Bright purple = chanting
+			elif is_mantra:
+				btn.add_theme_color_override("font_color", Color(0.7, 0.5, 0.9))  # Dim purple = activatable
 			else:
 				btn.add_theme_color_override("font_color", Color(0.9, 0.75, 0.3))
 
@@ -1385,6 +1394,11 @@ func _get_active_skills(unit: CombatUnit) -> Array[Dictionary]:
 					already_added = true
 					break
 			if not already_added:
+				# Mantras rarely have explicit combat_data — give them a mantra-type default
+				# so the button logic knows they're activatable (not greyed as "unimplemented")
+				var cd = data.get("combat_data", {})
+				if cd.is_empty():
+					cd = {"type": "mantra", "targeting": "self"}
 				var skill_info: Dictionary = {
 					"id": perk_entry.get("id", ""),
 					"name": data.get("name", perk_entry.get("id", "???")),
@@ -1392,7 +1406,7 @@ func _get_active_skills(unit: CombatUnit) -> Array[Dictionary]:
 					"is_mantra": true,
 					"stamina_cost": _parse_stamina_cost(desc),
 					"skill": data.get("skill", ""),
-					"combat_data": data.get("combat_data", {}),
+					"combat_data": cd,
 				}
 				result.append(skill_info)
 
@@ -1416,6 +1430,21 @@ func _on_active_skill_selected(skill_data: Dictionary) -> void:
 		return
 
 	var combat_data = skill_data.get("combat_data", {})
+
+	# Mantra: toggle on/off (uses 1 action to start/stop chanting)
+	if skill_data.get("is_mantra", false) or combat_data.get("type", "") == "mantra":
+		skills_panel.hide()
+		var perk_id = skill_data.get("id", "")
+		var mantra_name = skill_data.get("name", "???")
+		var now_active = unit.toggle_mantra(perk_id)
+		if now_active:
+			_log_message("%s begins chanting: %s" % [unit.unit_name, mantra_name])
+			unit.show_action_name("Chant Mantra")
+		else:
+			_log_message("%s stops chanting %s" % [unit.unit_name, mantra_name])
+			unit.show_action_name("End Mantra")
+		CombatManager.use_action(1)
+		return
 
 	# If no combat_data, this skill isn't wired up yet
 	if combat_data.is_empty():
@@ -2023,6 +2052,10 @@ func _on_combat_ended(victory: bool) -> void:
 
 func _on_turn_started(unit: Node) -> void:
 	_log_message("--- %s's turn (%d actions) ---" % [unit.unit_name, unit.actions_remaining])
+	# Log any active mantra pulses at the start of each turn
+	for mantra_id in unit.active_mantras:
+		var turns = unit.active_mantras[mantra_id]
+		_log_message("  ✦ %s pulses (turn %d)" % [mantra_id.replace("_", " ").capitalize(), turns])
 	_update_turn_order_display()
 	_update_action_buttons()
 	_select_unit(unit)
@@ -2204,15 +2237,12 @@ func _apply_rewards(rewards: Dictionary) -> void:
 	var xp = rewards.get("xp", 0)
 	var gold = rewards.get("gold", 0)
 
-	# Grant full XP to ALL party members equally
-	for member in CharacterSystem.get_party():
-		CharacterSystem.grant_xp(member, xp)
+	if xp > 0:
+		CompanionSystem.apply_party_xp(xp)
 
-	# Add gold
 	if gold > 0:
 		GameState.add_gold(gold)
 
-	# Add items to inventory (framework for later)
 	var items = rewards.get("items", [])
 	for item_id in items:
 		ItemSystem.add_to_inventory(item_id)

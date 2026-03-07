@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-03-06
+Last Updated: 2026-02-28
 
 ---
 
@@ -15,8 +15,7 @@ Last Updated: 2026-03-06
 - [x] ShopSystem singleton (buy/sell, spell learning, skill training, discounts)
 - [x] CombatManager singleton (full tactical combat system, loot drops with supply/reagent integration)
 - [x] PerkSystem singleton (skill perks, cross perks, base bonuses, affinity bonuses)
-- [x] EnemySystem singleton (enemy archetypes, role-based stats, inventory generation)
-- [x] SaveManager singleton (save/load game state)
+- [x] SaveManager singleton (save/load game state, 3 slots + autosave)
 - [x] MapManager singleton (overworld map, pathfinding, mobs, objects)
 - [x] AudioManager singleton (SFX system, 28 sounds × 6 variants)
 - [x] Supply system (Food/Herbs/Scrap/Reagents with passive consumption, starvation, save/load)
@@ -46,6 +45,8 @@ Last Updated: 2026-03-06
 - [x] Physical damage subtypes (slashing, crushing, piercing) with per-weapon types
 - [x] Consumable items in combat (potions and scrolls with Item button/panel UI)
 - [x] Talismans (19 items, mana cost reduction + spellpower boost per school)
+- [x] Ammo system for ranged weapons (crossbows, javelins); ammo tracked via Scrap supply
+- [x] Crossbow and javelin weapon types added
 - [x] Bombs (8 items, thrown AoE damage + status effects)
 - [x] Oils (6 items, weapon coating with bonus damage/status procs for N attacks)
 - [x] Active Skills panel in combat (shows active perks and mantras)
@@ -56,7 +57,10 @@ Last Updated: 2026-03-06
 - [x] Ammo system (ranged weapons consume ammo, crossbow/javelin subtypes)
 
 ### Character & Progression
-- [x] XP-based progression (no levels)
+- [x] XP-based progression (no levels; player starts with 50 XP)
+- [x] Supply system (Food, Herbs, Scrap, Reagents) with passive overworld consumption
+- [x] Alchemy passive brewing (per-step chance to brew item from unlocked tiers; togglable)
+- [x] Starvation system (grace period by CON, then 2% HP/step drain)
 - [x] Exponential attribute cost scaling
 - [x] Skill progression (10 levels, costs: 5/10/18/28/42/59/80/106/137/175)
 - [x] 0-10 skill scale refactor (15-level base bonus tables wired into derived stats, perk/spell levels remapped)
@@ -85,7 +89,9 @@ Last Updated: 2026-03-06
 ### UI
 - [x] Character sheet (attributes, skills, derived stats)
 - [x] Spellbook tab with school filtering
-- [x] Equipment screen with humanoid doll (12 slots, dual weapon sets)
+- [x] Equipment screen with humanoid doll (12 slots, dual weapon sets, mirrored hand slots)
+- [x] Supply counters on overworld HUD (Food/Herbs/Scrap/Reagents next to Gold)
+- [x] Charm effect descriptions in item tooltip (mana reduction %, spellpower bonus)
 - [x] Event display with choice coloring
 - [x] Combat arena with action buttons
 - [x] Spell panel with tooltips
@@ -113,6 +119,16 @@ Last Updated: 2026-03-06
 ---
 
 ## High Priority (Core Gameplay)
+
+### Companions / Party Members ← NEXT
+Recruiting companions is the single highest-impact missing feature for a playable loop.
+- [ ] Companion data structure (NPC characters with attributes, skills, equipment)
+- [ ] Recruitment events (meet companion on map, choose to hire/accept)
+- [ ] Party tab UI (show all party members, click to view their sheet)
+- [ ] Companion AI in combat (same as enemy AI, but Team.PLAYER)
+- [ ] Companion death / bleed-out handling (permanent death option?)
+- [ ] Companion XP sharing (split equally, or individual?)
+- [ ] Starting companion (optional: give player one at game start for first run)
 
 ### Content Expansion (Needed for Playable Loop)
 - [ ] Event files for remaining realms (hungry_ghost, animal, human, asura, god)
@@ -231,16 +247,16 @@ Roles to fulfill per realm (not specific object types):
 ## Low Priority (Nice to Have)
 
 ### Save/Load Improvements
-- [ ] Multiple save slots
-- [ ] Auto-save functionality
+- [x] Multiple save slots (3 slots)
+- [x] Auto-save functionality
 - [ ] Meta-progression (affinities, persistent upgrades across runs)
 
 ### Audio
 - [x] SFX system wired (AudioManager autoload, 28 sounds × 6 variants from Helton Yan Pixel Combat pack)
+- [x] Sound calls throughout codebase (62+ AudioManager.play calls across all systems)
 - [ ] Background music per realm
 - [ ] Combat music
-- [ ] UI click sounds wired to buttons (defined in SOUND_MAP but not yet connected)
-- [ ] More spell school variety (currently fire vs generic cast only)
+- [ ] More spell school sound variety (currently fire vs generic cast only)
 - [ ] Active skill sounds
 - [ ] Death / unit kill sound
 
@@ -310,13 +326,22 @@ Files live in `resources/audio/sfx/` (6 variants each, picked randomly).
 - Pre-battle prep or mid-combat?
 - What breaks concentration?
 
+### Mantra System — Finish Implementation
+Currently: mantras are toggleable (consume 1 action, track turns active, show [ACTIVE] in skills panel).
+Still needed:
+- [ ] Per-turn aura effects (area debuffs, damage, etc.) — each mantra in `active_mantras` should apply its effect at turn start via `_on_turn_started` in combat_arena.gd
+- [ ] Deity Yoga trigger: after N turns of chanting (e.g. 5), the capstone "Deity Yoga" effect fires (big one-time burst/effect), then mantra resets or stays active at base level
+- [ ] Concentration breaks: taking damage above a threshold or being CC'd should interrupt the mantra (erase from active_mantras, log message)
+- [ ] Continuous Recitation perk (Ritual 3): allows casting spells while chanting without breaking concentration
+- [ ] AI mantra awareness: enemies should prioritize attacking chanters to break concentration
+
 ---
 
 ## Known Issues
 
 - [x] ~~Derived stats not displaying~~ - FIXED (wrong key)
 - [x] ~~Combat turn order issues~~ - FIXED (Timer-based delays instead of async/await)
-- [ ] Turn order occasionally out of sync (rare, needs investigation)
+- [x] ~~Turn order occasionally out of sync (rare)~~ — FIXED
 - [x] ~~**Raising attributes doesn't increase current HP/MP/Stamina**~~ — FIXED (current rises with max)
 - [x] ~~**Same consumable items don't stack in item menu**~~ — FIXED (quantity badge on inventory slots)
 - [x] ~~**Victory screen waits for End Turn**~~ — FIXED (immediate check after damage/death)
@@ -383,16 +408,17 @@ Files live in `resources/audio/sfx/` (6 variants each, picked randomly).
 - Save/load integration into all major systems
 - Hell enemy archetypes data file
 
-### 2026-03-06: Reagents, Alchemy Crafting Tiers, Resource-Gathering Perks
-- **Reagents (4th supply type)**: Added to supplies.json, game_state.gd, items.json. Starting amount 10, shop price 8g (scarcer than herbs/scrap). Toggle for alchemy passive brewing.
-- **Alchemy crafting tiers** (perk-unlocked, 3 branches × 3 tiers):
-  - Remedies: Apprentice Apothecary (Alch 1, 1 reagent) → Journeyman (5, 2) → Master (9, 4)
-  - Munitions: Bomb Maker (1, 1) → Demolitions Expert (5, 2) → Master Demolitionist (9, 4)
-  - Applications: Applied Toxicology (3, 1) → Advanced Coatings (5, 2) → Master Coatings (9, 4)
-- **Passive brewing**: process_alchemy_step() — 15% + 3%/level per overworld step, toggleable
-- **Resource-gathering perks**: Alchemical Recycling (Alchemy 3), Herbalist (Medicine 3), Scavenger (Smithing 3) — each feeds its own supply chain from combat
-- **Loot integration**: Reagent drops 25% base / 50% from casters. Raw Reagents + Alchemist's Pouch items. Available in magic shops only.
-- **Supply system polish**: Renamed Crafting → Smithing across skills/perks. Ammo on all ranged weapons. Steeper Logistics scaling. Supply loot drops in combat_manager.
+### 2026-02-28: Bug Fixes, Mantra Toggle, Hands Mirroring, Supply HUD
+- **Supply system** completed: Food/Herbs/Scrap/Reagents with per-step overworld consumption, starvation, passive skill processing (Medicine/Smithing/Alchemy), HUD counters on overworld
+- **Alchemy crafting tiers**: passive per-step brewing from unlocked item pools; player-togglable
+- **Ammo system**: crossbows and javelins consume ammo (tracked via supply); Smithing passive restores ammo
+- **Mantras** now activatable in combat: toggle on/off with 1 action, show [ACTIVE] purple in skills panel, pulse logged each turn; per-turn effects and Deity Yoga trigger remain for next pass
+- **Hands slots** mirrored: equipping gloves fills both hand buttons from one inventory item; stats counted once (hand_l only)
+- **Starting XP** set to 50 (enough to buy ~2 skills to level 2 at game start)
+- **XP farming** fixed: persistent map objects (merchants, shrines) track used choices in GameState; text/XP options show "Already done" after first use; shop always stays open
+- **Attack range** fixed: melee now highlights all 8 adjacent tiles (Chebyshev square) not just 4 (diamond)
+- **Frozen Stupa "0"**: fixed pickup range resolver misidentifying 2-string item arrays as numeric ranges
+- **Charm tooltips**: now show mana reduction % and spellpower bonus % in item tooltip
 
 ### 2026-02-28: Equipment & Talisman Generation System
 - Renamed consumable talismans → charms (19 items: mana cost reduction consumables)

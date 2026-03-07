@@ -55,6 +55,11 @@ var combat_terrain_context: Dictionary = {}  # {dominant, counts, region}
 # combats_remaining == -1 means permanent (rare).
 var active_map_buffs: Array = []
 
+# Tracks which event choices have been used per persistent map object.
+# Format: { object_id: [choice_id, ...] }
+# Only populated for non-one_time event objects to prevent XP farming.
+var used_event_choices: Dictionary = {}
+
 # World definitions
 var WORLDS: Dictionary = {
 	"hell": {
@@ -377,7 +382,8 @@ func get_save_data() -> Dictionary:
 		"alchemy_passive_enabled": alchemy_passive_enabled,
 		"steps_without_food": steps_without_food,
 		"is_starving": is_starving,
-		"boss_defeated": boss_states
+		"boss_defeated": boss_states,
+		"used_event_choices": used_event_choices.duplicate(true)
 	}
 
 
@@ -394,6 +400,7 @@ func load_save_data(data: Dictionary) -> void:
 	alchemy_passive_enabled = data.get("alchemy_passive_enabled", true)
 	steps_without_food = data.get("steps_without_food", 0)
 	is_starving = data.get("is_starving", false)
+	used_event_choices = data.get("used_event_choices", {})
 
 	# Restore unlocked worlds
 	unlocked_worlds.clear()

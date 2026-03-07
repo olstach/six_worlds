@@ -55,6 +55,34 @@ theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 text = "Gold: 100"
 
+[node name="FoodLabel" type="Label" parent="HUDLayer/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 0.75, 0.35, 1)
+text = "Food: 50"
+
+[node name="HerbsLabel" type="Label" parent="HUDLayer/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.45, 0.9, 0.45, 1)
+text = "Herbs: 20"
+
+[node name="ScrapLabel" type="Label" parent="HUDLayer/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+text = "Scrap: 15"
+
+[node name="ReagentsLabel" type="Label" parent="HUDLayer/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.8, 0.5, 1.0, 1)
+text = "Reagents: 10"
+
 [node name="TerrainLabel" type="Label" parent="HUDLayer/TopBar"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -85,6 +113,11 @@ text = "Party (P)"
 unique_name_in_owner = true
 layout_mode = 2
 text = "Spellbook (S)"
+
+[node name="CraftingButton" type="Button" parent="HUDLayer/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Crafting (C)"
 
 [node name="ToastLabel" type="Label" parent="HUDLayer"]
 unique_name_in_owner = true

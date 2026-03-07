@@ -97,6 +97,28 @@ func show_item(item: Dictionary, global_pos: Vector2) -> void:
 		stat_val.add_theme_color_override("font_color", val_color)
 		stat_row.add_child(stat_val)
 
+	# Charm / consumable effects
+	var effect = item.get("effect", {})
+	if not effect.is_empty() and item.get("type", "") == "charm":
+		var eff_row = HBoxContainer.new()
+		stats_container.add_child(eff_row)
+
+		var school_str = effect.get("school", "").capitalize()
+		var mana_red = effect.get("mana_reduction", 0.0)
+		var sp_bonus = effect.get("spellpower_bonus", 0.0)
+
+		var eff_label = Label.new()
+		var parts: Array[String] = []
+		if mana_red > 0:
+			parts.append("-%d%% %s mana cost" % [int(mana_red * 100), school_str])
+		if sp_bonus > 0:
+			parts.append("+%d%% spellpower" % int(sp_bonus * 100))
+		eff_label.text = ", ".join(parts)
+		eff_label.add_theme_font_size_override("font_size", 12)
+		eff_label.add_theme_color_override("font_color", Color(0.4, 0.8, 1.0))
+		eff_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		eff_row.add_child(eff_label)
+
 	# Requirements
 	var requirements = item.get("requirements", {})
 	if requirements.is_empty():
