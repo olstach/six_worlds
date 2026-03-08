@@ -156,7 +156,7 @@ Three categories of interactive map objects. Hell is the target realm for initia
 - [x] ~~Effect types~~ — DONE (mana restore, HP restore, temp stat/skill buff with combats_remaining, loot chance buff, XP gain buff, item drops)
 - [x] ~~Cursed simples~~ — DONE (damage reward type, hell config has "Warm Glow" and "Flickering Light" cursed pickups)
 - [x] ~~Hell content~~ — DONE (25+ pickup templates in hell.json map config: Frozen Fountain, Ice Shrine, Burning Altar, Pain Altar, Lava Vent, Mourning Flame, Prayer Flags, etc.)
-- [ ] Bone pile (find weapon) simple — not yet in hell pickup pool
+- [x] ~~Bone pile (find weapon) simple~~ — DONE (cold_hell: "Bone Pile", fire_hell: "Charred Bone Pile"; both drop random weapon from iron/wood pool)
 
 **Category 2 — Traders** (peaceful default, with steal/attack/donate karma branches)
 Roles to fulfill per realm (not specific object types):
@@ -217,8 +217,7 @@ Roles to fulfill per realm (not specific object types):
 - [ ] Test all 326 spells load and cast correctly
 - [ ] **Perk wiring (in progress)**: ~441 passive perks in perks.json; active skills (combat_data key) already work. Passive wiring is done in `get_passive_perk_stat_bonus()`, `_process_on_hit_perks()`, `_process_on_dodge_perks()`, `_process_turn_start_perks()`, `_process_spell_cast_perks()`, `_check_perk_status_immunity()`.
 
-  **WIRED so far** (combat_manager.gd): `parry`, `improved_parry`, `stone_adept`, `all_in`, `weapon_master`, `wind_adept`, `flame_fist`, `thunder_breaker`, `blood_in_the_wind`, `riposte` + all talisman perks (brands, lifesteal, regen, mana regen, mirror, blur, lucky_escape, thorns, immunities).
-  **WIRED so far** (combat_manager.gd): `parry`, `improved_parry`, `stone_adept`, `all_in`, `weapon_master`, `wind_adept`, `flame_fist`, `thunder_breaker`, `blood_in_the_wind`, `riposte` + all talisman perks. Session 2: `centered_stance`, `flowing_footwork`, `open_the_gate`, `borrowed_force`, `empty_center`, `diamond_body`, `touch_of_gloom`, `measured_radiance`, `mental_aftershock`, `chains_of_suffering`, `elementalist`, `curseblade`, `blood_pact`. Session 3: `iron_shirt_technique`, `short_range_violence`, `commitment`, `momentum`, `keep_hitting`, `every_opening_is_an_invitation`, `close_and_personal`, `hard_knuckles`, `rattle_the_cage`, `see_stars`, `no_time_to_breathe`, `heavy_swing`, `wide_arc`, `laughing_at_the_abyss`, `bare_chest`. Session 4: `tidal_patience` (stationary stacks +dmg/armor), `disciplined_formation` (adj ally +acc/dmg/armor), `water_finds_the_gap` (spear vs moved target +acc, ignore 15% armor), `creeping_cold` (ice/cold spells → -1 mov 2 turns), `amplified_misfortune` (black debuff spells splash status to adjacent enemy).
+  **WIRED so far** (combat_manager.gd): `parry`, `improved_parry`, `stone_adept`, `all_in`, `weapon_master`, `wind_adept`, `flame_fist`, `thunder_breaker`, `blood_in_the_wind`, `riposte` + all talisman perks. Session 2: `centered_stance`, `flowing_footwork`, `open_the_gate`, `borrowed_force`, `empty_center`, `diamond_body`, `touch_of_gloom`, `measured_radiance`, `mental_aftershock`, `chains_of_suffering`, `elementalist`, `curseblade`, `blood_pact`. Session 3: `iron_shirt_technique`, `short_range_violence`, `commitment`, `momentum`, `keep_hitting`, `every_opening_is_an_invitation`, `close_and_personal`, `hard_knuckles`, `rattle_the_cage`, `see_stars`, `no_time_to_breathe`, `heavy_swing`, `wide_arc`, `laughing_at_the_abyss`, `bare_chest`. Session 4: `tidal_patience`, `disciplined_formation`, `water_finds_the_gap`, `creeping_cold`, `amplified_misfortune`. Session 5: `risen_dead` (talisman perk — 15% on kill, spawn undead ally; tracks last_attacker on CombatUnit). All talisman combat perks COMPLETE. `karma_sight` = event-system only, no combat wiring needed.
   **moved_this_turn** flag: set in `move_unit()`, cleared in `_process_turn_start_perks()`.
   **momentum_stacks / unarmed_hit_stacks**: on CombatUnit, incremented on hit, reset on miss and turn start.
 
@@ -246,7 +245,7 @@ Roles to fulfill per realm (not specific object types):
 - [x] ~~**Talisman system**~~: persistent equippable trinket-slot items with stat/skill/perk bonuses — DONE
 - [x] ~~**Equipment traits**~~: weapon/armor modifier system (sharp, reinforced, etc.) — DONE
 - [x] ~~Wire up `random_generate` template items to use the new procedural generation~~ — DONE
-- [ ] Integrate talisman perk effects into combat (poison_immune, regen, thorns, etc.)
+- [x] ~~Integrate talisman perk effects into combat (poison_immune, regen, thorns, etc.)~~ — DONE (all combat perks wired; karma_sight is event-system only)
 - [x] ~~Add talisman/equipment generation to shop and loot systems~~ — DONE (procedural items in loot drops + auto-generated shop stock)
 
 ### UI Improvements

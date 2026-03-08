@@ -104,7 +104,16 @@
 			{"event_id": "hell_teahouse_cold", "name": "Teahouse", "icon": "rest", "blocking": false, "one_time": false, "weight": 2, "tag": "rest"},
 			{"event_id": "hell_mercenary_guild", "name": "Mercenary Guild", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
 			{"event_id": "hell_veterans_camp", "name": "Veterans' Camp", "icon": "npc", "blocking": false, "one_time": false, "weight": 2, "training_pool": ["swords", "martial_arts", "ranged", "daggers", "axes", "unarmed", "spears", "maces", "armor"]},
-			{"event_id": "hell_yogini_circle", "name": "Yogini Circle", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1},
+			{"event_id": "hell_sacred_grove", "name": "Sacred Grove", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_temple_of_the_naga", "name": "Temple of the Naga", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_eternal_fire", "name": "Temple of the Eternal Fire", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_garuda_roost", "name": "Garuda Roost", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_hidden_gompa", "name": "Hidden Gompa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_medicinal_garden", "name": "Medicinal Garden", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_black_lodge", "name": "Black Lodge", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_yogini_circle", "name": "Circle of the Yoginis", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_mirror_lake", "name": "Mirror Lake", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_crossroads_stupa", "name": "Crossroads Stupa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
 			{"event_id": "hell_town_weapons", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
 			{"event_id": "hell_town_magic", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
 			{"event_id": "hell_town_supplies", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"}
@@ -131,9 +140,11 @@
 				{"name": "Old Battlefield", "icon": "shrine", "message": "Carrion crows pick what's left from the fallen.", "rewards": [{"type": "buff", "value": {"stat": "initiative", "amount": 3, "combats_remaining": 1}}], "weight": 2},
 				{"name": "Wayside Shrine", "icon": "shrine", "message": "If you want a good omen, you have to make it yourself.", "rewards": [{"type": "buff", "value": {"stat": "luck", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 1}}], "weight": 2},
 
+				{"name": "Bone Pile", "icon": "treasure", "message": "Frozen bones, stripped clean long ago. Something useful is lodged among them.", "rewards": [{"type": "item_random", "value": ["iron_sword", "iron_axe", "iron_dagger", "iron_mace", "wooden_spear", "wooden_staff", "short_bow", "iron_shield"]}], "weight": 2},
 				{"name": "Eerie Cold Patch", "icon": "rest", "message": "The cold here feels different. Wrong.", "rewards": [{"type": "buff", "value": {"stat": "constitution", "amount": -3, "combats_remaining": 1}}], "weight": 1},
 				{"name": "Warm Glow", "icon": "shrine", "message": "It looks like a flame shrine. Something is off.", "rewards": [{"type": "damage", "value": 20}], "weight": 1}
-			]
+			],
+			"spell_schools": ["Fire", "Water", "Earth", "Air", "Space", "White", "Black", "Sorcery", "Enchantment", "Summoning"]
 		},
 		"fire_hell": {
 			"events": [
@@ -157,7 +168,16 @@
 			{"event_id": "hell_teahouse_fire", "name": "Teahouse", "icon": "rest", "blocking": false, "one_time": false, "weight": 2, "tag": "rest"},
 			{"event_id": "hell_mercenary_guild", "name": "Mercenary Guild", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
 			{"event_id": "hell_veterans_camp", "name": "Veterans' Camp", "icon": "npc", "blocking": false, "one_time": false, "weight": 2, "training_pool": ["swords", "martial_arts", "ranged", "daggers", "axes", "unarmed", "spears", "maces", "armor"]},
-			{"event_id": "hell_yogini_circle", "name": "Yogini Circle", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1},
+			{"event_id": "hell_sacred_grove", "name": "Sacred Grove", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_temple_of_the_naga", "name": "Temple of the Naga", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_eternal_fire", "name": "Temple of the Eternal Fire", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_garuda_roost", "name": "Garuda Roost", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_hidden_gompa", "name": "Hidden Gompa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_medicinal_garden", "name": "Medicinal Garden", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_black_lodge", "name": "Black Lodge", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_yogini_circle", "name": "Circle of the Yoginis", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_mirror_lake", "name": "Mirror Lake", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+			{"event_id": "hell_crossroads_stupa", "name": "Crossroads Stupa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
 			{"event_id": "hell_town_weapons", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
 			{"event_id": "hell_town_magic", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
 			{"event_id": "hell_town_supplies", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"}
@@ -183,9 +203,11 @@
 				{"name": "Old Battlefield", "icon": "shrine", "message": "Carrion crows pick what's left from the fallen.", "rewards": [{"type": "buff", "value": {"stat": "initiative", "amount": 3, "combats_remaining": 1}}], "weight": 2},
 				{"name": "Wayside Shrine", "icon": "shrine", "message": "If you want a good omen, you have to make it yourself.", "rewards": [{"type": "buff", "value": {"stat": "luck", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 1}}], "weight": 2},
 
+				{"name": "Charred Bone Pile", "icon": "treasure", "message": "Ash and scorched bones. Something metallic survived the heat.", "rewards": [{"type": "item_random", "value": ["iron_sword", "iron_axe", "iron_dagger", "iron_mace", "wooden_spear", "wooden_staff", "short_bow", "iron_shield"]}], "weight": 2},
 				{"name": "Flickering Light", "icon": "shrine", "message": "It looks like a burning altar. It is not.", "rewards": [{"type": "damage", "value": 15}], "weight": 1},
 				{"name": "Cracked Stone", "icon": "treasure", "message": "Looks like a cache. It's a trap.", "rewards": [{"type": "damage", "value": 20}], "weight": 1}
-			]
+			],
+			"spell_schools": ["Fire", "Water", "Earth", "Air", "Space", "White", "Black", "Sorcery", "Enchantment", "Summoning"]
 		}
 	},
 
@@ -217,6 +239,8 @@
 		"mobs_per_zone": [140, 200],
 		"guaranteed_shops": [1, 2],
 		"guaranteed_rest": [1, 2],
+		"guaranteed_guilds": [1, 1],
+		"guaranteed_simples": [{"tier": 1, "count": 2}, {"tier": 2, "count": 1}],
 		"min_spacing": 3
 	}
 }
