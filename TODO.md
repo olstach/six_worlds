@@ -241,7 +241,7 @@ Roles to fulfill per realm (not specific object types):
 - [x] ~~Alchemy crafting system~~: Reagents supply type, 3 crafting branches (Remedies/Munitions/Applications) × 3 tiers, perk-unlocked, passive brewing toggle — DONE
 - [x] ~~Resource-gathering perks~~: Alchemical Recycling (Alchemy 3), Herbalist (Medicine 3), Scavenger (Smithing 3) — DONE
 - [x] ~~Crafting UI tab~~ — DONE (key: R; character picker, Potions/Bombs/Oils filter, craftable/locked recipe list with reagent cost)
-- [ ] More scroll varieties (AoE scrolls, buff scrolls)
+- [x] ~~More scroll varieties~~: 17 scrolls added (common: magic_missile, voidbolt, shocking_grasp, stone_spike, bless, cure, slow; uncommon: fireball, blizzard, chain_lightning, earthquake, haste, stone_skin, regeneration, blink, dispel, confusion). Distributed to demon_sorcerer, wandering_sage, general_store, hell_town_magic, hell_yogini_circle, mercy_ward
 - [ ] **Cursed items**: equipment that applies a passive debuff alongside its stats. Player may not know an item is cursed until equipped (reveal on ID or Alchemy skill check). Separate from cursed terrain/simples.
 - [x] ~~**Equipment generation system**~~: procedural weapons, armor, and talismans — DONE
 - [x] ~~**Talisman system**~~: persistent equippable trinket-slot items with stat/skill/perk bonuses — DONE
