@@ -121,10 +121,10 @@ Last Updated: 2026-03-08
 ## High Priority (Core Gameplay)
 
 ### Companions — Post-JSON Cleanup
-- [ ] Verify `smithing` matches the exact skill key in skills.json
-- [ ] Check all `background` values in companions.json against backgrounds.json (hunter, laborer, peasant, etc. may not exist)
-- [ ] Verify Karnak's updated `starting_equipment` item IDs (`iron_sword`, `leather_vest`) match items.json
-- [ ] Wire all 23 new companions into the available_companions lists for the new hell locations (currently only karnak is listed)
+- [x] ~~Verify skill keys~~ — all 35 skill IDs in companions.json match skills.json exactly
+- [x] ~~Check background values~~ — 9 companions had invalid backgrounds (soldier/laborer/peasant/criminal); fixed: soldier→former_soldier, laborer/peasant→farmer, criminal→raider or executioner
+- [x] ~~Verify item IDs~~ — all starting_equipment and fixed_items match items.json
+- [x] ~~Wire companions into shops~~ — all 23 companions already in available_companions for all 9 hell shop locations
 
 ### Companion Auto-Development Refactor
 - [ ] Add `"primary_attrs": [...]` to each skill entry in skills.json (35 skills × 2-3 attributes)
