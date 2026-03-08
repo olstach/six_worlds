@@ -4171,7 +4171,12 @@
       "requires_perks": [],
       "description": "You can enter stealth in combat (costs 1 action) and attempt stealth-based decisions in dialogue.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "stamina_cost": 0,
+        "targeting": "self",
+        "effect": "enter_stealth"
+      }
     },
     "now_you_see_me": {
       "name": "Now You See Me",

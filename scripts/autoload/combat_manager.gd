@@ -1101,7 +1101,7 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 		var has_soft_step = PerkSystem.has_perk(unit_char_ss, "soft_step")
 		if not has_soft_step:
 			for e in _get_enemies_in_range(unit, 3):
-				unit.is_stealthed = false
+				_leave_stealth(unit)
 				combat_log.emit("%s's stealth is broken by moving too close!" % unit.unit_name)
 				break
 
@@ -1187,10 +1187,14 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		if _stealth_attack and not result.get("crit", false):
 			result["crit"] = true
 			result["damage"] = int(result["damage"] * 1.5)
-		# Break stealth after attacking (regardless of shadow_strike)
+		# Break stealth after attacking — unless Shady Dealings (Guile 7) and non-melee
 		if _stealth_attack:
-			attacker.is_stealthed = false
-			combat_log.emit("%s breaks stealth with an attack!" % attacker.unit_name)
+			var _att_char_sd = attacker.character_data if "character_data" in attacker else {}
+			var _shady = PerkSystem.has_perk(_att_char_sd, "shady_dealings")
+			var _is_melee_sd = not (attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon())
+			if _is_melee_sd or not _shady:
+				_leave_stealth(attacker)
+				combat_log.emit("%s breaks stealth with an attack!" % attacker.unit_name)
 
 		# Apply damage
 		apply_damage(defender, result.damage, result.damage_type)
@@ -1518,11 +1522,16 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 			if not ("moved_this_turn" in attacker and attacker.moved_this_turn):
 				damage = int(damage * 1.10)
 
-	# Sudden End (Daggers+Guile cross): stealth attacks vs Stunned or Dazed targets deal +50% damage
+	# Sudden End (Daggers 7): first stealth attack deals +100% crit damage vs any target
+	# (bleed is applied in _process_on_hit_perks after the hit lands)
 	if PerkSystem.has_perk(att_char_phys, "sudden_end"):
 		if "is_stealthed" in attacker and attacker.is_stealthed:
-			if defender.has_status("Stunned") or defender.has_status("Dazed"):
-				damage = int(damage * 1.50)
+			if not crit:
+				# Force crit multiplier even if not a crit (stealth backstab)
+				damage = int(damage * 2.0)
+			else:
+				# Already crit — add 100% on top (brutal stealth crit)
+				damage = int(damage * 2.0)
 
 	# Skull Crack: +20% damage vs Stunned or Dazed targets (maces only)
 	if PerkSystem.has_perk(att_char_phys, "skull_crack"):
@@ -1644,11 +1653,16 @@ func _kill_unit(unit: Node) -> void:
 		var killer_char_ss = killer.character_data if "character_data" in killer else {}
 		var was_stealthed = "is_stealthed" in killer and killer.is_stealthed
 		if PerkSystem.has_perk(killer_char_ss, "shadow_strike"):
-			killer.is_stealthed = true
-			combat_log.emit("%s vanishes into shadow after the kill!" % killer.unit_name)
+			_enter_stealth(killer)
 		elif was_stealthed and PerkSystem.has_perk(killer_char_ss, "ambush_predator"):
-			killer.is_stealthed = true  # Reset stealth immediately (kill from stealth)
+			_enter_stealth(killer)  # Reset stealth immediately (kill from stealth)
 			combat_log.emit("%s remains in shadow (Ambush Predator)!" % killer.unit_name)
+
+		# Gone Before the Body Falls (Daggers 9): dagger kill → restore 1 action
+		if PerkSystem.has_perk(killer_char_ss, "gone_before_the_body_falls"):
+			if killer.has_method("get_equipped_weapon") and killer.get_equipped_weapon().get("type", "") == "dagger":
+				killer.actions_remaining = mini(killer.actions_remaining + 1, killer.max_actions)
+				combat_log.emit("%s: Gone Before the Body Falls — free action!" % killer.unit_name)
 
 	# Dharma Warrior (cross-skill): killing an enemy during mantra chanting advances each active mantra by +1
 	if killer != null and not killer.is_dead and not killer.active_mantras.is_empty():
@@ -1889,6 +1903,12 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	# Silenced / blinded units cannot cast spells
 	if not can_unit_cast(caster):
 		return {"success": false, "reason": "Cannot cast while silenced"}
+
+	# Stealth: spell casting breaks stealth unless Shady Dealings (Guile 7)
+	if "is_stealthed" in caster and caster.is_stealthed:
+		var caster_char_sd = caster.character_data if "character_data" in caster else {}
+		if not PerkSystem.has_perk(caster_char_sd, "shady_dealings"):
+			_leave_stealth(caster)
 
 	var spell = get_spell(spell_id)
 	if spell.is_empty():
@@ -3762,6 +3782,8 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 			result = _resolve_stance(user, combat_data)
 		"heal_self":
 			result = _resolve_heal_self(user, combat_data)
+		"enter_stealth":
+			result = _resolve_enter_stealth(user)
 		"mark_target":
 			result = _resolve_mark_target(user, combat_data, target_pos)
 		"examine":
@@ -3796,6 +3818,45 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 		active_skill_used.emit(user, skill_data, result)
 
 	return result
+
+
+## Enter stealth (blend_in active skill).
+func _resolve_enter_stealth(user: Node) -> Dictionary:
+	if "is_stealthed" in user and user.is_stealthed:
+		return {"success": false, "reason": "Already stealthed"}
+	_enter_stealth(user)
+	return {"success": true, "effects": [{"type": "enter_stealth"}]}
+
+
+## Central helper: enter stealth for a unit and apply all enter-stealth perk effects.
+func _enter_stealth(unit: Node) -> void:
+	unit.is_stealthed = true
+	combat_log.emit("%s blends into the shadows." % unit.unit_name)
+
+	var char_data = unit.character_data if "character_data" in unit else {}
+
+	# Now You See Me (Guile 3): entering stealth removes all 1-turn duration debuffs
+	if PerkSystem.has_perk(char_data, "now_you_see_me"):
+		for i in range(unit.status_effects.size() - 1, -1, -1):
+			var se = unit.status_effects[i]
+			var sdef = get_status_definition(se.get("status", ""))
+			if sdef.get("type", "") == "debuff" and se.get("duration", 0) <= 1:
+				var sname = se.get("status", "")
+				unit.status_effects.remove_at(i)
+				status_effect_expired.emit(unit, sname)
+		combat_log.emit("Now You See Me — minor debuffs cleared!")
+
+
+## Central helper: leave stealth for a unit and apply all leave-stealth perk effects.
+func _leave_stealth(unit: Node) -> void:
+	unit.is_stealthed = false
+	var char_data = unit.character_data if "character_data" in unit else {}
+
+	# Where I Meant to Be (Guile 5): leaving stealth → +15% Attack and +15% Dodge for 1 turn
+	if PerkSystem.has_perk(char_data, "where_i_meant_to_be"):
+		_apply_status_effect(unit, "Inspired", 1, 0, unit)   # +accuracy proxy
+		_apply_status_effect(unit, "Dodge_Buff", 1, 0, unit) # +dodge proxy
+		combat_log.emit("Where I Meant to Be — +15%% Attack and Dodge for 1 turn!")
 
 
 ## Mark an enemy (call_the_shot). The marking unit's field marks the target node.
@@ -4610,6 +4671,11 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 			var weapon = attacker.get_equipped_weapon()
 			if weapon.is_empty() or weapon.get("type", "") in ["", "unarmed"]:
 				_apply_status_effect(defender, "Burning", 3)
+
+	# Sudden End (Daggers 7): stealth first attack applies severe bleed (10% max HP/turn, 3t)
+	if _unit_has_perk(attacker, "sudden_end") and "is_stealthed" in attacker and attacker.is_stealthed:
+		var bleed_val = ceili(defender.max_hp * 0.10)
+		_apply_status_effect(defender, "Bleeding", 3, bleed_val, attacker)
 
 	# Relentless (Unarmed cross): crit with unarmed → free unarmed attack on the same target
 	if _unit_has_perk(attacker, "relentless") and result.get("crit", false) and not attacker.in_free_attack:
