@@ -90,7 +90,8 @@
 					"white",
 					"sorcery",
 					"yoga"
-				]
+				],
+				"max_skill_level": 6
 			}
 		},
 		"weapon_master": {
@@ -131,7 +132,8 @@
 					"ranged",
 					"daggers",
 					"armor"
-				]
+				],
+				"max_skill_level": 7
 			}
 		},
 		"frozen_merchant": {
@@ -910,7 +912,8 @@
 				"axes",
 				"maces",
 				"might"
-			]
+			],
+			"max_skill_level": 6
 		}
 	},
 	"bone_archer_camp": {
@@ -948,7 +951,8 @@
 				"ranged",
 				"daggers",
 				"guile"
-			]
+			],
+			"max_skill_level": 5
 		}
 	},
 	"mercy_ward": {
@@ -981,7 +985,8 @@
 			],
 			"skills": [
 				"medicine"
-			]
+			],
+			"max_skill_level": 5
 		}
 	},
 	"brimstone_lab": {

@@ -145,6 +145,13 @@ func get_attribute_training_cost() -> int:
 	return int(ATTRIBUTE_TRAINING_COST * shop_modifier * (1.0 - discount))
 
 
+## Return the skill cap this trainer enforces (defaults to SKILL_MAX_LEVEL)
+func get_trainer_skill_cap() -> int:
+	if _current_shop.is_empty():
+		return CharacterSystem.SKILL_MAX_LEVEL
+	return _current_shop.get("training", {}).get("max_skill_level", CharacterSystem.SKILL_MAX_LEVEL)
+
+
 ## Calculate cost to train a skill to next level
 func get_skill_training_cost(current_level: int) -> int:
 	if current_level < 0 or current_level >= SKILL_TRAINING_COSTS.size():
@@ -587,7 +594,7 @@ func buy_attribute_training(character: Dictionary, attribute: String) -> Diction
 func buy_skill_training(character: Dictionary, skill: String) -> Dictionary:
 	var current_level = character.get("skills", {}).get(skill, 0)
 
-	if current_level >= 5:
+	if current_level >= CharacterSystem.SKILL_MAX_LEVEL:
 		return {"success": false, "reason": "Skill already at maximum level"}
 
 	# Check if shop offers skill training
@@ -596,6 +603,11 @@ func buy_skill_training(character: Dictionary, skill: String) -> Dictionary:
 		var skills_offered = training.get("skills", [])
 		if not skills_offered.is_empty() and skill not in skills_offered:
 			return {"success": false, "reason": "Training not available here"}
+
+		# Enforce trainer cap if set
+		var cap = training.get("max_skill_level", CharacterSystem.SKILL_MAX_LEVEL)
+		if current_level >= cap:
+			return {"success": false, "reason": "Trainer can't teach beyond level %d" % cap}
 
 	var price = get_skill_training_cost(current_level)
 
@@ -625,6 +637,8 @@ func buy_skill_training(character: Dictionary, skill: String) -> Dictionary:
 ## Set the current active shop. Generates procedural inventory if configured.
 func open_shop(shop_data: Dictionary) -> void:
 	_current_shop = shop_data
+	if _current_shop.get("type", "") == "spell_guild":
+		_generate_guild_spells()
 	_generate_procedural_stock()
 	_resolve_template_items()
 
@@ -801,3 +815,73 @@ static func add_shop_training(shop: Dictionary, attributes: Array = [], skills: 
 	for skill in skills:
 		if skill not in shop.training.skills:
 			shop.training.skills.append(skill)
+
+
+# ============================================
+# SPELL GUILD CURRICULUM GENERATION
+# ============================================
+
+## Generate and cache the spell curriculum for a spell_guild shop.
+## guild_school: the school name (e.g. "Fire", "Black", "Sorcery")
+## guild_max_tier: highest tier offered (1-5, default 5; hell guilds use 3)
+## Curriculum: 1 spell at max_tier, 2 at max_tier-1, 3 at max_tier-2.
+## Results are cached in GameState.guild_spell_lists by object_id for stable revisits.
+func _generate_guild_spells() -> void:
+	var object_id: String = _current_shop.get("_object_id", "")
+	var school: String = _current_shop.get("guild_school", "")
+	var max_tier: int = clamp(int(_current_shop.get("guild_max_tier", 5)), 1, 5)
+
+	if school.is_empty():
+		return
+
+	# Return cached list if available
+	if object_id != "" and GameState.guild_spell_lists.has(object_id):
+		_current_shop["spells"] = GameState.guild_spell_lists[object_id]
+		return
+
+	# tier → spell level lookup (matches the 0-10 skill scale remapping)
+	var tier_to_level: Array = [0, 1, 3, 5, 7, 9]  # index = tier
+
+	var chosen_spells: Array = []
+
+	# Add 1 at max_tier, 2 at max_tier-1, 3 at max_tier-2
+	for offset in range(3):
+		var tier: int = clamp(max_tier - offset, 1, 5)
+		var count: int = offset + 1
+		var spell_level: int = tier_to_level[tier]
+		var candidates: Array = _get_guild_spell_candidates(school, spell_level, chosen_spells)
+		candidates.shuffle()
+		for i in range(min(count, candidates.size())):
+			chosen_spells.append(candidates[i])
+
+	_current_shop["spells"] = chosen_spells
+
+	# Cache for stability across revisits
+	if object_id != "":
+		GameState.guild_spell_lists[object_id] = chosen_spells
+
+
+## Return all spell IDs matching the given school at the given level, excluding already-chosen.
+## Checks both "schools" array and "subschool" field to cover Sorcery, Enchantment, etc.
+func _get_guild_spell_candidates(school: String, level: int, excluded: Array) -> Array:
+	var candidates: Array = []
+	var school_lower: String = school.to_lower()
+	var spell_db: Dictionary = CharacterSystem.get_spell_database()
+
+	for spell_id in spell_db:
+		if spell_id in excluded:
+			continue
+		var spell: Dictionary = spell_db[spell_id]
+		if int(spell.get("level", 0)) != level:
+			continue
+		var matches: bool = false
+		for s in spell.get("schools", []):
+			if s.to_lower() == school_lower:
+				matches = true
+				break
+		if not matches and spell.get("subschool", "").to_lower() == school_lower:
+			matches = true
+		if matches:
+			candidates.append(spell_id)
+
+	return candidates

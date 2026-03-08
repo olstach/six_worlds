@@ -538,17 +538,26 @@ func _create_skill_training_option(skill: String) -> void:
 	label.custom_minimum_size.x = 100
 	hbox.add_child(label)
 
+	var trainer_cap: int = ShopSystem.get_trainer_skill_cap()
+
 	for character in party:
 		var char_name = character.get("name", "?")
 		var current_level = character.get("skills", {}).get(skill, 0)
-		var price = ShopSystem.get_skill_training_cost(current_level)
-		var can_afford = GameState.can_afford(price) and price > 0
 
 		var btn = Button.new()
-		btn.text = "%s (Lv.%d) - %dg" % [char_name, current_level, price]
 		btn.add_theme_font_size_override("font_size", 11)
-		btn.disabled = not can_afford
-		btn.pressed.connect(func(): _on_train_skill_pressed(character, skill))
+
+		if current_level >= trainer_cap:
+			btn.text = "%s (Lv.%d) - Capped" % [char_name, current_level]
+			btn.disabled = true
+			btn.add_theme_color_override("font_disabled_color", Color(0.6, 0.6, 0.4))
+		else:
+			var price = ShopSystem.get_skill_training_cost(current_level)
+			var can_afford = GameState.can_afford(price) and price > 0
+			btn.text = "%s (Lv.%d) - %dg" % [char_name, current_level, price]
+			btn.disabled = not can_afford
+			btn.pressed.connect(func(): _on_train_skill_pressed(character, skill))
+
 		hbox.add_child(btn)
 
 
@@ -578,16 +587,23 @@ func _populate_veteran_training(selected_skills: Array, claimed: Array) -> void:
 			taken.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
 			hbox.add_child(taken)
 		else:
+			var trainer_cap: int = ShopSystem.get_trainer_skill_cap()
 			for character in CharacterSystem.get_party():
 				var current_level: int = character.get("skills", {}).get(skill, 0)
-				var price: int = ShopSystem.get_skill_training_cost(current_level)
-				var can_afford: bool = GameState.can_afford(price) and price > 0
 
 				var btn := Button.new()
-				btn.text = "%s (Lv.%d) — %dg" % [character.get("name", "?"), current_level, price]
 				btn.add_theme_font_size_override("font_size", 11)
-				btn.disabled = not can_afford
-				btn.pressed.connect(func(): _on_veteran_train_pressed(i, character, skill))
+
+				if current_level >= trainer_cap:
+					btn.text = "%s (Lv.%d) — Capped" % [character.get("name", "?"), current_level]
+					btn.disabled = true
+					btn.add_theme_color_override("font_disabled_color", Color(0.6, 0.6, 0.4))
+				else:
+					var price: int = ShopSystem.get_skill_training_cost(current_level)
+					var can_afford: bool = GameState.can_afford(price) and price > 0
+					btn.text = "%s (Lv.%d) — %dg" % [character.get("name", "?"), current_level, price]
+					btn.disabled = not can_afford
+					btn.pressed.connect(func(): _on_veteran_train_pressed(i, character, skill))
 				hbox.add_child(btn)
 
 		training_container.add_child(hbox)
