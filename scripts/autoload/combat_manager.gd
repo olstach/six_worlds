@@ -1750,6 +1750,17 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 			var reduction = charm_used.get("mana_reduction", 0.0)
 			mana_cost = int(mana_cost * (1.0 - reduction))
 
+	# Perk-based mana cost reductions (multiplicative with charm reduction)
+	var caster_char_perks = caster.character_data if "character_data" in caster else {}
+	# Clean Cast (Sorcery 1): Sorcery spells cost 10% less mana
+	if PerkSystem.has_perk(caster_char_perks, "clean_cast"):
+		if spell.get("schools", []).any(func(s): return s.to_lower() == "sorcery"):
+			mana_cost = int(mana_cost * 0.90)
+	# Efficient Enchanting (Enchantment 1): Enchantment spells cost 10% less mana
+	if PerkSystem.has_perk(caster_char_perks, "efficient_enchanting"):
+		if spell.get("schools", []).any(func(s): return s.to_lower() == "enchantment"):
+			mana_cost = int(mana_cost * 0.90)
+
 	# Deduct mana (sync to character_data so it persists after combat)
 	caster.current_mana -= mana_cost
 	var caster_derived = caster.character_data.get("derived", {})
@@ -1949,9 +1960,19 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 	if base_heal != null and (base_heal is int or base_heal is float):
 		if int(base_heal) > 0:
 			var total_heal = int(base_heal) + int(bonus * 0.5)
+			# Healing Waters (Water 1): Water healing spells are 15% more effective
+			var caster_char_hw = caster.character_data if "character_data" in caster else {}
+			var is_water_heal = spell.get("schools", []).any(func(s): return s.to_lower() == "water")
+			if is_water_heal and PerkSystem.has_perk(caster_char_hw, "healing_waters"):
+				total_heal = int(total_heal * 1.15)
 			target.heal(total_heal)
 			unit_healed.emit(target, total_heal)
 			result.effects_applied.append({"type": "heal", "amount": total_heal})
+			# Lingering Warmth (White 3): healing spells also apply regeneration (15% of heal over 3 turns)
+			var is_white_heal = spell.get("schools", []).any(func(s): return s.to_lower() == "white")
+			if is_white_heal and PerkSystem.has_perk(caster_char_hw, "lingering_warmth"):
+				var regen_per_turn = maxi(1, int(total_heal * 0.15 / 3))
+				_apply_status_effect(target, "Regenerating", 3, regen_per_turn, caster)
 
 	# --- Status effects (from spell.statuses_caused) ---
 	var statuses = spell.get("statuses_caused", [])
@@ -2068,6 +2089,31 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 		var is_cold = element in ["ice", "cold", "water"] or schools.any(func(s): return s.to_lower() in ["water"])
 		if is_cold:
 			_apply_stat_modifier(target, "movement", -1, 2)
+
+	# Sudden Silence (Sorcery 3): Sorcery damage spells reduce target Spellpower by 25% for 1 turn
+	if PerkSystem.has_perk(caster_char, "sudden_silence") and has_damage:
+		var is_sorcery = schools.any(func(s): return s.to_lower() == "sorcery")
+		if is_sorcery:
+			var sp_pen = int(target.get_spellpower() * 0.25) if target.has_method("get_spellpower") else 3
+			if sp_pen > 0:
+				_apply_stat_modifier(target, "spellpower", -sp_pen, 1)
+
+	# Snap Decision (Sorcery 4): Sorcery spells reduce target Initiative by 25% for 1 turn
+	if PerkSystem.has_perk(caster_char, "snap_decision") and has_damage:
+		var is_sorcery_sd = schools.any(func(s): return s.to_lower() == "sorcery")
+		if is_sorcery_sd:
+			var init_pen = int(target.get_initiative() * 0.25) if target.has_method("get_initiative") else 3
+			if init_pen > 0:
+				_apply_stat_modifier(target, "initiative", -init_pen, 1)
+
+	# No Follow-Up Needed (Sorcery 4): Killing with a Sorcery spell refunds 50% of its mana cost
+	if PerkSystem.has_perk(caster_char, "no_follow_up_needed") and has_damage:
+		var is_sorcery_nfun = schools.any(func(s): return s.to_lower() == "sorcery")
+		if is_sorcery_nfun and not target.is_alive():
+			var refund = int(spell.get("mana_cost", 0) * 0.50)
+			if refund > 0:
+				caster.current_mana = mini(caster.current_mana + refund, caster.max_mana)
+				unit_healed.emit(caster, 0)  # triggers mana display refresh
 
 	# Amplified Misfortune: black debuff spells also spread status effects to 1 adjacent enemy
 	if PerkSystem.has_perk(caster_char, "amplified_misfortune") and has_debuff:
@@ -3977,6 +4023,13 @@ func _check_perk_status_immunity(unit: Node, status: String) -> bool:
 				if unit.current_hp >= unit.max_hp * 0.5:
 					return true
 
+	# Pain Is Just Information (Might 4): +25% resistance to Stun, Knockdown, and Exhaustion
+	var pain_immune = ["stunned", "knocked_down", "exhausted"]
+	if status_lower in pain_immune:
+		if PerkSystem.has_perk(char_data, "pain_is_just_information"):
+			if randf() < 0.25:
+				return true
+
 	return false
 
 
@@ -4049,6 +4102,25 @@ func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 				if allies.size() > 0:
 					var derived_armor = char_data.get("derived", {}).get("armor", 0)
 					total += int(derived_armor * 0.1)
+			# Grounded (Might 2): +15% Armor when you haven't moved this turn
+			if PerkSystem.has_perk(char_data, "grounded"):
+				if not ("moved_this_turn" in unit and unit.moved_this_turn):
+					var derived_armor = char_data.get("derived", {}).get("armor", 0)
+					total += int(derived_armor * 0.15)
+			# No One Left Behind (Leadership 3): when below 30% HP, gain +20% Armor if any ally has this perk
+			if "current_hp" in unit and "max_hp" in unit:
+				if unit.current_hp < unit.max_hp * 0.30:
+					var leader_present = PerkSystem.has_perk(char_data, "no_one_left_behind")
+					if not leader_present:
+						for ally in get_team_units(unit.team if "team" in unit else 0):
+							if ally == unit: continue
+							var ally_char = ally.character_data if "character_data" in ally else {}
+							if PerkSystem.has_perk(ally_char, "no_one_left_behind"):
+								leader_present = true
+								break
+					if leader_present:
+						var derived_armor = char_data.get("derived", {}).get("armor", 0)
+						total += int(derived_armor * 0.20)
 
 		"damage":
 			# Use base derived damage to avoid recursion (get_attack_damage calls us)
@@ -4265,6 +4337,30 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "spear":
 			if not defender.is_alive():
 				_apply_stat_modifier(attacker, "movement", 2, 1)
+
+	# Put Your Weight Into It (Might 1): 15% chance to knockback 1 tile OR stun 1 turn on melee hit
+	if _unit_has_perk(attacker, "put_your_weight_into_it"):
+		var is_melee_hit = _grid_distance(attacker.grid_position, defender.grid_position) <= 1
+		if is_melee_hit and randf() < 0.15:
+			if randf() < 0.5:
+				_apply_status_effect(defender, "Knocked_Down", 1, 0, attacker)
+			else:
+				_apply_status_effect(defender, "Stunned", 1, 0, attacker)
+
+	# Play Dirty (Guile 2): 20% chance to apply a random minor debuff on any hit
+	if _unit_has_perk(attacker, "play_dirty") and randf() < 0.20:
+		var dirty_debuffs = ["Weakened", "Slowed", "Blinded", "Dodge_Debuff", "Damage_Debuff"]
+		_apply_status_effect(defender, dirty_debuffs[randi() % dirty_debuffs.size()], 1, 0, attacker)
+
+	# Press the Advantage (Leadership 4): killing an enemy grants nearby allies +3 Initiative & +10% Attack (2 turns)
+	if _unit_has_perk(attacker, "press_the_advantage") and not defender.is_alive():
+		var press_allies = _get_allies_in_range(attacker, 3)
+		press_allies.erase(attacker)
+		for ally in press_allies:
+			_apply_stat_modifier(ally, "initiative", 3, 2)
+			var ally_dmg = int(ally.get_attack_damage() * 0.10) if ally.has_method("get_attack_damage") else 2
+			if ally_dmg > 0:
+				_apply_stat_modifier(ally, "damage", ally_dmg, 2)
 
 	# --- Update consecutive hit streaks ---
 	if attacker.has_method("get_equipped_weapon"):
