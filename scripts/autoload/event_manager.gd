@@ -338,23 +338,37 @@ func make_choice(choice: Dictionary) -> Dictionary:
 	# Handle roll-based choices
 	if choice.type == "roll" and "requirements" in choice and "roll" in choice.requirements:
 		var roll_req = choice.requirements.roll
-		var attribute = roll_req.attribute
 		var difficulty = roll_req.difficulty
-		
-		# Find highest attribute value in party
+
+		# Determine whether this is an attribute roll or a skill roll
+		var roll_label: String  # used in roll_result for display
 		var best_value = 0
 		var roller = null
-		for party_member in CharacterSystem.get_party():
-			var attr_value = party_member.attributes.get(attribute, 0)
-			if attr_value > best_value:
-				best_value = attr_value
-				roller = party_member
-		
-		# Roll: d20 + attribute value
+
+		if "skill" in roll_req:
+			# Skill-based roll: find best skill level in party
+			var skill_id = roll_req.skill
+			roll_label = skill_id
+			for party_member in CharacterSystem.get_party():
+				var skill_val = party_member.get("skills", {}).get(skill_id, 0)
+				if skill_val > best_value:
+					best_value = skill_val
+					roller = party_member
+		else:
+			# Attribute-based roll (original behaviour)
+			var attribute = roll_req.attribute
+			roll_label = attribute
+			for party_member in CharacterSystem.get_party():
+				var attr_value = party_member.attributes.get(attribute, 0)
+				if attr_value > best_value:
+					best_value = attr_value
+					roller = party_member
+
+		# Roll: d20 + attribute/skill value
 		var roll = randi() % 20 + 1
 		var total = roll + best_value
 		var success = total >= difficulty
-		
+
 		# Choose appropriate outcome
 		if success and "outcome_success" in choice:
 			outcome = choice.outcome_success.duplicate(true)
@@ -362,10 +376,10 @@ func make_choice(choice: Dictionary) -> Dictionary:
 			outcome = choice.outcome_failure.duplicate(true)
 		else:
 			outcome = choice.outcome.duplicate(true) if "outcome" in choice else {}
-		
+
 		outcome["roll_result"] = {
 			"roll": roll,
-			"attribute": attribute,
+			"attribute": roll_label,
 			"attribute_value": best_value,
 			"total": total,
 			"difficulty": difficulty,
