@@ -2121,6 +2121,32 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 		if is_water_ts:
 			_apply_stat_modifier(caster, "movement", 1, 1)
 
+	# Static Edge (Air 1): all attacks deal +10% weapon damage as Air damage
+	# Wired in get_passive_perk_stat_bonus; here we add it as a bonus damage proc on spell hits
+	# Chain Spark (Air 3): Lightning spells have 30% chance to chain to 1 adjacent target
+	if PerkSystem.has_perk(caster_char, "chain_spark") and has_damage:
+		var is_lightning = element in ["air", "lightning"] or schools.any(func(s): return s.to_lower() == "air")
+		if is_lightning and randf() < 0.30:
+			var chain_targets = _get_enemies_in_range(target, 2)
+			chain_targets.erase(target)
+			chain_targets.erase(caster)
+			if not chain_targets.is_empty():
+				var chain_target = chain_targets[randi() % chain_targets.size()]
+				var chain_dmg = int(result.get("damage", 0) * 0.60)
+				chain_dmg = maxi(1, chain_dmg)
+				apply_damage(chain_target, chain_dmg, "air")
+				result["chain_spark_damage"] = chain_dmg
+
+	# Weakening Gaze (Enchantment 1): debuff spells are 10% more effective (longer duration)
+	if PerkSystem.has_perk(caster_char, "weakening_gaze") and has_debuff:
+		var is_enchant = schools.any(func(s): return s.to_lower() == "enchantment")
+		if is_enchant:
+			# Extend the last-applied debuff by 1 turn
+			if not target.status_effects.is_empty():
+				var last_effect = target.status_effects[-1]
+				if last_effect.get("status", "") != "":
+					last_effect["duration"] = last_effect.get("duration", 1) + 1
+
 	# Sudden Silence (Sorcery 3): Sorcery damage spells reduce target Spellpower by 25% for 1 turn
 	if PerkSystem.has_perk(caster_char, "sudden_silence") and has_damage:
 		var is_sorcery = schools.any(func(s): return s.to_lower() == "sorcery")
@@ -4066,6 +4092,24 @@ func _check_perk_status_immunity(unit: Node, status: String) -> bool:
 			if randf() < 0.25:
 				return true
 
+	# Unbroken Circle (Leadership 4): +15% mental status resistance with 2+ allies standing
+	var mental_cc = ["feared", "charmed", "confused", "berserk", "mind_controlled", "intimidated", "demoralized"]
+	if status_lower in mental_cc:
+		var ub_ally_count = get_team_units(unit.team if "team" in unit else 0).size() - 1
+		if ub_ally_count >= 2:
+			var ub_resist = 0.15 + 0.03 * (ub_ally_count - 2)  # +3% per additional ally
+			# Also check if any ally has the perk (aura) or if the unit itself has it
+			var has_leader = PerkSystem.has_perk(char_data, "unbroken_circle")
+			if not has_leader:
+				for ally in get_team_units(unit.team if "team" in unit else 0):
+					if ally == unit: continue
+					var ally_char = ally.character_data if "character_data" in ally else {}
+					if PerkSystem.has_perk(ally_char, "unbroken_circle"):
+						has_leader = true
+						break
+			if has_leader and randf() < ub_resist:
+				return true
+
 	return false
 
 
@@ -4238,6 +4282,14 @@ func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 			if PerkSystem.has_perk(char_data, "flowing_footwork"):
 				if _unit_is_unarmored(unit):
 					total += 10
+			# Summoner's Bond: +5% Dodge/saves while 1+ summon is active
+			# (Summons are units with the 'summoned' tag on their character_data)
+			if PerkSystem.has_perk(char_data, "summoners_bond"):
+				for ally in get_team_units(unit.team if "team" in unit else 0):
+					var ally_char = ally.character_data if "character_data" in ally else {}
+					if "summoned" in ally_char.get("tags", []):
+						total += 5
+						break
 			# Talisman: Blur — +10% dodge chance
 			if _unit_has_talisman_perk(unit, "blur"):
 				total += 10
@@ -4397,6 +4449,14 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 			var ally_dmg = int(ally.get_attack_damage() * 0.10) if ally.has_method("get_attack_damage") else 2
 			if ally_dmg > 0:
 				_apply_stat_modifier(ally, "damage", ally_dmg, 2)
+
+	# Static Edge (Air 1): attacks deal +10% weapon damage as bonus Air damage
+	if _unit_has_perk(attacker, "static_edge"):
+		var air_dmg = maxi(1, int(result.get("damage", 0) * 0.10))
+		var air_resist = defender.get_resistance("air")
+		var final_air_dmg = maxi(1, int(air_dmg * (1.0 - air_resist / 100.0)))
+		apply_damage(defender, final_air_dmg, "air")
+		result["static_edge_damage"] = final_air_dmg
 
 	# Cheap Shot: record that this enemy has now been attacked (removes the crit bonus on future attacks)
 	if "enemies_hit_this_combat" in attacker and not defender in attacker.enemies_hit_this_combat:
