@@ -1281,6 +1281,10 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 		var w = attacker.get_equipped_weapon()
 		is_unarmed_attack = w.is_empty() or w.get("type", "") in ["", "unarmed"]
 
+	# Anatomy Knowledge: +10% damage vs biological enemies
+	if PerkSystem.has_perk(att_char_phys, "anatomy_knowledge") and _unit_is_biological(defender):
+		damage = int(damage * 1.10)
+
 	# Close and Personal: +15% damage when adjacent to exactly one enemy
 	if PerkSystem.has_perk(att_char_phys, "close_and_personal"):
 		var adjacent_enemies = _get_enemies_in_range(attacker, 1)
@@ -3836,6 +3840,13 @@ func _check_perk_status_immunity(unit: Node, status: String) -> bool:
 
 ## Check if a unit is unarmored or wearing only light armor (robe/hat/cloth).
 ## Used by unarmored perks like Flowing Footwork and Diamond Body.
+## Returns true if the unit is tagged as biological (affected by anatomy_knowledge, pressure_points).
+## Non-biological: constructs, elementals, undead, ethereals.
+func _unit_is_biological(unit: Node) -> bool:
+	var char_data = unit.character_data if "character_data" in unit else {}
+	return "biological" in char_data.get("tags", [])
+
+
 func _unit_is_unarmored(unit: Node) -> bool:
 	var char_data = unit.character_data if "character_data" in unit else {}
 	var equipment = char_data.get("equipment", {})
@@ -4078,9 +4089,19 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 			attacker.unarmed_hit_stacks = 0
 
 	# Every Opening Is an Invitation: +10% crit vs statused — applied via get_passive_perk_stat_bonus
-	# Anatomy Knowledge: +10% damage vs biological enemies (needs biological tag on enemies — deferred)
+	# Anatomy Knowledge: +10% damage vs biological enemies — applied in calculate_physical_damage
 	# Shadow Strike: stealth attacks +50% damage & Silence (stealth system not yet implemented)
 	# Blood in the Wind: +movement when enemies bleeding (checked in stat getter)
+
+	# Pressure Points (Medicine 7): melee hits vs biological → 15% chance for random debuff
+	var att_char_pp = attacker.character_data if "character_data" in attacker else {}
+	if PerkSystem.has_perk(att_char_pp, "pressure_points"):
+		var is_melee = _grid_distance(attacker.grid_position, defender.grid_position) <= 1
+		if is_melee and _unit_is_biological(defender) and randf() < 0.15:
+			# -10% Attack (Damage_Debuff), -10% Dodge (Dodge_Debuff), or -1 Movement (Slowed)
+			var debuffs = ["Damage_Debuff", "Dodge_Debuff", "Slowed"]
+			var chosen = debuffs[randi() % debuffs.size()]
+			_apply_status_effect(defender, chosen, 2)
 
 	# --- Talisman perk on-hit effects ---
 	var talisman_perks = _get_talisman_perks(attacker)

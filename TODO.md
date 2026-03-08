@@ -222,9 +222,11 @@ Roles to fulfill per realm (not specific object types):
   **momentum_stacks / unarmed_hit_stacks**: on CombatUnit, incremented on hit, reset on miss and turn start.
 
   **STILL UNWIRED** (grouped by complexity):
-  - *Simple on-hit perks* (add to `_process_on_hit_perks`): `pressure_points` (Medicine 7, melee vs biological → 15% random debuff; needs biological tag), more weapon-type procs in daggers/spears/maces trees
-  - *Spell-cast perks*: `amplified_misfortune` (black debuffs → +1 tile AoE, needs AoE targeting change), `void_touched` (space spells leave void tiles), per-school on-hit proc perks
-  - *Stat passives needing target context* (can't use `get_passive_perk_stat_bonus` alone): `anatomy_knowledge` (+10% dmg vs biological — needs biological tag), `every_opening_is_an_invitation` crit already done in calculate_physical_damage
+  - *Simple on-hit perks* (add to `_process_on_hit_perks`): more weapon-type procs in daggers/spears/maces trees
+  - *Spell-cast perks*: `void_touched` (space spells leave void tiles — needs void tile terrain type), per-school on-hit proc perks
+  - *Stat passives needing target context*: `every_opening_is_an_invitation` crit already done in calculate_physical_damage
+  - ~~`pressure_points`~~: DONE (session 5) — melee vs biological → 15% random debuff (Damage_Debuff / Dodge_Debuff / Slowed, 2 turns)
+  - ~~`anatomy_knowledge`~~: DONE (session 5) — +10% damage vs biological; biological tags added to hell_archetypes.json, EnemySystem now copies tags into enemy dicts
   - *Complex / needs new infrastructure*: `necromancer` (raise dead on kill — unit spawning), stealth system perks (`shadow_strike`, ambush), zone-of-control perks (`frost_warden`, `sentinel`), metamagic (alter spell properties), `skirmisher` (needs ranged-after-move penalty added first), mantra-related perks, `cleave` (kill → free attack), `relentless` (crit → free unarmed attack), aura perks requiring nearby ally/enemy scanning each turn
   - *Deferred (already handled)*: all per-skill minor bonuses flow through PerkSystem base_bonuses → derived stats, not combat_manager
 

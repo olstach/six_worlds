@@ -264,6 +264,7 @@ func _build_enemy(archetype_id: String, power_budget: float) -> Dictionary:
 	var enemy: Dictionary = {
 		"name": archetype.get("name", "Enemy"),
 		"archetype_id": archetype_id,
+		"tags": archetype.get("tags", []),
 		"max_hp": derived.max_hp,
 		"max_mana": derived.max_mana,
 		"actions": 2,
