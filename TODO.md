@@ -161,17 +161,17 @@ Three categories of interactive map objects. Hell is the target realm for initia
 **Category 2 — Traders** (peaceful default, with steal/attack/donate karma branches)
 Roles to fulfill per realm (not specific object types):
 - [x] ~~General shop (basic items)~~ — DONE (hell_merchant, frozen_merchant, ember_merchant, wandering_peddler, general_store in shops.json)
-- [ ] Blacksmith (weapons, armor, weapon oils) — not yet a distinct shop
-- [ ] Fletcher (ranged weapons, throwables, light armor) — not yet a distinct shop
-- [ ] Healer (healing potions, white magic scrolls; rare locations only: raise dead companion for high gold cost + karma implications)
-- [ ] Alchemist (potions, bombs, oils) — not yet a distinct shop
+- [x] ~~Blacksmith~~ — DONE (infernal_forge: axes/maces/armor/oils, trains Axes/Maces/Might; fire_hell map pool)
+- [x] ~~Fletcher~~ — DONE (bone_archer_camp: bows/daggers/throwables/light armor, trains Ranged/Daggers/Guile; cold_hell map pool)
+- [x] ~~Healer~~ — DONE (mercy_ward: potions/white spells, trains Medicine; both zones map pool)
+- [x] ~~Alchemist~~ — DONE (brimstone_lab: bombs/oils/potions/reagents, trains Alchemy; fire_hell map pool)
 - [x] ~~Magic shop (scrolls, charms, magic foci)~~ — DONE (demon_sorcerer in shops.json sells spells + reagents)
 - [x] ~~Trainer (teaches skills/attributes)~~ — DONE (wandering_sage trains White/Sorcery/Yoga + Focus/Awareness; weapon_master trains 7 combat skills + Str/Fin; ShopSystem has full training tab)
 - [ ] Multi-function locations (towns, camps) use tab UI in event window — 3-4 functions per location
 - [ ] First-visit event hook for towns (simple choice: rumors, discount, hidden object)
 - [ ] Steal/attack/donate karma branches on trader interactions
 - [ ] Trainer caps (limit max level a trainer can teach)
-- [ ] Hell-specific named locations: Infernal Forge (blacksmith + trainer: Axes/Might), Bone Archer Camp (fletcher + trainer: Ranged/Guile), Mercy Ward (healer), Brimstone Lab (alchemist), Warden's Pit (trainer: Spears/Armor + Might cap 5)
+- [x] ~~Hell-specific named locations~~ — DONE (Infernal Forge, Bone Archer Camp, Mercy Ward, Brimstone Lab, Warden's Pit — all in shops.json + hell_events.json + hell.json map pools)
 
 **Category 3 — Event Chains** (1-3 choices deep, world/subregion specific)
 - [ ] Event chain data format (prerequisites, follow-up event IDs, outcome state flags)

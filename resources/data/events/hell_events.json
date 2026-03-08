@@ -3431,19 +3431,45 @@
 				}
 			]
 		},
-		"hell_yogini_circle": {
-			"id": "hell_yogini_circle",
-			"title": "Yogini Circle",
+		"hell_sacred_grove": {
+			"id": "hell_sacred_grove",
+			"title": "Sacred Grove",
 			"realm": "hell",
-			"text": "A ring of figures seated in the dirt, chanting in a language that makes your teeth itch. One of them opens her eyes and looks directly at you before you've made a sound.",
+			"text": "The dappled light streaming through the dense canopy seems like living gold. The Yakshas and Yakshinis come to commune with their followers in this place, marked with colored ropes on the tree trunks and prayer flags hanging from the branches.",
 			"choices": [
 				{
-					"text": "Approach the circle",
+					"text": "Approach the practitioners",
 					"type": "default",
 					"outcome": {
 						"type": "shop",
-						"shop_id": "hell_yogini_circle",
-						"text": "She gestures for you to sit. The chanting doesn't stop."
+						"shop_id": "hell_sacred_grove",
+						"text": "A Yakshini turns and regards you without surprise. Earth magic has a price — she names it."
+					}
+				},
+				{
+					"text": "Leave them to it",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You walk on. The light filters through the canopy long after the grove is out of sight."
+					}
+				}
+			]
+		},
+
+		"hell_temple_of_the_naga": {
+			"id": "hell_temple_of_the_naga",
+			"title": "Temple of the Naga",
+			"realm": "hell",
+			"text": "In every world some beings are born innately attuned to the mindstreams of the Naga. Temples arise where they practice, communing with their reptilian friends and patrons through offerings of saffron milk, fruits and flowers.",
+			"choices": [
+				{
+					"text": "Ask about their teachings",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_temple_of_the_naga",
+						"text": "A practitioner rises smoothly and names the spells they can teach. The price is gold, as always."
 					}
 				},
 				{
@@ -3451,11 +3477,220 @@
 					"type": "default",
 					"outcome": {
 						"type": "text",
-						"text": "You back away slowly. The chanting follows you for a while."
+						"text": "You don't disturb the offerings. The scent of flowers follows you."
 					}
 				}
 			]
 		},
+
+		"hell_garuda_roost": {
+			"id": "hell_garuda_roost",
+			"title": "Garuda Roost",
+			"realm": "hell",
+			"text": "A tall pole with a horned symbol at the top rises from the ground, sacred stones and offerings heaped at its base, colorful ribbons fluttering in the wind. The worshippers say the Garudas come to perch at the top during their long travels.",
+			"choices": [
+				{
+					"text": "Speak to the worshippers",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_garuda_roost",
+						"text": "One of the worshippers looks up. They teach Air magic here — what you pay is your own business."
+					}
+				},
+				{
+					"text": "Leave an offering and go",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You set something at the base of the pole and move on. The ribbons flutter."
+					}
+				}
+			]
+		},
+
+		"hell_hidden_gompa": {
+			"id": "hell_hidden_gompa",
+			"title": "Hidden Gompa",
+			"realm": "hell",
+			"text": "Practitioners come to this place seeking solitude and peace. The ground itself vibrates with the power of their meditation, mantric syllables appearing spontaneously in the rock.",
+			"choices": [
+				{
+					"text": "Knock and ask to enter",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_hidden_gompa",
+						"text": "After a long pause, the door opens. A monk gestures you inside. Space magic. What do you need?"
+					}
+				},
+				{
+					"text": "Don't disturb them",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You walk past without knocking. The syllables in the rock seem to pulse as you go."
+					}
+				}
+			]
+		},
+
+		"hell_mirror_lake": {
+			"id": "hell_mirror_lake",
+			"title": "Mirror Lake",
+			"realm": "hell",
+			"text": "Mirages flicker over the mercurial surface of the lake. Followers of the Goddess of Illusion gather around, meditating on the fleeting nature of phenomena and exchanging stories of their dreams.",
+			"choices": [
+				{
+					"text": "Sit and listen",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_mirror_lake",
+						"text": "A practitioner meets your eyes in the reflection before turning around. They can teach Enchantment. The lake makes everything a fair price."
+					}
+				},
+				{
+					"text": "Walk away from the mirage",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You step back. The images on the water follow you for a moment, then dissolve."
+					}
+				}
+			]
+		},
+
+		"hell_crossroads_stupa": {
+			"id": "hell_crossroads_stupa",
+			"title": "Crossroads Stupa",
+			"realm": "hell",
+			"text": "The wind carries the smell of sacred juniper smoke and sacrificial wine far from this place. As you come closer, you see little heaps of tormas and butter lamps, some still burning.",
+			"choices": [
+				{
+					"text": "Approach the stupa",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_crossroads_stupa",
+						"text": "A practitioner emerges from behind the stupa. Summoning magic — the crossroads is the right place for it. Gold is the price."
+					}
+				},
+				{
+					"text": "Observe from a distance",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You watch the butter lamps flicker in the wind. Some things are better left undisturbed."
+					}
+				}
+			]
+		},
+
+		"hell_yogini_circle": {
+			"id": "hell_yogini_circle",
+			"title": "Circle of the Yoginis",
+			"realm": "hell",
+			"text": "The inward-facing side of this circular stone wall is carved with the bizarre forms of sixty four Yoginis. There is no ceiling, so the witches can land when they come flying from vast space to meet their earthly sisters.",
+			"choices": [
+				{
+					"text": "Enter the circle",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_circle_of_yoginis",
+						"text": "One of the earthly sisters turns and gestures. No words needed."
+					}
+				},
+				{
+					"text": "Move on",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You back away slowly. The air around the circle hums for a long time."
+					}
+				}
+			]
+		},
+
+		"hell_medicinal_garden": {
+			"id": "hell_medicinal_garden",
+			"title": "Medicinal Garden",
+			"realm": "hell",
+			"text": "The air is vibrant with the aroma of medicinal herbs and flowers. The healers cultivating them are happy to share some of their knowledge for the benefit of all suffering beings.",
+			"choices": [
+				{
+					"text": "Ask to learn",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_medicinal_garden",
+						"text": "A healer looks up from her work and nods. She names her price without ceremony."
+					}
+				},
+				{
+					"text": "Leave them to their work",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You leave without disturbing them. The scent of herbs follows you."
+					}
+				}
+			]
+		},
+
+		"hell_eternal_fire": {
+			"id": "hell_eternal_fire",
+			"title": "Temple of the Eternal Fire",
+			"realm": "hell",
+			"text": "Priests clad in white robes have been guarding the sacred fire since time immemorial. Many come to pay their respects and seek visions in the dancing flames.",
+			"choices": [
+				{
+					"text": "Approach the priests",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_eternal_fire",
+						"text": "A priest turns from the flame and regards you. He names the spells, and then the prices."
+					}
+				},
+				{
+					"text": "Pay your respects and leave",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You bow before the flame and step back out. The fire reflected in your eyes for some time after."
+					}
+				}
+			]
+		},
+
+		"hell_black_lodge": {
+			"id": "hell_black_lodge",
+			"title": "Black Lodge",
+			"realm": "hell",
+			"text": "The entrance is half-buried in the earth, marked only with a crooked khatvanga topped with a skull and streaming black ribbons reeking of smoke and poison. As you enter, the darkness overwhelms you - until you notice the glint of a sneering smile.",
+			"choices": [
+				{
+					"text": "Ask to learn",
+					"type": "default",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "hell_black_lodge",
+						"text": "The smile does not move. A hand gestures to a list scratched into the wall. Spells. Prices. No preamble."
+					}
+				},
+				{
+					"text": "Back out",
+					"type": "default",
+					"outcome": {
+						"type": "text",
+						"text": "You step back into the light. The khatvanga watches you leave."
+					}
+				}
+			]
+		},
+
 		"hell_town_weapons": {
 			"id": "hell_town_weapons",
 			"title": "Town",
@@ -3528,6 +3763,192 @@
 						"type": "text",
 						"text": "You keep walking."
 					}
+				}
+			]
+		},
+
+		"hell_infernal_forge": {
+			"id": "hell_infernal_forge",
+			"title": "Infernal Forge",
+			"realm": "hell",
+			"text": "The heat hits you a hundred paces out. A demon the color of cooled lava stands at an enormous anvil, hammering something that glows white. The sign over the door reads: WEAPONS. ARMOR. NO CREDIT. NO REFUNDS. NO EXCEPTIONS.\n\nThe demon doesn't look up.",
+			"choices": [
+				{
+					"id": "browse",
+					"type": "default",
+					"text": "Browse the forge's stock",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "infernal_forge",
+						"text": "The demon nods once. You are allowed to look."
+					}
+				},
+				{
+					"id": "training",
+					"type": "requirement",
+					"text": "Ask to be trained in axe techniques",
+					"requirements": { "skills": { "axes": 1 } },
+					"outcome": {
+						"type": "shop",
+						"shop_id": "infernal_forge",
+						"text": "The demon sets down the hammer. \"You know which end to hold. Good. Cost you extra for the rest.\""
+					}
+				},
+				{
+					"id": "leave",
+					"type": "default",
+					"text": "Leave",
+					"outcome": { "type": "text", "text": "The hammering resumes behind you." }
+				}
+			]
+		},
+
+		"hell_bone_archer_camp": {
+			"id": "hell_bone_archer_camp",
+			"title": "Bone Archer Camp",
+			"realm": "hell",
+			"text": "A fortified camp of skeleton warriors — most armed with bows, some with knives. They regard you with hollow eyes. One of them, slightly larger than the rest, has set up a makeshift trading post.\n\n\"We trade,\" it says. \"We do not explain ourselves.\"",
+			"choices": [
+				{
+					"id": "browse",
+					"type": "default",
+					"text": "Browse the camp's goods",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "bone_archer_camp",
+						"text": "The skeleton gestures at the racks of weapons with one bony hand."
+					}
+				},
+				{
+					"id": "training",
+					"type": "requirement",
+					"text": "Ask one of the archers to teach you",
+					"requirements": { "skills": { "ranged": 1 } },
+					"outcome": {
+						"type": "shop",
+						"shop_id": "bone_archer_camp",
+						"text": "One of the archers tilts its skull at you, considering. Then it nocks an arrow and gestures for you to do the same.",
+						"karma": { "hell": 1 }
+					}
+				},
+				{
+					"id": "leave",
+					"type": "default",
+					"text": "Leave",
+					"outcome": { "type": "text", "text": "The skeleton archers watch you go, silent." }
+				}
+			]
+		},
+
+		"hell_mercy_ward": {
+			"id": "hell_mercy_ward",
+			"title": "Mercy Ward",
+			"realm": "hell",
+			"text": "A tent, remarkably clean. Inside, a figure in grey robes tends to the wounded — souls who staggered in from the wastes, demons nursing old injuries. Nobody asks questions. Nobody explains.\n\n\"I patch what I can,\" says the medic, without turning around. \"I charge what I must. Sit down if you're bleeding.\"",
+			"choices": [
+				{
+					"id": "buy",
+					"type": "default",
+					"text": "Buy supplies and spells",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "mercy_ward",
+						"text": "The medic points at the supply shelves.",
+						"karma": { "human": 1 }
+					}
+				},
+				{
+					"id": "rest",
+					"type": "requirement",
+					"text": "Ask to rest and recover",
+					"requirements": { "attributes": { "charm": 10 } },
+					"outcome": {
+						"type": "text",
+						"text": "The medic studies your face, then nods. \"An hour. Then I need the cot.\" You sleep deeply. When you wake, your wounds feel lighter.",
+						"rewards": { "xp": 10 },
+						"karma": { "human": 3, "god": 1 }
+					}
+				},
+				{
+					"id": "leave",
+					"type": "default",
+					"text": "Leave",
+					"outcome": { "type": "text", "text": "The medic returns to work without watching you go." }
+				}
+			]
+		},
+
+		"hell_brimstone_lab": {
+			"id": "hell_brimstone_lab",
+			"title": "Brimstone Lab",
+			"realm": "hell",
+			"text": "The structure looks like it's held together by habit and sulfur fumes. A figure peers at you through thick goggles, stirring something that smells like it wants to be left alone.\n\n\"Seventeen explosions,\" they announce, before you can speak. \"All educational. You need something that burns, you've come to the right address.\"",
+			"choices": [
+				{
+					"id": "browse",
+					"type": "default",
+					"text": "Buy alchemical supplies",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "brimstone_lab",
+						"text": "The alchemist sweeps a collection of vials to one side to make room for the transaction."
+					}
+				},
+				{
+					"id": "training",
+					"type": "requirement",
+					"text": "Ask about alchemy techniques",
+					"requirements": { "skills": { "alchemy": 1 } },
+					"outcome": {
+						"type": "shop",
+						"shop_id": "brimstone_lab",
+						"text": "\"You know the basics. Good. The advanced work is where it gets interesting — and occasionally fatal.\"",
+						"karma": { "asura": 1 }
+					}
+				},
+				{
+					"id": "leave",
+					"type": "default",
+					"text": "Leave",
+					"outcome": { "type": "text", "text": "Something bubbles aggressively as you go." }
+				}
+			]
+		},
+
+		"hell_wardens_pit": {
+			"id": "hell_wardens_pit",
+			"title": "Warden's Pit",
+			"realm": "hell",
+			"text": "A fortified post around a deep pit, guards drilling in formation on the parade ground. The warden — a scarred devil in heavy armor — watches them from the parapet.\n\n\"Outsiders,\" she says, not looking at you. \"You want something. They always do.\"",
+			"choices": [
+				{
+					"id": "browse",
+					"type": "default",
+					"text": "Ask to buy gear",
+					"outcome": {
+						"type": "shop",
+						"shop_id": "wardens_pit",
+						"text": "She jerks her chin toward the supply depot.",
+						"karma": { "hell": 1 }
+					}
+				},
+				{
+					"id": "training",
+					"type": "requirement",
+					"text": "Request combat training",
+					"requirements": { "skills": { "spears": 1 } },
+					"outcome": {
+						"type": "shop",
+						"shop_id": "wardens_pit",
+						"text": "She looks you over slowly. \"You know how to hold a spear. The rest is discipline. Discipline costs coin.\"",
+						"karma": { "hell": 2 }
+					}
+				},
+				{
+					"id": "leave",
+					"type": "default",
+					"text": "Leave",
+					"outcome": { "type": "text", "text": "The drilling continues. You are not relevant to it." }
 				}
 			]
 		}
