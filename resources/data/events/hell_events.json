@@ -256,9 +256,7 @@
 							]
 						},
 						"karma": {
-							"hell": 5,
-							"animal": 3,
-							"human": -4
+							"hungry_ghost": 5
 						}
 					},
 					"outcome_failure": {
@@ -267,7 +265,7 @@
 						"text": "The merchant's scream brings a demon patrol at a run. \"Thief! THIEF!\" There is nowhere to run.",
 						"difficulty": "normal",
 						"karma": {
-							"hell": 3
+							"hungry_ghost": 3
 						}
 					}
 				},
@@ -285,9 +283,7 @@
 							"xp": 3
 						},
 						"karma": {
-							"god": 3,
-							"human": 3,
-							"hungry_ghost": -2
+							"god": 4
 						}
 					}
 				},
@@ -311,16 +307,13 @@
 							]
 						},
 						"karma": {
-							"human": 3,
-							"asura": 1
+							"human": 3
 						}
 					},
 					"outcome_failure": {
 						"type": "text",
 						"text": "Silence. The merchant stares at you with an expression that could freeze hell twice over. \"Get out of my shop.\" There is no shop. You leave anyway.",
-						"karma": {
-							"animal": 1
-						}
+						"karma": {}
 					}
 				},
 				{
@@ -925,17 +918,14 @@
 							]
 						},
 						"karma": {
-							"hell": 6,
-							"human": -4,
-							"hungry_ghost": 3
+							"hungry_ghost": 5
 						}
 					},
 					"outcome_failure": {
 						"type": "text",
 						"text": "Your foot catches on a frozen rut. The peddler watches you sprawl, unmoved. \"Not the first time,\" he says, gathering his bag. \"Not the worst, either.\" He trudges on without another word. You are left with bruised dignity and nothing else.",
 						"karma": {
-							"animal": 2,
-							"hell": 2
+							"hungry_ghost": 2
 						}
 					}
 				},
@@ -949,10 +939,7 @@
 						"text": "The peddler drops the sack. From the shadows, his associates \u2014 desperate, hollow-eyed souls \u2014 close in. He was never alone.",
 						"difficulty": "normal",
 						"karma": {
-							"asura": 5,
-							"hell": 4,
-							"human": -5,
-							"god": -4
+							"hell": 5
 						}
 					}
 				},
@@ -1294,9 +1281,7 @@
 							]
 						},
 						"karma": {
-							"hell": 5,
-							"animal": 3,
-							"human": -4
+							"hungry_ghost": 5
 						}
 					},
 					"outcome_failure": {
@@ -1305,7 +1290,7 @@
 						"text": "The merchant's grin turns brittle. 'I have eyes in the back of my head. Three of them, actually.' They snap their fingers. Figures emerge from the smoke. 'No refunds \u2014 and no mercy for thieves.'",
 						"difficulty": "hard",
 						"karma": {
-							"hell": 4
+							"hungry_ghost": 3
 						}
 					}
 				},
@@ -1319,10 +1304,7 @@
 						"text": "The merchant drops the salesman's smile instantly. 'Oh good. I was getting bored.' Behind you, the exits close. Around the merchant, fire rises.",
 						"difficulty": "hard",
 						"karma": {
-							"asura": 6,
-							"hell": 4,
-							"human": -5,
-							"god": -4
+							"hell": 6
 						}
 					}
 				},
@@ -1346,16 +1328,13 @@
 							]
 						},
 						"karma": {
-							"human": 3,
-							"asura": 2
+							"human": 3
 						}
 					},
 					"outcome_failure": {
 						"type": "text",
 						"text": "The merchant's smile doesn't reach their obsidian eyes. \"That was not funny. I have been in this realm for eight hundred years and that was not funny. Leave.\" They turn their back. The temperature near you drops noticeably.",
-						"karma": {
-							"animal": 1
-						}
+						"karma": {}
 					}
 				},
 				{
@@ -4029,8 +4008,7 @@
 							]
 						},
 						"karma": {
-							"hell": 5,
-							"human": -3
+							"hungry_ghost": 5
 						}
 					},
 					"outcome_failure": {
@@ -4039,7 +4017,7 @@
 						"text": "The hammering stops. The demon turns around, still holding the hammer. They do not speak. They do not need to.",
 						"difficulty": "hard",
 						"karma": {
-							"hell": 4
+							"hungry_ghost": 3
 						}
 					}
 				},
@@ -4062,16 +4040,13 @@
 							]
 						},
 						"karma": {
-							"human": 2,
-							"asura": 1
+							"human": 2
 						}
 					},
 					"outcome_failure": {
 						"type": "text",
 						"text": "The demon stares at you for a very long time. Then they pick up the hammer again. \"Leave,\" they say. The word is shaped like a threat.",
-						"karma": {
-							"animal": 1
-						}
+						"karma": {}
 					}
 				},
 				{
@@ -4139,8 +4114,7 @@
 							]
 						},
 						"karma": {
-							"hell": 5,
-							"human": -3
+							"hungry_ghost": 5
 						}
 					},
 					"outcome_failure": {
@@ -4149,7 +4123,7 @@
 						"text": "Forty hollow eye sockets turn toward you simultaneously. The trader skeleton says nothing. It simply nocks an arrow. So do the others.",
 						"difficulty": "hard",
 						"karma": {
-							"hell": 4
+							"hungry_ghost": 3
 						}
 					}
 				},
@@ -4163,9 +4137,7 @@
 						"text": "The skeletons reach for their weapons without urgency. You get the impression they have been waiting for someone to try this.",
 						"difficulty": "hard",
 						"karma": {
-							"asura": 5,
-							"hell": 3,
-							"human": -4
+							"hell": 5
 						}
 					}
 				},
@@ -4234,9 +4206,7 @@
 							"xp": 5
 						},
 						"karma": {
-							"god": 5,
-							"human": 4,
-							"hungry_ghost": -1
+							"god": 5
 						}
 					}
 				},
@@ -4257,8 +4227,7 @@
 							"xp": 3
 						},
 						"karma": {
-							"human": 3,
-							"god": 1
+							"human": 3
 						}
 					},
 					"outcome_failure": {
@@ -4333,8 +4302,7 @@
 							]
 						},
 						"karma": {
-							"hell": 5,
-							"human": -3
+							"hungry_ghost": 5
 						}
 					},
 					"outcome_failure": {
@@ -4344,8 +4312,7 @@
 							"xp": 2
 						},
 						"karma": {
-							"animal": 2,
-							"hell": 2
+							"hungry_ghost": 2
 						}
 					}
 				},
@@ -4369,16 +4336,13 @@
 							]
 						},
 						"karma": {
-							"human": 3,
-							"asura": 2
+							"human": 3
 						}
 					},
 					"outcome_failure": {
 						"type": "text",
 						"text": "\"That is not funny,\" the alchemist says. \"Explosions are not funny. Explosions are science. I have been seriously injured seventeen times and I will not have it trivialized.\" They point at the door. You go.",
-						"karma": {
-							"animal": 1
-						}
+						"karma": {}
 					}
 				},
 				{
@@ -4449,9 +4413,7 @@
 							]
 						},
 						"karma": {
-							"hell": 5,
-							"asura": 2,
-							"human": -4
+							"hungry_ghost": 5
 						}
 					},
 					"outcome_failure": {
@@ -4460,7 +4422,7 @@
 						"text": "The warden's voice carries across the entire pit: \"I SAW THAT.\" She has not moved from the parapet. She does not need to.",
 						"difficulty": "hard",
 						"karma": {
-							"hell": 5
+							"hell": 4
 						}
 					}
 				},
@@ -4474,10 +4436,7 @@
 						"text": "The warden doesn't raise her voice. She just raises one finger. The drilling stops. The soldiers turn. \"Show me what you've got,\" she says.",
 						"difficulty": "hard",
 						"karma": {
-							"asura": 6,
-							"hell": 4,
-							"human": -5,
-							"god": -4
+							"hell": 6
 						}
 					}
 				},
