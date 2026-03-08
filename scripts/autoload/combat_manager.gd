@@ -40,6 +40,7 @@ var arena_scene: Node = null  # Reference to combat arena
 var all_units: Array[Node] = []
 var turn_order: Array[Node] = []
 var current_unit_index: int = 0
+var combat_round: int = 0  # Current round number (1 = first round); used by no_warning and similar perks
 
 # Team constants
 enum Team { PLAYER = 0, ENEMY = 1, NEUTRAL = 2 }
@@ -225,6 +226,7 @@ func start_combat(grid: Node, player_units: Array, enemy_units: Array) -> void:
 	all_units.clear()
 	turn_order.clear()
 	current_unit_index = 0
+	combat_round = 1
 	last_combat_rewards = {}
 
 	# Add all units
@@ -238,8 +240,23 @@ func start_combat(grid: Node, player_units: Array, enemy_units: Array) -> void:
 
 	combat_started.emit()
 
+	# Apply combat-start perk effects (auras, first-round buffs)
+	_apply_combat_start_perks()
+
 	# Start first turn
 	_start_current_turn()
+
+
+## Apply perks that trigger once at the very start of combat.
+func _apply_combat_start_perks() -> void:
+	for unit in all_units:
+		var char_data = unit.character_data if "character_data" in unit else {}
+		# Rousing Display (Performance 1): allies within 3 tiles gain +5 Initiative for round 1
+		if PerkSystem.has_perk(char_data, "rousing_display"):
+			for ally in get_team_units(unit.team if "team" in unit else 0):
+				if ally == unit: continue
+				if _grid_distance(unit.grid_position, ally.grid_position) <= 3:
+					_apply_stat_modifier(ally, "initiative", 5, 1)
 
 
 ## DoT statuses that can persist from combat into the overworld
@@ -962,6 +979,7 @@ func _advance_turn() -> void:
 ## Start a new round (recalculate turn order)
 func _start_new_round() -> void:
 	current_unit_index = 0
+	combat_round += 1
 	_calculate_turn_order()
 
 	# Tick terrain effect durations
@@ -1428,6 +1446,17 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 
 	damage = maxi(1, damage - armor)
 
+	# Hit Back Harder (Might 3): +20% melee damage after taking any damage; consumed on first attack
+	if "hit_back_ready" in attacker and attacker.hit_back_ready:
+		var is_melee_hbh = _grid_distance(attacker.grid_position, defender.grid_position) <= 1
+		if is_melee_hbh:
+			damage = int(damage * 1.20)
+			attacker.hit_back_ready = false
+
+	# Permafrost (Water 5): Frozen enemies take +30% all damage
+	if defender.has_status("Frozen"):
+		damage = int(damage * 1.30)
+
 	# Steady Aim: +10% damage if didn't move this turn (ranged only)
 	if PerkSystem.has_perk(att_char_phys, "steady_aim"):
 		if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
@@ -1475,6 +1504,10 @@ func calculate_magic_damage(caster: Node, target: Node, base_spell_damage: int, 
 		if target.has_status("Burning"):
 			damage = int(damage * 1.20)
 
+	# Permafrost (Water 5): Frozen targets take +30% all damage
+	if target.has_status("Frozen"):
+		damage = int(damage * 1.30)
+
 	# Apply elemental resistance
 	var resistance = target.get_resistance(element)
 	damage = int(damage * (1.0 - resistance / 100.0))
@@ -1493,6 +1526,11 @@ func calculate_magic_damage(caster: Node, target: Node, base_spell_damage: int, 
 func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 	unit.take_damage(damage)
 	unit_damaged.emit(unit, damage, damage_type)
+	# Hit Back Harder (Might 3): taking damage sets a ready flag for +20% bonus on next melee attack
+	if damage > 0 and unit.is_alive() and "hit_back_ready" in unit:
+		var char_data = unit.character_data if "character_data" in unit else {}
+		if PerkSystem.has_perk(char_data, "hit_back_harder"):
+			unit.hit_back_ready = true
 
 	# Taking damage breaks Pacified (dispel_methods includes "taking_damage")
 	if damage > 0 and "status_effects" in unit:
@@ -1779,6 +1817,10 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 
 	# Calculate spell power bonus from all applicable schools
 	var spellpower_bonus = _calculate_spell_bonus(caster, spell)
+	# Spell Like a Knife (Sorcery 5): killing with Sorcery grants +50% Spellpower on next spell
+	if "sorcery_kill_bonus_ready" in caster and caster.sorcery_kill_bonus_ready:
+		spellpower_bonus = int(spellpower_bonus * 1.50)
+		caster.sorcery_kill_bonus_ready = false
 
 	# Add charm spellpower bonus (percentage of base spellpower)
 	if not charm_used.is_empty():
@@ -1984,6 +2026,9 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 			if is_white_heal and PerkSystem.has_perk(caster_char_hw, "lingering_warmth"):
 				var regen_per_turn = maxi(1, int(total_heal * 0.15 / 3))
 				_apply_status_effect(target, "Regenerating", 3, regen_per_turn, caster)
+			# Purifying Stream (Water 2): Water healing spells also remove 1 negative status effect
+			if is_water_heal and PerkSystem.has_perk(caster_char_hw, "purifying_stream"):
+				_cleanse_status_effects(target, 1)
 
 	# --- Status effects (from spell.statuses_caused) ---
 	var statuses = spell.get("statuses_caused", [])
@@ -2004,6 +2049,13 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 	if not statuses_removed.is_empty():
 		var cleansed = _cleanse_status_effects(target, statuses_removed.size())
 		result.effects_applied.append({"type": "cleanse", "removed": cleansed})
+		# Gentle Removal (White 1): cleansing spells also heal target for 20% of caster Spellpower
+		var caster_char_gr = caster.character_data if "character_data" in caster else {}
+		var is_white_cleanse = spell.get("schools", []).any(func(s): return s.to_lower() == "white")
+		if is_white_cleanse and PerkSystem.has_perk(caster_char_gr, "gentle_removal") and cleansed > 0:
+			var cleanse_heal = maxi(1, int(caster.get_spellpower() * 0.20))
+			target.heal(cleanse_heal)
+			unit_healed.emit(target, cleanse_heal)
 
 	# --- Legacy effects array support (for future hand-crafted spells) ---
 	var effects = spell.get("effects", [])
@@ -2100,6 +2152,29 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 		var is_cold = element in ["ice", "cold", "water"] or schools.any(func(s): return s.to_lower() in ["water"])
 		if is_cold:
 			_apply_stat_modifier(target, "movement", -1, 2)
+
+	# No Warning (Sorcery 3): first combat round only, Sorcery spells deal +30% bonus damage
+	if PerkSystem.has_perk(caster_char, "no_warning") and has_damage and combat_round == 1:
+		var is_sorcery_nw = schools.any(func(s): return s.to_lower() == "sorcery")
+		if is_sorcery_nw:
+			var nw_bonus = int(result.get("damage", 0) * 0.30)
+			if nw_bonus > 0:
+				apply_damage(target, nw_bonus, element)
+				result["no_warning_bonus"] = nw_bonus
+
+	# Spell Like a Knife (Sorcery 5): single-target Sorcery kill → set bonus ready flag for next spell
+	if PerkSystem.has_perk(caster_char, "spell_like_a_knife") and has_damage:
+		var is_sorcery_slk = schools.any(func(s): return s.to_lower() == "sorcery")
+		if is_sorcery_slk and not target.is_alive() and "sorcery_kill_bonus_ready" in caster:
+			caster.sorcery_kill_bonus_ready = true
+
+	# Nothing Burns Alone (Fire 4): when a burning enemy dies, spread Burning (2 turns) to enemies within 1 tile
+	if PerkSystem.has_perk(caster_char, "nothing_burns_alone"):
+		var is_fire_nba = element == "fire" or schools.any(func(s): return s.to_lower() == "fire")
+		if is_fire_nba and not target.is_alive() and target.has_status("Burning"):
+			for adj in _get_enemies_in_range(target, 1):
+				if adj != target and adj.is_alive():
+					_apply_status_effect(adj, "Burning", 2, 0, caster)
 
 	# Crystalline Edge (Earth 2): Earth damage spells have 20% chance to apply Brittle (-15% Armor, 2 turns)
 	if PerkSystem.has_perk(caster_char, "crystalline_edge") and has_damage:
@@ -2269,6 +2344,11 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	# Kindled (Fire 1): Burning effects applied by the caster last 1 extra turn
 	if status == "Burning" and source != null and "character_data" in source:
 		if PerkSystem.has_perk(source.character_data, "kindled"):
+			duration += 1
+
+	# Lingering Touch (Enchantment 1): buff statuses applied by the caster last 1 extra turn
+	if def.get("type", "") == "buff" and source != null and "character_data" in source:
+		if PerkSystem.has_perk(source.character_data, "lingering_touch"):
 			duration += 1
 
 	# Check if already present and handle stacking
@@ -4439,6 +4519,16 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 	if _unit_has_perk(attacker, "play_dirty") and randf() < 0.20:
 		var dirty_debuffs = ["Weakened", "Slowed", "Blinded", "Dodge_Debuff", "Damage_Debuff"]
 		_apply_status_effect(defender, dirty_debuffs[randi() % dirty_debuffs.size()], 1, 0, attacker)
+
+	# Nothing Wasted (Might 4): overkill — when killing a target, deal 50% of the kill-blow damage to 1 adjacent enemy
+	if _unit_has_perk(attacker, "nothing_wasted") and not defender.is_alive():
+		var splash_targets = _get_enemies_in_range(attacker, 1)
+		splash_targets.erase(defender)
+		if not splash_targets.is_empty():
+			var splash_target = splash_targets[randi() % splash_targets.size()]
+			var splash_dmg = maxi(1, result.get("damage", 0) / 2)
+			apply_damage(splash_target, splash_dmg, result.get("damage_type", "crushing"))
+			result["nothing_wasted_damage"] = splash_dmg
 
 	# Press the Advantage (Leadership 4): killing an enemy grants nearby allies +3 Initiative & +10% Attack (2 turns)
 	if _unit_has_perk(attacker, "press_the_advantage") and not defender.is_alive():
