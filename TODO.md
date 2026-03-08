@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-03-06
+Last Updated: 2026-03-08
 ---
 
 ## Completed Systems
@@ -215,7 +215,19 @@ Roles to fulfill per realm (not specific object types):
 - [ ] Test terrain effect interactions with spells
 - [ ] Balance pass on spell mana costs vs effects
 - [ ] Test all 326 spells load and cast correctly
-- [ ] **Perk effect audit**: Verify all passive perks are actually wired into gameplay. PerkSystem stores perks on characters and provides base skill bonuses + affinity bonuses, but combat_manager.gd never references PerkSystem — passive perk effects (damage bonuses, resistances, proc chances, etc.) may be data-only with no combat integration. Active skills (with combat_data) work. Need to check each perk's effect_type and confirm it's applied somewhere.
+- [ ] **Perk wiring (in progress)**: ~441 passive perks in perks.json; active skills (combat_data key) already work. Passive wiring is done in `get_passive_perk_stat_bonus()`, `_process_on_hit_perks()`, `_process_on_dodge_perks()`, `_process_turn_start_perks()`, `_process_spell_cast_perks()`, `_check_perk_status_immunity()`.
+
+  **WIRED so far** (combat_manager.gd): `parry`, `improved_parry`, `stone_adept`, `all_in`, `weapon_master`, `wind_adept`, `flame_fist`, `thunder_breaker`, `blood_in_the_wind`, `riposte` + all talisman perks (brands, lifesteal, regen, mana regen, mirror, blur, lucky_escape, thorns, immunities).
+  **WIRED so far** (combat_manager.gd): `parry`, `improved_parry`, `stone_adept`, `all_in`, `weapon_master`, `wind_adept`, `flame_fist`, `thunder_breaker`, `blood_in_the_wind`, `riposte` + all talisman perks. Session 2: `centered_stance`, `flowing_footwork`, `open_the_gate`, `borrowed_force`, `empty_center`, `diamond_body`, `touch_of_gloom`, `measured_radiance`, `mental_aftershock`, `chains_of_suffering`, `elementalist`, `curseblade`, `blood_pact`. Session 3: `iron_shirt_technique`, `short_range_violence`, `commitment`, `momentum`, `keep_hitting`, `every_opening_is_an_invitation`, `close_and_personal`, `hard_knuckles`, `rattle_the_cage`, `see_stars`, `no_time_to_breathe`, `heavy_swing`, `wide_arc`, `laughing_at_the_abyss`, `bare_chest`. Session 4: `tidal_patience` (stationary stacks +dmg/armor), `disciplined_formation` (adj ally +acc/dmg/armor), `water_finds_the_gap` (spear vs moved target +acc, ignore 15% armor), `creeping_cold` (ice/cold spells → -1 mov 2 turns), `amplified_misfortune` (black debuff spells splash status to adjacent enemy).
+  **moved_this_turn** flag: set in `move_unit()`, cleared in `_process_turn_start_perks()`.
+  **momentum_stacks / unarmed_hit_stacks**: on CombatUnit, incremented on hit, reset on miss and turn start.
+
+  **STILL UNWIRED** (grouped by complexity):
+  - *Simple on-hit perks* (add to `_process_on_hit_perks`): `pressure_points` (Medicine 7, melee vs biological → 15% random debuff; needs biological tag), more weapon-type procs in daggers/spears/maces trees
+  - *Spell-cast perks*: `amplified_misfortune` (black debuffs → +1 tile AoE, needs AoE targeting change), `void_touched` (space spells leave void tiles), per-school on-hit proc perks
+  - *Stat passives needing target context* (can't use `get_passive_perk_stat_bonus` alone): `anatomy_knowledge` (+10% dmg vs biological — needs biological tag), `every_opening_is_an_invitation` crit already done in calculate_physical_damage
+  - *Complex / needs new infrastructure*: `necromancer` (raise dead on kill — unit spawning), stealth system perks (`shadow_strike`, ambush), zone-of-control perks (`frost_warden`, `sentinel`), metamagic (alter spell properties), `skirmisher` (needs ranged-after-move penalty added first), mantra-related perks, `cleave` (kill → free attack), `relentless` (crit → free unarmed attack), aura perks requiring nearby ally/enemy scanning each turn
+  - *Deferred (already handled)*: all per-skill minor bonuses flow through PerkSystem base_bonuses → derived stats, not combat_manager
 
 ---
 
@@ -350,6 +362,9 @@ Still needed:
 
 ## Known Issues
 
+- [ ] **Town naming**: Towns are currently all named "Town" — add procedural or preset names per realm to map_generator.gd
+- [ ] **Item flavor text (needs runtime)**: `space_charm_common` and `rations` reportedly show broken flavor text in item tooltip — static code looks correct; needs in-game testing to reproduce
+
 - [x] ~~Derived stats not displaying~~ - FIXED (wrong key)
 - [x] ~~Combat turn order issues~~ - FIXED (Timer-based delays instead of async/await)
 - [x] ~~Turn order occasionally out of sync (rare)~~ — FIXED
@@ -430,6 +445,31 @@ Still needed:
 - **Attack range** fixed: melee now highlights all 8 adjacent tiles (Chebyshev square) not just 4 (diamond)
 - **Frozen Stupa "0"**: fixed pickup range resolver misidentifying 2-string item arrays as numeric ranges
 - **Charm tooltips**: now show mana reduction % and spellpower bonus % in item tooltip
+### 2026-03-08: Bug Fixes + Passive Perk Wiring (35+ perks)
+
+**Bug fixes** (from previous session):
+- Starting equipment now equips correctly on new game (save_manager.gd missing resets)
+- Buff/mana/heal toasts now show ints not floats (overworld.gd)
+- Shop spell tooltips calculate damage/heal using player's spellpower (shop_ui.gd)
+- Spell guild "Buy" button fixed — was showing character name; now teaches all party members at once for one gold cost (shop_ui.gd)
+- HP/Mana/Stamina now persist correctly after combat — `take_damage()`, `heal()`, and mana deduction now sync back to `character_data.derived` (combat_unit.gd, combat_manager.gd)
+
+**Passive perk wiring architecture** established in combat_manager.gd:
+- `get_passive_perk_stat_bonus(unit, stat)` — always-on bonuses (called by CombatUnit getters)
+- `_process_on_hit_perks` / `_process_on_dodge_perks` — attack proc triggers
+- `_process_turn_start_perks` — per-turn effects + flag/counter resets
+- `_process_spell_cast_perks` — post-spell proc triggers (new this session)
+- `_check_perk_status_immunity` — status block checks (new this session)
+- `calculate_hit_chance` / `calculate_physical_damage` — target-context bonuses
+
+**Perks wired** (50+ total, see perk wiring item in Testing section for full list):
+- Martial Arts: flowing_footwork, open_the_gate, borrowed_force, empty_center
+- Swords: centered_stance; Unarmed: hard_knuckles, short_range_violence, close_and_personal, rattle_the_cage, see_stars, no_time_to_breathe, keep_hitting, bare_chest, iron_shirt_technique
+- Axes: commitment, momentum, heavy_swing, wide_arc; Spears: water_finds_the_gap, tidal_patience, disciplined_formation
+- Black: touch_of_gloom, chains_of_suffering, amplified_misfortune, blood_pact; White: measured_radiance; Space: mental_aftershock; Water: creeping_cold
+- Cross-skill: curseblade, elementalist, laughing_at_the_abyss
+- CombatUnit state flags: moved_this_turn, momentum_stacks, unarmed_hit_stacks, stationary_stacks
+
 ### 2026-03-06: Reagents, Alchemy Crafting Tiers, Resource-Gathering Perks
 - **Reagents (4th supply type)**: Added to supplies.json, game_state.gd, items.json. Starting amount 10, shop price 8g (scarcer than herbs/scrap). Toggle for alchemy passive brewing.
 - **Alchemy crafting tiers** (perk-unlocked, 3 branches × 3 tiers):

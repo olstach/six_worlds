@@ -86,6 +86,8 @@ func open_shop_by_id(shop_id: String, location_data: Dictionary = {}) -> bool:
 	if shop_data.is_empty():
 		return false
 	_location_data = location_data
+	# Pass object_id so ShopSystem can cache stable guild curricula
+	shop_data["_object_id"] = location_data.get("_object_id", "")
 	open_shop(shop_data)
 	return true
 
@@ -151,7 +153,26 @@ func _populate_items_tab() -> void:
 		items_grid.add_child(empty_label)
 		return
 
-	for item_id in items:
+	# Sort items: by type category first, then alphabetically by name
+	var type_priority := {
+		"sword": 0, "axe": 1, "mace": 2, "dagger": 3, "spear": 4,
+		"bow": 5, "crossbow": 6, "staff": 7,
+		"armor": 10, "helmet": 11, "boots": 12, "gloves": 13, "shield": 14,
+		"ring": 20, "amulet": 21, "talisman": 22, "trinket": 23,
+		"potion": 30, "scroll": 31, "charm": 32, "bomb": 33, "oil": 34,
+		"supply": 40, "material": 41
+	}
+	var sorted_ids = items.keys()
+	sorted_ids.sort_custom(func(a, b):
+		var ia = ItemSystem.get_item(a)
+		var ib = ItemSystem.get_item(b)
+		var pa = type_priority.get(ia.get("type", ""), 50)
+		var pb = type_priority.get(ib.get("type", ""), 50)
+		if pa != pb:
+			return pa < pb
+		return ia.get("name", a) < ib.get("name", b))
+
+	for item_id in sorted_ids:
 		var quantity = items[item_id]
 		if quantity == 0:
 			continue
@@ -328,13 +349,25 @@ func _create_spell_slot(spell_id: String) -> void:
 	price_label.add_theme_color_override("font_color", AFFORDABLE_COLOR if can_afford else UNAFFORDABLE_COLOR)
 	vbox.add_child(price_label)
 
-	# Learn button (for each party member)
+	# Learn button(s): guilds show one "Buy" button teaching the whole party,
+	# regular shops show one button per party member.
 	var party = CharacterSystem.get_party()
+	var is_guild = current_shop.get("type", "") == "spell_guild"
+
 	if party.is_empty():
 		var no_party = Label.new()
 		no_party.text = "No party members"
 		no_party.add_theme_font_size_override("font_size", 11)
 		vbox.add_child(no_party)
+	elif is_guild:
+		# Single "Buy" button — teaches every party member who doesn't already know it
+		var all_known = party.all(func(c): return CharacterSystem.knows_spell(c, spell_id))
+		var learn_btn = Button.new()
+		learn_btn.text = "Known by all" if all_known else "Buy"
+		learn_btn.add_theme_font_size_override("font_size", 11)
+		learn_btn.disabled = all_known or not can_afford
+		learn_btn.pressed.connect(func(): _on_guild_learn_spell_pressed(spell_id))
+		vbox.add_child(learn_btn)
 	else:
 		for character in party:
 			var char_name = character.get("name", "Unknown")
@@ -347,7 +380,64 @@ func _create_spell_slot(spell_id: String) -> void:
 			learn_btn.pressed.connect(func(): _on_learn_spell_pressed(character, spell_id))
 			vbox.add_child(learn_btn)
 
+	# Tooltip on hover — build a minimal item-like dict for the shared tooltip
+	slot.mouse_entered.connect(func():
+		if item_tooltip:
+			var desc = _build_spell_description(spell_data)
+			var spell_item := {
+				"name": spell_data.get("name", spell_id),
+				"type": "Spell",
+				"rarity": "common",
+				"description": desc
+			}
+			item_tooltip.show_item(spell_item, get_global_mouse_position()))
+	slot.mouse_exited.connect(_on_item_hover_end)
+
 	spells_grid.add_child(slot)
+
+
+## Build a compact description string for a spell, used in the shop tooltip.
+## Computes damage/heal values using the player character's spellpower if available.
+func _build_spell_description(spell_data: Dictionary) -> String:
+	var parts: Array[String] = []
+
+	# Get player's spellpower for stat calculations
+	var player = CharacterSystem.get_player()
+	var spellpower: int = 0
+	if not player.is_empty():
+		spellpower = player.get("derived", {}).get("spellpower", 0)
+
+	if "description" in spell_data:
+		parts.append(spell_data.description)
+
+	if "damage" in spell_data:
+		var dtype = spell_data.get("damage_type", "magical")
+		var base_dmg: int = int(spell_data.damage)
+		var actual_dmg: int = base_dmg + int(spellpower / 2)
+		parts.append("Damage: %d (%s)" % [actual_dmg, dtype.capitalize()])
+
+	if "heal" in spell_data:
+		var base_heal: int = int(spell_data.heal)
+		var actual_heal: int = base_heal + int(spellpower / 2)
+		parts.append("Heals: %d" % actual_heal)
+
+	var statuses = spell_data.get("statuses_caused", [])
+	if not statuses.is_empty():
+		parts.append("Inflicts: %s" % ", ".join(statuses))
+
+	var target = spell_data.get("target", {})
+	var range_val = target.get("range", "ranged")
+	parts.append("Range: %s" % str(range_val).capitalize())
+
+	if "aoe" in spell_data:
+		var aoe = spell_data.aoe
+		parts.append("AoE %s, radius %d" % [aoe.get("type", "area"), aoe.get("base_size", 1)])
+
+	var mana_cost = spell_data.get("mana_cost", 0)
+	if mana_cost > 0:
+		parts.append("Mana: %d" % mana_cost)
+
+	return "\n".join(parts)
 
 
 # ============================================
@@ -528,11 +618,13 @@ func _on_veteran_train_pressed(slot_index: int, character: Dictionary, skill: St
 # COMPANIONS TAB
 # ============================================
 
+const MAX_COMPANIONS_SHOWN := 3  # How many companions to show per visit
+
 func _populate_companions_tab() -> void:
 	for child in companions_container.get_children():
 		child.queue_free()
 
-	var available: Array = current_shop.get("available_companions", [])
+	var available: Array = current_shop.get("available_companions", []).duplicate()
 	if available.is_empty():
 		return  # Tab is hidden by _setup_tabs() when no companions — no label needed
 
@@ -542,10 +634,14 @@ func _populate_companions_tab() -> void:
 		if member.has("companion_id"):
 			party_companion_ids.append(member.companion_id)
 
+	# Remove already-recruited companions, then shuffle and cap the list
+	available = available.filter(func(id): return not id in party_companion_ids)
+	available.shuffle()
+	if available.size() > MAX_COMPANIONS_SHOWN:
+		available = available.slice(0, MAX_COMPANIONS_SHOWN)
+
 	var shown := 0
 	for companion_id in available:
-		if companion_id in party_companion_ids:
-			continue  # Already recruited — hide them (they're unique people)
 		var def: Dictionary = CompanionSystem.get_definition(companion_id)
 		if def.is_empty():
 			push_warning("shop_ui: unknown companion id in shop: %s" % companion_id)
@@ -798,6 +894,24 @@ func _on_learn_spell_pressed(character: Dictionary, spell_id: String) -> void:
 		_refresh_display()
 	else:
 		print("Learning failed: ", result.reason)
+
+
+## Guild spell purchase — charges once, teaches all party members who don't already know it.
+## Skill requirements are NOT enforced at guilds (that's the point of a guild teacher).
+func _on_guild_learn_spell_pressed(spell_id: String) -> void:
+	var price = ShopSystem.get_spell_cost(spell_id)
+	if not GameState.can_afford(price):
+		print("Guild purchase failed: not enough gold")
+		return
+
+	GameState.spend_gold(price)
+	ShopSystem.spell_purchased.emit(spell_id, price)
+
+	for character in CharacterSystem.get_party():
+		if not CharacterSystem.knows_spell(character, spell_id):
+			CharacterSystem.learn_spell(character, spell_id)
+
+	_refresh_display()
 
 
 func _on_train_attribute_pressed(character: Dictionary, attribute: String) -> void:

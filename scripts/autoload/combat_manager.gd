@@ -1033,6 +1033,7 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 
 	var from = unit.grid_position
 	combat_grid.move_unit(unit, target)
+	unit.moved_this_turn = true
 
 	use_action(1)
 	unit_moved.emit(unit, from, target)
@@ -1162,7 +1163,10 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 
 		# --- Attacker lifesteal statuses ---
 		if attacker.has_status("Lifelink") or attacker.has_status("Blood_Hunger"):
-			var steal = int(result.damage * 0.5)
+			var steal_pct = 0.5
+			if _unit_has_perk(attacker, "blood_pact"):
+				steal_pct *= 1.25  # Blood Pact: lifesteal heals 25% more
+			var steal = int(result.damage * steal_pct)
 			if steal > 0:
 				attacker.heal(steal)
 				unit_healed.emit(attacker, steal)
@@ -1174,6 +1178,9 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 	else:
 		# Attack missed — check dodge/parry perks on defender
 		_process_on_dodge_perks(defender, attacker)
+		# Reset consecutive hit streaks on miss
+		attacker.momentum_stacks = 0
+		attacker.unarmed_hit_stacks = 0
 
 	use_action(1)
 	unit_attacked.emit(attacker, defender, result)
@@ -1190,6 +1197,30 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 	var dodge = defender.get_dodge()
 
 	var hit_chance = base_chance + accuracy - dodge
+
+	# Every Opening Is an Invitation: +15% accuracy against enemies with any status effect
+	var att_char = attacker.character_data if "character_data" in attacker else {}
+	if PerkSystem.has_perk(att_char, "every_opening_is_an_invitation"):
+		if "status_effects" in defender and defender.status_effects.size() > 0:
+			hit_chance += 15.0
+
+	# Close and Personal: +15% accuracy when adjacent to exactly one enemy
+	if PerkSystem.has_perk(att_char, "close_and_personal"):
+		var adjacent_enemies = _get_enemies_in_range(attacker, 1)
+		if adjacent_enemies.size() == 1:
+			hit_chance += 15.0
+
+	# Disciplined Formation: +10% accuracy while adjacent to an ally
+	if PerkSystem.has_perk(att_char, "disciplined_formation"):
+		if _get_allies_in_range(attacker, 1).size() > 0:
+			hit_chance += 10.0
+
+	# Water Finds the Gap: spear attacks vs enemies who moved last turn +15% accuracy
+	if PerkSystem.has_perk(att_char, "water_finds_the_gap"):
+		if attacker.has_method("get_equipped_weapon"):
+			if attacker.get_equipped_weapon().get("type", "") == "spear":
+				if "moved_this_turn" in defender and defender.moved_this_turn:
+					hit_chance += 15.0
 
 	# Height advantage bonus (+5 per level, -5 penalty when lower)
 	if combat_grid:
@@ -1228,16 +1259,44 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 	var crit_chance = attacker.get_crit_chance()
 	if not attacker.weapon_oil.is_empty():
 		crit_chance += attacker.weapon_oil.get("crit_bonus", 0)
+	# Every Opening Is an Invitation: +10% crit against enemies with any status effect
+	var att_char_eoia = attacker.character_data if "character_data" in attacker else {}
+	if PerkSystem.has_perk(att_char_eoia, "every_opening_is_an_invitation"):
+		if "status_effects" in defender and defender.status_effects.size() > 0:
+			crit_chance += 10.0
 	var crit = randf() * 100.0 <= crit_chance
 	var crit_multi = 1.5  # TODO: Can be increased by upgrades
 
 	if crit:
 		damage = int(damage * crit_multi)
 
+	# Hard Knuckles: unarmed attacks ignore 25% of target's Armor
+	var att_char_phys = attacker.character_data if "character_data" in attacker else {}
+	var is_unarmed_attack = false
+	if attacker.has_method("get_equipped_weapon"):
+		var w = attacker.get_equipped_weapon()
+		is_unarmed_attack = w.is_empty() or w.get("type", "") in ["", "unarmed"]
+
+	# Close and Personal: +15% damage when adjacent to exactly one enemy
+	if PerkSystem.has_perk(att_char_phys, "close_and_personal"):
+		var adjacent_enemies = _get_enemies_in_range(attacker, 1)
+		if adjacent_enemies.size() == 1:
+			damage = int(damage * 1.15)
+
 	# Apply armor (flat reduction)
 	var armor = defender.get_armor()
 	if crit:
 		armor = int(armor * 0.5)  # Crits ignore 50% armor
+
+	# Hard Knuckles reduces effective armor by 25% for unarmed attacks
+	if PerkSystem.has_perk(att_char_phys, "hard_knuckles") and is_unarmed_attack:
+		armor = int(armor * 0.75)
+	# Water Finds the Gap: spear vs target who moved — ignore 15% armor
+	if PerkSystem.has_perk(att_char_phys, "water_finds_the_gap"):
+		if attacker.has_method("get_equipped_weapon"):
+			if attacker.get_equipped_weapon().get("type", "") == "spear":
+				if "moved_this_turn" in defender and defender.moved_this_turn:
+					armor = int(armor * 0.85)
 
 	damage = maxi(1, damage - armor)
 
@@ -1523,8 +1582,10 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 			var reduction = charm_used.get("mana_reduction", 0.0)
 			mana_cost = int(mana_cost * (1.0 - reduction))
 
-	# Deduct mana
+	# Deduct mana (sync to character_data so it persists after combat)
 	caster.current_mana -= mana_cost
+	var caster_derived = caster.character_data.get("derived", {})
+	caster_derived["current_mana"] = caster.current_mana
 
 	# Calculate spell power bonus from all applicable schools
 	var spellpower_bonus = _calculate_spell_bonus(caster, spell)
@@ -1692,6 +1753,17 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 			var element = spell.get("damage_type", "physical")
 			var total_damage = int(base_damage) + bonus
 
+			# Chains of Suffering: +15% Black spell damage vs targets with any debuff
+			var caster_char = caster.character_data if "character_data" in caster else {}
+			if element == "black" and PerkSystem.has_perk(caster_char, "chains_of_suffering"):
+				if target.status_effects.size() > 0:
+					total_damage = int(total_damage * 1.15)
+
+			# Elementalist: +25% damage when targeting an elemental weakness (negative resistance)
+			if PerkSystem.has_perk(caster_char, "elementalist"):
+				if target.get_resistance(element) < 0:
+					total_damage = int(total_damage * 1.25)
+
 			# Variance ±15%
 			var variance = randf_range(0.85, 1.15)
 			total_damage = int(total_damage * variance)
@@ -1786,7 +1858,62 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 		if not effect_result.is_empty():
 			result.effects_applied.append(effect_result)
 
+	# --- Post-effects: perk triggers on spell cast ---
+	_process_spell_cast_perks(caster, target, spell, result)
+
 	return result
+
+
+## Process passive perks that trigger when a spell hits a target.
+## Called from _apply_spell_effects() after all effects are applied.
+func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, result: Dictionary) -> void:
+	var caster_char = caster.character_data if "character_data" in caster else {}
+	var element = spell.get("damage_type", "")
+	var schools = spell.get("schools", [])
+	var has_damage = result.effects_applied.any(func(e): return e.get("type") == "damage")
+	var has_debuff = result.effects_applied.any(func(e): return e.get("type") == "status")
+
+	# Touch of Gloom: debuff spells also apply -1 Movement and -3 Initiative for 2 turns
+	if PerkSystem.has_perk(caster_char, "touch_of_gloom") and has_debuff:
+		var black_schools = ["Black", "black"]
+		var is_black_spell = schools.any(func(s): return s.to_lower() == "black")
+		if is_black_spell:
+			_apply_stat_modifier(target, "movement", -1, 2)
+			_apply_stat_modifier(target, "initiative", -3, 2)
+
+	# Measured Radiance: white damage spells have 25% chance to blind for 1 turn
+	if PerkSystem.has_perk(caster_char, "measured_radiance") and has_damage:
+		var is_white = element in ["white", "holy"] or schools.any(func(s): return s.to_lower() in ["white", "holy"])
+		if is_white and randf() < 0.25:
+			_apply_status_effect(target, "Blinded", 1, 0, caster)
+
+	# Mental Aftershock: space damage spells apply -10% Focus and -3 Initiative for 2 turns
+	if PerkSystem.has_perk(caster_char, "mental_aftershock") and has_damage:
+		var is_space = element == "space" or schools.any(func(s): return s.to_lower() == "space")
+		if is_space:
+			# -3 initiative as stat modifier; -10% focus as a flat -1 (focus is usually ~10)
+			_apply_stat_modifier(target, "initiative", -3, 2)
+			_apply_stat_modifier(target, "focus", -1, 2)
+
+	# Creeping Cold: ice/cold spells that deal damage also apply -1 Movement for 2 turns
+	if PerkSystem.has_perk(caster_char, "creeping_cold") and has_damage:
+		var is_cold = element in ["ice", "cold", "water"] or schools.any(func(s): return s.to_lower() in ["water"])
+		if is_cold:
+			_apply_stat_modifier(target, "movement", -1, 2)
+
+	# Amplified Misfortune: black debuff spells also spread status effects to 1 adjacent enemy
+	if PerkSystem.has_perk(caster_char, "amplified_misfortune") and has_debuff:
+		var is_black = schools.any(func(s): return s.to_lower() == "black")
+		if is_black:
+			var nearby = _get_enemies_in_range(target, 1)
+			nearby.erase(caster)
+			if not nearby.is_empty():
+				var splash = nearby[randi() % nearby.size()]
+				for applied in result.effects_applied:
+					if applied.get("type") == "status":
+						var sname = applied.get("status", "")
+						if sname != "":
+							_apply_status_effect(splash, sname, 2, 0, caster)
 
 
 ## Apply a temporary stat modifier
@@ -1858,6 +1985,12 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 
 	# --- Talisman perk immunity/resistance checks ---
 	if _check_talisman_status_immunity(unit, status):
+		if unit.has_method("show_resisted_text"):
+			unit.show_resisted_text()
+		return
+
+	# --- Character perk immunity/resistance checks ---
+	if _check_perk_status_immunity(unit, status):
 		if unit.has_method("show_resisted_text"):
 			unit.show_resisted_text()
 		return
@@ -3611,6 +3744,75 @@ func _unit_has_talisman_perk(unit: Node, perk_id: String) -> bool:
 	return perk_id in _get_talisman_perks(unit)
 
 
+## Check if a character perk grants immunity or resistance to a status effect.
+## Returns true if the status should be blocked.
+func _check_perk_status_immunity(unit: Node, status: String) -> bool:
+	var char_data = unit.character_data if "character_data" in unit else {}
+	var status_lower = status.to_lower()
+
+	# Diamond Body: immune to poison and disease while unarmored
+	if PerkSystem.has_perk(char_data, "diamond_body") and _unit_is_unarmored(unit):
+		if status_lower in ["poisoned", "diseased"]:
+			return true
+
+	# Empty Center: +20% resistance to mental effects
+	# Centered Stance: +15% resistance to mental effects while wielding a sword
+	var mental_statuses = ["feared", "charmed", "confused", "berserk", "mind_controlled"]
+	if status_lower in mental_statuses:
+		var mental_resist_pct = 0.0
+		if PerkSystem.has_perk(char_data, "empty_center"):
+			mental_resist_pct += 0.20
+		if PerkSystem.has_perk(char_data, "centered_stance"):
+			if unit.has_method("get_equipped_weapon"):
+				if unit.get_equipped_weapon().get("type", "") == "sword":
+					mental_resist_pct += 0.15
+		if mental_resist_pct > 0.0 and randf() < mental_resist_pct:
+			return true
+
+	# Empty Center: +25% save vs forced movement, stuns, knockdowns
+	var physical_cc = ["stunned", "knocked_down", "pushed", "pulled"]
+	if status_lower in physical_cc:
+		if PerkSystem.has_perk(char_data, "empty_center"):
+			if randf() < 0.25:
+				return true
+
+	# Diamond Body while unarmored: +25% general status resistance
+	if PerkSystem.has_perk(char_data, "diamond_body") and _unit_is_unarmored(unit):
+		if randf() < 0.25:
+			return true
+
+	# Laughing at the Abyss: immune to fear, despair, intimidation
+	var comedy_immune = ["feared", "intimidated", "demoralized", "despair"]
+	if status_lower in comedy_immune:
+		if PerkSystem.has_perk(char_data, "laughing_at_the_abyss"):
+			return true
+
+	# Bare Chest: +25% resistance to fear and pain effects while unarmored
+	var fear_pain = ["feared", "agonized", "pain"]
+	if status_lower in fear_pain:
+		if PerkSystem.has_perk(char_data, "bare_chest") and _unit_is_unarmored(unit):
+			if randf() < 0.25:
+				return true
+
+	return false
+
+
+## Check if a unit is unarmored or wearing only light armor (robe/hat/cloth).
+## Used by unarmored perks like Flowing Footwork and Diamond Body.
+func _unit_is_unarmored(unit: Node) -> bool:
+	var char_data = unit.character_data if "character_data" in unit else {}
+	var equipment = char_data.get("equipment", {})
+	for slot in ["chest", "head", "hands", "legs"]:
+		var item_id = equipment.get(slot, "")
+		if item_id == "":
+			continue
+		var item = ItemSystem.get_item(item_id)
+		var item_type = item.get("type", "")
+		if not item_type in ["robe", "hat", "cloth", ""]:
+			return false
+	return true
+
+
 ## Get passive perk stat bonuses for a unit.
 ## Called by CombatUnit stat getters to include perk effects.
 ## Returns the total bonus/penalty for the given stat.
@@ -3641,6 +3843,22 @@ func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 			if PerkSystem.has_perk(char_data, "stone_adept"):
 				var derived = char_data.get("derived", {})
 				total += int(derived.get("armor", 0) * 0.1)
+			# Iron Shirt Technique: 30% of unarmed Attack added to Armor while unarmored
+			if PerkSystem.has_perk(char_data, "iron_shirt_technique"):
+				if _unit_is_unarmored(unit):
+					var unarmed_attack = unit.get_attack_damage() if unit.has_method("get_attack_damage") else 0
+					total += int(unarmed_attack * 0.3)
+			# Tidal Patience: +5% Armor per stationary stack (up to +15%)
+			if PerkSystem.has_perk(char_data, "tidal_patience"):
+				if "stationary_stacks" in unit and unit.stationary_stacks > 0:
+					var derived_armor = char_data.get("derived", {}).get("armor", 0)
+					total += int(derived_armor * 0.05 * unit.stationary_stacks)
+			# Disciplined Formation: +10% Armor while adjacent to an ally
+			if PerkSystem.has_perk(char_data, "disciplined_formation"):
+				var allies = _get_allies_in_range(unit, 1)
+				if allies.size() > 0:
+					var derived_armor = char_data.get("derived", {}).get("armor", 0)
+					total += int(derived_armor * 0.1)
 
 		"damage":
 			# Use base derived damage to avoid recursion (get_attack_damage calls us)
@@ -3655,22 +3873,73 @@ func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 			# Weapon Master: +10% all weapon damage
 			if PerkSystem.has_perk(char_data, "weapon_master"):
 				total += int(derived_dmg * 0.1)
+			# Commitment: +20% damage if you did not move before attacking
+			if PerkSystem.has_perk(char_data, "commitment"):
+				if not ("moved_this_turn" in unit and unit.moved_this_turn):
+					if unit.has_method("get_equipped_weapon"):
+						if unit.get_equipped_weapon().get("type", "") == "axe":
+							total += int(derived_dmg * 0.2)
+			# Momentum: +10% damage per consecutive axe hit stack
+			if PerkSystem.has_perk(char_data, "momentum"):
+				if "momentum_stacks" in unit and unit.momentum_stacks > 0:
+					if unit.has_method("get_equipped_weapon"):
+						if unit.get_equipped_weapon().get("type", "") == "axe":
+							total += int(derived_dmg * 0.1 * unit.momentum_stacks)
+			# Keep Hitting: +10% damage per consecutive unarmed hit stack
+			if PerkSystem.has_perk(char_data, "keep_hitting"):
+				if "unarmed_hit_stacks" in unit and unit.unarmed_hit_stacks > 0:
+					if unit.has_method("get_equipped_weapon"):
+						var w = unit.get_equipped_weapon()
+						if w.is_empty() or w.get("type", "") in ["", "unarmed"]:
+							total += int(derived_dmg * 0.1 * unit.unarmed_hit_stacks)
+			# Tidal Patience: +5% Damage per stationary stack (up to +15%)
+			if PerkSystem.has_perk(char_data, "tidal_patience"):
+				if "stationary_stacks" in unit and unit.stationary_stacks > 0:
+					total += int(derived_dmg * 0.05 * unit.stationary_stacks)
+			# Disciplined Formation: +10% damage (accuracy) while adjacent to an ally
+			if PerkSystem.has_perk(char_data, "disciplined_formation"):
+				if _get_allies_in_range(unit, 1).size() > 0:
+					total += int(derived_dmg * 0.1)
 
 		"max_hp":
 			# Stone Adept: +10% max HP
 			if PerkSystem.has_perk(char_data, "stone_adept"):
 				total += int(unit.max_hp * 0.1) if "max_hp" in unit else 0
 
+		"initiative":
+			# Centered Stance: +10% Initiative while wielding a sword
+			if PerkSystem.has_perk(char_data, "centered_stance"):
+				if unit.has_method("get_equipped_weapon"):
+					if unit.get_equipped_weapon().get("type", "") == "sword":
+						var derived_init = char_data.get("derived", {}).get("initiative", 0)
+						total += int(derived_init * 0.1)
+
 		"movement":
 			# Wind Adept: +1 permanent Movement
 			if PerkSystem.has_perk(char_data, "wind_adept"):
 				total += 1
+			# Flowing Footwork: +1 Movement while unarmored or in light armor
+			if PerkSystem.has_perk(char_data, "flowing_footwork"):
+				if _unit_is_unarmored(unit):
+					total += 1
 
 		"crit_chance":
-			# Flame Fist: crits cause 3-turn burn (checked in on_hit, but crit bonus here)
-			pass
+			# Open the Gate: +15% crit chance after moving at least 1 tile this turn
+			if PerkSystem.has_perk(char_data, "open_the_gate"):
+				if "moved_this_turn" in unit and unit.moved_this_turn:
+					total += 15
+			# Short Range Violence: +10% crit with unarmed attacks
+			if PerkSystem.has_perk(char_data, "short_range_violence"):
+				if unit.has_method("get_equipped_weapon"):
+					var w = unit.get_equipped_weapon()
+					if w.is_empty() or w.get("type", "") in ["", "unarmed"]:
+						total += 10
 
 		"dodge":
+			# Flowing Footwork: +10% Dodge while unarmored or in light armor
+			if PerkSystem.has_perk(char_data, "flowing_footwork"):
+				if _unit_is_unarmored(unit):
+					total += 10
 			# Talisman: Blur — +10% dodge chance
 			if _unit_has_talisman_perk(unit, "blur"):
 				total += 10
@@ -3703,7 +3972,76 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 				if defender.has_status("Stunned"):
 					_apply_status_effect(defender, "Silenced", 1)
 
-	# Anatomy Knowledge: +10% damage vs biological enemies (already calculated in damage)
+	# Curseblade: dagger crits have 30% chance to apply Weakness, Blind, or Slow for 2 turns
+	if _unit_has_perk(attacker, "curseblade") and result.get("crit", false):
+		if attacker.has_method("get_equipped_weapon"):
+			if attacker.get_equipped_weapon().get("type", "") == "dagger":
+				if randf() < 0.30:
+					var curses = ["Weakened", "Blinded", "Slowed"]
+					var chosen = curses[randi() % curses.size()]
+					_apply_status_effect(defender, chosen, 2, 0, attacker)
+					result["curseblade_curse"] = chosen
+
+	# Rattle the Cage: unarmed crits apply Stun for 1 turn
+	if _unit_has_perk(attacker, "rattle_the_cage") and result.get("crit", false):
+		if attacker.has_method("get_equipped_weapon"):
+			var w = attacker.get_equipped_weapon()
+			if w.is_empty() or w.get("type", "") in ["", "unarmed"]:
+				_apply_status_effect(defender, "Stunned", 1, 0, attacker)
+
+	# See Stars: unarmed hit vs statused target → 25% chance Stun/Knockdown/Blind (1 turn)
+	if _unit_has_perk(attacker, "see_stars"):
+		if attacker.has_method("get_equipped_weapon"):
+			var w = attacker.get_equipped_weapon()
+			if w.is_empty() or w.get("type", "") in ["", "unarmed"]:
+				if "status_effects" in defender and defender.status_effects.size() > 0:
+					if randf() < 0.25:
+						var cc = ["Stunned", "Knocked_Down", "Blinded"]
+						_apply_status_effect(defender, cc[randi() % cc.size()], 1, 0, attacker)
+
+	# No Time to Breathe: unarmed hit → -5% dodge, -2 initiative on target (stackable, 2 turns)
+	if _unit_has_perk(attacker, "no_time_to_breathe"):
+		if attacker.has_method("get_equipped_weapon"):
+			var w = attacker.get_equipped_weapon()
+			if w.is_empty() or w.get("type", "") in ["", "unarmed"]:
+				_apply_stat_modifier(defender, "dodge", -5, 2)
+				_apply_stat_modifier(defender, "initiative", -2, 2)
+
+	# Heavy Swing: axe hits reduce target Armor by 5% for 1 turn (stacking)
+	if _unit_has_perk(attacker, "heavy_swing"):
+		if attacker.has_method("get_equipped_weapon"):
+			if attacker.get_equipped_weapon().get("type", "") == "axe":
+				var armor_pen = int(defender.get_armor() * 0.05)
+				if armor_pen > 0:
+					_apply_stat_modifier(defender, "armor", -armor_pen, 1)
+
+	# Wide Arc: axe attack deals 50% splash damage to one random adjacent enemy
+	if _unit_has_perk(attacker, "wide_arc"):
+		if attacker.has_method("get_equipped_weapon"):
+			if attacker.get_equipped_weapon().get("type", "") == "axe":
+				var splash_targets = _get_enemies_in_range(attacker, 1)
+				splash_targets.erase(defender)  # don't double-hit primary target
+				if not splash_targets.is_empty():
+					var splash_target = splash_targets[randi() % splash_targets.size()]
+					var splash_dmg = maxi(1, result.get("damage", 0) / 2)
+					apply_damage(splash_target, splash_dmg, result.get("damage_type", "slashing"))
+					result["splash_damage"] = splash_dmg
+
+	# --- Update consecutive hit streaks ---
+	if attacker.has_method("get_equipped_weapon"):
+		var w = attacker.get_equipped_weapon()
+		var weapon_type = w.get("type", "")
+		if weapon_type == "axe":
+			attacker.momentum_stacks += 1
+		else:
+			attacker.momentum_stacks = 0
+		if w.is_empty() or weapon_type in ["", "unarmed"]:
+			attacker.unarmed_hit_stacks += 1
+		else:
+			attacker.unarmed_hit_stacks = 0
+
+	# Every Opening Is an Invitation: +10% crit vs statused — applied via get_passive_perk_stat_bonus
+	# Anatomy Knowledge: +10% damage vs biological enemies (needs biological tag on enemies — deferred)
 	# Shadow Strike: stealth attacks +50% damage & Silence (stealth system not yet implemented)
 	# Blood in the Wind: +movement when enemies bleeding (checked in stat getter)
 
@@ -3742,9 +4080,12 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 					if randf() < poison_chance:
 						_apply_status_effect(defender, "Poisoned", 3)
 
-		# Lifesteal: heal 15% of attack damage dealt
+		# Lifesteal: heal 15% of attack damage dealt (Blood Pact boosts all lifesteal by 25%)
 		if "lifesteal" in talisman_perks:
-			var steal = int(base_damage * 0.15)
+			var steal_pct = 0.15
+			if _unit_has_perk(attacker, "blood_pact"):
+				steal_pct *= 1.25
+			var steal = int(base_damage * steal_pct)
 			if steal > 0:
 				attacker.heal(steal)
 				unit_healed.emit(attacker, steal)
@@ -3765,10 +4106,26 @@ func _process_on_dodge_perks(unit: Node, attacker: Node) -> void:
 				# Apply a temporary riposte buff (stored as status effect for tracking)
 				_apply_status_effect(unit, "Riposte_Ready", 1, 25)  # value = damage bonus %
 
+	# Borrowed Force: +30% damage bonus on next attack after dodging a melee attack
+	if _unit_has_perk(unit, "borrowed_force"):
+		var is_melee = _grid_distance(unit.grid_position, attacker.grid_position) <= 1
+		if is_melee:
+			var bonus = int(unit.get_attack_damage() * 0.3) if unit.has_method("get_attack_damage") else 5
+			_apply_stat_modifier(unit, "damage", bonus, 1)
+
 
 ## Process passive perks at the start of a unit's turn.
 ## Called from _start_current_turn().
 func _process_turn_start_perks(unit: Node) -> void:
+	# Reset per-turn flags
+	if unit.moved_this_turn:
+		unit.stationary_stacks = 0  # Tidal Patience: reset if moved last turn
+	else:
+		unit.stationary_stacks = mini(unit.stationary_stacks + 1, 3)  # max 3 stacks
+	unit.moved_this_turn = false
+	unit.momentum_stacks = 0
+	unit.unarmed_hit_stacks = 0
+
 	# Diamond Body: +25% status resist (handled via saving throw bonuses)
 	# Field Commander: companions reposition — only applies round 1 (handled in deployment)
 

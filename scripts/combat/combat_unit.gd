@@ -29,6 +29,10 @@ var max_actions: int = 2
 var is_bleeding_out: bool = false
 var bleed_out_turns: int = 0
 var is_dead: bool = false
+var moved_this_turn: bool = false  # Set when unit moves; cleared at turn start (used by open_the_gate perk)
+var momentum_stacks: int = 0       # Consecutive axe hits; cleared on miss or turn start (momentum perk)
+var unarmed_hit_stacks: int = 0    # Consecutive unarmed hits; cleared on miss or turn start (keep_hitting perk)
+var stationary_stacks: int = 0     # Turns without moving; incremented/reset at turn start (tidal_patience perk)
 var status_effects: Array = []  # Active status effects on this unit
 
 # Active skill cooldowns: perk_id -> turns remaining (0 = ready)
@@ -398,7 +402,7 @@ func is_targetable() -> bool:
 ## Get initiative for turn order (includes status effect bonuses)
 func get_initiative() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("initiative", 10) + _get_status_stat_bonus("initiative")
+	return derived.get("initiative", 10) + _get_status_stat_bonus("initiative") + CombatManager.get_passive_perk_stat_bonus(self, "initiative")
 
 
 ## Get movement range (includes status effect and perk bonuses)
@@ -601,7 +605,7 @@ func get_armor() -> int:
 ## Get crit chance (percentage, includes status effect bonuses)
 func get_crit_chance() -> float:
 	var derived = character_data.get("derived", {})
-	return float(derived.get("crit_chance", 5)) + float(_get_status_stat_bonus("crit_chance"))
+	return float(derived.get("crit_chance", 5)) + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance"))
 
 
 ## Get current stamina
@@ -776,6 +780,9 @@ func set_resistance(damage_type: String, value: float) -> void:
 ## Take damage
 func take_damage(amount: int) -> void:
 	current_hp = maxi(0, current_hp - amount)
+	# Keep character_data in sync so HP persists after combat
+	var derived_hp = character_data.get("derived", {})
+	derived_hp["current_hp"] = current_hp
 	_update_visuals()
 
 	# Show damage number
@@ -785,6 +792,9 @@ func take_damage(amount: int) -> void:
 ## Heal HP
 func heal(amount: int) -> void:
 	current_hp = mini(max_hp, current_hp + amount)
+	# Keep character_data in sync so HP persists after combat
+	var derived_heal = character_data.get("derived", {})
+	derived_heal["current_hp"] = current_hp
 	_update_visuals()
 
 	# Show heal number

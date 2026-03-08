@@ -401,9 +401,9 @@ func _on_pickup_collected(obj: Dictionary, rewards: Array) -> void:
 			"xp":
 				parts.append("+" + str(rval) + " XP")
 			"heal":
-				parts.append("Healed " + str(rval) + "%")
+				parts.append("Healed " + str(int(rval)) + "%")
 			"mana":
-				parts.append("Mana +" + str(rval) + "%")
+				parts.append("Mana +" + str(int(rval)) + "%")
 			"item":
 				parts.append(str(rval).replace("_", " ").capitalize())
 			"item_random":
@@ -417,11 +417,19 @@ func _on_pickup_collected(obj: Dictionary, rewards: Array) -> void:
 					var duration_str: String = "(permanent)" if combats == -1 \
 						else ("(%d battle)" % combats if combats == 1 else "(%d battles)" % combats)
 					var sign: String = "+" if amount >= 0 else ""
-					parts.append("%s%s %s %s" % [sign, str(amount), _buff_stat_label(stat), duration_str])
+					parts.append("%s%s %s %s" % [sign, str(int(amount)), _buff_stat_label(stat), duration_str])
 			"damage":
 				parts.append("[color=#ef4444]-%d HP (cursed!)[/color]" % int(rval))
 			"cleanse":
 				parts.append("Statuses cleared")
+			"spell":
+				var spell_id: String = reward.get("chosen_spell", "")
+				if not spell_id.is_empty():
+					var spell_data = CharacterSystem.get_spell_database().get(spell_id, {})
+					var spell_name: String = spell_data.get("name", spell_id.replace("_", " ").capitalize())
+					parts.append("Learned: " + spell_name)
+				else:
+					parts.append("(spell already known)")
 			_:
 				pass  # karma and other silent rewards don't show in toast
 

@@ -152,6 +152,15 @@ func start_new_game(slot: int) -> void:
 	GameState.is_alive = true
 	GameState.current_run_number = 1
 	GameState.gold = 100
+	GameState.food = 50
+	GameState.herbs = 20
+	GameState.scrap = 15
+	GameState.reagents = 10
+	GameState.steps_without_food = 0
+	GameState.is_starving = false
+	GameState.active_map_buffs = []
+	GameState.used_event_choices = {}
+	GameState.guild_spell_lists = {}
 	GameState.is_party_wiped = false
 	GameState.returning_from_combat = false
 	GameState.last_defeated_mob_id = ""
