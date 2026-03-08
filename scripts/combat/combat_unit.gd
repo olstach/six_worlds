@@ -50,6 +50,13 @@ var skill_cooldowns: Dictionary = {}
 # Mantras being chanted: perk_id -> turns_active (increments each turn)
 var active_mantras: Dictionary = {}
 
+# Accumulated stat bonuses from active mantras (rebuilt each turn by _process_mantra_effects)
+# Stats: armor, dodge, movement, initiative, crit_chance, spellpower, accuracy
+var mantra_stat_bonuses: Dictionary = {}
+
+# Tracks which mantras have already fired their Deity Yoga burst (reset when mantra is toggled off)
+var deity_yoga_triggered: Dictionary = {}
+
 # Consumable buffs
 var charm_buff: Dictionary = {}  # {school, mana_reduction, spellpower_bonus} - consumed on next matching spell
 var weapon_oil: Dictionary = {}  # {bonus_damage, bonus_damage_type, attacks_remaining, status, status_chance, status_duration, crit_bonus}
@@ -411,13 +418,13 @@ func is_targetable() -> bool:
 ## Get initiative for turn order (includes status effect bonuses)
 func get_initiative() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("initiative", 10) + _get_status_stat_bonus("initiative") + CombatManager.get_passive_perk_stat_bonus(self, "initiative")
+	return derived.get("initiative", 10) + _get_status_stat_bonus("initiative") + CombatManager.get_passive_perk_stat_bonus(self, "initiative") + mantra_stat_bonuses.get("initiative", 0)
 
 
 ## Get movement range (includes status effect and perk bonuses)
 func get_movement() -> int:
 	var derived = character_data.get("derived", {})
-	return maxi(0, derived.get("movement", 3) + _get_status_stat_bonus("movement") + CombatManager.get_passive_perk_stat_bonus(self, "movement"))
+	return maxi(0, derived.get("movement", 3) + _get_status_stat_bonus("movement") + CombatManager.get_passive_perk_stat_bonus(self, "movement") + mantra_stat_bonuses.get("movement", 0))
 
 
 ## Get maximum actions per turn
@@ -543,13 +550,13 @@ func get_attack_range() -> int:
 ## Weapon skill bonuses are now included in derived.accuracy via CharacterSystem.update_derived_stats()
 func get_accuracy() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("accuracy", 0) + _get_status_stat_bonus("accuracy")
+	return derived.get("accuracy", 0) + _get_status_stat_bonus("accuracy") + mantra_stat_bonuses.get("accuracy", 0)
 
 
 ## Get dodge value (includes status effect bonuses)
 func get_dodge() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge")
+	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge") + mantra_stat_bonuses.get("dodge", 0)
 
 
 ## Get attack damage
@@ -608,13 +615,13 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 ## Get armor value (includes status effect and perk bonuses)
 func get_armor() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_passive_perk_stat_bonus(self, "armor")
+	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_passive_perk_stat_bonus(self, "armor") + mantra_stat_bonuses.get("armor", 0)
 
 
 ## Get crit chance (percentage, includes status effect bonuses)
 func get_crit_chance() -> float:
 	var derived = character_data.get("derived", {})
-	return float(derived.get("crit_chance", 5)) + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance"))
+	return float(derived.get("crit_chance", 5)) + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance")) + float(mantra_stat_bonuses.get("crit_chance", 0))
 
 
 ## Get current stamina
@@ -672,6 +679,7 @@ func set_skill_cooldown(perk_id: String, turns: int) -> void:
 func toggle_mantra(perk_id: String) -> bool:
 	if perk_id in active_mantras:
 		active_mantras.erase(perk_id)
+		deity_yoga_triggered.erase(perk_id)  # Reset so DY can fire again on next activation
 		return false
 	else:
 		active_mantras[perk_id] = 0
@@ -687,7 +695,7 @@ func tick_mantras() -> void:
 ## Get spellpower (includes status effect bonuses)
 func get_spellpower() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("spellpower", 0) + _get_status_stat_bonus("spellpower")
+	return derived.get("spellpower", 0) + _get_status_stat_bonus("spellpower") + mantra_stat_bonuses.get("spellpower", 0)
 
 
 ## Get magic skill bonus for an element (spellpower from the skill's base_bonuses table)
@@ -773,6 +781,10 @@ func get_resistance(damage_type: String) -> float:
 		# Immune to all damage (Invulnerable)
 		if "immune_to_all_damage" in effects:
 			base = 100.0
+
+	# Mantra-based magic resistance bonus (non-physical types only)
+	if damage_type not in PHYSICAL_SUBTYPES and damage_type != "physical":
+		base += float(mantra_stat_bonuses.get("magic_resist", 0))
 
 	return base
 

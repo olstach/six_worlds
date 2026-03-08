@@ -942,9 +942,10 @@ func _start_current_turn() -> void:
 	# Tick skill cooldowns
 	unit.tick_cooldowns()
 
-# Tick active mantras (increment turn counter; per-turn effects applied by combat_arena)
+# Tick active mantras and apply per-turn effects
 	if not unit.active_mantras.is_empty():
 		unit.tick_mantras()
+		_process_mantra_effects(unit)
 
 	# Process passive perk turn-start effects
 	_process_turn_start_perks(unit)
@@ -1602,8 +1603,16 @@ func _kill_unit(unit: Node) -> void:
 	unit.is_bleeding_out = false
 	unit_died.emit(unit)
 
-	# Risen Dead talisman perk: 15% chance the slain enemy rises as an allied undead
+	# Dharma Warrior (cross-skill): killing an enemy during mantra chanting advances each active mantra by +1
 	var killer = unit.get("last_attacker")
+	if killer != null and not killer.is_dead and not killer.active_mantras.is_empty():
+		var killer_char_dw = killer.character_data if "character_data" in killer else {}
+		if PerkSystem.has_perk(killer_char_dw, "dharma_warrior"):
+			for m_id in killer.active_mantras:
+				killer.active_mantras[m_id] += 1
+			combat_log.emit("%s: Dharma Warrior — kill advances mantra!" % killer.unit_name)
+
+	# Risen Dead talisman perk: 15% chance the slain enemy rises as an allied undead
 	if killer != null and not killer.is_dead and _unit_has_talisman_perk(killer, "risen_dead"):
 		if randf() < 0.15 and combat_grid != null:
 			# Build a simplified undead enemy def from the dead unit's data
@@ -4698,6 +4707,12 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 			attacker.momentum_stacks = 0
 		if w.is_empty() or weapon_type in ["", "unarmed"]:
 			attacker.unarmed_hit_stacks += 1
+			# One Mind, One Fist (cross-skill): unarmed hits during active mantras advance each mantra by +1
+			if not attacker.active_mantras.is_empty():
+				var att_char_omomof = attacker.character_data if "character_data" in attacker else {}
+				if PerkSystem.has_perk(att_char_omomof, "one_mind_one_fist"):
+					for m_id in attacker.active_mantras:
+						attacker.active_mantras[m_id] += 1  # Extra progress point
 		else:
 			attacker.unarmed_hit_stacks = 0
 
@@ -4915,3 +4930,482 @@ func _process_turn_start_perks(unit: Node) -> void:
 	if mana_pct > 0.0 and unit.current_mana < unit.max_mana:
 		var mana_amount = ceili(unit.max_mana * mana_pct)
 		unit.restore_mana(mana_amount)
+
+# ============================================
+# MANTRA SYSTEM
+# ============================================
+
+## Process all active mantras for a unit at the start of their turn.
+## Rebuilds mantra_stat_bonuses and applies per-turn aura/damage/heal effects.
+## Triggers Deity Yoga automatically when the mantra reaches 5 stacks.
+func _process_mantra_effects(unit: Node) -> void:
+	var char_data = unit.character_data if "character_data" in unit else {}
+	var spellpower = unit.get_spellpower()
+
+	# Rebuild stat bonuses from scratch (so they don't accumulate unboundedly)
+	unit.mantra_stat_bonuses = {}
+
+	# Walking Meditation (cross-skill perk): +2 Move while any mantra is active
+	if PerkSystem.has_perk(char_data, "walking_meditation"):
+		unit.mantra_stat_bonuses["movement"] = unit.mantra_stat_bonuses.get("movement", 0) + 2
+
+	for perk_id in unit.active_mantras:
+		var stacks = mini(unit.active_mantras[perk_id], 5)
+		if stacks == 0:
+			continue  # Just started chanting this turn — no effect yet
+
+		_apply_mantra_tick(unit, perk_id, stacks, spellpower, char_data)
+
+		# Trigger Deity Yoga once when stacks reach 5
+		if unit.active_mantras[perk_id] >= 5 and not unit.deity_yoga_triggered.get(perk_id, false):
+			unit.deity_yoga_triggered[perk_id] = true
+			_trigger_deity_yoga(unit, perk_id, spellpower)
+
+
+## Apply the per-turn aura effect for a specific mantra at the given stack level.
+## stacks: 1-5; spellpower: caster's current spellpower.
+func _apply_mantra_tick(unit: Node, perk_id: String, stacks: int, spellpower: int, char_data: Dictionary) -> void:
+	var allies = _get_allies_in_range(unit, 3)  # Most mantras have 3-tile radius
+	var allies_with_self: Array = [unit] + allies
+	var enemies_3 = _get_enemies_in_range(unit, 3)
+	var enemies_4 = _get_enemies_in_range(unit, 4)
+	var all_enemies = _get_enemies_in_range(unit, 99)  # line-of-sight mantras use all visible enemies
+
+	match perk_id:
+
+		# ---- SPACE MAGIC ----
+		"lady_of_the_turquoise_mirror_mantra":
+			# Caster gains stacking +5% Dodge and +5% magic resist per stack
+			unit.mantra_stat_bonuses["dodge"] = unit.mantra_stat_bonuses.get("dodge", 0) + stacks * 5
+
+		"diamond_nail_mantra":
+			# Enemies in 3 tiles suffer -1 Move per stack (up to -5)
+			for e in enemies_3:
+				_apply_status_effect(e, "Slowed", 2, 0, unit)  # 1 Slowed per turn; stacks via the status system
+
+		# ---- WHITE MAGIC ----
+		"lotus_refuge_mantra":
+			# Allies in 3 tiles regen 3% max HP × stacks each turn
+			var heal_pct = stacks * 3
+			for a in allies_with_self:
+				var heal_amt = ceili(a.max_hp * heal_pct / 100.0)
+				a.heal(heal_amt)
+				unit_healed.emit(a, heal_amt)
+
+		"golden_wheel_mantra":
+			# Enemies in LOS suffer -5% Accuracy per stack (applied as Weakened each turn)
+			for e in all_enemies:
+				if combat_grid and combat_grid.has_line_of_sight(unit.grid_position, e.grid_position):
+					_apply_status_effect(e, "Weakened", 2, 0, unit)
+
+		"immovable_light_mantra":
+			# Caster gains +5% Armor and immunity to forced movement per stack
+			unit.mantra_stat_bonuses["armor"] = unit.mantra_stat_bonuses.get("armor", 0) + stacks * 5
+
+		# ---- BLACK MAGIC ----
+		"mantra_of_the_great_black_one":
+			# Enemies in 3 tiles: -5% Armor per stack + drain 3% Stamina/Mana per stack
+			for e in enemies_3:
+				_apply_status_effect(e, "Weakened", 2, 0, unit)  # simulates armor/resist reduction
+				var drain = ceili(e.max_stamina * 0.03 * stacks)
+				e.current_stamina = maxi(0, e.current_stamina - drain)
+				var mana_drain = ceili(e.max_mana * 0.03 * stacks)
+				e.current_mana = maxi(0, e.current_mana - mana_drain)
+
+		"mantra_of_the_blood_drinkers":
+			# Enemies in LOS take Black damage 5% Spellpower × stacks; heal caster + nearby allies
+			var dmg_per_enemy = ceili(spellpower * 0.05 * stacks)
+			for e in all_enemies:
+				if combat_grid and combat_grid.has_line_of_sight(unit.grid_position, e.grid_position):
+					apply_damage(e, dmg_per_enemy, "black")
+					# Lifesteal: heal caster and allies within 2 tiles
+					var healers = [unit] + _get_allies_in_range(unit, 2)
+					for h in healers:
+						var h_amt = ceili(dmg_per_enemy * 0.5)
+						h.heal(h_amt)
+						unit_healed.emit(h, h_amt)
+
+		"mantra_of_the_lord_of_death":
+			# Enemies in 4 tiles take Black damage 3% Spellpower × stacks
+			var dmg = ceili(spellpower * 0.03 * stacks)
+			for e in enemies_4:
+				apply_damage(e, dmg, "black")
+
+		# ---- YOGA ----
+		"mantra_of_the_white_saviouress":
+			# Caster + allies in 3 tiles regain 2%+stacks% max HP, Mana, Stamina
+			var pct = (1 + stacks) / 100.0
+			for a in allies_with_self:
+				var hp_amt = ceili(a.max_hp * pct)
+				a.heal(hp_amt)
+				unit_healed.emit(a, hp_amt)
+				a.current_mana = mini(a.max_mana, a.current_mana + ceili(a.max_mana * pct))
+				a.current_stamina = mini(a.max_stamina, a.current_stamina + ceili(a.max_stamina * pct))
+
+		"mantra_of_the_lotus_pinnacle":
+			# Allies in 3 tiles gain +3% all resist per stack (applied as armor bonus proxy)
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + stacks * 3
+
+		# ---- AIR MAGIC ----
+		"mantra_of_the_green_saviouress":
+			# Allies in 3 tiles gain +1 to all d20 rolls per stack → +5% accuracy per stack
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["accuracy"] = a.mantra_stat_bonuses.get("accuracy", 0) + stacks * 5
+
+		"mantra_of_the_roaring_one":
+			# Allies in 3 tiles gain +1 Move, +3% crit per stack
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["movement"] = a.mantra_stat_bonuses.get("movement", 0) + stacks
+				a.mantra_stat_bonuses["crit_chance"] = a.mantra_stat_bonuses.get("crit_chance", 0.0) + stacks * 3.0
+
+		# ---- RITUAL ----
+		"mantra_of_interdependent_arising":
+			# Caster + allies in 3 tiles regain 2% Mana per stack
+			var mana_pct = stacks * 2 / 100.0
+			for a in allies_with_self:
+				var mana_amt = ceili(a.max_mana * mana_pct)
+				a.current_mana = mini(a.max_mana, a.current_mana + mana_amt)
+
+		"mantra_of_multiplying":
+			# Caster gains +5% Spellpower per stack (up to +25%)
+			unit.mantra_stat_bonuses["spellpower"] = unit.mantra_stat_bonuses.get("spellpower", 0) + stacks * (spellpower / 20)
+
+		# ---- FIRE MAGIC ----
+		"mantra_of_the_lotus_blaze":
+			# Enemies in LOS: CON save (DC 10 + 2×stacks) or gain Burning
+			var dc = 10 + stacks * 2
+			for e in all_enemies:
+				if combat_grid and combat_grid.has_line_of_sight(unit.grid_position, e.grid_position):
+					var con = e.character_data.get("attributes", {}).get("constitution", 10) if "character_data" in e else 10
+					var roll = randi() % 20 + 1 + con - 10
+					if roll < dc:
+						_apply_status_effect(e, "Burning", 2, 0, unit)
+
+		"mantra_of_the_red_lotus_lady":
+			# Enemies in 3 tiles: Focus save (DC 10 + 2×stacks) or get Charmed 2t
+			var dc_r = 10 + stacks * 2
+			for e in enemies_3:
+				var foc = e.character_data.get("attributes", {}).get("focus", 10) if "character_data" in e else 10
+				var roll = randi() % 20 + 1 + foc - 10
+				if roll < dc_r:
+					_apply_status_effect(e, "Charmed", 2, 0, unit)
+
+		"mantra_of_the_horse_lord":
+			# Allies in 3 tiles gain +2 Initiative, +1 Move per stack
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["initiative"] = a.mantra_stat_bonuses.get("initiative", 0) + stacks * 2
+				a.mantra_stat_bonuses["movement"] = a.mantra_stat_bonuses.get("movement", 0) + stacks
+
+		# ---- SORCERY ----
+		"mantra_of_the_lionheaded_curse_devourer":
+			# Allies in 3 tiles gain +5% magic resist per stack → armor proxy
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + stacks * 5
+
+		# ---- WATER MAGIC ----
+		"mantra_of_the_medicine_buddha":
+			# Ally with lowest HP% in 3 tiles heals 5% Spellpower per stack
+			var heal_amt = ceili(spellpower * 0.05 * stacks)
+			var lowest: Node = null
+			var lowest_pct = 1.0
+			for a in allies_with_self:
+				var pct_hp = float(a.current_hp) / float(a.max_hp)
+				if pct_hp < lowest_pct:
+					lowest_pct = pct_hp
+					lowest = a
+			if lowest != null:
+				lowest.heal(heal_amt)
+				unit_healed.emit(lowest, heal_amt)
+
+		"mantra_of_the_unshakeable_one":
+			# Enemies in 3 tiles take Cold damage 3% Spellpower × stacks; allies +3% resist per stack
+			var cold_dmg = ceili(spellpower * 0.03 * stacks)
+			for e in enemies_3:
+				apply_damage(e, cold_dmg, "cold")
+				_apply_status_effect(e, "Slowed", 2, 0, unit)
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + stacks * 3
+
+		# ---- ENCHANTMENT ----
+		"mantra_of_the_wishfulfilling_jewel":
+			# Allies in 3 tiles get a random +5% buff to one stat each turn
+			var buff_options = ["dodge", "armor", "initiative", "crit_chance", "spellpower"]
+			for a in allies_with_self:
+				var chosen = buff_options[randi() % buff_options.size()]
+				a.mantra_stat_bonuses[chosen] = a.mantra_stat_bonuses.get(chosen, 0) + 5
+
+		"mantra_of_the_binding_word":
+			# Enemies in LOS get a random -5% debuff each turn
+			for e in all_enemies:
+				if combat_grid and combat_grid.has_line_of_sight(unit.grid_position, e.grid_position):
+					_apply_status_effect(e, "Weakened", 2, 0, unit)
+
+		# ---- EARTH MAGIC ----
+		"mantra_of_the_earth_store_bodhisattva":
+			# Allies in 3 tiles +5% Armor per stack; enemies in 3 tiles -5% Attack per stack
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + stacks * 5
+			for e in enemies_3:
+				_apply_status_effect(e, "Weakened", 2, 0, unit)
+
+		"mantra_of_the_jeweled_mountain":
+			# Enemies -5% Attack per stack; allies +5% Armor per stack
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + stacks * 5
+			for e in enemies_3:
+				_apply_status_effect(e, "Weakened", 2, 0, unit)
+
+		# ---- SUMMONING ----
+		"mantra_of_the_four_guardian_kings":
+			# Allies + summons in 3 tiles gain +5% Attack, +5% Armor per stack
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + stacks * 5
+				a.mantra_stat_bonuses["accuracy"] = a.mantra_stat_bonuses.get("accuracy", 0) + stacks * 5
+
+		"mantra_of_the_jeweled_pagoda":
+			# Caster +5% Spellpower per stack; allies' summons +3% all stats per stack
+			unit.mantra_stat_bonuses["spellpower"] = unit.mantra_stat_bonuses.get("spellpower", 0) + stacks * (spellpower / 20)
+
+
+## Trigger the Deity Yoga burst for a mantra at stack 5.
+## Called once per mantra activation when active_mantras[perk_id] first reaches 5.
+func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
+	var allies = _get_allies_in_range(unit, 3)
+	var allies_with_self: Array = [unit] + allies
+	var enemies_3 = _get_enemies_in_range(unit, 3)
+	var enemies_4 = _get_enemies_in_range(unit, 4)
+	var all_enemies = _get_enemies_in_range(unit, 99)
+	var mantra_name = perk_id.replace("_", " ").capitalize()
+	combat_log.emit("DEITY YOGA — %s!" % mantra_name)
+
+	match perk_id:
+
+		# SPACE
+		"lady_of_the_turquoise_mirror_mantra":
+			# All attacks targeting caster have 60% reflect chance for 3 turns
+			_apply_status_effect(unit, "Reflect", 3, 0, unit)
+			# Share dodge bonus with allies in 3 tiles
+			for a in allies:
+				a.mantra_stat_bonuses["dodge"] = a.mantra_stat_bonuses.get("dodge", 0) + 25
+
+		"diamond_nail_mantra":
+			# Enemies in 4 tiles take Space damage 50% Spellpower/turn — apply big Slow + damage burst
+			var dmg = ceili(spellpower * 0.50)
+			for e in enemies_4:
+				apply_damage(e, dmg, "space")
+				_apply_status_effect(e, "Rooted", 2, 0, unit)
+
+		# WHITE
+		"lotus_refuge_mantra":
+			# All allies heal 20% max HP; all healing maximized for 2 turns
+			for a in allies_with_self:
+				var heal = ceili(a.max_hp * 0.20)
+				a.heal(heal)
+				unit_healed.emit(a, heal)
+				_apply_status_effect(a, "Fortified", 2, 0, unit)
+
+		"golden_wheel_mantra":
+			# Enemies who attack take 30% of dealt damage as White; allies +20% attack for 3 turns
+			for a in allies_with_self:
+				_apply_status_effect(a, "Inspired", 3, 0, unit)
+			for e in all_enemies:
+				_apply_status_effect(e, "Weakened", 3, 0, unit)
+
+		"immovable_light_mantra":
+			# Caster cannot drop below 1 HP; allies within 3 tiles +30% all resist for 3 turns
+			_apply_status_effect(unit, "Invincible", 3, 0, unit)
+			for a in allies:
+				_apply_status_effect(a, "Fortified", 3, 0, unit)
+
+		# BLACK
+		"mantra_of_the_great_black_one":
+			# All enemies in LOS: -20% Attack, -20% Armor, -5 Init, drain 8% Stamina/Mana
+			for e in all_enemies:
+				if combat_grid and combat_grid.has_line_of_sight(unit.grid_position, e.grid_position):
+					_apply_status_effect(e, "Weakened", 3, 0, unit)
+					_apply_status_effect(e, "Slowed", 3, 0, unit)
+					e.current_stamina = maxi(0, e.current_stamina - ceili(e.max_stamina * 0.08))
+					e.current_mana = maxi(0, e.current_mana - ceili(e.max_mana * 0.08))
+
+		"mantra_of_the_blood_drinkers":
+			# Massive drain: 25% Spellpower Black to all LOS enemies; heal allies 50% dealt
+			var dmg = ceili(spellpower * 0.25)
+			for e in all_enemies:
+				if combat_grid and combat_grid.has_line_of_sight(unit.grid_position, e.grid_position):
+					apply_damage(e, dmg, "black")
+					for a in allies_with_self:
+						var h = ceili(dmg * 0.5)
+						a.heal(h)
+						unit_healed.emit(a, h)
+
+		"mantra_of_the_lord_of_death":
+			# Enemies in 4 tiles take 20% Spellpower Black; apply Feared
+			var dmg = ceili(spellpower * 0.20)
+			for e in enemies_4:
+				apply_damage(e, dmg, "black")
+				_apply_status_effect(e, "Feared", 3, 0, unit)
+
+		# YOGA
+		"mantra_of_the_white_saviouress":
+			# All allies: immunity to mental effects + 50% debuff resist for 3 turns
+			for a in allies_with_self:
+				_apply_status_effect(a, "Resolute", 3, 0, unit)
+
+		"mantra_of_the_lotus_pinnacle":
+			# All enemies in LOS: Focus save vs Pacified; else -50% Attack/Damage
+			for e in all_enemies:
+				if combat_grid and combat_grid.has_line_of_sight(unit.grid_position, e.grid_position):
+					var foc = e.character_data.get("attributes", {}).get("focus", 10) if "character_data" in e else 10
+					var roll = randi() % 20 + 1 + foc - 10
+					if roll < 15:
+						_apply_status_effect(e, "Pacified", 2, 0, unit)
+					else:
+						_apply_status_effect(e, "Weakened", 2, 0, unit)
+
+		# AIR
+		"mantra_of_the_green_saviouress":
+			# Caster's rolls gain +10 and can't critically fail; allies +5 accuracy for 3 turns
+			unit.mantra_stat_bonuses["accuracy"] = unit.mantra_stat_bonuses.get("accuracy", 0) + 20
+			for a in allies:
+				a.mantra_stat_bonuses["accuracy"] = a.mantra_stat_bonuses.get("accuracy", 0) + 10
+
+		"mantra_of_the_roaring_one":
+			# Full speed + crit burst for all allies; summon is deferred (needs spawn system)
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["movement"] = a.mantra_stat_bonuses.get("movement", 0) + 5
+				a.mantra_stat_bonuses["crit_chance"] = a.mantra_stat_bonuses.get("crit_chance", 0.0) + 15.0
+			combat_log.emit("(Rudra summons deferred — needs spawn system)")
+
+		# RITUAL
+		"mantra_of_interdependent_arising":
+			# All allies: 50% mana refund on next spell + +50% Spellpower for 3 turns
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["spellpower"] = a.mantra_stat_bonuses.get("spellpower", 0) + spellpower / 2
+
+		"mantra_of_multiplying":
+			# +50% Spellpower burst for caster
+			unit.mantra_stat_bonuses["spellpower"] = unit.mantra_stat_bonuses.get("spellpower", 0) + spellpower / 2
+
+		# FIRE
+		"mantra_of_the_lotus_blaze":
+			# All burning enemies explode: 10% max HP × Burning stacks AoE fire damage
+			for e in all_enemies:
+				if e.has_status("Burning"):
+					var burst_stacks = 0
+					for se in e.status_effects:
+						if se.get("status", "") == "Burning":
+							burst_stacks += 1
+					var burst_dmg = ceili(e.max_hp * 0.10 * burst_stacks)
+					apply_damage(e, burst_dmg, "fire")
+					# AoE splash to adjacent enemies
+					for nearby in _get_enemies_in_range(e, 1):
+						apply_damage(nearby, ceili(burst_dmg * 0.5), "fire")
+
+		"mantra_of_the_red_lotus_lady":
+			# All enemies must Focus save vs Charmed; crit fails → Dominated (here: Confused)
+			for e in all_enemies:
+				var foc_r = e.character_data.get("attributes", {}).get("focus", 10) if "character_data" in e else 10
+				var roll_r = randi() % 20 + 1 + foc_r - 10
+				if roll_r < 8:
+					_apply_status_effect(e, "Confused", 3, 0, unit)  # Dominated approximation
+				elif roll_r < 15:
+					_apply_status_effect(e, "Charmed", 3, 0, unit)
+
+		"mantra_of_the_horse_lord":
+			# All allies: full Move/Init burst + +20% Atk/Dmg + Burning on melee for 3 turns
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["initiative"] = a.mantra_stat_bonuses.get("initiative", 0) + 10
+				a.mantra_stat_bonuses["movement"] = a.mantra_stat_bonuses.get("movement", 0) + 5
+				a.mantra_stat_bonuses["accuracy"] = a.mantra_stat_bonuses.get("accuracy", 0) + 20
+			for e in all_enemies:
+				_apply_status_effect(e, "Weakened", 3, 0, unit)
+
+		# SORCERY
+		"mantra_of_the_lionheaded_curse_devourer":
+			# Transfer all debuffs from allies to enemies; big Spellpower/resist burst
+			for a in allies_with_self:
+				# Cleanse one debuff per ally
+				for i in range(a.status_effects.size() - 1, -1, -1):
+					var sname = a.status_effects[i].get("status", "")
+					var sdef = get_status_definition(sname)
+					if sdef.get("type", "") == "debuff":
+						a.status_effects.remove_at(i)
+						status_effect_expired.emit(a, sname)
+						break
+				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + 20
+			for e in all_enemies:
+				_apply_status_effect(e, "Weakened", 3, 0, unit)
+
+		# WATER
+		"mantra_of_the_medicine_buddha":
+			# All allies heal 50% max HP and are cleansed of all debuffs
+			for a in allies_with_self:
+				var heal = ceili(a.max_hp * 0.50)
+				a.heal(heal)
+				unit_healed.emit(a, heal)
+				# Cleanse all debuffs
+				for i in range(a.status_effects.size() - 1, -1, -1):
+					var sname = a.status_effects[i].get("status", "")
+					var sdef = get_status_definition(sname)
+					if sdef.get("type", "") == "debuff":
+						a.status_effects.remove_at(i)
+						status_effect_expired.emit(a, sname)
+
+		"mantra_of_the_unshakeable_one":
+			# All enemies in LOS: Frozen; big cold damage burst; allies +30% resist
+			var cold_burst = ceili(spellpower * 0.30)
+			for e in all_enemies:
+				if combat_grid and combat_grid.has_line_of_sight(unit.grid_position, e.grid_position):
+					apply_damage(e, cold_burst, "cold")
+					_apply_status_effect(e, "Frozen", 2, 0, unit)
+			for a in allies_with_self:
+				_apply_status_effect(a, "Fortified", 3, 0, unit)
+
+		# ENCHANTMENT
+		"mantra_of_the_wishfulfilling_jewel":
+			# All allies +25% to all stats for 3 turns
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["dodge"] = a.mantra_stat_bonuses.get("dodge", 0) + 25
+				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + 25
+				a.mantra_stat_bonuses["initiative"] = a.mantra_stat_bonuses.get("initiative", 0) + 10
+				a.mantra_stat_bonuses["crit_chance"] = a.mantra_stat_bonuses.get("crit_chance", 0.0) + 10.0
+				a.mantra_stat_bonuses["accuracy"] = a.mantra_stat_bonuses.get("accuracy", 0) + 25
+
+		"mantra_of_the_binding_word":
+			# All enemies in LOS: heavy multi-debuff
+			for e in all_enemies:
+				if combat_grid and combat_grid.has_line_of_sight(unit.grid_position, e.grid_position):
+					_apply_status_effect(e, "Weakened", 3, 0, unit)
+					_apply_status_effect(e, "Slowed", 3, 0, unit)
+					_apply_status_effect(e, "Dazed", 3, 0, unit)
+
+		# EARTH
+		"mantra_of_the_earth_store_bodhisattva":
+			# Heal all allies 20% HP; big armor burst
+			for a in allies_with_self:
+				var heal = ceili(a.max_hp * 0.20)
+				a.heal(heal)
+				unit_healed.emit(a, heal)
+				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + 25
+
+		"mantra_of_the_jeweled_mountain":
+			# Earth damage burst (25% Spellpower) to all enemies in 4 tiles; allies +30% armor
+			var dmg = ceili(spellpower * 0.25)
+			for e in enemies_4:
+				apply_damage(e, dmg, "earth")
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + 30
+
+		# SUMMONING
+		"mantra_of_the_four_guardian_kings":
+			# Big stat burst to all allies; summon DY deferred
+			for a in allies_with_self:
+				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + 25
+				a.mantra_stat_bonuses["accuracy"] = a.mantra_stat_bonuses.get("accuracy", 0) + 25
+			combat_log.emit("(Guardian summons deferred — needs spawn system)")
+
+		"mantra_of_the_jeweled_pagoda":
+			# Caster's next summon is empowered (flag it); big Spellpower burst
+			unit.mantra_stat_bonuses["spellpower"] = unit.mantra_stat_bonuses.get("spellpower", 0) + spellpower
+			combat_log.emit("(Empowered summon DY deferred — needs spawn system)")

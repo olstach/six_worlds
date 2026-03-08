@@ -233,20 +233,37 @@ Roles to fulfill per realm (not specific object types):
   - ~~`deep_freeze`~~: DONE — movement 0 → Frozen at turn start if enemy has perk.
 
   *Complex / needs new systems (defer):*
-  - `necromancer` (Black 3 + Summoning 3) — kill → spend 10 Mana to raise undead at 50% stats, max 2. Needs `spawn_unit()` in CombatManager.
-  - `cleave` (Axes cross) — kill → free attack on adjacent enemy. Needs kill-triggered free attack flow.
-  - `relentless` (Unarmed cross) — crit → free unarmed attack. Similar free-attack flow.
-  - `skirmisher` (Ranged 3 + Grace 3) — no penalty after moving + free disengage 1/turn. Needs move-penalty system first.
-  - `frost_warden` (Spears 3 + Water 2) — ZoC reactions Slow enemies; +1 reach while stationary. Needs ZoC reaction system (movement hook).
-  - `first_to_strike` (Spears 1) / `none_shall_pass` (Spears 9) — reaction attacks when enemies enter 2-tile reach. Needs movement hook.
-  - `sentinel` / ZoC perks — same movement-entry reaction system needed.
-  - `shadow_strike` (Daggers 3 + Guile 3) / `soft_step` / `sudden_end` / `ambush_predator` — need a stealth system: `is_stealthed: bool` on CombatUnit, detection radius, break conditions.
-  - `metamagic` (Sorcery 3 + Ritual 3) — modify spell properties (range, targets, element). Needs pre-cast UI choice.
-  - Mantra perks (`one_mind_one_fist`, `walking_meditation`, `dharma_warrior`) — need mantra system completion (per-turn aura effects, deity yoga trigger).
+
+  **Kill-triggered free attacks** (shared infrastructure: add `_trigger_free_attack(attacker, target)` to avoid recursion; flag `in_free_attack: bool` to prevent chains):
+  - `cleave` (Axes cross) — kill → free attack on nearest adjacent enemy. Hook in `_kill_unit()`: scan for adjacent enemies, call `_trigger_free_attack`.
+  - `relentless` (Unarmed cross) — crit → free unarmed attack on same target. Hook in `_process_on_hit_perks()` after crit detected.
+  - `necromancer` (Black 3 + Summoning 3) — kill → spend 10 Mana to raise undead at 50% stats, max 2 per combat. Uses existing `risen_dead` spawn code as template. Add `necromancer_raises: int` counter to CombatUnit. Hook in `_kill_unit()` checking killer perks.
+
+  **Zone of Control / Reaction system** (shared infrastructure: hook at end of `move_unit()`, call `_check_zoc_reactions(unit, old_pos, new_pos)`):
+  - `first_to_strike` (Spears 1) — reaction attack when enemy enters 2-tile range. Check all allies for this perk when any enemy moves.
+  - `frost_warden` (Spears 3 + Water 2) — ZoC reaction Slows enemies; +1 reach while stationary.
+  - `none_shall_pass` (Spears 9) — reaction attack against ALL enemies who enter 2-tile range (not just one).
+  - `sentinel` (Swords/Martial Arts cross) — reaction attack when enemy leaves melee range.
+
+  **Stealth system** (add `is_stealthed: bool` to CombatUnit; break on attack/damage; detection radius vs Guile):
+  - `shadow_strike` (Daggers 3 + Guile 3) — enter stealth after a kill; first attack from stealth is a guaranteed crit.
+  - `soft_step` — moving does not reveal stealth within 3 tiles.
+  - `sudden_end` — stealth attacks against stunned/dazed targets deal +50% damage.
+  - `ambush_predator` — kills from stealth reset stealth immediately.
+
+  **Metamagic** (pre-cast UI dialog; combat_data key selects which spell to modify before casting):
+  - `metamagic` (Sorcery 3 + Ritual 3) — modify next spell: extend range, add AoE, or change element. Needs a modal dialog before the spell panel confirms targeting.
+
+  **Mantra system** — DONE:
+  - Core: `mantra_stat_bonuses`, `deity_yoga_triggered` on CombatUnit; `_process_mantra_effects()` + `_apply_mantra_tick()` + `_trigger_deity_yoga()` in combat_manager.
+  - All 26 mantras wired with per-turn effects and Deity Yoga bursts. Stat bonuses flow through new `mantra_stat_bonuses` dict checked in `get_armor/dodge/movement/initiative/crit_chance/spellpower/accuracy/resistance`.
+  - `one_mind_one_fist`: unarmed hits during mantras advance each mantra +1. `walking_meditation`: +2 Move while any mantra active. `dharma_warrior`: kills during mantras advance each mantra +1.
+  - **Deferred DY effects** (simplified for now): damage reflection → stat burst; unit spawning (Roaring One, Lord of Death, Guardian Kings, Pagoda) → log message + stat burst.
+
+  **Other deferred:**
   - `void_touched` — space spells leave void terrain tiles. Needs void tile type added to combat_grid.
-  - `ashes_remember_heat` (Fire 5) — burning enemy death → create burning terrain. Needs terrain creation from perk context.
-  - `deep_freeze` (Water 3) — when Movement hits 0 from ice debuffs → apply Frozen. Needs stat_modifier 0-check hook in the movement modifier system.
-  - `avatar_of_the_wind` / `avatar_of_the_storm` — full-team aura that needs scanning each turn. Add to `_process_turn_start_perks` scanning all allies.
+  - `skirmisher` (Ranged 3 + Grace 3) — no penalty after moving + free disengage 1/turn. Needs move-penalty system first (ranged accuracy penalty flag).
+  - Mantra perks `roles_assigned` / `tactical_synergy` — need role designation system (assign Vanguard/Striker/Support/Control roles at combat start).
 
   *Deferred (already handled):* all per-skill minor bonuses flow through PerkSystem base_bonuses → derived stats, not combat_manager
 
