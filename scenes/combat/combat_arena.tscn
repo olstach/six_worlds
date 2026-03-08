@@ -133,6 +133,13 @@ custom_minimum_size = Vector2(120, 40)
 layout_mode = 2
 text = "Item"
 
+[node name="SwapWeaponButton" type="Button" parent="UILayer/BottomPanel/HBoxContainer/ActionPanel/MarginContainer/VBoxContainer/ButtonGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Swap Weapons"
+tooltip_text = "Switch weapon set (costs 1 action)"
+
 [node name="SkillsButton" type="Button" parent="UILayer/BottomPanel/HBoxContainer/ActionPanel/MarginContainer/VBoxContainer/ButtonGrid"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(120, 40)

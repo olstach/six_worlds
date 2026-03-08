@@ -559,7 +559,7 @@ func consolidate_inventory() -> void:
 		inventory_changed.emit()
 
 
-## Add starter items to inventory (called when starting new game)
+## Add starter items to inventory and equip them (called when starting new game)
 func add_starter_items() -> void:
 	# Give player some basic starting equipment
 	add_to_inventory("bronze_sword")
@@ -572,7 +572,25 @@ func add_starter_items() -> void:
 	# Starting consumables
 	add_to_inventory("health_potion", 3)
 	add_to_inventory("mana_potion", 2)
-	print("ItemSystem: Added starter items to inventory")
+
+	# Auto-equip gear on the player character
+	var player = CharacterSystem.get_player()
+	if not player.is_empty():
+		# Weapon set 1: sword (melee) — write directly to avoid signal races
+		player["active_weapon_set"] = 1
+		equip_item(player, "bronze_sword", "weapon_main")
+		# Weapon set 2: bow (ranged)
+		player["active_weapon_set"] = 2
+		equip_item(player, "short_bow", "weapon_main")
+		# Ensure we return to set 1
+		player["active_weapon_set"] = 1
+		# Armour and accessories
+		equip_item(player, "leather_vest", "chest")
+		equip_item(player, "leather_cap", "head")
+		equip_item(player, "leather_boots", "feet")
+		equip_item(player, "copper_ring", "ring1")
+		equip_item(player, "travelers_amulet", "trinket1")
+	print("ItemSystem: Added and equipped starter items")
 
 
 # ============================================
@@ -925,6 +943,8 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 		var valid_traits: Array = []
 		for trait_name in weapon_traits:
 			var trait_info = weapon_traits[trait_name]
+			if not trait_info is Dictionary:  # Skip _comment strings
+				continue
 			if weapon_type in trait_info.get("types", []):
 				valid_traits.append({"name": trait_name, "info": trait_info})
 
@@ -1087,6 +1107,8 @@ func generate_armor(armor_type: String = "", rarity: String = "common",
 		var valid_traits: Array = []
 		for trait_name in armor_traits:
 			var trait_info = armor_traits[trait_name]
+			if not trait_info is Dictionary:  # Skip _comment strings
+				continue
 			if armor_type in trait_info.get("types", []):
 				valid_traits.append({"name": trait_name, "info": trait_info})
 

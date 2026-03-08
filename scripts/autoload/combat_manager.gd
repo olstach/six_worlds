@@ -3256,6 +3256,12 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 			result = _resolve_stance(user, combat_data)
 		"heal_self":
 			result = _resolve_heal_self(user, combat_data)
+		"examine":
+			# Reveal enemy info via examine window — handled by combat_arena via signal
+			var target = get_unit_at(target_pos)
+			if target == null or not target.is_alive():
+				return {"success": false, "reason": "No target"}
+			result = {"success": true, "examine_target": target, "effects": []}
 		_:
 			return {"success": false, "reason": "Unknown skill effect: " + effect_type}
 
@@ -3263,8 +3269,9 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 		# Deduct stamina
 		if stamina_cost > 0:
 			user.use_stamina(stamina_cost)
-		# Use action
-		use_action(1)
+		# Use action — free_action skills cost nothing
+		if not combat_data.get("free_action", false):
+			use_action(1)
 		# Apply cooldown
 		var cooldown = combat_data.get("cooldown", 0)
 		if cooldown > 0:

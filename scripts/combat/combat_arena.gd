@@ -24,6 +24,7 @@ extends Control
 @onready var spell_panel: PanelContainer = %SpellPanel
 @onready var spell_list: VBoxContainer = %SpellList
 @onready var item_button: Button = %ItemButton
+@onready var swap_weapon_button: Button = %SwapWeaponButton
 @onready var item_panel: PanelContainer = %ItemPanel
 @onready var item_list: VBoxContainer = %ItemList
 @onready var skills_button: Button = %SkillsButton
@@ -187,6 +188,7 @@ func _ready() -> void:
 	attack_button.pressed.connect(_on_attack_pressed)
 	spell_button.pressed.connect(_on_spell_pressed)
 	item_button.pressed.connect(_on_item_pressed)
+	swap_weapon_button.pressed.connect(_on_swap_weapon_pressed)
 	skills_button.pressed.connect(_on_skills_pressed)
 	wait_button.pressed.connect(_on_wait_pressed)
 	flee_button.pressed.connect(_on_flee_pressed)
@@ -1588,6 +1590,12 @@ func _resolve_active_skill(target_pos: Vector2i) -> void:
 					if fx.type == "buff":
 						_log_message("  +%d%% %s for %d turn(s)" % [fx.value, fx.stat, fx.duration])
 
+			"examine":
+				var examined = result.get("examine_target", null)
+				if examined:
+					_log_message("  Examining %s..." % examined.unit_name)
+					_show_examine_window(examined)
+
 		# Update UI
 		_show_unit_info(unit)
 	else:
@@ -1604,6 +1612,20 @@ func _on_wait_pressed() -> void:
 	# Use one action to wait (skip action but not whole turn)
 	CombatManager.use_action(1)
 	_log_message("Waiting...")
+
+
+func _on_swap_weapon_pressed() -> void:
+	if not CombatManager.is_player_turn() or not CombatManager.can_act(1):
+		return
+	var unit = CombatManager.get_current_unit()
+	if not unit or not "character_data" in unit:
+		return
+	AudioManager.play("ui_click")
+	ItemSystem.swap_weapon_set(unit.character_data)
+	CombatManager.use_action(1)
+	_add_combat_log("[color=#aaaaff]%s switches weapon sets.[/color]" % unit.unit_name)
+	_update_action_buttons()
+	_update_unit_info(unit)
 
 
 func _on_end_turn_pressed() -> void:
@@ -1776,6 +1798,14 @@ func _update_action_buttons() -> void:
 	attack_button.disabled = not is_player or not can_act or cc_locked or not CombatManager.can_unit_attack(current_unit) if current_unit else true
 	spell_button.disabled = not is_player or not can_act or cc_locked or not CombatManager.can_unit_cast(current_unit) if current_unit else true
 	item_button.disabled = not is_player or not can_act or cc_locked
+	# Swap Weapons: only useful if the character has a weapon in the other set
+	var has_alt_weapon = false
+	if current_unit and "character_data" in current_unit:
+		var cdata = current_unit.character_data
+		var other_set = 2 if cdata.get("active_weapon_set", 1) == 1 else 1
+		var alt_weapon = cdata.get("equipment", {}).get("weapon_set_%d" % other_set, {}).get("main", "")
+		has_alt_weapon = alt_weapon != ""
+	swap_weapon_button.disabled = not is_player or not can_act or cc_locked or not has_alt_weapon
 	skills_button.disabled = not is_player or not can_act or cc_locked
 	wait_button.disabled = not is_player or not can_act or cc_locked
 	flee_button.disabled = not is_player or not can_act or cc_locked

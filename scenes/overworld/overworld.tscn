@@ -117,7 +117,7 @@ text = "Spellbook (S)"
 [node name="CraftingButton" type="Button" parent="HUDLayer/TopBar"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Crafting (C)"
+text = "Crafting (R)"
 
 [node name="ToastLabel" type="Label" parent="HUDLayer"]
 unique_name_in_owner = true
