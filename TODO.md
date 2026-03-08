@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-03-08
+Last Updated: 2026-03-08 (session 2)
 ---
 
 ## Completed Systems
@@ -170,7 +170,7 @@ Roles to fulfill per realm (not specific object types):
 - [ ] Multi-function locations (towns, camps) use tab UI in event window — 3-4 functions per location
 - [ ] First-visit event hook for towns (simple choice: rumors, discount, hidden object)
 - [x] ~~Steal/attack/donate karma branches on trader interactions~~ — DONE (all 8 hell trader events: steal roll on all, attack on 3, donate on 2, comedy wildcard on 5 with success/failure outcomes). Skill-based dice rolls now supported in event_manager (skill: comedy/performance instead of attribute)
-- [ ] Trainer caps (limit max level a trainer can teach)
+- [x] ~~Trainer caps~~ — DONE (max_skill_level in shop training dict; ShopSystem enforces cap, UI shows "Capped" in yellow)
 - [x] ~~Hell-specific named locations~~ — DONE (Infernal Forge, Bone Archer Camp, Mercy Ward, Brimstone Lab, Warden's Pit — all in shops.json + hell_events.json + hell.json map pools)
 
 **Category 3 — Event Chains** (1-3 choices deep, world/subregion specific)
@@ -446,6 +446,39 @@ Still needed:
 - **Attack range** fixed: melee now highlights all 8 adjacent tiles (Chebyshev square) not just 4 (diamond)
 - **Frozen Stupa "0"**: fixed pickup range resolver misidentifying 2-string item arrays as numeric ranges
 - **Charm tooltips**: now show mana reduction % and spellpower bonus % in item tooltip
+### 2026-03-08 Session 2: Bug Fixes + Scrolls/Events/Trainer Caps + Status Persistence
+
+**Scrolls & shops:**
+- 17 new scrolls added to demon_sorcerer, wandering_sage, general_store, hell_town_magic, hell_yogini_circle, mercy_ward
+- Trainer caps (max_skill_level) added to 5 shops; ShopSystem enforces + UI shows "Capped"
+
+**Hell events — trader branches:**
+- Steal/attack/donate/comedy choices added to all 8 hell trader events
+- Skill-based dice rolls (e.g. `skill: comedy`) now supported in event_manager alongside attribute rolls
+- Karma assignments: steal→hungry_ghost, attack→hell, donate→god, comedy→human
+
+**Bug fixes:**
+- Crafting button label was "C" — corrected to "R"
+- Starter equipment was landing on weapon set II — fixed by direct dict writes (no signal race)
+- Weapon set swap in combat: 1 action, swaps weapons only (armor unchanged); SwapWeaponButton added
+- Observe Carefully perk: "examine" effect type now handled in use_active_skill(); free_action flag now honored
+- combat_arena crash (wrong function names _add_combat_log/_update_unit_info) — fixed
+- Equipment tab showing empty on first open — fixed by awaiting _setup_equipment_doll()
+- Weapon set selector out of sync on equipment tab open — fixed
+
+**Status persistence (combat → overworld):**
+- combat_manager: _sync_combat_state_to_characters() writes HP/mana + DoT statuses to character_data on end_combat
+- overworld: _tick_overworld_statuses() applies DoT damage per step with toast notifications
+- map_manager: cleanse reward now clears overworld_statuses (was a pass placeholder)
+- DoT statuses that persist: Poisoned, Bleeding, Burning, Festering, Diseased
+
+**Spell infrastructure on overworld:**
+- "spell" reward type in map_manager teaches party a random spell of given school+tier
+- Spell shrine pickups (guaranteed_simples config) placed by map_generator
+- Spell guilds (guaranteed_guilds config) placed by map_generator
+- pick_random_spell_for_party() in character_system picks spells new to at least one member
+- guild_spell_lists persisted in save data for stable curricula
+
 ### 2026-03-08: Bug Fixes + Passive Perk Wiring (35+ perks)
 
 **Bug fixes** (from previous session):
