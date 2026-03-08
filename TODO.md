@@ -240,7 +240,7 @@ Roles to fulfill per realm (not specific object types):
 - [ ] More upgrades/perks
 - [x] ~~Alchemy crafting system~~: Reagents supply type, 3 crafting branches (Remedies/Munitions/Applications) × 3 tiers, perk-unlocked, passive brewing toggle — DONE
 - [x] ~~Resource-gathering perks~~: Alchemical Recycling (Alchemy 3), Herbalist (Medicine 3), Scavenger (Smithing 3) — DONE
-- [ ] Crafting UI tab (key: C) with character selector, filter buttons, recipe list
+- [x] ~~Crafting UI tab~~ — DONE (key: R; character picker, Potions/Bombs/Oils filter, craftable/locked recipe list with reagent cost)
 - [ ] More scroll varieties (AoE scrolls, buff scrolls)
 - [ ] **Cursed items**: equipment that applies a passive debuff alongside its stats. Player may not know an item is cursed until equipped (reveal on ID or Alchemy skill check). Separate from cursed terrain/simples.
 - [x] ~~**Equipment generation system**~~: procedural weapons, armor, and talismans — DONE
@@ -259,7 +259,7 @@ Roles to fulfill per realm (not specific object types):
 - [x] ~~Active skills fully functional (stamina costs, targeting, effects)~~ — DONE (25+ skills with combat_data, stamina/cooldown system)
 - [x] ~~AI using consumable items (enemy potion/scroll usage)~~ — DONE (AI health/mana potions, bombs, oils)
 - [x] ~~AI using active skills~~ — DONE (scoring system, prioritized decision tree)
-- [ ] Enemy-specific physical resistances (e.g., skeletons resist piercing, weak to crushing)
+- [x] ~~Enemy-specific physical resistances~~ — DONE (hell_archetypes.json: frozen_revenant +pierce/slash, -crush; lava_golem/mountain_guardian +slash/pierce; frost_guardian +pierce/slash; demons +pierce/slash)
 - [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
 - [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
 - [ ] Terrain affecting spell power
