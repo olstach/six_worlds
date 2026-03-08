@@ -37,6 +37,7 @@ var last_attacker: Node = null     # Last unit that dealt damage to this unit (u
 var dagger_attacks_this_turn: int = 0    # Dagger attacks made this turn; cleared at turn start (too_fast_to_count perk)
 var ranged_attacks_this_turn: int = 0    # Ranged attacks made this turn; cleared at turn start (one_breath_one_arrow perk)
 var knife_storm_proc_this_turn: bool = false  # Prevents knife_storm from proccing twice in one turn
+var enemies_hit_this_combat: Array = []  # Tracks enemies hit for cheap_shot (first-attack crit bonus)
 var status_effects: Array = []  # Active status effects on this unit
 
 # Active skill cooldowns: perk_id -> turns remaining (0 = ready)

@@ -1339,6 +1339,11 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 		if "status_effects" in defender and defender.status_effects.size() > 0:
 			crit_chance += 10.0
 
+	# Cheap Shot (Guile 1): +15% crit on the first attack vs each individual enemy
+	if PerkSystem.has_perk(att_char_eoia, "cheap_shot"):
+		if not ("enemies_hit_this_combat" in attacker and defender in attacker.enemies_hit_this_combat):
+			crit_chance += 15.0
+
 	# Offhand Jab: +5% crit when main and off-hand are both daggers
 	if PerkSystem.has_perk(att_char_eoia, "offhand_jab"):
 		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "dagger":
@@ -1463,6 +1468,12 @@ func calculate_magic_damage(caster: Node, target: Node, base_spell_damage: int, 
 	# Variance ±15%
 	var variance = randf_range(0.85, 1.15)
 	var damage = int(base_damage * variance)
+
+	# Feed the Fire (Fire 3): +20% fire spell damage vs Burning targets
+	var caster_char_ff = caster.character_data if "character_data" in caster else {}
+	if element == "fire" and PerkSystem.has_perk(caster_char_ff, "feed_the_fire"):
+		if target.has_status("Burning"):
+			damage = int(damage * 1.20)
 
 	# Apply elemental resistance
 	var resistance = target.get_resistance(element)
@@ -2090,6 +2101,26 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 		if is_cold:
 			_apply_stat_modifier(target, "movement", -1, 2)
 
+	# Crystalline Edge (Earth 2): Earth damage spells have 20% chance to apply Brittle (-15% Armor, 2 turns)
+	if PerkSystem.has_perk(caster_char, "crystalline_edge") and has_damage:
+		var is_earth = element == "earth" or schools.any(func(s): return s.to_lower() == "earth")
+		if is_earth and randf() < 0.20:
+			var brittle_amt = int(target.get_armor() * 0.15)
+			if brittle_amt > 0:
+				_apply_stat_modifier(target, "armor", -brittle_amt, 2)
+
+	# Weight of the Mountain (Earth 3): Earth damage spells apply -1 Movement for 2 turns
+	if PerkSystem.has_perk(caster_char, "weight_of_the_mountain") and has_damage:
+		var is_earth_wm = element == "earth" or schools.any(func(s): return s.to_lower() == "earth")
+		if is_earth_wm:
+			_apply_stat_modifier(target, "movement", -1, 2)
+
+	# Tidal Surge (Water 2): after casting a Water spell, caster gains +1 Movement for 1 turn
+	if PerkSystem.has_perk(caster_char, "tidal_surge"):
+		var is_water_ts = element in ["water", "ice", "cold"] or schools.any(func(s): return s.to_lower() == "water")
+		if is_water_ts:
+			_apply_stat_modifier(caster, "movement", 1, 1)
+
 	# Sudden Silence (Sorcery 3): Sorcery damage spells reduce target Spellpower by 25% for 1 turn
 	if PerkSystem.has_perk(caster_char, "sudden_silence") and has_damage:
 		var is_sorcery = schools.any(func(s): return s.to_lower() == "sorcery")
@@ -2208,6 +2239,11 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 		if unit.has_method("show_resisted_text"):
 			unit.show_resisted_text()
 		return
+
+	# Kindled (Fire 1): Burning effects applied by the caster last 1 extra turn
+	if status == "Burning" and source != null and "character_data" in source:
+		if PerkSystem.has_perk(source.character_data, "kindled"):
+			duration += 1
 
 	# Check if already present and handle stacking
 	if unit.has_status(status):
@@ -4362,6 +4398,10 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 			if ally_dmg > 0:
 				_apply_stat_modifier(ally, "damage", ally_dmg, 2)
 
+	# Cheap Shot: record that this enemy has now been attacked (removes the crit bonus on future attacks)
+	if "enemies_hit_this_combat" in attacker and not defender in attacker.enemies_hit_this_combat:
+		attacker.enemies_hit_this_combat.append(defender)
+
 	# --- Update consecutive hit streaks ---
 	if attacker.has_method("get_equipped_weapon"):
 		var w = attacker.get_equipped_weapon()
@@ -4488,6 +4528,19 @@ func _process_turn_start_perks(unit: Node) -> void:
 
 	# Diamond Body: +25% status resist (handled via saving throw bonuses)
 	# Field Commander: companions reposition — only applies round 1 (handled in deployment)
+
+	# Hungry Flames (Fire 2): Burning enemies have 25% chance/turn to spread to 1 adjacent enemy
+	# Processed on the perk-holder's turn rather than each burning enemy's turn
+	if _unit_has_perk(unit, "hungry_flames"):
+		var enemies = get_team_units(1 - unit.team if "team" in unit else 1)
+		for enemy in enemies:
+			if enemy.has_status("Burning") and randf() < 0.25:
+				var adj_enemies = _get_enemies_in_range(enemy, 1)
+				adj_enemies.erase(enemy)  # don't spread to self
+				for adj in adj_enemies:
+					if not adj.has_status("Burning") and adj.is_alive():
+						_apply_status_effect(adj, "Burning", 2, 0, unit)
+						break
 
 	# Blood in the Wind: +movement when enemies are bleeding
 	if _unit_has_perk(unit, "blood_in_the_wind"):
