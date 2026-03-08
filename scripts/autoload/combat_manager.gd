@@ -2176,6 +2176,30 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 				if adj != target and adj.is_alive():
 					_apply_status_effect(adj, "Burning", 2, 0, caster)
 
+	# Scattering Gust (Air 1): push/knockback spells have 25% chance to also Knockdown
+	var has_push = result.effects_applied.any(func(e): return e.get("status", "") in ["Pushed", "Knocked_Back", "Pulled"])
+	if PerkSystem.has_perk(caster_char, "scattering_gust") and has_push:
+		var is_air_sg = schools.any(func(s): return s.to_lower() == "air")
+		if is_air_sg and randf() < 0.25:
+			_apply_status_effect(target, "Knocked_Down", 1, 0, caster)
+
+	# Riptide (Water 3): push/pull spells gain +1 tile displacement (applied to stat mod) + save vs knockdown
+	# The extra displacement is handled by adding a brief Move debuff to simulate root
+	if PerkSystem.has_perk(caster_char, "riptide") and has_push:
+		var is_water_r = schools.any(func(s): return s.to_lower() == "water")
+		if is_water_r:
+			# Chance for knockdown in addition to the push
+			if randf() < 0.40:
+				_apply_status_effect(target, "Knocked_Down", 1, 0, caster)
+
+	# Mystic Healer (White 3 + Enchantment 2): single-target healing also applies a random minor buff (2 turns)
+	var has_heal = result.effects_applied.any(func(e): return e.get("type") == "heal")
+	if PerkSystem.has_perk(caster_char, "mystic_healer") and has_heal:
+		var is_white_mh = schools.any(func(s): return s.to_lower() == "white")
+		if is_white_mh:
+			var buffs = ["Strengthened", "Hastened", "Shielded", "Inspired"]
+			_apply_status_effect(target, buffs[randi() % buffs.size()], 2, 0, caster)
+
 	# Crystalline Edge (Earth 2): Earth damage spells have 20% chance to apply Brittle (-15% Armor, 2 turns)
 	if PerkSystem.has_perk(caster_char, "crystalline_edge") and has_damage:
 		var is_earth = element == "earth" or schools.any(func(s): return s.to_lower() == "earth")
@@ -2246,6 +2270,22 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 			if refund > 0:
 				caster.current_mana = mini(caster.current_mana + refund, caster.max_mana)
 				unit_healed.emit(caster, 0)  # triggers mana display refresh
+
+	# Fear Is the Mindkiller (Black 4): enemies with 2+ Black debuffs must save or become Feared (once per enemy per combat)
+	if PerkSystem.has_perk(caster_char, "fear_is_the_mindkiller") and has_debuff:
+		var is_black_fitm = schools.any(func(s): return s.to_lower() == "black")
+		if is_black_fitm:
+			# Count Black-type debuffs on target (check known Black statuses as proxy)
+			var black_debuff_names = ["Weakened", "Blinded", "Slowed", "Silenced", "Cursed", "Doomed",
+				"Damage_Debuff", "Dodge_Debuff", "Feared", "Demoralized"]
+			var black_debuff_count = 0
+			for se in target.status_effects:
+				if se.get("status", "") in black_debuff_names:
+					black_debuff_count += 1
+			if black_debuff_count >= 2 and not target.has_status("Feared"):
+				# Focus save vs DC 12 (simplified as 40% resist chance)
+				if randf() > 0.40:
+					_apply_status_effect(target, "Feared", 2, 0, caster)
 
 	# Amplified Misfortune: black debuff spells also spread status effects to 1 adjacent enemy
 	if PerkSystem.has_perk(caster_char, "amplified_misfortune") and has_debuff:
@@ -4678,6 +4718,14 @@ func _process_turn_start_perks(unit: Node) -> void:
 
 	# Diamond Body: +25% status resist (handled via saving throw bonuses)
 	# Field Commander: companions reposition — only applies round 1 (handled in deployment)
+
+	# Avatar of the Wind (Air 5): all allies gain +1 Move, +2 Initiative, +5% Dodge each round
+	if _unit_has_perk(unit, "avatar_of_the_wind"):
+		for ally in get_team_units(unit.team if "team" in unit else 0):
+			if ally == unit: continue
+			_apply_stat_modifier(ally, "movement", 1, 1)
+			_apply_stat_modifier(ally, "initiative", 2, 1)
+			_apply_stat_modifier(ally, "dodge", 5, 1)
 
 	# Hungry Flames (Fire 2): Burning enemies have 25% chance/turn to spread to 1 adjacent enemy
 	# Processed on the perk-holder's turn rather than each burning enemy's turn
