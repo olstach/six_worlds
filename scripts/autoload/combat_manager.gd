@@ -1095,6 +1095,16 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 	# Zone of Control reactions: check all enemies of this unit for ZoC perks
 	_check_zoc_reactions(unit, from, target)
 
+	# Stealth: moving within 3 tiles of an enemy breaks stealth unless soft_step perk
+	if "is_stealthed" in unit and unit.is_stealthed:
+		var unit_char_ss = unit.character_data if "character_data" in unit else {}
+		var has_soft_step = PerkSystem.has_perk(unit_char_ss, "soft_step")
+		if not has_soft_step:
+			for e in _get_enemies_in_range(unit, 3):
+				unit.is_stealthed = false
+				combat_log.emit("%s's stealth is broken by moving too close!" % unit.unit_name)
+				break
+
 	return true
 
 
@@ -1142,10 +1152,13 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		if not combat_grid.has_line_of_sight(attacker.grid_position, defender.grid_position):
 			return {"success": false, "reason": "No line of sight"}
 
+	# Shadow Strike: first attack from stealth is a guaranteed crit
+	var _stealth_attack = "is_stealthed" in attacker and attacker.is_stealthed
+
 	# Calculate hit chance
 	var hit_chance = calculate_hit_chance(attacker, defender)
 	var roll = randf() * 100.0
-	var hit = roll <= hit_chance
+	var hit = _stealth_attack or (roll <= hit_chance)  # stealth = auto-hit
 
 	# Get weapon damage type (slashing, crushing, piercing)
 	var weapon_dmg_type = attacker.get_weapon_damage_type() if attacker.has_method("get_weapon_damage_type") else "crushing"
@@ -1169,6 +1182,15 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		# Calculate damage
 		var damage_result = calculate_physical_damage(attacker, defender, weapon_dmg_type)
 		result.merge(damage_result, true)
+
+		# Shadow Strike: stealth attack is always a crit (apply crit multiplier if not already a crit)
+		if _stealth_attack and not result.get("crit", false):
+			result["crit"] = true
+			result["damage"] = int(result["damage"] * 1.5)
+		# Break stealth after attacking (regardless of shadow_strike)
+		if _stealth_attack:
+			attacker.is_stealthed = false
+			combat_log.emit("%s breaks stealth with an attack!" % attacker.unit_name)
 
 		# Apply damage
 		apply_damage(defender, result.damage, result.damage_type)
@@ -1496,6 +1518,12 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 			if not ("moved_this_turn" in attacker and attacker.moved_this_turn):
 				damage = int(damage * 1.10)
 
+	# Sudden End (Daggers+Guile cross): stealth attacks vs Stunned or Dazed targets deal +50% damage
+	if PerkSystem.has_perk(att_char_phys, "sudden_end"):
+		if "is_stealthed" in attacker and attacker.is_stealthed:
+			if defender.has_status("Stunned") or defender.has_status("Dazed"):
+				damage = int(damage * 1.50)
+
 	# Skull Crack: +20% damage vs Stunned or Dazed targets (maces only)
 	if PerkSystem.has_perk(att_char_phys, "skull_crack"):
 		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "mace":
@@ -1609,8 +1637,20 @@ func _kill_unit(unit: Node) -> void:
 	unit.is_bleeding_out = false
 	unit_died.emit(unit)
 
-	# Dharma Warrior (cross-skill): killing an enemy during mantra chanting advances each active mantra by +1
+	# Shadow Strike (Daggers 3 + Guile 3): killing an enemy enters stealth
+	# Ambush Predator: kills from stealth immediately reset stealth (no gap)
 	var killer = unit.get("last_attacker")
+	if killer != null and not killer.is_dead:
+		var killer_char_ss = killer.character_data if "character_data" in killer else {}
+		var was_stealthed = "is_stealthed" in killer and killer.is_stealthed
+		if PerkSystem.has_perk(killer_char_ss, "shadow_strike"):
+			killer.is_stealthed = true
+			combat_log.emit("%s vanishes into shadow after the kill!" % killer.unit_name)
+		elif was_stealthed and PerkSystem.has_perk(killer_char_ss, "ambush_predator"):
+			killer.is_stealthed = true  # Reset stealth immediately (kill from stealth)
+			combat_log.emit("%s remains in shadow (Ambush Predator)!" % killer.unit_name)
+
+	# Dharma Warrior (cross-skill): killing an enemy during mantra chanting advances each active mantra by +1
 	if killer != null and not killer.is_dead and not killer.active_mantras.is_empty():
 		var killer_char_dw = killer.character_data if "character_data" in killer else {}
 		if PerkSystem.has_perk(killer_char_dw, "dharma_warrior"):

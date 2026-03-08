@@ -238,11 +238,7 @@ Roles to fulfill per realm (not specific object types):
 
   ~~**Zone of Control / Reaction system**~~: DONE — `_check_zoc_reactions(mover, old_pos, new_pos)` called from `move_unit()`. `attack_unit()` gains `reaction: bool = false` param (skips `can_act()` + `use_action()`). `first_to_strike`: spear reaction on enter. `frost_warden`: Slow + +1 reach while stationary. `none_shall_pass`: also fires on same trigger. `sentinel`: fires when enemy LEAVES melee range.
 
-  **Stealth system** (add `is_stealthed: bool` to CombatUnit; break on attack/damage; detection radius vs Guile):
-  - `shadow_strike` (Daggers 3 + Guile 3) — enter stealth after a kill; first attack from stealth is a guaranteed crit.
-  - `soft_step` — moving does not reveal stealth within 3 tiles.
-  - `sudden_end` — stealth attacks against stunned/dazed targets deal +50% damage.
-  - `ambush_predator` — kills from stealth reset stealth immediately.
+  ~~**Stealth system**~~: DONE — `is_stealthed: bool` on CombatUnit. `shadow_strike`: kill → enter stealth; stealth attack = auto-hit + forced crit. `soft_step`: movement within 3 tiles of enemy doesn't break stealth. `sudden_end`: stealth + stunned/dazed = +50% damage. `ambush_predator`: kill from stealth resets stealth. Stealth breaks on attack (always) or moving within 3 tiles without soft_step.
 
   **Metamagic** (pre-cast UI dialog; combat_data key selects which spell to modify before casting):
   - `metamagic` (Sorcery 3 + Ritual 3) — modify next spell: extend range, add AoE, or change element. Needs a modal dialog before the spell panel confirms targeting.

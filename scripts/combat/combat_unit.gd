@@ -44,6 +44,7 @@ var marked_target: Node = null             # Target marked by call_the_shot; fir
 var call_the_shot_used_this_turn: bool = false  # Prevents call_the_shot from being used twice per turn
 var necromancer_raises: int = 0            # How many undead this unit has raised this combat (max 2)
 var in_free_attack: bool = false           # Recursion guard for cleave/relentless free attacks
+var is_stealthed: bool = false             # Whether this unit is in stealth (shadow_strike system)
 var status_effects: Array = []  # Active status effects on this unit
 
 # Active skill cooldowns: perk_id -> turns remaining (0 = ready)
