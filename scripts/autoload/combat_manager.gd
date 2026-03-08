@@ -1221,6 +1221,13 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 		attacker.momentum_stacks = 0
 		attacker.unarmed_hit_stacks = 0
 
+	# Track per-turn attack type counters (after resolving, so 'first attack' checks work)
+	if attacker.has_method("get_equipped_weapon"):
+		if attacker.get_equipped_weapon().get("type", "") == "dagger":
+			attacker.dagger_attacks_this_turn += 1
+	if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
+		attacker.ranged_attacks_this_turn += 1
+
 	use_action(1)
 	unit_attacked.emit(attacker, defender, result)
 	return result
@@ -1260,6 +1267,34 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 			if attacker.get_equipped_weapon().get("type", "") == "spear":
 				if "moved_this_turn" in defender and defender.moved_this_turn:
 					hit_chance += 15.0
+
+	# Offhand Jab: +10% accuracy when main weapon is a dagger AND off-hand slot also holds a dagger
+	if PerkSystem.has_perk(att_char, "offhand_jab"):
+		if attacker.has_method("get_equipped_weapon"):
+			if attacker.get_equipped_weapon().get("type", "") == "dagger":
+				var oh_id = att_char.get("equipment", {}).get("weapon_off", "")
+				if oh_id != "" and ItemSystem.get_item(oh_id).get("type", "") == "dagger":
+					hit_chance += 10.0
+
+	# Too Fast to Count: first dagger attack each turn is guaranteed to hit
+	if PerkSystem.has_perk(att_char, "too_fast_to_count"):
+		if attacker.has_method("get_equipped_weapon"):
+			if attacker.get_equipped_weapon().get("type", "") == "dagger":
+				if "dagger_attacks_this_turn" in attacker and attacker.dagger_attacks_this_turn == 0:
+					hit_chance = 95.0  # clamp max ensures guaranteed hit
+
+	# One Breath, One Arrow: first ranged attack each turn gains +15% accuracy
+	if PerkSystem.has_perk(att_char, "one_breath_one_arrow"):
+		if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
+			if "ranged_attacks_this_turn" in attacker and attacker.ranged_attacks_this_turn == 0:
+				hit_chance += 15.0
+
+	# Wall of Points: attacker suffers -10% accuracy when within 2 tiles of a spear-wielding defender
+	var def_char_wop = defender.character_data if "character_data" in defender else {}
+	if PerkSystem.has_perk(def_char_wop, "wall_of_points"):
+		if defender.has_method("get_equipped_weapon") and defender.get_equipped_weapon().get("type", "") == "spear":
+			if _grid_distance(attacker.grid_position, defender.grid_position) <= 2:
+				hit_chance -= 10.0
 
 	# Height advantage bonus (+5 per level, -5 penalty when lower)
 	if combat_grid:
@@ -1303,8 +1338,42 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 	if PerkSystem.has_perk(att_char_eoia, "every_opening_is_an_invitation"):
 		if "status_effects" in defender and defender.status_effects.size() > 0:
 			crit_chance += 10.0
+
+	# Offhand Jab: +5% crit when main and off-hand are both daggers
+	if PerkSystem.has_perk(att_char_eoia, "offhand_jab"):
+		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "dagger":
+			var oh_id_oj = att_char_eoia.get("equipment", {}).get("weapon_off", "")
+			if oh_id_oj != "" and ItemSystem.get_item(oh_id_oj).get("type", "") == "dagger":
+				crit_chance += 5.0
+
+	# Clean Line: +10% crit vs isolated targets (no allies adjacent to defender)
+	if PerkSystem.has_perk(att_char_eoia, "clean_line"):
+		if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
+			var def_has_adj_ally = false
+			for u in get_team_units(defender.team if "team" in defender else 1):
+				if u == defender:
+					continue
+				if _grid_distance(u.grid_position, defender.grid_position) <= 1:
+					def_has_adj_ally = true
+					break
+			if not def_has_adj_ally:
+				crit_chance += 10.0
+
+	# Backstab: +20% crit when an ally of the attacker is adjacent to the defender (flanking)
+	var _backstab_flanked = false
+	if PerkSystem.has_perk(att_char_eoia, "backstab"):
+		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "dagger":
+			for ally in get_team_units(attacker.team if "team" in attacker else 0):
+				if ally == attacker:
+					continue
+				if _grid_distance(ally.grid_position, defender.grid_position) <= 1:
+					crit_chance += 20.0
+					_backstab_flanked = true
+					break
+
 	var crit = randf() * 100.0 <= crit_chance
-	var crit_multi = 1.5  # TODO: Can be increased by upgrades
+	# Backstab: flanked crits deal 2x damage (replacing the 1.5x standard multiplier)
+	var crit_multi = 2.0 if (_backstab_flanked and crit) else 1.5
 
 	if crit:
 		damage = int(damage * crit_multi)
@@ -1341,7 +1410,30 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 				if "moved_this_turn" in defender and defender.moved_this_turn:
 					armor = int(armor * 0.85)
 
+	# Between the Ribs: daggers ignore 25% of the target's armor
+	if PerkSystem.has_perk(att_char_phys, "between_the_ribs"):
+		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "dagger":
+			armor = int(armor * 0.75)
+
+	# One Breath, One Arrow: first ranged attack that crits ignores all armor
+	if PerkSystem.has_perk(att_char_phys, "one_breath_one_arrow") and crit:
+		if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
+			if "ranged_attacks_this_turn" in attacker and attacker.ranged_attacks_this_turn == 0:
+				armor = 0
+
 	damage = maxi(1, damage - armor)
+
+	# Steady Aim: +10% damage if didn't move this turn (ranged only)
+	if PerkSystem.has_perk(att_char_phys, "steady_aim"):
+		if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
+			if not ("moved_this_turn" in attacker and attacker.moved_this_turn):
+				damage = int(damage * 1.10)
+
+	# Skull Crack: +20% damage vs Stunned or Dazed targets (maces only)
+	if PerkSystem.has_perk(att_char_phys, "skull_crack"):
+		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "mace":
+			if defender.has_status("Stunned") or defender.has_status("Dazed"):
+				damage = int(damage * 1.20)
 
 	# Apply physical resistance (checks specific subtype first, then falls back to generic "physical")
 	var phys_resist = defender.get_resistance(dmg_type)
@@ -3877,6 +3969,14 @@ func _check_perk_status_immunity(unit: Node, status: String) -> bool:
 			if randf() < 0.25:
 				return true
 
+	# Juggernaut: at 50%+ HP, immune to Slow, knockback, and forced movement
+	var juggernaut_immune = ["slowed", "pushed", "pulled", "knocked_back", "rooted"]
+	if status_lower in juggernaut_immune:
+		if PerkSystem.has_perk(char_data, "juggernaut"):
+			if "current_hp" in unit and "max_hp" in unit:
+				if unit.current_hp >= unit.max_hp * 0.5:
+					return true
+
 	return false
 
 
@@ -4117,6 +4217,55 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 					apply_damage(splash_target, splash_dmg, result.get("damage_type", "slashing"))
 					result["splash_damage"] = splash_dmg
 
+	# Concussive Force: 20% chance to Daze target for 1 turn on any mace hit
+	if _unit_has_perk(attacker, "concussive_force"):
+		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "mace":
+			if randf() < 0.20:
+				_apply_status_effect(defender, "Dazed", 1, 0, attacker)
+
+	# Shieldbreaker: mace hits reduce target Armor by 10% for 3 turns (stacking debuff)
+	if _unit_has_perk(attacker, "shieldbreaker"):
+		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "mace":
+			var shatter_amt = int(defender.get_armor() * 0.10)
+			if shatter_amt > 0:
+				_apply_stat_modifier(defender, "armor", -shatter_amt, 3)
+
+	# Thunderous Impact: mace crits knock defender prone (Knocked_Down) and Daze for 2 turns
+	if _unit_has_perk(attacker, "thunderous_impact") and result.get("crit", false):
+		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "mace":
+			_apply_status_effect(defender, "Knocked_Down", 1, 0, attacker)
+			_apply_status_effect(defender, "Dazed", 2, 0, attacker)
+
+	# Relentless Advance: mace hit grants +1 Move for 1 turn
+	if _unit_has_perk(attacker, "relentless_advance"):
+		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "mace":
+			_apply_stat_modifier(attacker, "movement", 1, 1)
+
+	# Exposed Target: ranged crits apply -15% Dodge debuff for 2 turns
+	if _unit_has_perk(attacker, "exposed_target") and result.get("crit", false):
+		if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
+			var dodge_pen = int(defender.get_dodge() * 0.15)
+			if dodge_pen > 0:
+				_apply_stat_modifier(defender, "dodge", -dodge_pen, 2)
+
+	# Knife Storm: 25% chance of a free bonus dagger attack on hit (max 1 per turn)
+	if _unit_has_perk(attacker, "knife_storm"):
+		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "dagger":
+			if not attacker.knife_storm_proc_this_turn and randf() < 0.25:
+				attacker.knife_storm_proc_this_turn = true
+				# Execute a bonus attack at 75% damage (simplified — apply damage directly)
+				var bonus_dmg_result = calculate_physical_damage(attacker, defender, "piercing")
+				var bonus_dmg = int(bonus_dmg_result.damage * 0.75)
+				bonus_dmg = maxi(1, bonus_dmg)
+				apply_damage(defender, bonus_dmg, "piercing")
+				result["knife_storm_damage"] = bonus_dmg
+
+	# Flowing Tide: spear kill grants +2 Move for 1 turn
+	if _unit_has_perk(attacker, "flowing_tide"):
+		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "spear":
+			if not defender.is_alive():
+				_apply_stat_modifier(attacker, "movement", 2, 1)
+
 	# --- Update consecutive hit streaks ---
 	if attacker.has_method("get_equipped_weapon"):
 		var w = attacker.get_equipped_weapon()
@@ -4213,6 +4362,18 @@ func _process_on_dodge_perks(unit: Node, attacker: Node) -> void:
 			var bonus = int(unit.get_attack_damage() * 0.3) if unit.has_method("get_attack_damage") else 5
 			_apply_stat_modifier(unit, "damage", bonus, 1)
 
+	# Opportunist: when a melee attack misses you and you're holding a dagger, make a free counterattack
+	if _unit_has_perk(unit, "opportunist"):
+		var is_melee_miss = _grid_distance(unit.grid_position, attacker.grid_position) <= 1
+		if is_melee_miss and unit.has_method("get_equipped_weapon"):
+			if unit.get_equipped_weapon().get("type", "") == "dagger":
+				# Free counter — apply 75% damage directly without consuming an action
+				var counter_result = calculate_physical_damage(unit, attacker, "piercing")
+				var counter_dmg = int(counter_result.damage * 0.75)
+				counter_dmg = maxi(1, counter_dmg)
+				apply_damage(attacker, counter_dmg, "piercing")
+				unit_attacked.emit(unit, attacker, {"success": true, "hit": true, "damage": counter_dmg, "crit": false, "opportunist": true})
+
 
 ## Process passive perks at the start of a unit's turn.
 ## Called from _start_current_turn().
@@ -4225,6 +4386,9 @@ func _process_turn_start_perks(unit: Node) -> void:
 	unit.moved_this_turn = false
 	unit.momentum_stacks = 0
 	unit.unarmed_hit_stacks = 0
+	unit.dagger_attacks_this_turn = 0
+	unit.ranged_attacks_this_turn = 0
+	unit.knife_storm_proc_this_turn = false
 
 	# Diamond Body: +25% status resist (handled via saving throw bonuses)
 	# Field Commander: companions reposition — only applies round 1 (handled in deployment)

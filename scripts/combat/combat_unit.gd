@@ -34,6 +34,9 @@ var momentum_stacks: int = 0       # Consecutive axe hits; cleared on miss or tu
 var unarmed_hit_stacks: int = 0    # Consecutive unarmed hits; cleared on miss or turn start (keep_hitting perk)
 var stationary_stacks: int = 0     # Turns without moving; incremented/reset at turn start (tidal_patience perk)
 var last_attacker: Node = null     # Last unit that dealt damage to this unit (used for risen_dead talisman perk)
+var dagger_attacks_this_turn: int = 0    # Dagger attacks made this turn; cleared at turn start (too_fast_to_count perk)
+var ranged_attacks_this_turn: int = 0    # Ranged attacks made this turn; cleared at turn start (one_breath_one_arrow perk)
+var knife_storm_proc_this_turn: bool = false  # Prevents knife_storm from proccing twice in one turn
 var status_effects: Array = []  # Active status effects on this unit
 
 # Active skill cooldowns: perk_id -> turns remaining (0 = ready)
