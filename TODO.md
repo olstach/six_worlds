@@ -169,7 +169,7 @@ Roles to fulfill per realm (not specific object types):
 - [x] ~~Trainer (teaches skills/attributes)~~ — DONE (wandering_sage trains White/Sorcery/Yoga + Focus/Awareness; weapon_master trains 7 combat skills + Str/Fin; ShopSystem has full training tab)
 - [ ] Multi-function locations (towns, camps) use tab UI in event window — 3-4 functions per location
 - [ ] First-visit event hook for towns (simple choice: rumors, discount, hidden object)
-- [ ] Steal/attack/donate karma branches on trader interactions
+- [x] ~~Steal/attack/donate karma branches on trader interactions~~ — DONE (all 8 hell trader events: steal roll on all, attack on 3, donate on 2, comedy wildcard on 5 with success/failure outcomes). Skill-based dice rolls now supported in event_manager (skill: comedy/performance instead of attribute)
 - [ ] Trainer caps (limit max level a trainer can teach)
 - [x] ~~Hell-specific named locations~~ — DONE (Infernal Forge, Bone Archer Camp, Mercy Ward, Brimstone Lab, Warden's Pit — all in shops.json + hell_events.json + hell.json map pools)
 
