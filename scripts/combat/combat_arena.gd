@@ -1623,9 +1623,9 @@ func _on_swap_weapon_pressed() -> void:
 	AudioManager.play("ui_click")
 	ItemSystem.swap_weapon_set(unit.character_data)
 	CombatManager.use_action(1)
-	_add_combat_log("[color=#aaaaff]%s switches weapon sets.[/color]" % unit.unit_name)
+	_log_message("[color=#aaaaff]%s switches weapon sets.[/color]" % unit.unit_name)
 	_update_action_buttons()
-	_update_unit_info(unit)
+	_show_unit_info(unit)
 
 
 func _on_end_turn_pressed() -> void:

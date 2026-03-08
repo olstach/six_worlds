@@ -546,6 +546,33 @@ func _on_char_sheet_visibility_changed() -> void:
 
 func _on_party_moved(_from: Vector2i, _to: Vector2i) -> void:
 	_update_terrain_label()
+	_tick_overworld_statuses()
+
+
+## Apply one tick of any persisting DoT statuses (Poison, Bleed, Burn, etc.)
+## Called once per step. Removes expired statuses. Shows a toast per damage tick.
+func _tick_overworld_statuses() -> void:
+	var party = CharacterSystem.get_party()
+	for char in party:
+		var statuses: Array = char.get("overworld_statuses", [])
+		if statuses.is_empty():
+			continue
+		var expired: Array = []
+		for i in range(statuses.size()):
+			var s = statuses[i]
+			var dmg: int = s.get("damage_per_step", 3)
+			var derived: Dictionary = char.get("derived", {})
+			var hp: int = derived.get("current_hp", derived.get("max_hp", 10))
+			hp = max(0, hp - dmg)
+			derived["current_hp"] = hp
+			_show_toast("%s: %s −%d HP" % [char.get("name", "?"), s.get("status", "?"), dmg])
+			s["duration"] -= 1
+			if s["duration"] <= 0:
+				expired.append(i)
+		# Remove expired (reverse to keep indices valid)
+		expired.reverse()
+		for idx in expired:
+			statuses.remove_at(idx)
 
 
 func _on_party_position_updated(_world_pos: Vector2) -> void:

@@ -60,6 +60,11 @@ var active_map_buffs: Array = []
 # Only populated for non-one_time event objects to prevent XP farming.
 var used_event_choices: Dictionary = {}
 
+# Cached spell curricula for spell guilds — keyed by map object_id.
+# Ensures each guild offers the same spells across revisits (stable curriculum).
+# Format: { object_id: [spell_id, ...] }
+var guild_spell_lists: Dictionary = {}
+
 # World definitions
 var WORLDS: Dictionary = {
 	"hell": {
@@ -384,7 +389,8 @@ func get_save_data() -> Dictionary:
 		"steps_without_food": steps_without_food,
 		"is_starving": is_starving,
 		"boss_defeated": boss_states,
-		"used_event_choices": used_event_choices.duplicate(true)
+		"used_event_choices": used_event_choices.duplicate(true),
+		"guild_spell_lists": guild_spell_lists.duplicate(true)
 	}
 
 
@@ -402,6 +408,7 @@ func load_save_data(data: Dictionary) -> void:
 	steps_without_food = data.get("steps_without_food", 0)
 	is_starving = data.get("is_starving", false)
 	used_event_choices = data.get("used_event_choices", {})
+	guild_spell_lists = data.get("guild_spell_lists", {})
 
 	# Restore unlocked worlds
 	unlocked_worlds.clear()

@@ -185,7 +185,13 @@ func _on_tab_changed(tab: int) -> void:
 	tab_changed.emit(tab)
 	# Refresh equipment tab when switching to it (tab index 1)
 	if tab == 1:
-		_setup_equipment_doll()
+		# await the doll setup — it has an internal await get_tree().process_frame
+		# that creates the slot nodes; without awaiting, the slots don't exist yet
+		# when _update_equipment_slots() runs, so everything appears empty.
+		await _setup_equipment_doll()
+		# Sync UI weapon set selector to match the character's actual active set
+		if _current_character:
+			current_weapon_set = _current_character.get("active_weapon_set", 1)
 		_update_equipment_slots()
 		_update_equipment_display()
 	# Refresh party tab when switching to it (tab index 2)

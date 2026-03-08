@@ -242,6 +242,11 @@ func start_combat(grid: Node, player_units: Array, enemy_units: Array) -> void:
 	_start_current_turn()
 
 
+## DoT statuses that can persist from combat into the overworld
+const OVERWORLD_DOT_STATUSES: Array = [
+	"Poisoned", "Bleeding", "Burning", "Festering", "Diseased"
+]
+
 ## End combat
 func end_combat(victory: bool) -> void:
 	if not combat_active:
@@ -253,6 +258,9 @@ func end_combat(victory: bool) -> void:
 	else:
 		last_combat_rewards = {}
 
+	# Sync player unit state back to character_data before clearing units
+	_sync_combat_state_to_characters()
+
 	combat_active = false
 	_deployment_phase = false
 	combat_ended.emit(victory)
@@ -261,6 +269,33 @@ func end_combat(victory: bool) -> void:
 	all_units.clear()
 	turn_order.clear()
 	combat_grid = null
+
+
+## Write current HP, mana, and persisting DoT statuses back to character_data
+func _sync_combat_state_to_characters() -> void:
+	for unit in all_units:
+		if unit.team != Team.PLAYER:
+			continue
+		if not "character_data" in unit:
+			continue
+		var cdata = unit.character_data
+		if not "derived" in cdata:
+			cdata["derived"] = {}
+		# HP / mana — preserve whatever the unit ended combat with
+		cdata.derived["current_hp"] = unit.current_hp
+		cdata.derived["current_mana"] = unit.current_mana
+		# Persisting DoT statuses
+		var persisting: Array = []
+		for effect in unit.status_effects:
+			var sname = effect.get("status", "")
+			if sname in OVERWORLD_DOT_STATUSES:
+				var def = _status_effects.get(sname, {})
+				persisting.append({
+					"status": sname,
+					"duration": effect.get("duration", 1),
+					"damage_per_step": def.get("damage_per_turn", 3)
+				})
+		cdata["overworld_statuses"] = persisting
 
 
 # ============================================

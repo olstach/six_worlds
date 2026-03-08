@@ -202,6 +202,52 @@ func _pick_random_spell(schools: Array, level: int, already_known: Array) -> Str
 	return candidates[0]
 
 
+## Public accessor for the spell database (used by shop system and map rewards)
+func get_spell_database() -> Dictionary:
+	return _spell_database
+
+
+## Pick a random spell of the given school and spell level for the whole party.
+## Excludes spells already known by ALL party members (so there's always someone who benefits).
+## Checks both the "schools" array and the "subschool" field, so Sorcery/Enchantment/etc. work.
+## Returns spell_id or "" if every matching spell is already universal knowledge.
+func pick_random_spell_for_party(school: String, level: int) -> String:
+	var party = get_party()
+	if party.is_empty():
+		return ""
+
+	# Build set of spells known by ALL party members — we won't offer those
+	var known_by_all: Array = party[0].get("known_spells", []).duplicate()
+	for i in range(1, party.size()):
+		var member_spells = party[i].get("known_spells", [])
+		known_by_all = known_by_all.filter(func(sid): return sid in member_spells)
+
+	var school_lower = school.to_lower()
+	var candidates: Array[String] = []
+
+	for spell_id in _spell_database:
+		if spell_id in known_by_all:
+			continue
+		var spell = _spell_database[spell_id]
+		if int(spell.get("level", 0)) != level:
+			continue
+		# Match against schools array or subschool field
+		var matches = false
+		for s in spell.get("schools", []):
+			if s.to_lower() == school_lower:
+				matches = true
+				break
+		if not matches and spell.get("subschool", "").to_lower() == school_lower:
+			matches = true
+		if matches:
+			candidates.append(spell_id)
+
+	if candidates.is_empty():
+		return ""
+	candidates.shuffle()
+	return candidates[0]
+
+
 ## Get race data dictionary for a given race ID
 func get_race_data(race_id: String) -> Dictionary:
 	return _race_data.get(race_id, {})

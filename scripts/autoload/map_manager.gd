@@ -1069,8 +1069,25 @@ func _apply_reward(reward: Dictionary) -> void:
 				ItemSystem.add_to_inventory(chosen)
 
 		"cleanse":
-			# Clear map status effects from party — placeholder for future map-status system
-			pass
+			# Clear persisting overworld DoT statuses from all party members
+			for char in CharacterSystem.get_party():
+				char["overworld_statuses"] = []
+
+		"spell":
+			# Spell simple: teach a random spell of the given school+tier to all party members who
+			# don't already know it. value = {"school": "Fire", "tier": 1}
+			# Tier maps to spell level: 1→1, 2→3, 3→5, 4→7, 5→9
+			if value is Dictionary:
+				var school: String = value.get("school", "")
+				var tier: int = clamp(int(value.get("tier", 1)), 1, 5)
+				var tier_to_level: Array = [0, 1, 3, 5, 7, 9]
+				var spell_level: int = tier_to_level[tier]
+				var spell_id: String = CharacterSystem.pick_random_spell_for_party(school, spell_level)
+				if spell_id != "":
+					reward["chosen_spell"] = spell_id  # store for toast display
+					for character in CharacterSystem.get_party():
+						if not CharacterSystem.knows_spell(character, spell_id):
+							CharacterSystem.learn_spell(character, spell_id)
 
 		"karma":
 			# Hidden karma adjustment
@@ -1594,6 +1611,11 @@ func get_reward_summary(rewards: Array) -> String:
 			"buff":
 				if value is Dictionary:
 					parts.append("+%d %s" % [value.get("amount", 0), value.get("stat", "")])
+			"spell":
+				if value is Dictionary:
+					var tier_names = ["", "Trace", "Mark", "Locus", "Nexus", "Throne"]
+					var tier = clamp(int(value.get("tier", 1)), 1, 5)
+					parts.append("%s of %s" % [tier_names[tier], value.get("school", "?")])
 	return ", ".join(parts) if not parts.is_empty() else ""
 
 

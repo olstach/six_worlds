@@ -577,11 +577,13 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 	var pickup_range = density.get("pickups_per_zone", [8, 14])
 	var shop_range = density.get("guaranteed_shops", [1, 2])
 	var rest_range = density.get("guaranteed_rest", [1, 2])
+	var guild_range = density.get("guaranteed_guilds", [0, 1])
 
 	var num_events = randi_range(int(event_range[0]), int(event_range[1]))
 	var num_pickups = randi_range(int(pickup_range[0]), int(pickup_range[1]))
 	var guaranteed_shops = randi_range(int(shop_range[0]), int(shop_range[1]))
 	var guaranteed_rest = randi_range(int(rest_range[0]), int(rest_range[1]))
+	var guaranteed_guilds = randi_range(int(guild_range[0]), int(guild_range[1]))
 
 	# Collect all placed objects for spacing checks
 	var placed_positions: Array[Vector2i] = []
@@ -615,6 +617,71 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 			_place_pickup_object(zone_id, template, pos)
 			placed_positions.append(pos)
 			num_pickups -= 1  # Counts toward pickup budget
+
+	# Place guaranteed guilds (from events tagged "guild") — one chosen at random from the full
+	# guild pool, so no school gets a guaranteed advantage from appearing in a specific zone.
+	var guild_events: Array = []
+	for e in event_pool:
+		if e.get("tag", "") == "guild":
+			guild_events.append(e)
+	guild_events.shuffle()  # Randomise order before picking
+	var guilds_placed := 0
+	for i in range(guaranteed_guilds):
+		if guilds_placed >= guild_events.size():
+			break
+		var template = guild_events[guilds_placed]
+		guilds_placed += 1
+		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions)
+		if pos != Vector2i(-1, -1):
+			_place_event_object(zone_id, template, pos)
+			placed_positions.append(pos)
+			num_events -= 1  # Counts toward event budget
+
+	# Place guaranteed spell simples — school is drawn randomly from the realm's school list
+	# so no school gets a meta-advantage from zone assignment.
+	# density.guaranteed_simples: [{tier, count}, ...] e.g. [{tier:1,count:2},{tier:2,count:1}]
+	var simple_specs: Array = density.get("guaranteed_simples", [])
+	if not simple_specs.is_empty():
+		var tier_names: Array = ["", "Trace", "Mark", "Locus", "Nexus", "Throne"]
+		var tier_messages: Array = [
+			"",
+			"A sliver of magical knowledge, crystallized into a fragment you can absorb.",
+			"A deeper resonance of magical knowledge, more complex but still accessible.",
+			"A concentrated locus of power — the knowledge reshapes something in you as you receive it.",
+			"A nexus of power at the intersection of several forces. Hard to hold, but it stays.",
+			"A throne of mastery. Rare beyond imagining. It settles into you like a memory you never had."
+		]
+		var all_schools: Array = pool.get("spell_schools", [
+			"Fire", "Water", "Earth", "Air", "Space",
+			"White", "Black", "Sorcery", "Enchantment", "Summoning"
+		])
+		# Shuffle once so each zone independently randomizes which schools appear
+		var shuffled_schools: Array = all_schools.duplicate()
+		shuffled_schools.shuffle()
+		var school_idx: int = 0
+
+		for spec in simple_specs:
+			var tier: int = clamp(int(spec.get("tier", 1)), 1, 5)
+			var count: int = int(spec.get("count", 1))
+			for _s in range(count):
+				if school_idx >= shuffled_schools.size():
+					shuffled_schools.shuffle()
+					school_idx = 0
+				var school: String = shuffled_schools[school_idx]
+				school_idx += 1
+				var tier_name: String = tier_names[tier]
+				var template: Dictionary = {
+					"name": "%s of %s" % [tier_name, school],
+					"icon": "shrine",
+					"message": tier_messages[tier],
+					"one_time": true,
+					"rewards": [{"type": "spell", "value": {"school": school, "tier": tier}}]
+				}
+				var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions)
+				if pos != Vector2i(-1, -1):
+					_place_pickup_object(zone_id, template, pos)
+					placed_positions.append(pos)
+					num_pickups -= 1
 
 	# Fill remaining events from weighted pool
 	var event_weights = _build_pool_weight_table(event_pool)
