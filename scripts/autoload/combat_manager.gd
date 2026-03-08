@@ -1307,6 +1307,26 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 			if "ranged_attacks_this_turn" in attacker and attacker.ranged_attacks_this_turn == 0:
 				hit_chance += 15.0
 
+	# Crushing Depths (Water 4): +15% accuracy vs enemies on water/ice terrain or with 2+ water debuffs
+	if PerkSystem.has_perk(att_char, "crushing_depths"):
+		var crushing_bonus = false
+		# Check terrain at defender's position
+		if combat_grid and "grid_position" in defender:
+			var terrain_eff = combat_grid.get_terrain_effect(defender.grid_position)
+			if terrain_eff in [2, 7]:  # ICE=2, WET=7
+				crushing_bonus = true
+		# Or check for 2+ water-type debuffs
+		if not crushing_bonus and "status_effects" in defender:
+			var water_debuffs = ["Slowed", "Frozen", "Chilled", "Waterlogged", "Rooted"]
+			var wdc = 0
+			for se in defender.status_effects:
+				if se.get("status", "") in water_debuffs:
+					wdc += 1
+			if wdc >= 2:
+				crushing_bonus = true
+		if crushing_bonus:
+			hit_chance += 15.0
+
 	# Wall of Points: attacker suffers -10% accuracy when within 2 tiles of a spear-wielding defender
 	var def_char_wop = defender.character_data if "character_data" in defender else {}
 	if PerkSystem.has_perk(def_char_wop, "wall_of_points"):
@@ -2175,6 +2195,20 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 			for adj in _get_enemies_in_range(target, 1):
 				if adj != target and adj.is_alive():
 					_apply_status_effect(adj, "Burning", 2, 0, caster)
+
+	# Tremor (Earth 2): Earth AoE spells have 25% chance to knock all targets prone
+	if PerkSystem.has_perk(caster_char, "tremor") and has_damage:
+		var is_earth_tr = element == "earth" or schools.any(func(s): return s.to_lower() == "earth")
+		var is_aoe_tr = spell.get("targeting", "").begins_with("aoe")
+		if is_earth_tr and is_aoe_tr and randf() < 0.25:
+			_apply_status_effect(target, "Knocked_Down", 1, 0, caster)
+
+	# Ashes Remember Heat (Fire 5): killing a burning enemy leaves burning terrain for 3 turns
+	if PerkSystem.has_perk(caster_char, "ashes_remember_heat") and has_damage:
+		var is_fire_arh = element == "fire" or schools.any(func(s): return s.to_lower() == "fire")
+		if is_fire_arh and not target.is_alive() and target.has_status("Burning"):
+			if combat_grid and "grid_position" in target:
+				combat_grid.add_terrain_effect(target.grid_position, "fire", 3)
 
 	# Scattering Gust (Air 1): push/knockback spells have 25% chance to also Knockdown
 	var has_push = result.effects_applied.any(func(e): return e.get("status", "") in ["Pushed", "Knocked_Back", "Pulled"])
@@ -4580,6 +4614,23 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 			if ally_dmg > 0:
 				_apply_stat_modifier(ally, "damage", ally_dmg, 2)
 
+	# Avatar of the Storm (Air 5): all allies gain +5% Air bonus damage and 10% stun chance on attacks
+	# Applied as an aura: if any ally of the attacker has this perk, the bonus applies
+	var _aots_active = _unit_has_perk(attacker, "avatar_of_the_storm")
+	if not _aots_active:
+		for ally in get_team_units(attacker.team if "team" in attacker else 0):
+			if ally != attacker and _unit_has_perk(ally, "avatar_of_the_storm"):
+				_aots_active = true
+				break
+	if _aots_active:
+		var aots_air_dmg = maxi(1, int(result.get("damage", 0) * 0.05))
+		var aots_resist = defender.get_resistance("air")
+		var final_aots_dmg = maxi(1, int(aots_air_dmg * (1.0 - aots_resist / 100.0)))
+		apply_damage(defender, final_aots_dmg, "air")
+		result["aots_air_damage"] = final_aots_dmg
+		if randf() < 0.10:
+			_apply_status_effect(defender, "Stunned", 1, 0, attacker)
+
 	# Static Edge (Air 1): attacks deal +10% weapon damage as bonus Air damage
 	if _unit_has_perk(attacker, "static_edge"):
 		var air_dmg = maxi(1, int(result.get("damage", 0) * 0.10))
@@ -4718,6 +4769,18 @@ func _process_turn_start_perks(unit: Node) -> void:
 
 	# Diamond Body: +25% status resist (handled via saving throw bonuses)
 	# Field Commander: companions reposition — only applies round 1 (handled in deployment)
+
+	# Deep Freeze (Water 3): if a unit's effective movement has been reduced to 0 by ice/water debuffs, freeze it
+	# Check at turn start — if movement stat is 0 and unit has a water debuff, apply Frozen
+	if not unit.has_status("Frozen"):
+		var cur_move = unit.get_movement() if unit.has_method("get_movement") else 99
+		if cur_move <= 0:
+			# Check if any caster with deep_freeze caused the movement penalty
+			for caster_u in get_team_units(1 - unit.team if "team" in unit else 1):
+				var caster_char_df = caster_u.character_data if "character_data" in caster_u else {}
+				if PerkSystem.has_perk(caster_char_df, "deep_freeze"):
+					_apply_status_effect(unit, "Frozen", 1, 0, caster_u)
+					break
 
 	# Avatar of the Wind (Air 5): all allies gain +1 Move, +2 Initiative, +5% Dodge each round
 	if _unit_has_perk(unit, "avatar_of_the_wind"):
