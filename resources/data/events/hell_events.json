@@ -184,7 +184,7 @@
 			"id": "hell_frozen_merchant",
 			"title": "Frozen Merchant",
 			"realm": "hell",
-			"text": "A bundled figure huddles near a sputtering fire, surrounded by tattered bags. Despite the brutal cold, the merchant seems oddly cheerful.\n\n\"Welcome, welcome! Don't mind the cold — it keeps the thieves away! I've got everything a traveler needs to survive this frozen wasteland. Well, almost everything.\"",
+			"text": "A bundled figure huddles near a sputtering fire, surrounded by tattered bags. Despite the brutal cold, the merchant seems oddly cheerful.\n\n\"Welcome, welcome! Don't mind the cold \u2014 it keeps the thieves away! I've got everything a traveler needs to survive this frozen wasteland. Well, almost everything.\"",
 			"choices": [
 				{
 					"id": "browse",
@@ -233,6 +233,93 @@
 						},
 						"karma": {
 							"human": 1
+						}
+					}
+				},
+				{
+					"id": "steal",
+					"type": "roll",
+					"text": "Wait for a distraction and pocket some merchandise",
+					"requirements": {
+						"roll": {
+							"attribute": "finesse",
+							"difficulty": 13
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "The merchant's attention drifts. Your hand moves fast. By the time they look back, you are studying the horizon innocently.",
+						"rewards": {
+							"items": [
+								"iron_dagger",
+								"health_potion"
+							]
+						},
+						"karma": {
+							"hell": 5,
+							"animal": 3,
+							"human": -4
+						}
+					},
+					"outcome_failure": {
+						"type": "combat",
+						"enemy_group": "demon_patrol",
+						"text": "The merchant's scream brings a demon patrol at a run. \"Thief! THIEF!\" There is nowhere to run.",
+						"difficulty": "normal",
+						"karma": {
+							"hell": 3
+						}
+					}
+				},
+				{
+					"id": "donate",
+					"type": "default",
+					"text": "Leave a generous tip \u2014 life's hard for everyone in hell",
+					"cost": {
+						"gold": "small"
+					},
+					"outcome": {
+						"type": "text",
+						"text": "The merchant stares at the coins, then at you, then at the coins again. \"I... thank you. I haven't had a kind customer since \u2014 actually, I've never had a kind customer.\" They wave you off with unusual warmth.",
+						"rewards": {
+							"xp": 3
+						},
+						"karma": {
+							"god": 3,
+							"human": 3,
+							"hungry_ghost": -2
+						}
+					}
+				},
+				{
+					"id": "comedy",
+					"type": "roll",
+					"text": "Tell the merchant a joke about freezing to death in hell",
+					"requirements": {
+						"roll": {
+							"skill": "comedy",
+							"difficulty": 11
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "\"...and then the yak said, 'at least it's a dry cold!'\" The merchant howls with laughter, slapping their knee hard enough to crack ice off their boot. \"That's the funniest thing anyone's said to me in three hundred years. Here \u2014 on the house.\" They toss you a health potion.",
+						"rewards": {
+							"xp": 4,
+							"items": [
+								"health_potion"
+							]
+						},
+						"karma": {
+							"human": 3,
+							"asura": 1
+						}
+					},
+					"outcome_failure": {
+						"type": "text",
+						"text": "Silence. The merchant stares at you with an expression that could freeze hell twice over. \"Get out of my shop.\" There is no shop. You leave anyway.",
+						"karma": {
+							"animal": 1
 						}
 					}
 				},
@@ -431,7 +518,7 @@
 			"id": "hell_boss_yama_lt",
 			"title": "Yama's Lieutenant",
 			"realm": "hell",
-			"text": "A towering demon in ornate black and gold armor stands before the Realm Gate. Its four arms hold different weapons — sword, mace, spear, and a mirror that shows nothing.\n\n\"I am Chitragupta, Lieutenant of Yama, Lord of Death. I have judged every soul that passes through this gate. Tell me, mortal — do you believe your deeds merit passage?\"",
+			"text": "A towering demon in ornate black and gold armor stands before the Realm Gate. Its four arms hold different weapons \u2014 sword, mace, spear, and a mirror that shows nothing.\n\n\"I am Chitragupta, Lieutenant of Yama, Lord of Death. I have judged every soul that passes through this gate. Tell me, mortal \u2014 do you believe your deeds merit passage?\"",
 			"choices": [
 				{
 					"id": "fight",
@@ -517,7 +604,7 @@
 			"id": "hell_frozen_cave",
 			"title": "Frozen Cave",
 			"realm": "hell",
-			"text": "A dark cave rimmed with glittering ice crystals yawns in the hillside like a great mouth. From deep within comes a faint glow and the distant sound of dripping water — warm water, impossibly, in this frozen waste.",
+			"text": "A dark cave rimmed with glittering ice crystals yawns in the hillside like a great mouth. From deep within comes a faint glow and the distant sound of dripping water \u2014 warm water, impossibly, in this frozen waste.",
 			"choices": [
 				{
 					"id": "enter",
@@ -584,7 +671,7 @@
 				{
 					"id": "leave",
 					"type": "default",
-					"text": "The cave looks dangerous — best to move on",
+					"text": "The cave looks dangerous \u2014 best to move on",
 					"outcome": {
 						"type": "text",
 						"text": "Discretion is the better part of valor.",
@@ -600,7 +687,7 @@
 			"id": "hell_tormented_soul",
 			"title": "Tormented Soul",
 			"realm": "hell",
-			"text": "A ghostly figure sits amid the frost, weeping silently. Unlike the mindless lost souls, this one retains its form — the shape of an old woman in tattered robes.\n\n\"Can you see me? Truly see me? So few can anymore...\"",
+			"text": "A ghostly figure sits amid the frost, weeping silently. Unlike the mindless lost souls, this one retains its form \u2014 the shape of an old woman in tattered robes.\n\n\"Can you see me? Truly see me? So few can anymore...\"",
 			"choices": [
 				{
 					"id": "help",
@@ -669,7 +756,7 @@
 				{
 					"id": "ignore",
 					"type": "default",
-					"text": "Walk past — you have enough of your own problems",
+					"text": "Walk past \u2014 you have enough of your own problems",
 					"outcome": {
 						"type": "text",
 						"text": "The weeping grows quieter, then stops. The cold deepens.",
@@ -788,7 +875,7 @@
 			"id": "hell_wandering_peddler",
 			"title": "Wandering Peddler",
 			"realm": "hell",
-			"text": "A hunched figure dragging a heavy sack waves you down.\n\n\"Psst! Traveler! You look like you could use some supplies. I've got just the things — all cleaned up nice.\"",
+			"text": "A hunched figure dragging a heavy sack waves you down.\n\n\"Psst! Traveler! You look like you could use some supplies. I've got just the things \u2014 all cleaned up nice.\"",
 			"choices": [
 				{
 					"id": "browse",
@@ -814,6 +901,58 @@
 						},
 						"karma": {
 							"human": 2
+						}
+					}
+				},
+				{
+					"id": "steal",
+					"type": "roll",
+					"text": "Grab his pack and run",
+					"requirements": {
+						"roll": {
+							"attribute": "finesse",
+							"difficulty": 12
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "You snatch the pack and sprint. Behind you, the peddler's shouts fade into confused silence. The bag contains more than you expected \u2014 and something that rattles like it's alive.",
+						"rewards": {
+							"items": [
+								"iron_dagger",
+								"leather_cap",
+								"health_potion"
+							]
+						},
+						"karma": {
+							"hell": 6,
+							"human": -4,
+							"hungry_ghost": 3
+						}
+					},
+					"outcome_failure": {
+						"type": "text",
+						"text": "Your foot catches on a frozen rut. The peddler watches you sprawl, unmoved. \"Not the first time,\" he says, gathering his bag. \"Not the worst, either.\" He trudges on without another word. You are left with bruised dignity and nothing else.",
+						"karma": {
+							"animal": 2,
+							"hell": 2
+						}
+					}
+				},
+				{
+					"id": "attack",
+					"type": "default",
+					"text": "Mug him outright",
+					"outcome": {
+						"type": "combat",
+						"enemy_group": "lost_souls",
+						"text": "The peddler drops the sack. From the shadows, his associates \u2014 desperate, hollow-eyed souls \u2014 close in. He was never alone.",
+						"difficulty": "normal",
+						"karma": {
+							"asura": 5,
+							"hell": 4,
+							"human": -5,
+							"god": -4
 						}
 					}
 				},
@@ -1006,7 +1145,7 @@
 			"id": "hell_fire_shrine",
 			"title": "The Burning Shrine",
 			"realm": "hell",
-			"text": "A shrine wreathed in eternal flames stands among scorched ruins. Unlike the destructive fires around it, these flames burn with an almost sacred quality — steady, contained, purposeful. Ancient mantras are carved into the shrine's stone base, glowing red with heat.\n\nThe air shimmers with power. You can feel the fire calling to something within you.",
+			"text": "A shrine wreathed in eternal flames stands among scorched ruins. Unlike the destructive fires around it, these flames burn with an almost sacred quality \u2014 steady, contained, purposeful. Ancient mantras are carved into the shrine's stone base, glowing red with heat.\n\nThe air shimmers with power. You can feel the fire calling to something within you.",
 			"choices": [
 				{
 					"id": "fire_magic",
@@ -1019,7 +1158,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You reach into the flames with your power, and the shrine responds. Fire dances up your arms without burning — instead, it fills you with understanding. The mantras on the base glow brighter as fire magic surges through you.\n\nWhen you release the connection, you can feel the fire's discipline has become part of you. Your control over flame has deepened.",
+						"text": "You reach into the flames with your power, and the shrine responds. Fire dances up your arms without burning \u2014 instead, it fills you with understanding. The mantras on the base glow brighter as fire magic surges through you.\n\nWhen you release the connection, you can feel the fire's discipline has become part of you. Your control over flame has deepened.",
 						"rewards": {
 							"xp": 12
 						},
@@ -1040,7 +1179,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "The mantras are written in an archaic script — prayers of purification through fire. As you trace the words with your finger, their meaning unfolds in your mind.\n\nThese are mantras of transformation, teaching how suffering itself can be fuel for enlightenment. The fire does not destroy — it transforms.",
+						"text": "The mantras are written in an archaic script \u2014 prayers of purification through fire. As you trace the words with your finger, their meaning unfolds in your mind.\n\nThese are mantras of transformation, teaching how suffering itself can be fuel for enlightenment. The fire does not destroy \u2014 it transforms.",
 						"rewards": {
 							"xp": 10
 						},
@@ -1056,7 +1195,7 @@
 					"text": "Kneel and pray before the burning shrine",
 					"outcome": {
 						"type": "text",
-						"text": "You kneel before the flames, feeling their warmth on your face. A prayer rises unbidden — not for protection from fire, but for the strength to face whatever lies ahead.\n\nThe flames flare briefly, and you feel a surge of resolve.",
+						"text": "You kneel before the flames, feeling their warmth on your face. A prayer rises unbidden \u2014 not for protection from fire, but for the strength to face whatever lies ahead.\n\nThe flames flare briefly, and you feel a surge of resolve.",
 						"rewards": {
 							"xp": 4
 						},
@@ -1069,7 +1208,7 @@
 				{
 					"id": "leave",
 					"type": "default",
-					"text": "The flames are too intense — move on",
+					"text": "The flames are too intense \u2014 move on",
 					"outcome": {
 						"type": "text",
 						"text": "You step back from the searing heat. Some trials require preparation before they can be faced.",
@@ -1108,7 +1247,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "'A merchant's eye! I can tell. You know the value of things.' The demon leans forward conspiratorially. 'Between professionals — take this. A little sample of my finest work. Consider it an investment in a return customer.'\n\nThey press a warm vial into your hands.",
+						"text": "'A merchant's eye! I can tell. You know the value of things.' The demon leans forward conspiratorially. 'Between professionals \u2014 take this. A little sample of my finest work. Consider it an investment in a return customer.'\n\nThey press a warm vial into your hands.",
 						"rewards": {
 							"xp": 5,
 							"items": [
@@ -1126,12 +1265,96 @@
 					"text": "Ask about the burning realm",
 					"outcome": {
 						"type": "text",
-						"text": "'This side of Naraka? Fire, brimstone, the usual.' The merchant waves a hand dismissively. 'The Oni Brute in the western ruins is trouble — stays clear of him unless you're looking for a fight. The Trial of Flames to the south is where demons test their warriors.'\n\nThey lower their voice. 'Yama's lieutenant guards the realm gate to the southeast. Chitragupta, they call him. Four arms, four weapons. Make sure you're ready before you go that way.'",
+						"text": "'This side of Naraka? Fire, brimstone, the usual.' The merchant waves a hand dismissively. 'The Oni Brute in the western ruins is trouble \u2014 stays clear of him unless you're looking for a fight. The Trial of Flames to the south is where demons test their warriors.'\n\nThey lower their voice. 'Yama's lieutenant guards the realm gate to the southeast. Chitragupta, they call him. Four arms, four weapons. Make sure you're ready before you go that way.'",
 						"rewards": {
 							"xp": 2
 						},
 						"karma": {
 							"human": 1
+						}
+					}
+				},
+				{
+					"id": "steal",
+					"type": "roll",
+					"text": "Pocket something while the merchant is talking",
+					"requirements": {
+						"roll": {
+							"attribute": "finesse",
+							"difficulty": 14
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "Demons talk with their hands. You use their hands against them \u2014 the fire-bomb slips into your pack right as they gesture dramatically about lava. They never notice.",
+						"rewards": {
+							"items": [
+								"fire_bomb",
+								"flame_oil"
+							]
+						},
+						"karma": {
+							"hell": 5,
+							"animal": 3,
+							"human": -4
+						}
+					},
+					"outcome_failure": {
+						"type": "combat",
+						"enemy_group": "demon_patrol",
+						"text": "The merchant's grin turns brittle. 'I have eyes in the back of my head. Three of them, actually.' They snap their fingers. Figures emerge from the smoke. 'No refunds \u2014 and no mercy for thieves.'",
+						"difficulty": "hard",
+						"karma": {
+							"hell": 4
+						}
+					}
+				},
+				{
+					"id": "attack",
+					"type": "default",
+					"text": "Draw your weapon and take what you need",
+					"outcome": {
+						"type": "combat",
+						"enemy_group": "demon_patrol",
+						"text": "The merchant drops the salesman's smile instantly. 'Oh good. I was getting bored.' Behind you, the exits close. Around the merchant, fire rises.",
+						"difficulty": "hard",
+						"karma": {
+							"asura": 6,
+							"hell": 4,
+							"human": -5,
+							"god": -4
+						}
+					}
+				},
+				{
+					"id": "comedy",
+					"type": "roll",
+					"text": "Make a joke about their 'no refunds if you fall into lava' policy",
+					"requirements": {
+						"roll": {
+							"skill": "comedy",
+							"difficulty": 12
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "\"What if I fall INTO a customer? Does THAT count?\" The demon stares at you, then erupts in a cackle that shakes their entire body and singes the awning. 'Ha! I like you. You're terrible but I like you.' They press a warm vial into your hands. 'On the house. First time I've laughed in forty years.'",
+						"rewards": {
+							"xp": 5,
+							"items": [
+								"fire_resistance_potion"
+							]
+						},
+						"karma": {
+							"human": 3,
+							"asura": 2
+						}
+					},
+					"outcome_failure": {
+						"type": "text",
+						"text": "The merchant's smile doesn't reach their obsidian eyes. \"That was not funny. I have been in this realm for eight hundred years and that was not funny. Leave.\" They turn their back. The temperature near you drops noticeably.",
+						"karma": {
+							"animal": 1
 						}
 					}
 				},
@@ -1151,7 +1374,7 @@
 			"id": "hell_burning_prisoner",
 			"title": "The Burning Prisoner",
 			"realm": "hell",
-			"text": "A figure writhes in chains of molten metal, suspended above a pit of glowing coals. Their screams have long since faded to hoarse whispers. Despite their torment, their eyes are clear — filled with pain, but also a terrible awareness.\n\n'Please,' they rasp. 'I know what I did. I know why I'm here. But I've suffered enough to understand. Please... if you can...'",
+			"text": "A figure writhes in chains of molten metal, suspended above a pit of glowing coals. Their screams have long since faded to hoarse whispers. Despite their torment, their eyes are clear \u2014 filled with pain, but also a terrible awareness.\n\n'Please,' they rasp. 'I know what I did. I know why I'm here. But I've suffered enough to understand. Please... if you can...'",
 			"choices": [
 				{
 					"id": "free",
@@ -1164,7 +1387,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You grab the molten chains, gritting your teeth against the searing pain. With a mighty heave, the links shatter. The prisoner collapses, weeping.\n\n'Thank you. I was a tyrant — I burned villages and tortured innocents. This was my punishment. But you... you showed mercy even to one who showed none.'\n\nThey press something into your blistered hands — a key they'd been clutching all along.",
+						"text": "You grab the molten chains, gritting your teeth against the searing pain. With a mighty heave, the links shatter. The prisoner collapses, weeping.\n\n'Thank you. I was a tyrant \u2014 I burned villages and tortured innocents. This was my punishment. But you... you showed mercy even to one who showed none.'\n\nThey press something into your blistered hands \u2014 a key they'd been clutching all along.",
 						"rewards": {
 							"xp": 10,
 							"items": [
@@ -1189,7 +1412,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You cannot break the chains, but you can mend what they've broken. Healing light flows from your hands, closing burns and numbing pain.\n\nThe prisoner breathes freely for the first time in ages. 'You cannot free me — only I can do that, through true repentance. But this respite... it reminds me what kindness feels like. I had forgotten.' Tears trace clean lines through the soot on their face.",
+						"text": "You cannot break the chains, but you can mend what they've broken. Healing light flows from your hands, closing burns and numbing pain.\n\nThe prisoner breathes freely for the first time in ages. 'You cannot free me \u2014 only I can do that, through true repentance. But this respite... it reminds me what kindness feels like. I had forgotten.' Tears trace clean lines through the soot on their face.",
 						"rewards": {
 							"xp": 8
 						},
@@ -1206,7 +1429,7 @@
 					"text": "Ask what crime brought them here",
 					"outcome": {
 						"type": "text",
-						"text": "'I was a warlord,' they whisper. 'I burned a hundred homes. I thought fear was power. Now I know — fear is just fear. And cruelty is just cruelty dressed up as strength.'\n\nThey look at you with haunted eyes. 'Don't make my mistakes, traveler. Power without compassion is just a longer chain.'",
+						"text": "'I was a warlord,' they whisper. 'I burned a hundred homes. I thought fear was power. Now I know \u2014 fear is just fear. And cruelty is just cruelty dressed up as strength.'\n\nThey look at you with haunted eyes. 'Don't make my mistakes, traveler. Power without compassion is just a longer chain.'",
 						"rewards": {
 							"xp": 4
 						},
@@ -1219,7 +1442,7 @@
 				{
 					"id": "leave",
 					"type": "default",
-					"text": "Turn away — this is their punishment",
+					"text": "Turn away \u2014 this is their punishment",
 					"outcome": {
 						"type": "text",
 						"text": "You walk on. Behind you, the prisoner's whispers fade back into the crackling of flames. The heat feels heavier on your shoulders.",
@@ -1235,7 +1458,7 @@
 			"id": "hell_fire_trial",
 			"title": "The Trial of Flames",
 			"realm": "hell",
-			"text": "An arena of scorched stone rises from the lava fields, its tiers filled with demons of all shapes and sizes. They roar and stamp at the sight of you — fresh blood for their entertainment.\n\nA massive demon in ceremonial armor stands at the center. 'FRESH CHALLENGER!' it bellows. 'The Trial of Flames awaits! Prove your worth in combat, or prove your wisdom in another way. Choose!'",
+			"text": "An arena of scorched stone rises from the lava fields, its tiers filled with demons of all shapes and sizes. They roar and stamp at the sight of you \u2014 fresh blood for their entertainment.\n\nA massive demon in ceremonial armor stands at the center. 'FRESH CHALLENGER!' it bellows. 'The Trial of Flames awaits! Prove your worth in combat, or prove your wisdom in another way. Choose!'",
 			"choices": [
 				{
 					"id": "fight",
@@ -1245,7 +1468,7 @@
 						"type": "combat",
 						"enemy_group": "demon_patrol",
 						"difficulty": "hard",
-						"text": "The crowd erupts as warriors pour into the arena. These are no ordinary demons — they are the arena's champions, hardened by countless trials.",
+						"text": "The crowd erupts as warriors pour into the arena. These are no ordinary demons \u2014 they are the arena's champions, hardened by countless trials.",
 						"karma": {
 							"asura": 5,
 							"hell": 2
@@ -1263,7 +1486,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You step into the arena not with weapons drawn, but with a performance that captures even demonic hearts. You tell the tale of a warrior who conquered not through strength but through art — and the demons listen, rapt.\n\nWhen you finish, even the arena champion is applauding. 'That took more courage than fighting!' they declare. The demons shower you with prizes.",
+						"text": "You step into the arena not with weapons drawn, but with a performance that captures even demonic hearts. You tell the tale of a warrior who conquered not through strength but through art \u2014 and the demons listen, rapt.\n\nWhen you finish, even the arena champion is applauding. 'That took more courage than fighting!' they declare. The demons shower you with prizes.",
 						"rewards": {
 							"xp": 12,
 							"items": [
@@ -1287,7 +1510,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You lock eyes with the champion. Neither of you blinks. The crowd falls silent. Seconds stretch into minutes. Something shifts in the champion's gaze — recognition, perhaps respect.\n\n'You have the spirit of a true warrior,' the champion says, breaking the silence. 'You don't need to prove anything in this pit.' They gesture, and the arena opens a path for you, the crowd parting with grudging respect.",
+						"text": "You lock eyes with the champion. Neither of you blinks. The crowd falls silent. Seconds stretch into minutes. Something shifts in the champion's gaze \u2014 recognition, perhaps respect.\n\n'You have the spirit of a true warrior,' the champion says, breaking the silence. 'You don't need to prove anything in this pit.' They gesture, and the arena opens a path for you, the crowd parting with grudging respect.",
 						"rewards": {
 							"xp": 10
 						},
@@ -1315,7 +1538,7 @@
 			"id": "hell_volcanic_cave",
 			"title": "The Volcanic Cave",
 			"realm": "hell",
-			"text": "A cave entrance glows red with the heat of magma flowing within. The walls pulse with veins of liquid fire, casting dancing shadows. Deep within, you can hear a rhythmic sound — like a heartbeat, or the slow breathing of something enormous.\n\nThe heat is nearly unbearable, but you can see the glint of something valuable deeper inside.",
+			"text": "A cave entrance glows red with the heat of magma flowing within. The walls pulse with veins of liquid fire, casting dancing shadows. Deep within, you can hear a rhythmic sound \u2014 like a heartbeat, or the slow breathing of something enormous.\n\nThe heat is nearly unbearable, but you can see the glint of something valuable deeper inside.",
 			"choices": [
 				{
 					"id": "enter",
@@ -1363,7 +1586,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You weave a barrier of controlled flame around yourself, turning the cave's heat aside like water off oiled cloth. The magma parts before you as you walk deeper.\n\nThe cave holds wonders — natural formations of crystallized fire magic, and at its heart, a forge still burning with the flames that were lit when Naraka was young. You take what you can carry.",
+						"text": "You weave a barrier of controlled flame around yourself, turning the cave's heat aside like water off oiled cloth. The magma parts before you as you walk deeper.\n\nThe cave holds wonders \u2014 natural formations of crystallized fire magic, and at its heart, a forge still burning with the flames that were lit when Naraka was young. You take what you can carry.",
 						"rewards": {
 							"xp": 12,
 							"items": [
@@ -1388,7 +1611,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You close your eyes and listen. The rhythm is too regular for a creature, too purposeful for nature. After long study, you realize — it's the pulse of the realm itself. Naraka has a heartbeat, and this cave is one of its arteries.\n\nThe knowledge fills you with a deeper understanding of how the hell realm works. The suffering here isn't random — it has structure, purpose, even a kind of terrible beauty.",
+						"text": "You close your eyes and listen. The rhythm is too regular for a creature, too purposeful for nature. After long study, you realize \u2014 it's the pulse of the realm itself. Naraka has a heartbeat, and this cave is one of its arteries.\n\nThe knowledge fills you with a deeper understanding of how the hell realm works. The suffering here isn't random \u2014 it has structure, purpose, even a kind of terrible beauty.",
 						"rewards": {
 							"xp": 8
 						},
@@ -1401,7 +1624,7 @@
 				{
 					"id": "leave",
 					"type": "default",
-					"text": "The heat is too dangerous — move on",
+					"text": "The heat is too dangerous \u2014 move on",
 					"outcome": {
 						"type": "text",
 						"text": "You back away from the cave entrance. The glow within seems to pulse with disappointment, but sometimes survival is its own reward.",
@@ -1414,7 +1637,7 @@
 			"id": "hell_lava_flow",
 			"title": "The Lava Flow",
 			"realm": "hell",
-			"text": "A river of molten rock surges across the path ahead, its surface glowing white-hot. The heat creates a shimmering wall of distortion in the air. On the other side, you can see the path continuing — but crossing seems impossible.\n\nThen you notice: the flow pulses. There are moments when it thins, gaps between surges...",
+			"text": "A river of molten rock surges across the path ahead, its surface glowing white-hot. The heat creates a shimmering wall of distortion in the air. On the other side, you can see the path continuing \u2014 but crossing seems impossible.\n\nThen you notice: the flow pulses. There are moments when it thins, gaps between surges...",
 			"choices": [
 				{
 					"id": "time_it",
@@ -1428,7 +1651,7 @@
 					},
 					"outcome_success": {
 						"type": "text",
-						"text": "You watch the rhythm of the flow, counting between surges. Three... two... one... NOW!\n\nYou sprint across the brief gap, heat searing your boots but not quite burning through. You make it to the other side with singed clothes and a racing heart — but alive and ahead of those who would turn back.",
+						"text": "You watch the rhythm of the flow, counting between surges. Three... two... one... NOW!\n\nYou sprint across the brief gap, heat searing your boots but not quite burning through. You make it to the other side with singed clothes and a racing heart \u2014 but alive and ahead of those who would turn back.",
 						"rewards": {
 							"xp": 8
 						},
@@ -1459,7 +1682,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You reach into the bedrock beneath the lava flow and pull. Stone rises, hissing and steaming, forming a crude but solid bridge above the molten river. The lava laps at it furiously but cannot melt it fast enough.\n\nYou cross safely, and the bridge will last long enough for others to follow — a small act of kindness in an unkind place.",
+						"text": "You reach into the bedrock beneath the lava flow and pull. Stone rises, hissing and steaming, forming a crude but solid bridge above the molten river. The lava laps at it furiously but cannot melt it fast enough.\n\nYou cross safely, and the bridge will last long enough for others to follow \u2014 a small act of kindness in an unkind place.",
 						"rewards": {
 							"xp": 10
 						},
@@ -1475,7 +1698,7 @@
 					"text": "Look for a way around the lava flow",
 					"outcome": {
 						"type": "text",
-						"text": "You follow the lava flow downstream until you find a narrow point where the ground is merely scorching rather than deadly. After a careful crossing, you continue on your way — slower, but unburned.",
+						"text": "You follow the lava flow downstream until you find a narrow point where the ground is merely scorching rather than deadly. After a careful crossing, you continue on your way \u2014 slower, but unburned.",
 						"rewards": {
 							"xp": 2
 						},
@@ -1669,7 +1892,7 @@
 			"id": "hell_ice_oracle",
 			"title": "Ice Oracle",
 			"realm": "hell",
-			"text": "A figure is frozen solid inside a pillar of ice — upright, arms folded, expression serene. When you come near, you hear a strange voice from within your head:\n\n\"I have been here since time lost to memory. I have watched many pass through, time and time again. Ask, and I may answer.\"",
+			"text": "A figure is frozen solid inside a pillar of ice \u2014 upright, arms folded, expression serene. When you come near, you hear a strange voice from within your head:\n\n\"I have been here since time lost to memory. I have watched many pass through, time and time again. Ask, and I may answer.\"",
 			"choices": [
 				{
 					"id": "ask_ahead",
@@ -1752,7 +1975,7 @@
 			"id": "hell_ghost_village",
 			"title": "The Ghost Village",
 			"realm": "hell",
-			"text": "Stone buildings stand perfectly preserved — doors hanging open, fires long dead, a well at the center still intact. Not a soul visible, but the air feels thick with watching.\n\nThis was a place once. Something happened here, in some other age, and whatever it was left the buildings standing but took everyone away.",
+			"text": "Stone buildings stand perfectly preserved \u2014 doors hanging open, fires long dead, a well at the center still intact. Not a soul visible, but the air feels thick with watching.\n\nThis was a place once. Something happened here, in some other age, and whatever it was left the buildings standing but took everyone away.",
 			"choices": [
 				{
 					"id": "search",
@@ -1780,7 +2003,7 @@
 					},
 					"outcome_failure": {
 						"type": "text",
-						"text": "You search, but the village gives up nothing. Whatever was here has long since been taken — by other travelers, by time, or by whatever emptied this place.\n\nAs you leave, you hear what might be footsteps from inside a house you already checked. You don't go back.",
+						"text": "You search, but the village gives up nothing. Whatever was here has long since been taken \u2014 by other travelers, by time, or by whatever emptied this place.\n\nAs you leave, you hear what might be footsteps from inside a house you already checked. You don't go back.",
 						"rewards": {
 							"xp": 3
 						},
@@ -1793,7 +2016,7 @@
 					"text": "Go to the village center and pay your respects",
 					"outcome": {
 						"type": "text",
-						"text": "You stand at the well and bow your head. A prayer rises naturally — for whoever lived here, for whatever ended this place, for the possibility that even abandoned things can be honored.\n\nSomething shifts. The watching feeling becomes less like surveillance and more like gratitude.",
+						"text": "You stand at the well and bow your head. A prayer rises naturally \u2014 for whoever lived here, for whatever ended this place, for the possibility that even abandoned things can be honored.\n\nSomething shifts. The watching feeling becomes less like surveillance and more like gratitude.",
 						"rewards": {
 							"xp": 5
 						},
@@ -1815,7 +2038,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You stand at the village center and speak: 'I know you're here. I'm not here to take anything. I just want to understand.'\n\nFor a long moment, nothing. Then a presence — not frightening, just profoundly sad — brushes past you like a cold wind with shape.\n\nImages: a flood, a night with no stars, the decision to stay and wait for someone who never came. Then nothing.",
+						"text": "You stand at the village center and speak: 'I know you're here. I'm not here to take anything. I just want to understand.'\n\nFor a long moment, nothing. Then a presence \u2014 not frightening, just profoundly sad \u2014 brushes past you like a cold wind with shape.\n\nImages: a flood, a night with no stars, the decision to stay and wait for someone who never came. Then nothing.",
 						"rewards": {
 							"xp": 10
 						},
@@ -1841,7 +2064,7 @@
 			"id": "hell_lava_swimmer",
 			"title": "The Lava Swimmer",
 			"realm": "hell",
-			"text": "Something enormous moves beneath the surface of a lava flow. As you watch, it surfaces — a serpentine creature forty meters long, its scales glowing like cooling magma, its eyes containing a fire that is not hot but old.\n\nIt regards you with what you can only describe as curiosity. It is not aggressive. It has simply noticed you, in the way that very old things notice small things that interest them.",
+			"text": "Something enormous moves beneath the surface of a lava flow. As you watch, it surfaces \u2014 a serpentine creature forty meters long, its scales glowing like cooling magma, its eyes containing a fire that is not hot but old.\n\nIt regards you with what you can only describe as curiosity. It is not aggressive. It has simply noticed you, in the way that very old things notice small things that interest them.",
 			"choices": [
 				{
 					"id": "observe",
@@ -1849,7 +2072,7 @@
 					"text": "Watch it in respectful silence",
 					"outcome": {
 						"type": "text",
-						"text": "You stand still and watch. The creature rises and sinks, performing what might be a display or might simply be how it exists. Its movements are mesmerizing — fluid despite the medium, graceful in a way that should not be possible in molten rock.\n\nAfter a time, it sinks below the surface. The lava glows a little brighter where it passed.",
+						"text": "You stand still and watch. The creature rises and sinks, performing what might be a display or might simply be how it exists. Its movements are mesmerizing \u2014 fluid despite the medium, graceful in a way that should not be possible in molten rock.\n\nAfter a time, it sinks below the surface. The lava glows a little brighter where it passed.",
 						"rewards": {
 							"xp": 6
 						},
@@ -1870,7 +2093,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You extend your awareness through fire, and the creature responds immediately — not with words, but with sensation: the pleasure of heat, the memory of a world younger and hotter, the understanding that fire is not destruction but transformation.\n\nWhen the contact ends, you carry something of that understanding with you. Your fire magic feels different — deeper.",
+						"text": "You extend your awareness through fire, and the creature responds immediately \u2014 not with words, but with sensation: the pleasure of heat, the memory of a world younger and hotter, the understanding that fire is not destruction but transformation.\n\nWhen the contact ends, you carry something of that understanding with you. Your fire magic feels different \u2014 deeper.",
 						"rewards": {
 							"xp": 14
 						},
@@ -1886,7 +2109,7 @@
 					"text": "Drop something metallic into the lava as an offering",
 					"outcome": {
 						"type": "text",
-						"text": "You toss a few coins into the flow. The creature's head rises immediately, watching where the metal sank. It dips below the surface and returns a moment later, nudging something up toward the edge.\n\nA gem — fire opal — glowing with internal heat. It seems this creature values the exchange.",
+						"text": "You toss a few coins into the flow. The creature's head rises immediately, watching where the metal sank. It dips below the surface and returns a moment later, nudging something up toward the edge.\n\nA gem \u2014 fire opal \u2014 glowing with internal heat. It seems this creature values the exchange.",
 						"rewards": {
 							"xp": 5,
 							"items": [
@@ -1919,7 +2142,7 @@
 			"id": "hell_demon_dojo",
 			"title": "The Demon Dojo",
 			"realm": "hell",
-			"text": "A stone courtyard surrounded by scorched walls, where a dozen demons practice combat forms with absolute precision. There is something almost beautiful about it — the focus, the discipline, the complete commitment to mastery.\n\nThe sensei demon — larger than the others, covered in old scars — spots you and points with a clawed finger. Then gestures inward. An invitation.",
+			"text": "A stone courtyard surrounded by scorched walls, where a dozen demons practice combat forms with absolute precision. There is something almost beautiful about it \u2014 the focus, the discipline, the complete commitment to mastery.\n\nThe sensei demon \u2014 larger than the others, covered in old scars \u2014 spots you and points with a clawed finger. Then gestures inward. An invitation.",
 			"choices": [
 				{
 					"id": "train",
@@ -1932,7 +2155,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You strip off your pack and join the ranks. The sensei demon watches you critically, adjusting your stance twice without gentleness. The training is brutal but honest — no cruelty, just high standards.\n\nAn hour later, bruised and exhausted, you bow. The sensei returns the bow — once, precisely. You have been accepted as a student, at least for today.",
+						"text": "You strip off your pack and join the ranks. The sensei demon watches you critically, adjusting your stance twice without gentleness. The training is brutal but honest \u2014 no cruelty, just high standards.\n\nAn hour later, bruised and exhausted, you bow. The sensei returns the bow \u2014 once, precisely. You have been accepted as a student, at least for today.",
 						"rewards": {
 							"xp": 12
 						},
@@ -1954,7 +2177,7 @@
 					},
 					"outcome_success": {
 						"type": "text",
-						"text": "You bow to your opponent and take your stance. It's a hard fight — the demon is fast and skilled — but you hold your own, forcing it back several times.\n\nThe bout ends in a draw by mutual acknowledgment. The other demons stamp their feet in approval. You have earned something here that is not easily named.",
+						"text": "You bow to your opponent and take your stance. It's a hard fight \u2014 the demon is fast and skilled \u2014 but you hold your own, forcing it back several times.\n\nThe bout ends in a draw by mutual acknowledgment. The other demons stamp their feet in approval. You have earned something here that is not easily named.",
 						"rewards": {
 							"xp": 10
 						},
@@ -1965,7 +2188,7 @@
 					},
 					"outcome_failure": {
 						"type": "text",
-						"text": "You are put flat on your back within thirty seconds. The demon stands over you, then offers a hand up. The others are not unkind about it — they have all been put on their backs before.\n\n'Again,' the sensei says. You last longer the second time.",
+						"text": "You are put flat on your back within thirty seconds. The demon stands over you, then offers a hand up. The others are not unkind about it \u2014 they have all been put on their backs before.\n\n'Again,' the sensei says. You last longer the second time.",
 						"rewards": {
 							"xp": 5
 						},
@@ -1986,7 +2209,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You find a wall to lean against and watch. These forms are old — older than you expected, derived from styles you half-recognize. The demons practice them with perfect fidelity, generation after generation.\n\nYou learn more from watching than you could from participation. Certain sequences embed themselves in your muscle memory through pure observation.",
+						"text": "You find a wall to lean against and watch. These forms are old \u2014 older than you expected, derived from styles you half-recognize. The demons practice them with perfect fidelity, generation after generation.\n\nYou learn more from watching than you could from participation. Certain sequences embed themselves in your muscle memory through pure observation.",
 						"rewards": {
 							"xp": 8
 						},
@@ -2014,7 +2237,7 @@
 			"id": "hell_infernal_archive",
 			"title": "The Infernal Archive",
 			"realm": "hell",
-			"text": "A tower of black basalt rising from the badlands, its windows glowing orange from within. The sign above the door reads: INFERNAL ARCHIVE — RESTRICTED MATERIALS.\n\nThe librarian demon at the desk looks up as you enter. It is ancient, patient, and wearing spectacles that have somehow survived the volcanic atmosphere. It regards you with the professional suspicion of someone who has seen too many people try to steal restricted materials.",
+			"text": "A tower of black basalt rising from the badlands, its windows glowing orange from within. The sign above the door reads: INFERNAL ARCHIVE \u2014 RESTRICTED MATERIALS.\n\nThe librarian demon at the desk looks up as you enter. It is ancient, patient, and wearing spectacles that have somehow survived the volcanic atmosphere. It regards you with the professional suspicion of someone who has seen too many people try to steal restricted materials.",
 			"choices": [
 				{
 					"id": "browse_legal",
@@ -2022,7 +2245,7 @@
 					"text": "Request access to the unrestricted section",
 					"outcome": {
 						"type": "text",
-						"text": "The librarian processes your request with the efficiency of someone who processes requests all day, every day, eternally.\n\n'Section Three. No fire. No food. No summoning.' It hands you a reading pass. You spend an hour in the stacks, reading accounts of previous hell realm travelers — their strategies, their mistakes, their occasional triumphs.",
+						"text": "The librarian processes your request with the efficiency of someone who processes requests all day, every day, eternally.\n\n'Section Three. No fire. No food. No summoning.' It hands you a reading pass. You spend an hour in the stacks, reading accounts of previous hell realm travelers \u2014 their strategies, their mistakes, their occasional triumphs.",
 						"rewards": {
 							"xp": 8,
 							"items": [
@@ -2081,7 +2304,7 @@
 				{
 					"id": "leave",
 					"type": "default",
-					"text": "The archive's atmosphere is too unsettling — leave",
+					"text": "The archive's atmosphere is too unsettling \u2014 leave",
 					"outcome": {
 						"type": "text",
 						"text": "You back out of the archive. The librarian watches you go without comment. Behind you, the orange glow from the windows continues its eternal, patient burn.",
@@ -2094,7 +2317,7 @@
 			"id": "hell_fire_pilgrim",
 			"title": "The Fire Pilgrim",
 			"realm": "hell",
-			"text": "A figure in scorched white robes moves through the fire hell on their knees, hands pressed together, murmuring prayers with every measured movement. Burns mark their skin. Their progress is agonizingly slow.\n\nThey look up as you approach. Their eyes are clear — no delusion, no despair, just an absolute and deliberate acceptance of each moment of pain.",
+			"text": "A figure in scorched white robes moves through the fire hell on their knees, hands pressed together, murmuring prayers with every measured movement. Burns mark their skin. Their progress is agonizingly slow.\n\nThey look up as you approach. Their eyes are clear \u2014 no delusion, no despair, just an absolute and deliberate acceptance of each moment of pain.",
 			"choices": [
 				{
 					"id": "heal",
@@ -2107,7 +2330,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You tend to their wounds as best you can. They do not ask you to stop the pilgrimage — they do not want to stop. But the relief in their eyes at having another person near them is unmistakable.\n\nYou walk beside them for an hour. They speak of their life, their error, their choice to make this journey rather than wait for absolution. When you part, they press a small carved token into your hands.\n\n'Carry it until you don't need it anymore. Then give it to someone who does.'",
+						"text": "You tend to their wounds as best you can. They do not ask you to stop the pilgrimage \u2014 they do not want to stop. But the relief in their eyes at having another person near them is unmistakable.\n\nYou walk beside them for an hour. They speak of their life, their error, their choice to make this journey rather than wait for absolution. When you part, they press a small carved token into your hands.\n\n'Carry it until you don't need it anymore. Then give it to someone who does.'",
 						"rewards": {
 							"xp": 12,
 							"items": [
@@ -2127,7 +2350,7 @@
 					"text": "Walk alongside them in silence",
 					"outcome": {
 						"type": "text",
-						"text": "You fall into step beside them — upright, while they crawl, but present. They do not ask why you've joined them, and you don't explain.\n\nFor a quarter mile, you walk in silence. Their prayers continue without pause. When you must go a different direction, you bow to each other, and they return the bow without interrupting their rhythm.",
+						"text": "You fall into step beside them \u2014 upright, while they crawl, but present. They do not ask why you've joined them, and you don't explain.\n\nFor a quarter mile, you walk in silence. Their prayers continue without pause. When you must go a different direction, you bow to each other, and they return the bow without interrupting their rhythm.",
 						"rewards": {
 							"xp": 6
 						},
@@ -2169,7 +2392,7 @@
 			"id": "hell_bone_arena",
 			"title": "Bone Arena",
 			"realm": "hell",
-			"text": "A frozen pit ringed with bones rises from the wasteland — a combat arena, its tiers packed with demons howling for blood. Two poor souls fight below, stumbling with exhaustion.\n\nA massive gatekeeper blocks the exit path, grinning with entirely too many rows of teeth. \"Welcome, welcome! Do you come to bet or to fight?\"",
+			"text": "A frozen pit ringed with bones rises from the wasteland \u2014 a combat arena, its tiers packed with demons howling for blood. Two poor souls fight below, stumbling with exhaustion.\n\nA massive gatekeeper blocks the exit path, grinning with entirely too many rows of teeth. \"Welcome, welcome! Do you come to bet or to fight?\"",
 			"choices": [
 				{
 					"id": "fight",
@@ -2267,7 +2490,7 @@
 			"id": "hell_suffering_sage",
 			"title": "Suffering Sage",
 			"realm": "hell",
-			"text": "A figure sits at the summit of a frozen ridge, encased in ice up to the neck — only their face remains free, eyes open and clear. The oldest devils have forgotten when he appeared. Their expression is that of endless patience. As you come closer, they open their eyes a little.",
+			"text": "A figure sits at the summit of a frozen ridge, encased in ice up to the neck \u2014 only their face remains free, eyes open and clear. The oldest devils have forgotten when he appeared. Their expression is that of endless patience. As you come closer, they open their eyes a little.",
 			"choices": [
 				{
 					"id": "suffering",
@@ -2414,7 +2637,7 @@
 					"text": "Open it with reckless optimism",
 					"outcome": {
 						"type": "text",
-						"text": "A flash, a sound, blinding cold — then you're standing there holding a health potion and forty gold, entirely unharmed. Sometimes things are exactly what they appear to be.",
+						"text": "A flash, a sound, blinding cold \u2014 then you're standing there holding a health potion and forty gold, entirely unharmed. Sometimes things are exactly what they appear to be.",
 						"rewards": {
 							"xp": 4,
 							"items": [
@@ -2431,7 +2654,7 @@
 				{
 					"id": "leave",
 					"type": "default",
-					"text": "Leave it — gifts in hell are seldom genuine",
+					"text": "Leave it \u2014 gifts in hell are seldom genuine",
 					"outcome": {
 						"type": "text",
 						"text": "You step around it cautiously; behind you, the package waits warm and patient.",
@@ -2447,7 +2670,7 @@
 			"id": "hell_ice_demon_toll",
 			"title": "Ice Demon Toll",
 			"realm": "hell",
-			"text": "Three squat ice demons have stretched a chain across the path. The leader holds a sign reading \"TOLL — 10 GOLD\" in letters of varying sizes.\n\n\"Passage fee. Standard Hell Traversal Rate, Section 7, Paragraph 4.\"\n\"There is no Section 7, Paragraph 4.\"\n\"For you there is.\"",
+			"text": "Three squat ice demons have stretched a chain across the path. The leader holds a sign reading \"TOLL \u2014 10 GOLD\" in letters of varying sizes.\n\n\"Passage fee. Standard Hell Traversal Rate, Section 7, Paragraph 4.\"\n\"There is no Section 7, Paragraph 4.\"\n\"For you there is.\"",
 			"choices": [
 				{
 					"id": "fight",
@@ -2469,7 +2692,7 @@
 					"text": "Pay the toll and move on",
 					"outcome": {
 						"type": "text",
-						"text": "The gold is counted with elaborate care, the chain unhurriedly unclipped. \"Watch out for the unofficial toll three roads further on — those ones are criminals.\"",
+						"text": "The gold is counted with elaborate care, the chain unhurriedly unclipped. \"Watch out for the unofficial toll three roads further on \u2014 those ones are criminals.\"",
 						"rewards": {
 							"xp": 2
 						},
@@ -2613,7 +2836,7 @@
 			"id": "hell_frozen_army",
 			"title": "Frozen Army",
 			"realm": "hell",
-			"text": "The valley below is filled with an army, frozen mid-march — thousands of soldiers preserved in ice, banners still flying. The armor is from no civilization you recognize. They are marching toward something that is no longer there.\n\nThey look like they are waiting.",
+			"text": "The valley below is filled with an army, frozen mid-march \u2014 thousands of soldiers preserved in ice, banners still flying. The armor is from no civilization you recognize. They are marching toward something that is no longer there.\n\nThey look like they are waiting.",
 			"choices": [
 				{
 					"id": "respect",
@@ -2693,7 +2916,7 @@
 			"id": "hell_pyromancer_duel",
 			"title": "The Pyromancer's Challenge",
 			"realm": "hell",
-			"text": "A human mage in scorched red robes blocks the path, orbiting flames circling her like planets. The dueling scar on her cheek is self-inflicted — a mark made deliberately. She examines you with professional interest.\n\n'You move like a magic user. I can always tell. I've been here forty years and no one's given me a real fight. You interested?'\n\nBehind her, the path continues.",
+			"text": "A human mage in scorched red robes blocks the path, orbiting flames circling her like planets. The dueling scar on her cheek is self-inflicted \u2014 a mark made deliberately. She examines you with professional interest.\n\n'You move like a magic user. I can always tell. I've been here forty years and no one's given me a real fight. You interested?'\n\nBehind her, the path continues.",
 			"choices": [
 				{
 					"id": "duel",
@@ -2729,7 +2952,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You raise a hand and let wind answer her fire. The two forces meet between you — not combat, but dialogue. Fire reaches. Wind redirects. Fire presses. Wind opens.\n\nShe holds this for a long moment, then lowers her hands.\n\n'Huh. I've never had someone answer fire with wind before.' She considers. 'That's actually better. You're teaching me something.' She steps aside and demonstrates a technique for sealing fire before she lets you pass.",
+						"text": "You raise a hand and let wind answer her fire. The two forces meet between you \u2014 not combat, but dialogue. Fire reaches. Wind redirects. Fire presses. Wind opens.\n\nShe holds this for a long moment, then lowers her hands.\n\n'Huh. I've never had someone answer fire with wind before.' She considers. 'That's actually better. You're teaching me something.' She steps aside and demonstrates a technique for sealing fire before she lets you pass.",
 						"rewards": {
 							"xp": 12
 						},
@@ -2750,7 +2973,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "The orbiting flames slow. Something in her expression shifts from challenge to something older.\n\n'I came looking for my student,' she says. 'He made bad choices. He ended up here. I found his ghost eventually. Spent ten years helping him move on.' A pause. 'He did, in the end. But I stayed. I thought I owed this place something.' She looks at the path behind her. 'I'm not sure that's true anymore.'\n\nShe steps aside without being asked. Her flames continue their orbit, but slower — more contemplative than aggressive.",
+						"text": "The orbiting flames slow. Something in her expression shifts from challenge to something older.\n\n'I came looking for my student,' she says. 'He made bad choices. He ended up here. I found his ghost eventually. Spent ten years helping him move on.' A pause. 'He did, in the end. But I stayed. I thought I owed this place something.' She looks at the path behind her. 'I'm not sure that's true anymore.'\n\nShe steps aside without being asked. Her flames continue their orbit, but slower \u2014 more contemplative than aggressive.",
 						"rewards": {
 							"xp": 8
 						},
@@ -2779,7 +3002,7 @@
 			"id": "hell_demon_marketplace",
 			"title": "The Demon Marketplace",
 			"realm": "hell",
-			"text": "A chaotic bazaar has assembled in the middle of the lava fields — dozens of stalls selling weapons, memories, bottled emotions, demon-forged equipment, and items you cannot categorize. The merchants are a mix of demons, damned souls, and creatures that do not appear to belong to any known category.\n\nA sign over the entrance reads: NO FIGHTING. NO UNAUTHORIZED FIRE (the sign is on fire). NO RETURNS.\n\nThe noise is extraordinary.",
+			"text": "A chaotic bazaar has assembled in the middle of the lava fields \u2014 dozens of stalls selling weapons, memories, bottled emotions, demon-forged equipment, and items you cannot categorize. The merchants are a mix of demons, damned souls, and creatures that do not appear to belong to any known category.\n\nA sign over the entrance reads: NO FIGHTING. NO UNAUTHORIZED FIRE (the sign is on fire). NO RETURNS.\n\nThe noise is extraordinary.",
 			"choices": [
 				{
 					"id": "browse",
@@ -2788,7 +3011,7 @@
 					"outcome": {
 						"type": "shop",
 						"shop_id": "ember_merchant",
-						"text": "You move through the stalls, shoulder to shoulder with demons and the damned alike. It is, despite everything, a marketplace — and there is something almost comforting about the familiar rhythms of commerce.",
+						"text": "You move through the stalls, shoulder to shoulder with demons and the damned alike. It is, despite everything, a marketplace \u2014 and there is something almost comforting about the familiar rhythms of commerce.",
 						"rewards": {
 							"xp": 2
 						},
@@ -2809,7 +3032,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You spend an hour working the stalls with professional efficiency — checking quality, testing weights, haggling at the right moments. You find a stall in the back that others seem to avoid, its proprietor a very old demon sitting behind a display of items none of the other merchants will look at directly.\n\n'Good eye,' the demon says. 'The things nobody wants are often the things someone needs.' The prices are fair. The goods are unusual.",
+						"text": "You spend an hour working the stalls with professional efficiency \u2014 checking quality, testing weights, haggling at the right moments. You find a stall in the back that others seem to avoid, its proprietor a very old demon sitting behind a display of items none of the other merchants will look at directly.\n\n'Good eye,' the demon says. 'The things nobody wants are often the things someone needs.' The prices are fair. The goods are unusual.",
 						"rewards": {
 							"xp": 8,
 							"items": [
@@ -2832,7 +3055,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You find the alley behind the main stalls where the less official commerce happens. A hooded demon with careful eyes offers things the main market won't stock — items with complicated histories, scrolls from restricted collections, objects whose provenance cannot be confirmed.\n\nYou leave with a scroll and a sense of mild unease.",
+						"text": "You find the alley behind the main stalls where the less official commerce happens. A hooded demon with careful eyes offers things the main market won't stock \u2014 items with complicated histories, scrolls from restricted collections, objects whose provenance cannot be confirmed.\n\nYou leave with a scroll and a sense of mild unease.",
 						"rewards": {
 							"xp": 6,
 							"items": [
@@ -2851,7 +3074,7 @@
 					"text": "Watch the crowds instead of buying",
 					"outcome": {
 						"type": "text",
-						"text": "You find a good position and spend an hour simply watching.\n\nThree deals go wrong in interesting ways. Two go surprisingly right — a demon and a damned soul find they both want what the other has, and part looking pleased. A woman in grey robes stands before a stall selling memory-jars, reading the labels, and cries quietly in front of one that says: 'Tuesday, Age 7.'\n\nShe doesn't buy it. Neither would you.",
+						"text": "You find a good position and spend an hour simply watching.\n\nThree deals go wrong in interesting ways. Two go surprisingly right \u2014 a demon and a damned soul find they both want what the other has, and part looking pleased. A woman in grey robes stands before a stall selling memory-jars, reading the labels, and cries quietly in front of one that says: 'Tuesday, Age 7.'\n\nShe doesn't buy it. Neither would you.",
 						"rewards": {
 							"xp": 4
 						},
@@ -2866,7 +3089,7 @@
 			"id": "hell_burning_library",
 			"title": "The Burning Library",
 			"realm": "hell",
-			"text": "A library is on fire.\n\nNot metaphorically — the entire building is actively burning, shelves collapsing, books falling in cascades of sparks. But at the center, visible through the inferno, an enormous bookshelf stands intact, its contents still whole.\n\nThe fire has been burning long enough that the outer walls have almost collapsed. It will reach the center shelf soon.",
+			"text": "A library is on fire.\n\nNot metaphorically \u2014 the entire building is actively burning, shelves collapsing, books falling in cascades of sparks. But at the center, visible through the inferno, an enormous bookshelf stands intact, its contents still whole.\n\nThe fire has been burning long enough that the outer walls have almost collapsed. It will reach the center shelf soon.",
 			"choices": [
 				{
 					"id": "brave",
@@ -2894,7 +3117,7 @@
 					},
 					"outcome_failure": {
 						"type": "text",
-						"text": "The heat drives you back before you reach the center. You grab one book from shelves near the entrance — old, smoke-damaged, but intact — before the entrance collapses.\n\nYou stand outside, coughing, clutching a book you saved. The center shelf burns.",
+						"text": "The heat drives you back before you reach the center. You grab one book from shelves near the entrance \u2014 old, smoke-damaged, but intact \u2014 before the entrance collapses.\n\nYou stand outside, coughing, clutching a book you saved. The center shelf burns.",
 						"rewards": {
 							"xp": 5,
 							"items": [
@@ -2918,7 +3141,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You reach into the fire and speak to it. It takes a moment — the fire here is old and set in its ways — but it responds. A corridor of cooler air opens before you, the flames pulling back on either side.\n\nYou walk to the center shelf calmly and take your time selecting. The books feel important in a way you cannot explain. You exit as the building finally collapses behind you in a controlled exhale.",
+						"text": "You reach into the fire and speak to it. It takes a moment \u2014 the fire here is old and set in its ways \u2014 but it responds. A corridor of cooler air opens before you, the flames pulling back on either side.\n\nYou walk to the center shelf calmly and take your time selecting. The books feel important in a way you cannot explain. You exit as the building finally collapses behind you in a controlled exhale.",
 						"rewards": {
 							"xp": 14,
 							"items": [
@@ -2938,7 +3161,7 @@
 					"text": "Shout to see if anyone is still inside",
 					"outcome": {
 						"type": "text",
-						"text": "You cup your hands and call into the flames.\n\nSilence. Then: a cough. Then a small demon emerges from behind a burning pillar, clutching a ledger to its chest with both arms, absolutely refusing to put it down despite the circumstances.\n\nYou pull it out by the collar. It stands outside looking humiliated — not by the rescue, but by the fact that it needed one.\n\n'The accounts,' it says, still holding the ledger. 'I couldn't leave the accounts.' It presses a key into your hands. 'For an archive in the eastern quarter. Everything there is in order too. In case anyone asks.' It walks away with dignity it has not entirely earned.",
+						"text": "You cup your hands and call into the flames.\n\nSilence. Then: a cough. Then a small demon emerges from behind a burning pillar, clutching a ledger to its chest with both arms, absolutely refusing to put it down despite the circumstances.\n\nYou pull it out by the collar. It stands outside looking humiliated \u2014 not by the rescue, but by the fact that it needed one.\n\n'The accounts,' it says, still holding the ledger. 'I couldn't leave the accounts.' It presses a key into your hands. 'For an archive in the eastern quarter. Everything there is in order too. In case anyone asks.' It walks away with dignity it has not entirely earned.",
 						"rewards": {
 							"xp": 8,
 							"items": [
@@ -2958,7 +3181,7 @@
 					"text": "Stand and witness the burning",
 					"outcome": {
 						"type": "text",
-						"text": "You stand in the heat and watch the library burn.\n\nAt a certain point, the center shelf goes. The books go last — their pages lifting in the updraft, briefly bright, then dark.\n\nSomething is lost. And yet, watching it, you also feel something like release — as though the books were finished being books and have become something else instead.\n\nYou are not sure this is a useful thought. But it is the thought you have.",
+						"text": "You stand in the heat and watch the library burn.\n\nAt a certain point, the center shelf goes. The books go last \u2014 their pages lifting in the updraft, briefly bright, then dark.\n\nSomething is lost. And yet, watching it, you also feel something like release \u2014 as though the books were finished being books and have become something else instead.\n\nYou are not sure this is a useful thought. But it is the thought you have.",
 						"rewards": {
 							"xp": 3
 						},
@@ -2973,7 +3196,7 @@
 			"id": "hell_sinner_gang",
 			"title": "The Sinner Gang",
 			"realm": "hell",
-			"text": "A group of damned souls has made camp around a fire — not for warmth, none of them need warmth, but for the feeling of it. A former soldier, a tax collector, an artist, a merchant. They've made rules, share what they find, keep watch in shifts. It is, against all odds, working.\n\nOne of them looks up as you approach.\n\n'You're alive. Actual living. We don't get many of those.' A pause. 'Sit down. We're not going to hurt you.'",
+			"text": "A group of damned souls has made camp around a fire \u2014 not for warmth, none of them need warmth, but for the feeling of it. A former soldier, a tax collector, an artist, a merchant. They've made rules, share what they find, keep watch in shifts. It is, against all odds, working.\n\nOne of them looks up as you approach.\n\n'You're alive. Actual living. We don't get many of those.' A pause. 'Sit down. We're not going to hurt you.'",
 			"choices": [
 				{
 					"id": "stories",
@@ -2981,7 +3204,7 @@
 					"text": "Share a meal and hear their stories",
 					"outcome": {
 						"type": "text",
-						"text": "You sit with them and the stories come out — what they did, what they understand now about what they did, what they are still working out.\n\nThe soldier burned a village on orders. The tax collector took more than was owed, always. The artist spent a life accepting credit for other people's work. The merchant let a business partner take the fall for a shared crime.\n\nNone of them are done yet. But they are thinking clearly about it, which is more than many here manage. You leave feeling, strangely, less alone.",
+						"text": "You sit with them and the stories come out \u2014 what they did, what they understand now about what they did, what they are still working out.\n\nThe soldier burned a village on orders. The tax collector took more than was owed, always. The artist spent a life accepting credit for other people's work. The merchant let a business partner take the fall for a shared crime.\n\nNone of them are done yet. But they are thinking clearly about it, which is more than many here manage. You leave feeling, strangely, less alone.",
 						"rewards": {
 							"xp": 8
 						},
@@ -2997,7 +3220,7 @@
 					"text": "Trade supplies with them",
 					"outcome": {
 						"type": "text",
-						"text": "They have things scavenged from wandering souls — small items, coins, a potion someone dropped. You have things from the living world. You trade fairly, taking what you need, giving what you can spare.\n\nThe merchant among them negotiates with professional precision, which makes everyone laugh, including the merchant. 'Habits,' they say. 'Even here.'",
+						"text": "They have things scavenged from wandering souls \u2014 small items, coins, a potion someone dropped. You have things from the living world. You trade fairly, taking what you need, giving what you can spare.\n\nThe merchant among them negotiates with professional precision, which makes everyone laugh, including the merchant. 'Habits,' they say. 'Even here.'",
 						"rewards": {
 							"xp": 4,
 							"items": [
@@ -3020,7 +3243,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You talk to them for a long time — about suffering as instruction, about the difference between enduring and understanding, about what it would mean to actively help other souls in the hell realm rather than simply outlasting it.\n\nThe words land differently here than they would in the living world. One of them begins to cry. Another says quietly, 'We could actually do something with our time here.'\n\nWhen you leave, they are still talking. Their camp looks like the beginning of something.",
+						"text": "You talk to them for a long time \u2014 about suffering as instruction, about the difference between enduring and understanding, about what it would mean to actively help other souls in the hell realm rather than simply outlasting it.\n\nThe words land differently here than they would in the living world. One of them begins to cry. Another says quietly, 'We could actually do something with our time here.'\n\nWhen you leave, they are still talking. Their camp looks like the beginning of something.",
 						"rewards": {
 							"xp": 12
 						},
@@ -3052,7 +3275,7 @@
 			"id": "hell_forge_spirit",
 			"title": "The Forge Spirit",
 			"realm": "hell",
-			"text": "An abandoned forge still glows with ancient heat — the fire here has not gone out in centuries. A translucent figure works the bellows with practiced rhythm, hammer rising and falling on metal that is not there. She died here, or near here, long enough ago that the distinction no longer matters.\n\nShe stops as you approach. Looks at you with the focused attention of someone who has not had company in a very long time.\n\n'Oh. A visitor. Forgive me — I lose track of... everything. What day is it?'",
+			"text": "An abandoned forge still glows with ancient heat \u2014 the fire here has not gone out in centuries. A translucent figure works the bellows with practiced rhythm, hammer rising and falling on metal that is not there. She died here, or near here, long enough ago that the distinction no longer matters.\n\nShe stops as you approach. Looks at you with the focused attention of someone who has not had company in a very long time.\n\n'Oh. A visitor. Forgive me \u2014 I lose track of... everything. What day is it?'",
 			"choices": [
 				{
 					"id": "tell_news",
@@ -3060,7 +3283,7 @@
 					"text": "Tell her what you know of the current state of the realm",
 					"outcome": {
 						"type": "text",
-						"text": "You tell her what you know — the demon patrols, the lava flows, the frozen north, Yama's lieutenant at the gate. Each piece of information she processes slowly, turning it over.\n\n'Still going, then. The realm.' She resumes the rhythm of the bellows. 'I wasn't sure.'\n\nThen she stops again. 'Thank you. No one has told me anything in... I genuinely don't know how long. You forget there is news to be had.' She works the bellows harder, as though the information has given her energy.",
+						"text": "You tell her what you know \u2014 the demon patrols, the lava flows, the frozen north, Yama's lieutenant at the gate. Each piece of information she processes slowly, turning it over.\n\n'Still going, then. The realm.' She resumes the rhythm of the bellows. 'I wasn't sure.'\n\nThen she stops again. 'Thank you. No one has told me anything in... I genuinely don't know how long. You forget there is news to be had.' She works the bellows harder, as though the information has given her energy.",
 						"rewards": {
 							"xp": 5
 						},
@@ -3081,7 +3304,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You spend a long time speaking with her — about what she made, who she made it for, what she was working toward when she died. The hammer and bellows slow and finally stop.\n\n'I kept thinking there was one more thing to finish,' she says. 'But it was already finished. I just didn't see it.'\n\nShe looks up and goes very still. 'Oh,' she says. 'There it is. I've been looking right at it.' And then she is simply gone — not destroyed, but complete. On the forge floor, her tools have become solid. Real. Apparently hers to leave behind.",
+						"text": "You spend a long time speaking with her \u2014 about what she made, who she made it for, what she was working toward when she died. The hammer and bellows slow and finally stop.\n\n'I kept thinking there was one more thing to finish,' she says. 'But it was already finished. I just didn't see it.'\n\nShe looks up and goes very still. 'Oh,' she says. 'There it is. I've been looking right at it.' And then she is simply gone \u2014 not destroyed, but complete. On the forge floor, her tools have become solid. Real. Apparently hers to leave behind.",
 						"rewards": {
 							"xp": 14,
 							"items": [
@@ -3106,7 +3329,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "She teaches. Ancient methods — based on relationship with material rather than mastery over it. She shows you how to hear what a metal wants to become before you force it into a shape.\n\nYour hands seem to remember what your mind cannot quite hold. You leave with something that feels less like knowledge and more like patience.",
+						"text": "She teaches. Ancient methods \u2014 based on relationship with material rather than mastery over it. She shows you how to hear what a metal wants to become before you force it into a shape.\n\nYour hands seem to remember what your mind cannot quite hold. You leave with something that feels less like knowledge and more like patience.",
 						"rewards": {
 							"xp": 10
 						},
@@ -3122,7 +3345,7 @@
 					"text": "Leave the spirit to her work",
 					"outcome": {
 						"type": "text",
-						"text": "You bow at the entrance to the forge. She does not look up, but the rhythm of the hammer changes briefly — a different beat, just for a moment — before returning to its ancient pattern.\n\nA greeting, in the only language available.",
+						"text": "You bow at the entrance to the forge. She does not look up, but the rhythm of the hammer changes briefly \u2014 a different beat, just for a moment \u2014 before returning to its ancient pattern.\n\nA greeting, in the only language available.",
 						"rewards": {
 							"xp": 2
 						},
@@ -3137,7 +3360,7 @@
 			"id": "hell_the_invitation",
 			"title": "The Invitation",
 			"realm": "hell",
-			"text": "An ornate envelope rests on a flat rock in the middle of a lava field, as though placed there deliberately. It is sealed with black wax. Your name is written on the outside — not the name you are using in this life, but a name you know with absolute certainty is yours.\n\nThe handwriting is beautiful.\n\nInside: a map, a time, an address, and the words: 'It would please us greatly if you would attend. We have matters of mutual interest to discuss. Come alone.'",
+			"text": "An ornate envelope rests on a flat rock in the middle of a lava field, as though placed there deliberately. It is sealed with black wax. Your name is written on the outside \u2014 not the name you are using in this life, but a name you know with absolute certainty is yours.\n\nThe handwriting is beautiful.\n\nInside: a map, a time, an address, and the words: 'It would please us greatly if you would attend. We have matters of mutual interest to discuss. Come alone.'",
 			"choices": [
 				{
 					"id": "follow",
@@ -3145,7 +3368,7 @@
 					"text": "Follow the map",
 					"outcome": {
 						"type": "text",
-						"text": "The address leads to a formal dining room carved from black obsidian, lit by candles burning with a clean blue flame. A demon of apparent authority waits at the head of a long table — well-dressed, patient, carrying the specific stillness of someone who has planned this meeting carefully.\n\n'We have been observing your journey,' it says. 'With interest. There is a matter we would like to discuss — something that would benefit both of us, if we can reach an agreement.'\n\nThe conversation that follows is careful and illuminating. You learn things about the hell realm you did not know. You also decline the offer, politely, when it finally arrives.\n\n'The offer stands,' the demon says as you leave. 'When you change your mind, you'll know how to reach us.' It does not say if.\n\nYou notice, on the way out, that there is only one setting at the table. They knew you'd come alone.",
+						"text": "The address leads to a formal dining room carved from black obsidian, lit by candles burning with a clean blue flame. A demon of apparent authority waits at the head of a long table \u2014 well-dressed, patient, carrying the specific stillness of someone who has planned this meeting carefully.\n\n'We have been observing your journey,' it says. 'With interest. There is a matter we would like to discuss \u2014 something that would benefit both of us, if we can reach an agreement.'\n\nThe conversation that follows is careful and illuminating. You learn things about the hell realm you did not know. You also decline the offer, politely, when it finally arrives.\n\n'The offer stands,' the demon says as you leave. 'When you change your mind, you'll know how to reach us.' It does not say if.\n\nYou notice, on the way out, that there is only one setting at the table. They knew you'd come alone.",
 						"rewards": {
 							"xp": 10
 						},
@@ -3167,7 +3390,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You find the address an hour before the appointed time and settle in a position with a clear view of the entrance.\n\nSomeone else has already arrived — a damned soul, young, with the hollow eyes of someone who has been suffering long enough to consider anything an improvement. They go inside. Through the wall (obsidian is surprisingly thin) you can hear the shape of the conversation without the words.\n\nA deal is being made. The soul wants something specific. The demon is offering it.\n\nYou could intervene. You could also let them make their own choice — the soul is old enough to know what they're doing, even here.\n\nYou wait until the soul emerges — lighter, in some way you cannot verify — then slip away before your own appointment time.",
+						"text": "You find the address an hour before the appointed time and settle in a position with a clear view of the entrance.\n\nSomeone else has already arrived \u2014 a damned soul, young, with the hollow eyes of someone who has been suffering long enough to consider anything an improvement. They go inside. Through the wall (obsidian is surprisingly thin) you can hear the shape of the conversation without the words.\n\nA deal is being made. The soul wants something specific. The demon is offering it.\n\nYou could intervene. You could also let them make their own choice \u2014 the soul is old enough to know what they're doing, even here.\n\nYou wait until the soul emerges \u2014 lighter, in some way you cannot verify \u2014 then slip away before your own appointment time.",
 						"rewards": {
 							"xp": 8
 						},
@@ -3187,7 +3410,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "You read the letter carefully with trained attention to what is not there.\n\nThree layers of enchantment. The first: a location beacon — someone has already noted that the invitation was opened. The second: a subtle compulsion toward compliance, minor enough to be deniable. The third: something you cannot fully name but that feels, precisely and strangely, like recognition — as though whoever wrote this has seen you before, in a context you cannot access.\n\nYou burn the invitation. For a moment you feel watched from a very specific direction. Then nothing.\n\nThe name they used for you, you will be thinking about for a while.",
+						"text": "You read the letter carefully with trained attention to what is not there.\n\nThree layers of enchantment. The first: a location beacon \u2014 someone has already noted that the invitation was opened. The second: a subtle compulsion toward compliance, minor enough to be deniable. The third: something you cannot fully name but that feels, precisely and strangely, like recognition \u2014 as though whoever wrote this has seen you before, in a context you cannot access.\n\nYou burn the invitation. For a moment you feel watched from a very specific direction. Then nothing.\n\nThe name they used for you, you will be thinking about for a while.",
 						"rewards": {
 							"xp": 10
 						},
@@ -3203,7 +3426,7 @@
 					"text": "Set it back on the rock and walk on",
 					"outcome": {
 						"type": "text",
-						"text": "You set the envelope back on the rock and continue on your way.\n\nBehind you, the envelope waits. A faint sense of disappointment from a specific direction — calm, professional, patient. The kind of disappointment that is already adjusting its timeline.\n\nSomeday, you think, you will want to know what was in that letter.",
+						"text": "You set the envelope back on the rock and continue on your way.\n\nBehind you, the envelope waits. A faint sense of disappointment from a specific direction \u2014 calm, professional, patient. The kind of disappointment that is already adjusting its timeline.\n\nSomeday, you think, you will want to know what was in that letter.",
 						"rewards": {
 							"xp": 3
 						},
@@ -3231,7 +3454,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "As you settle down and focus, you recognize there is no boundary between you. The teacher smiles and raises their hand to bless you.\n\nA warmth spreads through your body — not the burning heat of this realm, but something gentler. Something remembered.",
+						"text": "As you settle down and focus, you recognize there is no boundary between you. The teacher smiles and raises their hand to bless you.\n\nA warmth spreads through your body \u2014 not the burning heat of this realm, but something gentler. Something remembered.",
 						"rewards": {
 							"xp": 12
 						},
@@ -3253,7 +3476,7 @@
 					},
 					"outcome": {
 						"type": "text",
-						"text": "Impermanence, compassion, joy. It seems like you have heard these words before, but long forgotten their meaning.\n\nThe bodhisattva speaks without urgency, as though time here is different — and perhaps it is. When the teaching ends, the words continue to resonate somewhere you cannot quite locate.",
+						"text": "Impermanence, compassion, joy. It seems like you have heard these words before, but long forgotten their meaning.\n\nThe bodhisattva speaks without urgency, as though time here is different \u2014 and perhaps it is. When the teaching ends, the words continue to resonate somewhere you cannot quite locate.",
 						"rewards": {
 							"xp": 10
 						},
@@ -3270,7 +3493,7 @@
 					"text": "Come and take your fill",
 					"outcome": {
 						"type": "text",
-						"text": "For a moment, all your fears and hopes dissolve into the present moment. You are content.\n\nThe food tastes like nothing you have eaten in this realm — clean, simple, nourishing. Your wounds close. Your mind clears. Your body remembers what it feels like to be whole.",
+						"text": "For a moment, all your fears and hopes dissolve into the present moment. You are content.\n\nThe food tastes like nothing you have eaten in this realm \u2014 clean, simple, nourishing. Your wounds close. Your mind clears. Your body remembers what it feels like to be whole.",
 						"rewards": {
 							"xp": 8,
 							"restore": {
@@ -3293,7 +3516,7 @@
 					"text": "Rush in and take as much as you can",
 					"outcome": {
 						"type": "text",
-						"text": "You shove past the imps and grab armfuls of food and medicine — but as your hands close around them, they dissolve like mist. The clearing shimmers. The bodhisattva regards you with an expression that is not disappointment but something closer to recognition.\n\nThe scene vanishes as if it was never there.",
+						"text": "You shove past the imps and grab armfuls of food and medicine \u2014 but as your hands close around them, they dissolve like mist. The clearing shimmers. The bodhisattva regards you with an expression that is not disappointment but something closer to recognition.\n\nThe scene vanishes as if it was never there.",
 						"rewards": {
 							"xp": 0
 						},
@@ -3360,7 +3583,7 @@
 			"id": "hell_teahouse_fire",
 			"title": "Teahouse",
 			"realm": "hell",
-			"text": "A squat building half-buried in ash. The sign is burned off but the smell of tea — strong, smoky, almost pleasant — cuts through the sulphur. The door is open.",
+			"text": "A squat building half-buried in ash. The sign is burned off but the smell of tea \u2014 strong, smoky, almost pleasant \u2014 cuts through the sulphur. The door is open.",
 			"choices": [
 				{
 					"text": "Step inside",
@@ -3410,7 +3633,7 @@
 			"id": "hell_veterans_camp",
 			"title": "Veterans' Camp",
 			"realm": "hell",
-			"text": "A sparse camp around a fire. The people here are old — old for hell, which means they have survived something most haven't. One of them watches you approach with calculating eyes.",
+			"text": "A sparse camp around a fire. The people here are old \u2014 old for hell, which means they have survived something most haven't. One of them watches you approach with calculating eyes.",
 			"choices": [
 				{
 					"text": "Ask about training",
@@ -3443,7 +3666,7 @@
 					"outcome": {
 						"type": "shop",
 						"shop_id": "hell_sacred_grove",
-						"text": "A Yakshini turns and regards you without surprise. Earth magic has a price — she names it."
+						"text": "A Yakshini turns and regards you without surprise. Earth magic has a price \u2014 she names it."
 					}
 				},
 				{
@@ -3456,7 +3679,6 @@
 				}
 			]
 		},
-
 		"hell_temple_of_the_naga": {
 			"id": "hell_temple_of_the_naga",
 			"title": "Temple of the Naga",
@@ -3482,7 +3704,6 @@
 				}
 			]
 		},
-
 		"hell_garuda_roost": {
 			"id": "hell_garuda_roost",
 			"title": "Garuda Roost",
@@ -3495,7 +3716,7 @@
 					"outcome": {
 						"type": "shop",
 						"shop_id": "hell_garuda_roost",
-						"text": "One of the worshippers looks up. They teach Air magic here — what you pay is your own business."
+						"text": "One of the worshippers looks up. They teach Air magic here \u2014 what you pay is your own business."
 					}
 				},
 				{
@@ -3508,7 +3729,6 @@
 				}
 			]
 		},
-
 		"hell_hidden_gompa": {
 			"id": "hell_hidden_gompa",
 			"title": "Hidden Gompa",
@@ -3534,7 +3754,6 @@
 				}
 			]
 		},
-
 		"hell_mirror_lake": {
 			"id": "hell_mirror_lake",
 			"title": "Mirror Lake",
@@ -3560,7 +3779,6 @@
 				}
 			]
 		},
-
 		"hell_crossroads_stupa": {
 			"id": "hell_crossroads_stupa",
 			"title": "Crossroads Stupa",
@@ -3573,7 +3791,7 @@
 					"outcome": {
 						"type": "shop",
 						"shop_id": "hell_crossroads_stupa",
-						"text": "A practitioner emerges from behind the stupa. Summoning magic — the crossroads is the right place for it. Gold is the price."
+						"text": "A practitioner emerges from behind the stupa. Summoning magic \u2014 the crossroads is the right place for it. Gold is the price."
 					}
 				},
 				{
@@ -3586,7 +3804,6 @@
 				}
 			]
 		},
-
 		"hell_yogini_circle": {
 			"id": "hell_yogini_circle",
 			"title": "Circle of the Yoginis",
@@ -3612,7 +3829,6 @@
 				}
 			]
 		},
-
 		"hell_medicinal_garden": {
 			"id": "hell_medicinal_garden",
 			"title": "Medicinal Garden",
@@ -3638,7 +3854,6 @@
 				}
 			]
 		},
-
 		"hell_eternal_fire": {
 			"id": "hell_eternal_fire",
 			"title": "Temple of the Eternal Fire",
@@ -3664,7 +3879,6 @@
 				}
 			]
 		},
-
 		"hell_black_lodge": {
 			"id": "hell_black_lodge",
 			"title": "Black Lodge",
@@ -3690,7 +3904,6 @@
 				}
 			]
 		},
-
 		"hell_town_weapons": {
 			"id": "hell_town_weapons",
 			"title": "Town",
@@ -3766,7 +3979,6 @@
 				}
 			]
 		},
-
 		"hell_infernal_forge": {
 			"id": "hell_infernal_forge",
 			"title": "Infernal Forge",
@@ -3787,7 +3999,11 @@
 					"id": "training",
 					"type": "requirement",
 					"text": "Ask to be trained in axe techniques",
-					"requirements": { "skills": { "axes": 1 } },
+					"requirements": {
+						"skills": {
+							"axes": 1
+						}
+					},
 					"outcome": {
 						"type": "shop",
 						"shop_id": "infernal_forge",
@@ -3795,19 +4011,85 @@
 					}
 				},
 				{
+					"id": "steal",
+					"type": "roll",
+					"text": "Pocket a blade while the smith has their back turned",
+					"requirements": {
+						"roll": {
+							"attribute": "finesse",
+							"difficulty": 15
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "A demon at an anvil is completely absorbed in their work. You lift a finished blade from the cooling rack, tuck it under your arm, and walk out at a deliberate pace. The hammering does not stop.",
+						"rewards": {
+							"items": [
+								"iron_axe"
+							]
+						},
+						"karma": {
+							"hell": 5,
+							"human": -3
+						}
+					},
+					"outcome_failure": {
+						"type": "combat",
+						"enemy_group": "demon_sentinel",
+						"text": "The hammering stops. The demon turns around, still holding the hammer. They do not speak. They do not need to.",
+						"difficulty": "hard",
+						"karma": {
+							"hell": 4
+						}
+					}
+				},
+				{
+					"id": "comedy",
+					"type": "roll",
+					"text": "Attempt a joke about blacksmiths and hot work",
+					"requirements": {
+						"roll": {
+							"skill": "comedy",
+							"difficulty": 13
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "\"So I said to the blacksmith, 'is it hot in here or is it just your hammer?'\" The demon sets down their work. Looks at you. Then emits a sound like metal shearing \u2014 which, you eventually realize, is laughter. They hand you a fistful of scrap. 'You. I don't hate you.' Highest praise, probably.",
+						"rewards": {
+							"items": [
+								"scrap_metal"
+							]
+						},
+						"karma": {
+							"human": 2,
+							"asura": 1
+						}
+					},
+					"outcome_failure": {
+						"type": "text",
+						"text": "The demon stares at you for a very long time. Then they pick up the hammer again. \"Leave,\" they say. The word is shaped like a threat.",
+						"karma": {
+							"animal": 1
+						}
+					}
+				},
+				{
 					"id": "leave",
 					"type": "default",
 					"text": "Leave",
-					"outcome": { "type": "text", "text": "The hammering resumes behind you." }
+					"outcome": {
+						"type": "text",
+						"text": "The hammering resumes behind you."
+					}
 				}
 			]
 		},
-
 		"hell_bone_archer_camp": {
 			"id": "hell_bone_archer_camp",
 			"title": "Bone Archer Camp",
 			"realm": "hell",
-			"text": "A fortified camp of skeleton warriors — most armed with bows, some with knives. They regard you with hollow eyes. One of them, slightly larger than the rest, has set up a makeshift trading post.\n\n\"We trade,\" it says. \"We do not explain ourselves.\"",
+			"text": "A fortified camp of skeleton warriors \u2014 most armed with bows, some with knives. They regard you with hollow eyes. One of them, slightly larger than the rest, has set up a makeshift trading post.\n\n\"We trade,\" it says. \"We do not explain ourselves.\"",
 			"choices": [
 				{
 					"id": "browse",
@@ -3823,28 +4105,86 @@
 					"id": "training",
 					"type": "requirement",
 					"text": "Ask one of the archers to teach you",
-					"requirements": { "skills": { "ranged": 1 } },
+					"requirements": {
+						"skills": {
+							"ranged": 1
+						}
+					},
 					"outcome": {
 						"type": "shop",
 						"shop_id": "bone_archer_camp",
 						"text": "One of the archers tilts its skull at you, considering. Then it nocks an arrow and gestures for you to do the same.",
-						"karma": { "hell": 1 }
+						"karma": {
+							"hell": 1
+						}
+					}
+				},
+				{
+					"id": "steal",
+					"type": "roll",
+					"text": "Lift something from the rack while no one is looking",
+					"requirements": {
+						"roll": {
+							"attribute": "finesse",
+							"difficulty": 14
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "Skeletons don't blink. What they do have is peripheral vision \u2014 but yours is better. You slip a bow from the rack while the trader skeleton is occupied. You are forty paces gone before anyone counts the inventory.",
+						"rewards": {
+							"items": [
+								"hunting_bow",
+								"throwing_knife"
+							]
+						},
+						"karma": {
+							"hell": 5,
+							"human": -3
+						}
+					},
+					"outcome_failure": {
+						"type": "combat",
+						"enemy_group": "demon_patrol",
+						"text": "Forty hollow eye sockets turn toward you simultaneously. The trader skeleton says nothing. It simply nocks an arrow. So do the others.",
+						"difficulty": "hard",
+						"karma": {
+							"hell": 4
+						}
+					}
+				},
+				{
+					"id": "attack",
+					"type": "default",
+					"text": "Draw your weapon \u2014 bones break",
+					"outcome": {
+						"type": "combat",
+						"enemy_group": "demon_patrol",
+						"text": "The skeletons reach for their weapons without urgency. You get the impression they have been waiting for someone to try this.",
+						"difficulty": "hard",
+						"karma": {
+							"asura": 5,
+							"hell": 3,
+							"human": -4
+						}
 					}
 				},
 				{
 					"id": "leave",
 					"type": "default",
 					"text": "Leave",
-					"outcome": { "type": "text", "text": "The skeleton archers watch you go, silent." }
+					"outcome": {
+						"type": "text",
+						"text": "The skeleton archers watch you go, silent."
+					}
 				}
 			]
 		},
-
 		"hell_mercy_ward": {
 			"id": "hell_mercy_ward",
 			"title": "Mercy Ward",
 			"realm": "hell",
-			"text": "A tent, remarkably clean. Inside, a figure in grey robes tends to the wounded — souls who staggered in from the wastes, demons nursing old injuries. Nobody asks questions. Nobody explains.\n\n\"I patch what I can,\" says the medic, without turning around. \"I charge what I must. Sit down if you're bleeding.\"",
+			"text": "A tent, remarkably clean. Inside, a figure in grey robes tends to the wounded \u2014 souls who staggered in from the wastes, demons nursing old injuries. Nobody asks questions. Nobody explains.\n\n\"I patch what I can,\" says the medic, without turning around. \"I charge what I must. Sit down if you're bleeding.\"",
 			"choices": [
 				{
 					"id": "buy",
@@ -3854,30 +4194,90 @@
 						"type": "shop",
 						"shop_id": "mercy_ward",
 						"text": "The medic points at the supply shelves.",
-						"karma": { "human": 1 }
+						"karma": {
+							"human": 1
+						}
 					}
 				},
 				{
 					"id": "rest",
 					"type": "requirement",
 					"text": "Ask to rest and recover",
-					"requirements": { "attributes": { "charm": 10 } },
+					"requirements": {
+						"attributes": {
+							"charm": 10
+						}
+					},
 					"outcome": {
 						"type": "text",
 						"text": "The medic studies your face, then nods. \"An hour. Then I need the cot.\" You sleep deeply. When you wake, your wounds feel lighter.",
-						"rewards": { "xp": 10 },
-						"karma": { "human": 3, "god": 1 }
+						"rewards": {
+							"xp": 10
+						},
+						"karma": {
+							"human": 3,
+							"god": 1
+						}
+					}
+				},
+				{
+					"id": "donate",
+					"type": "default",
+					"text": "Leave a donation for those who can't pay",
+					"cost": {
+						"gold": "small"
+					},
+					"outcome": {
+						"type": "text",
+						"text": "The medic pauses. Looks at the coins. Looks at you. \"I'll make sure it goes to the ones who need it most.\" They say nothing else. In this place, that is enough.",
+						"rewards": {
+							"xp": 5
+						},
+						"karma": {
+							"god": 5,
+							"human": 4,
+							"hungry_ghost": -1
+						}
+					}
+				},
+				{
+					"id": "comedy",
+					"type": "roll",
+					"text": "Crack a very quiet joke to lighten the mood",
+					"requirements": {
+						"roll": {
+							"skill": "comedy",
+							"difficulty": 10
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "It is a small joke. Barely a joke, really \u2014 more of an observation about the absurdity of hell having a triage system. The medic glances up. The corners of their mouth move \u2014 not quite a smile, but not not a smile. \"I'll put that in the notes,\" they say. Their prices are slightly more negotiable afterward.",
+						"rewards": {
+							"xp": 3
+						},
+						"karma": {
+							"human": 3,
+							"god": 1
+						}
+					},
+					"outcome_failure": {
+						"type": "text",
+						"text": "The medic looks at you with the eyes of someone who has been stitching wounds for three hundred years in a place that specializes in creating them. They return to work. You feel, correctly, that you have misjudged the room.",
+						"karma": {}
 					}
 				},
 				{
 					"id": "leave",
 					"type": "default",
 					"text": "Leave",
-					"outcome": { "type": "text", "text": "The medic returns to work without watching you go." }
+					"outcome": {
+						"type": "text",
+						"text": "The medic returns to work without watching you go."
+					}
 				}
 			]
 		},
-
 		"hell_brimstone_lab": {
 			"id": "hell_brimstone_lab",
 			"title": "Brimstone Lab",
@@ -3898,28 +4298,105 @@
 					"id": "training",
 					"type": "requirement",
 					"text": "Ask about alchemy techniques",
-					"requirements": { "skills": { "alchemy": 1 } },
+					"requirements": {
+						"skills": {
+							"alchemy": 1
+						}
+					},
 					"outcome": {
 						"type": "shop",
 						"shop_id": "brimstone_lab",
-						"text": "\"You know the basics. Good. The advanced work is where it gets interesting — and occasionally fatal.\"",
-						"karma": { "asura": 1 }
+						"text": "\"You know the basics. Good. The advanced work is where it gets interesting \u2014 and occasionally fatal.\"",
+						"karma": {
+							"asura": 1
+						}
+					}
+				},
+				{
+					"id": "steal",
+					"type": "roll",
+					"text": "Pocket a few vials while the alchemist monologues",
+					"requirements": {
+						"roll": {
+							"attribute": "finesse",
+							"difficulty": 13
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "The alchemist's lecture on the eighteenth explosion provides excellent cover. Three vials heavier, you edge toward the exit. They are still talking.",
+						"rewards": {
+							"items": [
+								"fire_bomb",
+								"smoke_bomb",
+								"antidote"
+							]
+						},
+						"karma": {
+							"hell": 5,
+							"human": -3
+						}
+					},
+					"outcome_failure": {
+						"type": "text",
+						"text": "Your elbow catches a rack of unstable compounds. The subsequent blast leaves you singed, briefly confused, and completely empty-handed. The alchemist writes something in their notes without looking up. \"Eighteen explosions,\" they say. \"Seventeen of which were educational.\"",
+						"rewards": {
+							"xp": 2
+						},
+						"karma": {
+							"animal": 2,
+							"hell": 2
+						}
+					}
+				},
+				{
+					"id": "comedy",
+					"type": "roll",
+					"text": "Ask how they feel about the eighteenth explosion with full sincerity",
+					"requirements": {
+						"roll": {
+							"skill": "comedy",
+							"difficulty": 10
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "You lean on the counter and deliver the line with complete deadpan: \"Seventeen educational explosions is experience. Eighteen is a philosophy.\" The alchemist freezes. Then cackles. Then nearly knocks over the thing that smells like it wants to be left alone. \"Take this,\" they say, pressing a vial into your hands, \"and don't come back. I mean that as a compliment.\"",
+						"rewards": {
+							"xp": 4,
+							"items": [
+								"health_potion"
+							]
+						},
+						"karma": {
+							"human": 3,
+							"asura": 2
+						}
+					},
+					"outcome_failure": {
+						"type": "text",
+						"text": "\"That is not funny,\" the alchemist says. \"Explosions are not funny. Explosions are science. I have been seriously injured seventeen times and I will not have it trivialized.\" They point at the door. You go.",
+						"karma": {
+							"animal": 1
+						}
 					}
 				},
 				{
 					"id": "leave",
 					"type": "default",
 					"text": "Leave",
-					"outcome": { "type": "text", "text": "Something bubbles aggressively as you go." }
+					"outcome": {
+						"type": "text",
+						"text": "Something bubbles aggressively as you go."
+					}
 				}
 			]
 		},
-
 		"hell_wardens_pit": {
 			"id": "hell_wardens_pit",
 			"title": "Warden's Pit",
 			"realm": "hell",
-			"text": "A fortified post around a deep pit, guards drilling in formation on the parade ground. The warden — a scarred devil in heavy armor — watches them from the parapet.\n\n\"Outsiders,\" she says, not looking at you. \"You want something. They always do.\"",
+			"text": "A fortified post around a deep pit, guards drilling in formation on the parade ground. The warden \u2014 a scarred devil in heavy armor \u2014 watches them from the parapet.\n\n\"Outsiders,\" she says, not looking at you. \"You want something. They always do.\"",
 			"choices": [
 				{
 					"id": "browse",
@@ -3929,26 +4406,89 @@
 						"type": "shop",
 						"shop_id": "wardens_pit",
 						"text": "She jerks her chin toward the supply depot.",
-						"karma": { "hell": 1 }
+						"karma": {
+							"hell": 1
+						}
 					}
 				},
 				{
 					"id": "training",
 					"type": "requirement",
 					"text": "Request combat training",
-					"requirements": { "skills": { "spears": 1 } },
+					"requirements": {
+						"skills": {
+							"spears": 1
+						}
+					},
 					"outcome": {
 						"type": "shop",
 						"shop_id": "wardens_pit",
 						"text": "She looks you over slowly. \"You know how to hold a spear. The rest is discipline. Discipline costs coin.\"",
-						"karma": { "hell": 2 }
+						"karma": {
+							"hell": 2
+						}
+					}
+				},
+				{
+					"id": "steal",
+					"type": "roll",
+					"text": "Slip into the supply depot while everyone is drilling",
+					"requirements": {
+						"roll": {
+							"attribute": "finesse",
+							"difficulty": 15
+						}
+					},
+					"outcome_success": {
+						"type": "text",
+						"text": "The drilling formations create a predictable rhythm. You match it \u2014 moving only when boots hit the ground, stopping when they stop. The supply depot yields a spear and some armor before the rotation changes. You are back outside before anyone notices the count is off.",
+						"rewards": {
+							"items": [
+								"wooden_spear",
+								"leather_vest"
+							]
+						},
+						"karma": {
+							"hell": 5,
+							"asura": 2,
+							"human": -4
+						}
+					},
+					"outcome_failure": {
+						"type": "combat",
+						"enemy_group": "demon_patrol",
+						"text": "The warden's voice carries across the entire pit: \"I SAW THAT.\" She has not moved from the parapet. She does not need to.",
+						"difficulty": "hard",
+						"karma": {
+							"hell": 5
+						}
+					}
+				},
+				{
+					"id": "attack",
+					"type": "default",
+					"text": "Challenge the warden's authority \u2014 by force",
+					"outcome": {
+						"type": "combat",
+						"enemy_group": "demon_patrol",
+						"text": "The warden doesn't raise her voice. She just raises one finger. The drilling stops. The soldiers turn. \"Show me what you've got,\" she says.",
+						"difficulty": "hard",
+						"karma": {
+							"asura": 6,
+							"hell": 4,
+							"human": -5,
+							"god": -4
+						}
 					}
 				},
 				{
 					"id": "leave",
 					"type": "default",
 					"text": "Leave",
-					"outcome": { "type": "text", "text": "The drilling continues. You are not relevant to it." }
+					"outcome": {
+						"type": "text",
+						"text": "The drilling continues. You are not relevant to it."
+					}
 				}
 			]
 		}
