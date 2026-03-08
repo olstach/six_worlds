@@ -636,6 +636,177 @@
 			"spell_bonus": 0
 		},
 
+		"scroll_magic_missile": {
+			"name": "Scroll of Magic Missile",
+			"type": "scroll",
+			"rarity": "common",
+			"weight": 0,
+			"value": 35,
+			"description": "A scroll of pure force. Usable by anyone.",
+			"spell_id": "magic_missile",
+			"spell_bonus": 0
+		},
+		"scroll_voidbolt": {
+			"name": "Scroll of Voidbolt",
+			"type": "scroll",
+			"rarity": "common",
+			"weight": 0,
+			"value": 45,
+			"description": "A scroll imbued with space magic. The ink seems to shift when you're not looking at it.",
+			"spell_id": "voidbolt",
+			"spell_bonus": 0
+		},
+		"scroll_shocking_grasp": {
+			"name": "Scroll of Shocking Grasp",
+			"type": "scroll",
+			"rarity": "common",
+			"weight": 0,
+			"value": 40,
+			"description": "A crackling scroll of air energy. Usable by anyone.",
+			"spell_id": "shocking_grasp",
+			"spell_bonus": 0
+		},
+		"scroll_stone_spike": {
+			"name": "Scroll of Stone Spike",
+			"type": "scroll",
+			"rarity": "common",
+			"weight": 0,
+			"value": 40,
+			"description": "A heavy scroll dense with earth energy.",
+			"spell_id": "stone_spike",
+			"spell_bonus": 0
+		},
+		"scroll_fireball": {
+			"name": "Scroll of Fireball",
+			"type": "scroll",
+			"rarity": "uncommon",
+			"weight": 0,
+			"value": 80,
+			"description": "An AoE fire scroll. The paper is slightly warm to the touch.",
+			"spell_id": "fireball",
+			"spell_bonus": 0
+		},
+		"scroll_blizzard": {
+			"name": "Scroll of Blizzard",
+			"type": "scroll",
+			"rarity": "uncommon",
+			"weight": 0,
+			"value": 80,
+			"description": "An AoE cold scroll that conjures a storm of ice.",
+			"spell_id": "blizzard",
+			"spell_bonus": 0
+		},
+		"scroll_chain_lightning": {
+			"name": "Scroll of Chain Lightning",
+			"type": "scroll",
+			"rarity": "uncommon",
+			"weight": 0,
+			"value": 90,
+			"description": "An AoE air scroll. Lightning arcs between enemies.",
+			"spell_id": "chain_lightning",
+			"spell_bonus": 0
+		},
+		"scroll_earthquake": {
+			"name": "Scroll of Earthquake",
+			"type": "scroll",
+			"rarity": "uncommon",
+			"weight": 0,
+			"value": 90,
+			"description": "A heavy earth scroll that shakes the ground. Damages all enemies.",
+			"spell_id": "earthquake",
+			"spell_bonus": 0
+		},
+		"scroll_bless": {
+			"name": "Scroll of Bless",
+			"type": "scroll",
+			"rarity": "common",
+			"weight": 0,
+			"value": 50,
+			"description": "A buff scroll that raises combat effectiveness for several turns.",
+			"spell_id": "bless",
+			"spell_bonus": 0
+		},
+		"scroll_haste": {
+			"name": "Scroll of Haste",
+			"type": "scroll",
+			"rarity": "uncommon",
+			"weight": 0,
+			"value": 70,
+			"description": "Grants an extra action for several turns.",
+			"spell_id": "haste",
+			"spell_bonus": 0
+		},
+		"scroll_stone_skin": {
+			"name": "Scroll of Stone Skin",
+			"type": "scroll",
+			"rarity": "uncommon",
+			"weight": 0,
+			"value": 65,
+			"description": "Hardens the skin like stone, granting temporary armor.",
+			"spell_id": "stone_skin",
+			"spell_bonus": 0
+		},
+		"scroll_regeneration": {
+			"name": "Scroll of Regeneration",
+			"type": "scroll",
+			"rarity": "uncommon",
+			"weight": 0,
+			"value": 70,
+			"description": "A healing scroll that restores HP over several turns.",
+			"spell_id": "regeneration",
+			"spell_bonus": 0
+		},
+		"scroll_blink": {
+			"name": "Scroll of Blink",
+			"type": "scroll",
+			"rarity": "uncommon",
+			"weight": 0,
+			"value": 60,
+			"description": "A utility scroll that teleports the user a short distance.",
+			"spell_id": "blink",
+			"spell_bonus": 0
+		},
+		"scroll_cure": {
+			"name": "Scroll of Cure",
+			"type": "scroll",
+			"rarity": "common",
+			"weight": 0,
+			"value": 50,
+			"description": "Removes a negative status effect. Usable by anyone.",
+			"spell_id": "cure",
+			"spell_bonus": 0
+		},
+		"scroll_dispel": {
+			"name": "Scroll of Dispel",
+			"type": "scroll",
+			"rarity": "uncommon",
+			"weight": 0,
+			"value": 65,
+			"description": "Removes all magical buffs and debuffs from a target.",
+			"spell_id": "dispel",
+			"spell_bonus": 0
+		},
+		"scroll_slow": {
+			"name": "Scroll of Slow",
+			"type": "scroll",
+			"rarity": "common",
+			"weight": 0,
+			"value": 40,
+			"description": "Slows an enemy, halving its movement for several turns.",
+			"spell_id": "slow",
+			"spell_bonus": 0
+		},
+		"scroll_confusion": {
+			"name": "Scroll of Confusion",
+			"type": "scroll",
+			"rarity": "uncommon",
+			"weight": 0,
+			"value": 60,
+			"description": "Causes an enemy to act erratically, attacking random targets.",
+			"spell_id": "confusion",
+			"spell_bonus": 0
+		},
+
 		"white_charm_common": {
 			"name": "Common White Charm",
 			"type": "charm",
