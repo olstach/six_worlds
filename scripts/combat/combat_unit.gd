@@ -40,6 +40,8 @@ var knife_storm_proc_this_turn: bool = false  # Prevents knife_storm from procci
 var enemies_hit_this_combat: Array = []  # Tracks enemies hit for cheap_shot (first-attack crit bonus)
 var hit_back_ready: bool = false          # Set when taking damage with hit_back_harder perk; grants +20% damage on next melee attack
 var sorcery_kill_bonus_ready: bool = false  # Set when killing with Sorcery (spell_like_a_knife perk); next spell gets +50% Spellpower
+var marked_target: Node = null             # Target marked by call_the_shot; first ally to attack gets bonus
+var call_the_shot_used_this_turn: bool = false  # Prevents call_the_shot from being used twice per turn
 var status_effects: Array = []  # Active status effects on this unit
 
 # Active skill cooldowns: perk_id -> turns remaining (0 = ready)

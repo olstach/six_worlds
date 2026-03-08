@@ -1347,6 +1347,12 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 			hit_chance -= cover.dodge_bonus
 			_last_cover_result = cover
 
+	# Call the Shot (Leadership 1): next ally to attack a marked target gets +15% accuracy
+	for ally in get_team_units(attacker.team if "team" in attacker else 0):
+		if "marked_target" in ally and ally.marked_target == defender:
+			hit_chance += 15.0
+			break  # only check, don't clear — damage calc clears it
+
 	# Clamp to 10-95%
 	return clampf(hit_chance, 10.0, 95.0)
 
@@ -1488,6 +1494,14 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "mace":
 			if defender.has_status("Stunned") or defender.has_status("Dazed"):
 				damage = int(damage * 1.20)
+
+	# Call the Shot (Leadership 1): +15% damage on first ally attack vs marked target; clears mark
+	for ally_cts in get_team_units(attacker.team if "team" in attacker else 0):
+		if "marked_target" in ally_cts and ally_cts.marked_target == defender:
+			damage = int(damage * 1.15)
+			ally_cts.marked_target = null  # consume the mark
+			combat_log.emit("Called shot lands! +15% damage.")
+			break
 
 	# Apply physical resistance (checks specific subtype first, then falls back to generic "physical")
 	var phys_resist = defender.get_resistance(dmg_type)
@@ -3612,6 +3626,12 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 	if user.is_skill_on_cooldown(perk_id):
 		return {"success": false, "reason": "Skill on cooldown (%d turns)" % user.skill_cooldowns.get(perk_id, 0)}
 
+	# Check once-per-turn restriction (free-action skills like call_the_shot)
+	if combat_data.get("once_per_turn", false):
+		var used_flag = perk_id + "_used_this_turn"
+		if used_flag in user and user.get(used_flag):
+			return {"success": false, "reason": "Already used this turn"}
+
 	# Check stamina
 	if stamina_cost > 0 and user.current_stamina < stamina_cost:
 		return {"success": false, "reason": "Not enough stamina (%d/%d)" % [user.current_stamina, stamina_cost]}
@@ -3645,6 +3665,8 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 			result = _resolve_stance(user, combat_data)
 		"heal_self":
 			result = _resolve_heal_self(user, combat_data)
+		"mark_target":
+			result = _resolve_mark_target(user, combat_data, target_pos)
 		"examine":
 			# Reveal enemy info via examine window — handled by combat_arena via signal
 			var target = get_unit_at(target_pos)
@@ -3668,10 +3690,33 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 		# Once-per-combat skills get a huge cooldown
 		if combat_data.get("once_per_combat", false):
 			user.set_skill_cooldown(perk_id, 999)
+		# Mark once-per-turn skills as used (reset at turn start)
+		if combat_data.get("once_per_turn", false):
+			var used_flag = perk_id + "_used_this_turn"
+			if used_flag in user:
+				user.set(used_flag, true)
 		# Emit signal
 		active_skill_used.emit(user, skill_data, result)
 
 	return result
+
+
+## Mark an enemy (call_the_shot). The marking unit's field marks the target node.
+## Any ally who attacks that target gets the accuracy+damage bonus, then the mark clears.
+func _resolve_mark_target(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var target = get_unit_at(target_pos)
+	if target == null or not target.is_alive():
+		return {"success": false, "reason": "No valid target"}
+	if target.team == user.team:
+		return {"success": false, "reason": "Cannot mark allies"}
+	var distance = _grid_distance(user.grid_position, target_pos)
+	var max_range = combat_data.get("range", 6)
+	if distance > max_range:
+		return {"success": false, "reason": "Out of range"}
+	# Place the mark on the marking unit so allies can query it
+	user.marked_target = target
+	combat_log.emit("%s calls the shot on %s!" % [user.unit_name, target.unit_name])
+	return {"success": true, "effects": [{"type": "mark_target", "target": target}]}
 
 
 ## Attack with accuracy/damage bonuses (Measured Strike, Aimed Shot, Final Cut, etc.)
@@ -4766,6 +4811,7 @@ func _process_turn_start_perks(unit: Node) -> void:
 	unit.dagger_attacks_this_turn = 0
 	unit.ranged_attacks_this_turn = 0
 	unit.knife_storm_proc_this_turn = false
+	unit.call_the_shot_used_this_turn = false
 
 	# Diamond Body: +25% status resist (handled via saving throw bonuses)
 	# Field Commander: companions reposition — only applies round 1 (handled in deployment)
