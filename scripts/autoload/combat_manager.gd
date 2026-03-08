@@ -5033,6 +5033,11 @@ func _process_turn_start_perks(unit: Node) -> void:
 ## Check and fire ZoC reaction attacks after a unit moves.
 ## mover: the unit that just moved; old_pos/new_pos: previous and current grid positions.
 func _check_zoc_reactions(mover: Node, old_pos: Vector2i, new_pos: Vector2i) -> void:
+	# Skirmisher (Ranged 3 + Grace 3): free disengage — immune to ZoC reactions on all moves
+	var mover_char = mover.character_data if "character_data" in mover else {}
+	if PerkSystem.has_perk(mover_char, "skirmisher"):
+		return
+
 	# Scan all enemies of the mover (i.e., potential reactors on the other team)
 	for reactor in all_units:
 		if reactor.is_dead or reactor.team == mover.team:

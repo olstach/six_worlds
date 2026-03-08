@@ -251,8 +251,9 @@ Roles to fulfill per realm (not specific object types):
 
   **Other deferred:**
   - `void_touched` — space spells leave void terrain tiles. Needs void tile type added to combat_grid.
-  - `skirmisher` (Ranged 3 + Grace 3) — no penalty after moving + free disengage 1/turn. Needs move-penalty system first (ranged accuracy penalty flag).
-  - Mantra perks `roles_assigned` / `tactical_synergy` — need role designation system (assign Vanguard/Striker/Support/Control roles at combat start).
+  - ~~`skirmisher`~~: DONE — ZoC reactions suppressed for mover with this perk (free disengage). The "no accuracy penalty after moving" half defers until ranged move-penalty system is added.
+  - `roles_assigned` / `tactical_synergy` — need role designation UI (assign Vanguard/Striker/Support/Control at combat start). Complex — defer.
+  - `metamagic` — needs pre-cast UI dialog to modify next spell (range/AoE/element). Complex — defer.
 
   *Deferred (already handled):* all per-skill minor bonuses flow through PerkSystem base_bonuses → derived stats, not combat_manager
 
