@@ -1103,6 +1103,10 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 	}
 
 	if hit:
+		# Track last attacker for risen_dead and similar effects
+		if "last_attacker" in defender:
+			defender.last_attacker = attacker
+
 		# Calculate damage
 		var damage_result = calculate_physical_damage(attacker, defender, weapon_dmg_type)
 		result.merge(damage_result, true)
@@ -1384,8 +1388,41 @@ func _kill_unit(unit: Node) -> void:
 	unit.is_bleeding_out = false
 	unit_died.emit(unit)
 
-	# TODO: Talisman perk "risen_dead" — 15% chance slain enemies rise as allied undead
-	# Needs: track who killed this unit, spawn a new CombatUnit mid-combat
+	# Risen Dead talisman perk: 15% chance the slain enemy rises as an allied undead
+	var killer = unit.get("last_attacker")
+	if killer != null and not killer.is_dead and _unit_has_talisman_perk(killer, "risen_dead"):
+		if randf() < 0.15 and combat_grid != null:
+			# Build a simplified undead enemy def from the dead unit's data
+			var risen_def: Dictionary = unit.character_data.duplicate(true)
+			risen_def["name"] = "Risen " + unit.unit_name
+			var risen_derived = risen_def.get("derived", {}).duplicate()
+			risen_derived["max_hp"] = maxi(1, risen_derived.get("max_hp", 20) / 2)
+			risen_derived["current_hp"] = risen_derived["max_hp"]
+			risen_def["derived"] = risen_derived
+
+			# Create a new CombatUnit for the risen undead, on the killer's team
+			var risen = CombatUnit.new()
+			risen.init_as_enemy(risen_def)
+			risen.team = killer.team
+
+			# Find a nearby unoccupied tile to place it
+			var spawn_pos = Vector2i(-1, -1)
+			var dead_pos = unit.grid_position
+			for dx in range(-2, 3):
+				for dy in range(-2, 3):
+					var candidate = dead_pos + Vector2i(dx, dy)
+					if combat_grid.is_valid_position(candidate) and not combat_grid.is_occupied(candidate):
+						spawn_pos = candidate
+						break
+				if spawn_pos != Vector2i(-1, -1):
+					break
+
+			if spawn_pos != Vector2i(-1, -1):
+				combat_grid.place_unit(risen, spawn_pos)
+				all_units.append(risen)
+				# Insert into turn order right after current unit so it acts next round
+				turn_order.append(risen)
+				unit_deployed.emit(risen, spawn_pos)
 
 	# Remove from turn order and fix the current index
 	var idx = turn_order.find(unit)

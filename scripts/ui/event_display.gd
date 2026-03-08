@@ -50,23 +50,107 @@ func _on_event_started(event_data: Dictionary) -> void:
 	current_event = event_data
 	display_event()
 
+func _input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if not event is InputEventKey or not event.pressed or event.echo:
+		return
+
+	# Enter/Space continues from result panel
+	if result_panel.visible:
+		if event.keycode in [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE]:
+			get_viewport().set_input_as_handled()
+			_on_continue_button_pressed()
+		return
+
+	# 1-9 selects enabled choice buttons from event panel
+	if event_panel.visible:
+		var buttons: Array = []
+		for child in choices_container.get_children():
+			if child is Button:
+				buttons.append(child)
+		if event.keycode >= KEY_1 and event.keycode <= KEY_9:
+			var idx = event.keycode - KEY_1
+			if idx < buttons.size() and not buttons[idx].disabled:
+				get_viewport().set_input_as_handled()
+				buttons[idx].pressed.emit()
+
+
 func display_event() -> void:
 	# Clear previous choices
 	for child in choices_container.get_children():
 		child.queue_free()
-	
+
 	# Set title and description
 	title_label.text = current_event.title
 	description_label.text = current_event.text
-	
-	# Create choice buttons
+
+	# Create choice buttons; track whether any are available
+	var any_available = false
 	for choice in current_event.choices:
 		var availability = EventManager.evaluate_choice_availability(choice)
+		if availability.available:
+			any_available = true
 		create_choice_button(choice, availability)
-	
+
+	# If no choices are selectable, add a Leave button so the player isn't stuck
+	if not any_available:
+		_create_leave_button()
+
 	# Show event panel, hide result
 	event_panel.visible = true
 	result_panel.visible = false
+
+
+func _create_leave_button() -> void:
+	var button = Button.new()
+	button.text = "Leave"
+	button.custom_minimum_size = Vector2(0, 60)
+
+	var color = Color(0.4, 0.4, 0.5)
+	var style_normal = StyleBoxFlat.new()
+	style_normal.bg_color = color.darkened(0.6)
+	style_normal.border_width_left = 4
+	style_normal.border_width_right = 4
+	style_normal.border_width_top = 4
+	style_normal.border_width_bottom = 4
+	style_normal.border_color = color
+	style_normal.corner_radius_top_left = 8
+	style_normal.corner_radius_top_right = 8
+	style_normal.corner_radius_bottom_left = 8
+	style_normal.corner_radius_bottom_right = 8
+	style_normal.content_margin_left = 16
+	style_normal.content_margin_right = 16
+	style_normal.content_margin_top = 12
+	style_normal.content_margin_bottom = 12
+
+	var style_hover = style_normal.duplicate()
+	style_hover.bg_color = color.darkened(0.4)
+
+	button.add_theme_stylebox_override("normal", style_normal)
+	button.add_theme_stylebox_override("hover", style_hover)
+	button.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
+	button.add_theme_color_override("font_hover_color", Color.WHITE)
+
+	button.pressed.connect(func():
+		AudioManager.play("ui_click")
+		_on_continue_button_pressed())
+
+	choices_container.add_child(button)
+
+## Returns true if any party member has the karma_sight talisman perk equipped.
+func _party_has_karma_sight() -> bool:
+	var party = CharacterSystem.get_party()
+	for char_data in party:
+		for slot in ["trinket1", "trinket2"]:
+			var item_id = ItemSystem.get_equipped_item(char_data, slot)
+			if item_id == "":
+				continue
+			var item = ItemSystem.get_item(item_id)
+			if "karma_sight" in item.get("perks", []):
+				return true
+	return false
+
 
 func create_choice_button(choice: Dictionary, availability: Dictionary) -> void:
 	var button = Button.new()
@@ -78,7 +162,22 @@ func create_choice_button(choice: Dictionary, availability: Dictionary) -> void:
 		button_text += "\n[" + availability.reason + "]"
 	elif availability.passing_character:
 		button_text += "\n[" + availability.passing_character.name + "]"
-	
+
+	# karma_sight talisman: show karma hints on buttons before choosing
+	if _party_has_karma_sight():
+		var outcome_karma = choice.get("outcome", {}).get("karma", {})
+		if outcome_karma.is_empty():
+			# Roll choices have success/failure outcomes — show both if different
+			var s_karma = choice.get("success", {}).get("karma", {})
+			var f_karma = choice.get("failure", {}).get("karma", {})
+			outcome_karma = s_karma  # Show success karma as preview for rolls
+		if not outcome_karma.is_empty():
+			var karma_parts: Array[String] = []
+			for realm in outcome_karma:
+				var amt = outcome_karma[realm]
+				karma_parts.append(realm.capitalize() + (" +" if amt > 0 else " ") + str(amt))
+			button_text += "\n☸ " + ", ".join(karma_parts)
+
 	button.text = button_text
 	
 	# Style based on choice type
@@ -170,15 +269,15 @@ func display_outcome(outcome: Dictionary) -> void:
 	if "rewards" in outcome:
 		result_text += "[b]Rewards:[/b]\n"
 		if "xp" in outcome.rewards:
-			result_text += "• +" + str(outcome.rewards.xp) + " XP\n"
+			result_text += "• +" + str(int(outcome.rewards.xp)) + " XP\n"
 		if "items" in outcome.rewards:
 			for item in outcome.rewards.items:
 				result_text += "• " + item.replace("_", " ").capitalize() + "\n"
 		result_text += "\n"
 	
-	# Show karma changes (visible for now, can hide later)
-	if "karma" in outcome:
-		result_text += "[b]Karma shifts:[/b]\n"
+	# Show karma changes only if a party member has karma_sight talisman perk
+	if "karma" in outcome and _party_has_karma_sight():
+		result_text += "[b]☸ Karma shifts:[/b]\n"
 		for realm in outcome.karma:
 			var amount = outcome.karma[realm]
 			var sign = "+" if amount > 0 else ""

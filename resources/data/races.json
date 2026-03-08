@@ -725,6 +725,14 @@
 	  ],
 	  "weight": 4
 	},
+	"reveler": {
+	  "name": "Reveler",
+	  "description": "A social creature of feasts, festivals, and flattery. Charm opens more doors than keys.",
+	  "attribute_modifiers": {"charm": 2, "strength": -1, "constitution": -1},
+	  "starting_skills": {"performance": 1, "persuasion": 1, "leadership": 1},
+	  "available_races": [],
+	  "weight": 3
+	},
 	"warrior": {
 	  "name": "Warrior",
 	  "description": "Trained in the arts of combat, body hardened by years of drill and battle.",
