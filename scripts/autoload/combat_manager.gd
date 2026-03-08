@@ -1091,6 +1091,10 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 
 	use_action(1)
 	unit_moved.emit(unit, from, target)
+
+	# Zone of Control reactions: check all enemies of this unit for ZoC perks
+	_check_zoc_reactions(unit, from, target)
+
 	return true
 
 
@@ -1098,9 +1102,10 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 # COMBAT RESOLUTION
 # ============================================
 
-## Perform an attack from one unit to another
-func attack_unit(attacker: Node, defender: Node) -> Dictionary:
-	if not can_act(1):
+## Perform an attack from one unit to another.
+## reaction=true: skips can_act() check and use_action() cost (for free attacks and ZoC reactions).
+func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dictionary:
+	if not reaction and not can_act(1):
 		return {"success": false, "reason": "No actions remaining"}
 
 	# Forgetful / Pacified units cannot attack
@@ -1247,7 +1252,8 @@ func attack_unit(attacker: Node, defender: Node) -> Dictionary:
 	if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
 		attacker.ranged_attacks_this_turn += 1
 
-	use_action(1)
+	if not reaction:
+		use_action(1)
 	unit_attacked.emit(attacker, defender, result)
 	return result
 
@@ -1646,6 +1652,48 @@ func _kill_unit(unit: Node) -> void:
 				# Insert into turn order right after current unit so it acts next round
 				turn_order.append(risen)
 				unit_deployed.emit(risen, spawn_pos)
+
+	# Necromancer (Black 3 + Summoning 3): kill → spend 10 Mana to raise undead at 50% stats, max 2 per combat
+	if killer != null and not killer.is_dead and killer.necromancer_raises < 2:
+		var killer_char_nc = killer.character_data if "character_data" in killer else {}
+		if PerkSystem.has_perk(killer_char_nc, "necromancer") and killer.current_mana >= 10 and combat_grid != null:
+			killer.current_mana -= 10
+			killer.necromancer_raises += 1
+			var nc_def: Dictionary = unit.character_data.duplicate(true)
+			nc_def["name"] = "Risen " + unit.unit_name
+			var nc_derived = nc_def.get("derived", {}).duplicate()
+			nc_derived["max_hp"] = maxi(1, nc_derived.get("max_hp", 20) / 2)
+			nc_derived["current_hp"] = nc_derived["max_hp"]
+			nc_derived["max_mana"] = 0
+			nc_derived["current_mana"] = 0
+			nc_def["derived"] = nc_derived
+			# Strip spells so the risen just attacks
+			nc_def["known_spells"] = []
+
+			var nc_unit = CombatUnit.new()
+			nc_unit.init_as_enemy(nc_def)
+			nc_unit.team = killer.team
+
+			var nc_pos = Vector2i(-1, -1)
+			var nc_dead_pos = unit.grid_position
+			for dx in range(-2, 3):
+				for dy in range(-2, 3):
+					var candidate = nc_dead_pos + Vector2i(dx, dy)
+					if combat_grid.is_valid_position(candidate) and not combat_grid.is_occupied(candidate):
+						nc_pos = candidate
+						break
+				if nc_pos != Vector2i(-1, -1):
+					break
+
+			if nc_pos != Vector2i(-1, -1):
+				combat_grid.place_unit(nc_unit, nc_pos)
+				all_units.append(nc_unit)
+				turn_order.append(nc_unit)
+				unit_deployed.emit(nc_unit, nc_pos)
+				combat_log.emit("%s raises %s! (%d/2 this combat)" % [killer.unit_name, nc_unit.unit_name, killer.necromancer_raises])
+
+	# Cleave (Axes cross): kill → free attack on the nearest adjacent enemy
+	_trigger_cleave(killer, unit.grid_position)
 
 	# Remove from turn order and fix the current index
 	var idx = turn_order.find(unit)
@@ -4523,6 +4571,13 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 			if weapon.is_empty() or weapon.get("type", "") in ["", "unarmed"]:
 				_apply_status_effect(defender, "Burning", 3)
 
+	# Relentless (Unarmed cross): crit with unarmed → free unarmed attack on the same target
+	if _unit_has_perk(attacker, "relentless") and result.get("crit", false) and not attacker.in_free_attack:
+		if attacker.has_method("get_equipped_weapon"):
+			var rel_w = attacker.get_equipped_weapon()
+			if rel_w.is_empty() or rel_w.get("type", "") in ["", "unarmed"]:
+				_trigger_free_attack(attacker, defender)
+
 	# Thunder Breaker: stuns also silence
 	if _unit_has_perk(attacker, "thunder_breaker"):
 		if attacker.has_method("get_equipped_weapon"):
@@ -4930,6 +4985,100 @@ func _process_turn_start_perks(unit: Node) -> void:
 	if mana_pct > 0.0 and unit.current_mana < unit.max_mana:
 		var mana_amount = ceili(unit.max_mana * mana_pct)
 		unit.restore_mana(mana_amount)
+
+# ============================================
+# ZONE OF CONTROL REACTIONS
+# ============================================
+
+## Check and fire ZoC reaction attacks after a unit moves.
+## mover: the unit that just moved; old_pos/new_pos: previous and current grid positions.
+func _check_zoc_reactions(mover: Node, old_pos: Vector2i, new_pos: Vector2i) -> void:
+	# Scan all enemies of the mover (i.e., potential reactors on the other team)
+	for reactor in all_units:
+		if reactor.is_dead or reactor.team == mover.team:
+			continue
+		if not reactor.has_method("get_equipped_weapon"):
+			continue
+
+		var reactor_char = reactor.character_data if "character_data" in reactor else {}
+		var weapon_type = reactor.get_equipped_weapon().get("type", "")
+		var is_spear = weapon_type == "spear"
+		var reactor_pos = reactor.grid_position
+		var dist_old = _grid_distance(reactor_pos, old_pos)
+		var dist_new = _grid_distance(reactor_pos, new_pos)
+		var reach = 2 if is_spear else 1
+
+		# Frost Warden: +1 reach while stationary
+		if is_spear and PerkSystem.has_perk(reactor_char, "frost_warden") and not reactor.moved_this_turn:
+			reach += 1
+
+		# First to Strike (Spears 1): reaction attack when enemy enters 2-tile spear range
+		if is_spear and PerkSystem.has_perk(reactor_char, "first_to_strike"):
+			if dist_new <= reach and dist_old > reach:
+				combat_log.emit("%s: First to Strike reaction!" % reactor.unit_name)
+				attack_unit(reactor, mover, true)
+
+		# Frost Warden: reaction Slow when enemy enters reach
+		if is_spear and PerkSystem.has_perk(reactor_char, "frost_warden"):
+			if dist_new <= reach and dist_old > reach:
+				_apply_status_effect(mover, "Slowed", 2, 0, reactor)
+
+		# None Shall Pass (Spears 9): reaction attack against ALL enemies entering reach
+		if is_spear and PerkSystem.has_perk(reactor_char, "none_shall_pass"):
+			if dist_new <= reach and dist_old > reach:
+				combat_log.emit("%s: None Shall Pass reaction!" % reactor.unit_name)
+				attack_unit(reactor, mover, true)
+
+		# Sentinel (Swords/MA cross): reaction attack when enemy LEAVES melee range (1 tile)
+		if PerkSystem.has_perk(reactor_char, "sentinel"):
+			var sentinel_weapon = weapon_type in ["sword", ""] or weapon_type.is_empty()
+			if sentinel_weapon and dist_old <= 1 and dist_new > 1:
+				combat_log.emit("%s: Sentinel reaction!" % reactor.unit_name)
+				attack_unit(reactor, mover, true)
+
+
+# ============================================
+# FREE ATTACK SYSTEM (cleave, relentless)
+# ============================================
+
+## Perform one free attack from attacker against target, with a recursion guard
+## so free attacks can never chain into further free attacks.
+func _trigger_free_attack(attacker: Node, target: Node) -> void:
+	if attacker == null or attacker.is_dead or target == null or not target.is_alive():
+		return
+	if attacker.in_free_attack:
+		return  # Prevent chaining
+	attacker.in_free_attack = true
+	combat_log.emit("%s makes a free attack on %s!" % [attacker.unit_name, target.unit_name])
+	attack_unit(attacker, target, true)  # reaction=true: no action cost
+	attacker.in_free_attack = false
+
+
+## Check and trigger Cleave (Axes cross) after a kill.
+## dead_pos: grid position where the killed unit was standing.
+func _trigger_cleave(killer: Node, dead_pos: Vector2i) -> void:
+	if killer == null or killer.is_dead or killer.in_free_attack:
+		return
+	var killer_char = killer.character_data if "character_data" in killer else {}
+	if not PerkSystem.has_perk(killer_char, "cleave"):
+		return
+	# Must be wielding an axe
+	if not killer.has_method("get_equipped_weapon"):
+		return
+	if killer.get_equipped_weapon().get("type", "") != "axe":
+		return
+	# Find the nearest enemy adjacent to the dead unit's tile
+	var nearest: Node = null
+	var best_dist = 9999
+	for u in all_units:
+		if u.is_dead or u.team == killer.team:
+			continue
+		var d = _grid_distance(dead_pos, u.grid_position)
+		if d <= 1 and d < best_dist:
+			best_dist = d
+			nearest = u
+	_trigger_free_attack(killer, nearest)
+
 
 # ============================================
 # MANTRA SYSTEM

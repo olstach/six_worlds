@@ -42,6 +42,8 @@ var hit_back_ready: bool = false          # Set when taking damage with hit_back
 var sorcery_kill_bonus_ready: bool = false  # Set when killing with Sorcery (spell_like_a_knife perk); next spell gets +50% Spellpower
 var marked_target: Node = null             # Target marked by call_the_shot; first ally to attack gets bonus
 var call_the_shot_used_this_turn: bool = false  # Prevents call_the_shot from being used twice per turn
+var necromancer_raises: int = 0            # How many undead this unit has raised this combat (max 2)
+var in_free_attack: bool = false           # Recursion guard for cleave/relentless free attacks
 var status_effects: Array = []  # Active status effects on this unit
 
 # Active skill cooldowns: perk_id -> turns remaining (0 = ready)

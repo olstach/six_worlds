@@ -234,16 +234,9 @@ Roles to fulfill per realm (not specific object types):
 
   *Complex / needs new systems (defer):*
 
-  **Kill-triggered free attacks** (shared infrastructure: add `_trigger_free_attack(attacker, target)` to avoid recursion; flag `in_free_attack: bool` to prevent chains):
-  - `cleave` (Axes cross) — kill → free attack on nearest adjacent enemy. Hook in `_kill_unit()`: scan for adjacent enemies, call `_trigger_free_attack`.
-  - `relentless` (Unarmed cross) — crit → free unarmed attack on same target. Hook in `_process_on_hit_perks()` after crit detected.
-  - `necromancer` (Black 3 + Summoning 3) — kill → spend 10 Mana to raise undead at 50% stats, max 2 per combat. Uses existing `risen_dead` spawn code as template. Add `necromancer_raises: int` counter to CombatUnit. Hook in `_kill_unit()` checking killer perks.
+  ~~**Kill-triggered free attacks**~~: DONE — `_trigger_free_attack()` + `in_free_attack` guard on CombatUnit; `_trigger_cleave()` called from `_kill_unit()`; `relentless` hooked in `_process_on_hit_perks()`. `necromancer`: 10 mana cost, `necromancer_raises` counter (max 2), spawn via risen_dead template.
 
-  **Zone of Control / Reaction system** (shared infrastructure: hook at end of `move_unit()`, call `_check_zoc_reactions(unit, old_pos, new_pos)`):
-  - `first_to_strike` (Spears 1) — reaction attack when enemy enters 2-tile range. Check all allies for this perk when any enemy moves.
-  - `frost_warden` (Spears 3 + Water 2) — ZoC reaction Slows enemies; +1 reach while stationary.
-  - `none_shall_pass` (Spears 9) — reaction attack against ALL enemies who enter 2-tile range (not just one).
-  - `sentinel` (Swords/Martial Arts cross) — reaction attack when enemy leaves melee range.
+  ~~**Zone of Control / Reaction system**~~: DONE — `_check_zoc_reactions(mover, old_pos, new_pos)` called from `move_unit()`. `attack_unit()` gains `reaction: bool = false` param (skips `can_act()` + `use_action()`). `first_to_strike`: spear reaction on enter. `frost_warden`: Slow + +1 reach while stationary. `none_shall_pass`: also fires on same trigger. `sentinel`: fires when enemy LEAVES melee range.
 
   **Stealth system** (add `is_stealthed: bool` to CombatUnit; break on attack/damage; detection radius vs Guile):
   - `shadow_strike` (Daggers 3 + Guile 3) — enter stealth after a kill; first attack from stealth is a guaranteed crit.
