@@ -91,7 +91,7 @@
 		"pati":  { "meaning": "lord/master",             "lang": "sanskrit", "realms": ["hell"] },
 
 		"er":    { "meaning": "agent suffix",            "lang": "english",  "realms": ["hell", "hungry_ghost"] },
-		"ling":  { "meaning": "diminutive",              "lang": "english",  "realms": ["hell", "hungry_ghost"] },
+		"kin":   { "meaning": "diminutive (small/young)", "lang": "english",  "realms": ["hell", "hungry_ghost"] },
 		"born":  { "meaning": "born of",                "lang": "english",  "realms": ["hell"] },
 		"spawn": { "meaning": "offspring of",           "lang": "english",  "realms": ["hell"] }
 	}
