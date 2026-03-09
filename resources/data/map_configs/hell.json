@@ -7,11 +7,11 @@
 	"base_speed": 3.0,
 
 	"location_names": {
-		"_comment": "Tibetan/Sanskrit compound place names drawn randomly when placing town-type objects. Ro=corpse, Nag=black, Dur=charnel, Trak=blood, Mun=darkness, Jik=fear, Shi=death, Bar=blazing, Me=fire, Gang=glacier, Drang=cold, Drag=fierce. -khar=fort, -thang=plain, -yul=land, -lung=valley, -ri=mountain, -dzong=citadel, -pura=city.",
+		"_comment": "Tibetan/Sanskrit compound place names drawn randomly when placing town-type objects. Ro=corpse, Nag=black, Dur=charnel, Trak=blood, Mun=darkness, Jik=fear, Shi=death, Bar=blazing, Me=fire, Gang=glacier, Drang=cold, Drag=fierce. khar=fort, thang=plain, yul=land, lung=valley, ri=mountain, dzong=citadel, pura=city.",
 		"town": [
-			"Ro-khar", "Nag-thang", "Dur-yul", "Trak-khar", "Mun-khar",
-			"Jik-lung", "Shi-thang", "Bar-khar", "Me-ri", "Gang-khar",
-			"Drang-yul", "Drag-lung", "Krodha-pura", "Dvesa-nagar", "Yama-kshetra"
+			"Rokhar", "Nagthang", "Duryul", "Trakkhar", "Munkhar",
+			"Jiklung", "Shithang", "Barkhar", "Meri", "Gangkhar",
+			"Drangyul", "Draglung", "Krodhapura", "Dvesanagar", "Yamakshetra"
 		]
 	},
 
