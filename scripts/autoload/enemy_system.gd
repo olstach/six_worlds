@@ -326,14 +326,26 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	for item in archetype.get("starting_inventory", []):
 		inventory.append(item)
 
-	# Generate a procedural name from realm/region/tags, unless this is a named boss
+	# Generate a procedural name from realm/region/tags, unless this is a named boss.
+	# Race is inferred from archetype tags: imps first, then shades (undead+incorporeal),
+	# then biological devils, then elementals (no biology).
 	var tags = archetype.get("tags", [])
 	var is_boss = "boss" in archetype.get("roles", [])
+	var race: String
+	if "imp" in tags:
+		race = "imp"
+	elif "undead" in tags and "incorporeal" in tags:
+		race = "shade"
+	elif "biological" in tags or "devil" in tags:
+		race = "devil"
+	else:
+		race = "elemental"
+
 	var enemy_name: String
 	if is_boss or name_parts.is_empty():
 		enemy_name = archetype.get("name", "Enemy")
 	else:
-		enemy_name = generate_enemy_name(realm, tags, region)
+		enemy_name = generate_enemy_name(realm, tags, region, race)
 
 	# Update the weapon/claw name now that we have a real name
 	equipped_weapon["name"] = enemy_name + ("'s Claws" if bare_handed else "'s Weapon")
@@ -341,6 +353,7 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	# Assemble final enemy dict matching CombatUnit.init_as_enemy() expectations
 	var enemy: Dictionary = {
 		"name": enemy_name,
+		"archetype_name": archetype.get("name", ""),  # Human-readable archetype, shown as subtitle in combat
 		"archetype_id": archetype_id,
 		"tags": archetype.get("tags", []),
 		"max_hp": derived.max_hp,
@@ -564,28 +577,37 @@ func _build_perks(guaranteed: Array) -> Array:
 	return perks
 
 
-## Generate a procedural enemy name from name_parts.json.
+## Generate a procedural personal name from name_parts.json.
 ##
-## Structure: Prefix-root-suffix  (e.g. "Tsa-krul-pa", "Agni-ghora-kara")
+## Language consistency: picks ONE language (tibetan/sanskrit/english) and uses all three
+## parts from that language, so you never get mixed results like "Moha-crawl-born".
 ##
-## realm:  "hell", "hungry_ghost", etc. — filters which parts are valid
-## tags:   archetype tags like ["biological", "undead", "incorporeal"] — bias prefix selection
-## region: "cold_hell", "fire_hell", etc. — treated as an extra tag for affinity matching
+## Tibetan/Sanskrit format:  "Prefix-root-suffix"   (e.g. "Tsa-krul-pa", "Agni-ghora-kara")
+## English format:           "Prefix Rootsuffix"    (e.g. "Delusion Born", "Blood Gnasher")
 ##
-## If no affinity prefixes match the tags/region a random realm-valid prefix is used instead.
-## 70% of the time an affinity match is preferred when one exists.
-func generate_enemy_name(realm: String, tags: Array = [], region: String = "") -> String:
+## realm:  "hell", "hungry_ghost", etc.     — filters which parts are valid
+## tags:   archetype tags ["biological", …] — bias prefix affinity selection
+## region: "cold_hell", "fire_hell", etc.   — extra tag for affinity matching
+## race:   "devil", "shade", "imp", etc.    — restricts to race-appropriate parts
+##
+## Affinity-matched prefixes are preferred 70% of the time when available.
+func generate_enemy_name(realm: String, tags: Array = [], region: String = "", race: String = "") -> String:
 	var all_prefixes: Dictionary = name_parts.get("prefixes", {})
 	var all_roots: Dictionary    = name_parts.get("roots",    {})
 	var all_suffixes: Dictionary = name_parts.get("suffixes", {})
 
-	var valid_prefixes: Array[String]   = []
-	var affinity_prefixes: Array[String] = []
-
-	# Build the tag set to match against (archetype tags + region as a pseudo-tag)
+	# Build the tag set for affinity matching (archetype tags + region as pseudo-tag)
 	var match_tags: Array = tags.duplicate()
 	if region != "" and region != "any":
 		match_tags.append(region)
+
+	# Collect valid parts grouped by language.
+	# Each language dict holds { "parts": [...], "affinity": [...] } for prefixes,
+	# and plain arrays for roots/suffixes.
+	var lang_prefixes:  Dictionary = {}  # lang -> Array[String] (all valid)
+	var lang_affinity:  Dictionary = {}  # lang -> Array[String] (affinity-matched)
+	var lang_roots:     Dictionary = {}  # lang -> Array[String]
+	var lang_suffixes:  Dictionary = {}  # lang -> Array[String]
 
 	for key in all_prefixes:
 		if key.begins_with("_"):
@@ -593,43 +615,77 @@ func generate_enemy_name(realm: String, tags: Array = [], region: String = "") -
 		var entry: Dictionary = all_prefixes[key]
 		if not realm in entry.get("realms", []):
 			continue
-		valid_prefixes.append(key)
-		# Check affinity — any overlap with match_tags qualifies this prefix as preferred
+		if race != "" and entry.has("races") and not race in entry.get("races", []):
+			continue
+		var lang: String = entry.get("lang", "tibetan")
+		if not lang in lang_prefixes:
+			lang_prefixes[lang] = []
+			lang_affinity[lang]  = []
+		lang_prefixes[lang].append(key)
+		# Affinity check — any overlap with match_tags marks this prefix as preferred
 		var affinity: Array = entry.get("affinity_tags", [])
 		for tag in match_tags:
 			if tag in affinity:
-				affinity_prefixes.append(key)
+				lang_affinity[lang].append(key)
 				break
 
-	var valid_roots: Array[String] = []
 	for key in all_roots:
 		if key.begins_with("_"):
 			continue
-		if realm in all_roots[key].get("realms", []):
-			valid_roots.append(key)
+		var entry: Dictionary = all_roots[key]
+		if not realm in entry.get("realms", []):
+			continue
+		if race != "" and entry.has("races") and not race in entry.get("races", []):
+			continue
+		var lang: String = entry.get("lang", "tibetan")
+		if not lang in lang_roots:
+			lang_roots[lang] = []
+		lang_roots[lang].append(key)
 
-	var valid_suffixes: Array[String] = []
 	for key in all_suffixes:
 		if key.begins_with("_"):
 			continue
-		if realm in all_suffixes[key].get("realms", []):
-			valid_suffixes.append(key)
+		var entry: Dictionary = all_suffixes[key]
+		if not realm in entry.get("realms", []):
+			continue
+		if race != "" and entry.has("races") and not race in entry.get("races", []):
+			continue
+		var lang: String = entry.get("lang", "tibetan")
+		if not lang in lang_suffixes:
+			lang_suffixes[lang] = []
+		lang_suffixes[lang].append(key)
 
-	if valid_prefixes.is_empty() or valid_roots.is_empty() or valid_suffixes.is_empty():
-		push_warning("EnemySystem: Not enough name parts for realm '%s' — using fallback name" % realm)
+	# Find languages that have at least one valid part in ALL three categories
+	var complete_langs: Array[String] = []
+	for lang in lang_prefixes:
+		if lang in lang_roots and lang in lang_suffixes:
+			complete_langs.append(lang)
+
+	if complete_langs.is_empty():
+		push_warning("EnemySystem: No complete language set for realm '%s', race '%s' — using fallback" % [realm, race])
 		return "Unknown"
 
-	# Prefer an affinity-matched prefix 70% of the time
+	# Pick one language for the whole name
+	var chosen_lang: String = complete_langs[randi() % complete_langs.size()]
+
+	# Pick prefix (prefer affinity match 70% of the time)
 	var prefix: String
-	if not affinity_prefixes.is_empty() and randf() < 0.7:
-		prefix = affinity_prefixes[randi() % affinity_prefixes.size()]
+	var aff_list: Array = lang_affinity.get(chosen_lang, [])
+	if not aff_list.is_empty() and randf() < 0.7:
+		prefix = aff_list[randi() % aff_list.size()]
 	else:
-		prefix = valid_prefixes[randi() % valid_prefixes.size()]
+		prefix = lang_prefixes[chosen_lang][randi() % lang_prefixes[chosen_lang].size()]
 
-	var root:   String = valid_roots[randi() % valid_roots.size()]
-	var suffix: String = valid_suffixes[randi() % valid_suffixes.size()]
+	var root:   String = lang_roots[chosen_lang][randi() % lang_roots[chosen_lang].size()]
+	var suffix: String = lang_suffixes[chosen_lang][randi() % lang_suffixes[chosen_lang].size()]
 
-	return prefix + "-" + root + "-" + suffix
+	# Format based on language:
+	#   English → "Prefix Rootsuffix"  (e.g. "Blood Gnasher", "Delusion Born")
+	#   Other   → "Prefix-root-suffix" (e.g. "Tsa-krul-pa",  "Agni-ghora-kara")
+	if chosen_lang == "english":
+		return prefix + " " + root.capitalize() + suffix
+	else:
+		return prefix + "-" + root + "-" + suffix
 
 
 ## Generate consumable inventory for an enemy based on archetype and power level.
