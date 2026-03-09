@@ -228,7 +228,7 @@ Roles to fulfill per realm (not specific object types):
   **STILL UNWIRED** (grouped by complexity):
 
   *Simple / remaining (last few):*
-  - ~~`call_the_shot`~~: DONE — `mark_target` effect type added to `use_active_skill`; `marked_target` field on CombatUnit; bonuses applied in `calculate_hit_chance` (+15% acc) and `calculate_physical_damage` (+15% dmg, clears mark). `once_per_turn` flag enforced generically via `{perk_id}_used_this_turn` field.
+  - ~~`call_the_shot`~~: DONE — `mark_target` effect type; `marked_target` on attacker + `is_marked` on defender; +15% acc/dmg for first ally hit; clears on hit or defender's turn start.
   - ~~`tremor`~~: DONE — Earth AoE spells 25% Knockdown.
   - ~~`crushing_depths`~~: DONE — +15% accuracy vs enemies on water/ice terrain or 2+ water debuffs.
   - ~~`avatar_of_the_storm`~~: DONE — aura: all allies' attacks +5% Air, 10% stun.

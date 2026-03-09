@@ -12,6 +12,7 @@ extends Node
 # Loaded data from JSON
 var archetypes: Dictionary = {}   # archetype_id -> archetype definition
 var encounters: Dictionary = {}   # encounter_id -> encounter template
+var name_parts: Dictionary = {}   # prefixes, roots, suffixes for procedural naming
 
 # Spell database reference (loaded from spells.json)
 var all_spells: Dictionary = {}
@@ -44,6 +45,7 @@ func _ready() -> void:
 	_load_archetypes()
 	_load_encounters()
 	_load_spells()
+	_load_name_parts()
 	print("EnemySystem initialized: %d archetypes, %d encounters" % [archetypes.size(), encounters.size()])
 
 
@@ -115,6 +117,23 @@ func _load_spells() -> void:
 		all_spells = data.spells
 
 
+func _load_name_parts() -> void:
+	var file = FileAccess.open("res://resources/data/enemies/name_parts.json", FileAccess.READ)
+	if not file:
+		push_warning("EnemySystem: Could not load name_parts.json — enemies will use archetype names")
+		return
+
+	var json = JSON.new()
+	var err = json.parse(file.get_as_text())
+	file.close()
+
+	if err != OK:
+		push_warning("EnemySystem: Failed to parse name_parts.json: " + json.get_error_message())
+		return
+
+	name_parts = json.get_data()
+
+
 # ============================================
 # MAIN API
 # ============================================
@@ -122,11 +141,12 @@ func _load_spells() -> void:
 ## Generate an encounter: returns Array of enemy dicts ready for CombatUnit.init_as_enemy()
 ## encounter_id: matches enemy_group from events/mobs JSON
 ## region: "cold_hell", "fire_hell", or "" for any
-func generate_encounter(encounter_id: String, region: String = "") -> Array[Dictionary]:
+## realm: which of the six worlds this encounter is in — used for name generation
+func generate_encounter(encounter_id: String, region: String = "", realm: String = "hell") -> Array[Dictionary]:
 	var template = encounters.get(encounter_id, {})
 	if template.is_empty():
 		push_warning("EnemySystem: Unknown encounter '%s', generating fallback" % encounter_id)
-		return _generate_fallback_encounter()
+		return _generate_fallback_encounter(realm)
 
 	var party_power = get_party_power()
 	var enemies: Array[Dictionary] = []
@@ -137,14 +157,41 @@ func generate_encounter(encounter_id: String, region: String = "") -> Array[Dict
 			var archetype_id = entry.get("archetype", "")
 			var count = entry.get("count", 1)
 			for i in range(count):
-				var enemy = _build_enemy(archetype_id, party_power)
+				var enemy = _build_enemy(archetype_id, party_power, realm, region)
 				if not enemy.is_empty():
 					enemies.append(enemy)
+
+	elif template.get("mixed", false):
+		# Mixed encounter — groups of different tiers (e.g. 1 devil + 2 imps)
+		var enc_region = template.get("region", "any")
+		var effective_region = region if region != "" else enc_region
+
+		for group in template.get("groups", []):
+			var group_tier = group.get("tier", "devil")
+			var group_region = group.get("region", effective_region)
+			var diff_range = group.get("difficulty_range", [0.8, 1.2])
+			var diff_min = diff_range[0] if diff_range.size() > 0 else 0.8
+			var diff_max = diff_range[1] if diff_range.size() > 1 else 1.2
+
+			var group_roles = group.get("roles", {})
+			for role in group_roles:
+				var count = int(group_roles[role])
+				for i in range(count):
+					var archetype_id = _pick_archetype_for_role(role, group_region, group_tier)
+					if archetype_id == "":
+						push_warning("EnemySystem: No archetype for role '%s' tier '%s' in '%s'" % [role, group_tier, group_region])
+						continue
+					var difficulty = randf_range(diff_min, diff_max)
+					var enemy = _build_enemy(archetype_id, party_power * difficulty, realm, group_region)
+					if not enemy.is_empty():
+						enemies.append(enemy)
+
 	else:
-		# Role-based encounter — pick random archetypes matching roles
+		# Role-based encounter — pick random archetypes matching roles and tier
 		var enc_region = template.get("region", "any")
 		# Use mob's region if provided, otherwise encounter's default
 		var effective_region = region if region != "" else enc_region
+		var enc_tier = template.get("tier", "devil")
 
 		var diff_range = template.get("difficulty_range", [0.8, 1.2])
 		var diff_min = diff_range[0] if diff_range.size() > 0 else 0.8
@@ -154,20 +201,20 @@ func generate_encounter(encounter_id: String, region: String = "") -> Array[Dict
 		for role in roles:
 			var count = int(roles[role])
 			for i in range(count):
-				var archetype_id = _pick_archetype_for_role(role, effective_region)
+				var archetype_id = _pick_archetype_for_role(role, effective_region, enc_tier)
 				if archetype_id == "":
-					push_warning("EnemySystem: No archetype found for role '%s' in region '%s'" % [role, effective_region])
+					push_warning("EnemySystem: No archetype found for role '%s' tier '%s' in region '%s'" % [role, enc_tier, effective_region])
 					continue
 
 				# Random difficulty within range
 				var difficulty = randf_range(diff_min, diff_max)
-				var enemy = _build_enemy(archetype_id, party_power * difficulty)
+				var enemy = _build_enemy(archetype_id, party_power * difficulty, realm, effective_region)
 				if not enemy.is_empty():
 					enemies.append(enemy)
 
 	if enemies.is_empty():
 		push_warning("EnemySystem: Encounter '%s' produced no enemies, using fallback" % encounter_id)
-		return _generate_fallback_encounter()
+		return _generate_fallback_encounter(realm)
 
 	return enemies
 
@@ -205,8 +252,9 @@ func get_party_power() -> float:
 # ENEMY BUILDING
 # ============================================
 
-## Build a single enemy dict from an archetype + power budget
-func _build_enemy(archetype_id: String, power_budget: float) -> Dictionary:
+## Build a single enemy dict from an archetype + power budget.
+## realm and region are passed through for procedural name generation.
+func _build_enemy(archetype_id: String, power_budget: float, realm: String = "hell", region: String = "") -> Dictionary:
 	var archetype = archetypes.get(archetype_id, {})
 	if archetype.is_empty():
 		push_warning("EnemySystem: Unknown archetype '%s'" % archetype_id)
@@ -230,39 +278,82 @@ func _build_enemy(archetype_id: String, power_budget: float) -> Dictionary:
 	var spells = _pick_spells(skills, archetype.get("guaranteed_spells", []))
 	var perks = _build_perks(archetype.get("guaranteed_perks", []))
 
-	# Apply equipment bonuses to derived stats
-	derived.damage += equipment.get("weapon_damage", 0)
-	derived.accuracy += equipment.get("weapon_accuracy", 0)
-	derived.armor += equipment.get("armor_value", 0)
+	# Some enemy types (imps) have a chance to be bare-handed — no equipment at all
+	var no_equip_chance = archetype.get("no_equipment_chance", 0.0)
+	var bare_handed = randf() < no_equip_chance
 
-	# Build resistances dict (start with defaults, apply archetype overrides)
+	# Apply equipment bonuses to derived stats (skipped if bare-handed)
+	if not bare_handed:
+		derived.damage += equipment.get("weapon_damage", 0)
+		derived.accuracy += equipment.get("weapon_accuracy", 0)
+		derived.armor += equipment.get("armor_value", 0)
+
+	# Build resistances dict (start with defaults, apply archetype overrides).
+	# Includes "black" as a damage type used by Black magic spells.
 	var resistances = {
 		"physical": 0, "space": 0, "air": 0,
-		"fire": 0, "water": 0, "earth": 0
+		"fire": 0, "water": 0, "earth": 0, "black": 0
 	}
 	var arch_resists = archetype.get("resistances", {})
 	for key in arch_resists:
 		resistances[key] = arch_resists[key]
 
 	# Build the weapon dict for CombatUnit
-	var weapon_type = equipment.get("weapon_type", "sword")
-	var equipped_weapon = {
-		"name": archetype.get("name", "Enemy") + "'s Weapon",
-		"type": weapon_type,
-		"damage_type": _get_weapon_damage_type(weapon_type),
-		"stats": {
-			"damage": equipment.get("weapon_damage", 5),
-			"accuracy": equipment.get("weapon_accuracy", 3),
-			"range": equipment.get("weapon_range", 1)
+	var equipped_weapon: Dictionary
+	if bare_handed:
+		# Bare-handed: weak unarmed attack, no armor
+		equipped_weapon = {
+			"name": archetype.get("name", "Enemy") + "'s Claws",  # placeholder; real name set below
+			"type": "unarmed",
+			"damage_type": "crushing",
+			"stats": {"damage": 2, "accuracy": 4, "range": 1}
 		}
-	}
+	else:
+		var weapon_type = equipment.get("weapon_type", "sword")
+		equipped_weapon = {
+			"name": archetype.get("name", "Enemy") + "'s Weapon",  # placeholder; real name set below
+			"type": weapon_type,
+			"damage_type": _get_weapon_damage_type(weapon_type),
+			"stats": {
+				"damage": equipment.get("weapon_damage", 5),
+				"accuracy": equipment.get("weapon_accuracy", 3),
+				"range": equipment.get("weapon_range", 1)
+			}
+		}
 
-	# Generate consumable inventory based on role and power
+	# Generate consumable inventory, then merge any archetype-guaranteed items
 	var inventory = _generate_enemy_inventory(archetype, effective_budget)
+	for item in archetype.get("starting_inventory", []):
+		inventory.append(item)
+
+	# Generate a procedural name from realm/region/tags, unless this is a named boss.
+	# Race is inferred from archetype tags: imps first, then shades (undead+incorporeal),
+	# then biological devils, then elementals (no biology).
+	var tags = archetype.get("tags", [])
+	var is_boss = "boss" in archetype.get("roles", [])
+	var race: String
+	if "imp" in tags:
+		race = "imp"
+	elif "undead" in tags and "incorporeal" in tags:
+		race = "shade"
+	elif "biological" in tags or "devil" in tags:
+		race = "devil"
+	else:
+		race = "elemental"
+
+	var enemy_name: String
+	if is_boss or name_parts.is_empty():
+		enemy_name = archetype.get("name", "Enemy")
+	else:
+		enemy_name = generate_enemy_name(realm, tags, region, race)
+
+	# Update the weapon/claw name now that we have a real name
+	equipped_weapon["name"] = enemy_name + ("'s Claws" if bare_handed else "'s Weapon")
 
 	# Assemble final enemy dict matching CombatUnit.init_as_enemy() expectations
 	var enemy: Dictionary = {
-		"name": archetype.get("name", "Enemy"),
+		"name": enemy_name,
+		"archetype_name": archetype.get("name", ""),  # Human-readable archetype, shown as subtitle in combat
 		"archetype_id": archetype_id,
 		"tags": archetype.get("tags", []),
 		"max_hp": derived.max_hp,
@@ -383,7 +474,7 @@ func _get_weapon_damage_type(weapon_type: String) -> String:
 	match weapon_type:
 		"sword", "axe":
 			return "slashing"
-		"dagger", "spear", "bow", "thrown":
+		"dagger", "spear", "bow", "crossbow", "thrown":
 			return "piercing"
 		"mace", "staff":
 			return "crushing"
@@ -486,6 +577,117 @@ func _build_perks(guaranteed: Array) -> Array:
 	return perks
 
 
+## Generate a procedural personal name from name_parts.json.
+##
+## Language consistency: picks ONE language (tibetan/sanskrit/english) and uses all three
+## parts from that language, so you never get mixed results like "Moha-crawl-born".
+##
+## Tibetan/Sanskrit format:  "Prefix-root-suffix"   (e.g. "Tsa-krul-pa", "Agni-ghora-kara")
+## English format:           "Prefix Rootsuffix"    (e.g. "Delusion Born", "Blood Gnasher")
+##
+## realm:  "hell", "hungry_ghost", etc.     — filters which parts are valid
+## tags:   archetype tags ["biological", …] — bias prefix affinity selection
+## region: "cold_hell", "fire_hell", etc.   — extra tag for affinity matching
+## race:   "devil", "shade", "imp", etc.    — restricts to race-appropriate parts
+##
+## Affinity-matched prefixes are preferred 70% of the time when available.
+func generate_enemy_name(realm: String, tags: Array = [], region: String = "", race: String = "") -> String:
+	var all_prefixes: Dictionary = name_parts.get("prefixes", {})
+	var all_roots: Dictionary    = name_parts.get("roots",    {})
+	var all_suffixes: Dictionary = name_parts.get("suffixes", {})
+
+	# Build the tag set for affinity matching (archetype tags + region as pseudo-tag)
+	var match_tags: Array = tags.duplicate()
+	if region != "" and region != "any":
+		match_tags.append(region)
+
+	# Collect valid parts grouped by language.
+	# Each language dict holds { "parts": [...], "affinity": [...] } for prefixes,
+	# and plain arrays for roots/suffixes.
+	var lang_prefixes:  Dictionary = {}  # lang -> Array[String] (all valid)
+	var lang_affinity:  Dictionary = {}  # lang -> Array[String] (affinity-matched)
+	var lang_roots:     Dictionary = {}  # lang -> Array[String]
+	var lang_suffixes:  Dictionary = {}  # lang -> Array[String]
+
+	for key in all_prefixes:
+		if key.begins_with("_"):
+			continue
+		var entry: Dictionary = all_prefixes[key]
+		if not realm in entry.get("realms", []):
+			continue
+		if race != "" and entry.has("races") and not race in entry.get("races", []):
+			continue
+		var lang: String = entry.get("lang", "tibetan")
+		if not lang in lang_prefixes:
+			lang_prefixes[lang] = []
+			lang_affinity[lang]  = []
+		lang_prefixes[lang].append(key)
+		# Affinity check — any overlap with match_tags marks this prefix as preferred
+		var affinity: Array = entry.get("affinity_tags", [])
+		for tag in match_tags:
+			if tag in affinity:
+				lang_affinity[lang].append(key)
+				break
+
+	for key in all_roots:
+		if key.begins_with("_"):
+			continue
+		var entry: Dictionary = all_roots[key]
+		if not realm in entry.get("realms", []):
+			continue
+		if race != "" and entry.has("races") and not race in entry.get("races", []):
+			continue
+		var lang: String = entry.get("lang", "tibetan")
+		if not lang in lang_roots:
+			lang_roots[lang] = []
+		lang_roots[lang].append(key)
+
+	for key in all_suffixes:
+		if key.begins_with("_"):
+			continue
+		var entry: Dictionary = all_suffixes[key]
+		if not realm in entry.get("realms", []):
+			continue
+		if race != "" and entry.has("races") and not race in entry.get("races", []):
+			continue
+		var lang: String = entry.get("lang", "tibetan")
+		if not lang in lang_suffixes:
+			lang_suffixes[lang] = []
+		lang_suffixes[lang].append(key)
+
+	# Find languages that have at least one valid part in ALL three categories
+	var complete_langs: Array[String] = []
+	for lang in lang_prefixes:
+		if lang in lang_roots and lang in lang_suffixes:
+			complete_langs.append(lang)
+
+	if complete_langs.is_empty():
+		push_warning("EnemySystem: No complete language set for realm '%s', race '%s' — using fallback" % [realm, race])
+		return "Unknown"
+
+	# Pick one language for the whole name
+	var chosen_lang: String = complete_langs[randi() % complete_langs.size()]
+
+	# Pick prefix (prefer affinity match 70% of the time)
+	var prefix: String
+	var aff_list: Array = lang_affinity.get(chosen_lang, [])
+	if not aff_list.is_empty() and randf() < 0.7:
+		prefix = aff_list[randi() % aff_list.size()]
+	else:
+		prefix = lang_prefixes[chosen_lang][randi() % lang_prefixes[chosen_lang].size()]
+
+	var root:   String = lang_roots[chosen_lang][randi() % lang_roots[chosen_lang].size()]
+	var suffix: String = lang_suffixes[chosen_lang][randi() % lang_suffixes[chosen_lang].size()]
+
+	# Format based on language:
+	#   English → "Prefix Rootsuffix"  (e.g. "Blood Gnasher", "Delusion Born")
+	#   Other   → "Prefix-root-suffix" (e.g. "Tsa-krul-pa",  "Agni-ghora-kara")
+	if chosen_lang == "english":
+		return prefix + " " + root.capitalize() + suffix
+	else:
+		return prefix + "-" + root + "-" + suffix
+
+
 ## Generate consumable inventory for an enemy based on archetype and power level.
 ## Higher power enemies get more/better items. Roles determine item types.
 func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Array:
@@ -546,15 +748,18 @@ func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Arr
 	return inventory
 
 
-## Pick a random archetype that matches a given role and region.
+## Pick a random archetype that matches a given role, region, and tier.
 ## Region "any" archetypes can appear in any region.
-func _pick_archetype_for_role(role: String, region: String) -> String:
+## Tier defaults to "devil" — use "shade" or "imp" for lower-power enemies.
+## Archetypes without an explicit tier field default to "devil".
+func _pick_archetype_for_role(role: String, region: String, tier: String = "devil") -> String:
 	var candidates: Array[String] = []
 
 	for arch_id in archetypes:
 		var arch = archetypes[arch_id]
 		var arch_roles = arch.get("roles", [])
 		var arch_region = arch.get("region", "any")
+		var arch_tier = arch.get("tier", "devil")
 
 		# Check role match
 		if not role in arch_roles:
@@ -568,6 +773,10 @@ func _pick_archetype_for_role(role: String, region: String) -> String:
 		if "boss" in arch_roles:
 			continue
 
+		# Filter by tier — shades and imps don't appear in devil encounters and vice-versa
+		if arch_tier != tier:
+			continue
+
 		candidates.append(arch_id)
 
 	if candidates.is_empty():
@@ -577,12 +786,12 @@ func _pick_archetype_for_role(role: String, region: String) -> String:
 
 
 ## Fallback encounter when encounter_id is unknown — 2 generic demon warriors
-func _generate_fallback_encounter() -> Array[Dictionary]:
+func _generate_fallback_encounter(realm: String = "hell") -> Array[Dictionary]:
 	var party_power = get_party_power()
 	var enemies: Array[Dictionary] = []
 
 	for i in range(2):
-		var enemy = _build_enemy("hell_demon_warrior", party_power * 0.8)
+		var enemy = _build_enemy("hell_demon_warrior", party_power * 0.8, realm)
 		if not enemy.is_empty():
 			enemies.append(enemy)
 

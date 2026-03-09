@@ -44,6 +44,7 @@ var _objects: Array[Dictionary] = []
 var _mobs: Array[Dictionary] = []
 var _regions: Dictionary = {}
 var _obj_counter: int = 0  # For unique IDs
+var _location_name_pools: Dictionary = {}  # category -> Array[String] (shuffled, consumed as placed)
 
 
 func _ready() -> void:
@@ -92,6 +93,14 @@ func generate(config: Dictionary, seed_value: int = 0) -> Dictionary:
 	_mobs.clear()
 	_regions.clear()
 	_obj_counter = 0
+	_location_name_pools.clear()
+	# Pre-shuffle each name pool so placement order is random
+	for category in config.get("location_names", {}):
+		if category.begins_with("_"):
+			continue
+		var names: Array = config["location_names"][category].duplicate()
+		names.shuffle()
+		_location_name_pools[category] = names
 
 	var zones = config.get("zones", [])
 	var landmarks = config.get("fixed_landmarks", [])
@@ -711,12 +720,20 @@ func _place_event_object(zone_id: String, template: Dictionary, pos: Vector2i) -
 	_obj_counter += 1
 	var obj_id = "%s_evt_%d" % [zone_id, _obj_counter]
 
+	# Resolve display name — use name_category pool if available (no-repeat draw)
+	var obj_name: String
+	var name_cat: String = template.get("name_category", "")
+	if name_cat != "" and _location_name_pools.has(name_cat) and not _location_name_pools[name_cat].is_empty():
+		obj_name = _location_name_pools[name_cat].pop_back()
+	else:
+		obj_name = template.get("name", "Event")
+
 	_objects.append({
 		"id": obj_id,
 		"x": pos.x,
 		"y": pos.y,
 		"type": 0,  # EVENT
-		"name": template.get("name", "Event"),
+		"name": obj_name,
 		"icon": template.get("icon", "event"),
 		"blocking": template.get("blocking", false),
 		"one_time": template.get("one_time", true),

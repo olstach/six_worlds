@@ -1373,6 +1373,11 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 			if _grid_distance(attacker.grid_position, defender.grid_position) <= 2:
 				hit_chance -= 10.0
 
+	# Call the Shot (Leadership 1): marked targets are easier to hit — +15% accuracy
+	# The mark is consumed on the first damaging hit (see calculate_physical_damage)
+	if "is_marked" in defender and defender.is_marked:
+		hit_chance += 15.0
+
 	# Height advantage bonus (+5 per level, -5 penalty when lower)
 	if combat_grid:
 		hit_chance += combat_grid.get_height_accuracy_bonus(attacker.grid_position, defender.grid_position)
@@ -1550,6 +1555,8 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 		if "marked_target" in ally_cts and ally_cts.marked_target == defender:
 			damage = int(damage * 1.15)
 			ally_cts.marked_target = null  # consume the mark
+			if "is_marked" in defender:
+				defender.is_marked = false  # sync both mark representations
 			combat_log.emit("Called shot lands! +15% damage.")
 			break
 
@@ -3883,7 +3890,7 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 		var cooldown = combat_data.get("cooldown", 0)
 		if cooldown > 0:
 			user.set_skill_cooldown(perk_id, cooldown)
-		# Once-per-combat skills get a huge cooldown
+		# Once-per-combat skills get a huge cooldown; once-per-turn skills cool down in 1 turn
 		if combat_data.get("once_per_combat", false):
 			user.set_skill_cooldown(perk_id, 999)
 		# Mark once-per-turn skills as used (reset at turn start)
@@ -3948,8 +3955,10 @@ func _resolve_mark_target(user: Node, combat_data: Dictionary, target_pos: Vecto
 	var max_range = combat_data.get("range", 6)
 	if distance > max_range:
 		return {"success": false, "reason": "Out of range"}
-	# Place the mark on the marking unit so allies can query it
+	# Place the mark on both the marking unit (for team-wide queries) and the target (for quick checks)
 	user.marked_target = target
+	if "is_marked" in target:
+		target.is_marked = true
 	combat_log.emit("%s calls the shot on %s!" % [user.unit_name, target.unit_name])
 	return {"success": true, "effects": [{"type": "mark_target", "target": target}]}
 
@@ -5657,6 +5666,10 @@ func _process_turn_start_perks(unit: Node) -> void:
 	unit.ranged_attacks_this_turn = 0
 	unit.knife_storm_proc_this_turn = false
 	unit.call_the_shot_used_this_turn = false
+	# Call the Shot: mark on defender expires at the start of their own turn
+	if "is_marked" in unit and unit.is_marked:
+		unit.is_marked = false
+		combat_log.emit("%s shakes off the mark." % unit.unit_name)
 
 	# Diamond Body: +25% status resist (handled via saving throw bonuses)
 	# Field Commander: companions reposition — only applies round 1 (handled in deployment)

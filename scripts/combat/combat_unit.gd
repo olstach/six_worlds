@@ -10,6 +10,7 @@ class_name CombatUnit
 
 # Unit identification
 var unit_name: String = "Unit"
+var unit_archetype: String = ""  # Shown as a subtitle below the name (enemies only)
 var team: int = 0  # CombatManager.Team
 
 # Grid position
@@ -41,6 +42,7 @@ var enemies_hit_this_combat: Array = []  # Tracks enemies hit for cheap_shot (fi
 var hit_back_ready: bool = false          # Set when taking damage with hit_back_harder perk; grants +20% damage on next melee attack
 var sorcery_kill_bonus_ready: bool = false  # Set when killing with Sorcery (spell_like_a_knife perk); next spell gets +50% Spellpower
 var marked_target: Node = null             # Target marked by call_the_shot; first ally to attack gets bonus
+var is_marked: bool = false               # Set on the defender by call_the_shot; cleared on first hit or defender's turn start
 var call_the_shot_used_this_turn: bool = false  # Prevents call_the_shot from being used twice per turn
 var necromancer_raises: int = 0            # How many undead this unit has raised this combat (max 2)
 var in_free_attack: bool = false           # Recursion guard for cleave/relentless free attacks
@@ -99,6 +101,7 @@ var sprite: ColorRect  # Placeholder until we have actual sprites
 var health_bar_bg: ColorRect
 var health_bar_fill: ColorRect
 var name_label: Label
+var archetype_label: Label  # Second line below name_label, shown for enemies
 var status_indicator: Label
 
 # Visual settings
@@ -156,6 +159,7 @@ func init_from_character(char_data: Dictionary, unit_team: int) -> void:
 func init_as_enemy(enemy_def: Dictionary) -> void:
 	character_data = enemy_def
 	unit_name = enemy_def.get("name", "Enemy")
+	unit_archetype = enemy_def.get("archetype_name", "")
 	team = CombatManager.Team.ENEMY
 
 	max_hp = enemy_def.get("max_hp", 50)
@@ -204,15 +208,28 @@ func _create_visuals() -> void:
 	health_bar_fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(health_bar_fill)
 
-	# Name label
+	# Name label — procedural/personal name, bright white
 	name_label = Label.new()
 	name_label.text = unit_name
 	name_label.position = Vector2(-UNIT_SIZE.x / 2, UNIT_SIZE.y / 2 + 2)
 	name_label.add_theme_font_size_override("font_size", 10)
+	name_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.custom_minimum_size.x = UNIT_SIZE.x
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(name_label)
+
+	# Archetype label — role/class subtitle, muted grey, only shown for enemies
+	archetype_label = Label.new()
+	archetype_label.text = ""
+	archetype_label.position = Vector2(-UNIT_SIZE.x / 2, UNIT_SIZE.y / 2 + 14)
+	archetype_label.add_theme_font_size_override("font_size", 8)
+	archetype_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	archetype_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	archetype_label.custom_minimum_size.x = UNIT_SIZE.x
+	archetype_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	archetype_label.hide()
+	add_child(archetype_label)
 
 	# Status indicator (for bleed-out, buffs, etc.)
 	status_indicator = Label.new()
@@ -248,6 +265,13 @@ func _update_visuals() -> void:
 
 	if name_label:
 		name_label.text = unit_name
+
+	if archetype_label:
+		if unit_archetype != "":
+			archetype_label.text = unit_archetype
+			archetype_label.show()
+		else:
+			archetype_label.hide()
 
 	if status_indicator:
 		var status_text = ""
