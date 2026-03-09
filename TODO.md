@@ -223,7 +223,7 @@ Roles to fulfill per realm (not specific object types):
   **STILL UNWIRED** (grouped by complexity):
 
   *Simple / remaining (last few):*
-  - `call_the_shot` (Leadership 1) — free-action mark (1/turn): next ally attacking gains +15% acc and +15% dmg. Add `marked_target` node ref on CombatUnit; set via active skill; check+clear in `calculate_hit_chance` and `calculate_physical_damage`.
+  - ~~`call_the_shot`~~: DONE — free-action mark (1/turn): next ally attacking gets +15% acc/dmg; mark clears on first hit or at marked unit's turn start.
   - ~~`tremor`~~: DONE — Earth AoE spells 25% Knockdown.
   - ~~`crushing_depths`~~: DONE — +15% accuracy vs enemies on water/ice terrain or 2+ water debuffs.
   - ~~`avatar_of_the_storm`~~: DONE — aura: all allies' attacks +5% Air, 10% stun.
