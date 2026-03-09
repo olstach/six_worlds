@@ -1160,6 +1160,12 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 	var roll = randf() * 100.0
 	var hit = _stealth_attack or (roll <= hit_chance)  # stealth = auto-hit
 
+	# Force-miss: that_was_supposed_to_miss perk applied this flag to the attacker
+	if not _stealth_attack and "will_miss_next_attack" in attacker and attacker.will_miss_next_attack:
+		hit = false
+		attacker.will_miss_next_attack = false
+		combat_log.emit("%s swings wide — it was supposed to miss!" % attacker.unit_name)
+
 	# Get weapon damage type (slashing, crushing, piercing)
 	var weapon_dmg_type = attacker.get_weapon_damage_type() if attacker.has_method("get_weapon_damage_type") else "crushing"
 
@@ -1961,13 +1967,38 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		if spell.get("schools", []).any(func(s): return s.to_lower() == "enchantment"):
 			mana_cost = int(mana_cost * 0.90)
 
+	# Overcast bonus: push_the_words, burn_the_breath, one_perfect_sentence, grand_working
+	# Consume the queued bonus and apply mana cost multiplier
+	var _overcast: Dictionary = {}
+	if "pending_overcast_bonus" in caster and not caster.pending_overcast_bonus.is_empty():
+		_overcast = caster.pending_overcast_bonus
+		caster.pending_overcast_bonus = {}
+		var mana_mult = _overcast.get("mana_cost_multiplier", 1.0)
+		mana_cost = int(mana_cost * mana_mult)
+		combat_log.emit("%s casts with overcast power!" % caster.unit_name)
+
 	# Deduct mana (sync to character_data so it persists after combat)
 	caster.current_mana -= mana_cost
 	var caster_derived = caster.character_data.get("derived", {})
 	caster_derived["current_mana"] = caster.current_mana
 
+	# Overcast self-damage (burn_the_breath: caster takes damage equal to % of mana spent)
+	if not _overcast.is_empty():
+		var self_dmg_pct = _overcast.get("self_damage_pct_of_mana", 0)
+		if self_dmg_pct > 0:
+			var self_dmg = ceili(mana_cost * self_dmg_pct / 100.0)
+			apply_damage(caster, self_dmg, "fire")
+			combat_log.emit("%s burns from the overcast! (%d self-damage)" % [caster.unit_name, self_dmg])
+
 	# Calculate spell power bonus from all applicable schools
 	var spellpower_bonus = _calculate_spell_bonus(caster, spell)
+
+	# Apply overcast spellpower multiplier
+	if not _overcast.is_empty():
+		var sp_pct = _overcast.get("spellpower_bonus_pct", 0)
+		if sp_pct > 0:
+			spellpower_bonus = int(spellpower_bonus * (1.0 + sp_pct / 100.0))
+
 	# Spell Like a Knife (Sorcery 5): killing with Sorcery grants +50% Spellpower on next spell
 	if "sorcery_kill_bonus_ready" in caster and caster.sorcery_kill_bonus_ready:
 		spellpower_bonus = int(spellpower_bonus * 1.50)
@@ -3792,6 +3823,52 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 			if target == null or not target.is_alive():
 				return {"success": false, "reason": "No target"}
 			result = {"success": true, "examine_target": target, "effects": []}
+		# --- Batch 2 resolvers ---
+		"bonus_movement":
+			result = _resolve_bonus_movement(user, combat_data)
+		"restore_stamina":
+			result = _resolve_restore_stamina(user, combat_data)
+		"restore_armor":
+			result = _resolve_restore_armor(user, combat_data, target_pos)
+		"revive":
+			result = _resolve_revive_ally(user, combat_data, target_pos)
+		"debuff_enemies":
+			result = _resolve_debuff_enemies_aoe(user, combat_data, target_pos)
+		"buff_allies":
+			result = _resolve_buff_allies_all(user, combat_data)
+		"buff_ally":
+			result = _resolve_buff_ally_single(user, combat_data, target_pos)
+		"destroy_obstacle":
+			result = _resolve_destroy_obstacle(user, combat_data, target_pos)
+		"cleanse_and_buff":
+			result = _resolve_cleanse_and_buff(user, combat_data)
+		"grant_extra_action":
+			result = _resolve_grant_extra_action(user, combat_data, target_pos)
+		"force_miss":
+			result = _resolve_force_miss(user, combat_data, target_pos)
+		"grapple":
+			result = _resolve_grapple(user, combat_data, target_pos)
+		"overcast":
+			result = _resolve_overcast(user, combat_data)
+		"retreat":
+			result = _resolve_retreat(user, combat_data)
+		"aoe_damage_and_status":
+			result = _resolve_aoe_damage_and_status(user, combat_data, target_pos)
+		"buff_allies_debuff_enemies":
+			result = _resolve_buff_allies_debuff_enemies(user, combat_data)
+		"dispel_and_invert":
+			result = _resolve_dispel_and_invert(user, combat_data, target_pos)
+		"aggro_aura":
+			result = _resolve_aggro_aura(user, combat_data)
+		"share_buffs":
+			result = _resolve_share_buffs(user, combat_data)
+		"double_buffs":
+			result = _resolve_double_buffs(user, combat_data, target_pos)
+		# --- Deferred (complex UI/system needed) ---
+		"create_images", "imbued_attack", "mass_teleport", "recruit_or_pacify", \
+		"place_trap", "consume_charm", "steal_item", "choose_one", "guard_ally", \
+		"summon_aura", "create_terrain":
+			return {"success": false, "reason": "Skill not yet implemented: " + effect_type}
 		_:
 			return {"success": false, "reason": "Unknown skill effect: " + effect_type}
 
@@ -4235,6 +4312,581 @@ func _resolve_heal_self(user: Node, combat_data: Dictionary) -> Dictionary:
 ## Get the targeting type for a skill's combat_data
 func get_skill_targeting(combat_data: Dictionary) -> String:
 	return combat_data.get("targeting", "self")
+
+
+# ============================================
+# ACTIVE SKILL RESOLVER — BATCH 2
+# (bonus_movement, restore_stamina, revive, debuff_enemies, buff_allies, buff_ally,
+#  destroy_obstacle, cleanse_and_buff, grant_extra_action, force_miss, grapple,
+#  overcast, retreat, aoe_damage_and_status, buff_allies_debuff_enemies,
+#  dispel_and_invert, aggro_aura, share_buffs, double_buffs, restore_armor)
+# ============================================
+
+## Attribute-based saving throw. Returns true if the unit SAVES (resists the effect).
+## save_type is an attribute name ("strength", "focus", "finesse", etc.)
+func _perform_save_roll(unit: Node, save_type: String) -> bool:
+	var attrs = unit.character_data.get("attributes", {}) if "character_data" in unit else {}
+	var stat_val = attrs.get(save_type, 10)
+	# Each point above 10 adds 2% to the save chance; base 40%
+	var save_chance = clampf(40.0 + (stat_val - 10) * 2.0, 10.0, 90.0)
+	return randf() * 100.0 <= save_chance
+
+
+## Bonus movement (spring_step, quick_escape): add movement tiles for rest of this turn.
+func _resolve_bonus_movement(user: Node, combat_data: Dictionary) -> Dictionary:
+	var bonus = combat_data.get("bonus_movement", 2)
+	_apply_stat_modifier(user, "movement", bonus, 1)  # Expires at next turn start
+	combat_log.emit("%s gains +%d movement this turn!" % [user.unit_name, bonus])
+	return {"success": true, "effects": [{"type": "buff", "stat": "movement", "value": bonus}]}
+
+
+## Restore stamina to all allies (comic_relief).
+func _resolve_restore_stamina(user: Node, combat_data: Dictionary) -> Dictionary:
+	var pct = combat_data.get("stamina_restore_pct", 15)
+	var effects: Array = []
+	for ally in get_team_units(user.team if "team" in user else 0):
+		if not ally.is_alive():
+			continue
+		var amount = maxi(1, int(ally.max_stamina * pct / 100.0))
+		ally.restore_stamina(amount)
+		effects.append({"type": "stamina_restore", "target": ally, "amount": amount})
+	combat_log.emit("%s rallies the party — all allies restore %d%% stamina!" % [user.unit_name, pct])
+	return {"success": true, "effects": effects}
+
+
+## Restore armor as a temporary buff (field_repair).
+func _resolve_restore_armor(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var max_range = combat_data.get("range", 2)
+	var target: Node
+	var dist = _grid_distance(user.grid_position, target_pos)
+	if dist == 0:
+		target = user
+	else:
+		target = get_unit_at(target_pos)
+		if target == null or not target.is_alive():
+			return {"success": false, "reason": "No target"}
+		if dist > max_range:
+			return {"success": false, "reason": "Out of range"}
+		if target.team != user.team:
+			return {"success": false, "reason": "Can only repair allies"}
+
+	var pct = combat_data.get("armor_restore_pct", 25)
+	var base_armor = target.character_data.get("derived", {}).get("armor", 0) if "character_data" in target else 0
+	var armor_amount = maxi(2, int(base_armor * pct / 100.0))
+	_apply_stat_modifier(target, "armor", armor_amount, 3)
+	combat_log.emit("%s repairs %s's armor (+%d for 3 turns)." % [user.unit_name, target.unit_name, armor_amount])
+	return {"success": true, "effects": [{"type": "buff", "stat": "armor", "value": armor_amount}]}
+
+
+## Revive a bleeding-out or downed ally (miraculous_recovery).
+func _resolve_revive_ally(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var max_range = combat_data.get("range", 2)
+	if _grid_distance(user.grid_position, target_pos) > max_range:
+		return {"success": false, "reason": "Out of range"}
+
+	var target = get_unit_at(target_pos)
+	if target == null:
+		return {"success": false, "reason": "No target"}
+	if not (target.is_bleeding_out or target.is_dead):
+		return {"success": false, "reason": "Target is not downed"}
+	if target.team != user.team:
+		return {"success": false, "reason": "Can only revive allies"}
+
+	var heal_pct = combat_data.get("heal_pct", 30)
+	var heal_amount = maxi(1, int(target.max_hp * heal_pct / 100.0))
+
+	target.is_bleeding_out = false
+	target.is_dead = false
+	target.bleed_out_turns = 0
+	target.current_hp = mini(heal_amount, target.max_hp)
+
+	if combat_data.get("cleanse_all_debuffs", false):
+		target.status_effects.clear()
+
+	unit_healed.emit(target, heal_amount)
+	if target.has_method("_update_visuals"):
+		target._update_visuals()
+	combat_log.emit("%s miraculously revives %s with %d HP!" % [user.unit_name, target.unit_name, heal_amount])
+	return {"success": true, "effects": [{"type": "revive", "target": target, "hp": heal_amount}]}
+
+
+## Debuff enemies in an AoE with a saving throw (intimidating_stance, the_laughter_turns).
+func _resolve_debuff_enemies_aoe(user: Node, combat_data: Dictionary, _target_pos: Vector2i) -> Dictionary:
+	var aoe_radius = combat_data.get("aoe_radius", 2)
+	var targeting = combat_data.get("targeting", "aoe_self")
+	var save_type = combat_data.get("save_type", "focus")
+	var requires_demoralized = combat_data.get("requires_demoralized", false)
+	var statuses_to_apply = combat_data.get("statuses", [])
+	var alt_status = combat_data.get("alternate_status", {})
+	var effects: Array = []
+
+	var enemy_team = 1 - (user.team if "team" in user else 0)
+	var candidates: Array = []
+	for enemy in get_team_units(enemy_team):
+		if not enemy.is_alive():
+			continue
+		if targeting != "all_enemies" and _grid_distance(user.grid_position, enemy.grid_position) > aoe_radius:
+			continue
+		candidates.append(enemy)
+
+	for enemy in candidates:
+		# the_laughter_turns: only targets demoralised enemies; uses alternate status otherwise
+		if requires_demoralized:
+			var is_demoralised = enemy.has_status("Demoralized") or enemy.has_status("Feared") or enemy.has_status("Gloomy")
+			if not is_demoralised:
+				if not alt_status.is_empty() and not _perform_save_roll(enemy, save_type):
+					_apply_status_effect(enemy, alt_status.get("status", "Confused"), alt_status.get("duration", 2), 0, user)
+					effects.append({"type": "status", "target": enemy, "status": alt_status.get("status", "")})
+				continue
+
+		if _perform_save_roll(enemy, save_type):
+			continue  # Resisted
+
+		for se in statuses_to_apply:
+			_apply_status_effect(enemy, se.get("status", ""), se.get("duration", 2), 0, user)
+			effects.append({"type": "status", "target": enemy, "status": se.get("status", "")})
+
+	combat_log.emit("%s uses an intimidating action on nearby enemies!" % user.unit_name)
+	return {"success": true, "effects": effects}
+
+
+## Buff all allies with stat modifiers and/or status effects (breath_easy, perfect_volley, roots_of_the_world).
+func _resolve_buff_allies_all(user: Node, combat_data: Dictionary) -> Dictionary:
+	var buffs = combat_data.get("buffs", [])
+	var statuses = combat_data.get("statuses", [])
+	var effects: Array = []
+
+	for ally in get_team_units(user.team if "team" in user else 0):
+		if not ally.is_alive():
+			continue
+		for buff in buffs:
+			var stat = buff.get("stat", "")
+			var value = buff.get("value", 0)
+			var duration = buff.get("duration", 2)
+			if stat != "":
+				_apply_stat_modifier(ally, stat, value, duration)
+				effects.append({"type": "buff", "target": ally, "stat": stat, "value": value})
+		for se in statuses:
+			_apply_status_effect(ally, se.get("status", ""), se.get("duration", 2), 0, user)
+			effects.append({"type": "status", "target": ally, "status": se.get("status", "")})
+
+	combat_log.emit("%s buffs all allies!" % user.unit_name)
+	return {"success": true, "effects": effects}
+
+
+## Buff a single ally (bark_orders, booster_shot, crossdisciplinary_insight).
+func _resolve_buff_ally_single(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var max_range = combat_data.get("range", 4)
+	if _grid_distance(user.grid_position, target_pos) > max_range:
+		return {"success": false, "reason": "Out of range"}
+
+	var target = get_unit_at(target_pos)
+	if target == null or not target.is_alive():
+		return {"success": false, "reason": "No target"}
+	if target.team != user.team:
+		return {"success": false, "reason": "Can only buff allies"}
+
+	var buffs = combat_data.get("buffs", [])
+	var effects: Array = []
+	for buff in buffs:
+		var stat = buff.get("stat", "")
+		var value = buff.get("value", 0)
+		var duration = buff.get("duration", 2)
+		if stat == "skill_bonus":
+			# crossdisciplinary_insight: generic skill bonus; proxy as accuracy + spellpower bump
+			_apply_stat_modifier(target, "accuracy", value * 5, duration)
+			_apply_stat_modifier(target, "spellpower", value * 2, duration)
+			effects.append({"type": "buff", "target": target, "stat": "skill_bonus", "value": value})
+		elif stat == "status_resistance":
+			# booster_shot: +25% status resistance — apply as save bonus proxy via stat modifier
+			_apply_stat_modifier(target, "save_bonus", value, duration)
+			effects.append({"type": "buff", "target": target, "stat": "status_resistance", "value": value})
+		elif stat != "":
+			_apply_stat_modifier(target, stat, value, duration)
+			effects.append({"type": "buff", "target": target, "stat": stat, "value": value})
+
+	var statuses = combat_data.get("statuses", [])
+	for se in statuses:
+		_apply_status_effect(target, se.get("status", ""), se.get("duration", 2), 0, user)
+
+	combat_log.emit("%s buffs %s!" % [user.unit_name, target.unit_name])
+	return {"success": true, "target": target, "effects": effects}
+
+
+## Destroy an obstacle at the target tile (universal_solvent).
+func _resolve_destroy_obstacle(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var max_range = combat_data.get("range", 3)
+	if _grid_distance(user.grid_position, target_pos) > max_range:
+		return {"success": false, "reason": "Out of range"}
+
+	if combat_grid == null:
+		return {"success": false, "reason": "No combat grid"}
+
+	var obs = combat_grid.get_obstacle_at(target_pos)
+	if obs.is_empty() or obs.get("type", 0) == 0:
+		return {"success": false, "reason": "No obstacle at target"}
+
+	combat_grid.remove_obstacle(target_pos)
+	combat_log.emit("%s dissolves the obstacle!" % user.unit_name)
+	return {"success": true, "effects": [{"type": "destroy_obstacle", "pos": target_pos}]}
+
+
+## Cleanse specific statuses then buff all allies in AoE (rally_the_banner).
+func _resolve_cleanse_and_buff(user: Node, combat_data: Dictionary) -> Dictionary:
+	var cleanse_list = combat_data.get("cleanses", [])  # Status names or categories to remove
+	var buffs = combat_data.get("buffs", [])
+	var aoe_radius = combat_data.get("aoe_radius", 3)
+	var effects: Array = []
+
+	for ally in get_team_units(user.team if "team" in user else 0):
+		if not ally.is_alive():
+			continue
+		if _grid_distance(user.grid_position, ally.grid_position) > aoe_radius:
+			continue
+
+		# Cleanse matching statuses or categories
+		var to_remove: Array[int] = []
+		for i in range(ally.status_effects.size()):
+			var se_name = ally.status_effects[i].get("status", "")
+			if se_name in cleanse_list:
+				to_remove.append(i)
+			elif "mental" in cleanse_list:
+				var def = _status_effects.get(se_name, {})
+				if def.get("category", "") == "mental":
+					to_remove.append(i)
+		to_remove.reverse()
+		for idx in to_remove:
+			var removed = ally.status_effects[idx].get("status", "")
+			ally.status_effects.remove_at(idx)
+			effects.append({"type": "cleanse", "target": ally, "status": removed})
+
+		# Apply buffs
+		for buff in buffs:
+			var stat = buff.get("stat", "")
+			var value = buff.get("value", 0)
+			var duration = buff.get("duration", 2)
+			if stat != "":
+				_apply_stat_modifier(ally, stat, value, duration)
+				effects.append({"type": "buff", "target": ally, "stat": stat, "value": value})
+
+	combat_log.emit("%s rallies nearby allies!" % user.unit_name)
+	return {"success": true, "effects": effects}
+
+
+## Grant an extra action to allies in range (this_is_the_moment, summoners_command).
+func _resolve_grant_extra_action(user: Node, combat_data: Dictionary, _target_pos: Vector2i) -> Dictionary:
+	var max_range = combat_data.get("range", 6)
+	var max_targets = combat_data.get("max_targets", 4)
+	var summon_only = combat_data.get("summon_only", false)
+	var effects: Array = []
+
+	var eligible: Array = []
+	for ally in get_team_units(user.team if "team" in user else 0):
+		if not ally.is_alive() or ally == user:
+			continue
+		if _grid_distance(user.grid_position, ally.grid_position) > max_range:
+			continue
+		if summon_only and not ("is_summoned" in ally and ally.is_summoned):
+			continue
+		eligible.append(ally)
+
+	# Sort by proximity, take the closest max_targets
+	eligible.sort_custom(func(a, b):
+		return _grid_distance(user.grid_position, a.grid_position) < _grid_distance(user.grid_position, b.grid_position))
+
+	var given = 0
+	for target in eligible:
+		if given >= max_targets:
+			break
+		target.actions_remaining = mini(target.actions_remaining + 1, target.max_actions + 1)
+		effects.append({"type": "extra_action", "target": target})
+		combat_log.emit("%s grants %s an extra action!" % [user.unit_name, target.unit_name])
+		given += 1
+
+	return {"success": true, "effects": effects}
+
+
+## Force an enemy's next attack to miss (that_was_supposed_to_miss).
+func _resolve_force_miss(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var max_range = combat_data.get("range", 6)
+	if _grid_distance(user.grid_position, target_pos) > max_range:
+		return {"success": false, "reason": "Out of range"}
+
+	var target = get_unit_at(target_pos)
+	if target == null or not target.is_alive():
+		return {"success": false, "reason": "No target"}
+	if target.team == user.team:
+		return {"success": false, "reason": "Cannot jinx allies"}
+
+	if "will_miss_next_attack" in target:
+		target.will_miss_next_attack = true
+	else:
+		target.set("will_miss_next_attack", true)
+
+	combat_log.emit("%s jinxes %s — their next attack will miss!" % [user.unit_name, target.unit_name])
+	return {"success": true, "target": target, "effects": [{"type": "force_miss", "target": target}]}
+
+
+## Grapple a melee target (brawlers_grapple): hit roll then apply Grappled status.
+func _resolve_grapple(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var max_range = combat_data.get("range", 1)
+	if _grid_distance(user.grid_position, target_pos) > max_range:
+		return {"success": false, "reason": "Out of range (grapple is melee only)"}
+
+	var target = get_unit_at(target_pos)
+	if target == null or not target.is_alive():
+		return {"success": false, "reason": "No target"}
+	if target.team == user.team:
+		return {"success": false, "reason": "Cannot grapple allies"}
+
+	# Accuracy roll (uses normal melee hit chance)
+	var hit_chance = calculate_hit_chance(user, target)
+	if randf() * 100.0 > hit_chance:
+		combat_log.emit("%s fails to grapple %s!" % [user.unit_name, target.unit_name])
+		return {"success": true, "hit": false, "effects": []}
+
+	# Apply statuses from combat_data (Grappled with duration 99 = until escaped)
+	var statuses = combat_data.get("statuses", [{"status": "Immobilized", "duration": 2}])
+	for se in statuses:
+		_apply_status_effect(target, se.get("status", "Immobilized"), se.get("duration", 2), 0, user)
+
+	combat_log.emit("%s grapples %s!" % [user.unit_name, target.unit_name])
+	return {"success": true, "hit": true, "target": target, "effects": [{"type": "grapple", "target": target}]}
+
+
+## Queue an overcast bonus for the caster's next spell (push_the_words, burn_the_breath, etc.).
+func _resolve_overcast(user: Node, combat_data: Dictionary) -> Dictionary:
+	var next_spell_bonus = combat_data.get("next_spell_bonus", {})
+	if next_spell_bonus.is_empty():
+		return {"success": false, "reason": "No overcast bonus defined"}
+
+	# requires="ritual_circle": check if standing on one (simplified: log a note if missing)
+	if combat_data.get("requires", "") == "ritual_circle":
+		# Future: check combat_grid tile effect at user position
+		# For now, allow it and log
+		combat_log.emit("%s channels power through a ritual circle!" % user.unit_name)
+	else:
+		combat_log.emit("%s focuses power for an empowered spell!" % user.unit_name)
+
+	if "pending_overcast_bonus" in user:
+		user.pending_overcast_bonus = next_spell_bonus
+	else:
+		user.set("pending_overcast_bonus", next_spell_bonus)
+
+	return {"success": true, "effects": [{"type": "overcast_ready", "bonus": next_spell_bonus}]}
+
+
+## Teleport the unit to their deployment zone back row (strategic_withdrawal).
+func _resolve_retreat(user: Node, _combat_data: Dictionary) -> Dictionary:
+	if combat_grid == null:
+		return {"success": false, "reason": "No combat grid"}
+
+	var zones: Dictionary
+	if ("team" in user) and user.team == 0:
+		zones = combat_grid.get_player_deployment_zones()
+	else:
+		zones = combat_grid.get_enemy_deployment_zones()
+
+	var retreat_tiles: Array = zones.get("back", [])
+	if retreat_tiles.is_empty():
+		retreat_tiles = zones.get("all", [])
+
+	var dest = Vector2i(-1, -1)
+	for tile in retreat_tiles:
+		if combat_grid.get_unit_at(tile) == null and combat_grid.is_tile_walkable(tile):
+			dest = tile
+			break
+
+	if dest == Vector2i(-1, -1):
+		return {"success": false, "reason": "No safe position to retreat to"}
+
+	var from = user.grid_position
+	combat_grid.move_unit(user, dest)
+	unit_moved.emit(user, from, dest)
+	combat_log.emit("%s makes a strategic withdrawal!" % user.unit_name)
+	return {"success": true, "effects": [{"type": "retreat", "destination": dest}]}
+
+
+## AoE spell-like damage + status with save (drowning_pressure).
+func _resolve_aoe_damage_and_status(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var max_range = combat_data.get("range", 5)
+	if _grid_distance(user.grid_position, target_pos) > max_range:
+		return {"success": false, "reason": "Out of range"}
+
+	var aoe_radius = combat_data.get("aoe_radius", 3)
+	var damage_pct = combat_data.get("damage_pct", 75)
+	var damage_element = combat_data.get("damage_element", "physical")
+	var save_type = combat_data.get("save_type", "focus")
+	var statuses = combat_data.get("statuses", [])
+	var effects: Array = []
+
+	for enemy in get_team_units(1 - (user.team if "team" in user else 0)):
+		if not enemy.is_alive():
+			continue
+		if _grid_distance(target_pos, enemy.grid_position) > aoe_radius:
+			continue
+
+		# Spellpower-scaled damage
+		var base_dmg = int(user.get_spellpower() * damage_pct / 100.0)
+		var resist = enemy.get_resistance(damage_element) if enemy.has_method("get_resistance") else 0.0
+		var actual_dmg = maxi(1, int(base_dmg * (1.0 - resist / 100.0)))
+		apply_damage(enemy, actual_dmg, damage_element)
+		effects.append({"type": "damage", "target": enemy, "damage": actual_dmg})
+
+		# Status on failed save
+		if not _perform_save_roll(enemy, save_type) and enemy.is_alive():
+			for se in statuses:
+				_apply_status_effect(enemy, se.get("status", ""), se.get("duration", 2), 0, user)
+				effects.append({"type": "status", "target": enemy, "status": se.get("status", "")})
+
+	_check_immediate_combat_end()
+	combat_log.emit("%s unleashes a devastating wave!" % user.unit_name)
+	return {"success": true, "effects": effects}
+
+
+## Buff all allies AND debuff all enemies (crowd_influence).
+## Enemy debuff values in combat_data are already negative.
+func _resolve_buff_allies_debuff_enemies(user: Node, combat_data: Dictionary) -> Dictionary:
+	var ally_buffs = combat_data.get("ally_buffs", [])
+	var enemy_debuffs = combat_data.get("enemy_debuffs", [])
+	var enemy_save_type = combat_data.get("enemy_save_type", "focus")
+	var effects: Array = []
+
+	for ally in get_team_units(user.team if "team" in user else 0):
+		if not ally.is_alive():
+			continue
+		for buff in ally_buffs:
+			var stat = buff.get("stat", "")
+			var value = buff.get("value", 0)
+			var duration = buff.get("duration", 3)
+			if stat != "":
+				_apply_stat_modifier(ally, stat, value, duration)
+				effects.append({"type": "buff", "target": ally, "stat": stat, "value": value})
+
+	for enemy in get_team_units(1 - (user.team if "team" in user else 0)):
+		if not enemy.is_alive():
+			continue
+		if _perform_save_roll(enemy, enemy_save_type):
+			continue
+		for debuff in enemy_debuffs:
+			var stat = debuff.get("stat", "")
+			var value = debuff.get("value", 0)  # Already negative in combat_data
+			var duration = debuff.get("duration", 3)
+			if stat != "":
+				_apply_stat_modifier(enemy, stat, value, duration)
+				effects.append({"type": "debuff", "target": enemy, "stat": stat, "value": value})
+
+	combat_log.emit("%s shifts the tide of battle!" % user.unit_name)
+	return {"success": true, "effects": effects}
+
+
+## Remove buffs from target and apply them inverted as debuffs (unraveling).
+func _resolve_dispel_and_invert(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var max_range = combat_data.get("range", 5)
+	if _grid_distance(user.grid_position, target_pos) > max_range:
+		return {"success": false, "reason": "Out of range"}
+
+	var target = get_unit_at(target_pos)
+	if target == null or not target.is_alive():
+		return {"success": false, "reason": "No target"}
+
+	var duration = combat_data.get("duration", 2)
+	var effects: Array = []
+
+	# Remove all buff statuses from target
+	var to_remove: Array[int] = []
+	for i in range(target.status_effects.size()):
+		var se_name = target.status_effects[i].get("status", "")
+		var def = _status_effects.get(se_name, {})
+		if def.get("type", "") == "buff":
+			to_remove.append(i)
+	to_remove.reverse()
+	for idx in to_remove:
+		var removed = target.status_effects[idx].get("status", "")
+		target.status_effects.remove_at(idx)
+		effects.append({"type": "dispelled", "status": removed})
+
+	# Invert positive stat_modifiers into negatives
+	var inverted_count = 0
+	if "stat_modifiers" in target:
+		for mod in target.stat_modifiers:
+			if mod.get("value", 0) > 0:
+				_apply_stat_modifier(target, mod.get("stat", ""), -mod.get("value", 0), duration)
+				inverted_count += 1
+
+	# Apply Cursed as a general debuff token representing the inversion
+	if to_remove.size() > 0 or inverted_count > 0:
+		_apply_status_effect(target, "Cursed", duration, 0, user)
+		effects.append({"type": "inverted", "count": to_remove.size() + inverted_count})
+
+	combat_log.emit("%s unravels %s's buffs!" % [user.unit_name, target.unit_name])
+	return {"success": true, "target": target, "effects": effects}
+
+
+## Taunt: set aggro aura so enemies prefer to attack this unit (look_at_me).
+func _resolve_aggro_aura(user: Node, combat_data: Dictionary) -> Dictionary:
+	var duration = combat_data.get("duration", 2)
+	if "taunt_active" in user:
+		user.taunt_active = true
+		user.taunt_duration = duration
+	else:
+		user.set("taunt_active", true)
+		user.set("taunt_duration", duration)
+	combat_log.emit("%s draws all nearby attention!" % user.unit_name)
+	return {"success": true, "effects": [{"type": "aggro_aura", "duration": duration}]}
+
+
+## Share active buffs from caster to all allies (absolute_presence).
+func _resolve_share_buffs(user: Node, combat_data: Dictionary) -> Dictionary:
+	var cap_duration = combat_data.get("duration", 2)
+	var effects: Array = []
+
+	# Collect caster's positive stat modifiers and buff statuses
+	var user_mods: Array = user.stat_modifiers if "stat_modifiers" in user else []
+	var user_buff_statuses: Array = []
+	for se in user.status_effects:
+		var def = _status_effects.get(se.get("status", ""), {})
+		if def.get("type", "") == "buff":
+			user_buff_statuses.append(se)
+
+	for ally in get_team_units(user.team if "team" in user else 0):
+		if not ally.is_alive() or ally == user:
+			continue
+		for mod in user_mods:
+			if mod.get("value", 0) > 0:
+				_apply_stat_modifier(ally, mod.get("stat", ""), mod.get("value", 0),
+					mini(mod.get("duration", 1), cap_duration))
+				effects.append({"type": "shared_buff", "target": ally, "stat": mod.get("stat", "")})
+		for buff_se in user_buff_statuses:
+			_apply_status_effect(ally, buff_se.get("status", ""),
+				mini(buff_se.get("duration", 1), cap_duration), 0, user)
+			effects.append({"type": "shared_status", "target": ally, "status": buff_se.get("status", "")})
+
+	combat_log.emit("%s shares their power with all allies!" % user.unit_name)
+	return {"success": true, "effects": effects}
+
+
+## Double all active buff modifiers on a single ally (masterwork).
+func _resolve_double_buffs(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var max_range = combat_data.get("range", 4)
+	if _grid_distance(user.grid_position, target_pos) > max_range:
+		return {"success": false, "reason": "Out of range"}
+
+	var target = get_unit_at(target_pos)
+	if target == null or not target.is_alive():
+		return {"success": false, "reason": "No target"}
+	if target.team != user.team:
+		return {"success": false, "reason": "Can only use on allies"}
+
+	var effects: Array = []
+	if "stat_modifiers" in target:
+		for mod in target.stat_modifiers:
+			if mod.get("value", 0) > 0:
+				mod.value *= 2
+				effects.append({"type": "doubled", "stat": mod.get("stat", ""), "new_value": mod.value})
+
+	combat_log.emit("%s's masterwork doubles %s's active buffs!" % [user.unit_name, target.unit_name])
+	return {"success": true, "target": target, "effects": effects}
 
 
 ## Get valid target tiles for an active skill based on its targeting type
@@ -4976,6 +5628,23 @@ func _process_on_dodge_perks(unit: Node, attacker: Node) -> void:
 ## Process passive perks at the start of a unit's turn.
 ## Called from _start_current_turn().
 func _process_turn_start_perks(unit: Node) -> void:
+	# Tick active-skill stat modifiers (set by buff_self, buff_ally, buff_allies, etc.)
+	if "stat_modifiers" in unit and unit.stat_modifiers.size() > 0:
+		var expired_mods: Array[int] = []
+		for i in range(unit.stat_modifiers.size()):
+			unit.stat_modifiers[i].duration -= 1
+			if unit.stat_modifiers[i].duration <= 0:
+				expired_mods.append(i)
+		expired_mods.reverse()
+		for idx in expired_mods:
+			unit.stat_modifiers.remove_at(idx)
+
+	# Tick aggro-aura duration (look_at_me perk)
+	if "taunt_active" in unit and unit.taunt_active:
+		unit.taunt_duration -= 1
+		if unit.taunt_duration <= 0:
+			unit.taunt_active = false
+
 	# Reset per-turn flags
 	if unit.moved_this_turn:
 		unit.stationary_stacks = 0  # Tidal Patience: reset if moved last turn

@@ -47,6 +47,20 @@ var in_free_attack: bool = false           # Recursion guard for cleave/relentle
 var is_stealthed: bool = false             # Whether this unit is in stealth (shadow_strike system)
 var status_effects: Array = []  # Active status effects on this unit
 
+# Active skill stat modifiers: [{stat, value, duration}] — applied by _apply_stat_modifier()
+# Duration ticks down at each turn start; stat getters sum all matching modifiers.
+var stat_modifiers: Array[Dictionary] = []
+
+# Overcast bonus queued for next spell (set by push_the_words, burn_the_breath, etc.)
+var pending_overcast_bonus: Dictionary = {}
+
+# Force-miss flag: this unit's next attack auto-misses (set by that_was_supposed_to_miss)
+var will_miss_next_attack: bool = false
+
+# Taunt/aggro-aura state: AI enemies prioritise attacking this unit (set by look_at_me)
+var taunt_active: bool = false
+var taunt_duration: int = 0
+
 # Active skill cooldowns: perk_id -> turns remaining (0 = ready)
 var skill_cooldowns: Dictionary = {}
 
@@ -400,6 +414,16 @@ func _get_status_stat_bonus(stat: String) -> int:
 	return total
 
 
+## Sum all active skill stat modifiers for a given stat.
+## These are applied by active skills (buff_self, buff_ally, etc.) and expire each turn start.
+func _get_stat_modifier_bonus(stat: String) -> int:
+	var total := 0
+	for mod in stat_modifiers:
+		if mod.get("stat", "") == stat:
+			total += mod.get("value", 0)
+	return total
+
+
 ## Check if unit is alive (not dead and not bleeding out)
 func is_alive() -> bool:
 	return not is_dead and not is_bleeding_out
@@ -421,13 +445,13 @@ func is_targetable() -> bool:
 ## Get initiative for turn order (includes status effect bonuses)
 func get_initiative() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("initiative", 10) + _get_status_stat_bonus("initiative") + CombatManager.get_passive_perk_stat_bonus(self, "initiative") + mantra_stat_bonuses.get("initiative", 0)
+	return derived.get("initiative", 10) + _get_status_stat_bonus("initiative") + CombatManager.get_passive_perk_stat_bonus(self, "initiative") + mantra_stat_bonuses.get("initiative", 0) + _get_stat_modifier_bonus("initiative")
 
 
 ## Get movement range (includes status effect and perk bonuses)
 func get_movement() -> int:
 	var derived = character_data.get("derived", {})
-	return maxi(0, derived.get("movement", 3) + _get_status_stat_bonus("movement") + CombatManager.get_passive_perk_stat_bonus(self, "movement") + mantra_stat_bonuses.get("movement", 0))
+	return maxi(0, derived.get("movement", 3) + _get_status_stat_bonus("movement") + CombatManager.get_passive_perk_stat_bonus(self, "movement") + mantra_stat_bonuses.get("movement", 0) + _get_stat_modifier_bonus("movement"))
 
 
 ## Get maximum actions per turn
@@ -553,13 +577,13 @@ func get_attack_range() -> int:
 ## Weapon skill bonuses are now included in derived.accuracy via CharacterSystem.update_derived_stats()
 func get_accuracy() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("accuracy", 0) + _get_status_stat_bonus("accuracy") + mantra_stat_bonuses.get("accuracy", 0)
+	return derived.get("accuracy", 0) + _get_status_stat_bonus("accuracy") + mantra_stat_bonuses.get("accuracy", 0) + _get_stat_modifier_bonus("accuracy")
 
 
 ## Get dodge value (includes status effect bonuses)
 func get_dodge() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge") + mantra_stat_bonuses.get("dodge", 0)
+	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge") + mantra_stat_bonuses.get("dodge", 0) + _get_stat_modifier_bonus("dodge")
 
 
 ## Get attack damage
@@ -591,6 +615,9 @@ func get_attack_damage() -> int:
 	# Add passive perk damage bonuses
 	base_damage += CombatManager.get_passive_perk_stat_bonus(self, "damage")
 
+	# Add active skill stat modifier bonuses
+	base_damage += _get_stat_modifier_bonus("damage")
+
 	return base_damage
 
 
@@ -618,13 +645,13 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 ## Get armor value (includes status effect and perk bonuses)
 func get_armor() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_passive_perk_stat_bonus(self, "armor") + mantra_stat_bonuses.get("armor", 0)
+	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_passive_perk_stat_bonus(self, "armor") + mantra_stat_bonuses.get("armor", 0) + _get_stat_modifier_bonus("armor")
 
 
 ## Get crit chance (percentage, includes status effect bonuses)
 func get_crit_chance() -> float:
 	var derived = character_data.get("derived", {})
-	return float(derived.get("crit_chance", 5)) + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance")) + float(mantra_stat_bonuses.get("crit_chance", 0))
+	return float(derived.get("crit_chance", 5)) + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance")) + float(mantra_stat_bonuses.get("crit_chance", 0)) + float(_get_stat_modifier_bonus("crit_chance"))
 
 
 ## Get current stamina
@@ -698,7 +725,7 @@ func tick_mantras() -> void:
 ## Get spellpower (includes status effect bonuses)
 func get_spellpower() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("spellpower", 0) + _get_status_stat_bonus("spellpower") + mantra_stat_bonuses.get("spellpower", 0)
+	return derived.get("spellpower", 0) + _get_status_stat_bonus("spellpower") + mantra_stat_bonuses.get("spellpower", 0) + _get_stat_modifier_bonus("spellpower")
 
 
 ## Get magic skill bonus for an element (spellpower from the skill's base_bonuses table)

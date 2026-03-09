@@ -3341,6 +3341,19 @@ func _find_nearest_enemy(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
 	var nearest: CombatUnit = null
 	var nearest_dist: int = 999
 
+	# Aggro-aura (look_at_me): if any enemy has taunt_active, strongly prefer them
+	for enemy in enemies:
+		if not enemy.is_alive():
+			continue
+		if "taunt_active" in enemy and enemy.taunt_active:
+			var dist = _grid_distance(unit.grid_position, enemy.grid_position)
+			# Treat taunting units as distance 0 to always prefer them
+			if nearest == null or dist < nearest_dist:
+				nearest = enemy
+				nearest_dist = 0
+			return nearest  # First taunter wins — short-circuit
+
+	# Normal nearest-enemy selection
 	for enemy in enemies:
 		if not enemy.is_alive():
 			continue
