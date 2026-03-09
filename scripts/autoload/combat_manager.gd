@@ -1334,6 +1334,11 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 			if _grid_distance(attacker.grid_position, defender.grid_position) <= 2:
 				hit_chance -= 10.0
 
+	# Call the Shot (Leadership 1): marked targets are easier to hit — +15% accuracy
+	# The mark is consumed on the first damaging hit (see calculate_physical_damage)
+	if "is_marked" in defender and defender.is_marked:
+		hit_chance += 15.0
+
 	# Height advantage bonus (+5 per level, -5 penalty when lower)
 	if combat_grid:
 		hit_chance += combat_grid.get_height_accuracy_bonus(attacker.grid_position, defender.grid_position)
@@ -1488,6 +1493,12 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "mace":
 			if defender.has_status("Stunned") or defender.has_status("Dazed"):
 				damage = int(damage * 1.20)
+
+	# Call the Shot (Leadership 1): first hit on a marked target gets +15% damage; mark consumed
+	if "is_marked" in defender and defender.is_marked:
+		damage = int(damage * 1.15)
+		defender.is_marked = false
+		_add_combat_log("Mark consumed — %s's shot connects!" % attacker.unit_name)
 
 	# Apply physical resistance (checks specific subtype first, then falls back to generic "physical")
 	var phys_resist = defender.get_resistance(dmg_type)
@@ -3645,6 +3656,22 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 			result = _resolve_stance(user, combat_data)
 		"heal_self":
 			result = _resolve_heal_self(user, combat_data)
+		"mark_target":
+			# Call the Shot (Leadership 1): mark an enemy so the first ally to attack them
+			# gains +15% accuracy and +15% damage. Mark clears on first hit or target's turn start.
+			var target = get_unit_at(target_pos)
+			if target == null or not target.is_alive():
+				result = {"success": false, "reason": "No target"}
+			elif target.team == user.team:
+				result = {"success": false, "reason": "Cannot mark allies"}
+			else:
+				var range_allowed = combat_data.get("range", 6)
+				if _grid_distance(user.grid_position, target_pos) > range_allowed:
+					result = {"success": false, "reason": "Out of range"}
+				else:
+					target.is_marked = true
+					_add_combat_log("%s calls the shot on %s! Next ally to attack gains +15%% acc/dmg." % [user.unit_name, target.unit_name])
+					result = {"success": true, "effects": ["marked"], "marked_target": target}
 		"examine":
 			# Reveal enemy info via examine window — handled by combat_arena via signal
 			var target = get_unit_at(target_pos)
@@ -3665,9 +3692,11 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 		var cooldown = combat_data.get("cooldown", 0)
 		if cooldown > 0:
 			user.set_skill_cooldown(perk_id, cooldown)
-		# Once-per-combat skills get a huge cooldown
+		# Once-per-combat skills get a huge cooldown; once-per-turn skills cool down in 1 turn
 		if combat_data.get("once_per_combat", false):
 			user.set_skill_cooldown(perk_id, 999)
+		elif combat_data.get("once_per_turn", false):
+			user.set_skill_cooldown(perk_id, 1)
 		# Emit signal
 		active_skill_used.emit(user, skill_data, result)
 
@@ -4766,6 +4795,10 @@ func _process_turn_start_perks(unit: Node) -> void:
 	unit.dagger_attacks_this_turn = 0
 	unit.ranged_attacks_this_turn = 0
 	unit.knife_storm_proc_this_turn = false
+	# Call the Shot (Leadership 1): mark expires at the start of the marked unit's own turn
+	if unit.is_marked:
+		unit.is_marked = false
+		_add_combat_log("%s shakes off the mark." % unit.unit_name)
 
 	# Diamond Body: +25% status resist (handled via saving throw bonuses)
 	# Field Commander: companions reposition — only applies round 1 (handled in deployment)

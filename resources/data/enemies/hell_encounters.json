@@ -1,16 +1,18 @@
 {
 	"encounters": {
 
-		"_comment": "=== EVENT ENCOUNTERS ===",
+		"_comment_event": "=== EVENT ENCOUNTERS ===",
 
 		"demon_patrol": {
 			"region": "any",
+			"tier": "devil",
 			"roles": {"frontline": 2, "ranged": 1},
 			"difficulty_range": [0.7, 1.0]
 		},
 
 		"ice_spirits": {
 			"region": "cold_hell",
+			"tier": "devil",
 			"roles": {"caster": 2, "support": 1},
 			"difficulty_range": [0.7, 1.0]
 		},
@@ -40,34 +42,159 @@
 			]
 		},
 
+		"_comment_shade_events": "=== SHADE EVENT ENCOUNTERS — early game, weak incorporeal enemies ===",
+
+		"shade_ambush": {
+			"region": "any",
+			"tier": "shade",
+			"roles": {"frontline": 3},
+			"difficulty_range": [0.45, 0.6]
+		},
+
+		"shade_coven": {
+			"region": "any",
+			"tier": "shade",
+			"roles": {"caster": 2, "support": 1},
+			"difficulty_range": [0.4, 0.55]
+		},
+
+		"shade_and_devil": {
+			"_comment": "A devil commanding a pair of shades — mixed encounter",
+			"region": "any",
+			"mixed": true,
+			"groups": [
+				{
+					"tier": "devil",
+					"roles": {"frontline": 1},
+					"difficulty_range": [0.8, 1.0]
+				},
+				{
+					"tier": "shade",
+					"roles": {"frontline": 2},
+					"difficulty_range": [0.4, 0.55]
+				}
+			]
+		},
+
+		"_comment_imp_events": "=== IMP EVENT ENCOUNTERS — flying harassers, medium difficulty ===",
+
+		"imp_scouts": {
+			"region": "any",
+			"tier": "imp",
+			"roles": {"ranged": 2, "caster": 1},
+			"difficulty_range": [0.6, 0.8]
+		},
+
+		"imp_court": {
+			"_comment": "A devil with imp escorts — classic mixed encounter",
+			"region": "any",
+			"mixed": true,
+			"groups": [
+				{
+					"tier": "devil",
+					"roles": {"frontline": 1, "support": 1},
+					"difficulty_range": [0.9, 1.1]
+				},
+				{
+					"tier": "imp",
+					"roles": {"ranged": 2, "caster": 1},
+					"difficulty_range": [0.6, 0.75]
+				}
+			]
+		},
+
+		"_comment_racial_events": "=== RACIAL DEVIL EVENT ENCOUNTERS ===",
+
+		"red_devil_warband": {
+			"region": "fire_hell",
+			"fixed": true,
+			"enemies": [
+				{"archetype": "hell_red_devil_berserker", "count": 1},
+				{"archetype": "hell_red_devil_warrior", "count": 2}
+			]
+		},
+
+		"blue_devil_ambush": {
+			"region": "cold_hell",
+			"fixed": true,
+			"enemies": [
+				{"archetype": "hell_blue_devil_guardian", "count": 1},
+				{"archetype": "hell_blue_devil_ambusher", "count": 2}
+			]
+		},
+
+		"black_devil_ritual": {
+			"region": "any",
+			"fixed": true,
+			"enemies": [
+				{"archetype": "hell_black_devil_sorcerer", "count": 1},
+				{"archetype": "hell_black_devil_mindbender", "count": 1}
+			]
+		},
+
+		"white_devil_court": {
+			"region": "any",
+			"fixed": true,
+			"enemies": [
+				{"archetype": "hell_white_devil_tempter", "count": 1},
+				{"archetype": "hell_white_devil_medicus", "count": 1},
+				{"archetype": "hell_white_devil_illusionist", "count": 1}
+			]
+		},
+
+		"yellow_devil_caravan": {
+			"region": "any",
+			"fixed": true,
+			"enemies": [
+				{"archetype": "hell_yellow_devil_caravan_guard", "count": 2},
+				{"archetype": "hell_yellow_devil_extortionist", "count": 1},
+				{"archetype": "hell_yellow_devil_transmuter", "count": 1}
+			]
+		},
+
+		"green_devil_hunters": {
+			"region": "any",
+			"fixed": true,
+			"enemies": [
+				{"archetype": "hell_green_devil_sniper", "count": 1},
+				{"archetype": "hell_green_devil_hunter", "count": 1},
+				{"archetype": "hell_green_devil_backstabber", "count": 1}
+			]
+		},
+
 		"_comment_mobs": "=== MAP MOB ENCOUNTERS ===",
 
 		"ice_wraith": {
 			"region": "cold_hell",
+			"tier": "devil",
 			"roles": {"caster": 1, "frontline": 1},
 			"difficulty_range": [0.9, 1.0]
 		},
 
 		"demon_sentinel": {
 			"region": "any",
+			"tier": "devil",
 			"roles": {"frontline": 2},
 			"difficulty_range": [0.7, 1.0]
 		},
 
 		"frost_imp": {
 			"region": "cold_hell",
+			"tier": "imp",
 			"roles": {"caster": 2},
 			"difficulty_range": [0.6, 0.8]
 		},
 
 		"lost_souls": {
 			"region": "any",
+			"tier": "shade",
 			"roles": {"caster": 1, "support": 1},
-			"difficulty_range": [0.5, 0.7]
+			"difficulty_range": [0.4, 0.6]
 		},
 
 		"hell_hound": {
 			"region": "any",
+			"tier": "devil",
 			"roles": {"frontline": 2, "ranged": 1},
 			"difficulty_range": [0.9, 1.1]
 		},
@@ -83,8 +210,101 @@
 
 		"shadow_stalker": {
 			"region": "any",
+			"tier": "devil",
 			"roles": {"frontline": 1, "ranged": 1},
 			"difficulty_range": [0.7, 0.9]
+		},
+
+		"_comment_mixed_mobs": "=== MIXED TIER MAP MOBS ===",
+
+		"shade_wanderers": {
+			"region": "any",
+			"tier": "shade",
+			"roles": {"frontline": 2, "caster": 1},
+			"difficulty_range": [0.4, 0.6]
+		},
+
+		"imp_swarm": {
+			"region": "any",
+			"tier": "imp",
+			"roles": {"ranged": 3, "caster": 1},
+			"difficulty_range": [0.55, 0.75]
+		},
+
+		"devil_with_imps": {
+			"_comment": "Tough devil flanked by flying imps",
+			"region": "any",
+			"mixed": true,
+			"groups": [
+				{
+					"tier": "devil",
+					"roles": {"frontline": 1},
+					"difficulty_range": [1.0, 1.2]
+				},
+				{
+					"tier": "imp",
+					"roles": {"ranged": 2},
+					"difficulty_range": [0.6, 0.8]
+				}
+			]
+		},
+
+		"caster_and_shades": {
+			"_comment": "A devil caster raising shades",
+			"region": "any",
+			"mixed": true,
+			"groups": [
+				{
+					"tier": "devil",
+					"roles": {"caster": 1},
+					"difficulty_range": [0.9, 1.1]
+				},
+				{
+					"tier": "shade",
+					"roles": {"frontline": 3},
+					"difficulty_range": [0.4, 0.55]
+				}
+			]
+		},
+
+		"fire_brigade": {
+			"_comment": "Fire_hell mixed: red devils plus smoke imps",
+			"region": "fire_hell",
+			"mixed": true,
+			"groups": [
+				{
+					"tier": "devil",
+					"roles": {"frontline": 2, "caster": 1},
+					"difficulty_range": [0.9, 1.1],
+					"region": "fire_hell"
+				},
+				{
+					"tier": "imp",
+					"roles": {"ranged": 2},
+					"difficulty_range": [0.6, 0.75],
+					"region": "fire_hell"
+				}
+			]
+		},
+
+		"blizzard_patrol": {
+			"_comment": "Cold_hell mixed: blue devils with sleet imps harassing ranged",
+			"region": "cold_hell",
+			"mixed": true,
+			"groups": [
+				{
+					"tier": "devil",
+					"roles": {"frontline": 1, "ranged": 1},
+					"difficulty_range": [0.9, 1.1],
+					"region": "cold_hell"
+				},
+				{
+					"tier": "imp",
+					"roles": {"caster": 2},
+					"difficulty_range": [0.6, 0.75],
+					"region": "cold_hell"
+				}
+			]
 		}
 	}
 }
