@@ -220,7 +220,10 @@ Roles to fulfill per realm (not specific object types):
   **WIRED so far** (combat_manager.gd): `parry`, `improved_parry`, `stone_adept`, `all_in`, `weapon_master`, `wind_adept`, `flame_fist`, `thunder_breaker`, `blood_in_the_wind`, `riposte` + all talisman perks. Session 2: `centered_stance`, `flowing_footwork`, `open_the_gate`, `borrowed_force`, `empty_center`, `diamond_body`, `touch_of_gloom`, `measured_radiance`, `mental_aftershock`, `chains_of_suffering`, `elementalist`, `curseblade`, `blood_pact`. Session 3: `iron_shirt_technique`, `short_range_violence`, `commitment`, `momentum`, `keep_hitting`, `every_opening_is_an_invitation`, `close_and_personal`, `hard_knuckles`, `rattle_the_cage`, `see_stars`, `no_time_to_breathe`, `heavy_swing`, `wide_arc`, `laughing_at_the_abyss`, `bare_chest`. Session 4: `tidal_patience`, `disciplined_formation`, `water_finds_the_gap`, `creeping_cold`, `amplified_misfortune`. Session 5: `risen_dead` (talisman perk). Session 6: **Daggers**: `offhand_jab`, `backstab`, `between_the_ribs`, `knife_storm`, `opportunist`, `too_fast_to_count`. **Ranged**: `steady_aim`, `clean_line`, `exposed_target`, `one_breath_one_arrow`, `wall_of_points`. **Spears**: `flowing_tide`. **Maces**: `concussive_force`, `shieldbreaker`, `thunderous_impact`, `relentless_advance`, `skull_crack`, `juggernaut`. **Might**: `grounded`, `pain_is_just_information`, `put_your_weight_into_it`, `hit_back_harder`, `nothing_wasted`. **Guile**: `play_dirty`, `cheap_shot`. **Leadership**: `no_one_left_behind`, `press_the_advantage`, `unbroken_circle`. **Performance**: `rousing_display`. **Sorcery**: `clean_cast`, `efficient_enchanting`, `sudden_silence`, `snap_decision`, `no_follow_up_needed`, `no_warning`, `spell_like_a_knife`. **Water/White**: `healing_waters`, `lingering_warmth`, `tidal_surge`, `purifying_stream`, `gentle_removal`, `riptide`, `mystic_healer`, `permafrost`. **Fire**: `kindled`, `hungry_flames`, `feed_the_fire`, `nothing_burns_alone`. **Earth**: `crystalline_edge`, `weight_of_the_mountain`. **Air**: `static_edge`, `chain_spark`, `scattering_gust`, `avatar_of_the_wind`, `avatar_of_the_storm`. **Enchantment**: `weakening_gaze`, `lingering_touch`. **Black**: `fear_is_the_mindkiller`. **Summoning**: `summoners_bond`. **Earth**: `tremor`. **Water**: `deep_freeze`, `crushing_depths`, `riptide`, `purifying_stream`. **Fire**: `nothing_burns_alone`, `ashes_remember_heat`. All talisman combat perks COMPLETE. `karma_sight` = event-system only.
   **Session 7**: `call_the_shot` (Leadership active: mark_target effect, `marked_target` field, once_per_turn enforcement).
 
+  **Session 8**: Complete `stat_modifiers` infrastructure (array on CombatUnit, `_get_stat_modifier_bonus()`, wired into all stat getters, duration ticked at turn start). Overcast system wired into `cast_spell()`. `will_miss_next_attack` flag wired into `attack_unit()`. `taunt_active` wired into AI targeting. 20 new active skill effect type resolvers: `bonus_movement`, `restore_stamina`, `restore_armor`, `revive`, `debuff_enemies`, `buff_allies`, `buff_ally`, `destroy_obstacle`, `cleanse_and_buff`, `grant_extra_action`, `force_miss`, `grapple`, `overcast`, `retreat`, `aoe_damage_and_status`, `buff_allies_debuff_enemies`, `dispel_and_invert`, `aggro_aura`, `share_buffs`, `double_buffs`. statuses.json: added Grappled, Force_Miss, Taunt, Demoralized.
+
   **CombatUnit per-turn counters**: `moved_this_turn`, `momentum_stacks`, `unarmed_hit_stacks`, `stationary_stacks`, `dagger_attacks_this_turn`, `ranged_attacks_this_turn`, `knife_storm_proc_this_turn`, `enemies_hit_this_combat`, `hit_back_ready`, `sorcery_kill_bonus_ready`, `marked_target`, `call_the_shot_used_this_turn`.
+  **CombatUnit active-skill fields**: `stat_modifiers` (timed stat buffs), `pending_overcast_bonus`, `will_miss_next_attack`, `taunt_active`, `taunt_duration`.
 
   **STILL UNWIRED** (grouped by complexity):
 
@@ -254,6 +257,17 @@ Roles to fulfill per realm (not specific object types):
   - ~~`skirmisher`~~: DONE — ZoC reactions suppressed for mover with this perk (free disengage). The "no accuracy penalty after moving" half defers until ranged move-penalty system is added.
   - `roles_assigned` / `tactical_synergy` — need role designation UI (assign Vanguard/Striker/Support/Control at combat start). Complex — defer.
   - `metamagic` — needs pre-cast UI dialog to modify next spell (range/AoE/element). Complex — defer.
+  - `create_terrain` (inscribed_circle, fog_of_war, black_ice, raise_wall, gravity_well, improvised_barricade, prepared_ground) — needs timed terrain tile system. Complex — defer.
+  - `create_images` (smoke_and_mirrors) — needs illusion/decoy unit system. Defer.
+  - `imbued_attack` (arcane_archer) — ranged attack with spell element. Defer.
+  - `mass_teleport` (everyone_is_somewhere_else_now) — teleport all units. Defer.
+  - `recruit_or_pacify` (magnetism) — convert/pacify enemy. Defer.
+  - `place_trap` (trap_maker) — persistent terrain trap. Defer.
+  - `consume_charm` (attune_charm) — consume equipped talisman for next-spell bonus. Defer.
+  - `steal_item` (the_invisible_hand) — steal equipped item from enemy. Defer.
+  - `choose_one` (improvised_masterpiece) — needs sub-choice UI. Defer.
+  - `guard_ally` (stalwart_guardian) — redirect attacks to self. Defer.
+  - `summon_aura` (host_of_the_winds) — per-turn aura buff nearby allies. Defer.
 
   *Deferred (already handled):* all per-skill minor bonuses flow through PerkSystem base_bonuses → derived stats, not combat_manager
 
