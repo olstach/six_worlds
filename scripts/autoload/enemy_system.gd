@@ -140,11 +140,38 @@ func generate_encounter(encounter_id: String, region: String = "") -> Array[Dict
 				var enemy = _build_enemy(archetype_id, party_power)
 				if not enemy.is_empty():
 					enemies.append(enemy)
+
+	elif template.get("mixed", false):
+		# Mixed encounter — groups of different tiers (e.g. 1 devil + 2 imps)
+		var enc_region = template.get("region", "any")
+		var effective_region = region if region != "" else enc_region
+
+		for group in template.get("groups", []):
+			var group_tier = group.get("tier", "devil")
+			var group_region = group.get("region", effective_region)
+			var diff_range = group.get("difficulty_range", [0.8, 1.2])
+			var diff_min = diff_range[0] if diff_range.size() > 0 else 0.8
+			var diff_max = diff_range[1] if diff_range.size() > 1 else 1.2
+
+			var group_roles = group.get("roles", {})
+			for role in group_roles:
+				var count = int(group_roles[role])
+				for i in range(count):
+					var archetype_id = _pick_archetype_for_role(role, group_region, group_tier)
+					if archetype_id == "":
+						push_warning("EnemySystem: No archetype for role '%s' tier '%s' in '%s'" % [role, group_tier, group_region])
+						continue
+					var difficulty = randf_range(diff_min, diff_max)
+					var enemy = _build_enemy(archetype_id, party_power * difficulty)
+					if not enemy.is_empty():
+						enemies.append(enemy)
+
 	else:
-		# Role-based encounter — pick random archetypes matching roles
+		# Role-based encounter — pick random archetypes matching roles and tier
 		var enc_region = template.get("region", "any")
 		# Use mob's region if provided, otherwise encounter's default
 		var effective_region = region if region != "" else enc_region
+		var enc_tier = template.get("tier", "devil")
 
 		var diff_range = template.get("difficulty_range", [0.8, 1.2])
 		var diff_min = diff_range[0] if diff_range.size() > 0 else 0.8
@@ -154,9 +181,9 @@ func generate_encounter(encounter_id: String, region: String = "") -> Array[Dict
 		for role in roles:
 			var count = int(roles[role])
 			for i in range(count):
-				var archetype_id = _pick_archetype_for_role(role, effective_region)
+				var archetype_id = _pick_archetype_for_role(role, effective_region, enc_tier)
 				if archetype_id == "":
-					push_warning("EnemySystem: No archetype found for role '%s' in region '%s'" % [role, effective_region])
+					push_warning("EnemySystem: No archetype found for role '%s' tier '%s' in region '%s'" % [role, enc_tier, effective_region])
 					continue
 
 				# Random difficulty within range
@@ -230,35 +257,53 @@ func _build_enemy(archetype_id: String, power_budget: float) -> Dictionary:
 	var spells = _pick_spells(skills, archetype.get("guaranteed_spells", []))
 	var perks = _build_perks(archetype.get("guaranteed_perks", []))
 
-	# Apply equipment bonuses to derived stats
-	derived.damage += equipment.get("weapon_damage", 0)
-	derived.accuracy += equipment.get("weapon_accuracy", 0)
-	derived.armor += equipment.get("armor_value", 0)
+	# Some enemy types (imps) have a chance to be bare-handed — no equipment at all
+	var no_equip_chance = archetype.get("no_equipment_chance", 0.0)
+	var bare_handed = randf() < no_equip_chance
 
-	# Build resistances dict (start with defaults, apply archetype overrides)
+	# Apply equipment bonuses to derived stats (skipped if bare-handed)
+	if not bare_handed:
+		derived.damage += equipment.get("weapon_damage", 0)
+		derived.accuracy += equipment.get("weapon_accuracy", 0)
+		derived.armor += equipment.get("armor_value", 0)
+
+	# Build resistances dict (start with defaults, apply archetype overrides).
+	# Includes "black" as a damage type used by Black magic spells.
 	var resistances = {
 		"physical": 0, "space": 0, "air": 0,
-		"fire": 0, "water": 0, "earth": 0
+		"fire": 0, "water": 0, "earth": 0, "black": 0
 	}
 	var arch_resists = archetype.get("resistances", {})
 	for key in arch_resists:
 		resistances[key] = arch_resists[key]
 
 	# Build the weapon dict for CombatUnit
-	var weapon_type = equipment.get("weapon_type", "sword")
-	var equipped_weapon = {
-		"name": archetype.get("name", "Enemy") + "'s Weapon",
-		"type": weapon_type,
-		"damage_type": _get_weapon_damage_type(weapon_type),
-		"stats": {
-			"damage": equipment.get("weapon_damage", 5),
-			"accuracy": equipment.get("weapon_accuracy", 3),
-			"range": equipment.get("weapon_range", 1)
+	var equipped_weapon: Dictionary
+	if bare_handed:
+		# Bare-handed: weak unarmed attack, no armor
+		equipped_weapon = {
+			"name": archetype.get("name", "Enemy") + "'s Claws",
+			"type": "unarmed",
+			"damage_type": "crushing",
+			"stats": {"damage": 2, "accuracy": 4, "range": 1}
 		}
-	}
+	else:
+		var weapon_type = equipment.get("weapon_type", "sword")
+		equipped_weapon = {
+			"name": archetype.get("name", "Enemy") + "'s Weapon",
+			"type": weapon_type,
+			"damage_type": _get_weapon_damage_type(weapon_type),
+			"stats": {
+				"damage": equipment.get("weapon_damage", 5),
+				"accuracy": equipment.get("weapon_accuracy", 3),
+				"range": equipment.get("weapon_range", 1)
+			}
+		}
 
-	# Generate consumable inventory based on role and power
+	# Generate consumable inventory, then merge any archetype-guaranteed items
 	var inventory = _generate_enemy_inventory(archetype, effective_budget)
+	for item in archetype.get("starting_inventory", []):
+		inventory.append(item)
 
 	# Assemble final enemy dict matching CombatUnit.init_as_enemy() expectations
 	var enemy: Dictionary = {
@@ -383,7 +428,7 @@ func _get_weapon_damage_type(weapon_type: String) -> String:
 	match weapon_type:
 		"sword", "axe":
 			return "slashing"
-		"dagger", "spear", "bow", "thrown":
+		"dagger", "spear", "bow", "crossbow", "thrown":
 			return "piercing"
 		"mace", "staff":
 			return "crushing"
@@ -546,15 +591,18 @@ func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Arr
 	return inventory
 
 
-## Pick a random archetype that matches a given role and region.
+## Pick a random archetype that matches a given role, region, and tier.
 ## Region "any" archetypes can appear in any region.
-func _pick_archetype_for_role(role: String, region: String) -> String:
+## Tier defaults to "devil" — use "shade" or "imp" for lower-power enemies.
+## Archetypes without an explicit tier field default to "devil".
+func _pick_archetype_for_role(role: String, region: String, tier: String = "devil") -> String:
 	var candidates: Array[String] = []
 
 	for arch_id in archetypes:
 		var arch = archetypes[arch_id]
 		var arch_roles = arch.get("roles", [])
 		var arch_region = arch.get("region", "any")
+		var arch_tier = arch.get("tier", "devil")
 
 		# Check role match
 		if not role in arch_roles:
@@ -566,6 +614,10 @@ func _pick_archetype_for_role(role: String, region: String) -> String:
 
 		# Don't pick bosses for regular role slots
 		if "boss" in arch_roles:
+			continue
+
+		# Filter by tier — shades and imps don't appear in devil encounters and vice-versa
+		if arch_tier != tier:
 			continue
 
 		candidates.append(arch_id)
