@@ -1,0 +1,98 @@
+{
+	"_comment": "Enemy name parts for procedural name generation. Each part has: meaning, lang (tibetan/sanskrit/english), realms it applies to, and optional affinity_tags for tag-based prefix selection.",
+
+	"prefixes": {
+		"_comment": "Prefixes set the elemental/thematic tone. Filtered by realm, then biased toward affinity_tags matching the enemy's archetype tags and region.",
+
+		"Me":      { "meaning": "fire",               "lang": "tibetan",  "realms": ["hell"],                  "affinity_tags": ["fire_hell"] },
+		"Tsa":     { "meaning": "hot/burning",         "lang": "tibetan",  "realms": ["hell"],                  "affinity_tags": ["fire_hell"] },
+		"Gang":    { "meaning": "glacier/ice",         "lang": "tibetan",  "realms": ["hell"],                  "affinity_tags": ["cold_hell"] },
+		"Drang":   { "meaning": "cold/chill",          "lang": "tibetan",  "realms": ["hell"],                  "affinity_tags": ["cold_hell"] },
+		"Duk":     { "meaning": "poison",              "lang": "tibetan",  "realms": ["hell"],                  "affinity_tags": [] },
+		"Drag":    { "meaning": "fierce/sharp",        "lang": "tibetan",  "realms": ["hell"],                  "affinity_tags": ["biological"] },
+		"Chag":    { "meaning": "attachment",          "lang": "tibetan",  "realms": ["hungry_ghost"],          "affinity_tags": [] },
+		"Kem":     { "meaning": "parched/dried out",   "lang": "tibetan",  "realms": ["hungry_ghost"],          "affinity_tags": [] },
+		"Do":      { "meaning": "desire/wanting",      "lang": "tibetan",  "realms": ["hungry_ghost"],          "affinity_tags": [] },
+		"Pong":    { "meaning": "poverty/deprivation", "lang": "tibetan",  "realms": ["hungry_ghost"],          "affinity_tags": [] },
+		"Tsawa":   { "meaning": "salt/arid",           "lang": "tibetan",  "realms": ["hungry_ghost"],          "affinity_tags": [] },
+		"Mun":     { "meaning": "darkness",            "lang": "tibetan",  "realms": ["hell", "hungry_ghost"],  "affinity_tags": ["incorporeal"] },
+		"Nag":     { "meaning": "black",               "lang": "tibetan",  "realms": ["hell", "hungry_ghost"],  "affinity_tags": [] },
+		"Shi":     { "meaning": "death",               "lang": "tibetan",  "realms": ["hell", "hungry_ghost"],  "affinity_tags": ["undead"] },
+		"Dur":     { "meaning": "charnel ground",      "lang": "tibetan",  "realms": ["hell", "hungry_ghost"],  "affinity_tags": ["undead"] },
+		"Ro":      { "meaning": "corpse",              "lang": "tibetan",  "realms": ["hell", "hungry_ghost"],  "affinity_tags": ["undead"] },
+		"Jik":     { "meaning": "fear/terror",         "lang": "tibetan",  "realms": ["hell", "hungry_ghost"],  "affinity_tags": ["incorporeal"] },
+		"Trak":    { "meaning": "blood",               "lang": "tibetan",  "realms": ["hell", "hungry_ghost"],  "affinity_tags": ["biological"] },
+
+		"Agni":    { "meaning": "fire",                "lang": "sanskrit", "realms": ["hell"],                  "affinity_tags": ["fire_hell"] },
+		"Krodha":  { "meaning": "wrath",               "lang": "sanskrit", "realms": ["hell"],                  "affinity_tags": [] },
+		"Hima":    { "meaning": "frost/snow",          "lang": "sanskrit", "realms": ["hell"],                  "affinity_tags": ["cold_hell"] },
+		"Dvesa":   { "meaning": "hatred",              "lang": "sanskrit", "realms": ["hell"],                  "affinity_tags": [] },
+		"Preta":   { "meaning": "hungry ghost",        "lang": "sanskrit", "realms": ["hungry_ghost"],          "affinity_tags": [] },
+		"Trishna": { "meaning": "thirst/craving",      "lang": "sanskrit", "realms": ["hungry_ghost"],          "affinity_tags": [] },
+		"Lobha":   { "meaning": "greed",               "lang": "sanskrit", "realms": ["hungry_ghost"],          "affinity_tags": [] },
+		"Kshudha": { "meaning": "hunger",              "lang": "sanskrit", "realms": ["hungry_ghost"],          "affinity_tags": [] },
+		"Bhuta":   { "meaning": "ghost/wandering spirit", "lang": "sanskrit", "realms": ["hungry_ghost"],       "affinity_tags": ["undead", "incorporeal"] },
+		"Raga":    { "meaning": "passion/craving",     "lang": "sanskrit", "realms": ["hell", "hungry_ghost"],  "affinity_tags": [] },
+		"Yama":    { "meaning": "lord of death",       "lang": "sanskrit", "realms": ["hell", "hungry_ghost"],  "affinity_tags": ["undead"] },
+		"Mara":    { "meaning": "death/the tempter",   "lang": "sanskrit", "realms": ["hell", "hungry_ghost"],  "affinity_tags": [] },
+		"Kali":    { "meaning": "dark/destruction",    "lang": "sanskrit", "realms": ["hell", "hungry_ghost"],  "affinity_tags": [] },
+		"Moha":    { "meaning": "delusion/confusion",  "lang": "sanskrit", "realms": ["hell", "hungry_ghost"],  "affinity_tags": ["incorporeal"] },
+		"Mamsa":   { "meaning": "flesh/meat",          "lang": "sanskrit", "realms": ["hell", "hungry_ghost"],  "affinity_tags": ["biological"] },
+		"Asthi":   { "meaning": "bone",                "lang": "sanskrit", "realms": ["hell", "hungry_ghost"],  "affinity_tags": ["biological", "undead"] },
+		"Snayu":   { "meaning": "sinew/tendon",        "lang": "sanskrit", "realms": ["hell", "hungry_ghost"],  "affinity_tags": ["biological"] }
+	},
+
+	"roots": {
+		"_comment": "Roots are the action/nature core of the name. Lower-case as they sit in the middle of hyphenated names.",
+
+		"krul":    { "meaning": "wandering/deceived",     "lang": "tibetan",  "realms": ["hell", "hungry_ghost"] },
+		"khyil":   { "meaning": "swirling/coiling",       "lang": "tibetan",  "realms": ["hell"] },
+		"nyam":    { "meaning": "fading/diminishing",     "lang": "tibetan",  "realms": ["hungry_ghost"] },
+		"bar":     { "meaning": "blazing",                "lang": "tibetan",  "realms": ["hell"],                  "affinity_tags": ["fire_hell"] },
+		"khro":    { "meaning": "wrathful/enraged",       "lang": "tibetan",  "realms": ["hell"] },
+		"dral":    { "meaning": "splitting/tearing",      "lang": "tibetan",  "realms": ["hell", "hungry_ghost"] },
+		"phung":   { "meaning": "destroying/heaping",     "lang": "tibetan",  "realms": ["hell", "hungry_ghost"] },
+		"zil":     { "meaning": "overpowering",           "lang": "tibetan",  "realms": ["hell"] },
+
+		"ghora":   { "meaning": "terrible/fierce",        "lang": "sanskrit", "realms": ["hell", "hungry_ghost"] },
+		"grasa":   { "meaning": "devouring/swallowing",   "lang": "sanskrit", "realms": ["hell", "hungry_ghost"] },
+		"nasha":   { "meaning": "ruin/destruction",       "lang": "sanskrit", "realms": ["hell", "hungry_ghost"] },
+		"vora":    { "meaning": "devourer",               "lang": "sanskrit", "realms": ["hell", "hungry_ghost"] },
+		"rakta":   { "meaning": "blood",                  "lang": "sanskrit", "realms": ["hell"] },
+		"yudha":   { "meaning": "battle/combat",          "lang": "sanskrit", "realms": ["hell"] },
+		"kshaya":  { "meaning": "decay/wasting away",     "lang": "sanskrit", "realms": ["hungry_ghost"] },
+		"bhaksha": { "meaning": "eating/consuming",       "lang": "sanskrit", "realms": ["hungry_ghost"] },
+
+		"gnaw":    { "meaning": "to gnaw/bite",           "lang": "english",  "realms": ["hell", "hungry_ghost"] },
+		"rend":    { "meaning": "to tear apart",          "lang": "english",  "realms": ["hell"] },
+		"wail":    { "meaning": "to cry out in pain",     "lang": "english",  "realms": ["hell", "hungry_ghost"] },
+		"flay":    { "meaning": "to strip flesh",         "lang": "english",  "realms": ["hell"] },
+		"hunger":  { "meaning": "to hunger/crave",        "lang": "english",  "realms": ["hungry_ghost"] },
+		"crawl":   { "meaning": "to crawl/creep",         "lang": "english",  "realms": ["hell", "hungry_ghost"] },
+		"gnash":   { "meaning": "to gnash teeth",         "lang": "english",  "realms": ["hell", "hungry_ghost"] }
+	},
+
+	"suffixes": {
+		"_comment": "Suffixes are grammatical endings. Tibetan agent suffixes and Sanskrit nominals sit naturally after any root. English suffixes work best after English roots but are applied freely for contrast.",
+
+		"pa":    { "meaning": "agent suffix — one who",  "lang": "tibetan",  "realms": ["hell", "hungry_ghost"] },
+		"ma":    { "meaning": "feminine agent",          "lang": "tibetan",  "realms": ["hell", "hungry_ghost"] },
+		"po":    { "meaning": "masculine agent",         "lang": "tibetan",  "realms": ["hell", "hungry_ghost"] },
+		"mo":    { "meaning": "feminine",                "lang": "tibetan",  "realms": ["hell", "hungry_ghost"] },
+		"chen":  { "meaning": "great/the great",        "lang": "tibetan",  "realms": ["hell"] },
+		"chung": { "meaning": "small/lesser",            "lang": "tibetan",  "realms": ["hell", "hungry_ghost"] },
+		"nag":   { "meaning": "dark/black one",         "lang": "tibetan",  "realms": ["hell", "hungry_ghost"] },
+
+		"ra":    { "meaning": "one who (agent)",         "lang": "sanskrit", "realms": ["hell", "hungry_ghost"] },
+		"ka":    { "meaning": "agent/doer",              "lang": "sanskrit", "realms": ["hell", "hungry_ghost"] },
+		"in":    { "meaning": "possessing/having",       "lang": "sanskrit", "realms": ["hell", "hungry_ghost"] },
+		"kara":  { "meaning": "maker/causer of",         "lang": "sanskrit", "realms": ["hell"] },
+		"ghna":  { "meaning": "killer/slayer",           "lang": "sanskrit", "realms": ["hell"] },
+		"pati":  { "meaning": "lord/master",             "lang": "sanskrit", "realms": ["hell"] },
+
+		"er":    { "meaning": "agent suffix",            "lang": "english",  "realms": ["hell", "hungry_ghost"] },
+		"ling":  { "meaning": "diminutive",              "lang": "english",  "realms": ["hell", "hungry_ghost"] },
+		"born":  { "meaning": "born of",                "lang": "english",  "realms": ["hell"] },
+		"spawn": { "meaning": "offspring of",           "lang": "english",  "realms": ["hell"] }
+	}
+}

@@ -12,6 +12,7 @@ extends Node
 # Loaded data from JSON
 var archetypes: Dictionary = {}   # archetype_id -> archetype definition
 var encounters: Dictionary = {}   # encounter_id -> encounter template
+var name_parts: Dictionary = {}   # prefixes, roots, suffixes for procedural naming
 
 # Spell database reference (loaded from spells.json)
 var all_spells: Dictionary = {}
@@ -44,6 +45,7 @@ func _ready() -> void:
 	_load_archetypes()
 	_load_encounters()
 	_load_spells()
+	_load_name_parts()
 	print("EnemySystem initialized: %d archetypes, %d encounters" % [archetypes.size(), encounters.size()])
 
 
@@ -115,6 +117,23 @@ func _load_spells() -> void:
 		all_spells = data.spells
 
 
+func _load_name_parts() -> void:
+	var file = FileAccess.open("res://resources/data/enemies/name_parts.json", FileAccess.READ)
+	if not file:
+		push_warning("EnemySystem: Could not load name_parts.json — enemies will use archetype names")
+		return
+
+	var json = JSON.new()
+	var err = json.parse(file.get_as_text())
+	file.close()
+
+	if err != OK:
+		push_warning("EnemySystem: Failed to parse name_parts.json: " + json.get_error_message())
+		return
+
+	name_parts = json.get_data()
+
+
 # ============================================
 # MAIN API
 # ============================================
@@ -122,11 +141,12 @@ func _load_spells() -> void:
 ## Generate an encounter: returns Array of enemy dicts ready for CombatUnit.init_as_enemy()
 ## encounter_id: matches enemy_group from events/mobs JSON
 ## region: "cold_hell", "fire_hell", or "" for any
-func generate_encounter(encounter_id: String, region: String = "") -> Array[Dictionary]:
+## realm: which of the six worlds this encounter is in — used for name generation
+func generate_encounter(encounter_id: String, region: String = "", realm: String = "hell") -> Array[Dictionary]:
 	var template = encounters.get(encounter_id, {})
 	if template.is_empty():
 		push_warning("EnemySystem: Unknown encounter '%s', generating fallback" % encounter_id)
-		return _generate_fallback_encounter()
+		return _generate_fallback_encounter(realm)
 
 	var party_power = get_party_power()
 	var enemies: Array[Dictionary] = []
@@ -137,7 +157,7 @@ func generate_encounter(encounter_id: String, region: String = "") -> Array[Dict
 			var archetype_id = entry.get("archetype", "")
 			var count = entry.get("count", 1)
 			for i in range(count):
-				var enemy = _build_enemy(archetype_id, party_power)
+				var enemy = _build_enemy(archetype_id, party_power, realm, region)
 				if not enemy.is_empty():
 					enemies.append(enemy)
 
@@ -162,7 +182,7 @@ func generate_encounter(encounter_id: String, region: String = "") -> Array[Dict
 						push_warning("EnemySystem: No archetype for role '%s' tier '%s' in '%s'" % [role, group_tier, group_region])
 						continue
 					var difficulty = randf_range(diff_min, diff_max)
-					var enemy = _build_enemy(archetype_id, party_power * difficulty)
+					var enemy = _build_enemy(archetype_id, party_power * difficulty, realm, group_region)
 					if not enemy.is_empty():
 						enemies.append(enemy)
 
@@ -188,13 +208,13 @@ func generate_encounter(encounter_id: String, region: String = "") -> Array[Dict
 
 				# Random difficulty within range
 				var difficulty = randf_range(diff_min, diff_max)
-				var enemy = _build_enemy(archetype_id, party_power * difficulty)
+				var enemy = _build_enemy(archetype_id, party_power * difficulty, realm, effective_region)
 				if not enemy.is_empty():
 					enemies.append(enemy)
 
 	if enemies.is_empty():
 		push_warning("EnemySystem: Encounter '%s' produced no enemies, using fallback" % encounter_id)
-		return _generate_fallback_encounter()
+		return _generate_fallback_encounter(realm)
 
 	return enemies
 
@@ -232,8 +252,9 @@ func get_party_power() -> float:
 # ENEMY BUILDING
 # ============================================
 
-## Build a single enemy dict from an archetype + power budget
-func _build_enemy(archetype_id: String, power_budget: float) -> Dictionary:
+## Build a single enemy dict from an archetype + power budget.
+## realm and region are passed through for procedural name generation.
+func _build_enemy(archetype_id: String, power_budget: float, realm: String = "hell", region: String = "") -> Dictionary:
 	var archetype = archetypes.get(archetype_id, {})
 	if archetype.is_empty():
 		push_warning("EnemySystem: Unknown archetype '%s'" % archetype_id)
@@ -282,7 +303,7 @@ func _build_enemy(archetype_id: String, power_budget: float) -> Dictionary:
 	if bare_handed:
 		# Bare-handed: weak unarmed attack, no armor
 		equipped_weapon = {
-			"name": archetype.get("name", "Enemy") + "'s Claws",
+			"name": archetype.get("name", "Enemy") + "'s Claws",  # placeholder; real name set below
 			"type": "unarmed",
 			"damage_type": "crushing",
 			"stats": {"damage": 2, "accuracy": 4, "range": 1}
@@ -290,7 +311,7 @@ func _build_enemy(archetype_id: String, power_budget: float) -> Dictionary:
 	else:
 		var weapon_type = equipment.get("weapon_type", "sword")
 		equipped_weapon = {
-			"name": archetype.get("name", "Enemy") + "'s Weapon",
+			"name": archetype.get("name", "Enemy") + "'s Weapon",  # placeholder; real name set below
 			"type": weapon_type,
 			"damage_type": _get_weapon_damage_type(weapon_type),
 			"stats": {
@@ -305,9 +326,21 @@ func _build_enemy(archetype_id: String, power_budget: float) -> Dictionary:
 	for item in archetype.get("starting_inventory", []):
 		inventory.append(item)
 
+	# Generate a procedural name from realm/region/tags, unless this is a named boss
+	var tags = archetype.get("tags", [])
+	var is_boss = "boss" in archetype.get("roles", [])
+	var enemy_name: String
+	if is_boss or name_parts.is_empty():
+		enemy_name = archetype.get("name", "Enemy")
+	else:
+		enemy_name = generate_enemy_name(realm, tags, region)
+
+	# Update the weapon/claw name now that we have a real name
+	equipped_weapon["name"] = enemy_name + ("'s Claws" if bare_handed else "'s Weapon")
+
 	# Assemble final enemy dict matching CombatUnit.init_as_enemy() expectations
 	var enemy: Dictionary = {
-		"name": archetype.get("name", "Enemy"),
+		"name": enemy_name,
 		"archetype_id": archetype_id,
 		"tags": archetype.get("tags", []),
 		"max_hp": derived.max_hp,
@@ -531,6 +564,74 @@ func _build_perks(guaranteed: Array) -> Array:
 	return perks
 
 
+## Generate a procedural enemy name from name_parts.json.
+##
+## Structure: Prefix-root-suffix  (e.g. "Tsa-krul-pa", "Agni-ghora-kara")
+##
+## realm:  "hell", "hungry_ghost", etc. — filters which parts are valid
+## tags:   archetype tags like ["biological", "undead", "incorporeal"] — bias prefix selection
+## region: "cold_hell", "fire_hell", etc. — treated as an extra tag for affinity matching
+##
+## If no affinity prefixes match the tags/region a random realm-valid prefix is used instead.
+## 70% of the time an affinity match is preferred when one exists.
+func generate_enemy_name(realm: String, tags: Array = [], region: String = "") -> String:
+	var all_prefixes: Dictionary = name_parts.get("prefixes", {})
+	var all_roots: Dictionary    = name_parts.get("roots",    {})
+	var all_suffixes: Dictionary = name_parts.get("suffixes", {})
+
+	var valid_prefixes: Array[String]   = []
+	var affinity_prefixes: Array[String] = []
+
+	# Build the tag set to match against (archetype tags + region as a pseudo-tag)
+	var match_tags: Array = tags.duplicate()
+	if region != "" and region != "any":
+		match_tags.append(region)
+
+	for key in all_prefixes:
+		if key.begins_with("_"):
+			continue
+		var entry: Dictionary = all_prefixes[key]
+		if not realm in entry.get("realms", []):
+			continue
+		valid_prefixes.append(key)
+		# Check affinity — any overlap with match_tags qualifies this prefix as preferred
+		var affinity: Array = entry.get("affinity_tags", [])
+		for tag in match_tags:
+			if tag in affinity:
+				affinity_prefixes.append(key)
+				break
+
+	var valid_roots: Array[String] = []
+	for key in all_roots:
+		if key.begins_with("_"):
+			continue
+		if realm in all_roots[key].get("realms", []):
+			valid_roots.append(key)
+
+	var valid_suffixes: Array[String] = []
+	for key in all_suffixes:
+		if key.begins_with("_"):
+			continue
+		if realm in all_suffixes[key].get("realms", []):
+			valid_suffixes.append(key)
+
+	if valid_prefixes.is_empty() or valid_roots.is_empty() or valid_suffixes.is_empty():
+		push_warning("EnemySystem: Not enough name parts for realm '%s' — using fallback name" % realm)
+		return "Unknown"
+
+	# Prefer an affinity-matched prefix 70% of the time
+	var prefix: String
+	if not affinity_prefixes.is_empty() and randf() < 0.7:
+		prefix = affinity_prefixes[randi() % affinity_prefixes.size()]
+	else:
+		prefix = valid_prefixes[randi() % valid_prefixes.size()]
+
+	var root:   String = valid_roots[randi() % valid_roots.size()]
+	var suffix: String = valid_suffixes[randi() % valid_suffixes.size()]
+
+	return prefix + "-" + root + "-" + suffix
+
+
 ## Generate consumable inventory for an enemy based on archetype and power level.
 ## Higher power enemies get more/better items. Roles determine item types.
 func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Array:
@@ -629,12 +730,12 @@ func _pick_archetype_for_role(role: String, region: String, tier: String = "devi
 
 
 ## Fallback encounter when encounter_id is unknown — 2 generic demon warriors
-func _generate_fallback_encounter() -> Array[Dictionary]:
+func _generate_fallback_encounter(realm: String = "hell") -> Array[Dictionary]:
 	var party_power = get_party_power()
 	var enemies: Array[Dictionary] = []
 
 	for i in range(2):
-		var enemy = _build_enemy("hell_demon_warrior", party_power * 0.8)
+		var enemy = _build_enemy("hell_demon_warrior", party_power * 0.8, realm)
 		if not enemy.is_empty():
 			enemies.append(enemy)
 
