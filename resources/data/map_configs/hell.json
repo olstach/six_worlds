@@ -6,6 +6,15 @@
 	"height": 144,
 	"base_speed": 3.0,
 
+	"location_names": {
+		"_comment": "Tibetan/Sanskrit compound place names drawn randomly when placing town-type objects. Ro=corpse, Nag=black, Dur=charnel, Trak=blood, Mun=darkness, Jik=fear, Shi=death, Bar=blazing, Me=fire, Gang=glacier, Drang=cold, Drag=fierce. -khar=fort, -thang=plain, -yul=land, -lung=valley, -ri=mountain, -dzong=citadel, -pura=city.",
+		"town": [
+			"Ro-khar", "Nag-thang", "Dur-yul", "Trak-khar", "Mun-khar",
+			"Jik-lung", "Shi-thang", "Bar-khar", "Me-ri", "Gang-khar",
+			"Drang-yul", "Drag-lung", "Krodha-pura", "Dvesa-nagar", "Yama-kshetra"
+		]
+	},
+
 	"zones": [
 		{
 			"id": "cold_hell",
@@ -116,9 +125,9 @@
 			{"event_id": "hell_yogini_circle", "name": "Circle of the Yoginis", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
 			{"event_id": "hell_mirror_lake", "name": "Mirror Lake", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
 			{"event_id": "hell_crossroads_stupa", "name": "Crossroads Stupa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_town_weapons", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
-			{"event_id": "hell_town_magic", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
-			{"event_id": "hell_town_supplies", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"}
+			{"event_id": "hell_town_weapons", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+			{"event_id": "hell_town_magic", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+			{"event_id": "hell_town_supplies", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"}
 			],
 			"pickups": [
 				{"name": "Abandoned Cart", "icon": "treasure", "message": "A cart left behind by someone in a hurry.", "rewards": [{"type": "gold", "value": [25, 50]}, {"type": "item", "value": "health_potion"}], "weight": 3},
@@ -184,9 +193,9 @@
 			{"event_id": "hell_yogini_circle", "name": "Circle of the Yoginis", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
 			{"event_id": "hell_mirror_lake", "name": "Mirror Lake", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
 			{"event_id": "hell_crossroads_stupa", "name": "Crossroads Stupa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_town_weapons", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
-			{"event_id": "hell_town_magic", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
-			{"event_id": "hell_town_supplies", "name": "Town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"}
+			{"event_id": "hell_town_weapons", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+			{"event_id": "hell_town_magic", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+			{"event_id": "hell_town_supplies", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"}
 			],
 			"pickups": [
 				{"name": "Scorched Supplies", "icon": "treasure", "message": "Someone's emergency stash, half-melted.", "rewards": [{"type": "gold", "value": [30, 55]}, {"type": "item", "value": "health_potion"}], "weight": 3},
