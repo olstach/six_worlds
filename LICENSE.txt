@@ -1,0 +1,8 @@
+## Code License (MIT)
+All source code (.gd, .glsl, etc.) is licensed under the MIT License.
+[MIT license text]
+
+## Asset License (CC BY-NC-SA 4.0)
+All assets (art, audio, writing, scene content) are licensed under 
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0.
+[CC BY-NC-SA summary + link to full text]
