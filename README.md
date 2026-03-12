@@ -192,4 +192,9 @@ See `TODO.md` for detailed task list.
 
 **Status:** Core systems complete. Supply/alchemy systems in. Ready for content expansion across all six realms.
 
-Last Updated: 2026-03-06
+---
+
+**License**
+The source code is MIT licensed. Game content and assets are CC BY-NC-SA 4.0 — you're free to learn from and adapt the code, but please don't sell this game or its content.
+
+Last Updated: 2026-03-12
