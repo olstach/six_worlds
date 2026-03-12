@@ -30,6 +30,7 @@ signal deployment_phase_ended()
 signal unit_deployed(unit: Node, position: Vector2i)
 signal item_used_in_combat(user: Node, item: Dictionary, result: Dictionary)
 signal active_skill_used(user: Node, skill_data: Dictionary, result: Dictionary)
+signal combat_log(message: String)
 
 # Combat state
 var combat_active: bool = false
