@@ -6351,10 +6351,44 @@ func _apply_mantra_tick(unit: Node, perk_id: String, stacks: int, spellpower: in
 
 		# ---- SUMMONING ----
 		"mantra_of_the_four_guardian_kings":
-			# Allies + summons in 3 tiles gain +5% Attack, +5% Armor per stack
-			for a in allies_with_self:
-				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + stacks * 5
-				a.mantra_stat_bonuses["accuracy"] = a.mantra_stat_bonuses.get("accuracy", 0) + stacks * 5
+			# 1. Maintain up to 4 spirit guardians around the caster
+			var owned = _get_owned_summons(unit)
+			var guardian_count = 0
+			for s in owned:
+				if "tags" in s.character_data and "guardian_spirit" in s.character_data["tags"]:
+					guardian_count += 1
+			if guardian_count < 4:
+				# Find first free tile within 2 of caster
+				var found_tile = Vector2i(-1, -1)
+				for dx in range(-2, 3):
+					for dy in range(-2, 3):
+						if found_tile != Vector2i(-1, -1):
+							break
+						var candidate = unit.grid_position + Vector2i(dx, dy)
+						if candidate == unit.grid_position:
+							continue
+						if combat_grid != null and combat_grid.is_valid_position(candidate) and not combat_grid.is_occupied(candidate):
+							found_tile = candidate
+					if found_tile != Vector2i(-1, -1):
+						break
+				if found_tile != Vector2i(-1, -1):
+					_spawn_summoned_unit(unit, "spirit_guardian", found_tile, 0)
+					# Refresh owned list after spawn
+					owned = _get_owned_summons(unit)
+
+			# 2. Each spirit guardian gives +3 armor to the nearest ally within 3 tiles
+			for s in owned:
+				if not ("tags" in s.character_data and "guardian_spirit" in s.character_data["tags"]):
+					continue
+				var nearest_ally: Node = null
+				var nearest_ally_dist = 999
+				for a in allies_with_self:
+					var d = _grid_distance(s.grid_position, a.grid_position)
+					if d <= 3 and d < nearest_ally_dist:
+						nearest_ally_dist = d
+						nearest_ally = a
+				if nearest_ally != null:
+					nearest_ally.mantra_stat_bonuses["armor"] = nearest_ally.mantra_stat_bonuses.get("armor", 0) + 3
 
 		"mantra_of_the_jeweled_pagoda":
 			# Caster +5% Spellpower per stack; allies' summons +3% all stats per stack
@@ -6603,11 +6637,23 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 
 		# SUMMONING
 		"mantra_of_the_four_guardian_kings":
-			# Big stat burst to all allies; summon DY deferred
+			# Stat burst for all allies (+25 armor, +25 accuracy)
 			for a in allies_with_self:
 				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + 25
 				a.mantra_stat_bonuses["accuracy"] = a.mantra_stat_bonuses.get("accuracy", 0) + 25
-			combat_log.emit("(Guardian summons deferred — needs spawn system)")
+			# Spawn a Guardian King in each of 4 cardinal directions (search outward up to radius 2)
+			var cardinal_offsets = [Vector2i(0,-1), Vector2i(0,1), Vector2i(-1,0), Vector2i(1,0)]
+			for base_offset in cardinal_offsets:
+				var spawn_tile = Vector2i(-1, -1)
+				# Try exact cardinal tile, then 1 further, then 2 further (along the same axis)
+				for r in range(0, 3):
+					if spawn_tile != Vector2i(-1, -1):
+						break
+					var candidate = unit.grid_position + base_offset * (1 + r)
+					if combat_grid != null and combat_grid.is_valid_position(candidate) and not combat_grid.is_occupied(candidate):
+						spawn_tile = candidate
+				if spawn_tile != Vector2i(-1, -1):
+					_spawn_summoned_unit(unit, "stone_guardian", spawn_tile, 0)
 
 		"mantra_of_the_jeweled_pagoda":
 			# Caster's next summon is empowered (flag it); big Spellpower burst
