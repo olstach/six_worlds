@@ -76,6 +76,19 @@ var mantra_stat_bonuses: Dictionary = {}
 # Tracks which mantras have already fired their Deity Yoga burst (reset when mantra is toggled off)
 var deity_yoga_triggered: Dictionary = {}
 
+# Summon ownership: set to caster.get_instance_id() by _spawn_summoned_unit()
+var summoner_id: int = 0
+
+# Jeweled Pagoda DY: set on caster; consumed on next _spawn_summoned_unit() call
+var next_summon_empowered: bool = false
+
+# Set on a summon spawned while caster.next_summon_empowered was true
+# Processed in _process_summon_aura() at start of this unit's turn
+var has_summon_aura: bool = false
+
+# Set on summons by Lord of Death DY: multiplies their damage by 1.3
+var lord_of_death_empowered: bool = false
+
 # Consumable buffs
 var charm_buff: Dictionary = {}  # {school, mana_reduction, spellpower_bonus} - consumed on next matching spell
 var weapon_oil: Dictionary = {}  # {bonus_damage, bonus_damage_type, attacks_remaining, status, status_chance, status_duration, crit_bonus}
@@ -607,7 +620,8 @@ func get_accuracy() -> int:
 ## Get dodge value (includes status effect bonuses)
 func get_dodge() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge") + mantra_stat_bonuses.get("dodge", 0) + _get_stat_modifier_bonus("dodge")
+	var mantra_dodge = mantra_stat_bonuses.get("dodge", 0)
+	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge") + maxi(0, mantra_dodge) + _get_stat_modifier_bonus("dodge")
 
 
 ## Get attack damage
@@ -669,13 +683,15 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 ## Get armor value (includes status effect and perk bonuses)
 func get_armor() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_passive_perk_stat_bonus(self, "armor") + mantra_stat_bonuses.get("armor", 0) + _get_stat_modifier_bonus("armor")
+	var mantra_armor = mantra_stat_bonuses.get("armor", 0)
+	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_passive_perk_stat_bonus(self, "armor") + maxi(0, mantra_armor) + _get_stat_modifier_bonus("armor")
 
 
 ## Get crit chance (percentage, includes status effect bonuses)
 func get_crit_chance() -> float:
 	var derived = character_data.get("derived", {})
-	return float(derived.get("crit_chance", 5)) + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance")) + float(mantra_stat_bonuses.get("crit_chance", 0)) + float(_get_stat_modifier_bonus("crit_chance"))
+	var mantra_crit = float(mantra_stat_bonuses.get("crit_chance", 0))
+	return float(derived.get("crit_chance", 5)) + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance")) + maxf(0.0, mantra_crit) + float(_get_stat_modifier_bonus("crit_chance"))
 
 
 ## Get current stamina
