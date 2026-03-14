@@ -210,6 +210,9 @@ func _ready() -> void:
 	CombatManager.terrain_damage.connect(_on_terrain_damage)
 	CombatManager.terrain_heal.connect(_on_terrain_heal)
 
+	# Connect general combat log
+	CombatManager.combat_log.connect(_on_combat_log)
+
 	# Hide spell panel initially
 	spell_panel.hide()
 
@@ -761,7 +764,7 @@ func _show_spell_panel(unit: CombatUnit) -> void:
 			elif "earth" in schools_lower:
 				btn.add_theme_color_override("font_color", Color(0.7, 0.6, 0.4))
 			elif "air" in schools_lower:
-				btn.add_theme_color_override("font_color", Color(0.7, 0.9, 1.0))
+				btn.add_theme_color_override("font_color", Color(0.3, 0.85, 0.4))
 			elif "space" in schools_lower:
 				btn.add_theme_color_override("font_color", Color(0.8, 0.5, 1.0))
 			elif "white" in schools_lower:
@@ -822,6 +825,8 @@ func _build_spell_tooltip(spell: Dictionary) -> String:
 		"chain":
 			var chain_count = spell.get("chain_targets", 3)
 			target_text = "Chain (up to %d targets)" % chain_count
+		"ground":
+			target_text = "Ground (summon at target tile)"
 
 	lines.append("Target: " + target_text)
 	lines.append("")
@@ -869,6 +874,11 @@ func _build_spell_tooltip(spell: Dictionary) -> String:
 				var count = effect.get("count", 1)
 				lines.append("Remove %d negative effect(s)" % count)
 
+	# Summon info
+	var summon_id = spell.get("summon", "")
+	if summon_id != "":
+		lines.append("Summons: " + summon_id.replace("_", " "))
+
 	# Description
 	var desc = spell.get("description", "")
 	if not desc.is_empty():
@@ -910,6 +920,9 @@ func _on_spell_selected(spell: Dictionary) -> void:
 
 	if valid_targets.is_empty():
 		_log_message("No valid targets in range for %s (%s)" % [spell.name, range_text])
+	elif spell_data.get("targeting") == "ground":
+		var summon_name = spell_data.get("summon", "unknown").replace("_", " ")
+		_log_message("Select tile to summon %s (%s)..." % [summon_name, range_text])
 	else:
 		_log_message("Select target for %s (%s)..." % [spell.name, range_text])
 
@@ -924,7 +937,11 @@ func _try_cast_spell(target_pos: Vector2i) -> void:
 
 	if result.success:
 		# Logging is handled by _on_spell_cast signal
-		pass
+		# Spell casting breaks concentration unless caster has continuous_recitation (Ritual 3)
+		if "active_mantras" in caster and not caster.active_mantras.is_empty():
+			var char_data = caster.character_data if "character_data" in caster else {}
+			if not PerkSystem.has_perk(char_data, "continuous_recitation"):
+				CombatManager._interrupt_mantras(caster, "%s's concentration breaks from casting!" % caster.unit_name)
 	else:
 		_log_message("Failed to cast: " + result.get("reason", "Unknown"))
 
@@ -1855,6 +1872,15 @@ func _show_unit_info(unit: CombatUnit) -> void:
 	for child in unit_info_bars.get_children():
 		child.queue_free()
 
+	# Archetype subtitle for enemies
+	if unit.team == CombatManager.Team.ENEMY and unit.unit_archetype != "":
+		var arch_label = Label.new()
+		arch_label.text = unit.unit_archetype
+		arch_label.add_theme_font_size_override("font_size", 10)
+		arch_label.add_theme_color_override("font_color", Color(0.6, 0.55, 0.5))
+		arch_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		unit_info_bars.add_child(arch_label)
+
 	# HP bar (red)
 	unit_info_bars.add_child(_create_stat_bar("HP", unit.current_hp, unit.max_hp, Color(0.8, 0.2, 0.2)))
 
@@ -2033,6 +2059,10 @@ func _log_message(msg: String) -> void:
 # ============================================
 # COMBAT MANAGER SIGNAL HANDLERS
 # ============================================
+
+func _on_combat_log(message: String) -> void:
+	_log_message(message)
+
 
 func _on_combat_started() -> void:
 	_log_message("Combat started!")
@@ -3064,10 +3094,32 @@ func _ai_try_cast_spell(unit: CombatUnit, spells: Array[Dictionary], enemies: Ar
 			"self":
 				target_pos = unit.grid_position
 
+			"ground":
+				# Summoning: pick a random unoccupied tile in range near the front line
+				var valid_ground = CombatManager.get_spell_targets(unit, spell_id)
+				if not valid_ground.is_empty():
+					# Prefer tiles closer to enemies
+					var best = valid_ground[0]
+					var best_dist = 999
+					for enemy in enemies:
+						if not enemy.is_alive():
+							continue
+						for tile in valid_ground:
+							var d = _grid_distance(tile, enemy.grid_position)
+							if d < best_dist:
+								best_dist = d
+								best = tile
+					target_pos = best
+
 		# If valid target found, cast the spell
 		if target_pos != Vector2i(-1, -1):
 			var result = CombatManager.cast_spell(unit, spell_id, target_pos)
 			if result.success:
+				# Spell casting breaks concentration (AI casters rarely have continuous_recitation)
+				if "active_mantras" in unit and not unit.active_mantras.is_empty():
+					var char_data_ai = unit.character_data if "character_data" in unit else {}
+					if not PerkSystem.has_perk(char_data_ai, "continuous_recitation"):
+						CombatManager._interrupt_mantras(unit, "%s's concentration breaks from casting!" % unit.unit_name)
 				return true
 
 	return false
@@ -3353,16 +3405,66 @@ func _find_nearest_enemy(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
 				nearest_dist = 0
 			return nearest  # First taunter wins — short-circuit
 
-	# Normal nearest-enemy selection
+	# Normal nearest-enemy selection.
+	# Chanters (units with active mantras) are treated as 3 tiles closer
+	# so AI prioritises disrupting them. Taunt short-circuit above takes precedence.
 	for enemy in enemies:
 		if not enemy.is_alive():
 			continue
 		var dist = _grid_distance(unit.grid_position, enemy.grid_position)
-		if dist < nearest_dist:
-			nearest_dist = dist
+		var effective_dist = dist - (3 if ("active_mantras" in enemy and enemy.active_mantras.size() > 0) else 0)
+		if effective_dist < nearest_dist:
+			nearest_dist = effective_dist
 			nearest = enemy
 
 	return nearest
+
+
+## Run a free bonus turn for a summon unit outside the normal turn order.
+## Used by Lord of Death Deity Yoga. Uses reaction=true attacks to bypass
+## the can_act() check (which gates on the current turn's unit, not this one).
+## Manually tracks unit.actions_remaining.
+func _run_bonus_turn(unit: CombatUnit) -> void:
+	unit.actions_remaining = unit.character_data.get("actions", 2)
+	var player_units = CombatManager.get_team_units(CombatManager.Team.PLAYER)
+	if player_units.is_empty():
+		return
+	var nearest = _find_nearest_enemy(unit, player_units)
+	if nearest == null:
+		return
+
+	var attack_range = unit.get_attack_range()
+	var _safety = 0
+	while unit.actions_remaining > 0 and _safety < 10:
+		_safety += 1
+		if not nearest.is_alive():
+			nearest = _find_nearest_enemy(unit, player_units)
+			if nearest == null:
+				break
+
+		var dist = _grid_distance(unit.grid_position, nearest.grid_position)
+		if dist <= attack_range:
+			# reaction=true bypasses can_act() — this unit isn't the CombatManager current unit
+			var result = CombatManager.attack_unit(unit, nearest, true)
+			unit.actions_remaining -= 1
+			if result.get("hit", false):
+				_log_message("%s attacks %s for %d damage!" % [unit.unit_name, nearest.unit_name, result.get("damage", 0)])
+			else:
+				_show_miss_text(unit, nearest)
+		else:
+			# Move one step toward nearest using get_movement_range (doesn't check can_act)
+			var move_tiles = CombatManager.get_movement_range(unit)
+			var best_tile = unit.grid_position
+			for tile in move_tiles:
+				if _grid_distance(tile, nearest.grid_position) < _grid_distance(best_tile, nearest.grid_position):
+					best_tile = tile
+			if best_tile != unit.grid_position and CombatManager.combat_grid != null:
+				var from = unit.grid_position
+				CombatManager.combat_grid.move_unit(unit, best_tile)
+				CombatManager.unit_moved.emit(unit, from, best_tile)
+				unit.actions_remaining -= 1
+			else:
+				break  # Can't move, stop acting
 
 
 func _grid_distance(a: Vector2i, b: Vector2i) -> int:
@@ -3568,10 +3670,14 @@ func _show_examine_window(unit: CombatUnit) -> void:
 		if bg_id != "" and flavor == "":
 			flavor = bg_id.replace("_", " ").capitalize()
 	else:
-		# Enemy: show archetype if available
-		var archetype_id = char_data.get("archetype_id", "")
-		if archetype_id != "":
-			flavor = archetype_id.replace("_", " ").capitalize()
+		# Enemy: show archetype if available (prefer human-readable name over ID)
+		var archetype_name = char_data.get("archetype_name", "")
+		if archetype_name != "":
+			flavor = archetype_name
+		else:
+			var archetype_id = char_data.get("archetype_id", "")
+			if archetype_id != "":
+				flavor = archetype_id.replace("hell_", "").replace("_", " ").capitalize()
 
 	if flavor != "":
 		var flavor_label = Label.new()
