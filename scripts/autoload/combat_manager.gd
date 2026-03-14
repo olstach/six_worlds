@@ -2792,7 +2792,8 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 					if source != null:
 						existing["source"] = source
 					# Hard CC breaks concentration even on a refresh
-					if status in ["Stun", "Stunned", "Fear", "Feared", "Charm", "Charmed", "Confused", "Berserk"]:
+					if status in ["Stun", "Stunned", "Fear", "Feared", "Charm", "Charmed", "Confused", "Berserk",
+							"Frozen", "Petrified", "Held", "Paralyzed", "Immobilized", "Dominated", "Chaotic"]:
 						_interrupt_mantras(unit, "%s's concentration is broken by %s!" % [unit.unit_name, status])
 					return
 
@@ -2806,7 +2807,8 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	unit.get("status_effects").append(effect_entry)
 
 	# Hard CC breaks concentration on the affected unit
-	if status in ["Stun", "Stunned", "Fear", "Feared", "Charm", "Charmed", "Confused", "Berserk"]:
+	if status in ["Stun", "Stunned", "Fear", "Feared", "Charm", "Charmed", "Confused", "Berserk",
+			"Frozen", "Petrified", "Held", "Paralyzed", "Immobilized", "Dominated", "Chaotic"]:
 		_interrupt_mantras(unit, "%s's concentration is broken by %s!" % [unit.unit_name, status])
 
 	# Show floating status applied text on the unit
