@@ -40,6 +40,8 @@ var arena_scene: Node = null  # Reference to combat arena
 # Units in combat
 var all_units: Array[Node] = []
 var turn_order: Array[Node] = []
+# Lord of Death DY: units that have triggered the DY; used for resurrection-on-kill checks
+var _lord_of_death_casters: Array = []
 var current_unit_index: int = 0
 var combat_round: int = 0  # Current round number (1 = first round); used by no_warning and similar perks
 
@@ -114,14 +116,19 @@ var _can_manually_deploy: bool = false
 var _spell_database: Dictionary = {}
 var _status_effects: Dictionary = {}
 
+# Summon templates database
+var _summon_templates: Dictionary = {}
+
 # Combat rewards (filled before combat_ended signal, cleared on next combat start)
 var last_combat_rewards: Dictionary = {}
 
 func _ready() -> void:
 	_load_spell_database()
 	_load_status_definitions()
+	_load_summon_templates()
 	print("CombatManager initialized with ", _spell_database.size(), " spells, ",
-		_status_effects.size(), " status effects")
+		_status_effects.size(), " status effects, ",
+		_summon_templates.size(), " summon templates")
 
 
 ## Load spell definitions from JSON
@@ -214,6 +221,25 @@ func _load_status_definitions() -> void:
 ## Get a status definition by name (for external use by CombatUnit, etc.)
 func get_status_definition(status_name: String) -> Dictionary:
 	return _status_effects.get(status_name, {})
+
+
+## Load summon templates from summon_templates.json
+func _load_summon_templates() -> void:
+	var file_path = "res://resources/data/summon_templates.json"
+	if not FileAccess.file_exists(file_path):
+		push_warning("CombatManager: summon_templates.json not found")
+		return
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	if file == null:
+		return
+	var json = JSON.new()
+	var parse_result = json.parse(file.get_as_text())
+	file.close()
+	if parse_result != OK:
+		push_error("CombatManager: Failed to parse summon_templates.json")
+		return
+	var data = json.get_data()
+	_summon_templates = data.get("templates", {})
 
 
 ## Start a new combat encounter
@@ -946,7 +972,7 @@ func _start_current_turn() -> void:
 # Tick active mantras and apply per-turn effects
 	if not unit.active_mantras.is_empty():
 		unit.tick_mantras()
-		_process_mantra_effects(unit)
+		_process_mantra_effects_and_auras(unit)
 
 	# Process passive perk turn-start effects
 	_process_turn_start_perks(unit)
@@ -1566,6 +1592,10 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 	damage = int(damage * (1.0 - phys_resist / 100.0))
 	damage = maxi(1, damage)
 
+	# Lord of Death DY: empowered summons deal 30% bonus damage
+	if "lord_of_death_empowered" in attacker and attacker.lord_of_death_empowered:
+		damage = int(damage * 1.3)
+
 	return {
 		"damage": damage,
 		"base_damage": base_damage,
@@ -1944,8 +1974,10 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 			return {"success": false, "reason": "Target out of range"}
 
 	# Get targets based on targeting type
+	var summon_id = spell.get("summon", "")
 	var targets = _get_spell_targets(caster, spell, target_pos)
-	if targets.is_empty() and targeting != "self":
+	# Ground-targeting (summoning) spells don't need a unit target — just a valid tile
+	if targets.is_empty() and targeting != "self" and targeting != "ground":
 		return {"success": false, "reason": "No valid targets"}
 
 	# Calculate base mana cost
@@ -2017,6 +2049,13 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		var charm_sp_pct = charm_used.get("spellpower_bonus", 0.0)
 		if charm_sp_pct > 0:
 			spellpower_bonus += int(spellpower_bonus * charm_sp_pct)
+
+	# --- Summoning spells: spawn a unit instead of applying effects to targets ---
+	if summon_id != "" and targeting == "ground":
+		use_action(1)
+		var summon_result = _spawn_summoned_unit(caster, summon_id, target_pos, spellpower_bonus)
+		spell_cast.emit(caster, spell, [], [summon_result])
+		return {"success": true, "spell": spell, "targets": [], "results": [summon_result], "mana_cost": mana_cost}
 
 	# Apply effects to each target
 	var results: Array[Dictionary] = []
@@ -2195,6 +2234,10 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 			total_damage = int(total_damage * (1.0 - resistance / 100.0))
 			total_damage = maxi(1, total_damage)
 
+			# Lord of Death DY: empowered summons deal 30% bonus spell damage
+			if "lord_of_death_empowered" in caster and caster.lord_of_death_empowered:
+				total_damage = int(total_damage * 1.3)
+
 			apply_damage(target, total_damage, element)
 			result.effects_applied.append({"type": "damage", "amount": total_damage, "element": element})
 
@@ -2304,6 +2347,140 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 	_process_spell_cast_perks(caster, target, spell, result)
 
 	return result
+
+
+## Spawn a summoned unit at or near target_pos on the caster's team.
+## Called by cast_spell() when the spell has a "summon" key and "ground" targeting.
+## Stats scale with the caster's Summoning skill level and spellpower bonus.
+## Template data lives in resources/data/summon_templates.json (75 templates).
+func _spawn_summoned_unit(caster: Node, summon_id: String, target_pos: Vector2i, spellpower_bonus: int) -> Dictionary:
+	var template = _summon_templates.get(summon_id, {})
+	if template.is_empty():
+		push_warning("CombatManager: No summon template for: " + summon_id)
+		# Fall back to a generic weak unit so the spell isn't a total no-op
+		template = {
+			"display_name": summon_id.replace("_", " "),
+			"base_hp": 30, "base_mana": 0, "base_stamina": 40, "actions": 2,
+			"base_damage": 8, "damage_type": "physical",
+			"base_initiative": 10, "base_movement": 3,
+			"base_dodge": 10, "base_armor": 0, "base_crit": 5, "base_accuracy": 0,
+			"resistances": {}
+		}
+
+	# Scale factor based on caster's Summoning skill (0.5x at skill 0, 1.0x at skill 5, 1.5x at skill 10)
+	var summoning_level: int = 0
+	if "character_data" in caster:
+		summoning_level = caster.character_data.get("skills", {}).get("summoning", 0)
+	var scale: float = 0.5 + summoning_level / 10.0
+
+	# Calculate scaled stats
+	var scaled_hp = maxi(1, int(template.get("base_hp", 30) * scale) + spellpower_bonus * 2)
+	var scaled_mana = int(template.get("base_mana", 0) * scale)
+	var scaled_stamina = maxi(10, int(template.get("base_stamina", 40) * scale))
+	var scaled_damage = maxi(1, int(template.get("base_damage", 5) * scale) + int(spellpower_bonus * 0.3))
+	var scaled_initiative = template.get("base_initiative", 10)
+	var scaled_movement = template.get("base_movement", 3)
+	var scaled_dodge = template.get("base_dodge", 10)
+	var scaled_armor = template.get("base_armor", 0)
+	var scaled_crit = float(template.get("base_crit", 5))
+	var scaled_accuracy = template.get("base_accuracy", 0)
+
+	# Build character_data dict matching what init_as_enemy() and CombatUnit getters expect
+	var summon_data: Dictionary = {
+		"name": template.get("display_name", summon_id.replace("_", " ")),
+		"archetype_name": "Summon",
+		"max_hp": scaled_hp,
+		"max_mana": scaled_mana,
+		"actions": template.get("actions", 2),
+		"resistances": template.get("resistances", {}).duplicate(),
+		"inventory": [],
+		"skills": {},
+		"known_spells": [],
+		"perks": [],
+		"tags": template.get("tags", []),
+		"derived": {
+			"max_hp": scaled_hp,
+			"current_hp": scaled_hp,
+			"max_mana": scaled_mana,
+			"current_mana": scaled_mana,
+			"max_stamina": scaled_stamina,
+			"current_stamina": scaled_stamina,
+			"initiative": scaled_initiative,
+			"movement": scaled_movement,
+			"dodge": scaled_dodge,
+			"armor": scaled_armor,
+			"crit_chance": scaled_crit,
+			"accuracy": scaled_accuracy,
+			"damage": scaled_damage,
+			"damage_type": template.get("damage_type", "physical"),
+		},
+		"equipped_weapon": {
+			"name": "Natural Attack",
+			"damage": scaled_damage,
+			"damage_type": template.get("damage_type", "physical"),
+			"range": 1
+		}
+	}
+
+	# Create the CombatUnit node
+	var summon_unit = CombatUnit.new()
+	summon_unit.summoner_id = caster.get_instance_id()  # Track ownership for mantra effects
+	summon_unit.init_as_enemy(summon_data)
+	summon_unit.team = caster.team  # Summon fights on the caster's side
+	# Jeweled Pagoda DY: if caster.next_summon_empowered is set, consume it and apply buffs
+	if "next_summon_empowered" in caster and caster.next_summon_empowered:
+		caster.next_summon_empowered = false
+		# HP × 3, damage × 2
+		var emp_hp = summon_unit.max_hp * 3
+		summon_unit.max_hp = emp_hp
+		summon_unit.current_hp = emp_hp
+		var d = summon_unit.character_data.get("derived", {})
+		d["max_hp"] = emp_hp
+		d["current_hp"] = emp_hp
+		d["damage"] = d.get("damage", 0) * 2
+		summon_unit.character_data["equipped_weapon"]["damage"] = summon_unit.character_data["equipped_weapon"].get("damage", 0) * 2
+		summon_unit.has_summon_aura = true
+		combat_log.emit("%s: Empowered summon — %s is supercharged!" % [caster.unit_name, summon_unit.unit_name])
+
+	# Apply flying status if template specifies it
+	if template.get("movement_mode", "") == "flying":
+		summon_unit.status_effects.append({
+			"status": "Flying", "duration": 999, "value": 0,
+			"source": caster.unit_name
+		})
+
+	# Find a valid spawn position at or near target_pos
+	var spawn_pos = Vector2i(-1, -1)
+	if combat_grid != null and not combat_grid.is_occupied(target_pos) and combat_grid.is_valid_position(target_pos):
+		spawn_pos = target_pos
+	else:
+		# Search outward in a 3-tile radius
+		for radius in range(1, 4):
+			for dx in range(-radius, radius + 1):
+				for dy in range(-radius, radius + 1):
+					if abs(dx) != radius and abs(dy) != radius:
+						continue
+					var candidate = target_pos + Vector2i(dx, dy)
+					if combat_grid != null and combat_grid.is_valid_position(candidate) and not combat_grid.is_occupied(candidate):
+						spawn_pos = candidate
+						break
+				if spawn_pos != Vector2i(-1, -1):
+					break
+			if spawn_pos != Vector2i(-1, -1):
+				break
+
+	if spawn_pos == Vector2i(-1, -1):
+		push_warning("CombatManager: No space to spawn summon " + summon_id)
+		return {"success": false, "reason": "No space for summon"}
+
+	# Place the unit on the grid and register it
+	combat_grid.place_unit(summon_unit, spawn_pos)
+	all_units.append(summon_unit)
+	turn_order.append(summon_unit)
+	unit_deployed.emit(summon_unit, spawn_pos)
+	combat_log.emit("%s summons %s!" % [caster.unit_name, summon_unit.unit_name])
+
+	return {"success": true, "type": "summon", "unit": summon_unit, "position": spawn_pos}
 
 
 ## Process passive perks that trigger when a spell hits a target.
@@ -3326,6 +3503,16 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 						var pos = Vector2i(x, y)
 						var dist = _spell_distance(caster.grid_position, pos)
 						if dist <= spell_range:
+							valid_positions.append(pos)
+
+		"ground":
+			# Summoning spells: any unoccupied, walkable tile in range
+			if combat_grid:
+				for x in range(combat_grid.grid_size.x):
+					for y in range(combat_grid.grid_size.y):
+						var pos = Vector2i(x, y)
+						var dist = _spell_distance(caster.grid_position, pos)
+						if dist <= spell_range and combat_grid.is_valid_position(pos) and not combat_grid.is_occupied(pos):
 							valid_positions.append(pos)
 
 	return valid_positions
@@ -5874,6 +6061,33 @@ func _trigger_cleave(killer: Node, dead_pos: Vector2i) -> void:
 	_trigger_free_attack(killer, nearest)
 
 
+## Apply the aura effect for an empowered summon at the start of its turn.
+## Adds ±10 to mantra_stat_bonuses["armor"], ["dodge"], ["crit_chance"] for
+## all units within 2 tiles — positive for allies, negative for enemies.
+## The negative values are clamped to 0 in the getter (floor applied there).
+func _process_summon_aura(unit: Node) -> void:
+	for u in all_units:
+		if u.is_dead:
+			continue
+		var dist = _grid_distance(unit.grid_position, u.grid_position)
+		if dist > 2:
+			continue
+		var bonus = 10 if u.team == unit.team else -10
+		u.mantra_stat_bonuses["armor"] = u.mantra_stat_bonuses.get("armor", 0) + bonus
+		u.mantra_stat_bonuses["dodge"] = u.mantra_stat_bonuses.get("dodge", 0) + bonus
+		u.mantra_stat_bonuses["crit_chance"] = u.mantra_stat_bonuses.get("crit_chance", 0.0) + float(bonus)
+
+
+## Return all live units whose summoner_id matches caster.get_instance_id()
+func _get_owned_summons(caster: Node) -> Array:
+	var caster_id = caster.get_instance_id()
+	var result: Array = []
+	for u in all_units:
+		if not u.is_dead and "summoner_id" in u and u.summoner_id == caster_id:
+			result.append(u)
+	return result
+
+
 # ============================================
 # MANTRA SYSTEM
 # ============================================
@@ -5881,7 +6095,11 @@ func _trigger_cleave(killer: Node, dead_pos: Vector2i) -> void:
 ## Process all active mantras for a unit at the start of their turn.
 ## Rebuilds mantra_stat_bonuses and applies per-turn aura/damage/heal effects.
 ## Triggers Deity Yoga automatically when the mantra reaches 5 stacks.
-func _process_mantra_effects(unit: Node) -> void:
+func _process_mantra_effects_and_auras(unit: Node) -> void:
+	# Lord of Death cleanup: if DY was triggered but mantra is no longer active, remove from list
+	if not "mantra_of_the_lord_of_death" in unit.active_mantras:
+		_lord_of_death_casters.erase(unit)
+
 	var char_data = unit.character_data if "character_data" in unit else {}
 	var spellpower = unit.get_spellpower()
 
@@ -5903,6 +6121,10 @@ func _process_mantra_effects(unit: Node) -> void:
 		if unit.active_mantras[perk_id] >= 5 and not unit.deity_yoga_triggered.get(perk_id, false):
 			unit.deity_yoga_triggered[perk_id] = true
 			_trigger_deity_yoga(unit, perk_id, spellpower)
+
+	# Process summon aura if this unit has one
+	if "has_summon_aura" in unit and unit.has_summon_aura:
+		_process_summon_aura(unit)
 
 
 ## Apply the per-turn aura effect for a specific mantra at the given stack level.
