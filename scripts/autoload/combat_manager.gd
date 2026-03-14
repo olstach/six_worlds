@@ -6355,7 +6355,7 @@ func _apply_mantra_tick(unit: Node, perk_id: String, stacks: int, spellpower: in
 			var owned = _get_owned_summons(unit)
 			var guardian_count = 0
 			for s in owned:
-				if "tags" in s.character_data and "guardian_spirit" in s.character_data["tags"]:
+				if "character_data" in s and "tags" in s.character_data and "guardian_spirit" in s.character_data["tags"]:
 					guardian_count += 1
 			if guardian_count < 4:
 				# Find first free tile within 2 of caster
@@ -6378,7 +6378,7 @@ func _apply_mantra_tick(unit: Node, perk_id: String, stacks: int, spellpower: in
 
 			# 2. Each spirit guardian gives +3 armor to the nearest ally within 3 tiles
 			for s in owned:
-				if not ("tags" in s.character_data and "guardian_spirit" in s.character_data["tags"]):
+				if not ("character_data" in s and "tags" in s.character_data and "guardian_spirit" in s.character_data["tags"]):
 					continue
 				var nearest_ally: Node = null
 				var nearest_ally_dist = 999
@@ -6641,7 +6641,7 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 			for a in allies_with_self:
 				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + 25
 				a.mantra_stat_bonuses["accuracy"] = a.mantra_stat_bonuses.get("accuracy", 0) + 25
-			# Spawn a Guardian King in each of 4 cardinal directions (search outward up to radius 2)
+			# Spawn a Guardian King in each of 4 cardinal directions (search outward up to radius 3)
 			var cardinal_offsets = [Vector2i(0,-1), Vector2i(0,1), Vector2i(-1,0), Vector2i(1,0)]
 			for base_offset in cardinal_offsets:
 				var spawn_tile = Vector2i(-1, -1)
