@@ -3446,11 +3446,14 @@ func _run_bonus_turn(unit: CombatUnit) -> void:
 		if dist <= attack_range:
 			# reaction=true bypasses can_act() — this unit isn't the CombatManager current unit
 			var result = CombatManager.attack_unit(unit, nearest, true)
-			unit.actions_remaining -= 1
-			if result.get("hit", false):
-				_log_message("%s attacks %s for %d damage!" % [unit.unit_name, nearest.unit_name, result.get("damage", 0)])
+			if result.get("success", true):
+				unit.actions_remaining -= 1
+				if result.get("hit", false):
+					_log_message("%s attacks %s for %d damage!" % [unit.unit_name, nearest.unit_name, result.get("damage", 0)])
+				else:
+					_show_miss_text(unit, nearest)
 			else:
-				_show_miss_text(unit, nearest)
+				break  # Unit can't attack (CC'd or similar) — stop bonus turn
 		else:
 			# Move one step toward nearest using get_movement_range (doesn't check can_act)
 			var move_tiles = CombatManager.get_movement_range(unit)
