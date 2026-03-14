@@ -1675,6 +1675,14 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 		# Check if combat should end immediately (all enemies or all players down)
 		_check_immediate_combat_end()
 
+	# Heavy hit: ≥15% of max HP breaks concentration
+	# Uses post-absorption damage (what was actually received). This is intentional:
+	# attacks reduced below 15% effective damage by armor do not disrupt mantras.
+	if damage > 0 and unit.is_alive():
+		var max_hp = unit.max_hp
+		if max_hp > 0 and float(damage) / float(max_hp) >= 0.15:
+			_interrupt_mantras(unit, "%s's concentration breaks from the heavy blow!" % unit.unit_name)
+
 
 ## Start bleed-out state for a unit
 func _start_bleed_out(unit: Node) -> void:
@@ -2783,6 +2791,9 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 						existing.value = value
 					if source != null:
 						existing["source"] = source
+					# Hard CC breaks concentration even on a refresh
+					if status in ["Stun", "Stunned", "Fear", "Feared", "Charm", "Charmed", "Confused", "Berserk"]:
+						_interrupt_mantras(unit, "%s's concentration is broken by %s!" % [unit.unit_name, status])
 					return
 
 	var effect_entry = {
@@ -2793,6 +2804,10 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	if source != null:
 		effect_entry["source"] = source
 	unit.get("status_effects").append(effect_entry)
+
+	# Hard CC breaks concentration on the affected unit
+	if status in ["Stun", "Stunned", "Fear", "Feared", "Charm", "Charmed", "Confused", "Berserk"]:
+		_interrupt_mantras(unit, "%s's concentration is broken by %s!" % [unit.unit_name, status])
 
 	# Show floating status applied text on the unit
 	if unit.has_method("show_status_applied"):
@@ -6091,6 +6106,17 @@ func _get_owned_summons(caster: Node) -> Array:
 # ============================================
 # MANTRA SYSTEM
 # ============================================
+
+## Interrupt all active mantras on a unit (heavy hit, hard CC, or spell cast).
+## Returns immediately if there are no active mantras (cheap guard).
+func _interrupt_mantras(unit: Node, reason: String) -> void:
+	if not ("active_mantras" in unit) or unit.active_mantras.is_empty():
+		return
+	unit.active_mantras = {}
+	unit.mantra_stat_bonuses = {}
+	_lord_of_death_casters.erase(unit)
+	combat_log.emit(reason)
+
 
 ## Process all active mantras for a unit at the start of their turn.
 ## Rebuilds mantra_stat_bonuses and applies per-turn aura/damage/heal effects.
