@@ -6464,11 +6464,22 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 				a.mantra_stat_bonuses["accuracy"] = a.mantra_stat_bonuses.get("accuracy", 0) + 10
 
 		"mantra_of_the_roaring_one":
-			# Full speed + crit burst for all allies; summon is deferred (needs spawn system)
+			# Stat burst for all allies (+5 movement, +15% crit)
 			for a in allies_with_self:
 				a.mantra_stat_bonuses["movement"] = a.mantra_stat_bonuses.get("movement", 0) + 5
 				a.mantra_stat_bonuses["crit_chance"] = a.mantra_stat_bonuses.get("crit_chance", 0.0) + 15.0
-			combat_log.emit("(Rudra summons deferred — needs spawn system)")
+			# Spawn 1–3 Rudras near the caster (try adjacent tiles in order)
+			var rudra_count = 1 + randi() % 3
+			var spawned = 0
+			var offsets = [Vector2i(0,-1), Vector2i(0,1), Vector2i(-1,0), Vector2i(1,0),
+			               Vector2i(-1,-1), Vector2i(1,-1), Vector2i(-1,1), Vector2i(1,1)]
+			for offset in offsets:
+				if spawned >= rudra_count:
+					break
+				var candidate = unit.grid_position + offset
+				if combat_grid != null and combat_grid.is_valid_position(candidate) and not combat_grid.is_occupied(candidate):
+					_spawn_summoned_unit(unit, "rudra", candidate, spellpower)
+					spawned += 1
 
 		# RITUAL
 		"mantra_of_interdependent_arising":
