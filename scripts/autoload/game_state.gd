@@ -65,6 +65,16 @@ var used_event_choices: Dictionary = {}
 # Format: { object_id: [spell_id, ...] }
 var guild_spell_lists: Dictionary = {}
 
+# Persistent world-state flags used by event chains and quests.
+# Keys are strings; values can be bool, int, or string.
+# Format: { "flag_key": value, ... }
+var flags: Dictionary = {}
+
+# Active quests registered by event outcomes.
+# Each entry: { "id": String, "name": String, "description": String,
+#               "steps": [{"text": String, "done_when": {"flag": String, "value": Variant}}, ...] }
+var active_quests: Array = []
+
 # World definitions
 var WORLDS: Dictionary = {
 	"hell": {
@@ -365,6 +375,52 @@ func process_alchemy_step(alchemy_level: int, unlocked_item_ids: Array) -> Strin
 	return brewed_id
 
 
+## Set a world-state flag. Value can be bool, int, or String.
+func set_flag(key: String, value) -> void:
+	flags[key] = value
+
+
+## Get a world-state flag value. Returns default_value if not set.
+func get_flag(key: String, default_value = false):
+	return flags.get(key, default_value)
+
+
+## Register a new quest. Does nothing if a quest with this id already exists.
+func register_quest(quest: Dictionary) -> void:
+	var quest_id: String = quest.get("id", "")
+	if quest_id == "":
+		push_error("GameState.register_quest: quest missing 'id' field")
+		return
+	for existing in active_quests:
+		if existing.get("id", "") == quest_id:
+			return  # Already registered
+	active_quests.append(quest.duplicate(true))
+
+
+## Returns true if all steps of a quest are complete (all done_when flags match).
+func is_quest_complete(quest_id: String) -> bool:
+	for quest in active_quests:
+		if quest.get("id", "") != quest_id:
+			continue
+		for step in quest.get("steps", []):
+			if not _quest_step_done(step):
+				return false
+		return true
+	return false
+
+
+## Returns true if this single step's done_when condition is satisfied.
+func _quest_step_done(step: Dictionary) -> bool:
+	var done_when: Dictionary = step.get("done_when", {})
+	if done_when.is_empty():
+		return false
+	var flag_key: String = done_when.get("flag", "")
+	if flag_key == "":
+		return false
+	var expected = done_when.get("value", true)
+	return flags.get(flag_key, false) == expected
+
+
 # ============================================
 # SAVE / LOAD
 # ============================================
@@ -390,7 +446,9 @@ func get_save_data() -> Dictionary:
 		"is_starving": is_starving,
 		"boss_defeated": boss_states,
 		"used_event_choices": used_event_choices.duplicate(true),
-		"guild_spell_lists": guild_spell_lists.duplicate(true)
+		"guild_spell_lists": guild_spell_lists.duplicate(true),
+		"flags": flags.duplicate(true),
+		"active_quests": active_quests.duplicate(true)
 	}
 
 
@@ -409,6 +467,10 @@ func load_save_data(data: Dictionary) -> void:
 	is_starving = data.get("is_starving", false)
 	used_event_choices = data.get("used_event_choices", {})
 	guild_spell_lists = data.get("guild_spell_lists", {})
+	flags = data.get("flags", {})
+	active_quests = []
+	for q in data.get("active_quests", []):
+		active_quests.append(q.duplicate(true))
 
 	# Restore unlocked worlds
 	unlocked_worlds.clear()

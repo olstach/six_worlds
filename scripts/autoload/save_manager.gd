@@ -161,6 +161,8 @@ func start_new_game(slot: int) -> void:
 	GameState.active_map_buffs = []
 	GameState.used_event_choices = {}
 	GameState.guild_spell_lists = {}
+	GameState.flags = {}
+	GameState.active_quests = []
 	GameState.is_party_wiped = false
 	GameState.returning_from_combat = false
 	GameState.last_defeated_mob_id = ""
