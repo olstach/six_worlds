@@ -313,7 +313,7 @@ func _update_companion_ui(character: Dictionary) -> void:
 	if free_xp_row != null:
 		free_xp_row.visible = is_companion
 		if is_companion:
-			free_xp_value.text = str(character.get("free_xp", 0))
+			free_xp_value.text = str(int(character.get("free_xp", 0)))
 	if autodevelop_toggle != null:
 		autodevelop_toggle.visible = is_companion
 		if is_companion:
@@ -1718,11 +1718,10 @@ func _on_character_selected(character: Dictionary) -> void:
 
 
 func refresh_all_tabs() -> void:
-	## Refresh stats, equipment, spellbook, and journal tabs to show _current_character.
+	## Refresh stats, equipment, and spellbook tabs to show _current_character.
 	_refresh_stats_tab()
 	_refresh_equipment_tab()
 	_refresh_spellbook_tab()
-	_update_journal_tab()
 
 
 func _refresh_stats_tab() -> void:

@@ -19,6 +19,7 @@ extends Control
 @onready var party_button: Button = %PartyButton
 @onready var spellbook_button: Button = %SpellbookButton
 @onready var crafting_button: Button = %CraftingButton
+@onready var journal_button: Button = %JournalButton
 @onready var toast_label: Label = %ToastLabel
 
 # Event overlay controls (children of EventOverlay CanvasLayer)
@@ -146,6 +147,7 @@ func _ready() -> void:
 	party_button.pressed.connect(func(): _open_char_sheet_to_tab(2))
 	spellbook_button.pressed.connect(func(): _open_char_sheet_to_tab(3))
 	crafting_button.pressed.connect(func(): _open_char_sheet_to_tab(4))
+	journal_button.pressed.connect(func(): _open_char_sheet_to_tab(5))
 	char_sheet.visibility_changed.connect(_on_char_sheet_visibility_changed)
 
 	# Ensure overlays start hidden

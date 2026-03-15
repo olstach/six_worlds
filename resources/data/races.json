@@ -68,7 +68,7 @@
 	  },
 	  "starting_spells": [
 		{"school": "Water", "level": 1, "count": 1},
-		{"school": "Water", "level": 3, "count": 1}
+		{"school": "Water", "level": 1, "count": 1}
 	  ],
 	  "reincarnation_weight": 30,
 	  "typical_backgrounds": ["warrior", "hunter", "executioner", "soul_jailer", "guard"]

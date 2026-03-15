@@ -119,6 +119,11 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Crafting (R)"
 
+[node name="JournalButton" type="Button" parent="HUDLayer/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Journal (J)"
+
 [node name="ToastLabel" type="Label" parent="HUDLayer"]
 unique_name_in_owner = true
 anchors_preset = 7

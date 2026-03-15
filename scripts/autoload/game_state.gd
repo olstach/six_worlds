@@ -427,15 +427,10 @@ func is_quest_complete(quest_id: String) -> bool:
 		if quest.get("id", "") != quest_id:
 			continue
 		for step in quest.get("steps", []):
-			if not _quest_step_done(step):
+			if not is_quest_step_done(step):
 				return false
 		return true
 	return false
-
-
-## Public wrapper for quest step completion — use this from UI code.
-func is_quest_step_done(step: Dictionary) -> bool:
-	return _quest_step_done(step)
 
 
 ## Returns a quest definition from the pool by id. Returns {} if not found.
@@ -544,7 +539,7 @@ func append_overworld_log(msg: String) -> void:
 
 
 ## Returns true if this single step's done_when condition is satisfied.
-func _quest_step_done(step: Dictionary) -> bool:
+func is_quest_step_done(step: Dictionary) -> bool:
 	var done_when: Dictionary = step.get("done_when", {})
 	if done_when.is_empty():
 		return false

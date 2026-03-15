@@ -633,7 +633,7 @@ func _auto_equip_starter_items(player: Dictionary, items: Array, secondary_weapo
 	for item_id in items:
 		if item_id == "":
 			continue
-		var item_data = get_item_data(item_id)
+		var item_data = get_item(item_id)
 		if item_data.is_empty():
 			continue
 		var itype: String = item_data.get("type", "")

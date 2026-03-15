@@ -410,13 +410,13 @@ func _build_spell_description(spell_data: Dictionary) -> String:
 	if "description" in spell_data:
 		parts.append(spell_data.description)
 
-	if "damage" in spell_data:
+	if spell_data.get("damage") != null:
 		var dtype = spell_data.get("damage_type", "magical")
 		var base_dmg: int = int(spell_data.damage)
 		var actual_dmg: int = base_dmg + int(spellpower / 2)
 		parts.append("Damage: %d (%s)" % [actual_dmg, dtype.capitalize()])
 
-	if "heal" in spell_data:
+	if spell_data.get("heal") != null:
 		var base_heal: int = int(spell_data.heal)
 		var actual_heal: int = base_heal + int(spellpower / 2)
 		parts.append("Heals: %d" % actual_heal)
