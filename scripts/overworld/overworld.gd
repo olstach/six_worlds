@@ -872,6 +872,8 @@ func _append_log_entry(msg: String) -> void:
 	_log_list.add_child(lbl)
 	# Auto-scroll to bottom on next frame
 	await get_tree().process_frame
+	if not is_instance_valid(_log_list):
+		return
 	var scroll := _log_list.get_parent() as ScrollContainer
 	if is_instance_valid(scroll):
 		scroll.scroll_vertical = scroll.get_v_scroll_bar().max_value
