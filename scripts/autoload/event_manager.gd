@@ -241,6 +241,17 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 		"passing_character": null  # Which party member meets requirements
 	}
 
+	# Flag prerequisite: if present and not satisfied, hide this choice entirely.
+	# Unlike "requirements" (which shows a disabled button), a hidden choice is not rendered.
+	if "prerequisite" in choice:
+		var prereq: Dictionary = choice.prerequisite
+		var flag_key: String = prereq.get("flag", "")
+		var expected = prereq.get("value", true)
+		if flag_key != "" and GameState.get_flag(flag_key, false) != expected:
+			result.available = false
+			result["hidden"] = true
+			return result
+
 	# For persistent (non-one_time) event objects, block choices that have
 	# already been used (non-shop outcomes only) to prevent XP farming.
 	if not current_event_one_time and not current_event_object_id.is_empty():
@@ -497,6 +508,15 @@ func apply_outcome(outcome: Dictionary) -> void:
 			else:
 				print("EventManager: Gamble lost.")
 
+	# Write world-state flags declared by this outcome
+	if "set_flags" in outcome:
+		for flag_key in outcome.set_flags:
+			GameState.set_flag(flag_key, outcome.set_flags[flag_key])
+
+	# Register a new quest if the outcome defines one
+	if "register_quest" in outcome:
+		GameState.register_quest(outcome.register_quest)
+
 	# Apply gold/resource costs from the choice
 	# Cost amounts are descriptive strings for now ("small", "moderate", etc.)
 	# that will map to concrete values when the economy is tuned.
@@ -533,6 +553,10 @@ func apply_outcome(outcome: Dictionary) -> void:
 				var recruited: Dictionary = CompanionSystem.recruit(companion_id)
 				if recruited.is_empty():
 					push_warning("EventManager: CompanionSystem.recruit() failed for id: %s" % companion_id)
+			event_completed.emit(outcome)
+		"follow_up":
+			# Chain to another event. event_display reads follow_up_event from the outcome
+			# to decide whether to close or start the next event when Continue is pressed.
 			event_completed.emit(outcome)
 
 ## Convert descriptive gold cost strings to concrete amounts.

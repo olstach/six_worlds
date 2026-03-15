@@ -89,6 +89,8 @@ func display_event() -> void:
 	var any_available = false
 	for choice in current_event.choices:
 		var availability = EventManager.evaluate_choice_availability(choice)
+		if availability.get("hidden", false):
+			continue  # Flag prerequisite not met — don't render this choice at all
 		if availability.available:
 			any_available = true
 		create_choice_button(choice, availability)
@@ -298,8 +300,14 @@ func display_outcome(outcome: Dictionary) -> void:
 
 func _on_continue_button_pressed() -> void:
 	AudioManager.play("ui_click")
-	# Hide and notify parent (overworld) that the event is done
-	event_panel.visible = false
-	result_panel.visible = false
-	visible = false
-	event_display_closed.emit()
+	var follow_up: String = current_outcome.get("follow_up_event", "")
+	if follow_up != "":
+		# Chain directly into the next event — start it fresh (no object context inheritance).
+		# Pass "", false so the chained event is not treated as one-time or tracked
+		# against the triggering map object's used-choices list.
+		show_event(follow_up, "", false)
+	else:
+		event_panel.visible = false
+		result_panel.visible = false
+		visible = false
+		event_display_closed.emit()
