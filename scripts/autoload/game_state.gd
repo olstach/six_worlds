@@ -73,7 +73,7 @@ var flags: Dictionary = {}
 # Active quests registered by event outcomes.
 # Each entry: { "id": String, "name": String, "description": String,
 #               "steps": [{"text": String, "done_when": {"flag": String, "value": Variant}}, ...] }
-var active_quests: Array = []
+var active_quests: Array[Dictionary] = []
 
 # World definitions
 var WORLDS: Dictionary = {
@@ -381,7 +381,7 @@ func set_flag(key: String, value) -> void:
 
 
 ## Get a world-state flag value. Returns default_value if not set.
-func get_flag(key: String, default_value = false):
+func get_flag(key: String, default_value = false) -> Variant:
 	return flags.get(key, default_value)
 
 
