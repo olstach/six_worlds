@@ -6239,7 +6239,7 @@ func _apply_mantra_tick(unit: Node, perk_id: String, stacks: int, spellpower: in
 			for s in _get_owned_summons(unit):
 				if "character_data" in s and "tags" in s.character_data and "black" in s.character_data["tags"]:
 					if _grid_distance(unit.grid_position, s.grid_position) <= 4:
-						var heal_amt = ceili(s.character_data.get("max_hp", 1) * 0.10)
+						var heal_amt = ceili(s.max_hp * 0.10)
 						s.heal(heal_amt)
 						unit_healed.emit(s, heal_amt)
 			# 2. Stacking black damage to enemies in 4 tiles (3% spellpower × stacks)
