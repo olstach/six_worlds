@@ -1,0 +1,37 @@
+{
+  "quests": {
+    "cold_prisoner": {
+      "id": "cold_prisoner",
+      "name": "The Frozen Prisoner",
+      "description": "A soul encased in ice begs for release. Somewhere in the cold hells lies the key.",
+      "realm": "hell",
+      "steps": [
+        { "text": "Find the warden's seal",      "done_when": { "flag": "cold_warden_seal_found", "value": true } },
+        { "text": "Return to the prisoner",       "done_when": { "flag": "cold_prisoner_freed",    "value": true } }
+      ],
+      "reward": { "xp": 250, "gold": 0, "karma": { "hell": -10, "human": 5 } }
+    },
+    "ember_debt": {
+      "id": "ember_debt",
+      "name": "Ember Debt",
+      "description": "A fire merchant claims a debt owed by a roaming demon. Collect it—by any means.",
+      "realm": "hell",
+      "steps": [
+        { "text": "Track down Blisterfang",       "done_when": { "flag": "blisterfang_found",    "value": true } },
+        { "text": "Return the payment",           "done_when": { "flag": "ember_debt_paid",      "value": true } }
+      ],
+      "reward": { "xp": 200, "gold": 80, "karma": { "hell": 5 } }
+    },
+    "lost_mantra": {
+      "id": "lost_mantra",
+      "name": "The Lost Mantra",
+      "description": "A wandering hermit lost a scroll of protective mantras. Without it, the cold will claim him.",
+      "realm": "hell",
+      "steps": [
+        { "text": "Recover the mantra scroll",    "done_when": { "flag": "mantra_scroll_found",  "value": true } },
+        { "text": "Bring it to the hermit",       "done_when": { "flag": "mantra_returned",      "value": true } }
+      ],
+      "reward": { "xp": 180, "karma": { "human": 8, "god": 3 } }
+    }
+  }
+}
