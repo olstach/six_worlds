@@ -200,6 +200,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				# Spellbook tab (index 3)
 				_open_char_sheet_to_tab(3)
 				get_viewport().set_input_as_handled()
+			KEY_J:
+				# Journal tab (index 5)
+				_open_char_sheet_to_tab(5)
+				get_viewport().set_input_as_handled()
 			KEY_ESCAPE:
 				if _main_menu_open:
 					_close_main_menu()

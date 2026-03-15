@@ -40,7 +40,9 @@ signal tab_changed(tab_index: int)
 var _current_character: Dictionary = {}
 var _selector_group: ButtonGroup = null
 
-var _quests_container: VBoxContainer = null
+var _journal_list: VBoxContainer = null     # Left-panel quest title buttons
+var _journal_detail: RichTextLabel = null   # Right-panel quest details
+var _journal_selected_id: String = ""       # Currently selected quest id
 
 # Equipment slot definitions
 const EQUIPMENT_SLOTS := {
@@ -145,16 +147,43 @@ func _ready() -> void:
 	# Rename the first tab to "Character" (node is named "Stats" in the scene)
 	tab_container.set_tab_title(0, "Character")
 
-	# Quest Log tab — built in code to avoid scene file churn
-	var quests_scroll := ScrollContainer.new()
-	quests_scroll.name = "Quests"
-	quests_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_quests_container = VBoxContainer.new()
-	_quests_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_quests_container.add_theme_constant_override("separation", 8)
-	quests_scroll.add_child(_quests_container)
-	tab_container.add_child(quests_scroll)
-	tab_container.set_tab_title(tab_container.get_tab_count() - 1, "Quests")
+	# Journal tab — two-panel: title list on left, details on right
+	var journal_root := HSplitContainer.new()
+	journal_root.name = "Journal"
+	journal_root.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	journal_root.split_offset = 200  # left panel ~200px wide
+
+	# Left: scrollable list of quest titles
+	var journal_list_scroll := ScrollContainer.new()
+	journal_list_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	journal_list_scroll.custom_minimum_size = Vector2(180, 0)
+	_journal_list = VBoxContainer.new()
+	_journal_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_journal_list.add_theme_constant_override("separation", 4)
+	journal_list_scroll.add_child(_journal_list)
+	journal_root.add_child(journal_list_scroll)
+
+	# Right: detail panel (RichTextLabel + padding)
+	var detail_panel := PanelContainer.new()
+	detail_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var dp_style := StyleBoxFlat.new()
+	dp_style.bg_color = Color(0.08, 0.07, 0.06)
+	dp_style.content_margin_left = 12
+	dp_style.content_margin_right = 12
+	dp_style.content_margin_top = 10
+	dp_style.content_margin_bottom = 10
+	detail_panel.add_theme_stylebox_override("panel", dp_style)
+	_journal_detail = RichTextLabel.new()
+	_journal_detail.bbcode_enabled = true
+	_journal_detail.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_journal_detail.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_journal_detail.scroll_active = true
+	_journal_detail.text = "[color=#666666]Select a quest to view details.[/color]"
+	detail_panel.add_child(_journal_detail)
+	journal_root.add_child(detail_panel)
+
+	tab_container.add_child(journal_root)
+	tab_container.set_tab_title(tab_container.get_tab_count() - 1, "Journal")
 
 	# Connect debug button
 	add_xp_button.pressed.connect(_on_add_xp_pressed)
@@ -222,9 +251,9 @@ func _on_tab_changed(tab: int) -> void:
 		_load_craft_tiers()
 		_build_craft_filters()
 		_update_crafting_tab()
-	# Refresh quest log tab when switching to it (tab index 5)
+	# Refresh journal tab when switching to it (tab index 5)
 	elif tab == 5:
-		_update_quests_tab()
+		_update_journal_tab()
 
 func _on_character_updated(_character: Dictionary) -> void:
 	_refresh_display()
@@ -1689,11 +1718,11 @@ func _on_character_selected(character: Dictionary) -> void:
 
 
 func refresh_all_tabs() -> void:
-	## Refresh stats, equipment, spellbook, and quest log tabs to show _current_character.
+	## Refresh stats, equipment, spellbook, and journal tabs to show _current_character.
 	_refresh_stats_tab()
 	_refresh_equipment_tab()
 	_refresh_spellbook_tab()
-	_update_quests_tab()
+	_update_journal_tab()
 
 
 func _refresh_stats_tab() -> void:
@@ -2393,83 +2422,131 @@ func _create_follower_card(follower: Dictionary) -> PanelContainer:
 	return card
 
 
-## Quest Log tab — reads GameState.active_quests and resolves step flags.
-func _update_quests_tab() -> void:
-	if not is_instance_valid(_quests_container):
+## Journal tab — rebuilds the left-panel list; preserves selection if possible.
+func _update_journal_tab() -> void:
+	if not is_instance_valid(_journal_list):
 		return
-	for child in _quests_container.get_children():
+	for child in _journal_list.get_children():
 		child.queue_free()
 
-	var quests: Array[Dictionary] = GameState.active_quests
-	if quests.is_empty():
-		var empty_label := Label.new()
-		empty_label.text = "No active quests."
-		empty_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
-		_quests_container.add_child(empty_label)
+	var active: Array[Dictionary] = GameState.active_quests
+	var completed_ids: Array[String] = GameState.completed_quest_ids
+
+	if active.is_empty() and completed_ids.is_empty():
+		var empty_lbl := Label.new()
+		empty_lbl.text = "No quests recorded."
+		empty_lbl.add_theme_color_override("font_color", Color(0.4, 0.4, 0.4))
+		_journal_list.add_child(empty_lbl)
+		if is_instance_valid(_journal_detail):
+			_journal_detail.text = "[color=#666666]No quests yet.[/color]"
 		return
 
-	# Sort: incomplete first, complete last
-	var incomplete: Array[Dictionary] = []
-	var complete: Array[Dictionary] = []
-	for quest in quests:
-		if GameState.is_quest_complete(quest.get("id", "")):
-			complete.append(quest)
-		else:
-			incomplete.append(quest)
+	# Active quests first, then completed
+	var entries: Array[Dictionary] = []
+	for q in active:
+		entries.append(q)
+	# Also show completed quests from pool
+	for qid in completed_ids:
+		var qdef: Dictionary = GameState.get_quest_def(qid)
+		if not qdef.is_empty():
+			entries.append(qdef)
 
-	incomplete.append_array(complete)
-	for quest in incomplete:
-		_quests_container.add_child(_create_quest_card(quest))
+	var first_id := ""
+	for quest in entries:
+		var qid: String = quest.get("id", "")
+		if first_id == "":
+			first_id = qid
+		var is_done: bool = GameState.completed_quest_ids.has(qid)
+		var btn := Button.new()
+		btn.text = ("✓ " if is_done else "○ ") + quest.get("name", "?")
+		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		btn.flat = true
+		btn.custom_minimum_size = Vector2(0, 32)
+		var col := Color(0.5, 0.5, 0.5) if is_done else Color(0.85, 0.70, 0.30)
+		btn.add_theme_color_override("font_color", col)
+		btn.add_theme_color_override("font_hover_color", Color.WHITE)
+		# Highlight selected
+		if qid == _journal_selected_id:
+			var sel_style := StyleBoxFlat.new()
+			sel_style.bg_color = Color(0.18, 0.14, 0.10)
+			btn.add_theme_stylebox_override("normal", sel_style)
+		btn.pressed.connect(func(): _journal_select_quest(qid))
+		_journal_list.add_child(btn)
+
+	# Auto-select first or preserve selection
+	if _journal_selected_id == "" or not _journal_entry_exists(_journal_selected_id):
+		_journal_selected_id = first_id
+	_journal_show_detail(_journal_selected_id)
 
 
-func _create_quest_card(quest: Dictionary) -> PanelContainer:
-	var is_complete := GameState.is_quest_complete(quest.get("id", ""))
+func _journal_entry_exists(quest_id: String) -> bool:
+	for q in GameState.active_quests:
+		if q.get("id", "") == quest_id:
+			return true
+	return GameState.completed_quest_ids.has(quest_id)
 
-	var card := PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.10, 0.08) if not is_complete else Color(0.08, 0.08, 0.08)
-	style.border_width_left = 3
-	style.border_color = Color(0.6, 0.45, 0.15) if not is_complete else Color(0.3, 0.3, 0.3)
-	style.set_corner_radius_all(4)
-	style.content_margin_left = 10
-	style.content_margin_right = 10
-	style.content_margin_top = 8
-	style.content_margin_bottom = 8
-	card.add_theme_stylebox_override("panel", style)
 
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 4)
-	card.add_child(vbox)
+func _journal_select_quest(quest_id: String) -> void:
+	_journal_selected_id = quest_id
+	_update_journal_tab()
+
+
+func _journal_show_detail(quest_id: String) -> void:
+	if not is_instance_valid(_journal_detail) or quest_id == "":
+		return
+	# Prefer active quest dict (has runtime data); fall back to pool def
+	var quest: Dictionary = {}
+	for q in GameState.active_quests:
+		if q.get("id", "") == quest_id:
+			quest = q
+			break
+	if quest.is_empty():
+		quest = GameState.get_quest_def(quest_id)
+	if quest.is_empty():
+		_journal_detail.text = "[color=#666666]Quest not found.[/color]"
+		return
+
+	var is_done: bool = GameState.completed_quest_ids.has(quest_id)
+	var txt := ""
 
 	# Title
-	var title_lbl := Label.new()
-	title_lbl.text = quest.get("name", "Unknown Quest") + (" [COMPLETE]" if is_complete else "")
-	title_lbl.add_theme_color_override("font_color",
-			Color(0.85, 0.7, 0.3) if not is_complete else Color(0.45, 0.45, 0.45))
-	title_lbl.add_theme_font_size_override("font_size", 14)
-	vbox.add_child(title_lbl)
+	var title_col := "#888888" if is_done else "#d4a843"
+	txt += "[b][color=%s]%s[/color][/b]" % [title_col, quest.get("name", "?")]
+	if is_done:
+		txt += "  [color=#4ade80][b][COMPLETE][/b][/color]"
+	txt += "\n\n"
 
 	# Description
 	var desc: String = quest.get("description", "")
 	if desc != "":
-		var desc_lbl := Label.new()
-		desc_lbl.text = desc
-		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		desc_lbl.add_theme_color_override("font_color", Color(0.65, 0.60, 0.55))
-		desc_lbl.add_theme_font_size_override("font_size", 12)
-		vbox.add_child(desc_lbl)
+		txt += "[color=#9a9080]%s[/color]\n\n" % desc
 
 	# Steps
-	for step in quest.get("steps", []):
-		var step_done := GameState.is_quest_step_done(step)
-		var step_lbl := Label.new()
-		step_lbl.text = ("  ✓ " if step_done else "  ○ ") + step.get("text", "")
-		step_lbl.add_theme_color_override("font_color",
-				Color(0.4, 0.8, 0.4) if step_done else Color(0.55, 0.55, 0.55))
-		step_lbl.add_theme_font_size_override("font_size", 12)
-		vbox.add_child(step_lbl)
+	var steps: Array = quest.get("steps", [])
+	if not steps.is_empty():
+		txt += "[b]Objectives:[/b]\n"
+		for step in steps:
+			var done: bool = GameState.is_quest_step_done(step)
+			var mark := "[color=#4ade80]✓[/color]" if done else "[color=#666666]○[/color]"
+			var step_col := "#666666" if done else "#b8a898"
+			txt += "  %s [color=%s]%s[/color]\n" % [mark, step_col, step.get("text", "")]
+		txt += "\n"
 
-	return card
+	# Reward
+	var reward: Dictionary = quest.get("reward", {})
+	if not reward.is_empty():
+		txt += "[b]Reward:[/b]\n"
+		if reward.get("xp", 0) > 0:
+			txt += "  [color=#a0c8ff]+%d XP[/color]\n" % int(reward.xp)
+		if reward.get("gold", 0) > 0:
+			txt += "  [color=#f0d060]+%d gold[/color]\n" % int(reward.gold)
+		var karma: Dictionary = reward.get("karma", {})
+		for realm in karma:
+			var amt: int = int(karma[realm])
+			var ksign := "+" if amt > 0 else ""
+			txt += "  [color=#c890e0]☸ %s: %s%d[/color]\n" % [realm.capitalize(), ksign, amt]
+
+	_journal_detail.text = txt
 
 
 func _update_inventory() -> void:
