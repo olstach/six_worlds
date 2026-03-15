@@ -9,15 +9,16 @@ Last Updated: 2026-03-15 (session 10, audited)
 - [x] GameState singleton (world tracking, boss defeats, party gold, run state)
 - [x] CharacterSystem singleton (7 attributes, 35 skills, derived stats, party management)
 - [x] KarmaSystem singleton (hidden karma, reincarnation, weighted race selection)
-- [x] EventManager singleton (3 choice types, party-wide checks, dice rolls)
+- [x] EventManager singleton (3 choice types, party-wide checks, dice rolls, skill-based rolls)
 - [x] ItemSystem singleton (equipment database, 12-slot system, inventory, procedural generation)
-- [x] ShopSystem singleton (buy/sell, spell learning, skill training, discounts)
+- [x] ShopSystem singleton (buy/sell, spell learning, skill training, discounts, trainer caps)
 - [x] CombatManager singleton (full tactical combat system, loot drops with supply/reagent integration)
 - [x] PerkSystem singleton (skill perks, cross perks, base bonuses, affinity bonuses)
 - [x] EnemySystem singleton (enemy archetypes, role-based stats, inventory generation)
 - [x] SaveManager singleton (save/load game state, 3 slots + autosave)
-- [x] MapManager singleton (overworld map, pathfinding, mobs, objects)
+- [x] MapManager singleton (overworld map, pathfinding, mobs, objects, discovery system)
 - [x] AudioManager singleton (SFX system, 28 sounds × 6 variants)
+- [x] CompanionSystem singleton (recruit, auto-develop, party XP sharing, overflow handling)
 - [x] Supply system (Food/Herbs/Scrap/Reagents with passive consumption, starvation, save/load)
 
 ### Combat System
@@ -40,91 +41,132 @@ Last Updated: 2026-03-15 (session 10, audited)
 - [x] Deployment zones with role-based positioning
 - [x] Tactician upgrade for manual placement
 - [x] AI spell casting and ranged repositioning
-- [x] Bleed-out system (3 turns to revive)
+- [x] AI using consumable items (health potions, mana potions, bombs, oils)
+- [x] AI using active skills (scoring system, prioritized decision tree)
+- [x] AI chanter targeting (prioritizes interrupting mantra users)
+- [x] Bleed-out system (3 turns to revive); companions use same system
 - [x] Victory/defeat conditions
 - [x] Physical damage subtypes (slashing, crushing, piercing) with per-weapon types
 - [x] Consumable items in combat (potions and scrolls with Item button/panel UI)
-- [x] Talismans (19 items, mana cost reduction + spellpower boost per school)
+- [x] Talismans (equippable trinket-slot accessories with stat/skill/perk bonuses)
 - [x] Ammo system for ranged weapons (crossbows, javelins); ammo tracked via Scrap supply
 - [x] Crossbow and javelin weapon types added
 - [x] Bombs (8 items, thrown AoE damage + status effects)
 - [x] Oils (6 items, weapon coating with bonus damage/status procs for N attacks)
-- [x] Active Skills panel in combat (shows active perks and mantras)
+- [x] Active Skills panel in combat (shows active perks and mantras, with cooldown/stamina checks)
+- [x] Weapon type requirements for active skills (swords need sword equipped, etc.)
 - [x] Miss/Dodge/Block floating combat text
 - [x] Attack lunge animation (sprite moves toward target and returns)
 - [x] Enemy loot drops (supplies, reagents with caster-weighting)
 - [x] AoE spells damage obstacles and create ground effects
-- [x] Ammo system (ranged weapons consume ammo, crossbow/javelin subtypes)
+- [x] ZoC / reaction system (first_to_strike, sentinel, none_shall_pass, frost_warden, skirmisher)
+- [x] Stealth system (shadow_strike, soft_step, sudden_end, ambush_predator)
+- [x] Kill-triggered free attacks (cleave, relentless, necromancer)
+- [x] Status persistence combat→overworld (Poisoned, Bleeding, Burning, Festering, Diseased)
+- [x] stat_modifiers infrastructure (timed stat buffs on CombatUnit, duration ticked at turn start)
+- [x] Overcast system (pending_overcast_bonus in cast_spell)
+- [x] Summon system: 75 summon types from summon_templates.json; AI uses "ground" targeting
+- [x] Mantra system: toggleable, per-turn aura effects, Deity Yoga trigger (5 turns), concentration breaks (CC/damage threshold), AI prioritizes interrupting chanters
+- [x] Realm-specific combat terrain (overworld terrain generates realm-appropriate obstacles)
+- [x] Alchemy crafting system (3 branches × 3 tiers, perk-unlocked, passive brewing toggle)
 
 ### Character & Progression
 - [x] XP-based progression (no levels; player starts with 50 XP)
 - [x] Supply system (Food, Herbs, Scrap, Reagents) with passive overworld consumption
-- [x] Alchemy passive brewing (per-step chance to brew item from unlocked tiers; togglable)
 - [x] Starvation system (grace period by CON, then 2% HP/step drain)
-- [x] Exponential attribute cost scaling
+- [x] Exponential attribute cost scaling (`max((value-9)*3, 2)` per step)
 - [x] Skill progression (10 levels, costs: 5/10/18/28/42/59/80/106/137/175)
-- [x] 0-10 skill scale refactor (15-level base bonus tables wired into derived stats, perk/spell levels remapped)
+- [x] 0-10 skill scale (15-level base bonus tables wired into derived stats; spells/perks remapped)
+- [x] Item/race bonuses push effective skill to 15 (display in yellow, not purchasable)
 - [x] Derived stats calculation
 - [x] Spellbook system (learn/forget spells)
 - [x] Starting spells based on background
-- [x] Elemental affinities tracking
-- [x] Perk system (skill perks at each level, cross-skill perks)
-- [x] Races and backgrounds for Hell realm (6 devils + 23 backgrounds with available_races and weights)
+- [x] Elemental affinities tracking with bonuses
+- [x] Perk system (skill perks at each level, cross-skill perks, base bonuses)
+- [x] Races for **all 6 realms** (22 total: 6 hell + 4 human + 3 animal + 3 god + 3 hungry_ghost + 2 asura)
+- [x] 25 backgrounds with attribute_modifiers, starting_skills, available_races, weights
+
+### Companions
+- [x] Companion data structure (NPC characters with attributes, skills, equipment, build_weights)
+- [x] Companion recruitment (via events `recruit_companion` outcome + shop companion tab)
+- [x] Companion recruit popup (portrait, stats, flavor text, hire button)
+- [x] Party tab UI in character sheet (all party members shown as cards with XP bars)
+- [x] Companion XP sharing (multipliers: ×1.5 solo, ×1.25 duo, ×1.0 3-4, ×0.85 5-6, ×0.7 7-8)
+- [x] Companion AI in combat (same AI as enemies, Team.PLAYER)
+- [x] Companion bleed-out (same 3-turn system as player)
+- [x] Weighted auto-distribute XP (build_weights, surplus redistribution, overflow mode)
+- [x] Overflow popup (companion_overflow signal, emergent weight redistribution)
+- [x] Manual XP spending on companions (XP-swap pattern via free_xp)
+- [x] Autodevelop toggle per companion
+- [x] 23 hell companions fully defined in companions.json; wired into all 9 hell shops
 
 ### Overworld Map
-- [x] HoMM-style tile-based exploration
-- [x] A* pathfinding with terrain speed modifiers
+- [x] HoMM-style tile-based exploration with A* pathfinding and terrain speed modifiers
 - [x] Object types (events, pickups, portals)
 - [x] Mob system (stationary, patrol, roaming, aggressive pursuit)
 - [x] World transitions between realms (portal objects)
 - [x] Fog of war
 - [x] Map marker overhaul (shapes/colors by type, name labels)
-- [x] Procedural map generation from realm configs
+- [x] Procedural map generation from realm configs (hell: 96×72)
+- [x] Variable passability (water_walking, flight, lava_immunity abilities)
+- [x] Exploration discovery (skill-based hidden finds per terrain)
+- [x] Status persistence (DoT continues between overworld steps)
+- [x] Spell shrine pickups and spell guild locations (procedural placement)
 
 ### Event System
-- [x] Load events from JSON files
-- [x] Combat/shop trigger outcomes
-- [x] Hell realm events (hell_events.json)
+- [x] Load events from JSON files; 3 choice types (default/blue/yellow); party-wide checks; skill-based dice rolls
+- [x] Combat/shop trigger outcomes; event→combat→result→continue flow
+- [x] Recruit companion event outcome type
+- [x] Hell realm events: 39 total (19 cold_hell pool + 17 fire_hell pool + 2 landmarks + 1 shared)
+- [x] Hell trader events with steal/attack/donate/comedy karma branches
+- [x] Karma assignments per choice type (steal→hungry_ghost, attack→hell, donate→god, comedy→human)
+- [x] Event chains: `set_flags` outcome key writes world-state flags; `prerequisite: {flag, value}` on choices hides them when unmet; `follow_up_event` chains to next event on Continue
+- [x] Quest system: `register_quest` outcome key registers quest in GameState.active_quests; steps resolved via flag checks; Quest Log tab in character sheet (sorted by completion)
+
+### Shops / Traders
+- [x] Buy/sell items; spell learning; skill training; companion recruitment
+- [x] Trainer caps (max_skill_level enforced; "Capped" in UI)
+- [x] All hell trader types present: general store, blacksmith, fletcher, healer, alchemist, magic shop, trainers, wandering peddler
+- [x] Shop UI: items sorted by type/name; companion tab shows free_xp + autodevelop toggle
+- [x] Procedural shop stock (generated weapons, armor, talismans)
 
 ### UI
-- [x] Character sheet (attributes, skills, derived stats)
+- [x] Character sheet (attributes, skills, derived stats, yellow for boosted levels)
 - [x] Spellbook tab with school filtering
 - [x] Equipment screen with humanoid doll (12 slots, dual weapon sets, mirrored hand slots)
-- [x] Supply counters on overworld HUD (Food/Herbs/Scrap/Reagents next to Gold)
-- [x] Charm effect descriptions in item tooltip (mana reduction %, spellpower bonus)
-- [x] Event display with choice coloring
-- [x] Combat arena with action buttons
-- [x] Spell panel with tooltips
-- [x] Combat log
-- [x] Turn order display
-- [x] Title screen with save/load
+- [x] Supply counters on overworld HUD (Food/Herbs/Scrap/Reagents + Gold)
+- [x] Crafting tab (key R; character picker, item type filter, recipe list with reagent costs)
+- [x] Perk selection popup (shows up to 4 perk cards, clickable)
+- [x] Event display with choice coloring, keyboard shortcuts (1-9), Leave button on softlock
+- [x] Combat arena with action buttons, spell panel, combat log, turn order display
+- [x] Title screen with save/load (3 slots + autosave)
 - [x] Test launcher
 
 ### Data Files
-- [x] spells.json (326 spells)
-- [x] statuses.json (80+ status effects)
-- [x] items.json (weapons, armor, accessories, consumables)
-- [x] races.json (sample races for Hell realm)
+- [x] spells.json (326 spells across 10 schools)
+- [x] statuses.json (80+ status effects, fully reworked)
+- [x] items.json (weapons, armor, accessories, consumables, bombs, oils, talismans, scrolls × 17)
+- [x] races.json (22 races across all 6 realms + 25 backgrounds)
 - [x] skills.json (35 skills by category/element)
-- [x] shops.json (5 sample shops)
+- [x] shops.json (9+ shops covering all hell trader roles)
 - [x] upgrades.json (10+ upgrades)
-- [x] perks.json (skill perks + cross perks for all 35 skills)
-- [x] hell.json map config (procedural generation)
-- [x] hell_events.json (realm events)
-- [x] hell_enemies.json (enemy archetypes)
-- [x] supplies.json (4 supply types with passive effects, consumption, starvation)
-- [x] equipment_tables.json (procedural weapon/armor generation tables)
-- [x] talisman_tables.json (procedural talisman generation tables)
+- [x] perks.json (skill perks + cross perks for all 35 skills; 527 entries)
+- [x] summon_templates.json (75 summon types, tiered by spell level)
+- [x] hell.json map config (procedural generation, 96×72)
+- [x] hell_events.json (39 hell events)
+- [x] hell_archetypes.json + hell_encounters.json (19 archetypes, 12 encounters)
+- [x] supplies.json (4 supply types)
+- [x] equipment_tables.json + talisman_tables.json (procedural generation tables)
 
 ---
 
 ## High Priority (Core Gameplay)
 
-### Companions — Post-JSON Cleanup
-- [x] ~~Verify skill keys~~ — all 35 skill IDs in companions.json match skills.json exactly
-- [x] ~~Check background values~~ — 9 companions had invalid backgrounds (soldier/laborer/peasant/criminal); fixed: soldier→former_soldier, laborer/peasant→farmer, criminal→raider or executioner
-- [x] ~~Verify item IDs~~ — all starting_equipment and fixed_items match items.json
-- [x] ~~Wire companions into shops~~ — all 23 companions already in available_companions for all 9 hell shop locations
+### ~~Companion Auto-Development Refactor~~ DONE
+- [x] All 24 companions in companions.json already have skill-only `build_weights` (no attr keys)
+- [x] `_derive_attr_weights()` in companion_system.gd derives attr weights from skill weights using `primary_attribute` (×1.0) and `secondary_attribute` (×0.5) from skills.json
+- [x] Budget split: `attr_ratio` (default 0.35, per-companion override supported) × budget → attrs; remainder → skills
+- [x] Both `_try_autodevelop()` and `recruit()` use the split; overflow mode unaffected
 
 ### Companion Auto-Development Refactor
 *(Partially superseded — skills.json already has `primary_attribute` and `secondary_attribute` fields per skill, singular form. The planned array refactor below was designed before that existed. Decide whether to proceed or drop.)*
@@ -141,13 +183,15 @@ Last Updated: 2026-03-15 (session 10, audited)
 - [ ] Companion death / bleed-out handling — currently companions die like enemies with no special treatment; no permanent-death option, no party-wipe check distinct from normal defeat
 - [ ] Recruitment events on the overworld map — `recruit_companion` outcome type IS wired in event_manager.gd; just needs actual events in hell_events.json that use it
 - [ ] Starting companion (optional: give player one at game start for first run) — no logic in game_state.gd or character_system.gd
+- [ ] Companion definitions for remaining realms (companions.json currently has hell companions only)
 
 ### Content Expansion (Needed for Playable Loop)
+Hell realm is largely production-quality. Other realms are structural gaps.
 - [ ] Event files for remaining realms — only hell_events.json exists; no files for hungry_ghost, animal, human, asura, god
 - [x] ~~Races for all 6 realms~~ — DONE: 21 races across all realms (Hell 6, Hungry Ghost 3, Animal 3, Human 4, Asura 2, God 3)
 - [x] ~~Background definitions with skill distributions~~ — DONE: 25 backgrounds in races.json with attribute_modifiers, starting_skills, available_races whitelists
 - [ ] Map configs for remaining realms — only hell.json exists in resources/data/map_configs/
-- [ ] Enemy archetypes for remaining realms — only hell_archetypes.json exists in resources/data/enemies/
+- [ ] Enemy archetypes + encounters for remaining realms — only hell_archetypes.json + hell_encounters.json exist
 
 ### Map Interactibles System
 Three categories of interactive map objects. Hell is the target realm for initial content.
@@ -175,33 +219,39 @@ Roles to fulfill per realm (not specific object types):
 - [x] ~~Hell-specific named locations~~ — DONE (Infernal Forge, Bone Archer Camp, Mercy Ward, Brimstone Lab, Warden's Pit — all in shops.json + hell_events.json + hell.json map pools)
 
 **Category 3 — Event Chains** (1-3 choices deep, world/subregion specific)
-- [ ] Event chain data format — no `prerequisites` or `follow_up` fields in event_manager.gd; all hell events are currently standalone
-- [ ] Ability to reference other map objects in outcomes — not implemented
-- [ ] Hell-specific chains still needed: bandit ambush of a soul caravan, contraband deal gone wrong, corrupted simple, rival party encounter — `devil_deserter` and `hell_cursed_pilgrim` / `hell_fire_pilgrim` already exist but are standalone events, not full multi-step chains
+- [x] ~~Event chain data format~~ — DONE (`set_flags`, `prerequisite`, `follow_up_event` all implemented)
+- [ ] Hell-specific chains still needed: soul caravan ambush, contraband deal gone wrong, corrupted simple, rival party encounter
 - [ ] Chains should NOT be reused across realms — always write realm-specific flavor
 
-### Quest System
-*(Design phase — implement after event chains are solid)*
-- [ ] Quest data structure (active quests, state flags, completion conditions)
-- [ ] Quest giver NPCs (subset of trader/event chain interactions)
-- [ ] Quest log UI tab in character sheet
-- [ ] Quest outcomes: XP rewards, karma, unique items, unlocking new map locations
-- [ ] Multi-map quests (state persists across map transitions)
-- [ ] Event chains can reference and advance quests
-- [ ] Town first-visit hooks can initiate quests
+### ~~Event Chains + Quest System~~ DONE
+- [x] `set_flags` outcome key — write arbitrary world-state flags from any event outcome
+- [x] `prerequisite: {flag, value}` on choices — hides choice entirely when flag not met
+- [x] `follow_up_event` on any outcome — chains to next event on Continue; starts fresh
+- [x] `register_quest` outcome key — registers quest in `GameState.active_quests`; idempotent
+- [x] **Journal tab** (renamed from Quests, index 5) — two-panel layout; J keybinding; completed quest history; `GameState.is_quest_step_done()` public API
+- [x] **Quest board overlay** — `quest_board` outcome type; randomised pool-draw from quests.json; Accept buttons; realm filter
+- [x] **quests.json** — global quest pool with steps, rewards, realm tags; 3 sample hell quests
+- [x] **Quest completion auto-detection** — `set_flag()` triggers `check_quest_completion()`; awards XP/gold/karma; logs completion
+- [x] **Overworld message log** — session-only toggle panel (💬 button); all toasts recorded
+- [x] `GameState.flags` dict + `set_flag()`/`get_flag()` — persisted in save/load, reset on new game
 
-### Event System Improvements
-- [ ] Event chains and prerequisites (see Map Interactibles above)
-- [x] ~~Hell realm events at target density~~ — DONE: 62 events total in hell_events.json (well above 15-per-zone target). Category 2 trader events all present. `devil_deserter`, `hell_cursed_pilgrim`, `hell_fire_pilgrim` present as standalone events.
-- [ ] Category 3 multi-step chains for hell — soul caravan ambush, contraband deal, corrupted simple, rival party still missing (see Category 3 section above)
-- [ ] More events per realm (aim for 20+ per remaining realm) — blocked on event files existing first
+### Event System — Content Still Needed
+- [ ] Hell-specific event chains: soul caravan ambush, devil deserter, contraband deal, corrupted simple, chained pilgrim, rival party
+- [ ] More hell events: both zones still under target density (~15+ each)
+- [ ] Multi-function locations: tab UI inside event window (3-4 functions per town); no tab switching in event_display yet
+- [ ] First-visit event hook for towns: `visited_locations` set in GameState, trigger one-time intro event
+
+### Quest Content (system ready, quests need writing)
+- [ ] Hell quests: write using `register_quest` + `set_flags` + `prerequisite` in hell_events.json, OR add to quests.json for quest board pool
+- [ ] Quest giver NPCs — any trader or event can register a quest; no code changes needed
+- [ ] Quest board locations — add `"quest_board"` outcome to tavern/town events
 
 ### Camp Followers System
-*(Entirely unimplemented — design only)*
-- [ ] Non-combat companion data structure — no followers system exists anywhere
-- [ ] Follower recruitment through events — no follower outcome type in event_manager.gd
-- [ ] Passive bonus application (trade, healing, carrying capacity)
-- [ ] UI integration — FollowersList VBoxContainer exists in main_menu.gd but `_update_followers_list()` is a stub with an empty array
+UI stub exists in Party tab (`_update_followers_list()` / `_create_follower_card()`) but returns hardcoded empty list. No system exists yet.
+- [ ] Non-combat follower data structure in GameState
+- [ ] Follower recruitment through events
+- [ ] Passive bonus application (trade discounts, healing rate, carrying capacity)
+- [ ] Wire UI stub to actual follower data
 
 ### ~~Skill Scale Refactor (1-5 → 1-10)~~ DONE
 - [x] Skill levels 1-10 (purchasable); 11-15 accessible via items/race bonuses (display only, yellow in UI)
@@ -211,65 +261,36 @@ Roles to fulfill per realm (not specific object types):
 - [x] Attribute cost formula: `max((value - 9) * 3, 2)` per step (10→20 = 165 XP; 10→30 = 630 XP)
 
 ### Testing & Polish
+- [ ] Playtest hell realm end-to-end (combat, shops, events, quest board, portal transition)
 - [ ] Test Shop UI thoroughly (buying, selling, spell learning, training, companions tab, rest tab)
 - [ ] Test terrain effect interactions with spells
 - [ ] Balance pass on spell mana costs vs effects
 - [ ] Test all 326 spells load and cast correctly
-- [ ] **Perk wiring (in progress)**: ~441 passive perks in perks.json; active skills (combat_data key) already work. Passive wiring is done in `get_passive_perk_stat_bonus()`, `_process_on_hit_perks()`, `_process_on_dodge_perks()`, `_process_turn_start_perks()`, `_process_spell_cast_perks()`, `_check_perk_status_immunity()`.
+- [ ] Test Shop UI thoroughly (buying, selling, spell learning, training, companion tab)
+- [ ] Test terrain effect interactions with spells
+- [ ] Item flavor text: `space_charm_common` and `rations` reportedly show broken tooltip — needs in-game testing to reproduce
 
-  **WIRED so far** (combat_manager.gd): `parry`, `improved_parry`, `stone_adept`, `all_in`, `weapon_master`, `wind_adept`, `flame_fist`, `thunder_breaker`, `blood_in_the_wind`, `riposte` + all talisman perks. Session 2: `centered_stance`, `flowing_footwork`, `open_the_gate`, `borrowed_force`, `empty_center`, `diamond_body`, `touch_of_gloom`, `measured_radiance`, `mental_aftershock`, `chains_of_suffering`, `elementalist`, `curseblade`, `blood_pact`. Session 3: `iron_shirt_technique`, `short_range_violence`, `commitment`, `momentum`, `keep_hitting`, `every_opening_is_an_invitation`, `close_and_personal`, `hard_knuckles`, `rattle_the_cage`, `see_stars`, `no_time_to_breathe`, `heavy_swing`, `wide_arc`, `laughing_at_the_abyss`, `bare_chest`. Session 4: `tidal_patience`, `disciplined_formation`, `water_finds_the_gap`, `creeping_cold`, `amplified_misfortune`. Session 5: `risen_dead` (talisman perk). Session 6: **Daggers**: `offhand_jab`, `backstab`, `between_the_ribs`, `knife_storm`, `opportunist`, `too_fast_to_count`. **Ranged**: `steady_aim`, `clean_line`, `exposed_target`, `one_breath_one_arrow`, `wall_of_points`. **Spears**: `flowing_tide`. **Maces**: `concussive_force`, `shieldbreaker`, `thunderous_impact`, `relentless_advance`, `skull_crack`, `juggernaut`. **Might**: `grounded`, `pain_is_just_information`, `put_your_weight_into_it`, `hit_back_harder`, `nothing_wasted`. **Guile**: `play_dirty`, `cheap_shot`. **Leadership**: `no_one_left_behind`, `press_the_advantage`, `unbroken_circle`. **Performance**: `rousing_display`. **Sorcery**: `clean_cast`, `efficient_enchanting`, `sudden_silence`, `snap_decision`, `no_follow_up_needed`, `no_warning`, `spell_like_a_knife`. **Water/White**: `healing_waters`, `lingering_warmth`, `tidal_surge`, `purifying_stream`, `gentle_removal`, `riptide`, `mystic_healer`, `permafrost`. **Fire**: `kindled`, `hungry_flames`, `feed_the_fire`, `nothing_burns_alone`. **Earth**: `crystalline_edge`, `weight_of_the_mountain`. **Air**: `static_edge`, `chain_spark`, `scattering_gust`, `avatar_of_the_wind`, `avatar_of_the_storm`. **Enchantment**: `weakening_gaze`, `lingering_touch`. **Black**: `fear_is_the_mindkiller`. **Summoning**: `summoners_bond`. **Earth**: `tremor`. **Water**: `deep_freeze`, `crushing_depths`, `riptide`, `purifying_stream`. **Fire**: `nothing_burns_alone`, `ashes_remember_heat`. All talisman combat perks COMPLETE. `karma_sight` = event-system only.
-  **Session 7**: `call_the_shot` (Leadership active: mark_target effect, `marked_target` field, once_per_turn enforcement).
+### Perk Wiring — Remaining Deferred
+~441 passive perks total; all per-skill base bonuses flow through PerkSystem → derived stats automatically. The following active skill / complex perks are intentionally deferred and still stubbed with error messages in combat_manager.gd:
 
-  **Session 8**: Complete `stat_modifiers` infrastructure (array on CombatUnit, `_get_stat_modifier_bonus()`, wired into all stat getters, duration ticked at turn start). Overcast system wired into `cast_spell()`. `will_miss_next_attack` flag wired into `attack_unit()`. `taunt_active` wired into AI targeting. 20 new active skill effect type resolvers: `bonus_movement`, `restore_stamina`, `restore_armor`, `revive`, `debuff_enemies`, `buff_allies`, `buff_ally`, `destroy_obstacle`, `cleanse_and_buff`, `grant_extra_action`, `force_miss`, `grapple`, `overcast`, `retreat`, `aoe_damage_and_status`, `buff_allies_debuff_enemies`, `dispel_and_invert`, `aggro_aura`, `share_buffs`, `double_buffs`. statuses.json: added Grappled, Force_Miss, Taunt, Demoralized.
+**Needs new systems before implementation:**
+- `metamagic` (Sorcery 3 + Ritual 3) — needs pre-cast modal dialog to modify next spell (range/AoE/element)
+- ~~`continuous_recitation`~~ DONE — casting now calls `_interrupt_mantras()` on the caster; perk bypasses this check in both the summon path and the normal path of `cast_spell()`
+- `void_touched` — space spells leave void terrain tiles; needs `void` tile type in combat_grid
+- `roles_assigned` / `tactical_synergy` — need role designation UI (Vanguard/Striker/Support/Control assigned at combat start)
+- `create_terrain` perks (inscribed_circle, fog_of_war, black_ice, raise_wall, gravity_well, improvised_barricade, prepared_ground) — needs timed terrain tile system
+- `create_images` / `smoke_and_mirrors` — needs illusion/decoy unit system
+- `imbued_attack` / `arcane_archer` — ranged attack with spell element; needs attack+spell hybrid
+- `mass_teleport` — teleport all units
+- `recruit_or_pacify` / `magnetism` — convert/pacify enemy unit
+- `place_trap` / `trap_maker` — persistent terrain trap that triggers on enemy movement
+- `attune_charm` — consume equipped talisman for next-spell bonus (talisman passive consumption works; this is the active version)
+- `steal_item` / `the_invisible_hand` — steal equipped item from enemy
+- `choose_one` / `improvised_masterpiece` — needs sub-choice UI during active skill use
+- `guard_ally` / `stalwart_guardian` — redirect attacks targeting nearby ally to self
+- `summon_aura` / `host_of_the_winds` — DONE (`_process_summon_aura()` at combat_manager.gd:6105)
 
-  **CombatUnit per-turn counters**: `moved_this_turn`, `momentum_stacks`, `unarmed_hit_stacks`, `stationary_stacks`, `dagger_attacks_this_turn`, `ranged_attacks_this_turn`, `knife_storm_proc_this_turn`, `enemies_hit_this_combat`, `hit_back_ready`, `sorcery_kill_bonus_ready`, `marked_target`, `call_the_shot_used_this_turn`.
-  **CombatUnit active-skill fields**: `stat_modifiers` (timed stat buffs), `pending_overcast_bonus`, `will_miss_next_attack`, `taunt_active`, `taunt_duration`.
-
-  **STILL UNWIRED** (grouped by complexity):
-
-  *Simple / remaining (last few):*
-  - ~~`call_the_shot`~~: DONE — `mark_target` effect type; `marked_target` on attacker + `is_marked` on defender; +15% acc/dmg for first ally hit; clears on hit or defender's turn start.
-  - ~~`tremor`~~: DONE — Earth AoE spells 25% Knockdown.
-  - ~~`crushing_depths`~~: DONE — +15% accuracy vs enemies on water/ice terrain or 2+ water debuffs.
-  - ~~`avatar_of_the_storm`~~: DONE — aura: all allies' attacks +5% Air, 10% stun.
-  - ~~`ashes_remember_heat`~~: DONE — kill burning enemy → fire terrain at their tile.
-  - ~~`deep_freeze`~~: DONE — movement 0 → Frozen at turn start if enemy has perk.
-
-  *Complex / needs new systems (defer):*
-
-  ~~**Kill-triggered free attacks**~~: DONE — `_trigger_free_attack()` + `in_free_attack` guard on CombatUnit; `_trigger_cleave()` called from `_kill_unit()`; `relentless` hooked in `_process_on_hit_perks()`. `necromancer`: 10 mana cost, `necromancer_raises` counter (max 2), spawn via risen_dead template.
-
-  ~~**Zone of Control / Reaction system**~~: DONE — `_check_zoc_reactions(mover, old_pos, new_pos)` called from `move_unit()`. `attack_unit()` gains `reaction: bool = false` param (skips `can_act()` + `use_action()`). `first_to_strike`: spear reaction on enter. `frost_warden`: Slow + +1 reach while stationary. `none_shall_pass`: also fires on same trigger. `sentinel`: fires when enemy LEAVES melee range.
-
-  ~~**Stealth system**~~: DONE — `is_stealthed: bool` on CombatUnit. `shadow_strike`: kill → enter stealth; stealth attack = auto-hit + forced crit. `soft_step`: movement within 3 tiles of enemy doesn't break stealth. `sudden_end`: stealth + stunned/dazed = +50% damage. `ambush_predator`: kill from stealth resets stealth. Stealth breaks on attack (always) or moving within 3 tiles without soft_step.
-
-  **Metamagic** (pre-cast UI dialog; combat_data key selects which spell to modify before casting):
-  - `metamagic` (Sorcery 3 + Ritual 3) — modify next spell: extend range, add AoE, or change element. Needs a modal dialog before the spell panel confirms targeting.
-
-  **Mantra system** — DONE:
-  - Core: `mantra_stat_bonuses`, `deity_yoga_triggered` on CombatUnit; `_process_mantra_effects()` + `_apply_mantra_tick()` + `_trigger_deity_yoga()` in combat_manager.
-  - All 26 mantras wired with per-turn effects and Deity Yoga bursts. Stat bonuses flow through new `mantra_stat_bonuses` dict checked in `get_armor/dodge/movement/initiative/crit_chance/spellpower/accuracy/resistance`.
-  - `one_mind_one_fist`: unarmed hits during mantras advance each mantra +1. `walking_meditation`: +2 Move while any mantra active. `dharma_warrior`: kills during mantras advance each mantra +1.
-  - **Deferred DY effects** (simplified for now): damage reflection → stat burst; unit spawning (Roaring One, Lord of Death, Guardian Kings, Pagoda) → log message + stat burst.
-
-  **Other deferred:**
-  - `void_touched` — space spells leave void terrain tiles. Needs void tile type added to combat_grid.
-  - ~~`skirmisher`~~: DONE — ZoC reactions suppressed for mover with this perk (free disengage). The "no accuracy penalty after moving" half defers until ranged move-penalty system is added.
-  - `roles_assigned` / `tactical_synergy` — need role designation UI (assign Vanguard/Striker/Support/Control at combat start). Complex — defer.
-  - `metamagic` — needs pre-cast UI dialog to modify next spell (range/AoE/element). Complex — defer.
-  - `create_terrain` (inscribed_circle, fog_of_war, black_ice, raise_wall, gravity_well, improvised_barricade, prepared_ground) — needs timed terrain tile system. Complex — defer.
-  - `create_images` (smoke_and_mirrors) — needs illusion/decoy unit system. Defer.
-  - `imbued_attack` (arcane_archer) — ranged attack with spell element. Defer.
-  - `mass_teleport` (everyone_is_somewhere_else_now) — teleport all units. Defer.
-  - `recruit_or_pacify` (magnetism) — convert/pacify enemy. Defer.
-  - `place_trap` (trap_maker) — persistent terrain trap. Defer.
-  - `consume_charm` (attune_charm) — consume equipped talisman for next-spell bonus. Defer.
-  - `steal_item` (the_invisible_hand) — steal equipped item from enemy. Defer.
-  - `choose_one` (improvised_masterpiece) — needs sub-choice UI. Defer.
-  - `guard_ally` (stalwart_guardian) — redirect attacks to self. Defer.
-  - `summon_aura` (host_of_the_winds) — per-turn aura buff nearby allies. Defer.
-
-  *Deferred (already handled):* all per-skill minor bonuses flow through PerkSystem base_bonuses → derived stats, not combat_manager
+**Complexity note:** `continuous_recitation` is the simplest remaining item — one guard in `cast_spell()`.
 
 ---
 
@@ -325,10 +346,159 @@ Roles to fulfill per realm (not specific object types):
 - [ ] Active skill sounds — no AudioManager.play calls in active skill resolution
 - [ ] Death / unit kill sound — no death sound defined or triggered
 
-#### SFX Assignment Reference
+---
+
+## Known Issues
+
+- [ ] **Item flavor text (needs runtime)**: `space_charm_common` and `rations` reportedly show broken flavor text in item tooltip — static code looks correct; needs in-game testing to reproduce
+- [ ] **combat_grid.gd:458** — TODO comment "Check team" — possible edge case in team check logic; needs review
+- [ ] **Karma realm origins not loaded from data**: `karma_system.gd:154,179` — per-realm karma starting values are hardcoded, not loaded from background data. Low priority until other realms exist.
+- [ ] **Enemy weapon placeholder names**: `enemy_system.gd:306,314` — auto-generated weapons get generic names. Minor cosmetic issue.
+- [ ] **Companion permanent death**: companions use the bleed-out system but there's no "permanent death" toggle option implemented yet.
+
+---
+
+## Design Questions (Unresolved)
+
+### Karma Visibility
+- Currently completely hidden (thematic)
+- Should Yoga skill unlock karma meditation to see rough scores?
+- Or keep totally mysterious?
+
+### Combat Balance
+- Spell mana costs by level: 15/40/75/135/225 — needs playtesting
+- Status effect durations and tick damage
+- AI difficulty scaling
+
+### Realm-Specific Mechanics
+- Hell: Pure combat focus ← current
+- Hungry Ghost: Resource scarcity?
+- Animal: Mix of combat and negotiation
+- Human: Heavy dialogue/quest focus
+- Asura: Competitive events, duels?
+- God: Almost no combat, diplomacy/trade?
+
+### Mantra System
+- Continuous Recitation (Ritual 3): wire in `cast_spell()` — skip mantra interrupt if perk active
+- Deferred DY effects (simplified in-place): some deity yoga bursts are stat bonuses rather than true unit spawns; acceptable for now
+
+---
+
+## Session Notes
+
+### 2026-03-15 (Session 10): Full Codebase Audit
+- Audited all open TODO items against actual codebase — found ~15 items marked as TODO that were already fully implemented
+- **Companions** fully implemented: recruit, party tab, XP sharing, AI in combat, bleed-out — entire section moved to Completed
+- **Mantra system** substantially complete: per-turn effects, Deity Yoga trigger (5 turns), concentration breaks (CC + damage threshold), AI chanter targeting all wired. Only `continuous_recitation` perk remains (1-line guard in cast_spell)
+- **Races** complete for all 6 realms: 22 total (added in offline work `f0f77eb`)
+- **25 backgrounds** defined in races.json with attribute_modifiers, starting_skills, available_races
+- **Perk wiring**: `summon_aura` (`_process_summon_aura`) confirmed DONE. `attune_charm` talisman passive mechanism works; active `attune_charm` perk still deferred.
+- **Content gap confirmed**: Only hell has events, enemies, and map config; other realms have race data but no gameplay content
+- **Upgrade selection popup** confirmed implemented (`_show_perk_popup()` in main_menu.gd)
+- **Camp Followers**: UI stub exists but no actual system — added to High Priority
+- Removed stale TODO items that duplicated completed sections
+
+### 2026-03-14 (Session 9): Codebase Audit + Summoning School Implementation
+- Systematic audit — all 13 autoloads, 11 scenes, 80 signals, 137 statuses verified
+- No critical bugs found; hell realm is production-quality
+- Summoning school: 75 summon types in summon_templates.json; `_spawn_summoned_unit()`, "ground" targeting, AI support, stat scaling
+- Open issues logged: combat_grid.gd:458 team check, karma hardcoded defaults, enemy weapon placeholder names
+
+### 2026-03-08 (Session 8): Perk Wiring + Active Skill Effects + Mantra Infrastructure
+- stat_modifiers infrastructure; overcast system; will_miss_next_attack; taunt system
+- 20 new active skill effect type resolvers
+- call_the_shot (Leadership active) wired; mark_target, once_per_turn enforcement
+- ZoC / reaction system; stealth system; kill-triggered free attacks (cleave, relentless, necromancer)
+
+### 2026-03-08 (Session 2): Bug Fixes + Scrolls/Events/Trainer Caps + Status Persistence
+- 17 new scrolls; trainer caps; hell trader event branches (steal/attack/donate/comedy)
+- Status persistence combat→overworld (DoT continues between steps)
+- Spell shrines + spell guilds placed by map generator
+- Multiple bug fixes (crafting key, starter equipment, weapon set swap)
+
+### 2026-03-06: Reagents, Alchemy Crafting Tiers, Resource-Gathering Perks
+- Reagents (4th supply type); 3 alchemy branches × 3 tiers (perk-unlocked); passive brewing
+- Resource-gathering perks: Alchemical Recycling, Herbalist, Scavenger
+
+### 2026-02-28: Supply System, Alchemy, Ammo, Mantra Toggle, Mirrored Hands
+- Supply system complete; ammo system; mantra toggleable in combat
+- Hands slots mirrored; starting XP = 50; XP farming fixed; melee range fixed (Chebyshev)
+
+### 2026-02-28 (Equipment): Equipment & Talisman Generation System
+- Procedural weapons (7 types × 6 materials × 5 quality + traits)
+- Procedural armor (10 types × 6 materials × 5 quality + traits)
+- Procedural talismans (budget-based, 4 effect pools, Buddhist naming)
+
+### 2026-02-22: 0-10 Skill Refactor + Hell Races & Backgrounds + Interactibles Design
+- Skill scale 0-10 fully implemented; 15-level base_bonuses wired; perk/spell levels remapped
+- All 6 hell races + 23 backgrounds defined with available_races whitelists
+- Interactibles design: 3 categories (Simples, Traders, Event Chains)
+
+### 2026-02-17: Active Skills, AI Combat Intelligence, Terrain Height
+- Active skills: stamina/cooldown system, 25+ skills with combat_data, 8 effect types
+- AI: consumables, active skills, ranged repositioning
+- Terrain: height costs, levitate/flying modes, obstacle cover system
+
+### 2026-02-15: Save/Load, Title Screen, Hell Enemy Archetypes
+- SaveManager with 3-slot save/load; title screen; hell enemy archetypes
+
+### 2026-02-14: Weapon Damage Types & Consumable Items
+- Physical damage subtypes; 6 potions + 2 scrolls; combat Item panel; Alchemy potion scaling
+
+### 2026-02-15 (Charms): Charms, Bombs, Oils
+- 19 charms (mana cost reduction consumables); 8 bombs; 6 oils
+
+### 2026-02-02: Spell Database Merge
+- 326 spells (7 files → unified spells.json); 80+ statuses; shop system merge; all combat phases complete
+
+---
+
+## Reference
+
+### Mana Costs by Spell Level
+| Level | Mana Cost |
+|-------|-----------|
+| 1     | 15        |
+| 3     | 40        |
+| 5     | 75        |
+| 7     | 135       |
+| 9     | 225       |
+
+### Skill XP Costs (0-10 scale)
+| To Level | Cost | Cumulative |
+|----------|------|------------|
+| 1        | 5    | 5          |
+| 2        | 10   | 15         |
+| 3        | 18   | 33         |
+| 4        | 28   | 61         |
+| 5        | 42   | 103        |
+| 6        | 59   | 162        |
+| 7        | 80   | 242        |
+| 8        | 106  | 348        |
+| 9        | 137  | 485        |
+| 10       | 175  | 660        |
+
+Levels 11-15 are item/race bonus only — not purchasable. Displayed in yellow.
+
+### Attribute XP Costs
+Formula: `max((current_value - 9) * 3, 2)` per step (minimum 2 XP/step)
+- 10→11: 3 XP; 10→20: 165 XP total; 10→30: 630 XP total
+- Below 10: 2 XP/step flat
+
+### Spell Schools
+- **Elements**: Earth, Water, Fire, Air, Space
+- **Specializations**: Sorcery, Enchantment, Summoning, White, Black
+- Spells require ONE school at level; gain bonuses from ALL applicable schools
+
+### Status Effect Categories
+- **DoT**: burning, poisoned, bleeding
+- **HoT**: regenerating
+- **CC**: frozen, stunned, knocked_down, feared, charmed
+- **Buffs**: strengthened, hastened, shielded, inspired
+- **Debuffs**: weakened, slowed, cursed, blinded
+
+### SFX Assignment Reference
 All sounds defined in `scripts/autoload/audio_manager.gd` → `SOUND_MAP`.
-Change any prefix string there to swap a sound without touching other code.
-Files live in `resources/audio/sfx/` (6 variants each, picked randomly).
 
 | Event | Sound file prefix |
 |---|---|
