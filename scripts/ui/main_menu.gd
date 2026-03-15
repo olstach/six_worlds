@@ -2465,18 +2465,14 @@ func _update_journal_tab() -> void:
 		var col := Color(0.5, 0.5, 0.5) if is_done else Color(0.85, 0.70, 0.30)
 		btn.add_theme_color_override("font_color", col)
 		btn.add_theme_color_override("font_hover_color", Color.WHITE)
-		# Highlight selected
-		if qid == _journal_selected_id:
-			var sel_style := StyleBoxFlat.new()
-			sel_style.bg_color = Color(0.18, 0.14, 0.10)
-			btn.add_theme_stylebox_override("normal", sel_style)
 		btn.pressed.connect(func(): _journal_select_quest(qid))
+		btn.set_meta("quest_id", qid)
 		_journal_list.add_child(btn)
 
 	# Auto-select first or preserve selection
 	if _journal_selected_id == "" or not _journal_entry_exists(_journal_selected_id):
 		_journal_selected_id = first_id
-	_journal_show_detail(_journal_selected_id)
+	_journal_select_quest(_journal_selected_id)
 
 
 func _journal_entry_exists(quest_id: String) -> bool:
@@ -2488,7 +2484,16 @@ func _journal_entry_exists(quest_id: String) -> bool:
 
 func _journal_select_quest(quest_id: String) -> void:
 	_journal_selected_id = quest_id
-	_update_journal_tab()
+	# Update selection highlight on all list buttons without rebuilding the list
+	for child in _journal_list.get_children():
+		if child is Button:
+			if child.get_meta("quest_id", "") == quest_id:
+				var sel_style := StyleBoxFlat.new()
+				sel_style.bg_color = Color(0.18, 0.14, 0.10)
+				child.add_theme_stylebox_override("normal", sel_style)
+			else:
+				child.remove_theme_stylebox_override("normal")
+	_journal_show_detail(quest_id)
 
 
 func _journal_show_detail(quest_id: String) -> void:
@@ -2537,9 +2542,9 @@ func _journal_show_detail(quest_id: String) -> void:
 	if not reward.is_empty():
 		txt += "[b]Reward:[/b]\n"
 		if reward.get("xp", 0) > 0:
-			txt += "  [color=#a0c8ff]+%d XP[/color]\n" % int(reward.xp)
+			txt += "  [color=#a0c8ff]+%d XP[/color]\n" % int(reward.get("xp", 0))
 		if reward.get("gold", 0) > 0:
-			txt += "  [color=#f0d060]+%d gold[/color]\n" % int(reward.gold)
+			txt += "  [color=#f0d060]+%d gold[/color]\n" % int(reward.get("gold", 0))
 		var karma: Dictionary = reward.get("karma", {})
 		for realm in karma:
 			var amt: int = int(karma[realm])
