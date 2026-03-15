@@ -1801,6 +1801,22 @@ func _kill_unit(unit: Node) -> void:
 	# Cleave (Axes cross): kill → free attack on the nearest adjacent enemy
 	_trigger_cleave(killer, unit.grid_position)
 
+	# Lord of Death DY: 40% chance to raise a zombie/skeleton when an enemy dies near a registered caster
+	var dead_pos = unit.grid_position
+	for lod_caster in _lord_of_death_casters:
+		if lod_caster == null or lod_caster.is_dead:
+			continue
+		# Only trigger if the dead unit was on the opposing team
+		if "team" in unit and "team" in lod_caster and unit.team == lod_caster.team:
+			continue
+		if _grid_distance(dead_pos, lod_caster.grid_position) > 4:
+			continue
+		if randf() < 0.40:
+			var undead_template = ["zombie", "skeleton"][randi() % 2]
+			_spawn_summoned_unit(lod_caster, undead_template, dead_pos, 0)
+			combat_log.emit("The Lord of Death claims %s's soul!" % unit.unit_name)
+			break  # Only one resurrection per death event
+
 	# Remove from turn order and fix the current index
 	var idx = turn_order.find(unit)
 	if idx != -1:
@@ -6219,10 +6235,17 @@ func _apply_mantra_tick(unit: Node, perk_id: String, stacks: int, spellpower: in
 						unit_healed.emit(h, h_amt)
 
 		"mantra_of_the_lord_of_death":
-			# Enemies in 4 tiles take Black damage 3% Spellpower × stacks
-			var dmg = ceili(spellpower * 0.03 * stacks)
+			# 1. Heal black-tagged owned summons within 4 tiles (10% of their max HP)
+			for s in _get_owned_summons(unit):
+				if "character_data" in s and "tags" in s.character_data and "black" in s.character_data["tags"]:
+					if _grid_distance(unit.grid_position, s.grid_position) <= 4:
+						var heal_amt = ceili(s.character_data.get("max_hp", 1) * 0.10)
+						s.heal(heal_amt)
+						unit_healed.emit(s, heal_amt)
+			# 2. Stacking black damage to enemies in 4 tiles (3% spellpower × stacks)
+			var lod_dmg = ceili(spellpower * 0.03 * stacks)
 			for e in enemies_4:
-				apply_damage(e, dmg, "black")
+				apply_damage(e, lod_dmg, "black")
 
 		# ---- YOGA ----
 		"mantra_of_the_white_saviouress":
@@ -6472,11 +6495,23 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 						unit_healed.emit(a, h)
 
 		"mantra_of_the_lord_of_death":
-			# Enemies in 4 tiles take 20% Spellpower Black; apply Feared
-			var dmg = ceili(spellpower * 0.20)
+			# Existing burst: black damage + Fear to all enemies in 4 tiles
+			var lod_dy_dmg = ceili(spellpower * 0.20)
 			for e in enemies_4:
-				apply_damage(e, dmg, "black")
+				apply_damage(e, lod_dy_dmg, "black")
 				_apply_status_effect(e, "Feared", 3, 0, unit)
+			# 1. Bonus turns for all owned summons + empower them
+			var owned_summons = _get_owned_summons(unit)
+			for s in owned_summons:
+				s.lord_of_death_empowered = true
+				combat_log.emit("%s acts under the Lord of Death's command!" % s.unit_name)
+				if get_tree() != null:
+					var arena = get_tree().get_first_node_in_group("combat_arena")
+					if arena != null and arena.has_method("_run_bonus_turn"):
+						arena._run_bonus_turn(s)
+			# 2. Register this caster for resurrection-on-kill tracking
+			if not unit in _lord_of_death_casters:
+				_lord_of_death_casters.append(unit)
 
 		# YOGA
 		"mantra_of_the_white_saviouress":
