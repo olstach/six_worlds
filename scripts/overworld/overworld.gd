@@ -44,6 +44,11 @@ var _quest_board_open: bool = false
 var _quest_board_instance: Control = null
 var _quest_board_layer: CanvasLayer = null
 
+var _log_panel_visible: bool = false
+var _log_panel: PanelContainer = null
+var _log_list: VBoxContainer = null
+var _log_toggle_btn: Button = null
+
 # Main menu overlay (built in code, opened with Esc)
 var _main_menu_layer: CanvasLayer = null
 var _abandon_btn: Button = null
@@ -149,6 +154,7 @@ func _ready() -> void:
 
 	# Build the Esc main menu overlay
 	_build_main_menu_panel()
+	_build_log_panel()
 
 	# Initialize HUD
 	_update_hud()
@@ -673,6 +679,7 @@ func _show_toast(msg: String) -> void:
 	toast_label.visible = true
 	toast_label.modulate.a = 1.0
 	_toast_timer = TOAST_DURATION
+	GameState.append_overworld_log(msg)
 
 
 # ============================================
@@ -784,6 +791,90 @@ func _build_main_menu_panel() -> void:
 	_main_menu_layer.visible = false
 	# Build the settings sub-panel (hidden until opened)
 	_build_settings_panel()
+
+
+func _build_log_panel() -> void:
+	# Create a CanvasLayer so it floats above the map (layer 11 = above event overlay at 10)
+	var log_layer := CanvasLayer.new()
+	log_layer.layer = 11
+	add_child(log_layer)
+
+	# Intermediate full-rect Control required so that child anchor presets work correctly
+	# (Control nodes cannot anchor relative to a CanvasLayer directly in Godot 4)
+	var root_ctrl := Control.new()
+	root_ctrl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	log_layer.add_child(root_ctrl)
+
+	# Toggle button — bottom-right corner
+	_log_toggle_btn = Button.new()
+	_log_toggle_btn.text = "💬"
+	_log_toggle_btn.tooltip_text = "Toggle message log"
+	_log_toggle_btn.custom_minimum_size = Vector2(36, 36)
+	_log_toggle_btn.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	_log_toggle_btn.position = Vector2(-44, -44)
+	_log_toggle_btn.pressed.connect(_toggle_log_panel)
+	root_ctrl.add_child(_log_toggle_btn)
+
+	# Log panel — above the toggle button
+	_log_panel = PanelContainer.new()
+	_log_panel.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	_log_panel.custom_minimum_size = Vector2(320, 240)
+	_log_panel.position = Vector2(-328, -292)
+	_log_panel.visible = false
+	var lp_style := StyleBoxFlat.new()
+	lp_style.bg_color = Color(0.05, 0.04, 0.04, 0.90)
+	lp_style.border_width_left = 2
+	lp_style.border_width_right = 2
+	lp_style.border_width_top = 2
+	lp_style.border_width_bottom = 2
+	lp_style.border_color = Color(0.30, 0.25, 0.15)
+	lp_style.content_margin_left = 8
+	lp_style.content_margin_right = 8
+	lp_style.content_margin_top = 6
+	lp_style.content_margin_bottom = 6
+	_log_panel.add_theme_stylebox_override("panel", lp_style)
+	root_ctrl.add_child(_log_panel)
+
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_log_panel.add_child(scroll)
+
+	_log_list = VBoxContainer.new()
+	_log_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_log_list.add_theme_constant_override("separation", 2)
+	scroll.add_child(_log_list)
+
+	# Connect to future log entries
+	GameState.overworld_log_updated.connect(_on_overworld_log_updated)
+
+	# Populate with any existing entries (e.g. after scene reload)
+	for msg in GameState.overworld_log:
+		_append_log_entry(msg)
+
+
+func _toggle_log_panel() -> void:
+	_log_panel_visible = not _log_panel_visible
+	_log_panel.visible = _log_panel_visible
+
+
+func _on_overworld_log_updated(msg: String) -> void:
+	_append_log_entry(msg)
+
+
+func _append_log_entry(msg: String) -> void:
+	if not is_instance_valid(_log_list):
+		return
+	var lbl := Label.new()
+	lbl.text = msg
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lbl.add_theme_font_size_override("font_size", 11)
+	lbl.add_theme_color_override("font_color", Color(0.75, 0.72, 0.65))
+	_log_list.add_child(lbl)
+	# Auto-scroll to bottom on next frame
+	await get_tree().process_frame
+	var scroll := _log_list.get_parent() as ScrollContainer
+	if is_instance_valid(scroll):
+		scroll.scroll_vertical = scroll.get_v_scroll_bar().max_value
 
 
 func _open_main_menu() -> void:
