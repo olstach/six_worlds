@@ -136,7 +136,7 @@ Last Updated: 2026-03-15 (session 10)
 - [x] ~~Recruitment events (hire from shop)~~ — DONE (Companions tab in shop_ui; hell_tavern in shops.json)
 - [x] ~~Party tab UI (show all party members, click to view their sheet)~~ — DONE (Party tab in main_menu; View Stats + Remove buttons; derived stats bug fixed)
 - [x] ~~Companion XP sharing~~ — DONE (CompanionSystem.apply_party_xp with party-size multiplier)
-- [ ] Companion AI in combat (same as enemy AI, but Team.PLAYER) ← NEXT
+- [x] ~~Companion AI in combat~~ — DONE: companions are player-controlled (Team.PLAYER); summons use AI (summoner_id != 0 triggers ai_timer regardless of team)
 - [ ] Companion death / bleed-out handling (permanent death option?)
 - [ ] Recruitment events on the overworld map (meet companion, choose to hire/accept)
 - [ ] Starting companion (optional: give player one at game start for first run)
