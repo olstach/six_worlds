@@ -40,6 +40,8 @@ signal tab_changed(tab_index: int)
 var _current_character: Dictionary = {}
 var _selector_group: ButtonGroup = null
 
+var _quests_container: VBoxContainer = null
+
 # Equipment slot definitions
 const EQUIPMENT_SLOTS := {
 	"head": {"name": "Head", "types": ["helmet", "hat", "circlet"]},
@@ -143,6 +145,17 @@ func _ready() -> void:
 	# Rename the first tab to "Character" (node is named "Stats" in the scene)
 	tab_container.set_tab_title(0, "Character")
 
+	# Quest Log tab — built in code to avoid scene file churn
+	var quests_scroll := ScrollContainer.new()
+	quests_scroll.name = "Quests"
+	quests_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_quests_container = VBoxContainer.new()
+	_quests_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_quests_container.add_theme_constant_override("separation", 8)
+	quests_scroll.add_child(_quests_container)
+	tab_container.add_child(quests_scroll)
+	tab_container.set_tab_title(tab_container.get_tab_count() - 1, "Quests")
+
 	# Connect debug button
 	add_xp_button.pressed.connect(_on_add_xp_pressed)
 
@@ -209,6 +222,9 @@ func _on_tab_changed(tab: int) -> void:
 		_load_craft_tiers()
 		_build_craft_filters()
 		_update_crafting_tab()
+	# Refresh quest log tab when switching to it (tab index 5)
+	elif tab == 5:
+		_update_quests_tab()
 
 func _on_character_updated(_character: Dictionary) -> void:
 	_refresh_display()
@@ -1673,10 +1689,11 @@ func _on_character_selected(character: Dictionary) -> void:
 
 
 func refresh_all_tabs() -> void:
-	## Refresh stats, equipment, and spellbook tabs to show _current_character.
+	## Refresh stats, equipment, spellbook, and quest log tabs to show _current_character.
 	_refresh_stats_tab()
 	_refresh_equipment_tab()
 	_refresh_spellbook_tab()
+	_update_quests_tab()
 
 
 func _refresh_stats_tab() -> void:
@@ -2374,6 +2391,85 @@ func _create_follower_card(follower: Dictionary) -> PanelContainer:
 		vbox.add_child(bonus_label)
 
 	return card
+
+
+## Quest Log tab — reads GameState.active_quests and resolves step flags.
+func _update_quests_tab() -> void:
+	if not is_instance_valid(_quests_container):
+		return
+	for child in _quests_container.get_children():
+		child.queue_free()
+
+	var quests: Array = GameState.active_quests
+	if quests.is_empty():
+		var empty_label := Label.new()
+		empty_label.text = "No active quests."
+		empty_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		_quests_container.add_child(empty_label)
+		return
+
+	# Sort: incomplete first, complete last
+	var incomplete: Array = []
+	var complete: Array = []
+	for quest in quests:
+		if GameState.is_quest_complete(quest.get("id", "")):
+			complete.append(quest)
+		else:
+			incomplete.append(quest)
+
+	for quest in incomplete + complete:
+		_quests_container.add_child(_create_quest_card(quest))
+
+
+func _create_quest_card(quest: Dictionary) -> PanelContainer:
+	var is_complete := GameState.is_quest_complete(quest.get("id", ""))
+
+	var card := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.10, 0.08) if not is_complete else Color(0.08, 0.08, 0.08)
+	style.border_width_left = 3
+	style.border_color = Color(0.6, 0.45, 0.15) if not is_complete else Color(0.3, 0.3, 0.3)
+	style.set_corner_radius_all(4)
+	style.content_margin_left = 10
+	style.content_margin_right = 10
+	style.content_margin_top = 8
+	style.content_margin_bottom = 8
+	card.add_theme_stylebox_override("panel", style)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	card.add_child(vbox)
+
+	# Title
+	var title_lbl := Label.new()
+	title_lbl.text = quest.get("name", "Unknown Quest") + (" [COMPLETE]" if is_complete else "")
+	title_lbl.add_theme_color_override("font_color",
+			Color(0.85, 0.7, 0.3) if not is_complete else Color(0.45, 0.45, 0.45))
+	title_lbl.add_theme_font_size_override("font_size", 14)
+	vbox.add_child(title_lbl)
+
+	# Description
+	var desc: String = quest.get("description", "")
+	if desc != "":
+		var desc_lbl := Label.new()
+		desc_lbl.text = desc
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc_lbl.add_theme_color_override("font_color", Color(0.65, 0.60, 0.55))
+		desc_lbl.add_theme_font_size_override("font_size", 12)
+		vbox.add_child(desc_lbl)
+
+	# Steps
+	for step in quest.get("steps", []):
+		var step_done := GameState._quest_step_done(step)
+		var step_lbl := Label.new()
+		step_lbl.text = ("  ✓ " if step_done else "  ○ ") + step.get("text", "")
+		step_lbl.add_theme_color_override("font_color",
+				Color(0.4, 0.8, 0.4) if step_done else Color(0.55, 0.55, 0.55))
+		step_lbl.add_theme_font_size_override("font_size", 12)
+		vbox.add_child(step_lbl)
+
+	return card
+
 
 func _update_inventory() -> void:
 	# Clear existing
