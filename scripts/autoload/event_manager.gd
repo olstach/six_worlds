@@ -12,6 +12,7 @@ signal event_completed(outcomes: Dictionary)
 signal choice_made(choice_data: Dictionary)
 signal combat_requested(enemy_group: String, outcome: Dictionary)
 signal shop_requested(shop_id: String, outcome: Dictionary)
+signal quest_board_requested(realm: String, outcome: Dictionary)
 
 # Current event being displayed
 var current_event: Dictionary = {}
@@ -550,6 +551,11 @@ func apply_outcome(outcome: Dictionary) -> void:
 		"shop":
 			# Overworld will handle opening shop overlay
 			shop_requested.emit(outcome.get("shop_id", "unknown"), outcome)
+		"quest_board":
+			# Overworld will handle opening quest board overlay
+			quest_board_requested.emit(outcome.get("realm", "hell"), outcome)
+			# Do NOT emit event_completed — overworld handles showing result panel
+			return
 		"recruit_companion":
 			# Recruit a named companion into the party
 			var companion_id: String = outcome.get("companion_id", "")

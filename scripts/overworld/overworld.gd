@@ -40,6 +40,8 @@ var _event_open: bool = false
 var _char_sheet_open: bool = false
 var _shop_open: bool = false
 var _main_menu_open: bool = false
+var _quest_board_open: bool = false
+var _quest_board_instance: Control = null
 
 # Main menu overlay (built in code, opened with Esc)
 var _main_menu_layer: CanvasLayer = null
@@ -124,9 +126,10 @@ func _ready() -> void:
 	# Connect event display close signal
 	event_display.event_display_closed.connect(_on_event_display_closed)
 
-	# Connect EventManager signals for event→combat and event→shop
+	# Connect EventManager signals for event→combat, event→shop, and event→quest_board
 	EventManager.combat_requested.connect(_on_event_combat_requested)
 	EventManager.shop_requested.connect(_on_event_shop_requested)
+	EventManager.quest_board_requested.connect(_on_event_quest_board_requested)
 
 	# Connect companion overflow signal to show mastery popup
 	CompanionSystem.companion_overflow.connect(_on_companion_overflow)
@@ -211,7 +214,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				elif _char_sheet_open:
 					_toggle_char_sheet()
 					get_viewport().set_input_as_handled()
-				elif not _event_open and not _shop_open:
+				elif not _event_open and not _shop_open and not _quest_board_open:
 					_open_main_menu()
 					get_viewport().set_input_as_handled()
 
@@ -373,6 +376,39 @@ func _on_event_shop_closed() -> void:
 	event_display.visible = true
 	event_display.display_outcome(_pending_shop_outcome)
 	_pending_shop_outcome = {}
+
+
+## Event outcome triggered quest board — open quest board as overlay
+func _on_event_quest_board_requested(realm: String, outcome: Dictionary) -> void:
+	# Hide event display while board is open
+	if is_instance_valid(event_display):
+		event_display.visible = false
+
+	if not is_instance_valid(_quest_board_instance):
+		var board_script := load("res://scripts/ui/quest_board.gd")
+		_quest_board_instance = board_script.new()
+		# Add to a CanvasLayer above events (z=25, same as shop)
+		var board_layer := CanvasLayer.new()
+		board_layer.layer = 25
+		board_layer.add_child(_quest_board_instance)
+		add_child(board_layer)
+
+	_quest_board_open = true
+	# Disconnect before reconnect to avoid duplicate callbacks
+	if _quest_board_instance.quest_board_closed.is_connected(_on_quest_board_closed_wrapper):
+		_quest_board_instance.quest_board_closed.disconnect(_on_quest_board_closed_wrapper)
+	_quest_board_instance.quest_board_closed.connect(_on_quest_board_closed_wrapper.bind(outcome), CONNECT_ONE_SHOT)
+	_quest_board_instance.show_board(realm)
+
+
+func _on_quest_board_closed_wrapper(outcome: Dictionary) -> void:
+	_quest_board_open = false
+	if is_instance_valid(_quest_board_instance):
+		_quest_board_instance.visible = false
+	# Show event result panel (outcome text if any)
+	if is_instance_valid(event_display):
+		event_display.visible = true
+		event_display.display_outcome(outcome)
 
 
 ## Show a popup when a companion's build_weights are all maxed out (overflow mode).
