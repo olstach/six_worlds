@@ -6391,8 +6391,13 @@ func _apply_mantra_tick(unit: Node, perk_id: String, stacks: int, spellpower: in
 					nearest_ally.mantra_stat_bonuses["armor"] = nearest_ally.mantra_stat_bonuses.get("armor", 0) + 3
 
 		"mantra_of_the_jeweled_pagoda":
-			# Caster +5% Spellpower per stack; allies' summons +3% all stats per stack
-			unit.mantra_stat_bonuses["spellpower"] = unit.mantra_stat_bonuses.get("spellpower", 0) + stacks * (spellpower / 20)
+			# 1. Caster gains +5 * stacks flat spellpower bonus
+			unit.mantra_stat_bonuses["spellpower"] = unit.mantra_stat_bonuses.get("spellpower", 0) + stacks * 5
+			# 2. Each owned summon gains stacks*3 to damage, armor, dodge
+			for s in _get_owned_summons(unit):
+				s.mantra_stat_bonuses["damage"] = s.mantra_stat_bonuses.get("damage", 0) + stacks * 3
+				s.mantra_stat_bonuses["armor"] = s.mantra_stat_bonuses.get("armor", 0) + stacks * 3
+				s.mantra_stat_bonuses["dodge"] = s.mantra_stat_bonuses.get("dodge", 0) + stacks * 3
 
 
 ## Trigger the Deity Yoga burst for a mantra at stack 5.
@@ -6656,6 +6661,6 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 					_spawn_summoned_unit(unit, "stone_guardian", spawn_tile, 0)
 
 		"mantra_of_the_jeweled_pagoda":
-			# Caster's next summon is empowered (flag it); big Spellpower burst
-			unit.mantra_stat_bonuses["spellpower"] = unit.mantra_stat_bonuses.get("spellpower", 0) + spellpower
-			combat_log.emit("(Empowered summon DY deferred — needs spawn system)")
+			# Set the empowered flag — consumed by _spawn_summoned_unit() on next summon cast
+			unit.next_summon_empowered = true
+			combat_log.emit("%s's next summon will be empowered!" % unit.unit_name)
