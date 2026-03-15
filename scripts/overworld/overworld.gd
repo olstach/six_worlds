@@ -42,6 +42,7 @@ var _shop_open: bool = false
 var _main_menu_open: bool = false
 var _quest_board_open: bool = false
 var _quest_board_instance: Control = null
+var _quest_board_layer: CanvasLayer = null
 
 # Main menu overlay (built in code, opened with Esc)
 var _main_menu_layer: CanvasLayer = null
@@ -392,6 +393,7 @@ func _on_event_quest_board_requested(realm: String, outcome: Dictionary) -> void
 		board_layer.layer = 25
 		board_layer.add_child(_quest_board_instance)
 		add_child(board_layer)
+		_quest_board_layer = board_layer
 
 	_quest_board_open = true
 	# Disconnect before reconnect to avoid duplicate callbacks
@@ -403,8 +405,10 @@ func _on_event_quest_board_requested(realm: String, outcome: Dictionary) -> void
 
 func _on_quest_board_closed_wrapper(outcome: Dictionary) -> void:
 	_quest_board_open = false
-	if is_instance_valid(_quest_board_instance):
-		_quest_board_instance.visible = false
+	if is_instance_valid(_quest_board_layer):
+		_quest_board_layer.queue_free()
+		_quest_board_layer = null
+		_quest_board_instance = null
 	# Show event result panel (outcome text if any)
 	if is_instance_valid(event_display):
 		event_display.visible = true
