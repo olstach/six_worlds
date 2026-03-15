@@ -2400,7 +2400,7 @@ func _update_quests_tab() -> void:
 	for child in _quests_container.get_children():
 		child.queue_free()
 
-	var quests: Array = GameState.active_quests
+	var quests: Array[Dictionary] = GameState.active_quests
 	if quests.is_empty():
 		var empty_label := Label.new()
 		empty_label.text = "No active quests."
@@ -2409,15 +2409,16 @@ func _update_quests_tab() -> void:
 		return
 
 	# Sort: incomplete first, complete last
-	var incomplete: Array = []
-	var complete: Array = []
+	var incomplete: Array[Dictionary] = []
+	var complete: Array[Dictionary] = []
 	for quest in quests:
 		if GameState.is_quest_complete(quest.get("id", "")):
 			complete.append(quest)
 		else:
 			incomplete.append(quest)
 
-	for quest in incomplete + complete:
+	incomplete.append_array(complete)
+	for quest in incomplete:
 		_quests_container.add_child(_create_quest_card(quest))
 
 
@@ -2460,7 +2461,7 @@ func _create_quest_card(quest: Dictionary) -> PanelContainer:
 
 	# Steps
 	for step in quest.get("steps", []):
-		var step_done := GameState._quest_step_done(step)
+		var step_done := GameState.is_quest_step_done(step)
 		var step_lbl := Label.new()
 		step_lbl.text = ("  ✓ " if step_done else "  ○ ") + step.get("text", "")
 		step_lbl.add_theme_color_override("font_color",

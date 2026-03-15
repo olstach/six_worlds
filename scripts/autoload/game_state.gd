@@ -409,6 +409,11 @@ func is_quest_complete(quest_id: String) -> bool:
 	return false
 
 
+## Public wrapper for quest step completion — use this from UI code.
+func is_quest_step_done(step: Dictionary) -> bool:
+	return _quest_step_done(step)
+
+
 ## Returns true if this single step's done_when condition is satisfied.
 func _quest_step_done(step: Dictionary) -> bool:
 	var done_when: Dictionary = step.get("done_when", {})
