@@ -656,6 +656,9 @@ func get_attack_damage() -> int:
 	# Add active skill stat modifier bonuses
 	base_damage += _get_stat_modifier_bonus("damage")
 
+	# Add mantra stat bonuses (e.g. Jeweled Pagoda per-turn summon damage)
+	base_damage += mantra_stat_bonuses.get("damage", 0)
+
 	return base_damage
 
 
