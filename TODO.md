@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-03-14 (session 9)
+Last Updated: 2026-03-15 (session 10)
 ---
 
 ## Completed Systems
@@ -131,14 +131,14 @@ Last Updated: 2026-03-14 (session 9)
 - [ ] Replace per-skill/attribute weights in companions.json with `"attr_ratio": 0.3` (fraction of auto-XP going to attributes)
 - [ ] Update `companion_system.gd` auto-distribute logic: derive attribute targets from active skill weights × primary_attrs, invest proportionally
 
-### Companions / Party Members ← NEXT
-Recruiting companions is the single highest-impact missing feature for a playable loop.
-- [ ] Companion data structure (NPC characters with attributes, skills, equipment)
-- [ ] Recruitment events (meet companion on map, choose to hire/accept)
-- [ ] Party tab UI (show all party members, click to view their sheet)
-- [ ] Companion AI in combat (same as enemy AI, but Team.PLAYER)
+### Companions / Party Members
+- [x] ~~Companion data structure~~ — DONE (CompanionSystem, companions.json with 23 companions)
+- [x] ~~Recruitment events (hire from shop)~~ — DONE (Companions tab in shop_ui; hell_tavern in shops.json)
+- [x] ~~Party tab UI (show all party members, click to view their sheet)~~ — DONE (Party tab in main_menu; View Stats + Remove buttons; derived stats bug fixed)
+- [x] ~~Companion XP sharing~~ — DONE (CompanionSystem.apply_party_xp with party-size multiplier)
+- [ ] Companion AI in combat (same as enemy AI, but Team.PLAYER) ← NEXT
 - [ ] Companion death / bleed-out handling (permanent death option?)
-- [ ] Companion XP sharing (split equally, or individual?)
+- [ ] Recruitment events on the overworld map (meet companion, choose to hire/accept)
 - [ ] Starting companion (optional: give player one at game start for first run)
 
 ### Content Expansion (Needed for Playable Loop)
@@ -391,14 +391,12 @@ Files live in `resources/audio/sfx/` (6 variants each, picked randomly).
 - Pre-battle prep or mid-combat?
 - What breaks concentration?
 
-### Mantra System — Finish Implementation
-Currently: mantras are toggleable (consume 1 action, track turns active, show [ACTIVE] in skills panel).
-Still needed:
-- [ ] Per-turn aura effects (area debuffs, damage, etc.) — each mantra in `active_mantras` should apply its effect at turn start via `_on_turn_started` in combat_arena.gd
-- [ ] Deity Yoga trigger: after N turns of chanting (e.g. 5), the capstone "Deity Yoga" effect fires (big one-time burst/effect), then mantra resets or stays active at base level
-- [ ] Concentration breaks: taking damage above a threshold or being CC'd should interrupt the mantra (erase from active_mantras, log message)
-- [ ] Continuous Recitation perk (Ritual 3): allows casting spells while chanting without breaking concentration
-- [ ] AI mantra awareness: enemies should prioritize attacking chanters to break concentration
+### ~~Mantra System~~ — DONE (session 10)
+- [x] Per-turn aura effects wired via `_process_mantra_effects()` at turn start
+- [x] Deity Yoga trigger: after N turns, capstone burst fires via `_trigger_deity_yoga()`
+- [x] Concentration breaks: damage threshold + CC interrupts mantra
+- [x] Continuous Recitation perk (Ritual 3): cast spells while chanting
+- [x] AI mantra awareness: enemies prioritize attacking chanters
 
 ---
 

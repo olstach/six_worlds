@@ -2220,23 +2220,48 @@ func _create_party_card(character: Dictionary) -> PanelContainer:
 	bars_row.add_theme_constant_override("separation", 15)
 	vbox.add_child(bars_row)
 
-	var derived = character.get("derived_stats", {})
-	var attrs = character.get("attributes", {})
+	var derived: Dictionary = character.get("derived", {})
+	var attrs: Dictionary = character.get("attributes", {})
 
-	# HP bar (red) - use Constitution * 10 as fallback if derived not set
-	var max_hp = derived.get("max_hp", attrs.get("constitution", 10) * 10)
-	var current_hp = character.get("current_hp", max_hp)
+	# HP bar (red) - use Constitution as fallback if derived not set
+	var max_hp: int = derived.get("max_hp", attrs.get("constitution", 10))
+	var current_hp: int = derived.get("current_hp", max_hp)
 	bars_row.add_child(_create_stat_bar("HP", current_hp, max_hp, Color(0.8, 0.2, 0.2)))
 
-	# Mana bar (blue) - use Awareness * 5 as fallback
-	var max_mana = derived.get("max_mana", attrs.get("awareness", 10) * 5)
-	var current_mana = character.get("current_mana", max_mana)
+	# Mana bar (blue) - use Awareness as fallback
+	var max_mana: int = derived.get("max_mana", attrs.get("awareness", 10))
+	var current_mana: int = derived.get("current_mana", max_mana)
 	bars_row.add_child(_create_stat_bar("MP", current_mana, max_mana, Color(0.2, 0.4, 0.9)))
 
-	# Stamina bar (yellow) - use (Con + Fin) / 2 * 5 as fallback
-	var max_stamina = derived.get("max_stamina", ((attrs.get("constitution", 10) + attrs.get("finesse", 10)) / 2) * 5)
-	var current_stamina = character.get("current_stamina", max_stamina)
+	# Stamina bar (yellow)
+	var max_stamina: int = derived.get("max_stamina", 10)
+	var current_stamina: int = derived.get("current_stamina", max_stamina)
 	bars_row.add_child(_create_stat_bar("ST", current_stamina, max_stamina, Color(0.9, 0.75, 0.2)))
+
+	# Action buttons row
+	var btn_row := HBoxContainer.new()
+	btn_row.add_theme_constant_override("separation", 8)
+	btn_row.alignment = BoxContainer.ALIGNMENT_END
+	vbox.add_child(btn_row)
+
+	# "View Stats" — switches Stats tab to show this character
+	var view_btn := Button.new()
+	view_btn.text = "View Stats"
+	view_btn.add_theme_font_size_override("font_size", 12)
+	view_btn.pressed.connect(func():
+		_on_character_selected(character)
+		tab_container.current_tab = 0)
+	btn_row.add_child(view_btn)
+
+	# "Remove" — only for companions (not the player at index 0)
+	var party := CharacterSystem.get_party()
+	var char_index := party.find(character)
+	if char_index > 0:
+		var remove_btn := Button.new()
+		remove_btn.text = "Remove"
+		remove_btn.add_theme_font_size_override("font_size", 12)
+		remove_btn.pressed.connect(func(): _on_remove_companion_pressed(char_index))
+		btn_row.add_child(remove_btn)
 
 	return card
 
@@ -2269,6 +2294,19 @@ func _create_stat_bar(label_text: String, current: int, maximum: int, color: Col
 	container.add_child(value_label)
 
 	return container
+
+func _on_remove_companion_pressed(index: int) -> void:
+	## Remove a companion from the party (index must be > 0 to protect the player).
+	var party := CharacterSystem.get_party()
+	var was_viewing: bool = (party.size() > index and _current_character == party[index])
+	CharacterSystem.remove_companion(index)
+	# If we were viewing the removed companion, switch to the player
+	if was_viewing:
+		_current_character = CharacterSystem.get_player()
+		refresh_all_tabs()
+	_build_character_selector()
+	_update_party_list()
+
 
 func _update_followers_list() -> void:
 	# Clear existing
