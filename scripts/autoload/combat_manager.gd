@@ -969,7 +969,12 @@ func _start_current_turn() -> void:
 	# Tick skill cooldowns
 	unit.tick_cooldowns()
 
-# Tick active mantras and apply per-turn effects
+# Clear mantra stat bonuses every turn so aura/buff effects don't accumulate unboundedly.
+	# Other units may write to this dict (e.g. Guardian Kings aura, Jeweled Pagoda summon buffs),
+	# so it must be cleared for ALL units, not just active chanters.
+	unit.mantra_stat_bonuses = {}
+
+	# Tick active mantras and apply per-turn effects
 	if not unit.active_mantras.is_empty():
 		unit.tick_mantras()
 		_process_mantra_effects_and_auras(unit)
@@ -2461,8 +2466,7 @@ func _spawn_summoned_unit(caster: Node, summon_id: String, target_pos: Vector2i,
 		var d = summon_unit.character_data.get("derived", {})
 		d["max_hp"] = emp_hp
 		d["current_hp"] = emp_hp
-		d["damage"] = d.get("damage", 0) * 2
-		summon_unit.character_data["equipped_weapon"]["damage"] = summon_unit.character_data["equipped_weapon"].get("damage", 0) * 2
+		d["damage"] = d.get("damage", 0) * 2  # derived.damage is read by get_attack_damage()
 		summon_unit.has_summon_aura = true
 		combat_log.emit("%s: Empowered summon — %s is supercharged!" % [caster.unit_name, summon_unit.unit_name])
 
