@@ -151,7 +151,7 @@
 				{"name": "Old Battlefield", "icon": "shrine", "message": "Carrion crows pick what's left from the fallen.", "rewards": [{"type": "buff", "value": {"stat": "initiative", "amount": 3, "combats_remaining": 1}}], "weight": 2},
 				{"name": "Wayside Shrine", "icon": "shrine", "message": "If you want a good omen, you have to make it yourself.", "rewards": [{"type": "buff", "value": {"stat": "luck", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 1}}], "weight": 2},
 
-				{"name": "Bone Pile", "icon": "treasure", "message": "Frozen bones, stripped clean long ago. Something useful is lodged among them.", "rewards": [{"type": "item_random", "value": ["iron_sword", "iron_axe", "iron_dagger", "iron_mace", "wooden_spear", "wooden_staff", "short_bow", "iron_shield"]}], "weight": 2},
+				{"name": "Bone Pile", "icon": "treasure", "message": "Frozen bones, stripped clean long ago. Something useful is lodged among them.", "rewards": [{"type": "item_random_scaled", "value": {"tiers": {"weak": ["iron_dagger", "wooden_spear", "wooden_staff", "short_bow", "leather_vest", "leather_cap"], "medium": ["iron_sword", "iron_axe", "iron_mace", "leather_vest", "leather_boots", "wooden_shield", "copper_ring", "prayer_beads"], "strong": ["good_iron_weapon", "iron_shield", "padded_armor", "iron_helmet", "silver_ring", "bone_amulet", "lucky_charm"]}}}], "weight": 2},
 				{"name": "Eerie Cold Patch", "icon": "rest", "message": "The cold here feels different. Wrong.", "rewards": [{"type": "buff", "value": {"stat": "constitution", "amount": -3, "combats_remaining": 1}}], "weight": 1},
 				{"name": "Warm Glow", "icon": "shrine", "message": "It looks like a flame shrine. Something is off.", "rewards": [{"type": "damage", "value": 20}], "weight": 1}
 			],
@@ -218,7 +218,7 @@
 				{"name": "Old Battlefield", "icon": "shrine", "message": "Carrion crows pick what's left from the fallen.", "rewards": [{"type": "buff", "value": {"stat": "initiative", "amount": 3, "combats_remaining": 1}}], "weight": 2},
 				{"name": "Wayside Shrine", "icon": "shrine", "message": "If you want a good omen, you have to make it yourself.", "rewards": [{"type": "buff", "value": {"stat": "luck", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 1}}], "weight": 2},
 
-				{"name": "Charred Bone Pile", "icon": "treasure", "message": "Ash and scorched bones. Something metallic survived the heat.", "rewards": [{"type": "item_random", "value": ["iron_sword", "iron_axe", "iron_dagger", "iron_mace", "wooden_spear", "wooden_staff", "short_bow", "iron_shield"]}], "weight": 2},
+				{"name": "Charred Bone Pile", "icon": "treasure", "message": "Ash and scorched bones. Something metallic survived the heat.", "rewards": [{"type": "item_random_scaled", "value": {"tiers": {"weak": ["iron_dagger", "wooden_spear", "wooden_staff", "short_bow", "leather_boots", "leather_cap"], "medium": ["iron_sword", "iron_axe", "iron_mace", "iron_dagger", "leather_vest", "wooden_shield", "copper_ring", "travelers_amulet"], "strong": ["good_iron_weapon", "iron_shield", "chainmail", "iron_helmet", "silver_ring", "bone_amulet", "lucky_charm"]}}}], "weight": 2},
 				{"name": "Flickering Light", "icon": "shrine", "message": "It looks like a burning altar. It is not.", "rewards": [{"type": "damage", "value": 15}], "weight": 1},
 				{"name": "Cracked Stone", "icon": "treasure", "message": "Looks like a cache. It's a trap.", "rewards": [{"type": "damage", "value": 20}], "weight": 1}
 			],

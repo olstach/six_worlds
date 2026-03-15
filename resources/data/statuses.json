@@ -1,1943 +1,1943 @@
 {
   "statuses": [
-    {
-      "name": "Frozen",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "skip_turn",
+	{
+	  "name": "Frozen",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"skip_turn",
         "vulnerable_to_physical"
-      ],
-      "duration_type": "turns",
-      "default_duration": 1,
-      "dispellable": true,
-      "dispel_methods": [
-        "fire_damage",
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "dispellable": true,
+	  "dispel_methods": [
+		"fire_damage",
         "cleanse"
-      ]
-    },
-    {
-      "name": "Burning",
-      "type": "debuff",
-      "category": "dot",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Burning",
+	  "type": "debuff",
+	  "category": "dot",
+	  "effects": [
         "fire_damage_per_turn"
-      ],
-      "damage_per_turn": 5,
-      "duration_type": "turns",
-      "default_duration": 3,
-      "stackable": true,
-      "spread": {
-        "chance": "low",
-        "range": "melee",
-        "spreads_base_level_only": true
-      },
-      "dispellable": true,
-      "dispel_methods": [
-        "water_damage",
-        "cleanse",
+	  ],
+	  "damage_per_turn": 5,
+	  "duration_type": "turns",
+	  "default_duration": 3,
+	  "stackable": true,
+	  "spread": {
+		"chance": "low",
+		"range": "melee",
+		"spreads_base_level_only": true
+	  },
+	  "dispellable": true,
+	  "dispel_methods": [
+		"water_damage",
+		"cleanse",
         "cooling_mist"
-      ]
-    },
-    {
-      "name": "Poisoned",
-      "type": "debuff",
-      "category": "dot",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Poisoned",
+	  "type": "debuff",
+	  "category": "dot",
+	  "effects": [
         "poison_damage_per_turn"
-      ],
-      "damage_per_turn": 3,
-      "duration_type": "turns",
-      "default_duration": 5,
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "damage_per_turn": 3,
+	  "duration_type": "turns",
+	  "default_duration": 5,
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "herbal_remedy"
-      ]
-    },
-    {
-      "name": "Bleeding",
-      "type": "debuff",
-      "category": "dot",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Bleeding",
+	  "type": "debuff",
+	  "category": "dot",
+	  "effects": [
         "physical_damage_per_turn"
-      ],
-      "damage_per_turn": 3,
-      "duration_type": "turns",
-      "default_duration": 3,
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
-        "herbal_remedy",
+	  ],
+	  "damage_per_turn": 3,
+	  "duration_type": "turns",
+	  "default_duration": 3,
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
+		"herbal_remedy",
         "cauterize"
-      ]
-    },
-    {
-      "name": "Rooted",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Rooted",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
         "cannot_move"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "freedom"
-      ]
-    },
-    {
-      "name": "Slowed",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Slowed",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
         "movement_reduced_50"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
-        "freedom",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
+		"freedom",
         "haste"
-      ]
-    },
-    {
-      "name": "Petrified",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "skip_turn",
-        "cannot_act",
+	  ]
+	},
+	{
+	  "name": "Petrified",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"skip_turn",
+		"cannot_act",
         "physical_immunity"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "freedom"
-      ]
-    },
-    {
-      "name": "Silenced",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Silenced",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
         "cannot_cast"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Confused",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "random_movement",
+	  ]
+	},
+	{
+	  "name": "Confused",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"random_movement",
         "random_target"
-      ],
-      "duration_type": "spellpower",
-      "default_duration_range": [
-        1,
-        3
-      ],
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "spellpower",
+	  "default_duration_range": [
+		1,
+		3
+	  ],
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "clarity"
-      ]
-    },
-    {
-      "name": "Feared",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Feared",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
         "flee_from_source"
-      ],
-      "duration_type": "turns",
-      "default_duration": 2,
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
-        "clarity",
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 2,
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
+		"clarity",
         "encourage"
-      ]
-    },
-    {
-      "name": "Prone",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "skip_next_action",
+	  ]
+	},
+	{
+	  "name": "Prone",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"skip_next_action",
         "defense_penalty"
-      ],
-      "duration_type": "instant",
-      "dispellable": false
-    },
-    {
-      "name": "Held",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "cannot_move",
+	  ],
+	  "duration_type": "instant",
+	  "dispellable": false
+	},
+	{
+	  "name": "Held",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"cannot_move",
         "cannot_act"
-      ],
-      "duration_type": "until_save",
-      "save_type": "Strength",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "until_save",
+	  "save_type": "Strength",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "freedom"
-      ]
-    },
-    {
-      "name": "Drowning",
-      "type": "debuff",
-      "category": "dot_cc",
-      "effects": [
-        "physical_damage_per_turn",
+	  ]
+	},
+	{
+	  "name": "Drowning",
+	  "type": "debuff",
+	  "category": "dot_cc",
+	  "effects": [
+		"physical_damage_per_turn",
         "immobilized"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "dispel"
-      ]
-    },
-    {
-      "name": "Infected",
-      "type": "debuff",
-      "category": "delayed",
-      "effects": [
-        "spawn_fungal_spawn_on_expire",
-        "damage_on_expire",
+	  ]
+	},
+	{
+	  "name": "Infected",
+	  "type": "debuff",
+	  "category": "delayed",
+	  "effects": [
+		"spawn_fungal_spawn_on_expire",
+		"damage_on_expire",
         "bleed_on_expire"
-      ],
-      "duration_type": "fixed",
-      "default_duration": 3,
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "fixed",
+	  "default_duration": 3,
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Swarmed",
-      "type": "debuff",
-      "category": "dot_disruption",
-      "effects": [
-        "physical_damage_per_turn",
+	  ]
+	},
+	{
+	  "name": "Swarmed",
+	  "type": "debuff",
+	  "category": "dot_disruption",
+	  "effects": [
+		"physical_damage_per_turn",
         "focus_save_on_damage"
-      ],
-      "damage_per_turn": 1,
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "damage_per_turn": 1,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Doomed",
-      "type": "debuff",
-      "category": "delayed",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Doomed",
+	  "type": "debuff",
+	  "category": "delayed",
+	  "effects": [
         "death_on_expire"
-      ],
-      "duration_type": "fixed",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "fixed",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Fire_Vulnerable",
-      "type": "debuff",
-      "category": "vulnerability",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Fire_Vulnerable",
+	  "type": "debuff",
+	  "category": "vulnerability",
+	  "effects": [
         "fire_resistance_minus_50"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Blessed",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "attack_bonus",
+	  ]
+	},
+	{
+	  "name": "Blessed",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"attack_bonus",
         "defense_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "dispel",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"dispel",
         "steal_blessings"
-      ]
-    },
-    {
-      "name": "Hasted",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "speed_bonus",
+	  ]
+	},
+	{
+	  "name": "Hasted",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"speed_bonus",
         "initiative_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "dispel",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"dispel",
         "slow"
-      ]
-    },
-    {
-      "name": "Regenerating",
-      "type": "buff",
-      "category": "hot",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Regenerating",
+	  "type": "buff",
+	  "category": "hot",
+	  "effects": [
         "heal_per_turn"
-      ],
-      "heal_per_turn": 10,
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "heal_per_turn": 10,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Invisible",
-      "type": "buff",
-      "category": "stealth",
-      "effects": [
-        "cannot_be_targeted",
+	  ]
+	},
+	{
+	  "name": "Invisible",
+	  "type": "buff",
+	  "category": "stealth",
+	  "effects": [
+		"cannot_be_targeted",
         "attack_breaks_invisibility"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "dispel",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"dispel",
         "true_sight"
-      ]
-    },
-    {
-      "name": "Death_Immunity",
-      "type": "buff",
-      "category": "divine",
-      "effects": [
-        "cannot_die",
+	  ]
+	},
+	{
+	  "name": "Death_Immunity",
+	  "type": "buff",
+	  "category": "divine",
+	  "effects": [
+		"cannot_die",
         "hp_cannot_drop_below_1"
-      ],
-      "duration_type": "fixed",
-      "default_duration": 3,
-      "dispellable": false
-    },
-    {
-      "name": "Sanctuary",
-      "type": "buff",
-      "category": "protection",
-      "effects": [
-        "cannot_be_targeted",
-        "cannot_target_enemies",
+	  ],
+	  "duration_type": "fixed",
+	  "default_duration": 3,
+	  "dispellable": false
+	},
+	{
+	  "name": "Sanctuary",
+	  "type": "buff",
+	  "category": "protection",
+	  "effects": [
+		"cannot_be_targeted",
+		"cannot_target_enemies",
         "breaks_on_offensive_action"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Forgetful",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "can_move",
-        "cannot_attack",
+	  ]
+	},
+	{
+	  "name": "Forgetful",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"can_move",
+		"cannot_attack",
         "cannot_cast"
-      ],
-      "duration_type": "fixed",
-      "default_duration": 1,
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "fixed",
+	  "default_duration": 1,
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "clarity"
-      ]
-    },
-    {
-      "name": "Charmed",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "treats_caster_as_ally",
+	  ]
+	},
+	{
+	  "name": "Charmed",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"treats_caster_as_ally",
         "will_not_attack_caster"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
-        "clarity",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
+		"clarity",
         "damage_from_caster"
-      ]
-    },
-    {
-      "name": "Berserk",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "attacks_closest_creature",
+	  ]
+	},
+	{
+	  "name": "Berserk",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"attacks_closest_creature",
         "ignores_allegiance"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "clarity"
-      ]
-    },
-    {
-      "name": "Bloodlust",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Bloodlust",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "melee_damage_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Blinded",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "cannot_use_ranged",
-        "cannot_target_spells",
+	  ]
+	},
+	{
+	  "name": "Blinded",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"cannot_use_ranged",
+		"cannot_target_spells",
         "melee_hit_chance_halved"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "clarity"
-      ]
-    },
-    {
-      "name": "Fireshield",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Fireshield",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "fire_damage_to_melee_attackers"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Boiling_Blood",
-      "type": "debuff",
-      "category": "dot",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Boiling_Blood",
+	  "type": "debuff",
+	  "category": "dot",
+	  "effects": [
         "fire_damage_per_turn_internal"
-      ],
-      "damage_per_turn": 15,
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "damage_per_turn": 15,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Dominated",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "controlled_by_caster",
+	  ]
+	},
+	{
+	  "name": "Dominated",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"controlled_by_caster",
         "joins_party_permanently"
-      ],
-      "duration_type": "permanent",
-      "dispellable": false
-    },
-    {
-      "name": "Fan_the_Flames",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ],
+	  "duration_type": "permanent",
+	  "dispellable": false
+	},
+	{
+	  "name": "Fan_the_Flames",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "increase_burning_damage_dealt"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Smoke_Form",
-      "type": "buff",
-      "category": "transformation",
-      "effects": [
-        "evasion_bonus",
+	  ]
+	},
+	{
+	  "name": "Smoke_Form",
+	  "type": "buff",
+	  "category": "transformation",
+	  "effects": [
+		"evasion_bonus",
         "can_move_through_enemies"
-      ],
-      "grants_vulnerability": {
-        "water": 25
-      },
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "dispel",
+	  ],
+	  "grants_vulnerability": {
+		"water": 25
+	  },
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"dispel",
         "water_damage"
-      ]
-    },
-    {
-      "name": "Water_Vulnerable_25",
-      "type": "debuff",
-      "category": "vulnerability",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Water_Vulnerable_25",
+	  "type": "debuff",
+	  "category": "vulnerability",
+	  "effects": [
         "water_resistance_minus_25"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Stunned",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "skip_turn",
-        "cannot_act",
+	  ]
+	},
+	{
+	  "name": "Stunned",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"skip_turn",
+		"cannot_act",
         "save_at_end_of_turn"
-      ],
-      "duration_type": "turns",
-      "default_duration": 1,
-      "save_type": "Constitution",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "save_type": "Constitution",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Magnetizing_Aura",
-      "type": "buff",
-      "category": "aura",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Magnetizing_Aura",
+	  "type": "buff",
+	  "category": "aura",
+	  "effects": [
         "charm_chance_on_enemy_melee_approach"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Electrified_Weapon",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "adds_air_damage_to_attacks",
+	  ]
+	},
+	{
+	  "name": "Electrified_Weapon",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"adds_air_damage_to_attacks",
         "stun_chance_on_hit"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Levitating",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "immune_to_ground_effects",
+	  ]
+	},
+	{
+	  "name": "Levitating",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"immune_to_ground_effects",
         "immune_to_terrain_hazards"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Precision",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "range_bonus",
-        "accuracy_bonus",
+	  ]
+	},
+	{
+	  "name": "Precision",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"range_bonus",
+		"accuracy_bonus",
         "critical_bonus_ranged"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Air_Shield",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Air_Shield",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "ranged_damage_reduction"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Favorable_Wind",
-      "type": "buff",
-      "category": "aura",
-      "effects": [
-        "aura_grants_haste",
+	  ]
+	},
+	{
+	  "name": "Favorable_Wind",
+	  "type": "buff",
+	  "category": "aura",
+	  "effects": [
+		"aura_grants_haste",
         "aura_grants_precision"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Flying",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "grants_flight",
-        "immune_to_ground_effects",
+	  ]
+	},
+	{
+	  "name": "Flying",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"grants_flight",
+		"immune_to_ground_effects",
         "immune_to_melee_unless_flyer"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Storm_Lord",
-      "type": "buff",
-      "category": "transformation",
-      "effects": [
-        "lightning_aura_damages_attackers",
-        "grants_flight",
+	  ]
+	},
+	{
+	  "name": "Storm_Lord",
+	  "type": "buff",
+	  "category": "transformation",
+	  "effects": [
+		"lightning_aura_damages_attackers",
+		"grants_flight",
         "immune_to_ranged"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Blessed_Shot",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "next_ranged_guaranteed_hit",
-        "damage_boost",
+	  ]
+	},
+	{
+	  "name": "Blessed_Shot",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"next_ranged_guaranteed_hit",
+		"damage_boost",
         "critical_boost"
-      ],
-      "duration_type": "turns",
-      "default_duration": 1,
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Lightning_Form",
-      "type": "buff",
-      "category": "transformation",
-      "effects": [
-        "air_immune",
-        "physical_resist_50",
-        "grants_flight",
+	  ]
+	},
+	{
+	  "name": "Lightning_Form",
+	  "type": "buff",
+	  "category": "transformation",
+	  "effects": [
+		"air_immune",
+		"physical_resist_50",
+		"grants_flight",
         "lightning_aura_damages_and_stuns"
-      ],
-      "grants_vulnerability": {
-        "water": 50
-      },
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "grants_vulnerability": {
+		"water": 50
+	  },
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Thin_Air",
-      "type": "buff",
-      "category": "transformation",
-      "effects": [
-        "physical_immune",
-        "cannot_deal_physical",
+	  ]
+	},
+	{
+	  "name": "Thin_Air",
+	  "type": "buff",
+	  "category": "transformation",
+	  "effects": [
+		"physical_immune",
+		"cannot_deal_physical",
         "major_speed_boost"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Suffocating",
-      "type": "debuff",
-      "category": "dot_cc",
-      "effects": [
-        "physical_damage_per_turn",
+	  ]
+	},
+	{
+	  "name": "Suffocating",
+	  "type": "debuff",
+	  "category": "dot_cc",
+	  "effects": [
+		"physical_damage_per_turn",
         "silenced"
-      ],
-      "damage_per_turn": 30,
-      "duration_type": "spellpower",
-      "save_type": "Constitution",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "damage_per_turn": 30,
+	  "duration_type": "spellpower",
+	  "save_type": "Constitution",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Physical_Resist_50",
-      "type": "buff",
-      "category": "resistance",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Physical_Resist_50",
+	  "type": "buff",
+	  "category": "resistance",
+	  "effects": [
         "physical_resistance_plus_50"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Water_Vulnerable_50",
-      "type": "debuff",
-      "category": "vulnerability",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Water_Vulnerable_50",
+	  "type": "debuff",
+	  "category": "vulnerability",
+	  "effects": [
         "water_resistance_minus_50"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Air_Immune",
-      "type": "buff",
-      "category": "immunity",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Air_Immune",
+	  "type": "buff",
+	  "category": "immunity",
+	  "effects": [
         "air_damage_immunity"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Poison_Skin",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Poison_Skin",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "poisons_melee_attackers"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Festering",
-      "type": "debuff",
-      "category": "dot",
-      "effects": [
-        "poison_damage_per_turn",
+	  ]
+	},
+	{
+	  "name": "Festering",
+	  "type": "debuff",
+	  "category": "dot",
+	  "effects": [
+		"poison_damage_per_turn",
         "damage_increases_each_turn"
-      ],
-      "damage_per_turn": 5,
-      "damage_increase_per_turn": 5,
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "damage_per_turn": 5,
+	  "damage_increase_per_turn": 5,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "herbal_remedy"
-      ]
-    },
-    {
-      "name": "Diseased",
-      "type": "debuff",
-      "category": "dot_debuff",
-      "effects": [
-        "poison_damage_per_turn",
-        "stat_penalties",
+	  ]
+	},
+	{
+	  "name": "Diseased",
+	  "type": "debuff",
+	  "category": "dot_debuff",
+	  "effects": [
+		"poison_damage_per_turn",
+		"stat_penalties",
         "spreads_on_contact"
-      ],
-      "damage_per_turn": 10,
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
-        "herbal_remedy",
+	  ],
+	  "damage_per_turn": 10,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
+		"herbal_remedy",
         "cure_disease"
-      ]
-    },
-    {
-      "name": "Chameleon",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Chameleon",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "stealth_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Blurred",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "dodge_bonus",
+	  ]
+	},
+	{
+	  "name": "Blurred",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"dodge_bonus",
         "attacks_have_miss_chance"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Mirror_Images",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "illusory_copies",
+	  ]
+	},
+	{
+	  "name": "Mirror_Images",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"illusory_copies",
         "copies_absorb_attacks"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Magic_Shield",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Magic_Shield",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "spell_damage_reduction"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Magic_Mirror",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Magic_Mirror",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "spell_reflect_chance"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Mantric_Armor",
-      "type": "buff",
-      "category": "shield",
-      "effects": [
-        "hp_shield",
+	  ]
+	},
+	{
+	  "name": "Mantric_Armor",
+	  "type": "buff",
+	  "category": "shield",
+	  "effects": [
+		"hp_shield",
         "elemental_resistance_25"
-      ],
-      "duration_type": "until_destroyed",
-      "dispellable": false
-    },
-    {
-      "name": "Phasing",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ],
+	  "duration_type": "until_destroyed",
+	  "dispellable": false
+	},
+	{
+	  "name": "Phasing",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "physical_damage_negation_50_percent"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Shadow_Pinned",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "rooted",
+	  ]
+	},
+	{
+	  "name": "Shadow_Pinned",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"rooted",
         "damage_on_move_attempt"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "freedom"
-      ]
-    },
-    {
-      "name": "Wrathfully_Bound",
-      "type": "debuff",
-      "category": "cc_dot",
-      "effects": [
-        "space_damage_per_turn",
-        "cannot_teleport",
+	  ]
+	},
+	{
+	  "name": "Wrathfully_Bound",
+	  "type": "debuff",
+	  "category": "cc_dot",
+	  "effects": [
+		"space_damage_per_turn",
+		"cannot_teleport",
         "cannot_flee"
-      ],
-      "damage_per_turn": 25,
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "damage_per_turn": 25,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Shimmering",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Shimmering",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "minor_dodge_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Chaotic",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "random_movement",
-        "random_attacks",
+	  ]
+	},
+	{
+	  "name": "Chaotic",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"random_movement",
+		"random_attacks",
         "random_spellcasting"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "clarity"
-      ]
-    },
-    {
-      "name": "Paralyzed",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "cannot_move",
+	  ]
+	},
+	{
+	  "name": "Paralyzed",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"cannot_move",
         "cannot_act"
-      ],
-      "duration_type": "spellpower",
-      "save_type": "Focus",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "spellpower",
+	  "save_type": "Focus",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "freedom"
-      ]
-    },
-    {
-      "name": "Invulnerable",
-      "type": "buff",
-      "category": "immunity",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Invulnerable",
+	  "type": "buff",
+	  "category": "immunity",
+	  "effects": [
         "immune_to_all_damage"
-      ],
-      "duration_type": "turns",
-      "default_duration": 3,
-      "dispellable": false
-    },
-    {
-      "name": "Encouraged",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 3,
+	  "dispellable": false
+	},
+	{
+	  "name": "Encouraged",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "initiative_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Friendly",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Friendly",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "relationship_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Soothing_Presence",
-      "type": "buff",
-      "category": "aura",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Soothing_Presence",
+	  "type": "buff",
+	  "category": "aura",
+	  "effects": [
         "heal_allies_per_turn_in_aura"
-      ],
-      "heal_per_turn": 5,
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "heal_per_turn": 5,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Pacified",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "disengaged_from_combat",
+	  ]
+	},
+	{
+	  "name": "Pacified",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"disengaged_from_combat",
         "will_not_attack"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "taking_damage"
-      ]
-    },
-    {
-      "name": "Mirthful",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "initiative_bonus",
-        "speed_bonus",
+	  ]
+	},
+	{
+	  "name": "Mirthful",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"initiative_bonus",
+		"speed_bonus",
         "damage_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Praying",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "defense_bonus",
+	  ]
+	},
+	{
+	  "name": "Praying",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"defense_bonus",
         "magic_resistance_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Divinely_Inspired",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Divinely_Inspired",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "buffs_two_highest_stats"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Aura_of_Blessing",
-      "type": "buff",
-      "category": "aura",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Aura_of_Blessing",
+	  "type": "buff",
+	  "category": "aura",
+	  "effects": [
         "grants_blessed_to_nearby_allies"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Divine_Champion",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Divine_Champion",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "buffs_all_stats_considerably"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Lifelink",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Lifelink",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "heal_50_percent_of_damage_dealt"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Pain_Mirror",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Pain_Mirror",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "deal_50_percent_damage_taken_to_attacker"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Ancestral_Guidance",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "awareness_bonus",
+	  ]
+	},
+	{
+	  "name": "Ancestral_Guidance",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"awareness_bonus",
         "focus_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Ancestral_Vengeance",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Ancestral_Vengeance",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "attack_damage_buff_when_ally_dies"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Karmic_Bond",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "linked_to_ally",
+	  ]
+	},
+	{
+	  "name": "Karmic_Bond",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"linked_to_ally",
         "share_healing_75_percent"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Eternal_Vow",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "return_on_death_next_turn",
+	  ]
+	},
+	{
+	  "name": "Eternal_Vow",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"return_on_death_next_turn",
         "return_with_20_percent_hp"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": false
-    },
-    {
-      "name": "Ancestors_Blessing",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "minor_all_stats_bonus",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": false
+	},
+	{
+	  "name": "Ancestors_Blessing",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"minor_all_stats_bonus",
         "death_resistance"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Gloomy",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
-        "defense_penalty",
+	  ]
+	},
+	{
+	  "name": "Gloomy",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
+		"defense_penalty",
         "speed_penalty"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Blood_Hunger",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Blood_Hunger",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "lifesteal_on_attacks"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Cursed",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
-        "attack_penalty",
+	  ]
+	},
+	{
+	  "name": "Cursed",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
+		"attack_penalty",
         "defense_penalty"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Suffering",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
-        "initiative_penalty",
-        "speed_penalty",
+	  ]
+	},
+	{
+	  "name": "Suffering",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
+		"initiative_penalty",
+		"speed_penalty",
         "defense_penalty"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Shadow_Cloaked",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "stealth_bonus",
+	  ]
+	},
+	{
+	  "name": "Shadow_Cloaked",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"stealth_bonus",
         "dodge_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Rotting",
-      "type": "debuff",
-      "category": "debuff_dot",
-      "effects": [
-        "all_stats_penalty",
+	  ]
+	},
+	{
+	  "name": "Rotting",
+	  "type": "debuff",
+	  "category": "debuff_dot",
+	  "effects": [
+		"all_stats_penalty",
         "black_damage_per_turn"
-      ],
-      "damage_per_turn": 50,
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "damage_per_turn": 50,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Armored_Minor",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Armored_Minor",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "physical_damage_reduction_25"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Armored_Major",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Armored_Major",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "physical_damage_reduction_50"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Armored_Supreme",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Armored_Supreme",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "physical_damage_reduction_75"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Armor_Debuff_50",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Armor_Debuff_50",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
         "armor_reduced_50"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Armor_Reduced",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Armor_Reduced",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
         "armor_reduced"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Awareness_Buff",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Awareness_Buff",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "awareness_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Burning_Weapon",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Burning_Weapon",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "adds_fire_damage_to_attacks"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Caged",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "cannot_move",
+	  ]
+	},
+	{
+	  "name": "Caged",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"cannot_move",
         "cannot_be_targeted"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "freedom"
-      ]
-    },
-    {
-      "name": "Constitution_Buff",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Constitution_Buff",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "constitution_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Damage_Debuff",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Damage_Debuff",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
         "damage_reduction"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Dampening_Aura",
-      "type": "buff",
-      "category": "aura",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Dampening_Aura",
+	  "type": "buff",
+	  "category": "aura",
+	  "effects": [
         "aura_reduces_enemy_spell_damage"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Dodge_Debuff",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Dodge_Debuff",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
         "dodge_penalty"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Entangled",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "cannot_move",
+	  ]
+	},
+	{
+	  "name": "Entangled",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"cannot_move",
         "dodge_penalty"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
-        "freedom",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
+		"freedom",
         "fire_damage"
-      ]
-    },
-    {
-      "name": "Extra_Action",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Extra_Action",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "grants_extra_action"
-      ],
-      "duration_type": "turns",
-      "default_duration": 1,
-      "dispellable": false
-    },
-    {
-      "name": "Fire_Immune",
-      "type": "buff",
-      "category": "immunity",
-      "effects": [
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "dispellable": false
+	},
+	{
+	  "name": "Fire_Immune",
+	  "type": "buff",
+	  "category": "immunity",
+	  "effects": [
         "fire_damage_immunity"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Fire_Resistance_25",
-      "type": "buff",
-      "category": "resistance",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Fire_Resistance_25",
+	  "type": "buff",
+	  "category": "resistance",
+	  "effects": [
         "fire_resistance_plus_25"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Focus_Buff_Major",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Focus_Buff_Major",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "focus_bonus_major"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Fortified",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "defense_bonus",
+	  ]
+	},
+	{
+	  "name": "Fortified",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"defense_bonus",
         "physical_resistance_plus_25"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Golden_Defense",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "physical_resistance_plus_50",
+	  ]
+	},
+	{
+	  "name": "Golden_Defense",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"physical_resistance_plus_50",
         "spell_damage_reduction"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Grounded",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "cannot_fly",
+	  ]
+	},
+	{
+	  "name": "Grounded",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"cannot_fly",
         "loses_flight"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Immobilized",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "cannot_move",
+	  ]
+	},
+	{
+	  "name": "Immobilized",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"cannot_move",
         "cannot_act"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "freedom"
-      ]
-    },
-    {
-      "name": "Initiative_Buff",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Initiative_Buff",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "initiative_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Keen_Weapon",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "critical_boost",
+	  ]
+	},
+	{
+	  "name": "Keen_Weapon",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"critical_boost",
         "accuracy_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Lucky",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "luck_bonus",
+	  ]
+	},
+	{
+	  "name": "Lucky",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"luck_bonus",
         "critical_boost"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Lured",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Lured",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
         "forced_movement_toward_target"
-      ],
-      "duration_type": "turns",
-      "default_duration": 2,
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 2,
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "clarity"
-      ]
-    },
-    {
-      "name": "Major_Dodge",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Major_Dodge",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "major_dodge_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Melee_Attack_Debuff_50",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Melee_Attack_Debuff_50",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
         "melee_hit_chance_halved"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Movement_Debuff",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Movement_Debuff",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
         "movement_reduced_50"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Phase_Wind",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "can_move_through_enemies",
+	  ]
+	},
+	{
+	  "name": "Phase_Wind",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"can_move_through_enemies",
         "dodge_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Physical_Immune",
-      "type": "buff",
-      "category": "immunity",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Physical_Immune",
+	  "type": "buff",
+	  "category": "immunity",
+	  "effects": [
         "physical_immunity"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Pushed",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Pushed",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
         "knockback"
-      ],
-      "duration_type": "instant",
-      "dispellable": false
-    },
-    {
-      "name": "Range_Debuff",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
+	  ],
+	  "duration_type": "instant",
+	  "dispellable": false
+	},
+	{
+	  "name": "Range_Debuff",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
         "range_penalty"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Ranged_Attack_Debuff_50",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Ranged_Attack_Debuff_50",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
         "ranged_hit_chance_halved"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Ranged_Damage_Debuff_50",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Ranged_Damage_Debuff_50",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
         "ranged_damage_halved"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Slippery_Terrain",
-      "type": "debuff",
-      "category": "terrain",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Slippery_Terrain",
+	  "type": "debuff",
+	  "category": "terrain",
+	  "effects": [
         "prone_chance_on_movement"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "fire_damage"
-      ]
-    },
-    {
-      "name": "Slowed_After_Escape",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Slowed_After_Escape",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
         "movement_reduced_50"
-      ],
-      "duration_type": "turns",
-      "default_duration": 2,
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 2,
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "haste"
-      ]
-    },
-    {
-      "name": "Solar_Form",
-      "type": "buff",
-      "category": "transformation",
-      "effects": [
-        "fire_damage_immunity",
-        "adds_fire_damage_to_attacks",
+	  ]
+	},
+	{
+	  "name": "Solar_Form",
+	  "type": "buff",
+	  "category": "transformation",
+	  "effects": [
+		"fire_damage_immunity",
+		"adds_fire_damage_to_attacks",
         "light_aura"
-      ],
-      "grants_vulnerability": {
-        "water": 50
-      },
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "dispel",
+	  ],
+	  "grants_vulnerability": {
+		"water": 50
+	  },
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"dispel",
         "water_damage"
-      ]
-    },
-    {
-      "name": "Soul_Burning",
-      "type": "debuff",
-      "category": "dot",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Soul_Burning",
+	  "type": "debuff",
+	  "category": "dot",
+	  "effects": [
         "black_damage_per_turn"
-      ],
-      "damage_per_turn": 20,
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "damage_per_turn": 20,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Strength_Buff",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Strength_Buff",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
         "strength_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Tongues_of_Fire",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "adds_fire_damage_to_attacks",
+	  ]
+	},
+	{
+	  "name": "Tongues_of_Fire",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"adds_fire_damage_to_attacks",
         "fire_damage_to_melee_attackers"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Trapped",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "cannot_move",
+	  ]
+	},
+	{
+	  "name": "Trapped",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"cannot_move",
         "defense_penalty"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
-        "cleanse",
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse",
         "freedom"
-      ]
-    },
-    {
-      "name": "Water_Immune",
-      "type": "buff",
-      "category": "immunity",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Water_Immune",
+	  "type": "buff",
+	  "category": "immunity",
+	  "effects": [
         "water_damage_immunity"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Water_Vulnerable",
-      "type": "debuff",
-      "category": "vulnerability",
-      "effects": [
+	  ]
+	},
+	{
+	  "name": "Water_Vulnerable",
+	  "type": "debuff",
+	  "category": "vulnerability",
+	  "effects": [
         "water_resistance_minus_50"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ]
-    },
-    {
-      "name": "Water_Walking",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "can_walk_on_water",
+	  ]
+	},
+	{
+	  "name": "Water_Walking",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"can_walk_on_water",
         "immune_to_water_terrain"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Yaksha_Strength",
-      "type": "buff",
-      "category": "buff",
-      "effects": [
-        "strength_bonus_major",
+	  ]
+	},
+	{
+	  "name": "Yaksha_Strength",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"strength_bonus_major",
         "melee_damage_bonus"
-      ],
-      "duration_type": "spellpower",
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
         "dispel"
-      ]
-    },
-    {
-      "name": "Grappled",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
-        "cannot_move",
+	  ]
+	},
+	{
+	  "name": "Grappled",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+		"cannot_move",
         "dodge_penalty"
-      ],
-      "duration_type": "turns",
-      "default_duration": 99,
-      "dispellable": true,
-      "dispel_methods": [
-        "strength_check",
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 99,
+	  "dispellable": true,
+	  "dispel_methods": [
+		"strength_check",
         "cleanse"
-      ],
-      "description": "Held in a grapple \u2014 cannot move; attackers get +30% accuracy."
-    },
-    {
-      "name": "Force_Miss",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
+	  ],
+	  "description": "Held in a grapple \u2014 cannot move; attackers get +30% accuracy."
+	},
+	{
+	  "name": "Force_Miss",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
         "next_attack_misses"
-      ],
-      "duration_type": "turns",
-      "default_duration": 1,
-      "dispellable": false,
-      "description": "The next attack made by this unit automatically misses."
-    },
-    {
-      "name": "Taunt",
-      "type": "debuff",
-      "category": "cc",
-      "effects": [
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "dispellable": false,
+	  "description": "The next attack made by this unit automatically misses."
+	},
+	{
+	  "name": "Taunt",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
         "must_attack_taunter"
-      ],
-      "duration_type": "turns",
-      "default_duration": 2,
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 2,
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ],
-      "description": "Compelled to target the unit that applied this taunt."
-    },
-    {
-      "name": "Demoralized",
-      "type": "debuff",
-      "category": "debuff",
-      "effects": [
-        "attack_penalty",
+	  ],
+	  "description": "Compelled to target the unit that applied this taunt."
+	},
+	{
+	  "name": "Demoralized",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
+		"attack_penalty",
         "defense_penalty"
-      ],
-      "duration_type": "turns",
-      "default_duration": 3,
-      "dispellable": true,
-      "dispel_methods": [
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 3,
+	  "dispellable": true,
+	  "dispel_methods": [
         "cleanse"
-      ],
-      "description": "Spirit broken \u2014 -10 accuracy and -10 armor."
-    }
+	  ],
+	  "description": "Spirit broken \u2014 -10 accuracy and -10 armor."
+	}
   ]
 }

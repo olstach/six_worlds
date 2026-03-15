@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-03-08 (session 2)
+Last Updated: 2026-03-14 (session 9)
 ---
 
 ## Completed Systems
@@ -404,8 +404,11 @@ Still needed:
 
 ## Known Issues
 
-- [ ] **Town naming**: Towns are currently all named "Town" — add procedural or preset names per realm to map_generator.gd
+- [x] ~~**Town naming**~~ — DONE (procedural Tibetan/Sanskrit name pool, commit bff12ac)
 - [ ] **Item flavor text (needs runtime)**: `space_charm_common` and `rations` reportedly show broken flavor text in item tooltip — static code looks correct; needs in-game testing to reproduce
+- [ ] **combat_grid.gd:458** — TODO comment "Check team" — possible edge case in team check logic; needs review
+- [ ] **Karma realm origins not loaded from data**: `karma_system.gd:154,179` — per-realm karma starting values are hardcoded, not loaded from background data. Low priority until other realms exist.
+- [ ] **Enemy weapon placeholder names**: `enemy_system.gd:306,314` — auto-generated weapons get generic names. Minor cosmetic issue.
 
 - [x] ~~Derived stats not displaying~~ - FIXED (wrong key)
 - [x] ~~Combat turn order issues~~ - FIXED (Timer-based delays instead of async/await)
@@ -588,6 +591,35 @@ Still needed:
 - Scrolls cast spells without mana cost or skill requirements
 - Alchemy skill boosts potion effectiveness (10-75% based on level)
 - Starter items include 3 health potions + 2 mana potions
+
+### 2026-03-14 (Session 9): Codebase Audit + Summoning School Implementation
+
+**Systematic audit of all systems.** Hell realm is largely production-quality. No critical bugs found.
+
+**Confirmed working (no action needed):**
+- All 13 autoloads — every called function verified to exist
+- All 11 scenes — no missing scene references
+- All 80 signals — no orphaned or unconnected critical signals
+- All 137 status effects handled in combat
+- All 43 active skill effect types handled (30 functional, 13 intentionally deferred)
+- Item, shop, event, companion recruitment flows all wired correctly
+- Town naming already done (commit bff12ac) — removed from known issues
+
+**Open issues found (added to Known Issues section above):**
+- `combat_grid.gd:458` — TODO "Check team" comment, possible edge case
+- `karma_system.gd:154,179` — per-realm karma defaults hardcoded, not data-driven
+- Enemy weapon placeholder names in `enemy_system.gd`
+
+**Deferred perk list confirmed complete** — all 13 deferred perks are correctly stubbed with error messages; full list in perk wiring section above.
+
+**Summoning school implemented:** All 75 summon types now functional.
+- `resources/data/summon_templates.json` — stat blocks for all 75 summons, tiered by spell level 1/3/5/7/9
+- `combat_manager.gd`: `_load_summon_templates()`, `_spawn_summoned_unit()`, "ground" targeting in `cast_spell()` and `get_spell_targets()`
+- AI handles "ground" targeting: picks tile closest to front line
+- Stats scale: `0.5 + summoning_skill/10` × base + spellpower → flat HP/damage bonus
+- Tooltip shows "Summons: [Name]" and "Ground (summon at target tile)" target type
+
+**Next session:** Playtest pass to find runtime bugs in Hell realm. Then companion auto-dev refactor (primary_attrs in skills.json).
 
 ### 2026-02-02: Spell Database Merge
 - Merged 326 spells from previous session work (7 separate files → unified spells.json)

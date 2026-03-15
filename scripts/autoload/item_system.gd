@@ -559,38 +559,98 @@ func consolidate_inventory() -> void:
 		inventory_changed.emit()
 
 
-## Add starter items to inventory and equip them (called when starting new game)
-func add_starter_items() -> void:
-	# Give player some basic starting equipment
-	add_to_inventory("bronze_sword")
-	add_to_inventory("short_bow")  # Ranged option
-	add_to_inventory("leather_vest")
-	add_to_inventory("leather_cap")
-	add_to_inventory("leather_boots")
-	add_to_inventory("copper_ring")
-	add_to_inventory("travelers_amulet")
-	# Starting consumables
-	add_to_inventory("health_potion", 3)
-	add_to_inventory("mana_potion", 2)
+## Add starter items to inventory and equip them, using background-specific loadouts.
+## Falls back to a generic loadout if no background data is found.
+func add_starter_items(background: String = "") -> void:
+	var items_to_add: Array = []
+	var secondary_weapon: String = ""
 
-	# Auto-equip gear on the player character
+	# Try background-specific equipment from races.json
+	var bg_equipment: Dictionary = {}
+	if background != "":
+		var bg_data = CharacterSystem.get_background_data(background)
+		bg_equipment = bg_data.get("starting_equipment", {})
+
+	if not bg_equipment.is_empty():
+		for item_id in bg_equipment.get("items", []):
+			items_to_add.append(str(item_id))
+		secondary_weapon = str(bg_equipment.get("secondary_weapon", ""))
+		# Weapon quality roll: 20% chance to get the iron upgrade, otherwise bronze base
+		var base_weapon: String = str(bg_equipment.get("base_weapon", ""))
+		var weapon_upgrade: String = str(bg_equipment.get("weapon_upgrade", ""))
+		var upgrade_chance: float = float(bg_equipment.get("weapon_upgrade_chance", 0.2))
+		if base_weapon != "":
+			if weapon_upgrade != "" and randf() < upgrade_chance:
+				items_to_add.append(weapon_upgrade)
+			else:
+				items_to_add.append(base_weapon)
+		# Random bonus item (accessories, etc.)
+		var bonus_pool: Array = bg_equipment.get("random_bonus", [])
+		var bonus_chance: float = float(bg_equipment.get("bonus_chance", 0.0))
+		if bonus_pool.size() > 0 and randf() < bonus_chance:
+			items_to_add.append(str(bonus_pool[randi() % bonus_pool.size()]))
+	else:
+		# Generic fallback loadout
+		items_to_add = ["bronze_sword", "leather_vest", "leather_cap", "leather_boots", "copper_ring", "travelers_amulet"]
+		secondary_weapon = "short_bow"
+
+	# Add everything to inventory
+	for item_id in items_to_add:
+		if item_id != "":
+			add_to_inventory(item_id)
+	if secondary_weapon != "":
+		add_to_inventory(secondary_weapon)
+	# Starting consumables — same for everyone
+	add_to_inventory("health_potion", 2)
+	add_to_inventory("mana_potion", 1)
+
+	# Auto-equip on the player character
 	var player = CharacterSystem.get_player()
 	if not player.is_empty():
-		# Weapon set 1: sword (melee) — write directly to avoid signal races
-		player["active_weapon_set"] = 1
-		equip_item(player, "bronze_sword", "weapon_main")
-		# Weapon set 2: bow (ranged)
+		_auto_equip_starter_items(player, items_to_add, secondary_weapon)
+
+	print("ItemSystem: Added starter items for background '%s'" % background)
+
+
+## Auto-equip a list of starter items based on item type.
+## Melee weapons → weapon set 1; bows → weapon set 2; armor/accessories → their slots.
+func _auto_equip_starter_items(player: Dictionary, items: Array, secondary_weapon: String) -> void:
+	# Item type → equipment slot mapping
+	const SLOT_MAP: Dictionary = {
+		"armor": "chest", "robe": "chest",
+		"helmet": "head", "hat": "head",
+		"boots": "feet",
+		"gloves": "hand_l", "gauntlets": "hand_l",
+		"pants": "legs", "greaves": "legs",
+		"ring": "ring1",
+		"amulet": "trinket1", "trinket": "trinket1", "necklace": "trinket1",
+		"shield": "weapon_off"
+	}
+	const MELEE_TYPES: Array = ["sword", "axe", "dagger", "mace", "spear", "staff", "unarmed"]
+	const RANGED_TYPES: Array = ["bow", "thrown"]
+
+	player["active_weapon_set"] = 1
+	for item_id in items:
+		if item_id == "":
+			continue
+		var item_data = get_item_data(item_id)
+		if item_data.is_empty():
+			continue
+		var itype: String = item_data.get("type", "")
+		if itype in MELEE_TYPES:
+			equip_item(player, item_id, "weapon_main")
+		elif itype in RANGED_TYPES:
+			player["active_weapon_set"] = 2
+			equip_item(player, item_id, "weapon_main")
+			player["active_weapon_set"] = 1
+		elif itype in SLOT_MAP:
+			equip_item(player, item_id, SLOT_MAP[itype])
+
+	# Secondary weapon (bow/ranged) goes to set 2
+	if secondary_weapon != "":
 		player["active_weapon_set"] = 2
-		equip_item(player, "short_bow", "weapon_main")
-		# Ensure we return to set 1
+		equip_item(player, secondary_weapon, "weapon_main")
 		player["active_weapon_set"] = 1
-		# Armour and accessories
-		equip_item(player, "leather_vest", "chest")
-		equip_item(player, "leather_cap", "head")
-		equip_item(player, "leather_boots", "feet")
-		equip_item(player, "copper_ring", "ring1")
-		equip_item(player, "travelers_amulet", "trinket1")
-	print("ItemSystem: Added and equipped starter items")
 
 
 # ============================================

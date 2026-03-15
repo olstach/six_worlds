@@ -140,7 +140,7 @@
 	  },
 	  "starting_spells": [
 		{"school": "Air", "level": 1, "count": 1},
-		{"school": "Air", "level": 3, "count": 1}
+		{"school": "Air", "level": 1, "count": 1}
 	  ],
 	  "reincarnation_weight": 20,
 	  "typical_backgrounds": ["hunter", "raider", "infernal_scribe", "spy"]
@@ -670,6 +670,15 @@
 	  "description": "A traveler who has seen many places and learned to read people and terrain alike.",
 	  "attribute_modifiers": {"awareness": 1},
 	  "starting_skills": {"learning": 1, "might": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_vest", "leather_boots"],
+		"secondary_weapon": "short_bow",
+		"random_bonus": ["travelers_amulet", "copper_ring"],
+		"bonus_chance": 0.5
+	  },
 	  "available_races": [],
 	  "weight": 7
 	},
@@ -678,6 +687,11 @@
 	  "description": "A student of ancient texts and wisdom, more at home with scrolls than swords.",
 	  "attribute_modifiers": {"focus": 1, "strength": -1},
 	  "starting_skills": {"learning": 2, "ritual": 1},
+	  "starting_equipment": {
+		"items": ["wooden_staff", "cloth_robe", "cloth_hood"],
+		"random_bonus": ["prayer_beads", "bone_amulet"],
+		"bonus_chance": 0.45
+	  },
 	  "available_races": [
 		"human", "nomad", "mountain_folk", "trader",
 		"naga", "tsen", "rudra",
@@ -691,6 +705,14 @@
 	  "description": "A trader of goods and services, sharp-tongued and sharper-eyed for opportunity.",
 	  "attribute_modifiers": {"charm": 1, "strength": -1},
 	  "starting_skills": {"trade": 2, "persuasion": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_vest", "travelers_amulet"],
+		"random_bonus": ["copper_ring", "lucky_charm"],
+		"bonus_chance": 0.5
+	  },
 	  "available_races": [
 		"human", "nomad", "trader",
 		"naga", "tsen", "rudra",
@@ -704,6 +726,11 @@
 	  "description": "A practitioner of spiritual disciplines, attuned to inner forces most ignore.",
 	  "attribute_modifiers": {"awareness": 1, "strength": -1},
 	  "starting_skills": {"yoga": 2, "martial_arts": 1},
+	  "starting_equipment": {
+		"items": ["cloth_robe"],
+		"random_bonus": ["prayer_beads"],
+		"bonus_chance": 0.6
+	  },
 	  "available_races": [
 		"human", "nomad", "mountain_folk",
 		"naga", "tsen", "rudra",
@@ -717,6 +744,14 @@
 	  "description": "Born to privilege and power, accustomed to commanding others.",
 	  "attribute_modifiers": {"charm": 1, "constitution": 1, "strength": -1, "finesse": -1},
 	  "starting_skills": {"persuasion": 1, "leadership": 1, "swords": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_sword",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_vest", "leather_cap", "leather_boots"],
+		"random_bonus": ["silver_ring", "copper_ring"],
+		"bonus_chance": 0.5
+	  },
 	  "available_races": [
 		"human", "nomad", "trader",
 		"naga", "tsen", "rudra",
@@ -730,6 +765,14 @@
 	  "description": "A social creature of feasts, festivals, and flattery. Charm opens more doors than keys.",
 	  "attribute_modifiers": {"charm": 2, "strength": -1, "constitution": -1},
 	  "starting_skills": {"performance": 1, "persuasion": 1, "leadership": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_vest"],
+		"random_bonus": ["lucky_charm", "copper_ring"],
+		"bonus_chance": 0.55
+	  },
 	  "available_races": [],
 	  "weight": 3
 	},
@@ -738,6 +781,14 @@
 	  "description": "Trained in the arts of combat, body hardened by years of drill and battle.",
 	  "attribute_modifiers": {"strength": 1, "constitution": 1, "finesse": -1},
 	  "starting_skills": {"swords": 1, "armor": 1, "might": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_sword",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_vest", "leather_cap", "leather_boots"],
+		"random_bonus": ["wooden_shield"],
+		"bonus_chance": 0.35
+	  },
 	  "available_races": [
 		"human", "nomad", "mountain_folk", "trader",
 		"naga", "bee", "yaksha",
@@ -752,6 +803,14 @@
 	  "description": "A worker of the land, with tireless endurance and practical knowledge.",
 	  "attribute_modifiers": {"constitution": 2, "strength": 1, "finesse": -1, "awareness": -1, "charm": -1},
 	  "starting_skills": {"logistics": 1, "axes": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_axe",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["padded_armor", "leather_boots"],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
 	  "available_races": [
 		"human", "nomad", "mountain_folk", "trader",
 		"tsen", "bee", "yaksha",
@@ -764,6 +823,14 @@
 	  "description": "A warrior who fights with uncontrolled fury, trading precision for annihilating force.",
 	  "attribute_modifiers": {"strength": 2, "constitution": 1, "finesse": -1, "awareness": -2},
 	  "starting_skills": {"axes": 2, "unarmed": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_axe",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_vest"],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
 	  "available_races": [
 		"human", "nomad", "mountain_folk",
 		"tsen", "rudra",
@@ -778,6 +845,11 @@
 	  "description": "A protector of places and people, trained to hold ground and outlast attackers.",
 	  "attribute_modifiers": {"constitution": 2, "strength": 1, "awareness": -1},
 	  "starting_skills": {"spears": 1, "armor": 2},
+	  "starting_equipment": {
+		"items": ["wooden_spear", "leather_vest", "leather_cap", "leather_boots", "wooden_shield"],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
 	  "available_races": [
 		"human", "nomad", "mountain_folk", "trader",
 		"naga", "bee", "yaksha",
@@ -792,6 +864,14 @@
 	  "description": "One who takes what they want by force, quick to strike and quicker to vanish.",
 	  "attribute_modifiers": {"strength": 1, "finesse": 1, "awareness": -1, "charm": -1},
 	  "starting_skills": {"axes": 1, "guile": 1, "thievery": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_axe",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_vest"],
+		"random_bonus": ["iron_dagger", "throwing_knife"],
+		"bonus_chance": 0.4
+	  },
 	  "available_races": [
 		"human", "nomad",
 		"tsen", "rudra",
@@ -806,6 +886,15 @@
 	  "description": "A tracker and killer of prey, patient and precise at range.",
 	  "attribute_modifiers": {"finesse": 2, "awareness": 1, "strength": -1, "charm": -1},
 	  "starting_skills": {"ranged": 2, "guile": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_vest", "leather_boots"],
+		"secondary_weapon": "short_bow",
+		"random_bonus": ["hunting_bow"],
+		"bonus_chance": 0.3
+	  },
 	  "available_races": [
 		"human", "nomad", "mountain_folk",
 		"naga", "bee", "yaksha",
@@ -819,6 +908,14 @@
 	  "description": "One who delivers final judgment. Efficient, dispassionate, feared.",
 	  "attribute_modifiers": {"strength": 2, "finesse": -1, "awareness": -1, "charm": -2},
 	  "starting_skills": {"axes": 2, "black_magic": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_axe",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_vest", "leather_cap"],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
 	  "available_races": [
 		"human", "tsen", "rudra",
 		"red_devil", "black_devil", "yellow_devil",
@@ -831,6 +928,14 @@
 	  "description": "A professional in the application of suffering. Methodical, knowledgeable about bodies and their limits, and utterly without sentiment.",
 	  "attribute_modifiers": {"strength": 1, "focus": 1, "charm": -1, "luck": -1},
 	  "starting_skills": {"axes": 1, "black_magic": 1, "medicine": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_gloves"],
+		"random_bonus": ["bone_amulet"],
+		"bonus_chance": 0.35
+	  },
 	  "available_races": [
 		"red_devil", "blue_devil", "yellow_devil", "green_devil", "black_devil", "white_devil",
 		"tsen", "rudra"
@@ -842,6 +947,11 @@
 	  "description": "A warden of the condemned, guarding souls sentenced to suffer. Brutal and disciplined in equal measure.",
 	  "attribute_modifiers": {"strength": 1, "constitution": 1, "awareness": 1, "charm": -2},
 	  "starting_skills": {"spears": 1, "armor": 2, "black_magic": 1},
+	  "starting_equipment": {
+		"items": ["wooden_spear", "leather_vest", "leather_cap", "leather_boots"],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
 	  "available_races": [
 		"red_devil", "blue_devil", "yellow_devil", "green_devil", "black_devil", "white_devil"
 	  ],
@@ -852,6 +962,11 @@
 	  "description": "A keeper of sins and karmic ledgers. In hell, bureaucracy is its own form of torment — and these figures wield it like a weapon.",
 	  "attribute_modifiers": {"focus": 1, "awareness": 1, "strength": -2},
 	  "starting_skills": {"learning": 2, "ritual": 1, "persuasion": 1},
+	  "starting_equipment": {
+		"items": ["wooden_staff", "cloth_robe", "cloth_hood"],
+		"random_bonus": ["bone_amulet", "prayer_beads"],
+		"bonus_chance": 0.45
+	  },
 	  "available_races": [
 		"red_devil", "blue_devil", "yellow_devil", "green_devil", "black_devil", "white_devil",
 		"tsen", "rudra"
@@ -863,6 +978,11 @@
 	  "description": "A suffering soul who turned their torment inward and found something unexpected: clarity. Frail at first, but possessed of a spiritual awareness that others in hell have entirely forgotten.",
 	  "attribute_modifiers": {"constitution": 1, "awareness": 2, "strength": -2, "charm": -1},
 	  "starting_skills": {"yoga": 2, "medicine": 1},
+	  "starting_equipment": {
+		"items": ["cloth_robe"],
+		"random_bonus": ["prayer_beads"],
+		"bonus_chance": 0.6
+	  },
 	  "available_races": [
 		"red_devil", "blue_devil", "yellow_devil", "green_devil", "black_devil", "white_devil",
 		"zombie", "skeleton", "vetala"
@@ -874,6 +994,14 @@
 	  "description": "An operative who trades in information, deception, and precisely timed violence. Trusted by no one, useful to everyone.",
 	  "attribute_modifiers": {"finesse": 1, "awareness": 1, "strength": -1, "charm": -1},
 	  "starting_skills": {"daggers": 1, "guile": 2},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_vest", "leather_boots"],
+		"random_bonus": ["lucky_charm", "throwing_knife"],
+		"bonus_chance": 0.4
+	  },
 	  "available_races": [
 		"human", "nomad", "trader",
 		"naga", "tsen", "rudra",
@@ -887,6 +1015,11 @@
 	  "description": "Barely conscious, driven by hunger. What remains of a person after death strips everything else away.",
 	  "attribute_modifiers": {"constitution": 2, "strength": -1, "finesse": -2, "awareness": -3, "charm": -3},
 	  "starting_skills": {"unarmed": 1},
+	  "starting_equipment": {
+		"items": [],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
 	  "available_races": ["zombie"],
 	  "weight": 1,
 	  "todo": ["needs_upside: shambler is strictly penalizing (-7 net) — add a compensating passive ability eventually, e.g. immunity to fear/mind effects or reduced XP cost on unarmed/might"]
@@ -896,6 +1029,14 @@
 	  "description": "Death did not end their service. Muscle memory survives the grave.",
 	  "attribute_modifiers": {"strength": 1, "constitution": 1, "awareness": -1},
 	  "starting_skills": {"swords": 1, "armor": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_sword",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_vest", "leather_cap"],
+		"random_bonus": ["wooden_shield"],
+		"bonus_chance": 0.35
+	  },
 	  "available_races": ["zombie", "skeleton", "vetala"],
 	  "weight": 5
 	},
@@ -904,6 +1045,11 @@
 	  "description": "Carries the sickness that killed them. Even in death, the rot spreads.",
 	  "attribute_modifiers": {"constitution": 1, "awareness": -1, "charm": -2},
 	  "starting_skills": {"black_magic": 2},
+	  "starting_equipment": {
+		"items": ["wooden_staff"],
+		"random_bonus": ["bone_amulet"],
+		"bonus_chance": 0.3
+	  },
 	  "available_races": ["zombie", "skeleton", "vetala"],
 	  "weight": 3
 	},
@@ -912,6 +1058,14 @@
 	  "description": "A speaker between peoples, trained to find common ground in the most hostile of rooms.",
 	  "attribute_modifiers": {"charm": 2, "awareness": 1, "strength": -2},
 	  "starting_skills": {"persuasion": 2, "learning": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["travelers_amulet"],
+		"random_bonus": ["copper_ring", "silver_ring"],
+		"bonus_chance": 0.5
+	  },
 	  "available_races": [
 		"human", "nomad", "trader",
 		"naga", "tsen", "rudra",
@@ -925,6 +1079,11 @@
 	  "description": "A protector of sacred places, combining martial readiness with spiritual discipline.",
 	  "attribute_modifiers": {"strength": 1, "constitution": 1, "awareness": -1},
 	  "starting_skills": {"spears": 1, "white_magic": 1, "armor": 1},
+	  "starting_equipment": {
+		"items": ["wooden_spear", "leather_vest", "leather_cap", "wooden_shield"],
+		"random_bonus": ["prayer_beads"],
+		"bonus_chance": 0.4
+	  },
 	  "available_races": [
 		"human", "nomad", "mountain_folk",
 		"naga", "bee", "yaksha",
@@ -939,6 +1098,11 @@
 	  "description": "A servant of the divine, trained in ceremony and in the healing and harmful uses of sacred power.",
 	  "attribute_modifiers": {"focus": 2, "awareness": 1, "strength": -2, "constitution": -1},
 	  "starting_skills": {"white_magic": 1, "ritual": 1},
+	  "starting_equipment": {
+		"items": ["wooden_staff", "cloth_robe", "prayer_beads"],
+		"random_bonus": ["bone_amulet"],
+		"bonus_chance": 0.4
+	  },
 	  "available_races": [
 		"human", "mountain_folk",
 		"naga", "tsen", "rudra",

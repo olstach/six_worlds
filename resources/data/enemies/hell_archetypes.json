@@ -163,7 +163,7 @@
 				"awareness": 3, "focus": 3, "charm": 0, "luck": 1
 			},
 			"skill_priorities": ["black_magic", "space_magic"],
-			"guaranteed_spells": ["void_stare", "life_drain"],
+			"guaranteed_spells": ["gloom", "life_drain"],
 			"guaranteed_perks": [],
 			"equipment_template": {
 				"weapon": {"type": "unarmed", "base_damage": 1, "base_accuracy": 3, "range": 1},

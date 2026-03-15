@@ -406,9 +406,10 @@ func _on_pickup_collected(obj: Dictionary, rewards: Array) -> void:
 				parts.append("Mana +" + str(int(rval)) + "%")
 			"item":
 				parts.append(str(rval).replace("_", " ").capitalize())
-			"item_random":
-				var chosen: String = reward.get("chosen", str(rval))
-				parts.append(chosen.replace("_", " ").capitalize())
+			"item_random", "item_random_scaled":
+				var chosen: String = reward.get("chosen", "")
+				if chosen != "":
+					parts.append(chosen.replace("_", " ").capitalize())
 			"buff":
 				if rval is Dictionary:
 					var stat: String = rval.get("stat", "")
@@ -437,7 +438,7 @@ func _on_pickup_collected(obj: Dictionary, rewards: Array) -> void:
 	var is_cursed := rewards.any(func(r): return r.get("type", "") == "damage")
 	if is_cursed:
 		AudioManager.play("pickup_cursed")
-	elif rewards.any(func(r): return r.get("type", "") in ["item", "item_random"]):
+	elif rewards.any(func(r): return r.get("type", "") in ["item", "item_random", "item_random_scaled"]):
 		AudioManager.play("pickup_item")
 	elif rewards.any(func(r): return r.get("type", "") == "gold"):
 		AudioManager.play("pickup_gold")

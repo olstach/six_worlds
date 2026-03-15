@@ -60,8 +60,8 @@ const BASE_CHARACTER: Dictionary = {
 	"derived": {
 		"max_hp": 100,
 		"current_hp": 100,
-		"max_mana": 100,
-		"current_mana": 100,
+		"max_mana": 50,
+		"current_mana": 50,
 		"max_stamina": 50,
 		"current_stamina": 50,
 		"initiative": 20,
@@ -582,7 +582,7 @@ func update_derived_stats(character: Dictionary) -> void:
 
 	# Mana from Awareness + equipment
 	var old_max_mana = derived.get("max_mana", 100)
-	derived.max_mana = 100 + (effective_attrs.awareness - 10) * 10 + equip_bonus.get("max_mana", 0)
+	derived.max_mana = 50 + (effective_attrs.awareness - 10) * 10 + equip_bonus.get("max_mana", 0)
 	if derived.max_mana > old_max_mana:
 		derived.current_mana = derived.get("current_mana", derived.max_mana) + (derived.max_mana - old_max_mana)
 	derived.current_mana = min(derived.get("current_mana", derived.max_mana), derived.max_mana)

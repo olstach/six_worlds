@@ -178,7 +178,8 @@ func start_new_game(slot: int) -> void:
 
 	# Reset inventory and give starter items
 	ItemSystem.clear_inventory()
-	ItemSystem.add_starter_items()
+	var player = CharacterSystem.get_player()
+	ItemSystem.add_starter_items(player.get("background", ""))
 
 	# Reset karma
 	for realm in KarmaSystem.karma_scores:

@@ -453,8 +453,8 @@ func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dic
 	return {
 		"max_hp": 100 + (con - 10) * 10,
 		"current_hp": 100 + (con - 10) * 10,
-		"max_mana": 100 + (awa - 10) * 10,
-		"current_mana": 100 + (awa - 10) * 10,
+		"max_mana": 50 + (awa - 10) * 10,
+		"current_mana": 50 + (awa - 10) * 10,
 		"max_stamina": 50 + int((con + fin - 20) * 2.5),
 		"current_stamina": 50 + int((con + fin - 20) * 2.5),
 		"initiative": fin + awa,

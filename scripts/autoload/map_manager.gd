@@ -1068,6 +1068,40 @@ func _apply_reward(reward: Dictionary) -> void:
 				reward["chosen"] = chosen  # store for toast display
 				ItemSystem.add_to_inventory(chosen)
 
+		"item_random_scaled":
+			# Pick a random item appropriate to the party's power level.
+			# value = {"tiers": {"weak": [...], "medium": [...], "strong": [...]}}
+			# Party power ≤ 30 → weak, ≤ 65 → medium, > 65 → strong.
+			if value is Dictionary:
+				var party_power: float = 0.0
+				var party = CharacterSystem.get_party()
+				if party.size() > 0:
+					var total: float = 0.0
+					for member in party:
+						var attrs = member.get("attributes", {})
+						for attr_val in attrs.values():
+							total += maxi(0, int(attr_val) - 10)
+						var skills = member.get("skills", {})
+						for skill_lvl in skills.values():
+							total += int(skill_lvl) * 8
+					party_power = total / float(party.size())
+
+				var tiers: Dictionary = value.get("tiers", {})
+				var pool: Array
+				if party_power <= 30:
+					pool = tiers.get("weak", [])
+				elif party_power <= 65:
+					pool = tiers.get("medium", [])
+				else:
+					pool = tiers.get("strong", [])
+				# Fall back to any non-empty tier if preferred tier is empty
+				if pool.is_empty():
+					pool = tiers.get("medium", tiers.get("weak", tiers.get("strong", [])))
+				if pool.size() > 0:
+					var chosen: String = str(pool[randi() % pool.size()])
+					reward["chosen"] = chosen
+					ItemSystem.add_to_inventory(chosen)
+
 		"cleanse":
 			# Clear persisting overworld DoT statuses from all party members
 			for char in CharacterSystem.get_party():

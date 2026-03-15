@@ -159,7 +159,8 @@ func _ready() -> void:
 
 	# Add starter items if inventory is empty
 	if ItemSystem.get_inventory().is_empty():
-		ItemSystem.add_starter_items()
+		var player = CharacterSystem.get_player()
+		ItemSystem.add_starter_items(player.get("background", ""))
 	# Consolidate any fragmented consumable stacks (fixes older inventory data)
 	ItemSystem.consolidate_inventory()
 
