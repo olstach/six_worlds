@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-03-15 (session 10)
+Last Updated: 2026-03-15 (session 10, audited)
 ---
 
 ## Completed Systems
@@ -127,9 +127,10 @@ Last Updated: 2026-03-15 (session 10)
 - [x] ~~Wire companions into shops~~ — all 23 companions already in available_companions for all 9 hell shop locations
 
 ### Companion Auto-Development Refactor
-- [ ] Add `"primary_attrs": [...]` to each skill entry in skills.json (35 skills × 2-3 attributes)
-- [ ] Replace per-skill/attribute weights in companions.json with `"attr_ratio": 0.3` (fraction of auto-XP going to attributes)
-- [ ] Update `companion_system.gd` auto-distribute logic: derive attribute targets from active skill weights × primary_attrs, invest proportionally
+*(Partially superseded — skills.json already has `primary_attribute` and `secondary_attribute` fields per skill, singular form. The planned array refactor below was designed before that existed. Decide whether to proceed or drop.)*
+- [ ] Refactor companion XP distribution to derive attribute targets from active skill's `primary_attribute`/`secondary_attribute` automatically, rather than listing attributes manually in `build_weights`
+- [ ] Replace explicit attribute keys in `companions.json` `build_weights` with an `"attr_ratio": 0.3` field (fraction of auto-XP going to attributes vs skills)
+- [ ] Update `companion_system.gd` `_auto_distribute()` accordingly
 
 ### Companions / Party Members
 - [x] ~~Companion data structure~~ — DONE (CompanionSystem, companions.json with 23 companions)
@@ -137,16 +138,16 @@ Last Updated: 2026-03-15 (session 10)
 - [x] ~~Party tab UI (show all party members, click to view their sheet)~~ — DONE (Party tab in main_menu; View Stats + Remove buttons; derived stats bug fixed)
 - [x] ~~Companion XP sharing~~ — DONE (CompanionSystem.apply_party_xp with party-size multiplier)
 - [x] ~~Companion AI in combat~~ — DONE: companions are player-controlled (Team.PLAYER); summons use AI (summoner_id != 0 triggers ai_timer regardless of team)
-- [ ] Companion death / bleed-out handling (permanent death option?)
-- [ ] Recruitment events on the overworld map (meet companion, choose to hire/accept)
-- [ ] Starting companion (optional: give player one at game start for first run)
+- [ ] Companion death / bleed-out handling — currently companions die like enemies with no special treatment; no permanent-death option, no party-wipe check distinct from normal defeat
+- [ ] Recruitment events on the overworld map — `recruit_companion` outcome type IS wired in event_manager.gd; just needs actual events in hell_events.json that use it
+- [ ] Starting companion (optional: give player one at game start for first run) — no logic in game_state.gd or character_system.gd
 
 ### Content Expansion (Needed for Playable Loop)
-- [ ] Event files for remaining realms (hungry_ghost, animal, human, asura, god)
-- [ ] Races for all 6 realms (currently only Hell examples)
-- [ ] Background definitions with skill distributions
-- [ ] Map configs for remaining realms
-- [ ] Enemy archetypes for remaining realms
+- [ ] Event files for remaining realms — only hell_events.json exists; no files for hungry_ghost, animal, human, asura, god
+- [x] ~~Races for all 6 realms~~ — DONE: 21 races across all realms (Hell 6, Hungry Ghost 3, Animal 3, Human 4, Asura 2, God 3)
+- [x] ~~Background definitions with skill distributions~~ — DONE: 25 backgrounds in races.json with attribute_modifiers, starting_skills, available_races whitelists
+- [ ] Map configs for remaining realms — only hell.json exists in resources/data/map_configs/
+- [ ] Enemy archetypes for remaining realms — only hell_archetypes.json exists in resources/data/enemies/
 
 ### Map Interactibles System
 Three categories of interactive map objects. Hell is the target realm for initial content.
@@ -167,16 +168,16 @@ Roles to fulfill per realm (not specific object types):
 - [x] ~~Alchemist~~ — DONE (brimstone_lab: bombs/oils/potions/reagents, trains Alchemy; fire_hell map pool)
 - [x] ~~Magic shop (scrolls, charms, magic foci)~~ — DONE (demon_sorcerer in shops.json sells spells + reagents)
 - [x] ~~Trainer (teaches skills/attributes)~~ — DONE (wandering_sage trains White/Sorcery/Yoga + Focus/Awareness; weapon_master trains 7 combat skills + Str/Fin; ShopSystem has full training tab)
-- [ ] Multi-function locations (towns, camps) use tab UI in event window — 3-4 functions per location
-- [ ] First-visit event hook for towns (simple choice: rumors, discount, hidden object)
+- [ ] Multi-function locations (towns, camps) use tab UI in event window — not implemented; events use standard choice-based dialogue only
+- [ ] First-visit event hook for towns — no first-visit flag system in event_manager.gd or map_manager.gd
 - [x] ~~Steal/attack/donate karma branches on trader interactions~~ — DONE (all 8 hell trader events: steal roll on all, attack on 3, donate on 2, comedy wildcard on 5 with success/failure outcomes). Skill-based dice rolls now supported in event_manager (skill: comedy/performance instead of attribute)
 - [x] ~~Trainer caps~~ — DONE (max_skill_level in shop training dict; ShopSystem enforces cap, UI shows "Capped" in yellow)
 - [x] ~~Hell-specific named locations~~ — DONE (Infernal Forge, Bone Archer Camp, Mercy Ward, Brimstone Lab, Warden's Pit — all in shops.json + hell_events.json + hell.json map pools)
 
 **Category 3 — Event Chains** (1-3 choices deep, world/subregion specific)
-- [ ] Event chain data format (prerequisites, follow-up event IDs, outcome state flags)
-- [ ] Ability to reference other map objects in outcomes (e.g., "bring them to the healer on this map")
-- [ ] Hell-specific chains: bandit ambush of a soul caravan, devil deserter encounter, contraband deal gone wrong, corrupted simple (looks helpful, is cursed), chained pilgrim (penitent NPC — rescue or ignore or exploit), rival party encounter
+- [ ] Event chain data format — no `prerequisites` or `follow_up` fields in event_manager.gd; all hell events are currently standalone
+- [ ] Ability to reference other map objects in outcomes — not implemented
+- [ ] Hell-specific chains still needed: bandit ambush of a soul caravan, contraband deal gone wrong, corrupted simple, rival party encounter — `devil_deserter` and `hell_cursed_pilgrim` / `hell_fire_pilgrim` already exist but are standalone events, not full multi-step chains
 - [ ] Chains should NOT be reused across realms — always write realm-specific flavor
 
 ### Quest System
@@ -191,17 +192,16 @@ Roles to fulfill per realm (not specific object types):
 
 ### Event System Improvements
 - [ ] Event chains and prerequisites (see Map Interactibles above)
-- [x] Hell realm events: 39 total across both zones (19 cold_hell pool + 17 fire_hell pool + 2 fixed landmarks + 1 shared). Includes: Bone Arena, Suffering Sage, Suspicious Gift, Ice Demon Toll, Cursed Pilgrim, Frozen Army (cold); Pyromancer's Challenge, Demon Marketplace, Burning Library, Sinner Gang, Forge Spirit, The Invitation (fire); A Sigh of Relief (both zones)
-- [ ] More hell events: both zones at target density (~15+ each). Next focus: event chains and trader NPCs
-- [ ] Remaining Category 2 traders for hell: Infernal Forge (blacksmith), Bone Archer Camp (fletcher), Mercy Ward (healer), Brimstone Lab (alchemist), Warden's Pit (trainer) — general shops and magic/trainer shops already exist (frozen_merchant, ember_merchant, wandering_peddler, demon_sorcerer, wandering_sage, weapon_master)
-- [ ] Category 3 event chains for hell (soul caravan ambush, devil deserter, contraband deal, chained pilgrim, rival party)
-- [ ] More events per realm (aim for 20+ per remaining realm)
+- [x] ~~Hell realm events at target density~~ — DONE: 62 events total in hell_events.json (well above 15-per-zone target). Category 2 trader events all present. `devil_deserter`, `hell_cursed_pilgrim`, `hell_fire_pilgrim` present as standalone events.
+- [ ] Category 3 multi-step chains for hell — soul caravan ambush, contraband deal, corrupted simple, rival party still missing (see Category 3 section above)
+- [ ] More events per realm (aim for 20+ per remaining realm) — blocked on event files existing first
 
 ### Camp Followers System
-- [ ] Non-combat companion data structure
-- [ ] Follower recruitment through events
+*(Entirely unimplemented — design only)*
+- [ ] Non-combat companion data structure — no followers system exists anywhere
+- [ ] Follower recruitment through events — no follower outcome type in event_manager.gd
 - [ ] Passive bonus application (trade, healing, carrying capacity)
-- [ ] UI integration (slot already in Party tab)
+- [ ] UI integration — FollowersList VBoxContainer exists in main_menu.gd but `_update_followers_list()` is a stub with an empty array
 
 ### ~~Skill Scale Refactor (1-5 → 1-10)~~ DONE
 - [x] Skill levels 1-10 (purchasable); 11-15 accessible via items/race bonuses (display only, yellow in UI)
@@ -211,7 +211,7 @@ Roles to fulfill per realm (not specific object types):
 - [x] Attribute cost formula: `max((value - 9) * 3, 2)` per step (10→20 = 165 XP; 10→30 = 630 XP)
 
 ### Testing & Polish
-- [ ] Test Shop UI thoroughly (buying, selling, spell learning, training)
+- [ ] Test Shop UI thoroughly (buying, selling, spell learning, training, companions tab, rest tab)
 - [ ] Test terrain effect interactions with spells
 - [ ] Balance pass on spell mana costs vs effects
 - [ ] Test all 326 spells load and cast correctly
@@ -276,14 +276,14 @@ Roles to fulfill per realm (not specific object types):
 ## Medium Priority (Content & Polish)
 
 ### Content
-- [ ] More consumable items (realm-specific potions, higher-level scrolls, more charm/bomb/oil tiers)
-- [ ] More equipment (rare/legendary weapons and armor)
+- [ ] More consumable items — currently: 13 potions, 15 bombs, 12 oils, 21 scrolls, 21 charms; all generic (no realm-specific variants)
+- [ ] More equipment — 24 rare/epic items exist; no legendary tier; could use more variety
 - [ ] More upgrades/perks
 - [x] ~~Alchemy crafting system~~: Reagents supply type, 3 crafting branches (Remedies/Munitions/Applications) × 3 tiers, perk-unlocked, passive brewing toggle — DONE
 - [x] ~~Resource-gathering perks~~: Alchemical Recycling (Alchemy 3), Herbalist (Medicine 3), Scavenger (Smithing 3) — DONE
 - [x] ~~Crafting UI tab~~ — DONE (key: R; character picker, Potions/Bombs/Oils filter, craftable/locked recipe list with reagent cost)
 - [x] ~~More scroll varieties~~: 17 scrolls added (common: magic_missile, voidbolt, shocking_grasp, stone_spike, bless, cure, slow; uncommon: fireball, blizzard, chain_lightning, earthquake, haste, stone_skin, regeneration, blink, dispel, confusion). Distributed to demon_sorcerer, wandering_sage, general_store, hell_town_magic, hell_yogini_circle, mercy_ward
-- [ ] **Cursed items**: equipment that applies a passive debuff alongside its stats. Player may not know an item is cursed until equipped (reveal on ID or Alchemy skill check). Separate from cursed terrain/simples.
+- [ ] **Cursed items**: not implemented — "cursed" is currently only a status effect and a terrain type; no cursed equipment in items.json
 - [x] ~~**Equipment generation system**~~: procedural weapons, armor, and talismans — DONE
 - [x] ~~**Talisman system**~~: persistent equippable trinket-slot items with stat/skill/perk bonuses — DONE
 - [x] ~~**Equipment traits**~~: weapon/armor modifier system (sharp, reinforced, etc.) — DONE
@@ -292,9 +292,9 @@ Roles to fulfill per realm (not specific object types):
 - [x] ~~Add talisman/equipment generation to shop and loot systems~~ — DONE (procedural items in loot drops + auto-generated shop stock)
 
 ### UI Improvements
-- [ ] Tooltip system expansion
-- [ ] Upgrade selection popup (choose 1 of 4)
-- [ ] Party management screen
+- [ ] Tooltip system expansion — item_tooltip.gd works for items; no tooltips on status effects, terrain tiles, or turn order icons in combat
+- [ ] Upgrade selection popup (choose 1 of 4) — no scene or system exists
+- [x] ~~Party management screen~~ — DONE (session 10): Party tab in main_menu shows all members with HP/MP/ST bars, View Stats button switches to Stats tab for any member, Remove button dismisses companions
 
 ### Combat Improvements
 - [x] ~~Active skills fully functional (stamina costs, targeting, effects)~~ — DONE (25+ skills with combat_data, stamina/cooldown system)
@@ -303,8 +303,8 @@ Roles to fulfill per realm (not specific object types):
 - [x] ~~Enemy-specific physical resistances~~ — DONE (hell_archetypes.json: frozen_revenant +pierce/slash, -crush; lava_golem/mountain_guardian +slash/pierce; frost_guardian +pierce/slash; demons +pierce/slash)
 - [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
 - [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
-- [ ] Terrain affecting spell power
-- [ ] Environmental spell interactions
+- [ ] Terrain affecting spell power — no terrain-based spellpower modifiers in combat_manager.gd cast_spell()
+- [ ] Environmental spell interactions — spells create terrain (done); terrain does not yet buff/debuff spells of matching element
 - [x] ~~Realm-specific combat terrain themes~~ — DONE (overworld terrain generates realm-appropriate obstacles)
 
 ---
@@ -314,16 +314,16 @@ Roles to fulfill per realm (not specific object types):
 ### Save/Load Improvements
 - [x] Multiple save slots (3 slots)
 - [x] Auto-save functionality
-- [ ] Meta-progression (affinities, persistent upgrades across runs)
+- [ ] Meta-progression (affinities, persistent upgrades across runs) — not implemented; save_manager.gd handles per-run state only, no cross-run persistence
 
 ### Audio
 - [x] SFX system wired (AudioManager autoload, 28 sounds × 6 variants from Helton Yan Pixel Combat pack)
 - [x] Sound calls throughout codebase (62+ AudioManager.play calls across all systems)
-- [ ] Background music per realm
-- [ ] Combat music
-- [ ] More spell school sound variety (currently fire vs generic cast only)
-- [ ] Active skill sounds
-- [ ] Death / unit kill sound
+- [ ] Background music per realm — audio_manager.gd has SFX only; no music system at all
+- [ ] Combat music — same; no music infrastructure
+- [ ] More spell school sound variety — Air, Water, Earth have no dedicated impact sounds (only fire + generic exist)
+- [ ] Active skill sounds — no AudioManager.play calls in active skill resolution
+- [ ] Death / unit kill sound — no death sound defined or triggered
 
 #### SFX Assignment Reference
 All sounds defined in `scripts/autoload/audio_manager.gd` → `SOUND_MAP`.
@@ -358,11 +358,11 @@ Files live in `resources/audio/sfx/` (6 variants each, picked randomly).
 | UI denied (unwired) | `UIMisc_INTERFACE-Denied` |
 
 ### Visual Assets
-- [ ] Character portraits
-- [ ] Enemy sprites (currently colored rectangles)
-- [ ] Tile sets for each realm
-- [ ] Spell effects
-- [ ] UI artwork (Tibetan thangka style)
+- [ ] Character portraits — portrait field exists on companions but all are empty strings; no portrait images in project
+- [ ] Enemy sprites — enemies rendered as colored rectangles in combat; no sprite assets
+- [ ] Tile sets for each realm — no tileset resources found; only tibetan_theme.tres (UI theme)
+- [ ] Spell effects — no particle or animation system for spell visuals; attack lunge animation exists but no spell-specific VFX
+- [ ] UI artwork (Tibetan thangka style) — tibetan_theme.tres provides colors/fonts; no custom artwork assets
 
 ---
 
@@ -404,9 +404,9 @@ Files live in `resources/audio/sfx/` (6 variants each, picked randomly).
 
 - [x] ~~**Town naming**~~ — DONE (procedural Tibetan/Sanskrit name pool, commit bff12ac)
 - [ ] **Item flavor text (needs runtime)**: `space_charm_common` and `rations` reportedly show broken flavor text in item tooltip — static code looks correct; needs in-game testing to reproduce
-- [ ] **combat_grid.gd:458** — TODO comment "Check team" — possible edge case in team check logic; needs review
-- [ ] **Karma realm origins not loaded from data**: `karma_system.gd:154,179` — per-realm karma starting values are hardcoded, not loaded from background data. Low priority until other realms exist.
-- [ ] **Enemy weapon placeholder names**: `enemy_system.gd:306,314` — auto-generated weapons get generic names. Minor cosmetic issue.
+- [ ] **combat_grid.gd:458** — TODO comment "Check team" — pathfinding skips enemies but team check logic may have an edge case; needs review
+- [ ] **Karma realm origins not loaded from data**: `karma_system.gd:154,179` — per-realm karma starting values hardcoded, not loaded from background data. Low priority until other realms exist.
+- [ ] **Enemy weapon placeholder names**: `enemy_system.gd:306,314` — auto-generated weapons get names like "Enemy's Claws" / "Enemy's Weapon". Minor cosmetic issue.
 
 - [x] ~~Derived stats not displaying~~ - FIXED (wrong key)
 - [x] ~~Combat turn order issues~~ - FIXED (Timer-based delays instead of async/await)
@@ -419,6 +419,13 @@ Files live in `resources/audio/sfx/` (6 variants each, picked randomly).
 ---
 
 ## Session Notes
+
+### 2026-03-15: Session 10 — Companions, Summon AI, TODO Audit
+- **Companions backend confirmed complete**: CompanionSystem, 23 companions in companions.json, Companions tab in shop_ui, hell_tavern shop, party-size XP multiplier all already done
+- **Party tab fixed**: derived stats bug (`derived_stats` → `derived` key), added View Stats + Remove buttons per card, `_on_remove_companion_pressed()` with safe view-reset
+- **Summon AI**: player-summoned units now act on AI (summoner_id != 0 triggers ai_timer); companions remain player-controlled; two-line change in combat_arena.gd
+- **Mantra system confirmed done** (was done in session 9 by Olaf): all 26 mantras, DY bursts, concentration breaks, Continuous Recitation, AI awareness
+- **TODO audit**: races and backgrounds for all 6 realms confirmed done; 62 hell events confirmed (target met); Category 2 traders all done; Party management screen marked done; stale items corrected throughout
 
 ### 2026-02-22: 0-10 Skill Refactor, Hell Races & Backgrounds, Interactibles Design
 - **0-10 Skill Scale**: Fully implemented — SKILL_COSTS, 15-level base_bonuses for all 35 skills wired into derived stats, perk/spell level remapping, yellow enhanced-level display in character sheet
