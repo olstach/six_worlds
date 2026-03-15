@@ -510,12 +510,18 @@ func apply_outcome(outcome: Dictionary) -> void:
 
 	# Write world-state flags declared by this outcome
 	if "set_flags" in outcome:
-		for flag_key in outcome.set_flags:
-			GameState.set_flag(flag_key, outcome.set_flags[flag_key])
+		if outcome.set_flags is Dictionary:
+			for flag_key in outcome.set_flags:
+				GameState.set_flag(flag_key, outcome.set_flags[flag_key])
+		else:
+			push_error("EventManager: 'set_flags' must be a Dictionary, got: %s" % type_string(typeof(outcome.set_flags)))
 
 	# Register a new quest if the outcome defines one
 	if "register_quest" in outcome:
-		GameState.register_quest(outcome.register_quest)
+		if outcome.register_quest is Dictionary:
+			GameState.register_quest(outcome.register_quest)
+		else:
+			push_error("EventManager: 'register_quest' must be a Dictionary, got: %s" % type_string(typeof(outcome.register_quest)))
 
 	# Apply gold/resource costs from the choice
 	# Cost amounts are descriptive strings for now ("small", "moderate", etc.)

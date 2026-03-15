@@ -34,6 +34,7 @@ func _ready() -> void:
 ## object_id and one_time are forwarded to EventManager so it can track
 ## which choices have been used on persistent map objects (prevents XP farming).
 func show_event(event_id: String, object_id: String = "", one_time: bool = false) -> void:
+	current_outcome = {}  # Clear stale outcome from any previous event in this chain
 	# Set context on EventManager BEFORE start_event so evaluate_choice_availability
 	# can immediately check used_event_choices when building the choice list.
 	EventManager.current_event_object_id = object_id
