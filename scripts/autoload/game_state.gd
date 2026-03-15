@@ -13,6 +13,8 @@ signal gold_changed(new_amount: int, change: int)
 signal supply_changed(supply_type: String, new_amount: int, change: int)
 signal starvation_started()   # Emitted when food runs out and grace period expires
 signal starvation_ended()     # Emitted when food is obtained while starving
+signal quest_completed(quest_id: String, quest_name: String, reward: Dictionary)
+signal overworld_log_updated(message: String)
 
 # Current run data
 var current_world: String = "hell"  # Which world the player is currently in
@@ -75,6 +77,17 @@ var flags: Dictionary = {}
 #               "steps": [{"text": String, "done_when": {"flag": String, "value": Variant}}, ...] }
 var active_quests: Array[Dictionary] = []
 
+# IDs of quests that have been fully completed and rewarded this run.
+var completed_quest_ids: Array[String] = []
+
+# In-memory quest definitions loaded from quests.json at startup.
+# Format: { "quest_id": { id, name, description, realm, steps, reward } }
+var _quest_pool: Dictionary = {}
+
+# Session-only log of overworld messages (toasts, quest events, discoveries).
+# Reset on scene load; NOT saved to disk.
+var overworld_log: Array[String] = []
+
 # World definitions
 var WORLDS: Dictionary = {
 	"hell": {
@@ -118,6 +131,15 @@ var WORLDS: Dictionary = {
 func _ready() -> void:
 	RenderingServer.set_default_clear_color(Color.BLACK)
 	print("GameState initialized")
+	# Load quest pool from resources/data/quests.json
+	var quest_file := FileAccess.open("res://resources/data/quests.json", FileAccess.READ)
+	if quest_file:
+		var parsed = JSON.parse_string(quest_file.get_as_text())
+		if parsed is Dictionary:
+			_quest_pool = parsed.get("quests", {})
+		quest_file.close()
+	else:
+		push_error("GameState: could not open quests.json")
 
 ## Defeat a world's boss and unlock the next world
 func defeat_boss(world_name: String) -> void:
@@ -378,6 +400,7 @@ func process_alchemy_step(alchemy_level: int, unlocked_item_ids: Array) -> Strin
 ## Set a world-state flag. Value can be bool, int, or String.
 func set_flag(key: String, value) -> void:
 	flags[key] = value
+	check_quest_completion()
 
 
 ## Get a world-state flag value. Returns default_value if not set.
@@ -412,6 +435,105 @@ func is_quest_complete(quest_id: String) -> bool:
 ## Public wrapper for quest step completion — use this from UI code.
 func is_quest_step_done(step: Dictionary) -> bool:
 	return _quest_step_done(step)
+
+
+## Returns a quest definition from the pool by id. Returns {} if not found.
+func get_quest_def(quest_id: String) -> Dictionary:
+	return _quest_pool.get(quest_id, {})
+
+
+## Returns all quest definitions from the pool for a given realm.
+## Excludes quests already accepted (in active_quests) or completed.
+func get_available_quests_for_realm(realm: String) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for quest_id in _quest_pool:
+		var quest: Dictionary = _quest_pool[quest_id]
+		if quest.get("realm", "") != realm:
+			continue
+		if completed_quest_ids.has(quest_id):
+			continue
+		var already_active := false
+		for aq in active_quests:
+			if aq.get("id", "") == quest_id:
+				already_active = true
+				break
+		if not already_active:
+			result.append(quest)
+	return result
+
+
+## Accept a quest from the pool by id. Calls register_quest internally.
+## Returns false if quest not found or already active/completed.
+func accept_quest(quest_id: String) -> bool:
+	if not _quest_pool.has(quest_id):
+		push_error("GameState.accept_quest: unknown quest id '%s'" % quest_id)
+		return false
+	var quest: Dictionary = _quest_pool[quest_id]
+	register_quest(quest)
+	return true
+
+
+## Mark a quest as complete, award rewards, and add an overworld log entry.
+## Called automatically by check_quest_completion(); can also be called directly.
+func complete_quest(quest_id: String) -> void:
+	if completed_quest_ids.has(quest_id):
+		return  # Already completed
+	completed_quest_ids.append(quest_id)
+	# Remove from active_quests
+	for i in range(active_quests.size() - 1, -1, -1):
+		if active_quests[i].get("id", "") == quest_id:
+			active_quests.remove_at(i)
+			break
+	# Award rewards from pool definition
+	var quest_def: Dictionary = _quest_pool.get(quest_id, {})
+	var reward: Dictionary = quest_def.get("reward", {})
+	var quest_name: String = quest_def.get("name", quest_id)
+	if not reward.is_empty():
+		_apply_quest_reward(reward)
+	# Log the completion
+	var log_msg := "✓ Quest complete: %s" % quest_name
+	if reward.get("xp", 0) > 0:
+		log_msg += "  +%d XP" % int(reward.xp)
+	if reward.get("gold", 0) > 0:
+		log_msg += "  +%d gold" % int(reward.gold)
+	append_overworld_log(log_msg)
+	quest_completed.emit(quest_id, quest_name, reward)
+
+
+## Check all active quests; complete any that are fully done.
+## Called from set_flag() so completion triggers automatically.
+func check_quest_completion() -> void:
+	var ids_to_complete: Array[String] = []
+	for quest in active_quests:
+		var qid: String = quest.get("id", "")
+		if qid != "" and is_quest_complete(qid):
+			ids_to_complete.append(qid)
+	for qid in ids_to_complete:
+		complete_quest(qid)
+
+
+## Apply xp/gold/karma rewards from a quest reward dict.
+func _apply_quest_reward(reward: Dictionary) -> void:
+	var xp: int = int(reward.get("xp", 0))
+	var gold_reward: int = int(reward.get("gold", 0))
+	if xp > 0:
+		# apply_party_xp handles XP multipliers for party size (same as event rewards)
+		CompanionSystem.apply_party_xp(xp)
+	if gold_reward > 0:
+		# Gold stored on party leader (player character)
+		var player = CharacterSystem.get_player()
+		if player:
+			player["gold"] = player.get("gold", 0) + gold_reward
+	# Karma: KarmaSystem.add_karma(realm, amount, description)
+	var karma: Dictionary = reward.get("karma", {})
+	for realm in karma:
+		KarmaSystem.add_karma(realm, int(karma[realm]))
+
+
+## Append a message to the session overworld log.
+func append_overworld_log(msg: String) -> void:
+	overworld_log.append(msg)
+	overworld_log_updated.emit(msg)
 
 
 ## Returns true if this single step's done_when condition is satisfied.
@@ -453,7 +575,8 @@ func get_save_data() -> Dictionary:
 		"used_event_choices": used_event_choices.duplicate(true),
 		"guild_spell_lists": guild_spell_lists.duplicate(true),
 		"flags": flags.duplicate(true),
-		"active_quests": active_quests.duplicate(true)
+		"active_quests": active_quests.duplicate(true),
+		"completed_quest_ids": completed_quest_ids.duplicate(),
 	}
 
 
@@ -476,6 +599,10 @@ func load_save_data(data: Dictionary) -> void:
 	active_quests = []
 	for q in data.get("active_quests", []):
 		active_quests.append(q.duplicate(true))
+	completed_quest_ids = []
+	for id in data.get("completed_quest_ids", []):
+		completed_quest_ids.append(str(id))
+	overworld_log = []  # session-only; always start fresh on load
 
 	# Restore unlocked worlds
 	unlocked_worlds.clear()

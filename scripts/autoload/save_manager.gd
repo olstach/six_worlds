@@ -163,6 +163,8 @@ func start_new_game(slot: int) -> void:
 	GameState.guild_spell_lists = {}
 	GameState.flags = {}
 	GameState.active_quests = []
+	GameState.completed_quest_ids = []
+	GameState.overworld_log = []
 	GameState.is_party_wiped = false
 	GameState.returning_from_combat = false
 	GameState.last_defeated_mob_id = ""
