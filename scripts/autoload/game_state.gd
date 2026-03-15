@@ -400,7 +400,8 @@ func process_alchemy_step(alchemy_level: int, unlocked_item_ids: Array) -> Strin
 ## Set a world-state flag. Value can be bool, int, or String.
 func set_flag(key: String, value) -> void:
 	flags[key] = value
-	check_quest_completion()
+	if not active_quests.is_empty():
+		check_quest_completion()
 
 
 ## Get a world-state flag value. Returns default_value if not set.
@@ -463,11 +464,16 @@ func get_available_quests_for_realm(realm: String) -> Array[Dictionary]:
 
 
 ## Accept a quest from the pool by id. Calls register_quest internally.
-## Returns false if quest not found or already active/completed.
+## Returns false if quest not found, already active, or already completed.
 func accept_quest(quest_id: String) -> bool:
 	if not _quest_pool.has(quest_id):
 		push_error("GameState.accept_quest: unknown quest id '%s'" % quest_id)
 		return false
+	if completed_quest_ids.has(quest_id):
+		return false  # Already completed — do not re-accept
+	for q in active_quests:
+		if q.get("id", "") == quest_id:
+			return false  # Already active
 	var quest: Dictionary = _quest_pool[quest_id]
 	register_quest(quest)
 	return true
@@ -479,13 +485,17 @@ func complete_quest(quest_id: String) -> void:
 	if completed_quest_ids.has(quest_id):
 		return  # Already completed
 	completed_quest_ids.append(quest_id)
+	# Capture quest data BEFORE removing (inline quests not in pool)
+	var quest_def: Dictionary = _quest_pool.get(quest_id, {})
+	for q in active_quests:
+		if q.get("id", "") == quest_id and quest_def.is_empty():
+			quest_def = q  # Use inline quest data when pool has no entry
+			break
 	# Remove from active_quests
 	for i in range(active_quests.size() - 1, -1, -1):
 		if active_quests[i].get("id", "") == quest_id:
 			active_quests.remove_at(i)
 			break
-	# Award rewards from pool definition
-	var quest_def: Dictionary = _quest_pool.get(quest_id, {})
 	var reward: Dictionary = quest_def.get("reward", {})
 	var quest_name: String = quest_def.get("name", quest_id)
 	if not reward.is_empty():
@@ -520,10 +530,7 @@ func _apply_quest_reward(reward: Dictionary) -> void:
 		# apply_party_xp handles XP multipliers for party size (same as event rewards)
 		CompanionSystem.apply_party_xp(xp)
 	if gold_reward > 0:
-		# Gold stored on party leader (player character)
-		var player = CharacterSystem.get_player()
-		if player:
-			player["gold"] = player.get("gold", 0) + gold_reward
+		add_gold(gold_reward)
 	# Karma: KarmaSystem.add_karma(realm, amount, description)
 	var karma: Dictionary = reward.get("karma", {})
 	for realm in karma:
