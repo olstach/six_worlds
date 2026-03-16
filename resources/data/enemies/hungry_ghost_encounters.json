@@ -1,7 +1,293 @@
 {
   "encounters": {
 
-    "_comment_event": "=== EVENT ENCOUNTERS — triggered by map events ===",
+    "_comment_swamp": "=== FETID SWAMPS — rolang zone, start area ===",
+
+    "bog_zombie": {
+      "region": "fetid_swamps",
+      "tier": "devil",
+      "roles": {"frontline": 1},
+      "difficulty_range": [0.65, 0.85]
+    },
+
+    "zombie_pack": {
+      "region": "fetid_swamps",
+      "tier": "devil",
+      "roles": {"frontline": 3},
+      "difficulty_range": [0.7, 0.9]
+    },
+
+    "swamp_wraith": {
+      "_comment": "Hard swamp encounter — drowned rolang with leech swarm",
+      "region": "fetid_swamps",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_rolang_drowned", "count": 2},
+        {"archetype": "hg_swamp_leech", "count": 3}
+      ]
+    },
+
+    "rotting_sentinel": {
+      "_comment": "Hard stationary — a preserved ancient with worm bodyguards",
+      "region": "fetid_swamps",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_rolang_ancient", "count": 1},
+        {"archetype": "hg_carrion_worm", "count": 2}
+      ]
+    },
+
+    "mud_golem": {
+      "_comment": "A mass of rot and earth animated by the swamp — carrion worms packed into a shambling form",
+      "region": "fetid_swamps",
+      "tier": "imp",
+      "roles": {"frontline": 2},
+      "difficulty_range": [0.6, 0.75]
+    },
+
+    "rolang_with_vermin": {
+      "_comment": "Shamblers advancing behind a screen of centipedes",
+      "region": "fetid_swamps",
+      "mixed": true,
+      "groups": [
+        {
+          "tier": "devil",
+          "roles": {"frontline": 2},
+          "difficulty_range": [0.8, 1.0]
+        },
+        {
+          "tier": "shade",
+          "roles": {"skirmisher": 2},
+          "difficulty_range": [0.35, 0.5]
+        }
+      ]
+    },
+
+    "rolang_with_worms": {
+      "_comment": "Shamblers using carrion worms as living siege weapons",
+      "region": "fetid_swamps",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_rolang_shambler", "count": 2},
+        {"archetype": "hg_carrion_worm", "count": 2}
+      ]
+    },
+
+    "rolang_ancient_ritual": {
+      "_comment": "A preserved ancient directing newly-risen dead",
+      "region": "fetid_swamps",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_rolang_ancient", "count": 1},
+        {"archetype": "hg_rolang_shambler", "count": 2},
+        {"archetype": "hg_centipede", "count": 2}
+      ]
+    },
+
+    "_comment_graveyards": "=== DRY GRAVEYARDS — skeleton zone, mid area ===",
+
+    "skeleton_warrior": {
+      "region": "dry_graveyards",
+      "tier": "devil",
+      "roles": {"frontline": 2},
+      "difficulty_range": [0.8, 1.0]
+    },
+
+    "bone_archer": {
+      "region": "dry_graveyards",
+      "tier": "devil",
+      "roles": {"ranged": 2, "frontline": 1},
+      "difficulty_range": [0.8, 1.0]
+    },
+
+    "grave_hound": {
+      "_comment": "Skelepuppy packs that roam the graveyard",
+      "region": "dry_graveyards",
+      "tier": "shade",
+      "roles": {"skirmisher": 4},
+      "difficulty_range": [0.35, 0.5]
+    },
+
+    "skeleton_mage": {
+      "region": "dry_graveyards",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_skeleton_mage", "count": 1},
+        {"archetype": "hg_skeleton_warrior", "count": 2}
+      ]
+    },
+
+    "skeleton_elite": {
+      "_comment": "Hard encounter — full skeleton formation with bone horror anchor",
+      "region": "dry_graveyards",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_skeleton_warrior", "count": 2},
+        {"archetype": "hg_skeleton_archer", "count": 1},
+        {"archetype": "hg_bone_horror", "count": 1}
+      ]
+    },
+
+    "skeleton_warband": {
+      "_comment": "Classic skeleton formation: sword, bow, skelepuppy screen",
+      "region": "dry_graveyards",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_skeleton_warrior", "count": 2},
+        {"archetype": "hg_skeleton_archer", "count": 1},
+        {"archetype": "hg_skelepuppy", "count": 2}
+      ]
+    },
+
+    "skeleton_mage_with_horror": {
+      "_comment": "A mage animating a bone horror as bodyguard",
+      "region": "dry_graveyards",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_skeleton_mage", "count": 1},
+        {"archetype": "hg_bone_horror", "count": 1},
+        {"archetype": "hg_skelepuppy", "count": 2}
+      ]
+    },
+
+    "skeleton_harpy_nest": {
+      "_comment": "Skeletons roosting with harpies in the upper graveyard reaches",
+      "region": "dry_graveyards",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_skeleton_warrior", "count": 1},
+        {"archetype": "hg_skeleton_archer", "count": 1},
+        {"archetype": "hg_harpy", "count": 2}
+      ]
+    },
+
+    "skeleton_mage_with_puppies": {
+      "_comment": "Casters sheltering behind a skelepuppy screen",
+      "region": "dry_graveyards",
+      "mixed": true,
+      "groups": [
+        {
+          "tier": "devil",
+          "roles": {"caster": 1, "ranged": 1},
+          "difficulty_range": [0.9, 1.1]
+        },
+        {
+          "tier": "shade",
+          "roles": {"skirmisher": 3},
+          "difficulty_range": [0.35, 0.5]
+        }
+      ]
+    },
+
+    "_comment_charnel": "=== CHARNEL GROUNDS — vetala zone, final area ===",
+
+    "vetala_scout": {
+      "region": "charnel_grounds",
+      "tier": "devil",
+      "roles": {"skirmisher": 2},
+      "difficulty_range": [0.9, 1.1]
+    },
+
+    "vetala_pack": {
+      "region": "charnel_grounds",
+      "tier": "devil",
+      "roles": {"frontline": 2, "skirmisher": 1},
+      "difficulty_range": [0.95, 1.15]
+    },
+
+    "charnel_wraith": {
+      "_comment": "Stronger incorporeal haunt of the charnel grounds",
+      "region": "charnel_grounds",
+      "tier": "shade",
+      "roles": {"caster": 2, "support": 1},
+      "difficulty_range": [0.5, 0.65]
+    },
+
+    "corpse_sorcerer": {
+      "region": "charnel_grounds",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_vetala_sorcerer", "count": 1},
+        {"archetype": "hg_vampire_bat", "count": 3}
+      ]
+    },
+
+    "hungry_wraith": {
+      "_comment": "Dense cluster of lost pretas drawn to the charnel grounds by the smell of blood",
+      "region": "charnel_grounds",
+      "tier": "shade",
+      "roles": {"frontline": 2, "caster": 2},
+      "difficulty_range": [0.45, 0.6]
+    },
+
+    "vetala_noble": {
+      "_comment": "Hard encounter — vetala elder holding court",
+      "region": "charnel_grounds",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_vetala_elder", "count": 1},
+        {"archetype": "hg_vetala_blooddrinker", "count": 2},
+        {"archetype": "hg_vulture", "count": 2}
+      ]
+    },
+
+    "vetala_with_bats": {
+      "region": "charnel_grounds",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_vetala_blooddrinker", "count": 2},
+        {"archetype": "hg_vampire_bat", "count": 3}
+      ]
+    },
+
+    "vetala_sorcerer_with_dogs": {
+      "region": "charnel_grounds",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_vetala_sorcerer", "count": 1},
+        {"archetype": "hg_carrion_dog", "count": 3}
+      ]
+    },
+
+    "vetala_elder_court": {
+      "region": "charnel_grounds",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "hg_vetala_elder", "count": 1},
+        {"archetype": "hg_vetala_blooddrinker", "count": 2},
+        {"archetype": "hg_vulture", "count": 2}
+      ]
+    },
+
+    "vetala_with_minions": {
+      "_comment": "Vetala with bats and dogs — air and ground pressure",
+      "region": "charnel_grounds",
+      "mixed": true,
+      "groups": [
+        {
+          "tier": "devil",
+          "roles": {"frontline": 1, "caster": 1},
+          "difficulty_range": [0.9, 1.1]
+        },
+        {
+          "tier": "shade",
+          "roles": {"skirmisher": 3},
+          "difficulty_range": [0.4, 0.55]
+        }
+      ]
+    },
+
+    "_comment_shared": "=== SHARED — appear in all three zones ===",
+
+    "lost_preta": {
+      "_comment": "Dissolving spirits drifting through all zones — early/filler encounter",
+      "region": "any",
+      "tier": "shade",
+      "roles": {"frontline": 2, "caster": 1},
+      "difficulty_range": [0.4, 0.55]
+    },
+
+    "_comment_cross_zone": "=== CROSS-ZONE — event and mixed encounters not tied to one region ===",
 
     "rolang_mob": {
       "region": "any",
@@ -25,8 +311,8 @@
     },
 
     "swamp_vermin": {
-      "_comment": "Early swamp encounter — pure support-tier creatures, no faction leader",
-      "region": "swamp",
+      "_comment": "Early encounter — pure support-tier creatures, no faction leader",
+      "region": "fetid_swamps",
       "tier": "shade",
       "roles": {"skirmisher": 2, "support": 1},
       "difficulty_range": [0.35, 0.5]
@@ -34,7 +320,7 @@
 
     "bone_pack": {
       "_comment": "Skelepuppies with a bone horror keeping them in line",
-      "region": "any",
+      "region": "dry_graveyards",
       "mixed": true,
       "groups": [
         {
@@ -50,136 +336,8 @@
       ]
     },
 
-    "_comment_racial_events": "=== RACIAL FACTION EVENT ENCOUNTERS ===",
-
-    "rolang_with_worms": {
-      "_comment": "Shamblers using carrion worms as living siege weapons",
-      "region": "any",
-      "fixed": true,
-      "enemies": [
-        {"archetype": "hg_rolang_shambler", "count": 2},
-        {"archetype": "hg_carrion_worm", "count": 2}
-      ]
-    },
-
-    "rolang_drowned_with_leeches": {
-      "_comment": "Drowned rolangs from the swamp zone with leech swarms",
-      "region": "swamp",
-      "fixed": true,
-      "enemies": [
-        {"archetype": "hg_rolang_drowned", "count": 2},
-        {"archetype": "hg_swamp_leech", "count": 3}
-      ]
-    },
-
-    "rolang_ancient_ritual": {
-      "_comment": "A preserved ancient directing newly-risen dead",
-      "region": "any",
-      "fixed": true,
-      "enemies": [
-        {"archetype": "hg_rolang_ancient", "count": 1},
-        {"archetype": "hg_rolang_shambler", "count": 2},
-        {"archetype": "hg_centipede", "count": 2}
-      ]
-    },
-
-    "skeleton_warband": {
-      "_comment": "Classic skeleton formation: sword, bow, skelepuppy screen",
-      "region": "any",
-      "fixed": true,
-      "enemies": [
-        {"archetype": "hg_skeleton_warrior", "count": 2},
-        {"archetype": "hg_skeleton_archer", "count": 1},
-        {"archetype": "hg_skelepuppy", "count": 2}
-      ]
-    },
-
-    "skeleton_mage_with_horror": {
-      "_comment": "A mage animating a bone horror as bodyguard",
-      "region": "any",
-      "fixed": true,
-      "enemies": [
-        {"archetype": "hg_skeleton_mage", "count": 1},
-        {"archetype": "hg_bone_horror", "count": 1},
-        {"archetype": "hg_skelepuppy", "count": 2}
-      ]
-    },
-
-    "skeleton_harpy_nest": {
-      "_comment": "Skeletons roosting with harpies — natural alliance in the upper reaches",
-      "region": "any",
-      "fixed": true,
-      "enemies": [
-        {"archetype": "hg_skeleton_warrior", "count": 1},
-        {"archetype": "hg_skeleton_archer", "count": 1},
-        {"archetype": "hg_harpy", "count": 2}
-      ]
-    },
-
-    "vetala_with_bats": {
-      "_comment": "Vetala blooddrinker with a cloud of vampire bats",
-      "region": "any",
-      "fixed": true,
-      "enemies": [
-        {"archetype": "hg_vetala_blooddrinker", "count": 2},
-        {"archetype": "hg_vampire_bat", "count": 3}
-      ]
-    },
-
-    "vetala_sorcerer_with_dogs": {
-      "_comment": "Sorcerer with feral carrion dogs as hunting pack",
-      "region": "any",
-      "fixed": true,
-      "enemies": [
-        {"archetype": "hg_vetala_sorcerer", "count": 1},
-        {"archetype": "hg_carrion_dog", "count": 3}
-      ]
-    },
-
-    "vetala_elder_court": {
-      "_comment": "An elder holding court, flanked by blooddrinkers and circling vultures",
-      "region": "any",
-      "fixed": true,
-      "enemies": [
-        {"archetype": "hg_vetala_elder", "count": 1},
-        {"archetype": "hg_vetala_blooddrinker", "count": 2},
-        {"archetype": "hg_vulture", "count": 2}
-      ]
-    },
-
-    "_comment_mobs": "=== MAP MOB ENCOUNTERS — overworld roaming groups ===",
-
-    "shambling_dead": {
-      "region": "any",
-      "tier": "devil",
-      "roles": {"frontline": 2},
-      "difficulty_range": [0.7, 1.0]
-    },
-
-    "worm_pit": {
-      "_comment": "A cluster of carrion worms — area denial encounter",
-      "region": "any",
-      "tier": "imp",
-      "roles": {"frontline": 3},
-      "difficulty_range": [0.55, 0.7]
-    },
-
-    "bone_patrol": {
-      "region": "any",
-      "tier": "devil",
-      "roles": {"frontline": 1, "ranged": 1},
-      "difficulty_range": [0.8, 1.0]
-    },
-
-    "blood_hunt": {
-      "region": "any",
-      "tier": "devil",
-      "roles": {"frontline": 1, "skirmisher": 1},
-      "difficulty_range": [0.9, 1.1]
-    },
-
     "carrion_flock": {
-      "_comment": "Vultures and carrion dogs — no vetala leader, just opportunistic scavengers",
+      "_comment": "Vultures and carrion dogs — opportunistic scavengers with no vetala leader",
       "region": "any",
       "mixed": true,
       "groups": [
@@ -203,64 +361,8 @@
       "difficulty_range": [0.35, 0.5]
     },
 
-    "_comment_mixed_mobs": "=== MIXED TIER MAP MOBS ===",
-
-    "rolang_with_vermin": {
-      "_comment": "Shamblers advancing behind a screen of centipedes",
-      "region": "any",
-      "mixed": true,
-      "groups": [
-        {
-          "tier": "devil",
-          "roles": {"frontline": 2},
-          "difficulty_range": [0.8, 1.0]
-        },
-        {
-          "tier": "shade",
-          "roles": {"skirmisher": 2},
-          "difficulty_range": [0.35, 0.5]
-        }
-      ]
-    },
-
-    "skeleton_mage_with_puppies": {
-      "_comment": "Casters sheltering behind a skelepuppy screen",
-      "region": "any",
-      "mixed": true,
-      "groups": [
-        {
-          "tier": "devil",
-          "roles": {"caster": 1, "ranged": 1},
-          "difficulty_range": [0.9, 1.1]
-        },
-        {
-          "tier": "shade",
-          "roles": {"skirmisher": 3},
-          "difficulty_range": [0.35, 0.5]
-        }
-      ]
-    },
-
-    "vetala_with_minions": {
-      "_comment": "Vetala with bats and dogs — air and ground pressure",
-      "region": "any",
-      "mixed": true,
-      "groups": [
-        {
-          "tier": "devil",
-          "roles": {"frontline": 1, "caster": 1},
-          "difficulty_range": [0.9, 1.1]
-        },
-        {
-          "tier": "shade",
-          "roles": {"skirmisher": 3},
-          "difficulty_range": [0.4, 0.55]
-        }
-      ]
-    },
-
     "undead_convergence": {
-      "_comment": "All three factions present — rare chaotic mob when territories overlap",
+      "_comment": "All three factions present — rare encounter where territories overlap",
       "region": "any",
       "mixed": true,
       "groups": [

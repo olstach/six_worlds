@@ -827,6 +827,82 @@
         "life_steal"
       ],
       "realm": "hungry_ghost"
+    },
+
+    "_comment_incorporeal": "=== INCORPOREAL DRIFTERS === Preta and wraith types — the unaffiliated dead drifting through all zones.",
+
+    "hg_lost_preta": {
+      "_comment": "Dissolving consciousnesses barely present in the physical world. Analogous to hell's tormented shade. Appear in all three zones.",
+      "name": "Lost Preta",
+      "tier": "shade",
+      "roles": ["frontline", "caster"],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 2,
+        "awareness": 3,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": ["black_magic", "space_magic"],
+      "guaranteed_spells": ["gloom", "suffering"],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 2,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "black": 40,
+        "white": -50,
+        "physical": 20
+      },
+      "threat_multiplier": 0.45,
+      "tags": ["undead", "incorporeal"],
+      "realm": "hungry_ghost"
+    },
+
+    "hg_charnel_wraith": {
+      "_comment": "Stronger incorporeal from the charnel grounds — more focused and more dangerous than a lost preta.",
+      "name": "Charnel Wraith",
+      "tier": "shade",
+      "roles": ["caster", "support"],
+      "region": "charnel_grounds",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 2,
+        "awareness": 3,
+        "focus": 4,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": ["black_magic", "sorcery"],
+      "guaranteed_spells": ["gloom", "curse", "life_drain"],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 3,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "black": 50,
+        "white": -60,
+        "physical": 30
+      },
+      "threat_multiplier": 0.55,
+      "tags": ["undead", "incorporeal"],
+      "realm": "hungry_ghost"
     }
   }
 }
