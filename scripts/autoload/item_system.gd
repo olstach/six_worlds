@@ -471,7 +471,9 @@ func calculate_equipment_stats(character: Dictionary) -> Dictionary:
 		"constitution": 0,
 		"focus": 0,
 		"awareness": 0,
-		"charm": 0
+		"charm": 0,
+		# Resistance bonuses collected from item passives: {"fire": 15, "physical": 25, ...}
+		"resistances": {}
 	}
 
 	var equipment = character.get("equipment", {})
@@ -514,6 +516,13 @@ func _add_item_stats(item_id: String, bonuses: Dictionary) -> void:
 			bonuses[stat_key] += stats[stat_key]
 		else:
 			bonuses[stat_key] = stats[stat_key]
+
+	# Collect resistance bonuses from passive effects (e.g. "fire_resistance": 15)
+	var passive = item.get("passive", {})
+	for key in passive:
+		if key.ends_with("_resistance") and key != "perk":
+			var element = key.replace("_resistance", "")
+			bonuses["resistances"][element] = bonuses["resistances"].get(element, 0) + passive[key]
 
 
 ## Get rarity color for an item

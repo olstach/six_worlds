@@ -151,19 +151,12 @@ func init_from_character(char_data: Dictionary, unit_team: int) -> void:
 	# Calculate max actions (base 2, can be modified)
 	max_actions = CombatManager.BASE_ACTIONS
 
-	# Load talisman resistance bonuses from equipped trinkets
-	var equipment = char_data.get("equipment", {})
-	for slot in ["trinket1", "trinket2"]:
-		var item_id = equipment.get(slot, "")
-		if item_id == "":
-			continue
-		var item = ItemSystem.get_item(item_id)
-		var passive = item.get("passive", {})
-		for key in passive:
-			if key.ends_with("_resistance") and key != "perk":
-				# e.g. "fire_resistance": 15 -> resistances["fire"] += 15
-				var element = key.replace("_resistance", "")
-				resistances[element] = resistances.get(element, 0) + passive[key]
+	# Load pre-calculated resistances from derived stats.
+	# These already include racial base + all equipment bonuses (built by CharacterSystem.update_derived_stats).
+	# In-combat spell/status bonuses are applied on top in get_resistance().
+	var char_resists = char_data.get("derived", {}).get("resistances", {})
+	for resist_type in char_resists:
+		resistances[resist_type] = char_resists[resist_type]
 
 	_update_visuals()
 
