@@ -26,7 +26,7 @@ const KARMA_THRESHOLD: int = 100
 # Race pools for each realm
 const REALM_RACES: Dictionary = {
 	"hell": ["red_devil", "blue_devil", "green_devil", "yellow_devil", "white_devil", "black_devil"],
-	"hungry_ghost": ["rolang", "skeleton", "vetala"],
+	"hungry_ghost": ["rolang", "skeleton", "skeleton_silver", "skeleton_copper", "skeleton_golden", "skeleton_iron", "skeleton_turquoise", "dralha", "gyelpo", "dre", "vetala", "shaza", "yidag"],
 	"animal": ["naga", "bee", "yaksha"],
 	"human": ["nomad", "mountain_folk", "trader"],
 	"asura": ["tsen", "rudra"],
@@ -46,7 +46,17 @@ const RACE_WEIGHTS: Dictionary = {
 	# Hungry ghost realm
 	"rolang": 35,
 	"skeleton": 30,
+	"skeleton_silver": 15,
+	"skeleton_copper": 15,
+	"skeleton_golden": 15,
+	"skeleton_iron": 15,
+	"skeleton_turquoise": 15,
+	"dralha": 7,
+	"gyelpo": 5,
+	"dre": 5,
 	"vetala": 10,
+	"shaza": 10,
+	"yidag": 10,
 	
 	# Animal realm
 	"naga": 35,
