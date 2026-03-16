@@ -37,7 +37,7 @@ var _width: int = 0
 var _height: int = 0
 var _terrain: Array[int] = []  # Flat array [y * width + x]
 var _occupied: Dictionary = {}  # Vector2i -> true (tiles claimed by objects/mobs/landmarks)
-var _pass_positions: Array[Vector2i] = []  # Center of each mountain pass
+var _pass_positions: Array[Dictionary] = []  # Each entry: {"pos": Vector2i, "zone_id": String}
 var _start_pos: Vector2i = Vector2i.ZERO
 var _portal_pos: Vector2i = Vector2i.ZERO
 var _objects: Array[Dictionary] = []
@@ -161,14 +161,19 @@ func generate(config: Dictionary, seed_value: int = 0) -> Dictionary:
 # TERRAIN GENERATION
 # ============================================
 
-## Generate terrain for a single zone
+## Generate terrain for a single zone.
+## Zones can optionally specify "cols": [start, end] to restrict their horizontal extent.
+## If cols is omitted the zone spans the full map width (backward compatible with hell.json).
 func _generate_zone_terrain(zone: Dictionary) -> void:
-	var rows = zone.get("rows", [0, 0])
+	var rows = zone.get("rows", [0, _height - 1])
+	var cols = zone.get("cols", [0, _width - 1])
 	var row_start = int(rows[0])
 	var row_end = int(rows[1])
+	var col_start = int(cols[0])
+	var col_end = int(cols[1])
 
 	if zone.get("type", "") == "mountain_wall":
-		_generate_mountain_wall(zone, row_start, row_end)
+		_generate_mountain_wall(zone, row_start, row_end, col_start, col_end)
 		return
 
 	# Weighted random terrain fill
@@ -176,52 +181,89 @@ func _generate_zone_terrain(zone: Dictionary) -> void:
 	var weight_table = _build_weight_table(weights)
 
 	for y in range(row_start, row_end + 1):
-		for x in range(_width):
+		for x in range(col_start, col_end + 1):
 			_set_terrain(x, y, _pick_weighted(weight_table))
 
 	# Cellular automata smoothing — 3 passes
 	for _pass in range(3):
 		var new_terrain: Array[int] = _terrain.duplicate()
 		for y in range(row_start, row_end + 1):
-			for x in range(_width):
-				new_terrain[y * _width + x] = _smooth_cell(x, y, row_start, row_end)
-		# Apply smoothed result for this zone's rows only
+			for x in range(col_start, col_end + 1):
+				new_terrain[y * _width + x] = _smooth_cell(x, y, row_start, row_end, col_start, col_end)
+		# Apply smoothed result for this zone's rows and cols only
 		for y in range(row_start, row_end + 1):
-			for x in range(_width):
+			for x in range(col_start, col_end + 1):
 				_terrain[y * _width + x] = new_terrain[y * _width + x]
 
 
-## Fill a zone with mountains and carve passes through it
-func _generate_mountain_wall(zone: Dictionary, row_start: int, row_end: int) -> void:
+## Fill a zone with mountains and carve passes through it.
+## Supports horizontal walls (default) and vertical walls (set orientation = "vertical").
+## pass_range: [min_fraction, max_fraction] biases pass placement along the wall's length.
+##   For horizontal walls: fraction of wall width. For vertical walls: fraction of wall height.
+func _generate_mountain_wall(zone: Dictionary, row_start: int, row_end: int, col_start: int, col_end: int) -> void:
+	var zone_id = zone.get("id", "")
+	var orientation = zone.get("orientation", "horizontal")
+
 	# Fill with mountains
 	for y in range(row_start, row_end + 1):
-		for x in range(_width):
+		for x in range(col_start, col_end + 1):
 			_set_terrain(x, y, T_MOUNTAINS)
 
-	# Carve passes
 	var pass_count_range = zone.get("pass_count", [1, 2])
 	var num_passes = randi_range(int(pass_count_range[0]), int(pass_count_range[1]))
 	var pass_width = int(zone.get("pass_width", 3))
+	var pass_range: Array = zone.get("pass_range", [0.1, 0.9])
+	var range_min = float(pass_range[0])
+	var range_max = float(pass_range[1])
 
-	# Distribute passes across the width
-	var segment_width = _width / (num_passes + 1)
-	for i in range(num_passes):
-		var center_x = int(segment_width * (i + 1)) + randi_range(-5, 5)
-		center_x = clampi(center_x, pass_width, _width - pass_width - 1)
+	if orientation == "vertical":
+		# Vertical wall: passes are horizontal openings, distributed along the wall's height.
+		var wall_height = row_end - row_start
+		var range_start_y = row_start + int(wall_height * range_min)
+		var range_end_y = row_start + int(wall_height * range_max)
+		var segment_height = maxi((range_end_y - range_start_y) / (num_passes + 1), 1)
+		var center_x = (col_start + col_end) / 2
+
+		for i in range(num_passes):
+			var center_y = range_start_y + int(segment_height * (i + 1)) + randi_range(-3, 3)
+			center_y = clampi(center_y, row_start + pass_width, row_end - pass_width - 1)
+
+			# Carve horizontal opening through the vertical wall
+			for x in range(col_start, col_end + 1):
+				for dy in range(-pass_width / 2, pass_width / 2 + 1):
+					var py = center_y + dy
+					if py >= 0 and py < _height:
+						_set_terrain(x, py, T_PLAINS)
+
+			_pass_positions.append({"pos": Vector2i(center_x, center_y), "zone_id": zone_id})
+
+	else:
+		# Horizontal wall: passes are vertical openings, distributed along the wall's width.
+		var wall_width = col_end - col_start
+		var range_start_x = col_start + int(wall_width * range_min)
+		var range_end_x = col_start + int(wall_width * range_max)
+		var segment_width = maxi((range_end_x - range_start_x) / (num_passes + 1), 1)
 		var center_y = (row_start + row_end) / 2
 
-		# Carve the pass (rectangular opening)
-		for y in range(row_start, row_end + 1):
-			for dx in range(-pass_width / 2, pass_width / 2 + 1):
-				var px = center_x + dx
-				if px >= 0 and px < _width:
-					_set_terrain(px, y, T_PLAINS)
+		for i in range(num_passes):
+			var center_x = range_start_x + int(segment_width * (i + 1)) + randi_range(-5, 5)
+			center_x = clampi(center_x, col_start + pass_width, col_end - pass_width - 1)
 
-		_pass_positions.append(Vector2i(center_x, center_y))
+			# Carve vertical opening through the horizontal wall
+			for y in range(row_start, row_end + 1):
+				for dx in range(-pass_width / 2, pass_width / 2 + 1):
+					var px = center_x + dx
+					if px >= 0 and px < _width:
+						_set_terrain(px, y, T_PLAINS)
+
+			_pass_positions.append({"pos": Vector2i(center_x, center_y), "zone_id": zone_id})
 
 
-## Cellular automata: pick the most common terrain among 8 neighbors
-func _smooth_cell(x: int, y: int, row_min: int, row_max: int) -> int:
+## Cellular automata: pick the most common terrain among 8 neighbors.
+## col_min/col_max are optional — if not provided, defaults to full map width.
+func _smooth_cell(x: int, y: int, row_min: int, row_max: int, col_min: int = 0, col_max: int = -1) -> int:
+	if col_max < 0:
+		col_max = _width - 1
 	var counts: Dictionary = {}
 	var current = _get_terrain(x, y)
 	counts[current] = 1  # Slight bias toward keeping current
@@ -232,7 +274,7 @@ func _smooth_cell(x: int, y: int, row_min: int, row_max: int) -> int:
 				continue
 			var nx = x + dx
 			var ny = y + dy
-			if nx < 0 or nx >= _width or ny < row_min or ny > row_max:
+			if nx < col_min or nx > col_max or ny < row_min or ny > row_max:
 				continue
 			var t = _get_terrain(nx, ny)
 			counts[t] = counts.get(t, 0) + 1
@@ -251,38 +293,38 @@ func _smooth_cell(x: int, y: int, row_min: int, row_max: int) -> int:
 # ROAD CARVING
 # ============================================
 
-## Carve roads connecting start → pass → portal
-func _carve_connecting_roads(zones: Array) -> void:
+## Carve roads connecting start → passes (in nearest-neighbor travel order) → portal.
+## Works for any number of mountain walls in any orientation.
+func _carve_connecting_roads(_zones: Array) -> void:
 	if _pass_positions.is_empty():
+		_carve_road_between(_start_pos, _portal_pos)
 		return
 
-	# Find nearest pass to start
-	var nearest_pass = _pass_positions[0]
-	var best_dist = 99999.0
-	for pp in _pass_positions:
-		var d = Vector2(_start_pos).distance_to(Vector2(pp))
-		if d < best_dist:
-			best_dist = d
-			nearest_pass = pp
+	# Order passes greedily by nearest-neighbor from start
+	var remaining: Array = _pass_positions.duplicate()
+	var ordered: Array[Vector2i] = []
+	var current_pos = _start_pos
 
-	# Carve road: start → nearest pass entrance (top side of divider)
-	var pass_top = Vector2i(nearest_pass.x, nearest_pass.y)
-	# Find the top row of the divider
-	for zone in zones:
-		if zone.get("type", "") == "mountain_wall":
-			var rows = zone.get("rows", [0, 0])
-			pass_top = Vector2i(nearest_pass.x, int(rows[0]))
-			break
-	_carve_road_between(_start_pos, pass_top)
+	while not remaining.is_empty():
+		var nearest_entry = remaining[0]
+		var best_dist = Vector2(current_pos).distance_to(Vector2(nearest_entry.pos))
+		for entry in remaining:
+			var d = Vector2(current_pos).distance_to(Vector2(entry.pos))
+			if d < best_dist:
+				best_dist = d
+				nearest_entry = entry
+		ordered.append(nearest_entry.pos)
+		remaining.erase(nearest_entry)
+		current_pos = nearest_entry.pos
 
-	# Carve road: pass exit (bottom of divider) → portal
-	var pass_bottom = Vector2i(nearest_pass.x, pass_top.y + 5)
-	for zone in zones:
-		if zone.get("type", "") == "mountain_wall":
-			var rows = zone.get("rows", [0, 0])
-			pass_bottom = Vector2i(nearest_pass.x, int(rows[1]))
-			break
-	_carve_road_between(pass_bottom, _portal_pos)
+	# Carve: start → pass[0] → pass[1] → ... → portal
+	var waypoints: Array[Vector2i] = [_start_pos]
+	for pp in ordered:
+		waypoints.append(pp)
+	waypoints.append(_portal_pos)
+
+	for i in range(waypoints.size() - 1):
+		_carve_road_between(waypoints[i], waypoints[i + 1])
 
 
 ## Carve a meandering road between two points
@@ -354,23 +396,26 @@ func _place_fixed_landmarks(landmarks: Array, zones: Array) -> void:
 
 
 func _place_start(landmark: Dictionary, zone: Dictionary) -> void:
-	var rows = zone.get("rows", [0, 0])
+	var rows = zone.get("rows", [0, _height - 1])
+	var cols = zone.get("cols", [0, _width - 1])
 	var row_start = int(rows[0])
+	var col_start = int(cols[0])
+	var col_end = int(cols[1])
 	var clear_radius = int(landmark.get("clear_radius", 3))
 	var position = landmark.get("position", "top_left")
 
 	# Pick position based on config
 	match position:
 		"top_left":
-			_start_pos = Vector2i(3, row_start + 3)
+			_start_pos = Vector2i(col_start + 3, row_start + 3)
 		"top_right":
-			_start_pos = Vector2i(_width - 4, row_start + 3)
+			_start_pos = Vector2i(col_end - 3, row_start + 3)
 		"bottom_left":
-			_start_pos = Vector2i(3, int(rows[1]) - 3)
+			_start_pos = Vector2i(col_start + 3, int(rows[1]) - 3)
 		"bottom_right":
-			_start_pos = Vector2i(_width - 4, int(rows[1]) - 3)
+			_start_pos = Vector2i(col_end - 3, int(rows[1]) - 3)
 		_:
-			_start_pos = Vector2i(3, row_start + 3)
+			_start_pos = Vector2i(col_start + 3, row_start + 3)
 
 	# Clear area around start
 	_clear_area(_start_pos, clear_radius)
@@ -378,22 +423,25 @@ func _place_start(landmark: Dictionary, zone: Dictionary) -> void:
 
 
 func _place_portal(landmark: Dictionary, zone: Dictionary) -> void:
-	var rows = zone.get("rows", [0, 0])
+	var rows = zone.get("rows", [0, _height - 1])
+	var cols = zone.get("cols", [0, _width - 1])
 	var row_end = int(rows[1])
+	var col_start = int(cols[0])
+	var col_end = int(cols[1])
 	var clear_radius = int(landmark.get("clear_radius", 2))
 	var position = landmark.get("position", "bottom_right")
 
 	match position:
 		"bottom_right":
-			_portal_pos = Vector2i(_width - 5, row_end - 3)
+			_portal_pos = Vector2i(col_end - 4, row_end - 3)
 		"bottom_left":
-			_portal_pos = Vector2i(4, row_end - 3)
+			_portal_pos = Vector2i(col_start + 4, row_end - 3)
 		"top_right":
-			_portal_pos = Vector2i(_width - 5, int(rows[0]) + 3)
+			_portal_pos = Vector2i(col_end - 4, int(rows[0]) + 3)
 		"top_left":
-			_portal_pos = Vector2i(4, int(rows[0]) + 3)
+			_portal_pos = Vector2i(col_start + 4, int(rows[0]) + 3)
 		_:
-			_portal_pos = Vector2i(_width - 5, row_end - 3)
+			_portal_pos = Vector2i(col_end - 4, row_end - 3)
 
 	# Clear area around portal
 	_clear_area(_portal_pos, clear_radius)
@@ -444,8 +492,13 @@ func _place_pass_guardian(landmark: Dictionary) -> void:
 		return
 
 	var data = landmark.get("data", {})
-	# Place at the first pass
-	var pass_pos = _pass_positions[0]
+	var zone_id = landmark.get("zone", "")
+	# Find the pass belonging to the requested zone; fall back to first pass
+	var pass_pos: Vector2i = _pass_positions[0].pos
+	for entry in _pass_positions:
+		if entry.zone_id == zone_id:
+			pass_pos = entry.pos
+			break
 	_occupied[pass_pos] = true
 
 	_objects.append({
@@ -480,7 +533,7 @@ func _validate_connectivity() -> void:
 		# Check if any pass is reachable
 		var pass_reachable = false
 		for pp in _pass_positions:
-			if pp in reachable:
+			if pp.pos in reachable:
 				pass_reachable = true
 				break
 
@@ -492,15 +545,15 @@ func _validate_connectivity() -> void:
 
 		# Carve a path toward the unreachable target
 		if not pass_reachable and not _pass_positions.is_empty():
-			_carve_path_toward(reachable, _pass_positions[0])
+			_carve_path_toward(reachable, _pass_positions[0].pos)
 		elif not portal_reachable:
 			_carve_path_toward(reachable, _portal_pos)
 
 	# Last resort: brute force a straight-line path
 	push_warning("MapGenerator: Forcing connectivity with straight path")
 	if not _pass_positions.is_empty():
-		_force_path(_start_pos, _pass_positions[0])
-		_force_path(_pass_positions[0], _portal_pos)
+		_force_path(_start_pos, _pass_positions[0].pos)
+		_force_path(_pass_positions[0].pos, _portal_pos)
 	else:
 		_force_path(_start_pos, _portal_pos)
 
@@ -575,9 +628,12 @@ func _force_path(from: Vector2i, to: Vector2i) -> void:
 ## Place events and pickups from a zone's object pool
 func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary) -> void:
 	var zone_id = zone.get("id", "")
-	var rows = zone.get("rows", [0, 0])
+	var rows = zone.get("rows", [0, _height - 1])
+	var cols = zone.get("cols", [0, _width - 1])
 	var row_start = int(rows[0])
 	var row_end = int(rows[1])
+	var col_start = int(cols[0])
+	var col_end = int(cols[1])
 	var min_spacing = int(density.get("min_spacing", 3))
 
 	var event_pool = pool.get("events", [])
@@ -606,7 +662,7 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 		if shop_events.is_empty():
 			break
 		var template = shop_events[randi() % shop_events.size()]
-		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions)
+		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end)
 		if pos != Vector2i(-1, -1):
 			_place_event_object(zone_id, template, pos)
 			placed_positions.append(pos)
@@ -621,7 +677,7 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 		if rest_pickups.is_empty():
 			break
 		var template = rest_pickups[randi() % rest_pickups.size()]
-		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions)
+		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end)
 		if pos != Vector2i(-1, -1):
 			_place_pickup_object(zone_id, template, pos)
 			placed_positions.append(pos)
@@ -640,7 +696,7 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 			break
 		var template = guild_events[guilds_placed]
 		guilds_placed += 1
-		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions)
+		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end)
 		if pos != Vector2i(-1, -1):
 			_place_event_object(zone_id, template, pos)
 			placed_positions.append(pos)
@@ -686,7 +742,7 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 					"one_time": true,
 					"rewards": [{"type": "spell", "value": {"school": school, "tier": tier}}]
 				}
-				var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions)
+				var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end)
 				if pos != Vector2i(-1, -1):
 					_place_pickup_object(zone_id, template, pos)
 					placed_positions.append(pos)
@@ -698,7 +754,7 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 		if event_pool.is_empty():
 			break
 		var template = _pick_from_pool(event_pool, event_weights)
-		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions)
+		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end)
 		if pos != Vector2i(-1, -1):
 			_place_event_object(zone_id, template, pos)
 			placed_positions.append(pos)
@@ -709,7 +765,7 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 		if pickup_pool.is_empty():
 			break
 		var template = _pick_from_pool(pickup_pool, pickup_weights)
-		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions)
+		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end)
 		if pos != Vector2i(-1, -1):
 			_place_pickup_object(zone_id, template, pos)
 			placed_positions.append(pos)
@@ -813,9 +869,12 @@ func _resolve_rewards(rewards_template: Array) -> Array:
 ## Place mobs from a zone's mob pool
 func _place_zone_mobs(zone: Dictionary, pool: Array, density: Dictionary) -> void:
 	var zone_id = zone.get("id", "")
-	var rows = zone.get("rows", [0, 0])
+	var rows = zone.get("rows", [0, _height - 1])
+	var cols = zone.get("cols", [0, _width - 1])
 	var row_start = int(rows[0])
 	var row_end = int(rows[1])
+	var col_start = int(cols[0])
+	var col_end = int(cols[1])
 	var min_spacing = int(density.get("min_spacing", 3))
 
 	var mob_range = density.get("mobs_per_zone", [8, 14])
@@ -826,7 +885,7 @@ func _place_zone_mobs(zone: Dictionary, pool: Array, density: Dictionary) -> voi
 	var placement_failures = 0
 	for i in range(num_mobs):
 		var template = _pick_from_pool(pool, mob_weights)
-		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions)
+		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end)
 		if pos == Vector2i(-1, -1):
 			placement_failures += 1
 			if placement_failures >= 5:
@@ -911,16 +970,19 @@ func _generate_patrol_route(start: Vector2i, row_min: int, row_max: int) -> Arra
 # PLACEMENT HELPERS
 # ============================================
 
-## Find a valid tile for placing an object/mob in a zone row range.
+## Find a valid tile for placing an object/mob in a zone row+col range.
 ## Must be walkable, not occupied, and min_spacing from existing placements.
 ## Uses reservoir sampling so all valid tiles have equal probability (no terrain bias).
+## col_start/col_end are optional — if omitted, defaults to full map width.
 func _find_placement_tile(row_start: int, row_end: int, min_spacing: int,
-		placed: Array[Vector2i]) -> Vector2i:
+		placed: Array[Vector2i], col_start: int = 0, col_end: int = -1) -> Vector2i:
+	if col_end < 0:
+		col_end = _width - 1
 	var best_pos = Vector2i(-1, -1)
 	var valid_count = 0  # How many valid candidates seen so far (for reservoir sampling)
 
 	for _try in range(100):
-		var x = randi_range(1, _width - 2)
+		var x = randi_range(maxi(1, col_start), mini(_width - 2, col_end))
 		var y = randi_range(row_start + 1, row_end - 1)
 		var pos = Vector2i(x, y)
 
@@ -958,9 +1020,12 @@ func _find_placement_tile(row_start: int, row_end: int, min_spacing: int,
 ## Find a walkable tile near a position, within a distance range
 func _find_walkable_near(center: Vector2i, min_dist: int, max_dist: int,
 		zone: Dictionary) -> Vector2i:
-	var rows = zone.get("rows", [0, 0])
+	var rows = zone.get("rows", [0, _height - 1])
+	var cols = zone.get("cols", [0, _width - 1])
 	var row_start = int(rows[0])
 	var row_end = int(rows[1])
+	var col_start = int(cols[0])
+	var col_end = int(cols[1])
 
 	for _try in range(50):
 		var dx = randi_range(-max_dist, max_dist)
@@ -969,7 +1034,7 @@ func _find_walkable_near(center: Vector2i, min_dist: int, max_dist: int,
 
 		if absi(dx) + absi(dy) < min_dist:
 			continue
-		pos.x = clampi(pos.x, 1, _width - 2)
+		pos.x = clampi(pos.x, maxi(1, col_start), mini(_width - 2, col_end))
 		pos.y = clampi(pos.y, row_start + 1, row_end - 1)
 
 		if not _get_terrain(pos.x, pos.y) in IMPASSABLE and not pos in _occupied:
@@ -977,7 +1042,7 @@ func _find_walkable_near(center: Vector2i, min_dist: int, max_dist: int,
 
 	# Fallback: just offset from center
 	var fallback = center + Vector2i(min_dist, 0)
-	fallback.x = clampi(fallback.x, 1, _width - 2)
+	fallback.x = clampi(fallback.x, maxi(1, col_start), mini(_width - 2, col_end))
 	fallback.y = clampi(fallback.y, row_start + 1, row_end - 1)
 	return fallback
 
@@ -989,15 +1054,11 @@ func _find_walkable_near(center: Vector2i, min_dist: int, max_dist: int,
 ## Build region entry for the output regions dict
 func _build_region(zone: Dictionary) -> void:
 	var zone_id = zone.get("id", "")
-	var rows = zone.get("rows", [0, 0])
+	var rows = zone.get("rows", [0, _height - 1])
+	var cols = zone.get("cols", [0, _width - 1])
 
-	# Use "mountain_pass" for divider zones
-	var region_id = zone_id
-	if zone.get("type", "") == "mountain_wall":
-		region_id = "mountain_pass"
-
-	_regions[region_id] = {
-		"tiles_rect": [0, int(rows[0]), _width - 1, int(rows[1])]
+	_regions[zone_id] = {
+		"tiles_rect": [int(cols[0]), int(rows[0]), int(cols[1]), int(rows[1])]
 	}
 
 

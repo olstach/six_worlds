@@ -17,46 +17,35 @@
 
 	"zones": [
 		{
+			"_comment": "Left third of the map, full height. Start zone.",
 			"id": "fetid_swamps",
-			"rows": [0, 55],
+			"rows": [0, 191],
+			"cols": [0, 63],
 			"terrain_weights": {
-				"0": 20, "2": 25, "3": 20, "5": 12, "8": 8,
-				"11": 6, "1": 4, "4": 3, "13": 2
+				"0": 20, "2": 25, "3": 20, "5": 12, "6": 8,
+				"11": 5, "1": 4, "4": 3, "10": 3
 			},
 			"road_chance": 0.05,
 			"cluster_min": 3,
 			"cluster_max": 8
 		},
 		{
-			"id": "divider_1",
-			"rows": [56, 63],
+			"_comment": "Vertical wall separating swamp from the right half. Pass biased to lower area so the player must travel south before crossing.",
+			"id": "vertical_divider",
+			"rows": [0, 191],
+			"cols": [64, 71],
 			"type": "mountain_wall",
+			"orientation": "vertical",
 			"display_name": "Bone Levee",
 			"pass_width": 3,
-			"pass_count": [1, 2]
+			"pass_count": [1, 1],
+			"pass_range": [0.55, 0.82]
 		},
 		{
-			"id": "dry_graveyards",
-			"rows": [64, 119],
-			"terrain_weights": {
-				"0": 35, "1": 20, "4": 12, "3": 10, "13": 8,
-				"5": 5, "8": 4, "2": 3, "12": 3
-			},
-			"road_chance": 0.07,
-			"cluster_min": 2,
-			"cluster_max": 5
-		},
-		{
-			"id": "divider_2",
-			"rows": [120, 127],
-			"type": "mountain_wall",
-			"display_name": "Ruined Ramparts",
-			"pass_width": 3,
-			"pass_count": [1, 2]
-		},
-		{
+			"_comment": "Top-right section. Final zone — reached by going UP through the horizontal wall from the graveyard.",
 			"id": "charnel_grounds",
-			"rows": [128, 191],
+			"rows": [0, 95],
+			"cols": [72, 191],
 			"terrain_weights": {
 				"0": 25, "1": 18, "9": 12, "13": 10, "4": 10,
 				"3": 8, "12": 7, "8": 5, "2": 5
@@ -64,37 +53,56 @@
 			"road_chance": 0.04,
 			"cluster_min": 2,
 			"cluster_max": 6
+		},
+		{
+			"_comment": "Horizontal wall within the right section. Pass biased to the right so the player must explore the graveyard before finding it.",
+			"id": "horizontal_divider",
+			"rows": [96, 103],
+			"cols": [72, 191],
+			"type": "mountain_wall",
+			"display_name": "Ruined Ramparts",
+			"pass_width": 3,
+			"pass_count": [1, 1],
+			"pass_range": [0.55, 0.85]
+		},
+		{
+			"_comment": "Bottom-right section. First zone entered after the vertical wall pass.",
+			"id": "dry_graveyards",
+			"rows": [104, 191],
+			"cols": [72, 191],
+			"terrain_weights": {
+				"0": 35, "1": 20, "4": 12, "3": 10, "13": 8,
+				"5": 5, "7": 5, "2": 3, "12": 2
+			},
+			"road_chance": 0.07,
+			"cluster_min": 2,
+			"cluster_max": 5
 		}
 	],
 
 	"fixed_landmarks": [
 		{
+			"_comment": "Start at top-left of swamp. Player must travel south to find the vertical wall pass.",
 			"type": "start",
 			"zone": "fetid_swamps",
 			"position": "top_left",
 			"clear_radius": 3
 		},
 		{
-			"type": "pass_guardian",
-			"zone": "divider_1",
-			"position": "at_pass",
+			"_comment": "Portal placed first so boss placement can use it as an anchor.",
+			"type": "portal",
+			"zone": "charnel_grounds",
+			"position": "top_right",
+			"clear_radius": 2,
 			"data": {
-				"event_id": "hg_swamp_warden",
-				"name": "Swamp Warden",
-				"icon": "enemy_elite"
+				"destination_realm": "animal",
+				"destination_map": "animal_01",
+				"requires_boss_defeated": true,
+				"description": "A shimmering portal to the Animal Realm."
 			}
 		},
 		{
-			"type": "pass_guardian",
-			"zone": "divider_2",
-			"position": "at_pass",
-			"data": {
-				"event_id": "hg_bone_gate_keeper",
-				"name": "Bone Gate Keeper",
-				"icon": "enemy_elite"
-			}
-		},
-		{
+			"_comment": "Boss guards the portal in the top-right of charnel grounds, farthest from entry point.",
 			"type": "boss",
 			"zone": "charnel_grounds",
 			"position": "near_portal",
@@ -105,15 +113,25 @@
 			}
 		},
 		{
-			"type": "portal",
-			"zone": "charnel_grounds",
-			"position": "bottom_right",
-			"clear_radius": 2,
+			"_comment": "Guards the vertical wall pass (swamp → graveyard crossing).",
+			"type": "pass_guardian",
+			"zone": "vertical_divider",
+			"position": "at_pass",
 			"data": {
-				"destination_realm": "animal",
-				"destination_map": "animal_01",
-				"requires_boss_defeated": true,
-				"description": "A shimmering portal to the Animal Realm."
+				"event_id": "hg_swamp_warden",
+				"name": "Swamp Warden",
+				"icon": "enemy_elite"
+			}
+		},
+		{
+			"_comment": "Guards the horizontal wall pass (graveyard → charnel grounds crossing).",
+			"type": "pass_guardian",
+			"zone": "horizontal_divider",
+			"position": "at_pass",
+			"data": {
+				"event_id": "hg_bone_gate_keeper",
+				"name": "Bone Gate Keeper",
+				"icon": "enemy_elite"
 			}
 		}
 	],
