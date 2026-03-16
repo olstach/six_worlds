@@ -1,13 +1,13 @@
 {
   "_comment": "Hungry Ghost realm (Pretaloka) enemy archetypes. Three playable factions each have devil-tier combat variants plus shade/imp-tier support creatures. Mechanics marked with _comment may need new perks or combat AI behaviors.",
   "archetypes": {
-
     "_comment_rolang": "=== ROLANG FACTION === Walking dead of the swamp zones. Slow, tough, rot-focused. str/con heavy.",
-
     "hg_rolang_shambler": {
       "name": "Rolang Shambler",
       "tier": "devil",
-      "roles": ["frontline"],
+      "roles": [
+        "frontline"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 3,
@@ -18,7 +18,11 @@
         "charm": 0,
         "luck": 1
       },
-      "skill_priorities": ["unarmed", "might", "armor"],
+      "skill_priorities": [
+        "unarmed",
+        "might",
+        "armor"
+      ],
       "guaranteed_spells": [],
       "guaranteed_perks": [],
       "equipment_template": {
@@ -37,13 +41,19 @@
         "fire": -20
       },
       "threat_multiplier": 1.0,
-      "tags": ["undead", "biological"]
+      "tags": [
+        "undead",
+        "biological"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "hg_rolang_drowned": {
       "name": "Rolang Drowned",
       "tier": "devil",
-      "roles": ["frontline", "skirmisher"],
+      "roles": [
+        "frontline",
+        "skirmisher"
+      ],
       "region": "swamp",
       "attribute_weights": {
         "strength": 2,
@@ -54,8 +64,13 @@
         "charm": 0,
         "luck": 0
       },
-      "skill_priorities": ["unarmed", "water_magic"],
-      "guaranteed_spells": ["hands_of_the_drowned"],
+      "skill_priorities": [
+        "unarmed",
+        "water_magic"
+      ],
+      "guaranteed_spells": [
+        "hands_of_the_drowned"
+      ],
       "guaranteed_perks": [],
       "equipment_template": {
         "weapon": {
@@ -73,14 +88,20 @@
         "fire": -15
       },
       "threat_multiplier": 0.9,
-      "tags": ["undead", "biological"]
+      "tags": [
+        "undead",
+        "biological"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "hg_rolang_ancient": {
       "_comment": "The rare preserved rolang - alchemical or yogic arts kept the body intact. Rot caster and support.",
       "name": "Rolang Ancient",
       "tier": "devil",
-      "roles": ["support", "caster"],
+      "roles": [
+        "support",
+        "caster"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 1,
@@ -91,8 +112,15 @@
         "charm": 0,
         "luck": 0
       },
-      "skill_priorities": ["black_magic", "earth_magic", "ritual"],
-      "guaranteed_spells": ["pervasive_rot", "festering_wound"],
+      "skill_priorities": [
+        "black_magic",
+        "earth_magic",
+        "ritual"
+      ],
+      "guaranteed_spells": [
+        "pervasive_rot",
+        "festering_wound"
+      ],
       "guaranteed_perks": [],
       "equipment_template": {
         "weapon": {
@@ -110,16 +138,20 @@
         "fire": -20
       },
       "threat_multiplier": 1.1,
-      "tags": ["undead", "biological"]
+      "tags": [
+        "undead",
+        "biological"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "_comment_rolang_support": "--- Rolang support: swamp vermin and rot creatures ---",
-
     "hg_swamp_leech": {
       "_comment": "Attaches to a target and drains HP/stamina per turn until removed. Needs attach behavior in combat AI.",
       "name": "Swamp Leech",
       "tier": "shade",
-      "roles": ["support"],
+      "roles": [
+        "support"
+      ],
       "region": "swamp",
       "attribute_weights": {
         "strength": 0,
@@ -130,7 +162,10 @@
         "charm": 0,
         "luck": 0
       },
-      "skill_priorities": ["unarmed", "thievery"],
+      "skill_priorities": [
+        "unarmed",
+        "thievery"
+      ],
       "guaranteed_spells": [],
       "guaranteed_perks": [],
       "equipment_template": {
@@ -147,13 +182,17 @@
         "fire": -20
       },
       "threat_multiplier": 0.4,
-      "tags": ["biological"]
+      "tags": [
+        "biological"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "hg_centipede": {
       "name": "Centipede",
       "tier": "shade",
-      "roles": ["skirmisher"],
+      "roles": [
+        "skirmisher"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 1,
@@ -164,8 +203,13 @@
         "charm": 0,
         "luck": 1
       },
-      "skill_priorities": ["unarmed", "guile"],
-      "guaranteed_spells": ["poison_sting"],
+      "skill_priorities": [
+        "unarmed",
+        "guile"
+      ],
+      "guaranteed_spells": [
+        "poison_sting"
+      ],
       "guaranteed_perks": [],
       "equipment_template": {
         "weapon": {
@@ -181,14 +225,18 @@
         "crushing": -10
       },
       "threat_multiplier": 0.35,
-      "tags": ["biological"]
+      "tags": [
+        "biological"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "hg_carrion_worm": {
       "_comment": "Slow bloated tank. Explodes on death dealing rot/disease damage in an area. Needs explodes_on_death behavior in combat AI.",
       "name": "Carrion Worm",
       "tier": "imp",
-      "roles": ["frontline"],
+      "roles": [
+        "frontline"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 1,
@@ -199,7 +247,10 @@
         "charm": 0,
         "luck": 1
       },
-      "skill_priorities": ["unarmed", "might"],
+      "skill_priorities": [
+        "unarmed",
+        "might"
+      ],
       "guaranteed_spells": [],
       "guaranteed_perks": [],
       "equipment_template": {
@@ -217,15 +268,19 @@
         "fire": -20
       },
       "threat_multiplier": 0.6,
-      "tags": ["biological", "explodes_on_death"]
+      "tags": [
+        "biological",
+        "explodes_on_death"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "_comment_skeleton": "=== SKELETON FACTION === Ancient undead of the catacombs. Balanced, caster-leaning. Long wait in the grave strips away confusion, leaves something clear-eyed.",
-
     "hg_skeleton_warrior": {
       "name": "Skeleton Warrior",
       "tier": "devil",
-      "roles": ["frontline"],
+      "roles": [
+        "frontline"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 2,
@@ -236,7 +291,11 @@
         "charm": 0,
         "luck": 1
       },
-      "skill_priorities": ["swords", "armor", "learning"],
+      "skill_priorities": [
+        "swords",
+        "armor",
+        "learning"
+      ],
       "guaranteed_spells": [],
       "guaranteed_perks": [],
       "equipment_template": {
@@ -255,13 +314,17 @@
         "black": 20
       },
       "threat_multiplier": 1.0,
-      "tags": ["undead"]
+      "tags": [
+        "undead"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "hg_skeleton_archer": {
       "name": "Skeleton Archer",
       "tier": "devil",
-      "roles": ["ranged"],
+      "roles": [
+        "ranged"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 1,
@@ -272,7 +335,11 @@
         "charm": 0,
         "luck": 2
       },
-      "skill_priorities": ["ranged", "learning", "guile"],
+      "skill_priorities": [
+        "ranged",
+        "learning",
+        "guile"
+      ],
       "guaranteed_spells": [],
       "guaranteed_perks": [],
       "equipment_template": {
@@ -291,13 +358,17 @@
         "black": 20
       },
       "threat_multiplier": 1.0,
-      "tags": ["undead"]
+      "tags": [
+        "undead"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "hg_skeleton_mage": {
       "name": "Skeleton Mage",
       "tier": "devil",
-      "roles": ["caster"],
+      "roles": [
+        "caster"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 0,
@@ -308,8 +379,15 @@
         "charm": 1,
         "luck": 1
       },
-      "skill_priorities": ["black_magic", "space_magic", "learning"],
-      "guaranteed_spells": ["bone_spike", "gloom"],
+      "skill_priorities": [
+        "black_magic",
+        "space_magic",
+        "learning"
+      ],
+      "guaranteed_spells": [
+        "bone_spike",
+        "gloom"
+      ],
       "guaranteed_perks": [],
       "equipment_template": {
         "weapon": {
@@ -326,17 +404,23 @@
         "black": 30
       },
       "threat_multiplier": 1.1,
-      "tags": ["undead"]
+      "tags": [
+        "undead"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "_comment_skeleton_support": "--- Skeleton support: bone constructs and flying harassers ---",
-
     "hg_skelepuppy": {
       "name": "Skelepuppy",
       "tier": "shade",
-      "roles": ["skirmisher"],
+      "roles": [
+        "skirmisher"
+      ],
       "region": "any",
-      "group_size": {"min": 3, "max": 4},
+      "group_size": {
+        "min": 3,
+        "max": 4
+      },
       "attribute_weights": {
         "strength": 2,
         "constitution": 1,
@@ -346,7 +430,10 @@
         "charm": 0,
         "luck": 0
       },
-      "skill_priorities": ["unarmed", "martial_arts"],
+      "skill_priorities": [
+        "unarmed",
+        "martial_arts"
+      ],
       "guaranteed_spells": [],
       "guaranteed_perks": [],
       "equipment_template": {
@@ -365,14 +452,18 @@
         "black": 15
       },
       "threat_multiplier": 0.35,
-      "tags": ["undead"]
+      "tags": [
+        "undead"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "hg_bone_horror": {
       "_comment": "Heavy construct assembled from many skeletons. Reassembles once after death, returning at 50% HP after one turn. Needs 'reassemble' perk implementation.",
       "name": "Bone Horror",
       "tier": "imp",
-      "roles": ["frontline"],
+      "roles": [
+        "frontline"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 3,
@@ -383,9 +474,15 @@
         "charm": 0,
         "luck": 0
       },
-      "skill_priorities": ["unarmed", "might", "armor"],
+      "skill_priorities": [
+        "unarmed",
+        "might",
+        "armor"
+      ],
       "guaranteed_spells": [],
-      "guaranteed_perks": ["reassemble"],
+      "guaranteed_perks": [
+        "reassemble"
+      ],
       "equipment_template": {
         "weapon": {
           "type": "unarmed",
@@ -402,13 +499,19 @@
         "black": 25
       },
       "threat_multiplier": 0.8,
-      "tags": ["undead", "construct"]
+      "tags": [
+        "undead",
+        "construct"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "hg_harpy": {
       "name": "Harpy",
       "tier": "imp",
-      "roles": ["skirmisher", "ranged"],
+      "roles": [
+        "skirmisher",
+        "ranged"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 2,
@@ -419,7 +522,11 @@
         "charm": 0,
         "luck": 1
       },
-      "skill_priorities": ["unarmed", "ranged", "guile"],
+      "skill_priorities": [
+        "unarmed",
+        "ranged",
+        "guile"
+      ],
       "guaranteed_spells": [],
       "guaranteed_perks": [],
       "equipment_template": {
@@ -436,15 +543,20 @@
         "earth": -10
       },
       "threat_multiplier": 0.65,
-      "tags": ["flying", "biological"]
+      "tags": [
+        "flying",
+        "biological"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "_comment_vetala": "=== VETALA FACTION === Blood-drinking corpse sorcerers. Focus-heavy, life-draining. More magic than muscle.",
-
     "hg_vetala_blooddrinker": {
       "name": "Vetala Blooddrinker",
       "tier": "devil",
-      "roles": ["frontline", "skirmisher"],
+      "roles": [
+        "frontline",
+        "skirmisher"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 1,
@@ -455,8 +567,15 @@
         "charm": 1,
         "luck": 0
       },
-      "skill_priorities": ["sorcery", "daggers", "black_magic"],
-      "guaranteed_spells": ["life_drain", "blood_hunger"],
+      "skill_priorities": [
+        "sorcery",
+        "daggers",
+        "black_magic"
+      ],
+      "guaranteed_spells": [
+        "life_drain",
+        "blood_hunger"
+      ],
       "guaranteed_perks": [],
       "equipment_template": {
         "weapon": {
@@ -473,13 +592,18 @@
         "fire": -10
       },
       "threat_multiplier": 1.0,
-      "tags": ["undead", "biological"]
+      "tags": [
+        "undead",
+        "biological"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "hg_vetala_sorcerer": {
       "name": "Vetala Sorcerer",
       "tier": "devil",
-      "roles": ["caster"],
+      "roles": [
+        "caster"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 0,
@@ -490,8 +614,16 @@
         "charm": 1,
         "luck": 1
       },
-      "skill_priorities": ["sorcery", "black_magic", "learning"],
-      "guaranteed_spells": ["life_drain", "curse", "gloom"],
+      "skill_priorities": [
+        "sorcery",
+        "black_magic",
+        "learning"
+      ],
+      "guaranteed_spells": [
+        "life_drain",
+        "curse",
+        "gloom"
+      ],
       "guaranteed_perks": [],
       "equipment_template": {
         "weapon": {
@@ -508,13 +640,19 @@
         "fire": -10
       },
       "threat_multiplier": 1.1,
-      "tags": ["undead", "biological"]
+      "tags": [
+        "undead",
+        "biological"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "hg_vetala_elder": {
       "name": "Vetala Elder",
       "tier": "devil",
-      "roles": ["support", "caster"],
+      "roles": [
+        "support",
+        "caster"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 0,
@@ -525,8 +663,17 @@
         "charm": 2,
         "luck": 0
       },
-      "skill_priorities": ["black_magic", "sorcery", "ritual", "enchantment"],
-      "guaranteed_spells": ["life_drain", "suffering", "doom"],
+      "skill_priorities": [
+        "black_magic",
+        "sorcery",
+        "ritual",
+        "enchantment"
+      ],
+      "guaranteed_spells": [
+        "life_drain",
+        "suffering",
+        "doom"
+      ],
       "guaranteed_perks": [],
       "equipment_template": {
         "weapon": {
@@ -543,16 +690,20 @@
         "fire": -10
       },
       "threat_multiplier": 1.2,
-      "tags": ["undead", "biological"]
+      "tags": [
+        "undead",
+        "biological"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "_comment_vetala_support": "--- Vetala support: aerial and feral scavengers ---",
-
     "hg_vulture": {
       "_comment": "Prioritizes low-HP or downed targets. Needs scavenger targeting behavior in combat AI.",
       "name": "Vulture",
       "tier": "imp",
-      "roles": ["skirmisher"],
+      "roles": [
+        "skirmisher"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 1,
@@ -563,7 +714,10 @@
         "charm": 0,
         "luck": 2
       },
-      "skill_priorities": ["unarmed", "ranged"],
+      "skill_priorities": [
+        "unarmed",
+        "ranged"
+      ],
       "guaranteed_spells": [],
       "guaranteed_perks": [],
       "equipment_template": {
@@ -579,13 +733,18 @@
         "air": 10
       },
       "threat_multiplier": 0.6,
-      "tags": ["flying", "biological"]
+      "tags": [
+        "flying",
+        "biological"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "hg_carrion_dog": {
       "name": "Carrion Dog",
       "tier": "shade",
-      "roles": ["skirmisher"],
+      "roles": [
+        "skirmisher"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 2,
@@ -596,7 +755,10 @@
         "charm": 0,
         "luck": 1
       },
-      "skill_priorities": ["unarmed", "martial_arts"],
+      "skill_priorities": [
+        "unarmed",
+        "martial_arts"
+      ],
       "guaranteed_spells": [],
       "guaranteed_perks": [],
       "equipment_template": {
@@ -610,16 +772,23 @@
       },
       "resistances": {},
       "threat_multiplier": 0.45,
-      "tags": ["biological"]
+      "tags": [
+        "biological"
+      ],
+      "realm": "hungry_ghost"
     },
-
     "hg_vampire_bat": {
       "_comment": "Life drain on hit; in mixed encounters, healing feeds the paired vetala. Needs life_steal behavior in combat AI.",
       "name": "Vampire Bat",
       "tier": "shade",
-      "roles": ["skirmisher"],
+      "roles": [
+        "skirmisher"
+      ],
       "region": "any",
-      "group_size": {"min": 2, "max": 3},
+      "group_size": {
+        "min": 2,
+        "max": 3
+      },
       "attribute_weights": {
         "strength": 0,
         "constitution": 1,
@@ -629,8 +798,13 @@
         "charm": 0,
         "luck": 2
       },
-      "skill_priorities": ["unarmed", "black_magic"],
-      "guaranteed_spells": ["life_drain"],
+      "skill_priorities": [
+        "unarmed",
+        "black_magic"
+      ],
+      "guaranteed_spells": [
+        "life_drain"
+      ],
       "guaranteed_perks": [],
       "equipment_template": {
         "weapon": {
@@ -647,8 +821,12 @@
         "fire": -15
       },
       "threat_multiplier": 0.35,
-      "tags": ["flying", "biological", "life_steal"]
+      "tags": [
+        "flying",
+        "biological",
+        "life_steal"
+      ],
+      "realm": "hungry_ghost"
     }
-
   }
 }

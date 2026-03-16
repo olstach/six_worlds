@@ -180,7 +180,7 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 			for role in group_roles:
 				var count = int(group_roles[role])
 				for i in range(count):
-					var archetype_id = _pick_archetype_for_role(role, group_region, group_tier)
+					var archetype_id = _pick_archetype_for_role(role, group_region, group_tier, realm)
 					if archetype_id == "":
 						push_warning("EnemySystem: No archetype for role '%s' tier '%s' in '%s'" % [role, group_tier, group_region])
 						continue
@@ -204,7 +204,7 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 		for role in roles:
 			var count = int(roles[role])
 			for i in range(count):
-				var archetype_id = _pick_archetype_for_role(role, effective_region, enc_tier)
+				var archetype_id = _pick_archetype_for_role(role, effective_region, enc_tier, realm)
 				if archetype_id == "":
 					push_warning("EnemySystem: No archetype found for role '%s' tier '%s' in region '%s'" % [role, enc_tier, effective_region])
 					continue
@@ -751,11 +751,12 @@ func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Arr
 	return inventory
 
 
-## Pick a random archetype that matches a given role, region, and tier.
+## Pick a random archetype that matches a given role, region, tier, and realm.
 ## Region "any" archetypes can appear in any region.
 ## Tier defaults to "devil" — use "shade" or "imp" for lower-power enemies.
 ## Archetypes without an explicit tier field default to "devil".
-func _pick_archetype_for_role(role: String, region: String, tier: String = "devil") -> String:
+## Archetypes without an explicit realm field default to "hell" (backwards compatibility).
+func _pick_archetype_for_role(role: String, region: String, tier: String = "devil", realm: String = "hell") -> String:
 	var candidates: Array[String] = []
 
 	for arch_id in archetypes:
@@ -763,6 +764,7 @@ func _pick_archetype_for_role(role: String, region: String, tier: String = "devi
 		var arch_roles = arch.get("roles", [])
 		var arch_region = arch.get("region", "any")
 		var arch_tier = arch.get("tier", "devil")
+		var arch_realm = arch.get("realm", "hell")
 
 		# Check role match
 		if not role in arch_roles:
@@ -778,6 +780,10 @@ func _pick_archetype_for_role(role: String, region: String, tier: String = "devi
 
 		# Filter by tier — shades and imps don't appear in devil encounters and vice-versa
 		if arch_tier != tier:
+			continue
+
+		# Filter by realm — don't mix hell demons into hungry ghost encounters, etc.
+		if arch_realm != realm:
 			continue
 
 		candidates.append(arch_id)

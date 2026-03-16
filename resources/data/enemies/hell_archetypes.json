@@ -1,988 +1,2039 @@
 {
-	"archetypes": {
-
-		"_comment_any": "=== ANY REGION - can appear in cold_hell or fire_hell ===",
-
-		"hell_demon_warrior": {
-			"name": "Demon Warrior",
-			"tier": "devil",
-			"roles": ["frontline"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 3, "constitution": 2, "finesse": 2,
-				"awareness": 1, "focus": 0, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["swords", "armor", "might"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "sword", "base_damage": 8, "base_accuracy": 5, "range": 1},
-				"armor_type": "heavy"
-			},
-			"resistances": {"fire": 15, "slashing": 10, "piercing": 10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological"]
-		},
-
-		"hell_demon_brute": {
-			"name": "Demon Brute",
-			"tier": "devil",
-			"roles": ["frontline"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 4, "constitution": 3, "finesse": 0,
-				"awareness": 0, "focus": 0, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["axes", "might", "armor"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "axe", "base_damage": 12, "base_accuracy": 2, "range": 1},
-				"armor_type": "heavy"
-			},
-			"resistances": {"physical": 10, "fire": 10, "slashing": 10, "piercing": 10},
-			"threat_multiplier": 1.1,
-			"tags": ["biological"]
-		},
-
-		"hell_tormented_shade": {
-			"_comment": "Reworked: now a true shade-tier enemy (was formerly a devil-tier caster)",
-			"name": "Tormented Shade",
-			"tier": "shade",
-			"roles": ["frontline"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 3,
-				"awareness": 2, "focus": 3, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["black_magic"],
-			"guaranteed_spells": ["gloom"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "unarmed", "base_damage": 2, "base_accuracy": 4, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"black": 50, "white": -50, "physical": 10},
-			"threat_multiplier": 0.5,
-			"tags": ["undead", "incorporeal"]
-		},
-
-		"hell_demon_archer": {
-			"name": "Demon Archer",
-			"tier": "devil",
-			"roles": ["ranged"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 1, "constitution": 1, "finesse": 3,
-				"awareness": 2, "focus": 0, "charm": 0, "luck": 2
-			},
-			"skill_priorities": ["ranged", "guile"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "bow", "base_damage": 7, "base_accuracy": 6, "range": 5},
-				"armor_type": "light"
-			},
-			"resistances": {"fire": 10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological"]
-		},
-
-		"hell_demon_elite": {
-			"name": "Demon Elite",
-			"tier": "devil",
-			"roles": ["frontline"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 3, "constitution": 2, "finesse": 2,
-				"awareness": 1, "focus": 0, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["swords", "armor", "might"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "sword", "base_damage": 10, "base_accuracy": 6, "range": 1},
-				"armor_type": "heavy"
-			},
-			"resistances": {"fire": 20, "physical": 10, "slashing": 15, "piercing": 10},
-			"threat_multiplier": 1.2,
-			"tags": ["biological"]
-		},
-
-		"_comment_shades": "=== SHADE TIER — early-game incorporeal enemies, threat ~0.5 ===",
-
-		"hell_frozen_shade": {
-			"name": "Frozen Shade",
-			"tier": "shade",
-			"roles": ["frontline"],
-			"region": "cold_hell",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 3,
-				"awareness": 2, "focus": 2, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["water_magic"],
-			"guaranteed_spells": ["surge"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "unarmed", "base_damage": 2, "base_accuracy": 4, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"water": 50, "fire": -50, "physical": 10},
-			"threat_multiplier": 0.5,
-			"tags": ["undead", "incorporeal"]
-		},
-
-		"hell_burning_shade": {
-			"name": "Burning Shade",
-			"tier": "shade",
-			"roles": ["frontline"],
-			"region": "fire_hell",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 3,
-				"awareness": 2, "focus": 2, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["fire_magic"],
-			"guaranteed_spells": ["firebolt"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "unarmed", "base_damage": 2, "base_accuracy": 4, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"fire": 50, "water": -50, "physical": 10},
-			"threat_multiplier": 0.5,
-			"tags": ["undead", "incorporeal"]
-		},
-
-		"hell_shade_whisperer": {
-			"name": "Shade Whisperer",
-			"tier": "shade",
-			"roles": ["caster", "support"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 2,
-				"awareness": 3, "focus": 3, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["black_magic", "space_magic"],
-			"guaranteed_spells": ["gloom", "life_drain"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "unarmed", "base_damage": 1, "base_accuracy": 3, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"black": 50, "space": 20, "white": -50, "physical": 25},
-			"threat_multiplier": 0.5,
-			"tags": ["undead", "incorporeal"]
-		},
-
-		"_comment_imps": "=== IMP TIER — flying fast harassers, threat ~0.7, 50% chance bare-handed ===",
-
-		"hell_frost_imp": {
-			"name": "Sleet Imp",
-			"tier": "imp",
-			"roles": ["ranged", "caster"],
-			"region": "cold_hell",
-			"no_equipment_chance": 0.5,
-			"attribute_weights": {
-				"strength": 0, "constitution": 0, "finesse": 4,
-				"awareness": 2, "focus": 2, "charm": 0, "luck": 2
-			},
-			"skill_priorities": ["water_magic", "sorcery", "guile"],
-			"guaranteed_spells": ["rain"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "dagger", "base_damage": 4, "base_accuracy": 6, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"water": 25, "fire": -20},
-			"threat_multiplier": 0.7,
-			"tags": ["flying", "imp", "biological"]
-		},
-
-		"hell_flame_imp": {
-			"name": "Smoke Imp",
-			"tier": "imp",
-			"roles": ["ranged", "caster"],
-			"region": "fire_hell",
-			"no_equipment_chance": 0.5,
-			"attribute_weights": {
-				"strength": 0, "constitution": 0, "finesse": 4,
-				"awareness": 2, "focus": 2, "charm": 0, "luck": 2
-			},
-			"skill_priorities": ["fire_magic", "sorcery", "guile"],
-			"guaranteed_spells": ["firebolt"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "dagger", "base_damage": 4, "base_accuracy": 6, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"fire": 25, "water": -20},
-			"threat_multiplier": 0.7,
-			"tags": ["flying", "imp", "biological"]
-		},
-
-		"hell_static_imp": {
-			"name": "Static Imp",
-			"tier": "imp",
-			"roles": ["ranged", "caster"],
-			"region": "any",
-			"no_equipment_chance": 0.5,
-			"attribute_weights": {
-				"strength": 0, "constitution": 0, "finesse": 4,
-				"awareness": 3, "focus": 2, "charm": 0, "luck": 2
-			},
-			"skill_priorities": ["air_magic", "guile"],
-			"guaranteed_spells": ["shocking_grasp"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "dagger", "base_damage": 4, "base_accuracy": 6, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"air": 25, "earth": -15},
-			"threat_multiplier": 0.7,
-			"tags": ["flying", "imp", "biological"]
-		},
-
-		"hell_gravel_imp": {
-			"name": "Gravel Imp",
-			"tier": "imp",
-			"roles": ["ranged", "caster"],
-			"region": "any",
-			"no_equipment_chance": 0.5,
-			"attribute_weights": {
-				"strength": 1, "constitution": 1, "finesse": 3,
-				"awareness": 2, "focus": 2, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["earth_magic", "guile"],
-			"guaranteed_spells": ["stone_spike"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "dagger", "base_damage": 4, "base_accuracy": 6, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"earth": 20, "air": -15},
-			"threat_multiplier": 0.7,
-			"tags": ["flying", "imp", "biological"]
-		},
-
-		"hell_tinnitus_imp": {
-			"name": "Tinnitus Imp",
-			"tier": "imp",
-			"roles": ["ranged", "caster"],
-			"region": "any",
-			"no_equipment_chance": 0.5,
-			"attribute_weights": {
-				"strength": 0, "constitution": 0, "finesse": 4,
-				"awareness": 3, "focus": 2, "charm": 0, "luck": 2
-			},
-			"skill_priorities": ["space_magic", "guile"],
-			"guaranteed_spells": ["magic_missile"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "dagger", "base_damage": 4, "base_accuracy": 6, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"space": 20, "physical": -10},
-			"threat_multiplier": 0.7,
-			"tags": ["flying", "imp", "biological"]
-		},
-
-		"hell_ash_imp": {
-			"name": "Ash Imp",
-			"tier": "imp",
-			"roles": ["ranged", "caster"],
-			"region": "any",
-			"no_equipment_chance": 0.5,
-			"attribute_weights": {
-				"strength": 0, "constitution": 0, "finesse": 3,
-				"awareness": 3, "focus": 3, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["black_magic", "sorcery"],
-			"guaranteed_spells": ["void_stare"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "dagger", "base_damage": 4, "base_accuracy": 6, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"black": 25, "white": -15},
-			"threat_multiplier": 0.7,
-			"tags": ["flying", "imp", "biological"]
-		},
-
-		"hell_sloth_imp": {
-			"name": "Sloth Imp",
-			"tier": "imp",
-			"roles": ["support"],
-			"region": "any",
-			"no_equipment_chance": 0.5,
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 3,
-				"awareness": 2, "focus": 2, "charm": 1, "luck": 1
-			},
-			"skill_priorities": ["white_magic"],
-			"guaranteed_spells": ["lesser_heal"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "dagger", "base_damage": 3, "base_accuracy": 5, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"white": 15, "black": -15},
-			"threat_multiplier": 0.7,
-			"tags": ["flying", "imp", "biological"]
-		},
-
-		"_comment_cold": "=== COLD HELL REGION ===",
-
-		"hell_ice_mage": {
-			"name": "Ice Sorcerer",
-			"tier": "devil",
-			"roles": ["caster"],
-			"region": "cold_hell",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 1,
-				"awareness": 2, "focus": 3, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["water_magic", "sorcery", "enchantment"],
-			"guaranteed_spells": ["ice_bolt", "cooling_mist"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "staff", "base_damage": 3, "base_accuracy": 3, "range": 1},
-				"armor_type": "light"
-			},
-			"resistances": {"water": 25, "fire": -15},
-			"threat_multiplier": 1.0,
-			"tags": ["biological"]
-		},
-
-		"hell_frost_guardian": {
-			"name": "Frost Guardian",
-			"tier": "devil",
-			"roles": ["frontline"],
-			"region": "cold_hell",
-			"attribute_weights": {
-				"strength": 2, "constitution": 4, "finesse": 0,
-				"awareness": 1, "focus": 0, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["armor", "maces", "might"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "mace", "base_damage": 10, "base_accuracy": 3, "range": 1},
-				"armor_type": "heavy"
-			},
-			"resistances": {"water": 30, "fire": -20, "physical": 15, "piercing": 20, "slashing": 15},
-			"threat_multiplier": 1.2,
-			"tags": []
-		},
-
-		"hell_frozen_revenant": {
-			"name": "Frozen Revenant",
-			"tier": "devil",
-			"roles": ["frontline"],
-			"region": "cold_hell",
-			"attribute_weights": {
-				"strength": 3, "constitution": 2, "finesse": 1,
-				"awareness": 1, "focus": 0, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["swords", "might"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "sword", "base_damage": 9, "base_accuracy": 4, "range": 1},
-				"armor_type": "medium"
-			},
-			"resistances": {"water": 20, "fire": -15, "piercing": 20, "slashing": 15, "crushing": -15},
-			"threat_multiplier": 1.0,
-			"tags": []
-		},
-
-		"hell_ice_archer": {
-			"name": "Ice Archer",
-			"tier": "devil",
-			"roles": ["ranged"],
-			"region": "cold_hell",
-			"attribute_weights": {
-				"strength": 1, "constitution": 1, "finesse": 3,
-				"awareness": 2, "focus": 0, "charm": 0, "luck": 2
-			},
-			"skill_priorities": ["ranged", "guile"],
-			"guaranteed_spells": ["ice_bolt"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "bow", "base_damage": 6, "base_accuracy": 7, "range": 5},
-				"armor_type": "light"
-			},
-			"resistances": {"water": 15, "fire": -10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological"]
-		},
-
-		"hell_ice_priest": {
-			"name": "Ice Priest",
-			"tier": "devil",
-			"roles": ["support"],
-			"region": "cold_hell",
-			"attribute_weights": {
-				"strength": 0, "constitution": 2, "finesse": 1,
-				"awareness": 2, "focus": 3, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["white_magic", "water_magic", "enchantment"],
-			"guaranteed_spells": ["lesser_heal", "cooling_mist"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "staff", "base_damage": 3, "base_accuracy": 3, "range": 1},
-				"armor_type": "light"
-			},
-			"resistances": {"water": 20, "fire": -10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological"]
-		},
-
-		"_comment_blue_devils": "=== BLUE DEVIL RACE — cold_hell region, water/air affinity ===",
-
-		"hell_blue_devil_guardian": {
-			"name": "Blue Devil Guardian",
-			"tier": "devil",
-			"roles": ["frontline"],
-			"region": "cold_hell",
-			"attribute_weights": {
-				"strength": 2, "constitution": 3, "finesse": 2,
-				"awareness": 1, "focus": 0, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["spears", "armor"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "spear", "base_damage": 8, "base_accuracy": 4, "range": 2},
-				"armor_type": "heavy"
-			},
-			"resistances": {"water": 25, "fire": -15, "air": 10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"hell_blue_devil_ice_mage": {
-			"name": "Blue Devil Ice Mage",
-			"tier": "devil",
-			"roles": ["caster"],
-			"region": "cold_hell",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 1,
-				"awareness": 3, "focus": 3, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["water_magic", "enchantment"],
-			"guaranteed_spells": ["ice_bolt", "rain"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "staff", "base_damage": 3, "base_accuracy": 3, "range": 1},
-				"armor_type": "light"
-			},
-			"resistances": {"water": 30, "fire": -20},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"hell_blue_devil_ambusher": {
-			"name": "Blue Devil Ambusher",
-			"tier": "devil",
-			"roles": ["ranged"],
-			"region": "cold_hell",
-			"attribute_weights": {
-				"strength": 1, "constitution": 1, "finesse": 4,
-				"awareness": 2, "focus": 0, "charm": 0, "luck": 2
-			},
-			"skill_priorities": ["ranged", "guile"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "crossbow", "base_damage": 9, "base_accuracy": 7, "range": 6},
-				"armor_type": "light"
-			},
-			"resistances": {"water": 15, "fire": -10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"_comment_fire": "=== FIRE HELL REGION ===",
-
-		"hell_lava_golem": {
-			"name": "Lava Golem",
-			"tier": "devil",
-			"roles": ["frontline"],
-			"region": "fire_hell",
-			"attribute_weights": {
-				"strength": 3, "constitution": 4, "finesse": 0,
-				"awareness": 0, "focus": 0, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["unarmed", "might", "armor"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "unarmed", "base_damage": 12, "base_accuracy": 2, "range": 1},
-				"armor_type": "heavy"
-			},
-			"resistances": {"fire": 40, "water": -25, "physical": 20, "slashing": 25, "piercing": 25},
-			"threat_multiplier": 1.3,
-			"tags": []
-		},
-
-		"hell_fire_sorcerer": {
-			"name": "Fire Sorcerer",
-			"tier": "devil",
-			"roles": ["caster"],
-			"region": "fire_hell",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 1,
-				"awareness": 2, "focus": 3, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["fire_magic", "sorcery", "enchantment"],
-			"guaranteed_spells": ["firebolt", "cursed_flame"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "staff", "base_damage": 3, "base_accuracy": 3, "range": 1},
-				"armor_type": "light"
-			},
-			"resistances": {"fire": 25, "water": -15},
-			"threat_multiplier": 1.0,
-			"tags": ["biological"]
-		},
-
-		"hell_infernal_archer": {
-			"name": "Infernal Archer",
-			"tier": "devil",
-			"roles": ["ranged"],
-			"region": "fire_hell",
-			"attribute_weights": {
-				"strength": 1, "constitution": 1, "finesse": 3,
-				"awareness": 2, "focus": 0, "charm": 0, "luck": 2
-			},
-			"skill_priorities": ["ranged", "guile"],
-			"guaranteed_spells": ["firebolt"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "bow", "base_damage": 7, "base_accuracy": 6, "range": 5},
-				"armor_type": "light"
-			},
-			"resistances": {"fire": 15, "water": -10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological"]
-		},
-
-		"hell_ember_priest": {
-			"name": "Ember Priest",
-			"tier": "devil",
-			"roles": ["support"],
-			"region": "fire_hell",
-			"attribute_weights": {
-				"strength": 0, "constitution": 2, "finesse": 1,
-				"awareness": 2, "focus": 3, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["white_magic", "fire_magic", "enchantment"],
-			"guaranteed_spells": ["lesser_heal", "firebolt"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "staff", "base_damage": 3, "base_accuracy": 3, "range": 1},
-				"armor_type": "light"
-			},
-			"resistances": {"fire": 20, "water": -10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological"]
-		},
-
-		"_comment_red_devils": "=== RED DEVIL RACE — fire_hell region, fire/strength affinity ===",
-
-		"hell_red_devil_berserker": {
-			"name": "Red Devil Berserker",
-			"tier": "devil",
-			"roles": ["frontline"],
-			"region": "fire_hell",
-			"attribute_weights": {
-				"strength": 5, "constitution": 2, "finesse": 1,
-				"awareness": 0, "focus": 0, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["axes", "might"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": ["heavy_swing"],
-			"equipment_template": {
-				"weapon": {"type": "axe", "base_damage": 12, "base_accuracy": 2, "range": 1},
-				"armor_type": "medium"
-			},
-			"resistances": {"fire": 30, "water": -20},
-			"threat_multiplier": 1.1,
-			"tags": ["biological", "devil"]
-		},
-
-		"hell_red_devil_warrior": {
-			"name": "Red Devil Warrior",
-			"tier": "devil",
-			"roles": ["frontline"],
-			"region": "fire_hell",
-			"attribute_weights": {
-				"strength": 3, "constitution": 3, "finesse": 1,
-				"awareness": 1, "focus": 0, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["axes", "armor"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "axe", "base_damage": 10, "base_accuracy": 3, "range": 1},
-				"armor_type": "heavy"
-			},
-			"resistances": {"fire": 20, "water": -10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"hell_red_devil_firestarter": {
-			"name": "Red Devil Firestarter",
-			"tier": "devil",
-			"roles": ["caster"],
-			"region": "fire_hell",
-			"attribute_weights": {
-				"strength": 1, "constitution": 1, "finesse": 1,
-				"awareness": 2, "focus": 3, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["fire_magic", "sorcery"],
-			"guaranteed_spells": ["firebolt", "cursed_flame"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "staff", "base_damage": 4, "base_accuracy": 4, "range": 1},
-				"armor_type": "light"
-			},
-			"resistances": {"fire": 30, "water": -20},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"_comment_yellow_devils": "=== YELLOW DEVIL RACE — any region, earth/luck affinity, durable merchants ===",
-
-		"hell_yellow_devil_caravan_guard": {
-			"name": "Yellow Devil Caravan Guard",
-			"tier": "devil",
-			"roles": ["frontline"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 3, "constitution": 4, "finesse": 0,
-				"awareness": 1, "focus": 0, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["maces", "armor"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "mace", "base_damage": 9, "base_accuracy": 3, "range": 1},
-				"armor_type": "heavy"
-			},
-			"resistances": {"earth": 20, "physical": 10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"hell_yellow_devil_extortionist": {
-			"name": "Yellow Devil Extortionist",
-			"tier": "devil",
-			"roles": ["frontline"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 3, "constitution": 2, "finesse": 1,
-				"awareness": 1, "focus": 1, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["maces", "alchemy"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "mace", "base_damage": 9, "base_accuracy": 3, "range": 1},
-				"armor_type": "medium"
-			},
-			"resistances": {"earth": 15},
-			"threat_multiplier": 1.0,
-			"starting_inventory": [
-				{"item_id": "fire_bomb", "quantity": 1},
-				{"item_id": "acid_flask", "quantity": 1}
-			],
-			"tags": ["biological", "devil"]
-		},
-
-		"hell_yellow_devil_transmuter": {
-			"name": "Yellow Devil Transmuter",
-			"tier": "devil",
-			"roles": ["caster", "support"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 0,
-				"awareness": 3, "focus": 3, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["earth_magic", "enchantment"],
-			"guaranteed_spells": ["stone_spike", "bark_skin"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "staff", "base_damage": 3, "base_accuracy": 3, "range": 1},
-				"armor_type": "light"
-			},
-			"resistances": {"earth": 25, "physical": 10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"_comment_green_devils": "=== GREEN DEVIL RACE — any region, air/finesse affinity, swift hunters ===",
-
-		"hell_green_devil_hunter": {
-			"name": "Green Devil Hunter",
-			"tier": "devil",
-			"roles": ["ranged"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 1, "constitution": 1, "finesse": 4,
-				"awareness": 2, "focus": 0, "charm": 0, "luck": 2
-			},
-			"skill_priorities": ["ranged", "daggers"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "bow", "base_damage": 7, "base_accuracy": 7, "range": 5},
-				"armor_type": "light"
-			},
-			"resistances": {"air": 20},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"hell_green_devil_sniper": {
-			"name": "Green Devil Sniper",
-			"tier": "devil",
-			"roles": ["ranged"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 5,
-				"awareness": 2, "focus": 0, "charm": 0, "luck": 2
-			},
-			"skill_priorities": ["ranged"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": ["steady_aim"],
-			"equipment_template": {
-				"weapon": {"type": "bow", "base_damage": 8, "base_accuracy": 9, "range": 6},
-				"armor_type": "none"
-			},
-			"resistances": {"air": 20},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"hell_green_devil_backstabber": {
-			"name": "Green Devil Backstabber",
-			"tier": "devil",
-			"roles": ["frontline"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 1, "constitution": 1, "finesse": 5,
-				"awareness": 2, "focus": 0, "charm": 0, "luck": 2
-			},
-			"skill_priorities": ["daggers", "guile"],
-			"guaranteed_spells": [],
-			"guaranteed_perks": ["backstab"],
-			"equipment_template": {
-				"weapon": {"type": "dagger", "base_damage": 6, "base_accuracy": 8, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"air": 15, "physical": -10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"_comment_black_devils": "=== BLACK DEVIL RACE — any region, space/black magic affinity ===",
-
-		"hell_black_devil_sorcerer": {
-			"name": "Black Devil Sorcerer",
-			"tier": "devil",
-			"roles": ["caster"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 1,
-				"awareness": 3, "focus": 4, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["sorcery", "black_magic"],
-			"guaranteed_spells": ["blink", "death_bolt"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "staff", "base_damage": 4, "base_accuracy": 4, "range": 1},
-				"armor_type": "light"
-			},
-			"resistances": {"space": 25, "black": 15, "physical": -10},
-			"threat_multiplier": 1.1,
-			"tags": ["biological", "devil"]
-		},
-
-		"hell_black_devil_mindbender": {
-			"name": "Black Devil Mindbender",
-			"tier": "devil",
-			"roles": ["caster", "support"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 1,
-				"awareness": 3, "focus": 4, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["space_magic", "black_magic"],
-			"guaranteed_spells": ["blink", "confusion"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "staff", "base_damage": 3, "base_accuracy": 3, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"space": 30, "black": 15, "physical": -15},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"hell_black_devil_lifedrinker": {
-			"name": "Black Devil Lifedrinker",
-			"tier": "devil",
-			"roles": ["frontline"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 1, "constitution": 1, "finesse": 3,
-				"awareness": 2, "focus": 2, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["black_magic", "daggers"],
-			"guaranteed_spells": ["life_drain", "gloom"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "dagger", "base_damage": 7, "base_accuracy": 7, "range": 1},
-				"armor_type": "light"
-			},
-			"resistances": {"space": 15, "black": 20, "physical": -10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"_comment_white_devils": "=== WHITE DEVIL RACE — any region, space/charm affinity, manipulative ===",
-
-		"hell_white_devil_tempter": {
-			"name": "White Devil Tempter",
-			"tier": "devil",
-			"roles": ["support", "caster"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 1,
-				"awareness": 2, "focus": 2, "charm": 4, "luck": 1
-			},
-			"skill_priorities": ["white_magic", "black_magic"],
-			"guaranteed_spells": ["friends", "gloom"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "staff", "base_damage": 3, "base_accuracy": 3, "range": 1},
-				"armor_type": "light"
-			},
-			"resistances": {"space": 10, "physical": -10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"hell_white_devil_medicus": {
-			"name": "White Devil Medicus",
-			"tier": "devil",
-			"roles": ["support"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 1,
-				"awareness": 3, "focus": 3, "charm": 1, "luck": 1
-			},
-			"skill_priorities": ["white_magic", "medicine"],
-			"guaranteed_spells": ["lesser_heal", "cure"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "staff", "base_damage": 3, "base_accuracy": 3, "range": 1},
-				"armor_type": "light"
-			},
-			"resistances": {"space": 10},
-			"threat_multiplier": 0.9,
-			"tags": ["biological", "devil"]
-		},
-
-		"hell_white_devil_illusionist": {
-			"name": "White Devil Illusionist",
-			"tier": "devil",
-			"roles": ["caster", "support"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 0, "constitution": 1, "finesse": 2,
-				"awareness": 3, "focus": 3, "charm": 0, "luck": 1
-			},
-			"skill_priorities": ["space_magic", "enchantment"],
-			"guaranteed_spells": ["blur", "decoy"],
-			"guaranteed_perks": [],
-			"equipment_template": {
-				"weapon": {"type": "staff", "base_damage": 3, "base_accuracy": 3, "range": 1},
-				"armor_type": "none"
-			},
-			"resistances": {"space": 25, "physical": -10},
-			"threat_multiplier": 1.0,
-			"tags": ["biological", "devil"]
-		},
-
-		"_comment_bosses": "=== BOSS ARCHETYPES ===",
-
-		"hell_yama_lieutenant": {
-			"name": "Chitragupta, Yama's Lieutenant",
-			"tier": "boss",
-			"roles": ["boss"],
-			"region": "fire_hell",
-			"attribute_weights": {
-				"strength": 3, "constitution": 3, "finesse": 2,
-				"awareness": 2, "focus": 2, "charm": 1, "luck": 1
-			},
-			"skill_priorities": ["swords", "armor", "might", "black_magic"],
-			"guaranteed_spells": ["curse", "void_stare"],
-			"guaranteed_perks": [],
-			"guaranteed_drops": ["yamas_ledger"],
-			"equipment_template": {
-				"weapon": {"type": "sword", "base_damage": 14, "base_accuracy": 8, "range": 1},
-				"armor_type": "heavy"
-			},
-			"resistances": {"physical": 15, "fire": 25, "space": 15},
-			"threat_multiplier": 2.0,
-			"tags": ["biological"]
-		},
-
-		"hell_yama_lieutenant_weakened": {
-			"name": "Chitragupta (Diminished)",
-			"tier": "boss",
-			"roles": ["boss"],
-			"region": "fire_hell",
-			"attribute_weights": {
-				"strength": 2, "constitution": 2, "finesse": 2,
-				"awareness": 2, "focus": 1, "charm": 1, "luck": 1
-			},
-			"skill_priorities": ["swords", "armor", "might"],
-			"guaranteed_spells": ["gloom"],
-			"guaranteed_perks": [],
-			"guaranteed_drops": [],
-			"equipment_template": {
-				"weapon": {"type": "sword", "base_damage": 11, "base_accuracy": 6, "range": 1},
-				"armor_type": "heavy"
-			},
-			"resistances": {"physical": 10, "fire": 15, "space": 10},
-			"threat_multiplier": 1.5,
-			"tags": ["biological"]
-		},
-
-		"hell_mountain_guardian": {
-			"name": "Lava Guardian",
-			"tier": "boss",
-			"roles": ["boss"],
-			"region": "any",
-			"attribute_weights": {
-				"strength": 3, "constitution": 4, "finesse": 0,
-				"awareness": 1, "focus": 1, "charm": 0, "luck": 0
-			},
-			"skill_priorities": ["unarmed", "armor", "might", "fire_magic"],
-			"guaranteed_spells": ["firebolt"],
-			"guaranteed_perks": [],
-			"guaranteed_drops": ["frozen_heart_amulet"],
-			"equipment_template": {
-				"weapon": {"type": "unarmed", "base_damage": 14, "base_accuracy": 4, "range": 1},
-				"armor_type": "heavy"
-			},
-			"resistances": {"physical": 20, "fire": 40, "water": -25, "earth": 30, "slashing": 20, "piercing": 20},
-			"threat_multiplier": 1.8,
-			"tags": []
-		}
-	}
+  "archetypes": {
+    "_comment_any": "=== ANY REGION - can appear in cold_hell or fire_hell ===",
+    "hell_demon_warrior": {
+      "name": "Demon Warrior",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 2,
+        "finesse": 2,
+        "awareness": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "swords",
+        "armor",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "sword",
+          "base_damage": 8,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "fire": 15,
+        "slashing": 10,
+        "piercing": 10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_demon_brute": {
+      "name": "Demon Brute",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 4,
+        "constitution": 3,
+        "finesse": 0,
+        "awareness": 0,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "axes",
+        "might",
+        "armor"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "axe",
+          "base_damage": 12,
+          "base_accuracy": 2,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "physical": 10,
+        "fire": 10,
+        "slashing": 10,
+        "piercing": 10
+      },
+      "threat_multiplier": 1.1,
+      "tags": [
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_tormented_shade": {
+      "_comment": "Reworked: now a true shade-tier enemy (was formerly a devil-tier caster)",
+      "name": "Tormented Shade",
+      "tier": "shade",
+      "roles": [
+        "frontline"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 2,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "black_magic"
+      ],
+      "guaranteed_spells": [
+        "gloom"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 2,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "black": 50,
+        "white": -50,
+        "physical": 10
+      },
+      "threat_multiplier": 0.5,
+      "tags": [
+        "undead",
+        "incorporeal"
+      ],
+      "realm": "hell"
+    },
+    "hell_demon_archer": {
+      "name": "Demon Archer",
+      "tier": "devil",
+      "roles": [
+        "ranged"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 0,
+        "luck": 2
+      },
+      "skill_priorities": [
+        "ranged",
+        "guile"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "bow",
+          "base_damage": 7,
+          "base_accuracy": 6,
+          "range": 5
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "fire": 10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_demon_elite": {
+      "name": "Demon Elite",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 2,
+        "finesse": 2,
+        "awareness": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "swords",
+        "armor",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "sword",
+          "base_damage": 10,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "fire": 20,
+        "physical": 10,
+        "slashing": 15,
+        "piercing": 10
+      },
+      "threat_multiplier": 1.2,
+      "tags": [
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "_comment_shades": "=== SHADE TIER \u2014 early-game incorporeal enemies, threat ~0.5 ===",
+    "hell_frozen_shade": {
+      "name": "Frozen Shade",
+      "tier": "shade",
+      "roles": [
+        "frontline"
+      ],
+      "region": "cold_hell",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "water_magic"
+      ],
+      "guaranteed_spells": [
+        "surge"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 2,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "water": 50,
+        "fire": -50,
+        "physical": 10
+      },
+      "threat_multiplier": 0.5,
+      "tags": [
+        "undead",
+        "incorporeal"
+      ],
+      "realm": "hell"
+    },
+    "hell_burning_shade": {
+      "name": "Burning Shade",
+      "tier": "shade",
+      "roles": [
+        "frontline"
+      ],
+      "region": "fire_hell",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "fire_magic"
+      ],
+      "guaranteed_spells": [
+        "firebolt"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 2,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "fire": 50,
+        "water": -50,
+        "physical": 10
+      },
+      "threat_multiplier": 0.5,
+      "tags": [
+        "undead",
+        "incorporeal"
+      ],
+      "realm": "hell"
+    },
+    "hell_shade_whisperer": {
+      "name": "Shade Whisperer",
+      "tier": "shade",
+      "roles": [
+        "caster",
+        "support"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 2,
+        "awareness": 3,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "black_magic",
+        "space_magic"
+      ],
+      "guaranteed_spells": [
+        "gloom",
+        "life_drain"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 1,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "black": 50,
+        "space": 20,
+        "white": -50,
+        "physical": 25
+      },
+      "threat_multiplier": 0.5,
+      "tags": [
+        "undead",
+        "incorporeal"
+      ],
+      "realm": "hell"
+    },
+    "_comment_imps": "=== IMP TIER \u2014 flying fast harassers, threat ~0.7, 50% chance bare-handed ===",
+    "hell_frost_imp": {
+      "name": "Sleet Imp",
+      "tier": "imp",
+      "roles": [
+        "ranged",
+        "caster"
+      ],
+      "region": "cold_hell",
+      "no_equipment_chance": 0.5,
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 0,
+        "finesse": 4,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 0,
+        "luck": 2
+      },
+      "skill_priorities": [
+        "water_magic",
+        "sorcery",
+        "guile"
+      ],
+      "guaranteed_spells": [
+        "rain"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "dagger",
+          "base_damage": 4,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "water": 25,
+        "fire": -20
+      },
+      "threat_multiplier": 0.7,
+      "tags": [
+        "flying",
+        "imp",
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_flame_imp": {
+      "name": "Smoke Imp",
+      "tier": "imp",
+      "roles": [
+        "ranged",
+        "caster"
+      ],
+      "region": "fire_hell",
+      "no_equipment_chance": 0.5,
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 0,
+        "finesse": 4,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 0,
+        "luck": 2
+      },
+      "skill_priorities": [
+        "fire_magic",
+        "sorcery",
+        "guile"
+      ],
+      "guaranteed_spells": [
+        "firebolt"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "dagger",
+          "base_damage": 4,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "fire": 25,
+        "water": -20
+      },
+      "threat_multiplier": 0.7,
+      "tags": [
+        "flying",
+        "imp",
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_static_imp": {
+      "name": "Static Imp",
+      "tier": "imp",
+      "roles": [
+        "ranged",
+        "caster"
+      ],
+      "region": "any",
+      "no_equipment_chance": 0.5,
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 0,
+        "finesse": 4,
+        "awareness": 3,
+        "focus": 2,
+        "charm": 0,
+        "luck": 2
+      },
+      "skill_priorities": [
+        "air_magic",
+        "guile"
+      ],
+      "guaranteed_spells": [
+        "shocking_grasp"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "dagger",
+          "base_damage": 4,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "air": 25,
+        "earth": -15
+      },
+      "threat_multiplier": 0.7,
+      "tags": [
+        "flying",
+        "imp",
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_gravel_imp": {
+      "name": "Gravel Imp",
+      "tier": "imp",
+      "roles": [
+        "ranged",
+        "caster"
+      ],
+      "region": "any",
+      "no_equipment_chance": 0.5,
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "earth_magic",
+        "guile"
+      ],
+      "guaranteed_spells": [
+        "stone_spike"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "dagger",
+          "base_damage": 4,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "earth": 20,
+        "air": -15
+      },
+      "threat_multiplier": 0.7,
+      "tags": [
+        "flying",
+        "imp",
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_tinnitus_imp": {
+      "name": "Tinnitus Imp",
+      "tier": "imp",
+      "roles": [
+        "ranged",
+        "caster"
+      ],
+      "region": "any",
+      "no_equipment_chance": 0.5,
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 0,
+        "finesse": 4,
+        "awareness": 3,
+        "focus": 2,
+        "charm": 0,
+        "luck": 2
+      },
+      "skill_priorities": [
+        "space_magic",
+        "guile"
+      ],
+      "guaranteed_spells": [
+        "magic_missile"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "dagger",
+          "base_damage": 4,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "space": 20,
+        "physical": -10
+      },
+      "threat_multiplier": 0.7,
+      "tags": [
+        "flying",
+        "imp",
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_ash_imp": {
+      "name": "Ash Imp",
+      "tier": "imp",
+      "roles": [
+        "ranged",
+        "caster"
+      ],
+      "region": "any",
+      "no_equipment_chance": 0.5,
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 0,
+        "finesse": 3,
+        "awareness": 3,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "black_magic",
+        "sorcery"
+      ],
+      "guaranteed_spells": [
+        "void_stare"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "dagger",
+          "base_damage": 4,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "black": 25,
+        "white": -15
+      },
+      "threat_multiplier": 0.7,
+      "tags": [
+        "flying",
+        "imp",
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_sloth_imp": {
+      "name": "Sloth Imp",
+      "tier": "imp",
+      "roles": [
+        "support"
+      ],
+      "region": "any",
+      "no_equipment_chance": 0.5,
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 1,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "white_magic"
+      ],
+      "guaranteed_spells": [
+        "lesser_heal"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "dagger",
+          "base_damage": 3,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "white": 15,
+        "black": -15
+      },
+      "threat_multiplier": 0.7,
+      "tags": [
+        "flying",
+        "imp",
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "_comment_cold": "=== COLD HELL REGION ===",
+    "hell_ice_mage": {
+      "name": "Ice Sorcerer",
+      "tier": "devil",
+      "roles": [
+        "caster"
+      ],
+      "region": "cold_hell",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 1,
+        "awareness": 2,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "water_magic",
+        "sorcery",
+        "enchantment"
+      ],
+      "guaranteed_spells": [
+        "ice_bolt",
+        "cooling_mist"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "staff",
+          "base_damage": 3,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "water": 25,
+        "fire": -15
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_frost_guardian": {
+      "name": "Frost Guardian",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "cold_hell",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 4,
+        "finesse": 0,
+        "awareness": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "armor",
+        "maces",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "mace",
+          "base_damage": 10,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "water": 30,
+        "fire": -20,
+        "physical": 15,
+        "piercing": 20,
+        "slashing": 15
+      },
+      "threat_multiplier": 1.2,
+      "tags": [],
+      "realm": "hell"
+    },
+    "hell_frozen_revenant": {
+      "name": "Frozen Revenant",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "cold_hell",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 2,
+        "finesse": 1,
+        "awareness": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "swords",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "sword",
+          "base_damage": 9,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "medium"
+      },
+      "resistances": {
+        "water": 20,
+        "fire": -15,
+        "piercing": 20,
+        "slashing": 15,
+        "crushing": -15
+      },
+      "threat_multiplier": 1.0,
+      "tags": [],
+      "realm": "hell"
+    },
+    "hell_ice_archer": {
+      "name": "Ice Archer",
+      "tier": "devil",
+      "roles": [
+        "ranged"
+      ],
+      "region": "cold_hell",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 0,
+        "luck": 2
+      },
+      "skill_priorities": [
+        "ranged",
+        "guile"
+      ],
+      "guaranteed_spells": [
+        "ice_bolt"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "bow",
+          "base_damage": 6,
+          "base_accuracy": 7,
+          "range": 5
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "water": 15,
+        "fire": -10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_ice_priest": {
+      "name": "Ice Priest",
+      "tier": "devil",
+      "roles": [
+        "support"
+      ],
+      "region": "cold_hell",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 2,
+        "finesse": 1,
+        "awareness": 2,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "white_magic",
+        "water_magic",
+        "enchantment"
+      ],
+      "guaranteed_spells": [
+        "lesser_heal",
+        "cooling_mist"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "staff",
+          "base_damage": 3,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "water": 20,
+        "fire": -10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "_comment_blue_devils": "=== BLUE DEVIL RACE \u2014 cold_hell region, water/air affinity ===",
+    "hell_blue_devil_guardian": {
+      "name": "Blue Devil Guardian",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "cold_hell",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 3,
+        "finesse": 2,
+        "awareness": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "spears",
+        "armor"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "spear",
+          "base_damage": 8,
+          "base_accuracy": 4,
+          "range": 2
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "water": 25,
+        "fire": -15,
+        "air": 10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "hell_blue_devil_ice_mage": {
+      "name": "Blue Devil Ice Mage",
+      "tier": "devil",
+      "roles": [
+        "caster"
+      ],
+      "region": "cold_hell",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 1,
+        "awareness": 3,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "water_magic",
+        "enchantment"
+      ],
+      "guaranteed_spells": [
+        "ice_bolt",
+        "rain"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "staff",
+          "base_damage": 3,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "water": 30,
+        "fire": -20
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "hell_blue_devil_ambusher": {
+      "name": "Blue Devil Ambusher",
+      "tier": "devil",
+      "roles": [
+        "ranged"
+      ],
+      "region": "cold_hell",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 4,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 0,
+        "luck": 2
+      },
+      "skill_priorities": [
+        "ranged",
+        "guile"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "crossbow",
+          "base_damage": 9,
+          "base_accuracy": 7,
+          "range": 6
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "water": 15,
+        "fire": -10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "_comment_fire": "=== FIRE HELL REGION ===",
+    "hell_lava_golem": {
+      "name": "Lava Golem",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "fire_hell",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 4,
+        "finesse": 0,
+        "awareness": 0,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "unarmed",
+        "might",
+        "armor"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 12,
+          "base_accuracy": 2,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "fire": 40,
+        "water": -25,
+        "physical": 20,
+        "slashing": 25,
+        "piercing": 25
+      },
+      "threat_multiplier": 1.3,
+      "tags": [],
+      "realm": "hell"
+    },
+    "hell_fire_sorcerer": {
+      "name": "Fire Sorcerer",
+      "tier": "devil",
+      "roles": [
+        "caster"
+      ],
+      "region": "fire_hell",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 1,
+        "awareness": 2,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "fire_magic",
+        "sorcery",
+        "enchantment"
+      ],
+      "guaranteed_spells": [
+        "firebolt",
+        "cursed_flame"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "staff",
+          "base_damage": 3,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "fire": 25,
+        "water": -15
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_infernal_archer": {
+      "name": "Infernal Archer",
+      "tier": "devil",
+      "roles": [
+        "ranged"
+      ],
+      "region": "fire_hell",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 0,
+        "luck": 2
+      },
+      "skill_priorities": [
+        "ranged",
+        "guile"
+      ],
+      "guaranteed_spells": [
+        "firebolt"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "bow",
+          "base_damage": 7,
+          "base_accuracy": 6,
+          "range": 5
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "fire": 15,
+        "water": -10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_ember_priest": {
+      "name": "Ember Priest",
+      "tier": "devil",
+      "roles": [
+        "support"
+      ],
+      "region": "fire_hell",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 2,
+        "finesse": 1,
+        "awareness": 2,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "white_magic",
+        "fire_magic",
+        "enchantment"
+      ],
+      "guaranteed_spells": [
+        "lesser_heal",
+        "firebolt"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "staff",
+          "base_damage": 3,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "fire": 20,
+        "water": -10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "_comment_red_devils": "=== RED DEVIL RACE \u2014 fire_hell region, fire/strength affinity ===",
+    "hell_red_devil_berserker": {
+      "name": "Red Devil Berserker",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "fire_hell",
+      "attribute_weights": {
+        "strength": 5,
+        "constitution": 2,
+        "finesse": 1,
+        "awareness": 0,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "axes",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [
+        "heavy_swing"
+      ],
+      "equipment_template": {
+        "weapon": {
+          "type": "axe",
+          "base_damage": 12,
+          "base_accuracy": 2,
+          "range": 1
+        },
+        "armor_type": "medium"
+      },
+      "resistances": {
+        "fire": 30,
+        "water": -20
+      },
+      "threat_multiplier": 1.1,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "hell_red_devil_warrior": {
+      "name": "Red Devil Warrior",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "fire_hell",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 3,
+        "finesse": 1,
+        "awareness": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "axes",
+        "armor"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "axe",
+          "base_damage": 10,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "fire": 20,
+        "water": -10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "hell_red_devil_firestarter": {
+      "name": "Red Devil Firestarter",
+      "tier": "devil",
+      "roles": [
+        "caster"
+      ],
+      "region": "fire_hell",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 1,
+        "awareness": 2,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "fire_magic",
+        "sorcery"
+      ],
+      "guaranteed_spells": [
+        "firebolt",
+        "cursed_flame"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "staff",
+          "base_damage": 4,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "fire": 30,
+        "water": -20
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "_comment_yellow_devils": "=== YELLOW DEVIL RACE \u2014 any region, earth/luck affinity, durable merchants ===",
+    "hell_yellow_devil_caravan_guard": {
+      "name": "Yellow Devil Caravan Guard",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 4,
+        "finesse": 0,
+        "awareness": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "maces",
+        "armor"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "mace",
+          "base_damage": 9,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "earth": 20,
+        "physical": 10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "hell_yellow_devil_extortionist": {
+      "name": "Yellow Devil Extortionist",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 2,
+        "finesse": 1,
+        "awareness": 1,
+        "focus": 1,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "maces",
+        "alchemy"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "mace",
+          "base_damage": 9,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "medium"
+      },
+      "resistances": {
+        "earth": 15
+      },
+      "threat_multiplier": 1.0,
+      "starting_inventory": [
+        {
+          "item_id": "fire_bomb",
+          "quantity": 1
+        },
+        {
+          "item_id": "acid_flask",
+          "quantity": 1
+        }
+      ],
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "hell_yellow_devil_transmuter": {
+      "name": "Yellow Devil Transmuter",
+      "tier": "devil",
+      "roles": [
+        "caster",
+        "support"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 0,
+        "awareness": 3,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "earth_magic",
+        "enchantment"
+      ],
+      "guaranteed_spells": [
+        "stone_spike",
+        "bark_skin"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "staff",
+          "base_damage": 3,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "earth": 25,
+        "physical": 10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "_comment_green_devils": "=== GREEN DEVIL RACE \u2014 any region, air/finesse affinity, swift hunters ===",
+    "hell_green_devil_hunter": {
+      "name": "Green Devil Hunter",
+      "tier": "devil",
+      "roles": [
+        "ranged"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 4,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 0,
+        "luck": 2
+      },
+      "skill_priorities": [
+        "ranged",
+        "daggers"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "bow",
+          "base_damage": 7,
+          "base_accuracy": 7,
+          "range": 5
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "air": 20
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "hell_green_devil_sniper": {
+      "name": "Green Devil Sniper",
+      "tier": "devil",
+      "roles": [
+        "ranged"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 5,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 0,
+        "luck": 2
+      },
+      "skill_priorities": [
+        "ranged"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [
+        "steady_aim"
+      ],
+      "equipment_template": {
+        "weapon": {
+          "type": "bow",
+          "base_damage": 8,
+          "base_accuracy": 9,
+          "range": 6
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "air": 20
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "hell_green_devil_backstabber": {
+      "name": "Green Devil Backstabber",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 5,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 0,
+        "luck": 2
+      },
+      "skill_priorities": [
+        "daggers",
+        "guile"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [
+        "backstab"
+      ],
+      "equipment_template": {
+        "weapon": {
+          "type": "dagger",
+          "base_damage": 6,
+          "base_accuracy": 8,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "air": 15,
+        "physical": -10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "_comment_black_devils": "=== BLACK DEVIL RACE \u2014 any region, space/black magic affinity ===",
+    "hell_black_devil_sorcerer": {
+      "name": "Black Devil Sorcerer",
+      "tier": "devil",
+      "roles": [
+        "caster"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 1,
+        "awareness": 3,
+        "focus": 4,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "sorcery",
+        "black_magic"
+      ],
+      "guaranteed_spells": [
+        "blink",
+        "death_bolt"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "staff",
+          "base_damage": 4,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "space": 25,
+        "black": 15,
+        "physical": -10
+      },
+      "threat_multiplier": 1.1,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "hell_black_devil_mindbender": {
+      "name": "Black Devil Mindbender",
+      "tier": "devil",
+      "roles": [
+        "caster",
+        "support"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 1,
+        "awareness": 3,
+        "focus": 4,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "space_magic",
+        "black_magic"
+      ],
+      "guaranteed_spells": [
+        "blink",
+        "confusion"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "staff",
+          "base_damage": 3,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "space": 30,
+        "black": 15,
+        "physical": -15
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "hell_black_devil_lifedrinker": {
+      "name": "Black Devil Lifedrinker",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "black_magic",
+        "daggers"
+      ],
+      "guaranteed_spells": [
+        "life_drain",
+        "gloom"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "dagger",
+          "base_damage": 7,
+          "base_accuracy": 7,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "space": 15,
+        "black": 20,
+        "physical": -10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "_comment_white_devils": "=== WHITE DEVIL RACE \u2014 any region, space/charm affinity, manipulative ===",
+    "hell_white_devil_tempter": {
+      "name": "White Devil Tempter",
+      "tier": "devil",
+      "roles": [
+        "support",
+        "caster"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 1,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 4,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "white_magic",
+        "black_magic"
+      ],
+      "guaranteed_spells": [
+        "friends",
+        "gloom"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "staff",
+          "base_damage": 3,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "space": 10,
+        "physical": -10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "hell_white_devil_medicus": {
+      "name": "White Devil Medicus",
+      "tier": "devil",
+      "roles": [
+        "support"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 1,
+        "awareness": 3,
+        "focus": 3,
+        "charm": 1,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "white_magic",
+        "medicine"
+      ],
+      "guaranteed_spells": [
+        "lesser_heal",
+        "cure"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "staff",
+          "base_damage": 3,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "space": 10
+      },
+      "threat_multiplier": 0.9,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "hell_white_devil_illusionist": {
+      "name": "White Devil Illusionist",
+      "tier": "devil",
+      "roles": [
+        "caster",
+        "support"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 2,
+        "awareness": 3,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "space_magic",
+        "enchantment"
+      ],
+      "guaranteed_spells": [
+        "blur",
+        "decoy"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "staff",
+          "base_damage": 3,
+          "base_accuracy": 3,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "space": 25,
+        "physical": -10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
+    "_comment_bosses": "=== BOSS ARCHETYPES ===",
+    "hell_yama_lieutenant": {
+      "name": "Chitragupta, Yama's Lieutenant",
+      "tier": "boss",
+      "roles": [
+        "boss"
+      ],
+      "region": "fire_hell",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 3,
+        "finesse": 2,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 1,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "swords",
+        "armor",
+        "might",
+        "black_magic"
+      ],
+      "guaranteed_spells": [
+        "curse",
+        "void_stare"
+      ],
+      "guaranteed_perks": [],
+      "guaranteed_drops": [
+        "yamas_ledger"
+      ],
+      "equipment_template": {
+        "weapon": {
+          "type": "sword",
+          "base_damage": 14,
+          "base_accuracy": 8,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "physical": 15,
+        "fire": 25,
+        "space": 15
+      },
+      "threat_multiplier": 2.0,
+      "tags": [
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_yama_lieutenant_weakened": {
+      "name": "Chitragupta (Diminished)",
+      "tier": "boss",
+      "roles": [
+        "boss"
+      ],
+      "region": "fire_hell",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 2,
+        "finesse": 2,
+        "awareness": 2,
+        "focus": 1,
+        "charm": 1,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "swords",
+        "armor",
+        "might"
+      ],
+      "guaranteed_spells": [
+        "gloom"
+      ],
+      "guaranteed_perks": [],
+      "guaranteed_drops": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "sword",
+          "base_damage": 11,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "physical": 10,
+        "fire": 15,
+        "space": 10
+      },
+      "threat_multiplier": 1.5,
+      "tags": [
+        "biological"
+      ],
+      "realm": "hell"
+    },
+    "hell_mountain_guardian": {
+      "name": "Lava Guardian",
+      "tier": "boss",
+      "roles": [
+        "boss"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 4,
+        "finesse": 0,
+        "awareness": 1,
+        "focus": 1,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "unarmed",
+        "armor",
+        "might",
+        "fire_magic"
+      ],
+      "guaranteed_spells": [
+        "firebolt"
+      ],
+      "guaranteed_perks": [],
+      "guaranteed_drops": [
+        "frozen_heart_amulet"
+      ],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 14,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "physical": 20,
+        "fire": 40,
+        "water": -25,
+        "earth": 30,
+        "slashing": 20,
+        "piercing": 20
+      },
+      "threat_multiplier": 1.8,
+      "tags": [],
+      "realm": "hell"
+    }
+  }
 }
