@@ -1143,6 +1143,8 @@ func _handle_portal_object(obj: Dictionary) -> void:
 	portal_entered.emit(obj.data)
 
 	if GameState and not dest_realm.is_empty():
+		# Unlock the destination realm as a reincarnation option (meta-progression)
+		GameState.unlock_world(dest_realm)
 		GameState.travel_to_world(dest_realm)
 
 	if not dest_map.is_empty():
