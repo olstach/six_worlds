@@ -281,6 +281,111 @@
 	  "typical_backgrounds": ["warrior", "guard", "former_soldier", "catacomb_keeper", "bone_dancer", "charnel_yogi", "penitent"]
 	},
 
+	"dralha": {
+	  "name": "Dralha",
+	  "realm": "hungry_ghost",
+	  "description": "Warrior-kings who refused to relinquish their power at death and rebuilt their dominion from beyond the grave. Dralha are former chieftains, generals, and conquerors who linger in the charnel grounds surrounded by the spirits of those who served them in life. They lead through force and presence, wielding weapons with the same authority they carried in the living world.",
+	  "attribute_modifiers": {
+		"strength": 2,
+		"finesse": -2,
+		"constitution": 0,
+		"focus": -1,
+		"awareness": -1,
+		"charm": 2,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 32,
+		"finesse": 23,
+		"constitution": 28,
+		"focus": 25,
+		"awareness": 25,
+		"charm": 32,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {
+		"fire": 5
+	  },
+	  "starting_skills": {
+		"might": 1,
+		"leadership": 1
+	  },
+	  "starting_spells": [],
+	  "reincarnation_weight": 7,
+	  "typical_backgrounds": ["warrior", "former_soldier", "noble", "raider", "guard"]
+	},
+
+	"gyelpo": {
+	  "name": "Gyelpo",
+	  "realm": "hungry_ghost",
+	  "description": "Powerful tantric practitioners and sorcerers who accumulated enough spiritual force in life to persist after death as kings of the spirit world. Where dralha rule through arms and loyalty, gyelpos rule through binding oaths, ritual contracts, and the weight of accumulated power. Shugden is the archetype: a sorcerer who refused to dissolve, who built a new throne from obligation and fear.",
+	  "attribute_modifiers": {
+		"strength": -2,
+		"finesse": 0,
+		"constitution": -2,
+		"focus": 2,
+		"awareness": 2,
+		"charm": -1,
+		"luck": 1
+	  },
+	  "attribute_caps": {
+		"strength": 23,
+		"finesse": 28,
+		"constitution": 23,
+		"focus": 32,
+		"awareness": 32,
+		"charm": 25,
+		"luck": 30
+	  },
+	  "elemental_affinity_bonuses": {
+		"space": 5
+	  },
+	  "starting_skills": {
+		"black_magic": 1,
+		"ritual": 1
+	  },
+	  "starting_spells": [
+		{"school": "Black", "level": 1, "count": 1}
+	  ],
+	  "reincarnation_weight": 5,
+	  "typical_backgrounds": ["charnel_yogi", "scholar", "priest", "penitent"]
+	},
+
+	"dre": {
+	  "name": "Dré",
+	  "realm": "hungry_ghost",
+	  "description": "Ghosts in the oldest and most literal sense: consciousness that has shed its body but not its attachments, drifting through the charnel grounds like smoke through bone. Dré are the most dissolved of the preta, barely present in the physical world. They feel little of its violence but remain bound to it by the thread of whatever they could not let go.",
+	  "attribute_modifiers": {
+		"strength": -3,
+		"finesse": 0,
+		"constitution": -3,
+		"focus": 2,
+		"awareness": 2,
+		"charm": 0,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 22,
+		"finesse": 28,
+		"constitution": 22,
+		"focus": 32,
+		"awareness": 32,
+		"charm": 28,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {
+		"space": 5
+	  },
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "passives": {
+		"physical_damage_reduction": 0.5
+	  },
+	  "reincarnation_weight": 5,
+	  "typical_backgrounds": ["charnel_yogi", "penitent", "wanderer"],
+	  "todo": ["physical_damage_reduction: implement 50% physical damage immunity in combat system"]
+	},
+
 	"vetala": {
 	  "name": "Vetala",
 	  "realm": "hungry_ghost",
@@ -801,7 +906,7 @@
 		"naga", "bee", "yaksha",
 		"tsen", "rudra",
 		"red_devil", "blue_devil", "yellow_devil", "green_devil", "black_devil", "white_devil",
-		"skeleton", "vetala"
+		"skeleton", "vetala", "dralha"
 	  ],
 	  "weight": 10
 	},
@@ -992,7 +1097,7 @@
 	  },
 	  "available_races": [
 		"red_devil", "blue_devil", "yellow_devil", "green_devil", "black_devil", "white_devil",
-		"rolang", "skeleton", "vetala"
+		"rolang", "skeleton", "vetala", "gyelpo", "dre"
 	  ],
 	  "weight": 3
 	},
@@ -1044,7 +1149,7 @@
 		"random_bonus": ["wooden_shield"],
 		"bonus_chance": 0.35
 	  },
-	  "available_races": ["rolang", "skeleton", "vetala"],
+	  "available_races": ["rolang", "skeleton", "vetala", "dralha"],
 	  "weight": 5
 	},
 	"plague_victim": {
@@ -1057,7 +1162,7 @@
 		"random_bonus": ["bone_amulet"],
 		"bonus_chance": 0.3
 	  },
-	  "available_races": ["rolang", "skeleton", "vetala"],
+	  "available_races": ["rolang", "skeleton", "vetala", "gyelpo"],
 	  "weight": 3
 	},
 	"diplomat": {
@@ -1188,7 +1293,7 @@
 		"random_bonus": ["prayer_beads", "bone_amulet"],
 		"bonus_chance": 0.65
 	  },
-	  "available_races": ["vetala", "skeleton"],
+	  "available_races": ["vetala", "skeleton", "gyelpo", "dre"],
 	  "weight": 2
 	},
 
@@ -1205,7 +1310,7 @@
 		"random_bonus": ["lucky_charm"],
 		"bonus_chance": 0.5
 	  },
-	  "available_races": ["vetala"],
+	  "available_races": ["vetala", "dre"],
 	  "weight": 4
 	}
   }
