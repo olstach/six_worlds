@@ -264,7 +264,7 @@ func recruit(companion_id: String) -> Dictionary:
 		return {}
 
 	var cost: int = def.get("recruitment_cost", 0)
-	if GameState.party_gold < cost:
+	if GameState.gold < cost:
 		push_warning("CompanionSystem: Cannot afford companion ", companion_id)
 		return {}
 
