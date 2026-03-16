@@ -1,261 +1,1804 @@
 {
-	"id": "hell",
-	"name": "Naraka - The Hell Realm",
-	"description": "The Hell Realm of Naraka, split between the frozen wastes of the north and the burning badlands of the south, divided by an impassable mountain range.",
-	"width": 192,
-	"height": 144,
-	"base_speed": 3.0,
-
-	"location_names": {
-		"_comment": "Tibetan/Sanskrit compound place names drawn randomly when placing town-type objects. Ro=corpse, Nag=black, Dur=charnel, Trak=blood, Mun=darkness, Jik=fear, Shi=death, Bar=blazing, Me=fire, Gang=glacier, Drang=cold, Drag=fierce. khar=fort, thang=plain, yul=land, lung=valley, ri=mountain, dzong=citadel, pura=city.",
-		"town": [
-			"Rokhar", "Nagthang", "Duryul", "Trakkhar", "Munkhar",
-			"Jiklung", "Shithang", "Barkhar", "Meri", "Gangkhar",
-			"Drangyul", "Draglung", "Krodhapura", "Dvesanagar", "Yamakshetra"
-		]
-	},
-
-	"zones": [
-		{
-			"id": "cold_hell",
-			"rows": [0, 59],
-			"terrain_weights": {
-				"0": 30, "8": 25, "2": 8, "3": 8, "5": 10,
-				"11": 8, "1": 5, "13": 3, "4": 3
-			},
-			"road_chance": 0.08,
-			"cluster_min": 2,
-			"cluster_max": 6
-		},
-		{
-			"id": "divider",
-			"rows": [60, 71],
-			"type": "mountain_wall",
-			"pass_width": 3,
-			"pass_count": [1, 2]
-		},
-		{
-			"id": "fire_hell",
-			"rows": [72, 143],
-			"terrain_weights": {
-				"0": 25, "7": 20, "9": 15, "12": 10, "3": 8,
-				"13": 8, "1": 5, "2": 4, "4": 5
-			},
-			"road_chance": 0.06,
-			"cluster_min": 2,
-			"cluster_max": 7
-		}
-	],
-
-	"fixed_landmarks": [
-		{
-			"type": "start",
-			"zone": "cold_hell",
-			"position": "top_left",
-			"clear_radius": 3
-		},
-		{
-			"type": "portal",
-			"zone": "fire_hell",
-			"position": "bottom_right",
-			"clear_radius": 2,
-			"data": {
-				"destination_realm": "hungry_ghost",
-				"destination_map": "hungry_ghost_01",
-				"requires_boss_defeated": true,
-				"description": "A shimmering portal to the Hungry Ghost Realm."
-			}
-		},
-		{
-			"type": "boss",
-			"zone": "fire_hell",
-			"position": "near_portal",
-			"data": {
-				"event_id": "hell_boss_yama_lt",
-				"name": "Yama's Lieutenant",
-				"icon": "boss"
-			}
-		},
-		{
-			"type": "pass_guardian",
-			"zone": "divider",
-			"position": "at_pass",
-			"data": {
-				"event_id": "hell_lava_guardian",
-				"name": "Lava Guardian",
-				"icon": "enemy_elite"
-			}
-		}
-	],
-
-	"object_pools": {
-		"cold_hell": {
-			"events": [
-				{"event_id": "hell_demon_patrol", "name": "Demon Patrol", "icon": "enemy", "blocking": true, "one_time": true, "weight": 2},
-				{"event_id": "hell_ice_spirits", "name": "Ice Spirits", "icon": "enemy", "blocking": true, "one_time": true, "weight": 2},
-				{"event_id": "hell_frozen_merchant", "name": "Frozen Merchant", "icon": "shop", "blocking": false, "one_time": false, "weight": 2, "tag": "shop"},
-				{"event_id": "hell_lost_wanderer", "name": "Lost Wanderer", "icon": "npc", "blocking": false, "one_time": true, "weight": 3},
-				{"event_id": "hell_frozen_cave", "name": "Frozen Cave", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
-				{"event_id": "hell_tormented_soul", "name": "Tormented Soul", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
-				{"event_id": "hell_crossroads_shrine", "name": "Crossroads Shrine", "icon": "event", "blocking": false, "one_time": false, "weight": 2},
-				{"event_id": "hell_ice_yogi", "name": "Frozen Waterfall Yogi", "icon": "npc", "blocking": false, "one_time": true, "weight": 1},
-				{"event_id": "hell_ancient_stupa", "name": "Ancient Stupa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 3},
-				{"event_id": "hell_demon_checkpoint", "name": "Demon Checkpoint", "icon": "enemy", "blocking": true, "one_time": true, "weight": 3},
-				{"event_id": "hell_ice_oracle", "name": "Ice Oracle", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
-				{"event_id": "hell_ghost_village", "name": "Ghost Village", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
-			{"event_id": "hell_bone_arena", "name": "Bone Arena", "icon": "dungeon", "blocking": true, "one_time": true, "weight": 2},
-			{"event_id": "hell_suffering_sage", "name": "Suffering Sage", "icon": "npc", "blocking": false, "one_time": true, "weight": 1},
-			{"event_id": "hell_suspicious_gift", "name": "Suspicious Gift", "icon": "event", "blocking": false, "one_time": true, "weight": 3},
-			{"event_id": "hell_ice_demon_toll", "name": "Ice Demon Toll", "icon": "enemy", "blocking": true, "one_time": true, "weight": 3},
-			{"event_id": "hell_cursed_pilgrim", "name": "Cursed Pilgrim", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
-			{"event_id": "hell_frozen_army", "name": "Frozen Army", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
-			{"event_id": "hell_sigh_of_relief", "name": "A Sigh of Relief", "icon": "shrine", "blocking": false, "one_time": true, "weight": 1},
-			{"event_id": "hell_bone_archer_camp", "name": "Bone Archer Camp", "icon": "shop", "blocking": false, "one_time": true, "weight": 1, "tag": "shop"},
-			{"event_id": "hell_mercy_ward", "name": "Mercy Ward", "icon": "shrine", "blocking": false, "one_time": true, "weight": 1},
-			{"event_id": "hell_teahouse_cold", "name": "Teahouse", "icon": "rest", "blocking": false, "one_time": false, "weight": 2, "tag": "rest"},
-			{"event_id": "hell_mercenary_guild", "name": "Mercenary Guild", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
-			{"event_id": "hell_veterans_camp", "name": "Veterans' Camp", "icon": "npc", "blocking": false, "one_time": false, "weight": 2, "training_pool": ["swords", "martial_arts", "ranged", "daggers", "axes", "unarmed", "spears", "maces", "armor"]},
-			{"event_id": "hell_sacred_grove", "name": "Sacred Grove", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_temple_of_the_naga", "name": "Temple of the Naga", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_eternal_fire", "name": "Temple of the Eternal Fire", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_garuda_roost", "name": "Garuda Roost", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_hidden_gompa", "name": "Hidden Gompa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_medicinal_garden", "name": "Medicinal Garden", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_black_lodge", "name": "Black Lodge", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_yogini_circle", "name": "Circle of the Yoginis", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_mirror_lake", "name": "Mirror Lake", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_crossroads_stupa", "name": "Crossroads Stupa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_town_weapons", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
-			{"event_id": "hell_town_magic", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
-			{"event_id": "hell_town_supplies", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"}
-			],
-			"pickups": [
-				{"name": "Abandoned Cart", "icon": "treasure", "message": "A cart left behind by someone in a hurry.", "rewards": [{"type": "gold", "value": [25, 50]}, {"type": "item", "value": "health_potion"}], "weight": 3},
-				{"name": "Frozen Corpse", "icon": "treasure", "message": "Someone didn't make it. They left a little gold.", "rewards": [{"type": "gold", "value": [15, 30]}], "weight": 3},
-				{"name": "Warm Spring", "icon": "rest", "message": "A rare pocket of warmth in the frozen wastes.", "rewards": [{"type": "heal", "value": 30}, {"type": "mana", "value": 15}], "one_time": false, "weight": 2, "tag": "rest"},
-				{"name": "Prayer Flags", "icon": "shrine", "message": "Someone planted these here. The effort means something.", "rewards": [{"type": "xp", "value": [15, 35]}, {"type": "karma", "value": {"realm": "human", "amount": 3}}], "weight": 2},
-				{"name": "Frozen Fountain", "icon": "rest", "message": "The water beneath the ice is still flowing.", "rewards": [{"type": "mana", "value": 25}], "one_time": false, "weight": 2, "tag": "rest"},
-
-				{"name": "Frozen Spring", "icon": "rest", "message": "A pool trapped under ice, faintly warm at the center.", "rewards": [{"type": "mana", "value": 40}], "weight": 4},
-				{"name": "Mourning Flame", "icon": "shrine", "message": "A small fire that never goes out, tended by a weeping shade.", "rewards": [{"type": "heal", "value": 30}], "weight": 4},
-				{"name": "Ice Shrine", "icon": "shrine", "message": "A frozen stupa, offerings still visible inside the ice.", "rewards": [{"type": "buff", "value": {"stat": "awareness", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 2}}], "weight": 3},
-				{"name": "Frosted Relic", "icon": "shrine", "message": "A fragment of something holy, long corrupted by cold.", "rewards": [{"type": "item_random", "value": ["scroll_firebolt", "scroll_lesser_heal"]}], "weight": 2},
-				{"name": "Shivering Cairn", "icon": "shrine", "message": "Stones stacked by countless suffering hands.", "rewards": [{"type": "buff", "value": {"stat": "loot_chance_pct", "amount": 15, "combats_remaining": 1}}], "weight": 3},
-				{"name": "Sorrow Pool", "icon": "rest", "message": "Tears of the damned, gathered over eons.", "rewards": [{"type": "cleanse", "value": 1}], "weight": 2},
-
-				{"name": "Soul Well", "icon": "shrine", "message": "You can feel the outlines of strange memories.", "rewards": [{"type": "buff", "value": {"stat": ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"], "amount": 2, "combats_remaining": 1}}], "weight": 3},
-				{"name": "Forgotten Grave", "icon": "shrine", "message": "A rare act of caring for the dead in the Hells.", "rewards": [{"type": "xp", "value": 10}], "weight": 3},
-				{"name": "Devil's Charm", "icon": "treasure", "message": "Still humming with whispered mantras.", "rewards": [{"type": "item_random", "value": ["fire_charm_common", "black_charm_common", "sorcery_charm_common", "white_charm_common", "earth_charm_common"]}], "weight": 2},
-				{"name": "Magic Well", "icon": "rest", "message": "Shimmering with power.", "rewards": [{"type": "mana", "value": 100}], "weight": 3},
-				{"name": "Twisted Idol", "icon": "shrine", "message": "You feel sick looking into its eyes.", "rewards": [{"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "constitution", "amount": -2, "combats_remaining": 1}}], "weight": 2},
-				{"name": "Old Battlefield", "icon": "shrine", "message": "Carrion crows pick what's left from the fallen.", "rewards": [{"type": "buff", "value": {"stat": "initiative", "amount": 3, "combats_remaining": 1}}], "weight": 2},
-				{"name": "Wayside Shrine", "icon": "shrine", "message": "If you want a good omen, you have to make it yourself.", "rewards": [{"type": "buff", "value": {"stat": "luck", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 1}}], "weight": 2},
-
-				{"name": "Bone Pile", "icon": "treasure", "message": "Frozen bones, stripped clean long ago. Something useful is lodged among them.", "rewards": [{"type": "item_random_scaled", "value": {"tiers": {"weak": ["iron_dagger", "wooden_spear", "wooden_staff", "short_bow", "leather_vest", "leather_cap"], "medium": ["iron_sword", "iron_axe", "iron_mace", "leather_vest", "leather_boots", "wooden_shield", "copper_ring", "prayer_beads"], "strong": ["good_iron_weapon", "iron_shield", "padded_armor", "iron_helmet", "silver_ring", "bone_amulet", "lucky_charm"]}}}], "weight": 2},
-				{"name": "Eerie Cold Patch", "icon": "rest", "message": "The cold here feels different. Wrong.", "rewards": [{"type": "buff", "value": {"stat": "constitution", "amount": -3, "combats_remaining": 1}}], "weight": 1},
-				{"name": "Warm Glow", "icon": "shrine", "message": "It looks like a flame shrine. Something is off.", "rewards": [{"type": "damage", "value": 20}], "weight": 1}
-			],
-			"spell_schools": ["Fire", "Water", "Earth", "Air", "Space", "White", "Black", "Sorcery", "Enchantment", "Summoning"]
-		},
-		"fire_hell": {
-			"events": [
-				{"event_id": "hell_fire_shrine", "name": "Burning Shrine", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
-				{"event_id": "hell_ember_merchant", "name": "Ember Merchant", "icon": "shop", "blocking": false, "one_time": false, "weight": 2, "tag": "shop"},
-				{"event_id": "hell_burning_prisoner", "name": "Burning Prisoner", "icon": "npc", "blocking": false, "one_time": true, "weight": 3},
-				{"event_id": "hell_fire_trial", "name": "Trial of Flames", "icon": "dungeon", "blocking": true, "one_time": true, "weight": 2},
-				{"event_id": "hell_volcanic_cave", "name": "Volcanic Cave", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
-				{"event_id": "hell_lava_flow", "name": "Lava Flow", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
-				{"event_id": "hell_lava_swimmer", "name": "Lava Swimmer", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
-				{"event_id": "hell_demon_dojo", "name": "Demon Dojo", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
-				{"event_id": "hell_infernal_archive", "name": "Infernal Archive", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 1},
-				{"event_id": "hell_fire_pilgrim", "name": "Fire Pilgrim", "icon": "npc", "blocking": false, "one_time": true, "weight": 3},
-			{"event_id": "hell_pyromancer_duel", "name": "Pyromancer's Challenge", "icon": "enemy", "blocking": true, "one_time": true, "weight": 2},
-			{"event_id": "hell_demon_marketplace", "name": "Demon Marketplace", "icon": "shop", "blocking": false, "one_time": true, "weight": 2, "tag": "shop"},
-			{"event_id": "hell_burning_library", "name": "Burning Library", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
-			{"event_id": "hell_sinner_gang", "name": "Sinner Gang", "icon": "npc", "blocking": false, "one_time": true, "weight": 3},
-			{"event_id": "hell_forge_spirit", "name": "Forge Spirit", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
-			{"event_id": "hell_the_invitation", "name": "The Invitation", "icon": "event", "blocking": false, "one_time": true, "weight": 1},
-			{"event_id": "hell_sigh_of_relief", "name": "A Sigh of Relief", "icon": "shrine", "blocking": false, "one_time": true, "weight": 1},
-			{"event_id": "hell_infernal_forge", "name": "Infernal Forge", "icon": "shop", "blocking": false, "one_time": true, "weight": 1, "tag": "shop"},
-			{"event_id": "hell_brimstone_lab", "name": "Brimstone Lab", "icon": "shop", "blocking": false, "one_time": true, "weight": 1, "tag": "shop"},
-			{"event_id": "hell_wardens_pit", "name": "Warden's Pit", "icon": "npc", "blocking": false, "one_time": true, "weight": 1},
-			{"event_id": "hell_mercy_ward", "name": "Mercy Ward", "icon": "shrine", "blocking": false, "one_time": true, "weight": 1},
-			{"event_id": "hell_teahouse_fire", "name": "Teahouse", "icon": "rest", "blocking": false, "one_time": false, "weight": 2, "tag": "rest"},
-			{"event_id": "hell_mercenary_guild", "name": "Mercenary Guild", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
-			{"event_id": "hell_veterans_camp", "name": "Veterans' Camp", "icon": "npc", "blocking": false, "one_time": false, "weight": 2, "training_pool": ["swords", "martial_arts", "ranged", "daggers", "axes", "unarmed", "spears", "maces", "armor"]},
-			{"event_id": "hell_sacred_grove", "name": "Sacred Grove", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_temple_of_the_naga", "name": "Temple of the Naga", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_eternal_fire", "name": "Temple of the Eternal Fire", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_garuda_roost", "name": "Garuda Roost", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_hidden_gompa", "name": "Hidden Gompa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_medicinal_garden", "name": "Medicinal Garden", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_black_lodge", "name": "Black Lodge", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_yogini_circle", "name": "Circle of the Yoginis", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_mirror_lake", "name": "Mirror Lake", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_crossroads_stupa", "name": "Crossroads Stupa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
-			{"event_id": "hell_town_weapons", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
-			{"event_id": "hell_town_magic", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
-			{"event_id": "hell_town_supplies", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"}
-			],
-			"pickups": [
-				{"name": "Scorched Supplies", "icon": "treasure", "message": "Someone's emergency stash, half-melted.", "rewards": [{"type": "gold", "value": [30, 55]}, {"type": "item", "value": "health_potion"}], "weight": 3},
-				{"name": "Lava Crystal", "icon": "treasure", "message": "A chunk of solidified magma with a gem inside.", "rewards": [{"type": "gold", "value": [20, 40]}, {"type": "xp", "value": [10, 25]}], "weight": 2},
-				{"name": "Ember Pool", "icon": "rest", "message": "Tepid, grey, but restorative in this land of extremes.", "rewards": [{"type": "heal", "value": 25}, {"type": "mana", "value": 20}], "one_time": false, "weight": 2, "tag": "rest"},
-				{"name": "Fireproof Cache", "icon": "treasure", "message": "Whoever hid this planned ahead.", "rewards": [{"type": "gold", "value": [20, 35]}, {"type": "item", "value": "mana_potion"}], "weight": 2},
-
-				{"name": "Lava Vent", "icon": "shrine", "message": "The air quivers with heat above the cracked rock.", "rewards": [{"type": "buff", "value": {"stat": "strength", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "fire_resistance", "amount": 20, "combats_remaining": 1}}], "weight": 4},
-				{"name": "Burning Altar", "icon": "shrine", "message": "The offerings still smolder upon the black stone.", "rewards": [{"type": "buff", "value": {"stat": "spellpower_fire", "amount": 3, "combats_remaining": 1}}], "weight": 3},
-				{"name": "Pain Altar", "icon": "shrine", "message": "Clarity through pain.", "rewards": [{"type": "buff", "value": {"stat": "awareness", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}, {"type": "damage", "value": 15}], "weight": 2},
-				{"name": "Ember Cache", "icon": "treasure", "message": "A hidden stash, kept warm in volcanic rock.", "rewards": [{"type": "item_random", "value": ["health_potion", "mana_potion", "fire_bomb", "frost_bomb", "poison_bomb", "flame_oil", "frost_oil"]}], "weight": 3},
-				{"name": "Experience Stone", "icon": "shrine", "message": "When you touch it, your mind becomes strangely sparkly.", "rewards": [{"type": "buff", "value": {"stat": "xp_gain_pct", "amount": 20, "combats_remaining": 1}}], "weight": 3},
-				{"name": "Ashen Spring", "icon": "rest", "message": "In a land of fire, ash brings cool relief.", "rewards": [{"type": "heal", "value": 30}, {"type": "mana", "value": 20}], "weight": 4},
-
-				{"name": "Soul Well", "icon": "shrine", "message": "You can feel the outlines of strange memories.", "rewards": [{"type": "buff", "value": {"stat": ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"], "amount": 2, "combats_remaining": 1}}], "weight": 3},
-				{"name": "Forgotten Grave", "icon": "shrine", "message": "A rare act of caring for the dead in the Hells.", "rewards": [{"type": "xp", "value": 10}], "weight": 3},
-				{"name": "Devil's Charm", "icon": "treasure", "message": "Still humming with whispered mantras.", "rewards": [{"type": "item_random", "value": ["fire_charm_common", "black_charm_common", "sorcery_charm_common", "white_charm_common", "earth_charm_common"]}], "weight": 2},
-				{"name": "Magic Well", "icon": "rest", "message": "Shimmering with power.", "rewards": [{"type": "mana", "value": 100}], "weight": 3},
-				{"name": "Twisted Idol", "icon": "shrine", "message": "You feel sick looking into its eyes.", "rewards": [{"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "constitution", "amount": -2, "combats_remaining": 1}}], "weight": 2},
-				{"name": "Old Battlefield", "icon": "shrine", "message": "Carrion crows pick what's left from the fallen.", "rewards": [{"type": "buff", "value": {"stat": "initiative", "amount": 3, "combats_remaining": 1}}], "weight": 2},
-				{"name": "Wayside Shrine", "icon": "shrine", "message": "If you want a good omen, you have to make it yourself.", "rewards": [{"type": "buff", "value": {"stat": "luck", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 1}}], "weight": 2},
-
-				{"name": "Charred Bone Pile", "icon": "treasure", "message": "Ash and scorched bones. Something metallic survived the heat.", "rewards": [{"type": "item_random_scaled", "value": {"tiers": {"weak": ["iron_dagger", "wooden_spear", "wooden_staff", "short_bow", "leather_boots", "leather_cap"], "medium": ["iron_sword", "iron_axe", "iron_mace", "iron_dagger", "leather_vest", "wooden_shield", "copper_ring", "travelers_amulet"], "strong": ["good_iron_weapon", "iron_shield", "chainmail", "iron_helmet", "silver_ring", "bone_amulet", "lucky_charm"]}}}], "weight": 2},
-				{"name": "Flickering Light", "icon": "shrine", "message": "It looks like a burning altar. It is not.", "rewards": [{"type": "damage", "value": 15}], "weight": 1},
-				{"name": "Cracked Stone", "icon": "treasure", "message": "Looks like a cache. It's a trap.", "rewards": [{"type": "damage", "value": 20}], "weight": 1}
-			],
-			"spell_schools": ["Fire", "Water", "Earth", "Air", "Space", "White", "Black", "Sorcery", "Enchantment", "Summoning"]
-		}
-	},
-
-	"mob_pools": {
-		"cold_hell": [
-			{"name": "Ice Wraith", "icon": "enemy", "mode": 0, "attitude": 1, "speed": 0.0, "enemy_group": "ice_wraith", "difficulty": "hard", "weight": 2},
-			{"name": "Demon Sentinel", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.5, "enemy_group": "demon_sentinel", "difficulty": "hard", "weight": 2},
-			{"name": "Frost Imp", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.7, "enemy_group": "frost_imp", "difficulty": "normal", "weight": 4},
-			{"name": "Lost Souls", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.3, "enemy_group": "lost_souls", "difficulty": "normal", "weight": 8},
-			{"name": "Shadow Stalker", "icon": "enemy", "mode": 0, "attitude": 2, "speed": 0.8, "enemy_group": "shadow_stalker", "difficulty": "hard", "aggression": 0.4, "weight": 1},
-			{"name": "Wandering Hermit", "icon": "npc", "mode": 2, "attitude": 0, "speed": 0.3, "event_id": "hell_hermit_monk", "weight": 3},
-			{"name": "Wandering Peddler", "icon": "merchant", "mode": 2, "attitude": 0, "speed": 0.4, "event_id": "hell_wandering_peddler", "weight": 2, "tag": "shop"},
-			{"name": "Tormented Shade", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.2, "enemy_group": "lost_souls", "difficulty": "normal", "weight": 5}
-		],
-		"fire_hell": [
-			{"name": "Hell Hound", "icon": "enemy_fast", "mode": 2, "attitude": 2, "speed": 0.9, "enemy_group": "hell_hound", "difficulty": "hard", "aggression": 0.7, "weight": 1},
-			{"name": "Oni Brute", "icon": "enemy_elite", "mode": 1, "attitude": 2, "speed": 0.5, "enemy_group": "oni_brute", "difficulty": "hard", "aggression": 0.9, "weight": 1},
-			{"name": "Flame Imps", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.7, "enemy_group": "frost_imp", "difficulty": "normal", "weight": 4},
-			{"name": "Lost Souls", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.3, "enemy_group": "lost_souls", "difficulty": "normal", "weight": 8},
-			{"name": "Demon Sentinel", "icon": "enemy", "mode": 0, "attitude": 1, "speed": 0.0, "enemy_group": "demon_sentinel", "difficulty": "hard", "weight": 2},
-			{"name": "Burning Wraith", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.4, "enemy_group": "lost_souls", "difficulty": "normal", "weight": 5},
-			{"name": "Wandering Demon", "icon": "npc", "mode": 2, "attitude": 0, "speed": 0.3, "event_id": "hell_burning_prisoner", "weight": 3}
-		]
-	},
-
-	"density": {
-		"events_per_zone": [48, 72],
-		"pickups_per_zone": [240, 400],
-		"mobs_per_zone": [140, 200],
-		"guaranteed_shops": [1, 2],
-		"guaranteed_rest": [1, 2],
-		"guaranteed_guilds": [1, 1],
-		"guaranteed_simples": [{"tier": 1, "count": 2}, {"tier": 2, "count": 1}],
-		"min_spacing": 3
-	}
+  "id": "hell",
+  "name": "Naraka - The Hell Realm",
+  "description": "The Hell Realm of Naraka, split between the frozen wastes of the north and the burning badlands of the south, divided by an impassable mountain range.",
+  "width": 192,
+  "height": 144,
+  "base_speed": 3.0,
+  "location_names": {
+    "_comment": "Tibetan/Sanskrit compound place names drawn randomly when placing town-type objects. Ro=corpse, Nag=black, Dur=charnel, Trak=blood, Mun=darkness, Jik=fear, Shi=death, Bar=blazing, Me=fire, Gang=glacier, Drang=cold, Drag=fierce. khar=fort, thang=plain, yul=land, lung=valley, ri=mountain, dzong=citadel, pura=city.",
+    "town": [
+      "Rokhar",
+      "Nagthang",
+      "Duryul",
+      "Trakkhar",
+      "Munkhar",
+      "Jiklung",
+      "Shithang",
+      "Barkhar",
+      "Meri",
+      "Gangkhar",
+      "Drangyul",
+      "Draglung",
+      "Krodhapura",
+      "Dvesanagar",
+      "Yamakshetra"
+    ]
+  },
+  "zones": [
+    {
+      "id": "cold_hell",
+      "rows": [
+        0,
+        59
+      ],
+      "terrain_weights": {
+        "0": 30,
+        "8": 25,
+        "2": 8,
+        "3": 8,
+        "5": 10,
+        "11": 8,
+        "1": 5,
+        "13": 3,
+        "4": 3
+      },
+      "road_chance": 0.08,
+      "cluster_min": 2,
+      "cluster_max": 6
+    },
+    {
+      "id": "divider",
+      "rows": [
+        60,
+        71
+      ],
+      "type": "mountain_wall",
+      "pass_width": 3,
+      "pass_count": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "fire_hell",
+      "rows": [
+        72,
+        143
+      ],
+      "terrain_weights": {
+        "0": 25,
+        "7": 20,
+        "9": 15,
+        "12": 10,
+        "3": 8,
+        "13": 8,
+        "1": 5,
+        "2": 4,
+        "4": 5
+      },
+      "road_chance": 0.06,
+      "cluster_min": 2,
+      "cluster_max": 7
+    }
+  ],
+  "fixed_landmarks": [
+    {
+      "type": "start",
+      "zone": "cold_hell",
+      "position": "top_left",
+      "clear_radius": 3
+    },
+    {
+      "type": "event",
+      "zone": "cold_hell",
+      "position": "near_start",
+      "min_dist": 5,
+      "max_dist": 15,
+      "data": {
+        "event_id": "hell_lost_wanderer",
+        "name": "Wandering Devil",
+        "icon": "npc",
+        "blocking": false,
+        "one_time": true
+      }
+    },
+    {
+      "type": "portal",
+      "zone": "fire_hell",
+      "position": "bottom_right",
+      "clear_radius": 2,
+      "data": {
+        "destination_realm": "hungry_ghost",
+        "destination_map": "hungry_ghost_01",
+        "description": "A shimmering portal to the Hungry Ghost Realm."
+      }
+    },
+    {
+      "type": "boss",
+      "zone": "fire_hell",
+      "position": "near_portal",
+      "data": {
+        "event_id": "hell_boss_yama_lt",
+        "name": "Yama's Lieutenant",
+        "icon": "boss"
+      }
+    },
+    {
+      "type": "pass_guardian",
+      "zone": "divider",
+      "position": "at_pass",
+      "data": {
+        "event_id": "hell_lava_guardian",
+        "name": "Lava Guardian",
+        "icon": "enemy_elite"
+      }
+    }
+  ],
+  "object_pools": {
+    "cold_hell": {
+      "events": [
+        {
+          "event_id": "hell_demon_patrol",
+          "name": "Demon Patrol",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_ice_spirits",
+          "name": "Ice Spirits",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_frozen_merchant",
+          "name": "Frozen Merchant",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2,
+          "tag": "shop"
+        },
+        {
+          "event_id": "hell_lost_wanderer",
+          "name": "Lost Wanderer",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 3
+        },
+        {
+          "event_id": "hell_frozen_cave",
+          "name": "Frozen Cave",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_tormented_soul",
+          "name": "Tormented Soul",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_crossroads_shrine",
+          "name": "Crossroads Shrine",
+          "icon": "event",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_ice_yogi",
+          "name": "Frozen Waterfall Yogi",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1
+        },
+        {
+          "event_id": "hell_ancient_stupa",
+          "name": "Ancient Stupa",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 3
+        },
+        {
+          "event_id": "hell_demon_checkpoint",
+          "name": "Demon Checkpoint",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 3
+        },
+        {
+          "event_id": "hell_ice_oracle",
+          "name": "Ice Oracle",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_ghost_village",
+          "name": "Ghost Village",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_bone_arena",
+          "name": "Bone Arena",
+          "icon": "dungeon",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_suffering_sage",
+          "name": "Suffering Sage",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1
+        },
+        {
+          "event_id": "hell_suspicious_gift",
+          "name": "Suspicious Gift",
+          "icon": "event",
+          "blocking": false,
+          "one_time": true,
+          "weight": 3
+        },
+        {
+          "event_id": "hell_ice_demon_toll",
+          "name": "Ice Demon Toll",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 3
+        },
+        {
+          "event_id": "hell_cursed_pilgrim",
+          "name": "Cursed Pilgrim",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_frozen_army",
+          "name": "Frozen Army",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_sigh_of_relief",
+          "name": "A Sigh of Relief",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1
+        },
+        {
+          "event_id": "hell_bone_archer_camp",
+          "name": "Bone Archer Camp",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "hell_mercy_ward",
+          "name": "Mercy Ward",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1
+        },
+        {
+          "event_id": "hell_teahouse_cold",
+          "name": "Teahouse",
+          "icon": "rest",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2,
+          "tag": "rest"
+        },
+        {
+          "event_id": "hell_mercenary_guild",
+          "name": "Mercenary Guild",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "hell_veterans_camp",
+          "name": "Veterans' Camp",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2,
+          "training_pool": [
+            "swords",
+            "martial_arts",
+            "ranged",
+            "daggers",
+            "axes",
+            "unarmed",
+            "spears",
+            "maces",
+            "armor"
+          ]
+        },
+        {
+          "event_id": "hell_sacred_grove",
+          "name": "Sacred Grove",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_temple_of_the_naga",
+          "name": "Temple of the Naga",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_eternal_fire",
+          "name": "Temple of the Eternal Fire",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_garuda_roost",
+          "name": "Garuda Roost",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_hidden_gompa",
+          "name": "Hidden Gompa",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_medicinal_garden",
+          "name": "Medicinal Garden",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_black_lodge",
+          "name": "Black Lodge",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_yogini_circle",
+          "name": "Circle of the Yoginis",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_mirror_lake",
+          "name": "Mirror Lake",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_crossroads_stupa",
+          "name": "Crossroads Stupa",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_town_weapons",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "hell_town_magic",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "hell_town_supplies",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        }
+      ],
+      "pickups": [
+        {
+          "name": "Abandoned Cart",
+          "icon": "treasure",
+          "message": "A cart left behind by someone in a hurry.",
+          "rewards": [
+            {
+              "type": "gold",
+              "value": [
+                25,
+                50
+              ]
+            },
+            {
+              "type": "item",
+              "value": "health_potion"
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Frozen Corpse",
+          "icon": "treasure",
+          "message": "Someone didn't make it. They left a little gold.",
+          "rewards": [
+            {
+              "type": "gold",
+              "value": [
+                15,
+                30
+              ]
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Warm Spring",
+          "icon": "rest",
+          "message": "A rare pocket of warmth in the frozen wastes.",
+          "rewards": [
+            {
+              "type": "heal",
+              "value": 30
+            },
+            {
+              "type": "mana",
+              "value": 15
+            }
+          ],
+          "one_time": false,
+          "weight": 2,
+          "tag": "rest"
+        },
+        {
+          "name": "Prayer Flags",
+          "icon": "shrine",
+          "message": "Someone planted these here. The effort means something.",
+          "rewards": [
+            {
+              "type": "xp",
+              "value": [
+                15,
+                35
+              ]
+            },
+            {
+              "type": "karma",
+              "value": {
+                "realm": "human",
+                "amount": 3
+              }
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Frozen Fountain",
+          "icon": "rest",
+          "message": "The water beneath the ice is still flowing.",
+          "rewards": [
+            {
+              "type": "mana",
+              "value": 25
+            }
+          ],
+          "one_time": false,
+          "weight": 2,
+          "tag": "rest"
+        },
+        {
+          "name": "Frozen Spring",
+          "icon": "rest",
+          "message": "A pool trapped under ice, faintly warm at the center.",
+          "rewards": [
+            {
+              "type": "mana",
+              "value": 40
+            }
+          ],
+          "weight": 4
+        },
+        {
+          "name": "Mourning Flame",
+          "icon": "shrine",
+          "message": "A small fire that never goes out, tended by a weeping shade.",
+          "rewards": [
+            {
+              "type": "heal",
+              "value": 30
+            }
+          ],
+          "weight": 4
+        },
+        {
+          "name": "Ice Shrine",
+          "icon": "shrine",
+          "message": "A frozen stupa, offerings still visible inside the ice.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": "awareness",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "buff",
+              "value": {
+                "stat": "focus",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "karma",
+              "value": {
+                "realm": "god",
+                "amount": 2
+              }
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Frosted Relic",
+          "icon": "shrine",
+          "message": "A fragment of something holy, long corrupted by cold.",
+          "rewards": [
+            {
+              "type": "item_random",
+              "value": [
+                "scroll_firebolt",
+                "scroll_lesser_heal"
+              ]
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Shivering Cairn",
+          "icon": "shrine",
+          "message": "Stones stacked by countless suffering hands.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": "loot_chance_pct",
+                "amount": 15,
+                "combats_remaining": 1
+              }
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Sorrow Pool",
+          "icon": "rest",
+          "message": "Tears of the damned, gathered over eons.",
+          "rewards": [
+            {
+              "type": "cleanse",
+              "value": 1
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Soul Well",
+          "icon": "shrine",
+          "message": "You can feel the outlines of strange memories.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": [
+                  "strength",
+                  "constitution",
+                  "finesse",
+                  "focus",
+                  "awareness",
+                  "charm",
+                  "luck"
+                ],
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Forgotten Grave",
+          "icon": "shrine",
+          "message": "A rare act of caring for the dead in the Hells.",
+          "rewards": [
+            {
+              "type": "xp",
+              "value": 10
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Devil's Charm",
+          "icon": "treasure",
+          "message": "Still humming with whispered mantras.",
+          "rewards": [
+            {
+              "type": "item_random",
+              "value": [
+                "fire_charm_common",
+                "black_charm_common",
+                "sorcery_charm_common",
+                "white_charm_common",
+                "earth_charm_common"
+              ]
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Magic Well",
+          "icon": "rest",
+          "message": "Shimmering with power.",
+          "rewards": [
+            {
+              "type": "mana",
+              "value": 100
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Twisted Idol",
+          "icon": "shrine",
+          "message": "You feel sick looking into its eyes.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": "focus",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "buff",
+              "value": {
+                "stat": "constitution",
+                "amount": -2,
+                "combats_remaining": 1
+              }
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Old Battlefield",
+          "icon": "shrine",
+          "message": "Carrion crows pick what's left from the fallen.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": "initiative",
+                "amount": 3,
+                "combats_remaining": 1
+              }
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Wayside Shrine",
+          "icon": "shrine",
+          "message": "If you want a good omen, you have to make it yourself.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": "luck",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "karma",
+              "value": {
+                "realm": "god",
+                "amount": 1
+              }
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Bone Pile",
+          "icon": "treasure",
+          "message": "Frozen bones, stripped clean long ago. Something useful is lodged among them.",
+          "rewards": [
+            {
+              "type": "item_random_scaled",
+              "value": {
+                "tiers": {
+                  "weak": [
+                    "iron_dagger",
+                    "wooden_spear",
+                    "wooden_staff",
+                    "short_bow",
+                    "leather_vest",
+                    "leather_cap"
+                  ],
+                  "medium": [
+                    "iron_sword",
+                    "iron_axe",
+                    "iron_mace",
+                    "leather_vest",
+                    "leather_boots",
+                    "wooden_shield",
+                    "copper_ring",
+                    "prayer_beads"
+                  ],
+                  "strong": [
+                    "good_iron_weapon",
+                    "iron_shield",
+                    "padded_armor",
+                    "iron_helmet",
+                    "silver_ring",
+                    "bone_amulet",
+                    "lucky_charm"
+                  ]
+                }
+              }
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Eerie Cold Patch",
+          "icon": "rest",
+          "message": "The cold here feels different. Wrong.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": "constitution",
+                "amount": -3,
+                "combats_remaining": 1
+              }
+            }
+          ],
+          "weight": 1
+        },
+        {
+          "name": "Warm Glow",
+          "icon": "shrine",
+          "message": "It looks like a flame shrine. Something is off.",
+          "rewards": [
+            {
+              "type": "damage",
+              "value": 20
+            }
+          ],
+          "weight": 1
+        }
+      ],
+      "spell_schools": [
+        "Fire",
+        "Water",
+        "Earth",
+        "Air",
+        "Space",
+        "White",
+        "Black",
+        "Sorcery",
+        "Enchantment",
+        "Summoning"
+      ]
+    },
+    "fire_hell": {
+      "events": [
+        {
+          "event_id": "hell_fire_shrine",
+          "name": "Burning Shrine",
+          "icon": "event",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_ember_merchant",
+          "name": "Ember Merchant",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2,
+          "tag": "shop"
+        },
+        {
+          "event_id": "hell_burning_prisoner",
+          "name": "Burning Prisoner",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 3
+        },
+        {
+          "event_id": "hell_fire_trial",
+          "name": "Trial of Flames",
+          "icon": "dungeon",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_volcanic_cave",
+          "name": "Volcanic Cave",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_lava_flow",
+          "name": "Lava Flow",
+          "icon": "event",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_lava_swimmer",
+          "name": "Lava Swimmer",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_demon_dojo",
+          "name": "Demon Dojo",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_infernal_archive",
+          "name": "Infernal Archive",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1
+        },
+        {
+          "event_id": "hell_fire_pilgrim",
+          "name": "Fire Pilgrim",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 3
+        },
+        {
+          "event_id": "hell_pyromancer_duel",
+          "name": "Pyromancer's Challenge",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_demon_marketplace",
+          "name": "Demon Marketplace",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2,
+          "tag": "shop"
+        },
+        {
+          "event_id": "hell_burning_library",
+          "name": "Burning Library",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_sinner_gang",
+          "name": "Sinner Gang",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 3
+        },
+        {
+          "event_id": "hell_forge_spirit",
+          "name": "Forge Spirit",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_the_invitation",
+          "name": "The Invitation",
+          "icon": "event",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1
+        },
+        {
+          "event_id": "hell_sigh_of_relief",
+          "name": "A Sigh of Relief",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1
+        },
+        {
+          "event_id": "hell_infernal_forge",
+          "name": "Infernal Forge",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "hell_brimstone_lab",
+          "name": "Brimstone Lab",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "hell_wardens_pit",
+          "name": "Warden's Pit",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1
+        },
+        {
+          "event_id": "hell_mercy_ward",
+          "name": "Mercy Ward",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1
+        },
+        {
+          "event_id": "hell_teahouse_fire",
+          "name": "Teahouse",
+          "icon": "rest",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2,
+          "tag": "rest"
+        },
+        {
+          "event_id": "hell_mercenary_guild",
+          "name": "Mercenary Guild",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "hell_veterans_camp",
+          "name": "Veterans' Camp",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2,
+          "training_pool": [
+            "swords",
+            "martial_arts",
+            "ranged",
+            "daggers",
+            "axes",
+            "unarmed",
+            "spears",
+            "maces",
+            "armor"
+          ]
+        },
+        {
+          "event_id": "hell_sacred_grove",
+          "name": "Sacred Grove",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_temple_of_the_naga",
+          "name": "Temple of the Naga",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_eternal_fire",
+          "name": "Temple of the Eternal Fire",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_garuda_roost",
+          "name": "Garuda Roost",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_hidden_gompa",
+          "name": "Hidden Gompa",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_medicinal_garden",
+          "name": "Medicinal Garden",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_black_lodge",
+          "name": "Black Lodge",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_yogini_circle",
+          "name": "Circle of the Yoginis",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_mirror_lake",
+          "name": "Mirror Lake",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_crossroads_stupa",
+          "name": "Crossroads Stupa",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "hell_town_weapons",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "hell_town_magic",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "hell_town_supplies",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        }
+      ],
+      "pickups": [
+        {
+          "name": "Scorched Supplies",
+          "icon": "treasure",
+          "message": "Someone's emergency stash, half-melted.",
+          "rewards": [
+            {
+              "type": "gold",
+              "value": [
+                30,
+                55
+              ]
+            },
+            {
+              "type": "item",
+              "value": "health_potion"
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Lava Crystal",
+          "icon": "treasure",
+          "message": "A chunk of solidified magma with a gem inside.",
+          "rewards": [
+            {
+              "type": "gold",
+              "value": [
+                20,
+                40
+              ]
+            },
+            {
+              "type": "xp",
+              "value": [
+                10,
+                25
+              ]
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Ember Pool",
+          "icon": "rest",
+          "message": "Tepid, grey, but restorative in this land of extremes.",
+          "rewards": [
+            {
+              "type": "heal",
+              "value": 25
+            },
+            {
+              "type": "mana",
+              "value": 20
+            }
+          ],
+          "one_time": false,
+          "weight": 2,
+          "tag": "rest"
+        },
+        {
+          "name": "Fireproof Cache",
+          "icon": "treasure",
+          "message": "Whoever hid this planned ahead.",
+          "rewards": [
+            {
+              "type": "gold",
+              "value": [
+                20,
+                35
+              ]
+            },
+            {
+              "type": "item",
+              "value": "mana_potion"
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Lava Vent",
+          "icon": "shrine",
+          "message": "The air quivers with heat above the cracked rock.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": "strength",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "buff",
+              "value": {
+                "stat": "fire_resistance",
+                "amount": 20,
+                "combats_remaining": 1
+              }
+            }
+          ],
+          "weight": 4
+        },
+        {
+          "name": "Burning Altar",
+          "icon": "shrine",
+          "message": "The offerings still smolder upon the black stone.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": "spellpower_fire",
+                "amount": 3,
+                "combats_remaining": 1
+              }
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Pain Altar",
+          "icon": "shrine",
+          "message": "Clarity through pain.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": "awareness",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "buff",
+              "value": {
+                "stat": "focus",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "damage",
+              "value": 15
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Ember Cache",
+          "icon": "treasure",
+          "message": "A hidden stash, kept warm in volcanic rock.",
+          "rewards": [
+            {
+              "type": "item_random",
+              "value": [
+                "health_potion",
+                "mana_potion",
+                "fire_bomb",
+                "frost_bomb",
+                "poison_bomb",
+                "flame_oil",
+                "frost_oil"
+              ]
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Experience Stone",
+          "icon": "shrine",
+          "message": "When you touch it, your mind becomes strangely sparkly.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": "xp_gain_pct",
+                "amount": 20,
+                "combats_remaining": 1
+              }
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Ashen Spring",
+          "icon": "rest",
+          "message": "In a land of fire, ash brings cool relief.",
+          "rewards": [
+            {
+              "type": "heal",
+              "value": 30
+            },
+            {
+              "type": "mana",
+              "value": 20
+            }
+          ],
+          "weight": 4
+        },
+        {
+          "name": "Soul Well",
+          "icon": "shrine",
+          "message": "You can feel the outlines of strange memories.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": [
+                  "strength",
+                  "constitution",
+                  "finesse",
+                  "focus",
+                  "awareness",
+                  "charm",
+                  "luck"
+                ],
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Forgotten Grave",
+          "icon": "shrine",
+          "message": "A rare act of caring for the dead in the Hells.",
+          "rewards": [
+            {
+              "type": "xp",
+              "value": 10
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Devil's Charm",
+          "icon": "treasure",
+          "message": "Still humming with whispered mantras.",
+          "rewards": [
+            {
+              "type": "item_random",
+              "value": [
+                "fire_charm_common",
+                "black_charm_common",
+                "sorcery_charm_common",
+                "white_charm_common",
+                "earth_charm_common"
+              ]
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Magic Well",
+          "icon": "rest",
+          "message": "Shimmering with power.",
+          "rewards": [
+            {
+              "type": "mana",
+              "value": 100
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Twisted Idol",
+          "icon": "shrine",
+          "message": "You feel sick looking into its eyes.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": "focus",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "buff",
+              "value": {
+                "stat": "constitution",
+                "amount": -2,
+                "combats_remaining": 1
+              }
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Old Battlefield",
+          "icon": "shrine",
+          "message": "Carrion crows pick what's left from the fallen.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": "initiative",
+                "amount": 3,
+                "combats_remaining": 1
+              }
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Wayside Shrine",
+          "icon": "shrine",
+          "message": "If you want a good omen, you have to make it yourself.",
+          "rewards": [
+            {
+              "type": "buff",
+              "value": {
+                "stat": "luck",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "karma",
+              "value": {
+                "realm": "god",
+                "amount": 1
+              }
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Charred Bone Pile",
+          "icon": "treasure",
+          "message": "Ash and scorched bones. Something metallic survived the heat.",
+          "rewards": [
+            {
+              "type": "item_random_scaled",
+              "value": {
+                "tiers": {
+                  "weak": [
+                    "iron_dagger",
+                    "wooden_spear",
+                    "wooden_staff",
+                    "short_bow",
+                    "leather_boots",
+                    "leather_cap"
+                  ],
+                  "medium": [
+                    "iron_sword",
+                    "iron_axe",
+                    "iron_mace",
+                    "iron_dagger",
+                    "leather_vest",
+                    "wooden_shield",
+                    "copper_ring",
+                    "travelers_amulet"
+                  ],
+                  "strong": [
+                    "good_iron_weapon",
+                    "iron_shield",
+                    "chainmail",
+                    "iron_helmet",
+                    "silver_ring",
+                    "bone_amulet",
+                    "lucky_charm"
+                  ]
+                }
+              }
+            }
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Flickering Light",
+          "icon": "shrine",
+          "message": "It looks like a burning altar. It is not.",
+          "rewards": [
+            {
+              "type": "damage",
+              "value": 15
+            }
+          ],
+          "weight": 1
+        },
+        {
+          "name": "Cracked Stone",
+          "icon": "treasure",
+          "message": "Looks like a cache. It's a trap.",
+          "rewards": [
+            {
+              "type": "damage",
+              "value": 20
+            }
+          ],
+          "weight": 1
+        }
+      ],
+      "spell_schools": [
+        "Fire",
+        "Water",
+        "Earth",
+        "Air",
+        "Space",
+        "White",
+        "Black",
+        "Sorcery",
+        "Enchantment",
+        "Summoning"
+      ]
+    }
+  },
+  "mob_pools": {
+    "cold_hell": [
+      {
+        "name": "Ice Wraith",
+        "icon": "enemy",
+        "mode": 0,
+        "attitude": 1,
+        "speed": 0.0,
+        "enemy_group": "ice_wraith",
+        "difficulty": "hard",
+        "weight": 2
+      },
+      {
+        "name": "Demon Sentinel",
+        "icon": "enemy",
+        "mode": 1,
+        "attitude": 1,
+        "speed": 0.5,
+        "enemy_group": "demon_sentinel",
+        "difficulty": "hard",
+        "weight": 2
+      },
+      {
+        "name": "Frost Imp",
+        "icon": "enemy",
+        "mode": 1,
+        "attitude": 1,
+        "speed": 0.7,
+        "enemy_group": "frost_imp",
+        "difficulty": "normal",
+        "weight": 4
+      },
+      {
+        "name": "Lost Souls",
+        "icon": "enemy",
+        "mode": 2,
+        "attitude": 1,
+        "speed": 0.3,
+        "enemy_group": "lost_souls",
+        "difficulty": "normal",
+        "weight": 8
+      },
+      {
+        "name": "Shadow Stalker",
+        "icon": "enemy",
+        "mode": 0,
+        "attitude": 2,
+        "speed": 0.8,
+        "enemy_group": "shadow_stalker",
+        "difficulty": "hard",
+        "aggression": 0.4,
+        "weight": 1
+      },
+      {
+        "name": "Wandering Hermit",
+        "icon": "npc",
+        "mode": 2,
+        "attitude": 0,
+        "speed": 0.3,
+        "event_id": "hell_hermit_monk",
+        "weight": 3
+      },
+      {
+        "name": "Wandering Peddler",
+        "icon": "merchant",
+        "mode": 2,
+        "attitude": 0,
+        "speed": 0.4,
+        "event_id": "hell_wandering_peddler",
+        "weight": 2,
+        "tag": "shop"
+      },
+      {
+        "name": "Tormented Shade",
+        "icon": "enemy",
+        "mode": 2,
+        "attitude": 1,
+        "speed": 0.2,
+        "enemy_group": "lost_souls",
+        "difficulty": "normal",
+        "weight": 5
+      }
+    ],
+    "fire_hell": [
+      {
+        "name": "Hell Hound",
+        "icon": "enemy_fast",
+        "mode": 2,
+        "attitude": 2,
+        "speed": 0.9,
+        "enemy_group": "hell_hound",
+        "difficulty": "hard",
+        "aggression": 0.7,
+        "weight": 1
+      },
+      {
+        "name": "Oni Brute",
+        "icon": "enemy_elite",
+        "mode": 1,
+        "attitude": 2,
+        "speed": 0.5,
+        "enemy_group": "oni_brute",
+        "difficulty": "hard",
+        "aggression": 0.9,
+        "weight": 1
+      },
+      {
+        "name": "Flame Imps",
+        "icon": "enemy",
+        "mode": 1,
+        "attitude": 1,
+        "speed": 0.7,
+        "enemy_group": "frost_imp",
+        "difficulty": "normal",
+        "weight": 4
+      },
+      {
+        "name": "Lost Souls",
+        "icon": "enemy",
+        "mode": 2,
+        "attitude": 1,
+        "speed": 0.3,
+        "enemy_group": "lost_souls",
+        "difficulty": "normal",
+        "weight": 8
+      },
+      {
+        "name": "Demon Sentinel",
+        "icon": "enemy",
+        "mode": 0,
+        "attitude": 1,
+        "speed": 0.0,
+        "enemy_group": "demon_sentinel",
+        "difficulty": "hard",
+        "weight": 2
+      },
+      {
+        "name": "Burning Wraith",
+        "icon": "enemy",
+        "mode": 2,
+        "attitude": 1,
+        "speed": 0.4,
+        "enemy_group": "lost_souls",
+        "difficulty": "normal",
+        "weight": 5
+      },
+      {
+        "name": "Wandering Demon",
+        "icon": "npc",
+        "mode": 2,
+        "attitude": 0,
+        "speed": 0.3,
+        "event_id": "hell_burning_prisoner",
+        "weight": 3
+      }
+    ]
+  },
+  "density": {
+    "events_per_zone": [
+      48,
+      72
+    ],
+    "pickups_per_zone": [
+      240,
+      400
+    ],
+    "mobs_per_zone": [
+      140,
+      200
+    ],
+    "guaranteed_shops": [
+      1,
+      2
+    ],
+    "guaranteed_rest": [
+      1,
+      2
+    ],
+    "guaranteed_guilds": [
+      1,
+      1
+    ],
+    "guaranteed_simples": [
+      {
+        "tier": 1,
+        "count": 2
+      },
+      {
+        "tier": 2,
+        "count": 1
+      }
+    ],
+    "min_spacing": 3
+  }
 }
