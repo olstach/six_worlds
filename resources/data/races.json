@@ -914,6 +914,264 @@
       "reincarnation_weight": 0,
       "typical_backgrounds": [],
       "resistances": {}
+    },
+    "shaza": {
+      "name": "Shaza",
+      "realm": "hungry_ghost",
+      "description": "The predators of the underworld, the shaza aggressively seek out bodies to devour.",
+      "attribute_modifiers": {
+        "strength": 2,
+        "finesse": 2,
+        "constitution": 0,
+        "focus": 0,
+        "awareness": -2,
+        "charm": -2,
+        "luck": 0
+      },
+      "attribute_caps": {
+        "strength": 30,
+        "finesse": 30,
+        "constitution": 27,
+        "focus": 27,
+        "awareness": 26,
+        "charm": 26,
+        "luck": 27
+      },
+      "elemental_affinity_bonuses": {},
+      "starting_skills": {
+        "unarmed": 1,
+        "might": 1
+      },
+      "starting_spells": [],
+      "reincarnation_weight": 10,
+      "typical_backgrounds": [
+        "warrior",
+        "guard",
+        "former_soldier",
+        "hunter"
+      ],
+      "resistances": {}
+    },
+    "yidag": {
+      "name": "Yidag",
+      "realm": "hungry_ghost",
+      "description": "Bellies distended with insatiable hunger, throats constricted to a hair's width \u2014 these beings are the most unfortunate embodiment of the karma that created their world.",
+      "attribute_modifiers": {
+        "strength": 0,
+        "finesse": 2,
+        "constitution": 0,
+        "focus": 0,
+        "awareness": 0,
+        "charm": -1,
+        "luck": -1
+      },
+      "attribute_caps": {
+        "strength": 26,
+        "finesse": 30,
+        "constitution": 26,
+        "focus": 27,
+        "awareness": 27,
+        "charm": 26,
+        "luck": 26
+      },
+      "elemental_affinity_bonuses": {},
+      "starting_skills": {
+        "guile": 1,
+        "thievery": 1
+      },
+      "starting_spells": [],
+      "reincarnation_weight": 10,
+      "typical_backgrounds": [
+        "thief",
+        "wanderer",
+        "beggar",
+        "penitent"
+      ],
+      "resistances": {}
+    },
+    "skeleton_silver": {
+      "name": "Silver Skeleton",
+      "realm": "hungry_ghost",
+      "description": "Not many withstand the trials of the underworld without losing their compassion. Those who have managed that feat remain as healers and helpers, looking with hope for the future to the worlds far above.",
+      "attribute_modifiers": {
+        "strength": -1,
+        "finesse": 0,
+        "constitution": -1,
+        "focus": 0,
+        "awareness": 1,
+        "charm": 1,
+        "luck": 0
+      },
+      "attribute_caps": {
+        "strength": 24,
+        "finesse": 27,
+        "constitution": 24,
+        "focus": 28,
+        "awareness": 30,
+        "charm": 30,
+        "luck": 28
+      },
+      "elemental_affinity_bonuses": {},
+      "starting_skills": {
+        "white_magic": 1,
+        "medicine": 1
+      },
+      "starting_spells": [],
+      "reincarnation_weight": 15,
+      "typical_backgrounds": [
+        "healer",
+        "monk",
+        "charnel_yogi",
+        "penitent"
+      ],
+      "resistances": {}
+    },
+    "skeleton_copper": {
+      "name": "Copper Skeleton",
+      "realm": "hungry_ghost",
+      "description": "Skeletons born of molten copper mirrors in the court of the Skeleton King of the Setting Sun find themselves especially attuned to the arts of power and magnetism.",
+      "attribute_modifiers": {
+        "strength": -1,
+        "finesse": 0,
+        "constitution": -1,
+        "focus": 1,
+        "awareness": 0,
+        "charm": 1,
+        "luck": 0
+      },
+      "attribute_caps": {
+        "strength": 24,
+        "finesse": 27,
+        "constitution": 24,
+        "focus": 30,
+        "awareness": 28,
+        "charm": 30,
+        "luck": 28
+      },
+      "elemental_affinity_bonuses": {},
+      "starting_skills": {
+        "fire_magic": 1,
+        "persuasion": 1
+      },
+      "starting_spells": [],
+      "reincarnation_weight": 15,
+      "typical_backgrounds": [
+        "sorcerer",
+        "noble",
+        "courtier",
+        "bone_dancer"
+      ],
+      "resistances": {}
+    },
+    "skeleton_golden": {
+      "name": "Golden Skeleton",
+      "realm": "hungry_ghost",
+      "description": "Gleaming in the flickering light of the crypt cities, golden skeletons are respected nobles among their people.",
+      "attribute_modifiers": {
+        "strength": -1,
+        "finesse": 0,
+        "constitution": -1,
+        "focus": 0,
+        "awareness": 0,
+        "charm": 1,
+        "luck": 1
+      },
+      "attribute_caps": {
+        "strength": 24,
+        "finesse": 27,
+        "constitution": 24,
+        "focus": 28,
+        "awareness": 28,
+        "charm": 31,
+        "luck": 30
+      },
+      "elemental_affinity_bonuses": {},
+      "starting_skills": {
+        "trade": 1,
+        "leadership": 1
+      },
+      "starting_spells": [],
+      "reincarnation_weight": 15,
+      "typical_backgrounds": [
+        "noble",
+        "merchant",
+        "catacomb_keeper"
+      ],
+      "resistances": {}
+    },
+    "skeleton_iron": {
+      "name": "Iron Skeleton",
+      "realm": "hungry_ghost",
+      "description": "Born of broken weapons on endless battlefields of the multiverse, iron skeletons are hard and unyielding, the most serious and driven of their kin.",
+      "attribute_modifiers": {
+        "strength": 1,
+        "finesse": 0,
+        "constitution": -1,
+        "focus": 1,
+        "awareness": 0,
+        "charm": 0,
+        "luck": -1
+      },
+      "attribute_caps": {
+        "strength": 30,
+        "finesse": 27,
+        "constitution": 26,
+        "focus": 30,
+        "awareness": 27,
+        "charm": 25,
+        "luck": 24
+      },
+      "elemental_affinity_bonuses": {},
+      "starting_skills": {
+        "sorcery": 1,
+        "might": 1
+      },
+      "starting_spells": [],
+      "reincarnation_weight": 15,
+      "typical_backgrounds": [
+        "warrior",
+        "former_soldier",
+        "guard",
+        "charnel_yogi"
+      ],
+      "resistances": {}
+    },
+    "skeleton_turquoise": {
+      "name": "Turquoise Skeleton",
+      "realm": "hungry_ghost",
+      "description": "Prancing cheerfully in their rainbow skirts and flowery headdresses, turquoise skeletons serve as jesters, dancers and, often enough, grand viziers to the Great Bone Kings.",
+      "attribute_modifiers": {
+        "strength": -1,
+        "finesse": 0,
+        "constitution": -1,
+        "focus": 0,
+        "awareness": 0,
+        "charm": 1,
+        "luck": 1
+      },
+      "attribute_caps": {
+        "strength": 24,
+        "finesse": 28,
+        "constitution": 24,
+        "focus": 26,
+        "awareness": 27,
+        "charm": 31,
+        "luck": 30
+      },
+      "elemental_affinity_bonuses": {},
+      "starting_skills": {
+        "comedy": 1,
+        "performance": 1
+      },
+      "starting_spells": [],
+      "reincarnation_weight": 15,
+      "typical_backgrounds": [
+        "bone_dancer",
+        "noble",
+        "wanderer",
+        "catacomb_keeper"
+      ],
+      "resistances": {}
     }
   },
   "backgrounds": {
