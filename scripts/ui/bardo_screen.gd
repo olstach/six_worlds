@@ -346,7 +346,24 @@ func _on_begin_new_life() -> void:
 ## These are simple placeholders — can be expanded with name lists later
 func _generate_name(race: String, realm: String) -> String:
 	var hell_names = ["Mara", "Yama", "Rahu", "Kali", "Rudra", "Agni", "Vetala"]
-	var ghost_names = ["Preta", "Bhuta", "Yaksha", "Mara", "Pishacha", "Raksha"]
+	# Hungry ghost names draw from Tibetan preta lore and Sanskrit sources.
+	# Sub-races covered: yidag (pretas proper), rolang (reanimated corpses),
+	# skeleton variants, vetala (possession spirits), dralha (corrupted war-spirits),
+	# gyelpo (gyalpo demons), dré (obstacle spirits), shaza (flesh-eaters).
+	var ghost_names = [
+		# Tibetan-rooted — evoke craving, hollowness, wandering
+		"Nyönpa", "Khanag", "Drekpa", "Zhöchen", "Rolma", "Migme",
+		"Gongchen", "Dukpa", "Kyangbu", "Bayang", "Shangku", "Thamchen",
+		"Lungwa", "Trungkar", "Bardowa", "Dregchen", "Sogme", "Rimchen",
+		"Kyiduk", "Khyimdag", "Dokma", "Zangkar", "Phagchen", "Chöbar",
+		# Sanskrit-rooted — preta tradition
+		"Preta", "Vetali", "Pishacha", "Bhutika", "Apasmara", "Skandha",
+		"Jivaka", "Nirjhara", "Kshudha", "Trishna", "Abhava", "Pretaraja",
+		# Names evoking specific races
+		"Rolang", "Keting", "Gyelchen", "Drelwa",   # rolang / skeleton / gyelpo
+		"Tsenkar", "Dralkar", "Dralnak", "Tsensen", # dralha / tsen-adjacent
+		"Yidag", "Shazama", "Drema", "Nyönchen",    # yidag / shaza / dré
+	]
 	var animal_names = ["Naga", "Garuda", "Makara", "Simha", "Kinnara", "Vyala"]
 	var human_names = ["Tenzin", "Dorje", "Pema", "Karma", "Lobsang", "Drolma", "Sonam", "Jigme"]
 	var asura_names = ["Vemacitrin", "Rahu", "Svarbhanu", "Pahari", "Danava", "Daitya"]
