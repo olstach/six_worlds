@@ -379,7 +379,10 @@ UI stub exists in Party tab (`_update_followers_list()` / `_create_follower_card
 - Hell: Pure combat focus ← current
 - Hungry Ghost: Resource scarcity?
 - Animal: Mix of combat and negotiation
-- Human: Heavy dialogue/quest focus
+- Human: Heavy dialogue/quest focus — three zones:
+  - **West** (Oddiyana/Gandhara steppe): Scythian-like nomads, cavalry culture → Ranged, Guile, Daggers
+  - **NE** (Zhang-Zhung): proto-Tibetan shamanic Bön, yak herders, high altitude → Ritual, Yoga, Earth magic
+  - **SE** (coastal trade cities): wealthy cosmopolitan India-adjacent mercantile culture → Trade, Persuasion, Alchemy
 - Asura: Competitive events, duels?
 - God: Almost no combat, diplomacy/trade?
 
