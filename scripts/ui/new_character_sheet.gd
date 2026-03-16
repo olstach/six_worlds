@@ -185,15 +185,14 @@ func update_skills_grid() -> void:
 				skills_grid.add_child(empty)
 
 func get_skills_by_element() -> Dictionary:
-	# Map skills to elements based on skills.json data
-	# For now, hardcoded mapping - TODO: load from skills.json
-	return {
-		"space": ["space_magic", "yoga", "sorcery"],
-		"air": ["air_magic", "bows"],
-		"fire": ["fire_magic", "swords"],
-		"water": ["water_magic", "persuasion"],
-		"earth": ["earth_magic", "unarmed", "shields"]
-	}
+	# Build element -> [skill_ids] mapping from PerkSystem's loaded skill data
+	var result: Dictionary = {}
+	for skill_id in PerkSystem._skill_elements:
+		var element: String = PerkSystem._skill_elements[skill_id]
+		if not element in result:
+			result[element] = []
+		result[element].append(skill_id)
+	return result
 
 func update_perks_list() -> void:
 	# Clear existing

@@ -472,7 +472,7 @@ func apply_outcome(outcome: Dictionary) -> void:
 					})
 					# Re-derive stats so buff is reflected immediately
 					for char in CharacterSystem.get_party():
-						CharacterSystem.derive_stats(char)
+						CharacterSystem.update_derived_stats(char)
 					print("EventManager: Applied buff +%d %s for %d combat(s)" % [amount, stat, combats])
 
 		# HP/Mana/Stamina restore — e.g. {"hp_percent": 50, "mana_percent": 50, "stamina_percent": 100}
