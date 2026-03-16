@@ -1,0 +1,346 @@
+{
+	"id": "hungry_ghost",
+	"name": "Pretaloka - The Hungry Ghost Realm",
+	"description": "The realm of insatiable craving, divided into fetid swamps crawling with the newly dead, ancient graveyards haunted by desiccated skeletons, and the charnel grounds where vetalas hold court in palaces that are not quite real.",
+	"width": 192,
+	"height": 192,
+	"base_speed": 3.0,
+
+	"location_names": {
+		"_comment": "Tibetan/Sanskrit compound names for hungry ghost realm settlements. Preta=hungry ghost, Ro=corpse, Drib=obscuration, Tshog=gathering/craving, Nyom=desire, Ku=body, Sem=mind. Sanskrit: ksudha=hunger, trishna=craving, shava=corpse, shmashana=charnel. Suffixes: khar=fort, thang=plain, yul=land, lung=valley, dzong=citadel, pura=city.",
+		"town": [
+			"Yidaklung", "Roshel", "Dribkhar", "Tshogthang", "Nyomyul",
+			"Kugong", "Semdzong", "Rotrak", "Driblung", "Nyomkhar",
+			"Kshudhapura", "Trishnakshetra", "Pretanagar", "Shavanagar", "Smashanapura"
+		]
+	},
+
+	"zones": [
+		{
+			"id": "fetid_swamps",
+			"rows": [0, 55],
+			"terrain_weights": {
+				"0": 20, "2": 25, "3": 20, "5": 12, "8": 8,
+				"11": 6, "1": 4, "4": 3, "13": 2
+			},
+			"road_chance": 0.05,
+			"cluster_min": 3,
+			"cluster_max": 8
+		},
+		{
+			"id": "divider_1",
+			"rows": [56, 63],
+			"type": "mountain_wall",
+			"display_name": "Bone Levee",
+			"pass_width": 3,
+			"pass_count": [1, 2]
+		},
+		{
+			"id": "dry_graveyards",
+			"rows": [64, 119],
+			"terrain_weights": {
+				"0": 35, "1": 20, "4": 12, "3": 10, "13": 8,
+				"5": 5, "8": 4, "2": 3, "12": 3
+			},
+			"road_chance": 0.07,
+			"cluster_min": 2,
+			"cluster_max": 5
+		},
+		{
+			"id": "divider_2",
+			"rows": [120, 127],
+			"type": "mountain_wall",
+			"display_name": "Ruined Ramparts",
+			"pass_width": 3,
+			"pass_count": [1, 2]
+		},
+		{
+			"id": "charnel_grounds",
+			"rows": [128, 191],
+			"terrain_weights": {
+				"0": 25, "1": 18, "9": 12, "13": 10, "4": 10,
+				"3": 8, "12": 7, "8": 5, "2": 5
+			},
+			"road_chance": 0.04,
+			"cluster_min": 2,
+			"cluster_max": 6
+		}
+	],
+
+	"fixed_landmarks": [
+		{
+			"type": "start",
+			"zone": "fetid_swamps",
+			"position": "top_left",
+			"clear_radius": 3
+		},
+		{
+			"type": "pass_guardian",
+			"zone": "divider_1",
+			"position": "at_pass",
+			"data": {
+				"event_id": "hg_swamp_warden",
+				"name": "Swamp Warden",
+				"icon": "enemy_elite"
+			}
+		},
+		{
+			"type": "pass_guardian",
+			"zone": "divider_2",
+			"position": "at_pass",
+			"data": {
+				"event_id": "hg_bone_gate_keeper",
+				"name": "Bone Gate Keeper",
+				"icon": "enemy_elite"
+			}
+		},
+		{
+			"type": "boss",
+			"zone": "charnel_grounds",
+			"position": "near_portal",
+			"data": {
+				"event_id": "hg_boss_insatiable_king",
+				"name": "The Insatiable King",
+				"icon": "boss"
+			}
+		},
+		{
+			"type": "portal",
+			"zone": "charnel_grounds",
+			"position": "bottom_right",
+			"clear_radius": 2,
+			"data": {
+				"destination_realm": "animal",
+				"destination_map": "animal_01",
+				"requires_boss_defeated": true,
+				"description": "A shimmering portal to the Animal Realm."
+			}
+		}
+	],
+
+	"object_pools": {
+		"fetid_swamps": {
+			"events": [
+				{"event_id": "hg_zombie_horde", "name": "Zombie Horde", "icon": "enemy", "blocking": true, "one_time": true, "weight": 3},
+				{"event_id": "hg_sunken_village", "name": "Sunken Village", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_rotting_bridge", "name": "Rotting Bridge", "icon": "event", "blocking": true, "one_time": true, "weight": 3},
+				{"event_id": "hg_preta_wail", "name": "The Wailing", "icon": "event", "blocking": false, "one_time": true, "weight": 3},
+				{"event_id": "hg_corpse_merchant", "name": "Corpse Merchant", "icon": "shop", "blocking": false, "one_time": true, "weight": 2, "tag": "shop"},
+				{"event_id": "hg_will_o_wisp", "name": "Will-o-Wisp", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_flooded_crypt", "name": "Flooded Crypt", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_cursed_well", "name": "Cursed Well", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_bog_hermit", "name": "Bog Hermit", "icon": "npc", "blocking": false, "one_time": true, "weight": 1},
+				{"event_id": "hg_swamp_spirit", "name": "Swamp Spirit", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_bone_raft", "name": "Bone Raft", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_lost_traveler_swamp", "name": "Lost Traveler", "icon": "npc", "blocking": false, "one_time": true, "weight": 3},
+				{"event_id": "hg_sacrifice_post", "name": "Sacrifice Post", "icon": "shrine", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_swamp_toll", "name": "Zombie Toll", "icon": "enemy", "blocking": true, "one_time": true, "weight": 3},
+				{"event_id": "hg_weeping_shrine", "name": "Weeping Shrine", "icon": "shrine", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_preta_feast_swamp", "name": "Preta Feast", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_sigh_of_relief", "name": "A Sigh of Relief", "icon": "shrine", "blocking": false, "one_time": true, "weight": 1},
+				{"event_id": "hg_peddler_swamp", "name": "Swamp Peddler", "icon": "shop", "blocking": false, "one_time": true, "weight": 2, "tag": "shop"},
+				{"event_id": "hg_teahouse_swamp", "name": "Teahouse", "icon": "rest", "blocking": false, "one_time": false, "weight": 2, "tag": "rest"},
+				{"event_id": "hg_mercenary_guild", "name": "Mercenary Guild", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+				{"event_id": "hg_veterans_camp", "name": "Veterans' Camp", "icon": "npc", "blocking": false, "one_time": false, "weight": 2, "training_pool": ["swords", "martial_arts", "ranged", "daggers", "axes", "unarmed", "spears", "maces", "armor"]},
+				{"event_id": "hg_sacred_grove", "name": "Sacred Grove", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_temple_of_the_naga", "name": "Temple of the Naga", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_hidden_gompa", "name": "Hidden Gompa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_medicinal_garden", "name": "Medicinal Garden", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_black_lodge", "name": "Black Lodge", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_yogini_circle", "name": "Circle of the Yoginis", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_mirror_lake", "name": "Mirror Lake", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_crossroads_stupa", "name": "Crossroads Stupa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_town_weapons", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+				{"event_id": "hg_town_magic", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+				{"event_id": "hg_town_supplies", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"}
+			],
+			"pickups": [
+				{"name": "Sunken Chest", "icon": "treasure", "message": "Half-submerged in the muck. Most of the gold survived.", "rewards": [{"type": "gold", "value": [20, 45]}, {"type": "item", "value": "health_potion"}], "weight": 3},
+				{"name": "Waterlogged Pack", "icon": "treasure", "message": "Someone dropped this in a hurry. Some things are still usable.", "rewards": [{"type": "gold", "value": [10, 25]}, {"type": "item", "value": "mana_potion"}], "weight": 3},
+				{"name": "Murky Pool", "icon": "rest", "message": "The water tastes wrong, but your mana draws from stranger sources.", "rewards": [{"type": "mana", "value": 30}], "one_time": false, "weight": 2, "tag": "rest"},
+				{"name": "Preta Offering", "icon": "shrine", "message": "Food left for a hungry ghost. None of it can be eaten.", "rewards": [{"type": "xp", "value": [10, 25]}, {"type": "karma", "value": {"realm": "hungry_ghost", "amount": 3}}], "weight": 2},
+				{"name": "Warm Mud Vent", "icon": "rest", "message": "Noxious but strangely restorative.", "rewards": [{"type": "heal", "value": 25}, {"type": "mana", "value": 10}], "one_time": false, "weight": 2, "tag": "rest"},
+
+				{"name": "Preta's Tear", "icon": "shrine", "message": "A single tear, crystallized. You feel it cleanse something.", "rewards": [{"type": "cleanse", "value": 1}], "weight": 3},
+				{"name": "Will-o-Wisp Residue", "icon": "shrine", "message": "A faint glow left behind. Your awareness sharpens.", "rewards": [{"type": "buff", "value": {"stat": "awareness", "amount": 2, "combats_remaining": 1}}], "weight": 3},
+				{"name": "Swamp Shrine", "icon": "shrine", "message": "Sunk to the knees in mud, offerings still fresh.", "rewards": [{"type": "buff", "value": {"stat": "luck", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 1}}], "weight": 2},
+				{"name": "Bog Iron Deposits", "icon": "treasure", "message": "Strange metal drawn up from the swamp floor.", "rewards": [{"type": "item_random", "value": ["iron_dagger", "iron_sword", "iron_axe", "iron_mace", "copper_ring"]}], "weight": 2},
+				{"name": "Trapped Spirit Light", "icon": "shrine", "message": "A spirit bound inside a floating sphere. It gives off warmth.", "rewards": [{"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "awareness", "amount": 2, "combats_remaining": 1}}], "weight": 2},
+				{"name": "Sunken Altar", "icon": "shrine", "message": "You have to kneel in the water to reach it.", "rewards": [{"type": "buff", "value": {"stat": ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"], "amount": 2, "combats_remaining": 1}}], "weight": 2},
+
+				{"name": "Waterlogged Tome", "icon": "shrine", "message": "Miraculously legible. You learn something you hadn't known.", "rewards": [{"type": "xp", "value": [15, 40]}], "weight": 3},
+				{"name": "Ghost Charm", "icon": "treasure", "message": "Humming with bound hunger. Somehow useful.", "rewards": [{"type": "item_random", "value": ["water_charm_common", "black_charm_common", "white_charm_common", "earth_charm_common", "sorcery_charm_common"]}], "weight": 2},
+				{"name": "Magic Well", "icon": "rest", "message": "Shimmering with power.", "rewards": [{"type": "mana", "value": 100}], "weight": 3},
+				{"name": "Sunken Bone Pile", "icon": "treasure", "message": "Something metallic glints in the murk.", "rewards": [{"type": "item_random_scaled", "value": {"tiers": {"weak": ["iron_dagger", "wooden_spear", "wooden_staff", "short_bow", "leather_vest", "leather_cap"], "medium": ["iron_sword", "iron_axe", "iron_mace", "leather_vest", "wooden_shield", "copper_ring", "prayer_beads"], "strong": ["good_iron_weapon", "iron_shield", "padded_armor", "iron_helmet", "silver_ring", "bone_amulet", "lucky_charm"]}}}], "weight": 2},
+				{"name": "Wayside Shrine", "icon": "shrine", "message": "If you want a good omen, you have to make it yourself.", "rewards": [{"type": "buff", "value": {"stat": "luck", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 1}}], "weight": 2},
+
+				{"name": "Fetid Mist Patch", "icon": "event", "message": "The mist clings to you. You feel slower, heavier.", "rewards": [{"type": "buff", "value": {"stat": "constitution", "amount": -3, "combats_remaining": 1}}], "weight": 1},
+				{"name": "Rotting Offering", "icon": "event", "message": "Someone left food for the dead. It looks almost edible. It isn't.", "rewards": [{"type": "damage", "value": 15}], "weight": 1}
+			],
+			"spell_schools": ["Water", "Earth", "Air", "Space", "White", "Black", "Sorcery", "Enchantment", "Summoning"]
+		},
+		"dry_graveyards": {
+			"events": [
+				{"event_id": "hg_skeleton_patrol", "name": "Skeleton Patrol", "icon": "enemy", "blocking": true, "one_time": true, "weight": 3},
+				{"event_id": "hg_ancient_crypt", "name": "Ancient Crypt", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_grave_robbers", "name": "Grave Robbers", "icon": "npc", "blocking": false, "one_time": true, "weight": 3},
+				{"event_id": "hg_bone_collector", "name": "Bone Collector", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_ancestor_spirit", "name": "Ancestor Spirit", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_funeral_rites", "name": "Funeral Rites", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_crumbling_mausoleum", "name": "Crumbling Mausoleum", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_ossuary_bargain", "name": "The Ossuary", "icon": "shop", "blocking": false, "one_time": true, "weight": 2, "tag": "shop"},
+				{"event_id": "hg_dusty_library", "name": "Dusty Library", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 1},
+				{"event_id": "hg_skeleton_musician", "name": "Skeleton Musician", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_memory_echo", "name": "Memory Echo", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_grave_goods", "name": "Grave Goods", "icon": "event", "blocking": false, "one_time": true, "weight": 3},
+				{"event_id": "hg_skeleton_army", "name": "Skeleton Army", "icon": "dungeon", "blocking": true, "one_time": true, "weight": 2},
+				{"event_id": "hg_forgotten_king", "name": "The Forgotten King", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 1},
+				{"event_id": "hg_bone_shrine", "name": "Bone Shrine", "icon": "shrine", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_weary_pilgrim", "name": "Weary Pilgrim", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_graveyard_dog", "name": "Grave Hound", "icon": "enemy", "blocking": true, "one_time": true, "weight": 2},
+				{"event_id": "hg_dust_storm", "name": "Dust Storm", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_sigh_of_relief", "name": "A Sigh of Relief", "icon": "shrine", "blocking": false, "one_time": true, "weight": 1},
+				{"event_id": "hg_peddler_graveyard", "name": "Bone Peddler", "icon": "shop", "blocking": false, "one_time": true, "weight": 2, "tag": "shop"},
+				{"event_id": "hg_teahouse_graveyard", "name": "Teahouse", "icon": "rest", "blocking": false, "one_time": false, "weight": 2, "tag": "rest"},
+				{"event_id": "hg_mercenary_guild", "name": "Mercenary Guild", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+				{"event_id": "hg_veterans_camp", "name": "Veterans' Camp", "icon": "npc", "blocking": false, "one_time": false, "weight": 2, "training_pool": ["swords", "martial_arts", "ranged", "daggers", "axes", "unarmed", "spears", "maces", "armor"]},
+				{"event_id": "hg_sacred_grove", "name": "Sacred Grove", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_temple_of_the_naga", "name": "Temple of the Naga", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_hidden_gompa", "name": "Hidden Gompa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_medicinal_garden", "name": "Medicinal Garden", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_black_lodge", "name": "Black Lodge", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_yogini_circle", "name": "Circle of the Yoginis", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_mirror_lake", "name": "Mirror Lake", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_crossroads_stupa", "name": "Crossroads Stupa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_town_weapons", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+				{"event_id": "hg_town_magic", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+				{"event_id": "hg_town_supplies", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"}
+			],
+			"pickups": [
+				{"name": "Grave Offering", "icon": "treasure", "message": "Gold and valuables left for the dead. They won't miss it.", "rewards": [{"type": "gold", "value": [20, 50]}, {"type": "xp", "value": [10, 20]}], "weight": 3},
+				{"name": "Scattered Grave Goods", "icon": "treasure", "message": "A tomb disturbed long before you arrived.", "rewards": [{"type": "gold", "value": [15, 35]}], "weight": 3},
+				{"name": "Dust Spring", "icon": "rest", "message": "A trickle of water seeping up through cracked earth.", "rewards": [{"type": "mana", "value": 30}], "one_time": false, "weight": 2, "tag": "rest"},
+				{"name": "Ancient Inscription", "icon": "shrine", "message": "Carved in a script older than this realm. You understand it anyway.", "rewards": [{"type": "xp", "value": [20, 45]}], "weight": 3},
+				{"name": "Memorial Cairn", "icon": "shrine", "message": "Stones piled by the living, far from here.", "rewards": [{"type": "karma", "value": {"realm": "human", "amount": 2}}, {"type": "buff", "value": {"stat": "luck", "amount": 2, "combats_remaining": 1}}], "weight": 2},
+
+				{"name": "Ancestral Charm", "icon": "shrine", "message": "A charm from several lifetimes ago. It still works.", "rewards": [{"type": "buff", "value": {"stat": "awareness", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "constitution", "amount": 2, "combats_remaining": 1}}], "weight": 3},
+				{"name": "Crumbled Relic", "icon": "shrine", "message": "Holy once. Still faintly warm.", "rewards": [{"type": "item_random", "value": ["scroll_firebolt", "scroll_lesser_heal", "scroll_wind_step", "fire_charm_common", "white_charm_common"]}], "weight": 2},
+				{"name": "Bone Dust", "icon": "shrine", "message": "Powdered remains. A necromancer would know what to do with this.", "rewards": [{"type": "buff", "value": {"stat": "spellpower", "amount": 3, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "hungry_ghost", "amount": 1}}], "weight": 2},
+				{"name": "Funerary Urn", "icon": "treasure", "message": "Sealed and intact. Valuable, if you don't ask what's inside.", "rewards": [{"type": "gold", "value": [30, 60]}], "weight": 2},
+				{"name": "Sunken Soul Well", "icon": "shrine", "message": "You can feel the outlines of strange memories.", "rewards": [{"type": "buff", "value": {"stat": ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"], "amount": 2, "combats_remaining": 1}}], "weight": 2},
+
+				{"name": "Wayside Shrine", "icon": "shrine", "message": "If you want a good omen, you have to make it yourself.", "rewards": [{"type": "buff", "value": {"stat": "luck", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 1}}], "weight": 2},
+				{"name": "Ghost Charm", "icon": "treasure", "message": "Humming with bound hunger. Somehow useful.", "rewards": [{"type": "item_random", "value": ["water_charm_common", "black_charm_common", "white_charm_common", "earth_charm_common", "sorcery_charm_common"]}], "weight": 2},
+				{"name": "Magic Well", "icon": "rest", "message": "Shimmering with power.", "rewards": [{"type": "mana", "value": 100}], "weight": 3},
+				{"name": "Dry Bone Pile", "icon": "treasure", "message": "Ancient bones, perfectly dry. Something metallic is lodged among them.", "rewards": [{"type": "item_random_scaled", "value": {"tiers": {"weak": ["iron_dagger", "wooden_spear", "wooden_staff", "short_bow", "leather_boots", "leather_cap"], "medium": ["iron_sword", "iron_axe", "iron_mace", "iron_dagger", "leather_vest", "wooden_shield", "copper_ring", "travelers_amulet"], "strong": ["good_iron_weapon", "iron_shield", "chainmail", "iron_helmet", "silver_ring", "bone_amulet", "lucky_charm"]}}}], "weight": 2},
+				{"name": "Twisted Idol", "icon": "shrine", "message": "You feel sick looking into its eyes.", "rewards": [{"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "constitution", "amount": -2, "combats_remaining": 1}}], "weight": 2},
+
+				{"name": "Bone Dust Patch", "icon": "event", "message": "The dust gets into everything. You cough for an hour.", "rewards": [{"type": "buff", "value": {"stat": "constitution", "amount": -3, "combats_remaining": 1}}], "weight": 1},
+				{"name": "Empty Crypt", "icon": "event", "message": "You spend time forcing it open. Nothing inside but old air.", "rewards": [{"type": "xp", "value": 0}], "weight": 1}
+			],
+			"spell_schools": ["Earth", "Air", "Space", "White", "Black", "Sorcery", "Enchantment", "Summoning", "Water"]
+		},
+		"charnel_grounds": {
+			"events": [
+				{"event_id": "hg_vetala_court", "name": "Vetala Court", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_illusory_palace", "name": "Illusory Palace", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_charnel_feast", "name": "Charnel Feast", "icon": "event", "blocking": false, "one_time": true, "weight": 3},
+				{"event_id": "hg_vetala_bargain", "name": "Vetala's Offer", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_sorcerer_of_corpses", "name": "Corpse Sorcerer", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_bone_tower", "name": "Bone Tower", "icon": "dungeon", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_dancing_dead", "name": "The Dancing Dead", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_spirit_fire", "name": "Spirit Fires", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_king_messenger", "name": "Royal Messenger", "icon": "npc", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_illusory_treasure", "name": "Glittering Trove", "icon": "event", "blocking": false, "one_time": true, "weight": 3},
+				{"event_id": "hg_body_possession", "name": "Uninvited Guest", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_corpse_oracle", "name": "Corpse Oracle", "icon": "npc", "blocking": false, "one_time": true, "weight": 1},
+				{"event_id": "hg_shadow_market", "name": "Shadow Market", "icon": "shop", "blocking": false, "one_time": true, "weight": 2, "tag": "shop"},
+				{"event_id": "hg_charnel_hermit", "name": "Charnel Hermit", "icon": "npc", "blocking": false, "one_time": true, "weight": 1},
+				{"event_id": "hg_vetala_arena", "name": "Vetala Arena", "icon": "dungeon", "blocking": true, "one_time": true, "weight": 2},
+				{"event_id": "hg_feasting_hall_trap", "name": "The Feasting Hall", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_preta_feast_charnel", "name": "Preta Feast", "icon": "event", "blocking": false, "one_time": true, "weight": 2},
+				{"event_id": "hg_sigh_of_relief", "name": "A Sigh of Relief", "icon": "shrine", "blocking": false, "one_time": true, "weight": 1},
+				{"event_id": "hg_shadow_peddler", "name": "Shadow Peddler", "icon": "shop", "blocking": false, "one_time": false, "weight": 2, "tag": "shop"},
+				{"event_id": "hg_teahouse_charnel", "name": "Teahouse", "icon": "rest", "blocking": false, "one_time": false, "weight": 2, "tag": "rest"},
+				{"event_id": "hg_mercenary_guild", "name": "Mercenary Guild", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+				{"event_id": "hg_veterans_camp", "name": "Veterans' Camp", "icon": "npc", "blocking": false, "one_time": false, "weight": 2, "training_pool": ["swords", "martial_arts", "ranged", "daggers", "axes", "unarmed", "spears", "maces", "armor"]},
+				{"event_id": "hg_sacred_grove", "name": "Sacred Grove", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_temple_of_the_naga", "name": "Temple of the Naga", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_hidden_gompa", "name": "Hidden Gompa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_medicinal_garden", "name": "Medicinal Garden", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_black_lodge", "name": "Black Lodge", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_yogini_circle", "name": "Circle of the Yoginis", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_crossroads_stupa", "name": "Crossroads Stupa", "icon": "shrine", "blocking": false, "one_time": false, "weight": 1, "tag": "guild"},
+				{"event_id": "hg_town_weapons", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+				{"event_id": "hg_town_magic", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"},
+				{"event_id": "hg_town_supplies", "name": "Town", "name_category": "town", "icon": "shop", "blocking": false, "one_time": false, "weight": 1, "tag": "shop"}
+			],
+			"pickups": [
+				{"name": "Scattered Offerings", "icon": "treasure", "message": "Gold and herbs from a discarded feast. The food you leave behind.", "rewards": [{"type": "gold", "value": [25, 55]}, {"type": "supply", "value": {"type": "herbs", "amount": 2}}], "weight": 3},
+				{"name": "Charnel Incense", "icon": "shrine", "message": "Burns with a smell that sharpens the mind uncomfortably.", "rewards": [{"type": "buff", "value": {"stat": "spellpower", "amount": 3, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}], "weight": 3},
+				{"name": "Strange Fire", "icon": "shrine", "message": "It burns without fuel, in colors fire shouldn't be.", "rewards": [{"type": "buff", "value": {"stat": "awareness", "amount": 2, "combats_remaining": 1}}, {"type": "damage", "value": 10}], "weight": 3},
+				{"name": "Spirit Fountain", "icon": "rest", "message": "It fills you, though you cannot say with what.", "rewards": [{"type": "heal", "value": 20}, {"type": "mana", "value": 30}], "one_time": false, "weight": 2, "tag": "rest"},
+				{"name": "Palace Mirage", "icon": "shrine", "message": "You reach out for the door. Your hand passes through. But the feeling lingers.", "rewards": [{"type": "mana", "value": 50}], "weight": 2},
+
+				{"name": "Vetala's Gift", "icon": "shrine", "message": "A charm left on a post. Generous, or a trap.", "rewards": [{"type": "buff", "value": {"stat": "finesse", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "awareness", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "hungry_ghost", "amount": 2}}], "weight": 2},
+				{"name": "Charnel Ground Shrine", "icon": "shrine", "message": "A dakini shrine. Someone maintains it carefully.", "rewards": [{"type": "buff", "value": {"stat": ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"], "amount": 2, "combats_remaining": 1}}], "weight": 2},
+				{"name": "Ash Cache", "icon": "treasure", "message": "Hidden beneath the ash. Whoever left this didn't come back.", "rewards": [{"type": "item_random", "value": ["health_potion", "mana_potion", "poison_bomb", "frost_bomb", "flame_oil", "frost_oil"]}], "weight": 2},
+				{"name": "Bone Throne Debris", "icon": "treasure", "message": "A fallen seat of power, stripped of its gems.", "rewards": [{"type": "item_random_scaled", "value": {"tiers": {"weak": ["iron_dagger", "wooden_spear", "leather_boots", "leather_cap", "copper_ring"], "medium": ["iron_sword", "iron_axe", "iron_mace", "leather_vest", "wooden_shield", "copper_ring", "travelers_amulet"], "strong": ["good_iron_weapon", "iron_shield", "chainmail", "iron_helmet", "silver_ring", "bone_amulet", "lucky_charm"]}}}], "weight": 2},
+				{"name": "Ghost Charm", "icon": "treasure", "message": "Humming with bound hunger. Somehow useful.", "rewards": [{"type": "item_random", "value": ["water_charm_common", "black_charm_common", "white_charm_common", "earth_charm_common", "sorcery_charm_common"]}], "weight": 2},
+
+				{"name": "Magic Well", "icon": "rest", "message": "Shimmering with power.", "rewards": [{"type": "mana", "value": 100}], "weight": 3},
+				{"name": "Wayside Shrine", "icon": "shrine", "message": "If you want a good omen, you have to make it yourself.", "rewards": [{"type": "buff", "value": {"stat": "luck", "amount": 2, "combats_remaining": 1}}, {"type": "karma", "value": {"realm": "god", "amount": 1}}], "weight": 2},
+				{"name": "Experience Stone", "icon": "shrine", "message": "When you touch it, your mind becomes strangely sparkly.", "rewards": [{"type": "buff", "value": {"stat": "xp_gain_pct", "amount": 20, "combats_remaining": 1}}], "weight": 2},
+				{"name": "Twisted Idol", "icon": "shrine", "message": "You feel sick looking into its eyes.", "rewards": [{"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}}, {"type": "buff", "value": {"stat": "constitution", "amount": -2, "combats_remaining": 1}}], "weight": 2},
+
+				{"name": "Illusory Gold", "icon": "treasure", "message": "It looks like a fortune. When you reach for it, it burns.", "rewards": [{"type": "damage", "value": 20}], "weight": 1},
+				{"name": "Craving Incense", "icon": "shrine", "message": "The smell is wonderful. You feel hollow afterward.", "rewards": [{"type": "buff", "value": {"stat": "constitution", "amount": -2, "combats_remaining": 2}}, {"type": "buff", "value": {"stat": "focus", "amount": 3, "combats_remaining": 1}}], "weight": 1}
+			],
+			"spell_schools": ["Black", "Sorcery", "Enchantment", "Summoning", "Space", "White", "Earth", "Air", "Water"]
+		}
+	},
+
+	"mob_pools": {
+		"fetid_swamps": [
+			{"name": "Bog Zombie", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.2, "enemy_group": "bog_zombie", "difficulty": "normal", "weight": 5},
+			{"name": "Zombie Pack", "icon": "enemy", "mode": 2, "attitude": 2, "speed": 0.2, "enemy_group": "zombie_pack", "difficulty": "normal", "aggression": 0.6, "weight": 4},
+			{"name": "Swamp Wraith", "icon": "enemy", "mode": 0, "attitude": 1, "speed": 0.0, "enemy_group": "swamp_wraith", "difficulty": "hard", "weight": 2},
+			{"name": "Rotting Sentinel", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.3, "enemy_group": "rotting_sentinel", "difficulty": "hard", "weight": 2},
+			{"name": "Lost Preta", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.4, "enemy_group": "lost_preta", "difficulty": "normal", "weight": 6},
+			{"name": "Wandering Hermit", "icon": "npc", "mode": 2, "attitude": 0, "speed": 0.3, "event_id": "hg_bog_hermit", "weight": 2},
+			{"name": "Wandering Peddler", "icon": "merchant", "mode": 2, "attitude": 0, "speed": 0.4, "event_id": "hg_corpse_merchant", "weight": 2, "tag": "shop"},
+			{"name": "Mud Golem", "icon": "enemy_elite", "mode": 0, "attitude": 1, "speed": 0.0, "enemy_group": "mud_golem", "difficulty": "hard", "weight": 1}
+		],
+		"dry_graveyards": [
+			{"name": "Skeleton Warrior", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.5, "enemy_group": "skeleton_warrior", "difficulty": "normal", "weight": 5},
+			{"name": "Bone Archer", "icon": "enemy", "mode": 1, "attitude": 1, "speed": 0.4, "enemy_group": "bone_archer", "difficulty": "normal", "weight": 4},
+			{"name": "Grave Hound", "icon": "enemy_fast", "mode": 2, "attitude": 2, "speed": 0.8, "enemy_group": "grave_hound", "difficulty": "hard", "aggression": 0.8, "weight": 2},
+			{"name": "Skeleton Mage", "icon": "enemy", "mode": 0, "attitude": 1, "speed": 0.0, "enemy_group": "skeleton_mage", "difficulty": "hard", "weight": 2},
+			{"name": "Lost Preta", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.4, "enemy_group": "lost_preta", "difficulty": "normal", "weight": 5},
+			{"name": "Grave Robber Gang", "icon": "npc", "mode": 2, "attitude": 0, "speed": 0.4, "event_id": "hg_grave_robbers", "weight": 3},
+			{"name": "Bone Peddler", "icon": "merchant", "mode": 2, "attitude": 0, "speed": 0.3, "event_id": "hg_peddler_graveyard", "weight": 2, "tag": "shop"},
+			{"name": "Skeleton Elite", "icon": "enemy_elite", "mode": 1, "attitude": 2, "speed": 0.5, "enemy_group": "skeleton_elite", "difficulty": "hard", "aggression": 0.5, "weight": 1}
+		],
+		"charnel_grounds": [
+			{"name": "Vetala Scout", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.6, "enemy_group": "vetala_scout", "difficulty": "hard", "weight": 3},
+			{"name": "Vetala Pack", "icon": "enemy", "mode": 2, "attitude": 2, "speed": 0.7, "enemy_group": "vetala_pack", "difficulty": "hard", "aggression": 0.7, "weight": 2},
+			{"name": "Charnel Wraith", "icon": "enemy", "mode": 0, "attitude": 1, "speed": 0.0, "enemy_group": "charnel_wraith", "difficulty": "hard", "weight": 2},
+			{"name": "Corpse Sorcerer", "icon": "enemy_elite", "mode": 1, "attitude": 1, "speed": 0.3, "enemy_group": "corpse_sorcerer", "difficulty": "hard", "weight": 2},
+			{"name": "Lost Preta", "icon": "enemy", "mode": 2, "attitude": 1, "speed": 0.4, "enemy_group": "lost_preta", "difficulty": "normal", "weight": 5},
+			{"name": "Hungry Wraith", "icon": "enemy", "mode": 2, "attitude": 2, "speed": 0.5, "enemy_group": "hungry_wraith", "difficulty": "normal", "aggression": 0.9, "weight": 4},
+			{"name": "Shadow Peddler", "icon": "merchant", "mode": 2, "attitude": 0, "speed": 0.5, "event_id": "hg_shadow_peddler", "weight": 2, "tag": "shop"},
+			{"name": "Vetala Noble", "icon": "enemy_elite", "mode": 1, "attitude": 2, "speed": 0.6, "enemy_group": "vetala_noble", "difficulty": "hard", "aggression": 0.6, "weight": 1}
+		]
+	},
+
+	"density": {
+		"events_per_zone": [40, 60],
+		"pickups_per_zone": [200, 360],
+		"mobs_per_zone": [120, 180],
+		"guaranteed_shops": [1, 2],
+		"guaranteed_rest": [1, 2],
+		"guaranteed_guilds": [1, 1],
+		"guaranteed_simples": [{"tier": 1, "count": 2}, {"tier": 2, "count": 1}],
+		"min_spacing": 3
+	}
+}
