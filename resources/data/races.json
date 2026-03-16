@@ -221,93 +221,100 @@
 	  "typical_backgrounds": ["wanderer", "merchant", "penitent", "diplomat", "infernal_scribe"]
 	},
 
-	"zombie": {
-	  "name": "Zombie",
+	"rolang": {
+	  "name": "Rolang",
 	  "realm": "hungry_ghost",
-	  "description": "Restless corpses driven by insatiable hunger",
+	  "description": "The newly dead of the hungry ghost realm. Rolangs have been in the world of the dead for a relatively short time and are the least conscious of its inhabitants. Young walking dead are dim and animalistic — rigid, slow, moving in a jerky jiangshi-like manner — and only over long ages do some begin to develop awareness of their condition. Most rot away into skeletons. A rare few are preserved by alchemical and yogic arts and become the lords of their kind.",
 	  "attribute_modifiers": {
-		"strength": 2,
-		"finesse": -2,
+		"strength": 3,
+		"finesse": -1,
 		"constitution": 3,
-		"focus": -2,
-		"awareness": -3,
-		"charm": -4,
-		"luck": -1
+		"focus": -1,
+		"awareness": -1,
+		"charm": -1,
+		"luck": 0
 	  },
 	  "attribute_caps": {
-		"strength": 32,
-		"finesse": 23,
+		"strength": 33,
+		"finesse": 24,
 		"constitution": 35,
-		"focus": 23,
-		"awareness": 22,
-		"charm": 20,
-		"luck": 25
+		"focus": 24,
+		"awareness": 24,
+		"charm": 22,
+		"luck": 27
 	  },
-	  "elemental_affinity_bonuses": {},
-	  "starting_skills": {
-		"unarmed": 1
+	  "elemental_affinity_bonuses": {
+		"earth": 3
 	  },
+	  "starting_skills": {},
 	  "starting_spells": [],
-	  "reincarnation_weight": 0,
-	  "typical_backgrounds": ["shambler", "former_soldier", "plague_victim"]
+	  "reincarnation_weight": 35,
+	  "typical_backgrounds": ["shambler", "former_soldier", "plague_victim", "preserved", "bog_warden"]
 	},
 
 	"skeleton": {
 	  "name": "Skeleton",
 	  "realm": "hungry_ghost",
-	  "description": "TODO: Fill in description",
+	  "description": "Freed from the needs of the flesh by unstoppable decay, skeletons have had time to think. Most maintain the dryness of their sprawling catacombs and praise the blessings of abundant calcium with cheerful enthusiasm. Conscious skeletons are far more common than among the newly dead — the long wait in the grave strips away the animal confusion and leaves something clear-eyed and surprisingly sociable behind.",
 	  "attribute_modifiers": {
-		"strength": 0,
+		"strength": -1,
 		"finesse": 0,
-		"constitution": 0,
-		"focus": 0,
-		"awareness": 0,
-		"charm": 0,
-		"luck": 0
+		"constitution": -1,
+		"focus": 1,
+		"awareness": 1,
+		"charm": 1,
+		"luck": 1
 	  },
 	  "attribute_caps": {
-		"strength": 28,
-		"finesse": 28,
-		"constitution": 28,
-		"focus": 28,
-		"awareness": 28,
-		"charm": 28,
-		"luck": 28
+		"strength": 26,
+		"finesse": 29,
+		"constitution": 26,
+		"focus": 30,
+		"awareness": 30,
+		"charm": 31,
+		"luck": 31
 	  },
 	  "elemental_affinity_bonuses": {},
 	  "starting_skills": {},
 	  "starting_spells": [],
-	  "reincarnation_weight": 0,
-	  "typical_backgrounds": []
+	  "reincarnation_weight": 30,
+	  "typical_backgrounds": ["warrior", "guard", "former_soldier", "catacomb_keeper", "bone_dancer", "charnel_yogi", "penitent"]
 	},
 
 	"vetala": {
 	  "name": "Vetala",
 	  "realm": "hungry_ghost",
-	  "description": "TODO: Fill in description",
+	  "description": "Highly intelligent and curious tricksters who inhabit the charnel grounds. Vetalas are ambivalent towards the living and arbitrary in their dealings — sometimes helpful, sometimes dangerous, always keeping their own counsel. They drain life force through magic rather than physical violence, produce vivid illusions, and have a natural propensity for the arcane arts. Their propensity for rhetoric, humor, and meditation means they can usually talk their way out of a fight, though they rarely feel obliged to.",
 	  "attribute_modifiers": {
-		"strength": 0,
+		"strength": -2,
 		"finesse": 0,
-		"constitution": 0,
-		"focus": 0,
-		"awareness": 0,
-		"charm": 0,
-		"luck": 0
+		"constitution": -1,
+		"focus": 2,
+		"awareness": 1,
+		"charm": 1,
+		"luck": -1
 	  },
 	  "attribute_caps": {
-		"strength": 28,
-		"finesse": 28,
-		"constitution": 28,
-		"focus": 28,
-		"awareness": 28,
-		"charm": 28,
-		"luck": 28
+		"strength": 23,
+		"finesse": 29,
+		"constitution": 26,
+		"focus": 34,
+		"awareness": 31,
+		"charm": 31,
+		"luck": 26
 	  },
-	  "elemental_affinity_bonuses": {},
-	  "starting_skills": {},
-	  "starting_spells": [],
-	  "reincarnation_weight": 0,
-	  "typical_backgrounds": []
+	  "elemental_affinity_bonuses": {
+		"space": 5
+	  },
+	  "starting_skills": {
+		"sorcery": 1,
+		"learning": 1
+	  },
+	  "starting_spells": [
+		{"school": "Sorcery", "level": 1, "count": 1}
+	  ],
+	  "reincarnation_weight": 10,
+	  "typical_backgrounds": ["trickster", "charnel_yogi", "spy", "monk", "scholar", "former_soldier"]
 	},
 
 	"naga": {
@@ -985,7 +992,7 @@
 	  },
 	  "available_races": [
 		"red_devil", "blue_devil", "yellow_devil", "green_devil", "black_devil", "white_devil",
-		"zombie", "skeleton", "vetala"
+		"rolang", "skeleton", "vetala"
 	  ],
 	  "weight": 3
 	},
@@ -1020,7 +1027,7 @@
 		"random_bonus": [],
 		"bonus_chance": 0.0
 	  },
-	  "available_races": ["zombie"],
+	  "available_races": ["rolang"],
 	  "weight": 1,
 	  "todo": ["needs_upside: shambler is strictly penalizing (-7 net) — add a compensating passive ability eventually, e.g. immunity to fear/mind effects or reduced XP cost on unarmed/might"]
 	},
@@ -1037,7 +1044,7 @@
 		"random_bonus": ["wooden_shield"],
 		"bonus_chance": 0.35
 	  },
-	  "available_races": ["zombie", "skeleton", "vetala"],
+	  "available_races": ["rolang", "skeleton", "vetala"],
 	  "weight": 5
 	},
 	"plague_victim": {
@@ -1050,7 +1057,7 @@
 		"random_bonus": ["bone_amulet"],
 		"bonus_chance": 0.3
 	  },
-	  "available_races": ["zombie", "skeleton", "vetala"],
+	  "available_races": ["rolang", "skeleton", "vetala"],
 	  "weight": 3
 	},
 	"diplomat": {
@@ -1109,6 +1116,96 @@
 		"gandharva", "apsara", "planetary_deity",
 		"white_devil", "black_devil"
 	  ],
+	  "weight": 4
+	},
+
+	"preserved": {
+	  "name": "Preserved",
+	  "description": "Alchemical arts halted your decay. Oils, mantras and mineral compounds have kept you intact while others rotted to bone. You remember considerably more than most of your kind.",
+	  "attribute_modifiers": {"awareness": 2, "constitution": 1, "finesse": -1, "charm": -1},
+	  "starting_skills": {"alchemy": 2, "black_magic": 1},
+	  "starting_equipment": {
+		"items": ["wooden_staff", "cloth_robe"],
+		"random_bonus": ["bone_amulet", "prayer_beads"],
+		"bonus_chance": 0.45
+	  },
+	  "available_races": ["rolang"],
+	  "weight": 2
+	},
+
+	"bog_warden": {
+	  "name": "Bog Warden",
+	  "description": "Long years of standing knee-deep in the same patch of swamp have made you territorial and surprisingly canny about it. You know every root and current. Others stumble; you do not.",
+	  "attribute_modifiers": {"constitution": 1, "awareness": 1, "charm": -1, "finesse": -1},
+	  "starting_skills": {"unarmed": 1, "guile": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_mace",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_vest"],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
+	  "available_races": ["rolang"],
+	  "weight": 3
+	},
+
+	"catacomb_keeper": {
+	  "name": "Catacomb Keeper",
+	  "description": "You tend the dry places. You know where every bone is, who it belonged to, and how long they have been here. The catacombs are yours and you maintain them with cheer and precision.",
+	  "attribute_modifiers": {"awareness": 1, "constitution": 1, "strength": -1, "finesse": -1},
+	  "starting_skills": {"logistics": 1, "earth_magic": 1, "white_magic": 1},
+	  "starting_equipment": {
+		"items": ["wooden_staff", "cloth_robe"],
+		"random_bonus": ["prayer_beads"],
+		"bonus_chance": 0.5
+	  },
+	  "available_races": ["skeleton"],
+	  "weight": 3
+	},
+
+	"bone_dancer": {
+	  "name": "Bone Dancer",
+	  "description": "You rattle with purpose where others grimace. A drum, a flourish, a joke at the right moment — you discovered that morale is its own kind of magic, and yours is inexhaustible.",
+	  "attribute_modifiers": {"charm": 2, "luck": 1, "constitution": -1, "strength": -2},
+	  "starting_skills": {"performance": 2, "comedy": 1},
+	  "starting_equipment": {
+		"items": ["leather_vest"],
+		"random_bonus": ["lucky_charm", "copper_ring"],
+		"bonus_chance": 0.55
+	  },
+	  "available_races": ["skeleton"],
+	  "weight": 2
+	},
+
+	"charnel_yogi": {
+	  "name": "Charnel Yogi",
+	  "description": "You meditate where death is most concentrated. The proximity to dissolution, to rot and impermanence, has sharpened your understanding of the mind and weakened your attachment to the body.",
+	  "attribute_modifiers": {"focus": 2, "awareness": 1, "constitution": -2, "strength": -1},
+	  "starting_skills": {"yoga": 2, "ritual": 1},
+	  "starting_equipment": {
+		"items": ["cloth_robe"],
+		"random_bonus": ["prayer_beads", "bone_amulet"],
+		"bonus_chance": 0.65
+	  },
+	  "available_races": ["vetala", "skeleton"],
+	  "weight": 2
+	},
+
+	"trickster": {
+	  "name": "Trickster",
+	  "description": "You live for the moment the illusion lands. Misdirection, impossible vanishings, arguments that fold in on themselves — you treat confusion as both art form and survival strategy.",
+	  "attribute_modifiers": {"finesse": 1, "awareness": 1, "charm": 1, "constitution": -2, "luck": -1},
+	  "starting_skills": {"guile": 2, "space_magic": 1, "comedy": 1},
+	  "starting_equipment": {
+		"base_weapon": "bronze_sword",
+		"weapon_upgrade": "iron_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": ["leather_vest"],
+		"random_bonus": ["lucky_charm"],
+		"bonus_chance": 0.5
+	  },
+	  "available_races": ["vetala"],
 	  "weight": 4
 	}
   }
