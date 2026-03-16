@@ -73,7 +73,10 @@ const BASE_CHARACTER: Dictionary = {
 		"damage": 0,
 		"armor": 0,
 		"accuracy": 0,
-		"armor_pierce": 0
+		"armor_pierce": 0,
+		# Current resistances: racial base + equipment + permanent perk bonuses
+		# In-combat spell/status bonuses are applied on top in CombatUnit.get_resistance()
+		"resistances": {}
 	},
 	
 	# Skills (level 0-10 purchasable; up to 15 with item/race bonuses)
@@ -86,6 +89,10 @@ const BASE_CHARACTER: Dictionary = {
 	# Innate elemental affinity from race (independent of skills)
 	# Format: {"fire": 5, "water": 3, ...}
 	"racial_affinity_bonuses": {},
+
+	# Permanent racial resistances (set once at character creation from races.json)
+	# Format: {"physical": 50, "fire": 25, ...}  values are percentages
+	"base_resistances": {},
 	
 	# Elemental affinities (built up through skill usage)
 	"elements": {
@@ -324,6 +331,11 @@ func apply_race_modifiers(character: Dictionary, race: String) -> void:
 	var affinity_bonuses = data.get("elemental_affinity_bonuses", {})
 	if not affinity_bonuses.is_empty():
 		character["racial_affinity_bonuses"] = affinity_bonuses.duplicate()
+
+	# Store permanent racial resistances (merged into derived.resistances by update_derived_stats)
+	var racial_resists = data.get("resistances", {})
+	if not racial_resists.is_empty():
+		character["base_resistances"] = racial_resists.duplicate()
 
 	# Apply starting skills from race.
 	# starting_skills may be a dict {skill_id: level} or legacy array [skill_id, ...].
@@ -621,6 +633,13 @@ func update_derived_stats(character: Dictionary) -> void:
 	derived.accuracy = equip_bonus.get("accuracy", 0)
 	derived.armor_pierce = equip_bonus.get("armor_pierce", 0)
 
+	# Build current resistances: start from permanent racial base, add equipment bonuses
+	var new_resists: Dictionary = character.get("base_resistances", {}).duplicate()
+	var equip_resists = equip_bonus.get("resistances", {})
+	for r in equip_resists:
+		new_resists[r] = new_resists.get(r, 0) + equip_resists[r]
+	derived["resistances"] = new_resists
+
 	# Apply base skill bonuses from PerkSystem (data-driven per_level tables)
 	# Each skill contributes its cumulative bonuses at the character's effective level.
 	if PerkSystem:
@@ -677,10 +696,6 @@ func update_derived_stats(character: Dictionary) -> void:
 					pass  # future: social/event roll bonuses
 				"luck":
 					derived["crit_chance"] = derived.get("crit_chance", 0.0) + amount
-				"fire_resistance":
-					if not "resistances" in derived:
-						derived["resistances"] = {}
-					derived["resistances"]["fire"] = derived["resistances"].get("fire", 0) + amount
 				"spellpower_fire":
 					derived["spellpower_fire"] = derived.get("spellpower_fire", 0) + amount
 				"initiative":
@@ -689,6 +704,10 @@ func update_derived_stats(character: Dictionary) -> void:
 					derived["loot_chance_pct"] = derived.get("loot_chance_pct", 0) + amount
 				"xp_gain_pct":
 					derived["xp_gain_pct"] = derived.get("xp_gain_pct", 0) + amount
+			# Handle *_resistance map buffs generically (match doesn't support wildcards)
+			if stat.ends_with("_resistance"):
+				var element = stat.replace("_resistance", "")
+				derived["resistances"][element] = derived["resistances"].get(element, 0) + amount
 
 ## Get player character
 func get_player() -> Dictionary:

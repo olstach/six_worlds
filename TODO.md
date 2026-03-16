@@ -370,11 +370,19 @@ UI stub exists in Party tab (`_update_followers_list()` / `_create_follower_card
 - Status effect durations and tick damage
 - AI difficulty scaling
 
+### Miniboss & Boss Battle Mechanics
+- Brainstorm unique per-fight mechanics for realm minibosses and end-bosses (e.g. swallow mechanic for Great Devourer, resurrection aura for Bone Lord, etc.)
+- Design should be distinct from standard combat — consider multi-phase fights, special win/lose conditions, environmental interactions
+- Hungry Ghost candidates: Bone Lord (earth magic + undead commander), Great Devourer (shaza), Mirror of the Setting Sun (copper construct), Matriarch of All Longing (yidag)
+
 ### Realm-Specific Mechanics
 - Hell: Pure combat focus ← current
 - Hungry Ghost: Resource scarcity?
 - Animal: Mix of combat and negotiation
-- Human: Heavy dialogue/quest focus
+- Human: Heavy dialogue/quest focus — three zones:
+  - **West** (Oddiyana/Gandhara steppe): Scythian-like nomads, cavalry culture → Ranged, Guile, Daggers
+  - **NE** (Zhang-Zhung): proto-Tibetan shamanic Bön, yak herders, high altitude → Ritual, Yoga, Earth magic
+  - **SE** (coastal trade cities): wealthy cosmopolitan India-adjacent mercantile culture → Trade, Persuasion, Alchemy
 - Asura: Competitive events, duels?
 - God: Almost no combat, diplomacy/trade?
 

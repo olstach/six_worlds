@@ -42,8 +42,10 @@ const ARMOR_VALUES: Dictionary = {
 
 
 func _ready() -> void:
-	_load_archetypes()
-	_load_encounters()
+	_load_archetypes("res://resources/data/enemies/hell_archetypes.json")
+	_load_archetypes("res://resources/data/enemies/hungry_ghost_archetypes.json")
+	_load_encounters("res://resources/data/enemies/hell_encounters.json")
+	_load_encounters("res://resources/data/enemies/hungry_ghost_encounters.json")
 	_load_spells()
 	_load_name_parts()
 	print("EnemySystem initialized: %d archetypes, %d encounters" % [archetypes.size(), encounters.size()])
@@ -53,10 +55,10 @@ func _ready() -> void:
 # DATA LOADING
 # ============================================
 
-func _load_archetypes() -> void:
-	var file = FileAccess.open("res://resources/data/enemies/hell_archetypes.json", FileAccess.READ)
+func _load_archetypes(path: String) -> void:
+	var file = FileAccess.open(path, FileAccess.READ)
 	if not file:
-		push_error("EnemySystem: Could not load hell_archetypes.json")
+		push_error("EnemySystem: Could not load " + path)
 		return
 
 	var json = JSON.new()
@@ -64,7 +66,7 @@ func _load_archetypes() -> void:
 	file.close()
 
 	if err != OK:
-		push_error("EnemySystem: Failed to parse hell_archetypes.json: " + json.get_error_message())
+		push_error("EnemySystem: Failed to parse " + path + ": " + json.get_error_message())
 		return
 
 	var data = json.get_data()
@@ -76,10 +78,11 @@ func _load_archetypes() -> void:
 			archetypes[key] = data.archetypes[key]
 
 
-func _load_encounters() -> void:
-	var file = FileAccess.open("res://resources/data/enemies/hell_encounters.json", FileAccess.READ)
+func _load_encounters(path: String) -> void:
+	var file = FileAccess.open(path, FileAccess.READ)
 	if not file:
-		push_error("EnemySystem: Could not load hell_encounters.json")
+		# Encounters file may not exist yet for a new realm — warn but don't error
+		push_warning("EnemySystem: Could not load " + path)
 		return
 
 	var json = JSON.new()
@@ -87,7 +90,7 @@ func _load_encounters() -> void:
 	file.close()
 
 	if err != OK:
-		push_error("EnemySystem: Failed to parse hell_encounters.json: " + json.get_error_message())
+		push_error("EnemySystem: Failed to parse " + path + ": " + json.get_error_message())
 		return
 
 	var data = json.get_data()
