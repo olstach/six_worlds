@@ -1847,9 +1847,9 @@
       "rarity": "common",
       "weight": 2,
       "value": 8,
-      "description": "A well-packed bundle of preserved food.",
+      "description": "Prepared trail food for the road — cooked grain, dried fruit, cured meat.",
       "supply_type": "food",
-      "supply_amount": 15
+      "supply_amount": 10
     },
     "herb_bundle": {
       "name": "Herb Bundle",
@@ -1869,7 +1869,7 @@
       "value": 15,
       "description": "A leather pouch packed with carefully sorted remedies.",
       "supply_type": "herbs",
-      "supply_amount": 12
+      "supply_amount": 10
     },
     "scrap_metal": {
       "name": "Scrap Metal",
@@ -1889,7 +1889,7 @@
       "value": 15,
       "description": "Usable metal, leather strips, and repair materials.",
       "supply_type": "scrap",
-      "supply_amount": 12
+      "supply_amount": 10
     },
     "raw_reagents": {
       "name": "Raw Reagents",
@@ -1899,7 +1899,7 @@
       "value": 8,
       "description": "Mineral salts, dried fungi, and alchemical base compounds.",
       "supply_type": "reagents",
-      "supply_amount": 3
+      "supply_amount": 5
     },
     "alchemists_pouch": {
       "name": "Alchemist's Pouch",
@@ -1909,7 +1909,7 @@
       "value": 20,
       "description": "A carefully prepared kit of distilled essences and reactive powders.",
       "supply_type": "reagents",
-      "supply_amount": 8
+      "supply_amount": 10
     },
     "tsampa": {
       "name": "Tsampa",
@@ -1917,7 +1917,7 @@
       "rarity": "common",
       "weight": 1,
       "value": 2,
-      "description": "Roasted barley flour pressed into dense travel cakes. Staple of every Tibetan journey.",
+      "description": "Roasted barley flour pressed into travel cakes. Staple of every Tibetan journey.",
       "supply_type": "food",
       "supply_amount": 5
     },
@@ -1927,9 +1927,9 @@
       "rarity": "common",
       "weight": 1,
       "value": 3,
-      "description": "Hand-pulled noodles in dark broth, found cooling in an abandoned pack.",
+      "description": "Hand-pulled noodles in dark broth. A full bowl, still warm.",
       "supply_type": "food",
-      "supply_amount": 6
+      "supply_amount": 10
     },
     "sha_phaley": {
       "name": "Sha Phaley",
@@ -1937,19 +1937,19 @@
       "rarity": "common",
       "weight": 1,
       "value": 3,
-      "description": "Meat-filled bread, pan-fried and still faintly warm. Someone left in a hurry.",
+      "description": "Meat-filled bread, pan-fried and still warm. Someone left these in a hurry.",
       "supply_type": "food",
-      "supply_amount": 6
+      "supply_amount": 10
     },
     "momo": {
-      "name": "Momo",
+      "name": "Chilli Momo",
       "type": "supply",
       "rarity": "common",
       "weight": 1,
       "value": 2,
-      "description": "Steamed dumplings in rough flour, stuffed with spiced meat. A small comfort.",
+      "description": "Steamed dumplings stuffed with spiced meat and chilli — someone's best effort at comfort in hell.",
       "supply_type": "food",
-      "supply_amount": 5
+      "supply_amount": 10
     },
     "butter_tea": {
       "name": "Butter Tea",
@@ -1959,7 +1959,7 @@
       "value": 2,
       "description": "Salt, yak butter, and strong tea in a wooden tube. Strange to outsiders, vital in the cold.",
       "supply_type": "food",
-      "supply_amount": 4
+      "supply_amount": 5
     },
     "chang": {
       "name": "Chang",
@@ -1967,9 +1967,9 @@
       "rarity": "common",
       "weight": 1,
       "value": 1,
-      "description": "Fermented barley beer in a cracked gourd. Warming if not quite nourishing.",
+      "description": "Fermented barley beer in a cracked gourd. More warming than nourishing.",
       "supply_type": "food",
-      "supply_amount": 3
+      "supply_amount": 5
     },
     "dried_curd": {
       "name": "Dried Curd",
@@ -1989,7 +1989,7 @@
       "value": 2,
       "description": "Fried dough twists, dense and sweet — festival food from a better life.",
       "supply_type": "food",
-      "supply_amount": 4
+      "supply_amount": 5
     },
     "curry": {
       "name": "Curry",
@@ -1997,9 +1997,9 @@
       "rarity": "common",
       "weight": 1,
       "value": 3,
-      "description": "A sealed clay pot of spiced lentils and root vegetables. Heavier than it looks.",
+      "description": "A sealed clay pot of spiced lentils and root vegetables. Heavy, filling, restorative.",
       "supply_type": "food",
-      "supply_amount": 8
+      "supply_amount": 10
     },
     "tinmo": {
       "name": "Tinmo",
@@ -2007,9 +2007,9 @@
       "rarity": "common",
       "weight": 1,
       "value": 2,
-      "description": "Steamed spiral bread. Bland on its own, sustaining on the road.",
+      "description": "Steamed spiral bread fresh off the pot. Dense and satisfying.",
       "supply_type": "food",
-      "supply_amount": 5
+      "supply_amount": 10
     },
     "tulsi": {
       "name": "Tulsi",
@@ -2019,7 +2019,7 @@
       "value": 5,
       "description": "Holy basil, sacred to Vishnu. Purifies breath and blood. Grows even near the passes.",
       "supply_type": "herbs",
-      "supply_amount": 4
+      "supply_amount": 5
     },
     "ashwagandha": {
       "name": "Ashwagandha",
@@ -2029,7 +2029,7 @@
       "value": 5,
       "description": "Withania root, dried and powdered. Steadies the humors under duress.",
       "supply_type": "herbs",
-      "supply_amount": 4
+      "supply_amount": 5
     },
     "amalaki": {
       "name": "Amalaki",
@@ -2049,7 +2049,7 @@
       "value": 6,
       "description": "Himalayan spikenard. Calms wind humor, aids rest in hostile terrain.",
       "supply_type": "herbs",
-      "supply_amount": 4
+      "supply_amount": 5
     },
     "neem_bark": {
       "name": "Neem Bark",
@@ -2059,7 +2059,7 @@
       "value": 4,
       "description": "Bitter and antiparasitic. You're not sure what lives in hell's water, but this helps.",
       "supply_type": "herbs",
-      "supply_amount": 3
+      "supply_amount": 5
     },
     "saffron_pinch": {
       "name": "Saffron",
@@ -2067,9 +2067,9 @@
       "rarity": "uncommon",
       "weight": 1,
       "value": 12,
-      "description": "A few threads wrapped in cloth. Precious here as anywhere.",
+      "description": "A generous pinch of saffron threads, wrapped in cloth. Rare and potent.",
       "supply_type": "herbs",
-      "supply_amount": 3
+      "supply_amount": 10
     },
     "triphala": {
       "name": "Triphala",
@@ -2089,7 +2089,7 @@
       "value": 5,
       "description": "Giloy stem, dried and powdered. Called 'the divine nectar' for its resilience.",
       "supply_type": "herbs",
-      "supply_amount": 4
+      "supply_amount": 5
     },
     "shatavari": {
       "name": "Shatavari",
@@ -2109,7 +2109,7 @@
       "value": 10,
       "description": "Mercury sulfide, ground fine. Lurid red powder central to outer alchemy and Tibetan ritual medicine.",
       "supply_type": "reagents",
-      "supply_amount": 2
+      "supply_amount": 5
     },
     "realgar": {
       "name": "Realgar",
@@ -2119,7 +2119,7 @@
       "value": 10,
       "description": "Arsenic sulphide in orange crystal form. Toxic to demons and humans alike in sufficient quantity.",
       "supply_type": "reagents",
-      "supply_amount": 2
+      "supply_amount": 5
     },
     "shilajit": {
       "name": "Shilajit",
@@ -2129,7 +2129,7 @@
       "value": 14,
       "description": "Mineral pitch seeping from hot rock. Rasayana tradition names it the destroyer of weakness.",
       "supply_type": "reagents",
-      "supply_amount": 3
+      "supply_amount": 5
     },
     "lapis_powder": {
       "name": "Lapis Powder",
@@ -2139,7 +2139,7 @@
       "value": 12,
       "description": "Ground lapis lazuli, sky-blue and faintly bitter. Used in Tibetan art, medicine, and ritual.",
       "supply_type": "reagents",
-      "supply_amount": 3
+      "supply_amount": 5
     },
     "datura_seed": {
       "name": "Datura Seed",
@@ -2149,7 +2149,7 @@
       "value": 8,
       "description": "Jimsonweed. Potent in small doses, lethal in larger ones. A staple of dark alchemy.",
       "supply_type": "reagents",
-      "supply_amount": 2
+      "supply_amount": 5
     },
     "soma_resin": {
       "name": "Soma Resin",
@@ -2159,7 +2159,7 @@
       "value": 25,
       "description": "A gummy substance of uncertain origin. Smells of lightning and old ceremony.",
       "supply_type": "reagents",
-      "supply_amount": 5
+      "supply_amount": 10
     },
     "swarna_bhasma": {
       "name": "Swarna Bhasma",
@@ -2169,7 +2169,7 @@
       "value": 30,
       "description": "Gold calcined through a hundred purifications. Rasayana medicine's most radiant offering.",
       "supply_type": "reagents",
-      "supply_amount": 5
+      "supply_amount": 10
     },
     "hell_iron_shards": {
       "name": "Hell-Iron Shards",
@@ -2189,7 +2189,7 @@
       "value": 4,
       "description": "Pins, clasps, and rings carved from bone. Practical in their ugliness.",
       "supply_type": "scrap",
-      "supply_amount": 4
+      "supply_amount": 5
     },
     "broken_manacles": {
       "name": "Broken Manacles",
@@ -2197,9 +2197,9 @@
       "rarity": "common",
       "weight": 2,
       "value": 5,
-      "description": "Shackles snapped by someone in a hurry. The iron is still serviceable.",
+      "description": "Shackles snapped by someone determined. The iron is dense and workable.",
       "supply_type": "scrap",
-      "supply_amount": 5
+      "supply_amount": 10
     },
     "frost_steel_fragments": {
       "name": "Frost-Steel Fragments",
@@ -2207,9 +2207,9 @@
       "rarity": "common",
       "weight": 2,
       "value": 6,
-      "description": "Metal tempered by the cold hell's extremes. Harder and stranger than plain iron.",
+      "description": "Plates of metal tempered by the cold hell's extremes. Harder and stranger than plain iron.",
       "supply_type": "scrap",
-      "supply_amount": 6
+      "supply_amount": 10
     },
     "salvaged_chain": {
       "name": "Salvaged Chain Links",
@@ -2219,7 +2219,7 @@
       "value": 4,
       "description": "Detached from a longer length. Someone was freed here, or escaped.",
       "supply_type": "scrap",
-      "supply_amount": 4
+      "supply_amount": 5
     },
     "demon_nail_bundle": {
       "name": "Demon Nails",
@@ -2229,7 +2229,187 @@
       "value": 3,
       "description": "Iron spikes shed from demonic hide. Sharp, pungent, and oddly workable.",
       "supply_type": "scrap",
-      "supply_amount": 3
+      "supply_amount": 5
+    },
+    "dried_meat": {
+      "name": "Dried Meat",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 2,
+      "description": "Strips of yak or unidentified flesh, salted and dried. Tough, but sustaining.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "barley_grain": {
+      "name": "Barley Grain",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 1,
+      "description": "A cloth pouch of raw barley. Needs cooking, but it keeps.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "wild_apple": {
+      "name": "Wild Apple",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 2,
+      "description": "Small, tart Himalayan apples. How they grow here is unclear.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "turnip": {
+      "name": "Turnip",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 1,
+      "description": "Hardy root vegetable. Unpleasant raw, edible cooked, reliable everywhere.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "rice_portion": {
+      "name": "Rice",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 2,
+      "description": "A knotted cloth of uncooked rice. Plain, but it fills the belly.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "dal_bhat": {
+      "name": "Dal Bhat",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 5,
+      "description": "Lentil soup over rice — the meal that sustains half the Himalayas. Reliable and restorative.",
+      "supply_type": "food",
+      "supply_amount": 10
+    },
+    "khichdi": {
+      "name": "Khichdi",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 4,
+      "description": "Rice and lentils cooked down to a thick porridge. The universal comfort food.",
+      "supply_type": "food",
+      "supply_amount": 10
+    },
+    "meat_stew": {
+      "name": "Meat Stew",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 2,
+      "value": 5,
+      "description": "A heavy pot of slow-cooked meat and root vegetables. Smells better than it should down here.",
+      "supply_type": "food",
+      "supply_amount": 10
+    },
+    "chyawanprash": {
+      "name": "Chyawanprash",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 14,
+      "description": "The great Ayurvedic jam — amalaki, honey, ghee, and forty-seven herbs. Dark, sweet, medicinal.",
+      "supply_type": "herbs",
+      "supply_amount": 10
+    },
+    "brahmi_ghrita": {
+      "name": "Brahmi Ghrita",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 14,
+      "description": "Brahmi herb clarified into ghee. A nerve tonic prized for clarity of mind and steadiness of hand.",
+      "supply_type": "herbs",
+      "supply_amount": 10
+    },
+    "mahasudarshana": {
+      "name": "Mahasudarshana",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 16,
+      "description": "A Tibetan compound of fifty herbs. Named for the great discus — cuts through obstruction.",
+      "supply_type": "herbs",
+      "supply_amount": 10
+    },
+    "mercury_amalgam": {
+      "name": "Mercury Amalgam",
+      "type": "supply",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 22,
+      "description": "Processed quicksilver fixed with sulphur. Central to both Tibetan and Indian outer alchemy.",
+      "supply_type": "reagents",
+      "supply_amount": 10
+    },
+    "precious_pills": {
+      "name": "Precious Pills",
+      "type": "supply",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 28,
+      "description": "Rinchen rilbu — Tibetan medicine's highest formulation. Gold, gems, and purified minerals compressed into small black pills.",
+      "supply_type": "reagents",
+      "supply_amount": 10
+    },
+    "copper_wire": {
+      "name": "Copper Wire",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 4,
+      "description": "Thin copper wire stripped from a larger mechanism. Useful for binding and conducting.",
+      "supply_type": "scrap",
+      "supply_amount": 5
+    },
+    "cracked_bell_metal": {
+      "name": "Cracked Bell Metal",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 2,
+      "value": 4,
+      "description": "Fragment of a bronze ritual bell. The alloy is good; the tone is gone.",
+      "supply_type": "scrap",
+      "supply_amount": 5
+    },
+    "demon_plate_shard": {
+      "name": "Demon Plate Shard",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 3,
+      "value": 8,
+      "description": "A palm-sized chunk of demonic chest armor. Heavy, dense, and faintly warm.",
+      "supply_type": "scrap",
+      "supply_amount": 10
+    },
+    "hellforge_ingot": {
+      "name": "Hellforge Ingot",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 3,
+      "value": 12,
+      "description": "A rough ingot poured at one of the infernal forges. Still carries heat from the casting.",
+      "supply_type": "scrap",
+      "supply_amount": 10
+    },
+    "yoke_hardware": {
+      "name": "Yoke Hardware",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 2,
+      "value": 7,
+      "description": "Iron fittings from a broken cart yoke — rings, bolts, and a chain length.",
+      "supply_type": "scrap",
+      "supply_amount": 10
     }
   },
   "item_types": {
