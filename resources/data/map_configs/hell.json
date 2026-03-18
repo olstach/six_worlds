@@ -804,6 +804,8 @@
                     "bronze_axe",
                     "bronze_mace",
                     "bronze_dagger",
+                    "obsidian_dagger",
+                    "obsidian_blade",
                     "leather_vest",
                     "wooden_shield",
                     "copper_ring"
@@ -1547,6 +1549,8 @@
                     "bronze_axe",
                     "bronze_mace",
                     "bronze_dagger",
+                    "obsidian_dagger",
+                    "obsidian_blade",
                     "leather_vest",
                     "wooden_shield",
                     "copper_ring"

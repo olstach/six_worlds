@@ -4,6 +4,7 @@
 	"materials": {
 		"bone":         {"tier": 0, "damage_mult": 0.65,"armor_mult": 0.55,"weight_mult": 0.6, "value_mult": 0.35,"name_prefix": "Bone"},
 		"wood":         {"tier": 0, "damage_mult": 0.6, "armor_mult": 0.5, "weight_mult": 0.7, "value_mult": 0.4, "name_prefix": "Wooden"},
+		"obsidian":     {"tier": 1, "damage_mult": 0.95,"armor_mult": 0.15,"weight_mult": 0.5, "value_mult": 1.1, "name_prefix": "Obsidian", "fragility": 3.0, "_note": "Off-branch: near-iron damage but extremely brittle. Weapons only."},
 		"bronze":       {"tier": 1, "damage_mult": 0.8, "armor_mult": 0.8, "weight_mult": 0.9, "value_mult": 0.7, "name_prefix": "Bronze"},
 		"iron":         {"tier": 2, "damage_mult": 1.0, "armor_mult": 1.0, "weight_mult": 1.0, "value_mult": 1.0, "name_prefix": "Iron"},
 		"steel":        {"tier": 3, "damage_mult": 1.2, "armor_mult": 1.2, "weight_mult": 0.95,"value_mult": 1.5, "name_prefix": "Steel"},
@@ -96,8 +97,8 @@
 	},
 
 	"tier_to_material_weights": {
-		"0": {"bone": 60, "wood": 20, "bronze": 20},
-		"1": {"bone": 20, "bronze": 60, "iron": 20},
+		"0": {"bone": 55, "wood": 15, "bronze": 20, "obsidian": 10},
+		"1": {"bone": 15, "bronze": 30, "obsidian": 35, "iron": 20},
 		"2": {"bronze": 20, "iron": 50, "steel": 30},
 		"3": {"iron": 20, "steel": 50, "mithril": 30},
 		"4": {"steel": 20, "mithril": 50, "demon_forged": 30},

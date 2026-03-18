@@ -118,7 +118,8 @@
         "short_bow": 2,
         "hunting_bow": 1,
         "bronze_dagger": 3,
-        "iron_dagger": 1
+        "iron_dagger": 1,
+        "obsidian_dagger": 1
       },
       "spells": [],
       "training": {
@@ -176,7 +177,8 @@
         "leather_vest": 3,
         "leather_boots": 4,
         "health_potion": 3,
-        "rations": 5
+        "rations": 5,
+        "obsidian_dagger": 1
       },
       "spells": [],
       "training": {
@@ -387,7 +389,8 @@
         "leather_vest": 3,
         "padded_armor": 2,
         "leather_boots": 3,
-        "leather_gloves": 3
+        "leather_gloves": 3,
+        "obsidian_blade": 1
       },
       "spells": [],
       "training": {
@@ -538,7 +541,9 @@
         "short_bow": 2,
         "leather_vest": 3,
         "leather_boots": 3,
-        "leather_gloves": 3
+        "leather_gloves": 3,
+        "obsidian_dagger": 1,
+        "obsidian_blade": 1
       },
       "spells": [],
       "training": {

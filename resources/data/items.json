@@ -2508,6 +2508,46 @@
       "description": "A bronze-tipped spear with a hardwood haft. Reach and reliability.",
       "skill": "spears",
       "two_handed": true
+    },
+    "obsidian_dagger": {
+      "name": "Obsidian Dagger",
+      "type": "dagger",
+      "rarity": "uncommon",
+      "material": "obsidian",
+      "damage": 4,
+      "accuracy": 18,
+      "weight": 1,
+      "value": 30,
+      "description": "Volcanic glass knapped to a razor edge. Cuts cleaner than anything this tier — but drop it and it shatters.",
+      "skill": "daggers",
+      "fragile": true
+    },
+    "obsidian_blade": {
+      "name": "Obsidian Blade",
+      "type": "sword",
+      "rarity": "uncommon",
+      "material": "obsidian",
+      "damage": 8,
+      "accuracy": 5,
+      "weight": 4,
+      "value": 45,
+      "description": "A wide blade of chipped obsidian, mounted on bone. The edge is terrifying. The structural integrity is not.",
+      "skill": "swords",
+      "fragile": true
+    },
+    "obsidian_spear": {
+      "name": "Obsidian Spear",
+      "type": "spear",
+      "rarity": "uncommon",
+      "material": "obsidian",
+      "damage": 7,
+      "accuracy": 8,
+      "weight": 4,
+      "value": 40,
+      "description": "A hafted spear with a knapped obsidian head. Deadly on the thrust. Do not use it to parry.",
+      "skill": "spears",
+      "two_handed": true,
+      "fragile": true
     }
   },
   "item_types": {
