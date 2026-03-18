@@ -600,7 +600,7 @@ func add_starter_items(background: String = "") -> void:
 			items_to_add.append(str(bonus_pool[randi() % bonus_pool.size()]))
 	else:
 		# Generic fallback loadout
-		items_to_add = ["bronze_sword", "leather_vest", "leather_cap", "leather_boots", "copper_ring", "travelers_amulet"]
+		items_to_add = ["bone_dagger", "leather_vest", "leather_cap", "leather_boots", "copper_ring", "travelers_amulet"]
 		secondary_weapon = "short_bow"
 
 	# Add everything to inventory

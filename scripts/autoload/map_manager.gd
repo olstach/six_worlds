@@ -1606,8 +1606,8 @@ func _generate_discovery(terrain: int, pos: Vector2i) -> Dictionary:
 ## Pick a discovery item appropriate to the region
 func _pick_discovery_item(region: String) -> String:
 	var cold_items = ["health_potion", "leather_gloves", "leather_boots", "copper_ring"]
-	var fire_items = ["health_potion", "iron_dagger", "leather_vest", "copper_ring"]
-	var default_items = ["health_potion", "copper_ring", "iron_dagger"]
+	var fire_items = ["health_potion", "bone_dagger", "leather_vest", "copper_ring"]
+	var default_items = ["health_potion", "copper_ring", "bone_dagger"]
 
 	var pool: Array
 	if region == "cold_hell":

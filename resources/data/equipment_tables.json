@@ -2,6 +2,7 @@
 	"_comment": "Equipment generation tables: materials, quality, traits, and base stats for procedural weapons/armor",
 
 	"materials": {
+		"bone":         {"tier": 0, "damage_mult": 0.65,"armor_mult": 0.55,"weight_mult": 0.6, "value_mult": 0.35,"name_prefix": "Bone"},
 		"wood":         {"tier": 0, "damage_mult": 0.6, "armor_mult": 0.5, "weight_mult": 0.7, "value_mult": 0.4, "name_prefix": "Wooden"},
 		"bronze":       {"tier": 1, "damage_mult": 0.8, "armor_mult": 0.8, "weight_mult": 0.9, "value_mult": 0.7, "name_prefix": "Bronze"},
 		"iron":         {"tier": 2, "damage_mult": 1.0, "armor_mult": 1.0, "weight_mult": 1.0, "value_mult": 1.0, "name_prefix": "Iron"},
@@ -95,8 +96,8 @@
 	},
 
 	"tier_to_material_weights": {
-		"0": {"wood": 70, "bronze": 30},
-		"1": {"wood": 20, "bronze": 50, "iron": 30},
+		"0": {"bone": 60, "wood": 20, "bronze": 20},
+		"1": {"bone": 20, "bronze": 60, "iron": 20},
 		"2": {"bronze": 20, "iron": 50, "steel": 30},
 		"3": {"iron": 20, "steel": 50, "mithril": 30},
 		"4": {"steel": 20, "mithril": 50, "demon_forged": 30},

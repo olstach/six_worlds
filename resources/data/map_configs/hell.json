@@ -792,22 +792,21 @@
               "value": {
                 "tiers": {
                   "weak": [
-                    "iron_dagger",
+                    "bone_dagger",
+                    "bone_sword",
                     "wooden_spear",
                     "wooden_staff",
-                    "short_bow",
                     "leather_vest",
                     "leather_cap"
                   ],
                   "medium": [
-                    "iron_sword",
-                    "iron_axe",
-                    "iron_mace",
+                    "bronze_sword",
+                    "bronze_axe",
+                    "bronze_mace",
+                    "bronze_dagger",
                     "leather_vest",
-                    "leather_boots",
                     "wooden_shield",
-                    "copper_ring",
-                    "prayer_beads"
+                    "copper_ring"
                   ],
                   "strong": [
                     "good_iron_weapon",
@@ -1536,22 +1535,21 @@
               "value": {
                 "tiers": {
                   "weak": [
-                    "iron_dagger",
+                    "bone_dagger",
+                    "bone_sword",
                     "wooden_spear",
                     "wooden_staff",
-                    "short_bow",
                     "leather_boots",
                     "leather_cap"
                   ],
                   "medium": [
-                    "iron_sword",
-                    "iron_axe",
-                    "iron_mace",
-                    "iron_dagger",
+                    "bronze_sword",
+                    "bronze_axe",
+                    "bronze_mace",
+                    "bronze_dagger",
                     "leather_vest",
                     "wooden_shield",
-                    "copper_ring",
-                    "travelers_amulet"
+                    "copper_ring"
                   ],
                   "strong": [
                     "good_iron_weapon",
