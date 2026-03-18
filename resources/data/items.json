@@ -17,7 +17,9 @@
         "damage": 8,
         "accuracy": 0
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 85,
+      "max_durability": 85
     },
     "bronze_sword": {
       "name": "Bronze Sword",
@@ -36,7 +38,9 @@
         "damage": 6,
         "accuracy": 5
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 65,
+      "max_durability": 65
     },
     "steel_longsword": {
       "name": "Steel Longsword",
@@ -55,7 +59,9 @@
         "damage": 12,
         "accuracy": 5
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 110,
+      "max_durability": 110
     },
     "wooden_staff": {
       "name": "Wooden Staff",
@@ -72,7 +78,10 @@
         "damage": 4,
         "spellpower": 5
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40,
+      "material": "wood"
     },
     "oak_staff": {
       "name": "Oak Staff",
@@ -91,7 +100,10 @@
         "damage": 5,
         "spellpower": 12
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40,
+      "material": "wood"
     },
     "hunting_bow": {
       "name": "Hunting Bow",
@@ -112,7 +124,10 @@
         "range": 5,
         "ammo": 20
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40,
+      "material": "wood"
     },
     "short_bow": {
       "name": "Short Bow",
@@ -133,7 +148,10 @@
         "range": 4,
         "ammo": 20
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40,
+      "material": "wood"
     },
     "longbow": {
       "name": "Longbow",
@@ -155,7 +173,10 @@
         "range": 6,
         "ammo": 20
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40,
+      "material": "wood"
     },
     "throwing_knife": {
       "name": "Throwing Knife",
@@ -197,7 +218,9 @@
         "accuracy": 15,
         "crit_chance": 5
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 85,
+      "max_durability": 85
     },
     "iron_axe": {
       "name": "Iron Axe",
@@ -216,7 +239,9 @@
         "damage": 10,
         "accuracy": -5
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 85,
+      "max_durability": 85
     },
     "iron_mace": {
       "name": "Iron Mace",
@@ -236,7 +261,9 @@
         "accuracy": 0,
         "armor_pierce": 5
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 85,
+      "max_durability": 85
     },
     "wooden_spear": {
       "name": "Wooden Spear",
@@ -255,7 +282,9 @@
         "damage": 6,
         "accuracy": 5
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40
     },
     "wooden_shield": {
       "name": "Wooden Shield",
@@ -274,7 +303,9 @@
         "dodge": 5,
         "armor": 2
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40
     },
     "iron_shield": {
       "name": "Iron Shield",
@@ -293,7 +324,9 @@
         "dodge": 8,
         "armor": 5
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 85,
+      "max_durability": 85
     },
     "leather_vest": {
       "name": "Leather Vest",
@@ -640,7 +673,9 @@
         "spellpower": 10,
         "armor_pierce": 10
       },
-      "abilities": []
+      "abilities": [],
+      "durability": 85,
+      "max_durability": 85
     },
     "yamas_ledger": {
       "name": "Yama's Ledger",
@@ -1292,7 +1327,9 @@
         "quality": "good",
         "material": "iron",
         "match_party_skill": true
-      }
+      },
+      "durability": 85,
+      "max_durability": 85
     },
     "good_iron_armor": {
       "name": "Good Iron Armor",
@@ -2421,7 +2458,9 @@
       "weight": 1,
       "value": 8,
       "description": "A long bone sharpened to a point. Crude but quiet.",
-      "skill": "daggers"
+      "skill": "daggers",
+      "durability": 30,
+      "max_durability": 30
     },
     "bone_sword": {
       "name": "Bone Sword",
@@ -2433,7 +2472,9 @@
       "weight": 5,
       "value": 12,
       "description": "A wide femur carved into a blade. Heavier than it looks, more fragile than it should be.",
-      "skill": "swords"
+      "skill": "swords",
+      "durability": 30,
+      "max_durability": 30
     },
     "bone_club": {
       "name": "Bone Club",
@@ -2445,7 +2486,9 @@
       "weight": 6,
       "value": 10,
       "description": "A knobbed bone swung like a mace. Not elegant, but it breaks things.",
-      "skill": "maces"
+      "skill": "maces",
+      "durability": 30,
+      "max_durability": 30
     },
     "bone_spear": {
       "name": "Bone Spear",
@@ -2458,7 +2501,9 @@
       "value": 10,
       "description": "A long bone lashed to a wooden shaft. Reach without refinement.",
       "skill": "spears",
-      "two_handed": true
+      "two_handed": true,
+      "durability": 30,
+      "max_durability": 30
     },
     "bronze_dagger": {
       "name": "Bronze Dagger",
@@ -2470,7 +2515,9 @@
       "weight": 2,
       "value": 18,
       "description": "A short bronze blade, double-edged. Standard traveller's sidearm.",
-      "skill": "daggers"
+      "skill": "daggers",
+      "durability": 65,
+      "max_durability": 65
     },
     "bronze_axe": {
       "name": "Bronze Axe",
@@ -2482,7 +2529,9 @@
       "weight": 8,
       "value": 28,
       "description": "A single-headed bronze axe. Splits wood and skulls with equal indifference.",
-      "skill": "axes"
+      "skill": "axes",
+      "durability": 65,
+      "max_durability": 65
     },
     "bronze_mace": {
       "name": "Bronze Mace",
@@ -2494,7 +2543,9 @@
       "weight": 8,
       "value": 26,
       "description": "A flanged bronze mace. Heavy on the back-swing, satisfying on contact.",
-      "skill": "maces"
+      "skill": "maces",
+      "durability": 65,
+      "max_durability": 65
     },
     "bronze_spear": {
       "name": "Bronze Spear",
@@ -2507,7 +2558,9 @@
       "value": 22,
       "description": "A bronze-tipped spear with a hardwood haft. Reach and reliability.",
       "skill": "spears",
-      "two_handed": true
+      "two_handed": true,
+      "durability": 65,
+      "max_durability": 65
     },
     "obsidian_dagger": {
       "name": "Obsidian Dagger",
@@ -2520,7 +2573,9 @@
       "value": 30,
       "description": "Volcanic glass knapped to a razor edge. Cuts cleaner than anything this tier — but drop it and it shatters.",
       "skill": "daggers",
-      "fragile": true
+      "fragile": true,
+      "durability": 20,
+      "max_durability": 20
     },
     "obsidian_blade": {
       "name": "Obsidian Blade",
@@ -2533,7 +2588,9 @@
       "value": 45,
       "description": "A wide blade of chipped obsidian, mounted on bone. The edge is terrifying. The structural integrity is not.",
       "skill": "swords",
-      "fragile": true
+      "fragile": true,
+      "durability": 20,
+      "max_durability": 20
     },
     "obsidian_spear": {
       "name": "Obsidian Spear",
@@ -2547,7 +2604,9 @@
       "description": "A hafted spear with a knapped obsidian head. Deadly on the thrust. Do not use it to parry.",
       "skill": "spears",
       "two_handed": true,
-      "fragile": true
+      "fragile": true,
+      "durability": 20,
+      "max_durability": 20
     }
   },
   "item_types": {

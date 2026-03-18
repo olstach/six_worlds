@@ -2,14 +2,14 @@
 	"_comment": "Equipment generation tables: materials, quality, traits, and base stats for procedural weapons/armor",
 
 	"materials": {
-		"bone":         {"tier": 0, "damage_mult": 0.65,"armor_mult": 0.55,"weight_mult": 0.6, "value_mult": 0.35,"name_prefix": "Bone"},
-		"wood":         {"tier": 0, "damage_mult": 0.6, "armor_mult": 0.5, "weight_mult": 0.7, "value_mult": 0.4, "name_prefix": "Wooden"},
-		"obsidian":     {"tier": 1, "damage_mult": 0.95,"armor_mult": 0.15,"weight_mult": 0.5, "value_mult": 1.1, "name_prefix": "Obsidian", "fragility": 3.0, "_note": "Off-branch: near-iron damage but extremely brittle. Weapons only."},
-		"bronze":       {"tier": 1, "damage_mult": 0.8, "armor_mult": 0.8, "weight_mult": 0.9, "value_mult": 0.7, "name_prefix": "Bronze"},
-		"iron":         {"tier": 2, "damage_mult": 1.0, "armor_mult": 1.0, "weight_mult": 1.0, "value_mult": 1.0, "name_prefix": "Iron"},
-		"steel":        {"tier": 3, "damage_mult": 1.2, "armor_mult": 1.2, "weight_mult": 0.95,"value_mult": 1.5, "name_prefix": "Steel"},
-		"mithril":      {"tier": 4, "damage_mult": 1.3, "armor_mult": 1.4, "weight_mult": 0.6, "value_mult": 3.0, "name_prefix": "Mithril"},
-		"demon_forged": {"tier": 5, "damage_mult": 1.5, "armor_mult": 1.5, "weight_mult": 1.1, "value_mult": 4.0, "name_prefix": "Demon-forged"}
+		"bone":         {"tier": 0, "damage_mult": 0.65,"armor_mult": 0.55,"weight_mult": 0.6, "value_mult": 0.35,"base_durability": 30, "fragility": 1.5, "name_prefix": "Bone"},
+		"wood":         {"tier": 0, "damage_mult": 0.6, "armor_mult": 0.5, "weight_mult": 0.7, "value_mult": 0.4, "base_durability": 40, "fragility": 1.2, "name_prefix": "Wooden"},
+		"obsidian":     {"tier": 1, "damage_mult": 0.95,"armor_mult": 0.15,"weight_mult": 0.5, "value_mult": 1.1, "base_durability": 20, "fragility": 3.0, "name_prefix": "Obsidian", "_note": "Off-branch: near-iron damage but extremely brittle. Weapons only."},
+		"bronze":       {"tier": 1, "damage_mult": 0.8, "armor_mult": 0.8, "weight_mult": 0.9, "value_mult": 0.7, "base_durability": 65, "fragility": 1.0, "name_prefix": "Bronze"},
+		"iron":         {"tier": 2, "damage_mult": 1.0, "armor_mult": 1.0, "weight_mult": 1.0, "value_mult": 1.0, "base_durability": 85, "fragility": 1.0, "name_prefix": "Iron"},
+		"steel":        {"tier": 3, "damage_mult": 1.2, "armor_mult": 1.2, "weight_mult": 0.95,"value_mult": 1.5, "base_durability": 110,"fragility": 1.0, "name_prefix": "Steel"},
+		"mithril":      {"tier": 4, "damage_mult": 1.3, "armor_mult": 1.4, "weight_mult": 0.6, "value_mult": 3.0, "base_durability": 150,"fragility": 0.7, "name_prefix": "Mithril"},
+		"demon_forged": {"tier": 5, "damage_mult": 1.5, "armor_mult": 1.5, "weight_mult": 1.1, "value_mult": 4.0, "base_durability": 130,"fragility": 1.3, "name_prefix": "Demon-forged"}
 	},
 
 	"quality_levels": {
