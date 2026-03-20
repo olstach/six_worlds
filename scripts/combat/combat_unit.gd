@@ -666,7 +666,7 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 			return "daggers"
 		"axe":
 			return "axes"
-		"mace":
+		"mace", "club":
 			return "maces"
 		"spear":
 			return "spears"

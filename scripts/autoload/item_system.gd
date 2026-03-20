@@ -983,7 +983,7 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 
 	# Pick material — realm sets the bell curve; rarity is fallback only when no realm given
 	var material: String = material_override
-	var m_weights: Dictionary
+	var m_weights: Dictionary = {}
 	if material == "" or not material in materials:
 		var realm_weights = _equipment_tables.get("realm_material_weights", {})
 		if realm != "" and realm in realm_weights:
@@ -1087,7 +1087,11 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 		if base_key == "loot_value":
 			final_value = int(final_value * (1.0 + final_stats[key] / 100.0))
 		elif base_key == "initiative":
-			final_stats["initiative"] = maxi(1, int(final_stats[key] / 10))
+			# initiative has no weapon base stat; treat the pct value as a flat bonus directly
+			# (initiative_pct: 10 → +10 initiative, matching trait budget intent)
+			var init_bonus = final_stats.get("initiative", 0) + int(final_stats[key])
+			if init_bonus != 0:
+				final_stats["initiative"] = init_bonus
 		else:
 			var current = final_stats.get(base_key, 0)
 			if current != 0:
@@ -1202,7 +1206,7 @@ func generate_armor(armor_type: String = "", rarity: String = "common",
 
 	# Pick material — realm sets the bell curve; rarity is fallback only when no realm given
 	var material: String = material_override
-	var m_weights: Dictionary
+	var m_weights: Dictionary = {}
 	if material == "" or not material in materials:
 		var realm_weights = _equipment_tables.get("realm_material_weights", {})
 		if realm != "" and realm in realm_weights:
