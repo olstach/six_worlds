@@ -1,0 +1,76 @@
+{
+  "_comment": "Ammo types for bows and crossbows. is_default ammo is free/infinite and never stored in inventory.",
+
+  "ammo": {
+    "bone_arrow": {
+      "name": "Bone Arrow", "weapon_types": ["bow"],
+      "tier": 1, "damage_bonus": 0, "accuracy_bonus": 0, "value": 0,
+      "is_default": true, "stack_size": 999,
+      "description": "Crude but freely available. Always replenished between fights."
+    },
+    "bronze_arrow": {
+      "name": "Bronze Arrow", "weapon_types": ["bow"],
+      "tier": 3, "damage_bonus": 1, "accuracy_bonus": 2, "value": 3, "stack_size": 40
+    },
+    "iron_arrow": {
+      "name": "Iron Arrow", "weapon_types": ["bow"],
+      "tier": 4, "damage_bonus": 2, "accuracy_bonus": 3, "value": 5, "stack_size": 40
+    },
+    "steel_arrow": {
+      "name": "Steel Arrow", "weapon_types": ["bow"],
+      "tier": 5, "damage_bonus": 3, "accuracy_bonus": 4, "value": 8, "stack_size": 30
+    },
+    "damascene_arrow": {
+      "name": "Damascene Arrow", "weapon_types": ["bow"],
+      "tier": 6, "damage_bonus": 5, "accuracy_bonus": 5, "value": 20, "stack_size": 20
+    },
+    "sky_iron_arrow": {
+      "name": "Sky-iron Arrow", "weapon_types": ["bow"],
+      "tier": 7, "damage_bonus": 7, "accuracy_bonus": 6, "value": 60, "stack_size": 10
+    },
+
+    "bone_bolt": {
+      "name": "Bone Bolt", "weapon_types": ["crossbow"],
+      "tier": 1, "damage_bonus": 0, "accuracy_bonus": 0, "value": 0,
+      "is_default": true, "stack_size": 999,
+      "description": "Crude but freely available. Always replenished between fights."
+    },
+    "bronze_bolt": {
+      "name": "Bronze Bolt", "weapon_types": ["crossbow"],
+      "tier": 3, "damage_bonus": 1, "accuracy_bonus": 2, "value": 3, "stack_size": 40
+    },
+    "iron_bolt": {
+      "name": "Iron Bolt", "weapon_types": ["crossbow"],
+      "tier": 4, "damage_bonus": 2, "accuracy_bonus": 3, "value": 5, "stack_size": 40
+    },
+    "steel_bolt": {
+      "name": "Steel Bolt", "weapon_types": ["crossbow"],
+      "tier": 5, "damage_bonus": 3, "accuracy_bonus": 4, "value": 8, "stack_size": 30
+    },
+
+    "fire_arrow": {
+      "name": "Fire Arrow", "weapon_types": ["bow", "crossbow"],
+      "tier": 3, "damage_bonus": 2, "accuracy_bonus": 0, "value": 15, "stack_size": 10,
+      "special_effect": {"type": "aoe_fire", "damage": 12, "radius": 1, "element": "fire"},
+      "description": "Explodes on impact, dealing fire damage to all nearby units."
+    },
+    "venom_arrow": {
+      "name": "Venom Arrow", "weapon_types": ["bow", "crossbow"],
+      "tier": 3, "damage_bonus": 0, "accuracy_bonus": 0, "value": 10, "stack_size": 10,
+      "special_effect": {"type": "status", "status": "Poisoned", "duration": 3, "chance": 100},
+      "description": "Coated in fast-acting poison."
+    },
+    "frost_arrow": {
+      "name": "Frost Arrow", "weapon_types": ["bow", "crossbow"],
+      "tier": 4, "damage_bonus": 1, "accuracy_bonus": 0, "value": 12, "stack_size": 10,
+      "special_effect": {"type": "status", "status": "Frozen", "duration": 1, "chance": 75},
+      "description": "Chills the target, potentially freezing them solid."
+    },
+    "silencing_arrow": {
+      "name": "Silencing Arrow", "weapon_types": ["bow", "crossbow"],
+      "tier": 4, "damage_bonus": 0, "accuracy_bonus": 3, "value": 12, "stack_size": 10,
+      "special_effect": {"type": "status", "status": "Silenced", "duration": 2, "chance": 80},
+      "description": "Disrupts spellcasting concentration on impact."
+    }
+  }
+}
