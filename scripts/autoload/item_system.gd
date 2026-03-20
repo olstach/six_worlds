@@ -1340,7 +1340,7 @@ func generate_weapon_for_party(rarity: String = "common",
 	# Map weapon types to their skill names
 	var type_to_skill = {
 		"sword": "swords", "dagger": "daggers", "axe": "axes",
-		"mace": "maces", "spear": "spears", "staff": "martial_arts",
+		"mace": "maces", "club": "maces", "spear": "spears", "staff": "martial_arts",
 		"bow": "ranged"
 	}
 
