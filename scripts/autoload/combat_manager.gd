@@ -1301,6 +1301,10 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 
 		# --- Passive perk on-hit effects ---
 		_process_on_hit_perks(attacker, defender, result)
+		# --- Weapon passive on-hit procs ---
+		_process_weapon_on_hit_procs(attacker, defender, result)
+		# --- Weapon durability ---
+		_deduct_weapon_durability(attacker)
 
 	else:
 		# Attack missed — check dodge/parry perks on defender
@@ -1545,6 +1549,12 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 		if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
 			if "ranged_attacks_this_turn" in attacker and attacker.ranged_attacks_this_turn == 0:
 				armor = 0
+
+	# Weapon armor pierce — flat reduction to effective armor before damage
+	if attacker.has_method("get_armor_pierce"):
+		var pierce = attacker.get_armor_pierce()
+		if pierce > 0:
+			armor = maxi(0, armor - pierce)
 
 	damage = maxi(1, damage - armor)
 
@@ -5543,6 +5553,93 @@ func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 						total += 15
 
 	return total
+
+
+## Process on-hit procs from weapon passive dict.
+## Called from attack_unit() after damage lands, alongside _process_on_hit_perks.
+func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictionary) -> void:
+	if not attacker.has_method("get_equipped_weapon"):
+		return
+	var passive = attacker.get_equipped_weapon().get("passive", {})
+	if passive.is_empty():
+		return
+
+	# Status procs — roll each chance independently
+	var status_procs = {
+		"poison_chance":  "Poisoned",
+		"bleed_chance":   "Bleeding",
+		"stun_chance":    "Stunned",
+		"burn_chance":    "Burning",
+		"freeze_chance":  "Chilled",
+		"silence_chance": "Silenced",
+	}
+	for key in status_procs:
+		if key in passive and randf() * 100.0 <= passive[key]:
+			_apply_status_effect(defender, status_procs[key], 3)
+
+	# Dispel: remove one random buff from the defender
+	# status_effects is an Array of {status, duration} dicts — NOT a Dictionary
+	if "dispel_chance" in passive and randf() * 100.0 <= passive["dispel_chance"]:
+		if "status_effects" in defender:
+			var buff_indices: Array = []
+			for i in range(defender.status_effects.size()):
+				var effect = defender.status_effects[i]
+				var sdef = get_status_definition(effect.get("status", ""))
+				if sdef.get("type", "debuff") == "buff":
+					buff_indices.append(i)
+			if buff_indices.size() > 0:
+				defender.status_effects.remove_at(buff_indices[randi() % buff_indices.size()])
+
+	# Lifesteal
+	if "lifesteal" in passive:
+		var steal = int(result.get("damage", 0) * passive["lifesteal"] / 100.0)
+		if steal > 0:
+			attacker.heal(steal)
+			unit_healed.emit(attacker, steal)
+			result["weapon_lifesteal"] = steal
+
+	# Manasteal
+	if "manasteal" in passive:
+		var steal_mana = int(result.get("damage", 0) * passive["manasteal"] / 100.0)
+		if steal_mana > 0 and "current_mana" in defender:
+			var actual = mini(steal_mana, defender.current_mana)
+			defender.current_mana = defender.current_mana - actual
+			attacker.restore_mana(actual)
+			result["weapon_manasteal"] = actual
+
+	# Elemental damage bonus attacks
+	if "elemental_damage" in passive:
+		for element in passive["elemental_damage"]:
+			var dmg = passive["elemental_damage"][element]
+			if dmg > 0:
+				apply_damage(defender, dmg, element)
+				if not "elemental_procs" in result:
+					result["elemental_procs"] = {}
+				result["elemental_procs"][element] = dmg
+
+
+## Deduct durability from the attacker's equipped weapon after use.
+## fragility in item.generated.fragility = durability cost per attack.
+## Vajra (fragility 0.0) and static items never degrade.
+func _deduct_weapon_durability(unit: Node) -> void:
+	if not unit.has_method("get_equipped_weapon"):
+		return
+	var weapon = unit.get_equipped_weapon()
+	if weapon.is_empty():
+		return
+	var fragility: float = weapon.get("generated", {}).get("fragility", 0.0)
+	if fragility <= 0.0:
+		return  # Indestructible or not a generated item
+	if not "character_data" in unit:
+		return
+	var item_id = ItemSystem.get_equipped_item(unit.character_data, "weapon_main")
+	if item_id == "" or not item_id.begins_with("gen_"):
+		return  # Static items don't track wear
+	var current_dur: int = weapon.get("durability", 1)
+	var new_dur: int = maxi(0, current_dur - int(ceil(fragility)))
+	ItemSystem.update_item_durability(item_id, new_dur)
+	if new_dur == 0:
+		combat_log.emit("%s's %s has broken!" % [unit.unit_name, weapon.get("name", "weapon")])
 
 
 ## Process passive perks that trigger when a unit hits an enemy.
