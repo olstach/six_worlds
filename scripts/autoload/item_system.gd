@@ -27,11 +27,14 @@ var _next_runtime_id: int = 1
 # Equipment doesn't stack, so quantity is always 1 for equipment
 var _inventory: Array[Dictionary] = []
 
+var ammo_types: Dictionary = {}  # ammo_id -> ammo definition from ammo.json
+
 # Maximum inventory size (can be expanded via upgrades later)
 var max_inventory_size: int = 60
 
 func _ready() -> void:
 	_load_item_database()
+	_load_ammo()
 	print("ItemSystem initialized with ", _item_database.size(), " items")
 
 
@@ -550,6 +553,54 @@ func get_type_info(item_type: String) -> Dictionary:
 	return _item_types.get(item_type, {})
 
 
+## Return ammo type definition dict, or {} if not found.
+func get_ammo(ammo_id: String) -> Dictionary:
+	return ammo_types.get(ammo_id, {})
+
+
+## Return all ammo available for a given weapon type.
+## First entry is always the default (bone arrow/bolt), which is free and infinite.
+## Subsequent entries are finite ammo from the party inventory matching this weapon_type.
+func get_available_ammo(weapon_type: String) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+
+	# Find and add the default (free/infinite) ammo for this weapon type first
+	for ammo_id in ammo_types:
+		var ammo = ammo_types[ammo_id]
+		if ammo.get("is_default", false) and weapon_type in ammo.get("weapon_types", []):
+			var entry = ammo.duplicate()
+			entry["id"] = ammo_id
+			result.append(entry)
+			break  # Only one default per weapon type
+
+	# Add finite ammo from party inventory that matches this weapon type
+	for inv_entry in _inventory:
+		var ammo_id: String = inv_entry.get("item_id", "")
+		if not ammo_types.has(ammo_id):
+			continue
+		var ammo = ammo_types[ammo_id]
+		if ammo.get("is_default", false):
+			continue  # Default already added above
+		if weapon_type in ammo.get("weapon_types", []):
+			var entry = ammo.duplicate()
+			entry["id"] = ammo_id
+			entry["quantity"] = inv_entry.get("quantity", 0)
+			result.append(entry)
+
+	return result
+
+
+## Consume 1 unit of ammo from the party inventory.
+## Returns true if ammo remains after consumption, false if fully depleted.
+## Does nothing (returns true) for default (free/infinite) ammo.
+func consume_ammo(ammo_id: String) -> bool:
+	var ammo_def = ammo_types.get(ammo_id, {})
+	if ammo_def.get("is_default", false):
+		return true  # Free ammo is never depleted
+	remove_from_inventory(ammo_id, 1)
+	return get_inventory_count(ammo_id) > 0
+
+
 ## Merge duplicate consumable entries in inventory (fixes pre-stacking data)
 func consolidate_inventory() -> void:
 	var seen: Dictionary = {}  # item_id → index in new array
@@ -928,6 +979,22 @@ func _load_equipment_tables() -> void:
 	if json.parse(file.get_as_text()) == OK:
 		_equipment_tables = json.get_data()
 	file.close()
+
+
+## Load ammo type definitions from ammo.json
+func _load_ammo() -> void:
+	var file = FileAccess.open("res://resources/data/ammo.json", FileAccess.READ)
+	if not file:
+		push_error("ItemSystem: Could not load ammo.json")
+		return
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		push_error("ItemSystem: Failed to parse ammo.json: " + json.get_error_message())
+		file.close()
+		return
+	file.close()
+	ammo_types = json.get_data().get("ammo", {})
+	print("ItemSystem: Loaded %d ammo types" % ammo_types.size())
 
 
 ## Pick a weighted random key from a {key: weight} dictionary
