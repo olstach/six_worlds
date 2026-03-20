@@ -68,7 +68,7 @@ func _load_item_database() -> void:
 	_rarities = data.get("rarities", {})
 
 
-## Get an item definition by ID (checks static DB first, then runtime items)
+## Get an item definition by ID (checks static DB first, then runtime items, then ammo)
 func get_item(item_id: String) -> Dictionary:
 	if item_id in _item_database:
 		var item = _item_database[item_id].duplicate(true)
@@ -78,12 +78,16 @@ func get_item(item_id: String) -> Dictionary:
 		var item = _runtime_items[item_id].duplicate(true)
 		item["id"] = item_id
 		return item
+	if item_id in ammo_types:
+		var item = ammo_types[item_id].duplicate(true)
+		item["id"] = item_id
+		return item
 	return {}
 
 
-## Check if an item exists (static or runtime)
+## Check if an item exists (static, runtime, or ammo)
 func item_exists(item_id: String) -> bool:
-	return item_id in _item_database or item_id in _runtime_items
+	return item_id in _item_database or item_id in _runtime_items or item_id in ammo_types
 
 
 ## Get all items of a specific type (e.g., "sword", "helmet")
@@ -323,8 +327,8 @@ func add_to_inventory(item_id: String, quantity: int = 1) -> bool:
 	var category = type_info.get("category", "")
 
 	# Equipment doesn't stack - add separate entries
-	# (Consumables will stack when implemented later)
-	var is_stackable = category == "consumable"  # Future support
+	# Consumables and ammo stack
+	var is_stackable = category == "consumable" or item_id in ammo_types
 
 	if is_stackable:
 		# Find existing stack and add to it, or create one entry with full quantity
