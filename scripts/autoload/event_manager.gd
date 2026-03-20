@@ -558,11 +558,13 @@ func apply_outcome(outcome: Dictionary) -> void:
 			return
 		"recruit_companion":
 			# Recruit a named companion into the party
+			# Set "free": true in the outcome to skip the gold cost (event-granted companions)
 			var companion_id: String = outcome.get("companion_id", "")
 			if companion_id == "":
 				push_error("EventManager: recruit_companion outcome missing 'companion_id' field")
 			else:
-				var recruited: Dictionary = CompanionSystem.recruit(companion_id)
+				var free: bool = outcome.get("free", false)
+				var recruited: Dictionary = CompanionSystem.recruit(companion_id, free)
 				if recruited.is_empty():
 					push_warning("EventManager: CompanionSystem.recruit() failed for id: %s" % companion_id)
 			event_completed.emit(outcome)

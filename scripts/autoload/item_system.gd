@@ -600,7 +600,7 @@ func add_starter_items(background: String = "") -> void:
 			items_to_add.append(str(bonus_pool[randi() % bonus_pool.size()]))
 	else:
 		# Generic fallback loadout
-		items_to_add = ["bronze_sword", "leather_vest", "leather_cap", "leather_boots", "copper_ring", "travelers_amulet"]
+		items_to_add = ["bone_dagger", "leather_vest", "leather_cap", "leather_boots", "copper_ring", "travelers_amulet"]
 		secondary_weapon = "short_bow"
 
 	# Add everything to inventory
@@ -1077,6 +1077,11 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 	elif weapon_type == "staff":
 		requirements["focus"] = 8 + tier * 2
 
+	# Durability — base value from material, reduced by quality (poor = worse condition)
+	var base_dur: int = mat_info.get("base_durability", 85)
+	var dur_mult: float = q_info.get("stat_mult", 1.0)
+	var max_dur: int = maxi(5, int(base_dur * dur_mult))
+
 	# Build item data
 	var item_data: Dictionary = {
 		"name": item_name,
@@ -1091,10 +1096,13 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 		"requirements": requirements,
 		"stats": final_stats,
 		"abilities": [],
+		"durability": max_dur,
+		"max_durability": max_dur,
 		"generated": {
 			"material": material,
 			"quality": quality,
-			"traits": applied_traits
+			"traits": applied_traits,
+			"fragility": mat_info.get("fragility", 1.0)
 		}
 	}
 

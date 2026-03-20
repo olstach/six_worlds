@@ -393,6 +393,8 @@ func _place_fixed_landmarks(landmarks: Array, zones: Array) -> void:
 				_place_boss(landmark, zone)
 			"pass_guardian":
 				_place_pass_guardian(landmark)
+			"event":
+				_place_fixed_event(landmark, zone)
 
 
 func _place_start(landmark: Dictionary, zone: Dictionary) -> void:
@@ -484,6 +486,43 @@ func _place_boss(landmark: Dictionary, zone: Dictionary) -> void:
 			"region": zone.get("id", ""),
 			"description": "A powerful guardian blocks the path."
 		}
+	})
+
+
+## Place a fixed event object at a known position relative to the start or portal.
+## Supports position: "near_start" (5-12 tiles from _start_pos).
+## The start landmark must appear before any "event" landmarks in fixed_landmarks.
+func _place_fixed_event(landmark: Dictionary, zone: Dictionary) -> void:
+	var data = landmark.get("data", {})
+	var position = landmark.get("position", "near_start")
+	var min_dist = int(landmark.get("min_dist", 5))
+	var max_dist = int(landmark.get("max_dist", 12))
+
+	var event_pos: Vector2i
+	match position:
+		"near_start":
+			event_pos = _find_walkable_near(_start_pos, min_dist, max_dist, zone)
+		"near_portal":
+			event_pos = _find_walkable_near(_portal_pos, min_dist, max_dist, zone)
+		_:
+			event_pos = _find_walkable_near(_start_pos, min_dist, max_dist, zone)
+
+	if event_pos == Vector2i(-1, -1):
+		push_warning("MapGenerator: Could not place fixed event landmark: " + data.get("event_id", "?"))
+		return
+
+	_occupied[event_pos] = true
+	_objects.append({
+		"id": data.get("event_id", "fixed_event_%d" % _objects.size()),
+		"x": event_pos.x,
+		"y": event_pos.y,
+		"type": 0,  # ObjectType.EVENT
+		"name": data.get("name", "Event"),
+		"icon": data.get("icon", "npc"),
+		"blocking": data.get("blocking", false),
+		"one_time": data.get("one_time", true),
+		"visible": true,
+		"data": {"event_id": data.get("event_id", "")}
 	})
 
 

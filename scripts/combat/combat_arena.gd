@@ -2070,8 +2070,44 @@ func _on_combat_started() -> void:
 	_update_action_buttons()
 
 
+## Stabilize any companions still bleeding out at the end of a won fight.
+## They survive with 1 HP — close call, but alive.
+func _stabilize_bleeding_companions() -> void:
+	var player_name = CharacterSystem.get_player().get("name", "")
+	for unit in CombatManager.all_units:
+		if unit.team != CombatManager.Team.PLAYER:
+			continue
+		if unit.unit_name == player_name:
+			continue
+		if unit.is_bleeding_out:
+			unit.is_bleeding_out = false
+			unit.current_hp = 1
+			_log_message("%s is stabilized — barely alive." % unit.unit_name)
+
+## Remove companions who died (bleed-out expired) from the party permanently.
+## Skips the player character (party index 0).
+func _cleanup_dead_companions() -> void:
+	var player_name = CharacterSystem.get_player().get("name", "")
+	for unit in CombatManager.all_units:
+		if unit.team != CombatManager.Team.PLAYER:
+			continue
+		if unit.unit_name == player_name:
+			continue
+		if unit.is_dead:
+			var party = CharacterSystem.get_party()
+			# Iterate in reverse so removing one doesn't shift remaining indices
+			for i in range(party.size() - 1, 0, -1):
+				if party[i].get("name", "") == unit.unit_name:
+					CharacterSystem.remove_companion(i)
+					_log_message("%s has been lost forever." % unit.unit_name)
+					break
+
 func _on_combat_ended(victory: bool) -> void:
 	_update_action_buttons()
+
+	if victory:
+		_stabilize_bleeding_companions()
+		_cleanup_dead_companions()
 
 	if victory:
 		_log_message("=== VICTORY! ===")
@@ -2102,7 +2138,8 @@ func _on_combat_ended(victory: bool) -> void:
 			_log_message("=== ALL HAVE FALLEN ===")
 			_show_defeat_screen()
 		else:
-			# Fled — return to overworld
+			# Fled — companions who died before the retreat are still gone
+			_cleanup_dead_companions()
 			_log_message("=== RETREAT ===")
 			GameState.returning_from_combat = true
 			SaveManager.autosave()

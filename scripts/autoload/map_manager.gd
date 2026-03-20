@@ -1143,6 +1143,8 @@ func _handle_portal_object(obj: Dictionary) -> void:
 	portal_entered.emit(obj.data)
 
 	if GameState and not dest_realm.is_empty():
+		# Unlock the destination realm as a reincarnation option (meta-progression)
+		GameState.unlock_world(dest_realm)
 		GameState.travel_to_world(dest_realm)
 
 	if not dest_map.is_empty():
@@ -1604,8 +1606,8 @@ func _generate_discovery(terrain: int, pos: Vector2i) -> Dictionary:
 ## Pick a discovery item appropriate to the region
 func _pick_discovery_item(region: String) -> String:
 	var cold_items = ["health_potion", "leather_gloves", "leather_boots", "copper_ring"]
-	var fire_items = ["health_potion", "iron_dagger", "leather_vest", "copper_ring"]
-	var default_items = ["health_potion", "copper_ring", "iron_dagger"]
+	var fire_items = ["health_potion", "bone_dagger", "leather_vest", "copper_ring"]
+	var default_items = ["health_potion", "copper_ring", "bone_dagger"]
 
 	var pool: Array
 	if region == "cold_hell":

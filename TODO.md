@@ -162,6 +162,39 @@ Last Updated: 2026-03-15 (session 10, audited)
 
 ## High Priority (Core Gameplay)
 
+### [HIGH] Equipment Material Tiers — Upper Progression Missing
+The intended material progression above Steel has not been implemented. Current tiers top out at
+`mithril` and `demon_forged`, which were added generically and should be replaced. The correct
+upper tier design (from design notes not yet in the repo) is:
+
+  bone → wood → bronze / obsidian(branch) → iron → steel → **damascene** → **sky-iron** → **vajra**
+
+- `mithril` and `demon_forged` are placeholders — decide whether to remove, repurpose as realm
+  branches (demon_forged = hell branch; mithril = god realm branch?), or rename entirely
+- `damascene` — Damascus-style folded steel; excellent edge retention, mid-high tier
+- `sky-iron` (`gnam lcags`) — Tibetan meteoritic iron, used in real ritual implements including
+  vajras; penultimate mortal-world material
+- `vajra` as material — indestructible divine metal; near-exclusively god realm / legendary drops;
+  stat tables and full design to be retrieved from Olaf's notes
+- Once tiers are corrected, update: equipment_tables.json (materials + tier_to_material_weights),
+  items.json (static weapon durability values), shops.json (all realm shop inventories),
+  map loot tables, and tier_to_material_weights for each realm
+
+### [HIGH] Ranged Ammo Scaling — Arrows and Bolts as Material Items
+Bows and crossbows currently treat ammo as a flat supply counter (Scrap-backed). With the
+material tier system, arrows and bolts should scale with their material like weapons do.
+
+- Add arrow and bolt item types to items.json across the full material progression:
+  `bone_arrow`, `wooden_arrow`, `bronze_arrow`, `iron_arrow`, `steel_arrow`, etc.
+  (obsidian_arrow as brittle but high-damage off-branch; sky-iron/vajra at high tiers)
+- Bolts (crossbow ammo) follow the same material ladder
+- Ammo material determines damage bonus added to the ranged weapon's base damage
+- Low-tier ammo (bone, wood) should be common/cheap; high-tier rare/expensive
+- Smithing passive restores ammo using lowest available material in inventory
+- Shops and loot tables need ammo entries per realm (hell starts with bone/wooden arrows)
+- Design question: does carrying different ammo types require inventory slots, or is it
+  abstracted as a supply pool with a material-quality modifier?
+
 ### ~~Companion Auto-Development Refactor~~ DONE
 - [x] All 24 companions in companions.json already have skill-only `build_weights` (no attr keys)
 - [x] `_derive_attr_weights()` in companion_system.gd derives attr weights from skill weights using `primary_attribute` (×1.0) and `secondary_attribute` (×0.5) from skills.json

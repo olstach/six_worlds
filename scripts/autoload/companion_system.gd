@@ -257,13 +257,14 @@ func _apply_starting_equipment(character: Dictionary, fixed_equip: Dictionary,
 
 ## Recruit a companion by id. Deducts gold, builds and stats the character,
 ## and adds them to the party. Returns the new companion dict, or {} on failure.
-func recruit(companion_id: String) -> Dictionary:
+## Pass free=true to skip the gold cost (for event-granted companions).
+func recruit(companion_id: String, free: bool = false) -> Dictionary:
 	var def: Dictionary = get_definition(companion_id)
 	if def.is_empty():
 		push_error("CompanionSystem: Unknown companion id: ", companion_id)
 		return {}
 
-	var cost: int = def.get("recruitment_cost", 0)
+	var cost: int = 0 if free else def.get("recruitment_cost", 0)
 	if GameState.gold < cost:
 		push_warning("CompanionSystem: Cannot afford companion ", companion_id)
 		return {}
