@@ -5648,7 +5648,7 @@ func _process_ammo_special_effect(attacker: Node, defender: Node, ammo: Dictiona
 					continue
 				var dist = abs(unit.grid_position.x - defender.grid_position.x) \
 						 + abs(unit.grid_position.y - defender.grid_position.y)
-				if dist <= radius:
+				if dist > 0 and dist <= radius:
 					var resistance = unit.get_resistance(element) if unit.has_method("get_resistance") else 0.0
 					var final_dmg = maxi(1, int(aoe_damage * (1.0 - resistance / 100.0)))
 					apply_damage(unit, final_dmg, element)
@@ -5660,7 +5660,7 @@ func _process_ammo_special_effect(attacker: Node, defender: Node, ammo: Dictiona
 				var status = effect.get("status", "")
 				var duration = effect.get("duration", 2)
 				if status != "":
-					_apply_status_effect(defender, status, duration)
+					_apply_status_effect(defender, status, duration, 0, attacker)
 					combat_log.emit("%s is afflicted with %s from the arrow." % [defender.unit_name, status])
 
 
