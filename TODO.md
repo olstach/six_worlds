@@ -220,11 +220,14 @@ material tier system, arrows and bolts should scale with their material like wea
 
 ### Content Expansion (Needed for Playable Loop)
 Hell realm is largely production-quality. Other realms are structural gaps.
+- [ ] **Convert HG_EVENTS.md → hungry_ghost_events.json** — design draft exists in HG_EVENTS.md, needs to be turned into JSON matching hell_events.json format
 - [ ] Event files for remaining realms — only hell_events.json exists; no files for hungry_ghost, animal, human, asura, god
-- [x] ~~Races for all 6 realms~~ — DONE: 21 races across all realms (Hell 6, Hungry Ghost 3, Animal 3, Human 4, Asura 2, God 3)
+- [x] ~~Races for all 6 realms~~ — DONE: 13 hungry ghost races (Rolang, Skeleton×5, Dralha, Gyelpo, Dré, Vetala, Shaza, Yidag) + full set for other realms
 - [x] ~~Background definitions with skill distributions~~ — DONE: 25 backgrounds in races.json with attribute_modifiers, starting_skills, available_races whitelists
-- [ ] Map configs for remaining realms — only hell.json exists in resources/data/map_configs/
-- [ ] Enemy archetypes + encounters for remaining realms — only hell_archetypes.json + hell_encounters.json exist
+- [ ] Map configs for remaining realms — only hell.json and hungry_ghost.json exist in resources/data/map_configs/
+- [x] ~~Enemy archetypes + encounters for hungry ghost~~ — DONE: hungry_ghost_archetypes.json (27 entries, 4 factions) + hungry_ghost_encounters.json
+- [ ] **Fix roles in hungry_ghost_archetypes.json** — all archetypes have `"role": "?"` which breaks EnemySystem role-based encounter filtering; assign proper roles (frontline/ranged/caster/support/boss)
+- [ ] Enemy archetypes + encounters for remaining realms — animal, human, asura, god
 
 ### Map Interactibles System
 Three categories of interactive map objects. Hell is the target realm for initial content.
@@ -422,6 +425,12 @@ UI stub exists in Party tab (`_update_followers_list()` / `_create_follower_card
 ### Mantra System
 - Continuous Recitation (Ritual 3): wire in `cast_spell()` — skip mantra interrupt if perk active
 - Deferred DY effects (simplified in-place): some deity yoga bursts are stat bonuses rather than true unit spawns; acceptable for now
+
+### Weapon Element Affinity (future design)
+Each weapon has an `element` field matching its governing skill's element (e.g. sword→space, axe→fire).
+Design a system where high elemental affinity boosts weapons of that element — e.g. a Space-attuned
+character gets extra crit or damage with swords/staffs. Wire into CharacterSystem elemental affinity
+bonuses and/or add element-affinity multipliers to generate_weapon stat scaling.
 
 ---
 
