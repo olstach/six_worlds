@@ -1,5 +1,5 @@
 {
-  "_comment": "Ammo types for bows and crossbows. is_default ammo is free/infinite and never stored in inventory.",
+  "_comment": "Ammo types for bows and crossbows. is_default ammo is free/infinite and never stored in inventory. Tier 2 (obsidian) intentionally absent — obsidian is an off-branch weapon material, not used for arrows/bolts.",
 
   "ammo": {
     "bone_arrow": {
@@ -46,6 +46,14 @@
     "steel_bolt": {
       "name": "Steel Bolt", "weapon_types": ["crossbow"],
       "tier": 5, "damage_bonus": 3, "accuracy_bonus": 4, "value": 8, "stack_size": 30
+    },
+    "damascene_bolt": {
+      "name": "Damascene Bolt", "weapon_types": ["crossbow"],
+      "tier": 6, "damage_bonus": 5, "accuracy_bonus": 5, "value": 20, "stack_size": 20
+    },
+    "sky_iron_bolt": {
+      "name": "Sky-iron Bolt", "weapon_types": ["crossbow"],
+      "tier": 7, "damage_bonus": 7, "accuracy_bonus": 6, "value": 60, "stack_size": 10
     },
 
     "fire_arrow": {
