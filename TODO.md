@@ -162,23 +162,23 @@ Last Updated: 2026-03-15 (session 10, audited)
 
 ## High Priority (Core Gameplay)
 
-### [HIGH] Equipment Material Tiers — Upper Progression Missing
-The intended material progression above Steel has not been implemented. Current tiers top out at
-`mithril` and `demon_forged`, which were added generically and should be replaced. The correct
-upper tier design (from design notes not yet in the repo) is:
+### ~~[HIGH] Equipment Material Tiers — Upper Progression Missing~~ DONE
+Material tiers fully redesigned: wood(0) → bone(1) → obsidian(2) → bronze(3) → iron(4) → steel(5)
+→ damascene(6) → sky-iron(7) → vajra(8, indestructible). Realm-based bell-curve weights implemented.
+Shops and loot drops wired. See equipment_tables.json.
 
-  bone → wood → bronze / obsidian(branch) → iron → steel → **damascene** → **sky-iron** → **vajra**
+### [HIGH] Enemy Equipment — Generated Weapons
+Enemies currently use plain hardcoded stat dicts (damage/accuracy/range from archetype JSON) rather
+than real generated items. They have no material, no durability, no traits, and no on-hit passives.
 
-- `mithril` and `demon_forged` are placeholders — decide whether to remove, repurpose as realm
-  branches (demon_forged = hell branch; mithril = god realm branch?), or rename entirely
-- `damascene` — Damascus-style folded steel; excellent edge retention, mid-high tier
-- `sky-iron` (`gnam lcags`) — Tibetan meteoritic iron, used in real ritual implements including
-  vajras; penultimate mortal-world material
-- `vajra` as material — indestructible divine metal; near-exclusively god realm / legendary drops;
-  stat tables and full design to be retrieved from Olaf's notes
-- Once tiers are corrected, update: equipment_tables.json (materials + tier_to_material_weights),
-  items.json (static weapon durability values), shops.json (all realm shop inventories),
-  map loot tables, and tier_to_material_weights for each realm
+- Replace the manually assembled `equipped_weapon` dict in `enemy_system.gd` with a call to
+  `ItemSystem.generate_weapon(weapon_type, rarity, "", "", realm)` so enemies carry real
+  material-tiered weapons with traits and durability.
+- Enemy weapon rarity should scale with party power (already calculated in `_calculate_power_level`).
+- Loot drops from defeated enemies should yield their actual equipped item (or a copy of it), not a
+  separate random roll — enemies should drop what they carry.
+- enemy_system.gd builds the weapon dict around line 304; realm is already passed into
+  `generate_scaled_enemy()` as a parameter.
 
 ### [HIGH] Ranged Ammo Scaling — Arrows and Bolts as Material Items
 Bows and crossbows currently treat ammo as a flat supply counter (Scrap-backed). With the

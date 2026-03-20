@@ -596,10 +596,11 @@ func _pick_item_from_types(allowed_types: Array[String], rarity_weights: Diction
 		if ItemSystem.can_generate_type(item_type):
 			generatable_types.append(item_type)
 
+	var current_realm = GameState.current_world if GameState else ""
 	if not generatable_types.is_empty() and randf() < proc_chance:
 		# Generate a procedural item of a random allowed type
 		var gen_type = generatable_types[randi() % generatable_types.size()]
-		var gen_id = ItemSystem.generate_item_for_type(gen_type, rolled_rarity)
+		var gen_id = ItemSystem.generate_item_for_type(gen_type, rolled_rarity, current_realm)
 		if gen_id != "":
 			return gen_id
 
@@ -624,7 +625,7 @@ func _pick_item_from_types(allowed_types: Array[String], rarity_weights: Diction
 	# Last resort: if no static items matched at any rarity, try procedural generation
 	if not generatable_types.is_empty():
 		var gen_type = generatable_types[randi() % generatable_types.size()]
-		var gen_id = ItemSystem.generate_item_for_type(gen_type, rolled_rarity)
+		var gen_id = ItemSystem.generate_item_for_type(gen_type, rolled_rarity, current_realm)
 		if gen_id != "":
 			return gen_id
 

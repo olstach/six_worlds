@@ -1427,11 +1427,11 @@ func resolve_random_generate(item_id: String) -> String:
 ## Generate a procedural item for a given item type and rarity.
 ## Used by loot drops and shops to create appropriate procedural items.
 ## Returns the gen_XXXX ID, or "" if the type can't be procedurally generated.
-func generate_item_for_type(item_type: String, rarity: String = "common") -> String:
+func generate_item_for_type(item_type: String, rarity: String = "common", realm: String = "") -> String:
 	if item_type in WEAPON_TYPES:
-		return generate_weapon(item_type, rarity)
+		return generate_weapon(item_type, rarity, "", "", realm)
 	elif item_type in ARMOR_TYPES:
-		return generate_armor(item_type, rarity)
+		return generate_armor(item_type, rarity, "", "", realm)
 	elif item_type in TALISMAN_TYPES:
 		return generate_talisman(rarity)
 	return ""

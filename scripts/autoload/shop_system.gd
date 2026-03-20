@@ -704,16 +704,17 @@ func _generate_procedural_stock() -> void:
 		var item_type: String = slot.get("type", "")
 		var count: int = slot.get("count", 1)
 
+		var current_realm = GameState.current_world if GameState else ""
 		for i in range(count):
 			var gen_id: String = ""
 			match category:
 				"weapon":
 					if slot.get("match_party_skill", false):
-						gen_id = ItemSystem.generate_weapon_for_party(rarity)
+						gen_id = ItemSystem.generate_weapon_for_party(rarity, "", "", current_realm)
 					else:
-						gen_id = ItemSystem.generate_weapon(item_type, rarity)
+						gen_id = ItemSystem.generate_weapon(item_type, rarity, "", "", current_realm)
 				"armor":
-					gen_id = ItemSystem.generate_armor(item_type, rarity)
+					gen_id = ItemSystem.generate_armor(item_type, rarity, "", "", current_realm)
 				"talisman":
 					gen_id = ItemSystem.generate_talisman(rarity)
 
