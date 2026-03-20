@@ -449,6 +449,13 @@ func clear_inventory() -> void:
 	inventory_changed.emit()
 
 
+## Update durability on a runtime-generated item (static items don't track wear).
+## Called by CombatManager after each weapon use.
+func update_item_durability(item_id: String, new_value: int) -> void:
+	if item_id in _runtime_items:
+		_runtime_items[item_id]["durability"] = new_value
+
+
 ## Calculate total stat bonuses from all equipped items
 func calculate_equipment_stats(character: Dictionary) -> Dictionary:
 	var bonuses: Dictionary = {
@@ -945,7 +952,8 @@ func _weighted_pick(weights: Dictionary) -> String:
 ## material_override: force a specific material (or "" for random)
 ## quality_override: force a specific quality (or "" for random)
 func generate_weapon(weapon_type: String = "", rarity: String = "common",
-		material_override: String = "", quality_override: String = "") -> String:
+		material_override: String = "", quality_override: String = "",
+		realm: String = "") -> String:
 	if _equipment_tables.is_empty():
 		_load_equipment_tables()
 	if _equipment_tables.is_empty():
@@ -973,13 +981,30 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 		quality = _weighted_pick(q_weights)
 	var q_info = quality_levels[quality]
 
-	# Pick material — use tier based on rarity
+	# Pick material — realm sets the bell curve; rarity is fallback only when no realm given
 	var material: String = material_override
+	var m_weights: Dictionary
 	if material == "" or not material in materials:
-		var rarity_tiers = {"common": "1", "uncommon": "2", "rare": "3", "epic": "4", "legendary": "5"}
-		var tier_key = rarity_tiers.get(rarity, "2")
-		var m_weights = tier_materials.get(tier_key, {"iron": 100})
+		var realm_weights = _equipment_tables.get("realm_material_weights", {})
+		if realm != "" and realm in realm_weights:
+			m_weights = realm_weights[realm]
+		else:
+			var rarity_tiers = {"common": "3", "uncommon": "4", "rare": "5", "epic": "6", "legendary": "7"}
+			var tier_key = rarity_tiers.get(rarity, "4")
+			m_weights = tier_materials.get(tier_key, {"iron": 100})
 		material = _weighted_pick(m_weights)
+
+	# Material type restriction (e.g. wood only allowed for staff/club)
+	if material != "" and material in materials:
+		var allowed = materials[material].get("allowed_types", [])
+		if allowed.size() > 0 and not weapon_type in allowed:
+			var filtered: Dictionary = {}
+			for mat_key in m_weights:
+				var mat_allowed = materials.get(mat_key, {}).get("allowed_types", [])
+				if mat_allowed.is_empty() or weapon_type in mat_allowed:
+					filtered[mat_key] = m_weights[mat_key]
+			material = _weighted_pick(filtered) if not filtered.is_empty() else "iron"
+
 	var mat_info = materials[material]
 
 	# Calculate stats
@@ -997,6 +1022,14 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 	for special in ["spellpower", "range", "crit_chance", "armor_pierce"]:
 		if special in base:
 			final_stats[special] = int(base[special] * stat_mult)
+
+	# Apply material-specific stat bonuses (e.g. obsidian crit_chance +3)
+	for bonus_key in mat_info.get("stat_bonuses", {}):
+		var bonus_val = mat_info["stat_bonuses"][bonus_key]
+		if bonus_key in final_stats:
+			final_stats[bonus_key] += bonus_val
+		else:
+			final_stats[bonus_key] = bonus_val
 
 	# Weight and value
 	var final_weight: int = maxi(1, int(base.get("weight", 5) * mat_info.get("weight_mult", 1.0)))
@@ -1028,8 +1061,16 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 			for key in trait_info:
 				if key in ["budget_cost", "types"]:
 					continue
-				# Special combat passives
-				if key in ["poison_chance", "stun_chance", "lifesteal"]:
+				# Elemental damage traits (e.g. space_damage_pct: 15)
+				if key.ends_with("_damage_pct"):
+					var element = key.left(key.length() - 11)  # strip "_damage_pct"
+					if not "elemental_damage" in passive:
+						passive["elemental_damage"] = {}
+					var base_dmg = base.get("damage", 5)
+					passive["elemental_damage"][element] = maxi(1, int(base_dmg * trait_info[key] / 100.0))
+				# On-hit proc passives stored raw
+				elif key in ["poison_chance", "bleed_chance", "stun_chance", "burn_chance",
+						"freeze_chance", "silence_chance", "dispel_chance", "lifesteal", "manasteal"]:
 					passive[key] = trait_info[key]
 				elif key in final_stats:
 					final_stats[key] += trait_info[key]
@@ -1037,6 +1078,21 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 					final_stats[key] = trait_info[key]
 
 			final_value += int(trait_info.get("budget_cost", 0) * 15)
+
+	# Convert _pct trait keys to actual stat adjustments
+	for key in final_stats.keys():
+		if not key.ends_with("_pct"):
+			continue
+		var base_key = key.left(key.length() - 4)  # strip "_pct"
+		if base_key == "loot_value":
+			final_value = int(final_value * (1.0 + final_stats[key] / 100.0))
+		elif base_key == "initiative":
+			final_stats["initiative"] = maxi(1, int(final_stats[key] / 10))
+		else:
+			var current = final_stats.get(base_key, 0)
+			if current != 0:
+				final_stats[base_key] = current + int(current * final_stats[key] / 100.0)
+		final_stats.erase(key)
 
 	# Build name
 	var name_parts: Array[String] = []
@@ -1115,7 +1171,8 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 ## Generate a procedural armor piece. Returns the gen_XXXX item ID.
 ## armor_type: "armor", "helmet", "boots", etc. (or "" for random)
 func generate_armor(armor_type: String = "", rarity: String = "common",
-		material_override: String = "", quality_override: String = "") -> String:
+		material_override: String = "", quality_override: String = "",
+		realm: String = "") -> String:
 	if _equipment_tables.is_empty():
 		_load_equipment_tables()
 	if _equipment_tables.is_empty():
@@ -1143,12 +1200,17 @@ func generate_armor(armor_type: String = "", rarity: String = "common",
 		quality = _weighted_pick(q_weights)
 	var q_info = quality_levels[quality]
 
-	# Pick material
+	# Pick material — realm sets the bell curve; rarity is fallback only when no realm given
 	var material: String = material_override
+	var m_weights: Dictionary
 	if material == "" or not material in materials:
-		var rarity_tiers = {"common": "1", "uncommon": "2", "rare": "3", "epic": "4", "legendary": "5"}
-		var tier_key = rarity_tiers.get(rarity, "2")
-		var m_weights = tier_materials.get(tier_key, {"iron": 100})
+		var realm_weights = _equipment_tables.get("realm_material_weights", {})
+		if realm != "" and realm in realm_weights:
+			m_weights = realm_weights[realm]
+		else:
+			var rarity_tiers = {"common": "3", "uncommon": "4", "rare": "5", "epic": "6", "legendary": "7"}
+			var tier_key = rarity_tiers.get(rarity, "4")
+			m_weights = tier_materials.get(tier_key, {"iron": 100})
 		material = _weighted_pick(m_weights)
 	var mat_info = materials[material]
 
@@ -1269,7 +1331,8 @@ func generate_armor(armor_type: String = "", rarity: String = "common",
 ## Generate equipment matching a party member's best weapon skill.
 ## Inspects the party and picks a weapon type that someone can use.
 func generate_weapon_for_party(rarity: String = "common",
-		material_override: String = "", quality_override: String = "") -> String:
+		material_override: String = "", quality_override: String = "",
+		realm: String = "") -> String:
 	var party = CharacterSystem.get_party() if CharacterSystem else []
 	var best_type: String = ""
 	var best_level: int = 0
@@ -1294,7 +1357,7 @@ func generate_weapon_for_party(rarity: String = "common",
 	if best_type == "":
 		best_type = ""
 
-	return generate_weapon(best_type, rarity, material_override, quality_override)
+	return generate_weapon(best_type, rarity, material_override, quality_override, realm)
 
 
 # ============================================
@@ -1303,7 +1366,7 @@ func generate_weapon_for_party(rarity: String = "common",
 
 # Item types that can be procedurally generated as weapons
 const WEAPON_TYPES: Array[String] = [
-	"sword", "dagger", "axe", "mace", "spear", "staff", "bow", "crossbow", "javelin"
+	"sword", "dagger", "axe", "mace", "spear", "staff", "bow", "crossbow", "javelin", "club"
 ]
 
 # Item types that can be procedurally generated as armor
