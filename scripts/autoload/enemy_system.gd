@@ -285,10 +285,9 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	var no_equip_chance = archetype.get("no_equipment_chance", 0.0)
 	var bare_handed = randf() < no_equip_chance
 
-	# Apply equipment bonuses to derived stats (skipped if bare-handed)
+	# Apply armor bonus to derived stats. Weapon damage/accuracy are no longer added
+	# to derived — they come from the generated weapon's stats dict instead.
 	if not bare_handed:
-		derived.damage += equipment.get("weapon_damage", 0)
-		derived.accuracy += equipment.get("weapon_accuracy", 0)
 		derived.armor += equipment.get("armor_value", 0)
 
 	# Build resistances dict (start with defaults, apply archetype overrides).
@@ -301,33 +300,54 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	for key in arch_resists:
 		resistances[key] = arch_resists[key]
 
-	# Build the weapon dict for CombatUnit
+	# Generate consumable inventory, then merge any archetype-guaranteed items
+	var inventory = _generate_enemy_inventory(archetype, effective_budget)
+	for item in archetype.get("starting_inventory", []):
+		inventory.append(item)
+
+	# Build the weapon for CombatUnit — generated items for armed enemies so they
+	# carry real material-tiered weapons with traits and durability.
 	var equipped_weapon: Dictionary
 	if bare_handed:
-		# Bare-handed: weak unarmed attack, no armor
 		equipped_weapon = {
-			"name": archetype.get("name", "Enemy") + "'s Claws",  # placeholder; real name set below
+			"name": archetype.get("name", "Enemy") + "'s Claws",
 			"type": "unarmed",
 			"damage_type": "crushing",
 			"stats": {"damage": 2, "accuracy": 4, "range": 1}
 		}
 	else:
 		var weapon_type = equipment.get("weapon_type", "sword")
-		equipped_weapon = {
-			"name": archetype.get("name", "Enemy") + "'s Weapon",  # placeholder; real name set below
-			"type": weapon_type,
-			"damage_type": _get_weapon_damage_type(weapon_type),
-			"stats": {
-				"damage": equipment.get("weapon_damage", 5),
-				"accuracy": equipment.get("weapon_accuracy", 3),
-				"range": equipment.get("weapon_range", 1)
-			}
-		}
+		# Map power scale to rarity for weapon quality (realm drives material tier)
+		var power_scale = effective_budget / 80.0
+		var weapon_rarity: String
+		if power_scale < 0.5:
+			weapon_rarity = "common"
+		elif power_scale < 1.0:
+			weapon_rarity = "uncommon"
+		elif power_scale < 1.5:
+			weapon_rarity = "rare"
+		elif power_scale < 2.0:
+			weapon_rarity = "epic"
+		else:
+			weapon_rarity = "legendary"
 
-	# Generate consumable inventory, then merge any archetype-guaranteed items
-	var inventory = _generate_enemy_inventory(archetype, effective_budget)
-	for item in archetype.get("starting_inventory", []):
-		inventory.append(item)
+		var gen_id = ItemSystem.generate_weapon(weapon_type, weapon_rarity, "", "", realm)
+		if gen_id != "":
+			equipped_weapon = ItemSystem.get_item(gen_id)
+			# Add to inventory so the weapon can be looted when this enemy is defeated
+			inventory.append({"item_id": gen_id, "quantity": 1})
+		else:
+			# Fallback to hardcoded dict if ItemSystem unavailable
+			equipped_weapon = {
+				"name": archetype.get("name", "Enemy") + "'s Weapon",
+				"type": weapon_type,
+				"damage_type": _get_weapon_damage_type(weapon_type),
+				"stats": {
+					"damage": equipment.get("weapon_damage", 5),
+					"accuracy": equipment.get("weapon_accuracy", 3),
+					"range": equipment.get("weapon_range", 1)
+				}
+			}
 
 	# Generate a procedural name from realm/region/tags, unless this is a named boss.
 	# Race is inferred from archetype tags: imps first, then shades (undead+incorporeal),
@@ -350,8 +370,10 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	else:
 		enemy_name = generate_enemy_name(realm, tags, region, race)
 
-	# Update the weapon/claw name now that we have a real name
-	equipped_weapon["name"] = enemy_name + ("'s Claws" if bare_handed else "'s Weapon")
+	# For bare-handed enemies, name the claws after the enemy.
+	# Generated weapons already have proper names (e.g. "Fine Obsidian Sword") — keep them.
+	if bare_handed:
+		equipped_weapon["name"] = enemy_name + "'s Claws"
 
 	# Assemble final enemy dict matching CombatUnit.init_as_enemy() expectations
 	var enemy: Dictionary = {
