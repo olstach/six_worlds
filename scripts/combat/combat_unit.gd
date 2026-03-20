@@ -37,6 +37,7 @@ var stationary_stacks: int = 0     # Turns without moving; incremented/reset at 
 var last_attacker: Node = null     # Last unit that dealt damage to this unit (used for risen_dead talisman perk)
 var dagger_attacks_this_turn: int = 0    # Dagger attacks made this turn; cleared at turn start (too_fast_to_count perk)
 var ranged_attacks_this_turn: int = 0    # Ranged attacks made this turn; cleared at turn start (one_breath_one_arrow perk)
+var selected_ammo_id: String = ""  # Which ammo is loaded; "" = default (bone arrow/bolt)
 var knife_storm_proc_this_turn: bool = false  # Prevents knife_storm from proccing twice in one turn
 var enemies_hit_this_combat: Array = []  # Tracks enemies hit for cheap_shot (first-attack crit bonus)
 var hit_back_ready: bool = false          # Set when taking damage with hit_back_harder perk; grants +20% damage on next melee attack
@@ -609,7 +610,31 @@ func get_attack_range() -> int:
 func get_accuracy() -> int:
 	var derived = character_data.get("derived", {})
 	var weapon_acc = get_equipped_weapon().get("stats", {}).get("accuracy", 0)
-	return derived.get("accuracy", 0) + weapon_acc + _get_status_stat_bonus("accuracy") + mantra_stat_bonuses.get("accuracy", 0) + _get_stat_modifier_bonus("accuracy")
+	var ammo_acc = get_selected_ammo().get("accuracy_bonus", 0) if is_ranged_weapon() else 0
+	return derived.get("accuracy", 0) + weapon_acc + ammo_acc + _get_status_stat_bonus("accuracy") + mantra_stat_bonuses.get("accuracy", 0) + _get_stat_modifier_bonus("accuracy")
+
+
+## Return the current ammo definition dict (includes id, bonuses, special_effect).
+## Returns the matching default ammo when nothing is explicitly selected.
+func get_selected_ammo() -> Dictionary:
+	if not is_ranged_weapon():
+		return {}
+	if selected_ammo_id != "" and ItemSystem:
+		var ammo = ItemSystem.get_ammo(selected_ammo_id)
+		if not ammo.is_empty():
+			var entry = ammo.duplicate()
+			entry["id"] = selected_ammo_id
+			return entry
+	# Fall back to the default ammo for this weapon type
+	var weapon_type = get_equipped_weapon().get("type", "bow")
+	if ItemSystem:
+		for ammo_id in ItemSystem.ammo_types:
+			var ammo = ItemSystem.ammo_types[ammo_id]
+			if ammo.get("is_default", false) and weapon_type in ammo.get("weapon_types", []):
+				var entry = ammo.duplicate()
+				entry["id"] = ammo_id
+				return entry
+	return {}
 
 
 ## Get dodge value (includes status effect bonuses)
@@ -653,6 +678,10 @@ func get_attack_damage() -> int:
 
 	# Add mantra stat bonuses (e.g. Jeweled Pagoda per-turn summon damage)
 	base_damage += mantra_stat_bonuses.get("damage", 0)
+
+	# Add ammo damage bonus for ranged weapons
+	if is_ranged_weapon():
+		base_damage += get_selected_ammo().get("damage_bonus", 0)
 
 	return base_damage
 
