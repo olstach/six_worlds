@@ -30,6 +30,9 @@ extends Control
 @onready var skills_button: Button = %SkillsButton
 @onready var skills_panel: PanelContainer = %SkillsPanel
 @onready var skills_list: VBoxContainer = %SkillsList
+@onready var ammo_button: Button = %AmmoButton
+@onready var ammo_panel: PanelContainer = %AmmoPanel
+@onready var ammo_list: VBoxContainer = %AmmoList
 
 # Context menu and examine window (created in code)
 var context_menu: PopupMenu = null
@@ -188,6 +191,7 @@ func _ready() -> void:
 	attack_button.pressed.connect(_on_attack_pressed)
 	spell_button.pressed.connect(_on_spell_pressed)
 	item_button.pressed.connect(_on_item_pressed)
+	ammo_button.pressed.connect(_on_ammo_pressed)
 	swap_weapon_button.pressed.connect(_on_swap_weapon_pressed)
 	skills_button.pressed.connect(_on_skills_pressed)
 	wait_button.pressed.connect(_on_wait_pressed)
@@ -662,6 +666,7 @@ func _cancel_action_mode() -> void:
 	spell_panel.hide()
 	item_panel.hide()
 	skills_panel.hide()
+	ammo_panel.hide()
 	_update_action_buttons()
 
 
@@ -726,7 +731,102 @@ func _on_spell_pressed() -> void:
 	else:
 		item_panel.hide()
 		skills_panel.hide()
+		ammo_panel.hide()
 		_show_spell_panel(unit)
+
+
+func _on_ammo_pressed() -> void:
+	if not CombatManager.is_player_turn():
+		return
+	var unit = CombatManager.get_current_unit()
+	if unit == null:
+		return
+	AudioManager.play("ui_click")
+	if ammo_panel.visible:
+		ammo_panel.hide()
+	else:
+		spell_panel.hide()
+		item_panel.hide()
+		skills_panel.hide()
+		_show_ammo_panel(unit)
+
+
+func _show_ammo_panel(unit: CombatUnit) -> void:
+	for child in ammo_list.get_children():
+		child.queue_free()
+
+	if not unit.is_ranged_weapon():
+		ammo_panel.hide()
+		return
+
+	var weapon_type = unit.get_equipped_weapon().get("type", "bow")
+	var available = ItemSystem.get_available_ammo(weapon_type)
+
+	if available.is_empty():
+		var label = Label.new()
+		label.text = "No ammo available"
+		label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		ammo_list.add_child(label)
+	else:
+		for ammo in available:
+			var ammo_id = ammo.get("id", "")
+			var is_default = ammo.get("is_default", false)
+			var is_selected = (unit.selected_ammo_id == ammo_id or
+								(unit.selected_ammo_id == "" and is_default))
+
+			var btn = Button.new()
+			if is_default:
+				btn.text = "%s (∞)" % ammo.get("name", "Bone Arrow")
+			else:
+				btn.text = "%s (x%d)" % [ammo.get("name", "Arrow"), ammo.get("quantity", 0)]
+				if ammo.get("quantity", 0) <= 0:
+					btn.disabled = true
+
+			# Gold tint = currently selected ammo
+			if is_selected:
+				btn.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3))
+
+			# Build tooltip
+			var tip_lines: Array[String] = [ammo.get("name", "Arrow")]
+			var dmg_bonus = ammo.get("damage_bonus", 0)
+			var acc_bonus = ammo.get("accuracy_bonus", 0)
+			if dmg_bonus != 0:
+				tip_lines.append("+%d Damage" % dmg_bonus)
+			if acc_bonus != 0:
+				tip_lines.append("+%d Accuracy" % acc_bonus)
+			var fx = ammo.get("special_effect", {})
+			if not fx.is_empty():
+				match fx.get("type", ""):
+					"aoe_fire":
+						tip_lines.append("On hit: AoE fire blast (radius %d, %d dmg)" % [
+							fx.get("radius", 1), fx.get("damage", 0)])
+					"status":
+						tip_lines.append("On hit: %d%% chance to inflict %s for %d turns" % [
+							fx.get("chance", 100), fx.get("status", ""), fx.get("duration", 1)])
+			var desc = ammo.get("description", "")
+			if not desc.is_empty():
+				tip_lines.append("")
+				tip_lines.append(desc)
+			btn.tooltip_text = "\n".join(tip_lines)
+
+			btn.pressed.connect(_on_ammo_selected.bind(ammo_id))
+			ammo_list.add_child(btn)
+
+	ammo_panel.show()
+
+
+func _on_ammo_selected(ammo_id: String) -> void:
+	var unit = CombatManager.get_current_unit()
+	if unit == null:
+		return
+	var ammo = ItemSystem.get_ammo(ammo_id)
+	if ammo.get("is_default", false):
+		unit.selected_ammo_id = ""
+		_log_message("Using default ammo (%s)." % ammo.get("name", "Bone Arrow"))
+	else:
+		unit.selected_ammo_id = ammo_id
+		_log_message("Loaded %s." % ammo.get("name", ammo_id))
+	ammo_panel.hide()
 
 
 func _show_spell_panel(unit: CombatUnit) -> void:
@@ -968,6 +1068,7 @@ func _on_item_pressed() -> void:
 	else:
 		spell_panel.hide()
 		skills_panel.hide()
+		ammo_panel.hide()
 		_show_item_panel(unit)
 
 
@@ -1376,6 +1477,7 @@ func _show_skills_panel(unit: CombatUnit) -> void:
 	# Hide other panels, show skills
 	spell_panel.hide()
 	item_panel.hide()
+	ammo_panel.hide()
 	skills_panel.show()
 
 
@@ -1815,6 +1917,9 @@ func _update_action_buttons() -> void:
 	attack_button.disabled = not is_player or not can_act or cc_locked or not CombatManager.can_unit_attack(current_unit) if current_unit else true
 	spell_button.disabled = not is_player or not can_act or cc_locked or not CombatManager.can_unit_cast(current_unit) if current_unit else true
 	item_button.disabled = not is_player or not can_act or cc_locked
+	# Ammo button: only useful when a ranged weapon is equipped
+	var has_ranged = current_unit != null and current_unit.has_method("is_ranged_weapon") and current_unit.is_ranged_weapon()
+	ammo_button.disabled = not is_player or not can_act or cc_locked or not has_ranged
 	# Swap Weapons: only useful if the character has a weapon in the other set
 	var has_alt_weapon = false
 	if current_unit and "character_data" in current_unit:
