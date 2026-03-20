@@ -205,6 +205,7 @@ func _ready() -> void:
 	# Hide item and skills panels initially
 	item_panel.hide()
 	skills_panel.hide()
+	ammo_panel.hide()
 
 	# Connect status effect signals
 	CombatManager.status_effect_triggered.connect(_on_status_effect_triggered)
