@@ -1304,6 +1304,11 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		_process_on_hit_perks(attacker, defender, result)
 		# --- Weapon passive on-hit procs ---
 		_process_weapon_on_hit_procs(attacker, defender, result)
+		# --- Ammo special effects (fire arrow AoE, status procs) ---
+		if "get_selected_ammo" in attacker:
+			var ammo = attacker.get_selected_ammo()
+			if ammo.has("special_effect"):
+				_process_ammo_special_effect(attacker, defender, ammo)
 		# --- Weapon durability ---
 		_deduct_weapon_durability(attacker)
 
@@ -1320,6 +1325,13 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			attacker.dagger_attacks_this_turn += 1
 	if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
 		attacker.ranged_attacks_this_turn += 1
+		# Consume one ammo; revert to default if depleted
+		if "selected_ammo_id" in attacker and attacker.selected_ammo_id != "":
+			var still_has_ammo = ItemSystem.consume_ammo(attacker.selected_ammo_id)
+			if not still_has_ammo:
+				var ammo_name = ItemSystem.get_ammo(attacker.selected_ammo_id).get("name", attacker.selected_ammo_id)
+				combat_log.emit("%s's %s ran out — falling back to bone arrows." % [attacker.unit_name, ammo_name])
+				attacker.selected_ammo_id = ""
 
 	if not reaction:
 		use_action(1)
@@ -5617,6 +5629,39 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 				if not "elemental_procs" in result:
 					result["elemental_procs"] = {}
 				result["elemental_procs"][element] = dmg
+
+
+## Process special effects from ammo: fire arrow AoE or status proc arrows.
+## Called on hit only — a missed shot produces no explosion or status.
+## apply_damage() is used for AoE hits (handles death, bleed-out, mantra interruption).
+func _process_ammo_special_effect(attacker: Node, defender: Node, ammo: Dictionary) -> void:
+	var effect = ammo.get("special_effect", {})
+	match effect.get("type", ""):
+
+		"aoe_fire":
+			var radius = effect.get("radius", 1)
+			var aoe_damage = effect.get("damage", 10)
+			var element = effect.get("element", "fire")
+			combat_log.emit("%s's %s explodes!" % [attacker.unit_name, ammo.get("name", "arrow")])
+			for unit in all_units:
+				if not unit.is_alive():
+					continue
+				var dist = abs(unit.grid_position.x - defender.grid_position.x) \
+						 + abs(unit.grid_position.y - defender.grid_position.y)
+				if dist <= radius:
+					var resistance = unit.get_resistance(element) if unit.has_method("get_resistance") else 0.0
+					var final_dmg = maxi(1, int(aoe_damage * (1.0 - resistance / 100.0)))
+					apply_damage(unit, final_dmg, element)
+					combat_log.emit("%s takes %d %s damage from the explosion." % [unit.unit_name, final_dmg, element])
+
+		"status":
+			var chance = effect.get("chance", 100)
+			if randi() % 100 < chance:
+				var status = effect.get("status", "")
+				var duration = effect.get("duration", 2)
+				if status != "":
+					_apply_status_effect(defender, status, duration)
+					combat_log.emit("%s is afflicted with %s from the arrow." % [defender.unit_name, status])
 
 
 ## Deduct durability from the attacker's equipped weapon after use.
