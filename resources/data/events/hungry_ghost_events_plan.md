@@ -306,14 +306,146 @@ The ground sinks. You realize you're standing on a mass burial site — hundreds
 
 ---
 
-## Future Batch (rough outline)
+---
 
-### Batch 3 (events 41–60+): Advanced + boss events
-- Skeleton King encounter (major multi-stage event)
-- Charnel ground vetala elder boss
-- Companion recruit events (need companion definitions first)
-- Spell guild events (sacred grove, naga temple equivalents)
-- Yogini circle equivalent for hungry ghost
-- Realm-exit / transition events
-- Rare unique encounters (golden skeleton sage, turquoise skeleton dancer)
-- More zone-specific flavor events
+## Batch 3: Events 41–60
+
+### 41. hg_skeleton_king — "The Skeleton King of the Setting Sun"
+A city of bone rises from the dust — towers of fused ribcages, walls of skulls, gates of pelvis and shoulder blade. On a throne of vertebrae sits the Skeleton King, crowned with a circlet of hammered copper. His eye sockets burn with cold intelligence. "All the dead pass through my kingdom eventually. What makes you think you're different?"
+- **Kneel and request an audience** (default) — he's amused, grants you a task: clear a rolang infestation for him, combat vs rolang_mob, reward = safe passage through his domain + gold + XP
+- **Challenge his authority** (requirement: strength 16 AND charm 14) — he respects boldness, offers a formal duel; combat vs skeleton_elite (boss difficulty), win = legendary weapon + massive XP + asura karma
+- **Offer magical knowledge** (requirement: focus 16) — trade arcane secrets, he teaches you a rare spell + large XP
+- **Bow and leave** (default) — no shame in discretion, safe exit, small XP
+
+### 42. hg_vetala_elder — "The Elder of the Charnel Grounds"
+Deep in the charnel grounds, where the bone-fires burn highest, you find her — a vetala so old her skin has turned to parchment, her eyes like oil lamps. She sits surrounded by corpse-offerings brought by lesser vetalas. "I have eaten the memories of ten thousand dead. Ask me anything. But everything has a price."
+- **Ask about the nature of death** (requirement: yoga 3) — philosophical exchange, massive god karma + XP + lore about the realm's true nature
+- **Ask for power** (default) — she offers a dark bargain: permanent stat boost but hungry_ghost karma, or refuse
+- **Offer her a memory of your own** (requirement: charm 15) — she's moved by a living memory, teaches a rare black magic spell + XP
+- **Attack while she's distracted** (default) — combat vs vetala_elder_court (very hard), hell + asura karma, large loot if you win
+
+### 43. hg_golden_skeleton_sage — "The Golden Sage"
+A skeleton of gleaming gold sits beneath a withered bodhi tree, radiating calm. Other skeletons give it a wide berth — not from fear but from reverence. "You carry the weight of many lives. Would you like to set some of it down?"
+- **Accept teaching** (requirement: yoga 2) — spiritual instruction, large god karma + XP, insight into your karma balance
+- **Ask about the golden skeletons** (default) — lore about how compassion transforms the dead, XP + human karma
+- **Request healing** (default) — full HP restore + status cure, god karma
+- **Ask to learn white magic** (requirement: awareness 14) — learn a healing spell + XP
+
+### 44. hg_turquoise_dancers — "The Turquoise Dancers"
+A troupe of turquoise skeletons in rainbow skirts and flower headdresses dances in a circle, rattling and clacking in joyful rhythm. They notice you and beckon. "Dance with us! The dead don't have to be dreary!"
+- **Join the dance** (roll: finesse DC 12) — success: invigorating, temporary speed buff + XP + human karma / fail: you trip, they laugh kindly, small XP
+- **Play music for them** (requirement: performance 2) — they're delighted, large XP + human karma + gold tips from skeleton audience
+- **Ask why they dance** (default) — "Because we can. Because joy is an act of defiance against decay." Lore + god karma + XP
+- **Politely decline** (default) — they wave goodbye cheerfully, small human karma
+
+### 45. hg_iron_skeleton_duel — "The Iron Challenger"
+An iron skeleton stands at a crossroads, sword driven into the ground before it. A sign reads: DEFEAT ME AND PASS. LOSE AND SERVE. It has clearly been here a very long time.
+- **Accept the duel** (default) — combat vs skeleton_elite, win = passage + item + XP, lose = forced into a service quest
+- **Outthink it** (requirement: learning 3) — point out a logical flaw in its oath; it freezes, processing. You walk past. XP + human karma
+- **Persuade it the oath is fulfilled** (roll: persuasion DC 15) — success: it lowers its sword, relieved, god + human karma + XP / fail: it attacks, offended
+- **Offer to take its place** (requirement: charm 14) — it's genuinely moved, lowers its sword, gives you its weapon, departs. God karma + legendary item + large XP
+
+### 46. hg_copper_mirror — "The Copper Mirror"
+A copper skeleton sits polishing an enormous mirror of burnished copper. The mirror shows not reflections but truths — the viewer sees themselves as they truly are. "Most can't bear it," the skeleton says. "Can you?"
+- **Look into the mirror** (roll: awareness DC 14) — success: confront your true self, permanent minor stat boost + god karma + XP / fail: overwhelmed, temporary debuff
+- **Ask the skeleton about itself** (default) — it was a judge in life, now judges the dead by showing them truth. Lore + XP
+- **Smash the mirror** (default) — the copper skeleton fights, combat vs skeleton_warrior. The mirror reforms. Hungry_ghost + hell karma
+- **Polish it with the skeleton** (default) — meditative, small XP + human karma + god karma
+
+### 47. hg_preta_feeding_ground — "The Feeding Ground"
+A hollow where pretas gather around a spring of water that turns to pus in their mouths, fruit trees whose apples become ash when touched. The pretas wail and claw at sustenance that perpetually escapes them. It is one of the worst things you have ever seen.
+- **Share your own food** (default) — costs large rations, it actually nourishes them briefly, massive god karma + XP
+- **Use white magic to bless the spring** (requirement: white_magic 3) — water flows pure for a time, enormous god karma + XP
+- **Study the curse** (requirement: learning 3) — understand the mechanics of preta suffering, XP + lore about karma
+- **Move on quickly** (default) — you can't help everyone. Small animal karma, text about the weight of helplessness
+
+### 48. hg_bone_bridge — "The Bone Bridge"
+A bridge of interlocking bones spans a chasm of howling darkness. Halfway across, a figure blocks the way — a massive bone horror, assembled from dozens of skeletons. It does not speak. It does not need to.
+- **Fight it head-on** (default) — combat vs hg_bone_horror, hard difficulty
+- **Find a weakness** (requirement: awareness 15) — identify the binding spell holding it together, easier combat + XP
+- **Collapse the bridge behind you and leap** (roll: finesse DC 15) — success: dramatic escape across, the horror falls / fail: you both fall, heavy damage + combat
+- **Sing a lullaby** (requirement: performance 3) — the bone horror was once many people; music reaches the remnants of their souls. It steps aside, trembling. God karma + XP
+
+### 49. hg_grave_hound_pack — "The Pack"
+A pack of grave hounds — skeletal dogs with eyes of green flame — circles you. They're not attacking. They're... sniffing. Curious. One tilts its skull and whines.
+- **Offer food** (default) — costs rations, they become friendly, one follows you temporarily (combat ally for next fight), animal + human karma
+- **Intimidate them** (roll: strength DC 12) — success: they scatter / fail: combat vs grave_hound pack
+- **Speak soothingly** (requirement: charm 12) — calm them, they guide you to a hidden cache, item + XP
+- **Use summoning magic** (requirement: summoning 2) — bind one as a familiar, permanent minor bonus, small hungry_ghost karma
+
+### 50. hg_last_rites — "The Unfinished Rites"
+A half-completed funeral pyre. The body hasn't been burned — the rites were interrupted. A dré circles the pyre, keening. Without proper rites, neither body nor spirit can move on.
+- **Complete the rites** (requirement: ritual 2) — perform the ceremony, the dré is freed, massive god karma + XP
+- **Pray for the dead** (requirement: yoga 1) — partial help, the dré calms, god karma + XP
+- **Take the funeral offerings** (default) — gold and items left for the dead, hungry_ghost karma
+- **Ask the dré what happened** (default) — learn about the interrupted funeral, the dré asks for help completing it, mini-quest XP
+
+### 51. hg_yidag_encounter — "The Needle-Throat"
+A yidag — the truest form of the hungry ghost, belly swollen to bursting, throat thin as a needle — blocks the road. Not threateningly. It simply can't move. It wheezes: "Please. Anything. Even a drop."
+- **Give water** (default) — costs nothing, the water evaporates in its throat. It weeps. But you tried. God karma + XP
+- **Use white magic to ease its suffering** (requirement: white_magic 2) — temporarily widen its throat, it drinks for the first time in centuries, weeps with joy. Enormous god karma + XP
+- **Ask how it came to this** (default) — story of greed in a past life, lore + XP + warning about hungry_ghost karma
+- **Put it out of its misery** (roll: charm DC 14) — success: you convince it to let go; it dissipates peacefully, god karma / fail: it clings harder to existence, combat vs lost_preta
+
+### 52. hg_smuggler_tunnel — "The Smuggler's Tunnel"
+A narrow tunnel entrance hidden behind a collapsed wall. Scratch marks on the stone suggest frequent use. From inside: voices, the clink of coin, the smell of something cooking.
+- **Enter cautiously** (default) — find a black market, buy rare items at high prices, text
+- **Announce yourself** (roll: charm DC 12) — success: welcomed as a potential customer, better prices / fail: they think you're a spy, combat vs skeleton_warband
+- **Offer contraband** (requirement: thievery 2) — join their network, access to unique inventory, hungry_ghost karma
+- **Report them to the bone patrol** (requirement: persuasion 2) — earn a reward from the Skeleton King's forces, gold + XP, human karma
+
+### 53. hg_spirit_lanterns — "The Lantern Procession"
+A line of ghostly lanterns floats through the darkness, each carried by an invisible hand. They move with purpose — a funeral procession of pure spirit, honoring someone important who died long ago. The procession repeats every night, endlessly.
+- **Walk alongside respectfully** (default) — absorb the solemn beauty, god karma + XP
+- **Join the procession** (requirement: ritual 2) — carry a lantern, see visions of the honored dead, large XP + god karma + lore
+- **Try to break the cycle** (requirement: white_magic 4) — end the eternal repetition, free the spirits, massive god karma + XP
+- **Steal a lantern** (roll: finesse DC 14) — success: magical lantern item / fail: the procession turns hostile, combat vs charnel_wraith
+
+### 54. hg_gravedigger — "The Gravedigger"
+A living man — actually alive — digs graves in the realm of the dead. He's been here so long he's forgotten how he arrived. "Someone's got to do it. The dead keep coming and the holes don't dig themselves."
+- **Help him dig** (default) — manual labor, small XP + human karma, he shares food and stories
+- **Ask how to leave this realm** (default) — he doesn't know, but shares useful survival tips, XP + lore
+- **Offer to take him home** (requirement: charm 13) — he refuses. "Who'd dig the graves?" Human + god karma for asking
+- **Trade with him** (requirement: trade 2) — he's accumulated interesting things from the graves, unique item + XP
+
+### 55. hg_bone_library — "The Bone Library"
+Shelves of bone hold scrolls of dried skin. A silver skeleton serves as librarian, filing and organizing with tireless precision. "Knowledge doesn't decay. Everything else does. That's why I chose this."
+- **Research a topic** (requirement: learning 2) — gain XP in any magic skill of your choice, text about the knowledge gained
+- **Ask about the realm's history** (default) — detailed lore, XP
+- **Offer a book from the living world** (default) — the librarian is deeply grateful, god + human karma + free access to rare knowledge (spell learning opportunity)
+- **Steal a rare scroll** (roll: finesse DC 16) — success: rare spell scroll item / fail: the librarian is heartbroken rather than angry. God karma loss, no combat
+
+### 56. hg_swamp_hermit — "The Hermit of the Mire"
+Deep in the swamp, a rolang sits on a rock, fishing in toxic water with a line made of hair. It's the most peaceful undead you've ever seen. It has achieved something rare here — contentment.
+- **Sit and fish together** (default) — quiet companionship, XP + human karma + god karma, temporary stress relief
+- **Ask its secret** (requirement: awareness 13) — "I stopped wanting." Philosophical insight, large XP + god karma
+- **Offer supplies** (default) — it declines gently. "I have everything I need." Small god karma
+- **Disturb its peace** (default) — why would you? Combat vs rotting_sentinel if you insist. Hell karma
+
+### 57. hg_wandering_preta_event — "The Wandering Preta"
+A preta merchant dragging an enormous sack approaches. Despite being a hungry ghost, this one has channeled its craving into commerce. "I can't eat, I can't drink, I can't sleep — but I CAN make a profit! Browse my wares?"
+- **Browse** (default) → shop: hg_wandering_preta
+- **Ask about life as a preta** (default) — darkly funny monologue about the merchant life when you can't enjoy any of it, XP + human karma
+- **Offer food** (default) — it can't eat but is touched by the gesture, small discount on next purchase, god karma
+- **Rob it** (roll: finesse DC 13) — success: items + gold, hungry_ghost karma / fail: it screams, attracting combat vs rolang_mob
+
+### 58. hg_death_meditation — "The Charnel Ground Meditation"
+A flat stone among the bones, clearly used for meditation. Sitting here means confronting death directly — the smell, the reality, the inevitability. This is a practice site for advanced yogis.
+- **Meditate on death** (requirement: yoga 4) — profound experience, large XP + massive god karma + temporary stat boost
+- **Meditate briefly** (requirement: yoga 1) — partial insight, moderate XP + god karma
+- **Study the bones** (requirement: medicine 2) — anatomical knowledge, XP
+- **Leave a prayer flag** (default) — small god karma, mark the site for future travelers
+
+### 59. hg_toll_bridge — "The Toll"
+Two massive skeletons in heavy armor flank a stone bridge. A sign lists increasingly absurd toll prices. The skeletons seem bored.
+- **Pay the toll** (default) — costs moderate gold, safe passage
+- **Haggle** (roll: trade DC 13) — success: reduced price + XP / fail: price goes up
+- **Comedy** (roll: comedy DC 12) — success: they laugh so hard they fall apart temporarily, free passage + XP / fail: "heard that one. Pay up."
+- **Logistics expertise** (requirement: logistics 2) — point out their toll structure is economically unsound, they're so confused you walk past, XP
+
+### 60. hg_realm_exit — "The Border"
+The air changes. Ahead, the grey wasteland of the hungry ghost realm gives way to... something else. A boundary marker — a stone carved with the Wheel of Life — stands at the transition point. Behind you, the realm of craving. Ahead, the unknown.
+- **Cross without looking back** (default) — leave the realm, transition event, XP
+- **Look back one last time** (requirement: awareness 14) — see the realm for what it truly is — not horror but consequence. Deep understanding. Large god karma + XP
+- **Leave an offering at the boundary** (default) — for those still trapped, god karma + XP
+- **Perform a dedication of merit** (requirement: yoga 3) — dedicate all positive karma gained here to the beings still suffering. Massive god karma + XP. The most Buddhist thing you can do
