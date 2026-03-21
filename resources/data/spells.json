@@ -7,7 +7,7 @@
       "4": 135,
       "5": 225
     },
-    "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)",
+    "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)",
     "schools": [
       "earth",
       "water",
@@ -28,40 +28,40 @@
       "stone_spells": "Base physical damage",
       "blade_spells": "+50% damage, +50% cost (Earth/Space)",
       "golden_blade": "+50% over blade (~2.25x base)",
-      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
     },
     "water": {
       "general": "Less damage than other schools, focuses on crowd control",
       "ice_spells": "Have freeze chance, scaling with upgrades",
       "push_spells": "Deal bonus physical damage if enemy hits obstacle",
       "vajra_spells": "Water-Space crossover. Vajra (thunderbolt/diamond) themed spells with stun, binding, and portal effects",
-      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
     },
     "fire": {
       "general": "Moderate damage in big AoE with burning DoT. Charm/magnetizing effects from Padma (Lotus) family.",
       "burning": "Stacks. Small chance to spread in melee (spreads base level only, not full stack).",
-      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
     },
     "air": {
       "general": "Lightning spells have high damage, high cost, stun chance. Wind spells push/scatter enemies, dealing physical damage on impact. Buffs focus on ranged accuracy and speed.",
       "lightning_spells": "Air damage with stun chance scaling with spellpower/upgrades",
       "wind_spells": "Physical damage from impacts/falls, scatter to random tiles",
       "stun_vs_freeze": "Stun: 1 turn, save at end to break, no vulnerability. Freeze: can last longer, physical vulnerability, dispelled by fire.",
-      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
     },
     "space": {
       "general": "Utility with teleportation, mental manipulation crossovers, illusion spells, and basic reliable damage. Magic Missile style spells are moderate and useful for everyone.",
       "damage_type": "space",
       "dagger_theme": "Phurba/Nailing Dagger spells - pinning, binding, subjugating hostile forces",
       "illusion_theme": "Deception, misdirection, mental manipulation",
-      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
     },
     "white": {
       "general": "Healing and buffs primarily, with some damage spells effective against undead and demons who have white vulnerability. White and Black are both natural parts of the world order.",
       "damage_type": "white",
       "anti_undead_demon": "White damage is especially effective against undead and demons",
       "ancestral_theme": "White-Black crossover focuses on respectful dealings with the dead, ancestor veneration",
-      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
     },
     "black": {
       "general": "Debuffs, undead/demon summons, and damage spells. Black and White are both natural parts of the world order.",
@@ -69,7 +69,7 @@
       "celestial_vulnerability": "Celestials have 50% black vulnerability (in race stats, not spell stats)",
       "summons": "Summoned from nothing, not from corpses",
       "curse_synergy": "Many spells and upgrades benefit from debuffed targets",
-      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
     }
   },
   "spells": {
@@ -77,7 +77,8 @@
       "name": "Bark Skin",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 1,
       "theme": "plant",
@@ -95,7 +96,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Minor armor buff"
     },
@@ -103,7 +104,8 @@
       "name": "Crushing Hand",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 1,
       "theme": "stone",
@@ -126,7 +128,8 @@
       "name": "Tangleroot",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 1,
       "theme": "plant",
@@ -145,7 +148,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Root enemy, Finesse resist"
     },
@@ -153,7 +156,8 @@
       "name": "Slow",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "stone",
@@ -171,7 +175,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Reduce enemy speed"
     },
@@ -179,7 +183,8 @@
       "name": "Bulwark",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "stone",
@@ -197,7 +202,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Defense buff"
     },
@@ -205,7 +210,8 @@
       "name": "Vine Trap",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "plant",
@@ -230,7 +236,8 @@
       "name": "Golden Ring",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "gold",
@@ -248,7 +255,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Luck buff"
     },
@@ -257,7 +264,8 @@
       "subschool": "Enchantment",
       "schools": [
         "Earth",
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "blade",
@@ -276,7 +284,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Weapon buff, +50% physical damage"
     },
@@ -284,7 +292,8 @@
       "name": "Stone Skin",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "stone",
@@ -302,7 +311,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Major armor buff"
     },
@@ -310,7 +319,8 @@
       "name": "Ground Flyers",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "stone",
@@ -328,7 +338,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Remove flight from target"
     },
@@ -336,7 +346,8 @@
       "name": "Earthen Pit",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "stone",
@@ -362,7 +373,8 @@
       "name": "Golden Armor",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "gold",
@@ -380,7 +392,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Defense buff"
     },
@@ -388,7 +400,8 @@
       "name": "Petrify",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "stone",
@@ -407,7 +420,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Disable enemy, resistible, lower cost than Midas Touch"
     },
@@ -415,7 +428,8 @@
       "name": "Yaksha Strength",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "stone",
@@ -433,7 +447,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Major strength buff"
     },
@@ -441,7 +455,8 @@
       "name": "Murder Vines",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "plant",
@@ -460,7 +475,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Damaging vines that entangle"
     },
@@ -468,7 +483,8 @@
       "name": "Steel Skin",
       "subschool": "Enchantment",
       "schools": [
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 9,
       "theme": "stone",
@@ -486,7 +502,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Supreme armor buff"
     },
@@ -494,7 +510,8 @@
       "name": "Boar",
       "subschool": "Summoning",
       "schools": [
-        "Earth"
+        "Earth",
+        "Summoning"
       ],
       "level": 1,
       "theme": "stone",
@@ -513,7 +530,8 @@
       "name": "Living Hedge",
       "subschool": "Summoning",
       "schools": [
-        "Earth"
+        "Earth",
+        "Summoning"
       ],
       "level": 1,
       "theme": "plant",
@@ -533,7 +551,8 @@
       "name": "Create Obstacle",
       "subschool": "Summoning",
       "schools": [
-        "Earth"
+        "Earth",
+        "Summoning"
       ],
       "level": 1,
       "theme": "stone",
@@ -553,7 +572,8 @@
       "name": "Yaksha",
       "subschool": "Summoning",
       "schools": [
-        "Earth"
+        "Earth",
+        "Summoning"
       ],
       "level": 3,
       "theme": "stone",
@@ -572,7 +592,8 @@
       "name": "Yakshini",
       "subschool": "Summoning",
       "schools": [
-        "Earth"
+        "Earth",
+        "Summoning"
       ],
       "level": 3,
       "theme": "stone",
@@ -591,7 +612,8 @@
       "name": "Stone Wall",
       "subschool": "Summoning",
       "schools": [
-        "Earth"
+        "Earth",
+        "Summoning"
       ],
       "level": 3,
       "theme": "stone",
@@ -611,7 +633,8 @@
       "name": "Bear",
       "subschool": "Summoning",
       "schools": [
-        "Earth"
+        "Earth",
+        "Summoning"
       ],
       "level": 5,
       "theme": "stone",
@@ -630,7 +653,8 @@
       "name": "Stone Guardian",
       "subschool": "Summoning",
       "schools": [
-        "Earth"
+        "Earth",
+        "Summoning"
       ],
       "level": 5,
       "theme": "stone",
@@ -651,7 +675,8 @@
       "subschool": "Summoning",
       "schools": [
         "Earth",
-        "Air"
+        "Air",
+        "Summoning"
       ],
       "level": 5,
       "theme": "stone",
@@ -671,7 +696,8 @@
       "name": "Stone Shell",
       "subschool": "Summoning",
       "schools": [
-        "Earth"
+        "Earth",
+        "Summoning"
       ],
       "level": 5,
       "theme": "stone",
@@ -694,7 +720,8 @@
       "name": "Yaksha Host",
       "subschool": "Summoning",
       "schools": [
-        "Earth"
+        "Earth",
+        "Summoning"
       ],
       "level": 7,
       "theme": "stone",
@@ -714,7 +741,8 @@
       "name": "Stone Prison",
       "subschool": "Summoning",
       "schools": [
-        "Earth"
+        "Earth",
+        "Summoning"
       ],
       "level": 7,
       "theme": "stone",
@@ -735,7 +763,8 @@
       "name": "Yaksha Lord",
       "subschool": "Summoning",
       "schools": [
-        "Earth"
+        "Earth",
+        "Summoning"
       ],
       "level": 9,
       "theme": "stone",
@@ -755,7 +784,8 @@
       "name": "Stone Spike",
       "subschool": "Sorcery",
       "schools": [
-        "Earth"
+        "Earth",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "stone",
@@ -776,7 +806,8 @@
       "name": "Fool's Gold",
       "subschool": "Sorcery",
       "schools": [
-        "Earth"
+        "Earth",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "gold",
@@ -801,7 +832,8 @@
       "name": "Earthen Knife",
       "subschool": "Sorcery",
       "schools": [
-        "Earth"
+        "Earth",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "stone",
@@ -822,7 +854,8 @@
       "name": "Chasm",
       "subschool": "Sorcery",
       "schools": [
-        "Earth"
+        "Earth",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "stone",
@@ -849,7 +882,8 @@
       "subschool": "Sorcery",
       "schools": [
         "Earth",
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "blade",
@@ -872,7 +906,8 @@
       "name": "Earthen Cross",
       "subschool": "Sorcery",
       "schools": [
-        "Earth"
+        "Earth",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "stone",
@@ -900,7 +935,8 @@
       "name": "Stone Hail",
       "subschool": "Sorcery",
       "schools": [
-        "Earth"
+        "Earth",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "stone",
@@ -929,7 +965,8 @@
       "subschool": "Sorcery",
       "schools": [
         "Earth",
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "blade",
@@ -959,7 +996,8 @@
       "name": "Earthquake",
       "subschool": "Sorcery",
       "schools": [
-        "Earth"
+        "Earth",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "stone",
@@ -988,7 +1026,8 @@
       "subschool": "Sorcery",
       "schools": [
         "Earth",
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "stone",
@@ -1017,7 +1056,8 @@
       "name": "Golden Blade",
       "subschool": "Sorcery",
       "schools": [
-        "Earth"
+        "Earth",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "gold",
@@ -1041,7 +1081,8 @@
       "name": "Golden Cage",
       "subschool": "Sorcery",
       "schools": [
-        "Earth"
+        "Earth",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "gold",
@@ -1069,7 +1110,8 @@
       "name": "Implosion",
       "subschool": "Sorcery",
       "schools": [
-        "Earth"
+        "Earth",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "stone",
@@ -1095,7 +1137,8 @@
       "subschool": "Sorcery",
       "schools": [
         "Earth",
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "stone",
@@ -1125,7 +1168,8 @@
       "subschool": "Sorcery",
       "schools": [
         "Earth",
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "blade",
@@ -1155,7 +1199,8 @@
       "name": "Midas Touch",
       "subschool": "Sorcery",
       "schools": [
-        "Earth"
+        "Earth",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "gold",
@@ -1201,7 +1246,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Heal minor HP, remove bleeding and poison"
     },
@@ -1230,7 +1275,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Remove negative effects, buff Constitution"
     },
@@ -1289,7 +1334,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Boost Strength and Constitution, heal minor"
     },
@@ -1352,7 +1397,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "50% fire vulnerability, cumulative with resistances"
     },
@@ -1385,7 +1430,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "1 physical damage per turn, disrupts mantras/rituals with focus saves"
     },
@@ -1597,7 +1642,8 @@
       "name": "Slippery Slope",
       "subschool": "Enchantment",
       "schools": [
-        "Water"
+        "Water",
+        "Enchantment"
       ],
       "level": 1,
       "theme": "water",
@@ -1613,7 +1659,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "One enemy falls down"
     },
@@ -1621,7 +1667,8 @@
       "name": "Water Walking",
       "subschool": "Enchantment",
       "schools": [
-        "Water"
+        "Water",
+        "Enchantment"
       ],
       "level": 1,
       "theme": "water",
@@ -1642,7 +1689,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Ignore water terrain hazards, walk on water"
     },
@@ -1650,7 +1697,8 @@
       "name": "Sleet",
       "subschool": "Enchantment",
       "schools": [
-        "Water"
+        "Water",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "ice",
@@ -1680,7 +1728,8 @@
       "name": "Mud",
       "subschool": "Enchantment",
       "schools": [
-        "Water"
+        "Water",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "water",
@@ -1712,7 +1761,8 @@
       "name": "Be Like Water",
       "subschool": "Enchantment",
       "schools": [
-        "Water"
+        "Water",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "water",
@@ -1730,7 +1780,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Major dodge boost"
     },
@@ -1738,7 +1788,8 @@
       "name": "Dampening Aura",
       "subschool": "Enchantment",
       "schools": [
-        "Water"
+        "Water",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "water",
@@ -1766,7 +1817,8 @@
       "name": "Bone Chill",
       "subschool": "Enchantment",
       "schools": [
-        "Water"
+        "Water",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "ice",
@@ -1784,7 +1836,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Dodge and damage debuff"
     },
@@ -1792,7 +1844,8 @@
       "name": "Fluid Form",
       "subschool": "Enchantment",
       "schools": [
-        "Water"
+        "Water",
+        "Enchantment"
       ],
       "level": 9,
       "theme": "water",
@@ -1818,7 +1871,8 @@
       "name": "Frog",
       "subschool": "Summoning",
       "schools": [
-        "Water"
+        "Water",
+        "Summoning"
       ],
       "level": 1,
       "theme": "water",
@@ -1838,7 +1892,8 @@
       "name": "Sheets of Ice",
       "subschool": "Summoning",
       "schools": [
-        "Water"
+        "Water",
+        "Summoning"
       ],
       "level": 1,
       "theme": "ice",
@@ -1862,7 +1917,8 @@
       "name": "Naga",
       "subschool": "Summoning",
       "schools": [
-        "Water"
+        "Water",
+        "Summoning"
       ],
       "level": 3,
       "theme": "water",
@@ -1882,7 +1938,8 @@
       "name": "Ice Wall",
       "subschool": "Summoning",
       "schools": [
-        "Water"
+        "Water",
+        "Summoning"
       ],
       "level": 3,
       "theme": "ice",
@@ -1902,7 +1959,8 @@
       "name": "Ice Totem",
       "subschool": "Summoning",
       "schools": [
-        "Water"
+        "Water",
+        "Summoning"
       ],
       "level": 5,
       "theme": "ice",
@@ -1926,7 +1984,8 @@
       "name": "Crustacean Knight",
       "subschool": "Summoning",
       "schools": [
-        "Water"
+        "Water",
+        "Summoning"
       ],
       "level": 5,
       "theme": "water",
@@ -1946,7 +2005,8 @@
       "name": "Naga Host",
       "subschool": "Summoning",
       "schools": [
-        "Water"
+        "Water",
+        "Summoning"
       ],
       "level": 7,
       "theme": "water",
@@ -1967,7 +2027,8 @@
       "name": "Ghost Shoal",
       "subschool": "Summoning",
       "schools": [
-        "Water"
+        "Water",
+        "Summoning"
       ],
       "level": 7,
       "theme": "water",
@@ -2006,7 +2067,8 @@
       "name": "Naga Prince",
       "subschool": "Summoning",
       "schools": [
-        "Water"
+        "Water",
+        "Summoning"
       ],
       "level": 9,
       "theme": "water",
@@ -2027,7 +2089,8 @@
       "name": "Surge",
       "subschool": "Sorcery",
       "schools": [
-        "Water"
+        "Water",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "water",
@@ -2054,7 +2117,8 @@
       "name": "Rain",
       "subschool": "Sorcery",
       "schools": [
-        "Water"
+        "Water",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "water",
@@ -2086,7 +2150,8 @@
       "name": "Wave",
       "subschool": "Sorcery",
       "schools": [
-        "Water"
+        "Water",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "water",
@@ -2119,7 +2184,8 @@
       "name": "Flash Freeze",
       "subschool": "Sorcery",
       "schools": [
-        "Water"
+        "Water",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "ice",
@@ -2138,7 +2204,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Freeze chance on target"
     },
@@ -2146,7 +2212,8 @@
       "name": "Ice Bolt",
       "subschool": "Sorcery",
       "schools": [
-        "Water"
+        "Water",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "ice",
@@ -2173,7 +2240,8 @@
       "name": "Ripple",
       "subschool": "Sorcery",
       "schools": [
-        "Water"
+        "Water",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "water",
@@ -2207,7 +2275,8 @@
       "name": "Hail Storm",
       "subschool": "Sorcery",
       "schools": [
-        "Water"
+        "Water",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "ice",
@@ -2241,7 +2310,8 @@
       "name": "Drown",
       "subschool": "Sorcery",
       "schools": [
-        "Water"
+        "Water",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "water",
@@ -2272,7 +2342,8 @@
       "name": "Blizzard",
       "subschool": "Sorcery",
       "schools": [
-        "Water"
+        "Water",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "ice",
@@ -2306,7 +2377,8 @@
       "name": "Cone of Frost",
       "subschool": "Sorcery",
       "schools": [
-        "Water"
+        "Water",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "ice",
@@ -2340,7 +2412,8 @@
       "name": "Tsunami",
       "subschool": "Sorcery",
       "schools": [
-        "Water"
+        "Water",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "water",
@@ -2372,7 +2445,8 @@
       "name": "Ice Age",
       "subschool": "Sorcery",
       "schools": [
-        "Water"
+        "Water",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "ice",
@@ -2423,7 +2497,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Remove burning, 25% fire resistance"
     },
@@ -2463,7 +2537,8 @@
       "name": "Cleanse",
       "subschool": "Sorcery",
       "schools": [
-        "White"
+        "White",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "heal",
@@ -2478,7 +2553,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Remove all negative effects"
     },
@@ -2538,7 +2613,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Heal comparable to Greater Heal, death immunity for a few turns"
     },
@@ -2566,7 +2641,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Reduce ranged attack and damage by 50%"
     },
@@ -2620,7 +2695,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Reduce melee attack and armor by 50%"
     },
@@ -2649,7 +2724,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Melee attackers become poisoned"
     },
@@ -2681,7 +2756,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Poison DoT that increases each turn"
     },
@@ -2976,7 +3051,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "special": {
         "visual": "vajra_chains"
@@ -3090,7 +3165,8 @@
       "name": "Burning Weapon",
       "subschool": "Enchantment",
       "schools": [
-        "Fire"
+        "Fire",
+        "Enchantment"
       ],
       "level": 1,
       "theme": "fire",
@@ -3107,7 +3183,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Add fire damage + burning to attacks"
     },
@@ -3115,7 +3191,8 @@
       "name": "Bloodlust",
       "subschool": "Enchantment",
       "schools": [
-        "Fire"
+        "Fire",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "fire",
@@ -3132,7 +3209,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Melee damage buff"
     },
@@ -3140,7 +3217,8 @@
       "name": "Fan the Flames",
       "subschool": "Enchantment",
       "schools": [
-        "Fire"
+        "Fire",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "fire",
@@ -3160,7 +3238,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Increase burning damage dealt by target's attacks"
     },
@@ -3168,7 +3246,8 @@
       "name": "Charm",
       "subschool": "Enchantment",
       "schools": [
-        "Fire"
+        "Fire",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "mental",
@@ -3186,7 +3265,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Target treats caster as ally"
     },
@@ -3194,7 +3273,8 @@
       "name": "Fireshield",
       "subschool": "Enchantment",
       "schools": [
-        "Fire"
+        "Fire",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "fire",
@@ -3216,7 +3296,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Fire damage to melee attackers"
     },
@@ -3224,7 +3304,8 @@
       "name": "Tongues of Fire",
       "subschool": "Enchantment",
       "schools": [
-        "Fire"
+        "Fire",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "fire",
@@ -3246,7 +3327,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Lash at enemies entering melee range"
     },
@@ -3255,7 +3336,8 @@
       "subschool": "Enchantment",
       "schools": [
         "Fire",
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "mental",
@@ -3273,7 +3355,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Target attacks closest creature indiscriminately"
     },
@@ -3281,7 +3363,8 @@
       "name": "Magnetizing Aura",
       "subschool": "Enchantment",
       "schools": [
-        "Fire"
+        "Fire",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "mental",
@@ -3302,7 +3385,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Chance to charm enemies entering melee"
     },
@@ -3311,7 +3394,8 @@
       "subschool": "Enchantment",
       "schools": [
         "Fire",
-        "Earth"
+        "Earth",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "smoke",
@@ -3336,7 +3420,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Target becomes smoke, gains evasion, can move through enemies, 25% water vulnerability"
     },
@@ -3345,7 +3429,8 @@
       "subschool": "Enchantment",
       "schools": [
         "Fire",
-        "White"
+        "White",
+        "Enchantment"
       ],
       "level": 9,
       "theme": "solar",
@@ -3373,7 +3458,8 @@
       "name": "Dominate",
       "subschool": "Enchantment",
       "schools": [
-        "Fire"
+        "Fire",
+        "Enchantment"
       ],
       "level": 9,
       "theme": "mental",
@@ -3403,7 +3489,8 @@
       "subschool": "Summoning",
       "schools": [
         "Fire",
-        "Air"
+        "Air",
+        "Summoning"
       ],
       "level": 1,
       "theme": "fire",
@@ -3423,7 +3510,8 @@
       "name": "Agnideva",
       "subschool": "Summoning",
       "schools": [
-        "Fire"
+        "Fire",
+        "Summoning"
       ],
       "level": 3,
       "theme": "fire",
@@ -3443,7 +3531,8 @@
       "name": "Ash Imp",
       "subschool": "Summoning",
       "schools": [
-        "Fire"
+        "Fire",
+        "Summoning"
       ],
       "level": 3,
       "theme": "fire",
@@ -3464,7 +3553,8 @@
       "subschool": "Summoning",
       "schools": [
         "Fire",
-        "Earth"
+        "Earth",
+        "Summoning"
       ],
       "level": 5,
       "theme": "smoke",
@@ -3486,7 +3576,8 @@
       "name": "Agnideva Host",
       "subschool": "Summoning",
       "schools": [
-        "Fire"
+        "Fire",
+        "Summoning"
       ],
       "level": 7,
       "theme": "fire",
@@ -3508,7 +3599,8 @@
       "subschool": "Summoning",
       "schools": [
         "Fire",
-        "White"
+        "White",
+        "Summoning"
       ],
       "level": 7,
       "theme": "solar",
@@ -3529,7 +3621,8 @@
       "name": "Agnideva Lord",
       "subschool": "Summoning",
       "schools": [
-        "Fire"
+        "Fire",
+        "Summoning"
       ],
       "level": 9,
       "theme": "fire",
@@ -3551,7 +3644,8 @@
       "subschool": "Summoning",
       "schools": [
         "Fire",
-        "Air"
+        "Air",
+        "Summoning"
       ],
       "level": 9,
       "theme": "fire",
@@ -3572,7 +3666,8 @@
       "name": "Firebolt",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "fire",
@@ -3596,7 +3691,8 @@
       "name": "Ember",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "fire",
@@ -3622,7 +3718,8 @@
       "subschool": "Sorcery",
       "schools": [
         "Fire",
-        "Earth"
+        "Earth",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "smoke",
@@ -3653,7 +3750,8 @@
       "name": "Breath of Fire",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "fire",
@@ -3684,7 +3782,8 @@
       "name": "Fire Lotus",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "fire",
@@ -3717,7 +3816,8 @@
       "name": "Spontaneous Combustion",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "fire",
@@ -3751,7 +3851,8 @@
       "name": "Fireball",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "fire",
@@ -3782,7 +3883,8 @@
       "name": "Heat Ray",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "fire",
@@ -3815,7 +3917,8 @@
       "name": "Ignite",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "fire",
@@ -3843,7 +3946,8 @@
       "subschool": "Sorcery",
       "schools": [
         "Fire",
-        "Earth"
+        "Earth",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "smoke",
@@ -3879,7 +3983,8 @@
       "name": "Flash Step",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "fire",
@@ -3934,7 +4039,8 @@
       "name": "Searing Orb",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "fire",
@@ -3973,7 +4079,8 @@
       "name": "Firestorm",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "fire",
@@ -4004,7 +4111,8 @@
       "name": "Vaporize",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "fire",
@@ -4047,7 +4155,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Remove bleeding, poison, disease; deal minor damage"
     },
@@ -4075,7 +4183,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Remove negative mental effects, boost Awareness"
     },
@@ -4162,7 +4270,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Major Focus boost"
     },
@@ -4221,7 +4329,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Remove negative effects, minor fire damage to target"
     },
@@ -4306,7 +4414,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Reduce armor, fire vulnerability"
     },
@@ -4365,7 +4473,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Fire DoT, internal"
     },
@@ -4419,7 +4527,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Fire DoT that deals more damage for each debuff on target"
     },
@@ -4521,7 +4629,8 @@
       "name": "Electrify Weapon",
       "subschool": "Enchantment",
       "schools": [
-        "Air"
+        "Air",
+        "Enchantment"
       ],
       "level": 1,
       "theme": "lightning",
@@ -4542,7 +4651,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Add air damage + stun chance to attacks"
     },
@@ -4550,7 +4659,8 @@
       "name": "Haste",
       "subschool": "Enchantment",
       "schools": [
-        "Air"
+        "Air",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "wind",
@@ -4567,7 +4677,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Speed and initiative boost"
     },
@@ -4575,7 +4685,8 @@
       "name": "Levitate",
       "subschool": "Enchantment",
       "schools": [
-        "Air"
+        "Air",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "wind",
@@ -4595,7 +4706,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Immunity to ground/terrain effects"
     },
@@ -4603,7 +4714,8 @@
       "name": "Precision",
       "subschool": "Enchantment",
       "schools": [
-        "Air"
+        "Air",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "wind",
@@ -4625,7 +4737,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Range, accuracy, and critical boost for ranged attacks"
     },
@@ -4633,7 +4745,8 @@
       "name": "Air Shield",
       "subschool": "Enchantment",
       "schools": [
-        "Air"
+        "Air",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "wind",
@@ -4653,7 +4766,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Protection from ranged damage"
     },
@@ -4661,7 +4774,8 @@
       "name": "Favorable Wind",
       "subschool": "Enchantment",
       "schools": [
-        "Air"
+        "Air",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "wind",
@@ -4684,7 +4798,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Aura granting haste and precision to nearby allies"
     },
@@ -4692,7 +4806,8 @@
       "name": "Fly",
       "subschool": "Enchantment",
       "schools": [
-        "Air"
+        "Air",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "wind",
@@ -4714,7 +4829,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Grant flight"
     },
@@ -4722,7 +4837,8 @@
       "name": "Storm Lord",
       "subschool": "Enchantment",
       "schools": [
-        "Air"
+        "Air",
+        "Enchantment"
       ],
       "level": 9,
       "theme": "lightning",
@@ -4751,7 +4867,8 @@
       "subschool": "Summoning",
       "schools": [
         "Air",
-        "Space"
+        "Space",
+        "Summoning"
       ],
       "level": 1,
       "theme": "wind",
@@ -4771,7 +4888,8 @@
       "name": "Eagle",
       "subschool": "Summoning",
       "schools": [
-        "Air"
+        "Air",
+        "Summoning"
       ],
       "level": 3,
       "theme": "wind",
@@ -4791,7 +4909,8 @@
       "name": "Singing Birds",
       "subschool": "Summoning",
       "schools": [
-        "Air"
+        "Air",
+        "Summoning"
       ],
       "level": 3,
       "theme": "wind",
@@ -4816,7 +4935,8 @@
       "name": "Rudra",
       "subschool": "Summoning",
       "schools": [
-        "Air"
+        "Air",
+        "Summoning"
       ],
       "level": 5,
       "theme": "wind",
@@ -4837,7 +4957,8 @@
       "subschool": "Summoning",
       "schools": [
         "Air",
-        "White"
+        "White",
+        "Summoning"
       ],
       "level": 5,
       "theme": "wind",
@@ -4863,7 +4984,8 @@
       "subschool": "Summoning",
       "schools": [
         "Air",
-        "White"
+        "White",
+        "Summoning"
       ],
       "level": 7,
       "theme": "wind",
@@ -4889,7 +5011,8 @@
       "name": "Flock of Eagles",
       "subschool": "Summoning",
       "schools": [
-        "Air"
+        "Air",
+        "Summoning"
       ],
       "level": 7,
       "theme": "wind",
@@ -4910,7 +5033,8 @@
       "name": "Lord of the Wind",
       "subschool": "Summoning",
       "schools": [
-        "Air"
+        "Air",
+        "Summoning"
       ],
       "level": 9,
       "theme": "wind",
@@ -4931,7 +5055,8 @@
       "name": "Wild Host",
       "subschool": "Summoning",
       "schools": [
-        "Air"
+        "Air",
+        "Summoning"
       ],
       "level": 9,
       "theme": "wind",
@@ -4953,7 +5078,8 @@
       "name": "Jump",
       "subschool": "Sorcery",
       "schools": [
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "wind",
@@ -4975,7 +5101,8 @@
       "name": "Shocking Grasp",
       "subschool": "Sorcery",
       "schools": [
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "lightning",
@@ -5004,7 +5131,8 @@
       "name": "Blessed Shot",
       "subschool": "Sorcery",
       "schools": [
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "wind",
@@ -5032,7 +5160,8 @@
       "name": "Air Bomb",
       "subschool": "Sorcery",
       "schools": [
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "wind",
@@ -5066,7 +5195,8 @@
       "name": "Thunderclap",
       "subschool": "Sorcery",
       "schools": [
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "lightning",
@@ -5102,7 +5232,8 @@
       "name": "Gust of Wind",
       "subschool": "Sorcery",
       "schools": [
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "wind",
@@ -5135,7 +5266,8 @@
       "name": "Lightning",
       "subschool": "Sorcery",
       "schools": [
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "lightning",
@@ -5163,7 +5295,8 @@
       "name": "Ball Lightning",
       "subschool": "Sorcery",
       "schools": [
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "lightning",
@@ -5197,7 +5330,8 @@
       "name": "Chain Lightning",
       "subschool": "Sorcery",
       "schools": [
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "lightning",
@@ -5227,7 +5361,8 @@
       "name": "Tornado",
       "subschool": "Sorcery",
       "schools": [
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "wind",
@@ -5262,7 +5397,8 @@
       "name": "Lightning Form",
       "subschool": "Sorcery",
       "schools": [
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "lightning",
@@ -5294,7 +5430,8 @@
       "name": "Thin Air",
       "subschool": "Sorcery",
       "schools": [
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "wind",
@@ -5316,7 +5453,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Immunity to physical damage, cannot deal physical, major speed boost"
     },
@@ -5324,7 +5461,8 @@
       "name": "Thunderstorm",
       "subschool": "Sorcery",
       "schools": [
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "lightning",
@@ -5470,7 +5608,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Minor heal, restore Stamina"
     },
@@ -5556,7 +5694,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Grant one additional action this turn"
     },
@@ -5642,7 +5780,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Physical damage and drain stamina"
     },
@@ -5711,7 +5849,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Silence + physical damage over time, Constitution save"
     },
@@ -5755,7 +5893,8 @@
       "name": "Chameleon",
       "subschool": "Enchantment",
       "schools": [
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 1,
       "theme": "illusion",
@@ -5775,7 +5914,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Boost to stealth/sneak"
     },
@@ -5783,7 +5922,8 @@
       "name": "Decoy",
       "subschool": "Enchantment",
       "schools": [
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 1,
       "theme": "illusion",
@@ -5807,7 +5947,8 @@
       "name": "Magic Shield",
       "subschool": "Enchantment",
       "schools": [
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "space",
@@ -5827,7 +5968,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Protection from spell damage"
     },
@@ -5835,7 +5976,8 @@
       "name": "Blur",
       "subschool": "Enchantment",
       "schools": [
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "illusion",
@@ -5856,7 +5998,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Shifting image grants dodge bonus, attacks have miss chance"
     },
@@ -5864,7 +6006,8 @@
       "name": "Invisibility",
       "subschool": "Enchantment",
       "schools": [
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "illusion",
@@ -5881,7 +6024,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Target becomes invisible, broken by offensive action"
     },
@@ -5889,7 +6032,8 @@
       "name": "Mirror Image",
       "subschool": "Enchantment",
       "schools": [
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "illusion",
@@ -5911,7 +6055,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Create illusory copies, attacks may hit copies instead"
     },
@@ -5919,7 +6063,8 @@
       "name": "Magic Mirror",
       "subschool": "Enchantment",
       "schools": [
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "space",
@@ -5941,7 +6086,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Chance to reflect spells back to caster (spellpower vs spellpower)"
     },
@@ -5949,7 +6094,8 @@
       "name": "Mantric Armor",
       "subschool": "Enchantment",
       "schools": [
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "space",
@@ -5978,7 +6124,8 @@
       "name": "False Terrain",
       "subschool": "Enchantment",
       "schools": [
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "illusion",
@@ -6009,7 +6156,8 @@
       "name": "Dimensional Anchor",
       "subschool": "Enchantment",
       "schools": [
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 9,
       "theme": "space",
@@ -6041,7 +6189,8 @@
       "name": "Trickster Mask",
       "subschool": "Summoning",
       "schools": [
-        "Space"
+        "Space",
+        "Summoning"
       ],
       "level": 1,
       "theme": "illusion",
@@ -6067,7 +6216,8 @@
       "name": "Puppet",
       "subschool": "Summoning",
       "schools": [
-        "Space"
+        "Space",
+        "Summoning"
       ],
       "level": 3,
       "theme": "illusion",
@@ -6091,7 +6241,8 @@
       "name": "Nailing Dagger",
       "subschool": "Summoning",
       "schools": [
-        "Space"
+        "Space",
+        "Summoning"
       ],
       "level": 3,
       "theme": "dagger",
@@ -6115,7 +6266,8 @@
       "name": "Eldritch Spawn",
       "subschool": "Summoning",
       "schools": [
-        "Space"
+        "Space",
+        "Summoning"
       ],
       "level": 5,
       "theme": "space",
@@ -6139,7 +6291,8 @@
       "name": "Mass of Masks",
       "subschool": "Summoning",
       "schools": [
-        "Space"
+        "Space",
+        "Summoning"
       ],
       "level": 5,
       "theme": "illusion",
@@ -6163,7 +6316,8 @@
       "name": "Troupe of Puppets",
       "subschool": "Summoning",
       "schools": [
-        "Space"
+        "Space",
+        "Summoning"
       ],
       "level": 7,
       "theme": "illusion",
@@ -6188,7 +6342,8 @@
       "name": "Dagger Swarm",
       "subschool": "Summoning",
       "schools": [
-        "Space"
+        "Space",
+        "Summoning"
       ],
       "level": 7,
       "theme": "dagger",
@@ -6213,7 +6368,8 @@
       "name": "Eldritch Guardian",
       "subschool": "Summoning",
       "schools": [
-        "Space"
+        "Space",
+        "Summoning"
       ],
       "level": 9,
       "theme": "space",
@@ -6238,7 +6394,8 @@
       "name": "Get Out",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "space",
@@ -6260,7 +6417,8 @@
       "name": "Magic Missile",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "space",
@@ -6285,7 +6443,8 @@
       "name": "Nail the Shadow",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "dagger",
@@ -6308,7 +6467,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Pin enemy's shadow - rooted, takes damage if they try to move"
     },
@@ -6316,7 +6475,8 @@
       "name": "Blink",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "space",
@@ -6338,7 +6498,8 @@
       "name": "Mana Flare",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "space",
@@ -6357,7 +6518,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Remove some mana and deal space damage"
     },
@@ -6365,7 +6526,8 @@
       "name": "Stake the Threshold",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "dagger",
@@ -6400,7 +6562,8 @@
       "name": "Phasing",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "space",
@@ -6420,7 +6583,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "50% chance to negate physical damage"
     },
@@ -6428,7 +6591,8 @@
       "name": "Space Swap",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "space",
@@ -6450,7 +6614,8 @@
       "name": "Psychic Blast",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "space",
@@ -6478,7 +6643,8 @@
       "name": "Phantasm",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "illusion",
@@ -6497,7 +6663,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "special": {
         "illusion_of_fear": true
@@ -6508,7 +6674,8 @@
       "name": "Banishing Stake",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "dagger",
@@ -6534,7 +6701,8 @@
       "name": "Teleport",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "space",
@@ -6557,7 +6725,8 @@
       "name": "Wrathful Binding",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "dagger",
@@ -6578,7 +6747,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "special": {
         "dagger_orbits_target": true,
@@ -6591,7 +6760,8 @@
       "name": "Intervention",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "space",
@@ -6614,7 +6784,8 @@
       "name": "Psychic Tremor",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "space",
@@ -6642,7 +6813,8 @@
       "name": "Mana Drain",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "space",
@@ -6659,7 +6831,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Drain significant mana from target, transfer to caster"
     },
@@ -6667,7 +6839,8 @@
       "name": "Nail the Sun",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "dagger",
@@ -6693,7 +6866,8 @@
       "name": "Planar Shift",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "space",
@@ -6717,7 +6891,8 @@
       "name": "Portal",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "space",
@@ -6743,7 +6918,8 @@
       "name": "Spellstrike",
       "subschool": "Sorcery",
       "schools": [
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "space",
@@ -6792,7 +6968,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Minor dodge buff, attackers are briefly dazzled (accuracy penalty on next attack)"
     },
@@ -6820,7 +6996,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Remove paralysis, slow, root, and earthbound effects"
     },
@@ -6851,7 +7027,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Target can't be targeted or target enemies, breaks on offensive action"
     },
@@ -6937,7 +7113,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Target moves randomly, can't act intentionally"
     },
@@ -6964,7 +7140,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Enemy can move but can't attack or cast for 1 turn"
     },
@@ -6991,7 +7167,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Target moves AND attacks/casts randomly - dangerous to everyone"
     },
@@ -7017,7 +7193,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Paralyze target with dread"
     },
@@ -7080,7 +7256,8 @@
       "name": "Encourage",
       "subschool": "Enchantment",
       "schools": [
-        "White"
+        "White",
+        "Enchantment"
       ],
       "level": 1,
       "theme": "buff",
@@ -7099,7 +7276,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Buff initiative"
     },
@@ -7107,7 +7284,8 @@
       "name": "Friends",
       "subschool": "Enchantment",
       "schools": [
-        "White"
+        "White",
+        "Enchantment"
       ],
       "level": 1,
       "theme": "buff",
@@ -7133,7 +7311,8 @@
       "name": "Soothing Presence",
       "subschool": "Enchantment",
       "schools": [
-        "White"
+        "White",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "heal",
@@ -7159,7 +7338,8 @@
       "name": "Pacify",
       "subschool": "Enchantment",
       "schools": [
-        "White"
+        "White",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "buff",
@@ -7179,7 +7359,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Chance to make enemy disengage from combat"
     },
@@ -7187,7 +7367,8 @@
       "name": "Bless",
       "subschool": "Enchantment",
       "schools": [
-        "White"
+        "White",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "buff",
@@ -7207,7 +7388,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Buff attack and defense"
     },
@@ -7215,7 +7396,8 @@
       "name": "Regeneration",
       "subschool": "Enchantment",
       "schools": [
-        "White"
+        "White",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "heal",
@@ -7235,7 +7417,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Heal over time"
     },
@@ -7243,7 +7425,8 @@
       "name": "Mirth",
       "subschool": "Enchantment",
       "schools": [
-        "White"
+        "White",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "buff",
@@ -7264,7 +7447,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Buff initiative, speed, and damage"
     },
@@ -7272,7 +7455,8 @@
       "name": "Prayer",
       "subschool": "Enchantment",
       "schools": [
-        "White"
+        "White",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "buff",
@@ -7292,7 +7476,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Buff defense and magic resistances"
     },
@@ -7300,7 +7484,8 @@
       "name": "Song of Peace",
       "subschool": "Enchantment",
       "schools": [
-        "White"
+        "White",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "buff",
@@ -7336,7 +7521,8 @@
       "name": "Divine Inspiration",
       "subschool": "Enchantment",
       "schools": [
-        "White"
+        "White",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "buff",
@@ -7356,7 +7542,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Considerably buff target's two highest stats"
     },
@@ -7364,7 +7550,8 @@
       "name": "Aura of Blessing",
       "subschool": "Enchantment",
       "schools": [
-        "White"
+        "White",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "buff",
@@ -7389,7 +7576,8 @@
       "name": "Divine Champion",
       "subschool": "Enchantment",
       "schools": [
-        "White"
+        "White",
+        "Enchantment"
       ],
       "level": 9,
       "theme": "buff",
@@ -7417,7 +7605,8 @@
       "name": "Guiding Light",
       "subschool": "Summoning",
       "schools": [
-        "White"
+        "White",
+        "Summoning"
       ],
       "level": 1,
       "theme": "support",
@@ -7441,7 +7630,8 @@
       "name": "Kinnara",
       "subschool": "Summoning",
       "schools": [
-        "White"
+        "White",
+        "Summoning"
       ],
       "level": 3,
       "theme": "support",
@@ -7467,7 +7657,8 @@
       "name": "Godling",
       "subschool": "Summoning",
       "schools": [
-        "White"
+        "White",
+        "Summoning"
       ],
       "level": 5,
       "theme": "support",
@@ -7494,7 +7685,8 @@
       "name": "Symbol of Healing",
       "subschool": "Summoning",
       "schools": [
-        "White"
+        "White",
+        "Summoning"
       ],
       "level": 5,
       "theme": "heal",
@@ -7518,7 +7710,8 @@
       "name": "Host of Kinnaras",
       "subschool": "Summoning",
       "schools": [
-        "White"
+        "White",
+        "Summoning"
       ],
       "level": 7,
       "theme": "support",
@@ -7545,7 +7738,8 @@
       "name": "Avenger",
       "subschool": "Summoning",
       "schools": [
-        "White"
+        "White",
+        "Summoning"
       ],
       "level": 9,
       "theme": "combat",
@@ -7570,7 +7764,8 @@
       "name": "Smite",
       "subschool": "Sorcery",
       "schools": [
-        "White"
+        "White",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "damage",
@@ -7594,7 +7789,8 @@
       "name": "Lesser Heal",
       "subschool": "Sorcery",
       "schools": [
-        "White"
+        "White",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "heal",
@@ -7613,7 +7809,8 @@
       "name": "Cure",
       "subschool": "Sorcery",
       "schools": [
-        "White"
+        "White",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "heal",
@@ -7629,7 +7826,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Heal minor HP, roll to dispel negative effects"
     },
@@ -7637,7 +7834,8 @@
       "name": "Turn Undead",
       "subschool": "Sorcery",
       "schools": [
-        "White"
+        "White",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "damage",
@@ -7675,7 +7873,8 @@
       "name": "Dispel",
       "subschool": "Sorcery",
       "schools": [
-        "White"
+        "White",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "utility",
@@ -7687,7 +7886,7 @@
       "target": {
         "type": "single",
         "eligible": "any",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all"
+        "upgrade_scaling": "single → aoe → all"
       },
       "special": {
         "removes_all_magical_effects": true
@@ -7698,7 +7897,8 @@
       "name": "Greater Heal",
       "subschool": "Sorcery",
       "schools": [
-        "White"
+        "White",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "heal",
@@ -7710,7 +7910,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Heal significant HP"
     },
@@ -7718,7 +7918,8 @@
       "name": "Holy Light",
       "subschool": "Sorcery",
       "schools": [
-        "White"
+        "White",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "damage",
@@ -7749,7 +7950,8 @@
       "name": "Raise Dead",
       "subschool": "Sorcery",
       "schools": [
-        "White"
+        "White",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "heal",
@@ -7770,7 +7972,8 @@
       "name": "Rejuvenate",
       "subschool": "Sorcery",
       "schools": [
-        "White"
+        "White",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "heal",
@@ -7793,7 +7996,8 @@
       "name": "Resurrect",
       "subschool": "Sorcery",
       "schools": [
-        "White"
+        "White",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "heal",
@@ -7814,7 +8018,8 @@
       "name": "Divine Wrath",
       "subschool": "Sorcery",
       "schools": [
-        "White"
+        "White",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "damage",
@@ -7890,7 +8095,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Gain insight from ancestors, temporary Awareness and Focus buff"
     },
@@ -7975,7 +8180,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Gain 50% of damage dealt as HP"
     },
@@ -8004,7 +8209,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Deal 50% of damage taken back to attacker"
     },
@@ -8071,7 +8276,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "When an ally dies, gain attack and damage buff for several turns"
     },
@@ -8191,7 +8396,8 @@
       "name": "Gloom",
       "subschool": "Enchantment",
       "schools": [
-        "Black"
+        "Black",
+        "Enchantment"
       ],
       "level": 1,
       "theme": "debuff",
@@ -8207,7 +8413,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Debuff defense and speed"
     },
@@ -8215,7 +8421,8 @@
       "name": "Blood Hunger",
       "subschool": "Enchantment",
       "schools": [
-        "Black"
+        "Black",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "vampiric",
@@ -8234,7 +8441,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Buff that grants lifesteal on all attacks"
     },
@@ -8242,7 +8449,8 @@
       "name": "Curse",
       "subschool": "Enchantment",
       "schools": [
-        "Black"
+        "Black",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "debuff",
@@ -8258,7 +8466,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Debuff attack and defense"
     },
@@ -8266,7 +8474,8 @@
       "name": "Suffering",
       "subschool": "Enchantment",
       "schools": [
-        "Black"
+        "Black",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "debuff",
@@ -8282,7 +8491,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Debuff initiative, speed, and defense"
     },
@@ -8290,7 +8499,8 @@
       "name": "Shadow Cloak",
       "subschool": "Enchantment",
       "schools": [
-        "Black"
+        "Black",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "shadow",
@@ -8311,7 +8521,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Stealth and dodge bonus"
     },
@@ -8319,7 +8529,8 @@
       "name": "Doom",
       "subschool": "Enchantment",
       "schools": [
-        "Black"
+        "Black",
+        "Enchantment"
       ],
       "level": 7,
       "theme": "debuff",
@@ -8348,7 +8559,8 @@
       "name": "Pervasive Rot",
       "subschool": "Enchantment",
       "schools": [
-        "Black"
+        "Black",
+        "Enchantment"
       ],
       "level": 9,
       "theme": "debuff",
@@ -8371,7 +8583,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Debuff all attributes and deal black damage over time"
     },
@@ -8379,7 +8591,8 @@
       "name": "Zombie",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 1,
       "theme": "undead",
@@ -8398,7 +8611,8 @@
       "name": "Imp",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 1,
       "theme": "demon",
@@ -8423,7 +8637,8 @@
       "name": "Skeleton",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 3,
       "theme": "undead",
@@ -8442,7 +8657,8 @@
       "name": "Vampire Bats",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 3,
       "theme": "vampiric",
@@ -8466,7 +8682,8 @@
       "name": "Vetala",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 5,
       "theme": "undead",
@@ -8492,7 +8709,8 @@
       "name": "Zombie Horde",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 5,
       "theme": "undead",
@@ -8512,7 +8730,8 @@
       "name": "Mara",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 5,
       "theme": "demon",
@@ -8539,7 +8758,8 @@
       "name": "Swarm of Imps",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 5,
       "theme": "demon",
@@ -8559,7 +8779,8 @@
       "name": "Skeleton Troop",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 7,
       "theme": "undead",
@@ -8579,7 +8800,8 @@
       "name": "Undead Yogi",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 7,
       "theme": "undead",
@@ -8606,7 +8828,8 @@
       "name": "Daughter of Mara",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 7,
       "theme": "demon",
@@ -8633,7 +8856,8 @@
       "name": "Undead Host",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 9,
       "theme": "undead",
@@ -8654,7 +8878,8 @@
       "name": "Swarm of Maras",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 9,
       "theme": "demon",
@@ -8675,7 +8900,8 @@
       "name": "Imp Collector",
       "subschool": "Summoning",
       "schools": [
-        "Black"
+        "Black",
+        "Summoning"
       ],
       "level": 9,
       "theme": "demon",
@@ -8699,7 +8925,8 @@
       "name": "Voidbolt",
       "subschool": "Sorcery",
       "schools": [
-        "Black"
+        "Black",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "void",
@@ -8720,7 +8947,8 @@
       "name": "Death Bolt",
       "subschool": "Sorcery",
       "schools": [
-        "Black"
+        "Black",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "undead",
@@ -8744,7 +8972,8 @@
       "name": "Behind You",
       "subschool": "Sorcery",
       "schools": [
-        "Black"
+        "Black",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "shadow",
@@ -8767,7 +8996,8 @@
       "name": "Life Drain",
       "subschool": "Sorcery",
       "schools": [
-        "Black"
+        "Black",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "vampiric",
@@ -8785,7 +9015,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Steal HP from enemy"
     },
@@ -8793,7 +9023,8 @@
       "name": "Hands of the Damned",
       "subschool": "Sorcery",
       "schools": [
-        "Black"
+        "Black",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "undead",
@@ -8826,7 +9057,8 @@
       "name": "Steal Blessings",
       "subschool": "Sorcery",
       "schools": [
-        "Black"
+        "Black",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "curse",
@@ -8850,7 +9082,8 @@
       "name": "Shroud of Darkness",
       "subschool": "Sorcery",
       "schools": [
-        "Black"
+        "Black",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "shadow",
@@ -8881,7 +9114,8 @@
       "name": "Exploit Weakness",
       "subschool": "Sorcery",
       "schools": [
-        "Black"
+        "Black",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "curse",
@@ -8905,7 +9139,8 @@
       "name": "Death Shock",
       "subschool": "Sorcery",
       "schools": [
-        "Black"
+        "Black",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "void",
@@ -8931,7 +9166,8 @@
       "name": "Black Lightning",
       "subschool": "Sorcery",
       "schools": [
-        "Black"
+        "Black",
+        "Sorcery"
       ],
       "level": 7,
       "theme": "void",
@@ -8961,7 +9197,8 @@
       "name": "Voidstorm",
       "subschool": "Sorcery",
       "schools": [
-        "Black"
+        "Black",
+        "Sorcery"
       ],
       "level": 9,
       "theme": "void",
@@ -8985,13 +9222,13 @@
       },
       "description": "Major black damage in large AoE"
     },
-
     "mudling": {
       "name": "Mudling",
       "subschool": "Summoning",
       "schools": [
         "Earth",
-        "Water"
+        "Water",
+        "Summoning"
       ],
       "level": 3,
       "theme": "mud",
@@ -9009,13 +9246,13 @@
       },
       "description": "Summon 3 Mudlings. High HP, physical resistance, slow on hit. Low damage."
     },
-
     "metal_to_mud": {
       "name": "Metal to Mud",
       "subschool": "Enchantment",
       "schools": [
         "Earth",
-        "Water"
+        "Water",
+        "Enchantment"
       ],
       "level": 3,
       "theme": "mud",
@@ -9037,17 +9274,17 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+        "upgrade_scaling": "single → aoe → all_enemies"
       },
       "description": "Metal corrodes into useless mud. On failed Constitution save: reduces target's damage output and armor."
     },
-
     "rain_of_mud": {
       "name": "Rain of Mud",
       "subschool": "Sorcery",
       "schools": [
         "Earth",
-        "Water"
+        "Water",
+        "Sorcery"
       ],
       "level": 5,
       "theme": "mud",
@@ -9078,13 +9315,13 @@
       },
       "description": "A torrent of mud crashes down. Each enemy that fails a Finesse save is afflicted by one of: Blinded, Slowed, or Disarmed (random)."
     },
-
     "mindmuck": {
       "name": "Mindmuck",
       "subschool": "Enchantment",
       "schools": [
         "Earth",
-        "Water"
+        "Water",
+        "Enchantment"
       ],
       "level": 5,
       "theme": "mud",
@@ -9107,13 +9344,13 @@
       },
       "description": "Flood a single mind with filth and confusion. Major debuff to Awareness and Focus. No save."
     },
-
     "glass_shard": {
       "name": "Glass Shard",
       "subschool": "Sorcery",
       "schools": [
         "Earth",
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 1,
       "theme": "glass",
@@ -9137,13 +9374,13 @@
       },
       "description": "Conjure a shard of glass and drive it into an enemy at melee range. Light slashing damage, guaranteed Bleeding."
     },
-
     "powdered_glass": {
       "name": "Powdered Glass",
       "subschool": "Sorcery",
       "schools": [
         "Earth",
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 2,
       "theme": "glass",
@@ -9173,13 +9410,13 @@
       },
       "description": "Scatter powdered glass in a cone in front of the caster. All enemies in the cone are Blinded for 3 turns."
     },
-
     "globe_of_glass": {
       "name": "Globe of Glass",
       "subschool": "Sorcery",
       "schools": [
         "Earth",
-        "Air"
+        "Air",
+        "Sorcery"
       ],
       "level": 3,
       "theme": "glass",
@@ -9199,17 +9436,17 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Encase an ally in a globe of conjured glass. Provides minor armor. When the target takes any damage, the globe shatters outward: moderate slashing damage + guaranteed Bleeding to all enemies within 2 tiles."
     },
-
     "glass_mine": {
       "name": "Glass Mine",
       "subschool": "Summoning",
       "schools": [
         "Earth",
-        "Air"
+        "Air",
+        "Summoning"
       ],
       "level": 2,
       "theme": "glass",
@@ -9227,13 +9464,13 @@
       },
       "description": "Place an invisible glass mine on the ground. Explodes on enemy contact: moderate slashing damage + guaranteed Bleeding to all within 2 tiles."
     },
-
     "scattered_light": {
       "name": "Scattered Light",
       "subschool": "Sorcery",
       "schools": [
         "Earth",
-        "Space"
+        "Space",
+        "Sorcery"
       ],
       "level": 2,
       "theme": "crystal",
@@ -9265,13 +9502,13 @@
       },
       "description": "Shatter light into the eyes of all nearby enemies. Light space damage; 50% chance to Blind for 1 turn (Awareness save)."
     },
-
     "crystal_guardian": {
       "name": "Crystal Guardian",
       "subschool": "Summoning",
       "schools": [
         "Earth",
-        "Space"
+        "Space",
+        "Summoning"
       ],
       "level": 4,
       "theme": "crystal",
@@ -9289,13 +9526,13 @@
       },
       "description": "Grow an immobile crystal formation. High resistances to everything except crushing damage. Each turn it fires a space-damage laser at the nearest enemy."
     },
-
     "crystal_diadem": {
       "name": "Crystal Diadem",
       "subschool": "Enchantment",
       "schools": [
         "Earth",
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 4,
       "theme": "crystal",
@@ -9314,17 +9551,17 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+        "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Crown the target with living crystal. Major Focus and Awareness bonus. 50% chance to shatter and be lost whenever the wearer takes damage."
     },
-
     "crystal_light": {
       "name": "Crystal Light",
       "subschool": "Enchantment",
       "schools": [
         "Earth",
-        "Space"
+        "Space",
+        "Enchantment"
       ],
       "level": 4,
       "theme": "crystal",
@@ -9353,7 +9590,6 @@
       },
       "description": "Flood the battlefield with pure crystal light. Instantly removes all stealth, invisibility, blur, smoke-form, and illusion effects from every unit on the field — allies and enemies alike."
     },
-
     "steam_jet": {
       "name": "Steam Jet",
       "subschool": "Sorcery",
@@ -9386,7 +9622,6 @@
       },
       "description": "Blast of scalding steam in a 3-tile line from the caster toward the cursor — moderate fire damage to all in the path"
     },
-
     "fragrant_sauna": {
       "name": "Fragrant Sauna",
       "subschool": "White",
@@ -9424,7 +9659,6 @@
       },
       "description": "Envelop allies in healing steam — remove Burning and Poisoned, restore all stamina, heal a little HP"
     },
-
     "geyser": {
       "name": "Geyser",
       "subschool": "Sorcery",
@@ -9461,7 +9695,6 @@
       },
       "description": "Superheated geyser erupts at target location in a cross AoE — moderate fire damage and throws each target 2-3 tiles in a random direction; bonus damage if thrown into a wall"
     },
-
     "scalding_fog": {
       "name": "Scalding Fog",
       "subschool": "Sorcery",
