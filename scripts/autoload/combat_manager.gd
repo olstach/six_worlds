@@ -1698,6 +1698,40 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 				unit.show_status_expired(sname)
 			status_effect_expired.emit(unit, sname)
 
+	# Glass_Globe: shatters on any damage, dealing slashing AoE + guaranteed Bleeding to nearby enemies.
+	# Fires even on lethal hits (the globe shatters as the bearer falls).
+	if damage > 0 and unit.has_status("Glass_Globe"):
+		var globe_def = _status_effects.get("Glass_Globe", {})
+		var shatter = globe_def.get("special", {}).get("shatters_on_damage_received", {})
+		var shatter_dmg: int = shatter.get("damage", 20)
+		var shatter_radius: int = shatter.get("radius", 2)
+		# Remove the status first so the shatter itself can't re-trigger
+		for i in range(unit.status_effects.size() - 1, -1, -1):
+			if unit.status_effects[i].get("status", "") == "Glass_Globe":
+				unit.status_effects.remove_at(i)
+				if unit.has_method("show_status_expired"):
+					unit.show_status_expired("Glass_Globe")
+				status_effect_expired.emit(unit, "Glass_Globe")
+				break
+		combat_log.emit("%s's Glass Globe shatters! Razor shards fly outward!" % unit.unit_name)
+		for nearby in _get_enemies_in_range(unit, shatter_radius):
+			apply_damage(nearby, shatter_dmg, "slashing")
+			_apply_status_effect(nearby, "Bleeding", 3, 0, null)
+
+	# Crystal_Diadem: 50% chance (configurable) to shatter and be lost on any damage received.
+	if damage > 0 and unit.has_status("Crystal_Diadem"):
+		var diadem_def = _status_effects.get("Crystal_Diadem", {})
+		var lose_chance: int = diadem_def.get("special", {}).get("chance_to_lose_on_damage_received", 50)
+		if randi() % 100 < lose_chance:
+			for i in range(unit.status_effects.size() - 1, -1, -1):
+				if unit.status_effects[i].get("status", "") == "Crystal_Diadem":
+					unit.status_effects.remove_at(i)
+					if unit.has_method("show_status_expired"):
+						unit.show_status_expired("Crystal_Diadem")
+					status_effect_expired.emit(unit, "Crystal_Diadem")
+					break
+			combat_log.emit("%s's Crystal Diadem shatters!" % unit.unit_name)
+
 	if unit.current_hp <= 0 and not unit.is_bleeding_out:
 		_start_bleed_out(unit)
 		# Check if combat should end immediately (all enemies or all players down)
