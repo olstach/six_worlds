@@ -56,8 +56,8 @@ func update_header() -> void:
 	name_label.text = current_character.name
 	race_label.text = current_character.race.capitalize()
 	background_label.text = current_character.background.capitalize()
-	xp_total_label.text = "XP Total: " + str(current_character.xp)
-	xp_free_label.text = "Free XP: " + str(current_character.xp)  # TODO: track spent vs free
+	xp_total_label.text = "XP Total: " + str(current_character.get("xp_earned", current_character.xp))
+	xp_free_label.text = "Free XP: " + str(current_character.xp)
 
 func update_karma() -> void:
 	# Clear existing
