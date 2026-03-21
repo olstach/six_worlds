@@ -109,8 +109,9 @@
           "type": "default",
           "text": "Look into the mirror.",
           "outcome": {
-            "type": "text",
-            "text": "You hold its gaze for a long moment. The smoke parts. You see yourself — but wrong. Every flaw magnified, every failure given a face. Something in you is diminished by the looking.\n\nYou tear your eyes away. The mirror shows nothing again.",
+            "type": "shop",
+            "shop_id": "smoke_domain_shop",
+            "text": "You hold its gaze. The smoke parts. You see yourself — but wrong: every flaw given a face, every hidden thing laid bare. Something dissolves. Something else rises in its place.\n\nWhen you look away, you understand smoke in a way you did not before. The price was a piece of yourself. The mirror does not seem to care.",
             "rewards": {
               "xp": 5,
               "attribute_loss": {"which": "random", "amount": 1}
