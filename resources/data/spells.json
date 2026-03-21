@@ -9352,6 +9352,151 @@
         "type": "battlefield"
       },
       "description": "Flood the battlefield with pure crystal light. Instantly removes all stealth, invisibility, blur, smoke-form, and illusion effects from every unit on the field — allies and enemies alike."
+    },
+
+    "steam_jet": {
+      "name": "Steam Jet",
+      "subschool": "Sorcery",
+      "schools": [
+        "Water",
+        "Fire"
+      ],
+      "level": 2,
+      "theme": "steam",
+      "tags": [
+        "steam",
+        "damage",
+        "aoe"
+      ],
+      "mana_cost": 40,
+      "damage": 20,
+      "damage_type": "fire",
+      "target": {
+        "type": "aoe",
+        "eligible": "enemy"
+      },
+      "aoe": {
+        "type": "line",
+        "base_size": 3,
+        "width": 1,
+        "from_caster": true,
+        "upgradeable": true,
+        "upgrade_scaling": "+1_length_per_tier"
+      },
+      "description": "Blast of scalding steam in a 3-tile line from the caster toward the cursor — moderate fire damage to all in the path"
+    },
+
+    "fragrant_sauna": {
+      "name": "Fragrant Sauna",
+      "subschool": "White",
+      "schools": [
+        "Water",
+        "Fire",
+        "White"
+      ],
+      "level": 3,
+      "theme": "steam",
+      "tags": [
+        "steam",
+        "heal",
+        "cleanse",
+        "aoe"
+      ],
+      "mana_cost": 75,
+      "heal": 20,
+      "statuses_removed": [
+        "Burning",
+        "Poisoned"
+      ],
+      "special": {
+        "restore_stamina_full": true
+      },
+      "target": {
+        "type": "aoe",
+        "eligible": "ally"
+      },
+      "aoe": {
+        "type": "circle",
+        "base_size": 2,
+        "upgradeable": true,
+        "upgrade_scaling": "+1_radius_per_tier"
+      },
+      "description": "Envelop allies in healing steam — remove Burning and Poisoned, restore all stamina, heal a little HP"
+    },
+
+    "geyser": {
+      "name": "Geyser",
+      "subschool": "Sorcery",
+      "schools": [
+        "Water",
+        "Fire"
+      ],
+      "level": 4,
+      "theme": "steam",
+      "tags": [
+        "steam",
+        "damage",
+        "push",
+        "aoe"
+      ],
+      "mana_cost": 135,
+      "damage": 30,
+      "damage_type": "fire",
+      "special": {
+        "push_direction": "random",
+        "push_distance_min": 2,
+        "push_distance_max": 3,
+        "obstacle_bonus_damage": 25
+      },
+      "target": {
+        "type": "ground"
+      },
+      "aoe": {
+        "type": "cross",
+        "base_size": 1,
+        "upgradeable": true,
+        "upgrade_scaling": "+1_arm_length_per_tier"
+      },
+      "description": "Superheated geyser erupts at target location in a cross AoE — moderate fire damage and throws each target 2-3 tiles in a random direction; bonus damage if thrown into a wall"
+    },
+
+    "scalding_fog": {
+      "name": "Scalding Fog",
+      "subschool": "Sorcery",
+      "schools": [
+        "Water",
+        "Fire"
+      ],
+      "level": 4,
+      "theme": "steam",
+      "tags": [
+        "steam",
+        "fog",
+        "damage",
+        "terrain",
+        "escalating",
+        "dot"
+      ],
+      "mana_cost": 135,
+      "damage": 5,
+      "damage_type": "fire",
+      "damage_per_turn": true,
+      "duration": "spellpower",
+      "special": {
+        "cloud_effect": true,
+        "damage_scales_with_turns_in_fog": true,
+        "base_damage_per_turn": 5
+      },
+      "target": {
+        "type": "ground"
+      },
+      "aoe": {
+        "type": "circle",
+        "base_size": 2,
+        "upgradeable": true,
+        "upgrade_scaling": "+1_radius_per_tier"
+      },
+      "description": "Summon a persistent cloud of scalding fog. Each turn a creature spends inside it, the damage grows: turn_in_fog × 5 fire damage — light at first, searing by the end"
     }
   }
 }

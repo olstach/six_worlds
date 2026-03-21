@@ -317,6 +317,131 @@
           }
         }
       ]
+    },
+
+    "waterworks": {
+      "id": "waterworks",
+      "title": "The Waterworks",
+      "domain": "steam",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "A low wooden building rises from the mist, every surface slick and steaming. Above the entry hangs a sign painted with a frog holding a cup of tea. Through the latticed panels you can see shapes moving in pale mineral water — people, perhaps, or creatures that resemble them. The smell of cardamom and sulfur drifts toward you.\n\nThe door is open.",
+      "choices": [
+        {
+          "id": "bathe",
+          "type": "default",
+          "text": "Pay the entry fee and use the baths",
+          "cost": {
+            "gold": "small_moderate"
+          },
+          "outcome": {
+            "type": "follow_up",
+            "follow_up_event": "waterworks_inner",
+            "text": "You hand over the coins, receive a worn linen towel, and are waved through. The water is exactly the right temperature. Somewhere, a flute plays a tune you almost recognize. When you finally climb out, you feel entirely new.",
+            "rewards": {
+              "restore": {
+                "hp_percent": 100,
+                "mana_percent": 100,
+                "stamina_percent": 100
+              }
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave without going in",
+          "outcome": {
+            "type": "text",
+            "text": "You walk on. The sound of splashing water and low voices fades behind you."
+          }
+        }
+      ]
+    },
+
+    "waterworks_inner": {
+      "id": "waterworks_inner",
+      "title": "The Bathhouse Floor",
+      "domain": "steam",
+      "realm": "any",
+      "rarity": "follow_up_only",
+      "text": "Clean, rested, and wrapped in borrowed linen, you survey the room. A pair of river spirits play dice in the corner. Two monks argue quietly over a plate of dumplings. A large toad in a silk robe sips tea with the focused air of someone who has been doing this for several centuries.\n\nOn low tables between the pools: small plates of pickled plum, pale cakes, and pale green tea. Nobody looks at you with any particular suspicion.",
+      "choices": [
+        {
+          "id": "treat_everyone",
+          "type": "default",
+          "text": "Order tea and snacks for the whole room — your coin, your treat",
+          "cost": {
+            "gold": 100
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "steam_domain_shop",
+            "text": "A small stir runs through the room. The toad in the silk robe sets down its cup, turns its enormous amber eyes toward you, and slowly crosses the floor.\n\n'Generosity in a bathhouse,' it says, in a voice like water over smooth stone. 'That's rarer than you'd think.' It settles beside you. 'I know a trick or two. Buy something, and I'll show you.'",
+            "karma": {
+              "god": 3,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "tall_tales",
+          "type": "requirement",
+          "text": "Hold the room with tall tales of your travels",
+          "requirements": {
+            "skills": {
+              "performance": 5,
+              "comedy": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "steam_domain_shop",
+            "text": "You begin with the time you crossed the frozen bridge over the River of Ash. By the second story, even the monks have stopped arguing. By the third, the toad in the silk robe is leaning forward with those great amber eyes half-closed in something like delight.\n\n'You've been places,' it says, when you finish. 'I've been a few places myself. A trade seems fair.'",
+            "karma": {
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "steal",
+          "type": "roll",
+          "text": "Slip away and quietly go through the bags left unattended near the changing room",
+          "requirements": {
+            "roll": {
+              "skill": "thievery",
+              "difficulty": 13
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Everyone is very relaxed and nobody is watching the changing room closely. You move quickly and quietly. Coins, a small charm, and then you're back in your seat before anyone looks up. The dice players argue. The monks argue. The toad sips its tea.",
+            "rewards": {
+              "gold": 25,
+              "items": [
+                "water_charm_common"
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 4,
+              "animal": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You're doing well until a pale hand closes around your wrist. The room goes quiet. In short order you are dressed and deposited outside, the door clicking shut behind you. The painted frog on the sign stares at you with what might be disappointment.",
+            "set_flags": {
+              "waterworks_banned": true
+            },
+            "karma": {
+              "hungry_ghost": 6
+            }
+          }
+        }
+      ]
     }
   }
 }

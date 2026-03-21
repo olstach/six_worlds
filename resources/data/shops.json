@@ -1236,6 +1236,28 @@
       "tabs": [
         "spells"
       ]
+    },
+
+    "steam_domain_shop": {
+      "name": "The Frog-Spirit's Teaching",
+      "type": "domain_spell_trainer",
+      "description": "The old frog settles onto the edge of the pool, pours two cups of tea, and begins to talk. What it knows about steam and the place where water meets fire cannot be found in any guild.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "steam_jet",
+        "fragrant_sauna",
+        "geyser",
+        "scalding_fog"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
     }
   }
 }
