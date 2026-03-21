@@ -8972,6 +8972,128 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "description": "Major black damage in large AoE"
+    },
+
+    "mudling": {
+      "name": "Mudling",
+      "subschool": "Summoning",
+      "schools": [
+        "Earth",
+        "Water"
+      ],
+      "level": 3,
+      "theme": "mud",
+      "domain": "mud",
+      "tags": [
+        "mud",
+        "summon",
+        "domain_spell"
+      ],
+      "mana_cost": 75,
+      "summon": "Mudling",
+      "summon_count": 3,
+      "target": {
+        "type": "ground"
+      },
+      "description": "Summon 3 Mudlings. High HP, physical resistance, slow on hit. Low damage."
+    },
+
+    "metal_to_mud": {
+      "name": "Metal to Mud",
+      "subschool": "Enchantment",
+      "schools": [
+        "Earth",
+        "Water"
+      ],
+      "level": 3,
+      "theme": "mud",
+      "domain": "mud",
+      "tags": [
+        "mud",
+        "debuff",
+        "armor",
+        "domain_spell"
+      ],
+      "mana_cost": 75,
+      "damage": null,
+      "duration": "spellpower",
+      "save_type": "Constitution",
+      "statuses_caused_on_failed_save": [
+        "Damage_Debuff",
+        "Armor_Reduced"
+      ],
+      "target": {
+        "type": "single",
+        "eligible": "enemy",
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+      },
+      "description": "Metal corrodes into useless mud. On failed Constitution save: reduces target's damage output and armor."
+    },
+
+    "rain_of_mud": {
+      "name": "Rain of Mud",
+      "subschool": "Sorcery",
+      "schools": [
+        "Earth",
+        "Water"
+      ],
+      "level": 5,
+      "theme": "mud",
+      "domain": "mud",
+      "tags": [
+        "mud",
+        "aoe",
+        "cc",
+        "domain_spell"
+      ],
+      "mana_cost": 225,
+      "damage": null,
+      "save_type": "Finesse",
+      "on_failed_save_random_one_of": [
+        "Blinded",
+        "Slowed",
+        "Disarmed"
+      ],
+      "target": {
+        "type": "aoe",
+        "eligible": "enemy"
+      },
+      "aoe": {
+        "type": "circle",
+        "base_size": 3,
+        "upgradeable": true,
+        "upgrade_scaling": "+1_radius_per_tier"
+      },
+      "description": "A torrent of mud crashes down. Each enemy that fails a Finesse save is afflicted by one of: Blinded, Slowed, or Disarmed (random)."
+    },
+
+    "mindmuck": {
+      "name": "Mindmuck",
+      "subschool": "Enchantment",
+      "schools": [
+        "Earth",
+        "Water"
+      ],
+      "level": 5,
+      "theme": "mud",
+      "domain": "mud",
+      "tags": [
+        "mud",
+        "debuff",
+        "mental",
+        "domain_spell"
+      ],
+      "mana_cost": 225,
+      "damage": null,
+      "duration": "spellpower",
+      "statuses_caused": [
+        "Mindmucked"
+      ],
+      "target": {
+        "type": "single",
+        "eligible": "enemy"
+      },
+      "description": "Flood a single mind with filth and confusion. Major debuff to Awareness and Focus. No save."
     }
   }
 }

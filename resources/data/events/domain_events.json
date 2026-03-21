@@ -1,0 +1,120 @@
+{
+  "comment": "Rare map events tied to special spell domains. Each grants access to domain spells on success. These events are realm-agnostic and can appear on any map where the domain is thematically appropriate (controlled by map_config).",
+  "events": {
+    "the_pit": {
+      "id": "the_pit",
+      "title": "The Pit",
+      "domain": "mud",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "The path descends into a vast muddy hollow. Dozens of mudlings — squat, glistening figures of animated muck — mill about in the thick brown sludge below. They have a crude camp of sorts: stacked bones, offerings of rusted metal, a clumsily drawn circle of wet earth in the center.\n\nOne large mudling turns its featureless face toward you. A sound like bubbling tar rises from its throat. The others still.",
+      "choices": [
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Attack. Clear the pit and take what they have.",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "mudling_colony",
+            "difficulty": "hard",
+            "on_victory": {
+              "type": "text",
+              "text": "The last mudling splatters apart. In the muck at the hollow's centre you find a smooth obsidian tablet etched with flowing glyphs — a record of mud-working techniques older than memory.",
+              "rewards": {
+                "xp": 80,
+                "spells": ["mudling", "metal_to_mud", "rain_of_mud", "mindmuck"]
+              },
+              "karma": {
+                "hell": 5,
+                "asura": 3
+              }
+            },
+            "on_defeat": {
+              "type": "text",
+              "text": "The mudlings drag you out of the pit and leave you face-down on the road. They do not kill — only humiliate."
+            }
+          }
+        },
+        {
+          "id": "bribe",
+          "type": "default",
+          "text": "Offer a valuable piece of equipment as tribute.",
+          "cost": {
+            "equipment": "valuable"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The large mudling reaches out a dripping limb and takes the offering. It sinks it reverently into the central circle. The colony burbles with apparent satisfaction.\n\nThen, slowly, the large one extends a clay-encrusted finger and draws something on your palm — a warm, tingling seal that fades into your skin.",
+            "rewards": {
+              "xp": 50,
+              "spells": ["mudling", "metal_to_mud", "rain_of_mud", "mindmuck"]
+            },
+            "karma": {
+              "animal": 4,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "earth_magic",
+          "type": "requirement",
+          "text": "Demonstrate mastery of earth. Let them see what the deep stone knows.",
+          "requirements": {
+            "skills": {
+              "earth_magic": 7
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You call stone and soil to your hands and let the deep vibration speak. The mudlings go utterly still. Then, one by one, they prostrate themselves in the mud — a gesture that must mean something profound in mudling culture.\n\nThe elder rises and presses both palms against your chest. The knowledge of mud flows into you like a slow tide.",
+            "rewards": {
+              "xp": 100,
+              "spells": ["mudling", "metal_to_mud", "rain_of_mud", "mindmuck"]
+            },
+            "karma": {
+              "god": 4,
+              "human": 3,
+              "animal": 2
+            }
+          }
+        },
+        {
+          "id": "mud_puppet_play",
+          "type": "roll",
+          "text": "Stage an impromptu mud puppet play for their entertainment.",
+          "requirements": {
+            "skills": {
+              "performance": 5
+            },
+            "roll": {
+              "attribute": "charm",
+              "difficulty": 13
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "You scoop up handfuls of mud and begin. Heroes, villains, a tragic love, a pratfall — the mudlings watch in transfixed silence, then erupt into a sound like a dozen mud geysers firing at once. Applause.\n\nThe elder mudling, visibly moved, teaches you everything it knows.",
+            "rewards": {
+              "xp": 90,
+              "spells": ["mudling", "metal_to_mud", "rain_of_mud", "mindmuck"]
+            },
+            "karma": {
+              "human": 5,
+              "animal": 4
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "Your puppet stumbles. Your plot collapses. The mudlings watch politely for a moment, then begin pelting you with clods. You flee the pit covered head to toe — but oddly, not harmed.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "animal": 2
+            }
+          }
+        }
+      ]
+    }
+  }
+}

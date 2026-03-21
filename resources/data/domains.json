@@ -1,0 +1,18 @@
+{
+  "comment": "Special spell domains: themed groups of spells at the intersection of two elements. Domain spells are not available in normal guilds — they are learned exclusively through rare map events tied to each domain. Future metaprogression may unlock them for guild purchase or attach domain-specific perks.",
+  "domains": {
+    "mud": {
+      "name": "Mud",
+      "elements": ["Earth", "Water"],
+      "theme": "Corruption, weight, tenacity. Mud endures and smothers.",
+      "spells": [
+        "mudling",
+        "metal_to_mud",
+        "rain_of_mud",
+        "mindmuck"
+      ],
+      "event": "the_pit",
+      "description": "Where earth and water meet without ceremony, mud is born — patient, heavy, and suffocating. Mud magic combines the endurance of earth with the corrosion of water: slow but relentless, hard to wash off."
+    }
+  }
+}

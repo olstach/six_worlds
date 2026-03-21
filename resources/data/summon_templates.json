@@ -1367,6 +1367,26 @@
       "base_accuracy": 78,
       "resistances": {"black": 50, "physical": 20},
       "tags": ["black", "undead"]
+    },
+    "Mudling": {
+      "display_name": "Mudling",
+      "base_hp": 50,
+      "base_mana": 0,
+      "base_stamina": 40,
+      "actions": 1,
+      "base_damage": 5,
+      "damage_type": "physical",
+      "base_initiative": 6,
+      "base_movement": 3,
+      "base_dodge": 8,
+      "base_armor": 15,
+      "base_crit": 0,
+      "base_accuracy": 0,
+      "resistances": {"physical": 40},
+      "on_hit": {
+        "Slowed": {"chance": 50}
+      },
+      "tags": ["earth", "water", "mud", "construct", "domain_mud"]
     }
   }
 }

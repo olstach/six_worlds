@@ -1938,6 +1938,37 @@
         "cleanse"
 	  ],
 	  "description": "Spirit broken \u2014 -10 accuracy and -10 armor."
+	},
+	{
+	  "name": "Disarmed",
+	  "type": "debuff",
+	  "category": "cc",
+	  "effects": [
+        "cannot_make_weapon_attacks"
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 2,
+	  "dispellable": true,
+	  "dispel_methods": [
+        "cleanse"
+	  ],
+	  "description": "Weapon torn from grasp \u2014 cannot make weapon attacks. Can still cast spells and move."
+	},
+	{
+	  "name": "Mindmucked",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
+        "awareness_penalty_major",
+        "focus_penalty_major"
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+        "cleanse",
+        "dispel"
+	  ],
+	  "description": "Mind clouded with filth \u2014 major penalty to Awareness and Focus."
 	}
   ]
 }
