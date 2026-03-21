@@ -9168,7 +9168,8 @@
         "type": "cone_forward",
         "base_size": 3,
         "upgradeable": true,
-        "upgrade_scaling": "+1_length_per_tier"
+        "upgrade_scaling": "+1_length_per_tier",
+        "note": "cone_forward targeting not yet implemented in combat_manager.gd — see TODO"
       },
       "description": "Scatter powdered glass in a cone in front of the caster. All enemies in the cone are Blinded for 3 turns."
     },
