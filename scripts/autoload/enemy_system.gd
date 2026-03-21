@@ -595,7 +595,7 @@ func _build_perks(guaranteed: Array) -> Array:
 		# Try to get perk name from PerkSystem
 		var perk_name = perk_id
 		if PerkSystem:
-			var perk_data = PerkSystem.get_perk(perk_id)
+			var perk_data = PerkSystem.get_perk_data(perk_id)
 			if not perk_data.is_empty():
 				perk_name = perk_data.get("name", perk_id)
 		perks.append({"id": perk_id, "name": perk_name})

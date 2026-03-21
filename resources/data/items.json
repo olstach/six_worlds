@@ -2607,6 +2607,16 @@
       "fragile": true,
       "durability": 20,
       "max_durability": 20
+    },
+    "ember_core": {
+      "name": "Ember Core",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 35,
+      "description": "A smouldering sphere of compressed hellfire, warm to the touch. Used as a reagent in fire rituals and alchemical processes.",
+      "supply_type": "reagents",
+      "supply_amount": 8
     }
   },
   "item_types": {

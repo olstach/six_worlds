@@ -8972,6 +8972,108 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "description": "Major black damage in large AoE"
+    },
+    "immolate": {
+      "name": "Immolate",
+      "subschool": "Sorcery",
+      "schools": [
+        "Fire"
+      ],
+      "level": 3,
+      "theme": "fire",
+      "tags": [
+        "fire",
+        "damage",
+        "dot"
+      ],
+      "mana_cost": 40,
+      "damage": 30,
+      "damage_type": "fire",
+      "statuses_caused": [
+        "Burning"
+      ],
+      "special": {
+        "bonus_burning_stacks": 2
+      },
+      "target": {
+        "type": "single",
+        "eligible": "enemy",
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+      },
+      "description": "Engulf target in flames, dealing fire damage and applying heavy burning"
+    },
+    "poison_dart": {
+      "name": "Poison Dart",
+      "subschool": "Sorcery",
+      "schools": [
+        "Water",
+        "Black"
+      ],
+      "level": 1,
+      "theme": "poison",
+      "tags": [
+        "poison",
+        "damage",
+        "dot"
+      ],
+      "mana_cost": 15,
+      "damage": 8,
+      "damage_type": "poison",
+      "statuses_caused": [
+        "Poisoned"
+      ],
+      "target": {
+        "type": "single",
+        "eligible": "enemy"
+      },
+      "description": "A venomous projectile that poisons the target"
+    },
+    "splash": {
+      "name": "Splash",
+      "subschool": "Sorcery",
+      "schools": [
+        "Water"
+      ],
+      "level": 1,
+      "theme": "water",
+      "tags": [
+        "water",
+        "damage"
+      ],
+      "mana_cost": 15,
+      "damage": 12,
+      "damage_type": "water",
+      "target": {
+        "type": "single",
+        "eligible": "enemy"
+      },
+      "description": "A burst of conjured water strikes the target"
+    },
+    "vampiric_touch": {
+      "name": "Vampiric Touch",
+      "subschool": "Sorcery",
+      "schools": [
+        "Black"
+      ],
+      "level": 2,
+      "theme": "vampiric",
+      "tags": [
+        "vampiric",
+        "damage",
+        "heal"
+      ],
+      "mana_cost": 40,
+      "damage": 20,
+      "damage_type": "black",
+      "special": {
+        "heal_for_damage_dealt": true
+      },
+      "target": {
+        "type": "single",
+        "eligible": "enemy",
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
+      },
+      "description": "Drain life from target, healing caster for damage dealt"
     }
   }
 }
