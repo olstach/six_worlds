@@ -144,7 +144,7 @@ Last Updated: 2026-03-15 (session 10, audited)
 
 ### Data Files
 - [x] spells.json (326 spells across 10 schools)
-- [ ] **spells.json: add subschool to `schools` array for all spells** — Sorcery/Enchantment/Summoning subschool spells currently don't list their subschool in `schools`, only element schools. White and Black are already included correctly. A pure Sorcery/Enchantment/Summoning build should be able to cast these spells; doing a sweep to add the missing entries consistently across all spells.
+- [x] ~~**spells.json: add subschool to `schools` array for all spells**~~ — Sorcery/Enchantment/Summoning subschool spells currently don't list their subschool in `schools`, only element schools. White and Black are already included correctly. A pure Sorcery/Enchantment/Summoning build should be able to cast these spells; doing a sweep to add the missing entries consistently across all spells.
 - [x] statuses.json (80+ status effects, fully reworked)
 - [x] items.json (weapons, armor, accessories, consumables, bombs, oils, talismans, scrolls × 17)
 - [x] races.json (22 races across all 6 realms + 25 backgrounds)
