@@ -160,19 +160,160 @@ Weapons jut from the earth like iron flowers. The ground is more bone than dirt.
 
 ---
 
-## Future Batches (rough outline)
+---
 
-### Batch 2 (events 21–40): More encounters + companion recruits
-- Vetala companion recruit events (need companion data)
-- Skeleton companion recruit events
-- More combat encounters per zone
-- Sacred grove / spell guild events
-- Veterans' camp event
-- Yogini circle equivalent
+## Batch 2: Events 21–40
+
+### 21. hg_vetala_trickster — "The Trickster"
+A vetala disguised as a living traveler waves you down. "Thank the gods, another living soul! This place is horrible!" Something about the smile is wrong — too many teeth, held too long.
+- **See through the disguise** (requirement: awareness 15) — call it out, the vetala laughs and offers a genuine trade, item + XP
+- **Play along** (default) — it leads you into an ambush, combat vs vetala_pack
+- **Challenge it directly** (default) — combat vs vetala_scout, straightforward
+- **Use guile right back** (roll: guile DC 14) — out-trick the trickster, success: it's impressed, teaches you a thievery technique (XP) / fail: ambush as above
+
+### 22. hg_drowned_temple — "The Drowned Temple"
+Half-sunken in the swamp, a temple's spire still rises above the black water. Faded murals of bodhisattvas peer out from the waterline. Something hums inside — a prayer wheel, still turning.
+- **Swim inside** (roll: constitution DC 13) — success: find a shrine with offerings (gold + item) / fail: combat vs bog_zombie in tight quarters
+- **Pray from outside** (default) — small god karma, minor XP
+- **Use water magic to part the waters** (requirement: water_magic 3) — enter safely, large loot + god karma + XP
+- **Salvage building materials** (requirement: crafting 2) — strip useful materials, get crafting supplies, neutral karma
+
+### 23. hg_skeleton_patrol — "Bone Patrol"
+Four skeletons in mismatched armor march in tight formation. Their sergeant — distinguishable only by a dented helmet — holds up a bony hand. "Halt. State your business in the King's domain."
+- **State your business honestly** (default) — they let you pass, text
+- **Claim to be an emissary** (roll: charm DC 13) — success: escorted safely, XP / fail: they see through it, combat vs skeleton_patrol
+- **Show a trade pass** (requirement: trade 2) — recognized as a merchant, safe passage + directions to the nearest town
+- **Fight your way through** (default) — combat vs skeleton_patrol, asura karma
+
+### 24. hg_forgotten_shrine — "Forgotten Shrine"
+A small roadside shrine, half-buried in dust. The offering bowl is empty. The carved face of the deity has worn smooth — you can't tell who it once depicted.
+- **Leave an offering** (default) — costs gold, god karma, small blessing (temporary stat buff text)
+- **Restore the shrine** (requirement: crafting 2) — rebuild it properly, large god karma + XP
+- **Meditate before it** (requirement: yoga 1) — brief vision of the shrine's history, XP + lore
+- **Take the offering bowl** (default) — it's well-made, get item, hungry_ghost karma
+
+### 25. hg_rolang_horde — "The Horde"
+The ground trembles. Over the ridge, a mass of rolangs shuffles forward — dozens, maybe hundreds. Not aggressive, just... moving. A tide of the mindless dead flowing toward something you can't see.
+- **Get out of the way** (default) — safe, text, small XP
+- **Try to redirect them** (requirement: leadership 3) — herd them away from a settlement, large human + god karma, XP
+- **Stand your ground** (default) — combat vs rolang_mob (hard difficulty), asura karma
+- **Follow them** (requirement: awareness 13) — discover where they're going, lore + large XP
+
+### 26. hg_alchemist_camp — "The Alchemist"
+A dré — a bodiless ghost inhabiting a suit of robes stuffed with herbs — floats above a bubbling cauldron. Jars of questionable substances line makeshift shelves. "Customer or ingredient?" it asks cheerfully.
+- **Buy potions** (default) — purchase healing/mana potions at good prices, text
+- **Assist with brewing** (requirement: alchemy 3) — help create something powerful, get rare potion + XP
+- **Ask about the cauldron's contents** (requirement: medicine 2) — learn a recipe, XP + alchemy knowledge
+- **Knock over the cauldron** (default) — the dré attacks, combat vs charnel_wraith, chaotic karma
+
+### 27. hg_bone_arena_event — "The Bone Pit"
+A circular pit ringed with skull-topped posts. Skeletons sit in the stands, clicking their jaws in anticipation. A skeleton announcer calls out: "Fresh meat! Who wants to test the newcomer?"
+- **Accept the challenge** (default) — combat vs skeleton_warrior, win = gold + XP + reputation
+- **Bet on a fight** (default) — costs gold, roll luck DC 12 for double return or lose it
+- **Offer to fight the champion** (requirement: strength 15) — harder combat vs skeleton_elite, much better rewards
+- **Work the crowd** (roll: performance DC 13) — success: earn tips as entertainer, gold + human karma / fail: booed, pelted with bones (minor damage)
+
+### 28. hg_ghost_light — "Ghost Lights"
+Pale blue flames dance above the swamp surface, drifting slowly deeper into the mire. They're beautiful. They're clearly a trap. And yet, they seem to be leading somewhere specific.
+- **Follow them carefully** (roll: awareness DC 14) — success: led to hidden treasure cache / fail: led into quicksand, take damage
+- **Ignore them** (default) — safe, text
+- **Use fire magic to communicate** (requirement: fire_magic 2) — the lights respond; they're souls, not traps. They show you a safe path + item
+- **Extinguish them** (requirement: water_magic 1) — they're freed, god karma + XP
+
+### 29. hg_veterans_camp_event — "The Old Guard"
+A fortified camp of veteran undead soldiers. These aren't mindless — they maintain discipline, run drills, keep watch. A grizzled skeleton missing half its ribcage sits by the fire. "We remember what we were. That's more than most here can say."
+- **Enter the camp** (default) → shop: hg_veterans_camp
+- **Ask for combat training** (requirement: swords 1 or axes 1 or maces 1) — sparring session, XP in combat skills
+- **Share news from the living world** (default) — they're grateful, small XP + human karma
+- **Challenge their best fighter** (roll: strength DC 15) — success: earn a weapon + large XP / fail: beaten but respected, small XP
+
+### 30. hg_crying_river — "The River of Tears"
+A river of black water flows silently through the wasteland. The surface ripples with faces — the crying dead, trapped in the current. A ferryman waits on the bank, pole in hand. He is enormous. He does not speak.
+- **Pay for passage** (default) — costs gold, safe crossing
+- **Swim across** (roll: constitution DC 14) — success: save gold / fail: dragged under, take heavy damage, washed up downstream
+- **Speak to the faces in the water** (requirement: yoga 2) — commune with the trapped souls, god karma + XP + lore
+- **Offer to help the ferryman** (requirement: might 2) — pole the raft yourself, earn free passage + the ferryman's respect (future event flag)
+
+### 31. hg_gyelpo_court — "The Sorcerer's Court"
+A ruined palace, still grand in its decay. A gyelpo — a dead sorcerer of terrible power — holds court here, attended by bound spirits. "I ruled in life. I rule in death. What makes you think I'd stop for something as trivial as dying?"
+- **Pay respects** (default) — the gyelpo is pleased, grants safe passage + minor blessing text
+- **Request an audience** (requirement: charm 14) — negotiate for information or magical aid, XP + spell learning opportunity
+- **Challenge their authority** (default) — combat vs corpse_sorcerer (hard), asura karma
+- **Offer magical knowledge** (requirement: focus 15) — exchange spells, learn a new spell + XP
+
+### 32. hg_fungal_grove — "The Fungal Grove"
+Enormous mushrooms grow from the bodies of the dead, some taller than trees. The air is thick with spores. Faint whispers echo — the fungi seem to be... communicating.
+- **Harvest mushrooms** (requirement: alchemy 2) — gather rare reagents, XP
+- **Listen to the whispers** (requirement: awareness 14) — the fungi share memories of the dead they grow from, lore + XP
+- **Push through quickly** (roll: constitution DC 12) — success: pass unaffected / fail: hallucinations (temporary debuff)
+- **Burn a path through** (default) — fire clears the way, lose potential reagents, small XP
+
+### 33. hg_dralha_warband — "The Dead King's Warband"
+A dralha — an undead warrior-king — rides at the head of a column of skeleton soldiers. Banners of a forgotten kingdom snap in a wind that doesn't exist. The dralha raises a gauntleted fist and the column halts. "You. You have the look of a fighter."
+- **Accept a commission** (default) — join a raid against a rolang horde, combat vs rolang_mob, paid in gold + XP + asura karma
+- **Decline politely** (requirement: charm 13) — no offense taken, safe passage
+- **Challenge the dralha** (default) — combat vs skeleton_elite (very hard), win = legendary weapon + large XP
+- **Offer intelligence** (requirement: learning 2) — share tactical knowledge, earn their respect, XP + safe passage + human karma
+
+### 34. hg_whispering_bones — "The Whispering Bones"
+Scattered bones on the ground begin to whisper as you pass. Each bone holds a fragment of memory — a name, a regret, a last wish. The whispers grow louder the longer you stay.
+- **Listen patiently** (default) — hear their stories, XP + god karma, takes time
+- **Collect the bones** (requirement: ritual 2) — perform a bone-gathering ceremony, large god karma + XP
+- **Block out the sound** (roll: focus DC 13) — success: resist the distraction / fail: overwhelmed, temporary confusion debuff
+- **Speak their names** (requirement: black_magic 2) — give them voice, they share secrets (reveal hidden location or item cache)
+
+### 35. hg_charnel_sorcerer_event — "The Charnel Sorcerer"
+In a cave hung with bones and dried entrails, a vetala sorcerer works dark rituals. Candles made from human fat cast a greasy light. "I don't get many visitors. Most find the décor off-putting. Can't imagine why."
+- **Seek magical training** (default) → shop: hg_charnel_sorcerer
+- **Ask about forbidden knowledge** (requirement: black_magic 3) — learn about advanced necromancy, XP + lore
+- **Trade spell components** (requirement: alchemy 2) — exchange reagents for potions or scrolls
+- **Attempt to disrupt the ritual** (default) — combat vs corpse_sorcerer, god karma but dangerous
+
+### 36. hg_lost_caravan — "The Lost Caravan"
+Overturned carts and scattered goods. The caravan guards are dead — properly dead, not undead. Something attacked them recently. Tracks lead into the swamp. The goods are still here.
+- **Take what you can carry** (default) — get items + gold, hungry_ghost karma
+- **Search for survivors** (requirement: medicine 2) — find one barely alive, save them for god + human karma, XP
+- **Track the attackers** (requirement: awareness 13) — follow the trail, combat vs carrion_flock, recover the rest of the goods
+- **Bury the dead** (requirement: yoga 1) — perform rites, god karma + XP, no loot
+
+### 37. hg_mirror_pool — "The Mirror Pool"
+A pool of perfectly still, perfectly clear water in the middle of the wasteland. It shows not your reflection but... something else. Your past life. Your death. Your next incarnation.
+- **Look into the pool** (default) — see a vision of your karma balance (hint about current highest realm), XP
+- **Drink from the pool** (roll: constitution DC 14) — success: temporary stat boost / fail: temporary stat drain (visions overwhelm)
+- **Meditate beside it** (requirement: yoga 3) — deep insight into the cycle of rebirth, large god karma + XP
+- **Shatter the surface** (default) — the vision breaks. You feel lighter but uncertain. Hungry_ghost karma removed, god karma added
+
+### 38. hg_shaza_ambush — "The Hunters"
+A shaza pack has been tracking you — body-snatching predators that crave living flesh above all else. You spot them circling just as they realize you've noticed.
+- **Stand and fight** (default) — combat vs undead_convergence, straightforward
+- **Set a trap** (requirement: guile 3) — lure them into a kill zone, easier combat + bonus XP
+- **Climb to high ground** (roll: finesse DC 13) — success: avoid them entirely / fail: fight at a disadvantage
+- **Play dead** (roll: guile DC 15) — success: they pass you by (ironic) / fail: they're not fooled, combat with surprise round against you
+
+### 39. hg_singing_skull — "The Singing Skull"
+A skull sits atop a cairn of stones, humming a melody. When you approach, it opens its jaw wider: "Oh, a listener! I used to be a bard, you know. Died mid-song. Very embarrassing. Would you like to hear how it ends?"
+- **Listen to the song** (default) — it's actually beautiful, XP + human karma, temporary morale boost
+- **Sing along** (roll: performance DC 11) — success: duet unlocks a magical harmony, XP + temporary buff / fail: off-key, the skull is politely disappointed
+- **Ask how it died** (default) — funny/tragic story, lore + small XP
+- **Offer to carry it to an audience** (requirement: comedy 2) — the skull is overjoyed, becomes a temporary trinket that grants comedy bonus
+
+### 40. hg_mass_grave — "The Mass Grave"
+The ground sinks. You realize you're standing on a mass burial site — hundreds, maybe thousands of dead from some forgotten catastrophe. The earth pulses with dark energy.
+- **Leave immediately** (default) — safe, text
+- **Investigate carefully** (roll: awareness DC 14) — success: find burial goods, item + gold / fail: disturb the dead, combat vs rolang_mob
+- **Consecrate the site** (requirement: white_magic 3 or ritual 3) — massive undertaking, very large god karma + XP
+- **Channel the dark energy** (requirement: black_magic 4) — absorb necromantic power, large XP + hungry_ghost karma, learn a spell
+
+---
+
+## Future Batch (rough outline)
 
 ### Batch 3 (events 41–60+): Advanced + boss events
-- Skeleton King encounter (major event)
-- Charnel ground boss events
-- Rare/unique encounters
-- Realm-exit events
-- More shops and training opportunities
+- Skeleton King encounter (major multi-stage event)
+- Charnel ground vetala elder boss
+- Companion recruit events (need companion definitions first)
+- Spell guild events (sacred grove, naga temple equivalents)
+- Yogini circle equivalent for hungry ghost
+- Realm-exit / transition events
+- Rare unique encounters (golden skeleton sage, turquoise skeleton dancer)
+- More zone-specific flavor events
