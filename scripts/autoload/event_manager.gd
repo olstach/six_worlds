@@ -446,6 +446,26 @@ func apply_outcome(outcome: Dictionary) -> void:
 				else:
 					print("EventManager: Unknown item '%s', skipping" % item_id)
 
+		# Attribute loss — e.g. {"which": "random", "amount": 1} to lose a point
+		# Used by events like the_smoking_mirror (look into the mirror).
+		# "which" can be "random" or a specific attribute name.
+		if "attribute_loss" in rewards:
+			var loss = rewards.attribute_loss
+			var amount: int = int(loss.get("amount", 1))
+			var which: String = loss.get("which", "random")
+			var player = CharacterSystem.get_player()
+			if player and "attributes" in player:
+				var all_attrs = ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"]
+				var chosen_attr: String
+				if which == "random":
+					chosen_attr = all_attrs[randi() % all_attrs.size()]
+				elif which in all_attrs:
+					chosen_attr = which
+				if not chosen_attr.is_empty():
+					player.attributes[chosen_attr] = max(1, int(player.attributes[chosen_attr]) - amount)
+					CharacterSystem.update_derived_stats(player)
+					print("EventManager: %s lost %d %s (attribute_loss)" % [player.name, amount, chosen_attr])
+
 		# Skill gain — e.g. {"skill": "water_magic", "amount": 1, "cap": 6}
 		if "skill_up" in rewards:
 			var su = rewards.skill_up

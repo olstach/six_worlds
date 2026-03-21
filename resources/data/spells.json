@@ -3310,15 +3310,18 @@
       "name": "Smoke Form",
       "subschool": "Enchantment",
       "schools": [
-        "Fire"
+        "Fire",
+        "Earth"
       ],
       "level": 7,
       "theme": "smoke",
+      "domain": "smoke",
       "tags": [
         "smoke",
         "buff",
         "defensive",
-        "mobility"
+        "mobility",
+        "domain_spell"
       ],
       "mana_cost": 135,
       "duration": "spellpower",
@@ -3460,14 +3463,17 @@
       "name": "Smoke Imp",
       "subschool": "Summoning",
       "schools": [
-        "Fire"
+        "Fire",
+        "Earth"
       ],
       "level": 5,
       "theme": "smoke",
+      "domain": "smoke",
       "tags": [
         "smoke",
         "summon",
-        "demon"
+        "demon",
+        "domain_spell"
       ],
       "mana_cost": 75,
       "summon": "Smoke_Imp",
@@ -3615,14 +3621,17 @@
       "name": "Smoke Cloud",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Earth"
       ],
       "level": 1,
       "theme": "smoke",
+      "domain": "smoke",
       "tags": [
         "smoke",
         "utility",
-        "terrain"
+        "terrain",
+        "domain_spell"
       ],
       "mana_cost": 15,
       "duration": "spellpower",
@@ -3833,14 +3842,17 @@
       "name": "Choking Smoke",
       "subschool": "Sorcery",
       "schools": [
-        "Fire"
+        "Fire",
+        "Earth"
       ],
       "level": 5,
       "theme": "smoke",
+      "domain": "smoke",
       "tags": [
         "smoke",
         "damage",
-        "cc"
+        "cc",
+        "domain_spell"
       ],
       "mana_cost": 75,
       "damage": 30,

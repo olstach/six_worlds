@@ -1,6 +1,19 @@
 {
   "comment": "Special spell domains: themed groups of spells at the intersection of two elements. Domain spells are not available in normal guilds — they are learned exclusively through rare map events tied to each domain. Future metaprogression may unlock them for guild purchase or attach domain-specific perks.",
   "domains": {
+    "smoke": {
+      "name": "Smoke",
+      "elements": ["Earth", "Fire"],
+      "theme": "Concealment, suffocation, transformation. Smoke obscures and corrupts.",
+      "spells": [
+        "smoke_cloud",
+        "smoke_imp",
+        "choking_smoke",
+        "smoke_form"
+      ],
+      "event": "the_smoking_mirror",
+      "description": "Where fire meets earth, smoke is born — neither solid nor flame, a thing between states. Smoke magic inherits fire's hunger and earth's patience: it lingers, it blinds, it creeps into lungs and minds. The Smoking Mirror is its emblem: a surface that shows not the world but what the world hides."
+    },
     "mud": {
       "name": "Mud",
       "elements": ["Earth", "Water"],

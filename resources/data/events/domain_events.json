@@ -94,6 +94,67 @@
           }
         }
       ]
+    },
+
+    "the_smoking_mirror": {
+      "id": "the_smoking_mirror",
+      "title": "The Smoking Mirror",
+      "domain": "smoke",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "In a clearing where ash drifts like snow, a mirror stands alone — black obsidian framed in tarnished silver, taller than a person, tilted slightly as if to catch a sky it has no interest in showing you.\n\nThe surface does not reflect. It smokes. Slow dark coils rise from the glass and dissipate without smell or warmth. Where your reflection should be, there is only depth — and somewhere in that depth, something moves.",
+      "choices": [
+        {
+          "id": "look",
+          "type": "default",
+          "text": "Look into the mirror.",
+          "outcome": {
+            "type": "text",
+            "text": "You hold its gaze for a long moment. The smoke parts. You see yourself — but wrong. Every flaw magnified, every failure given a face. Something in you is diminished by the looking.\n\nYou tear your eyes away. The mirror shows nothing again.",
+            "rewards": {
+              "xp": 5,
+              "attribute_loss": {"which": "random", "amount": 1}
+            },
+            "karma": {
+              "human": 2,
+              "hell": 2
+            }
+          }
+        },
+        {
+          "id": "ritual_mirror",
+          "type": "requirement",
+          "text": "Recognize the mirror for what it is. Hold up your own mirror to face it.",
+          "requirements": {
+            "skills": {
+              "ritual": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "smoke_domain_shop",
+            "text": "You have seen this described in the old texts: a Tezcatlipoca-mirror, a devourer of reflections. You produce your own mirror — polished bronze, consecrated — and hold it to face the black glass.\n\nThe two mirrors lock. The smoke rushes between them in a furious loop, finds no victim, and exhausts itself. The obsidian surface is still. In the silence, the knowledge of smoke rises in you like cooling ash.",
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "strike",
+          "type": "default",
+          "text": "Strike the mirror. Whatever is in there, drag it out.",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "smoking_mirror_combat",
+            "difficulty": "hard",
+            "karma": {
+              "asura": 4,
+              "hell": 3
+            }
+          }
+        }
+      ]
     }
   }
 }

@@ -1153,6 +1153,27 @@
         "training"
       ]
     },
+    "smoke_domain_shop": {
+      "name": "Whispers of the Shattered Mirror",
+      "type": "domain_spell_trainer",
+      "description": "Knowledge gleaned from smoke and reflection. These arts cannot be taught in any guild — only glimpsed in the mirror's darkness.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "smoke_cloud",
+        "smoke_imp",
+        "choking_smoke",
+        "smoke_form"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
     "mud_domain_shop": {
       "name": "Mudling Elder's Teaching",
       "type": "domain_spell_trainer",
