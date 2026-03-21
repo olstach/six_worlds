@@ -1152,6 +1152,27 @@
         "items",
         "training"
       ]
+    },
+    "mud_domain_shop": {
+      "name": "Mudling Elder's Teaching",
+      "type": "domain_spell_trainer",
+      "description": "The elder mudling has agreed to teach the secrets of mud-working. These spells cannot be found in any guild — buy now or lose the chance.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "mudling",
+        "metal_to_mud",
+        "rain_of_mud",
+        "mindmuck"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
     }
   }
 }

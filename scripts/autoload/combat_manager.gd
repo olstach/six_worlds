@@ -2329,6 +2329,39 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 		_apply_status_effect(target, status_name, duration, 0, caster)
 		result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
 
+	# --- Status effects on failed save (from spell.statuses_caused_on_failed_save) ---
+	# Used by spells like metal_to_mud: all listed statuses are applied only if the target fails
+	# a saving throw. save_type names an attribute ("constitution", "finesse", etc.)
+	var save_statuses = spell.get("statuses_caused_on_failed_save", [])
+	if not save_statuses.is_empty():
+		var save_attr = spell.get("save_type", "constitution").to_lower()
+		var save_dur_field = spell.get("duration", null)
+		var save_duration = 3
+		if save_dur_field is int or save_dur_field is float:
+			save_duration = int(save_dur_field)
+		elif save_dur_field == "spellpower":
+			save_duration = maxi(1, 2 + int(bonus * 0.1))
+		if not _perform_save_roll(target, save_attr):  # false = failed save = effect applies
+			for status_name in save_statuses:
+				_apply_status_effect(target, status_name, save_duration, 0, caster)
+				result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
+
+	# --- Random status on failed save (from spell.on_failed_save_random_one_of) ---
+	# Used by spells like rain_of_mud: one random status from the list is applied on failed save.
+	var random_statuses = spell.get("on_failed_save_random_one_of", [])
+	if not random_statuses.is_empty():
+		var rand_save_attr = spell.get("save_type", "finesse").to_lower()
+		var rand_dur_field = spell.get("duration", null)
+		var rand_duration = 3
+		if rand_dur_field is int or rand_dur_field is float:
+			rand_duration = int(rand_dur_field)
+		elif rand_dur_field == "spellpower":
+			rand_duration = maxi(1, 2 + int(bonus * 0.1))
+		if not _perform_save_roll(target, rand_save_attr):
+			var chosen_status = random_statuses[randi() % random_statuses.size()]
+			_apply_status_effect(target, chosen_status, rand_duration, 0, caster)
+			result.effects_applied.append({"type": "status", "status": chosen_status, "applied": true})
+
 	# --- Status removal (from spell.statuses_removed) ---
 	var statuses_removed = spell.get("statuses_removed", [])
 	if not statuses_removed.is_empty():

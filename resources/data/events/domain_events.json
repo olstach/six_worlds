@@ -1,5 +1,5 @@
 {
-  "comment": "Rare map events tied to special spell domains. Each grants access to domain spells on success. These events are realm-agnostic and can appear on any map where the domain is thematically appropriate (controlled by map_config).",
+  "comment": "Rare map events tied to special spell domains. Each opens a domain-exclusive shop on success — the only way to acquire those spells. Realm-agnostic; availability controlled by map_config.",
   "events": {
     "the_pit": {
       "id": "the_pit",
@@ -12,26 +12,14 @@
         {
           "id": "fight",
           "type": "default",
-          "text": "Attack. Clear the pit and take what they have.",
+          "text": "Attack. Clear the pit.",
           "outcome": {
             "type": "combat",
             "enemy_group": "mudling_colony",
             "difficulty": "hard",
-            "on_victory": {
-              "type": "text",
-              "text": "The last mudling splatters apart. In the muck at the hollow's centre you find a smooth obsidian tablet etched with flowing glyphs — a record of mud-working techniques older than memory.",
-              "rewards": {
-                "xp": 80,
-                "spells": ["mudling", "metal_to_mud", "rain_of_mud", "mindmuck"]
-              },
-              "karma": {
-                "hell": 5,
-                "asura": 3
-              }
-            },
-            "on_defeat": {
-              "type": "text",
-              "text": "The mudlings drag you out of the pit and leave you face-down on the road. They do not kill — only humiliate."
+            "karma": {
+              "hell": 5,
+              "asura": 3
             }
           }
         },
@@ -43,12 +31,9 @@
             "equipment": "valuable"
           },
           "outcome": {
-            "type": "text",
-            "text": "The large mudling reaches out a dripping limb and takes the offering. It sinks it reverently into the central circle. The colony burbles with apparent satisfaction.\n\nThen, slowly, the large one extends a clay-encrusted finger and draws something on your palm — a warm, tingling seal that fades into your skin.",
-            "rewards": {
-              "xp": 50,
-              "spells": ["mudling", "metal_to_mud", "rain_of_mud", "mindmuck"]
-            },
+            "type": "shop",
+            "shop_id": "mud_domain_shop",
+            "text": "The large mudling reaches out a dripping limb and takes the offering. It sinks it reverently into the central circle. The colony burbles with apparent satisfaction. The elder turns back to you, willing to share what it knows.",
             "karma": {
               "animal": 4,
               "human": 3
@@ -65,12 +50,9 @@
             }
           },
           "outcome": {
-            "type": "text",
-            "text": "You call stone and soil to your hands and let the deep vibration speak. The mudlings go utterly still. Then, one by one, they prostrate themselves in the mud — a gesture that must mean something profound in mudling culture.\n\nThe elder rises and presses both palms against your chest. The knowledge of mud flows into you like a slow tide.",
-            "rewards": {
-              "xp": 100,
-              "spells": ["mudling", "metal_to_mud", "rain_of_mud", "mindmuck"]
-            },
+            "type": "shop",
+            "shop_id": "mud_domain_shop",
+            "text": "You call stone and soil to your hands and let the deep vibration speak. The mudlings go utterly still. Then, one by one, they prostrate themselves in the mud. The elder rises and presses both palms against your chest — it recognises a peer, and is willing to teach.",
             "karma": {
               "god": 4,
               "human": 3,
@@ -92,12 +74,9 @@
             }
           },
           "outcome_success": {
-            "type": "text",
-            "text": "You scoop up handfuls of mud and begin. Heroes, villains, a tragic love, a pratfall — the mudlings watch in transfixed silence, then erupt into a sound like a dozen mud geysers firing at once. Applause.\n\nThe elder mudling, visibly moved, teaches you everything it knows.",
-            "rewards": {
-              "xp": 90,
-              "spells": ["mudling", "metal_to_mud", "rain_of_mud", "mindmuck"]
-            },
+            "type": "shop",
+            "shop_id": "mud_domain_shop",
+            "text": "Heroes, villains, a tragic love, a pratfall — the mudlings erupt into a sound like a dozen mud geysers firing at once. Applause. The elder mudling, visibly moved, gestures toward the central circle. You are welcome to learn.",
             "karma": {
               "human": 5,
               "animal": 4
