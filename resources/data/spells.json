@@ -9226,6 +9226,132 @@
         "type": "ground"
       },
       "description": "Place an invisible glass mine on the ground. Explodes on enemy contact: moderate slashing damage + guaranteed Bleeding to all within 2 tiles."
+    },
+
+    "scattered_light": {
+      "name": "Scattered Light",
+      "subschool": "Sorcery",
+      "schools": [
+        "Earth",
+        "Space"
+      ],
+      "level": 2,
+      "theme": "crystal",
+      "domain": "crystal",
+      "tags": [
+        "crystal",
+        "damage",
+        "aoe",
+        "cc",
+        "domain_spell"
+      ],
+      "mana_cost": 40,
+      "damage": 10,
+      "damage_type": "space",
+      "on_failed_save_random_one_of": [
+        "Blinded"
+      ],
+      "save_type": "Awareness",
+      "duration": 1,
+      "target": {
+        "type": "aoe",
+        "eligible": "enemy"
+      },
+      "aoe": {
+        "type": "circle",
+        "base_size": 4,
+        "upgradeable": true,
+        "upgrade_scaling": "+1_radius_per_tier"
+      },
+      "description": "Shatter light into the eyes of all nearby enemies. Light space damage; 50% chance to Blind for 1 turn (Awareness save)."
+    },
+
+    "crystal_guardian": {
+      "name": "Crystal Guardian",
+      "subschool": "Summoning",
+      "schools": [
+        "Earth",
+        "Space"
+      ],
+      "level": 4,
+      "theme": "crystal",
+      "domain": "crystal",
+      "tags": [
+        "crystal",
+        "summon",
+        "construct",
+        "domain_spell"
+      ],
+      "mana_cost": 135,
+      "summon": "Crystal_Guardian",
+      "target": {
+        "type": "ground"
+      },
+      "description": "Grow an immobile crystal formation. High resistances to everything except crushing damage. Each turn it fires a space-damage laser at the nearest enemy."
+    },
+
+    "crystal_diadem": {
+      "name": "Crystal Diadem",
+      "subschool": "Enchantment",
+      "schools": [
+        "Earth",
+        "Space"
+      ],
+      "level": 4,
+      "theme": "crystal",
+      "domain": "crystal",
+      "tags": [
+        "crystal",
+        "buff",
+        "fragile",
+        "domain_spell"
+      ],
+      "mana_cost": 135,
+      "duration": "spellpower",
+      "statuses_caused": [
+        "Crystal_Diadem"
+      ],
+      "target": {
+        "type": "single",
+        "eligible": "ally",
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+      },
+      "description": "Crown the target with living crystal. Major Focus and Awareness bonus. 50% chance to shatter and be lost whenever the wearer takes damage."
+    },
+
+    "crystal_light": {
+      "name": "Crystal Light",
+      "subschool": "Enchantment",
+      "schools": [
+        "Earth",
+        "Space"
+      ],
+      "level": 4,
+      "theme": "crystal",
+      "domain": "crystal",
+      "tags": [
+        "crystal",
+        "utility",
+        "reveal",
+        "domain_spell"
+      ],
+      "mana_cost": 135,
+      "special": {
+        "dispels_all_battlefield": [
+          "Invisible",
+          "Blurred",
+          "Shadow_Cloaked",
+          "Smoke_Form",
+          "Chameleon",
+          "Shimmering",
+          "Phasing",
+          "Mirror_Images"
+        ]
+      },
+      "target": {
+        "type": "battlefield"
+      },
+      "description": "Flood the battlefield with pure crystal light. Instantly removes all stealth, invisibility, blur, smoke-form, and illusion effects from every unit on the field — allies and enemies alike."
     }
   }
 }

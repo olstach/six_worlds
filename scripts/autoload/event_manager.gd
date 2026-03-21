@@ -580,6 +580,11 @@ func apply_outcome(outcome: Dictionary) -> void:
 			if gold_amount > 0:
 				GameState.spend_gold(gold_amount)
 				print("EventManager: Spent %d gold" % gold_amount)
+		if "food" in cost:
+			var food_amount = _resolve_food_cost(cost.food)
+			if food_amount > 0:
+				GameState.consume_supplies("food", food_amount)
+				print("EventManager: Consumed %d food" % food_amount)
 
 	# Apply karma changes
 	if "karma" in outcome:
@@ -636,6 +641,16 @@ func _resolve_gold_cost(amount) -> int:
 			return 15  # "some gold and food"
 		_:
 			return 0
+
+## Convert descriptive food cost strings to concrete amounts.
+func _resolve_food_cost(amount) -> int:
+	if amount is int or amount is float:
+		return int(amount)
+	match str(amount):
+		"small":    return 5
+		"moderate": return 15
+		"large":    return 30
+		_:          return 0
 
 ## Get a random event for a specific realm
 func get_random_event_for_realm(realm: String) -> String:

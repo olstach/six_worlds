@@ -1153,6 +1153,27 @@
         "training"
       ]
     },
+    "crystal_domain_shop": {
+      "name": "The Yogi's Teaching",
+      "type": "domain_spell_trainer",
+      "description": "The yogi shares what he knows with those who approach in the right spirit. The spells he teaches are not found in any guild.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "scattered_light",
+        "crystal_guardian",
+        "crystal_diadem",
+        "crystal_light"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
     "glass_domain_shop": {
       "name": "Fragments of the Glass Mountain",
       "type": "domain_spell_trainer",

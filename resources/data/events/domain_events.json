@@ -96,6 +96,96 @@
       ]
     },
 
+    "crystal_cave": {
+      "id": "crystal_cave",
+      "title": "Crystal Cave",
+      "domain": "crystal",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "The cave mouth is unremarkable — a crack in a hillside. Inside, it opens into something else entirely. Formations of crystal the height of houses catch what little light enters and multiply it into thousands of beams, filling the space with cold, sourceless radiance.\n\nAt the centre, seated in perfect stillness on bare stone, is a man. He is old. He is completely naked. He is meditating, and does not appear to notice you at all.",
+      "choices": [
+        {
+          "id": "meditate",
+          "type": "requirement",
+          "text": "Sit down and meditate alongside him.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "crystal_domain_shop",
+            "text": "You sit. The cave does the rest. After some time — minutes or hours, it is impossible to say — the yogi opens his eyes. He looks at you the way people look at someone they recognise from a long time ago.\n\n'You already know some of this,' he says. 'Let me show you the rest.'",
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "ask_secrets",
+          "type": "requirement",
+          "text": "Ask him about the secrets of this cave.",
+          "requirements": {
+            "skills": {
+              "earth_magic": 6,
+              "space_magic": 6
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "crystal_domain_shop",
+            "text": "He opens one eye. He looks you over slowly. Then he smiles — not warmly, exactly, but as if amused by something he's been waiting to see.\n\n'You speak the right language,' he says. 'Then you will understand what I am about to tell you.'",
+            "karma": {
+              "god": 4,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "offerings",
+          "type": "default",
+          "text": "Leave him offerings and ask for a blessing.",
+          "cost": {
+            "gold": "small",
+            "food": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You set down what you have brought — a little gold, a little food — and bow. The yogi does not open his eyes. But something in the cave shifts. The light settles differently on you.\n\nYou feel cleaner, somehow. Sharper. You carry the blessing forward.",
+            "rewards": {
+              "buffs": [
+                {"stat": "awareness", "amount": 2, "combats_remaining": 1},
+                {"stat": "focus", "amount": 2, "combats_remaining": 1},
+                {"stat": "luck", "amount": 2, "combats_remaining": 1}
+              ]
+            },
+            "karma": {
+              "god": 4,
+              "human": 3,
+              "animal": 1
+            }
+          }
+        },
+        {
+          "id": "attack",
+          "type": "default",
+          "text": "Attack him.",
+          "outcome": {
+            "type": "text",
+            "text": "You raise your weapon. He opens his eyes.\n\nThe cave is gone. You are standing on the hillside in the open air. There is no crack in the rock, no crystal, no yogi. Only a very faint impression of sadness that may be yours or may be his — it is difficult to tell.",
+            "karma": {
+              "hell": 8,
+              "asura": 5,
+              "human": -5,
+              "god": -5
+            }
+          }
+        }
+      ]
+    },
+
     "glass_mountain": {
       "id": "glass_mountain",
       "title": "Glass Mountain",

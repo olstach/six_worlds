@@ -1433,6 +1433,38 @@
       },
       "tags": ["construct", "smoke", "domain_smoke", "boss"]
     },
+    "Crystal_Guardian": {
+      "display_name": "Crystal Guardian",
+      "base_hp": 55,
+      "base_mana": 0,
+      "base_stamina": 999,
+      "actions": 1,
+      "base_damage": 20,
+      "damage_type": "space",
+      "base_initiative": 8,
+      "base_movement": 0,
+      "base_dodge": 0,
+      "base_armor": 15,
+      "base_crit": 0,
+      "base_accuracy": 10,
+      "resistances": {
+        "physical": 40,
+        "slashing": 40,
+        "piercing": 40,
+        "fire": 35,
+        "water": 35,
+        "air": 35,
+        "space": 25,
+        "crushing": -40
+      },
+      "special": {
+        "immovable": true,
+        "auto_attack_nearest_enemy": true,
+        "attack_type": "laser",
+        "attack_damage_type": "space"
+      },
+      "tags": ["earth", "space", "construct", "crystal", "domain_crystal"]
+    },
     "Glass_Mine": {
       "display_name": "Glass Mine",
       "base_hp": 10,
