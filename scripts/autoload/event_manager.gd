@@ -446,6 +446,31 @@ func apply_outcome(outcome: Dictionary) -> void:
 				else:
 					print("EventManager: Unknown item '%s', skipping" % item_id)
 
+		# HP loss — e.g. {"amount": "moderate", "target": "all"} to deal out-of-combat damage.
+		# amount: "light" (10%), "moderate" (25%), "heavy" (40%). target: "all" or "random".
+		# HP is floored at 1 — events cannot kill party members.
+		if "hp_loss" in rewards:
+			var loss = rewards.hp_loss
+			var amount_key: String = str(loss.get("amount", "moderate"))
+			var target_mode: String = str(loss.get("target", "all"))
+			var pct: float
+			match amount_key:
+				"light":    pct = 10.0
+				"moderate": pct = 25.0
+				"heavy":    pct = 40.0
+				_:          pct = 20.0
+			var party = CharacterSystem.get_party()
+			var targets = []
+			if target_mode == "random" and not party.is_empty():
+				targets = [party[randi() % party.size()]]
+			else:
+				targets = party
+			for char in targets:
+				if "derived" in char:
+					var dmg = maxi(1, int(char.derived.max_hp * pct / 100.0))
+					char.derived.current_hp = maxi(1, char.derived.current_hp - dmg)
+					print("EventManager: %s took %d HP damage from event" % [char.name, dmg])
+
 		# Attribute loss — e.g. {"which": "random", "amount": 1} to lose a point
 		# Used by events like the_smoking_mirror (look into the mirror).
 		# "which" can be "random" or a specific attribute name.

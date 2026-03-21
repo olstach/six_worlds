@@ -1969,6 +1969,30 @@
         "dispel"
 	  ],
 	  "description": "Mind clouded with filth \u2014 major penalty to Awareness and Focus."
+	},
+	{
+	  "name": "Glass_Globe",
+	  "type": "buff",
+	  "category": "shield",
+	  "effects": [
+        "armor_bonus_minor"
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+        "dispel"
+	  ],
+	  "special": {
+        "shatters_on_damage_received": {
+          "damage": 20,
+          "damage_type": "slashing",
+          "radius": 2,
+          "statuses": ["Bleeding"],
+          "bleed_guaranteed": true,
+          "consumes_status": true
+        }
+	  },
+	  "description": "Encased in a globe of conjured glass. Shatters on any damage received, dealing slashing AoE + guaranteed bleed to all within 2 tiles."
 	}
   ]
 }

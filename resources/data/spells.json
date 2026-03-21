@@ -9106,6 +9106,125 @@
         "eligible": "enemy"
       },
       "description": "Flood a single mind with filth and confusion. Major debuff to Awareness and Focus. No save."
+    },
+
+    "glass_shard": {
+      "name": "Glass Shard",
+      "subschool": "Sorcery",
+      "schools": [
+        "Earth",
+        "Air"
+      ],
+      "level": 1,
+      "theme": "glass",
+      "domain": "glass",
+      "tags": [
+        "glass",
+        "damage",
+        "melee",
+        "domain_spell"
+      ],
+      "mana_cost": 15,
+      "damage": 10,
+      "damage_type": "slashing",
+      "statuses_caused": [
+        "Bleeding"
+      ],
+      "target": {
+        "type": "single",
+        "eligible": "enemy",
+        "range": "melee"
+      },
+      "description": "Conjure a shard of glass and drive it into an enemy at melee range. Light slashing damage, guaranteed Bleeding."
+    },
+
+    "powdered_glass": {
+      "name": "Powdered Glass",
+      "subschool": "Sorcery",
+      "schools": [
+        "Earth",
+        "Air"
+      ],
+      "level": 2,
+      "theme": "glass",
+      "domain": "glass",
+      "tags": [
+        "glass",
+        "cc",
+        "aoe",
+        "domain_spell"
+      ],
+      "mana_cost": 40,
+      "damage": null,
+      "duration": 3,
+      "statuses_caused": [
+        "Blinded"
+      ],
+      "target": {
+        "type": "aoe",
+        "eligible": "enemy"
+      },
+      "aoe": {
+        "type": "cone_forward",
+        "base_size": 3,
+        "upgradeable": true,
+        "upgrade_scaling": "+1_length_per_tier"
+      },
+      "description": "Scatter powdered glass in a cone in front of the caster. All enemies in the cone are Blinded for 3 turns."
+    },
+
+    "globe_of_glass": {
+      "name": "Globe of Glass",
+      "subschool": "Sorcery",
+      "schools": [
+        "Earth",
+        "Air"
+      ],
+      "level": 3,
+      "theme": "glass",
+      "domain": "glass",
+      "tags": [
+        "glass",
+        "buff",
+        "reactive",
+        "domain_spell"
+      ],
+      "mana_cost": 75,
+      "damage": null,
+      "duration": "spellpower",
+      "statuses_caused": [
+        "Glass_Globe"
+      ],
+      "target": {
+        "type": "single",
+        "eligible": "ally",
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
+      },
+      "description": "Encase an ally in a globe of conjured glass. Provides minor armor. When the target takes any damage, the globe shatters outward: moderate slashing damage + guaranteed Bleeding to all enemies within 2 tiles."
+    },
+
+    "glass_mine": {
+      "name": "Glass Mine",
+      "subschool": "Summoning",
+      "schools": [
+        "Earth",
+        "Air"
+      ],
+      "level": 2,
+      "theme": "glass",
+      "domain": "glass",
+      "tags": [
+        "glass",
+        "summon",
+        "trap",
+        "domain_spell"
+      ],
+      "mana_cost": 40,
+      "summon": "Glass_Mine",
+      "target": {
+        "type": "ground"
+      },
+      "description": "Place an invisible glass mine on the ground. Explodes on enemy contact: moderate slashing damage + guaranteed Bleeding to all within 2 tiles."
     }
   }
 }

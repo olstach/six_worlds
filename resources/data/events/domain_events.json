@@ -96,6 +96,77 @@
       ]
     },
 
+    "glass_mountain": {
+      "id": "glass_mountain",
+      "title": "Glass Mountain",
+      "domain": "glass",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "A mountain of glass rises from the plain — not metaphor, not illusion. Pure fused silica, facets the size of houses catching the light and throwing it in every direction. The surface is perfectly smooth and perfectly vertical. There is no path up. There is no grip.\n\nAt the summit, something glitters.",
+      "choices": [
+        {
+          "id": "scale",
+          "type": "roll",
+          "text": "Attempt to scale the glass face.",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": 16
+            }
+          },
+          "outcome_success": {
+            "type": "shop",
+            "shop_id": "glass_domain_shop",
+            "text": "Your fingers find edges too fine to see, your weight shifts by instinct rather than thought. Slowly, impossibly, you climb. At the top, the mountain teaches you something about what it is made of.",
+            "karma": {
+              "god": 3,
+              "human": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "follow_up",
+            "follow_up_event": "glass_mountain",
+            "text": "You slip. The glass offers nothing to hold and less to forgive — you slide and tumble, cutting yourself on the way down. The mountain stands unchanged.",
+            "rewards": {
+              "hp_loss": {"amount": "moderate", "target": "random"}
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "air_ascent",
+          "type": "requirement",
+          "text": "Let the air carry you up.",
+          "requirements": {
+            "skills": {
+              "air_magic": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "glass_domain_shop",
+            "text": "You step off the ground and let the wind take you — not flying, exactly, but drifting upward along the face of the mountain, close enough to see your own distorted reflection in every facet. At the summit you understand something about the nature of glass: it is air that forgot how to move.",
+            "karma": {
+              "god": 4,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "turn_back",
+          "type": "default",
+          "text": "The mountain is not for you today. Turn back.",
+          "outcome": {
+            "type": "text",
+            "text": "You walk away. The glass catches your retreating reflection and holds it for a moment, then lets it go.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+
     "the_smoking_mirror": {
       "id": "the_smoking_mirror",
       "title": "The Smoking Mirror",

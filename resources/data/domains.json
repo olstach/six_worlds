@@ -1,6 +1,19 @@
 {
   "comment": "Special spell domains: themed groups of spells at the intersection of two elements. Domain spells are not available in normal guilds — they are learned exclusively through rare map events tied to each domain. Future metaprogression may unlock them for guild purchase or attach domain-specific perks.",
   "domains": {
+    "glass": {
+      "name": "Glass",
+      "elements": ["Earth", "Air"],
+      "theme": "Precision, fragility, reflection. Glass wounds and reveals.",
+      "spells": [
+        "glass_shard",
+        "powdered_glass",
+        "globe_of_glass",
+        "glass_mine"
+      ],
+      "event": "glass_mountain",
+      "description": "Where earth is seized by air and made impossibly thin, glass is born — transparent, silent, and lethal when broken. Glass magic is precise and reactive: a shard in the dark, powder in the eyes, a globe that waits to shatter. It punishes the enemy for coming close and the ally for taking hits."
+    },
     "smoke": {
       "name": "Smoke",
       "elements": ["Earth", "Fire"],

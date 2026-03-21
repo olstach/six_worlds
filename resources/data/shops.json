@@ -1153,6 +1153,27 @@
         "training"
       ]
     },
+    "glass_domain_shop": {
+      "name": "Fragments of the Glass Mountain",
+      "type": "domain_spell_trainer",
+      "description": "Knowledge cut from the mountain itself. Impossibly sharp, perfectly clear. These spells cannot be found in any guild.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "glass_shard",
+        "powdered_glass",
+        "globe_of_glass",
+        "glass_mine"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
     "smoke_domain_shop": {
       "name": "Whispers of the Shattered Mirror",
       "type": "domain_spell_trainer",

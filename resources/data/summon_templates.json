@@ -1433,6 +1433,35 @@
       },
       "tags": ["construct", "smoke", "domain_smoke", "boss"]
     },
+    "Glass_Mine": {
+      "display_name": "Glass Mine",
+      "base_hp": 10,
+      "base_mana": 0,
+      "base_stamina": 0,
+      "actions": 0,
+      "base_damage": 0,
+      "damage_type": "slashing",
+      "base_initiative": 1,
+      "base_movement": 0,
+      "base_dodge": 0,
+      "base_armor": 0,
+      "base_crit": 0,
+      "base_accuracy": 0,
+      "resistances": {},
+      "special": {
+        "immovable": true,
+        "invisible_until_triggered": true,
+        "explodes_on_enemy_contact": {
+          "damage": 25,
+          "damage_type": "slashing",
+          "radius": 2,
+          "statuses": ["Bleeding"],
+          "bleed_guaranteed": true,
+          "destroys_self": true
+        }
+      },
+      "tags": ["earth", "air", "construct", "trap", "domain_glass"]
+    },
     "Mudling": {
       "display_name": "Mudling",
       "base_hp": 50,
