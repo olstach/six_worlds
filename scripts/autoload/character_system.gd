@@ -44,6 +44,7 @@ const BASE_CHARACTER: Dictionary = {
 	"race": "human",
 	"background": "wanderer",
 	"xp": 50,  # Starting XP — enough to pick up two skills at level 2 or dabble in several
+	"xp_earned": 50,  # Lifetime total XP earned (never decreases)
 	
 	# Core attributes (start at 10)
 	"attributes": {
@@ -514,6 +515,7 @@ func add_upgrade(character: Dictionary, upgrade: Dictionary) -> void:
 ## Grant XP to character
 func grant_xp(character: Dictionary, amount: int) -> void:
 	character.xp += amount
+	character.xp_earned = character.get("xp_earned", 0) + amount
 	character_updated.emit(character)
 
 
