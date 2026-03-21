@@ -9359,7 +9359,8 @@
       "subschool": "Sorcery",
       "schools": [
         "Water",
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 2,
       "theme": "steam",
@@ -9429,7 +9430,8 @@
       "subschool": "Sorcery",
       "schools": [
         "Water",
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 4,
       "theme": "steam",
@@ -9465,7 +9467,8 @@
       "subschool": "Sorcery",
       "schools": [
         "Water",
-        "Fire"
+        "Fire",
+        "Sorcery"
       ],
       "level": 4,
       "theme": "steam",
