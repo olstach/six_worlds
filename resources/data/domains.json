@@ -52,6 +52,19 @@
       ],
       "event": "the_pit",
       "description": "Where earth and water meet without ceremony, mud is born — patient, heavy, and suffocating. Mud magic combines the endurance of earth with the corrosion of water: slow but relentless, hard to wash off."
+    },
+    "cloud": {
+      "name": "Cloud",
+      "elements": ["Water", "Air"],
+      "theme": "Transience, sovereignty, height. Cloud moves freely, belongs nowhere, answers to no one.",
+      "spells": [
+        "cloudstep",
+        "cloudform",
+        "cloud_serpent",
+        "cloud_gate"
+      ],
+      "event": "cloud_palace",
+      "description": "Where water surrenders its weight to air, cloud is born — neither earth nor sky, neither solid nor gone. Cloud magic is the discipline of the in-between: it slips past barriers, sheds damage like rain, carries the party home on a breath of wind, and answers a call with something vast and serpentine that lives between the rain and the stars. The nagas who dwell in cloud are rare and sovereign; they do not welcome interruption, but they respect those who know how to approach."
     }
   }
 }

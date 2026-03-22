@@ -1258,6 +1258,28 @@
       "tabs": [
         "spells"
       ]
+    },
+
+    "cloud_domain_shop": {
+      "name": "Songs of the Cloud Nagas",
+      "type": "domain_spell_trainer",
+      "description": "The nagas coil around you, humming in their deep rain-voices. What they know of cloud and sky and the space between water and air cannot be found in any guild — and will not be offered twice.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "cloudstep",
+        "cloudform",
+        "cloud_serpent",
+        "cloud_gate"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
     }
   }
 }

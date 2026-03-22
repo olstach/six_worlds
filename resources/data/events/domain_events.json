@@ -319,6 +319,113 @@
       ]
     },
 
+    "cloud_palace": {
+      "id": "cloud_palace",
+      "title": "The Cloud Palace",
+      "domain": "cloud",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "A palace materialises before you — or perhaps you have drifted into it without noticing. Its halls are open to the sky, its floors are cloud made solid underfoot. Through gaps in the floor, far below, you can see the tops of mountains. Through gaps in the ceiling, open sky.\n\nSlithering through the amber light, singing to one another in voices like slow rain on stone, are nagas — a rare breed that rules the clouds and weather. Vast and iridescent, utterly absorbed in their song. They have not yet noticed you.",
+      "choices": [
+        {
+          "id": "join_chorus",
+          "type": "requirement",
+          "text": "Listen carefully and join their chorus.",
+          "requirements": {
+            "skills": {
+              "performance": 6
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "cloud_domain_shop",
+            "text": "You find the thread of the melody and follow it in. One naga turns a great head toward you — eyes like water, expression unreadable — and then returns to the song. You have been included. When the chorus ends, the nagas coil and settle, regarding you with something that might be warmth. There are things they are willing to teach.",
+            "karma": {
+              "god": 5,
+              "human": 4,
+              "animal": 2
+            }
+          }
+        },
+        {
+          "id": "offerings",
+          "type": "requirement",
+          "text": "Listen in, then step forward and set out offerings: fruits, perfumed water, their favourite herbs and spices.",
+          "requirements": {
+            "skills": {
+              "ritual": 3
+            }
+          },
+          "cost": {
+            "gold": "moderate",
+            "food": "small",
+            "herbs": "small",
+            "reagents": "small"
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "cloud_domain_shop",
+            "text": "The song does not stop, but it shifts — a new note braided in, low and enquiring. One naga descends to inspect the offerings. It touches each item with the tip of its tongue. A long pause. Then it looks at you with those water-coloured eyes and the song shifts again, opening a space for you to enter. You have been acknowledged. They are willing to share something of what they know.",
+            "karma": {
+              "god": 4,
+              "human": 3,
+              "animal": 3
+            }
+          }
+        },
+        {
+          "id": "talk_to_them",
+          "type": "default",
+          "text": "Walk inside and try to talk to them.",
+          "outcome": {
+            "type": "text",
+            "text": "The song stops.\n\nEvery naga in the palace turns to look at you. The silence is enormous. One — the largest, coiled around a pillar of frozen cloud — opens its mouth. What comes out is not words. It is weather.\n\nWhen you come back to yourself you are standing outside, alone, the palace gone. Your bones ache with a deep cold. The nagas have left a mark on you.",
+            "rewards": {
+              "buffs": [
+                {"stat": "constitution", "amount": -3, "combats_remaining": 2}
+              ]
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "pocket_jewels",
+          "type": "default",
+          "text": "Walk inside and try to pocket some of their jewels while they are distracted.",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "cloud_naga_pack",
+            "difficulty": "hard",
+            "note": "TODO: fill in when animal realm enemy data is complete",
+            "text": "Your hand closes around something that feels like a frozen raindrop cut into a gem the size of a fist. The song stops.\n\nThey are not slow.",
+            "karma": {
+              "hungry_ghost": 6,
+              "animal": 3,
+              "human": -3
+            }
+          }
+        },
+        {
+          "id": "attack",
+          "type": "default",
+          "text": "Attack them.",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "cloud_naga_pack",
+            "difficulty": "hard",
+            "note": "TODO: fill in when animal realm enemy data is complete",
+            "text": "The song stops. The nagas uncoil.",
+            "karma": {
+              "hell": 8,
+              "asura": 4,
+              "human": -4,
+              "god": -4
+            }
+          }
+        }
+      ]
+    },
+
     "waterworks": {
       "id": "waterworks",
       "title": "The Waterworks",
