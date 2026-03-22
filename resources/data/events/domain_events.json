@@ -26,14 +26,14 @@
         {
           "id": "bribe",
           "type": "default",
-          "text": "Offer a valuable piece of equipment as tribute.",
+          "text": "Offer most of your food stores as tribute — seeds, grain, everything you can carry forward.",
           "cost": {
-            "equipment": "valuable"
+            "food_percent": 75
           },
           "outcome": {
             "type": "shop",
             "shop_id": "mud_domain_shop",
-            "text": "The large mudling reaches out a dripping limb and takes the offering. It sinks it reverently into the central circle. The colony burbles with apparent satisfaction. The elder turns back to you, willing to share what it knows.",
+            "text": "The large mudling reaches out a dripping limb and takes the sacks. One by one they are passed back through the colony and buried reverently in the central circle — seeds going into the earth, the way things are supposed to go. The mudlings make a sound like a long satisfied exhale of thick air. The elder turns back to you, willing to share what it knows.",
             "karma": {
               "animal": 4,
               "human": 3
@@ -63,7 +63,7 @@
         {
           "id": "mud_puppet_play",
           "type": "roll",
-          "text": "Stage an impromptu mud puppet play for their entertainment.",
+          "text": "Stage an impromptu mud puppet play — a heroic epic specifically about the mudlings. Their ancient glories. Their terrible battles. The beauty of their mud.",
           "requirements": {
             "skills": {
               "performance": 5
@@ -76,7 +76,7 @@
           "outcome_success": {
             "type": "shop",
             "shop_id": "mud_domain_shop",
-            "text": "Heroes, villains, a tragic love, a pratfall — the mudlings erupt into a sound like a dozen mud geysers firing at once. Applause. The elder mudling, visibly moved, gestures toward the central circle. You are welcome to learn.",
+            "text": "You give them heroes. You give them tragedy. You give them a protagonist who is unmistakably the large elder mudling, whose courage is legendary, whose mud is the finest mud in all the realms. The colony erupts into a sound like a dozen geysers firing at once. Applause. The elder mudling — visibly moved, perhaps slightly embarrassed — gestures toward the central circle. You are welcome to learn.",
             "karma": {
               "human": 5,
               "animal": 4
@@ -192,7 +192,7 @@
       "domain": "glass",
       "realm": "any",
       "rarity": "rare",
-      "text": "A mountain of glass rises from the plain — not metaphor, not illusion. Pure fused silica, facets the size of houses catching the light and throwing it in every direction. The surface is perfectly smooth and perfectly vertical. There is no path up. There is no grip.\n\nAt the summit, something glitters.",
+      "text": "A mountain of glass rises from the plain — not metaphor, not illusion. Pure fused silica, facets the size of houses catching the light and throwing it in every direction. The surface is perfectly smooth and perfectly vertical. There is no path up. There is no grip.\n\nAt the summit, something moves.",
       "choices": [
         {
           "id": "scale",
@@ -207,7 +207,7 @@
           "outcome_success": {
             "type": "shop",
             "shop_id": "glass_domain_shop",
-            "text": "Your fingers find edges too fine to see, your weight shifts by instinct rather than thought. Slowly, impossibly, you climb. At the top, the mountain teaches you something about what it is made of.",
+            "text": "Your fingers find edges too fine to see, your weight shifts by instinct rather than thought. Slowly, impossibly, you climb. At the summit: glass spirits drifting in slow, glitching arcs — each movement a fraction out of time with the last, refracting light into cascades that should not be possible. They do not speak. They seem to notice you the way light notices a prism. Something passes between you.",
             "karma": {
               "god": 3,
               "human": 3
@@ -237,7 +237,7 @@
           "outcome": {
             "type": "shop",
             "shop_id": "glass_domain_shop",
-            "text": "You step off the ground and let the wind take you — not flying, exactly, but drifting upward along the face of the mountain, close enough to see your own distorted reflection in every facet. At the summit you understand something about the nature of glass: it is air that forgot how to move.",
+            "text": "You step off the ground and let the wind take you — drifting upward along the face of the mountain, close enough to see your own distorted reflection in every facet. At the summit, glass spirits dance in slow, glitching loops, throwing light in directions that make no sense. One drifts close and holds the shape of something familiar — your face, perhaps, or the memory of one. Then it disperses, chiming softly.",
             "karma": {
               "god": 4,
               "human": 2
@@ -245,13 +245,81 @@
           }
         },
         {
-          "id": "turn_back",
+          "id": "earth_speech",
+          "type": "requirement",
+          "text": "Speak to the glass as stone. It was sand once — and before that, it was earth.",
+          "requirements": {
+            "skills": {
+              "earth_magic": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "glass_domain_shop",
+            "text": "You press your hands to the surface and speak to what it used to be. There is a long moment. Then the glass does not open exactly — it simply stops being a wall in the way that it was. You walk through and up, the mountain permitting. At the summit, glass spirits spiral in their slow broken arcs. They feel very old. They feel like they have been waiting.",
+            "karma": {
+              "god": 4,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "sing_to_it",
+          "type": "requirement",
+          "text": "Sing to the mountain.",
+          "requirements": {
+            "skills": {
+              "performance": 6
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "glass_domain_shop",
+            "text": "You begin to sing — nothing composed, just what comes. The mountain answers. A harmonic rises from somewhere inside the glass, and then another, and footholds crystallise along the face as if the mountain is remembering how to be climbed. At the summit the glass spirits dance faster for a moment, producing tones you can almost hear. A faint luck settles on you like dust: the mountain was pleased.",
+            "rewards": {
+              "buffs": [
+                {"stat": "luck", "amount": 1, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "god": 5,
+              "human": 4,
+              "animal": 1
+            }
+          }
+        },
+        {
+          "id": "meditate_at_base",
+          "type": "requirement",
+          "text": "Sit at the base and meditate. Stop trying to climb.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "glass_domain_shop",
+            "text": "You sit. The mountain does not move. You stop expecting it to. At some point — you cannot say when — you are at the summit, seated in the same posture, and the glass spirits are circling you in their glitching arcs, throwing light across your closed eyelids in patterns that carry meaning. You have not climbed the mountain. You have stopped being someone who needed to.",
+            "karma": {
+              "god": 6,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "admire",
           "type": "default",
-          "text": "The mountain is not for you today. Turn back.",
+          "text": "Stand and look at it for a while. Some things teach by being looked at.",
           "outcome": {
             "type": "text",
-            "text": "You walk away. The glass catches your retreating reflection and holds it for a moment, then lets it go.",
-            "karma": {}
+            "text": "You stand at the base of the mountain and look up. The light changes as you watch — slowly, the way a day changes, but condensed. Somewhere in the complexity of the refracted surface is something you cannot name but will not forget.",
+            "rewards": {
+              "xp": 15
+            },
+            "karma": {
+              "human": 1
+            }
           }
         }
       ]
@@ -267,14 +335,28 @@
       "choices": [
         {
           "id": "look",
-          "type": "default",
+          "type": "roll",
           "text": "Look into the mirror.",
-          "outcome": {
+          "requirements": {
+            "roll": {
+              "attribute": "focus",
+              "difficulty": 14
+            }
+          },
+          "outcome_success": {
             "type": "shop",
             "shop_id": "smoke_domain_shop",
-            "text": "You hold its gaze. The smoke parts. You see yourself — but wrong: every flaw given a face, every hidden thing laid bare. Something dissolves. Something else rises in its place.\n\nWhen you look away, you understand smoke in a way you did not before. The price was a piece of yourself. The mirror does not seem to care.",
+            "text": "You hold its gaze. The smoke parts. You see yourself — but wrong: every flaw given a face, every hidden thing laid bare. You do not flinch. Something dissolves, and something else rises in its place. When you look away you understand smoke in a way you did not before. The mirror has nothing more to show you.",
+            "karma": {
+              "human": 3,
+              "god": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "shop",
+            "shop_id": "smoke_domain_shop",
+            "text": "You hold its gaze too long. The smoke parts and shows you something you were not ready to see — and a piece of yourself goes with it, drawn into the depth. The knowledge of smoke rises in you regardless. The price was a piece of yourself. The mirror does not seem to care.",
             "rewards": {
-              "xp": 5,
               "attribute_loss": {"which": "random", "amount": 1}
             },
             "karma": {
@@ -296,6 +378,35 @@
             "type": "shop",
             "shop_id": "smoke_domain_shop",
             "text": "You have seen this described in the old texts: a Tezcatlipoca-mirror, a devourer of reflections. You produce your own mirror — polished bronze, consecrated — and hold it to face the black glass.\n\nThe two mirrors lock. The smoke rushes between them in a furious loop, finds no victim, and exhausts itself. The obsidian surface is still. In the silence, the knowledge of smoke rises in you like cooling ash.",
+            "rewards": {
+              "buffs": [
+                {"stat": "awareness", "amount": 1, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "yoga_recognition",
+          "type": "requirement",
+          "text": "Recognise the mirror for what it is. Don't look at the surface — look at what the surface is doing.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "smoke_domain_shop",
+            "text": "You see the mirror without seeing what it shows. The smoke coils and finds no purchase — there is no self presented to be consumed. The mirror continues smoking. You absorb its nature without being changed by its contents.",
+            "rewards": {
+              "buffs": [
+                {"stat": "focus", "amount": 1, "combats_remaining": 2}
+              ]
+            },
             "karma": {
               "god": 5,
               "human": 3
@@ -310,10 +421,25 @@
             "type": "combat",
             "enemy_group": "smoking_mirror_combat",
             "difficulty": "hard",
+            "on_victory": {
+              "type": "shop",
+              "shop_id": "smoke_domain_shop",
+              "text": "The last imp dissolves. The mirror lies in shards, each one still faintly smoking. From the fragments, patterns of ash rise and arrange themselves — the knowledge of smoke, offered at last in defeat."
+            },
             "karma": {
               "asura": 4,
               "hell": 3
             }
+          }
+        },
+        {
+          "id": "turn_away",
+          "type": "default",
+          "text": "Turn away. Do not look.",
+          "outcome": {
+            "type": "text",
+            "text": "You turn your back on it and walk. The smoke coils behind you. Whatever it wanted to show you, it keeps.",
+            "karma": {}
           }
         }
       ]
@@ -378,14 +504,9 @@
           "type": "default",
           "text": "Walk inside and try to talk to them.",
           "outcome": {
-            "type": "text",
-            "text": "The song stops.\n\nEvery naga in the palace turns to look at you. The silence is enormous. One — the largest, coiled around a pillar of frozen cloud — opens its mouth. What comes out is not words. It is weather.\n\nWhen you come back to yourself you are standing outside, alone, the palace gone. Your bones ache with a deep cold. The nagas have left a mark on you.",
-            "rewards": {
-              "buffs": [
-                {"stat": "constitution", "amount": -3, "combats_remaining": 2}
-              ]
-            },
-            "karma": {}
+            "type": "follow_up",
+            "follow_up_event": "cloud_palace_inner",
+            "text": "You step through into the heart of the palace. The song reverberates in your chest. The nagas slither in vast arcs around the pillars, absorbed completely in their chorus — and then, one by one, they notice you."
           }
         },
         {
@@ -420,6 +541,102 @@
               "asura": 4,
               "human": -4,
               "god": -4
+            }
+          }
+        }
+      ]
+    },
+
+    "cloud_palace_inner": {
+      "id": "cloud_palace_inner",
+      "title": "The Cloud Palace — Inner Hall",
+      "domain": "cloud",
+      "realm": "any",
+      "rarity": "follow_up_only",
+      "text": "The song stops. Every naga in the palace has turned to regard you. The silence is the silence of held weather.\n\nThe largest — coiled around a pillar of frozen cloud, scales catching the amber light like hammered silver — opens its mouth.\n\n\"Who daresss interrupt the sssong?\"",
+      "choices": [
+        {
+          "id": "yoga_harmony",
+          "type": "requirement",
+          "text": "Breathe, settle, and let the song you were interrupting continue through you.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "cloud_domain_shop",
+            "text": "You close your eyes and stop resisting the sound. The song fills you and passes through you, using you briefly as an instrument. The nagas relax — one by one, they return to their spiralling. The largest turns those water-coloured eyes on you and inclines its head. You have not interrupted the song. You have become, briefly, a part of it. They are willing to teach.",
+            "karma": {
+              "god": 6,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "persuade",
+          "type": "requirement",
+          "text": "Bow low and explain, with all the words you have, why you have come and what you offer.",
+          "requirements": {
+            "skills": {
+              "persuasion": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "cloud_domain_shop",
+            "text": "You speak carefully and at length. The nagas listen with the patience of creatures that measure time in rainstorms. The large one's tail shifts — once, then again. At last it makes a sound like distant thunder and the others settle.\n\n\"Ssso. You have a tongue worth hearing.\" They are willing to teach.",
+            "karma": {
+              "human": 5,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "charm_roll",
+          "type": "roll",
+          "text": "Smile, open your hands, and try to win them over on pure charm.",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": 17
+            }
+          },
+          "outcome_success": {
+            "type": "shop",
+            "shop_id": "cloud_domain_shop",
+            "text": "You have spent years learning how to walk into rooms that do not want you and leave them differently. The large naga blinks — a slow, contemplative gesture — and something shifts in its posture.\n\n\"You,\" it says, \"are either very brave or very foolish.\" It sounds like a compliment. They are willing to teach.",
+            "karma": {
+              "human": 4,
+              "god": 1
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The naga stares at you for a long, terrible moment. Then it opens its mouth, and what comes out is not words. It is weather.\n\nWhen you come back to yourself you are standing outside, alone. The palace is gone. Your bones ache with a deep cold.",
+            "rewards": {
+              "buffs": [
+                {"stat": "constitution", "amount": -3, "combats_remaining": 2}
+              ]
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "back_talk",
+          "type": "default",
+          "text": "\"Is that any way to treat a guest?\"",
+          "outcome": {
+            "type": "text",
+            "text": "There is a pause that contains weather systems.\n\n\"A guesssst,\" the large naga says, very softly, \"isss invited.\"\n\nWhat comes next is not words. When you come back to yourself you are standing outside. The palace is gone. The sky above is the particular grey of something that has already decided to rain.",
+            "rewards": {
+              "buffs": [
+                {"stat": "constitution", "amount": -3, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "human": -1
             }
           }
         }
