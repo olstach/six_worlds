@@ -2005,8 +2005,11 @@ func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dicti
 	if unit.current_mana < mana_cost:
 		return {"success": false, "reason": "Not enough mana"}
 
-	# Check skill requirements - need at least one school at required level
-	var required_level = spell.get("level", 1)
+	# Check skill requirements - need at least one school at required skill level.
+	# Spell levels 1-5 map to minimum skill levels 1,3,5,7,9 respectively
+	# (spell_level * 2 - 1), reflecting the 10-level skill scale.
+	var spell_tier = spell.get("level", 1)
+	var required_skill_level = spell_tier * 2 - 1
 	var schools = spell.get("schools", [])
 	var has_skill = false
 
@@ -2015,7 +2018,7 @@ func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dicti
 		var school_lower = school.to_lower()
 		var skill_name = school_lower + "_magic" if school_lower in ["earth", "water", "fire", "air", "space", "white", "black"] else school_lower
 		var skill_level = skills.get(skill_name, 0)
-		if skill_level >= required_level:
+		if skill_level >= required_skill_level:
 			has_skill = true
 			break
 
