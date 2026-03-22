@@ -8,6 +8,7 @@ extends Control
 ## 4. Spellbook - Known spells grouped by level
 
 signal tab_changed(tab_index: int)
+signal overworld_spell_cast(spell_name: String, detail: String)
 
 # Use unique names (%) for nodes marked with unique_name_in_owner
 @onready var tab_container: TabContainer = $MarginContainer/VBoxContainer/TabContainer
@@ -742,6 +743,7 @@ func _build_spell_filters() -> void:
 		_spell_filters[school] = false
 	for sub in SPELL_SUBSCHOOLS:
 		_spell_filters[sub] = false
+	_spell_filters["Overworld"] = false
 
 	# "All" label
 	var all_label = Label.new()
@@ -766,6 +768,15 @@ func _build_spell_filters() -> void:
 		var btn = _create_filter_button(sub, Color(0.6, 0.6, 0.55))
 		spell_filter_bar.add_child(btn)
 		_spell_filter_buttons[sub] = btn
+
+	# Overworld filter — separate from school/subschool filters
+	var sep2 = VSeparator.new()
+	sep2.add_theme_constant_override("separation", 8)
+	spell_filter_bar.add_child(sep2)
+
+	var ow_btn = _create_filter_button("Overworld", Color(0.35, 0.72, 0.45))
+	spell_filter_bar.add_child(ow_btn)
+	_spell_filter_buttons["Overworld"] = ow_btn
 
 	# Clear all button
 	var clear_btn = Button.new()
@@ -843,7 +854,8 @@ func _spell_passes_filter(spell_data: Dictionary) -> bool:
 			active_subs.append(sub)
 
 	# No filters active = show all
-	if active_schools.is_empty() and active_subs.is_empty():
+	var overworld_active: bool = _spell_filters.get("Overworld", false)
+	if active_schools.is_empty() and active_subs.is_empty() and not overworld_active:
 		return true
 
 	# Check school filters — spell must have ALL active schools
@@ -864,6 +876,12 @@ func _spell_passes_filter(spell_data: Dictionary) -> bool:
 		for required_sub in active_subs:
 			if spell_sub != required_sub.to_lower():
 				return false
+
+	# Overworld filter — spell must carry the out_of_combat tag
+	if overworld_active:
+		var tags: Array = spell_data.get("tags", [])
+		if not "out_of_combat" in tags:
+			return false
 
 	return true
 
@@ -996,6 +1014,45 @@ func _create_spell_card(spell_id: String, spell_data: Dictionary) -> PanelContai
 	mana_label.add_theme_font_size_override("font_size", 12)
 	top_row.add_child(mana_label)
 
+	# Cast button — shown for spells tagged out_of_combat (overworld-castable)
+	var spell_tags: Array = spell_data.get("tags", [])
+	if "out_of_combat" in spell_tags:
+		var caster: Dictionary = _current_character if not _current_character.is_empty() \
+				else CharacterSystem.get_player()
+		var mana_cost: int = int(spell_data.get("mana_cost", 0))
+		var can_cast: bool = caster.get("derived", {}).get("current_mana", 0) >= mana_cost
+
+		var cast_btn = Button.new()
+		cast_btn.text = "Cast"
+		cast_btn.add_theme_font_size_override("font_size", 12)
+		cast_btn.custom_minimum_size = Vector2(50, 24)
+		cast_btn.disabled = not can_cast
+		if not can_cast:
+			cast_btn.tooltip_text = "Not enough mana (%d/%d MP)" % [
+					caster.get("derived", {}).get("current_mana", 0), mana_cost]
+
+		var cast_style = StyleBoxFlat.new()
+		cast_style.bg_color    = Color(0.12, 0.28, 0.15) if can_cast else Color(0.18, 0.18, 0.18)
+		cast_style.border_color = Color(0.3, 0.7, 0.35)  if can_cast else Color(0.35, 0.35, 0.35)
+		cast_style.set_border_width_all(1)
+		cast_style.set_corner_radius_all(3)
+		cast_style.set_content_margin_all(4)
+		cast_btn.add_theme_stylebox_override("normal", cast_style)
+
+		cast_btn.pressed.connect(func():
+			var derived_now: Dictionary = caster.get("derived", {})
+			var mana_now: int = derived_now.get("current_mana", 0)
+			if mana_now < mana_cost:
+				AudioManager.play("ui_denied")
+				return
+			derived_now["current_mana"] = max(0, mana_now - mana_cost)
+			AudioManager.play("spell_cast")
+			var detail := _apply_overworld_spell(spell_id, spell_data, caster)
+			overworld_spell_cast.emit(spell_data.get("name", spell_id), detail)
+			hide()
+		)
+		top_row.add_child(cast_btn)
+
 	# Stats row: damage, heal, statuses, range
 	var stats_parts: Array[String] = []
 
@@ -1044,6 +1101,95 @@ func _create_spell_card(spell_id: String, spell_data: Dictionary) -> PanelContai
 		vbox.add_child(desc_label)
 
 	return card
+
+
+func _apply_overworld_spell(spell_id: String, spell_data: Dictionary, caster: Dictionary) -> String:
+	## Apply a spell's effects outside of combat and return a result string for the toast.
+	var party := CharacterSystem.get_party()
+	var target_info: Dictionary = spell_data.get("target", {})
+	var target_type: String    = target_info.get("type",     "single")
+	var target_eligible: String = target_info.get("eligible", "ally")
+
+	# Determine who gets hit
+	var targets: Array[Dictionary] = []
+	match target_type:
+		"self":
+			targets = [caster]
+		"aoe", "global":
+			if target_eligible == "dead_ally":
+				return "No fallen allies in the party"
+			targets = party
+		"party":
+			targets = party
+		"dead_ally":
+			return "No fallen allies in the party"
+		"corpse":
+			return "No corpse here to perform rites over"
+		"ground":
+			return "Cannot target ground on the overworld"
+		_:  # "single", "two_allies", etc. — default to caster
+			targets = [caster]
+
+	if targets.is_empty():
+		return "No valid targets"
+
+	var heal_value        = spell_data.get("heal")
+	var statuses_removed: Array = spell_data.get("statuses_removed", [])
+	var special: Dictionary     = spell_data.get("special", {})
+	var results: Array[String]  = []
+
+	for target in targets:
+		var target_name: String  = target.get("name", "?")
+		var derived: Dictionary  = target.get("derived", {})
+		var max_hp: int          = derived.get("max_hp", 100)
+		var cur_hp: int          = derived.get("current_hp", max_hp)
+
+		# Healing
+		if heal_value != null:
+			var heal_amt := 0
+			if heal_value is String and heal_value == "full":
+				heal_amt = max_hp - cur_hp
+			elif heal_value is float and heal_value > 0.0:
+				heal_amt = int(heal_value)
+			if heal_amt > 0:
+				var actual := mini(heal_amt, max_hp - cur_hp)
+				derived["current_hp"] = min(max_hp, cur_hp + actual)
+				if actual > 0:
+					results.append("%s +%d HP" % [target_name, actual])
+
+		# Stamina restore (e.g. Gentle Breeze)
+		if special.get("restores_stamina", false):
+			var max_st: int = derived.get("max_stamina", 50)
+			var cur_st: int = derived.get("current_stamina", max_st)
+			if cur_st < max_st:
+				derived["current_stamina"] = max_st
+				results.append("%s stamina restored" % target_name)
+
+		# Overworld status removal
+		if not statuses_removed.is_empty():
+			var ow_statuses: Array = target.get("overworld_statuses", [])
+			if not ow_statuses.is_empty():
+				var remove_all := "all_negative" in statuses_removed \
+						or "negative" in statuses_removed
+				var to_remove: Array[int] = []
+				for i in range(ow_statuses.size()):
+					var s_name: String = ow_statuses[i].get("status", "")
+					if remove_all:
+						to_remove.append(i)
+					else:
+						for tag in statuses_removed:
+							if s_name.to_lower() == (tag as String).to_lower():
+								to_remove.append(i)
+								break
+				to_remove.reverse()
+				for idx in to_remove:
+					ow_statuses.remove_at(idx)
+				if not to_remove.is_empty():
+					results.append("%s cleansed" % target_name)
+
+	if results.is_empty():
+		return "No effect"
+	return " | ".join(results)
 
 
 # ============================================
