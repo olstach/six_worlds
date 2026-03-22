@@ -9841,19 +9841,18 @@
         "teleport",
         "party",
         "utility",
-        "out_of_combat",
+        "retreat",
         "domain_spell"
       ],
       "mana_cost": 135,
       "special": {
         "teleport_target": "last_healing_location",
-        "affects_party": true,
-        "out_of_combat_only": true
+        "affects_party": true
       },
       "target": {
         "type": "self"
       },
-      "description": "Open a gate through the clouds. Teleports the entire party to the last teahouse, temple, or town visited. Out of combat only."
+      "description": "Open a gate through the clouds. Teleports the entire party to the last teahouse, temple, or town visited. Works in and out of combat — a last resort as much as a convenience."
     }
   }
 }

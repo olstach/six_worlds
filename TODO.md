@@ -364,6 +364,7 @@ UI stub exists in Party tab (`_update_followers_list()` / `_create_follower_card
 - [ ] Terrain affecting spell power — no terrain-based spellpower modifiers in combat_manager.gd cast_spell()
 - [ ] Environmental spell interactions — spells create terrain (done); terrain does not yet buff/debuff spells of matching element
 - [ ] Cone AoE targeting — `aoe.type: "cone_forward"` is defined in data but unimplemented in combat_manager.gd and the spell UI. Needed by: `powdered_glass` (Glass domain). Cone should project N tiles forward from caster facing, width scaling with length. See `cast_spell()` targeting resolution and spell highlight logic.
+- [ ] **Out-of-combat spellcasting** — not implemented. Several spells are designed for overworld/camp use (e.g. `cloud_gate`: retreat to last healing location; future utility spells). Needs a spellbook interface accessible from the overworld HUD or pause menu, mana deducted from caster, and spell effect resolved outside combat. `cloud_gate` specifically needs to teleport the party on the map to the last-visited healing-location tile.
 - [x] ~~Realm-specific combat terrain themes~~ — DONE (overworld terrain generates realm-appropriate obstacles)
 
 ---
