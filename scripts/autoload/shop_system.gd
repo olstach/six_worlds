@@ -392,7 +392,8 @@ func barter_buy_spell(character: Dictionary, spell_id: String, offered_items: Ar
 	if spell.is_empty():
 		return {"success": false, "reason": "Spell not found"}
 
-	var required_level = spell.get("level", 1)
+	# Spell tier 1-5 maps to min skill level 1,3,5,7,9 (tier * 2 - 1)
+	var required_level = spell.get("level", 1) * 2 - 1
 	var schools = spell.get("schools", [])
 	var skills = character.get("skills", {})
 	var has_skill = false
@@ -519,7 +520,8 @@ func buy_spell(character: Dictionary, spell_id: String) -> Dictionary:
 	if spell.is_empty():
 		return {"success": false, "reason": "Spell not found"}
 
-	var required_level = spell.get("level", 1)
+	# Spell tier 1-5 maps to min skill level 1,3,5,7,9 (tier * 2 - 1)
+	var required_level = spell.get("level", 1) * 2 - 1
 	var schools = spell.get("schools", [])
 	var skills = character.get("skills", {})
 	var has_skill = false
