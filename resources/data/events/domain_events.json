@@ -549,6 +549,94 @@
           }
         }
       ]
+    },
+    "skygazing_gompa": {
+      "id": "skygazing_gompa",
+      "title": "Skygazing Gompa",
+      "domain": "rainbow",
+      "realm": "any",
+      "rarity": "rare",
+      "description": "On the open terrace of a small gompa, a yogi sits gazing single-pointedly at the sky. A soft rainbow shimmer is reflected in their eyes. As you approach, they smile and greet you with a gesture.",
+      "choices": [
+        {
+          "id": "teach_perfection",
+          "text": "\"Please teach us about the Great Perfection.\"",
+          "type": "requirement",
+          "requirements": {
+            "skills": {"yoga": 5}
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "rainbow_domain_shop",
+            "text": "Gladly, the yogi explains the workings of the mind as swirling reflections of rainbow light in a crystalline prism. The teaching opens doors you did not know were closed."
+          }
+        },
+        {
+          "id": "bless_us",
+          "text": "\"Please bless us for this life and the next, master.\"",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "The yogi's eyes soften. They place their hands together and murmur a mantra, then touch each of you lightly on the crown of the head. A warmth radiates outward.",
+            "rewards": {
+              "buffs": [
+                {
+                  "stat": "awareness",
+                  "amount": 2,
+                  "combats_remaining": 2
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "source_of_shimmer",
+          "text": "\"What is the source of the shimmer in your eyes I can't help but notice, master?\"",
+          "type": "requirement",
+          "requirements": {
+            "skills": {"space_magic": 5}
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "rainbow_domain_shop",
+            "text": "The yogi just laughs — a clear, boundless sound — and gestures you inside. There, arranged on low tables, are things you have never seen offered anywhere else."
+          }
+        },
+        {
+          "id": "what_are_you_doing",
+          "text": "\"What are you doing here?\"",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "\"Observing the unceasing movement of the stream of the sky, friend.\" The yogi says nothing more, but the simplicity of the answer lingers with you long after you leave.",
+            "rewards": {
+              "xp": 10
+            }
+          }
+        },
+        {
+          "id": "bow_and_leave",
+          "text": "Bow, place some offerings, and leave.",
+          "type": "default",
+          "cost": {
+            "gold": "small",
+            "food": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You place what you can afford at the foot of the yogi's seat. They incline their head in acknowledgment. A faint warmth accompanies you as you descend the terrace steps.",
+            "rewards": {
+              "buffs": [
+                {
+                  "stat": "luck",
+                  "amount": 1,
+                  "combats_remaining": 1
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   }
 }

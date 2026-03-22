@@ -9878,6 +9878,144 @@
         "type": "self"
       },
       "description": "Open a gate through the clouds. Teleports the entire party to the last teahouse, temple, or town visited. Works in and out of combat — a last resort as much as a convenience."
+    },
+
+    "rainbow_orb": {
+      "name": "Rainbow Orb",
+      "subschool": "Sorcery",
+      "schools": [
+        "Space",
+        "White",
+        "Sorcery"
+      ],
+      "level": 2,
+      "theme": "rainbow",
+      "tags": [
+        "rainbow",
+        "damage",
+        "cc"
+      ],
+      "mana_cost": 40,
+      "special": {
+        "each_effect_independent_chance": 0.25,
+        "effects": [
+          {"type": "damage", "damage": 35, "damage_type": "random_elemental"},
+          {"type": "status", "status": "Blinded"},
+          {"type": "status", "status": "Confused"},
+          {"type": "status", "status": "Charmed"}
+        ],
+        "non_physical_damage_only": true
+      },
+      "target": {
+        "type": "single",
+        "eligible": "enemy",
+        "upgrade_scaling": "single → aoe → all_enemies"
+      },
+      "description": "A shimmering orb of prismatic light. Each of four effects triggers independently at 25% chance: moderate damage of a random elemental type, Blind, Confuse, or Charm."
+    },
+
+    "rainbow_spray": {
+      "name": "Rainbow Spray",
+      "subschool": "Sorcery",
+      "schools": [
+        "Space",
+        "White",
+        "Sorcery"
+      ],
+      "level": 4,
+      "theme": "rainbow",
+      "tags": [
+        "rainbow",
+        "damage",
+        "cc",
+        "aoe"
+      ],
+      "mana_cost": 135,
+      "special": {
+        "each_effect_independent_chance": 0.25,
+        "effects": [
+          {"type": "damage", "damage": 35, "damage_type": "random_elemental"},
+          {"type": "status", "status": "Blinded"},
+          {"type": "status", "status": "Confused"},
+          {"type": "status", "status": "Charmed"}
+        ],
+        "non_physical_damage_only": true
+      },
+      "target": {
+        "type": "aoe",
+        "eligible": "enemy"
+      },
+      "aoe": {
+        "type": "cone",
+        "base_size": 3,
+        "upgradeable": true,
+        "upgrade_scaling": "+1_length_per_tier"
+      },
+      "description": "A cone of prismatic light. Each target independently rolls each of four effects at 25% chance: moderate elemental damage of a random type, Blind, Confuse, or Charm."
+    },
+
+    "vision_of_reality": {
+      "name": "A Vision of Reality",
+      "subschool": "White",
+      "schools": [
+        "Space",
+        "White"
+      ],
+      "level": 5,
+      "theme": "rainbow",
+      "tags": [
+        "rainbow",
+        "heal",
+        "cleanse",
+        "aoe"
+      ],
+      "mana_cost": 225,
+      "heal": 30,
+      "statuses_removed": [
+        "all_negative"
+      ],
+      "special": {
+        "heals_all_allies": true,
+        "cleanses_all_allies": true,
+        "applies_rainbow_orb_to_all_enemies": true
+      },
+      "target": {
+        "type": "global",
+        "eligible": "all"
+      },
+      "description": "A flash of pure awareness. All allies receive a light heal and have all debuffs lifted. All enemies simultaneously receive the Rainbow Orb — each of its four effects rolling independently per target."
+    },
+
+    "rainbow_cloak": {
+      "name": "Rainbow Cloak",
+      "subschool": "Sorcery",
+      "schools": [
+        "Space",
+        "White",
+        "Sorcery"
+      ],
+      "level": 4,
+      "theme": "rainbow",
+      "tags": [
+        "rainbow",
+        "buff",
+        "defensive",
+        "reflect"
+      ],
+      "mana_cost": 135,
+      "duration": "spellpower",
+      "statuses_caused": [
+        "Rainbow_Cloak"
+      ],
+      "special": {
+        "elemental_resistance_all_pct": 50,
+        "reflect_chance_pct": 10,
+        "reflect_damage_pct": 50
+      },
+      "target": {
+        "type": "self"
+      },
+      "description": "Wrap yourself in a mantle of prismatic light. Gain 50% resistance to all elemental damage. Each incoming hit has a 10% chance to reflect 50% of the damage back to the source."
     }
   }
 }
