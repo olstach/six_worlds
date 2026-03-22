@@ -1235,7 +1235,8 @@
       "tags": [
         "plant",
         "heal",
-        "cleanse"
+        "cleanse",
+        "out_of_combat"
       ],
       "mana_cost": 15,
       "heal": 15,
@@ -1262,7 +1263,8 @@
       "tags": [
         "stone",
         "cleanse",
-        "buff"
+        "buff",
+        "out_of_combat"
       ],
       "mana_cost": 40,
       "heal": null,
@@ -1292,7 +1294,8 @@
         "stone",
         "heal",
         "buff",
-        "aoe"
+        "aoe",
+        "out_of_combat"
       ],
       "mana_cost": 75,
       "heal": 60,
@@ -1323,7 +1326,8 @@
       "tags": [
         "stone",
         "buff",
-        "heal"
+        "heal",
+        "out_of_combat"
       ],
       "mana_cost": 135,
       "heal": 30,
@@ -1797,7 +1801,8 @@
         "water",
         "buff",
         "defensive",
-        "aura"
+        "aura",
+        "out_of_combat"
       ],
       "mana_cost": 75,
       "duration": "spellpower",
@@ -2483,7 +2488,8 @@
       "tags": [
         "water",
         "cleanse",
-        "buff"
+        "buff",
+        "out_of_combat"
       ],
       "mana_cost": 15,
       "damage": null,
@@ -2514,7 +2520,8 @@
         "water",
         "heal",
         "cleanse",
-        "aoe"
+        "aoe",
+        "out_of_combat"
       ],
       "mana_cost": 40,
       "heal": 35,
@@ -2544,7 +2551,8 @@
       "theme": "heal",
       "tags": [
         "cleanse",
-        "utility"
+        "utility",
+        "out_of_combat"
       ],
       "mana_cost": 135,
       "statuses_removed": [
@@ -2570,7 +2578,8 @@
         "water",
         "heal",
         "buff",
-        "aoe"
+        "aoe",
+        "out_of_combat"
       ],
       "mana_cost": 135,
       "heal": 60,
@@ -2602,7 +2611,8 @@
       "tags": [
         "water",
         "heal",
-        "divine"
+        "divine",
+        "out_of_combat"
       ],
       "mana_cost": 225,
       "heal": 60,
@@ -5598,7 +5608,8 @@
       "theme": "wind",
       "tags": [
         "wind",
-        "heal"
+        "heal",
+        "out_of_combat"
       ],
       "mana_cost": 15,
       "heal": 15,
@@ -5710,7 +5721,8 @@
       "tags": [
         "wind",
         "heal",
-        "resurrect"
+        "resurrect",
+        "out_of_combat"
       ],
       "mana_cost": 225,
       "special": {
@@ -6482,7 +6494,8 @@
       "theme": "space",
       "tags": [
         "space",
-        "mobility"
+        "mobility",
+        "out_of_combat"
       ],
       "mana_cost": 40,
       "target": {
@@ -6708,7 +6721,8 @@
       "theme": "space",
       "tags": [
         "space",
-        "mobility"
+        "mobility",
+        "out_of_combat"
       ],
       "mana_cost": 135,
       "target": {
@@ -7403,7 +7417,8 @@
       "theme": "heal",
       "tags": [
         "heal",
-        "hot"
+        "hot",
+        "out_of_combat"
       ],
       "mana_cost": 75,
       "duration": "spellpower",
@@ -7795,7 +7810,8 @@
       "level": 1,
       "theme": "heal",
       "tags": [
-        "heal"
+        "heal",
+        "out_of_combat"
       ],
       "mana_cost": 15,
       "heal": 30,
@@ -7816,7 +7832,8 @@
       "theme": "heal",
       "tags": [
         "heal",
-        "cleanse"
+        "cleanse",
+        "out_of_combat"
       ],
       "mana_cost": 15,
       "heal": 15,
@@ -7880,7 +7897,8 @@
       "theme": "utility",
       "tags": [
         "dispel",
-        "utility"
+        "utility",
+        "out_of_combat"
       ],
       "mana_cost": 40,
       "target": {
@@ -7903,7 +7921,8 @@
       "level": 5,
       "theme": "heal",
       "tags": [
-        "heal"
+        "heal",
+        "out_of_combat"
       ],
       "mana_cost": 75,
       "heal": 80,
@@ -7956,7 +7975,8 @@
       "level": 7,
       "theme": "heal",
       "tags": [
-        "resurrect"
+        "resurrect",
+        "out_of_combat"
       ],
       "mana_cost": 135,
       "target": {
@@ -7979,7 +7999,8 @@
       "theme": "heal",
       "tags": [
         "heal",
-        "cleanse"
+        "cleanse",
+        "out_of_combat"
       ],
       "mana_cost": 225,
       "heal": "full",
@@ -8002,7 +8023,8 @@
       "level": 9,
       "theme": "heal",
       "tags": [
-        "resurrect"
+        "resurrect",
+        "out_of_combat"
       ],
       "mana_cost": 225,
       "target": {
@@ -8137,7 +8159,8 @@
         "ancestral",
         "utility",
         "protective",
-        "buff"
+        "buff",
+        "out_of_combat"
       ],
       "mana_cost": 40,
       "duration": "spellpower",
@@ -8318,7 +8341,8 @@
       "tags": [
         "ancestral",
         "buff",
-        "link"
+        "link",
+        "out_of_combat"
       ],
       "mana_cost": 135,
       "duration": "spellpower",
@@ -9636,7 +9660,8 @@
         "steam",
         "heal",
         "cleanse",
-        "aoe"
+        "aoe",
+        "out_of_combat"
       ],
       "mana_cost": 75,
       "heal": 20,
@@ -9750,6 +9775,7 @@
         "cloud",
         "teleport",
         "mobility",
+        "out_of_combat",
         "domain_spell"
       ],
       "mana_cost": 40,
@@ -9842,6 +9868,7 @@
         "party",
         "utility",
         "retreat",
+        "out_of_combat",
         "domain_spell"
       ],
       "mana_cost": 135,
