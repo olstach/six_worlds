@@ -674,6 +674,7 @@ func _tick_supply_step() -> void:
 			var dmg: int = maxi(1, int(max_hp * dmg_pct / 100.0))
 			derived["current_hp"] = maxi(0, derived.get("current_hp", max_hp) - dmg)
 		_show_toast("Party is starving! −%d%% HP per step" % int(dmg_pct))
+		_spawn_floating_text("Starving!", Color(1.0, 0.15, 0.15))
 
 	# --- Herbs: Medicine passive bonus healing ---
 	var herb_bonus: float = GameState.process_herbs_step(best_medicine)
@@ -793,6 +794,28 @@ func _show_toast(msg: String) -> void:
 	toast_label.modulate.a = 1.0
 	_toast_timer = TOAST_DURATION
 	GameState.append_overworld_log(msg)
+
+
+## Spawn a floating text label above the party (screen-space, camera-independent).
+## The party is always at screen center since the camera follows it.
+func _spawn_floating_text(text: String, color: Color) -> void:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", 24)
+	label.add_theme_color_override("font_color", color)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.custom_minimum_size = Vector2(140, 0)
+
+	var vp := get_viewport().get_visible_rect().size
+	# Centre horizontally over the party; start just above the party icon
+	label.position = Vector2(vp.x / 2.0 - 70.0, vp.y / 2.0 - 56.0)
+
+	$HUDLayer.add_child(label)
+
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(label, "position:y", label.position.y - 52.0, 1.4)
+	tween.tween_property(label, "modulate:a", 0.0, 1.4)
+	tween.finished.connect(func(): label.queue_free())
 
 
 # ============================================
