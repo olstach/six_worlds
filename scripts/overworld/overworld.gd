@@ -36,6 +36,9 @@ extends Control
 var _toast_timer: float = 0.0
 const TOAST_DURATION: float = 3.0
 
+# Cached crafting tiers for alchemy passive step processing
+var _alchemy_tiers_cache: Dictionary = {}
+
 # Track overlay state (since CanvasLayer has no .visible)
 var _event_open: bool = false
 var _char_sheet_open: bool = false
@@ -90,7 +93,14 @@ func _ready() -> void:
 			# Victory — restore event object for cleanup on Continue
 			GameState.last_defeated_mob_id = ""
 			_current_event_object = GameState.pending_event_object.duplicate(true)
-			outcome["text"] = outcome.get("text", "") + "\n\n[b][color=#4ade80]VICTORY![/color][/b]"
+			# If the combat outcome has an on_victory block, use it instead
+			# (e.g. smoking_mirror: defeat the mirror → shop opens with domain spells)
+			if "on_victory" in outcome:
+				var victory_outcome: Dictionary = outcome["on_victory"].duplicate(true)
+				victory_outcome["text"] = victory_outcome.get("text", "") + "\n\n[b][color=#4ade80]VICTORY![/color][/b]"
+				outcome = victory_outcome
+			else:
+				outcome["text"] = outcome.get("text", "") + "\n\n[b][color=#4ade80]VICTORY![/color][/b]"
 		else:
 			# Defeat — don't restore event object (so it stays on map for retry)
 			outcome["text"] = outcome.get("text", "") + "\n\n[b][color=#ef4444]DEFEAT![/color][/b]\nYou retreat from the battle..."
@@ -149,6 +159,7 @@ func _ready() -> void:
 	crafting_button.pressed.connect(func(): _open_char_sheet_to_tab(4))
 	journal_button.pressed.connect(func(): _open_char_sheet_to_tab(5))
 	char_sheet.visibility_changed.connect(_on_char_sheet_visibility_changed)
+	char_sheet.overworld_spell_cast.connect(_on_overworld_spell_cast)
 
 	# Ensure overlays start hidden
 	_set_event_visible(false)
@@ -381,6 +392,9 @@ func _on_event_shop_closed() -> void:
 		_shop_instance = null
 	_shop_open = false
 
+	# Clear any event-set price multiplier so it doesn't affect future shops
+	GameState.set_flag("event_shop_price_multiplier", 1.0)
+
 	# Show event result panel with shop outcome
 	event_display.visible = true
 	event_display.display_outcome(_pending_shop_outcome)
@@ -600,6 +614,7 @@ func _on_char_sheet_visibility_changed() -> void:
 func _on_party_moved(_from: Vector2i, _to: Vector2i) -> void:
 	_update_terrain_label()
 	_tick_overworld_statuses()
+	_tick_supply_step()
 
 
 ## Apply one tick of any persisting DoT statuses (Poison, Bleed, Burn, etc.)
@@ -626,6 +641,113 @@ func _tick_overworld_statuses() -> void:
 		expired.reverse()
 		for idx in expired:
 			statuses.remove_at(idx)
+
+
+## Process one step's worth of supply consumption and passive effects.
+## Called from _on_party_moved after status ticks.
+func _tick_supply_step() -> void:
+	var party := CharacterSystem.get_party()
+	if party.is_empty():
+		return
+
+	# Gather per-party-member stats needed for supply calculations
+	var party_size := party.size()
+	var best_logistics := 0
+	var best_medicine  := 0
+	var best_crafting  := 0
+	var best_alchemy   := 0
+	var lowest_con     := 999
+
+	for char in party:
+		var skills: Dictionary = char.get("skills", {})
+		best_logistics = maxi(best_logistics, int(skills.get("logistics", 0)))
+		best_medicine  = maxi(best_medicine,  int(skills.get("medicine",  0)))
+		best_crafting  = maxi(best_crafting,  int(skills.get("crafting",  0)))
+		best_alchemy   = maxi(best_alchemy,   int(skills.get("alchemy",   0)))
+		lowest_con     = mini(lowest_con, int(char.get("attributes", {}).get("constitution", 10)))
+
+	if lowest_con == 999:
+		lowest_con = 10
+
+	# --- Food: consumption, starvation, base passive healing ---
+	var food_result := GameState.process_food_step(party_size, best_logistics, lowest_con)
+	var heal_pct := 0.0
+
+	if food_result.get("healing_active", false):
+		heal_pct = 1.0  # 1% max HP per step when fed
+
+	if food_result.get("is_starving", false):
+		var dmg_pct: float = food_result.get("starvation_damage_pct", 2.0)
+		for char in party:
+			var derived: Dictionary = char.get("derived", {})
+			var max_hp: int = derived.get("max_hp", 100)
+			var dmg: int = maxi(1, int(max_hp * dmg_pct / 100.0))
+			derived["current_hp"] = maxi(0, derived.get("current_hp", max_hp) - dmg)
+		_show_toast("Party is starving! −%d%% HP per step" % int(dmg_pct))
+		_spawn_floating_text("Starving!", Color(1.0, 0.15, 0.15))
+
+	# --- Herbs: Medicine passive bonus healing ---
+	var herb_bonus: float = GameState.process_herbs_step(best_medicine)
+	heal_pct += herb_bonus
+
+	# --- Apply passive healing to all party members ---
+	if heal_pct > 0.0:
+		for char in party:
+			var derived: Dictionary = char.get("derived", {})
+			var max_hp: int = derived.get("max_hp", 100)
+			var cur_hp: int = derived.get("current_hp", max_hp)
+			if cur_hp < max_hp:
+				var heal_amt: int = maxi(1, int(max_hp * heal_pct / 100.0))
+				derived["current_hp"] = mini(max_hp, cur_hp + heal_amt)
+
+	# --- Scrap: Crafting passive repair (effect applied when durability system is ready) ---
+	GameState.process_scrap_step(best_crafting)
+
+	# --- Reagents: Alchemy passive brewing ---
+	if best_alchemy > 0:
+		var unlocked := _get_unlocked_alchemy_items(party)
+		if not unlocked.is_empty():
+			var brewed: String = GameState.process_alchemy_step(best_alchemy, unlocked)
+			if not brewed.is_empty():
+				ItemSystem.add_to_inventory(brewed)
+				var item_data := ItemSystem.get_item(brewed)
+				_show_toast("Alchemy: brewed %s!" % item_data.get("name", brewed))
+
+
+## Build the list of item IDs any party member can brew based on their perks.
+## Loads and caches the alchemy_crafting_tiers table from supplies.json.
+func _get_unlocked_alchemy_items(party: Array) -> Array:
+	if _alchemy_tiers_cache.is_empty():
+		var path := "res://resources/data/supplies.json"
+		if FileAccess.file_exists(path):
+			var file := FileAccess.open(path, FileAccess.READ)
+			var json := JSON.new()
+			if json.parse(file.get_as_text()) == OK:
+				_alchemy_tiers_cache = json.get_data().get("alchemy_crafting_tiers", {})
+			file.close()
+
+	var unlocked: Array[String] = []
+	for category in _alchemy_tiers_cache:
+		var cat_data: Dictionary = _alchemy_tiers_cache[category]
+		for tier_key in ["tier_1", "tier_2", "tier_3"]:
+			var tier: Dictionary = cat_data.get(tier_key, {})
+			if tier.is_empty():
+				continue
+			var required_perk: String = tier.get("perk", "")
+			var any_has_perk := false
+			for char in party:
+				if PerkSystem.has_perk(char, required_perk):
+					any_has_perk = true
+					break
+			if any_has_perk:
+				for item_id in tier.get("items", []):
+					unlocked.append(str(item_id))
+	return unlocked
+
+
+## Show a toast when the player casts a spell from the overworld spellbook.
+func _on_overworld_spell_cast(spell_name: String, detail: String) -> void:
+	_show_toast("%s: %s" % [spell_name, detail])
 
 
 func _on_party_position_updated(_world_pos: Vector2) -> void:
@@ -682,6 +804,28 @@ func _show_toast(msg: String) -> void:
 	toast_label.modulate.a = 1.0
 	_toast_timer = TOAST_DURATION
 	GameState.append_overworld_log(msg)
+
+
+## Spawn a floating text label above the party (screen-space, camera-independent).
+## The party is always at screen center since the camera follows it.
+func _spawn_floating_text(text: String, color: Color) -> void:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", 24)
+	label.add_theme_color_override("font_color", color)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.custom_minimum_size = Vector2(140, 0)
+
+	var vp := get_viewport().get_visible_rect().size
+	# Centre horizontally over the party; start just above the party icon
+	label.position = Vector2(vp.x / 2.0 - 70.0, vp.y / 2.0 - 56.0)
+
+	$HUDLayer.add_child(label)
+
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(label, "position:y", label.position.y - 52.0, 1.4)
+	tween.tween_property(label, "modulate:a", 0.0, 1.4)
+	tween.finished.connect(func(): label.queue_free())
 
 
 # ============================================

@@ -141,13 +141,10 @@ func _ready() -> void:
 	else:
 		push_error("GameState: could not open quests.json")
 
-## Defeat a world's boss and unlock the next world
+## Mark a world's boss as defeated (no longer unlocks the next world)
 func defeat_boss(world_name: String) -> void:
 	if world_name in WORLDS:
 		WORLDS[world_name].boss_defeated = true
-		var next_world = WORLDS[world_name].next_world
-		if next_world and next_world not in unlocked_worlds:
-			unlocked_worlds.append(next_world)
 
 ## Travel to a different world (if unlocked)
 func travel_to_world(world_name: String) -> bool:
@@ -156,6 +153,12 @@ func travel_to_world(world_name: String) -> bool:
 		return true
 	else:
 		return false
+
+## Unlock a world directly - called when a portal to a new realm is discovered
+func unlock_world(world_name: String) -> void:
+	if world_name in WORLDS and world_name not in unlocked_worlds:
+		unlocked_worlds.append(world_name)
+		print("Unlocked realm for reincarnation: ", world_name)
 
 ## Player death - triggers reincarnation
 func player_died() -> void:

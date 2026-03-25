@@ -1,0 +1,70 @@
+{
+  "comment": "Special spell domains: themed groups of spells at the intersection of two elements. Domain spells are not available in normal guilds — they are learned exclusively through rare map events tied to each domain. Future metaprogression may unlock them for guild purchase or attach domain-specific perks.",
+  "domains": {
+    "crystal": {
+      "name": "Crystal",
+      "elements": ["Earth", "Space"],
+      "theme": "Clarity, resonance, precision. Crystal focuses and reveals.",
+      "spells": [
+        "scattered_light",
+        "crystal_guardian",
+        "crystal_diadem",
+        "crystal_light"
+      ],
+      "event": "crystal_cave",
+      "description": "Where earth is compressed to perfection by space, crystal grows — ordered, resonant, and perfectly transparent. Crystal magic is a discipline of clarity: it reveals what hides, focuses the mind to a razor edge, and defends by refracting rather than absorbing. The Crystal Guardian is its emblem: patient, immovable, and lethal at a distance."
+    },
+    "glass": {
+      "name": "Glass",
+      "elements": ["Earth", "Air"],
+      "theme": "Precision, fragility, reflection. Glass wounds and reveals.",
+      "spells": [
+        "glass_shard",
+        "powdered_glass",
+        "globe_of_glass",
+        "glass_mine"
+      ],
+      "event": "glass_mountain",
+      "description": "Where earth is seized by air and made impossibly thin, glass is born — transparent, silent, and lethal when broken. Glass magic is precise and reactive: a shard in the dark, powder in the eyes, a globe that waits to shatter. It punishes the enemy for coming close and the ally for taking hits."
+    },
+    "smoke": {
+      "name": "Smoke",
+      "elements": ["Earth", "Fire"],
+      "theme": "Concealment, suffocation, transformation. Smoke obscures and corrupts.",
+      "spells": [
+        "smoke_cloud",
+        "smoke_imp",
+        "choking_smoke",
+        "smoke_form"
+      ],
+      "event": "the_smoking_mirror",
+      "description": "Where fire meets earth, smoke is born — neither solid nor flame, a thing between states. Smoke magic inherits fire's hunger and earth's patience: it lingers, it blinds, it creeps into lungs and minds. The Smoking Mirror is its emblem: a surface that shows not the world but what the world hides."
+    },
+    "mud": {
+      "name": "Mud",
+      "elements": ["Earth", "Water"],
+      "theme": "Corruption, weight, tenacity. Mud endures and smothers.",
+      "spells": [
+        "mudling",
+        "metal_to_mud",
+        "rain_of_mud",
+        "mindmuck"
+      ],
+      "event": "the_pit",
+      "description": "Where earth and water meet without ceremony, mud is born — patient, heavy, and suffocating. Mud magic combines the endurance of earth with the corrosion of water: slow but relentless, hard to wash off."
+    },
+    "cloud": {
+      "name": "Cloud",
+      "elements": ["Water", "Air"],
+      "theme": "Transience, sovereignty, height. Cloud moves freely, belongs nowhere, answers to no one.",
+      "spells": [
+        "cloudstep",
+        "cloudform",
+        "cloud_serpent",
+        "cloud_gate"
+      ],
+      "event": "cloud_palace",
+      "description": "Where water surrenders its weight to air, cloud is born — neither earth nor sky, neither solid nor gone. Cloud magic is the discipline of the in-between: it slips past barriers, sheds damage like rain, carries the party home on a breath of wind, and answers a call with something vast and serpentine that lives between the rain and the stars. The nagas who dwell in cloud are rare and sovereign; they do not welcome interruption, but they respect those who know how to approach."
+    }
+  }
+}

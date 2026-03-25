@@ -1,1710 +1,2866 @@
 {
-	"items": {
-		"iron_sword": {
-			"name": "Iron Sword",
-			"type": "sword",
-			"slot": "weapon_main",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "earth",
-			"weight": 8,
-			"value": 50,
-			"description": "A sturdy blade forged of iron.",
-			"requirements": {"strength": 10},
-			"stats": {"damage": 8, "accuracy": 0},
-			"abilities": []
-		},
-		"bronze_sword": {
-			"name": "Bronze Sword",
-			"type": "sword",
-			"slot": "weapon_main",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "earth",
-			"weight": 7,
-			"value": 35,
-			"description": "An older design, still serviceable.",
-			"requirements": {"strength": 8},
-			"stats": {"damage": 6, "accuracy": 5},
-			"abilities": []
-		},
-		"steel_longsword": {
-			"name": "Steel Longsword",
-			"type": "sword",
-			"slot": "weapon_main",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "earth",
-			"weight": 10,
-			"value": 120,
-			"description": "A well-crafted blade of tempered steel.",
-			"requirements": {"strength": 12},
-			"stats": {"damage": 12, "accuracy": 5},
-			"abilities": []
-		},
-		"wooden_staff": {
-			"name": "Wooden Staff",
-			"type": "staff",
-			"slot": "weapon_main",
-			"two_handed": true,
-			"rarity": "common",
-			"element": "earth",
-			"weight": 4,
-			"value": 15,
-			"description": "A simple wooden staff, useful for walking and whacking.",
-			"requirements": {},
-			"stats": {"damage": 4, "spellpower": 5},
-			"abilities": []
-		},
-		"oak_staff": {
-			"name": "Oak Staff",
-			"type": "staff",
-			"slot": "weapon_main",
-			"two_handed": true,
-			"rarity": "uncommon",
-			"element": "earth",
-			"weight": 5,
-			"value": 60,
-			"description": "A sturdy oak staff, carved with simple protective symbols.",
-			"requirements": {"focus": 10},
-			"stats": {"damage": 5, "spellpower": 12},
-			"abilities": []
-		},
-		"hunting_bow": {
-			"name": "Hunting Bow",
-			"type": "bow",
-			"slot": "weapon_main",
-			"two_handed": true,
-			"rarity": "common",
-			"element": "air",
-			"weight": 3,
-			"value": 40,
-			"description": "A simple bow for hunting game.",
-			"requirements": {"finesse": 10},
-			"stats": {"damage": 7, "accuracy": 10, "range": 5, "ammo": 20},
-			"abilities": []
-		},
-		"short_bow": {
-			"name": "Short Bow",
-			"type": "bow",
-			"slot": "weapon_main",
-			"two_handed": true,
-			"rarity": "common",
-			"element": "air",
-			"weight": 2,
-			"value": 30,
-			"description": "A compact bow, easy to carry.",
-			"requirements": {"finesse": 8},
-			"stats": {"damage": 5, "accuracy": 15, "range": 4, "ammo": 20},
-			"abilities": []
-		},
-		"longbow": {
-			"name": "Longbow",
-			"type": "bow",
-			"slot": "weapon_main",
-			"two_handed": true,
-			"rarity": "uncommon",
-			"element": "air",
-			"weight": 4,
-			"value": 80,
-			"description": "A powerful bow requiring great skill to draw.",
-			"requirements": {"finesse": 12, "strength": 10},
-			"stats": {"damage": 10, "accuracy": 5, "range": 6, "ammo": 20},
-			"abilities": []
-		},
-		"throwing_knife": {
-			"name": "Throwing Knife",
-			"type": "thrown",
-			"slot": "weapon_main",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "air",
-			"weight": 1,
-			"value": 15,
-			"description": "A balanced knife designed for throwing.",
-			"requirements": {"finesse": 8},
-			"stats": {"damage": 4, "accuracy": 10, "range": 3, "crit_chance": 5, "ammo": 5},
-			"abilities": []
-		},
-		"iron_dagger": {
-			"name": "Iron Dagger",
-			"type": "dagger",
-			"slot": "weapon_main",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "air",
-			"weight": 2,
-			"value": 25,
-			"description": "A simple iron dagger, quick to strike.",
-			"requirements": {"finesse": 8},
-			"stats": {"damage": 4, "accuracy": 15, "crit_chance": 5},
-			"abilities": []
-		},
-		"iron_axe": {
-			"name": "Iron Axe",
-			"type": "axe",
-			"slot": "weapon_main",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "fire",
-			"weight": 10,
-			"value": 55,
-			"description": "A heavy iron axe, good for chopping.",
-			"requirements": {"strength": 12},
-			"stats": {"damage": 10, "accuracy": -5},
-			"abilities": []
-		},
-		"iron_mace": {
-			"name": "Iron Mace",
-			"type": "mace",
-			"slot": "weapon_main",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "earth",
-			"weight": 9,
-			"value": 50,
-			"description": "A heavy iron mace for crushing blows.",
-			"requirements": {"strength": 11},
-			"stats": {"damage": 9, "accuracy": 0, "armor_pierce": 5},
-			"abilities": []
-		},
-		"wooden_spear": {
-			"name": "Wooden Spear",
-			"type": "spear",
-			"slot": "weapon_main",
-			"two_handed": true,
-			"rarity": "common",
-			"element": "water",
-			"weight": 5,
-			"value": 20,
-			"description": "A simple wooden spear with an iron tip.",
-			"requirements": {"finesse": 8},
-			"stats": {"damage": 6, "accuracy": 5},
-			"abilities": []
-		},
-		"wooden_shield": {
-			"name": "Wooden Shield",
-			"type": "shield",
-			"slot": "weapon_off",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "earth",
-			"weight": 6,
-			"value": 30,
-			"description": "A round wooden shield, basic protection.",
-			"requirements": {"strength": 8},
-			"stats": {"dodge": 5, "armor": 2},
-			"abilities": []
-		},
-		"iron_shield": {
-			"name": "Iron Shield",
-			"type": "shield",
-			"slot": "weapon_off",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "earth",
-			"weight": 12,
-			"value": 80,
-			"description": "A sturdy iron shield with a boss.",
-			"requirements": {"strength": 12},
-			"stats": {"dodge": 8, "armor": 5},
-			"abilities": []
-		},
-		"leather_vest": {
-			"name": "Leather Vest",
-			"type": "armor",
-			"slot": "chest",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "earth",
-			"weight": 8,
-			"value": 40,
-			"description": "Simple leather protection.",
-			"requirements": {},
-			"stats": {"armor": 3, "dodge": 0},
-			"abilities": []
-		},
-		"padded_armor": {
-			"name": "Padded Armor",
-			"type": "armor",
-			"slot": "chest",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "earth",
-			"weight": 10,
-			"value": 50,
-			"description": "Quilted cloth armor, surprisingly effective.",
-			"requirements": {},
-			"stats": {"armor": 4, "dodge": -2},
-			"abilities": []
-		},
-		"chainmail": {
-			"name": "Chainmail",
-			"type": "armor",
-			"slot": "chest",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "earth",
-			"weight": 25,
-			"value": 150,
-			"description": "Interlocking iron rings provide solid protection.",
-			"requirements": {"strength": 12},
-			"stats": {"armor": 8, "dodge": -5},
-			"abilities": []
-		},
-		"cloth_robe": {
-			"name": "Cloth Robe",
-			"type": "robe",
-			"slot": "chest",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "space",
-			"weight": 3,
-			"value": 20,
-			"description": "A simple robe, preferred by scholars.",
-			"requirements": {},
-			"stats": {"armor": 1, "max_mana": 10},
-			"abilities": []
-		},
-		"leather_cap": {
-			"name": "Leather Cap",
-			"type": "helmet",
-			"slot": "head",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "earth",
-			"weight": 2,
-			"value": 20,
-			"description": "A simple leather cap.",
-			"requirements": {},
-			"stats": {"armor": 1},
-			"abilities": []
-		},
-		"iron_helmet": {
-			"name": "Iron Helmet",
-			"type": "helmet",
-			"slot": "head",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "earth",
-			"weight": 5,
-			"value": 60,
-			"description": "An iron helmet with nose guard.",
-			"requirements": {"strength": 10},
-			"stats": {"armor": 3, "awareness": -1},
-			"abilities": []
-		},
-		"cloth_hood": {
-			"name": "Cloth Hood",
-			"type": "hat",
-			"slot": "head",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "air",
-			"weight": 1,
-			"value": 10,
-			"description": "A simple cloth hood.",
-			"requirements": {},
-			"stats": {"max_mana": 5},
-			"abilities": []
-		},
-		"leather_gloves": {
-			"name": "Leather Gloves",
-			"type": "gloves",
-			"slot": "hand_l",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "earth",
-			"weight": 1,
-			"value": 15,
-			"description": "Simple leather gloves.",
-			"requirements": {},
-			"stats": {"armor": 1},
-			"abilities": []
-		},
-		"iron_gauntlets": {
-			"name": "Iron Gauntlets",
-			"type": "gauntlets",
-			"slot": "hand_l",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "earth",
-			"weight": 4,
-			"value": 50,
-			"description": "Heavy iron gauntlets.",
-			"requirements": {"strength": 10},
-			"stats": {"armor": 2, "damage": 1},
-			"abilities": []
-		},
-		"leather_pants": {
-			"name": "Leather Pants",
-			"type": "pants",
-			"slot": "legs",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "earth",
-			"weight": 4,
-			"value": 25,
-			"description": "Sturdy leather pants.",
-			"requirements": {},
-			"stats": {"armor": 2},
-			"abilities": []
-		},
-		"iron_greaves": {
-			"name": "Iron Greaves",
-			"type": "greaves",
-			"slot": "legs",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "earth",
-			"weight": 8,
-			"value": 70,
-			"description": "Iron leg armor.",
-			"requirements": {"strength": 10},
-			"stats": {"armor": 4, "dodge": -2},
-			"abilities": []
-		},
-		"leather_boots": {
-			"name": "Leather Boots",
-			"type": "boots",
-			"slot": "feet",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "earth",
-			"weight": 3,
-			"value": 20,
-			"description": "Sturdy leather boots.",
-			"requirements": {},
-			"stats": {"armor": 1, "movement": 0},
-			"abilities": []
-		},
-		"travelers_boots": {
-			"name": "Traveler's Boots",
-			"type": "boots",
-			"slot": "feet",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "air",
-			"weight": 2,
-			"value": 60,
-			"description": "Light boots made for long journeys.",
-			"requirements": {},
-			"stats": {"armor": 1, "movement": 1},
-			"abilities": []
-		},
-		"copper_ring": {
-			"name": "Copper Ring",
-			"type": "ring",
-			"slot": "ring1",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "earth",
-			"weight": 0,
-			"value": 15,
-			"description": "A simple copper ring.",
-			"requirements": {},
-			"stats": {"luck": 1},
-			"abilities": []
-		},
-		"silver_ring": {
-			"name": "Silver Ring",
-			"type": "ring",
-			"slot": "ring1",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "water",
-			"weight": 0,
-			"value": 50,
-			"description": "A polished silver ring.",
-			"requirements": {},
-			"stats": {"max_mana": 10, "luck": 1},
-			"abilities": []
-		},
-		"travelers_amulet": {
-			"name": "Traveler's Amulet",
-			"type": "amulet",
-			"slot": "trinket1",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "space",
-			"weight": 0,
-			"value": 30,
-			"description": "A simple amulet blessed for safe travels.",
-			"requirements": {},
-			"stats": {"luck": 2},
-			"abilities": []
-		},
-		"bone_amulet": {
-			"name": "Bone Amulet",
-			"type": "amulet",
-			"slot": "trinket1",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "space",
-			"weight": 0,
-			"value": 75,
-			"description": "A carved bone amulet inscribed with mantras.",
-			"requirements": {},
-			"stats": {"spellpower": 5, "max_mana": 5},
-			"abilities": []
-		},
-		"lucky_charm": {
-			"name": "Lucky Charm",
-			"type": "trinket",
-			"slot": "trinket1",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "air",
-			"weight": 0,
-			"value": 25,
-			"description": "A small charm said to bring good fortune.",
-			"requirements": {},
-			"stats": {"luck": 3, "crit_chance": 2},
-			"abilities": []
-		},
-		"prayer_beads": {
-			"name": "Prayer Beads",
-			"type": "trinket",
-			"slot": "trinket1",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "space",
-			"weight": 0,
-			"value": 80,
-			"description": "Mala beads used for meditation and mantra recitation.",
-			"requirements": {},
-			"stats": {"max_mana": 15, "spellpower": 3},
-			"abilities": []
-		},
-
-		"vajra_thunderbolt": {
-			"name": "Vajra Thunderbolt",
-			"type": "mace",
-			"slot": "weapon_main",
-			"two_handed": false,
-			"rarity": "legendary",
-			"element": "space",
-			"weight": 6,
-			"value": 500,
-			"description": "A diamond sceptre crackling with divine lightning. Symbol of indestructible truth.",
-			"requirements": {"strength": 14, "focus": 12},
-			"stats": {"damage": 18, "accuracy": 10, "spellpower": 10, "armor_pierce": 10},
-			"abilities": []
-		},
-		"yamas_ledger": {
-			"name": "Yama's Ledger",
-			"type": "trinket",
-			"slot": "trinket1",
-			"two_handed": false,
-			"rarity": "legendary",
-			"element": "space",
-			"weight": 1,
-			"value": 450,
-			"description": "The book of judgment, recording every deed. Whispers karmic secrets to its bearer.",
-			"requirements": {},
-			"stats": {"luck": 5, "awareness": 3, "spellpower": 8, "max_mana": 20},
-			"abilities": []
-		},
-		"mantle_of_the_undying_flame": {
-			"name": "Mantle of the Undying Flame",
-			"type": "robe",
-			"slot": "chest",
-			"two_handed": false,
-			"rarity": "legendary",
-			"element": "fire",
-			"weight": 4,
-			"value": 480,
-			"description": "Woven from perpetual embers, this robe burns without consuming. Fire cannot harm its wearer.",
-			"requirements": {},
-			"stats": {"armor": 6, "max_mana": 25, "spellpower": 12},
-			"abilities": []
-		},
-		"frozen_heart_amulet": {
-			"name": "Frozen Heart Amulet",
-			"type": "amulet",
-			"slot": "trinket1",
-			"two_handed": false,
-			"rarity": "legendary",
-			"element": "water",
-			"weight": 0,
-			"value": 420,
-			"description": "A sapphire heart encased in eternal ice. Slows the wearer's pulse, granting preternatural calm.",
-			"requirements": {},
-			"stats": {"max_hp": 20, "armor": 4, "dodge": 8},
-			"abilities": []
-		},
-
-		"health_potion": {
-			"name": "Health Potion",
-			"type": "potion",
-			"rarity": "common",
-			"weight": 1,
-			"value": 25,
-			"description": "A red tincture that restores vitality.",
-			"effect": {
-				"type": "heal",
-				"value": 30,
-				"targeting": "self"
-			}
-		},
-		"greater_health_potion": {
-			"name": "Greater Health Potion",
-			"type": "potion",
-			"rarity": "uncommon",
-			"weight": 1,
-			"value": 60,
-			"description": "A concentrated healing draught.",
-			"effect": {
-				"type": "heal",
-				"value": 60,
-				"targeting": "self"
-			}
-		},
-		"mana_potion": {
-			"name": "Mana Potion",
-			"type": "potion",
-			"rarity": "common",
-			"weight": 1,
-			"value": 30,
-			"description": "A shimmering blue elixir that restores magical energy.",
-			"effect": {
-				"type": "restore_mana",
-				"value": 25,
-				"targeting": "self"
-			}
-		},
-		"greater_mana_potion": {
-			"name": "Greater Mana Potion",
-			"type": "potion",
-			"rarity": "uncommon",
-			"weight": 1,
-			"value": 70,
-			"description": "A potent distillation of magical essence.",
-			"effect": {
-				"type": "restore_mana",
-				"value": 50,
-				"targeting": "self"
-			}
-		},
-		"fire_resistance_potion": {
-			"name": "Fire Resistance Potion",
-			"type": "potion",
-			"rarity": "uncommon",
-			"weight": 1,
-			"value": 45,
-			"description": "Grants temporary resistance to flames.",
-			"effect": {
-				"type": "buff",
-				"status": "Fire_Resistant",
-				"resistance": "fire",
-				"value": 25,
-				"duration": 3,
-				"targeting": "self"
-			}
-		},
-		"antidote": {
-			"name": "Antidote",
-			"type": "potion",
-			"rarity": "common",
-			"weight": 1,
-			"value": 20,
-			"description": "Purges poison and stops bleeding.",
-			"effect": {
-				"type": "cleanse",
-				"statuses_removed": ["Poisoned", "Bleeding"],
-				"targeting": "self"
-			}
-		},
-		"scroll_firebolt": {
-			"name": "Scroll of Firebolt",
-			"type": "scroll",
-			"rarity": "common",
-			"weight": 0,
-			"value": 40,
-			"description": "A scroll inscribed with the Firebolt incantation. Usable by anyone.",
-			"spell_id": "firebolt",
-			"spell_bonus": 0
-		},
-		"scroll_lesser_heal": {
-			"name": "Scroll of Lesser Heal",
-			"type": "scroll",
-			"rarity": "common",
-			"weight": 0,
-			"value": 35,
-			"description": "A scroll inscribed with a healing prayer. Usable by anyone.",
-			"spell_id": "lesser_heal",
-			"spell_bonus": 0
-		},
-
-		"scroll_magic_missile": {
-			"name": "Scroll of Magic Missile",
-			"type": "scroll",
-			"rarity": "common",
-			"weight": 0,
-			"value": 35,
-			"description": "A scroll of pure force. Usable by anyone.",
-			"spell_id": "magic_missile",
-			"spell_bonus": 0
-		},
-		"scroll_voidbolt": {
-			"name": "Scroll of Voidbolt",
-			"type": "scroll",
-			"rarity": "common",
-			"weight": 0,
-			"value": 45,
-			"description": "A scroll imbued with space magic. The ink seems to shift when you're not looking at it.",
-			"spell_id": "voidbolt",
-			"spell_bonus": 0
-		},
-		"scroll_shocking_grasp": {
-			"name": "Scroll of Shocking Grasp",
-			"type": "scroll",
-			"rarity": "common",
-			"weight": 0,
-			"value": 40,
-			"description": "A crackling scroll of air energy. Usable by anyone.",
-			"spell_id": "shocking_grasp",
-			"spell_bonus": 0
-		},
-		"scroll_stone_spike": {
-			"name": "Scroll of Stone Spike",
-			"type": "scroll",
-			"rarity": "common",
-			"weight": 0,
-			"value": 40,
-			"description": "A heavy scroll dense with earth energy.",
-			"spell_id": "stone_spike",
-			"spell_bonus": 0
-		},
-		"scroll_fireball": {
-			"name": "Scroll of Fireball",
-			"type": "scroll",
-			"rarity": "uncommon",
-			"weight": 0,
-			"value": 80,
-			"description": "An AoE fire scroll. The paper is slightly warm to the touch.",
-			"spell_id": "fireball",
-			"spell_bonus": 0
-		},
-		"scroll_blizzard": {
-			"name": "Scroll of Blizzard",
-			"type": "scroll",
-			"rarity": "uncommon",
-			"weight": 0,
-			"value": 80,
-			"description": "An AoE cold scroll that conjures a storm of ice.",
-			"spell_id": "blizzard",
-			"spell_bonus": 0
-		},
-		"scroll_chain_lightning": {
-			"name": "Scroll of Chain Lightning",
-			"type": "scroll",
-			"rarity": "uncommon",
-			"weight": 0,
-			"value": 90,
-			"description": "An AoE air scroll. Lightning arcs between enemies.",
-			"spell_id": "chain_lightning",
-			"spell_bonus": 0
-		},
-		"scroll_earthquake": {
-			"name": "Scroll of Earthquake",
-			"type": "scroll",
-			"rarity": "uncommon",
-			"weight": 0,
-			"value": 90,
-			"description": "A heavy earth scroll that shakes the ground. Damages all enemies.",
-			"spell_id": "earthquake",
-			"spell_bonus": 0
-		},
-		"scroll_bless": {
-			"name": "Scroll of Bless",
-			"type": "scroll",
-			"rarity": "common",
-			"weight": 0,
-			"value": 50,
-			"description": "A buff scroll that raises combat effectiveness for several turns.",
-			"spell_id": "bless",
-			"spell_bonus": 0
-		},
-		"scroll_haste": {
-			"name": "Scroll of Haste",
-			"type": "scroll",
-			"rarity": "uncommon",
-			"weight": 0,
-			"value": 70,
-			"description": "Grants an extra action for several turns.",
-			"spell_id": "haste",
-			"spell_bonus": 0
-		},
-		"scroll_stone_skin": {
-			"name": "Scroll of Stone Skin",
-			"type": "scroll",
-			"rarity": "uncommon",
-			"weight": 0,
-			"value": 65,
-			"description": "Hardens the skin like stone, granting temporary armor.",
-			"spell_id": "stone_skin",
-			"spell_bonus": 0
-		},
-		"scroll_regeneration": {
-			"name": "Scroll of Regeneration",
-			"type": "scroll",
-			"rarity": "uncommon",
-			"weight": 0,
-			"value": 70,
-			"description": "A healing scroll that restores HP over several turns.",
-			"spell_id": "regeneration",
-			"spell_bonus": 0
-		},
-		"scroll_blink": {
-			"name": "Scroll of Blink",
-			"type": "scroll",
-			"rarity": "uncommon",
-			"weight": 0,
-			"value": 60,
-			"description": "A utility scroll that teleports the user a short distance.",
-			"spell_id": "blink",
-			"spell_bonus": 0
-		},
-		"scroll_cure": {
-			"name": "Scroll of Cure",
-			"type": "scroll",
-			"rarity": "common",
-			"weight": 0,
-			"value": 50,
-			"description": "Removes a negative status effect. Usable by anyone.",
-			"spell_id": "cure",
-			"spell_bonus": 0
-		},
-		"scroll_dispel": {
-			"name": "Scroll of Dispel",
-			"type": "scroll",
-			"rarity": "uncommon",
-			"weight": 0,
-			"value": 65,
-			"description": "Removes all magical buffs and debuffs from a target.",
-			"spell_id": "dispel",
-			"spell_bonus": 0
-		},
-		"scroll_slow": {
-			"name": "Scroll of Slow",
-			"type": "scroll",
-			"rarity": "common",
-			"weight": 0,
-			"value": 40,
-			"description": "Slows an enemy, halving its movement for several turns.",
-			"spell_id": "slow",
-			"spell_bonus": 0
-		},
-		"scroll_confusion": {
-			"name": "Scroll of Confusion",
-			"type": "scroll",
-			"rarity": "uncommon",
-			"weight": 0,
-			"value": 60,
-			"description": "Causes an enemy to act erratically, attacking random targets.",
-			"spell_id": "confusion",
-			"spell_bonus": 0
-		},
-
-		"white_charm_common": {
-			"name": "Common White Charm",
-			"type": "charm",
-			"rarity": "common",
-			"weight": 0,
-			"value": 30,
-			"description": "A blessed prayer bead. Reduces the mana cost of your next White magic spell.",
-			"effect": {
-				"school": "white",
-				"mana_reduction": 0.15,
-				"spellpower_bonus": 0
-			}
-		},
-		"white_charm_middling": {
-			"name": "Middling White Charm",
-			"type": "charm",
-			"rarity": "uncommon",
-			"weight": 0,
-			"value": 60,
-			"description": "A consecrated prayer bead of moderate power.",
-			"effect": {
-				"school": "white",
-				"mana_reduction": 0.30,
-				"spellpower_bonus": 0
-			}
-		},
-		"white_charm_rare": {
-			"name": "Rare White Charm",
-			"type": "charm",
-			"rarity": "rare",
-			"weight": 0,
-			"value": 100,
-			"description": "A sanctified relic that amplifies divine magic.",
-			"effect": {
-				"school": "white",
-				"mana_reduction": 0.45,
-				"spellpower_bonus": 0.10
-			}
-		},
-		"white_charm_unique": {
-			"name": "Unique White Charm",
-			"type": "charm",
-			"rarity": "epic",
-			"weight": 0,
-			"value": 160,
-			"description": "A sacred relic radiating divine light. Greatly empowers White magic.",
-			"effect": {
-				"school": "white",
-				"mana_reduction": 0.60,
-				"spellpower_bonus": 0.20
-			}
-		},
-		"fire_charm_common": {
-			"name": "Common Fire Charm",
-			"type": "charm",
-			"rarity": "common",
-			"weight": 0,
-			"value": 30,
-			"description": "A smoldering ember charm. Reduces the mana cost of your next Fire spell.",
-			"effect": {
-				"school": "fire",
-				"mana_reduction": 0.15,
-				"spellpower_bonus": 0
-			}
-		},
-		"fire_charm_middling": {
-			"name": "Middling Fire Charm",
-			"type": "charm",
-			"rarity": "uncommon",
-			"weight": 0,
-			"value": 60,
-			"description": "A flickering ember charm of moderate intensity.",
-			"effect": {
-				"school": "fire",
-				"mana_reduction": 0.30,
-				"spellpower_bonus": 0
-			}
-		},
-		"fire_charm_rare": {
-			"name": "Rare Fire Charm",
-			"type": "charm",
-			"rarity": "rare",
-			"weight": 0,
-			"value": 100,
-			"description": "A blazing cinder that intensifies flame magic.",
-			"effect": {
-				"school": "fire",
-				"mana_reduction": 0.45,
-				"spellpower_bonus": 0.10
-			}
-		},
-		"fire_charm_unique": {
-			"name": "Unique Fire Charm",
-			"type": "charm",
-			"rarity": "epic",
-			"weight": 0,
-			"value": 160,
-			"description": "A shard of elemental flame. Vastly empowers Fire magic.",
-			"effect": {
-				"school": "fire",
-				"mana_reduction": 0.60,
-				"spellpower_bonus": 0.20
-			}
-		},
-		"earth_charm_common": {
-			"name": "Common Earth Charm",
-			"type": "charm",
-			"rarity": "common",
-			"weight": 0,
-			"value": 30,
-			"description": "A polished stone inscribed with earthen runes. Reduces the mana cost of your next Earth spell.",
-			"effect": {
-				"school": "earth",
-				"mana_reduction": 0.15,
-				"spellpower_bonus": 0
-			}
-		},
-		"earth_charm_middling": {
-			"name": "Middling Earth Charm",
-			"type": "charm",
-			"rarity": "uncommon",
-			"weight": 0,
-			"value": 60,
-			"description": "A dense geode fragment pulsing with earthen power.",
-			"effect": {
-				"school": "earth",
-				"mana_reduction": 0.30,
-				"spellpower_bonus": 0
-			}
-		},
-		"earth_charm_rare": {
-			"name": "Rare Earth Charm",
-			"type": "charm",
-			"rarity": "rare",
-			"weight": 0,
-			"value": 100,
-			"description": "A crystal of living stone that amplifies earth magic.",
-			"effect": {
-				"school": "earth",
-				"mana_reduction": 0.45,
-				"spellpower_bonus": 0.10
-			}
-		},
-		"earth_charm_unique": {
-			"name": "Unique Earth Charm",
-			"type": "charm",
-			"rarity": "epic",
-			"weight": 0,
-			"value": 160,
-			"description": "A fragment of the World Mountain. Vastly empowers Earth magic.",
-			"effect": {
-				"school": "earth",
-				"mana_reduction": 0.60,
-				"spellpower_bonus": 0.20
-			}
-		},
-		"water_charm_common": {
-			"name": "Common Water Charm",
-			"type": "charm",
-			"rarity": "common",
-			"weight": 0,
-			"value": 30,
-			"description": "A vial of enchanted dew. Reduces the mana cost of your next Water spell.",
-			"effect": {
-				"school": "water",
-				"mana_reduction": 0.15,
-				"spellpower_bonus": 0
-			}
-		},
-		"air_charm_common": {
-			"name": "Common Air Charm",
-			"type": "charm",
-			"rarity": "common",
-			"weight": 0,
-			"value": 30,
-			"description": "A feather caught in a perpetual breeze. Reduces the mana cost of your next Air spell.",
-			"effect": {
-				"school": "air",
-				"mana_reduction": 0.15,
-				"spellpower_bonus": 0
-			}
-		},
-		"space_charm_common": {
-			"name": "Common Space Charm",
-			"type": "charm",
-			"rarity": "common",
-			"weight": 0,
-			"value": 30,
-			"description": "A shard of void crystal. Reduces the mana cost of your next Space spell.",
-			"effect": {
-				"school": "space",
-				"mana_reduction": 0.15,
-				"spellpower_bonus": 0
-			}
-		},
-		"black_charm_common": {
-			"name": "Common Black Charm",
-			"type": "charm",
-			"rarity": "common",
-			"weight": 0,
-			"value": 30,
-			"description": "A bone token etched with dark sigils. Reduces the mana cost of your next Black magic spell.",
-			"effect": {
-				"school": "black",
-				"mana_reduction": 0.15,
-				"spellpower_bonus": 0
-			}
-		},
-		"sorcery_charm_common": {
-			"name": "Common Sorcery Charm",
-			"type": "charm",
-			"rarity": "common",
-			"weight": 0,
-			"value": 30,
-			"description": "A glass lens infused with raw magical force. Reduces the mana cost of your next Sorcery spell.",
-			"effect": {
-				"school": "sorcery",
-				"mana_reduction": 0.15,
-				"spellpower_bonus": 0
-			}
-		},
-		"enchantment_charm_common": {
-			"name": "Common Enchantment Charm",
-			"type": "charm",
-			"rarity": "common",
-			"weight": 0,
-			"value": 30,
-			"description": "A woven cord of binding thread. Reduces the mana cost of your next Enchantment spell.",
-			"effect": {
-				"school": "enchantment",
-				"mana_reduction": 0.15,
-				"spellpower_bonus": 0
-			}
-		},
-		"summoning_charm_common": {
-			"name": "Common Summoning Charm",
-			"type": "charm",
-			"rarity": "common",
-			"weight": 0,
-			"value": 30,
-			"description": "A clay figurine of a spirit beast. Reduces the mana cost of your next Summoning spell.",
-			"effect": {
-				"school": "summoning",
-				"mana_reduction": 0.15,
-				"spellpower_bonus": 0
-			}
-		},
-
-		"ice_shard": {
-			"name": "Ice Shard",
-			"type": "talisman",
-			"slot": "trinket1",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "water",
-			"weight": 0,
-			"value": 60,
-			"description": "A shard of living ice that hums with power, gifted by the spirits of the frozen lake.",
-			"requirements": {},
-			"stats": {"spellpower": 5, "max_mana": 10},
-			"abilities": []
-		},
-		"soul_stone": {
-			"name": "Soul Stone",
-			"type": "talisman",
-			"slot": "trinket1",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "space",
-			"weight": 0,
-			"value": 75,
-			"description": "A piece of turquoise left behind by a liberated spirit. Warm to the touch.",
-			"requirements": {},
-			"stats": {"spellpower": 6, "max_mana": 8},
-			"abilities": []
-		},
-		"fire_resistance_talisman": {
-			"name": "Fire Resistance Talisman",
-			"type": "talisman",
-			"slot": "trinket1",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "fire",
-			"weight": 0,
-			"value": 55,
-			"description": "An old offering found near the lava guardian's passage. Grants some protection from flames.",
-			"requirements": {},
-			"stats": {},
-			"abilities": [],
-			"passive": {"fire_resistance": 15}
-		},
-		"good_iron_weapon": {
-			"name": "Good Iron Weapon",
-			"type": "sword",
-			"slot": "weapon_main",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "earth",
-			"weight": 9,
-			"value": 90,
-			"description": "A well-made iron weapon. When found, its type matches the bearer's best weapon skill.",
-			"requirements": {"strength": 10},
-			"stats": {"damage": 11, "accuracy": 5},
-			"abilities": [],
-			"random_generate": {"category": "weapon", "quality": "good", "material": "iron", "match_party_skill": true}
-		},
-		"good_iron_armor": {
-			"name": "Good Iron Armor",
-			"type": "armor",
-			"slot": "chest",
-			"two_handed": false,
-			"rarity": "uncommon",
-			"element": "earth",
-			"weight": 20,
-			"value": 120,
-			"description": "Sturdy iron armor left behind by the frozen army. Still in remarkable condition.",
-			"requirements": {"strength": 11},
-			"stats": {"armor": 7, "dodge": -3},
-			"abilities": [],
-			"random_generate": {"category": "armor", "quality": "good", "material": "iron"}
-		},
-		"random_common_talisman": {
-			"name": "Carved Token",
-			"type": "talisman",
-			"slot": "trinket1",
-			"two_handed": false,
-			"rarity": "common",
-			"element": "space",
-			"weight": 0,
-			"value": 35,
-			"description": "A small carved token pressed into your hands by a grateful soul.",
-			"requirements": {},
-			"stats": {"luck": 2},
-			"abilities": [],
-			"random_generate": {"category": "talisman", "rarity": "common"}
-		},
-
-		"fire_bomb": {
-			"name": "Fire Bomb",
-			"type": "bomb",
-			"rarity": "common",
-			"weight": 1,
-			"value": 35,
-			"description": "An alchemical incendiary that explodes on impact.",
-			"effect": {
-				"damage": 20,
-				"damage_type": "fire",
-				"aoe_radius": 1,
-				"range": 4,
-				"statuses": []
-			}
-		},
-		"frost_bomb": {
-			"name": "Frost Bomb",
-			"type": "bomb",
-			"rarity": "common",
-			"weight": 1,
-			"value": 35,
-			"description": "A flash-freezing alchemical flask.",
-			"effect": {
-				"damage": 15,
-				"damage_type": "cold",
-				"aoe_radius": 1,
-				"range": 4,
-				"statuses": [{"name": "Chilled", "duration": 2, "chance": 100}]
-			}
-		},
-		"poison_bomb": {
-			"name": "Poison Bomb",
-			"type": "bomb",
-			"rarity": "uncommon",
-			"weight": 1,
-			"value": 50,
-			"description": "A noxious cloud bomb that chokes everything in the area.",
-			"effect": {
-				"damage": 10,
-				"damage_type": "poison",
-				"aoe_radius": 2,
-				"range": 4,
-				"statuses": [{"name": "Poisoned", "duration": 3, "chance": 100}]
-			}
-		},
-		"smoke_bomb": {
-			"name": "Smoke Bomb",
-			"type": "bomb",
-			"rarity": "common",
-			"weight": 1,
-			"value": 25,
-			"description": "A blinding smoke cloud. Affects all units in the area.",
-			"effect": {
-				"damage": 0,
-				"damage_type": "",
-				"aoe_radius": 2,
-				"range": 3,
-				"hits_all": true,
-				"statuses": [{"name": "Blinded", "duration": 2, "chance": 100}]
-			}
-		},
-		"holy_water_bomb": {
-			"name": "Holy Water Bomb",
-			"type": "bomb",
-			"rarity": "uncommon",
-			"weight": 1,
-			"value": 45,
-			"description": "Consecrated water that scalds the unholy.",
-			"effect": {
-				"damage": 25,
-				"damage_type": "holy",
-				"aoe_radius": 1,
-				"range": 4,
-				"statuses": []
-			}
-		},
-		"greater_fire_bomb": {
-			"name": "Greater Fire Bomb",
-			"type": "bomb",
-			"rarity": "rare",
-			"weight": 1,
-			"value": 80,
-			"description": "A volatile alchemical explosive packed with concentrated flame powder.",
-			"effect": {
-				"damage": 40,
-				"damage_type": "fire",
-				"aoe_radius": 2,
-				"range": 5,
-				"statuses": [{"name": "Burning", "duration": 2, "chance": 100}]
-			}
-		},
-		"acid_bomb": {
-			"name": "Acid Bomb",
-			"type": "bomb",
-			"rarity": "uncommon",
-			"weight": 1,
-			"value": 50,
-			"description": "A corrosive splash that eats through armor.",
-			"effect": {
-				"damage": 15,
-				"damage_type": "acid",
-				"aoe_radius": 1,
-				"range": 4,
-				"statuses": [{"name": "Corroded", "duration": 3, "chance": 100}]
-			}
-		},
-		"thunder_bomb": {
-			"name": "Thunder Bomb",
-			"type": "bomb",
-			"rarity": "rare",
-			"weight": 1,
-			"value": 75,
-			"description": "A concussive blast that stuns those caught in the detonation.",
-			"effect": {
-				"damage": 30,
-				"damage_type": "air",
-				"aoe_radius": 1,
-				"range": 5,
-				"statuses": [{"name": "Stunned", "duration": 1, "chance": 100}]
-			}
-		},
-
-		"flame_oil": {
-			"name": "Flame Oil",
-			"type": "oil",
-			"rarity": "common",
-			"weight": 1,
-			"value": 35,
-			"description": "Coats a weapon with alchemical fire. Next 3 attacks deal bonus fire damage.",
-			"effect": {
-				"bonus_damage": 5,
-				"bonus_damage_type": "fire",
-				"attacks": 3,
-				"status": "",
-				"status_chance": 0,
-				"status_duration": 0
-			}
-		},
-		"frost_oil": {
-			"name": "Frost Oil",
-			"type": "oil",
-			"rarity": "common",
-			"weight": 1,
-			"value": 35,
-			"description": "Coats a weapon with bitter cold. Next 3 attacks deal bonus cold damage and may chill.",
-			"effect": {
-				"bonus_damage": 5,
-				"bonus_damage_type": "cold",
-				"attacks": 3,
-				"status": "Chilled",
-				"status_chance": 30,
-				"status_duration": 2
-			}
-		},
-		"poison_oil": {
-			"name": "Poison Oil",
-			"type": "oil",
-			"rarity": "uncommon",
-			"weight": 1,
-			"value": 50,
-			"description": "A venomous coating that lingers on the blade. Next 4 attacks may poison the target.",
-			"effect": {
-				"bonus_damage": 3,
-				"bonus_damage_type": "poison",
-				"attacks": 4,
-				"status": "Poisoned",
-				"status_chance": 50,
-				"status_duration": 3
-			}
-		},
-		"holy_oil": {
-			"name": "Holy Oil",
-			"type": "oil",
-			"rarity": "uncommon",
-			"weight": 1,
-			"value": 50,
-			"description": "Blessed ointment that imbues a weapon with divine wrath.",
-			"effect": {
-				"bonus_damage": 8,
-				"bonus_damage_type": "holy",
-				"attacks": 3,
-				"status": "",
-				"status_chance": 0,
-				"status_duration": 0
-			}
-		},
-		"whetstone_oil": {
-			"name": "Whetstone Oil",
-			"type": "oil",
-			"rarity": "common",
-			"weight": 1,
-			"value": 30,
-			"description": "Hones a blade to razor sharpness. Next 3 attacks deal bonus damage with improved criticals.",
-			"effect": {
-				"bonus_damage": 4,
-				"bonus_damage_type": "physical",
-				"attacks": 3,
-				"crit_bonus": 10,
-				"status": "",
-				"status_chance": 0,
-				"status_duration": 0
-			}
-		},
-		"paralyzing_oil": {
-			"name": "Paralyzing Oil",
-			"type": "oil",
-			"rarity": "rare",
-			"weight": 1,
-			"value": 75,
-			"description": "A numbing toxin extracted from cave spiders. Attacks may stun the target.",
-			"effect": {
-				"bonus_damage": 2,
-				"bonus_damage_type": "poison",
-				"attacks": 3,
-				"status": "Stunned",
-				"status_chance": 40,
-				"status_duration": 1
-			}
-		},
-		"warding_oil": {
-			"name": "Warding Oil",
-			"type": "oil",
-			"rarity": "rare",
-			"weight": 1,
-			"value": 80,
-			"description": "A shimmering oil that grants weapons the ability to pierce magical defenses. Next 3 attacks bypass magic resistance.",
-			"effect": {
-				"bonus_damage": 2,
-				"bonus_damage_type": "physical",
-				"attacks": 3,
-				"magic_penetration": 30,
-				"status": "",
-				"status_chance": 0,
-				"status_duration": 0
-			}
-		},
-		"dragons_blood_oil": {
-			"name": "Dragon's Blood Oil",
-			"type": "oil",
-			"rarity": "epic",
-			"weight": 1,
-			"value": 200,
-			"description": "Rendered from dragonfire glands. Weapons coated in it burst into flame, and each wound fuels the wielder.",
-			"effect": {
-				"bonus_damage": 15,
-				"bonus_damage_type": "fire",
-				"attacks": 4,
-				"lifesteal_pct": 20,
-				"status": "Burning",
-				"status_chance": 60,
-				"status_duration": 2
-			}
-		},
-		"void_oil": {
-			"name": "Void Oil",
-			"type": "oil",
-			"rarity": "epic",
-			"weight": 1,
-			"value": 220,
-			"description": "Distilled from extraplanar essence. Strikes from a voided blade silence spellcasters.",
-			"effect": {
-				"bonus_damage": 12,
-				"bonus_damage_type": "void",
-				"attacks": 4,
-				"status": "Silenced",
-				"status_chance": 50,
-				"status_duration": 2
-			}
-		},
-		"sovereign_oil": {
-			"name": "Sovereign Oil",
-			"type": "oil",
-			"rarity": "legendary",
-			"weight": 1,
-			"value": 350,
-			"description": "The pinnacle of applied alchemy. Deals fire, frost, and void damage simultaneously, bypassing all resistances.",
-			"effect": {
-				"bonus_damage": 18,
-				"bonus_damage_type": "prismatic",
-				"attacks": 5,
-				"pierce_all_resistance": true,
-				"status": "",
-				"status_chance": 0,
-				"status_duration": 0
-			}
-		},
-		"stamina_tonic": {
-			"name": "Stamina Tonic",
-			"type": "potion",
-			"rarity": "uncommon",
-			"weight": 1,
-			"value": 45,
-			"description": "A bracing brew that floods the body with energy. Restores stamina and delays fatigue.",
-			"effect": {
-				"type": "restore_stamina",
-				"value": 40,
-				"targeting": "self"
-			}
-		},
-		"cure_all": {
-			"name": "Cure-All",
-			"type": "potion",
-			"rarity": "uncommon",
-			"weight": 1,
-			"value": 60,
-			"description": "A bitter draught that purges poison, disease, and curse alike.",
-			"effect": {
-				"type": "cleanse",
-				"statuses_removed": ["Poisoned", "Bleeding", "Burned", "Chilled", "Stunned", "Cursed", "Diseased"],
-				"targeting": "self"
-			}
-		},
-		"elixir_of_vitality": {
-			"name": "Elixir of Vitality",
-			"type": "potion",
-			"rarity": "rare",
-			"weight": 1,
-			"value": 150,
-			"description": "A deep crimson elixir that surges through the blood. Heals massively and temporarily increases maximum HP.",
-			"effect": {
-				"type": "heal",
-				"value": 100,
-				"max_hp_bonus": 20,
-				"max_hp_duration": 5,
-				"targeting": "self"
-			}
-		},
-		"elixir_of_power": {
-			"name": "Elixir of Power",
-			"type": "potion",
-			"rarity": "rare",
-			"weight": 1,
-			"value": 150,
-			"description": "A blazing golden elixir that ignites the mind. Restores mana fully and boosts spellpower for several turns.",
-			"effect": {
-				"type": "restore_mana",
-				"value": 999,
-				"spellpower_bonus": 15,
-				"spellpower_duration": 5,
-				"targeting": "self"
-			}
-		},
-		"panacea": {
-			"name": "Panacea",
-			"type": "potion",
-			"rarity": "legendary",
-			"weight": 1,
-			"value": 400,
-			"description": "The alchemist's masterwork. Heals all wounds, purges all ailments, and restores body and mind to peak condition.",
-			"effect": {
-				"type": "full_restore",
-				"heals_hp": true,
-				"heals_mana": true,
-				"heals_stamina": true,
-				"cleanses_all": true,
-				"targeting": "self"
-			}
-		},
-		"acid_flask": {
-			"name": "Acid Flask",
-			"type": "bomb",
-			"rarity": "uncommon",
-			"weight": 1,
-			"value": 70,
-			"description": "A flask of corrosive alchemical acid. Dissolves armor on impact.",
-			"effect": {
-				"damage": 15,
-				"damage_type": "acid",
-				"aoe_radius": 1,
-				"range": 4,
-				"statuses": ["Corroded"],
-				"armor_reduction": 5
-			}
-		},
-		"flashbang": {
-			"name": "Flashbang",
-			"type": "bomb",
-			"rarity": "uncommon",
-			"weight": 1,
-			"value": 65,
-			"description": "A blinding alchemical burst. Disorients all enemies in the area.",
-			"effect": {
-				"damage": 5,
-				"damage_type": "light",
-				"aoe_radius": 2,
-				"range": 4,
-				"statuses": ["Blinded", "Stunned"],
-				"status_duration": 1
-			}
-		},
-		"inferno_bomb": {
-			"name": "Inferno Bomb",
-			"type": "bomb",
-			"rarity": "rare",
-			"weight": 2,
-			"value": 180,
-			"description": "An unstable alchemical charge that detonates in a massive fireball, leaving burning ground.",
-			"effect": {
-				"damage": 60,
-				"damage_type": "fire",
-				"aoe_radius": 3,
-				"range": 5,
-				"statuses": ["Burning"],
-				"terrain_effect": "fire"
-			}
-		},
-		"void_grenade": {
-			"name": "Void Grenade",
-			"type": "bomb",
-			"rarity": "rare",
-			"weight": 1,
-			"value": 200,
-			"description": "Compressed extraplanar energy. On detonation, creates a spatial rift that disrupts all magic in the area.",
-			"effect": {
-				"damage": 45,
-				"damage_type": "void",
-				"aoe_radius": 2,
-				"range": 5,
-				"statuses": ["Silenced"],
-				"status_duration": 2
-			}
-		},
-		"plague_flask": {
-			"name": "Plague Flask",
-			"type": "bomb",
-			"rarity": "epic",
-			"weight": 1,
-			"value": 250,
-			"description": "A biohazardous alchemical concoction. Spreads a fast-acting disease that jumps between enemies.",
-			"effect": {
-				"damage": 20,
-				"damage_type": "poison",
-				"aoe_radius": 2,
-				"range": 4,
-				"statuses": ["Diseased", "Poisoned"],
-				"contagious": true
-			}
-		},
-
-		"rations": {
-			"name": "Rations",
-			"type": "supply",
-			"rarity": "common",
-			"weight": 1,
-			"value": 2,
-			"description": "Dried meat and grain. Keeps the party fed on the road.",
-			"supply_type": "food",
-			"supply_amount": 5
-		},
-		"travel_provisions": {
-			"name": "Travel Provisions",
-			"type": "supply",
-			"rarity": "common",
-			"weight": 2,
-			"value": 8,
-			"description": "A well-packed bundle of preserved food.",
-			"supply_type": "food",
-			"supply_amount": 15
-		},
-		"herb_bundle": {
-			"name": "Herb Bundle",
-			"type": "supply",
-			"rarity": "common",
-			"weight": 1,
-			"value": 5,
-			"description": "Assorted medicinal herbs, roots, and dried flowers.",
-			"supply_type": "herbs",
-			"supply_amount": 5
-		},
-		"apothecary_pouch": {
-			"name": "Apothecary Pouch",
-			"type": "supply",
-			"rarity": "uncommon",
-			"weight": 2,
-			"value": 15,
-			"description": "A leather pouch packed with carefully sorted remedies.",
-			"supply_type": "herbs",
-			"supply_amount": 12
-		},
-		"scrap_metal": {
-			"name": "Scrap Metal",
-			"type": "supply",
-			"rarity": "common",
-			"weight": 2,
-			"value": 5,
-			"description": "Bent nails, broken fittings, and salvageable metal scraps.",
-			"supply_type": "scrap",
-			"supply_amount": 5
-		},
-		"salvage_kit": {
-			"name": "Salvage Kit",
-			"type": "supply",
-			"rarity": "uncommon",
-			"weight": 3,
-			"value": 15,
-			"description": "Usable metal, leather strips, and repair materials.",
-			"supply_type": "scrap",
-			"supply_amount": 12
-		},
-		"raw_reagents": {
-			"name": "Raw Reagents",
-			"type": "supply",
-			"rarity": "uncommon",
-			"weight": 1,
-			"value": 8,
-			"description": "Mineral salts, dried fungi, and alchemical base compounds.",
-			"supply_type": "reagents",
-			"supply_amount": 3
-		},
-		"alchemists_pouch": {
-			"name": "Alchemist's Pouch",
-			"type": "supply",
-			"rarity": "rare",
-			"weight": 2,
-			"value": 20,
-			"description": "A carefully prepared kit of distilled essences and reactive powders.",
-			"supply_type": "reagents",
-			"supply_amount": 8
-		}
-	},
-	"item_types": {
-		"sword": {"category": "weapon", "slots": ["weapon_main", "weapon_off"], "ranged": false, "damage_type": "slashing"},
-		"dagger": {"category": "weapon", "slots": ["weapon_main", "weapon_off"], "ranged": false, "damage_type": "piercing"},
-		"axe": {"category": "weapon", "slots": ["weapon_main"], "ranged": false, "damage_type": "slashing"},
-		"mace": {"category": "weapon", "slots": ["weapon_main"], "ranged": false, "damage_type": "crushing"},
-		"spear": {"category": "weapon", "slots": ["weapon_main"], "ranged": false, "damage_type": "piercing"},
-		"staff": {"category": "weapon", "slots": ["weapon_main"], "ranged": false, "damage_type": "crushing"},
-		"bow": {"category": "weapon", "slots": ["weapon_main"], "ranged": true, "skill": "ranged", "damage_type": "piercing"},
-		"thrown": {"category": "weapon", "slots": ["weapon_main"], "ranged": true, "skill": "ranged", "damage_type": "piercing"},
-		"shield": {"category": "weapon", "slots": ["weapon_off"], "ranged": false},
-		"armor": {"category": "armor", "slots": ["chest"]},
-		"robe": {"category": "armor", "slots": ["chest"]},
-		"helmet": {"category": "armor", "slots": ["head"]},
-		"hat": {"category": "armor", "slots": ["head"]},
-		"circlet": {"category": "armor", "slots": ["head"]},
-		"gloves": {"category": "armor", "slots": ["hand_l", "hand_r"]},
-		"gauntlets": {"category": "armor", "slots": ["hand_l", "hand_r"]},
-		"bracers": {"category": "armor", "slots": ["hand_l", "hand_r"]},
-		"pants": {"category": "armor", "slots": ["legs"]},
-		"greaves": {"category": "armor", "slots": ["legs"]},
-		"leggings": {"category": "armor", "slots": ["legs"]},
-		"boots": {"category": "armor", "slots": ["feet"]},
-		"shoes": {"category": "armor", "slots": ["feet"]},
-		"sandals": {"category": "armor", "slots": ["feet"]},
-		"ring": {"category": "accessory", "slots": ["ring1", "ring2"]},
-		"amulet": {"category": "accessory", "slots": ["trinket1", "trinket2"]},
-		"necklace": {"category": "accessory", "slots": ["trinket1", "trinket2"]},
-		"trinket": {"category": "accessory", "slots": ["trinket1", "trinket2"]},
-		"talisman": {"category": "accessory", "slots": ["trinket1", "trinket2"]},
-		"potion": {"category": "consumable", "subcategory": "potion"},
-		"scroll": {"category": "consumable", "subcategory": "scroll"},
-		"charm": {"category": "consumable", "subcategory": "charm"},
-		"bomb": {"category": "consumable", "subcategory": "bomb"},
-		"oil": {"category": "consumable", "subcategory": "oil"},
-		"supply": {"category": "supply"}
-	},
-	"rarities": {
-		"common": {"color": "#AAAAAA", "drop_weight": 100},
-		"uncommon": {"color": "#55AA55", "drop_weight": 50},
-		"rare": {"color": "#5555FF", "drop_weight": 20},
-		"epic": {"color": "#AA55AA", "drop_weight": 5},
-		"legendary": {"color": "#FFAA00", "drop_weight": 1}
-	}
+  "items": {
+    "iron_sword": {
+      "name": "Iron Sword",
+      "type": "sword",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "weight": 8,
+      "value": 50,
+      "description": "A sturdy blade forged of iron.",
+      "requirements": {
+        "strength": 10
+      },
+      "stats": {
+        "damage": 8,
+        "accuracy": 0
+      },
+      "abilities": [],
+      "durability": 85,
+      "max_durability": 85
+    },
+    "bronze_sword": {
+      "name": "Bronze Sword",
+      "type": "sword",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "weight": 7,
+      "value": 35,
+      "description": "An older design, still serviceable.",
+      "requirements": {
+        "strength": 8
+      },
+      "stats": {
+        "damage": 6,
+        "accuracy": 5
+      },
+      "abilities": [],
+      "durability": 65,
+      "max_durability": 65
+    },
+    "steel_longsword": {
+      "name": "Steel Longsword",
+      "type": "sword",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "earth",
+      "weight": 10,
+      "value": 120,
+      "description": "A well-crafted blade of tempered steel.",
+      "requirements": {
+        "strength": 12
+      },
+      "stats": {
+        "damage": 12,
+        "accuracy": 5
+      },
+      "abilities": [],
+      "durability": 110,
+      "max_durability": 110
+    },
+    "wooden_staff": {
+      "name": "Wooden Staff",
+      "type": "staff",
+      "slot": "weapon_main",
+      "two_handed": true,
+      "rarity": "common",
+      "element": "earth",
+      "weight": 4,
+      "value": 15,
+      "description": "A simple wooden staff, useful for walking and whacking.",
+      "requirements": {},
+      "stats": {
+        "damage": 4,
+        "spellpower": 5
+      },
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40,
+      "material": "wood"
+    },
+    "oak_staff": {
+      "name": "Oak Staff",
+      "type": "staff",
+      "slot": "weapon_main",
+      "two_handed": true,
+      "rarity": "uncommon",
+      "element": "earth",
+      "weight": 5,
+      "value": 60,
+      "description": "A sturdy oak staff, carved with simple protective symbols.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "damage": 5,
+        "spellpower": 12
+      },
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40,
+      "material": "wood"
+    },
+    "hunting_bow": {
+      "name": "Hunting Bow",
+      "type": "bow",
+      "slot": "weapon_main",
+      "two_handed": true,
+      "rarity": "common",
+      "element": "air",
+      "weight": 3,
+      "value": 40,
+      "description": "A simple bow for hunting game.",
+      "requirements": {
+        "finesse": 10
+      },
+      "stats": {
+        "damage": 7,
+        "accuracy": 10,
+        "range": 5,
+        "ammo": 20
+      },
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40,
+      "material": "wood"
+    },
+    "short_bow": {
+      "name": "Short Bow",
+      "type": "bow",
+      "slot": "weapon_main",
+      "two_handed": true,
+      "rarity": "common",
+      "element": "air",
+      "weight": 2,
+      "value": 30,
+      "description": "A compact bow, easy to carry.",
+      "requirements": {
+        "finesse": 8
+      },
+      "stats": {
+        "damage": 5,
+        "accuracy": 15,
+        "range": 4,
+        "ammo": 20
+      },
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40,
+      "material": "wood"
+    },
+    "longbow": {
+      "name": "Longbow",
+      "type": "bow",
+      "slot": "weapon_main",
+      "two_handed": true,
+      "rarity": "uncommon",
+      "element": "air",
+      "weight": 4,
+      "value": 80,
+      "description": "A powerful bow requiring great skill to draw.",
+      "requirements": {
+        "finesse": 12,
+        "strength": 10
+      },
+      "stats": {
+        "damage": 10,
+        "accuracy": 5,
+        "range": 6,
+        "ammo": 20
+      },
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40,
+      "material": "wood"
+    },
+    "throwing_knife": {
+      "name": "Throwing Knife",
+      "type": "thrown",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "air",
+      "weight": 1,
+      "value": 15,
+      "description": "A balanced knife designed for throwing.",
+      "requirements": {
+        "finesse": 8
+      },
+      "stats": {
+        "damage": 4,
+        "accuracy": 10,
+        "range": 3,
+        "crit_chance": 5,
+        "ammo": 5
+      },
+      "abilities": []
+    },
+    "iron_dagger": {
+      "name": "Iron Dagger",
+      "type": "dagger",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "air",
+      "weight": 2,
+      "value": 25,
+      "description": "A simple iron dagger, quick to strike.",
+      "requirements": {
+        "finesse": 8
+      },
+      "stats": {
+        "damage": 4,
+        "accuracy": 15,
+        "crit_chance": 5
+      },
+      "abilities": [],
+      "durability": 85,
+      "max_durability": 85
+    },
+    "iron_axe": {
+      "name": "Iron Axe",
+      "type": "axe",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "fire",
+      "weight": 10,
+      "value": 55,
+      "description": "A heavy iron axe, good for chopping.",
+      "requirements": {
+        "strength": 12
+      },
+      "stats": {
+        "damage": 10,
+        "accuracy": -5
+      },
+      "abilities": [],
+      "durability": 85,
+      "max_durability": 85
+    },
+    "iron_mace": {
+      "name": "Iron Mace",
+      "type": "mace",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "weight": 9,
+      "value": 50,
+      "description": "A heavy iron mace for crushing blows.",
+      "requirements": {
+        "strength": 11
+      },
+      "stats": {
+        "damage": 9,
+        "accuracy": 0,
+        "armor_pierce": 5
+      },
+      "abilities": [],
+      "durability": 85,
+      "max_durability": 85
+    },
+    "wooden_spear": {
+      "name": "Wooden Spear",
+      "type": "spear",
+      "slot": "weapon_main",
+      "two_handed": true,
+      "rarity": "common",
+      "element": "water",
+      "weight": 5,
+      "value": 20,
+      "description": "A simple wooden spear with an iron tip.",
+      "requirements": {
+        "finesse": 8
+      },
+      "stats": {
+        "damage": 6,
+        "accuracy": 5
+      },
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40
+    },
+    "wooden_shield": {
+      "name": "Wooden Shield",
+      "type": "shield",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "weight": 6,
+      "value": 30,
+      "description": "A round wooden shield, basic protection.",
+      "requirements": {
+        "strength": 8
+      },
+      "stats": {
+        "dodge": 5,
+        "armor": 2
+      },
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40
+    },
+    "iron_shield": {
+      "name": "Iron Shield",
+      "type": "shield",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "earth",
+      "weight": 12,
+      "value": 80,
+      "description": "A sturdy iron shield with a boss.",
+      "requirements": {
+        "strength": 12
+      },
+      "stats": {
+        "dodge": 8,
+        "armor": 5
+      },
+      "abilities": [],
+      "durability": 85,
+      "max_durability": 85
+    },
+    "leather_vest": {
+      "name": "Leather Vest",
+      "type": "armor",
+      "slot": "chest",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "weight": 8,
+      "value": 40,
+      "description": "Simple leather protection.",
+      "requirements": {},
+      "stats": {
+        "armor": 3,
+        "dodge": 0
+      },
+      "abilities": []
+    },
+    "padded_armor": {
+      "name": "Padded Armor",
+      "type": "armor",
+      "slot": "chest",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "weight": 10,
+      "value": 50,
+      "description": "Quilted cloth armor, surprisingly effective.",
+      "requirements": {},
+      "stats": {
+        "armor": 4,
+        "dodge": -2
+      },
+      "abilities": []
+    },
+    "chainmail": {
+      "name": "Chainmail",
+      "type": "armor",
+      "slot": "chest",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "earth",
+      "weight": 25,
+      "value": 150,
+      "description": "Interlocking iron rings provide solid protection.",
+      "requirements": {
+        "strength": 12
+      },
+      "stats": {
+        "armor": 8,
+        "dodge": -5
+      },
+      "abilities": []
+    },
+    "cloth_robe": {
+      "name": "Cloth Robe",
+      "type": "robe",
+      "slot": "chest",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "space",
+      "weight": 3,
+      "value": 20,
+      "description": "A simple robe, preferred by scholars.",
+      "requirements": {},
+      "stats": {
+        "armor": 1,
+        "max_mana": 10
+      },
+      "abilities": []
+    },
+    "leather_cap": {
+      "name": "Leather Cap",
+      "type": "helmet",
+      "slot": "head",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "weight": 2,
+      "value": 20,
+      "description": "A simple leather cap.",
+      "requirements": {},
+      "stats": {
+        "armor": 1
+      },
+      "abilities": []
+    },
+    "iron_helmet": {
+      "name": "Iron Helmet",
+      "type": "helmet",
+      "slot": "head",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "earth",
+      "weight": 5,
+      "value": 60,
+      "description": "An iron helmet with nose guard.",
+      "requirements": {
+        "strength": 10
+      },
+      "stats": {
+        "armor": 3,
+        "awareness": -1
+      },
+      "abilities": []
+    },
+    "cloth_hood": {
+      "name": "Cloth Hood",
+      "type": "hat",
+      "slot": "head",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "air",
+      "weight": 1,
+      "value": 10,
+      "description": "A simple cloth hood.",
+      "requirements": {},
+      "stats": {
+        "max_mana": 5
+      },
+      "abilities": []
+    },
+    "leather_gloves": {
+      "name": "Leather Gloves",
+      "type": "gloves",
+      "slot": "hand_l",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "weight": 1,
+      "value": 15,
+      "description": "Simple leather gloves.",
+      "requirements": {},
+      "stats": {
+        "armor": 1
+      },
+      "abilities": []
+    },
+    "iron_gauntlets": {
+      "name": "Iron Gauntlets",
+      "type": "gauntlets",
+      "slot": "hand_l",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "earth",
+      "weight": 4,
+      "value": 50,
+      "description": "Heavy iron gauntlets.",
+      "requirements": {
+        "strength": 10
+      },
+      "stats": {
+        "armor": 2,
+        "damage": 1
+      },
+      "abilities": []
+    },
+    "leather_pants": {
+      "name": "Leather Pants",
+      "type": "pants",
+      "slot": "legs",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "weight": 4,
+      "value": 25,
+      "description": "Sturdy leather pants.",
+      "requirements": {},
+      "stats": {
+        "armor": 2
+      },
+      "abilities": []
+    },
+    "iron_greaves": {
+      "name": "Iron Greaves",
+      "type": "greaves",
+      "slot": "legs",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "earth",
+      "weight": 8,
+      "value": 70,
+      "description": "Iron leg armor.",
+      "requirements": {
+        "strength": 10
+      },
+      "stats": {
+        "armor": 4,
+        "dodge": -2
+      },
+      "abilities": []
+    },
+    "leather_boots": {
+      "name": "Leather Boots",
+      "type": "boots",
+      "slot": "feet",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "weight": 3,
+      "value": 20,
+      "description": "Sturdy leather boots.",
+      "requirements": {},
+      "stats": {
+        "armor": 1,
+        "movement": 0
+      },
+      "abilities": []
+    },
+    "travelers_boots": {
+      "name": "Traveler's Boots",
+      "type": "boots",
+      "slot": "feet",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "air",
+      "weight": 2,
+      "value": 60,
+      "description": "Light boots made for long journeys.",
+      "requirements": {},
+      "stats": {
+        "armor": 1,
+        "movement": 1
+      },
+      "abilities": []
+    },
+    "copper_ring": {
+      "name": "Copper Ring",
+      "type": "ring",
+      "slot": "ring1",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "weight": 0,
+      "value": 15,
+      "description": "A simple copper ring.",
+      "requirements": {},
+      "stats": {
+        "luck": 1
+      },
+      "abilities": []
+    },
+    "silver_ring": {
+      "name": "Silver Ring",
+      "type": "ring",
+      "slot": "ring1",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "water",
+      "weight": 0,
+      "value": 50,
+      "description": "A polished silver ring.",
+      "requirements": {},
+      "stats": {
+        "max_mana": 10,
+        "luck": 1
+      },
+      "abilities": []
+    },
+    "travelers_amulet": {
+      "name": "Traveler's Amulet",
+      "type": "amulet",
+      "slot": "trinket1",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "space",
+      "weight": 0,
+      "value": 30,
+      "description": "A simple amulet blessed for safe travels.",
+      "requirements": {},
+      "stats": {
+        "luck": 2
+      },
+      "abilities": []
+    },
+    "bone_amulet": {
+      "name": "Bone Amulet",
+      "type": "amulet",
+      "slot": "trinket1",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "space",
+      "weight": 0,
+      "value": 75,
+      "description": "A carved bone amulet inscribed with mantras.",
+      "requirements": {},
+      "stats": {
+        "spellpower": 5,
+        "max_mana": 5
+      },
+      "abilities": []
+    },
+    "lucky_charm": {
+      "name": "Lucky Charm",
+      "type": "trinket",
+      "slot": "trinket1",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "air",
+      "weight": 0,
+      "value": 25,
+      "description": "A small charm said to bring good fortune.",
+      "requirements": {},
+      "stats": {
+        "luck": 3,
+        "crit_chance": 2
+      },
+      "abilities": []
+    },
+    "prayer_beads": {
+      "name": "Prayer Beads",
+      "type": "trinket",
+      "slot": "trinket1",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "space",
+      "weight": 0,
+      "value": 80,
+      "description": "Mala beads used for meditation and mantra recitation.",
+      "requirements": {},
+      "stats": {
+        "max_mana": 15,
+        "spellpower": 3
+      },
+      "abilities": []
+    },
+    "vajra_thunderbolt": {
+      "name": "Vajra Thunderbolt",
+      "type": "mace",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "legendary",
+      "element": "space",
+      "weight": 6,
+      "value": 500,
+      "description": "A diamond sceptre crackling with divine lightning. Symbol of indestructible truth.",
+      "requirements": {
+        "strength": 14,
+        "focus": 12
+      },
+      "stats": {
+        "damage": 18,
+        "accuracy": 10,
+        "spellpower": 10,
+        "armor_pierce": 10
+      },
+      "abilities": [],
+      "durability": 85,
+      "max_durability": 85
+    },
+    "yamas_ledger": {
+      "name": "Yama's Ledger",
+      "type": "trinket",
+      "slot": "trinket1",
+      "two_handed": false,
+      "rarity": "legendary",
+      "element": "space",
+      "weight": 1,
+      "value": 450,
+      "description": "The book of judgment, recording every deed. Whispers karmic secrets to its bearer.",
+      "requirements": {},
+      "stats": {
+        "luck": 5,
+        "awareness": 3,
+        "spellpower": 8,
+        "max_mana": 20
+      },
+      "abilities": []
+    },
+    "mantle_of_the_undying_flame": {
+      "name": "Mantle of the Undying Flame",
+      "type": "robe",
+      "slot": "chest",
+      "two_handed": false,
+      "rarity": "legendary",
+      "element": "fire",
+      "weight": 4,
+      "value": 480,
+      "description": "Woven from perpetual embers, this robe burns without consuming. Fire cannot harm its wearer.",
+      "requirements": {},
+      "stats": {
+        "armor": 6,
+        "max_mana": 25,
+        "spellpower": 12
+      },
+      "abilities": []
+    },
+    "frozen_heart_amulet": {
+      "name": "Frozen Heart Amulet",
+      "type": "amulet",
+      "slot": "trinket1",
+      "two_handed": false,
+      "rarity": "legendary",
+      "element": "water",
+      "weight": 0,
+      "value": 420,
+      "description": "A sapphire heart encased in eternal ice. Slows the wearer's pulse, granting preternatural calm.",
+      "requirements": {},
+      "stats": {
+        "max_hp": 20,
+        "armor": 4,
+        "dodge": 8
+      },
+      "abilities": []
+    },
+    "health_potion": {
+      "name": "Health Potion",
+      "type": "potion",
+      "rarity": "common",
+      "weight": 1,
+      "value": 25,
+      "description": "A red tincture that restores vitality.",
+      "effect": {
+        "type": "heal",
+        "value": 30,
+        "targeting": "self"
+      }
+    },
+    "greater_health_potion": {
+      "name": "Greater Health Potion",
+      "type": "potion",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 60,
+      "description": "A concentrated healing draught.",
+      "effect": {
+        "type": "heal",
+        "value": 60,
+        "targeting": "self"
+      }
+    },
+    "mana_potion": {
+      "name": "Mana Potion",
+      "type": "potion",
+      "rarity": "common",
+      "weight": 1,
+      "value": 30,
+      "description": "A shimmering blue elixir that restores magical energy.",
+      "effect": {
+        "type": "restore_mana",
+        "value": 25,
+        "targeting": "self"
+      }
+    },
+    "greater_mana_potion": {
+      "name": "Greater Mana Potion",
+      "type": "potion",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 70,
+      "description": "A potent distillation of magical essence.",
+      "effect": {
+        "type": "restore_mana",
+        "value": 50,
+        "targeting": "self"
+      }
+    },
+    "fire_resistance_potion": {
+      "name": "Fire Resistance Potion",
+      "type": "potion",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 45,
+      "description": "Grants temporary resistance to flames.",
+      "effect": {
+        "type": "buff",
+        "status": "Fire_Resistant",
+        "resistance": "fire",
+        "value": 25,
+        "duration": 3,
+        "targeting": "self"
+      }
+    },
+    "antidote": {
+      "name": "Antidote",
+      "type": "potion",
+      "rarity": "common",
+      "weight": 1,
+      "value": 20,
+      "description": "Purges poison and stops bleeding.",
+      "effect": {
+        "type": "cleanse",
+        "statuses_removed": [
+          "Poisoned",
+          "Bleeding"
+        ],
+        "targeting": "self"
+      }
+    },
+    "scroll_firebolt": {
+      "name": "Scroll of Firebolt",
+      "type": "scroll",
+      "rarity": "common",
+      "weight": 0,
+      "value": 40,
+      "description": "A scroll inscribed with the Firebolt incantation. Usable by anyone.",
+      "spell_id": "firebolt",
+      "spell_bonus": 0
+    },
+    "scroll_lesser_heal": {
+      "name": "Scroll of Lesser Heal",
+      "type": "scroll",
+      "rarity": "common",
+      "weight": 0,
+      "value": 35,
+      "description": "A scroll inscribed with a healing prayer. Usable by anyone.",
+      "spell_id": "lesser_heal",
+      "spell_bonus": 0
+    },
+    "scroll_magic_missile": {
+      "name": "Scroll of Magic Missile",
+      "type": "scroll",
+      "rarity": "common",
+      "weight": 0,
+      "value": 35,
+      "description": "A scroll of pure force. Usable by anyone.",
+      "spell_id": "magic_missile",
+      "spell_bonus": 0
+    },
+    "scroll_voidbolt": {
+      "name": "Scroll of Voidbolt",
+      "type": "scroll",
+      "rarity": "common",
+      "weight": 0,
+      "value": 45,
+      "description": "A scroll imbued with space magic. The ink seems to shift when you're not looking at it.",
+      "spell_id": "voidbolt",
+      "spell_bonus": 0
+    },
+    "scroll_shocking_grasp": {
+      "name": "Scroll of Shocking Grasp",
+      "type": "scroll",
+      "rarity": "common",
+      "weight": 0,
+      "value": 40,
+      "description": "A crackling scroll of air energy. Usable by anyone.",
+      "spell_id": "shocking_grasp",
+      "spell_bonus": 0
+    },
+    "scroll_stone_spike": {
+      "name": "Scroll of Stone Spike",
+      "type": "scroll",
+      "rarity": "common",
+      "weight": 0,
+      "value": 40,
+      "description": "A heavy scroll dense with earth energy.",
+      "spell_id": "stone_spike",
+      "spell_bonus": 0
+    },
+    "scroll_fireball": {
+      "name": "Scroll of Fireball",
+      "type": "scroll",
+      "rarity": "uncommon",
+      "weight": 0,
+      "value": 80,
+      "description": "An AoE fire scroll. The paper is slightly warm to the touch.",
+      "spell_id": "fireball",
+      "spell_bonus": 0
+    },
+    "scroll_blizzard": {
+      "name": "Scroll of Blizzard",
+      "type": "scroll",
+      "rarity": "uncommon",
+      "weight": 0,
+      "value": 80,
+      "description": "An AoE cold scroll that conjures a storm of ice.",
+      "spell_id": "blizzard",
+      "spell_bonus": 0
+    },
+    "scroll_chain_lightning": {
+      "name": "Scroll of Chain Lightning",
+      "type": "scroll",
+      "rarity": "uncommon",
+      "weight": 0,
+      "value": 90,
+      "description": "An AoE air scroll. Lightning arcs between enemies.",
+      "spell_id": "chain_lightning",
+      "spell_bonus": 0
+    },
+    "scroll_earthquake": {
+      "name": "Scroll of Earthquake",
+      "type": "scroll",
+      "rarity": "uncommon",
+      "weight": 0,
+      "value": 90,
+      "description": "A heavy earth scroll that shakes the ground. Damages all enemies.",
+      "spell_id": "earthquake",
+      "spell_bonus": 0
+    },
+    "scroll_bless": {
+      "name": "Scroll of Bless",
+      "type": "scroll",
+      "rarity": "common",
+      "weight": 0,
+      "value": 50,
+      "description": "A buff scroll that raises combat effectiveness for several turns.",
+      "spell_id": "bless",
+      "spell_bonus": 0
+    },
+    "scroll_haste": {
+      "name": "Scroll of Haste",
+      "type": "scroll",
+      "rarity": "uncommon",
+      "weight": 0,
+      "value": 70,
+      "description": "Grants an extra action for several turns.",
+      "spell_id": "haste",
+      "spell_bonus": 0
+    },
+    "scroll_stone_skin": {
+      "name": "Scroll of Stone Skin",
+      "type": "scroll",
+      "rarity": "uncommon",
+      "weight": 0,
+      "value": 65,
+      "description": "Hardens the skin like stone, granting temporary armor.",
+      "spell_id": "stone_skin",
+      "spell_bonus": 0
+    },
+    "scroll_regeneration": {
+      "name": "Scroll of Regeneration",
+      "type": "scroll",
+      "rarity": "uncommon",
+      "weight": 0,
+      "value": 70,
+      "description": "A healing scroll that restores HP over several turns.",
+      "spell_id": "regeneration",
+      "spell_bonus": 0
+    },
+    "scroll_blink": {
+      "name": "Scroll of Blink",
+      "type": "scroll",
+      "rarity": "uncommon",
+      "weight": 0,
+      "value": 60,
+      "description": "A utility scroll that teleports the user a short distance.",
+      "spell_id": "blink",
+      "spell_bonus": 0
+    },
+    "scroll_cure": {
+      "name": "Scroll of Cure",
+      "type": "scroll",
+      "rarity": "common",
+      "weight": 0,
+      "value": 50,
+      "description": "Removes a negative status effect. Usable by anyone.",
+      "spell_id": "cure",
+      "spell_bonus": 0
+    },
+    "scroll_dispel": {
+      "name": "Scroll of Dispel",
+      "type": "scroll",
+      "rarity": "uncommon",
+      "weight": 0,
+      "value": 65,
+      "description": "Removes all magical buffs and debuffs from a target.",
+      "spell_id": "dispel",
+      "spell_bonus": 0
+    },
+    "scroll_slow": {
+      "name": "Scroll of Slow",
+      "type": "scroll",
+      "rarity": "common",
+      "weight": 0,
+      "value": 40,
+      "description": "Slows an enemy, halving its movement for several turns.",
+      "spell_id": "slow",
+      "spell_bonus": 0
+    },
+    "scroll_confusion": {
+      "name": "Scroll of Confusion",
+      "type": "scroll",
+      "rarity": "uncommon",
+      "weight": 0,
+      "value": 60,
+      "description": "Causes an enemy to act erratically, attacking random targets.",
+      "spell_id": "confusion",
+      "spell_bonus": 0
+    },
+    "white_charm_common": {
+      "name": "Common White Charm",
+      "type": "charm",
+      "rarity": "common",
+      "weight": 0,
+      "value": 30,
+      "description": "A blessed prayer bead. Reduces the mana cost of your next White magic spell.",
+      "effect": {
+        "school": "white",
+        "mana_reduction": 0.15,
+        "spellpower_bonus": 0
+      }
+    },
+    "white_charm_middling": {
+      "name": "Middling White Charm",
+      "type": "charm",
+      "rarity": "uncommon",
+      "weight": 0,
+      "value": 60,
+      "description": "A consecrated prayer bead of moderate power.",
+      "effect": {
+        "school": "white",
+        "mana_reduction": 0.3,
+        "spellpower_bonus": 0
+      }
+    },
+    "white_charm_rare": {
+      "name": "Rare White Charm",
+      "type": "charm",
+      "rarity": "rare",
+      "weight": 0,
+      "value": 100,
+      "description": "A sanctified relic that amplifies divine magic.",
+      "effect": {
+        "school": "white",
+        "mana_reduction": 0.45,
+        "spellpower_bonus": 0.1
+      }
+    },
+    "white_charm_unique": {
+      "name": "Unique White Charm",
+      "type": "charm",
+      "rarity": "epic",
+      "weight": 0,
+      "value": 160,
+      "description": "A sacred relic radiating divine light. Greatly empowers White magic.",
+      "effect": {
+        "school": "white",
+        "mana_reduction": 0.6,
+        "spellpower_bonus": 0.2
+      }
+    },
+    "fire_charm_common": {
+      "name": "Common Fire Charm",
+      "type": "charm",
+      "rarity": "common",
+      "weight": 0,
+      "value": 30,
+      "description": "A smoldering ember charm. Reduces the mana cost of your next Fire spell.",
+      "effect": {
+        "school": "fire",
+        "mana_reduction": 0.15,
+        "spellpower_bonus": 0
+      }
+    },
+    "fire_charm_middling": {
+      "name": "Middling Fire Charm",
+      "type": "charm",
+      "rarity": "uncommon",
+      "weight": 0,
+      "value": 60,
+      "description": "A flickering ember charm of moderate intensity.",
+      "effect": {
+        "school": "fire",
+        "mana_reduction": 0.3,
+        "spellpower_bonus": 0
+      }
+    },
+    "fire_charm_rare": {
+      "name": "Rare Fire Charm",
+      "type": "charm",
+      "rarity": "rare",
+      "weight": 0,
+      "value": 100,
+      "description": "A blazing cinder that intensifies flame magic.",
+      "effect": {
+        "school": "fire",
+        "mana_reduction": 0.45,
+        "spellpower_bonus": 0.1
+      }
+    },
+    "fire_charm_unique": {
+      "name": "Unique Fire Charm",
+      "type": "charm",
+      "rarity": "epic",
+      "weight": 0,
+      "value": 160,
+      "description": "A shard of elemental flame. Vastly empowers Fire magic.",
+      "effect": {
+        "school": "fire",
+        "mana_reduction": 0.6,
+        "spellpower_bonus": 0.2
+      }
+    },
+    "earth_charm_common": {
+      "name": "Common Earth Charm",
+      "type": "charm",
+      "rarity": "common",
+      "weight": 0,
+      "value": 30,
+      "description": "A polished stone inscribed with earthen runes. Reduces the mana cost of your next Earth spell.",
+      "effect": {
+        "school": "earth",
+        "mana_reduction": 0.15,
+        "spellpower_bonus": 0
+      }
+    },
+    "earth_charm_middling": {
+      "name": "Middling Earth Charm",
+      "type": "charm",
+      "rarity": "uncommon",
+      "weight": 0,
+      "value": 60,
+      "description": "A dense geode fragment pulsing with earthen power.",
+      "effect": {
+        "school": "earth",
+        "mana_reduction": 0.3,
+        "spellpower_bonus": 0
+      }
+    },
+    "earth_charm_rare": {
+      "name": "Rare Earth Charm",
+      "type": "charm",
+      "rarity": "rare",
+      "weight": 0,
+      "value": 100,
+      "description": "A crystal of living stone that amplifies earth magic.",
+      "effect": {
+        "school": "earth",
+        "mana_reduction": 0.45,
+        "spellpower_bonus": 0.1
+      }
+    },
+    "earth_charm_unique": {
+      "name": "Unique Earth Charm",
+      "type": "charm",
+      "rarity": "epic",
+      "weight": 0,
+      "value": 160,
+      "description": "A fragment of the World Mountain. Vastly empowers Earth magic.",
+      "effect": {
+        "school": "earth",
+        "mana_reduction": 0.6,
+        "spellpower_bonus": 0.2
+      }
+    },
+    "water_charm_common": {
+      "name": "Common Water Charm",
+      "type": "charm",
+      "rarity": "common",
+      "weight": 0,
+      "value": 30,
+      "description": "A vial of enchanted dew. Reduces the mana cost of your next Water spell.",
+      "effect": {
+        "school": "water",
+        "mana_reduction": 0.15,
+        "spellpower_bonus": 0
+      }
+    },
+    "air_charm_common": {
+      "name": "Common Air Charm",
+      "type": "charm",
+      "rarity": "common",
+      "weight": 0,
+      "value": 30,
+      "description": "A feather caught in a perpetual breeze. Reduces the mana cost of your next Air spell.",
+      "effect": {
+        "school": "air",
+        "mana_reduction": 0.15,
+        "spellpower_bonus": 0
+      }
+    },
+    "space_charm_common": {
+      "name": "Common Space Charm",
+      "type": "charm",
+      "rarity": "common",
+      "weight": 0,
+      "value": 30,
+      "description": "A shard of void crystal. Reduces the mana cost of your next Space spell.",
+      "effect": {
+        "school": "space",
+        "mana_reduction": 0.15,
+        "spellpower_bonus": 0
+      }
+    },
+    "black_charm_common": {
+      "name": "Common Black Charm",
+      "type": "charm",
+      "rarity": "common",
+      "weight": 0,
+      "value": 30,
+      "description": "A bone token etched with dark sigils. Reduces the mana cost of your next Black magic spell.",
+      "effect": {
+        "school": "black",
+        "mana_reduction": 0.15,
+        "spellpower_bonus": 0
+      }
+    },
+    "sorcery_charm_common": {
+      "name": "Common Sorcery Charm",
+      "type": "charm",
+      "rarity": "common",
+      "weight": 0,
+      "value": 30,
+      "description": "A glass lens infused with raw magical force. Reduces the mana cost of your next Sorcery spell.",
+      "effect": {
+        "school": "sorcery",
+        "mana_reduction": 0.15,
+        "spellpower_bonus": 0
+      }
+    },
+    "enchantment_charm_common": {
+      "name": "Common Enchantment Charm",
+      "type": "charm",
+      "rarity": "common",
+      "weight": 0,
+      "value": 30,
+      "description": "A woven cord of binding thread. Reduces the mana cost of your next Enchantment spell.",
+      "effect": {
+        "school": "enchantment",
+        "mana_reduction": 0.15,
+        "spellpower_bonus": 0
+      }
+    },
+    "summoning_charm_common": {
+      "name": "Common Summoning Charm",
+      "type": "charm",
+      "rarity": "common",
+      "weight": 0,
+      "value": 30,
+      "description": "A clay figurine of a spirit beast. Reduces the mana cost of your next Summoning spell.",
+      "effect": {
+        "school": "summoning",
+        "mana_reduction": 0.15,
+        "spellpower_bonus": 0
+      }
+    },
+    "ice_shard": {
+      "name": "Ice Shard",
+      "type": "talisman",
+      "slot": "trinket1",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "water",
+      "weight": 0,
+      "value": 60,
+      "description": "A shard of living ice that hums with power, gifted by the spirits of the frozen lake.",
+      "requirements": {},
+      "stats": {
+        "spellpower": 5,
+        "max_mana": 10
+      },
+      "abilities": []
+    },
+    "soul_stone": {
+      "name": "Soul Stone",
+      "type": "talisman",
+      "slot": "trinket1",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "space",
+      "weight": 0,
+      "value": 75,
+      "description": "A piece of turquoise left behind by a liberated spirit. Warm to the touch.",
+      "requirements": {},
+      "stats": {
+        "spellpower": 6,
+        "max_mana": 8
+      },
+      "abilities": []
+    },
+    "fire_resistance_talisman": {
+      "name": "Fire Resistance Talisman",
+      "type": "talisman",
+      "slot": "trinket1",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "fire",
+      "weight": 0,
+      "value": 55,
+      "description": "An old offering found near the lava guardian's passage. Grants some protection from flames.",
+      "requirements": {},
+      "stats": {},
+      "abilities": [],
+      "passive": {
+        "fire_resistance": 15
+      }
+    },
+    "good_iron_weapon": {
+      "name": "Good Iron Weapon",
+      "type": "sword",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "earth",
+      "weight": 9,
+      "value": 90,
+      "description": "A well-made iron weapon. When found, its type matches the bearer's best weapon skill.",
+      "requirements": {
+        "strength": 10
+      },
+      "stats": {
+        "damage": 11,
+        "accuracy": 5
+      },
+      "abilities": [],
+      "random_generate": {
+        "category": "weapon",
+        "quality": "good",
+        "material": "iron",
+        "match_party_skill": true
+      },
+      "durability": 85,
+      "max_durability": 85
+    },
+    "good_iron_armor": {
+      "name": "Good Iron Armor",
+      "type": "armor",
+      "slot": "chest",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "earth",
+      "weight": 20,
+      "value": 120,
+      "description": "Sturdy iron armor left behind by the frozen army. Still in remarkable condition.",
+      "requirements": {
+        "strength": 11
+      },
+      "stats": {
+        "armor": 7,
+        "dodge": -3
+      },
+      "abilities": [],
+      "random_generate": {
+        "category": "armor",
+        "quality": "good",
+        "material": "iron"
+      }
+    },
+    "random_common_talisman": {
+      "name": "Carved Token",
+      "type": "talisman",
+      "slot": "trinket1",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "space",
+      "weight": 0,
+      "value": 35,
+      "description": "A small carved token pressed into your hands by a grateful soul.",
+      "requirements": {},
+      "stats": {
+        "luck": 2
+      },
+      "abilities": [],
+      "random_generate": {
+        "category": "talisman",
+        "rarity": "common"
+      }
+    },
+    "fire_bomb": {
+      "name": "Fire Bomb",
+      "type": "bomb",
+      "rarity": "common",
+      "weight": 1,
+      "value": 35,
+      "description": "An alchemical incendiary that explodes on impact.",
+      "effect": {
+        "damage": 20,
+        "damage_type": "fire",
+        "aoe_radius": 1,
+        "range": 4,
+        "statuses": []
+      }
+    },
+    "frost_bomb": {
+      "name": "Frost Bomb",
+      "type": "bomb",
+      "rarity": "common",
+      "weight": 1,
+      "value": 35,
+      "description": "A flash-freezing alchemical flask.",
+      "effect": {
+        "damage": 15,
+        "damage_type": "cold",
+        "aoe_radius": 1,
+        "range": 4,
+        "statuses": [
+          {
+            "name": "Chilled",
+            "duration": 2,
+            "chance": 100
+          }
+        ]
+      }
+    },
+    "poison_bomb": {
+      "name": "Poison Bomb",
+      "type": "bomb",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 50,
+      "description": "A noxious cloud bomb that chokes everything in the area.",
+      "effect": {
+        "damage": 10,
+        "damage_type": "poison",
+        "aoe_radius": 2,
+        "range": 4,
+        "statuses": [
+          {
+            "name": "Poisoned",
+            "duration": 3,
+            "chance": 100
+          }
+        ]
+      }
+    },
+    "smoke_bomb": {
+      "name": "Smoke Bomb",
+      "type": "bomb",
+      "rarity": "common",
+      "weight": 1,
+      "value": 25,
+      "description": "A blinding smoke cloud. Affects all units in the area.",
+      "effect": {
+        "damage": 0,
+        "damage_type": "",
+        "aoe_radius": 2,
+        "range": 3,
+        "hits_all": true,
+        "statuses": [
+          {
+            "name": "Blinded",
+            "duration": 2,
+            "chance": 100
+          }
+        ]
+      }
+    },
+    "holy_water_bomb": {
+      "name": "Holy Water Bomb",
+      "type": "bomb",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 45,
+      "description": "Consecrated water that scalds the unholy.",
+      "effect": {
+        "damage": 25,
+        "damage_type": "holy",
+        "aoe_radius": 1,
+        "range": 4,
+        "statuses": []
+      }
+    },
+    "greater_fire_bomb": {
+      "name": "Greater Fire Bomb",
+      "type": "bomb",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 80,
+      "description": "A volatile alchemical explosive packed with concentrated flame powder.",
+      "effect": {
+        "damage": 40,
+        "damage_type": "fire",
+        "aoe_radius": 2,
+        "range": 5,
+        "statuses": [
+          {
+            "name": "Burning",
+            "duration": 2,
+            "chance": 100
+          }
+        ]
+      }
+    },
+    "acid_bomb": {
+      "name": "Acid Bomb",
+      "type": "bomb",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 50,
+      "description": "A corrosive splash that eats through armor.",
+      "effect": {
+        "damage": 15,
+        "damage_type": "acid",
+        "aoe_radius": 1,
+        "range": 4,
+        "statuses": [
+          {
+            "name": "Corroded",
+            "duration": 3,
+            "chance": 100
+          }
+        ]
+      }
+    },
+    "thunder_bomb": {
+      "name": "Thunder Bomb",
+      "type": "bomb",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 75,
+      "description": "A concussive blast that stuns those caught in the detonation.",
+      "effect": {
+        "damage": 30,
+        "damage_type": "air",
+        "aoe_radius": 1,
+        "range": 5,
+        "statuses": [
+          {
+            "name": "Stunned",
+            "duration": 1,
+            "chance": 100
+          }
+        ]
+      }
+    },
+    "flame_oil": {
+      "name": "Flame Oil",
+      "type": "oil",
+      "rarity": "common",
+      "weight": 1,
+      "value": 35,
+      "description": "Coats a weapon with alchemical fire. Next 3 attacks deal bonus fire damage.",
+      "effect": {
+        "bonus_damage": 5,
+        "bonus_damage_type": "fire",
+        "attacks": 3,
+        "status": "",
+        "status_chance": 0,
+        "status_duration": 0
+      }
+    },
+    "frost_oil": {
+      "name": "Frost Oil",
+      "type": "oil",
+      "rarity": "common",
+      "weight": 1,
+      "value": 35,
+      "description": "Coats a weapon with bitter cold. Next 3 attacks deal bonus cold damage and may chill.",
+      "effect": {
+        "bonus_damage": 5,
+        "bonus_damage_type": "cold",
+        "attacks": 3,
+        "status": "Chilled",
+        "status_chance": 30,
+        "status_duration": 2
+      }
+    },
+    "poison_oil": {
+      "name": "Poison Oil",
+      "type": "oil",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 50,
+      "description": "A venomous coating that lingers on the blade. Next 4 attacks may poison the target.",
+      "effect": {
+        "bonus_damage": 3,
+        "bonus_damage_type": "poison",
+        "attacks": 4,
+        "status": "Poisoned",
+        "status_chance": 50,
+        "status_duration": 3
+      }
+    },
+    "holy_oil": {
+      "name": "Holy Oil",
+      "type": "oil",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 50,
+      "description": "Blessed ointment that imbues a weapon with divine wrath.",
+      "effect": {
+        "bonus_damage": 8,
+        "bonus_damage_type": "holy",
+        "attacks": 3,
+        "status": "",
+        "status_chance": 0,
+        "status_duration": 0
+      }
+    },
+    "whetstone_oil": {
+      "name": "Whetstone Oil",
+      "type": "oil",
+      "rarity": "common",
+      "weight": 1,
+      "value": 30,
+      "description": "Hones a blade to razor sharpness. Next 3 attacks deal bonus damage with improved criticals.",
+      "effect": {
+        "bonus_damage": 4,
+        "bonus_damage_type": "physical",
+        "attacks": 3,
+        "crit_bonus": 10,
+        "status": "",
+        "status_chance": 0,
+        "status_duration": 0
+      }
+    },
+    "paralyzing_oil": {
+      "name": "Paralyzing Oil",
+      "type": "oil",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 75,
+      "description": "A numbing toxin extracted from cave spiders. Attacks may stun the target.",
+      "effect": {
+        "bonus_damage": 2,
+        "bonus_damage_type": "poison",
+        "attacks": 3,
+        "status": "Stunned",
+        "status_chance": 40,
+        "status_duration": 1
+      }
+    },
+    "warding_oil": {
+      "name": "Warding Oil",
+      "type": "oil",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 80,
+      "description": "A shimmering oil that grants weapons the ability to pierce magical defenses. Next 3 attacks bypass magic resistance.",
+      "effect": {
+        "bonus_damage": 2,
+        "bonus_damage_type": "physical",
+        "attacks": 3,
+        "magic_penetration": 30,
+        "status": "",
+        "status_chance": 0,
+        "status_duration": 0
+      }
+    },
+    "dragons_blood_oil": {
+      "name": "Dragon's Blood Oil",
+      "type": "oil",
+      "rarity": "epic",
+      "weight": 1,
+      "value": 200,
+      "description": "Rendered from dragonfire glands. Weapons coated in it burst into flame, and each wound fuels the wielder.",
+      "effect": {
+        "bonus_damage": 15,
+        "bonus_damage_type": "fire",
+        "attacks": 4,
+        "lifesteal_pct": 20,
+        "status": "Burning",
+        "status_chance": 60,
+        "status_duration": 2
+      }
+    },
+    "void_oil": {
+      "name": "Void Oil",
+      "type": "oil",
+      "rarity": "epic",
+      "weight": 1,
+      "value": 220,
+      "description": "Distilled from extraplanar essence. Strikes from a voided blade silence spellcasters.",
+      "effect": {
+        "bonus_damage": 12,
+        "bonus_damage_type": "void",
+        "attacks": 4,
+        "status": "Silenced",
+        "status_chance": 50,
+        "status_duration": 2
+      }
+    },
+    "sovereign_oil": {
+      "name": "Sovereign Oil",
+      "type": "oil",
+      "rarity": "legendary",
+      "weight": 1,
+      "value": 350,
+      "description": "The pinnacle of applied alchemy. Deals fire, frost, and void damage simultaneously, bypassing all resistances.",
+      "effect": {
+        "bonus_damage": 18,
+        "bonus_damage_type": "prismatic",
+        "attacks": 5,
+        "pierce_all_resistance": true,
+        "status": "",
+        "status_chance": 0,
+        "status_duration": 0
+      }
+    },
+    "stamina_tonic": {
+      "name": "Stamina Tonic",
+      "type": "potion",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 45,
+      "description": "A bracing brew that floods the body with energy. Restores stamina and delays fatigue.",
+      "effect": {
+        "type": "restore_stamina",
+        "value": 40,
+        "targeting": "self"
+      }
+    },
+    "cure_all": {
+      "name": "Cure-All",
+      "type": "potion",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 60,
+      "description": "A bitter draught that purges poison, disease, and curse alike.",
+      "effect": {
+        "type": "cleanse",
+        "statuses_removed": [
+          "Poisoned",
+          "Bleeding",
+          "Burned",
+          "Chilled",
+          "Stunned",
+          "Cursed",
+          "Diseased"
+        ],
+        "targeting": "self"
+      }
+    },
+    "elixir_of_vitality": {
+      "name": "Elixir of Vitality",
+      "type": "potion",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 150,
+      "description": "A deep crimson elixir that surges through the blood. Heals massively and temporarily increases maximum HP.",
+      "effect": {
+        "type": "heal",
+        "value": 100,
+        "max_hp_bonus": 20,
+        "max_hp_duration": 5,
+        "targeting": "self"
+      }
+    },
+    "elixir_of_power": {
+      "name": "Elixir of Power",
+      "type": "potion",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 150,
+      "description": "A blazing golden elixir that ignites the mind. Restores mana fully and boosts spellpower for several turns.",
+      "effect": {
+        "type": "restore_mana",
+        "value": 999,
+        "spellpower_bonus": 15,
+        "spellpower_duration": 5,
+        "targeting": "self"
+      }
+    },
+    "panacea": {
+      "name": "Panacea",
+      "type": "potion",
+      "rarity": "legendary",
+      "weight": 1,
+      "value": 400,
+      "description": "The alchemist's masterwork. Heals all wounds, purges all ailments, and restores body and mind to peak condition.",
+      "effect": {
+        "type": "full_restore",
+        "heals_hp": true,
+        "heals_mana": true,
+        "heals_stamina": true,
+        "cleanses_all": true,
+        "targeting": "self"
+      }
+    },
+    "acid_flask": {
+      "name": "Acid Flask",
+      "type": "bomb",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 70,
+      "description": "A flask of corrosive alchemical acid. Dissolves armor on impact.",
+      "effect": {
+        "damage": 15,
+        "damage_type": "acid",
+        "aoe_radius": 1,
+        "range": 4,
+        "statuses": [
+          "Corroded"
+        ],
+        "armor_reduction": 5
+      }
+    },
+    "flashbang": {
+      "name": "Flashbang",
+      "type": "bomb",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 65,
+      "description": "A blinding alchemical burst. Disorients all enemies in the area.",
+      "effect": {
+        "damage": 5,
+        "damage_type": "light",
+        "aoe_radius": 2,
+        "range": 4,
+        "statuses": [
+          "Blinded",
+          "Stunned"
+        ],
+        "status_duration": 1
+      }
+    },
+    "inferno_bomb": {
+      "name": "Inferno Bomb",
+      "type": "bomb",
+      "rarity": "rare",
+      "weight": 2,
+      "value": 180,
+      "description": "An unstable alchemical charge that detonates in a massive fireball, leaving burning ground.",
+      "effect": {
+        "damage": 60,
+        "damage_type": "fire",
+        "aoe_radius": 3,
+        "range": 5,
+        "statuses": [
+          "Burning"
+        ],
+        "terrain_effect": "fire"
+      }
+    },
+    "void_grenade": {
+      "name": "Void Grenade",
+      "type": "bomb",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 200,
+      "description": "Compressed extraplanar energy. On detonation, creates a spatial rift that disrupts all magic in the area.",
+      "effect": {
+        "damage": 45,
+        "damage_type": "void",
+        "aoe_radius": 2,
+        "range": 5,
+        "statuses": [
+          "Silenced"
+        ],
+        "status_duration": 2
+      }
+    },
+    "plague_flask": {
+      "name": "Plague Flask",
+      "type": "bomb",
+      "rarity": "epic",
+      "weight": 1,
+      "value": 250,
+      "description": "A biohazardous alchemical concoction. Spreads a fast-acting disease that jumps between enemies.",
+      "effect": {
+        "damage": 20,
+        "damage_type": "poison",
+        "aoe_radius": 2,
+        "range": 4,
+        "statuses": [
+          "Diseased",
+          "Poisoned"
+        ],
+        "contagious": true
+      }
+    },
+    "rations": {
+      "name": "Rations",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 2,
+      "description": "Dried meat and grain. Keeps the party fed on the road.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "travel_provisions": {
+      "name": "Travel Provisions",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 2,
+      "value": 8,
+      "description": "Prepared trail food for the road — cooked grain, dried fruit, cured meat.",
+      "supply_type": "food",
+      "supply_amount": 10
+    },
+    "herb_bundle": {
+      "name": "Herb Bundle",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 5,
+      "description": "Assorted medicinal herbs, roots, and dried flowers.",
+      "supply_type": "herbs",
+      "supply_amount": 5
+    },
+    "apothecary_pouch": {
+      "name": "Apothecary Pouch",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 2,
+      "value": 15,
+      "description": "A leather pouch packed with carefully sorted remedies.",
+      "supply_type": "herbs",
+      "supply_amount": 10
+    },
+    "scrap_metal": {
+      "name": "Scrap Metal",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 2,
+      "value": 5,
+      "description": "Bent nails, broken fittings, and salvageable metal scraps.",
+      "supply_type": "scrap",
+      "supply_amount": 5
+    },
+    "salvage_kit": {
+      "name": "Salvage Kit",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 3,
+      "value": 15,
+      "description": "Usable metal, leather strips, and repair materials.",
+      "supply_type": "scrap",
+      "supply_amount": 10
+    },
+    "raw_reagents": {
+      "name": "Raw Reagents",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 8,
+      "description": "Mineral salts, dried fungi, and alchemical base compounds.",
+      "supply_type": "reagents",
+      "supply_amount": 5
+    },
+    "alchemists_pouch": {
+      "name": "Alchemist's Pouch",
+      "type": "supply",
+      "rarity": "rare",
+      "weight": 2,
+      "value": 20,
+      "description": "A carefully prepared kit of distilled essences and reactive powders.",
+      "supply_type": "reagents",
+      "supply_amount": 10
+    },
+    "tsampa": {
+      "name": "Tsampa",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 2,
+      "description": "Roasted barley flour pressed into travel cakes. Staple of every Tibetan journey.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "thukpa": {
+      "name": "Thukpa",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 3,
+      "description": "Hand-pulled noodles in dark broth. A full bowl, still warm.",
+      "supply_type": "food",
+      "supply_amount": 10
+    },
+    "sha_phaley": {
+      "name": "Sha Phaley",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 3,
+      "description": "Meat-filled bread, pan-fried and still warm. Someone left these in a hurry.",
+      "supply_type": "food",
+      "supply_amount": 10
+    },
+    "momo": {
+      "name": "Chilli Momo",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 2,
+      "description": "Steamed dumplings stuffed with spiced meat and chilli — someone's best effort at comfort in hell.",
+      "supply_type": "food",
+      "supply_amount": 10
+    },
+    "butter_tea": {
+      "name": "Butter Tea",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 2,
+      "description": "Salt, yak butter, and strong tea in a wooden tube. Strange to outsiders, vital in the cold.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "chang": {
+      "name": "Chang",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 1,
+      "description": "Fermented barley beer in a cracked gourd. More warming than nourishing.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "dried_curd": {
+      "name": "Dried Curd",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 2,
+      "description": "Hard yak cheese that takes long to eat and longer to digest. Keeps indefinitely.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "khabse": {
+      "name": "Khabse",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 2,
+      "description": "Fried dough twists, dense and sweet — festival food from a better life.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "curry": {
+      "name": "Curry",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 3,
+      "description": "A sealed clay pot of spiced lentils and root vegetables. Heavy, filling, restorative.",
+      "supply_type": "food",
+      "supply_amount": 10
+    },
+    "tinmo": {
+      "name": "Tinmo",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 2,
+      "description": "Steamed spiral bread fresh off the pot. Dense and satisfying.",
+      "supply_type": "food",
+      "supply_amount": 10
+    },
+    "tulsi": {
+      "name": "Tulsi",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 5,
+      "description": "Holy basil, sacred to Vishnu. Purifies breath and blood. Grows even near the passes.",
+      "supply_type": "herbs",
+      "supply_amount": 5
+    },
+    "ashwagandha": {
+      "name": "Ashwagandha",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 5,
+      "description": "Withania root, dried and powdered. Steadies the humors under duress.",
+      "supply_type": "herbs",
+      "supply_amount": 5
+    },
+    "amalaki": {
+      "name": "Amalaki",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 6,
+      "description": "Dried Indian gooseberry — sour enough to water the eyes, rich in vital essence.",
+      "supply_type": "herbs",
+      "supply_amount": 5
+    },
+    "jatamansi": {
+      "name": "Jatamansi",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 6,
+      "description": "Himalayan spikenard. Calms wind humor, aids rest in hostile terrain.",
+      "supply_type": "herbs",
+      "supply_amount": 5
+    },
+    "neem_bark": {
+      "name": "Neem Bark",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 4,
+      "description": "Bitter and antiparasitic. You're not sure what lives in hell's water, but this helps.",
+      "supply_type": "herbs",
+      "supply_amount": 5
+    },
+    "saffron_pinch": {
+      "name": "Saffron",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 12,
+      "description": "A generous pinch of saffron threads, wrapped in cloth. Rare and potent.",
+      "supply_type": "herbs",
+      "supply_amount": 10
+    },
+    "triphala": {
+      "name": "Triphala",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 14,
+      "description": "The three fruits — amalaki, haritaki, bibhitaki — pressed into a single cake. A complete remedy.",
+      "supply_type": "herbs",
+      "supply_amount": 10
+    },
+    "guduchi": {
+      "name": "Guduchi",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 5,
+      "description": "Giloy stem, dried and powdered. Called 'the divine nectar' for its resilience.",
+      "supply_type": "herbs",
+      "supply_amount": 5
+    },
+    "shatavari": {
+      "name": "Shatavari",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 6,
+      "description": "Asparagus root from high altitude. Replenishes after exertion.",
+      "supply_type": "herbs",
+      "supply_amount": 5
+    },
+    "cinnabar": {
+      "name": "Cinnabar",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 10,
+      "description": "Mercury sulfide, ground fine. Lurid red powder central to outer alchemy and Tibetan ritual medicine.",
+      "supply_type": "reagents",
+      "supply_amount": 5
+    },
+    "realgar": {
+      "name": "Realgar",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 10,
+      "description": "Arsenic sulphide in orange crystal form. Toxic to demons and humans alike in sufficient quantity.",
+      "supply_type": "reagents",
+      "supply_amount": 5
+    },
+    "shilajit": {
+      "name": "Shilajit",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 14,
+      "description": "Mineral pitch seeping from hot rock. Rasayana tradition names it the destroyer of weakness.",
+      "supply_type": "reagents",
+      "supply_amount": 5
+    },
+    "lapis_powder": {
+      "name": "Lapis Powder",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 12,
+      "description": "Ground lapis lazuli, sky-blue and faintly bitter. Used in Tibetan art, medicine, and ritual.",
+      "supply_type": "reagents",
+      "supply_amount": 5
+    },
+    "datura_seed": {
+      "name": "Datura Seed",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 8,
+      "description": "Jimsonweed. Potent in small doses, lethal in larger ones. A staple of dark alchemy.",
+      "supply_type": "reagents",
+      "supply_amount": 5
+    },
+    "soma_resin": {
+      "name": "Soma Resin",
+      "type": "supply",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 25,
+      "description": "A gummy substance of uncertain origin. Smells of lightning and old ceremony.",
+      "supply_type": "reagents",
+      "supply_amount": 10
+    },
+    "swarna_bhasma": {
+      "name": "Swarna Bhasma",
+      "type": "supply",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 30,
+      "description": "Gold calcined through a hundred purifications. Rasayana medicine's most radiant offering.",
+      "supply_type": "reagents",
+      "supply_amount": 10
+    },
+    "hell_iron_shards": {
+      "name": "Hell-Iron Shards",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 2,
+      "value": 5,
+      "description": "Fragments of demon-forged armor, still warm to the touch.",
+      "supply_type": "scrap",
+      "supply_amount": 5
+    },
+    "bone_fittings": {
+      "name": "Bone Fittings",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 4,
+      "description": "Pins, clasps, and rings carved from bone. Practical in their ugliness.",
+      "supply_type": "scrap",
+      "supply_amount": 5
+    },
+    "broken_manacles": {
+      "name": "Broken Manacles",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 2,
+      "value": 5,
+      "description": "Shackles snapped by someone determined. The iron is dense and workable.",
+      "supply_type": "scrap",
+      "supply_amount": 10
+    },
+    "frost_steel_fragments": {
+      "name": "Frost-Steel Fragments",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 2,
+      "value": 6,
+      "description": "Plates of metal tempered by the cold hell's extremes. Harder and stranger than plain iron.",
+      "supply_type": "scrap",
+      "supply_amount": 10
+    },
+    "salvaged_chain": {
+      "name": "Salvaged Chain Links",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 2,
+      "value": 4,
+      "description": "Detached from a longer length. Someone was freed here, or escaped.",
+      "supply_type": "scrap",
+      "supply_amount": 5
+    },
+    "demon_nail_bundle": {
+      "name": "Demon Nails",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 3,
+      "description": "Iron spikes shed from demonic hide. Sharp, pungent, and oddly workable.",
+      "supply_type": "scrap",
+      "supply_amount": 5
+    },
+    "dried_meat": {
+      "name": "Dried Meat",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 2,
+      "description": "Strips of yak or unidentified flesh, salted and dried. Tough, but sustaining.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "barley_grain": {
+      "name": "Barley Grain",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 1,
+      "description": "A cloth pouch of raw barley. Needs cooking, but it keeps.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "wild_apple": {
+      "name": "Wild Apple",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 2,
+      "description": "Small, tart Himalayan apples. How they grow here is unclear.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "turnip": {
+      "name": "Turnip",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 1,
+      "description": "Hardy root vegetable. Unpleasant raw, edible cooked, reliable everywhere.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "rice_portion": {
+      "name": "Rice",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 2,
+      "description": "A knotted cloth of uncooked rice. Plain, but it fills the belly.",
+      "supply_type": "food",
+      "supply_amount": 5
+    },
+    "dal_bhat": {
+      "name": "Dal Bhat",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 5,
+      "description": "Lentil soup over rice — the meal that sustains half the Himalayas. Reliable and restorative.",
+      "supply_type": "food",
+      "supply_amount": 10
+    },
+    "khichdi": {
+      "name": "Khichdi",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 4,
+      "description": "Rice and lentils cooked down to a thick porridge. The universal comfort food.",
+      "supply_type": "food",
+      "supply_amount": 10
+    },
+    "meat_stew": {
+      "name": "Meat Stew",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 2,
+      "value": 5,
+      "description": "A heavy pot of slow-cooked meat and root vegetables. Smells better than it should down here.",
+      "supply_type": "food",
+      "supply_amount": 10
+    },
+    "chyawanprash": {
+      "name": "Chyawanprash",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 14,
+      "description": "The great Ayurvedic jam — amalaki, honey, ghee, and forty-seven herbs. Dark, sweet, medicinal.",
+      "supply_type": "herbs",
+      "supply_amount": 10
+    },
+    "brahmi_ghrita": {
+      "name": "Brahmi Ghrita",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 14,
+      "description": "Brahmi herb clarified into ghee. A nerve tonic prized for clarity of mind and steadiness of hand.",
+      "supply_type": "herbs",
+      "supply_amount": 10
+    },
+    "mahasudarshana": {
+      "name": "Mahasudarshana",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 16,
+      "description": "A Tibetan compound of fifty herbs. Named for the great discus — cuts through obstruction.",
+      "supply_type": "herbs",
+      "supply_amount": 10
+    },
+    "mercury_amalgam": {
+      "name": "Mercury Amalgam",
+      "type": "supply",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 22,
+      "description": "Processed quicksilver fixed with sulphur. Central to both Tibetan and Indian outer alchemy.",
+      "supply_type": "reagents",
+      "supply_amount": 10
+    },
+    "precious_pills": {
+      "name": "Precious Pills",
+      "type": "supply",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 28,
+      "description": "Rinchen rilbu — Tibetan medicine's highest formulation. Gold, gems, and purified minerals compressed into small black pills.",
+      "supply_type": "reagents",
+      "supply_amount": 10
+    },
+    "copper_wire": {
+      "name": "Copper Wire",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 1,
+      "value": 4,
+      "description": "Thin copper wire stripped from a larger mechanism. Useful for binding and conducting.",
+      "supply_type": "scrap",
+      "supply_amount": 5
+    },
+    "cracked_bell_metal": {
+      "name": "Cracked Bell Metal",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 2,
+      "value": 4,
+      "description": "Fragment of a bronze ritual bell. The alloy is good; the tone is gone.",
+      "supply_type": "scrap",
+      "supply_amount": 5
+    },
+    "demon_plate_shard": {
+      "name": "Demon Plate Shard",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 3,
+      "value": 8,
+      "description": "A palm-sized chunk of demonic chest armor. Heavy, dense, and faintly warm.",
+      "supply_type": "scrap",
+      "supply_amount": 10
+    },
+    "hellforge_ingot": {
+      "name": "Hellforge Ingot",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 3,
+      "value": 12,
+      "description": "A rough ingot poured at one of the infernal forges. Still carries heat from the casting.",
+      "supply_type": "scrap",
+      "supply_amount": 10
+    },
+    "yoke_hardware": {
+      "name": "Yoke Hardware",
+      "type": "supply",
+      "rarity": "common",
+      "weight": 2,
+      "value": 7,
+      "description": "Iron fittings from a broken cart yoke — rings, bolts, and a chain length.",
+      "supply_type": "scrap",
+      "supply_amount": 10
+    },
+    "bone_dagger": {
+      "name": "Bone Dagger",
+      "type": "dagger",
+      "rarity": "common",
+      "material": "bone",
+      "damage": 3,
+      "accuracy": 12,
+      "weight": 1,
+      "value": 8,
+      "description": "A long bone sharpened to a point. Crude but quiet.",
+      "skill": "daggers",
+      "durability": 30,
+      "max_durability": 30
+    },
+    "bone_sword": {
+      "name": "Bone Sword",
+      "type": "sword",
+      "rarity": "common",
+      "material": "bone",
+      "damage": 5,
+      "accuracy": 0,
+      "weight": 5,
+      "value": 12,
+      "description": "A wide femur carved into a blade. Heavier than it looks, more fragile than it should be.",
+      "skill": "swords",
+      "durability": 30,
+      "max_durability": 30
+    },
+    "bone_club": {
+      "name": "Bone Club",
+      "type": "mace",
+      "rarity": "common",
+      "material": "bone",
+      "damage": 6,
+      "accuracy": -5,
+      "weight": 6,
+      "value": 10,
+      "description": "A knobbed bone swung like a mace. Not elegant, but it breaks things.",
+      "skill": "maces",
+      "durability": 30,
+      "max_durability": 30
+    },
+    "bone_spear": {
+      "name": "Bone Spear",
+      "type": "spear",
+      "rarity": "common",
+      "material": "bone",
+      "damage": 4,
+      "accuracy": 5,
+      "weight": 4,
+      "value": 10,
+      "description": "A long bone lashed to a wooden shaft. Reach without refinement.",
+      "skill": "spears",
+      "two_handed": true,
+      "durability": 30,
+      "max_durability": 30
+    },
+    "bronze_dagger": {
+      "name": "Bronze Dagger",
+      "type": "dagger",
+      "rarity": "common",
+      "material": "bronze",
+      "damage": 3,
+      "accuracy": 15,
+      "weight": 2,
+      "value": 18,
+      "description": "A short bronze blade, double-edged. Standard traveller's sidearm.",
+      "skill": "daggers",
+      "durability": 65,
+      "max_durability": 65
+    },
+    "bronze_axe": {
+      "name": "Bronze Axe",
+      "type": "axe",
+      "rarity": "common",
+      "material": "bronze",
+      "damage": 8,
+      "accuracy": -5,
+      "weight": 8,
+      "value": 28,
+      "description": "A single-headed bronze axe. Splits wood and skulls with equal indifference.",
+      "skill": "axes",
+      "durability": 65,
+      "max_durability": 65
+    },
+    "bronze_mace": {
+      "name": "Bronze Mace",
+      "type": "mace",
+      "rarity": "common",
+      "material": "bronze",
+      "damage": 7,
+      "accuracy": 0,
+      "weight": 8,
+      "value": 26,
+      "description": "A flanged bronze mace. Heavy on the back-swing, satisfying on contact.",
+      "skill": "maces",
+      "durability": 65,
+      "max_durability": 65
+    },
+    "bronze_spear": {
+      "name": "Bronze Spear",
+      "type": "spear",
+      "rarity": "common",
+      "material": "bronze",
+      "damage": 5,
+      "accuracy": 5,
+      "weight": 5,
+      "value": 22,
+      "description": "A bronze-tipped spear with a hardwood haft. Reach and reliability.",
+      "skill": "spears",
+      "two_handed": true,
+      "durability": 65,
+      "max_durability": 65
+    },
+    "obsidian_dagger": {
+      "name": "Obsidian Dagger",
+      "type": "dagger",
+      "rarity": "uncommon",
+      "material": "obsidian",
+      "damage": 4,
+      "accuracy": 18,
+      "weight": 1,
+      "value": 30,
+      "description": "Volcanic glass knapped to a razor edge. Cuts cleaner than anything this tier — but drop it and it shatters.",
+      "skill": "daggers",
+      "fragile": true,
+      "durability": 20,
+      "max_durability": 20
+    },
+    "obsidian_blade": {
+      "name": "Obsidian Blade",
+      "type": "sword",
+      "rarity": "uncommon",
+      "material": "obsidian",
+      "damage": 8,
+      "accuracy": 5,
+      "weight": 4,
+      "value": 45,
+      "description": "A wide blade of chipped obsidian, mounted on bone. The edge is terrifying. The structural integrity is not.",
+      "skill": "swords",
+      "fragile": true,
+      "durability": 20,
+      "max_durability": 20
+    },
+    "obsidian_spear": {
+      "name": "Obsidian Spear",
+      "type": "spear",
+      "rarity": "uncommon",
+      "material": "obsidian",
+      "damage": 7,
+      "accuracy": 8,
+      "weight": 4,
+      "value": 40,
+      "description": "A hafted spear with a knapped obsidian head. Deadly on the thrust. Do not use it to parry.",
+      "skill": "spears",
+      "two_handed": true,
+      "fragile": true,
+      "durability": 20,
+      "max_durability": 20
+    },
+    "ember_core": {
+      "name": "Ember Core",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 35,
+      "description": "A smouldering sphere of compressed hellfire, warm to the touch. Used as a reagent in fire rituals and alchemical processes.",
+      "supply_type": "reagents",
+      "supply_amount": 8
+    }
+  },
+  "item_types": {
+    "sword": {
+      "category": "weapon",
+      "slots": [
+        "weapon_main",
+        "weapon_off"
+      ],
+      "ranged": false,
+      "damage_type": "slashing"
+    },
+    "dagger": {
+      "category": "weapon",
+      "slots": [
+        "weapon_main",
+        "weapon_off"
+      ],
+      "ranged": false,
+      "damage_type": "piercing"
+    },
+    "axe": {
+      "category": "weapon",
+      "slots": [
+        "weapon_main"
+      ],
+      "ranged": false,
+      "damage_type": "slashing"
+    },
+    "mace": {
+      "category": "weapon",
+      "slots": [
+        "weapon_main"
+      ],
+      "ranged": false,
+      "damage_type": "crushing"
+    },
+    "spear": {
+      "category": "weapon",
+      "slots": [
+        "weapon_main"
+      ],
+      "ranged": false,
+      "damage_type": "piercing"
+    },
+    "staff": {
+      "category": "weapon",
+      "slots": [
+        "weapon_main"
+      ],
+      "ranged": false,
+      "damage_type": "crushing"
+    },
+    "bow": {
+      "category": "weapon",
+      "slots": [
+        "weapon_main"
+      ],
+      "ranged": true,
+      "skill": "ranged",
+      "damage_type": "piercing"
+    },
+    "thrown": {
+      "category": "weapon",
+      "slots": [
+        "weapon_main"
+      ],
+      "ranged": true,
+      "skill": "ranged",
+      "damage_type": "piercing"
+    },
+    "shield": {
+      "category": "weapon",
+      "slots": [
+        "weapon_off"
+      ],
+      "ranged": false
+    },
+    "armor": {
+      "category": "armor",
+      "slots": [
+        "chest"
+      ]
+    },
+    "robe": {
+      "category": "armor",
+      "slots": [
+        "chest"
+      ]
+    },
+    "helmet": {
+      "category": "armor",
+      "slots": [
+        "head"
+      ]
+    },
+    "hat": {
+      "category": "armor",
+      "slots": [
+        "head"
+      ]
+    },
+    "circlet": {
+      "category": "armor",
+      "slots": [
+        "head"
+      ]
+    },
+    "gloves": {
+      "category": "armor",
+      "slots": [
+        "hand_l",
+        "hand_r"
+      ]
+    },
+    "gauntlets": {
+      "category": "armor",
+      "slots": [
+        "hand_l",
+        "hand_r"
+      ]
+    },
+    "bracers": {
+      "category": "armor",
+      "slots": [
+        "hand_l",
+        "hand_r"
+      ]
+    },
+    "pants": {
+      "category": "armor",
+      "slots": [
+        "legs"
+      ]
+    },
+    "greaves": {
+      "category": "armor",
+      "slots": [
+        "legs"
+      ]
+    },
+    "leggings": {
+      "category": "armor",
+      "slots": [
+        "legs"
+      ]
+    },
+    "boots": {
+      "category": "armor",
+      "slots": [
+        "feet"
+      ]
+    },
+    "shoes": {
+      "category": "armor",
+      "slots": [
+        "feet"
+      ]
+    },
+    "sandals": {
+      "category": "armor",
+      "slots": [
+        "feet"
+      ]
+    },
+    "ring": {
+      "category": "accessory",
+      "slots": [
+        "ring1",
+        "ring2"
+      ]
+    },
+    "amulet": {
+      "category": "accessory",
+      "slots": [
+        "trinket1",
+        "trinket2"
+      ]
+    },
+    "necklace": {
+      "category": "accessory",
+      "slots": [
+        "trinket1",
+        "trinket2"
+      ]
+    },
+    "trinket": {
+      "category": "accessory",
+      "slots": [
+        "trinket1",
+        "trinket2"
+      ]
+    },
+    "talisman": {
+      "category": "accessory",
+      "slots": [
+        "trinket1",
+        "trinket2"
+      ]
+    },
+    "potion": {
+      "category": "consumable",
+      "subcategory": "potion"
+    },
+    "scroll": {
+      "category": "consumable",
+      "subcategory": "scroll"
+    },
+    "charm": {
+      "category": "consumable",
+      "subcategory": "charm"
+    },
+    "bomb": {
+      "category": "consumable",
+      "subcategory": "bomb"
+    },
+    "oil": {
+      "category": "consumable",
+      "subcategory": "oil"
+    },
+    "supply": {
+      "category": "supply"
+    }
+  },
+  "rarities": {
+    "common": {
+      "color": "#AAAAAA",
+      "drop_weight": 100
+    },
+    "uncommon": {
+      "color": "#55AA55",
+      "drop_weight": 50
+    },
+    "rare": {
+      "color": "#5555FF",
+      "drop_weight": 20
+    },
+    "epic": {
+      "color": "#AA55AA",
+      "drop_weight": 5
+    },
+    "legendary": {
+      "color": "#FFAA00",
+      "drop_weight": 1
+    }
+  }
 }

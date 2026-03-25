@@ -37,6 +37,7 @@ var stationary_stacks: int = 0     # Turns without moving; incremented/reset at 
 var last_attacker: Node = null     # Last unit that dealt damage to this unit (used for risen_dead talisman perk)
 var dagger_attacks_this_turn: int = 0    # Dagger attacks made this turn; cleared at turn start (too_fast_to_count perk)
 var ranged_attacks_this_turn: int = 0    # Ranged attacks made this turn; cleared at turn start (one_breath_one_arrow perk)
+var selected_ammo_id: String = ""  # Which ammo is loaded; "" = default (bone arrow/bolt)
 var knife_storm_proc_this_turn: bool = false  # Prevents knife_storm from proccing twice in one turn
 var enemies_hit_this_combat: Array = []  # Tracks enemies hit for cheap_shot (first-attack crit bonus)
 var hit_back_ready: bool = false          # Set when taking damage with hit_back_harder perk; grants +20% damage on next melee attack
@@ -475,7 +476,8 @@ func is_targetable() -> bool:
 ## Get initiative for turn order (includes status effect bonuses)
 func get_initiative() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("initiative", 10) + _get_status_stat_bonus("initiative") + CombatManager.get_passive_perk_stat_bonus(self, "initiative") + mantra_stat_bonuses.get("initiative", 0) + _get_stat_modifier_bonus("initiative")
+	var weapon_init = get_equipped_weapon().get("stats", {}).get("initiative", 0)
+	return derived.get("initiative", 10) + weapon_init + _get_status_stat_bonus("initiative") + CombatManager.get_passive_perk_stat_bonus(self, "initiative") + mantra_stat_bonuses.get("initiative", 0) + _get_stat_modifier_bonus("initiative")
 
 
 ## Get movement range (includes status effect and perk bonuses)
@@ -607,7 +609,32 @@ func get_attack_range() -> int:
 ## Weapon skill bonuses are now included in derived.accuracy via CharacterSystem.update_derived_stats()
 func get_accuracy() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("accuracy", 0) + _get_status_stat_bonus("accuracy") + mantra_stat_bonuses.get("accuracy", 0) + _get_stat_modifier_bonus("accuracy")
+	var weapon_acc = get_equipped_weapon().get("stats", {}).get("accuracy", 0)
+	var ammo_acc = get_selected_ammo().get("accuracy_bonus", 0) if is_ranged_weapon() else 0
+	return derived.get("accuracy", 0) + weapon_acc + ammo_acc + _get_status_stat_bonus("accuracy") + mantra_stat_bonuses.get("accuracy", 0) + _get_stat_modifier_bonus("accuracy")
+
+
+## Return the current ammo definition dict (includes id, bonuses, special_effect).
+## Returns the matching default ammo when nothing is explicitly selected.
+func get_selected_ammo() -> Dictionary:
+	if not is_ranged_weapon():
+		return {}
+	if selected_ammo_id != "" and ItemSystem:
+		var ammo = ItemSystem.get_ammo(selected_ammo_id)
+		if not ammo.is_empty():
+			var entry = ammo.duplicate()
+			entry["id"] = selected_ammo_id
+			return entry
+	# Fall back to the default ammo for this weapon type
+	var weapon_type = get_equipped_weapon().get("type", "bow")
+	if ItemSystem:
+		for ammo_id in ItemSystem.ammo_types:
+			var ammo = ItemSystem.ammo_types[ammo_id]
+			if ammo.get("is_default", false) and weapon_type in ammo.get("weapon_types", []):
+				var entry = ammo.duplicate()
+				entry["id"] = ammo_id
+				return entry
+	return {}
 
 
 ## Get dodge value (includes status effect bonuses)
@@ -652,6 +679,10 @@ func get_attack_damage() -> int:
 	# Add mantra stat bonuses (e.g. Jeweled Pagoda per-turn summon damage)
 	base_damage += mantra_stat_bonuses.get("damage", 0)
 
+	# Add ammo damage bonus for ranged weapons
+	if is_ranged_weapon():
+		base_damage += get_selected_ammo().get("damage_bonus", 0)
+
 	return base_damage
 
 
@@ -664,7 +695,7 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 			return "daggers"
 		"axe":
 			return "axes"
-		"mace":
+		"mace", "club":
 			return "maces"
 		"spear":
 			return "spears"
@@ -683,11 +714,17 @@ func get_armor() -> int:
 	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_passive_perk_stat_bonus(self, "armor") + maxi(0, mantra_armor) + _get_stat_modifier_bonus("armor")
 
 
+## Get armor pierce value from equipped weapon (flat reduction to defender armor before damage)
+func get_armor_pierce() -> int:
+	return get_equipped_weapon().get("stats", {}).get("armor_pierce", 0)
+
+
 ## Get crit chance (percentage, includes status effect bonuses)
 func get_crit_chance() -> float:
 	var derived = character_data.get("derived", {})
 	var mantra_crit = float(mantra_stat_bonuses.get("crit_chance", 0))
-	return float(derived.get("crit_chance", 5)) + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance")) + maxf(0.0, mantra_crit) + float(_get_stat_modifier_bonus("crit_chance"))
+	var weapon_crit = float(get_equipped_weapon().get("stats", {}).get("crit_chance", 0))
+	return float(derived.get("crit_chance", 5)) + weapon_crit + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance")) + maxf(0.0, mantra_crit) + float(_get_stat_modifier_bonus("crit_chance"))
 
 
 ## Get current stamina
@@ -761,7 +798,8 @@ func tick_mantras() -> void:
 ## Get spellpower (includes status effect bonuses)
 func get_spellpower() -> int:
 	var derived = character_data.get("derived", {})
-	return derived.get("spellpower", 0) + _get_status_stat_bonus("spellpower") + mantra_stat_bonuses.get("spellpower", 0) + _get_stat_modifier_bonus("spellpower")
+	var weapon_sp = get_equipped_weapon().get("stats", {}).get("spellpower", 0)
+	return derived.get("spellpower", 0) + weapon_sp + _get_status_stat_bonus("spellpower") + mantra_stat_bonuses.get("spellpower", 0) + _get_stat_modifier_bonus("spellpower")
 
 
 ## Get magic skill bonus for an element (spellpower from the skill's base_bonuses table)

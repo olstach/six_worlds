@@ -596,10 +596,11 @@ func _pick_item_from_types(allowed_types: Array[String], rarity_weights: Diction
 		if ItemSystem.can_generate_type(item_type):
 			generatable_types.append(item_type)
 
+	var current_realm = GameState.current_world if GameState else ""
 	if not generatable_types.is_empty() and randf() < proc_chance:
 		# Generate a procedural item of a random allowed type
 		var gen_type = generatable_types[randi() % generatable_types.size()]
-		var gen_id = ItemSystem.generate_item_for_type(gen_type, rolled_rarity)
+		var gen_id = ItemSystem.generate_item_for_type(gen_type, rolled_rarity, current_realm)
 		if gen_id != "":
 			return gen_id
 
@@ -624,7 +625,7 @@ func _pick_item_from_types(allowed_types: Array[String], rarity_weights: Diction
 	# Last resort: if no static items matched at any rarity, try procedural generation
 	if not generatable_types.is_empty():
 		var gen_type = generatable_types[randi() % generatable_types.size()]
-		var gen_id = ItemSystem.generate_item_for_type(gen_type, rolled_rarity)
+		var gen_id = ItemSystem.generate_item_for_type(gen_type, rolled_rarity, current_realm)
 		if gen_id != "":
 			return gen_id
 
@@ -1301,6 +1302,15 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 
 		# --- Passive perk on-hit effects ---
 		_process_on_hit_perks(attacker, defender, result)
+		# --- Weapon passive on-hit procs ---
+		_process_weapon_on_hit_procs(attacker, defender, result)
+		# --- Ammo special effects (fire arrow AoE, status procs) ---
+		if "get_selected_ammo" in attacker:
+			var ammo = attacker.get_selected_ammo()
+			if ammo.has("special_effect"):
+				_process_ammo_special_effect(attacker, defender, ammo)
+		# --- Weapon durability ---
+		_deduct_weapon_durability(attacker)
 
 	else:
 		# Attack missed — check dodge/parry perks on defender
@@ -1315,6 +1325,13 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			attacker.dagger_attacks_this_turn += 1
 	if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
 		attacker.ranged_attacks_this_turn += 1
+		# Consume one ammo; revert to default if depleted
+		if "selected_ammo_id" in attacker and attacker.selected_ammo_id != "":
+			var still_has_ammo = ItemSystem.consume_ammo(attacker.selected_ammo_id)
+			if not still_has_ammo:
+				var ammo_name = ItemSystem.get_ammo(attacker.selected_ammo_id).get("name", attacker.selected_ammo_id)
+				combat_log.emit("%s's %s ran out — falling back to bone arrows." % [attacker.unit_name, ammo_name])
+				attacker.selected_ammo_id = ""
 
 	if not reaction:
 		use_action(1)
@@ -1546,6 +1563,12 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 			if "ranged_attacks_this_turn" in attacker and attacker.ranged_attacks_this_turn == 0:
 				armor = 0
 
+	# Weapon armor pierce — flat reduction to effective armor before damage
+	if attacker.has_method("get_armor_pierce"):
+		var pierce = attacker.get_armor_pierce()
+		if pierce > 0:
+			armor = maxi(0, armor - pierce)
+
 	damage = maxi(1, damage - armor)
 
 	# Hit Back Harder (Might 3): +20% melee damage after taking any damage; consumed on first attack
@@ -1674,6 +1697,40 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 			if unit.has_method("show_status_expired"):
 				unit.show_status_expired(sname)
 			status_effect_expired.emit(unit, sname)
+
+	# Glass_Globe: shatters on any damage, dealing slashing AoE + guaranteed Bleeding to nearby enemies.
+	# Fires even on lethal hits (the globe shatters as the bearer falls).
+	if damage > 0 and unit.has_status("Glass_Globe"):
+		var globe_def = _status_effects.get("Glass_Globe", {})
+		var shatter = globe_def.get("special", {}).get("shatters_on_damage_received", {})
+		var shatter_dmg: int = shatter.get("damage", 20)
+		var shatter_radius: int = shatter.get("radius", 2)
+		# Remove the status first so the shatter itself can't re-trigger
+		for i in range(unit.status_effects.size() - 1, -1, -1):
+			if unit.status_effects[i].get("status", "") == "Glass_Globe":
+				unit.status_effects.remove_at(i)
+				if unit.has_method("show_status_expired"):
+					unit.show_status_expired("Glass_Globe")
+				status_effect_expired.emit(unit, "Glass_Globe")
+				break
+		combat_log.emit("%s's Glass Globe shatters! Razor shards fly outward!" % unit.unit_name)
+		for nearby in _get_enemies_in_range(unit, shatter_radius):
+			apply_damage(nearby, shatter_dmg, "slashing")
+			_apply_status_effect(nearby, "Bleeding", 3, 0, null)
+
+	# Crystal_Diadem: 50% chance (configurable) to shatter and be lost on any damage received.
+	if damage > 0 and unit.has_status("Crystal_Diadem"):
+		var diadem_def = _status_effects.get("Crystal_Diadem", {})
+		var lose_chance: int = diadem_def.get("special", {}).get("chance_to_lose_on_damage_received", 50)
+		if randi() % 100 < lose_chance:
+			for i in range(unit.status_effects.size() - 1, -1, -1):
+				if unit.status_effects[i].get("status", "") == "Crystal_Diadem":
+					unit.status_effects.remove_at(i)
+					if unit.has_method("show_status_expired"):
+						unit.show_status_expired("Crystal_Diadem")
+					status_effect_expired.emit(unit, "Crystal_Diadem")
+					break
+			combat_log.emit("%s's Crystal Diadem shatters!" % unit.unit_name)
 
 	if unit.current_hp <= 0 and not unit.is_bleeding_out:
 		_start_bleed_out(unit)
@@ -1948,8 +2005,11 @@ func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dicti
 	if unit.current_mana < mana_cost:
 		return {"success": false, "reason": "Not enough mana"}
 
-	# Check skill requirements - need at least one school at required level
-	var required_level = spell.get("level", 1)
+	# Check skill requirements - need at least one school at required skill level.
+	# Spell levels 1-5 map to minimum skill levels 1,3,5,7,9 respectively
+	# (spell_level * 2 - 1), reflecting the 10-level skill scale.
+	var spell_tier = spell.get("level", 1)
+	var required_skill_level = spell_tier * 2 - 1
 	var schools = spell.get("schools", [])
 	var has_skill = false
 
@@ -1958,7 +2018,7 @@ func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dicti
 		var school_lower = school.to_lower()
 		var skill_name = school_lower + "_magic" if school_lower in ["earth", "water", "fire", "air", "space", "white", "black"] else school_lower
 		var skill_level = skills.get(skill_name, 0)
-		if skill_level >= required_level:
+		if skill_level >= required_skill_level:
 			has_skill = true
 			break
 
@@ -2305,6 +2365,39 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 
 		_apply_status_effect(target, status_name, duration, 0, caster)
 		result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
+
+	# --- Status effects on failed save (from spell.statuses_caused_on_failed_save) ---
+	# Used by spells like metal_to_mud: all listed statuses are applied only if the target fails
+	# a saving throw. save_type names an attribute ("constitution", "finesse", etc.)
+	var save_statuses = spell.get("statuses_caused_on_failed_save", [])
+	if not save_statuses.is_empty():
+		var save_attr = spell.get("save_type", "constitution").to_lower()
+		var save_dur_field = spell.get("duration", null)
+		var save_duration = 3
+		if save_dur_field is int or save_dur_field is float:
+			save_duration = int(save_dur_field)
+		elif save_dur_field == "spellpower":
+			save_duration = maxi(1, 2 + int(bonus * 0.1))
+		if not _perform_save_roll(target, save_attr):  # false = failed save = effect applies
+			for status_name in save_statuses:
+				_apply_status_effect(target, status_name, save_duration, 0, caster)
+				result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
+
+	# --- Random status on failed save (from spell.on_failed_save_random_one_of) ---
+	# Used by spells like rain_of_mud: one random status from the list is applied on failed save.
+	var random_statuses = spell.get("on_failed_save_random_one_of", [])
+	if not random_statuses.is_empty():
+		var rand_save_attr = spell.get("save_type", "finesse").to_lower()
+		var rand_dur_field = spell.get("duration", null)
+		var rand_duration = 3
+		if rand_dur_field is int or rand_dur_field is float:
+			rand_duration = int(rand_dur_field)
+		elif rand_dur_field == "spellpower":
+			rand_duration = maxi(1, 2 + int(bonus * 0.1))
+		if not _perform_save_roll(target, rand_save_attr):
+			var chosen_status = random_statuses[randi() % random_statuses.size()]
+			_apply_status_effect(target, chosen_status, rand_duration, 0, caster)
+			result.effects_applied.append({"type": "status", "status": chosen_status, "applied": true})
 
 	# --- Status removal (from spell.statuses_removed) ---
 	var statuses_removed = spell.get("statuses_removed", [])
@@ -5543,6 +5636,126 @@ func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 						total += 15
 
 	return total
+
+
+## Process on-hit procs from weapon passive dict.
+## Called from attack_unit() after damage lands, alongside _process_on_hit_perks.
+func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictionary) -> void:
+	if not attacker.has_method("get_equipped_weapon"):
+		return
+	var passive = attacker.get_equipped_weapon().get("passive", {})
+	if passive.is_empty():
+		return
+
+	# Status procs — roll each chance independently
+	var status_procs = {
+		"poison_chance":  "Poisoned",
+		"bleed_chance":   "Bleeding",
+		"stun_chance":    "Stunned",
+		"burn_chance":    "Burning",
+		"freeze_chance":  "Chilled",
+		"silence_chance": "Silenced",
+	}
+	for key in status_procs:
+		if key in passive and randf() * 100.0 <= passive[key]:
+			_apply_status_effect(defender, status_procs[key], 3)
+
+	# Dispel: remove one random buff from the defender
+	# status_effects is an Array of {status, duration} dicts — NOT a Dictionary
+	if "dispel_chance" in passive and randf() * 100.0 <= passive["dispel_chance"]:
+		if "status_effects" in defender:
+			var buff_indices: Array = []
+			for i in range(defender.status_effects.size()):
+				var effect = defender.status_effects[i]
+				var sdef = get_status_definition(effect.get("status", ""))
+				if sdef.get("type", "debuff") == "buff":
+					buff_indices.append(i)
+			if buff_indices.size() > 0:
+				defender.status_effects.remove_at(buff_indices[randi() % buff_indices.size()])
+
+	# Lifesteal
+	if "lifesteal" in passive:
+		var steal = int(result.get("damage", 0) * passive["lifesteal"] / 100.0)
+		if steal > 0:
+			attacker.heal(steal)
+			unit_healed.emit(attacker, steal)
+			result["weapon_lifesteal"] = steal
+
+	# Manasteal
+	if "manasteal" in passive:
+		var steal_mana = int(result.get("damage", 0) * passive["manasteal"] / 100.0)
+		if steal_mana > 0 and "current_mana" in defender:
+			var actual = mini(steal_mana, defender.current_mana)
+			defender.current_mana = defender.current_mana - actual
+			attacker.restore_mana(actual)
+			result["weapon_manasteal"] = actual
+
+	# Elemental damage bonus attacks
+	if "elemental_damage" in passive:
+		for element in passive["elemental_damage"]:
+			var dmg = passive["elemental_damage"][element]
+			if dmg > 0:
+				apply_damage(defender, dmg, element)
+				if not "elemental_procs" in result:
+					result["elemental_procs"] = {}
+				result["elemental_procs"][element] = dmg
+
+
+## Process special effects from ammo: fire arrow AoE or status proc arrows.
+## Called on hit only — a missed shot produces no explosion or status.
+## apply_damage() is used for AoE hits (handles death, bleed-out, mantra interruption).
+func _process_ammo_special_effect(attacker: Node, defender: Node, ammo: Dictionary) -> void:
+	var effect = ammo.get("special_effect", {})
+	match effect.get("type", ""):
+
+		"aoe_fire":
+			var radius = effect.get("radius", 1)
+			var aoe_damage = effect.get("damage", 10)
+			var element = effect.get("element", "fire")
+			combat_log.emit("%s's %s explodes!" % [attacker.unit_name, ammo.get("name", "arrow")])
+			for unit in all_units:
+				if not unit.is_alive():
+					continue
+				var dist = abs(unit.grid_position.x - defender.grid_position.x) \
+						 + abs(unit.grid_position.y - defender.grid_position.y)
+				if dist > 0 and dist <= radius:
+					var resistance = unit.get_resistance(element) if unit.has_method("get_resistance") else 0.0
+					var final_dmg = maxi(1, int(aoe_damage * (1.0 - resistance / 100.0)))
+					apply_damage(unit, final_dmg, element)
+					combat_log.emit("%s takes %d %s damage from the explosion." % [unit.unit_name, final_dmg, element])
+
+		"status":
+			var chance = effect.get("chance", 100)
+			if randi() % 100 < chance:
+				var status = effect.get("status", "")
+				var duration = effect.get("duration", 2)
+				if status != "":
+					_apply_status_effect(defender, status, duration, 0, attacker)
+					combat_log.emit("%s is afflicted with %s from the arrow." % [defender.unit_name, status])
+
+
+## Deduct durability from the attacker's equipped weapon after use.
+## fragility in item.generated.fragility = durability cost per attack.
+## Vajra (fragility 0.0) and static items never degrade.
+func _deduct_weapon_durability(unit: Node) -> void:
+	if not unit.has_method("get_equipped_weapon"):
+		return
+	var weapon = unit.get_equipped_weapon()
+	if weapon.is_empty():
+		return
+	var fragility: float = weapon.get("generated", {}).get("fragility", 0.0)
+	if fragility <= 0.0:
+		return  # Indestructible or not a generated item
+	if not "character_data" in unit:
+		return
+	var item_id = ItemSystem.get_equipped_item(unit.character_data, "weapon_main")
+	if item_id == "" or not item_id.begins_with("gen_"):
+		return  # Static items don't track wear
+	var current_dur: int = weapon.get("durability", 1)
+	var new_dur: int = maxi(0, current_dur - int(ceil(fragility)))
+	ItemSystem.update_item_durability(item_id, new_dur)
+	if new_dur == 0:
+		combat_log.emit("%s's %s has broken!" % [unit.unit_name, weapon.get("name", "weapon")])
 
 
 ## Process passive perks that trigger when a unit hits an enemy.

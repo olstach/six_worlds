@@ -1187,8 +1187,8 @@
         "might": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_dagger",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_dagger",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_vest",
@@ -1257,8 +1257,8 @@
         "persuasion": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_dagger",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_dagger",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_vest",
@@ -1339,8 +1339,8 @@
         "swords": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_sword",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_sword",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_vest",
@@ -1384,8 +1384,8 @@
         "leadership": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_dagger",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_dagger",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_vest"
@@ -1413,8 +1413,8 @@
         "might": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_sword",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_sword",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_vest",
@@ -1463,8 +1463,8 @@
         "axes": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_axe",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_axe",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "padded_armor",
@@ -1500,8 +1500,8 @@
         "unarmed": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_axe",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_axe",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_vest"
@@ -1578,8 +1578,8 @@
         "thievery": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_axe",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_axe",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_vest"
@@ -1620,8 +1620,8 @@
         "guile": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_dagger",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_dagger",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_vest",
@@ -1661,8 +1661,8 @@
         "black_magic": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_axe",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_axe",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_vest",
@@ -1697,8 +1697,8 @@
         "medicine": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_dagger",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_dagger",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_gloves"
@@ -1842,8 +1842,8 @@
         "guile": 2
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_dagger",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_dagger",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_vest",
@@ -1909,8 +1909,8 @@
         "armor": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_sword",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_sword",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_vest",
@@ -1970,8 +1970,8 @@
         "learning": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_dagger",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_dagger",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "travelers_amulet"
@@ -2121,8 +2121,8 @@
         "guile": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_mace",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_mace",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_vest"
@@ -2239,8 +2239,8 @@
         "comedy": 1
       },
       "starting_equipment": {
-        "base_weapon": "bronze_sword",
-        "weapon_upgrade": "iron_dagger",
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_dagger",
         "weapon_upgrade_chance": 0.2,
         "items": [
           "leather_vest"

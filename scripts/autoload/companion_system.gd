@@ -198,8 +198,10 @@ func _apply_random_spells(character: Dictionary, random_cfg: Dictionary,
 				break
 		if not school_match:
 			continue
-		# Check that the character can actually cast it (has the required skill level)
-		var required_level: int = spell.get("level", 1)
+		# Check that the character can actually cast it (has the required skill level).
+		# Spell tier 1-5 maps to min skill level 1,3,5,7,9 (tier * 2 - 1).
+		var spell_tier: int = spell.get("level", 1)
+		var required_level: int = spell_tier * 2 - 1
 		var can_cast := false
 		for s in schools:
 			for skill_name in SKILL_TO_SCHOOL.keys():
@@ -257,13 +259,14 @@ func _apply_starting_equipment(character: Dictionary, fixed_equip: Dictionary,
 
 ## Recruit a companion by id. Deducts gold, builds and stats the character,
 ## and adds them to the party. Returns the new companion dict, or {} on failure.
-func recruit(companion_id: String) -> Dictionary:
+## Pass free=true to skip the gold cost (for event-granted companions).
+func recruit(companion_id: String, free: bool = false) -> Dictionary:
 	var def: Dictionary = get_definition(companion_id)
 	if def.is_empty():
 		push_error("CompanionSystem: Unknown companion id: ", companion_id)
 		return {}
 
-	var cost: int = def.get("recruitment_cost", 0)
+	var cost: int = 0 if free else def.get("recruitment_cost", 0)
 	if GameState.gold < cost:
 		push_warning("CompanionSystem: Cannot afford companion ", companion_id)
 		return {}

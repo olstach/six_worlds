@@ -27,11 +27,14 @@ var _next_runtime_id: int = 1
 # Equipment doesn't stack, so quantity is always 1 for equipment
 var _inventory: Array[Dictionary] = []
 
+var ammo_types: Dictionary = {}  # ammo_id -> ammo definition from ammo.json
+
 # Maximum inventory size (can be expanded via upgrades later)
 var max_inventory_size: int = 60
 
 func _ready() -> void:
 	_load_item_database()
+	_load_ammo()
 	print("ItemSystem initialized with ", _item_database.size(), " items")
 
 
@@ -65,7 +68,7 @@ func _load_item_database() -> void:
 	_rarities = data.get("rarities", {})
 
 
-## Get an item definition by ID (checks static DB first, then runtime items)
+## Get an item definition by ID (checks static DB first, then runtime items, then ammo)
 func get_item(item_id: String) -> Dictionary:
 	if item_id in _item_database:
 		var item = _item_database[item_id].duplicate(true)
@@ -75,12 +78,16 @@ func get_item(item_id: String) -> Dictionary:
 		var item = _runtime_items[item_id].duplicate(true)
 		item["id"] = item_id
 		return item
+	if item_id in ammo_types:
+		var item = ammo_types[item_id].duplicate(true)
+		item["id"] = item_id
+		return item
 	return {}
 
 
-## Check if an item exists (static or runtime)
+## Check if an item exists (static, runtime, or ammo)
 func item_exists(item_id: String) -> bool:
-	return item_id in _item_database or item_id in _runtime_items
+	return item_id in _item_database or item_id in _runtime_items or item_id in ammo_types
 
 
 ## Get all items of a specific type (e.g., "sword", "helmet")
@@ -320,8 +327,8 @@ func add_to_inventory(item_id: String, quantity: int = 1) -> bool:
 	var category = type_info.get("category", "")
 
 	# Equipment doesn't stack - add separate entries
-	# (Consumables will stack when implemented later)
-	var is_stackable = category == "consumable"  # Future support
+	# Consumables and ammo stack
+	var is_stackable = category == "consumable" or item_id in ammo_types
 
 	if is_stackable:
 		# Find existing stack and add to it, or create one entry with full quantity
@@ -449,6 +456,13 @@ func clear_inventory() -> void:
 	inventory_changed.emit()
 
 
+## Update durability on a runtime-generated item (static items don't track wear).
+## Called by CombatManager after each weapon use.
+func update_item_durability(item_id: String, new_value: int) -> void:
+	if item_id in _runtime_items:
+		_runtime_items[item_id]["durability"] = new_value
+
+
 ## Calculate total stat bonuses from all equipped items
 func calculate_equipment_stats(character: Dictionary) -> Dictionary:
 	var bonuses: Dictionary = {
@@ -543,6 +557,54 @@ func get_type_info(item_type: String) -> Dictionary:
 	return _item_types.get(item_type, {})
 
 
+## Return ammo type definition dict, or {} if not found.
+func get_ammo(ammo_id: String) -> Dictionary:
+	return ammo_types.get(ammo_id, {})
+
+
+## Return all ammo available for a given weapon type.
+## First entry is always the default (bone arrow/bolt), which is free and infinite.
+## Subsequent entries are finite ammo from the party inventory matching this weapon_type.
+func get_available_ammo(weapon_type: String) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+
+	# Find and add the default (free/infinite) ammo for this weapon type first
+	for ammo_id in ammo_types:
+		var ammo = ammo_types[ammo_id]
+		if ammo.get("is_default", false) and weapon_type in ammo.get("weapon_types", []):
+			var entry = ammo.duplicate()
+			entry["id"] = ammo_id
+			result.append(entry)
+			break  # Only one default per weapon type
+
+	# Add finite ammo from party inventory that matches this weapon type
+	for inv_entry in _inventory:
+		var ammo_id: String = inv_entry.get("item_id", "")
+		if not ammo_types.has(ammo_id):
+			continue
+		var ammo = ammo_types[ammo_id]
+		if ammo.get("is_default", false):
+			continue  # Default already added above
+		if weapon_type in ammo.get("weapon_types", []):
+			var entry = ammo.duplicate()
+			entry["id"] = ammo_id
+			entry["quantity"] = inv_entry.get("quantity", 0)
+			result.append(entry)
+
+	return result
+
+
+## Consume 1 unit of ammo from the party inventory.
+## Returns true if ammo remains after consumption, false if fully depleted.
+## Does nothing (returns true) for default (free/infinite) ammo.
+func consume_ammo(ammo_id: String) -> bool:
+	var ammo_def = ammo_types.get(ammo_id, {})
+	if ammo_def.get("is_default", false):
+		return true  # Free ammo is never depleted
+	remove_from_inventory(ammo_id, 1)
+	return get_inventory_count(ammo_id) > 0
+
+
 ## Merge duplicate consumable entries in inventory (fixes pre-stacking data)
 func consolidate_inventory() -> void:
 	var seen: Dictionary = {}  # item_id → index in new array
@@ -600,7 +662,7 @@ func add_starter_items(background: String = "") -> void:
 			items_to_add.append(str(bonus_pool[randi() % bonus_pool.size()]))
 	else:
 		# Generic fallback loadout
-		items_to_add = ["bronze_sword", "leather_vest", "leather_cap", "leather_boots", "copper_ring", "travelers_amulet"]
+		items_to_add = ["bone_dagger", "leather_vest", "leather_cap", "leather_boots", "copper_ring", "travelers_amulet"]
 		secondary_weapon = "short_bow"
 
 	# Add everything to inventory
@@ -923,6 +985,22 @@ func _load_equipment_tables() -> void:
 	file.close()
 
 
+## Load ammo type definitions from ammo.json
+func _load_ammo() -> void:
+	var file = FileAccess.open("res://resources/data/ammo.json", FileAccess.READ)
+	if not file:
+		push_error("ItemSystem: Could not load ammo.json")
+		return
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		push_error("ItemSystem: Failed to parse ammo.json: " + json.get_error_message())
+		file.close()
+		return
+	file.close()
+	ammo_types = json.get_data().get("ammo", {})
+	print("ItemSystem: Loaded %d ammo types" % ammo_types.size())
+
+
 ## Pick a weighted random key from a {key: weight} dictionary
 func _weighted_pick(weights: Dictionary) -> String:
 	var total: float = 0.0
@@ -945,7 +1023,8 @@ func _weighted_pick(weights: Dictionary) -> String:
 ## material_override: force a specific material (or "" for random)
 ## quality_override: force a specific quality (or "" for random)
 func generate_weapon(weapon_type: String = "", rarity: String = "common",
-		material_override: String = "", quality_override: String = "") -> String:
+		material_override: String = "", quality_override: String = "",
+		realm: String = "") -> String:
 	if _equipment_tables.is_empty():
 		_load_equipment_tables()
 	if _equipment_tables.is_empty():
@@ -973,13 +1052,30 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 		quality = _weighted_pick(q_weights)
 	var q_info = quality_levels[quality]
 
-	# Pick material — use tier based on rarity
+	# Pick material — realm sets the bell curve; rarity is fallback only when no realm given
 	var material: String = material_override
+	var m_weights: Dictionary = {}
 	if material == "" or not material in materials:
-		var rarity_tiers = {"common": "1", "uncommon": "2", "rare": "3", "epic": "4", "legendary": "5"}
-		var tier_key = rarity_tiers.get(rarity, "2")
-		var m_weights = tier_materials.get(tier_key, {"iron": 100})
+		var realm_weights = _equipment_tables.get("realm_material_weights", {})
+		if realm != "" and realm in realm_weights:
+			m_weights = realm_weights[realm]
+		else:
+			var rarity_tiers = {"common": "3", "uncommon": "4", "rare": "5", "epic": "6", "legendary": "7"}
+			var tier_key = rarity_tiers.get(rarity, "4")
+			m_weights = tier_materials.get(tier_key, {"iron": 100})
 		material = _weighted_pick(m_weights)
+
+	# Material type restriction (e.g. wood only allowed for staff/club)
+	if material != "" and material in materials:
+		var allowed = materials[material].get("allowed_types", [])
+		if allowed.size() > 0 and not weapon_type in allowed:
+			var filtered: Dictionary = {}
+			for mat_key in m_weights:
+				var mat_allowed = materials.get(mat_key, {}).get("allowed_types", [])
+				if mat_allowed.is_empty() or weapon_type in mat_allowed:
+					filtered[mat_key] = m_weights[mat_key]
+			material = _weighted_pick(filtered) if not filtered.is_empty() else "iron"
+
 	var mat_info = materials[material]
 
 	# Calculate stats
@@ -997,6 +1093,14 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 	for special in ["spellpower", "range", "crit_chance", "armor_pierce"]:
 		if special in base:
 			final_stats[special] = int(base[special] * stat_mult)
+
+	# Apply material-specific stat bonuses (e.g. obsidian crit_chance +3)
+	for bonus_key in mat_info.get("stat_bonuses", {}):
+		var bonus_val = mat_info["stat_bonuses"][bonus_key]
+		if bonus_key in final_stats:
+			final_stats[bonus_key] += bonus_val
+		else:
+			final_stats[bonus_key] = bonus_val
 
 	# Weight and value
 	var final_weight: int = maxi(1, int(base.get("weight", 5) * mat_info.get("weight_mult", 1.0)))
@@ -1028,8 +1132,16 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 			for key in trait_info:
 				if key in ["budget_cost", "types"]:
 					continue
-				# Special combat passives
-				if key in ["poison_chance", "stun_chance", "lifesteal"]:
+				# Elemental damage traits (e.g. space_damage_pct: 15)
+				if key.ends_with("_damage_pct"):
+					var element = key.left(key.length() - 11)  # strip "_damage_pct"
+					if not "elemental_damage" in passive:
+						passive["elemental_damage"] = {}
+					var base_dmg = base.get("damage", 5)
+					passive["elemental_damage"][element] = maxi(1, int(base_dmg * trait_info[key] / 100.0))
+				# On-hit proc passives stored raw
+				elif key in ["poison_chance", "bleed_chance", "stun_chance", "burn_chance",
+						"freeze_chance", "silence_chance", "dispel_chance", "lifesteal", "manasteal"]:
 					passive[key] = trait_info[key]
 				elif key in final_stats:
 					final_stats[key] += trait_info[key]
@@ -1037,6 +1149,25 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 					final_stats[key] = trait_info[key]
 
 			final_value += int(trait_info.get("budget_cost", 0) * 15)
+
+	# Convert _pct trait keys to actual stat adjustments
+	for key in final_stats.keys():
+		if not key.ends_with("_pct"):
+			continue
+		var base_key = key.left(key.length() - 4)  # strip "_pct"
+		if base_key == "loot_value":
+			final_value = int(final_value * (1.0 + final_stats[key] / 100.0))
+		elif base_key == "initiative":
+			# initiative has no weapon base stat; treat the pct value as a flat bonus directly
+			# (initiative_pct: 10 → +10 initiative, matching trait budget intent)
+			var init_bonus = final_stats.get("initiative", 0) + int(final_stats[key])
+			if init_bonus != 0:
+				final_stats["initiative"] = init_bonus
+		else:
+			var current = final_stats.get(base_key, 0)
+			if current != 0:
+				final_stats[base_key] = current + int(current * final_stats[key] / 100.0)
+		final_stats.erase(key)
 
 	# Build name
 	var name_parts: Array[String] = []
@@ -1077,6 +1208,11 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 	elif weapon_type == "staff":
 		requirements["focus"] = 8 + tier * 2
 
+	# Durability — base value from material, reduced by quality (poor = worse condition)
+	var base_dur: int = mat_info.get("base_durability", 85)
+	var dur_mult: float = q_info.get("stat_mult", 1.0)
+	var max_dur: int = maxi(5, int(base_dur * dur_mult))
+
 	# Build item data
 	var item_data: Dictionary = {
 		"name": item_name,
@@ -1091,10 +1227,13 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 		"requirements": requirements,
 		"stats": final_stats,
 		"abilities": [],
+		"durability": max_dur,
+		"max_durability": max_dur,
 		"generated": {
 			"material": material,
 			"quality": quality,
-			"traits": applied_traits
+			"traits": applied_traits,
+			"fragility": mat_info.get("fragility", 1.0)
 		}
 	}
 
@@ -1107,7 +1246,8 @@ func generate_weapon(weapon_type: String = "", rarity: String = "common",
 ## Generate a procedural armor piece. Returns the gen_XXXX item ID.
 ## armor_type: "armor", "helmet", "boots", etc. (or "" for random)
 func generate_armor(armor_type: String = "", rarity: String = "common",
-		material_override: String = "", quality_override: String = "") -> String:
+		material_override: String = "", quality_override: String = "",
+		realm: String = "") -> String:
 	if _equipment_tables.is_empty():
 		_load_equipment_tables()
 	if _equipment_tables.is_empty():
@@ -1135,12 +1275,17 @@ func generate_armor(armor_type: String = "", rarity: String = "common",
 		quality = _weighted_pick(q_weights)
 	var q_info = quality_levels[quality]
 
-	# Pick material
+	# Pick material — realm sets the bell curve; rarity is fallback only when no realm given
 	var material: String = material_override
+	var m_weights: Dictionary = {}
 	if material == "" or not material in materials:
-		var rarity_tiers = {"common": "1", "uncommon": "2", "rare": "3", "epic": "4", "legendary": "5"}
-		var tier_key = rarity_tiers.get(rarity, "2")
-		var m_weights = tier_materials.get(tier_key, {"iron": 100})
+		var realm_weights = _equipment_tables.get("realm_material_weights", {})
+		if realm != "" and realm in realm_weights:
+			m_weights = realm_weights[realm]
+		else:
+			var rarity_tiers = {"common": "3", "uncommon": "4", "rare": "5", "epic": "6", "legendary": "7"}
+			var tier_key = rarity_tiers.get(rarity, "4")
+			m_weights = tier_materials.get(tier_key, {"iron": 100})
 		material = _weighted_pick(m_weights)
 	var mat_info = materials[material]
 
@@ -1261,7 +1406,8 @@ func generate_armor(armor_type: String = "", rarity: String = "common",
 ## Generate equipment matching a party member's best weapon skill.
 ## Inspects the party and picks a weapon type that someone can use.
 func generate_weapon_for_party(rarity: String = "common",
-		material_override: String = "", quality_override: String = "") -> String:
+		material_override: String = "", quality_override: String = "",
+		realm: String = "") -> String:
 	var party = CharacterSystem.get_party() if CharacterSystem else []
 	var best_type: String = ""
 	var best_level: int = 0
@@ -1269,7 +1415,7 @@ func generate_weapon_for_party(rarity: String = "common",
 	# Map weapon types to their skill names
 	var type_to_skill = {
 		"sword": "swords", "dagger": "daggers", "axe": "axes",
-		"mace": "maces", "spear": "spears", "staff": "martial_arts",
+		"mace": "maces", "club": "maces", "spear": "spears", "staff": "martial_arts",
 		"bow": "ranged"
 	}
 
@@ -1286,7 +1432,7 @@ func generate_weapon_for_party(rarity: String = "common",
 	if best_type == "":
 		best_type = ""
 
-	return generate_weapon(best_type, rarity, material_override, quality_override)
+	return generate_weapon(best_type, rarity, material_override, quality_override, realm)
 
 
 # ============================================
@@ -1295,7 +1441,7 @@ func generate_weapon_for_party(rarity: String = "common",
 
 # Item types that can be procedurally generated as weapons
 const WEAPON_TYPES: Array[String] = [
-	"sword", "dagger", "axe", "mace", "spear", "staff", "bow", "crossbow", "javelin"
+	"sword", "dagger", "axe", "mace", "spear", "staff", "bow", "crossbow", "javelin", "club"
 ]
 
 # Item types that can be procedurally generated as armor
@@ -1352,11 +1498,11 @@ func resolve_random_generate(item_id: String) -> String:
 ## Generate a procedural item for a given item type and rarity.
 ## Used by loot drops and shops to create appropriate procedural items.
 ## Returns the gen_XXXX ID, or "" if the type can't be procedurally generated.
-func generate_item_for_type(item_type: String, rarity: String = "common") -> String:
+func generate_item_for_type(item_type: String, rarity: String = "common", realm: String = "") -> String:
 	if item_type in WEAPON_TYPES:
-		return generate_weapon(item_type, rarity)
+		return generate_weapon(item_type, rarity, "", "", realm)
 	elif item_type in ARMOR_TYPES:
-		return generate_armor(item_type, rarity)
+		return generate_armor(item_type, rarity, "", "", realm)
 	elif item_type in TALISMAN_TYPES:
 		return generate_talisman(rarity)
 	return ""

@@ -1,0 +1,20 @@
+{
+  "comment": "Fixed encounters for domain events. Realm-agnostic — these spawn regardless of which realm the party is currently in.",
+  "encounters": {
+    "smoking_mirror_combat": {
+      "region": "any",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "domain_smoking_mirror", "count": 1},
+        {"archetype": "domain_smoke_imp", "count": 2}
+      ]
+    },
+    "mudling_colony": {
+      "region": "any",
+      "fixed": true,
+      "enemies": [
+        {"archetype": "domain_mudling", "count": 5}
+      ]
+    }
+  }
+}

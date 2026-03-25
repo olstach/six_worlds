@@ -119,6 +119,19 @@ func show_item(item: Dictionary, global_pos: Vector2) -> void:
 		eff_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		eff_row.add_child(eff_label)
 
+	# Supply items (food, herbs, scrap, reagents)
+	if item.get("type", "") == "supply":
+		var supply_type = item.get("supply_type", "")
+		var supply_amount = item.get("supply_amount", 0)
+		if supply_amount > 0 and supply_type != "":
+			var supply_row = HBoxContainer.new()
+			stats_container.add_child(supply_row)
+			var supply_label = Label.new()
+			supply_label.text = "+%d %s" % [supply_amount, supply_type.capitalize()]
+			supply_label.add_theme_font_size_override("font_size", 12)
+			supply_label.add_theme_color_override("font_color", Color(0.4, 0.9, 0.6))
+			supply_row.add_child(supply_label)
+
 	# Requirements
 	var requirements = item.get("requirements", {})
 	if requirements.is_empty():

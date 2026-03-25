@@ -1,0 +1,116 @@
+{
+  "comment": "Archetypes for domain-specific encounters. These enemies are realm-agnostic — they appear in rare domain events regardless of which realm the party is in.",
+  "archetypes": {
+    "domain_smoke_imp": {
+      "name": "Smoke Imp",
+      "tier": "imp",
+      "roles": ["ranged", "caster"],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": ["fire_magic", "guile"],
+      "guaranteed_spells": ["smoke_cloud"],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "claws",
+          "base_damage": 5,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "fire": 35
+      },
+      "threat_multiplier": 0.7,
+      "tags": ["demon", "smoke", "domain_smoke"],
+      "realm": "any"
+    },
+    "domain_smoking_mirror": {
+      "name": "Smoking Mirror",
+      "tier": "boss",
+      "roles": ["boss"],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 5,
+        "finesse": 0,
+        "awareness": 3,
+        "focus": 3,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "none",
+          "base_damage": 0,
+          "base_accuracy": 0,
+          "range": 0
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "fire": 100,
+        "water": -50
+      },
+      "special": {
+        "immovable": true,
+        "spawns_on_turn": {
+          "archetype": "domain_smoke_imp",
+          "count": 2,
+          "every_n_turns": 2
+        }
+      },
+      "threat_multiplier": 2.0,
+      "tags": ["construct", "smoke", "domain_smoke", "boss"],
+      "realm": "any"
+    },
+    "domain_mudling": {
+      "name": "Mudling",
+      "tier": "beast",
+      "roles": ["frontline"],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 4,
+        "finesse": 0,
+        "awareness": 0,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": ["maces", "armor"],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "slam",
+          "base_damage": 6,
+          "base_accuracy": 0,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "physical": 40
+      },
+      "on_hit": {
+        "Slowed": {"chance": 50}
+      },
+      "threat_multiplier": 0.8,
+      "tags": ["construct", "mud", "domain_mud"],
+      "realm": "any"
+    }
+  }
+}
