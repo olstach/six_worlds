@@ -1364,6 +1364,134 @@
         "items",
         "training"
       ]
+    },
+    "crystal_domain_shop": {
+      "name": "The Yogi's Teaching",
+      "type": "domain_spell_trainer",
+      "description": "The yogi shares what he knows with those who approach in the right spirit. The spells he teaches are not found in any guild.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "scattered_light",
+        "crystal_guardian",
+        "crystal_diadem",
+        "crystal_light"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
+    "glass_domain_shop": {
+      "name": "Fragments of the Glass Mountain",
+      "type": "domain_spell_trainer",
+      "description": "Knowledge cut from the mountain itself. Impossibly sharp, perfectly clear. These spells cannot be found in any guild.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "glass_shard",
+        "powdered_glass",
+        "globe_of_glass",
+        "glass_mine"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
+    "smoke_domain_shop": {
+      "name": "Whispers of the Shattered Mirror",
+      "type": "domain_spell_trainer",
+      "description": "Knowledge gleaned from smoke and reflection. These arts cannot be taught in any guild — only glimpsed in the mirror's darkness.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "smoke_cloud",
+        "smoke_imp",
+        "choking_smoke",
+        "smoke_form"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
+    "mud_domain_shop": {
+      "name": "Mudling Elder's Teaching",
+      "type": "domain_spell_trainer",
+      "description": "The elder mudling has agreed to teach the secrets of mud-working. These spells cannot be found in any guild — buy now or lose the chance.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "mudling",
+        "metal_to_mud",
+        "rain_of_mud",
+        "mindmuck"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
+
+    "steam_domain_shop": {
+      "name": "The Frog-Spirit's Teaching",
+      "type": "domain_spell_trainer",
+      "description": "The old frog settles onto the edge of the pool, pours two cups of tea, and begins to talk. What it knows about steam and the place where water meets fire cannot be found in any guild.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "steam_jet",
+        "fragrant_sauna",
+        "geyser",
+        "scalding_fog"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
+
+    "cloud_domain_shop": {
+      "name": "Songs of the Cloud Nagas",
+      "type": "domain_spell_trainer",
+      "description": "The nagas coil around you, humming in their deep rain-voices. What they know of cloud and sky and the space between water and air cannot be found in any guild — and will not be offered twice.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "cloudstep",
+        "cloudform",
+        "cloud_serpent",
+        "cloud_gate"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
     }
   }
 }

@@ -446,6 +446,51 @@ func apply_outcome(outcome: Dictionary) -> void:
 				else:
 					print("EventManager: Unknown item '%s', skipping" % item_id)
 
+		# HP loss — e.g. {"amount": "moderate", "target": "all"} to deal out-of-combat damage.
+		# amount: "light" (10%), "moderate" (25%), "heavy" (40%). target: "all" or "random".
+		# HP is floored at 1 — events cannot kill party members.
+		if "hp_loss" in rewards:
+			var loss = rewards.hp_loss
+			var amount_key: String = str(loss.get("amount", "moderate"))
+			var target_mode: String = str(loss.get("target", "all"))
+			var pct: float
+			match amount_key:
+				"light":    pct = 10.0
+				"moderate": pct = 25.0
+				"heavy":    pct = 40.0
+				_:          pct = 20.0
+			var party = CharacterSystem.get_party()
+			var targets = []
+			if target_mode == "random" and not party.is_empty():
+				targets = [party[randi() % party.size()]]
+			else:
+				targets = party
+			for char in targets:
+				if "derived" in char:
+					var dmg = maxi(1, int(char.derived.max_hp * pct / 100.0))
+					char.derived.current_hp = maxi(1, char.derived.current_hp - dmg)
+					print("EventManager: %s took %d HP damage from event" % [char.name, dmg])
+
+		# Attribute loss — e.g. {"which": "random", "amount": 1} to lose a point
+		# Used by events like the_smoking_mirror (look into the mirror).
+		# "which" can be "random" or a specific attribute name.
+		if "attribute_loss" in rewards:
+			var loss = rewards.attribute_loss
+			var amount: int = int(loss.get("amount", 1))
+			var which: String = loss.get("which", "random")
+			var player = CharacterSystem.get_player()
+			if player and "attributes" in player:
+				var all_attrs = ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"]
+				var chosen_attr: String
+				if which == "random":
+					chosen_attr = all_attrs[randi() % all_attrs.size()]
+				elif which in all_attrs:
+					chosen_attr = which
+				if not chosen_attr.is_empty():
+					player.attributes[chosen_attr] = max(1, int(player.attributes[chosen_attr]) - amount)
+					CharacterSystem.update_derived_stats(player)
+					print("EventManager: %s lost %d %s (attribute_loss)" % [player.name, amount, chosen_attr])
+
 		# Skill gain — e.g. {"skill": "water_magic", "amount": 1, "cap": 6}
 		if "skill_up" in rewards:
 			var su = rewards.skill_up
@@ -509,6 +554,18 @@ func apply_outcome(outcome: Dictionary) -> void:
 			else:
 				print("EventManager: Gamble lost.")
 
+		# gold_returned: the NPC refuses the money and gives it back (e.g. dark cave yogini)
+		if "gold_returned" in rewards and rewards.gold_returned:
+			# Cost was deducted when the choice cost was applied; refund the gold cost here.
+			# We look for the gold cost on the original choice's cost field via current_choice_cost.
+			if "cost" in outcome and "gold" in outcome.cost:
+				var refund: int = _resolve_gold_cost(outcome.cost.gold)
+				if refund > 0:
+					GameState.add_gold(refund)
+					print("EventManager: Gold returned (%d)" % refund)
+			else:
+				print("EventManager: gold_returned set but no gold cost found to refund")
+
 	# Write world-state flags declared by this outcome
 	if "set_flags" in outcome:
 		if outcome.set_flags is Dictionary:
@@ -535,18 +592,47 @@ func apply_outcome(outcome: Dictionary) -> void:
 			if gold_amount > 0:
 				GameState.spend_gold(gold_amount)
 				print("EventManager: Spent %d gold" % gold_amount)
+		if "food" in cost:
+			var food_amount = _resolve_food_cost(cost.food)
+			if food_amount > 0:
+				GameState.consume_supplies("food", food_amount)
+				print("EventManager: Consumed %d food" % food_amount)
+		# food_percent: spend a percentage of current food stores (e.g. the_pit bribe)
+		if "food_percent" in cost:
+			var pct: float = float(cost.food_percent)
+			var current_food: int = GameState.get_supplies("food")
+			var food_amount: int = max(1, int(current_food * pct / 100.0))
+			GameState.consume_supplies("food", food_amount)
+			print("EventManager: Consumed %d food (%d%% of stores)" % [food_amount, int(pct)])
+		if "herbs" in cost:
+			var herbs_amount = _resolve_supply_cost(cost.herbs)
+			if herbs_amount > 0:
+				GameState.consume_supplies("herbs", herbs_amount)
+				print("EventManager: Consumed %d herbs" % herbs_amount)
+		if "reagents" in cost:
+			var reagents_amount = _resolve_supply_cost(cost.reagents)
+			if reagents_amount > 0:
+				GameState.consume_supplies("reagents", reagents_amount)
+				print("EventManager: Consumed %d reagents" % reagents_amount)
 
 	# Apply karma changes
 	if "karma" in outcome:
 		for realm in outcome.karma:
 			KarmaSystem.add_karma(realm, outcome.karma[realm], "Event choice")
 
+	# Apply event-level shop price modifier (e.g. arrogant challenge — shop opens at +50% prices)
+	if "shop_modifier" in outcome:
+		var modifier = outcome.shop_modifier
+		if "price_multiplier" in modifier:
+			GameState.set_flag("event_shop_price_multiplier", modifier.price_multiplier)
+
 	# Handle outcome type — combat/shop are routed to overworld via signals
 	match outcome.get("type", "text"):
 		"text":
 			event_completed.emit(outcome)
 		"combat":
-			# Overworld will handle scene transition to combat_arena
+			# Overworld will handle scene transition to combat_arena.
+			# on_victory: if present, open a shop or run a follow-up after winning.
 			combat_requested.emit(outcome.get("enemy_group", "unknown"), outcome)
 		"shop":
 			# Overworld will handle opening shop overlay
@@ -591,6 +677,26 @@ func _resolve_gold_cost(amount) -> int:
 			return 15  # "some gold and food"
 		_:
 			return 0
+
+## Convert descriptive food cost strings to concrete amounts.
+func _resolve_food_cost(amount) -> int:
+	if amount is int or amount is float:
+		return int(amount)
+	match str(amount):
+		"small":    return 5
+		"moderate": return 15
+		"large":    return 30
+		_:          return 0
+
+## Convert descriptive supply cost strings (herbs, reagents) to concrete amounts.
+func _resolve_supply_cost(amount) -> int:
+	if amount is int or amount is float:
+		return int(amount)
+	match str(amount):
+		"small":    return 3
+		"moderate": return 8
+		"large":    return 18
+		_:          return 0
 
 ## Get a random event for a specific realm
 func get_random_event_for_realm(realm: String) -> String:

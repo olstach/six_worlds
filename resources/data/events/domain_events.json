@@ -1,0 +1,1312 @@
+{
+  "comment": "Rare map events tied to special spell domains. Each opens a domain-exclusive shop on success — the only way to acquire those spells. Realm-agnostic; availability controlled by map_config.",
+  "events": {
+    "the_pit": {
+      "id": "the_pit",
+      "title": "The Pit",
+      "domain": "mud",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "The path descends into a vast muddy hollow. Dozens of mudlings — squat, glistening figures of animated muck — mill about in the thick brown sludge below. They have a crude camp of sorts: stacked bones, offerings of rusted metal, a clumsily drawn circle of wet earth in the center.\n\nOne large mudling turns its featureless face toward you. A sound like bubbling tar rises from its throat. The others still.",
+      "choices": [
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Attack. Clear the pit.",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "mudling_colony",
+            "difficulty": "hard",
+            "karma": {
+              "hell": 5,
+              "asura": 3
+            }
+          }
+        },
+        {
+          "id": "bribe",
+          "type": "default",
+          "text": "Offer most of your food stores as tribute — seeds, grain, everything you can carry forward.",
+          "cost": {
+            "food_percent": 75
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "mud_domain_shop",
+            "text": "The large mudling reaches out a dripping limb and takes the sacks. One by one they are passed back through the colony and buried reverently in the central circle — seeds going into the earth, the way things are supposed to go. The mudlings make a sound like a long satisfied exhale of thick air. The elder turns back to you, willing to share what it knows.",
+            "karma": {
+              "animal": 4,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "earth_magic",
+          "type": "requirement",
+          "text": "Demonstrate mastery of earth. Let them see what the deep stone knows.",
+          "requirements": {
+            "skills": {
+              "earth_magic": 7
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "mud_domain_shop",
+            "text": "You call stone and soil to your hands and let the deep vibration speak. The mudlings go utterly still. Then, one by one, they prostrate themselves in the mud. The elder rises and presses both palms against your chest — it recognises a peer, and is willing to teach.",
+            "karma": {
+              "god": 4,
+              "human": 3,
+              "animal": 2
+            }
+          }
+        },
+        {
+          "id": "mud_puppet_play",
+          "type": "roll",
+          "text": "Stage an impromptu mud puppet play — a heroic epic specifically about the mudlings. Their ancient glories. Their terrible battles. The beauty of their mud.",
+          "requirements": {
+            "skills": {
+              "performance": 5
+            },
+            "roll": {
+              "attribute": "charm",
+              "difficulty": 13
+            }
+          },
+          "outcome_success": {
+            "type": "shop",
+            "shop_id": "mud_domain_shop",
+            "text": "You give them heroes. You give them tragedy. You give them a protagonist who is unmistakably the large elder mudling, whose courage is legendary, whose mud is the finest mud in all the realms. The colony erupts into a sound like a dozen geysers firing at once. Applause. The elder mudling — visibly moved, perhaps slightly embarrassed — gestures toward the central circle. You are welcome to learn.",
+            "karma": {
+              "human": 5,
+              "animal": 4
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "Your puppet stumbles. Your plot collapses. The mudlings watch politely for a moment, then begin pelting you with clods. You flee the pit covered head to toe — but oddly, not harmed.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "animal": 2
+            }
+          }
+        }
+      ]
+    },
+
+    "crystal_cave": {
+      "id": "crystal_cave",
+      "title": "Crystal Cave",
+      "domain": "crystal",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "The cave mouth is unremarkable — a crack in a hillside. Inside, it opens into something else entirely. Formations of crystal the height of houses catch what little light enters and multiply it into thousands of beams, filling the space with cold, sourceless radiance.\n\nAt the centre, seated in perfect stillness on bare stone, is a man. He is old. He is completely naked. He is meditating, and does not appear to notice you at all.",
+      "choices": [
+        {
+          "id": "meditate",
+          "type": "requirement",
+          "text": "Sit down and meditate alongside him.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "crystal_domain_shop",
+            "text": "You sit. The cave does the rest. After some time — minutes or hours, it is impossible to say — the yogi opens his eyes. He looks at you the way people look at someone they recognise from a long time ago.\n\n'You already know some of this,' he says. 'Let me show you the rest.'",
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "ask_secrets",
+          "type": "requirement",
+          "text": "Ask him about the secrets of this cave.",
+          "requirements": {
+            "skills": {
+              "earth_magic": 6,
+              "space_magic": 6
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "crystal_domain_shop",
+            "text": "He opens one eye. He looks you over slowly. Then he smiles — not warmly, exactly, but as if amused by something he's been waiting to see.\n\n'You speak the right language,' he says. 'Then you will understand what I am about to tell you.'",
+            "karma": {
+              "god": 4,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "offerings",
+          "type": "default",
+          "text": "Leave him offerings and ask for a blessing.",
+          "cost": {
+            "gold": "small",
+            "food": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You set down what you have brought — a little gold, a little food — and bow. The yogi does not open his eyes. But something in the cave shifts. The light settles differently on you.\n\nYou feel cleaner, somehow. Sharper. You carry the blessing forward.",
+            "rewards": {
+              "buffs": [
+                {"stat": "awareness", "amount": 2, "combats_remaining": 1},
+                {"stat": "focus", "amount": 2, "combats_remaining": 1},
+                {"stat": "luck", "amount": 2, "combats_remaining": 1}
+              ]
+            },
+            "karma": {
+              "god": 4,
+              "human": 3,
+              "animal": 1
+            }
+          }
+        },
+        {
+          "id": "attack",
+          "type": "default",
+          "text": "Attack him.",
+          "outcome": {
+            "type": "text",
+            "text": "You raise your weapon. He opens his eyes.\n\nThe cave is gone. You are standing on the hillside in the open air. There is no crack in the rock, no crystal, no yogi. Only a very faint impression of sadness that may be yours or may be his — it is difficult to tell.",
+            "karma": {
+              "hell": 8,
+              "asura": 5,
+              "human": -5,
+              "god": -5
+            }
+          }
+        }
+      ]
+    },
+
+    "glass_mountain": {
+      "id": "glass_mountain",
+      "title": "Glass Mountain",
+      "domain": "glass",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "A mountain of glass rises from the plain — not metaphor, not illusion. Pure fused silica, facets the size of houses catching the light and throwing it in every direction. The surface is perfectly smooth and perfectly vertical. There is no path up. There is no grip.\n\nAt the summit, something moves.",
+      "choices": [
+        {
+          "id": "scale",
+          "type": "roll",
+          "text": "Attempt to scale the glass face.",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": 16
+            }
+          },
+          "outcome_success": {
+            "type": "shop",
+            "shop_id": "glass_domain_shop",
+            "text": "Your fingers find edges too fine to see, your weight shifts by instinct rather than thought. Slowly, impossibly, you climb. At the summit: glass spirits drifting in slow, glitching arcs — each movement a fraction out of time with the last, refracting light into cascades that should not be possible. They do not speak. They seem to notice you the way light notices a prism. Something passes between you.",
+            "karma": {
+              "god": 3,
+              "human": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "follow_up",
+            "follow_up_event": "glass_mountain",
+            "text": "You slip. The glass offers nothing to hold and less to forgive — you slide and tumble, cutting yourself on the way down. The mountain stands unchanged.",
+            "rewards": {
+              "hp_loss": {"amount": "moderate", "target": "random"}
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "air_ascent",
+          "type": "requirement",
+          "text": "Let the air carry you up.",
+          "requirements": {
+            "skills": {
+              "air_magic": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "glass_domain_shop",
+            "text": "You step off the ground and let the wind take you — drifting upward along the face of the mountain, close enough to see your own distorted reflection in every facet. At the summit, glass spirits dance in slow, glitching loops, throwing light in directions that make no sense. One drifts close and holds the shape of something familiar — your face, perhaps, or the memory of one. Then it disperses, chiming softly.",
+            "karma": {
+              "god": 4,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "earth_speech",
+          "type": "requirement",
+          "text": "Speak to the glass as stone. It was sand once — and before that, it was earth.",
+          "requirements": {
+            "skills": {
+              "earth_magic": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "glass_domain_shop",
+            "text": "You press your hands to the surface and speak to what it used to be. There is a long moment. Then the glass does not open exactly — it simply stops being a wall in the way that it was. You walk through and up, the mountain permitting. At the summit, glass spirits spiral in their slow broken arcs. They feel very old. They feel like they have been waiting.",
+            "karma": {
+              "god": 4,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "sing_to_it",
+          "type": "requirement",
+          "text": "Sing to the mountain.",
+          "requirements": {
+            "skills": {
+              "performance": 6
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "glass_domain_shop",
+            "text": "You begin to sing — nothing composed, just what comes. The mountain answers. A harmonic rises from somewhere inside the glass, and then another, and footholds crystallise along the face as if the mountain is remembering how to be climbed. At the summit the glass spirits dance faster for a moment, producing tones you can almost hear. A faint luck settles on you like dust: the mountain was pleased.",
+            "rewards": {
+              "buffs": [
+                {"stat": "luck", "amount": 1, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "god": 5,
+              "human": 4,
+              "animal": 1
+            }
+          }
+        },
+        {
+          "id": "meditate_at_base",
+          "type": "requirement",
+          "text": "Sit at the base and meditate. Stop trying to climb.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "glass_domain_shop",
+            "text": "You sit. The mountain does not move. You stop expecting it to. At some point — you cannot say when — you are at the summit, seated in the same posture, and the glass spirits are circling you in their glitching arcs, throwing light across your closed eyelids in patterns that carry meaning. You have not climbed the mountain. You have stopped being someone who needed to.",
+            "karma": {
+              "god": 6,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "admire",
+          "type": "default",
+          "text": "Stand and look at it for a while. Some things teach by being looked at.",
+          "outcome": {
+            "type": "text",
+            "text": "You stand at the base of the mountain and look up. The light changes as you watch — slowly, the way a day changes, but condensed. Somewhere in the complexity of the refracted surface is something you cannot name but will not forget.",
+            "rewards": {
+              "xp": 15
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        }
+      ]
+    },
+
+    "the_smoking_mirror": {
+      "id": "the_smoking_mirror",
+      "title": "The Smoking Mirror",
+      "domain": "smoke",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "In a clearing where ash drifts like snow, a mirror stands alone — black obsidian framed in tarnished silver, taller than a person, tilted slightly as if to catch a sky it has no interest in showing you.\n\nThe surface does not reflect. It smokes. Slow dark coils rise from the glass and dissipate without smell or warmth. Where your reflection should be, there is only depth — and somewhere in that depth, something moves.",
+      "choices": [
+        {
+          "id": "look",
+          "type": "roll",
+          "text": "Look into the mirror.",
+          "requirements": {
+            "roll": {
+              "attribute": "focus",
+              "difficulty": 14
+            }
+          },
+          "outcome_success": {
+            "type": "shop",
+            "shop_id": "smoke_domain_shop",
+            "text": "You hold its gaze. The smoke parts. You see yourself — but wrong: every flaw given a face, every hidden thing laid bare. You do not flinch. Something dissolves, and something else rises in its place. When you look away you understand smoke in a way you did not before. The mirror has nothing more to show you.",
+            "karma": {
+              "human": 3,
+              "god": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "shop",
+            "shop_id": "smoke_domain_shop",
+            "text": "You hold its gaze too long. The smoke parts and shows you something you were not ready to see — and a piece of yourself goes with it, drawn into the depth. The knowledge of smoke rises in you regardless. The price was a piece of yourself. The mirror does not seem to care.",
+            "rewards": {
+              "attribute_loss": {"which": "random", "amount": 1}
+            },
+            "karma": {
+              "human": 2,
+              "hell": 2
+            }
+          }
+        },
+        {
+          "id": "ritual_mirror",
+          "type": "requirement",
+          "text": "Recognize the mirror for what it is. Hold up your own mirror to face it.",
+          "requirements": {
+            "skills": {
+              "ritual": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "smoke_domain_shop",
+            "text": "You have seen this described in the old texts: a Tezcatlipoca-mirror, a devourer of reflections. You produce your own mirror — polished bronze, consecrated — and hold it to face the black glass.\n\nThe two mirrors lock. The smoke rushes between them in a furious loop, finds no victim, and exhausts itself. The obsidian surface is still. In the silence, the knowledge of smoke rises in you like cooling ash.",
+            "rewards": {
+              "buffs": [
+                {"stat": "awareness", "amount": 1, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "yoga_recognition",
+          "type": "requirement",
+          "text": "Recognise the mirror for what it is. Don't look at the surface — look at what the surface is doing.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "smoke_domain_shop",
+            "text": "You see the mirror without seeing what it shows. The smoke coils and finds no purchase — there is no self presented to be consumed. The mirror continues smoking. You absorb its nature without being changed by its contents.",
+            "rewards": {
+              "buffs": [
+                {"stat": "focus", "amount": 1, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "strike",
+          "type": "default",
+          "text": "Strike the mirror. Whatever is in there, drag it out.",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "smoking_mirror_combat",
+            "difficulty": "hard",
+            "on_victory": {
+              "type": "shop",
+              "shop_id": "smoke_domain_shop",
+              "text": "The last imp dissolves. The mirror lies in shards, each one still faintly smoking. From the fragments, patterns of ash rise and arrange themselves — the knowledge of smoke, offered at last in defeat."
+            },
+            "karma": {
+              "asura": 4,
+              "hell": 3
+            }
+          }
+        },
+        {
+          "id": "turn_away",
+          "type": "default",
+          "text": "Turn away. Do not look.",
+          "outcome": {
+            "type": "text",
+            "text": "You turn your back on it and walk. The smoke coils behind you. Whatever it wanted to show you, it keeps.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+
+    "cloud_palace": {
+      "id": "cloud_palace",
+      "title": "The Cloud Palace",
+      "domain": "cloud",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "A palace materialises before you — or perhaps you have drifted into it without noticing. Its halls are open to the sky, its floors are cloud made solid underfoot. Through gaps in the floor, far below, you can see the tops of mountains. Through gaps in the ceiling, open sky.\n\nSlithering through the amber light, singing to one another in voices like slow rain on stone, are nagas — a rare breed that rules the clouds and weather. Vast and iridescent, utterly absorbed in their song. They have not yet noticed you.",
+      "choices": [
+        {
+          "id": "join_chorus",
+          "type": "requirement",
+          "text": "Listen carefully and join their chorus.",
+          "requirements": {
+            "skills": {
+              "performance": 6
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "cloud_domain_shop",
+            "text": "You find the thread of the melody and follow it in. One naga turns a great head toward you — eyes like water, expression unreadable — and then returns to the song. You have been included. When the chorus ends, the nagas coil and settle, regarding you with something that might be warmth. There are things they are willing to teach.",
+            "karma": {
+              "god": 5,
+              "human": 4,
+              "animal": 2
+            }
+          }
+        },
+        {
+          "id": "offerings",
+          "type": "requirement",
+          "text": "Listen in, then step forward and set out offerings: fruits, perfumed water, their favourite herbs and spices.",
+          "requirements": {
+            "skills": {
+              "ritual": 3
+            }
+          },
+          "cost": {
+            "gold": "moderate",
+            "food": "small",
+            "herbs": "small",
+            "reagents": "small"
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "cloud_domain_shop",
+            "text": "The song does not stop, but it shifts — a new note braided in, low and enquiring. One naga descends to inspect the offerings. It touches each item with the tip of its tongue. A long pause. Then it looks at you with those water-coloured eyes and the song shifts again, opening a space for you to enter. You have been acknowledged. They are willing to share something of what they know.",
+            "karma": {
+              "god": 4,
+              "human": 3,
+              "animal": 3
+            }
+          }
+        },
+        {
+          "id": "talk_to_them",
+          "type": "default",
+          "text": "Walk inside and try to talk to them.",
+          "outcome": {
+            "type": "follow_up",
+            "follow_up_event": "cloud_palace_inner",
+            "text": "You step through into the heart of the palace. The song reverberates in your chest. The nagas slither in vast arcs around the pillars, absorbed completely in their chorus — and then, one by one, they notice you."
+          }
+        },
+        {
+          "id": "pocket_jewels",
+          "type": "default",
+          "text": "Walk inside and try to pocket some of their jewels while they are distracted.",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "cloud_naga_pack",
+            "difficulty": "hard",
+            "note": "TODO: fill in when animal realm enemy data is complete",
+            "text": "Your hand closes around something that feels like a frozen raindrop cut into a gem the size of a fist. The song stops.\n\nThey are not slow.",
+            "karma": {
+              "hungry_ghost": 6,
+              "animal": 3,
+              "human": -3
+            }
+          }
+        },
+        {
+          "id": "attack",
+          "type": "default",
+          "text": "Attack them.",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "cloud_naga_pack",
+            "difficulty": "hard",
+            "note": "TODO: fill in when animal realm enemy data is complete",
+            "text": "The song stops. The nagas uncoil.",
+            "karma": {
+              "hell": 8,
+              "asura": 4,
+              "human": -4,
+              "god": -4
+            }
+          }
+        }
+      ]
+    },
+
+    "cloud_palace_inner": {
+      "id": "cloud_palace_inner",
+      "title": "The Cloud Palace — Inner Hall",
+      "domain": "cloud",
+      "realm": "any",
+      "rarity": "follow_up_only",
+      "text": "The song stops. Every naga in the palace has turned to regard you. The silence is the silence of held weather.\n\nThe largest — coiled around a pillar of frozen cloud, scales catching the amber light like hammered silver — opens its mouth.\n\n\"Who daresss interrupt the sssong?\"",
+      "choices": [
+        {
+          "id": "yoga_harmony",
+          "type": "requirement",
+          "text": "Breathe, settle, and let the song you were interrupting continue through you.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "cloud_domain_shop",
+            "text": "You close your eyes and stop resisting the sound. The song fills you and passes through you, using you briefly as an instrument. The nagas relax — one by one, they return to their spiralling. The largest turns those water-coloured eyes on you and inclines its head. You have not interrupted the song. You have become, briefly, a part of it. They are willing to teach.",
+            "karma": {
+              "god": 6,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "persuade",
+          "type": "requirement",
+          "text": "Bow low and explain, with all the words you have, why you have come and what you offer.",
+          "requirements": {
+            "skills": {
+              "persuasion": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "cloud_domain_shop",
+            "text": "You speak carefully and at length. The nagas listen with the patience of creatures that measure time in rainstorms. The large one's tail shifts — once, then again. At last it makes a sound like distant thunder and the others settle.\n\n\"Ssso. You have a tongue worth hearing.\" They are willing to teach.",
+            "karma": {
+              "human": 5,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "charm_roll",
+          "type": "roll",
+          "text": "Smile, open your hands, and try to win them over on pure charm.",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": 17
+            }
+          },
+          "outcome_success": {
+            "type": "shop",
+            "shop_id": "cloud_domain_shop",
+            "text": "You have spent years learning how to walk into rooms that do not want you and leave them differently. The large naga blinks — a slow, contemplative gesture — and something shifts in its posture.\n\n\"You,\" it says, \"are either very brave or very foolish.\" It sounds like a compliment. They are willing to teach.",
+            "karma": {
+              "human": 4,
+              "god": 1
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The naga stares at you for a long, terrible moment. Then it opens its mouth, and what comes out is not words. It is weather.\n\nWhen you come back to yourself you are standing outside, alone. The palace is gone. Your bones ache with a deep cold.",
+            "rewards": {
+              "buffs": [
+                {"stat": "constitution", "amount": -3, "combats_remaining": 2}
+              ]
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "back_talk",
+          "type": "default",
+          "text": "\"Is that any way to treat a guest?\"",
+          "outcome": {
+            "type": "text",
+            "text": "There is a pause that contains weather systems.\n\n\"A guesssst,\" the large naga says, very softly, \"isss invited.\"\n\nWhat comes next is not words. When you come back to yourself you are standing outside. The palace is gone. The sky above is the particular grey of something that has already decided to rain.",
+            "rewards": {
+              "buffs": [
+                {"stat": "constitution", "amount": -3, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "human": -1
+            }
+          }
+        }
+      ]
+    },
+
+    "waterworks": {
+      "id": "waterworks",
+      "title": "The Waterworks",
+      "domain": "steam",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "A low wooden building rises from the mist, every surface slick and steaming. Above the entry hangs a sign painted with a frog holding a cup of tea. Through the latticed panels you can see shapes moving in pale mineral water — people, perhaps, or creatures that resemble them. The smell of cardamom and sulfur drifts toward you.\n\nThe door is open.",
+      "choices": [
+        {
+          "id": "bathe",
+          "type": "default",
+          "text": "Pay the entry fee and use the baths",
+          "cost": {
+            "gold": "small_moderate"
+          },
+          "outcome": {
+            "type": "follow_up",
+            "follow_up_event": "waterworks_inner",
+            "text": "You hand over the coins, receive a worn linen towel, and are waved through. The water is exactly the right temperature. Somewhere, a flute plays a tune you almost recognize. When you finally climb out, you feel entirely new.",
+            "rewards": {
+              "restore": {
+                "hp_percent": 100,
+                "mana_percent": 100,
+                "stamina_percent": 100
+              }
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave without going in",
+          "outcome": {
+            "type": "text",
+            "text": "You walk on. The sound of splashing water and low voices fades behind you."
+          }
+        }
+      ]
+    },
+
+    "waterworks_inner": {
+      "id": "waterworks_inner",
+      "title": "The Bathhouse Floor",
+      "domain": "steam",
+      "realm": "any",
+      "rarity": "follow_up_only",
+      "text": "Clean, rested, and wrapped in borrowed linen, you survey the room. A pair of river spirits play dice in the corner. Two monks argue quietly over a plate of dumplings. A large toad in a silk robe sips tea with the focused air of someone who has been doing this for several centuries.\n\nOn low tables between the pools: small plates of pickled plum, pale cakes, and pale green tea. Nobody looks at you with any particular suspicion.",
+      "choices": [
+        {
+          "id": "treat_everyone",
+          "type": "default",
+          "text": "Order tea and snacks for the whole room — your coin, your treat",
+          "cost": {
+            "gold": 100
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "steam_domain_shop",
+            "text": "A small stir runs through the room. The toad in the silk robe sets down its cup, turns its enormous amber eyes toward you, and slowly crosses the floor.\n\n'Generosity in a bathhouse,' it says, in a voice like water over smooth stone. 'That's rarer than you'd think.' It settles beside you. 'I know a trick or two. Buy something, and I'll show you.'",
+            "karma": {
+              "god": 3,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "tall_tales",
+          "type": "requirement",
+          "text": "Hold the room with tall tales of your travels",
+          "requirements": {
+            "skills": {
+              "performance": 5,
+              "comedy": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "steam_domain_shop",
+            "text": "You begin with the time you crossed the frozen bridge over the River of Ash. By the second story, even the monks have stopped arguing. By the third, the toad in the silk robe is leaning forward with those great amber eyes half-closed in something like delight.\n\n'You've been places,' it says, when you finish. 'I've been a few places myself. A trade seems fair.'",
+            "karma": {
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "steal",
+          "type": "roll",
+          "text": "Slip away and quietly go through the bags left unattended near the changing room",
+          "requirements": {
+            "roll": {
+              "skill": "thievery",
+              "difficulty": 13
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Everyone is very relaxed and nobody is watching the changing room closely. You move quickly and quietly. Coins, a small charm, and then you're back in your seat before anyone looks up. The dice players argue. The monks argue. The toad sips its tea.",
+            "rewards": {
+              "gold": 25,
+              "items": [
+                "water_charm_common"
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 4,
+              "animal": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You're doing well until a pale hand closes around your wrist. The room goes quiet. In short order you are dressed and deposited outside, the door clicking shut behind you. The painted frog on the sign stares at you with what might be disappointment.",
+            "set_flags": {
+              "waterworks_banned": true
+            },
+            "karma": {
+              "hungry_ghost": 6
+            }
+          }
+        }
+      ]
+    },
+    "snowcapped_hermitage": {
+      "id": "snowcapped_hermitage",
+      "title": "Snow-Capped Hermitage",
+      "domain": "tummo",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "On an exposed ridge, in full sight of the howling wind, a group of yogis sit cross-legged in the snow. They wear nothing but thin white linen. Steam rises from their bodies in visible wisps, melting the snow in a circle around each of them.\n\nThe oldest sits at the centre, utterly still, eyes open but seeing elsewhere. Slightly apart, the youngest shivers — barely perceptibly, but his toes have gone the faint blue of someone fighting a losing battle with the cold.",
+      "choices": [
+        {
+          "id": "ask_teachings",
+          "type": "requirement",
+          "text": "Approach, bow deeply, and ask for teachings.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "tummo_domain_shop",
+            "text": "The eldest yogi opens his eyes and regards you for a long moment. He nods once. The youngest, still shivering, looks up at you with something like relief — perhaps he will learn more if you are here too.\n\nThe teachings begin.",
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "fire_magic",
+          "type": "roll",
+          "text": "You have some knowledge of inner heat yourself. Show them — not as a challenge, because you cannot help it.",
+          "requirements": {
+            "skills": {
+              "fire_magic": 5
+            },
+            "roll": {
+              "attribute": "focus",
+              "difficulty": 13
+            }
+          },
+          "outcome_success": {
+            "type": "shop",
+            "shop_id": "tummo_domain_shop",
+            "text": "You let it rise — the warmth from the secret place below the navel, imperfect but real. The youngest yogi's eyes go wide. The eldest smiles: not at the technique, which is rough, but at the unmistakable sincerity behind it.\n\n'You have found the door,' he says. 'Come, let us show you what is behind it.'",
+            "karma": {
+              "god": 4,
+              "human": 4
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The warmth flickers and goes out. The eldest yogi watches, patient and kind.\n\n'The fire is there,' he says. 'But it needs tending before it can burn steadily. The doors of this hermitage will be open to you when you return, more mature in your practice, young sadhaka.'\n\nSomething in his words leaves a warmth in you that your technique could not produce.",
+            "rewards": {
+              "buffs": [
+                {"stat": "focus", "amount": 2, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "water_challenge",
+          "type": "roll",
+          "text": "Challenge them to a contest of cold resistance. They seem so untouchable — surely it cannot hurt to test them.",
+          "requirements": {
+            "skills": {
+              "water_magic": 5
+            },
+            "roll": {
+              "attribute": "focus",
+              "difficulty": 17
+            }
+          },
+          "outcome_success": {
+            "type": "shop",
+            "shop_id": "tummo_domain_shop",
+            "shop_modifier": {
+              "price_multiplier": 1.5
+            },
+            "text": "Your mastery of water is formidable — the cold bends to your will, and the youngest yogi has gone very still watching you. The eldest meets your eyes throughout, unshaken.\n\n'Impressive,' he says at last. 'But your attitude is poisoned by arrogance. What you sought was not knowledge — it was victory. We will teach you anyway, because the fire does not care why you came, only that you did. But you will pay more for what arrogance has cost.'",
+            "karma": {
+              "asura": 3,
+              "human": -1
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The cold defeats you well before it touches them. The eldest yogi says nothing for a long time. When he speaks, there is no cruelty in it.\n\n'You are not ready for the dharma taught in this place. Return once your merit grows.'",
+            "karma": {
+              "asura": 2,
+              "human": -1
+            }
+          }
+        },
+        {
+          "id": "sit_in_snow",
+          "type": "roll",
+          "text": "Say nothing. Sit down in the snow beside them and see how long you last.",
+          "requirements": {
+            "roll": {
+              "attribute": "constitution",
+              "difficulty": 15
+            }
+          },
+          "outcome_success": {
+            "type": "shop",
+            "shop_id": "tummo_domain_shop",
+            "text": "You have no technique. You have only stubbornness and the refusal to move. Minutes pass. The cold becomes a presence, then a voice, then a kind of silence. When you open your eyes, the eldest is looking at you.\n\n'No technique,' he says, 'but something that technique cannot give. Sit closer. There is something we can show you.'",
+            "karma": {
+              "human": 5,
+              "god": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The cold defeats you. You last longer than seems reasonable, but it defeats you. The youngest yogi — still shivering himself, toes still blue — gives you a small, sympathetic look as you scramble to your feet.\n\nYou carry the cold in your bones for a while after.",
+            "rewards": {
+              "buffs": [
+                {"stat": "constitution", "amount": -2, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "circumambulate",
+          "type": "default",
+          "text": "Circumambulate the group, set out small offerings, and leave them in peace.",
+          "cost": {
+            "gold": "small",
+            "food": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You walk the circle three times, quietly, and place what you have brought at the edge of their warmth. None of them acknowledge this directly. But as you turn to leave, the youngest yogi's shivering has stopped.\n\nSomething of their steadiness travels with you.",
+            "rewards": {
+              "buffs": [
+                {"stat": "constitution", "amount": 2, "combats_remaining": 2},
+                {"stat": "focus", "amount": 2, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "god": 3,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave them to their practice.",
+          "outcome": {
+            "type": "text",
+            "text": "You walk on. The sound of the wind returns. The steam rising from their circle diminishes behind you."
+          }
+        }
+      ]
+    },
+
+    "dark_cave": {
+      "id": "dark_cave",
+      "title": "Dark Cave",
+      "domain": "luminosity",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "No light reaches the depths of this cave. The darkness is not empty — it has a quality to it, a density that suggests something is happening inside it.\n\nAt the back wall, barely visible, is a small opening the size of a fist. Beside it, a shallow bowl, worn smooth.",
+      "choices": [
+        {
+          "id": "ask_teachings",
+          "type": "default",
+          "text": "Ask her for teachings.",
+          "ui_hint": "vanishing",
+          "outcome": {
+            "type": "follow_up",
+            "follow_up_event": "dark_cave_interior",
+            "text": "A voice comes from the other side of the wall — unhurried, neither welcoming nor unwelcoming.\n\n'The dark will teach you, if you sit with it long enough.'\n\nSilence."
+          }
+        },
+        {
+          "id": "yoga_sit",
+          "type": "requirement",
+          "text": "Sit on this side of the wall and wait. Without expectation.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "luminosity_domain_shop",
+            "text": "You sit. The dark settles around you. Visions begin — first muddled and confused, images and sounds without coherence, then gradually clarifying, like sediment falling through still water.\n\nAfter some hours, a quiet laugh from the other side of the wall.\n\n'You've shown the purity of your intent. I'll teach you a little — but keep practicing on your own.'",
+            "karma": {
+              "god": 6,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "space_perception",
+          "type": "requirement",
+          "text": "Still your perception. Not the stone — the quality of what is in the stone.",
+          "requirements": {
+            "skills": {
+              "space_magic": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "luminosity_domain_shop",
+            "text": "You let your perception settle and expand. The stone is there — cold, dense, indifferent. And then, not through it but somehow alongside it: a quality of light that is not light, sourceless, neither warm nor cold, bleeding outward through the rock without diminishing.\n\nA pause from the other side of the wall. Then, quietly: 'I see you have some eyes of your own.' The sound of something being moved. 'Come then. Let's compare notes.'",
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "push_food",
+          "type": "default",
+          "text": "Push some food through the opening in the wall.",
+          "cost": {
+            "food": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "'Thank you, child.'\n\nThe bowl on your side is already empty. On the other side, the sound of something being received with care.",
+            "rewards": {
+              "buffs": [
+                {"stat": "awareness", "amount": 1, "combats_remaining": 2},
+                {"stat": "luck", "amount": 1, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "god": 3,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "push_money",
+          "type": "default",
+          "text": "Push some money through the opening in the wall.",
+          "outcome": {
+            "type": "text",
+            "text": "A pause.\n\n'I don't need this, child.'\n\nThe coins reappear in the bowl on your side, one by one.",
+            "rewards": {
+              "gold_returned": true
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave the cave.",
+          "outcome": {
+            "type": "text",
+            "text": "You step back into the light. The cave says nothing. The darkness continues its practice without you."
+          }
+        }
+      ]
+    },
+
+    "dark_cave_interior": {
+      "id": "dark_cave_interior",
+      "title": "Dark Cave",
+      "domain": "luminosity",
+      "realm": "any",
+      "rarity": "follow_up_only",
+      "text": "The silence continues. The darkness has the same quality as before — dense, inhabited. The small opening in the wall. The worn bowl.",
+      "choices": [
+        {
+          "id": "yoga_sit",
+          "type": "requirement",
+          "text": "Sit on this side of the wall and wait. Without expectation.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "luminosity_domain_shop",
+            "text": "You sit. The dark settles around you. Visions begin — first muddled and confused, images and sounds without coherence, then gradually clarifying, like sediment falling through still water.\n\nAfter some hours, a quiet laugh from the other side of the wall.\n\n'You've shown the purity of your intent. I'll teach you a little — but keep practicing on your own.'",
+            "karma": {
+              "god": 6,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "space_perception",
+          "type": "requirement",
+          "text": "Still your perception. Not the stone — the quality of what is in the stone.",
+          "requirements": {
+            "skills": {
+              "space_magic": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "luminosity_domain_shop",
+            "text": "You let your perception settle and expand. The stone is there — cold, dense, indifferent. And then, not through it but somehow alongside it: a quality of light that is not light, sourceless, neither warm nor cold, bleeding outward through the rock without diminishing.\n\nA pause from the other side of the wall. Then, quietly: 'I see you have some eyes of your own.' The sound of something being moved. 'Come then. Let's compare notes.'",
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "push_food",
+          "type": "default",
+          "text": "Push some food through the opening in the wall.",
+          "cost": {
+            "food": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "'Thank you, child.'\n\nThe bowl on your side is already empty. On the other side, the sound of something being received with care.",
+            "rewards": {
+              "buffs": [
+                {"stat": "awareness", "amount": 1, "combats_remaining": 2},
+                {"stat": "luck", "amount": 1, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "god": 3,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "push_money",
+          "type": "default",
+          "text": "Push some money through the opening in the wall.",
+          "outcome": {
+            "type": "text",
+            "text": "A pause.\n\n'I don't need this, child.'\n\nThe coins reappear in the bowl on your side, one by one.",
+            "rewards": {
+              "gold_returned": true
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave the cave.",
+          "outcome": {
+            "type": "text",
+            "text": "You step back into the light. The cave says nothing. The darkness continues its practice without you."
+          }
+        }
+      ]
+    },
+
+    "skygazing_gompa": {
+      "id": "skygazing_gompa",
+      "title": "Skygazing Gompa",
+      "domain": "rainbow",
+      "realm": "any",
+      "rarity": "rare",
+      "description": "On the open terrace of a small gompa, a yogi sits gazing single-pointedly at the sky. A soft rainbow shimmer is reflected in their eyes. As you approach, they smile and greet you with a gesture.",
+      "choices": [
+        {
+          "id": "teach_perfection",
+          "text": "\"Please teach us about the Great Perfection.\"",
+          "type": "requirement",
+          "requirements": {
+            "skills": {"yoga": 5}
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "rainbow_domain_shop",
+            "text": "Gladly, the yogi explains the workings of the mind as swirling reflections of rainbow light in a crystalline prism. The teaching opens doors you did not know were closed."
+          }
+        },
+        {
+          "id": "bless_us",
+          "text": "\"Please bless us for this life and the next, master.\"",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "The yogi's eyes soften. They place their hands together and murmur a mantra, then touch each of you lightly on the crown of the head. A warmth radiates outward.",
+            "rewards": {
+              "buffs": [
+                {
+                  "stat": "awareness",
+                  "amount": 2,
+                  "combats_remaining": 2
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "source_of_shimmer",
+          "text": "\"What is the source of the shimmer in your eyes I can't help but notice, master?\"",
+          "type": "requirement",
+          "requirements": {
+            "skills": {"space_magic": 5}
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "rainbow_domain_shop",
+            "text": "The yogi just laughs — a clear, boundless sound — and gestures you inside. There, arranged on low tables, are things you have never seen offered anywhere else."
+          }
+        },
+        {
+          "id": "what_are_you_doing",
+          "text": "\"What are you doing here?\"",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "\"Observing the unceasing movement of the stream of the sky, friend.\" The yogi says nothing more, but the simplicity of the answer lingers with you long after you leave.",
+            "rewards": {
+              "xp": 10
+            }
+          }
+        },
+        {
+          "id": "bow_and_leave",
+          "text": "Bow, place some offerings, and leave.",
+          "type": "default",
+          "cost": {
+            "gold": "small",
+            "food": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You place what you can afford at the foot of the yogi's seat. They incline their head in acknowledgment. A faint warmth accompanies you as you descend the terrace steps.",
+            "rewards": {
+              "buffs": [
+                {
+                  "stat": "luck",
+                  "amount": 1,
+                  "combats_remaining": 1
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+
+    "court_of_the_musician_prince": {
+      "id": "court_of_the_musician_prince",
+      "title": "The Court of the Musician Prince",
+      "domain": "sound",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "A lavish building rises before you, its doors open to the warm air. Inside, a half-naked man sits in a carved chair, eyes closed, strumming a sitar with total absorption. He does not appear to notice your arrival.\n\nA servant materializes at your elbow, inclining his head politely. 'Welcome. How may I serve you?'",
+      "choices": [
+        {
+          "id": "ask_about_prince",
+          "type": "default",
+          "text": "Ask about the prince and the state of his court.",
+          "outcome": {
+            "type": "text",
+            "text": "'My lord always had the soul of an artist first, and ruler only second,' the servant says, with unmistakable pride. 'Some years ago, an itinerant yogi came to court and taught him that the path to awakening need not pass through renunciation — that music itself, heard rightly, is a door. The yogi has since moved on, as such men do. My lord has not moved at all.'\n\nHe glances toward the prince with something between concern and devotion. 'We manage.'",
+            "rewards": {
+              "xp": 10
+            }
+          }
+        },
+        {
+          "id": "play_with_prince",
+          "type": "requirement",
+          "text": "Take out your instrument and play alongside him.",
+          "requirements": {
+            "skills": {
+              "performance": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "sound_domain_shop",
+            "text": "The servant hesitates, then steps aside. You take a seat near the prince and begin to play. A long moment passes. Then, without opening his eyes, the prince adjusts his melody to harmonize with yours — a conversation with no words in it. When you finally stop, he opens his eyes and looks at you directly for the first time.\n\n'Stay a while,' he says. 'I have something to show you.'",
+            "karma": {
+              "human": 5,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "meditate_on_music",
+          "type": "requirement",
+          "text": "Sit and listen. Not to the notes — to what is between them.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "sound_domain_shop",
+            "text": "You find a place to sit and simply listen. The music is complex past comprehension — and then, quite suddenly, it isn't. You hear through it to something else: the source of the sound, the silence inside each note. After some time, the prince opens one eye. He looks at you with faint surprise, then nods curtly, as if settling a question he had been asking himself.\n\n'Yes,' he says. 'Come.'",
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "ask_for_job",
+          "type": "default",
+          "text": "Ask if they need any hired hands.",
+          "ui_hint": "vanishing",
+          "outcome": {
+            "type": "text",
+            "text": "'I'm afraid my lord has very little in the way of worldly affairs to attend to anymore,' the servant says, pleasantly but with a finality that suggests the topic is closed."
+          }
+        },
+        {
+          "id": "ask_for_donation",
+          "type": "default",
+          "text": "Ask if they could spare anything for travelers.",
+          "outcome": {
+            "type": "text",
+            "text": "The servant blinks, as if the question has surprised him from a great distance. He produces a few coins from somewhere about his person and presses them into your hand with the vague goodwill of someone performing a gesture they have been taught. You find yourself outside. The door closes quietly.",
+            "rewards": {
+              "gold": 8
+            },
+            "set_flags": {
+              "musician_prince_closed": true
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave without disturbing them.",
+          "outcome": {
+            "type": "text",
+            "text": "You step back into the open air. Inside, the music continues without interruption."
+          }
+        }
+      ]
+    }
+  }
+}

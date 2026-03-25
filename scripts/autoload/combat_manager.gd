@@ -1698,6 +1698,40 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 				unit.show_status_expired(sname)
 			status_effect_expired.emit(unit, sname)
 
+	# Glass_Globe: shatters on any damage, dealing slashing AoE + guaranteed Bleeding to nearby enemies.
+	# Fires even on lethal hits (the globe shatters as the bearer falls).
+	if damage > 0 and unit.has_status("Glass_Globe"):
+		var globe_def = _status_effects.get("Glass_Globe", {})
+		var shatter = globe_def.get("special", {}).get("shatters_on_damage_received", {})
+		var shatter_dmg: int = shatter.get("damage", 20)
+		var shatter_radius: int = shatter.get("radius", 2)
+		# Remove the status first so the shatter itself can't re-trigger
+		for i in range(unit.status_effects.size() - 1, -1, -1):
+			if unit.status_effects[i].get("status", "") == "Glass_Globe":
+				unit.status_effects.remove_at(i)
+				if unit.has_method("show_status_expired"):
+					unit.show_status_expired("Glass_Globe")
+				status_effect_expired.emit(unit, "Glass_Globe")
+				break
+		combat_log.emit("%s's Glass Globe shatters! Razor shards fly outward!" % unit.unit_name)
+		for nearby in _get_enemies_in_range(unit, shatter_radius):
+			apply_damage(nearby, shatter_dmg, "slashing")
+			_apply_status_effect(nearby, "Bleeding", 3, 0, null)
+
+	# Crystal_Diadem: 50% chance (configurable) to shatter and be lost on any damage received.
+	if damage > 0 and unit.has_status("Crystal_Diadem"):
+		var diadem_def = _status_effects.get("Crystal_Diadem", {})
+		var lose_chance: int = diadem_def.get("special", {}).get("chance_to_lose_on_damage_received", 50)
+		if randi() % 100 < lose_chance:
+			for i in range(unit.status_effects.size() - 1, -1, -1):
+				if unit.status_effects[i].get("status", "") == "Crystal_Diadem":
+					unit.status_effects.remove_at(i)
+					if unit.has_method("show_status_expired"):
+						unit.show_status_expired("Crystal_Diadem")
+					status_effect_expired.emit(unit, "Crystal_Diadem")
+					break
+			combat_log.emit("%s's Crystal Diadem shatters!" % unit.unit_name)
+
 	if unit.current_hp <= 0 and not unit.is_bleeding_out:
 		_start_bleed_out(unit)
 		# Check if combat should end immediately (all enemies or all players down)
@@ -1971,8 +2005,11 @@ func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dicti
 	if unit.current_mana < mana_cost:
 		return {"success": false, "reason": "Not enough mana"}
 
-	# Check skill requirements - need at least one school at required level
-	var required_level = spell.get("level", 1)
+	# Check skill requirements - need at least one school at required skill level.
+	# Spell levels 1-5 map to minimum skill levels 1,3,5,7,9 respectively
+	# (spell_level * 2 - 1), reflecting the 10-level skill scale.
+	var spell_tier = spell.get("level", 1)
+	var required_skill_level = spell_tier * 2 - 1
 	var schools = spell.get("schools", [])
 	var has_skill = false
 
@@ -1981,7 +2018,7 @@ func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dicti
 		var school_lower = school.to_lower()
 		var skill_name = school_lower + "_magic" if school_lower in ["earth", "water", "fire", "air", "space", "white", "black"] else school_lower
 		var skill_level = skills.get(skill_name, 0)
-		if skill_level >= required_level:
+		if skill_level >= required_skill_level:
 			has_skill = true
 			break
 
@@ -2328,6 +2365,39 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 
 		_apply_status_effect(target, status_name, duration, 0, caster)
 		result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
+
+	# --- Status effects on failed save (from spell.statuses_caused_on_failed_save) ---
+	# Used by spells like metal_to_mud: all listed statuses are applied only if the target fails
+	# a saving throw. save_type names an attribute ("constitution", "finesse", etc.)
+	var save_statuses = spell.get("statuses_caused_on_failed_save", [])
+	if not save_statuses.is_empty():
+		var save_attr = spell.get("save_type", "constitution").to_lower()
+		var save_dur_field = spell.get("duration", null)
+		var save_duration = 3
+		if save_dur_field is int or save_dur_field is float:
+			save_duration = int(save_dur_field)
+		elif save_dur_field == "spellpower":
+			save_duration = maxi(1, 2 + int(bonus * 0.1))
+		if not _perform_save_roll(target, save_attr):  # false = failed save = effect applies
+			for status_name in save_statuses:
+				_apply_status_effect(target, status_name, save_duration, 0, caster)
+				result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
+
+	# --- Random status on failed save (from spell.on_failed_save_random_one_of) ---
+	# Used by spells like rain_of_mud: one random status from the list is applied on failed save.
+	var random_statuses = spell.get("on_failed_save_random_one_of", [])
+	if not random_statuses.is_empty():
+		var rand_save_attr = spell.get("save_type", "finesse").to_lower()
+		var rand_dur_field = spell.get("duration", null)
+		var rand_duration = 3
+		if rand_dur_field is int or rand_dur_field is float:
+			rand_duration = int(rand_dur_field)
+		elif rand_dur_field == "spellpower":
+			rand_duration = maxi(1, 2 + int(bonus * 0.1))
+		if not _perform_save_roll(target, rand_save_attr):
+			var chosen_status = random_statuses[randi() % random_statuses.size()]
+			_apply_status_effect(target, chosen_status, rand_duration, 0, caster)
+			result.effects_applied.append({"type": "status", "status": chosen_status, "applied": true})
 
 	# --- Status removal (from spell.statuses_removed) ---
 	var statuses_removed = spell.get("statuses_removed", [])

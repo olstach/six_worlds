@@ -203,7 +203,10 @@ func _get_total_discount() -> float:
 func _get_shop_price_modifier() -> float:
 	if _current_shop.is_empty():
 		return 1.0
-	return _current_shop.get("price_modifier", 1.0)
+	var base: float = _current_shop.get("price_modifier", 1.0)
+	# Event outcomes can set a temporary price multiplier (e.g. arrogant challenge at hermitage)
+	var event_mult: float = float(GameState.get_flag("event_shop_price_multiplier", 1.0))
+	return base * event_mult
 
 
 ## Get price breakdown for UI display
@@ -392,7 +395,8 @@ func barter_buy_spell(character: Dictionary, spell_id: String, offered_items: Ar
 	if spell.is_empty():
 		return {"success": false, "reason": "Spell not found"}
 
-	var required_level = spell.get("level", 1)
+	# Spell tier 1-5 maps to min skill level 1,3,5,7,9 (tier * 2 - 1)
+	var required_level = spell.get("level", 1) * 2 - 1
 	var schools = spell.get("schools", [])
 	var skills = character.get("skills", {})
 	var has_skill = false
@@ -519,7 +523,8 @@ func buy_spell(character: Dictionary, spell_id: String) -> Dictionary:
 	if spell.is_empty():
 		return {"success": false, "reason": "Spell not found"}
 
-	var required_level = spell.get("level", 1)
+	# Spell tier 1-5 maps to min skill level 1,3,5,7,9 (tier * 2 - 1)
+	var required_level = spell.get("level", 1) * 2 - 1
 	var schools = spell.get("schools", [])
 	var skills = character.get("skills", {})
 	var has_skill = false
