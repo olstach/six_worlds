@@ -9626,7 +9626,8 @@
       "tags": [
         "steam",
         "damage",
-        "aoe"
+        "aoe",
+        "domain_spell"
       ],
       "mana_cost": 40,
       "damage": 20,
@@ -9643,7 +9644,8 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_length_per_tier"
       },
-      "description": "Blast of scalding steam in a 3-tile line from the caster toward the cursor — moderate fire damage to all in the path"
+      "description": "Blast of scalding steam in a 3-tile line from the caster toward the cursor — moderate fire damage to all in the path",
+      "domain": "steam"
     },
     "fragrant_sauna": {
       "name": "Fragrant Sauna",
@@ -9660,7 +9662,8 @@
         "heal",
         "cleanse",
         "aoe",
-        "out_of_combat"
+        "out_of_combat",
+        "domain_spell"
       ],
       "mana_cost": 75,
       "heal": 20,
@@ -9681,7 +9684,8 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_radius_per_tier"
       },
-      "description": "Envelop allies in healing steam — remove Burning and Poisoned, restore all stamina, heal a little HP"
+      "description": "Envelop allies in healing steam — remove Burning and Poisoned, restore all stamina, heal a little HP",
+      "domain": "steam"
     },
     "geyser": {
       "name": "Geyser",
@@ -9697,7 +9701,8 @@
         "steam",
         "damage",
         "push",
-        "aoe"
+        "aoe",
+        "domain_spell"
       ],
       "mana_cost": 135,
       "damage": 30,
@@ -9717,7 +9722,8 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_arm_length_per_tier"
       },
-      "description": "Superheated geyser erupts at target location in a cross AoE — moderate fire damage and throws each target 2-3 tiles in a random direction; bonus damage if thrown into a wall"
+      "description": "Superheated geyser erupts at target location in a cross AoE — moderate fire damage and throws each target 2-3 tiles in a random direction; bonus damage if thrown into a wall",
+      "domain": "steam"
     },
     "scalding_fog": {
       "name": "Scalding Fog",
@@ -9735,7 +9741,8 @@
         "damage",
         "terrain",
         "escalating",
-        "dot"
+        "dot",
+        "domain_spell"
       ],
       "mana_cost": 135,
       "damage": 5,
@@ -9756,9 +9763,9 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_radius_per_tier"
       },
-      "description": "Summon a persistent cloud of scalding fog. Each turn a creature spends inside it, the damage grows: turn_in_fog × 5 fire damage — light at first, searing by the end"
+      "description": "Summon a persistent cloud of scalding fog. Each turn a creature spends inside it, the damage grows: turn_in_fog × 5 fire damage — light at first, searing by the end",
+      "domain": "steam"
     },
-
     "cloudstep": {
       "name": "Cloudstep",
       "subschool": "Sorcery",
@@ -9789,7 +9796,6 @@
       },
       "description": "Step through cloud. Instantly teleport to any tile within 5 tiles, ignoring height difference and line of sight. Cannot teleport into occupied tiles."
     },
-
     "cloudform": {
       "name": "Cloudform",
       "subschool": "Enchantment",
@@ -9822,7 +9828,6 @@
       },
       "description": "The target's body disperses into cloud. Grants 100% immunity to physical and water damage; 50% vulnerability to fire damage. Duration scales with spellpower."
     },
-
     "cloud_serpent": {
       "name": "Cloud Serpent",
       "subschool": "Summoning",
@@ -9848,7 +9853,6 @@
       },
       "description": "Summon a cloud naga — a flying serpent of exceptional speed, initiative, and dodge. High damage output. Immune to ground effects."
     },
-
     "cloud_gate": {
       "name": "Cloud Gate",
       "subschool": "Sorcery",
@@ -9879,7 +9883,6 @@
       },
       "description": "Open a gate through the clouds. Teleports the entire party to the last teahouse, temple, or town visited. Works in and out of combat — a last resort as much as a convenience."
     },
-
     "rainbow_orb": {
       "name": "Rainbow Orb",
       "subschool": "Sorcery",
@@ -9893,16 +9896,30 @@
       "tags": [
         "rainbow",
         "damage",
-        "cc"
+        "cc",
+        "domain_spell"
       ],
       "mana_cost": 40,
       "special": {
         "each_effect_independent_chance": 0.25,
         "effects": [
-          {"type": "damage", "damage": 35, "damage_type": "random_elemental"},
-          {"type": "status", "status": "Blinded"},
-          {"type": "status", "status": "Confused"},
-          {"type": "status", "status": "Charmed"}
+          {
+            "type": "damage",
+            "damage": 35,
+            "damage_type": "random_elemental"
+          },
+          {
+            "type": "status",
+            "status": "Blinded"
+          },
+          {
+            "type": "status",
+            "status": "Confused"
+          },
+          {
+            "type": "status",
+            "status": "Charmed"
+          }
         ],
         "non_physical_damage_only": true
       },
@@ -9911,9 +9928,9 @@
         "eligible": "enemy",
         "upgrade_scaling": "single → aoe → all_enemies"
       },
-      "description": "A shimmering orb of prismatic light. Each of four effects triggers independently at 25% chance: moderate damage of a random elemental type, Blind, Confuse, or Charm."
+      "description": "A shimmering orb of prismatic light. Each of four effects triggers independently at 25% chance: moderate damage of a random elemental type, Blind, Confuse, or Charm.",
+      "domain": "rainbow"
     },
-
     "rainbow_spray": {
       "name": "Rainbow Spray",
       "subschool": "Sorcery",
@@ -9928,16 +9945,30 @@
         "rainbow",
         "damage",
         "cc",
-        "aoe"
+        "aoe",
+        "domain_spell"
       ],
       "mana_cost": 135,
       "special": {
         "each_effect_independent_chance": 0.25,
         "effects": [
-          {"type": "damage", "damage": 35, "damage_type": "random_elemental"},
-          {"type": "status", "status": "Blinded"},
-          {"type": "status", "status": "Confused"},
-          {"type": "status", "status": "Charmed"}
+          {
+            "type": "damage",
+            "damage": 35,
+            "damage_type": "random_elemental"
+          },
+          {
+            "type": "status",
+            "status": "Blinded"
+          },
+          {
+            "type": "status",
+            "status": "Confused"
+          },
+          {
+            "type": "status",
+            "status": "Charmed"
+          }
         ],
         "non_physical_damage_only": true
       },
@@ -9951,9 +9982,9 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_length_per_tier"
       },
-      "description": "A cone of prismatic light. Each target independently rolls each of four effects at 25% chance: moderate elemental damage of a random type, Blind, Confuse, or Charm."
+      "description": "A cone of prismatic light. Each target independently rolls each of four effects at 25% chance: moderate elemental damage of a random type, Blind, Confuse, or Charm.",
+      "domain": "rainbow"
     },
-
     "vision_of_reality": {
       "name": "A Vision of Reality",
       "subschool": "White",
@@ -9967,7 +9998,8 @@
         "rainbow",
         "heal",
         "cleanse",
-        "aoe"
+        "aoe",
+        "domain_spell"
       ],
       "mana_cost": 225,
       "heal": 30,
@@ -9983,9 +10015,9 @@
         "type": "global",
         "eligible": "all"
       },
-      "description": "A flash of pure awareness. All allies receive a light heal and have all debuffs lifted. All enemies simultaneously receive the Rainbow Orb — each of its four effects rolling independently per target."
+      "description": "A flash of pure awareness. All allies receive a light heal and have all debuffs lifted. All enemies simultaneously receive the Rainbow Orb — each of its four effects rolling independently per target.",
+      "domain": "rainbow"
     },
-
     "rainbow_cloak": {
       "name": "Rainbow Cloak",
       "subschool": "Sorcery",
@@ -10000,7 +10032,8 @@
         "rainbow",
         "buff",
         "defensive",
-        "reflect"
+        "reflect",
+        "domain_spell"
       ],
       "mana_cost": 135,
       "duration": "spellpower",
@@ -10015,17 +10048,26 @@
       "target": {
         "type": "self"
       },
-      "description": "Wrap yourself in a mantle of prismatic light. Gain 50% resistance to all elemental damage. Each incoming hit has a 10% chance to reflect 50% of the damage back to the source."
+      "description": "Wrap yourself in a mantle of prismatic light. Gain 50% resistance to all elemental damage. Each incoming hit has a 10% chance to reflect 50% of the damage back to the source.",
+      "domain": "rainbow"
     },
-
     "inner_flame": {
       "name": "Inner Flame",
       "subschool": "Enchantment",
-      "schools": ["Fire", "Air", "Enchantment"],
+      "schools": [
+        "Fire",
+        "Air",
+        "Enchantment"
+      ],
       "level": 1,
       "theme": "tummo",
       "domain": "tummo",
-      "tags": ["tummo", "buff", "resist", "domain_spell"],
+      "tags": [
+        "tummo",
+        "buff",
+        "resist",
+        "domain_spell"
+      ],
       "mana_cost": 15,
       "duration": "spellpower",
       "special": {
@@ -10043,15 +10085,24 @@
       },
       "description": "+25% fire and water resistance for duration. While active, enemies that strike you in melee receive 1 burning stack — the body radiates heat."
     },
-
     "heat_transfer": {
       "name": "Heat Transfer",
       "subschool": "Sorcery",
-      "schools": ["Fire", "Air", "Sorcery"],
+      "schools": [
+        "Fire",
+        "Air",
+        "Sorcery"
+      ],
       "level": 3,
       "theme": "tummo",
       "domain": "tummo",
-      "tags": ["tummo", "fire", "burning", "transfer", "domain_spell"],
+      "tags": [
+        "tummo",
+        "fire",
+        "burning",
+        "transfer",
+        "domain_spell"
+      ],
       "mana_cost": 75,
       "special": {
         "transfer_burning": {
@@ -10067,15 +10118,24 @@
       },
       "description": "Transfer all burning stacks from all allies to enemies, distributed evenly. No stacks are lost."
     },
-
     "flash_of_radiance": {
       "name": "Flash of Radiance",
       "subschool": "White",
-      "schools": ["Fire", "Air", "White"],
+      "schools": [
+        "Fire",
+        "Air",
+        "White"
+      ],
       "level": 3,
       "theme": "tummo",
       "domain": "tummo",
-      "tags": ["tummo", "cleanse", "damage", "aoe", "domain_spell"],
+      "tags": [
+        "tummo",
+        "cleanse",
+        "damage",
+        "aoe",
+        "domain_spell"
+      ],
       "mana_cost": 75,
       "special": {
         "self_cleanse_and_burst": {
@@ -10088,7 +10148,9 @@
             "save": {
               "attribute": "constitution",
               "difficulty": "moderate",
-              "on_fail": ["Blinded_1"]
+              "on_fail": [
+                "Blinded_1"
+              ]
             },
             "description": "Each debuff removed fires outward as a bolt of white radiance. Each bolt deals light white damage to enemies in 2-tile radius. CON save or blinded for 1 turn."
           }
@@ -10099,41 +10161,66 @@
       },
       "description": "Remove all debuffs from self. Each debuff removed becomes a bolt of white radiance striking all enemies in a 2-tile radius for light white damage. CON save or blinded 1 turn."
     },
-
     "blazing_and_dripping": {
       "name": "Blazing and Dripping",
       "subschool": "Enchantment",
-      "schools": ["Fire", "Air", "Enchantment"],
+      "schools": [
+        "Fire",
+        "Air",
+        "Enchantment"
+      ],
       "level": 4,
       "theme": "tummo",
       "domain": "tummo",
-      "tags": ["tummo", "buff", "resist", "stat_boost", "domain_spell"],
+      "tags": [
+        "tummo",
+        "buff",
+        "resist",
+        "stat_boost",
+        "domain_spell"
+      ],
       "mana_cost": 135,
       "duration": "spellpower",
       "special": {
         "fire_resist_pct": 75,
         "water_resist_pct": 75
       },
-      "statuses_caused": ["Focus_Plus_3", "Awareness_Plus_3"],
+      "statuses_caused": [
+        "Focus_Plus_3",
+        "Awareness_Plus_3"
+      ],
       "target": {
         "type": "single",
         "eligible": "self"
       },
       "description": "+75% fire and water resistance, +3 FCS and +3 AWR for duration. The inner fire blazes from the secret chakra; the crown amrita melts and drips down into it, renewing the body."
     },
-
     "clear_mind": {
       "name": "Clear Mind",
       "subschool": "White",
-      "schools": ["Fire", "Space", "White"],
+      "schools": [
+        "Fire",
+        "Space",
+        "White"
+      ],
       "level": 2,
       "theme": "luminosity",
       "domain": "luminosity",
-      "tags": ["luminosity", "cleanse", "buff", "mental", "domain_spell"],
+      "tags": [
+        "luminosity",
+        "cleanse",
+        "buff",
+        "mental",
+        "domain_spell"
+      ],
       "mana_cost": 40,
       "duration": "spellpower_turns",
-      "statuses_removed": ["mental_negative"],
-      "statuses_caused": ["Mental_Immunity"],
+      "statuses_removed": [
+        "mental_negative"
+      ],
+      "statuses_caused": [
+        "Mental_Immunity"
+      ],
       "target": {
         "type": "single",
         "eligible": "ally",
@@ -10141,19 +10228,35 @@
       },
       "description": "Clear all mental debuffs from target. Grant immunity to mental debuffs for spellpower turns (typically 2–4). Note: distinct from Clarity (Fire/White), which instead provides an Awareness buff."
     },
-
     "divine_eye": {
       "name": "Divine Eye",
       "subschool": "Enchantment",
-      "schools": ["Fire", "Space", "Enchantment"],
+      "schools": [
+        "Fire",
+        "Space",
+        "Enchantment"
+      ],
       "level": 3,
       "theme": "luminosity",
       "domain": "luminosity",
-      "tags": ["luminosity", "buff", "reveal", "range", "domain_spell"],
+      "tags": [
+        "luminosity",
+        "buff",
+        "reveal",
+        "range",
+        "domain_spell"
+      ],
       "mana_cost": 75,
       "duration": "combat",
       "special": {
-        "see_through_stealth": ["Invisible", "Chameleon", "Shadow_Cloaked", "Blurred", "Mirror_Images", "Smoke_Form"],
+        "see_through_stealth": [
+          "Invisible",
+          "Chameleon",
+          "Shadow_Cloaked",
+          "Blurred",
+          "Mirror_Images",
+          "Smoke_Form"
+        ],
         "range_bonus_pct": 50
       },
       "target": {
@@ -10163,35 +10266,56 @@
       },
       "description": "Target sees through all stealth, invisibility, blur, and illusion for the rest of combat. +50% range for ranged attacks and spells. Note: distinct from Crystal Light (Earth/Space), which dispels these effects once battlefield-wide rather than granting ongoing personal vision."
     },
-
     "radiant_visage": {
       "name": "Radiant Visage",
       "subschool": "Enchantment",
-      "schools": ["Fire", "Space", "Enchantment"],
+      "schools": [
+        "Fire",
+        "Space",
+        "Enchantment"
+      ],
       "level": 4,
       "theme": "luminosity",
       "domain": "luminosity",
-      "tags": ["luminosity", "buff", "aura", "mental", "domain_spell"],
+      "tags": [
+        "luminosity",
+        "buff",
+        "aura",
+        "mental",
+        "domain_spell"
+      ],
       "mana_cost": 135,
       "duration": "spellpower",
       "aura": {
         "radius": 2,
-        "effects": ["Mental_Immunity", "Awareness_Plus_2", "Constitution_Plus_2"]
+        "effects": [
+          "Mental_Immunity",
+          "Awareness_Plus_2",
+          "Constitution_Plus_2"
+        ]
       },
       "target": {
         "type": "self"
       },
       "description": "Radiate an aura in a 2-tile radius: all allies within gain immunity to mental debuffs, +2 AWR and +2 CON."
     },
-
     "shining_mirage": {
       "name": "Shining Mirage",
       "subschool": "Enchantment",
-      "schools": ["Fire", "Space", "Enchantment"],
+      "schools": [
+        "Fire",
+        "Space",
+        "Enchantment"
+      ],
       "level": 4,
       "theme": "luminosity",
       "domain": "luminosity",
-      "tags": ["luminosity", "cc", "aura", "domain_spell"],
+      "tags": [
+        "luminosity",
+        "cc",
+        "aura",
+        "domain_spell"
+      ],
       "mana_cost": 135,
       "duration": "spellpower",
       "special": {
@@ -10204,7 +10328,9 @@
             "modifier_scope": "per_enemy",
             "description": "Each enemy rolls FCS at the start of their turn or is confused for 1 turn. Each time a given enemy passes the save, their personal DC drops by 2 — they are slowly seeing through the mirage."
           },
-          "on_fail": ["Confused_1"]
+          "on_fail": [
+            "Confused_1"
+          ]
         }
       },
       "target": {
@@ -10212,18 +10338,28 @@
       },
       "description": "Each enemy must make a FCS save at the start of their turn or be confused for 1 turn. Each passed save reduces that enemy's personal DC by 2 as they pierce the mirage."
     },
-
     "battle_chant": {
       "name": "Battle Chant",
       "subschool": "Enchantment",
-      "schools": ["Air", "Space", "Enchantment"],
+      "schools": [
+        "Air",
+        "Space",
+        "Enchantment"
+      ],
       "level": 2,
       "theme": "sound",
       "domain": "sound",
-      "tags": ["sound", "buff", "domain_spell"],
+      "tags": [
+        "sound",
+        "buff",
+        "domain_spell"
+      ],
       "mana_cost": 40,
       "duration": "spellpower",
-      "statuses_caused": ["Strength_Plus_2", "Finesse_Plus_2"],
+      "statuses_caused": [
+        "Strength_Plus_2",
+        "Finesse_Plus_2"
+      ],
       "target": {
         "type": "single",
         "eligible": "ally",
@@ -10231,18 +10367,28 @@
       },
       "description": "+2 STR and +2 FIN for spellpower-based duration. A resonant chant that sharpens the body for combat."
     },
-
     "eerie_dirge": {
       "name": "Eerie Dirge",
       "subschool": "Enchantment",
-      "schools": ["Air", "Space", "Enchantment"],
+      "schools": [
+        "Air",
+        "Space",
+        "Enchantment"
+      ],
       "level": 3,
       "theme": "sound",
       "domain": "sound",
-      "tags": ["sound", "debuff", "domain_spell"],
+      "tags": [
+        "sound",
+        "debuff",
+        "domain_spell"
+      ],
       "mana_cost": 75,
       "duration": "spellpower",
-      "statuses_caused": ["Constitution_Minus_2", "Focus_Minus_2"],
+      "statuses_caused": [
+        "Constitution_Minus_2",
+        "Focus_Minus_2"
+      ],
       "target": {
         "type": "single",
         "eligible": "enemy",
@@ -10250,15 +10396,24 @@
       },
       "description": "-2 CON and -2 FCS for spellpower-based duration. A low, sourceless tone that unsettles the body and mind."
     },
-
     "sonic_boom": {
       "name": "Sonic Boom",
       "subschool": "Sorcery",
-      "schools": ["Air", "Space", "Sorcery"],
+      "schools": [
+        "Air",
+        "Space",
+        "Sorcery"
+      ],
       "level": 3,
       "theme": "sound",
       "domain": "sound",
-      "tags": ["sound", "damage", "aoe", "cc", "domain_spell"],
+      "tags": [
+        "sound",
+        "damage",
+        "aoe",
+        "cc",
+        "domain_spell"
+      ],
       "mana_cost": 75,
       "damage": {
         "type": "space",
@@ -10272,22 +10427,34 @@
       "save": {
         "attribute": "constitution",
         "difficulty": "moderate",
-        "on_fail": ["Stunned_1"]
+        "on_fail": [
+          "Stunned_1"
+        ]
       },
       "target": {
-        "type": "aoe_self_centered"
+        "type": "ground",
+        "origin": "caster"
       },
       "description": "Moderate space damage in a 2-tile radius around the caster. CON save or stunned 1 turn."
     },
-
     "up_to_eleven": {
       "name": "Up to Eleven",
       "subschool": "Sorcery",
-      "schools": ["Air", "Space", "Sorcery"],
+      "schools": [
+        "Air",
+        "Space",
+        "Sorcery"
+      ],
       "level": 4,
       "theme": "sound",
       "domain": "sound",
-      "tags": ["sound", "cc", "aoe", "friendly_fire", "domain_spell"],
+      "tags": [
+        "sound",
+        "cc",
+        "aoe",
+        "friendly_fire",
+        "domain_spell"
+      ],
       "mana_cost": 135,
       "special": {
         "affects_all_combatants": true,

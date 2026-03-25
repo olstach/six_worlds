@@ -93,7 +93,14 @@ func _ready() -> void:
 			# Victory — restore event object for cleanup on Continue
 			GameState.last_defeated_mob_id = ""
 			_current_event_object = GameState.pending_event_object.duplicate(true)
-			outcome["text"] = outcome.get("text", "") + "\n\n[b][color=#4ade80]VICTORY![/color][/b]"
+			# If the combat outcome has an on_victory block, use it instead
+			# (e.g. smoking_mirror: defeat the mirror → shop opens with domain spells)
+			if "on_victory" in outcome:
+				var victory_outcome: Dictionary = outcome["on_victory"].duplicate(true)
+				victory_outcome["text"] = victory_outcome.get("text", "") + "\n\n[b][color=#4ade80]VICTORY![/color][/b]"
+				outcome = victory_outcome
+			else:
+				outcome["text"] = outcome.get("text", "") + "\n\n[b][color=#4ade80]VICTORY![/color][/b]"
 		else:
 			# Defeat — don't restore event object (so it stays on map for retry)
 			outcome["text"] = outcome.get("text", "") + "\n\n[b][color=#ef4444]DEFEAT![/color][/b]\nYou retreat from the battle..."
@@ -384,6 +391,9 @@ func _on_event_shop_closed() -> void:
 		_shop_instance.queue_free()
 		_shop_instance = null
 	_shop_open = false
+
+	# Clear any event-set price multiplier so it doesn't affect future shops
+	GameState.set_flag("event_shop_price_multiplier", 1.0)
 
 	# Show event result panel with shop outcome
 	event_display.visible = true

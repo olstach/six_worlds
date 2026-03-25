@@ -203,7 +203,10 @@ func _get_total_discount() -> float:
 func _get_shop_price_modifier() -> float:
 	if _current_shop.is_empty():
 		return 1.0
-	return _current_shop.get("price_modifier", 1.0)
+	var base: float = _current_shop.get("price_modifier", 1.0)
+	# Event outcomes can set a temporary price multiplier (e.g. arrogant challenge at hermitage)
+	var event_mult: float = float(GameState.get_flag("event_shop_price_multiplier", 1.0))
+	return base * event_mult
 
 
 ## Get price breakdown for UI display

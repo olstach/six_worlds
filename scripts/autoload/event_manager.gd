@@ -554,6 +554,18 @@ func apply_outcome(outcome: Dictionary) -> void:
 			else:
 				print("EventManager: Gamble lost.")
 
+		# gold_returned: the NPC refuses the money and gives it back (e.g. dark cave yogini)
+		if "gold_returned" in rewards and rewards.gold_returned:
+			# Cost was deducted when the choice cost was applied; refund the gold cost here.
+			# We look for the gold cost on the original choice's cost field via current_choice_cost.
+			if "cost" in outcome and "gold" in outcome.cost:
+				var refund: int = _resolve_gold_cost(outcome.cost.gold)
+				if refund > 0:
+					GameState.add_gold(refund)
+					print("EventManager: Gold returned (%d)" % refund)
+			else:
+				print("EventManager: gold_returned set but no gold cost found to refund")
+
 	# Write world-state flags declared by this outcome
 	if "set_flags" in outcome:
 		if outcome.set_flags is Dictionary:
@@ -585,18 +597,42 @@ func apply_outcome(outcome: Dictionary) -> void:
 			if food_amount > 0:
 				GameState.consume_supplies("food", food_amount)
 				print("EventManager: Consumed %d food" % food_amount)
+		# food_percent: spend a percentage of current food stores (e.g. the_pit bribe)
+		if "food_percent" in cost:
+			var pct: float = float(cost.food_percent)
+			var current_food: int = GameState.get_supplies("food")
+			var food_amount: int = max(1, int(current_food * pct / 100.0))
+			GameState.consume_supplies("food", food_amount)
+			print("EventManager: Consumed %d food (%d%% of stores)" % [food_amount, int(pct)])
+		if "herbs" in cost:
+			var herbs_amount = _resolve_supply_cost(cost.herbs)
+			if herbs_amount > 0:
+				GameState.consume_supplies("herbs", herbs_amount)
+				print("EventManager: Consumed %d herbs" % herbs_amount)
+		if "reagents" in cost:
+			var reagents_amount = _resolve_supply_cost(cost.reagents)
+			if reagents_amount > 0:
+				GameState.consume_supplies("reagents", reagents_amount)
+				print("EventManager: Consumed %d reagents" % reagents_amount)
 
 	# Apply karma changes
 	if "karma" in outcome:
 		for realm in outcome.karma:
 			KarmaSystem.add_karma(realm, outcome.karma[realm], "Event choice")
 
+	# Apply event-level shop price modifier (e.g. arrogant challenge — shop opens at +50% prices)
+	if "shop_modifier" in outcome:
+		var modifier = outcome.shop_modifier
+		if "price_multiplier" in modifier:
+			GameState.set_flag("event_shop_price_multiplier", modifier.price_multiplier)
+
 	# Handle outcome type — combat/shop are routed to overworld via signals
 	match outcome.get("type", "text"):
 		"text":
 			event_completed.emit(outcome)
 		"combat":
-			# Overworld will handle scene transition to combat_arena
+			# Overworld will handle scene transition to combat_arena.
+			# on_victory: if present, open a shop or run a follow-up after winning.
 			combat_requested.emit(outcome.get("enemy_group", "unknown"), outcome)
 		"shop":
 			# Overworld will handle opening shop overlay
@@ -650,6 +686,16 @@ func _resolve_food_cost(amount) -> int:
 		"small":    return 5
 		"moderate": return 15
 		"large":    return 30
+		_:          return 0
+
+## Convert descriptive supply cost strings (herbs, reagents) to concrete amounts.
+func _resolve_supply_cost(amount) -> int:
+	if amount is int or amount is float:
+		return int(amount)
+	match str(amount):
+		"small":    return 3
+		"moderate": return 8
+		"large":    return 18
 		_:          return 0
 
 ## Get a random event for a specific realm
