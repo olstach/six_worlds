@@ -8821,6 +8821,15 @@
       "flavor": "",
       "is_mantra": false,
       "special_requirement": "earth_affinity_40"
+    },
+    "reassemble": {
+      "name": "Reassemble",
+      "skill": "armor",
+      "required_level": 1,
+      "requires_perks": [],
+      "description": "On death, reassemble after one turn at 50% HP. Triggers once per combat.",
+      "flavor": "The bones clatter back together, driven by a hunger that refuses to end.",
+      "is_mantra": false
     }
   }
 }
