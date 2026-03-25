@@ -10016,6 +10016,201 @@
         "type": "self"
       },
       "description": "Wrap yourself in a mantle of prismatic light. Gain 50% resistance to all elemental damage. Each incoming hit has a 10% chance to reflect 50% of the damage back to the source."
+    },
+
+    "inner_flame": {
+      "name": "Inner Flame",
+      "subschool": "Enchantment",
+      "schools": ["Fire", "Air", "Enchantment"],
+      "level": 1,
+      "theme": "tummo",
+      "domain": "tummo",
+      "tags": ["tummo", "buff", "resist", "domain_spell"],
+      "mana_cost": 15,
+      "duration": "spellpower",
+      "special": {
+        "fire_resist_pct": 25,
+        "water_resist_pct": 25,
+        "melee_counter_burn": {
+          "effect": "attacker_gains_burning_1",
+          "description": "While active, any enemy that strikes the caster in melee receives 1 burning stack"
+        }
+      },
+      "target": {
+        "type": "single",
+        "eligible": "self",
+        "upgrade_scaling": "single → aoe → all_allies"
+      },
+      "description": "+25% fire and water resistance for duration. While active, enemies that strike you in melee receive 1 burning stack — the body radiates heat."
+    },
+
+    "heat_transfer": {
+      "name": "Heat Transfer",
+      "subschool": "Sorcery",
+      "schools": ["Fire", "Air", "Sorcery"],
+      "level": 3,
+      "theme": "tummo",
+      "domain": "tummo",
+      "tags": ["tummo", "fire", "burning", "transfer", "domain_spell"],
+      "mana_cost": 75,
+      "special": {
+        "transfer_burning": {
+          "source": "all_allies",
+          "target": "all_enemies",
+          "distribution": "even",
+          "no_stacks_lost": true,
+          "description": "All burning stacks are lifted from every ally and redistributed evenly across all enemies. No stacks are lost; surplus stacks from uneven division go to enemies front-to-back."
+        }
+      },
+      "target": {
+        "type": "special"
+      },
+      "description": "Transfer all burning stacks from all allies to enemies, distributed evenly. No stacks are lost."
+    },
+
+    "flash_of_radiance": {
+      "name": "Flash of Radiance",
+      "subschool": "White",
+      "schools": ["Fire", "Air", "White"],
+      "level": 3,
+      "theme": "tummo",
+      "domain": "tummo",
+      "tags": ["tummo", "cleanse", "damage", "aoe", "domain_spell"],
+      "mana_cost": 75,
+      "special": {
+        "self_cleanse_and_burst": {
+          "self_effect": "remove_all_debuffs",
+          "enemy_effect": {
+            "aoe_radius": 2,
+            "damage_type": "white",
+            "damage_magnitude": "light",
+            "damage_hits": "count_of_debuffs_removed",
+            "save": {
+              "attribute": "constitution",
+              "difficulty": "moderate",
+              "on_fail": ["Blinded_1"]
+            },
+            "description": "Each debuff removed fires outward as a bolt of white radiance. Each bolt deals light white damage to enemies in 2-tile radius. CON save or blinded for 1 turn."
+          }
+        }
+      },
+      "target": {
+        "type": "self"
+      },
+      "description": "Remove all debuffs from self. Each debuff removed becomes a bolt of white radiance striking all enemies in a 2-tile radius for light white damage. CON save or blinded 1 turn."
+    },
+
+    "blazing_and_dripping": {
+      "name": "Blazing and Dripping",
+      "subschool": "Enchantment",
+      "schools": ["Fire", "Air", "Enchantment"],
+      "level": 4,
+      "theme": "tummo",
+      "domain": "tummo",
+      "tags": ["tummo", "buff", "resist", "stat_boost", "domain_spell"],
+      "mana_cost": 135,
+      "duration": "spellpower",
+      "special": {
+        "fire_resist_pct": 75,
+        "water_resist_pct": 75
+      },
+      "statuses_caused": ["Focus_Plus_3", "Awareness_Plus_3"],
+      "target": {
+        "type": "single",
+        "eligible": "self"
+      },
+      "description": "+75% fire and water resistance, +3 FCS and +3 AWR for duration. The inner fire blazes from the secret chakra; the crown amrita melts and drips down into it, renewing the body."
+    },
+
+    "clear_mind": {
+      "name": "Clear Mind",
+      "subschool": "White",
+      "schools": ["Fire", "Space", "White"],
+      "level": 2,
+      "theme": "luminosity",
+      "domain": "luminosity",
+      "tags": ["luminosity", "cleanse", "buff", "mental", "domain_spell"],
+      "mana_cost": 40,
+      "duration": "spellpower_turns",
+      "statuses_removed": ["mental_negative"],
+      "statuses_caused": ["Mental_Immunity"],
+      "target": {
+        "type": "single",
+        "eligible": "ally",
+        "upgrade_scaling": "single → aoe → all_allies"
+      },
+      "description": "Clear all mental debuffs from target. Grant immunity to mental debuffs for spellpower turns (typically 2–4). Note: distinct from Clarity (Fire/White), which instead provides an Awareness buff."
+    },
+
+    "divine_eye": {
+      "name": "Divine Eye",
+      "subschool": "Enchantment",
+      "schools": ["Fire", "Space", "Enchantment"],
+      "level": 3,
+      "theme": "luminosity",
+      "domain": "luminosity",
+      "tags": ["luminosity", "buff", "reveal", "range", "domain_spell"],
+      "mana_cost": 75,
+      "duration": "combat",
+      "special": {
+        "see_through_stealth": ["Invisible", "Chameleon", "Shadow_Cloaked", "Blurred", "Mirror_Images", "Smoke_Form"],
+        "range_bonus_pct": 50
+      },
+      "target": {
+        "type": "single",
+        "eligible": "ally",
+        "upgrade_scaling": "single → aoe → all_allies"
+      },
+      "description": "Target sees through all stealth, invisibility, blur, and illusion for the rest of combat. +50% range for ranged attacks and spells. Note: distinct from Crystal Light (Earth/Space), which dispels these effects once battlefield-wide rather than granting ongoing personal vision."
+    },
+
+    "radiant_visage": {
+      "name": "Radiant Visage",
+      "subschool": "Enchantment",
+      "schools": ["Fire", "Space", "Enchantment"],
+      "level": 4,
+      "theme": "luminosity",
+      "domain": "luminosity",
+      "tags": ["luminosity", "buff", "aura", "mental", "domain_spell"],
+      "mana_cost": 135,
+      "duration": "spellpower",
+      "aura": {
+        "radius": 2,
+        "effects": ["Mental_Immunity", "Awareness_Plus_2", "Constitution_Plus_2"]
+      },
+      "target": {
+        "type": "self"
+      },
+      "description": "Radiate an aura in a 2-tile radius: all allies within gain immunity to mental debuffs, +2 AWR and +2 CON."
+    },
+
+    "shining_mirage": {
+      "name": "Shining Mirage",
+      "subschool": "Enchantment",
+      "schools": ["Fire", "Space", "Enchantment"],
+      "level": 4,
+      "theme": "luminosity",
+      "domain": "luminosity",
+      "tags": ["luminosity", "cc", "aura", "domain_spell"],
+      "mana_cost": 135,
+      "duration": "spellpower",
+      "special": {
+        "persistent_confusion_aura": {
+          "trigger": "start_of_each_enemy_turn",
+          "save": {
+            "attribute": "focus",
+            "base_difficulty": 14,
+            "difficulty_modifier_per_passed_save": -2,
+            "modifier_scope": "per_enemy",
+            "description": "Each enemy rolls FCS at the start of their turn or is confused for 1 turn. Each time a given enemy passes the save, their personal DC drops by 2 — they are slowly seeing through the mirage."
+          },
+          "on_fail": ["Confused_1"]
+        }
+      },
+      "target": {
+        "type": "self"
+      },
+      "description": "Each enemy must make a FCS save at the start of their turn or be confused for 1 turn. Each passed save reduces that enemy's personal DC by 2 as they pierce the mirage."
     }
   }
 }

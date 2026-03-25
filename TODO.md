@@ -361,6 +361,7 @@ UI stub exists in Party tab (`_update_followers_list()` / `_create_follower_card
 - [x] ~~Enemy-specific physical resistances~~ — DONE (hell_archetypes.json: frozen_revenant +pierce/slash, -crush; lava_golem/mountain_guardian +slash/pierce; frost_guardian +pierce/slash; demons +pierce/slash)
 - [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
 - [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
+- [ ] **Spell duration unification** — buff/debuff durations are currently inconsistent across spells (some use `"spellpower"`, some `"combat"`, some fixed turns, some `"spellpower_turns"`). Need a unified scaling formula: e.g. base_turns + floor(spellpower / threshold). Affects all enchantment/white spells. Also: `clear_mind` mental immunity and similar conditional immunity spells need their duration to feel proportional to spell level and caster investment.
 - [ ] Terrain affecting spell power — no terrain-based spellpower modifiers in combat_manager.gd cast_spell()
 - [ ] Environmental spell interactions — spells create terrain (done); terrain does not yet buff/debuff spells of matching element
 - [ ] Cone AoE targeting — `aoe.type: "cone_forward"` is defined in data but unimplemented in combat_manager.gd and the spell UI. Needed by: `powdered_glass` (Glass domain). Cone should project N tiles forward from caster facing, width scaling with length. See `cast_spell()` targeting resolution and spell highlight logic.

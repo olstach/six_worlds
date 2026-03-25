@@ -767,6 +767,364 @@
         }
       ]
     },
+    "snowcapped_hermitage": {
+      "id": "snowcapped_hermitage",
+      "title": "Snow-Capped Hermitage",
+      "domain": "tummo",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "On an exposed ridge, in full sight of the howling wind, a group of yogis sit cross-legged in the snow. They wear nothing but thin white linen. Steam rises from their bodies in visible wisps, melting the snow in a circle around each of them.\n\nThe oldest sits at the centre, utterly still, eyes open but seeing elsewhere. Slightly apart, the youngest shivers — barely perceptibly, but his toes have gone the faint blue of someone fighting a losing battle with the cold.",
+      "choices": [
+        {
+          "id": "ask_teachings",
+          "type": "requirement",
+          "text": "Approach, bow deeply, and ask for teachings.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "tummo_domain_shop",
+            "text": "The eldest yogi opens his eyes and regards you for a long moment. He nods once. The youngest, still shivering, looks up at you with something like relief — perhaps he will learn more if you are here too.\n\nThe teachings begin.",
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "fire_magic",
+          "type": "roll",
+          "text": "You have some knowledge of inner heat yourself. Show them — not as a challenge, because you cannot help it.",
+          "requirements": {
+            "skills": {
+              "fire_magic": 5
+            },
+            "roll": {
+              "attribute": "focus",
+              "difficulty": 13
+            }
+          },
+          "outcome_success": {
+            "type": "shop",
+            "shop_id": "tummo_domain_shop",
+            "text": "You let it rise — the warmth from the secret place below the navel, imperfect but real. The youngest yogi's eyes go wide. The eldest smiles: not at the technique, which is rough, but at the unmistakable sincerity behind it.\n\n'You have found the door,' he says. 'Come, let us show you what is behind it.'",
+            "karma": {
+              "god": 4,
+              "human": 4
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The warmth flickers and goes out. The eldest yogi watches, patient and kind.\n\n'The fire is there,' he says. 'But it needs tending before it can burn steadily. The doors of this hermitage will be open to you when you return, more mature in your practice, young sadhaka.'\n\nSomething in his words leaves a warmth in you that your technique could not produce.",
+            "rewards": {
+              "buffs": [
+                {"stat": "focus", "amount": 2, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "water_challenge",
+          "type": "roll",
+          "text": "Challenge them to a contest of cold resistance. They seem so untouchable — surely it cannot hurt to test them.",
+          "requirements": {
+            "skills": {
+              "water_magic": 5
+            },
+            "roll": {
+              "attribute": "focus",
+              "difficulty": 17
+            }
+          },
+          "outcome_success": {
+            "type": "shop",
+            "shop_id": "tummo_domain_shop",
+            "shop_modifier": {
+              "price_multiplier": 1.5
+            },
+            "text": "Your mastery of water is formidable — the cold bends to your will, and the youngest yogi has gone very still watching you. The eldest meets your eyes throughout, unshaken.\n\n'Impressive,' he says at last. 'But your attitude is poisoned by arrogance. What you sought was not knowledge — it was victory. We will teach you anyway, because the fire does not care why you came, only that you did. But you will pay more for what arrogance has cost.'",
+            "karma": {
+              "asura": 3,
+              "human": -1
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The cold defeats you well before it touches them. The eldest yogi says nothing for a long time. When he speaks, there is no cruelty in it.\n\n'You are not ready for the dharma taught in this place. Return once your merit grows.'",
+            "karma": {
+              "asura": 2,
+              "human": -1
+            }
+          }
+        },
+        {
+          "id": "sit_in_snow",
+          "type": "roll",
+          "text": "Say nothing. Sit down in the snow beside them and see how long you last.",
+          "requirements": {
+            "roll": {
+              "attribute": "constitution",
+              "difficulty": 15
+            }
+          },
+          "outcome_success": {
+            "type": "shop",
+            "shop_id": "tummo_domain_shop",
+            "text": "You have no technique. You have only stubbornness and the refusal to move. Minutes pass. The cold becomes a presence, then a voice, then a kind of silence. When you open your eyes, the eldest is looking at you.\n\n'No technique,' he says, 'but something that technique cannot give. Sit closer. There is something we can show you.'",
+            "karma": {
+              "human": 5,
+              "god": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The cold defeats you. You last longer than seems reasonable, but it defeats you. The youngest yogi — still shivering himself, toes still blue — gives you a small, sympathetic look as you scramble to your feet.\n\nYou carry the cold in your bones for a while after.",
+            "rewards": {
+              "buffs": [
+                {"stat": "constitution", "amount": -2, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "circumambulate",
+          "type": "default",
+          "text": "Circumambulate the group, set out small offerings, and leave them in peace.",
+          "cost": {
+            "gold": "small",
+            "food": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You walk the circle three times, quietly, and place what you have brought at the edge of their warmth. None of them acknowledge this directly. But as you turn to leave, the youngest yogi's shivering has stopped.\n\nSomething of their steadiness travels with you.",
+            "rewards": {
+              "buffs": [
+                {"stat": "constitution", "amount": 2, "combats_remaining": 2},
+                {"stat": "focus", "amount": 2, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "god": 3,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave them to their practice.",
+          "outcome": {
+            "type": "text",
+            "text": "You walk on. The sound of the wind returns. The steam rising from their circle diminishes behind you."
+          }
+        }
+      ]
+    },
+
+    "dark_cave": {
+      "id": "dark_cave",
+      "title": "Dark Cave",
+      "domain": "luminosity",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "No light reaches the depths of this cave. The darkness is not empty — it has a quality to it, a density that suggests something is happening inside it.\n\nAt the back wall, barely visible, is a small opening the size of a fist. Beside it, a shallow bowl, worn smooth.",
+      "choices": [
+        {
+          "id": "ask_teachings",
+          "type": "default",
+          "text": "Ask her for teachings.",
+          "ui_hint": "vanishing",
+          "outcome": {
+            "type": "follow_up",
+            "follow_up_event": "dark_cave_interior",
+            "text": "A voice comes from the other side of the wall — unhurried, neither welcoming nor unwelcoming.\n\n'The dark will teach you, if you sit with it long enough.'\n\nSilence."
+          }
+        },
+        {
+          "id": "yoga_sit",
+          "type": "requirement",
+          "text": "Sit on this side of the wall and wait. Without expectation.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "luminosity_domain_shop",
+            "text": "You sit. The dark settles around you. Visions begin — first muddled and confused, images and sounds without coherence, then gradually clarifying, like sediment falling through still water.\n\nAfter some hours, a quiet laugh from the other side of the wall.\n\n'You've shown the purity of your intent. I'll teach you a little — but keep practicing on your own.'",
+            "karma": {
+              "god": 6,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "space_perception",
+          "type": "requirement",
+          "text": "Still your perception. Not the stone — the quality of what is in the stone.",
+          "requirements": {
+            "skills": {
+              "space_magic": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "luminosity_domain_shop",
+            "text": "You let your perception settle and expand. The stone is there — cold, dense, indifferent. And then, not through it but somehow alongside it: a quality of light that is not light, sourceless, neither warm nor cold, bleeding outward through the rock without diminishing.\n\nA pause from the other side of the wall. Then, quietly: 'I see you have some eyes of your own.' The sound of something being moved. 'Come then. Let's compare notes.'",
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "push_food",
+          "type": "default",
+          "text": "Push some food through the opening in the wall.",
+          "cost": {
+            "food": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "'Thank you, child.'\n\nThe bowl on your side is already empty. On the other side, the sound of something being received with care.",
+            "rewards": {
+              "buffs": [
+                {"stat": "awareness", "amount": 1, "combats_remaining": 2},
+                {"stat": "luck", "amount": 1, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "god": 3,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "push_money",
+          "type": "default",
+          "text": "Push some money through the opening in the wall.",
+          "outcome": {
+            "type": "text",
+            "text": "A pause.\n\n'I don't need this, child.'\n\nThe coins reappear in the bowl on your side, one by one.",
+            "rewards": {
+              "gold_returned": true
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave the cave.",
+          "outcome": {
+            "type": "text",
+            "text": "You step back into the light. The cave says nothing. The darkness continues its practice without you."
+          }
+        }
+      ]
+    },
+
+    "dark_cave_interior": {
+      "id": "dark_cave_interior",
+      "title": "Dark Cave",
+      "domain": "luminosity",
+      "realm": "any",
+      "rarity": "follow_up_only",
+      "text": "The silence continues. The darkness has the same quality as before — dense, inhabited. The small opening in the wall. The worn bowl.",
+      "choices": [
+        {
+          "id": "yoga_sit",
+          "type": "requirement",
+          "text": "Sit on this side of the wall and wait. Without expectation.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "luminosity_domain_shop",
+            "text": "You sit. The dark settles around you. Visions begin — first muddled and confused, images and sounds without coherence, then gradually clarifying, like sediment falling through still water.\n\nAfter some hours, a quiet laugh from the other side of the wall.\n\n'You've shown the purity of your intent. I'll teach you a little — but keep practicing on your own.'",
+            "karma": {
+              "god": 6,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "space_perception",
+          "type": "requirement",
+          "text": "Still your perception. Not the stone — the quality of what is in the stone.",
+          "requirements": {
+            "skills": {
+              "space_magic": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "luminosity_domain_shop",
+            "text": "You let your perception settle and expand. The stone is there — cold, dense, indifferent. And then, not through it but somehow alongside it: a quality of light that is not light, sourceless, neither warm nor cold, bleeding outward through the rock without diminishing.\n\nA pause from the other side of the wall. Then, quietly: 'I see you have some eyes of your own.' The sound of something being moved. 'Come then. Let's compare notes.'",
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "push_food",
+          "type": "default",
+          "text": "Push some food through the opening in the wall.",
+          "cost": {
+            "food": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "'Thank you, child.'\n\nThe bowl on your side is already empty. On the other side, the sound of something being received with care.",
+            "rewards": {
+              "buffs": [
+                {"stat": "awareness", "amount": 1, "combats_remaining": 2},
+                {"stat": "luck", "amount": 1, "combats_remaining": 2}
+              ]
+            },
+            "karma": {
+              "god": 3,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "push_money",
+          "type": "default",
+          "text": "Push some money through the opening in the wall.",
+          "outcome": {
+            "type": "text",
+            "text": "A pause.\n\n'I don't need this, child.'\n\nThe coins reappear in the bowl on your side, one by one.",
+            "rewards": {
+              "gold_returned": true
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave the cave.",
+          "outcome": {
+            "type": "text",
+            "text": "You step back into the light. The cave says nothing. The darkness continues its practice without you."
+          }
+        }
+      ]
+    },
+
     "skygazing_gompa": {
       "id": "skygazing_gompa",
       "title": "Skygazing Gompa",
