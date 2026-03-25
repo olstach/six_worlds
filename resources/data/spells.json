@@ -10211,6 +10211,97 @@
         "type": "self"
       },
       "description": "Each enemy must make a FCS save at the start of their turn or be confused for 1 turn. Each passed save reduces that enemy's personal DC by 2 as they pierce the mirage."
+    },
+
+    "battle_chant": {
+      "name": "Battle Chant",
+      "subschool": "Enchantment",
+      "schools": ["Air", "Space", "Enchantment"],
+      "level": 2,
+      "theme": "sound",
+      "domain": "sound",
+      "tags": ["sound", "buff", "domain_spell"],
+      "mana_cost": 40,
+      "duration": "spellpower",
+      "statuses_caused": ["Strength_Plus_2", "Finesse_Plus_2"],
+      "target": {
+        "type": "single",
+        "eligible": "ally",
+        "upgrade_scaling": "single → aoe → all_allies"
+      },
+      "description": "+2 STR and +2 FIN for spellpower-based duration. A resonant chant that sharpens the body for combat."
+    },
+
+    "eerie_dirge": {
+      "name": "Eerie Dirge",
+      "subschool": "Enchantment",
+      "schools": ["Air", "Space", "Enchantment"],
+      "level": 3,
+      "theme": "sound",
+      "domain": "sound",
+      "tags": ["sound", "debuff", "domain_spell"],
+      "mana_cost": 75,
+      "duration": "spellpower",
+      "statuses_caused": ["Constitution_Minus_2", "Focus_Minus_2"],
+      "target": {
+        "type": "single",
+        "eligible": "enemy",
+        "upgrade_scaling": "single → aoe → all_enemies"
+      },
+      "description": "-2 CON and -2 FCS for spellpower-based duration. A low, sourceless tone that unsettles the body and mind."
+    },
+
+    "sonic_boom": {
+      "name": "Sonic Boom",
+      "subschool": "Sorcery",
+      "schools": ["Air", "Space", "Sorcery"],
+      "level": 3,
+      "theme": "sound",
+      "domain": "sound",
+      "tags": ["sound", "damage", "aoe", "cc", "domain_spell"],
+      "mana_cost": 75,
+      "damage": {
+        "type": "space",
+        "magnitude": "moderate"
+      },
+      "aoe": {
+        "type": "circle",
+        "radius": 2,
+        "origin": "caster"
+      },
+      "save": {
+        "attribute": "constitution",
+        "difficulty": "moderate",
+        "on_fail": ["Stunned_1"]
+      },
+      "target": {
+        "type": "aoe_self_centered"
+      },
+      "description": "Moderate space damage in a 2-tile radius around the caster. CON save or stunned 1 turn."
+    },
+
+    "up_to_eleven": {
+      "name": "Up to Eleven",
+      "subschool": "Sorcery",
+      "schools": ["Air", "Space", "Sorcery"],
+      "level": 4,
+      "theme": "sound",
+      "domain": "sound",
+      "tags": ["sound", "cc", "aoe", "friendly_fire", "domain_spell"],
+      "mana_cost": 135,
+      "special": {
+        "affects_all_combatants": true,
+        "caster_immune": true,
+        "description": "Every unit on the battlefield except the caster must make a CON save or be stunned for 1 turn. Hits allies. Use with caution or with foreknowledge of your party's CON."
+      },
+      "save": {
+        "attribute": "constitution",
+        "difficulty": "hard"
+      },
+      "target": {
+        "type": "battlefield"
+      },
+      "description": "The sound hits everything. Every combatant except the caster makes a CON save or is stunned 1 turn. Affects allies. The caster is immune by virtue of being the source."
     }
   }
 }

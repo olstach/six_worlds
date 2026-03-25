@@ -1212,6 +1212,101 @@
           }
         }
       ]
+    },
+
+    "court_of_the_musician_prince": {
+      "id": "court_of_the_musician_prince",
+      "title": "The Court of the Musician Prince",
+      "domain": "sound",
+      "realm": "any",
+      "rarity": "rare",
+      "text": "A lavish building rises before you, its doors open to the warm air. Inside, a half-naked man sits in a carved chair, eyes closed, strumming a sitar with total absorption. He does not appear to notice your arrival.\n\nA servant materializes at your elbow, inclining his head politely. 'Welcome. How may I serve you?'",
+      "choices": [
+        {
+          "id": "ask_about_prince",
+          "type": "default",
+          "text": "Ask about the prince and the state of his court.",
+          "outcome": {
+            "type": "text",
+            "text": "'My lord always had the soul of an artist first, and ruler only second,' the servant says, with unmistakable pride. 'Some years ago, an itinerant yogi came to court and taught him that the path to awakening need not pass through renunciation — that music itself, heard rightly, is a door. The yogi has since moved on, as such men do. My lord has not moved at all.'\n\nHe glances toward the prince with something between concern and devotion. 'We manage.'",
+            "rewards": {
+              "xp": 10
+            }
+          }
+        },
+        {
+          "id": "play_with_prince",
+          "type": "requirement",
+          "text": "Take out your instrument and play alongside him.",
+          "requirements": {
+            "skills": {
+              "performance": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "sound_domain_shop",
+            "text": "The servant hesitates, then steps aside. You take a seat near the prince and begin to play. A long moment passes. Then, without opening his eyes, the prince adjusts his melody to harmonize with yours — a conversation with no words in it. When you finally stop, he opens his eyes and looks at you directly for the first time.\n\n'Stay a while,' he says. 'I have something to show you.'",
+            "karma": {
+              "human": 5,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "meditate_on_music",
+          "type": "requirement",
+          "text": "Sit and listen. Not to the notes — to what is between them.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "shop",
+            "shop_id": "sound_domain_shop",
+            "text": "You find a place to sit and simply listen. The music is complex past comprehension — and then, quite suddenly, it isn't. You hear through it to something else: the source of the sound, the silence inside each note. After some time, the prince opens one eye. He looks at you with faint surprise, then nods curtly, as if settling a question he had been asking himself.\n\n'Yes,' he says. 'Come.'",
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "ask_for_job",
+          "type": "default",
+          "text": "Ask if they need any hired hands.",
+          "ui_hint": "vanishing",
+          "outcome": {
+            "type": "text",
+            "text": "'I'm afraid my lord has very little in the way of worldly affairs to attend to anymore,' the servant says, pleasantly but with a finality that suggests the topic is closed."
+          }
+        },
+        {
+          "id": "ask_for_donation",
+          "type": "default",
+          "text": "Ask if they could spare anything for travelers.",
+          "outcome": {
+            "type": "text",
+            "text": "The servant blinks, as if the question has surprised him from a great distance. He produces a few coins from somewhere about his person and presses them into your hand with the vague goodwill of someone performing a gesture they have been taught. You find yourself outside. The door closes quietly.",
+            "rewards": {
+              "gold": 8
+            },
+            "set_flags": {
+              "musician_prince_closed": true
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave without disturbing them.",
+          "outcome": {
+            "type": "text",
+            "text": "You step back into the open air. Inside, the music continues without interruption."
+          }
+        }
+      ]
     }
   }
 }
