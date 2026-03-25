@@ -927,6 +927,10 @@ func _build_spell_tooltip(spell: Dictionary) -> String:
 		"aoe":
 			var aoe_def = spell.get("aoe", {"type": "circle", "size": 2})
 			target_text = AoEResolver.describe(aoe_def)
+		"all_enemies":
+			target_text = "All Enemies"
+		"all_allies":
+			target_text = "All Allies"
 		"chain":
 			var chain_count = spell.get("chain_targets", 3)
 			target_text = "Chain (up to %d targets)" % chain_count

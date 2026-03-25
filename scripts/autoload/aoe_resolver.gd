@@ -174,15 +174,22 @@ static func _resolve_origin(aoe: Dictionary, caster_pos: Vector2i,
 			return target_pos
 
 
-## Cardinal direction (4-way) from from_pos toward to_pos.
-## Snaps to the dominant axis. Returns Vector2i(1,0) if positions are equal.
+## 8-directional unit vector from from_pos toward to_pos.
+## Rounds the caster→target angle to the nearest 45° and returns one of the
+## 8 compass directions (including diagonals).
+## Returns Vector2i(1, 0) if positions are equal.
 static func _dir4(from_pos: Vector2i, to_pos: Vector2i) -> Vector2i:
 	var delta = to_pos - from_pos
 	if delta == Vector2i.ZERO:
 		return Vector2i(1, 0)
-	if absi(delta.x) >= absi(delta.y):
-		return Vector2i(signi(delta.x), 0)
-	return Vector2i(0, signi(delta.y))
+	var angle = atan2(float(delta.y), float(delta.x))
+	# Round to nearest 45° sector (0–7)
+	var idx: int = int(round(angle / (PI / 4.0))) % 8
+	var dirs: Array[Vector2i] = [
+		Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, 1), Vector2i(-1, 1),
+		Vector2i(-1, 0), Vector2i(-1, -1), Vector2i(0, -1), Vector2i(1, -1)
+	]
+	return dirs[(idx + 8) % 8]
 
 
 ## Bounds check: is this position within the grid?

@@ -2256,6 +2256,16 @@ func _get_spell_targets(caster: Node, spell: Dictionary, target_pos: Vector2i) -
 					elif not is_offensive and unit.team == caster.team:
 						targets.append(unit)
 
+		"all_enemies":
+			for unit in all_units:
+				if unit.is_alive() and unit.team != caster.team:
+					targets.append(unit)
+
+		"all_allies":
+			for unit in all_units:
+				if unit.is_alive() and unit.team == caster.team and unit != caster:
+					targets.append(unit)
+
 		"chain":
 			# Start with primary target, chain to nearby enemies
 			var primary = get_unit_at(target_pos)
