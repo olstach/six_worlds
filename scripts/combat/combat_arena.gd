@@ -563,9 +563,13 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 	# Show AoE preview when targeting AoE spells or AoE scrolls
 	if current_action_mode == ActionMode.CAST_SPELL and not selected_spell.is_empty():
 		var targeting = selected_spell.get("targeting", "single")
-		if targeting == "aoe_circle":
-			var radius = selected_spell.get("aoe_radius", 1)
-			combat_grid.show_aoe_preview(grid_pos, radius)
+		if targeting == "aoe":
+			var aoe_def = selected_spell.get("aoe", {"type": "circle", "size": 2})
+			var caster = CombatManager.get_current_unit()
+			if caster:
+				combat_grid.show_aoe_shape_preview(aoe_def, caster.grid_position, grid_pos)
+			else:
+				combat_grid.clear_aoe_preview()
 		else:
 			combat_grid.clear_aoe_preview()
 	elif current_action_mode == ActionMode.USE_ITEM and not selected_item.is_empty():
@@ -573,9 +577,13 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 		if sel_type == "scroll":
 			var spell_id = selected_item.get("spell_id", "")
 			var spell = CombatManager.get_spell(spell_id)
-			if not spell.is_empty() and spell.get("targeting", "") == "aoe_circle":
-				var radius = spell.get("aoe_radius", 1)
-				combat_grid.show_aoe_preview(grid_pos, radius)
+			if not spell.is_empty() and spell.get("targeting", "") == "aoe":
+				var aoe_def = spell.get("aoe", {"type": "circle", "size": 2})
+				var caster = CombatManager.get_current_unit()
+				if caster:
+					combat_grid.show_aoe_shape_preview(aoe_def, caster.grid_position, grid_pos)
+				else:
+					combat_grid.clear_aoe_preview()
 			else:
 				combat_grid.clear_aoe_preview()
 		elif sel_type == "bomb":
@@ -916,13 +924,9 @@ func _build_spell_tooltip(spell: Dictionary) -> String:
 			target_text = "Single Ally"
 		"single_corpse":
 			target_text = "Downed Ally"
-		"aoe_circle":
-			var radius = spell.get("aoe_radius", 1)
-			var center = spell.get("aoe_center", "target")
-			if center == "self":
-				target_text = "AoE (Radius %d, centered on self)" % radius
-			else:
-				target_text = "AoE (Radius %d)" % radius
+		"aoe":
+			var aoe_def = spell.get("aoe", {"type": "circle", "size": 2})
+			target_text = AoEResolver.describe(aoe_def)
 		"chain":
 			var chain_count = spell.get("chain_targets", 3)
 			target_text = "Chain (up to %d targets)" % chain_count
@@ -1016,8 +1020,9 @@ func _on_spell_selected(spell: Dictionary) -> void:
 
 	# Log with range info
 	var range_text = "Range: %d" % spell_range
-	if spell_data.get("targeting") == "aoe_circle":
-		range_text += ", AoE radius: %d" % spell_data.get("aoe_radius", 1)
+	if spell_data.get("targeting") == "aoe":
+		var aoe_def = spell_data.get("aoe", {"type": "circle", "size": 2})
+		range_text += ", %s" % AoEResolver.describe(aoe_def)
 
 	if valid_targets.is_empty():
 		_log_message("No valid targets in range for %s (%s)" % [spell.name, range_text])
@@ -3209,29 +3214,27 @@ func _ai_try_cast_spell(unit: CombatUnit, spells: Array[Dictionary], enemies: Ar
 						target_pos = enemy.grid_position
 						break
 
-			"aoe_circle":
-				# Target position with most enemies
-				var aoe_radius = spell.get("aoe_radius", 1)
+			"aoe":
+				# Find the target position that maximizes enemies hit by the AoE shape
+				var aoe_def: Dictionary = spell.get("aoe", {"type": "circle", "size": 2, "origin": "target"})
+				var grid_sz = Vector2i(16, 10)
+				if combat_grid:
+					grid_sz = combat_grid.grid_size
 				var best_pos = Vector2i(-1, -1)
 				var best_count = 0
 
-				# Check each enemy position as potential center
 				for enemy in enemies:
 					if not enemy.is_alive():
 						continue
 					var dist = _grid_distance(unit.grid_position, enemy.grid_position)
 					if dist > spell_range:
 						continue
-
-					# Count enemies in AoE
+					var aoe_tiles = AoEResolver.get_tiles(aoe_def, unit.grid_position,
+							enemy.grid_position, grid_sz)
 					var count = 0
 					for other in enemies:
-						if not other.is_alive():
-							continue
-						var aoe_dist = _grid_distance(enemy.grid_position, other.grid_position)
-						if aoe_dist <= aoe_radius:
+						if other.is_alive() and other.grid_position in aoe_tiles:
 							count += 1
-
 					if count > best_count:
 						best_count = count
 						best_pos = enemy.grid_position
