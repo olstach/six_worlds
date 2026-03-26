@@ -249,7 +249,7 @@ Roles to fulfill per realm (not specific object types):
 - [x] ~~Alchemist~~ — DONE (brimstone_lab: bombs/oils/potions/reagents, trains Alchemy; fire_hell map pool)
 - [x] ~~Magic shop (scrolls, charms, magic foci)~~ — DONE (demon_sorcerer in shops.json sells spells + reagents)
 - [x] ~~Trainer (teaches skills/attributes)~~ — DONE (wandering_sage trains White/Sorcery/Yoga + Focus/Awareness; weapon_master trains 7 combat skills + Str/Fin; ShopSystem has full training tab)
-- [ ] Multi-function locations (towns, camps) use tab UI in event window — not implemented; events use standard choice-based dialogue only
+- [x] ~~Multi-function locations (towns, camps) use tab UI in event window~~ — DONE: events with `"type": "location"` and a `"services"` array show gold-tinted service buttons in the event panel; each opens the corresponding shop as a modal, then returns to the location panel. Keyboard 1–9 and Escape supported. Sample location `hell_waystation` added to hell_events.json.
 - [ ] First-visit event hook for towns — no first-visit flag system in event_manager.gd or map_manager.gd
 - [x] ~~Steal/attack/donate karma branches on trader interactions~~ — DONE (all 8 hell trader events: steal roll on all, attack on 3, donate on 2, comedy wildcard on 5 with success/failure outcomes). Skill-based dice rolls now supported in event_manager (skill: comedy/performance instead of attribute)
 - [x] ~~Trainer caps~~ — DONE (max_skill_level in shop training dict; ShopSystem enforces cap, UI shows "Capped" in yellow)

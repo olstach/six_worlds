@@ -4404,6 +4404,19 @@
           }
         }
       ]
+    },
+
+    "hell_waystation": {
+      "title": "Waystation of Ash",
+      "realm": "hell",
+      "type": "location",
+      "text": "A fortified waystation rises from the volcanic plain, its walls scorched black by centuries of eruptions. Smoke vents line the roof, and a battered sign reads 'ALL TRADES WELCOME — NO SOULS ACCEPTED AS PAYMENT.' Inside, merchants, healers, and weapon-smiths carve out a livelihood amid the suffering.",
+      "services": [
+        {"tab_name": "General Goods",  "shop_id": "hell_merchant",   "icon": "🏪"},
+        {"tab_name": "Forge",          "shop_id": "infernal_forge",  "icon": "⚒"},
+        {"tab_name": "Healer",         "shop_id": "mercy_ward",      "icon": "💊"},
+        {"tab_name": "Alchemist",      "shop_id": "brimstone_lab",   "icon": "⚗"}
+      ]
     }
   }
 }
