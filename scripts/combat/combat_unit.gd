@@ -244,7 +244,7 @@ func _create_visuals() -> void:
 	status_indicator.position = Vector2(UNIT_SIZE.x / 2 - 10, -UNIT_SIZE.y / 2 - 15)
 	status_indicator.add_theme_font_size_override("font_size", 12)
 	status_indicator.add_theme_color_override("font_color", Color.RED)
-	status_indicator.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	status_indicator.mouse_filter = Control.MOUSE_FILTER_PASS
 	add_child(status_indicator)
 
 
@@ -348,9 +348,98 @@ func _update_visuals() -> void:
 
 		if status_text != "":
 			status_indicator.text = status_text
+			status_indicator.tooltip_text = _build_status_tooltip()
 			status_indicator.show()
 		else:
+			status_indicator.tooltip_text = ""
 			status_indicator.hide()
+
+
+## Build a multi-line tooltip string for all active status effects.
+func _build_status_tooltip() -> String:
+	# Human-readable descriptions for effect strings from statuses.json
+	const EFFECT_LABELS := {
+		"fire_damage_per_turn": "fire damage/turn",
+		"poison_damage_per_turn": "poison damage/turn",
+		"physical_damage_per_turn": "physical damage/turn",
+		"heal_per_turn": "HP healed/turn",
+		"skip_turn": "Skips next turn",
+		"skip_next_action": "Lose 1 action",
+		"cannot_move": "Cannot move",
+		"immobilized": "Cannot move",
+		"cannot_act": "Cannot act",
+		"cannot_cast": "Cannot cast spells",
+		"silenced": "Cannot cast spells",
+		"cannot_attack": "Cannot attack",
+		"cannot_be_targeted": "Cannot be targeted",
+		"cannot_die": "Cannot die",
+		"hp_cannot_drop_below_1": "HP cannot drop below 1",
+		"random_movement": "Moves randomly",
+		"random_target": "Attacks random targets",
+		"flee_from_source": "Flees from attacker",
+		"attack_bonus": "+10 accuracy",
+		"defense_bonus": "+10 armor",
+		"defense_penalty": "-10 armor",
+		"attack_penalty": "-10 accuracy",
+		"speed_bonus": "+2 movement",
+		"initiative_bonus": "+10 initiative",
+		"movement_reduced_50": "Movement halved",
+		"vulnerable_to_physical": "Vulnerable to physical",
+		"physical_immunity": "Immune to physical",
+		"fire_resistance_minus_50": "-50% fire resistance",
+		"melee_hit_chance_halved": "Melee accuracy halved",
+		"ranged_hit_chance_halved": "Ranged accuracy halved",
+		"armor_reduced_50": "Armor reduced by 50%",
+		"armor_reduced": "Armor reduced",
+		"attack_breaks_invisibility": "Breaks on attacking",
+		"breaks_on_offensive_action": "Breaks on offensive action",
+		"treats_caster_as_ally": "Treats caster as ally",
+		"will_not_attack_caster": "Won't attack caster",
+		"death_on_expire": "Dies when expired",
+		"damage_on_expire": "Bursts on expiry",
+		"bleed_on_expire": "Bleeds on expiry",
+		"spawn_fungal_spawn_on_expire": "Spawns creature on expiry",
+		"focus_save_on_damage": "Focus save each hit or lose actions",
+	}
+
+	var lines: Array[String] = []
+	for effect in status_effects:
+		var sname: String = effect.get("status", "?")
+		var duration: int = effect.get("duration", 0)
+		var def: Dictionary = CombatManager.get_status_definition(sname)
+
+		var duration_str: String = ""
+		if duration > 0:
+			duration_str = " (%d turn%s)" % [duration, "s" if duration != 1 else ""]
+
+		var header: String = sname.replace("_", " ") + duration_str
+
+		# Collect effect bullets from definition
+		var bullets: Array[String] = []
+		var effects_list: Array = def.get("effects", [])
+		for fx in effects_list:
+			var label: String = EFFECT_LABELS.get(fx, "")
+			if label != "" and label not in bullets:
+				# Prefix per-turn numbers if available
+				if "per_turn" in fx:
+					var dmg = def.get("damage_per_turn", def.get("heal_per_turn", 0))
+					if dmg > 0:
+						label = str(dmg) + " " + label
+				bullets.append(label)
+		# Dispel info
+		var dispel_methods: Array = def.get("dispel_methods", [])
+		if not dispel_methods.is_empty():
+			var clean: Array[String] = []
+			for m in dispel_methods:
+				clean.append(m.replace("_", " "))
+			bullets.append("Cure: " + ", ".join(clean))
+
+		if bullets.is_empty():
+			lines.append(header)
+		else:
+			lines.append(header + "\n  " + "\n  ".join(bullets))
+
+	return "\n\n".join(lines)
 
 
 # ============================================
@@ -978,6 +1067,16 @@ func show_action_name(text: String) -> void:
 	tween.tween_property(label, "position:y", label.position.y - 25, 1.0)
 	tween.parallel().tween_property(label, "modulate:a", 0, 1.0)
 	tween.tween_callback(label.queue_free)
+
+
+## Bounce the sprite up and back to signal this unit's turn has started
+func play_turn_start_bounce() -> void:
+	if sprite == null:
+		return
+	var original_y = sprite.position.y
+	var tween = create_tween()
+	tween.tween_property(sprite, "position:y", original_y - 8, 0.12).set_ease(Tween.EASE_OUT)
+	tween.tween_property(sprite, "position:y", original_y, 0.12).set_ease(Tween.EASE_IN)
 
 
 ## Show floating combat text (miss, dodge, block, etc.)

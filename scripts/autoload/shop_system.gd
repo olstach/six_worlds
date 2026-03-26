@@ -475,10 +475,22 @@ func buy_item(item_id: String) -> Dictionary:
 	if not GameState.spend_gold(price):
 		return {"success": false, "reason": "Transaction failed"}
 
+	var item = ItemSystem.get_item(item_id)
+
+	# Supply items (food, herbs, etc.) are consumed immediately into the party pool
+	# rather than sitting unused in inventory.
+	if item.get("type", "") == "supply":
+		var supply_type: String = item.get("supply_type", "")
+		var supply_amount: int = item.get("supply_amount", 0)
+		if supply_type != "" and supply_amount > 0:
+			GameState.add_supply(supply_type, supply_amount)
+			item_purchased.emit(item_id, price)
+			return {"success": true, "item_name": item.get("name", item_id), "price": price,
+				"supply_gained": supply_amount, "supply_type": supply_type}
+
 	ItemSystem.add_to_inventory(item_id)
 	item_purchased.emit(item_id, price)
 
-	var item = ItemSystem.get_item(item_id)
 	return {"success": true, "item_name": item.get("name", item_id), "price": price}
 
 

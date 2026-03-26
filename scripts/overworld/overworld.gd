@@ -231,6 +231,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				# Journal tab (index 5)
 				_open_char_sheet_to_tab(5)
 				get_viewport().set_input_as_handled()
+			KEY_L:
+				# Message log toggle
+				_toggle_log_panel()
+				get_viewport().set_input_as_handled()
 			KEY_ESCAPE:
 				if _main_menu_open:
 					_close_main_menu()
@@ -485,7 +489,7 @@ func _on_pickup_collected(obj: Dictionary, rewards: Array) -> void:
 			"gold":
 				parts.append("+" + str(rval) + " gold")
 			"xp":
-				parts.append("+" + str(rval) + " XP")
+				parts.append("+%d XP" % int(rval))
 			"heal":
 				parts.append("Healed " + str(int(rval)) + "%")
 			"mana":
@@ -505,6 +509,8 @@ func _on_pickup_collected(obj: Dictionary, rewards: Array) -> void:
 						else ("(%d battle)" % combats if combats == 1 else "(%d battles)" % combats)
 					var sign: String = "+" if amount >= 0 else ""
 					parts.append("%s%s %s %s" % [sign, str(int(amount)), _buff_stat_label(stat), duration_str])
+			"food":
+				parts.append("+%d food" % int(rval))
 			"damage":
 				parts.append("[color=#ef4444]-%d HP (cursed!)[/color]" % int(rval))
 			"cleanse":
@@ -559,6 +565,19 @@ func _buff_stat_label(stat: String) -> String:
 
 
 ## Fade in from black on scene enter — covers abrupt pop-in.
+func _fade_and_goto(scene_path: String) -> void:
+	var overlay = ColorRect.new()
+	overlay.color = Color.BLACK
+	overlay.modulate.a = 0.0
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.z_index = 100
+	add_child(overlay)
+	var tween = create_tween()
+	tween.tween_property(overlay, "modulate:a", 1.0, 0.5)
+	tween.tween_callback(func(): get_tree().change_scene_to_file(scene_path))
+
+
 func _fade_in_from_black() -> void:
 	var overlay = ColorRect.new()
 	overlay.color = Color.BLACK
@@ -635,6 +654,26 @@ func _on_party_moved(_from: Vector2i, _to: Vector2i) -> void:
 	_update_terrain_label()
 	_tick_overworld_statuses()
 	_tick_supply_step()
+	_check_party_death()
+
+
+## Check if all party members have died from starvation or status damage.
+## If so, transition to the Bardo death screen.
+func _check_party_death() -> void:
+	var party := CharacterSystem.get_party()
+	if party.is_empty():
+		return
+	var any_alive := false
+	for char in party:
+		var hp: int = char.get("derived", {}).get("current_hp", 1)
+		if hp > 0:
+			any_alive = true
+			break
+	if not any_alive:
+		GameState.is_party_wiped = true
+		_show_toast("Your party has perished...")
+		await get_tree().create_timer(1.5).timeout
+		_fade_and_goto("res://scenes/ui/bardo_screen.tscn")
 
 
 ## Apply one tick of any persisting DoT statuses (Poison, Bleed, Burn, etc.)
@@ -967,8 +1006,10 @@ func _build_log_panel() -> void:
 
 	# Intermediate full-rect Control required so that child anchor presets work correctly
 	# (Control nodes cannot anchor relative to a CanvasLayer directly in Godot 4)
+	# Must be MOUSE_FILTER_IGNORE — default STOP would block all clicks on the entire screen.
 	var root_ctrl := Control.new()
 	root_ctrl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	root_ctrl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	log_layer.add_child(root_ctrl)
 
 	# Toggle button — bottom-right corner

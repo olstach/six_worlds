@@ -224,8 +224,9 @@ func _apply_random_spells(character: Dictionary, random_cfg: Dictionary,
 ## Apply fixed and procedural equipment to the companion.
 ## fixed_equip slots are always applied as-is.
 ## starting_equip slots generate items via ItemSystem at the given rarity.
+## realm constrains material selection to realm-appropriate tiers.
 func _apply_starting_equipment(character: Dictionary, fixed_equip: Dictionary,
-		starting_equip: Dictionary, rarity: String) -> void:
+		starting_equip: Dictionary, rarity: String, realm: String = "") -> void:
 	const WEAPON_SLOTS := ["weapon_set_1", "weapon_set_2"]
 	const ARMOR_SLOTS := ["head", "chest", "legs", "feet", "hand_l", "hand_r"]
 
@@ -251,12 +252,12 @@ func _apply_starting_equipment(character: Dictionary, fixed_equip: Dictionary,
 				if ItemSystem.item_exists(main_type):
 					set_data.main = main_type
 				else:
-					set_data.main = ItemSystem.generate_weapon(main_type, rarity)
+					set_data.main = ItemSystem.generate_weapon(main_type, rarity, "", "", realm)
 			if off_type != "":
 				if ItemSystem.item_exists(off_type):
 					set_data.off = off_type
 				else:
-					set_data.off = ItemSystem.generate_weapon(off_type, rarity)
+					set_data.off = ItemSystem.generate_weapon(off_type, rarity, "", "", realm)
 			character.equipment[slot] = set_data
 		elif slot in ARMOR_SLOTS:
 			var armor_val: String = type_data if typeof(type_data) == TYPE_STRING else ""
@@ -265,7 +266,7 @@ func _apply_starting_equipment(character: Dictionary, fixed_equip: Dictionary,
 				if ItemSystem.item_exists(armor_val):
 					character.equipment[slot] = armor_val
 				else:
-					character.equipment[slot] = ItemSystem.generate_armor(armor_val, rarity)
+					character.equipment[slot] = ItemSystem.generate_armor(armor_val, rarity, "", "", realm)
 
 
 ## Recruit a companion by id. Deducts gold, builds and stats the character,
@@ -330,10 +331,11 @@ func recruit(companion_id: String, free: bool = false) -> Dictionary:
 	# 8. Random spells weighted by build
 	_apply_random_spells(companion, def.get("random_spells", {}), def.get("build_weights", {}))
 
-	# 9. Equipment — fixed first, then procedural
+	# 9. Equipment — fixed first, then procedural; realm sets material tier
 	var rarity := _power_to_rarity(budget)
+	var realm := GameState.current_world
 	_apply_starting_equipment(companion, def.get("fixed_equipment", {}),
-		def.get("starting_equipment", {}), rarity)
+		def.get("starting_equipment", {}), rarity, realm)
 
 	# 10. Fixed items — add to shared party inventory
 	for item_id in def.get("fixed_items", []):
@@ -354,10 +356,21 @@ func recruit(companion_id: String, free: bool = false) -> Dictionary:
 const RECRUIT_POPUP_SCENE = preload("res://scenes/ui/companion_recruit_popup.tscn")
 
 ## Show the recruitment introduction popup for a companion.
+## Uses a CanvasLayer at layer 30 so it renders above shop (25) and event (20) overlays.
+## Background is set to MOUSE_FILTER_PASS so it doesn't block clicks on other UI.
 func show_recruit_popup(companion: Dictionary) -> void:
+	var canvas = CanvasLayer.new()
+	canvas.layer = 30
+	get_tree().root.add_child(canvas)
 	var popup = RECRUIT_POPUP_SCENE.instantiate()
-	get_tree().current_scene.add_child(popup)
+	canvas.add_child(popup)
 	popup.show_companion(companion)
+	# Allow clicks to pass through the dark background to other UI elements
+	var bg = popup.get_node_or_null("Background")
+	if bg:
+		bg.mouse_filter = Control.MOUSE_FILTER_PASS
+	# Free the CanvasLayer wrapper when the popup dismisses itself
+	popup.confirmed.connect(canvas.queue_free)
 
 
 ## Returns XP multiplier based on current party size.

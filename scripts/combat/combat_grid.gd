@@ -15,7 +15,7 @@ signal terrain_effect_triggered(grid_pos: Vector2i, effect: int, value: int)
 signal terrain_effect_expired(grid_pos: Vector2i, effect: int)
 
 # Grid configuration
-@export var grid_size: Vector2i = Vector2i(16, 10)
+@export var grid_size: Vector2i = Vector2i(48, 30)
 @export var tile_size: int = 48  # Pixels per tile
 
 # Tile data: Dictionary of Vector2i -> GridTile
@@ -46,6 +46,10 @@ const COLOR_EFFECT_POISON = Color(0.4, 0.8, 0.2, 0.5)
 const COLOR_EFFECT_ACID = Color(0.7, 0.9, 0.1, 0.5)
 const COLOR_EFFECT_BLESSED = Color(1.0, 0.95, 0.6, 0.4)
 const COLOR_EFFECT_CURSED = Color(0.3, 0.1, 0.3, 0.5)
+const COLOR_EFFECT_WET = Color(0.2, 0.4, 0.85, 0.55)
+const COLOR_EFFECT_STORMY = Color(0.55, 0.45, 0.75, 0.6)
+const COLOR_EFFECT_VOID = Color(0.12, 0.04, 0.22, 0.72)
+const COLOR_EFFECT_SMOKE = Color(0.55, 0.55, 0.55, 0.65)
 
 # Current highlights
 var highlighted_tiles: Array[Vector2i] = []
@@ -57,17 +61,17 @@ const COLOR_DEPLOY_BACK = Color(0.3, 0.3, 0.6, 0.4)   # Blue for back line
 const COLOR_DEPLOY_ENEMY = Color(0.6, 0.3, 0.3, 0.3)  # Red tint for enemy zone
 
 # Deployment zone configuration
-const PLAYER_DEPLOY_COLUMNS: int = 4  # Columns 0-3 for player deployment
-const ENEMY_DEPLOY_COLUMNS: int = 4   # Last 4 columns for enemy deployment
+const PLAYER_DEPLOY_COLUMNS: int = 4  # 4 columns wide; start at grid_size.x/3 (centered)
+const ENEMY_DEPLOY_COLUMNS: int = 4   # 4 columns wide; start at grid_size.x*2/3 - 4 (centered)
 
 # Tile types (base terrain)
 enum TileType { FLOOR, WALL, PIT, WATER, DIFFICULT }
 
 # Terrain effects (hazards that can be on tiles)
-enum TerrainEffect { NONE, FIRE, ICE, POISON, ACID, BLESSED, CURSED, WET, STORMY, VOID }
+enum TerrainEffect { NONE, FIRE, ICE, POISON, ACID, BLESSED, CURSED, WET, STORMY, VOID, SMOKE }
 
 # Obstacle types (objects sitting on tiles that provide cover)
-enum ObstacleType { NONE, TREE, ROCK, PILLAR, BARRICADE }
+enum ObstacleType { NONE, TREE, ROCK, PILLAR, BARRICADE, FALLEN_TREE }
 
 # Movement modes (affect height traversal rules)
 enum MovementMode { NORMAL, LEVITATE, FLYING }
@@ -82,6 +86,7 @@ const OBSTACLE_COVER_BONUS: Dictionary = {
 	ObstacleType.ROCK: 20,
 	ObstacleType.PILLAR: 15,
 	ObstacleType.BARRICADE: 15,
+	ObstacleType.FALLEN_TREE: 10,
 }
 
 # Default HP per obstacle type (0 = indestructible)
@@ -90,6 +95,7 @@ const OBSTACLE_DEFAULT_HP: Dictionary = {
 	ObstacleType.ROCK: 50,
 	ObstacleType.PILLAR: 30,
 	ObstacleType.BARRICADE: 16,
+	ObstacleType.FALLEN_TREE: 28,
 }
 
 # Obstacle visual colors
@@ -97,6 +103,7 @@ const COLOR_OBSTACLE_TREE = Color(0.2, 0.55, 0.2)
 const COLOR_OBSTACLE_ROCK = Color(0.45, 0.42, 0.38)
 const COLOR_OBSTACLE_PILLAR = Color(0.6, 0.55, 0.4)
 const COLOR_OBSTACLE_BARRICADE = Color(0.5, 0.35, 0.15)
+const COLOR_OBSTACLE_FALLEN_TREE = Color(0.42, 0.28, 0.12)
 
 # GridTile structure (named to avoid conflict with Godot's TileData)
 class GridTile:
@@ -259,9 +266,12 @@ func _create_tile_visual(grid_pos: Vector2i, tile_data: GridTile) -> Control:
 		TileType.WATER:
 			tile.color = Color(0.2, 0.3, 0.5)
 
-	# Height shading: lighter tiles for higher ground (+0.04 per height level)
+	# Height shading: lighter tiles for higher ground (+0.12 per height level)
 	if tile_data.height > 0:
-		tile.color = tile.color.lightened(tile_data.height * 0.04)
+		tile.color = tile.color.lightened(tile_data.height * 0.12)
+		# Subtle warm tint at height 2+ to make elevation pop visually
+		if tile_data.height >= 2:
+			tile.color = tile.color.lerp(Color(0.9, 0.85, 0.6), 0.1)
 
 	# Make clickable
 	tile.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -877,6 +887,7 @@ func get_effect_name(effect: int) -> String:
 		TerrainEffect.WET: return "Wet Ground"
 		TerrainEffect.STORMY: return "Storm"
 		TerrainEffect.VOID: return "Void Rift"
+		TerrainEffect.SMOKE: return "Smoke"
 		_: return ""
 
 
@@ -929,6 +940,14 @@ func _create_effect_visual(grid_pos: Vector2i, effect: int) -> Control:
 			color = COLOR_EFFECT_BLESSED
 		TerrainEffect.CURSED:
 			color = COLOR_EFFECT_CURSED
+		TerrainEffect.WET:
+			color = COLOR_EFFECT_WET
+		TerrainEffect.STORMY:
+			color = COLOR_EFFECT_STORMY
+		TerrainEffect.VOID:
+			color = COLOR_EFFECT_VOID
+		TerrainEffect.SMOKE:
+			color = COLOR_EFFECT_SMOKE
 		_:
 			color = Color(0, 0, 0, 0)
 
@@ -1033,8 +1052,8 @@ func _blocks_line_of_sight(grid_pos: Vector2i) -> bool:
 	if tile == null:
 		return true
 
-	# Walls block LoS, pits and water don't
-	return tile.type == TileType.WALL
+	# Walls block LoS, pits and water don't; smoke also blocks LoS
+	return tile.type == TileType.WALL or tile.effect == TerrainEffect.SMOKE
 
 
 ## Get valid ranged attack targets (within range AND has line of sight)
@@ -1252,6 +1271,7 @@ func get_obstacle_name(obstacle_type: int) -> String:
 		ObstacleType.ROCK: return "Rock"
 		ObstacleType.PILLAR: return "Pillar"
 		ObstacleType.BARRICADE: return "Barricade"
+		ObstacleType.FALLEN_TREE: return "Fallen Tree"
 		_: return ""
 
 
@@ -1362,6 +1382,8 @@ func _create_obstacle_visual(grid_pos: Vector2i, obstacle_type: int) -> Control:
 			color = COLOR_OBSTACLE_PILLAR
 		ObstacleType.BARRICADE:
 			color = COLOR_OBSTACLE_BARRICADE
+		ObstacleType.FALLEN_TREE:
+			color = COLOR_OBSTACLE_FALLEN_TREE
 		_:
 			color = Color.WHITE
 
@@ -1418,6 +1440,27 @@ func _create_obstacle_visual(grid_pos: Vector2i, obstacle_type: int) -> Control:
 			bar.color = color
 			bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			container.add_child(bar)
+
+		ObstacleType.FALLEN_TREE:
+			# Horizontal log spanning most of tile width (fallen trunk)
+			var log = ColorRect.new()
+			var lw = tile_size * 0.82
+			var lh = tile_size * 0.22
+			log.size = Vector2(lw, lh)
+			log.position = Vector2((tile_size - lw) / 2.0, tile_size * 0.52)
+			log.color = color
+			log.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			container.add_child(log)
+			# Dead foliage cluster at one end
+			var leaves = ColorRect.new()
+			var ls = tile_size * 0.28
+			leaves.size = Vector2(ls, ls)
+			leaves.pivot_offset = Vector2(ls / 2.0, ls / 2.0)
+			leaves.position = Vector2((tile_size - lw) / 2.0 + ls * 0.1, tile_size * 0.38)
+			leaves.rotation_degrees = 45
+			leaves.color = Color(0.22, 0.42, 0.14)
+			leaves.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			container.add_child(leaves)
 
 	return container
 
@@ -1485,22 +1528,21 @@ func create_test_arena() -> void:
 # ============================================
 
 ## Get player deployment zone tiles
-## Returns dict with "front" and "back" arrays of positions
+## For the larger arena, zones are in the CENTER THIRD of the grid so there's
+## flanking room on all sides. Player deploys at grid_size.x/3 .. +PLAYER_DEPLOY_COLUMNS-1.
 func get_player_deployment_zones() -> Dictionary:
 	var front_tiles: Array[Vector2i] = []
 	var back_tiles: Array[Vector2i] = []
 
-	# Front row is the rightmost column of the deploy zone (closest to enemy)
-	var front_col = PLAYER_DEPLOY_COLUMNS - 1
+	var start_x = grid_size.x / 3  # e.g. 16 for a 48-wide grid
+	# Front column = rightmost of deploy zone (closest to enemy)
+	var front_col = start_x + PLAYER_DEPLOY_COLUMNS - 1  # e.g. 19
 
 	for y in range(grid_size.y):
-		# Front column
 		var front_pos = Vector2i(front_col, y)
 		if _is_valid_deployment_tile(front_pos):
 			front_tiles.append(front_pos)
-
-		# Back columns (everything else in deploy zone)
-		for x in range(front_col):
+		for x in range(start_x, front_col):
 			var back_pos = Vector2i(x, y)
 			if _is_valid_deployment_tile(back_pos):
 				back_tiles.append(back_pos)
@@ -1513,21 +1555,20 @@ func get_player_deployment_zones() -> Dictionary:
 
 
 ## Get enemy deployment zone tiles
+## Enemy deploys at (grid_size.x*2/3 - ENEMY_DEPLOY_COLUMNS) .. grid_size.x*2/3 - 1.
 func get_enemy_deployment_zones() -> Dictionary:
 	var front_tiles: Array[Vector2i] = []
 	var back_tiles: Array[Vector2i] = []
 
-	# Front row is the leftmost column of enemy deploy zone (closest to player)
-	var front_col = grid_size.x - ENEMY_DEPLOY_COLUMNS
+	var start_x = grid_size.x * 2 / 3 - ENEMY_DEPLOY_COLUMNS  # e.g. 28 for a 48-wide grid
+	# Front column = leftmost of enemy zone (closest to player)
+	var front_col = start_x  # e.g. 28
 
 	for y in range(grid_size.y):
-		# Front column
 		var front_pos = Vector2i(front_col, y)
 		if _is_valid_deployment_tile(front_pos):
 			front_tiles.append(front_pos)
-
-		# Back columns
-		for x in range(front_col + 1, grid_size.x):
+		for x in range(front_col + 1, start_x + ENEMY_DEPLOY_COLUMNS):
 			var back_pos = Vector2i(x, y)
 			if _is_valid_deployment_tile(back_pos):
 				back_tiles.append(back_pos)

@@ -135,6 +135,10 @@ func _is_skill_perk_eligible(character: Dictionary, perk_id: String, owned: Arra
 	var perk = _skill_perks[perk_id]
 	var skills = character.get("skills", {})
 
+	# Enemy-only perks are never available to player characters
+	if perk.get("enemy_only", false):
+		return false
+
 	# Check primary skill level
 	var skill_id = perk.get("skill", "")
 	var required_level = perk.get("required_level", 1)
@@ -163,6 +167,10 @@ func _is_cross_perk_eligible(character: Dictionary, perk_id: String, owned: Arra
 	## Check if a character meets the requirements for a cross-skill perk.
 	var perk = _cross_perks[perk_id]
 	var skills = character.get("skills", {})
+
+	# Enemy-only perks are never available to player characters
+	if perk.get("enemy_only", false):
+		return false
 
 	# Check all skill requirements
 	var requirements = perk.get("requirements", {})

@@ -168,33 +168,17 @@ Material tiers fully redesigned: wood(0) → bone(1) → obsidian(2) → bronze(
 → damascene(6) → sky-iron(7) → vajra(8, indestructible). Realm-based bell-curve weights implemented.
 Shops and loot drops wired. See equipment_tables.json.
 
-### [HIGH] Enemy Equipment — Generated Weapons
-Enemies currently use plain hardcoded stat dicts (damage/accuracy/range from archetype JSON) rather
-than real generated items. They have no material, no durability, no traits, and no on-hit passives.
+### ~~[HIGH] Enemy Equipment — Generated Weapons~~ DONE
+Enemies now call `ItemSystem.generate_weapon()` and `generate_armor()` for real material-tiered
+items. Rarity scales with party power. All generated items go into `combat_inventory` so they drop
+on death. Loot system in combat_manager.gd walks `combat_inventory`, filters by realm value floor,
+and converts cheap gear to gold automatically.
 
-- Replace the manually assembled `equipped_weapon` dict in `enemy_system.gd` with a call to
-  `ItemSystem.generate_weapon(weapon_type, rarity, "", "", realm)` so enemies carry real
-  material-tiered weapons with traits and durability.
-- Enemy weapon rarity should scale with party power (already calculated in `_calculate_power_level`).
-- Loot drops from defeated enemies should yield their actual equipped item (or a copy of it), not a
-  separate random roll — enemies should drop what they carry.
-- enemy_system.gd builds the weapon dict around line 304; realm is already passed into
-  `generate_scaled_enemy()` as a parameter.
-
-### [HIGH] Ranged Ammo Scaling — Arrows and Bolts as Material Items
-Bows and crossbows currently treat ammo as a flat supply counter (Scrap-backed). With the
-material tier system, arrows and bolts should scale with their material like weapons do.
-
-- Add arrow and bolt item types to items.json across the full material progression:
-  `bone_arrow`, `wooden_arrow`, `bronze_arrow`, `iron_arrow`, `steel_arrow`, etc.
-  (obsidian_arrow as brittle but high-damage off-branch; sky-iron/vajra at high tiers)
-- Bolts (crossbow ammo) follow the same material ladder
-- Ammo material determines damage bonus added to the ranged weapon's base damage
-- Low-tier ammo (bone, wood) should be common/cheap; high-tier rare/expensive
-- Smithing passive restores ammo using lowest available material in inventory
-- Shops and loot tables need ammo entries per realm (hell starts with bone/wooden arrows)
-- Design question: does carrying different ammo types require inventory slots, or is it
-  abstracted as a supply pool with a material-quality modifier?
+### ~~[HIGH] Ranged Ammo Scaling — Arrows and Bolts as Material Items~~ DONE
+Material-tiered arrows and bolts live in `ammo.json` (bone→bronze→iron→steel→damascene→sky-iron).
+`damage_bonus` applied in `CombatUnit.get_base_damage()`; `accuracy_bonus` applied in accuracy
+calculation. Special ammo (fire, venom, frost, silencing) handled via `_process_ammo_special_effect`.
+Ammo is an inventory item (not Scrap supply); `ItemSystem.consume_ammo()` tracks counts.
 
 ### ~~Companion Auto-Development Refactor~~ DONE
 - [x] All 24 companions in companions.json already have skill-only `build_weights` (no attr keys)

@@ -1,2260 +1,2260 @@
 {
   "races": {
-    "_comment": "Races organized by realm. starting_skills is a dict {skill_id: level}. starting_spells is an array of {school or schools, level, count}. elemental_affinity_bonuses is innate racial affinity independent of skills. reincarnation_weight is relative probability of being reborn as this race (higher = more common).",
-    "red_devil": {
-      "name": "Red Devil",
-      "realm": "hell",
-      "description": "Hot-headed and driven by anger and lust, red devils are the finest warriors in the Hells.",
-      "attribute_modifiers": {
-        "strength": 3,
-        "finesse": -1,
-        "constitution": 0,
-        "focus": 2,
-        "awareness": -2,
-        "charm": -1,
-        "luck": -1
-      },
-      "attribute_caps": {
-        "strength": 33,
-        "finesse": 25,
-        "constitution": 30,
-        "focus": 32,
-        "awareness": 25,
-        "charm": 25,
-        "luck": 27
-      },
-      "elemental_affinity_bonuses": {
-        "fire": 5
-      },
-      "starting_skills": {
-        "might": 1
-      },
-      "starting_spells": [
-        {
-          "school": "Fire",
-          "level": 1,
-          "count": 1
-        }
-      ],
-      "reincarnation_weight": 30,
-      "typical_backgrounds": [
-        "warrior",
-        "berserker",
-        "guard",
-        "raider",
+	"_comment": "Races organized by realm. starting_skills is a dict {skill_id: level}. starting_spells is an array of {school or schools, level, count}. elemental_affinity_bonuses is innate racial affinity independent of skills. reincarnation_weight is relative probability of being reborn as this race (higher = more common).",
+	"red_devil": {
+	  "name": "Red Devil",
+	  "realm": "hell",
+	  "description": "Hot-headed and driven by anger and lust, red devils are the finest warriors in the Hells.",
+	  "attribute_modifiers": {
+		"strength": 3,
+		"finesse": -1,
+		"constitution": 0,
+		"focus": 2,
+		"awareness": -2,
+		"charm": -1,
+		"luck": -1
+	  },
+	  "attribute_caps": {
+		"strength": 33,
+		"finesse": 25,
+		"constitution": 30,
+		"focus": 32,
+		"awareness": 25,
+		"charm": 25,
+		"luck": 27
+	  },
+	  "elemental_affinity_bonuses": {
+		"fire": 5
+	  },
+	  "starting_skills": {
+		"might": 1
+	  },
+	  "starting_spells": [
+		{
+		  "school": "Fire",
+		  "level": 1,
+		  "count": 1
+		}
+	  ],
+	  "reincarnation_weight": 30,
+	  "typical_backgrounds": [
+		"warrior",
+		"berserker",
+		"guard",
+		"raider",
         "torturer"
-      ],
-      "todo": [
+	  ],
+	  "todo": [
         "better_starting_weapon: start with a tier-2 melee weapon instead of tier-1"
-      ],
-      "resistances": {}
-    },
-    "blue_devil": {
-      "name": "Blue Devil",
-      "realm": "hell",
-      "description": "Cold and calculating, blue devils keep grudges long after they were forgotten in the realms above.",
-      "attribute_modifiers": {
-        "strength": -1,
-        "finesse": 3,
-        "constitution": -1,
-        "focus": 0,
-        "awareness": 2,
-        "charm": -1,
-        "luck": -2
-      },
-      "attribute_caps": {
-        "strength": 25,
-        "finesse": 33,
-        "constitution": 27,
-        "focus": 27,
-        "awareness": 32,
-        "charm": 25,
-        "luck": 25
-      },
-      "elemental_affinity_bonuses": {
-        "water": 5
-      },
-      "starting_skills": {
-        "water_magic": 1
-      },
-      "starting_spells": [
-        {
-          "school": "Water",
-          "level": 1,
-          "count": 1
-        },
-        {
-          "school": "Water",
-          "level": 1,
-          "count": 1
-        }
-      ],
-      "reincarnation_weight": 30,
-      "typical_backgrounds": [
-        "warrior",
-        "hunter",
-        "executioner",
-        "soul_jailer",
+	  ],
+	  "resistances": {}
+	},
+	"blue_devil": {
+	  "name": "Blue Devil",
+	  "realm": "hell",
+	  "description": "Cold and calculating, blue devils keep grudges long after they were forgotten in the realms above.",
+	  "attribute_modifiers": {
+		"strength": -1,
+		"finesse": 3,
+		"constitution": -1,
+		"focus": 0,
+		"awareness": 2,
+		"charm": -1,
+		"luck": -2
+	  },
+	  "attribute_caps": {
+		"strength": 25,
+		"finesse": 33,
+		"constitution": 27,
+		"focus": 27,
+		"awareness": 32,
+		"charm": 25,
+		"luck": 25
+	  },
+	  "elemental_affinity_bonuses": {
+		"water": 5
+	  },
+	  "starting_skills": {
+		"water_magic": 1
+	  },
+	  "starting_spells": [
+		{
+		  "school": "Water",
+		  "level": 1,
+		  "count": 1
+		},
+		{
+		  "school": "Water",
+		  "level": 1,
+		  "count": 1
+		}
+	  ],
+	  "reincarnation_weight": 30,
+	  "typical_backgrounds": [
+		"warrior",
+		"hunter",
+		"executioner",
+		"soul_jailer",
         "guard"
-      ],
-      "resistances": {}
-    },
-    "yellow_devil": {
-      "name": "Yellow Devil",
-      "realm": "hell",
-      "description": "Greedy and proud, yellow devils tend to cluster wherever wealth changes hands.",
-      "attribute_modifiers": {
-        "strength": -1,
-        "finesse": -1,
-        "constitution": 2,
-        "focus": -1,
-        "awareness": -1,
-        "charm": -1,
-        "luck": 3
-      },
-      "attribute_caps": {
-        "strength": 25,
-        "finesse": 25,
-        "constitution": 32,
-        "focus": 25,
-        "awareness": 25,
-        "charm": 25,
-        "luck": 33
-      },
-      "elemental_affinity_bonuses": {
-        "earth": 5
-      },
-      "starting_skills": {
-        "trade": 1
-      },
-      "starting_spells": [
-        {
-          "school": "Earth",
-          "level": 1,
-          "count": 1
-        }
-      ],
-      "reincarnation_weight": 20,
-      "typical_backgrounds": [
-        "merchant",
-        "raider",
-        "guard",
-        "infernal_scribe",
+	  ],
+	  "resistances": {}
+	},
+	"yellow_devil": {
+	  "name": "Yellow Devil",
+	  "realm": "hell",
+	  "description": "Greedy and proud, yellow devils tend to cluster wherever wealth changes hands.",
+	  "attribute_modifiers": {
+		"strength": -1,
+		"finesse": -1,
+		"constitution": 2,
+		"focus": -1,
+		"awareness": -1,
+		"charm": -1,
+		"luck": 3
+	  },
+	  "attribute_caps": {
+		"strength": 25,
+		"finesse": 25,
+		"constitution": 32,
+		"focus": 25,
+		"awareness": 25,
+		"charm": 25,
+		"luck": 33
+	  },
+	  "elemental_affinity_bonuses": {
+		"earth": 5
+	  },
+	  "starting_skills": {
+		"trade": 1
+	  },
+	  "starting_spells": [
+		{
+		  "school": "Earth",
+		  "level": 1,
+		  "count": 1
+		}
+	  ],
+	  "reincarnation_weight": 20,
+	  "typical_backgrounds": [
+		"merchant",
+		"raider",
+		"guard",
+		"infernal_scribe",
         "torturer"
-      ],
-      "todo": [
+	  ],
+	  "todo": [
         "extra_starting_gold: begin with 50 bonus gold"
-      ],
-      "resistances": {}
-    },
-    "green_devil": {
-      "name": "Green Devil",
-      "realm": "hell",
-      "description": "Quick-witted and paranoid, green devils make for excellent operatives and terrible friends.",
-      "attribute_modifiers": {
-        "strength": -1,
-        "finesse": 3,
-        "constitution": -2,
-        "focus": -1,
-        "awareness": 1,
-        "charm": -1,
-        "luck": 1
-      },
-      "attribute_caps": {
-        "strength": 25,
-        "finesse": 33,
-        "constitution": 25,
-        "focus": 25,
-        "awareness": 30,
-        "charm": 25,
-        "luck": 29
-      },
-      "elemental_affinity_bonuses": {
-        "air": 5
-      },
-      "starting_skills": {
-        "air_magic": 1
-      },
-      "starting_spells": [
-        {
-          "school": "Air",
-          "level": 1,
-          "count": 1
-        },
-        {
-          "school": "Air",
-          "level": 1,
-          "count": 1
-        }
-      ],
-      "reincarnation_weight": 20,
-      "typical_backgrounds": [
-        "hunter",
-        "raider",
-        "infernal_scribe",
+	  ],
+	  "resistances": {}
+	},
+	"green_devil": {
+	  "name": "Green Devil",
+	  "realm": "hell",
+	  "description": "Quick-witted and paranoid, green devils make for excellent operatives and terrible friends.",
+	  "attribute_modifiers": {
+		"strength": -1,
+		"finesse": 3,
+		"constitution": -2,
+		"focus": -1,
+		"awareness": 1,
+		"charm": -1,
+		"luck": 1
+	  },
+	  "attribute_caps": {
+		"strength": 25,
+		"finesse": 33,
+		"constitution": 25,
+		"focus": 25,
+		"awareness": 30,
+		"charm": 25,
+		"luck": 29
+	  },
+	  "elemental_affinity_bonuses": {
+		"air": 5
+	  },
+	  "starting_skills": {
+		"air_magic": 1
+	  },
+	  "starting_spells": [
+		{
+		  "school": "Air",
+		  "level": 1,
+		  "count": 1
+		},
+		{
+		  "school": "Air",
+		  "level": 1,
+		  "count": 1
+		}
+	  ],
+	  "reincarnation_weight": 20,
+	  "typical_backgrounds": [
+		"hunter",
+		"raider",
+		"infernal_scribe",
         "spy"
-      ],
-      "resistances": {}
-    },
-    "black_devil": {
-      "name": "Black Devil",
-      "realm": "hell",
-      "description": "Spawned from the Outer Dark, black devils live off confusion and fear.",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 1,
-        "constitution": -2,
-        "focus": 1,
-        "awareness": 2,
-        "charm": -1,
-        "luck": -1
-      },
-      "attribute_caps": {
-        "strength": 27,
-        "finesse": 29,
-        "constitution": 25,
-        "focus": 30,
-        "awareness": 32,
-        "charm": 25,
-        "luck": 25
-      },
-      "elemental_affinity_bonuses": {
-        "space": 5
-      },
-      "starting_skills": {
-        "black_magic": 1,
-        "space_magic": 1
-      },
-      "starting_spells": [
-        {
-          "school": "Black",
-          "level": 1,
-          "count": 1
-        },
-        {
-          "school": "Space",
-          "level": 1,
-          "count": 1
-        },
-        {
-          "schools": [
-            "Black",
+	  ],
+	  "resistances": {}
+	},
+	"black_devil": {
+	  "name": "Black Devil",
+	  "realm": "hell",
+	  "description": "Spawned from the Outer Dark, black devils live off confusion and fear.",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": 1,
+		"constitution": -2,
+		"focus": 1,
+		"awareness": 2,
+		"charm": -1,
+		"luck": -1
+	  },
+	  "attribute_caps": {
+		"strength": 27,
+		"finesse": 29,
+		"constitution": 25,
+		"focus": 30,
+		"awareness": 32,
+		"charm": 25,
+		"luck": 25
+	  },
+	  "elemental_affinity_bonuses": {
+		"space": 5
+	  },
+	  "starting_skills": {
+		"black_magic": 1,
+		"space_magic": 1
+	  },
+	  "starting_spells": [
+		{
+		  "school": "Black",
+		  "level": 1,
+		  "count": 1
+		},
+		{
+		  "school": "Space",
+		  "level": 1,
+		  "count": 1
+		},
+		{
+		  "schools": [
+			"Black",
             "Space"
-          ],
-          "level": 1,
-          "count": 1
-        }
-      ],
-      "reincarnation_weight": 5,
-      "typical_backgrounds": [
-        "executioner",
-        "torturer",
-        "infernal_scribe",
+		  ],
+		  "level": 1,
+		  "count": 1
+		}
+	  ],
+	  "reincarnation_weight": 5,
+	  "typical_backgrounds": [
+		"executioner",
+		"torturer",
+		"infernal_scribe",
         "penitent"
-      ],
-      "resistances": {}
-    },
-    "white_devil": {
-      "name": "White Devil",
-      "realm": "hell",
-      "description": "Lazy and a bit ditzy, white devils make pleasant company as far as hell's denizens go.",
-      "attribute_modifiers": {
-        "strength": -2,
-        "finesse": 1,
-        "constitution": 1,
-        "focus": -2,
-        "awareness": -1,
-        "charm": 2,
-        "luck": 1
-      },
-      "attribute_caps": {
-        "strength": 23,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 25,
-        "awareness": 25,
-        "charm": 33,
-        "luck": 29
-      },
-      "elemental_affinity_bonuses": {
-        "space": 5
-      },
-      "starting_skills": {
-        "persuasion": 1,
-        "space_magic": 1
-      },
-      "starting_spells": [
-        {
-          "school": "Space",
-          "level": 1,
-          "count": 1
-        },
-        {
-          "school": "White",
-          "level": 1,
-          "count": 1
-        }
-      ],
-      "reincarnation_weight": 5,
-      "typical_backgrounds": [
-        "wanderer",
-        "merchant",
-        "penitent",
-        "diplomat",
+	  ],
+	  "resistances": {}
+	},
+	"white_devil": {
+	  "name": "White Devil",
+	  "realm": "hell",
+	  "description": "Lazy and a bit ditzy, white devils make pleasant company as far as hell's denizens go.",
+	  "attribute_modifiers": {
+		"strength": -2,
+		"finesse": 1,
+		"constitution": 1,
+		"focus": -2,
+		"awareness": -1,
+		"charm": 2,
+		"luck": 1
+	  },
+	  "attribute_caps": {
+		"strength": 23,
+		"finesse": 28,
+		"constitution": 28,
+		"focus": 25,
+		"awareness": 25,
+		"charm": 33,
+		"luck": 29
+	  },
+	  "elemental_affinity_bonuses": {
+		"space": 5
+	  },
+	  "starting_skills": {
+		"persuasion": 1,
+		"space_magic": 1
+	  },
+	  "starting_spells": [
+		{
+		  "school": "Space",
+		  "level": 1,
+		  "count": 1
+		},
+		{
+		  "school": "White",
+		  "level": 1,
+		  "count": 1
+		}
+	  ],
+	  "reincarnation_weight": 5,
+	  "typical_backgrounds": [
+		"wanderer",
+		"merchant",
+		"penitent",
+		"diplomat",
         "infernal_scribe"
-      ],
-      "resistances": {}
-    },
-    "rolang": {
-      "name": "Rolang",
-      "realm": "hungry_ghost",
-      "description": "The newly dead of the hungry ghost realm. Rolangs have been in the world of the dead for a relatively short time and are the least conscious of its inhabitants. Young walking dead are dim and animalistic \u2014 rigid, slow, moving in a jerky jiangshi-like manner \u2014 and only over long ages do some begin to develop awareness of their condition. Most rot away into skeletons. A rare few are preserved by alchemical and yogic arts and become the lords of their kind.",
-      "attribute_modifiers": {
-        "strength": 3,
-        "finesse": -1,
-        "constitution": 3,
-        "focus": -1,
-        "awareness": -1,
-        "charm": -1,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 33,
-        "finesse": 24,
-        "constitution": 35,
-        "focus": 24,
-        "awareness": 24,
-        "charm": 22,
-        "luck": 27
-      },
-      "elemental_affinity_bonuses": {
-        "earth": 3
-      },
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 35,
-      "typical_backgrounds": [
-        "shambler",
-        "former_soldier",
-        "plague_victim",
-        "preserved",
+	  ],
+	  "resistances": {}
+	},
+	"rolang": {
+	  "name": "Rolang",
+	  "realm": "hungry_ghost",
+	  "description": "The newly dead of the hungry ghost realm. Rolangs have been in the world of the dead for a relatively short time and are the least conscious of its inhabitants. Young walking dead are dim and animalistic \u2014 rigid, slow, moving in a jerky jiangshi-like manner \u2014 and only over long ages do some begin to develop awareness of their condition. Most rot away into skeletons. A rare few are preserved by alchemical and yogic arts and become the lords of their kind.",
+	  "attribute_modifiers": {
+		"strength": 3,
+		"finesse": -1,
+		"constitution": 3,
+		"focus": -1,
+		"awareness": -1,
+		"charm": -1,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 33,
+		"finesse": 24,
+		"constitution": 35,
+		"focus": 24,
+		"awareness": 24,
+		"charm": 22,
+		"luck": 27
+	  },
+	  "elemental_affinity_bonuses": {
+		"earth": 3
+	  },
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 35,
+	  "typical_backgrounds": [
+		"shambler",
+		"former_soldier",
+		"plague_victim",
+		"preserved",
         "bog_warden"
-      ],
-      "resistances": {}
-    },
-    "skeleton": {
-      "name": "Skeleton",
-      "realm": "hungry_ghost",
-      "description": "Freed from the needs of the flesh by unstoppable decay, skeletons have had time to think. Most maintain the dryness of their sprawling catacombs and praise the blessings of abundant calcium with cheerful enthusiasm. Conscious skeletons are far more common than among the newly dead \u2014 the long wait in the grave strips away the animal confusion and leaves something clear-eyed and surprisingly sociable behind.",
-      "attribute_modifiers": {
-        "strength": -1,
-        "finesse": 0,
-        "constitution": -1,
-        "focus": 1,
-        "awareness": 1,
-        "charm": 1,
-        "luck": 1
-      },
-      "attribute_caps": {
-        "strength": 26,
-        "finesse": 29,
-        "constitution": 26,
-        "focus": 30,
-        "awareness": 30,
-        "charm": 31,
-        "luck": 31
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 30,
-      "typical_backgrounds": [
-        "warrior",
-        "guard",
-        "former_soldier",
-        "catacomb_keeper",
-        "bone_dancer",
-        "charnel_yogi",
+	  ],
+	  "resistances": {}
+	},
+	"skeleton": {
+	  "name": "Skeleton",
+	  "realm": "hungry_ghost",
+	  "description": "Freed from the needs of the flesh by unstoppable decay, skeletons have had time to think. Most maintain the dryness of their sprawling catacombs and praise the blessings of abundant calcium with cheerful enthusiasm. Conscious skeletons are far more common than among the newly dead \u2014 the long wait in the grave strips away the animal confusion and leaves something clear-eyed and surprisingly sociable behind.",
+	  "attribute_modifiers": {
+		"strength": -1,
+		"finesse": 0,
+		"constitution": -1,
+		"focus": 1,
+		"awareness": 1,
+		"charm": 1,
+		"luck": 1
+	  },
+	  "attribute_caps": {
+		"strength": 26,
+		"finesse": 29,
+		"constitution": 26,
+		"focus": 30,
+		"awareness": 30,
+		"charm": 31,
+		"luck": 31
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 30,
+	  "typical_backgrounds": [
+		"warrior",
+		"guard",
+		"former_soldier",
+		"catacomb_keeper",
+		"bone_dancer",
+		"charnel_yogi",
         "penitent"
-      ],
-      "resistances": {}
-    },
-    "dralha": {
-      "name": "Dralha",
-      "realm": "hungry_ghost",
-      "description": "Warrior-kings who refused to relinquish their power at death and rebuilt their dominion from beyond the grave. Dralha are former chieftains, generals, and conquerors who linger in the charnel grounds surrounded by the spirits of those who served them in life. They lead through force and presence, wielding weapons with the same authority they carried in the living world.",
-      "attribute_modifiers": {
-        "strength": 2,
-        "finesse": -2,
-        "constitution": 0,
-        "focus": -1,
-        "awareness": -1,
-        "charm": 2,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 32,
-        "finesse": 23,
-        "constitution": 28,
-        "focus": 25,
-        "awareness": 25,
-        "charm": 32,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {
-        "fire": 5
-      },
-      "starting_skills": {
-        "might": 1,
-        "leadership": 1
-      },
-      "starting_spells": [],
-      "reincarnation_weight": 7,
-      "typical_backgrounds": [
-        "warrior",
-        "former_soldier",
-        "noble",
-        "raider",
+	  ],
+	  "resistances": {}
+	},
+	"dralha": {
+	  "name": "Dralha",
+	  "realm": "hungry_ghost",
+	  "description": "Warrior-kings who refused to relinquish their power at death and rebuilt their dominion from beyond the grave. Dralha are former chieftains, generals, and conquerors who linger in the charnel grounds surrounded by the spirits of those who served them in life. They lead through force and presence, wielding weapons with the same authority they carried in the living world.",
+	  "attribute_modifiers": {
+		"strength": 2,
+		"finesse": -2,
+		"constitution": 0,
+		"focus": -1,
+		"awareness": -1,
+		"charm": 2,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 32,
+		"finesse": 23,
+		"constitution": 28,
+		"focus": 25,
+		"awareness": 25,
+		"charm": 32,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {
+		"fire": 5
+	  },
+	  "starting_skills": {
+		"might": 1,
+		"leadership": 1
+	  },
+	  "starting_spells": [],
+	  "reincarnation_weight": 7,
+	  "typical_backgrounds": [
+		"warrior",
+		"former_soldier",
+		"noble",
+		"raider",
         "guard"
-      ],
-      "resistances": {}
-    },
-    "gyelpo": {
-      "name": "Gyelpo",
-      "realm": "hungry_ghost",
-      "description": "Powerful tantric practitioners and sorcerers who accumulated enough spiritual force in life to persist after death as kings of the spirit world. Where dralha rule through arms and loyalty, gyelpos rule through binding oaths, ritual contracts, and the weight of accumulated power. Shugden is the archetype: a sorcerer who refused to dissolve, who built a new throne from obligation and fear.",
-      "attribute_modifiers": {
-        "strength": -2,
-        "finesse": 0,
-        "constitution": -2,
-        "focus": 2,
-        "awareness": 2,
-        "charm": -1,
-        "luck": 1
-      },
-      "attribute_caps": {
-        "strength": 23,
-        "finesse": 28,
-        "constitution": 23,
-        "focus": 32,
-        "awareness": 32,
-        "charm": 25,
-        "luck": 30
-      },
-      "elemental_affinity_bonuses": {
-        "space": 5
-      },
-      "starting_skills": {
-        "black_magic": 1,
-        "ritual": 1
-      },
-      "starting_spells": [
-        {
-          "school": "Black",
-          "level": 1,
-          "count": 1
-        }
-      ],
-      "reincarnation_weight": 5,
-      "typical_backgrounds": [
-        "charnel_yogi",
-        "scholar",
-        "priest",
+	  ],
+	  "resistances": {}
+	},
+	"gyelpo": {
+	  "name": "Gyelpo",
+	  "realm": "hungry_ghost",
+	  "description": "Powerful tantric practitioners and sorcerers who accumulated enough spiritual force in life to persist after death as kings of the spirit world. Where dralha rule through arms and loyalty, gyelpos rule through binding oaths, ritual contracts, and the weight of accumulated power. Shugden is the archetype: a sorcerer who refused to dissolve, who built a new throne from obligation and fear.",
+	  "attribute_modifiers": {
+		"strength": -2,
+		"finesse": 0,
+		"constitution": -2,
+		"focus": 2,
+		"awareness": 2,
+		"charm": -1,
+		"luck": 1
+	  },
+	  "attribute_caps": {
+		"strength": 23,
+		"finesse": 28,
+		"constitution": 23,
+		"focus": 32,
+		"awareness": 32,
+		"charm": 25,
+		"luck": 30
+	  },
+	  "elemental_affinity_bonuses": {
+		"space": 5
+	  },
+	  "starting_skills": {
+		"black_magic": 1,
+		"ritual": 1
+	  },
+	  "starting_spells": [
+		{
+		  "school": "Black",
+		  "level": 1,
+		  "count": 1
+		}
+	  ],
+	  "reincarnation_weight": 5,
+	  "typical_backgrounds": [
+		"charnel_yogi",
+		"scholar",
+		"priest",
         "penitent"
-      ],
-      "resistances": {}
-    },
-    "dre": {
-      "name": "Dr\u00e9",
-      "realm": "hungry_ghost",
-      "description": "Ghosts in the oldest and most literal sense: consciousness that has shed its body but not its attachments, drifting through the charnel grounds like smoke through bone. Dr\u00e9 are the most dissolved of the preta, barely present in the physical world. They feel little of its violence but remain bound to it by the thread of whatever they could not let go.",
-      "attribute_modifiers": {
-        "strength": -3,
-        "finesse": 0,
-        "constitution": -3,
-        "focus": 2,
-        "awareness": 2,
-        "charm": 0,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 22,
-        "finesse": 28,
-        "constitution": 22,
-        "focus": 32,
-        "awareness": 32,
-        "charm": 28,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {
-        "space": 5
-      },
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 5,
-      "typical_backgrounds": [
-        "charnel_yogi",
-        "penitent",
+	  ],
+	  "resistances": {}
+	},
+	"dre": {
+	  "name": "Dr\u00e9",
+	  "realm": "hungry_ghost",
+	  "description": "Ghosts in the oldest and most literal sense: consciousness that has shed its body but not its attachments, drifting through the charnel grounds like smoke through bone. Dr\u00e9 are the most dissolved of the preta, barely present in the physical world. They feel little of its violence but remain bound to it by the thread of whatever they could not let go.",
+	  "attribute_modifiers": {
+		"strength": -3,
+		"finesse": 0,
+		"constitution": -3,
+		"focus": 2,
+		"awareness": 2,
+		"charm": 0,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 22,
+		"finesse": 28,
+		"constitution": 22,
+		"focus": 32,
+		"awareness": 32,
+		"charm": 28,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {
+		"space": 5
+	  },
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 5,
+	  "typical_backgrounds": [
+		"charnel_yogi",
+		"penitent",
         "wanderer"
-      ],
-      "todo": [
+	  ],
+	  "todo": [
         "physical_damage_reduction: implement 50% physical damage immunity in combat system"
-      ],
-      "resistances": {
-        "physical": 50
-      }
-    },
-    "vetala": {
-      "name": "Vetala",
-      "realm": "hungry_ghost",
-      "description": "Highly intelligent and curious tricksters who inhabit the charnel grounds. Vetalas are ambivalent towards the living and arbitrary in their dealings \u2014 sometimes helpful, sometimes dangerous, always keeping their own counsel. They drain life force through magic rather than physical violence, produce vivid illusions, and have a natural propensity for the arcane arts. Their propensity for rhetoric, humor, and meditation means they can usually talk their way out of a fight, though they rarely feel obliged to.",
-      "attribute_modifiers": {
-        "strength": -2,
-        "finesse": 0,
-        "constitution": -1,
-        "focus": 2,
-        "awareness": 1,
-        "charm": 1,
-        "luck": -1
-      },
-      "attribute_caps": {
-        "strength": 23,
-        "finesse": 29,
-        "constitution": 26,
-        "focus": 34,
-        "awareness": 31,
-        "charm": 31,
-        "luck": 26
-      },
-      "elemental_affinity_bonuses": {
-        "space": 5
-      },
-      "starting_skills": {
-        "sorcery": 1,
-        "learning": 1
-      },
-      "starting_spells": [
-        {
-          "school": "Sorcery",
-          "level": 1,
-          "count": 1
-        }
-      ],
-      "reincarnation_weight": 10,
-      "typical_backgrounds": [
-        "trickster",
-        "charnel_yogi",
-        "spy",
-        "monk",
-        "scholar",
+	  ],
+	  "resistances": {
+		"physical": 50
+	  }
+	},
+	"vetala": {
+	  "name": "Vetala",
+	  "realm": "hungry_ghost",
+	  "description": "Highly intelligent and curious tricksters who inhabit the charnel grounds. Vetalas are ambivalent towards the living and arbitrary in their dealings \u2014 sometimes helpful, sometimes dangerous, always keeping their own counsel. They drain life force through magic rather than physical violence, produce vivid illusions, and have a natural propensity for the arcane arts. Their propensity for rhetoric, humor, and meditation means they can usually talk their way out of a fight, though they rarely feel obliged to.",
+	  "attribute_modifiers": {
+		"strength": -2,
+		"finesse": 0,
+		"constitution": -1,
+		"focus": 2,
+		"awareness": 1,
+		"charm": 1,
+		"luck": -1
+	  },
+	  "attribute_caps": {
+		"strength": 23,
+		"finesse": 29,
+		"constitution": 26,
+		"focus": 34,
+		"awareness": 31,
+		"charm": 31,
+		"luck": 26
+	  },
+	  "elemental_affinity_bonuses": {
+		"space": 5
+	  },
+	  "starting_skills": {
+		"sorcery": 1,
+		"learning": 1
+	  },
+	  "starting_spells": [
+		{
+		  "school": "Sorcery",
+		  "level": 1,
+		  "count": 1
+		}
+	  ],
+	  "reincarnation_weight": 10,
+	  "typical_backgrounds": [
+		"trickster",
+		"charnel_yogi",
+		"spy",
+		"monk",
+		"scholar",
         "former_soldier"
-      ],
-      "resistances": {}
-    },
-    "naga": {
-      "name": "Naga",
-      "realm": "animal",
-      "description": "Serpentine beings of wisdom and power dwelling beneath the waves",
-      "attribute_modifiers": {
-        "strength": -1,
-        "finesse": 1,
-        "constitution": 0,
-        "focus": 2,
-        "awareness": 3,
-        "charm": 2,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 25,
-        "finesse": 29,
-        "constitution": 28,
-        "focus": 32,
-        "awareness": 35,
-        "charm": 32,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {
-        "water_magic": 1,
-        "persuasion": 1
-      },
-      "starting_spells": [],
-      "reincarnation_weight": 0,
-      "typical_backgrounds": [
-        "diplomat",
-        "guardian",
-        "scholar",
+	  ],
+	  "resistances": {}
+	},
+	"naga": {
+	  "name": "Naga",
+	  "realm": "animal",
+	  "description": "Serpentine beings of wisdom and power dwelling beneath the waves",
+	  "attribute_modifiers": {
+		"strength": -1,
+		"finesse": 1,
+		"constitution": 0,
+		"focus": 2,
+		"awareness": 3,
+		"charm": 2,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 25,
+		"finesse": 29,
+		"constitution": 28,
+		"focus": 32,
+		"awareness": 35,
+		"charm": 32,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {
+		"water_magic": 1,
+		"persuasion": 1
+	  },
+	  "starting_spells": [],
+	  "reincarnation_weight": 0,
+	  "typical_backgrounds": [
+		"diplomat",
+		"guardian",
+		"scholar",
         "priest"
-      ],
-      "resistances": {}
-    },
-    "bee": {
-      "name": "Bee",
-      "realm": "animal",
-      "description": "TODO: Fill in description",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 0,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 0,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 0,
-      "typical_backgrounds": [],
-      "resistances": {}
-    },
-    "yaksha": {
-      "name": "Yaksha",
-      "realm": "animal",
-      "description": "TODO: Fill in description",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 0,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 0,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 0,
-      "typical_backgrounds": [],
-      "resistances": {}
-    },
-    "human": {
-      "name": "Human",
-      "realm": "human",
-      "description": "Beings of potential and choice, balanced in all aspects",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 0,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 0,
-        "luck": 1
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 30,
-        "awareness": 30,
-        "charm": 30,
-        "luck": 32
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 0,
-      "typical_backgrounds": [
-        "wanderer",
-        "scholar",
-        "merchant",
-        "monk",
-        "noble",
-        "warrior",
+	  ],
+	  "resistances": {}
+	},
+	"bee": {
+	  "name": "Bee",
+	  "realm": "animal",
+	  "description": "TODO: Fill in description",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": 0,
+		"constitution": 0,
+		"focus": 0,
+		"awareness": 0,
+		"charm": 0,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 28,
+		"finesse": 28,
+		"constitution": 28,
+		"focus": 28,
+		"awareness": 28,
+		"charm": 28,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 0,
+	  "typical_backgrounds": [],
+	  "resistances": {}
+	},
+	"yaksha": {
+	  "name": "Yaksha",
+	  "realm": "animal",
+	  "description": "TODO: Fill in description",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": 0,
+		"constitution": 0,
+		"focus": 0,
+		"awareness": 0,
+		"charm": 0,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 28,
+		"finesse": 28,
+		"constitution": 28,
+		"focus": 28,
+		"awareness": 28,
+		"charm": 28,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 0,
+	  "typical_backgrounds": [],
+	  "resistances": {}
+	},
+	"human": {
+	  "name": "Human",
+	  "realm": "human",
+	  "description": "Beings of potential and choice, balanced in all aspects",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": 0,
+		"constitution": 0,
+		"focus": 0,
+		"awareness": 0,
+		"charm": 0,
+		"luck": 1
+	  },
+	  "attribute_caps": {
+		"strength": 28,
+		"finesse": 28,
+		"constitution": 28,
+		"focus": 30,
+		"awareness": 30,
+		"charm": 30,
+		"luck": 32
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 0,
+	  "typical_backgrounds": [
+		"wanderer",
+		"scholar",
+		"merchant",
+		"monk",
+		"noble",
+		"warrior",
         "farmer"
-      ],
-      "resistances": {}
-    },
-    "nomad": {
-      "name": "Nomad",
-      "realm": "human",
-      "description": "TODO: Fill in description",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 0,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 0,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 0,
-      "typical_backgrounds": [],
-      "resistances": {}
-    },
-    "mountain_folk": {
-      "name": "Mountain Folk",
-      "realm": "human",
-      "description": "TODO: Fill in description",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 0,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 0,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 0,
-      "typical_backgrounds": [],
-      "resistances": {}
-    },
-    "trader": {
-      "name": "Trader",
-      "realm": "human",
-      "description": "TODO: Fill in description",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 0,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 0,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 0,
-      "typical_backgrounds": [],
-      "resistances": {}
-    },
-    "tsen": {
-      "name": "Tsen",
-      "realm": "asura",
-      "description": "TODO: Fill in description",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 0,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 0,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 0,
-      "typical_backgrounds": [],
-      "resistances": {}
-    },
-    "rudra": {
-      "name": "Rudra",
-      "realm": "asura",
-      "description": "TODO: Fill in description",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 0,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 0,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 0,
-      "typical_backgrounds": [],
-      "resistances": {}
-    },
-    "gandharva": {
-      "name": "Gandharva",
-      "realm": "god",
-      "description": "TODO: Fill in description",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 0,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 0,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 0,
-      "typical_backgrounds": [],
-      "resistances": {}
-    },
-    "apsara": {
-      "name": "Apsara",
-      "realm": "god",
-      "description": "TODO: Fill in description",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 0,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 0,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 0,
-      "typical_backgrounds": [],
-      "resistances": {}
-    },
-    "planetary_deity": {
-      "name": "Planetary Deity",
-      "realm": "god",
-      "description": "TODO: Fill in description",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 0,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 0,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 0,
-      "typical_backgrounds": [],
-      "resistances": {}
-    },
-    "shaza": {
-      "name": "Shaza",
-      "realm": "hungry_ghost",
-      "description": "The predators of the underworld, the shaza aggressively seek out bodies to devour.",
-      "attribute_modifiers": {
-        "strength": 2,
-        "finesse": 2,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": -2,
-        "charm": -2,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 30,
-        "finesse": 30,
-        "constitution": 27,
-        "focus": 27,
-        "awareness": 26,
-        "charm": 26,
-        "luck": 27
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {
-        "unarmed": 1,
-        "might": 1
-      },
-      "starting_spells": [],
-      "reincarnation_weight": 10,
-      "typical_backgrounds": [
-        "warrior",
-        "guard",
-        "former_soldier",
+	  ],
+	  "resistances": {}
+	},
+	"nomad": {
+	  "name": "Nomad",
+	  "realm": "human",
+	  "description": "TODO: Fill in description",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": 0,
+		"constitution": 0,
+		"focus": 0,
+		"awareness": 0,
+		"charm": 0,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 28,
+		"finesse": 28,
+		"constitution": 28,
+		"focus": 28,
+		"awareness": 28,
+		"charm": 28,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 0,
+	  "typical_backgrounds": [],
+	  "resistances": {}
+	},
+	"mountain_folk": {
+	  "name": "Mountain Folk",
+	  "realm": "human",
+	  "description": "TODO: Fill in description",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": 0,
+		"constitution": 0,
+		"focus": 0,
+		"awareness": 0,
+		"charm": 0,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 28,
+		"finesse": 28,
+		"constitution": 28,
+		"focus": 28,
+		"awareness": 28,
+		"charm": 28,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 0,
+	  "typical_backgrounds": [],
+	  "resistances": {}
+	},
+	"trader": {
+	  "name": "Trader",
+	  "realm": "human",
+	  "description": "TODO: Fill in description",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": 0,
+		"constitution": 0,
+		"focus": 0,
+		"awareness": 0,
+		"charm": 0,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 28,
+		"finesse": 28,
+		"constitution": 28,
+		"focus": 28,
+		"awareness": 28,
+		"charm": 28,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 0,
+	  "typical_backgrounds": [],
+	  "resistances": {}
+	},
+	"tsen": {
+	  "name": "Tsen",
+	  "realm": "asura",
+	  "description": "TODO: Fill in description",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": 0,
+		"constitution": 0,
+		"focus": 0,
+		"awareness": 0,
+		"charm": 0,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 28,
+		"finesse": 28,
+		"constitution": 28,
+		"focus": 28,
+		"awareness": 28,
+		"charm": 28,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 0,
+	  "typical_backgrounds": [],
+	  "resistances": {}
+	},
+	"rudra": {
+	  "name": "Rudra",
+	  "realm": "asura",
+	  "description": "TODO: Fill in description",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": 0,
+		"constitution": 0,
+		"focus": 0,
+		"awareness": 0,
+		"charm": 0,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 28,
+		"finesse": 28,
+		"constitution": 28,
+		"focus": 28,
+		"awareness": 28,
+		"charm": 28,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 0,
+	  "typical_backgrounds": [],
+	  "resistances": {}
+	},
+	"gandharva": {
+	  "name": "Gandharva",
+	  "realm": "god",
+	  "description": "TODO: Fill in description",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": 0,
+		"constitution": 0,
+		"focus": 0,
+		"awareness": 0,
+		"charm": 0,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 28,
+		"finesse": 28,
+		"constitution": 28,
+		"focus": 28,
+		"awareness": 28,
+		"charm": 28,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 0,
+	  "typical_backgrounds": [],
+	  "resistances": {}
+	},
+	"apsara": {
+	  "name": "Apsara",
+	  "realm": "god",
+	  "description": "TODO: Fill in description",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": 0,
+		"constitution": 0,
+		"focus": 0,
+		"awareness": 0,
+		"charm": 0,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 28,
+		"finesse": 28,
+		"constitution": 28,
+		"focus": 28,
+		"awareness": 28,
+		"charm": 28,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 0,
+	  "typical_backgrounds": [],
+	  "resistances": {}
+	},
+	"planetary_deity": {
+	  "name": "Planetary Deity",
+	  "realm": "god",
+	  "description": "TODO: Fill in description",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": 0,
+		"constitution": 0,
+		"focus": 0,
+		"awareness": 0,
+		"charm": 0,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 28,
+		"finesse": 28,
+		"constitution": 28,
+		"focus": 28,
+		"awareness": 28,
+		"charm": 28,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {},
+	  "starting_spells": [],
+	  "reincarnation_weight": 0,
+	  "typical_backgrounds": [],
+	  "resistances": {}
+	},
+	"shaza": {
+	  "name": "Shaza",
+	  "realm": "hungry_ghost",
+	  "description": "The predators of the underworld, the shaza aggressively seek out bodies to devour.",
+	  "attribute_modifiers": {
+		"strength": 2,
+		"finesse": 2,
+		"constitution": 0,
+		"focus": 0,
+		"awareness": -2,
+		"charm": -2,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 30,
+		"finesse": 30,
+		"constitution": 27,
+		"focus": 27,
+		"awareness": 26,
+		"charm": 26,
+		"luck": 27
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {
+		"unarmed": 1,
+		"might": 1
+	  },
+	  "starting_spells": [],
+	  "reincarnation_weight": 10,
+	  "typical_backgrounds": [
+		"warrior",
+		"guard",
+		"former_soldier",
         "hunter"
-      ],
-      "resistances": {}
-    },
-    "yidag": {
-      "name": "Yidag",
-      "realm": "hungry_ghost",
-      "description": "Bellies distended with insatiable hunger, throats constricted to a hair's width \u2014 these beings are the most unfortunate embodiment of the karma that created their world.",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 2,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": 0,
-        "charm": -1,
-        "luck": -1
-      },
-      "attribute_caps": {
-        "strength": 26,
-        "finesse": 30,
-        "constitution": 26,
-        "focus": 27,
-        "awareness": 27,
-        "charm": 26,
-        "luck": 26
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {
-        "guile": 1,
-        "thievery": 1
-      },
-      "starting_spells": [],
-      "reincarnation_weight": 10,
-      "typical_backgrounds": [
-        "thief",
-        "wanderer",
-        "beggar",
+	  ],
+	  "resistances": {}
+	},
+	"yidag": {
+	  "name": "Yidag",
+	  "realm": "hungry_ghost",
+	  "description": "Bellies distended with insatiable hunger, throats constricted to a hair's width \u2014 these beings are the most unfortunate embodiment of the karma that created their world.",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": 2,
+		"constitution": 0,
+		"focus": 0,
+		"awareness": 0,
+		"charm": -1,
+		"luck": -1
+	  },
+	  "attribute_caps": {
+		"strength": 26,
+		"finesse": 30,
+		"constitution": 26,
+		"focus": 27,
+		"awareness": 27,
+		"charm": 26,
+		"luck": 26
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {
+		"guile": 1,
+		"thievery": 1
+	  },
+	  "starting_spells": [],
+	  "reincarnation_weight": 10,
+	  "typical_backgrounds": [
+		"thief",
+		"wanderer",
+		"beggar",
         "penitent"
-      ],
-      "resistances": {}
-    },
-    "skeleton_silver": {
-      "name": "Silver Skeleton",
-      "realm": "hungry_ghost",
-      "description": "Not many withstand the trials of the underworld without losing their compassion. Those who have managed that feat remain as healers and helpers, looking with hope for the future to the worlds far above.",
-      "attribute_modifiers": {
-        "strength": -1,
-        "finesse": 0,
-        "constitution": -1,
-        "focus": 0,
-        "awareness": 1,
-        "charm": 1,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 24,
-        "finesse": 27,
-        "constitution": 24,
-        "focus": 28,
-        "awareness": 30,
-        "charm": 30,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {
-        "white_magic": 1,
-        "medicine": 1
-      },
-      "starting_spells": [],
-      "reincarnation_weight": 15,
-      "typical_backgrounds": [
-        "healer",
-        "monk",
-        "charnel_yogi",
+	  ],
+	  "resistances": {}
+	},
+	"skeleton_silver": {
+	  "name": "Silver Skeleton",
+	  "realm": "hungry_ghost",
+	  "description": "Not many withstand the trials of the underworld without losing their compassion. Those who have managed that feat remain as healers and helpers, looking with hope for the future to the worlds far above.",
+	  "attribute_modifiers": {
+		"strength": -1,
+		"finesse": 0,
+		"constitution": -1,
+		"focus": 0,
+		"awareness": 1,
+		"charm": 1,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 24,
+		"finesse": 27,
+		"constitution": 24,
+		"focus": 28,
+		"awareness": 30,
+		"charm": 30,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {
+		"white_magic": 1,
+		"medicine": 1
+	  },
+	  "starting_spells": [],
+	  "reincarnation_weight": 15,
+	  "typical_backgrounds": [
+		"healer",
+		"monk",
+		"charnel_yogi",
         "penitent"
-      ],
-      "resistances": {}
-    },
-    "skeleton_copper": {
-      "name": "Copper Skeleton",
-      "realm": "hungry_ghost",
-      "description": "Skeletons born of molten copper mirrors in the court of the Skeleton King of the Setting Sun find themselves especially attuned to the arts of power and magnetism.",
-      "attribute_modifiers": {
-        "strength": -1,
-        "finesse": 0,
-        "constitution": -1,
-        "focus": 1,
-        "awareness": 0,
-        "charm": 1,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 24,
-        "finesse": 27,
-        "constitution": 24,
-        "focus": 30,
-        "awareness": 28,
-        "charm": 30,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {
-        "fire_magic": 1,
-        "persuasion": 1
-      },
-      "starting_spells": [],
-      "reincarnation_weight": 15,
-      "typical_backgrounds": [
-        "sorcerer",
-        "noble",
-        "courtier",
+	  ],
+	  "resistances": {}
+	},
+	"skeleton_copper": {
+	  "name": "Copper Skeleton",
+	  "realm": "hungry_ghost",
+	  "description": "Skeletons born of molten copper mirrors in the court of the Skeleton King of the Setting Sun find themselves especially attuned to the arts of power and magnetism.",
+	  "attribute_modifiers": {
+		"strength": -1,
+		"finesse": 0,
+		"constitution": -1,
+		"focus": 1,
+		"awareness": 0,
+		"charm": 1,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 24,
+		"finesse": 27,
+		"constitution": 24,
+		"focus": 30,
+		"awareness": 28,
+		"charm": 30,
+		"luck": 28
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {
+		"fire_magic": 1,
+		"persuasion": 1
+	  },
+	  "starting_spells": [],
+	  "reincarnation_weight": 15,
+	  "typical_backgrounds": [
+		"sorcerer",
+		"noble",
+		"courtier",
         "bone_dancer"
-      ],
-      "resistances": {}
-    },
-    "skeleton_golden": {
-      "name": "Golden Skeleton",
-      "realm": "hungry_ghost",
-      "description": "Gleaming in the flickering light of the crypt cities, golden skeletons are respected nobles among their people.",
-      "attribute_modifiers": {
-        "strength": -1,
-        "finesse": 0,
-        "constitution": -1,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 1,
-        "luck": 1
-      },
-      "attribute_caps": {
-        "strength": 24,
-        "finesse": 27,
-        "constitution": 24,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 31,
-        "luck": 30
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {
-        "trade": 1,
-        "leadership": 1
-      },
-      "starting_spells": [],
-      "reincarnation_weight": 15,
-      "typical_backgrounds": [
-        "noble",
-        "merchant",
+	  ],
+	  "resistances": {}
+	},
+	"skeleton_golden": {
+	  "name": "Golden Skeleton",
+	  "realm": "hungry_ghost",
+	  "description": "Gleaming in the flickering light of the crypt cities, golden skeletons are respected nobles among their people.",
+	  "attribute_modifiers": {
+		"strength": -1,
+		"finesse": 0,
+		"constitution": -1,
+		"focus": 0,
+		"awareness": 0,
+		"charm": 1,
+		"luck": 1
+	  },
+	  "attribute_caps": {
+		"strength": 24,
+		"finesse": 27,
+		"constitution": 24,
+		"focus": 28,
+		"awareness": 28,
+		"charm": 31,
+		"luck": 30
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {
+		"trade": 1,
+		"leadership": 1
+	  },
+	  "starting_spells": [],
+	  "reincarnation_weight": 15,
+	  "typical_backgrounds": [
+		"noble",
+		"merchant",
         "catacomb_keeper"
-      ],
-      "resistances": {}
-    },
-    "skeleton_iron": {
-      "name": "Iron Skeleton",
-      "realm": "hungry_ghost",
-      "description": "Born of broken weapons on endless battlefields of the multiverse, iron skeletons are hard and unyielding, the most serious and driven of their kin.",
-      "attribute_modifiers": {
-        "strength": 1,
-        "finesse": 0,
-        "constitution": -1,
-        "focus": 1,
-        "awareness": 0,
-        "charm": 0,
-        "luck": -1
-      },
-      "attribute_caps": {
-        "strength": 30,
-        "finesse": 27,
-        "constitution": 26,
-        "focus": 30,
-        "awareness": 27,
-        "charm": 25,
-        "luck": 24
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {
-        "sorcery": 1,
-        "might": 1
-      },
-      "starting_spells": [],
-      "reincarnation_weight": 15,
-      "typical_backgrounds": [
-        "warrior",
-        "former_soldier",
-        "guard",
+	  ],
+	  "resistances": {}
+	},
+	"skeleton_iron": {
+	  "name": "Iron Skeleton",
+	  "realm": "hungry_ghost",
+	  "description": "Born of broken weapons on endless battlefields of the multiverse, iron skeletons are hard and unyielding, the most serious and driven of their kin.",
+	  "attribute_modifiers": {
+		"strength": 1,
+		"finesse": 0,
+		"constitution": -1,
+		"focus": 1,
+		"awareness": 0,
+		"charm": 0,
+		"luck": -1
+	  },
+	  "attribute_caps": {
+		"strength": 30,
+		"finesse": 27,
+		"constitution": 26,
+		"focus": 30,
+		"awareness": 27,
+		"charm": 25,
+		"luck": 24
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {
+		"sorcery": 1,
+		"might": 1
+	  },
+	  "starting_spells": [],
+	  "reincarnation_weight": 15,
+	  "typical_backgrounds": [
+		"warrior",
+		"former_soldier",
+		"guard",
         "charnel_yogi"
-      ],
-      "resistances": {}
-    },
-    "skeleton_turquoise": {
-      "name": "Turquoise Skeleton",
-      "realm": "hungry_ghost",
-      "description": "Prancing cheerfully in their rainbow skirts and flowery headdresses, turquoise skeletons serve as jesters, dancers and, often enough, grand viziers to the Great Bone Kings.",
-      "attribute_modifiers": {
-        "strength": -1,
-        "finesse": 0,
-        "constitution": -1,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 1,
-        "luck": 1
-      },
-      "attribute_caps": {
-        "strength": 24,
-        "finesse": 28,
-        "constitution": 24,
-        "focus": 26,
-        "awareness": 27,
-        "charm": 31,
-        "luck": 30
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {
-        "comedy": 1,
-        "performance": 1
-      },
-      "starting_spells": [],
-      "reincarnation_weight": 15,
-      "typical_backgrounds": [
-        "bone_dancer",
-        "noble",
-        "wanderer",
+	  ],
+	  "resistances": {}
+	},
+	"skeleton_turquoise": {
+	  "name": "Turquoise Skeleton",
+	  "realm": "hungry_ghost",
+	  "description": "Prancing cheerfully in their rainbow skirts and flowery headdresses, turquoise skeletons serve as jesters, dancers and, often enough, grand viziers to the Great Bone Kings.",
+	  "attribute_modifiers": {
+		"strength": -1,
+		"finesse": 0,
+		"constitution": -1,
+		"focus": 0,
+		"awareness": 0,
+		"charm": 1,
+		"luck": 1
+	  },
+	  "attribute_caps": {
+		"strength": 24,
+		"finesse": 28,
+		"constitution": 24,
+		"focus": 26,
+		"awareness": 27,
+		"charm": 31,
+		"luck": 30
+	  },
+	  "elemental_affinity_bonuses": {},
+	  "starting_skills": {
+		"comedy": 1,
+		"performance": 1
+	  },
+	  "starting_spells": [],
+	  "reincarnation_weight": 15,
+	  "typical_backgrounds": [
+		"bone_dancer",
+		"noble",
+		"wanderer",
         "catacomb_keeper"
-      ],
-      "resistances": {}
-    }
+	  ],
+	  "resistances": {}
+	}
   },
   "backgrounds": {
-    "_comment": "Background definitions with starting skills and small attribute tweaks. starting_skills is a dict {skill_id: level}. attribute_modifiers are small flavour adjustments on top of race modifiers. available_races is a whitelist of race IDs (omit or empty = universal). weight is relative reincarnation probability.",
-    "wanderer": {
-      "name": "Wanderer",
-      "description": "A traveler who has seen many places and learned to read people and terrain alike.",
-      "attribute_modifiers": {
-        "awareness": 1
-      },
-      "starting_skills": {
-        "learning": 1,
-        "might": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_dagger",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
-          "leather_vest",
+	"_comment": "Background definitions with starting skills and small attribute tweaks. starting_skills is a dict {skill_id: level}. attribute_modifiers are small flavour adjustments on top of race modifiers. available_races is a whitelist of race IDs (omit or empty = universal). weight is relative reincarnation probability.",
+	"wanderer": {
+	  "name": "Wanderer",
+	  "description": "A traveler who has seen many places and learned to read people and terrain alike.",
+	  "attribute_modifiers": {
+		"awareness": 1
+	  },
+	  "starting_skills": {
+		"learning": 1,
+		"might": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
+		  "leather_vest",
           "leather_boots"
-        ],
-        "secondary_weapon": "short_bow",
-        "random_bonus": [
-          "travelers_amulet",
+		],
+		"secondary_weapon": "short_bow",
+		"random_bonus": [
+		  "travelers_amulet",
           "copper_ring"
-        ],
-        "bonus_chance": 0.5
-      },
-      "available_races": [],
-      "weight": 7
-    },
-    "scholar": {
-      "name": "Scholar",
-      "description": "A student of ancient texts and wisdom, more at home with scrolls than swords.",
-      "attribute_modifiers": {
-        "focus": 1,
-        "strength": -1
-      },
-      "starting_skills": {
-        "learning": 2,
-        "ritual": 1
-      },
-      "starting_equipment": {
-        "items": [
-          "wooden_staff",
-          "cloth_robe",
+		],
+		"bonus_chance": 0.5
+	  },
+	  "available_races": [],
+	  "weight": 7
+	},
+	"scholar": {
+	  "name": "Scholar",
+	  "description": "A student of ancient texts and wisdom, more at home with scrolls than swords.",
+	  "attribute_modifiers": {
+		"focus": 1,
+		"strength": -1
+	  },
+	  "starting_skills": {
+		"learning": 2,
+		"ritual": 1
+	  },
+	  "starting_equipment": {
+		"items": [
+		  "wooden_staff",
+		  "cloth_robe",
           "cloth_hood"
-        ],
-        "random_bonus": [
-          "prayer_beads",
+		],
+		"random_bonus": [
+		  "prayer_beads",
           "bone_amulet"
-        ],
-        "bonus_chance": 0.45
-      },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "blue_devil",
-        "green_devil",
-        "black_devil",
+		],
+		"bonus_chance": 0.45
+	  },
+	  "available_races": [
+		"human",
+		"nomad",
+		"mountain_folk",
+		"trader",
+		"naga",
+		"tsen",
+		"rudra",
+		"gandharva",
+		"apsara",
+		"planetary_deity",
+		"blue_devil",
+		"green_devil",
+		"black_devil",
         "white_devil"
-      ],
-      "weight": 5
-    },
-    "merchant": {
-      "name": "Merchant",
-      "description": "A trader of goods and services, sharp-tongued and sharper-eyed for opportunity.",
-      "attribute_modifiers": {
-        "charm": 1,
-        "strength": -1
-      },
-      "starting_skills": {
-        "trade": 2,
-        "persuasion": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_dagger",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
-          "leather_vest",
+	  ],
+	  "weight": 5
+	},
+	"merchant": {
+	  "name": "Merchant",
+	  "description": "A trader of goods and services, sharp-tongued and sharper-eyed for opportunity.",
+	  "attribute_modifiers": {
+		"charm": 1,
+		"strength": -1
+	  },
+	  "starting_skills": {
+		"trade": 2,
+		"persuasion": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
+		  "leather_vest",
           "travelers_amulet"
-        ],
-        "random_bonus": [
-          "copper_ring",
+		],
+		"random_bonus": [
+		  "copper_ring",
           "lucky_charm"
-        ],
-        "bonus_chance": 0.5
-      },
-      "available_races": [
-        "human",
-        "nomad",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
+		],
+		"bonus_chance": 0.5
+	  },
+	  "available_races": [
+		"human",
+		"nomad",
+		"trader",
+		"naga",
+		"tsen",
+		"rudra",
+		"gandharva",
+		"apsara",
+		"planetary_deity",
+		"red_devil",
+		"blue_devil",
+		"yellow_devil",
         "white_devil"
-      ],
-      "weight": 7
-    },
-    "monk": {
-      "name": "Monk",
-      "description": "A practitioner of spiritual disciplines, attuned to inner forces most ignore.",
-      "attribute_modifiers": {
-        "awareness": 1,
-        "strength": -1
-      },
-      "starting_skills": {
-        "yoga": 2,
-        "martial_arts": 1
-      },
-      "starting_equipment": {
-        "items": [
+	  ],
+	  "weight": 7
+	},
+	"monk": {
+	  "name": "Monk",
+	  "description": "A practitioner of spiritual disciplines, attuned to inner forces most ignore.",
+	  "attribute_modifiers": {
+		"awareness": 1,
+		"strength": -1
+	  },
+	  "starting_skills": {
+		"yoga": 2,
+		"martial_arts": 1
+	  },
+	  "starting_equipment": {
+		"items": [
           "cloth_robe"
-        ],
-        "random_bonus": [
+		],
+		"random_bonus": [
           "prayer_beads"
-        ],
-        "bonus_chance": 0.6
-      },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "white_devil",
-        "black_devil",
-        "green_devil",
+		],
+		"bonus_chance": 0.6
+	  },
+	  "available_races": [
+		"human",
+		"nomad",
+		"mountain_folk",
+		"naga",
+		"tsen",
+		"rudra",
+		"gandharva",
+		"apsara",
+		"planetary_deity",
+		"white_devil",
+		"black_devil",
+		"green_devil",
         "vetala"
-      ],
-      "weight": 5
-    },
-    "noble": {
-      "name": "Noble",
-      "description": "Born to privilege and power, accustomed to commanding others.",
-      "attribute_modifiers": {
-        "charm": 1,
-        "constitution": 1,
-        "strength": -1,
-        "finesse": -1
-      },
-      "starting_skills": {
-        "persuasion": 1,
-        "leadership": 1,
-        "swords": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_sword",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
-          "leather_vest",
-          "leather_cap",
+	  ],
+	  "weight": 5
+	},
+	"noble": {
+	  "name": "Noble",
+	  "description": "Born to privilege and power, accustomed to commanding others.",
+	  "attribute_modifiers": {
+		"charm": 1,
+		"constitution": 1,
+		"strength": -1,
+		"finesse": -1
+	  },
+	  "starting_skills": {
+		"persuasion": 1,
+		"leadership": 1,
+		"swords": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_sword",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
+		  "leather_vest",
+		  "leather_cap",
           "leather_boots"
-        ],
-        "random_bonus": [
-          "silver_ring",
+		],
+		"random_bonus": [
+		  "silver_ring",
           "copper_ring"
-        ],
-        "bonus_chance": 0.5
-      },
-      "available_races": [
-        "human",
-        "nomad",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
+		],
+		"bonus_chance": 0.5
+	  },
+	  "available_races": [
+		"human",
+		"nomad",
+		"trader",
+		"naga",
+		"tsen",
+		"rudra",
+		"gandharva",
+		"apsara",
+		"planetary_deity",
+		"red_devil",
+		"blue_devil",
+		"yellow_devil",
         "white_devil"
-      ],
-      "weight": 4
-    },
-    "reveler": {
-      "name": "Reveler",
-      "description": "A social creature of feasts, festivals, and flattery. Charm opens more doors than keys.",
-      "attribute_modifiers": {
-        "charm": 2,
-        "strength": -1,
-        "constitution": -1
-      },
-      "starting_skills": {
-        "performance": 1,
-        "persuasion": 1,
-        "leadership": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_dagger",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
+	  ],
+	  "weight": 4
+	},
+	"reveler": {
+	  "name": "Reveler",
+	  "description": "A social creature of feasts, festivals, and flattery. Charm opens more doors than keys.",
+	  "attribute_modifiers": {
+		"charm": 2,
+		"strength": -1,
+		"constitution": -1
+	  },
+	  "starting_skills": {
+		"performance": 1,
+		"persuasion": 1,
+		"leadership": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
           "leather_vest"
-        ],
-        "random_bonus": [
-          "lucky_charm",
+		],
+		"random_bonus": [
+		  "lucky_charm",
           "copper_ring"
-        ],
-        "bonus_chance": 0.55
-      },
-      "available_races": [],
-      "weight": 3
-    },
-    "warrior": {
-      "name": "Warrior",
-      "description": "Trained in the arts of combat, body hardened by years of drill and battle.",
-      "attribute_modifiers": {
-        "strength": 1,
-        "constitution": 1,
-        "finesse": -1
-      },
-      "starting_skills": {
-        "swords": 1,
-        "armor": 1,
-        "might": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_sword",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
-          "leather_vest",
-          "leather_cap",
+		],
+		"bonus_chance": 0.55
+	  },
+	  "available_races": [],
+	  "weight": 3
+	},
+	"warrior": {
+	  "name": "Warrior",
+	  "description": "Trained in the arts of combat, body hardened by years of drill and battle.",
+	  "attribute_modifiers": {
+		"strength": 1,
+		"constitution": 1,
+		"finesse": -1
+	  },
+	  "starting_skills": {
+		"swords": 1,
+		"armor": 1,
+		"might": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_sword",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
+		  "leather_vest",
+		  "leather_cap",
           "leather_boots"
-        ],
-        "random_bonus": [
+		],
+		"random_bonus": [
           "wooden_shield"
-        ],
-        "bonus_chance": 0.35
-      },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "trader",
-        "naga",
-        "bee",
-        "yaksha",
-        "tsen",
-        "rudra",
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "green_devil",
-        "black_devil",
-        "white_devil",
-        "skeleton",
-        "vetala",
+		],
+		"bonus_chance": 0.35
+	  },
+	  "available_races": [
+		"human",
+		"nomad",
+		"mountain_folk",
+		"trader",
+		"naga",
+		"bee",
+		"yaksha",
+		"tsen",
+		"rudra",
+		"red_devil",
+		"blue_devil",
+		"yellow_devil",
+		"green_devil",
+		"black_devil",
+		"white_devil",
+		"skeleton",
+		"vetala",
         "dralha"
-      ],
-      "weight": 10
-    },
-    "farmer": {
-      "name": "Farmer",
-      "description": "A worker of the land, with tireless endurance and practical knowledge.",
-      "attribute_modifiers": {
-        "constitution": 2,
-        "strength": 1,
-        "finesse": -1,
-        "awareness": -1,
-        "charm": -1
-      },
-      "starting_skills": {
-        "logistics": 1,
-        "axes": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_axe",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
-          "padded_armor",
+	  ],
+	  "weight": 10
+	},
+	"farmer": {
+	  "name": "Farmer",
+	  "description": "A worker of the land, with tireless endurance and practical knowledge.",
+	  "attribute_modifiers": {
+		"constitution": 2,
+		"strength": 1,
+		"finesse": -1,
+		"awareness": -1,
+		"charm": -1
+	  },
+	  "starting_skills": {
+		"logistics": 1,
+		"axes": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_axe",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
+		  "padded_armor",
           "leather_boots"
-        ],
-        "random_bonus": [],
-        "bonus_chance": 0.0
-      },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "trader",
-        "tsen",
-        "bee",
-        "yaksha",
-        "red_devil",
+		],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
+	  "available_races": [
+		"human",
+		"nomad",
+		"mountain_folk",
+		"trader",
+		"tsen",
+		"bee",
+		"yaksha",
+		"red_devil",
         "yellow_devil"
-      ],
-      "weight": 8
-    },
-    "berserker": {
-      "name": "Berserker",
-      "description": "A warrior who fights with uncontrolled fury, trading precision for annihilating force.",
-      "attribute_modifiers": {
-        "strength": 2,
-        "constitution": 1,
-        "finesse": -1,
-        "awareness": -2
-      },
-      "starting_skills": {
-        "axes": 2,
-        "unarmed": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_axe",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
+	  ],
+	  "weight": 8
+	},
+	"berserker": {
+	  "name": "Berserker",
+	  "description": "A warrior who fights with uncontrolled fury, trading precision for annihilating force.",
+	  "attribute_modifiers": {
+		"strength": 2,
+		"constitution": 1,
+		"finesse": -1,
+		"awareness": -2
+	  },
+	  "starting_skills": {
+		"axes": 2,
+		"unarmed": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_axe",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
           "leather_vest"
-        ],
-        "random_bonus": [],
-        "bonus_chance": 0.0
-      },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "tsen",
-        "rudra",
-        "bee",
-        "yaksha",
-        "red_devil",
-        "green_devil",
+		],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
+	  "available_races": [
+		"human",
+		"nomad",
+		"mountain_folk",
+		"tsen",
+		"rudra",
+		"bee",
+		"yaksha",
+		"red_devil",
+		"green_devil",
         "skeleton"
-      ],
-      "weight": 5
-    },
-    "guard": {
-      "name": "Guard",
-      "description": "A protector of places and people, trained to hold ground and outlast attackers.",
-      "attribute_modifiers": {
-        "constitution": 2,
-        "strength": 1,
-        "awareness": -1
-      },
-      "starting_skills": {
-        "spears": 1,
-        "armor": 2
-      },
-      "starting_equipment": {
-        "items": [
-          "wooden_spear",
-          "leather_vest",
-          "leather_cap",
-          "leather_boots",
+	  ],
+	  "weight": 5
+	},
+	"guard": {
+	  "name": "Guard",
+	  "description": "A protector of places and people, trained to hold ground and outlast attackers.",
+	  "attribute_modifiers": {
+		"constitution": 2,
+		"strength": 1,
+		"awareness": -1
+	  },
+	  "starting_skills": {
+		"spears": 1,
+		"armor": 2
+	  },
+	  "starting_equipment": {
+		"items": [
+		  "wooden_spear",
+		  "leather_vest",
+		  "leather_cap",
+		  "leather_boots",
           "wooden_shield"
-        ],
-        "random_bonus": [],
-        "bonus_chance": 0.0
-      },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "trader",
-        "naga",
-        "bee",
-        "yaksha",
-        "tsen",
-        "rudra",
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
+		],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
+	  "available_races": [
+		"human",
+		"nomad",
+		"mountain_folk",
+		"trader",
+		"naga",
+		"bee",
+		"yaksha",
+		"tsen",
+		"rudra",
+		"red_devil",
+		"blue_devil",
+		"yellow_devil",
         "skeleton"
-      ],
-      "weight": 7
-    },
-    "raider": {
-      "name": "Raider",
-      "description": "One who takes what they want by force, quick to strike and quicker to vanish.",
-      "attribute_modifiers": {
-        "strength": 1,
-        "finesse": 1,
-        "awareness": -1,
-        "charm": -1
-      },
-      "starting_skills": {
-        "axes": 1,
-        "guile": 1,
-        "thievery": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_axe",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
+	  ],
+	  "weight": 7
+	},
+	"raider": {
+	  "name": "Raider",
+	  "description": "One who takes what they want by force, quick to strike and quicker to vanish.",
+	  "attribute_modifiers": {
+		"strength": 1,
+		"finesse": 1,
+		"awareness": -1,
+		"charm": -1
+	  },
+	  "starting_skills": {
+		"axes": 1,
+		"guile": 1,
+		"thievery": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_axe",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
           "leather_vest"
-        ],
-        "random_bonus": [
-          "iron_dagger",
+		],
+		"random_bonus": [
+		  "iron_dagger",
           "throwing_knife"
-        ],
-        "bonus_chance": 0.4
-      },
-      "available_races": [
-        "human",
-        "nomad",
-        "tsen",
-        "rudra",
-        "bee",
-        "yaksha",
-        "red_devil",
-        "blue_devil",
-        "green_devil",
-        "yellow_devil",
-        "skeleton",
+		],
+		"bonus_chance": 0.4
+	  },
+	  "available_races": [
+		"human",
+		"nomad",
+		"tsen",
+		"rudra",
+		"bee",
+		"yaksha",
+		"red_devil",
+		"blue_devil",
+		"green_devil",
+		"yellow_devil",
+		"skeleton",
         "vetala"
-      ],
-      "weight": 5
-    },
-    "hunter": {
-      "name": "Hunter",
-      "description": "A tracker and killer of prey, patient and precise at range.",
-      "attribute_modifiers": {
-        "finesse": 2,
-        "awareness": 1,
-        "strength": -1,
-        "charm": -1
-      },
-      "starting_skills": {
-        "ranged": 2,
-        "guile": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_dagger",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
-          "leather_vest",
+	  ],
+	  "weight": 5
+	},
+	"hunter": {
+	  "name": "Hunter",
+	  "description": "A tracker and killer of prey, patient and precise at range.",
+	  "attribute_modifiers": {
+		"finesse": 2,
+		"awareness": 1,
+		"strength": -1,
+		"charm": -1
+	  },
+	  "starting_skills": {
+		"ranged": 2,
+		"guile": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
+		  "leather_vest",
           "leather_boots"
-        ],
-        "secondary_weapon": "short_bow",
-        "random_bonus": [
+		],
+		"secondary_weapon": "short_bow",
+		"random_bonus": [
           "hunting_bow"
-        ],
-        "bonus_chance": 0.3
-      },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "naga",
-        "bee",
-        "yaksha",
-        "tsen",
-        "rudra",
-        "blue_devil",
+		],
+		"bonus_chance": 0.3
+	  },
+	  "available_races": [
+		"human",
+		"nomad",
+		"mountain_folk",
+		"naga",
+		"bee",
+		"yaksha",
+		"tsen",
+		"rudra",
+		"blue_devil",
         "green_devil"
-      ],
-      "weight": 6
-    },
-    "executioner": {
-      "name": "Executioner",
-      "description": "One who delivers final judgment. Efficient, dispassionate, feared.",
-      "attribute_modifiers": {
-        "strength": 2,
-        "finesse": -1,
-        "awareness": -1,
-        "charm": -2
-      },
-      "starting_skills": {
-        "axes": 2,
-        "black_magic": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_axe",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
-          "leather_vest",
+	  ],
+	  "weight": 6
+	},
+	"executioner": {
+	  "name": "Executioner",
+	  "description": "One who delivers final judgment. Efficient, dispassionate, feared.",
+	  "attribute_modifiers": {
+		"strength": 2,
+		"finesse": -1,
+		"awareness": -1,
+		"charm": -2
+	  },
+	  "starting_skills": {
+		"axes": 2,
+		"black_magic": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_axe",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
+		  "leather_vest",
           "leather_cap"
-        ],
-        "random_bonus": [],
-        "bonus_chance": 0.0
-      },
-      "available_races": [
-        "human",
-        "tsen",
-        "rudra",
-        "red_devil",
-        "black_devil",
-        "yellow_devil",
+		],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
+	  "available_races": [
+		"human",
+		"tsen",
+		"rudra",
+		"red_devil",
+		"black_devil",
+		"yellow_devil",
         "skeleton"
-      ],
-      "weight": 3
-    },
-    "torturer": {
-      "name": "Torturer",
-      "description": "A professional in the application of suffering. Methodical, knowledgeable about bodies and their limits, and utterly without sentiment.",
-      "attribute_modifiers": {
-        "strength": 1,
-        "focus": 1,
-        "charm": -1,
-        "luck": -1
-      },
-      "starting_skills": {
-        "axes": 1,
-        "black_magic": 1,
-        "medicine": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_dagger",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
+	  ],
+	  "weight": 3
+	},
+	"torturer": {
+	  "name": "Torturer",
+	  "description": "A professional in the application of suffering. Methodical, knowledgeable about bodies and their limits, and utterly without sentiment.",
+	  "attribute_modifiers": {
+		"strength": 1,
+		"focus": 1,
+		"charm": -1,
+		"luck": -1
+	  },
+	  "starting_skills": {
+		"axes": 1,
+		"black_magic": 1,
+		"medicine": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
           "leather_gloves"
-        ],
-        "random_bonus": [
+		],
+		"random_bonus": [
           "bone_amulet"
-        ],
-        "bonus_chance": 0.35
-      },
-      "available_races": [
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "green_devil",
-        "black_devil",
-        "white_devil",
-        "tsen",
+		],
+		"bonus_chance": 0.35
+	  },
+	  "available_races": [
+		"red_devil",
+		"blue_devil",
+		"yellow_devil",
+		"green_devil",
+		"black_devil",
+		"white_devil",
+		"tsen",
         "rudra"
-      ],
-      "weight": 4
-    },
-    "soul_jailer": {
-      "name": "Soul Jailer",
-      "description": "A warden of the condemned, guarding souls sentenced to suffer. Brutal and disciplined in equal measure.",
-      "attribute_modifiers": {
-        "strength": 1,
-        "constitution": 1,
-        "awareness": 1,
-        "charm": -2
-      },
-      "starting_skills": {
-        "spears": 1,
-        "armor": 2,
-        "black_magic": 1
-      },
-      "starting_equipment": {
-        "items": [
-          "wooden_spear",
-          "leather_vest",
-          "leather_cap",
+	  ],
+	  "weight": 4
+	},
+	"soul_jailer": {
+	  "name": "Soul Jailer",
+	  "description": "A warden of the condemned, guarding souls sentenced to suffer. Brutal and disciplined in equal measure.",
+	  "attribute_modifiers": {
+		"strength": 1,
+		"constitution": 1,
+		"awareness": 1,
+		"charm": -2
+	  },
+	  "starting_skills": {
+		"spears": 1,
+		"armor": 2,
+		"black_magic": 1
+	  },
+	  "starting_equipment": {
+		"items": [
+		  "wooden_spear",
+		  "leather_vest",
+		  "leather_cap",
           "leather_boots"
-        ],
-        "random_bonus": [],
-        "bonus_chance": 0.0
-      },
-      "available_races": [
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "green_devil",
-        "black_devil",
+		],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
+	  "available_races": [
+		"red_devil",
+		"blue_devil",
+		"yellow_devil",
+		"green_devil",
+		"black_devil",
         "white_devil"
-      ],
-      "weight": 4
-    },
-    "infernal_scribe": {
-      "name": "Infernal Scribe",
-      "description": "A keeper of sins and karmic ledgers. In hell, bureaucracy is its own form of torment \u2014 and these figures wield it like a weapon.",
-      "attribute_modifiers": {
-        "focus": 1,
-        "awareness": 1,
-        "strength": -2
-      },
-      "starting_skills": {
-        "learning": 2,
-        "ritual": 1,
-        "persuasion": 1
-      },
-      "starting_equipment": {
-        "items": [
-          "wooden_staff",
-          "cloth_robe",
+	  ],
+	  "weight": 4
+	},
+	"infernal_scribe": {
+	  "name": "Infernal Scribe",
+	  "description": "A keeper of sins and karmic ledgers. In hell, bureaucracy is its own form of torment \u2014 and these figures wield it like a weapon.",
+	  "attribute_modifiers": {
+		"focus": 1,
+		"awareness": 1,
+		"strength": -2
+	  },
+	  "starting_skills": {
+		"learning": 2,
+		"ritual": 1,
+		"persuasion": 1
+	  },
+	  "starting_equipment": {
+		"items": [
+		  "wooden_staff",
+		  "cloth_robe",
           "cloth_hood"
-        ],
-        "random_bonus": [
-          "bone_amulet",
+		],
+		"random_bonus": [
+		  "bone_amulet",
           "prayer_beads"
-        ],
-        "bonus_chance": 0.45
-      },
-      "available_races": [
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "green_devil",
-        "black_devil",
-        "white_devil",
-        "tsen",
+		],
+		"bonus_chance": 0.45
+	  },
+	  "available_races": [
+		"red_devil",
+		"blue_devil",
+		"yellow_devil",
+		"green_devil",
+		"black_devil",
+		"white_devil",
+		"tsen",
         "rudra"
-      ],
-      "weight": 3
-    },
-    "penitent": {
-      "name": "Penitent",
-      "description": "A suffering soul who turned their torment inward and found something unexpected: clarity. Frail at first, but possessed of a spiritual awareness that others in hell have entirely forgotten.",
-      "attribute_modifiers": {
-        "constitution": 1,
-        "awareness": 2,
-        "strength": -2,
-        "charm": -1
-      },
-      "starting_skills": {
-        "yoga": 2,
-        "medicine": 1
-      },
-      "starting_equipment": {
-        "items": [
+	  ],
+	  "weight": 3
+	},
+	"penitent": {
+	  "name": "Penitent",
+	  "description": "A suffering soul who turned their torment inward and found something unexpected: clarity. Frail at first, but possessed of a spiritual awareness that others in hell have entirely forgotten.",
+	  "attribute_modifiers": {
+		"constitution": 1,
+		"awareness": 2,
+		"strength": -2,
+		"charm": -1
+	  },
+	  "starting_skills": {
+		"yoga": 2,
+		"medicine": 1
+	  },
+	  "starting_equipment": {
+		"items": [
           "cloth_robe"
-        ],
-        "random_bonus": [
+		],
+		"random_bonus": [
           "prayer_beads"
-        ],
-        "bonus_chance": 0.6
-      },
-      "available_races": [
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "green_devil",
-        "black_devil",
-        "white_devil",
-        "rolang",
-        "skeleton",
-        "vetala",
-        "gyelpo",
+		],
+		"bonus_chance": 0.6
+	  },
+	  "available_races": [
+		"red_devil",
+		"blue_devil",
+		"yellow_devil",
+		"green_devil",
+		"black_devil",
+		"white_devil",
+		"rolang",
+		"skeleton",
+		"vetala",
+		"gyelpo",
         "dre"
-      ],
-      "weight": 3
-    },
-    "spy": {
-      "name": "Spy",
-      "description": "An operative who trades in information, deception, and precisely timed violence. Trusted by no one, useful to everyone.",
-      "attribute_modifiers": {
-        "finesse": 1,
-        "awareness": 1,
-        "strength": -1,
-        "charm": -1
-      },
-      "starting_skills": {
-        "daggers": 1,
-        "guile": 2
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_dagger",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
-          "leather_vest",
+	  ],
+	  "weight": 3
+	},
+	"spy": {
+	  "name": "Spy",
+	  "description": "An operative who trades in information, deception, and precisely timed violence. Trusted by no one, useful to everyone.",
+	  "attribute_modifiers": {
+		"finesse": 1,
+		"awareness": 1,
+		"strength": -1,
+		"charm": -1
+	  },
+	  "starting_skills": {
+		"daggers": 1,
+		"guile": 2
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
+		  "leather_vest",
           "leather_boots"
-        ],
-        "random_bonus": [
-          "lucky_charm",
+		],
+		"random_bonus": [
+		  "lucky_charm",
           "throwing_knife"
-        ],
-        "bonus_chance": 0.4
-      },
-      "available_races": [
-        "human",
-        "nomad",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "blue_devil",
-        "green_devil",
-        "black_devil",
-        "white_devil",
+		],
+		"bonus_chance": 0.4
+	  },
+	  "available_races": [
+		"human",
+		"nomad",
+		"trader",
+		"naga",
+		"tsen",
+		"rudra",
+		"blue_devil",
+		"green_devil",
+		"black_devil",
+		"white_devil",
         "vetala"
-      ],
-      "weight": 4
-    },
-    "shambler": {
-      "name": "Shambler",
-      "description": "Barely conscious, driven by hunger. What remains of a person after death strips everything else away.",
-      "attribute_modifiers": {
-        "constitution": 2,
-        "strength": -1,
-        "finesse": -2,
-        "awareness": -3,
-        "charm": -3
-      },
-      "starting_skills": {
-        "unarmed": 1
-      },
-      "starting_equipment": {
-        "items": [],
-        "random_bonus": [],
-        "bonus_chance": 0.0
-      },
-      "available_races": [
+	  ],
+	  "weight": 4
+	},
+	"shambler": {
+	  "name": "Shambler",
+	  "description": "Barely conscious, driven by hunger. What remains of a person after death strips everything else away.",
+	  "attribute_modifiers": {
+		"constitution": 2,
+		"strength": -1,
+		"finesse": -2,
+		"awareness": -3,
+		"charm": -3
+	  },
+	  "starting_skills": {
+		"unarmed": 1
+	  },
+	  "starting_equipment": {
+		"items": [],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
+	  "available_races": [
         "rolang"
-      ],
-      "weight": 1,
-      "todo": [
+	  ],
+	  "weight": 1,
+	  "todo": [
         "needs_upside: shambler is strictly penalizing (-7 net) \u2014 add a compensating passive ability eventually, e.g. immunity to fear/mind effects or reduced XP cost on unarmed/might"
-      ]
-    },
-    "former_soldier": {
-      "name": "Former Soldier",
-      "description": "Death did not end their service. Muscle memory survives the grave.",
-      "attribute_modifiers": {
-        "strength": 1,
-        "constitution": 1,
-        "awareness": -1
-      },
-      "starting_skills": {
-        "swords": 1,
-        "armor": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_sword",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
-          "leather_vest",
+	  ]
+	},
+	"former_soldier": {
+	  "name": "Former Soldier",
+	  "description": "Death did not end their service. Muscle memory survives the grave.",
+	  "attribute_modifiers": {
+		"strength": 1,
+		"constitution": 1,
+		"awareness": -1
+	  },
+	  "starting_skills": {
+		"swords": 1,
+		"armor": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_sword",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
+		  "leather_vest",
           "leather_cap"
-        ],
-        "random_bonus": [
+		],
+		"random_bonus": [
           "wooden_shield"
-        ],
-        "bonus_chance": 0.35
-      },
-      "available_races": [
-        "rolang",
-        "skeleton",
-        "vetala",
+		],
+		"bonus_chance": 0.35
+	  },
+	  "available_races": [
+		"rolang",
+		"skeleton",
+		"vetala",
         "dralha"
-      ],
-      "weight": 5
-    },
-    "plague_victim": {
-      "name": "Plague Victim",
-      "description": "Carries the sickness that killed them. Even in death, the rot spreads.",
-      "attribute_modifiers": {
-        "constitution": 1,
-        "awareness": -1,
-        "charm": -2
-      },
-      "starting_skills": {
-        "black_magic": 2
-      },
-      "starting_equipment": {
-        "items": [
+	  ],
+	  "weight": 5
+	},
+	"plague_victim": {
+	  "name": "Plague Victim",
+	  "description": "Carries the sickness that killed them. Even in death, the rot spreads.",
+	  "attribute_modifiers": {
+		"constitution": 1,
+		"awareness": -1,
+		"charm": -2
+	  },
+	  "starting_skills": {
+		"black_magic": 2
+	  },
+	  "starting_equipment": {
+		"items": [
           "wooden_staff"
-        ],
-        "random_bonus": [
+		],
+		"random_bonus": [
           "bone_amulet"
-        ],
-        "bonus_chance": 0.3
-      },
-      "available_races": [
-        "rolang",
-        "skeleton",
-        "vetala",
+		],
+		"bonus_chance": 0.3
+	  },
+	  "available_races": [
+		"rolang",
+		"skeleton",
+		"vetala",
         "gyelpo"
-      ],
-      "weight": 3
-    },
-    "diplomat": {
-      "name": "Diplomat",
-      "description": "A speaker between peoples, trained to find common ground in the most hostile of rooms.",
-      "attribute_modifiers": {
-        "charm": 2,
-        "awareness": 1,
-        "strength": -2
-      },
-      "starting_skills": {
-        "persuasion": 2,
-        "learning": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_dagger",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
+	  ],
+	  "weight": 3
+	},
+	"diplomat": {
+	  "name": "Diplomat",
+	  "description": "A speaker between peoples, trained to find common ground in the most hostile of rooms.",
+	  "attribute_modifiers": {
+		"charm": 2,
+		"awareness": 1,
+		"strength": -2
+	  },
+	  "starting_skills": {
+		"persuasion": 2,
+		"learning": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
           "travelers_amulet"
-        ],
-        "random_bonus": [
-          "copper_ring",
+		],
+		"random_bonus": [
+		  "copper_ring",
           "silver_ring"
-        ],
-        "bonus_chance": 0.5
-      },
-      "available_races": [
-        "human",
-        "nomad",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "blue_devil",
-        "white_devil",
+		],
+		"bonus_chance": 0.5
+	  },
+	  "available_races": [
+		"human",
+		"nomad",
+		"trader",
+		"naga",
+		"tsen",
+		"rudra",
+		"gandharva",
+		"apsara",
+		"planetary_deity",
+		"blue_devil",
+		"white_devil",
         "black_devil"
-      ],
-      "weight": 4
-    },
-    "guardian": {
-      "name": "Guardian",
-      "description": "A protector of sacred places, combining martial readiness with spiritual discipline.",
-      "attribute_modifiers": {
-        "strength": 1,
-        "constitution": 1,
-        "awareness": -1
-      },
-      "starting_skills": {
-        "spears": 1,
-        "white_magic": 1,
-        "armor": 1
-      },
-      "starting_equipment": {
-        "items": [
-          "wooden_spear",
-          "leather_vest",
-          "leather_cap",
+	  ],
+	  "weight": 4
+	},
+	"guardian": {
+	  "name": "Guardian",
+	  "description": "A protector of sacred places, combining martial readiness with spiritual discipline.",
+	  "attribute_modifiers": {
+		"strength": 1,
+		"constitution": 1,
+		"awareness": -1
+	  },
+	  "starting_skills": {
+		"spears": 1,
+		"white_magic": 1,
+		"armor": 1
+	  },
+	  "starting_equipment": {
+		"items": [
+		  "wooden_spear",
+		  "leather_vest",
+		  "leather_cap",
           "wooden_shield"
-        ],
-        "random_bonus": [
+		],
+		"random_bonus": [
           "prayer_beads"
-        ],
-        "bonus_chance": 0.4
-      },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "naga",
-        "bee",
-        "yaksha",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "white_devil",
+		],
+		"bonus_chance": 0.4
+	  },
+	  "available_races": [
+		"human",
+		"nomad",
+		"mountain_folk",
+		"naga",
+		"bee",
+		"yaksha",
+		"tsen",
+		"rudra",
+		"gandharva",
+		"apsara",
+		"planetary_deity",
+		"white_devil",
         "blue_devil"
-      ],
-      "weight": 5
-    },
-    "priest": {
-      "name": "Priest",
-      "description": "A servant of the divine, trained in ceremony and in the healing and harmful uses of sacred power.",
-      "attribute_modifiers": {
-        "focus": 2,
-        "awareness": 1,
-        "strength": -2,
-        "constitution": -1
-      },
-      "starting_skills": {
-        "white_magic": 1,
-        "ritual": 1
-      },
-      "starting_equipment": {
-        "items": [
-          "wooden_staff",
-          "cloth_robe",
+	  ],
+	  "weight": 5
+	},
+	"priest": {
+	  "name": "Priest",
+	  "description": "A servant of the divine, trained in ceremony and in the healing and harmful uses of sacred power.",
+	  "attribute_modifiers": {
+		"focus": 2,
+		"awareness": 1,
+		"strength": -2,
+		"constitution": -1
+	  },
+	  "starting_skills": {
+		"white_magic": 1,
+		"ritual": 1
+	  },
+	  "starting_equipment": {
+		"items": [
+		  "wooden_staff",
+		  "cloth_robe",
           "prayer_beads"
-        ],
-        "random_bonus": [
+		],
+		"random_bonus": [
           "bone_amulet"
-        ],
-        "bonus_chance": 0.4
-      },
-      "available_races": [
-        "human",
-        "mountain_folk",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "white_devil",
+		],
+		"bonus_chance": 0.4
+	  },
+	  "available_races": [
+		"human",
+		"mountain_folk",
+		"naga",
+		"tsen",
+		"rudra",
+		"gandharva",
+		"apsara",
+		"planetary_deity",
+		"white_devil",
         "black_devil"
-      ],
-      "weight": 4
-    },
-    "preserved": {
-      "name": "Preserved",
-      "description": "Alchemical arts halted your decay. Oils, mantras and mineral compounds have kept you intact while others rotted to bone. You remember considerably more than most of your kind.",
-      "attribute_modifiers": {
-        "awareness": 2,
-        "constitution": 1,
-        "finesse": -1,
-        "charm": -1
-      },
-      "starting_skills": {
-        "alchemy": 2,
-        "black_magic": 1
-      },
-      "starting_equipment": {
-        "items": [
-          "wooden_staff",
+	  ],
+	  "weight": 4
+	},
+	"preserved": {
+	  "name": "Preserved",
+	  "description": "Alchemical arts halted your decay. Oils, mantras and mineral compounds have kept you intact while others rotted to bone. You remember considerably more than most of your kind.",
+	  "attribute_modifiers": {
+		"awareness": 2,
+		"constitution": 1,
+		"finesse": -1,
+		"charm": -1
+	  },
+	  "starting_skills": {
+		"alchemy": 2,
+		"black_magic": 1
+	  },
+	  "starting_equipment": {
+		"items": [
+		  "wooden_staff",
           "cloth_robe"
-        ],
-        "random_bonus": [
-          "bone_amulet",
+		],
+		"random_bonus": [
+		  "bone_amulet",
           "prayer_beads"
-        ],
-        "bonus_chance": 0.45
-      },
-      "available_races": [
+		],
+		"bonus_chance": 0.45
+	  },
+	  "available_races": [
         "rolang"
-      ],
-      "weight": 2
-    },
-    "bog_warden": {
-      "name": "Bog Warden",
-      "description": "Long years of standing knee-deep in the same patch of swamp have made you territorial and surprisingly canny about it. You know every root and current. Others stumble; you do not.",
-      "attribute_modifiers": {
-        "constitution": 1,
-        "awareness": 1,
-        "charm": -1,
-        "finesse": -1
-      },
-      "starting_skills": {
-        "unarmed": 1,
-        "guile": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_mace",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
+	  ],
+	  "weight": 2
+	},
+	"bog_warden": {
+	  "name": "Bog Warden",
+	  "description": "Long years of standing knee-deep in the same patch of swamp have made you territorial and surprisingly canny about it. You know every root and current. Others stumble; you do not.",
+	  "attribute_modifiers": {
+		"constitution": 1,
+		"awareness": 1,
+		"charm": -1,
+		"finesse": -1
+	  },
+	  "starting_skills": {
+		"unarmed": 1,
+		"guile": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_mace",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
           "leather_vest"
-        ],
-        "random_bonus": [],
-        "bonus_chance": 0.0
-      },
-      "available_races": [
+		],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
+	  "available_races": [
         "rolang"
-      ],
-      "weight": 3
-    },
-    "catacomb_keeper": {
-      "name": "Catacomb Keeper",
-      "description": "You tend the dry places. You know where every bone is, who it belonged to, and how long they have been here. The catacombs are yours and you maintain them with cheer and precision.",
-      "attribute_modifiers": {
-        "awareness": 1,
-        "constitution": 1,
-        "strength": -1,
-        "finesse": -1
-      },
-      "starting_skills": {
-        "logistics": 1,
-        "earth_magic": 1,
-        "white_magic": 1
-      },
-      "starting_equipment": {
-        "items": [
-          "wooden_staff",
+	  ],
+	  "weight": 3
+	},
+	"catacomb_keeper": {
+	  "name": "Catacomb Keeper",
+	  "description": "You tend the dry places. You know where every bone is, who it belonged to, and how long they have been here. The catacombs are yours and you maintain them with cheer and precision.",
+	  "attribute_modifiers": {
+		"awareness": 1,
+		"constitution": 1,
+		"strength": -1,
+		"finesse": -1
+	  },
+	  "starting_skills": {
+		"logistics": 1,
+		"earth_magic": 1,
+		"white_magic": 1
+	  },
+	  "starting_equipment": {
+		"items": [
+		  "wooden_staff",
           "cloth_robe"
-        ],
-        "random_bonus": [
+		],
+		"random_bonus": [
           "prayer_beads"
-        ],
-        "bonus_chance": 0.5
-      },
-      "available_races": [
+		],
+		"bonus_chance": 0.5
+	  },
+	  "available_races": [
         "skeleton"
-      ],
-      "weight": 3
-    },
-    "bone_dancer": {
-      "name": "Bone Dancer",
-      "description": "You rattle with purpose where others grimace. A drum, a flourish, a joke at the right moment \u2014 you discovered that morale is its own kind of magic, and yours is inexhaustible.",
-      "attribute_modifiers": {
-        "charm": 2,
-        "luck": 1,
-        "constitution": -1,
-        "strength": -2
-      },
-      "starting_skills": {
-        "performance": 2,
-        "comedy": 1
-      },
-      "starting_equipment": {
-        "items": [
+	  ],
+	  "weight": 3
+	},
+	"bone_dancer": {
+	  "name": "Bone Dancer",
+	  "description": "You rattle with purpose where others grimace. A drum, a flourish, a joke at the right moment \u2014 you discovered that morale is its own kind of magic, and yours is inexhaustible.",
+	  "attribute_modifiers": {
+		"charm": 2,
+		"luck": 1,
+		"constitution": -1,
+		"strength": -2
+	  },
+	  "starting_skills": {
+		"performance": 2,
+		"comedy": 1
+	  },
+	  "starting_equipment": {
+		"items": [
           "leather_vest"
-        ],
-        "random_bonus": [
-          "lucky_charm",
+		],
+		"random_bonus": [
+		  "lucky_charm",
           "copper_ring"
-        ],
-        "bonus_chance": 0.55
-      },
-      "available_races": [
+		],
+		"bonus_chance": 0.55
+	  },
+	  "available_races": [
         "skeleton"
-      ],
-      "weight": 2
-    },
-    "charnel_yogi": {
-      "name": "Charnel Yogi",
-      "description": "You meditate where death is most concentrated. The proximity to dissolution, to rot and impermanence, has sharpened your understanding of the mind and weakened your attachment to the body.",
-      "attribute_modifiers": {
-        "focus": 2,
-        "awareness": 1,
-        "constitution": -2,
-        "strength": -1
-      },
-      "starting_skills": {
-        "yoga": 2,
-        "ritual": 1
-      },
-      "starting_equipment": {
-        "items": [
+	  ],
+	  "weight": 2
+	},
+	"charnel_yogi": {
+	  "name": "Charnel Yogi",
+	  "description": "You meditate where death is most concentrated. The proximity to dissolution, to rot and impermanence, has sharpened your understanding of the mind and weakened your attachment to the body.",
+	  "attribute_modifiers": {
+		"focus": 2,
+		"awareness": 1,
+		"constitution": -2,
+		"strength": -1
+	  },
+	  "starting_skills": {
+		"yoga": 2,
+		"ritual": 1
+	  },
+	  "starting_equipment": {
+		"items": [
           "cloth_robe"
-        ],
-        "random_bonus": [
-          "prayer_beads",
+		],
+		"random_bonus": [
+		  "prayer_beads",
           "bone_amulet"
-        ],
-        "bonus_chance": 0.65
-      },
-      "available_races": [
-        "vetala",
-        "skeleton",
-        "gyelpo",
+		],
+		"bonus_chance": 0.65
+	  },
+	  "available_races": [
+		"vetala",
+		"skeleton",
+		"gyelpo",
         "dre"
-      ],
-      "weight": 2
-    },
-    "trickster": {
-      "name": "Trickster",
-      "description": "You live for the moment the illusion lands. Misdirection, impossible vanishings, arguments that fold in on themselves \u2014 you treat confusion as both art form and survival strategy.",
-      "attribute_modifiers": {
-        "finesse": 1,
-        "awareness": 1,
-        "charm": 1,
-        "constitution": -2,
-        "luck": -1
-      },
-      "starting_skills": {
-        "guile": 2,
-        "space_magic": 1,
-        "comedy": 1
-      },
-      "starting_equipment": {
-        "base_weapon": "bone_dagger",
-        "weapon_upgrade": "bronze_dagger",
-        "weapon_upgrade_chance": 0.2,
-        "items": [
+	  ],
+	  "weight": 2
+	},
+	"trickster": {
+	  "name": "Trickster",
+	  "description": "You live for the moment the illusion lands. Misdirection, impossible vanishings, arguments that fold in on themselves \u2014 you treat confusion as both art form and survival strategy.",
+	  "attribute_modifiers": {
+		"finesse": 1,
+		"awareness": 1,
+		"charm": 1,
+		"constitution": -2,
+		"luck": -1
+	  },
+	  "starting_skills": {
+		"guile": 2,
+		"space_magic": 1,
+		"comedy": 1
+	  },
+	  "starting_equipment": {
+		"base_weapon": "bone_dagger",
+		"weapon_upgrade": "bronze_dagger",
+		"weapon_upgrade_chance": 0.2,
+		"items": [
           "leather_vest"
-        ],
-        "random_bonus": [
+		],
+		"random_bonus": [
           "lucky_charm"
-        ],
-        "bonus_chance": 0.5
-      },
-      "available_races": [
-        "vetala",
+		],
+		"bonus_chance": 0.5
+	  },
+	  "available_races": [
+		"vetala",
         "dre"
-      ],
-      "weight": 4
-    }
+	  ],
+	  "weight": 4
+	}
   }
 }

@@ -111,7 +111,7 @@
 	},
 
 	"realm_material_weights": {
-		"hell":         {"bone": 45, "obsidian": 35, "bronze": 15, "iron": 4, "steel": 1},
+		"hell":         {"bone": 50, "obsidian": 35, "bronze": 15},
 		"hungry_ghost": {"bone": 20, "obsidian": 30, "bronze": 30, "iron": 15, "steel": 5},
 		"animal":       {"bone": 5,  "obsidian": 10, "bronze": 35, "iron": 35, "steel": 15},
 		"human":        {"bronze": 5, "iron": 30, "steel": 40, "damascene": 20, "sky_iron": 5},

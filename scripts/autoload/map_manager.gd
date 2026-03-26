@@ -1123,6 +1123,10 @@ func _apply_reward(reward: Dictionary) -> void:
 						if not CharacterSystem.knows_spell(character, spell_id):
 							CharacterSystem.learn_spell(character, spell_id)
 
+		"food":
+			# Add directly to food supply
+			GameState.add_supply("food", int(value))
+
 		"karma":
 			# Hidden karma adjustment
 			if value is Dictionary and KarmaSystem:

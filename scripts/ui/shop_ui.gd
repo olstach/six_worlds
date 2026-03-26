@@ -673,7 +673,12 @@ func _populate_companions_tab() -> void:
 
 
 func _create_companion_panel(companion_id: String, def: Dictionary) -> void:
-	var cost: int = def.get("recruitment_cost", 0)
+	# Scale recruitment cost with party power so early-game companions are affordable.
+	# At power 20 (fresh start) costs ~25%; at power 80 (mid-game) costs 100%; scales up beyond that.
+	var base_cost: int = def.get("recruitment_cost", 0)
+	var party_power: float = EnemySystem.get_party_power()
+	var price_mult: float = clampf(party_power / 80.0, 0.20, 2.0)
+	var cost: int = maxi(10, int(base_cost * price_mult))
 	var can_afford: bool = GameState.can_afford(cost)
 	var party_full: bool = CharacterSystem.get_party().size() >= CharacterSystem.max_party_size
 
@@ -773,6 +778,8 @@ func _populate_rest_tab() -> void:
 	var night_cost: int = int(rest_data.get("night_cost", 80) * price_mod)
 	var teapot_pct: int = rest_data.get("teapot_restore_pct", 50)
 	var night_pct: int = rest_data.get("night_restore_pct", 100)
+	var teapot_food: int = rest_data.get("teapot_food", 0)
+	var night_food: int = rest_data.get("night_food", 0)
 
 	# Party status summary
 	for character in CharacterSystem.get_party():
@@ -800,18 +807,22 @@ func _populate_rest_tab() -> void:
 
 	rest_container.add_child(HSeparator.new())
 
-	_add_rest_option("Order a teapot", teapot_pct, teapot_cost)
-	_add_rest_option("Stay for the night", night_pct, night_cost)
+	_add_rest_option("Order a teapot", teapot_pct, teapot_cost, teapot_food)
+	_add_rest_option("Stay for the night", night_pct, night_cost, night_food)
 
 
-func _add_rest_option(label: String, restore_pct: int, cost: int) -> void:
+func _add_rest_option(label: String, restore_pct: int, cost: int, food_restore: int = 0) -> void:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
 	rest_container.add_child(row)
 
 	var lbl := Label.new()
-	lbl.text = "%s  (%d%% restore)" % [label, restore_pct]
-	lbl.custom_minimum_size.x = 220
+	var desc = "%s  (%d%% restore" % [label, restore_pct]
+	if food_restore > 0:
+		desc += ", +%d food" % food_restore
+	desc += ")"
+	lbl.text = desc
+	lbl.custom_minimum_size.x = 260
 	row.add_child(lbl)
 
 	var cost_lbl := Label.new()
@@ -824,11 +835,11 @@ func _add_rest_option(label: String, restore_pct: int, cost: int) -> void:
 	var btn := Button.new()
 	btn.text = "Rest"
 	btn.disabled = not can_afford
-	btn.pressed.connect(func(): _on_rest_pressed(restore_pct, cost))
+	btn.pressed.connect(func(): _on_rest_pressed(restore_pct, cost, food_restore))
 	row.add_child(btn)
 
 
-func _on_rest_pressed(restore_pct: int, cost: int) -> void:
+func _on_rest_pressed(restore_pct: int, cost: int, food_restore: int = 0) -> void:
 	if not GameState.can_afford(cost):
 		return
 	GameState.spend_gold(cost)
@@ -845,6 +856,9 @@ func _on_rest_pressed(restore_pct: int, cost: int) -> void:
 		character.derived["current_hp"] = mini(cur_hp + int(float(max_hp - cur_hp) * restore_pct / 100.0), max_hp)
 		character.derived["current_mana"] = mini(cur_mp + int(float(max_mp - cur_mp) * restore_pct / 100.0), max_mp)
 		character.derived["current_stamina"] = mini(cur_st + int(float(max_st - cur_st) * restore_pct / 100.0), max_st)
+
+	if food_restore > 0:
+		GameState.add_supply("food", food_restore)
 
 	_update_gold_display()
 	_populate_rest_tab()
@@ -888,7 +902,11 @@ func _populate_inventory() -> void:
 func _on_buy_item_pressed(item_id: String) -> void:
 	var result = ShopSystem.buy_item(item_id)
 	if result.success:
-		print("Purchased: ", result.item_name, " for ", result.price, " gold")
+		if result.has("supply_gained"):
+			# Supply items (food, etc.) go straight to the party pool
+			print("Purchased: %s — +%d %s" % [result.item_name, result.supply_gained, result.supply_type])
+		else:
+			print("Purchased: ", result.item_name, " for ", result.price, " gold")
 		_refresh_display()
 	else:
 		print("Purchase failed: ", result.reason)

@@ -233,13 +233,46 @@ func _ready() -> void:
 		_start_test_combat()
 
 
-## Center camera on the grid
+## Center camera on the combat zone (center-third of grid where units deploy)
 func _center_camera() -> void:
-	var grid_pixel_size = Vector2(
-		combat_grid.grid_size.x * combat_grid.tile_size,
-		combat_grid.grid_size.y * combat_grid.tile_size
-	)
-	camera.position = grid_pixel_size / 2
+	var ts = combat_grid.tile_size
+	var gw = combat_grid.grid_size.x
+	var gh = combat_grid.grid_size.y
+	# Set camera bounds to the full grid
+	camera.limit_left = 0
+	camera.limit_top = 0
+	camera.limit_right = gw * ts
+	camera.limit_bottom = gh * ts
+	# Start centered on the battle zone (midpoint between the two deploy zones)
+	var player_center_x = (gw / 3 + CombatGrid.PLAYER_DEPLOY_COLUMNS / 2) * ts
+	var enemy_center_x = (gw * 2 / 3 - CombatGrid.ENEMY_DEPLOY_COLUMNS / 2) * ts
+	camera.position = Vector2((player_center_x + enemy_center_x) / 2.0, gh * ts / 2.0)
+
+
+## Smoothly pan the camera to a world position (clamped to grid bounds)
+func _pan_camera_to(world_pos: Vector2, instant: bool = false) -> void:
+	var ts = combat_grid.tile_size
+	var gw = combat_grid.grid_size.x
+	var gh = combat_grid.grid_size.y
+	var target = world_pos.clamp(Vector2.ZERO, Vector2(gw * ts, gh * ts))
+	if instant:
+		camera.position = target
+	else:
+		var tween = create_tween()
+		tween.tween_property(camera, "position", target, 0.35).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+
+
+## Camera panning speed with WASD (called from _process)
+var _cam_pan_speed: float = 500.0
+
+func _process(delta: float) -> void:
+	var cam_dir = Vector2.ZERO
+	if Input.is_action_pressed("ui_up"):    cam_dir.y -= 1.0
+	if Input.is_action_pressed("ui_down"):  cam_dir.y += 1.0
+	if Input.is_action_pressed("ui_left"):  cam_dir.x -= 1.0
+	if Input.is_action_pressed("ui_right"): cam_dir.x += 1.0
+	if cam_dir != Vector2.ZERO:
+		camera.position += cam_dir * _cam_pan_speed * delta
 
 
 ## Start a test combat for debugging
@@ -251,7 +284,9 @@ func _start_test_combat() -> void:
 
 	# Create player units from party
 	var party = CharacterSystem.get_party()
-	var player_start_positions = [Vector2i(1, 3), Vector2i(1, 5), Vector2i(2, 4)]
+	# Center-zone positions (player at columns 16-19, enemy at 28-31 for 48-wide grid)
+	var pz = combat_grid.grid_size.x / 3  # player zone start x
+	var player_start_positions = [Vector2i(pz, 13), Vector2i(pz, 15), Vector2i(pz + 1, 14)]
 
 	for i in range(mini(party.size(), player_start_positions.size())):
 		var char_data = party[i]
@@ -262,7 +297,8 @@ func _start_test_combat() -> void:
 		_log_message("Player: %s placed at %s" % [unit.unit_name, player_start_positions[i]])
 
 	# Create test enemies (mix of melee, ranged, and mage)
-	var enemy_start_positions = [Vector2i(14, 3), Vector2i(14, 5), Vector2i(13, 4)]
+	var ez = combat_grid.grid_size.x * 2 / 3 - CombatGrid.ENEMY_DEPLOY_COLUMNS  # enemy zone start x
+	var enemy_start_positions = [Vector2i(ez + 3, 13), Vector2i(ez + 3, 15), Vector2i(ez + 2, 14)]
 
 	for i in range(3):
 		var enemy_def: Dictionary
@@ -369,148 +405,249 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 func _generate_combat_terrain(context: Dictionary) -> Dictionary:
 	var dominant = int(context.get("dominant", 0))
 	var counts = context.get("counts", {})
-	var grid_w = combat_grid.grid_size.x  # 16
-	var grid_h = combat_grid.grid_size.y  # 10
+	var grid_w = combat_grid.grid_size.x  # 48
+	var grid_h = combat_grid.grid_size.y  # 30
 
 	var tile_overrides: Dictionary = {}  # "x,y" -> TileType
 	var effects: Array[Dictionary] = []
 	var heights: Array[Dictionary] = []
 	var obstacles: Array[Dictionary] = []
 
-	# Budget obstacles based on overworld terrain counts in the 5x5 sample
+	# ── Deployment zone bounds (center-third layout) ─────────────────────────
+	var p_x0 = grid_w / 3                                  # player zone start x (16)
+	var p_x1 = p_x0 + CombatGrid.PLAYER_DEPLOY_COLUMNS - 1 # player zone end x   (19)
+	var e_x0 = grid_w * 2 / 3 - CombatGrid.ENEMY_DEPLOY_COLUMNS  # enemy zone start x (28)
+	var e_x1 = e_x0 + CombatGrid.ENEMY_DEPLOY_COLUMNS - 1         # enemy zone end x   (31)
+
+	# Returns true for x columns that must stay clear of blocking terrain
+	var in_deploy = func(x: int) -> bool:
+		return (x >= p_x0 and x <= p_x1) or (x >= e_x0 and x <= e_x1)
+
+	# Random tile in full grid, avoiding deploy zones and borders
+	var rand_tile = func() -> Vector2i:
+		for _try in range(30):
+			var rx = randi_range(1, grid_w - 2)
+			var ry = randi_range(1, grid_h - 2)
+			if not in_deploy.call(rx):
+				return Vector2i(rx, ry)
+		return Vector2i(-1, -1)  # safety fallback (shouldn't happen)
+
+	# ── Terrain-specific obstacle budgets (from overworld 5×5 sample) ────────
 	var wall_budget = 0
 	var water_budget = 0
 	var difficult_budget = 0
 	var tree_budget = 0
+	var fallen_tree_budget = 0
 	var rock_budget = 0
 	var pillar_budget = 0
+	var lava_budget = 0
+	var ice_budget = 0
 
 	for terrain_type in counts:
 		var count = int(counts[terrain_type])
 		match int(terrain_type):
-			4:  # MOUNTAINS -> walls + rocks for cover
+			4:  # MOUNTAINS → walls + rocks
 				wall_budget += count
+				rock_budget += count * 2
+			5:  # WATER → water tiles
+				water_budget += count * 2
+			2:  # FOREST → trees + fallen logs
+				difficult_budget += count
+				tree_budget += count * 3
+				fallen_tree_budget += count
+			6:  # SWAMP → difficult + fallen logs + water
+				difficult_budget += count
+				fallen_tree_budget += count
+				water_budget += count / 2
+			3:  # HILLS → height variation + rocks
 				rock_budget += count
-			5:  # WATER -> water tiles
-				water_budget += count
-			2:  # FOREST -> difficult terrain + trees for cover
+			9:  # LAVA → fire pits
+				lava_budget += count
+			13: # RUINS → pillars + walls + difficult
+				pillar_budget += count * 2
+				wall_budget += count
 				difficult_budget += count
-				tree_budget += count * 2  # Forests generate plenty of trees
-			6:  # SWAMP -> difficult terrain + some trees
-				difficult_budget += count
-				tree_budget += count
-			3:  # HILLS -> height variation + occasional rocks
-				for i in range(mini(count, 4)):
-					var hx = randi_range(4, grid_w - 5)
-					var hy = randi_range(1, grid_h - 2)
-					heights.append({"pos": Vector2i(hx, hy), "height": 1})
-				rock_budget += count / 2
-			9:  # LAVA -> fire pits
-				for i in range(mini(count / 2, 3)):
-					var lx = randi_range(4, grid_w - 5)
-					var ly = randi_range(1, grid_h - 2)
-					tile_overrides["%d,%d" % [lx, ly]] = CombatGrid.TileType.PIT
-					effects.append({"pos": Vector2i(lx, ly),
-						"effect": CombatGrid.TerrainEffect.FIRE, "value": 5})
-			13:  # RUINS -> difficult terrain + pillars + some walls
-				difficult_budget += count / 2
-				wall_budget += count / 3
-				pillar_budget += count
+			8, 11: # SNOW/ICE → ice patches
+				ice_budget += count * 2
 
-	# Track occupied positions to avoid overlap
+	# ── Track occupied positions to avoid overlap ─────────────────────────────
 	var occupied: Dictionary = {}
 
-	# Place wall obstacles (from mountains/ruins)
-	var walls_to_place = clampi(wall_budget / 4, 0, 6)
-	for i in range(walls_to_place):
-		var wx = randi_range(4, grid_w - 5)
-		var wy = randi_range(1, grid_h - 2)
-		var key = "%d,%d" % [wx, wy]
-		tile_overrides[key] = CombatGrid.TileType.WALL
+	# Helper: try to place at pos, return false if blocked
+	var try_place = func(x: int, y: int) -> bool:
+		if x < 1 or x >= grid_w - 1 or y < 1 or y >= grid_h - 1:
+			return false
+		if in_deploy.call(x):
+			return false
+		var key = "%d,%d" % [x, y]
+		if key in occupied:
+			return false
 		occupied[key] = true
+		return true
 
-	# Place water tiles
-	var water_to_place = clampi(water_budget / 3, 0, 4)
-	for i in range(water_to_place):
-		var wx = randi_range(4, grid_w - 5)
-		var wy = randi_range(1, grid_h - 2)
-		var key = "%d,%d" % [wx, wy]
+	# ── CHASMS (always present, 2-5 clusters of 1-3 pit tiles) ───────────────
+	var chasm_count = randi_range(2, 5)
+	for _i in range(chasm_count):
+		var p = rand_tile.call()
+		if p.x < 0:
+			continue
+		var key = "%d,%d" % [p.x, p.y]
+		tile_overrides[key] = CombatGrid.TileType.PIT
+		occupied[key] = true
+		# Extend the chasm 1-2 tiles
+		var ext_count = randi_range(0, 2)
+		var dirs = [Vector2i(1,0), Vector2i(-1,0), Vector2i(0,1), Vector2i(0,-1)]
+		var cur = p
+		for _e in range(ext_count):
+			dirs.shuffle()
+			for d in dirs:
+				var nx = cur.x + d.x
+				var ny = cur.y + d.y
+				if try_place.call(nx, ny):
+					var k2 = "%d,%d" % [nx, ny]
+					tile_overrides[k2] = CombatGrid.TileType.PIT
+					cur = Vector2i(nx, ny)
+					break
+
+	# ── LAVA PITS (terrain-specific) ──────────────────────────────────────────
+	var lava_to_place = clampi(lava_budget / 2, 0, 5)
+	for _i in range(lava_to_place):
+		var p = rand_tile.call()
+		if p.x < 0:
+			continue
+		var key = "%d,%d" % [p.x, p.y]
+		if not key in occupied:
+			tile_overrides[key] = CombatGrid.TileType.PIT
+			effects.append({"pos": p, "effect": CombatGrid.TerrainEffect.FIRE, "value": 5})
+			occupied[key] = true
+
+	# ── WALLS (impassable terrain blocks) ─────────────────────────────────────
+	var walls_to_place = clampi(wall_budget / 3, 0, 12)
+	for _i in range(walls_to_place):
+		var p = rand_tile.call()
+		if p.x < 0:
+			continue
+		var key = "%d,%d" % [p.x, p.y]
+		if not key in occupied:
+			tile_overrides[key] = CombatGrid.TileType.WALL
+			occupied[key] = true
+
+	# ── WATER TILES ───────────────────────────────────────────────────────────
+	var water_to_place = clampi(water_budget / 2, 0, 10)
+	for _i in range(water_to_place):
+		var p = rand_tile.call()
+		if p.x < 0:
+			continue
+		var key = "%d,%d" % [p.x, p.y]
 		if not key in occupied:
 			tile_overrides[key] = CombatGrid.TileType.WATER
 			occupied[key] = true
 
-	# Place difficult terrain (from forest/swamp)
-	var diff_to_place = clampi(difficult_budget / 3, 0, 6)
-	for i in range(diff_to_place):
-		var dx = randi_range(4, grid_w - 5)
-		var dy = randi_range(0, grid_h - 1)
-		var key = "%d,%d" % [dx, dy]
+	# ── DIFFICULT TERRAIN ─────────────────────────────────────────────────────
+	var diff_to_place = clampi(difficult_budget / 2, 0, 14)
+	for _i in range(diff_to_place):
+		var p = rand_tile.call()
+		if p.x < 0:
+			continue
+		var key = "%d,%d" % [p.x, p.y]
 		if not key in occupied:
 			tile_overrides[key] = CombatGrid.TileType.DIFFICULT
 			occupied[key] = true
 
-	# Place tree obstacles (from forest/swamp)
-	var trees_to_place = clampi(tree_budget / 4, 0, 5)
-	for i in range(trees_to_place):
-		var tx = randi_range(4, grid_w - 5)
-		var ty = randi_range(1, grid_h - 2)
-		var key = "%d,%d" % [tx, ty]
-		if not key in occupied:
-			obstacles.append({"pos": Vector2i(tx, ty), "obstacle": CombatGrid.ObstacleType.TREE})
-			occupied[key] = true
+	# ── TREE obstacles ────────────────────────────────────────────────────────
+	var trees_to_place = clampi(tree_budget / 3, 0, 14)
+	for _i in range(trees_to_place):
+		var p = rand_tile.call()
+		if p.x < 0:
+			continue
+		if try_place.call(p.x, p.y):
+			obstacles.append({"pos": p, "obstacle": CombatGrid.ObstacleType.TREE})
 
-	# Place rock obstacles (from mountains/hills)
-	var rocks_to_place = clampi(rock_budget / 4, 0, 4)
-	for i in range(rocks_to_place):
-		var rx = randi_range(4, grid_w - 5)
-		var ry = randi_range(1, grid_h - 2)
-		var key = "%d,%d" % [rx, ry]
-		if not key in occupied:
-			obstacles.append({"pos": Vector2i(rx, ry), "obstacle": CombatGrid.ObstacleType.ROCK})
-			occupied[key] = true
+	# ── FALLEN TREE obstacles ─────────────────────────────────────────────────
+	var fallen_to_place = clampi(fallen_tree_budget / 2, 0, 10)
+	for _i in range(fallen_to_place):
+		var p = rand_tile.call()
+		if p.x < 0:
+			continue
+		if try_place.call(p.x, p.y):
+			obstacles.append({"pos": p, "obstacle": CombatGrid.ObstacleType.FALLEN_TREE})
 
-	# Place pillar obstacles (from ruins)
-	var pillars_to_place = clampi(pillar_budget / 4, 0, 3)
-	for i in range(pillars_to_place):
-		var px = randi_range(4, grid_w - 5)
-		var py = randi_range(1, grid_h - 2)
-		var key = "%d,%d" % [px, py]
-		if not key in occupied:
-			obstacles.append({"pos": Vector2i(px, py), "obstacle": CombatGrid.ObstacleType.PILLAR})
-			occupied[key] = true
+	# ── ROCK obstacles ────────────────────────────────────────────────────────
+	var rocks_to_place = clampi(rock_budget / 3, 0, 12)
+	for _i in range(rocks_to_place):
+		var p = rand_tile.call()
+		if p.x < 0:
+			continue
+		if try_place.call(p.x, p.y):
+			obstacles.append({"pos": p, "obstacle": CombatGrid.ObstacleType.ROCK})
 
-	# Dominant terrain effects (snow/ice -> ice patches, etc.)
-	match dominant:
-		8, 11:  # SNOW, ICE
-			for i in range(randi_range(2, 5)):
-				var ix = randi_range(4, grid_w - 5)
-				var iy = randi_range(0, grid_h - 1)
-				var key = "%d,%d" % [ix, iy]
-				if not key in tile_overrides:
-					effects.append({"pos": Vector2i(ix, iy),
-						"effect": CombatGrid.TerrainEffect.ICE, "value": 0})
+	# ── PILLAR obstacles (ruins/ancient) ──────────────────────────────────────
+	var pillars_to_place = clampi(pillar_budget / 3, 0, 8)
+	for _i in range(pillars_to_place):
+		var p = rand_tile.call()
+		if p.x < 0:
+			continue
+		if try_place.call(p.x, p.y):
+			obstacles.append({"pos": p, "obstacle": CombatGrid.ObstacleType.PILLAR})
 
-	# Safety: never block deployment zones (columns 0-3 for player, last 4 for enemy)
-	for key in tile_overrides.keys():
-		var parts = key.split(",")
-		var kx = int(parts[0])
-		if kx < 4 or kx >= grid_w - 4:
-			tile_overrides.erase(key)
+	# ── ICE patches (dominant snow/ice) ───────────────────────────────────────
+	var ice_to_place = clampi(ice_budget / 2, 0, 10)
+	for _i in range(ice_to_place):
+		var p = rand_tile.call()
+		if p.x < 0:
+			continue
+		var key = "%d,%d" % [p.x, p.y]
+		if not key in tile_overrides:
+			effects.append({"pos": p, "effect": CombatGrid.TerrainEffect.ICE, "value": 0})
 
-	# Also clear effects and obstacles from deployment zones
-	var safe_effects: Array[Dictionary] = []
-	for eff in effects:
-		var ex = eff.get("pos", Vector2i(-1, -1)).x
-		if ex >= 4 and ex < grid_w - 4:
-			safe_effects.append(eff)
-	effects = safe_effects
+	# ── BASELINE obstacles (always placed, regardless of overworld terrain) ───
+	# The larger arena always has some minimum cover/terrain to make every fight interesting.
+	var baseline_trees = randi_range(3, 6)
+	for _i in range(baseline_trees):
+		var p = rand_tile.call()
+		if p.x >= 0 and try_place.call(p.x, p.y):
+			obstacles.append({"pos": p, "obstacle": CombatGrid.ObstacleType.TREE})
 
-	var safe_obstacles: Array[Dictionary] = []
-	for obs in obstacles:
-		var ox = obs.get("pos", Vector2i(-1, -1)).x
-		if ox >= 4 and ox < grid_w - 4:
-			safe_obstacles.append(obs)
-	obstacles = safe_obstacles
+	var baseline_fallen = randi_range(2, 4)
+	for _i in range(baseline_fallen):
+		var p = rand_tile.call()
+		if p.x >= 0 and try_place.call(p.x, p.y):
+			obstacles.append({"pos": p, "obstacle": CombatGrid.ObstacleType.FALLEN_TREE})
+
+	var baseline_rocks = randi_range(2, 5)
+	for _i in range(baseline_rocks):
+		var p = rand_tile.call()
+		if p.x >= 0 and try_place.call(p.x, p.y):
+			obstacles.append({"pos": p, "obstacle": CombatGrid.ObstacleType.ROCK})
+
+	# ── HEIGHT VARIATION (always generated — terrain type adds to it) ─────────
+	# Base height patches regardless of terrain
+	var height_patches = randi_range(4, 8)
+	# Hills terrain adds more patches
+	var hill_count = int(counts.get(3, 0))
+	height_patches += mini(hill_count, 6)
+
+	for _i in range(height_patches):
+		var p = rand_tile.call()
+		if p.x < 0:
+			continue
+		var key = "%d,%d" % [p.x, p.y]
+		if key in tile_overrides:  # Don't raise walls/pits/water
+			continue
+		var h = 1 if randf() < 0.7 else 2
+		heights.append({"pos": p, "height": h})
+		# Maybe extend the platform to an adjacent tile
+		if randf() < 0.55:
+			var ext_dirs = [Vector2i(1,0), Vector2i(-1,0), Vector2i(0,1), Vector2i(0,-1)]
+			ext_dirs.shuffle()
+			for d in ext_dirs:
+				var nx = p.x + d.x
+				var ny = p.y + d.y
+				if nx >= 1 and nx < grid_w - 1 and ny >= 0 and ny < grid_h and not in_deploy.call(nx):
+					var k2 = "%d,%d" % [nx, ny]
+					if not k2 in tile_overrides:
+						heights.append({"pos": Vector2i(nx, ny), "height": h})
+				break
 
 	return {
 		"size": Vector2i(grid_w, grid_h),
@@ -599,21 +736,8 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 	else:
 		_hide_cover_tooltip()
 
-	# Show obstacle/height info in log (only when tile changes to avoid spam)
-	if grid_pos != _last_hovered_tile:
-		_last_hovered_tile = grid_pos
-
-		# Show obstacle info when hovering over an obstacle tile
-		var obs_info = combat_grid.get_obstacle_at(grid_pos)
-		if not obs_info.is_empty() and current_action_mode == ActionMode.NONE:
-			_log_message("%s (HP: %d, Cover: +%d%% dodge)" % [
-				obs_info.name, obs_info.hp, obs_info.cover_bonus])
-
-		# Show height info when hovering elevated tiles
-		var tile_height = combat_grid.get_tile_height(grid_pos)
-		if tile_height > 0 and current_action_mode == ActionMode.NONE:
-			_log_message("Height: %d (+%d%% accuracy, +%d range from above)" % [
-				tile_height, tile_height * 5, tile_height])
+	# Show floating tile info tooltip (obstacle, height, terrain effect)
+	_show_tile_tooltip(grid_pos)
 
 	# Update unit info if hovering over a unit
 	var unit = combat_grid.get_unit_at(grid_pos)
@@ -664,6 +788,7 @@ func _cancel_action_mode() -> void:
 	combat_grid.clear_highlights()
 	combat_grid.clear_aoe_preview()
 	_hide_cover_tooltip()
+	_hide_tile_tooltip()
 	spell_panel.hide()
 	item_panel.hide()
 	skills_panel.hide()
@@ -1022,8 +1147,11 @@ func _on_spell_selected(spell: Dictionary) -> void:
 	if valid_targets.is_empty():
 		_log_message("No valid targets in range for %s (%s)" % [spell.name, range_text])
 	elif spell_data.get("targeting") == "ground":
-		var summon_name = spell_data.get("summon", "unknown").replace("_", " ")
-		_log_message("Select tile to summon %s (%s)..." % [summon_name, range_text])
+		if spell_data.has("summon"):
+			var summon_name = spell_data.get("summon", "unknown").replace("_", " ")
+			_log_message("Select tile to summon %s (%s)..." % [summon_name, range_text])
+		else:
+			_log_message("Select tile for %s (%s)..." % [spell.name, range_text])
 	else:
 		_log_message("Select target for %s (%s)..." % [spell.name, range_text])
 
@@ -1791,15 +1919,42 @@ func _on_flee_pressed() -> void:
 	var party_avg = party_finesse_sum / maxf(party_count, 1)
 	var enemy_avg = enemy_finesse_sum / maxf(enemy_count, 1)
 
-	# Roll: d20 + party avg finesse modifier vs DC 10 + enemy avg finesse modifier
-	# Modifier = (attribute - 10) like standard d20 systems
+	# Proximity bonus: find the closest living player-to-enemy pair.
+	# Being surrounded is nearly impossible to escape; being far away is easy.
+	var min_dist: int = 999
+	for pu in player_units:
+		if not pu.is_alive():
+			continue
+		for eu in enemy_units:
+			if not eu.is_alive():
+				continue
+			var d = _grid_distance(pu.grid_position, eu.grid_position)
+			if d < min_dist:
+				min_dist = d
+
+	# dist 1-2 → -3 penalty (surrounded); dist 3-4 → 0; dist 5-7 → +2; dist 8-11 → +4; dist 12+ → +6
+	var proximity_bonus: int
+	if   min_dist <= 2:  proximity_bonus = -3
+	elif min_dist <= 4:  proximity_bonus = 0
+	elif min_dist <= 7:  proximity_bonus = 2
+	elif min_dist <= 11: proximity_bonus = 4
+	else:                proximity_bonus = 6
+
+	# Roll: d20 + party avg finesse modifier + proximity bonus vs DC 12 + enemy avg finesse modifier
 	var party_mod = (party_avg - 10.0) / 2.0
 	var enemy_mod = (enemy_avg - 10.0) / 2.0
 	var roll = randi_range(1, 20)
-	var total = roll + party_mod
+	var total = roll + party_mod + proximity_bonus
 	var dc = 12.0 + enemy_mod  # Base DC 12 = "moderately difficult"
 
-	_log_message("Attempting to flee... (rolled %d + %.0f = %.0f vs DC %.0f)" % [roll, party_mod, total, dc])
+	var prox_str = ""
+	if proximity_bonus > 0:
+		prox_str = " +%d proximity" % proximity_bonus
+	elif proximity_bonus < 0:
+		prox_str = " %d proximity" % proximity_bonus
+
+	_log_message("Attempting to flee... (rolled %d + %.0f%s = %.0f vs DC %.0f, closest enemy: %d tiles)" \
+		% [roll, party_mod, prox_str, total, dc, min_dist])
 
 	# Use 1 action for the attempt
 	CombatManager.use_action(1)
@@ -1966,7 +2121,39 @@ func _update_turn_order_display() -> void:
 			label.text += " [!%d]" % unit.bleed_out_turns
 
 		label.add_theme_font_size_override("font_size", 12)
+
+		# Build hover tooltip with unit stats and status effects
+		label.mouse_filter = Control.MOUSE_FILTER_PASS
+		label.tooltip_text = _build_turn_order_tooltip(unit)
+
 		turn_order_list.add_child(label)
+
+
+## Build tooltip text for a turn order entry
+func _build_turn_order_tooltip(unit: CombatUnit) -> String:
+	var lines: Array[String] = []
+
+	# HP / Mana / Actions
+	lines.append("HP: %d/%d" % [unit.current_hp, unit.max_hp])
+	if unit.max_mana > 0:
+		lines.append("Mana: %d/%d" % [unit.current_mana, unit.max_mana])
+	lines.append("Actions: %d/%d" % [unit.actions_remaining, unit.max_actions])
+
+	# Initiative (explains position in turn order)
+	var initiative = unit.get_initiative() if unit.has_method("get_initiative") else 0
+	if initiative > 0:
+		lines.append("Initiative: %d" % initiative)
+
+	# Active status effects
+	if not unit.status_effects.is_empty():
+		lines.append("")  # blank separator
+		for effect in unit.status_effects:
+			var sname: String = effect.get("status", "?")
+			var dur: int = effect.get("duration", 0)
+			var dur_str = " (%d turn%s)" % [dur, "s" if dur != 1 else ""] if dur > 0 else ""
+			lines.append(sname.replace("_", " ") + dur_str)
+
+	return "\n".join(lines)
 
 
 ## Show unit info panel with colored bars for HP, mana, stamina
@@ -2113,6 +2300,9 @@ func _update_action_circles(remaining: int, total: int) -> void:
 ## Floating label shown when hovering over movement tiles near cover
 var _cover_tooltip: Label = null
 
+## Floating label shown when hovering any tile with noteworthy terrain info
+var _tile_tooltip: Label = null
+
 ## Show cover tooltip at a tile position when in movement mode
 func _show_cover_tooltip(grid_pos: Vector2i) -> void:
 	_hide_cover_tooltip()
@@ -2153,6 +2343,59 @@ func _hide_cover_tooltip() -> void:
 	if _cover_tooltip != null:
 		_cover_tooltip.queue_free()
 		_cover_tooltip = null
+
+
+## Show a floating tooltip with obstacle, height, and terrain effect info for a tile
+func _show_tile_tooltip(grid_pos: Vector2i) -> void:
+	_hide_tile_tooltip()
+
+	# Don't show when cover tooltip is already providing info in movement mode
+	if current_action_mode == ActionMode.MOVE:
+		return
+
+	var parts: Array[String] = []
+
+	# Obstacle info
+	var obs_info = combat_grid.get_obstacle_at(grid_pos)
+	if not obs_info.is_empty():
+		var obs_text = obs_info.name
+		if obs_info.hp > 0:
+			obs_text += " (HP: %d)" % obs_info.hp
+		if obs_info.cover_bonus > 0:
+			obs_text += " — +%d%% cover" % obs_info.cover_bonus
+		parts.append(obs_text)
+
+	# Height info
+	var tile_height = combat_grid.get_tile_height(grid_pos)
+	if tile_height > 0:
+		parts.append("Height %d — +%d%% accuracy, +%d range" % [tile_height, tile_height * 5, tile_height])
+
+	# Terrain effect info
+	var tile = combat_grid.tiles.get(grid_pos)
+	if tile != null and tile.effect != combat_grid.TerrainEffect.NONE:
+		var eff_name = combat_grid.get_effect_name(tile.effect)
+		var eff_text = eff_name
+		if tile.effect_duration > 0:
+			eff_text += " (%d turn%s)" % [tile.effect_duration, "s" if tile.effect_duration != 1 else ""]
+		parts.append(eff_text)
+
+	if parts.is_empty():
+		return
+
+	_tile_tooltip = Label.new()
+	_tile_tooltip.text = "\n".join(parts)
+	_tile_tooltip.add_theme_font_size_override("font_size", 11)
+	_tile_tooltip.add_theme_color_override("font_color", Color(0.9, 0.85, 0.6))
+	_tile_tooltip.position = combat_grid.grid_to_world(grid_pos) + Vector2(2, -28)
+	_tile_tooltip.z_index = 100
+	combat_grid.add_child(_tile_tooltip)
+
+
+## Hide the tile info tooltip
+func _hide_tile_tooltip() -> void:
+	if _tile_tooltip != null:
+		_tile_tooltip.queue_free()
+		_tile_tooltip = null
 
 
 ## Add message to combat log
@@ -2262,6 +2505,10 @@ func _on_turn_started(unit: Node) -> void:
 	_update_turn_order_display()
 	_update_action_buttons()
 	_select_unit(unit)
+	if unit.has_method("play_turn_start_bounce"):
+		unit.play_turn_start_bounce()
+	# Pan camera to active unit so it's always in view
+	_pan_camera_to(combat_grid.tile_center(unit.grid_position))
 
 	# Check for CC behavior override — affects both player and enemy units
 	var cc_behavior = CombatManager.get_cc_behavior(unit)

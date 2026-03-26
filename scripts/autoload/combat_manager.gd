@@ -388,9 +388,9 @@ func _calculate_combat_rewards() -> Dictionary:
 		ratio = enemy_power_total / party_power
 
 	# --- XP REWARD ---
-	# Base: 2 XP per enemy, scaled by difficulty ratio
-	# Clamped so trivial fights still give something, hard fights give more
-	var base_xp := enemy_count * 2
+	# Base: 15 XP per enemy, scaled by difficulty ratio.
+	# Party-size multiplier (solo=1.5×, duo=1.25×, etc.) is applied later in CompanionSystem.apply_party_xp.
+	var base_xp := enemy_count * 15
 	var xp_reward := maxi(1, int(base_xp * clampf(ratio, 0.5, 3.0)))
 
 	# --- GOLD REWARD ---
@@ -2220,6 +2220,25 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		var summon_result = _spawn_summoned_unit(caster, summon_id, target_pos, spellpower_bonus)
 		spell_cast.emit(caster, spell, [], [summon_result])
 		return {"success": true, "spell": spell, "targets": [], "results": [summon_result], "mana_cost": mana_cost}
+
+	# --- Ground-effect spells: place terrain effects at target location ---
+	# e.g. smoke_cloud — blocks_line_of_sight in spell.special means SMOKE terrain
+	if targeting == "ground" and spell.get("special", {}).get("blocks_line_of_sight", false):
+		use_action(1)
+		var aoe_radius = spell.get("aoe", {}).get("base_size", 1)
+		var duration = spellpower_bonus if spell.get("duration", 0) == "spellpower" else int(spell.get("duration", 3))
+		if duration <= 0:
+			duration = 3
+		var tiles_in_area = combat_grid.get_tiles_in_radius(target_pos, aoe_radius)
+		for pos in tiles_in_area:
+			var tile = combat_grid.tiles.get(pos)
+			if tile != null and tile.walkable:
+				combat_grid.add_terrain_effect(pos, CombatGrid.TerrainEffect.SMOKE, duration)
+		combat_log.emit("%s casts Smoke Cloud — sight blocked for %d turns!" % [caster.unit_name, duration])
+		var ground_result = {"effect": "smoke", "tiles_affected": tiles_in_area.size(), "duration": duration}
+		spell_cast.emit(caster, spell, [], [ground_result])
+		_process_spell_cast_perks(caster, null, spell, ground_result)
+		return {"success": true, "spell": spell, "targets": [], "results": [ground_result], "mana_cost": mana_cost}
 
 	# Apply effects to each target
 	var results: Array[Dictionary] = []
@@ -6856,7 +6875,7 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 			var rudra_count = 1 + randi() % 3
 			var spawned = 0
 			var offsets = [Vector2i(0,-1), Vector2i(0,1), Vector2i(-1,0), Vector2i(1,0),
-			               Vector2i(-1,-1), Vector2i(1,-1), Vector2i(-1,1), Vector2i(1,1)]
+						   Vector2i(-1,-1), Vector2i(1,-1), Vector2i(-1,1), Vector2i(1,1)]
 			for offset in offsets:
 				if spawned >= rudra_count:
 					break

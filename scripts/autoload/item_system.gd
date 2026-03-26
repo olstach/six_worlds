@@ -1357,12 +1357,14 @@ func generate_armor(armor_type: String = "", rarity: String = "common",
 	name_parts_arr.append(armor_type.capitalize())
 	var item_name = " ".join(name_parts_arr)
 
-	# Build description
+	# Build description — boots/gloves/gauntlets/greaves are plural, use "Some"
+	const PLURAL_ARMOR_TYPES: Array[String] = ["boots", "gloves", "gauntlets", "greaves"]
+	var article: String = "Some" if armor_type in PLURAL_ARMOR_TYPES else "A"
 	var desc_parts: Array[String] = []
 	if q_prefix != "":
-		desc_parts.append("A %s %s %s." % [q_prefix.to_lower(), mat_info.get("name_prefix", "").to_lower(), armor_type])
+		desc_parts.append("%s %s %s %s." % [article, q_prefix.to_lower(), mat_info.get("name_prefix", "").to_lower(), armor_type])
 	else:
-		desc_parts.append("A %s %s." % [mat_info.get("name_prefix", "").to_lower(), armor_type])
+		desc_parts.append("%s %s %s." % [article, mat_info.get("name_prefix", "").to_lower(), armor_type])
 	if not applied_traits.is_empty():
 		var trait_names: Array[String] = []
 		for t in applied_traits:

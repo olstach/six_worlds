@@ -222,6 +222,8 @@ func _draw() -> void:
 	draw_circle(party_center, ts * 0.35, PARTY_OUTLINE)
 	# Fill
 	draw_circle(party_center, ts * 0.3, PARTY_COLOR)
+	# HP/MP bars below the party circle — only when not full
+	_draw_party_stat_bars(party_center, ts)
 
 	# --- Layer 7: Hover highlight ---
 	if hover_tile.x >= 0 and hover_tile.x < map_w and hover_tile.y >= 0 and hover_tile.y < map_h:
@@ -401,3 +403,52 @@ func _draw_terrain_overlay(x: int, y: int, ts: int, speed: float) -> void:
 		var top_y = float(y * ts) + 4.0
 		var bot_y = float(y * ts) + ts - 4.0
 		draw_line(Vector2(mid_x, top_y), Vector2(mid_x, bot_y), Color(1, 1, 1, 0.2), 2.0)
+
+
+## Draw HP and MP bars below the party circle, only when not at full values.
+## Aggregates across all party members (total current / total max).
+func _draw_party_stat_bars(party_center: Vector2, ts: int) -> void:
+	var party = CharacterSystem.get_party()
+	if party.is_empty():
+		return
+
+	var total_hp: int = 0
+	var total_max_hp: int = 0
+	var total_mp: int = 0
+	var total_max_mp: int = 0
+
+	for char in party:
+		var derived: Dictionary = char.get("derived", {})
+		var max_hp: int = derived.get("max_hp", 0)
+		var max_mp: int = derived.get("max_mana", 0)
+		total_hp += derived.get("current_hp", max_hp)
+		total_max_hp += max_hp
+		total_mp += derived.get("current_mana", max_mp)
+		total_max_mp += max_mp
+
+	var hp_full: bool = total_hp >= total_max_hp
+	var mp_full: bool = total_mp >= total_max_mp or total_max_mp == 0
+	if hp_full and mp_full:
+		return  # Both full — nothing to show
+
+	# Bar dimensions: width = tile, height = 3px, 2px gap between bars
+	var bar_w: float = ts * 0.7
+	var bar_h: float = 3.0
+	var bar_x: float = party_center.x - bar_w * 0.5
+	# Start just below the circle outline
+	var bar_y: float = party_center.y + ts * 0.36
+
+	if not hp_full and total_max_hp > 0:
+		var hp_pct: float = clampf(float(total_hp) / float(total_max_hp), 0.0, 1.0)
+		# Background (empty)
+		draw_rect(Rect2(bar_x - 1, bar_y - 1, bar_w + 2, bar_h + 2), Color(0.1, 0.05, 0.05, 0.85))
+		draw_rect(Rect2(bar_x, bar_y, bar_w, bar_h), Color(0.3, 0.1, 0.1, 0.8))
+		# Filled portion
+		draw_rect(Rect2(bar_x, bar_y, bar_w * hp_pct, bar_h), Color(0.85, 0.2, 0.2, 0.95))
+		bar_y += bar_h + 2.0
+
+	if not mp_full and total_max_mp > 0:
+		var mp_pct: float = clampf(float(total_mp) / float(total_max_mp), 0.0, 1.0)
+		draw_rect(Rect2(bar_x - 1, bar_y - 1, bar_w + 2, bar_h + 2), Color(0.05, 0.05, 0.15, 0.85))
+		draw_rect(Rect2(bar_x, bar_y, bar_w, bar_h), Color(0.1, 0.1, 0.3, 0.8))
+		draw_rect(Rect2(bar_x, bar_y, bar_w * mp_pct, bar_h), Color(0.2, 0.4, 0.9, 0.95))

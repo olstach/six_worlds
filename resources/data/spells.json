@@ -7,7 +7,7 @@
       "4": 135,
       "5": 225
     },
-    "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)",
+    "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)",
     "schools": [
       "earth",
       "water",
@@ -28,40 +28,40 @@
       "stone_spells": "Base physical damage",
       "blade_spells": "+50% damage, +50% cost (Earth/Space)",
       "golden_blade": "+50% over blade (~2.25x base)",
-      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
     },
     "water": {
       "general": "Less damage than other schools, focuses on crowd control",
       "ice_spells": "Have freeze chance, scaling with upgrades",
       "push_spells": "Deal bonus physical damage if enemy hits obstacle",
       "vajra_spells": "Water-Space crossover. Vajra (thunderbolt/diamond) themed spells with stun, binding, and portal effects",
-      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
     },
     "fire": {
       "general": "Moderate damage in big AoE with burning DoT. Charm/magnetizing effects from Padma (Lotus) family.",
       "burning": "Stacks. Small chance to spread in melee (spreads base level only, not full stack).",
-      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
     },
     "air": {
       "general": "Lightning spells have high damage, high cost, stun chance. Wind spells push/scatter enemies, dealing physical damage on impact. Buffs focus on ranged accuracy and speed.",
       "lightning_spells": "Air damage with stun chance scaling with spellpower/upgrades",
       "wind_spells": "Physical damage from impacts/falls, scatter to random tiles",
       "stun_vs_freeze": "Stun: 1 turn, save at end to break, no vulnerability. Freeze: can last longer, physical vulnerability, dispelled by fire.",
-      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
     },
     "space": {
       "general": "Utility with teleportation, mental manipulation crossovers, illusion spells, and basic reliable damage. Magic Missile style spells are moderate and useful for everyone.",
       "damage_type": "space",
       "dagger_theme": "Phurba/Nailing Dagger spells - pinning, binding, subjugating hostile forces",
       "illusion_theme": "Deception, misdirection, mental manipulation",
-      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
     },
     "white": {
       "general": "Healing and buffs primarily, with some damage spells effective against undead and demons who have white vulnerability. White and Black are both natural parts of the world order.",
       "damage_type": "white",
       "anti_undead_demon": "White damage is especially effective against undead and demons",
       "ancestral_theme": "White-Black crossover focuses on respectful dealings with the dead, ancestor veneration",
-      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
     },
     "black": {
       "general": "Debuffs, undead/demon summons, and damage spells. Black and White are both natural parts of the world order.",
@@ -69,7 +69,7 @@
       "celestial_vulnerability": "Celestials have 50% black vulnerability (in race stats, not spell stats)",
       "summons": "Summoned from nothing, not from corpses",
       "curse_synergy": "Many spells and upgrades benefit from debuffed targets",
-      "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)"
+      "buff_debuff_scaling": "single target \u2192 AoE (circle) \u2192 all eligible (allies/enemies)"
     }
   },
   "spells": {
@@ -96,7 +96,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Minor armor buff"
     },
@@ -148,7 +148,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Root enemy, Finesse resist"
     },
@@ -175,7 +175,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Reduce enemy speed"
     },
@@ -202,7 +202,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Defense buff"
     },
@@ -255,7 +255,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Luck buff"
     },
@@ -284,7 +284,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Weapon buff, +50% physical damage"
     },
@@ -311,7 +311,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Major armor buff"
     },
@@ -338,7 +338,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Remove flight from target"
     },
@@ -392,7 +392,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Defense buff"
     },
@@ -420,7 +420,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Disable enemy, resistible, lower cost than Midas Touch"
     },
@@ -447,7 +447,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Major strength buff"
     },
@@ -475,7 +475,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Damaging vines that entangle"
     },
@@ -502,7 +502,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Supreme armor buff"
     },
@@ -1247,7 +1247,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Heal minor HP, remove bleeding and poison"
     },
@@ -1277,7 +1277,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Remove negative effects, buff Constitution"
     },
@@ -1338,7 +1338,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Boost Strength and Constitution, heal minor"
     },
@@ -1401,7 +1401,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "50% fire vulnerability, cumulative with resistances"
     },
@@ -1434,7 +1434,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "1 physical damage per turn, disrupts mantras/rituals with focus saves"
     },
@@ -1663,7 +1663,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "One enemy falls down"
     },
@@ -1693,7 +1693,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Ignore water terrain hazards, walk on water"
     },
@@ -1784,7 +1784,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Major dodge boost"
     },
@@ -1841,7 +1841,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Dodge and damage debuff"
     },
@@ -2209,7 +2209,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Freeze chance on target"
     },
@@ -2503,7 +2503,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Remove burning, 25% fire resistance"
     },
@@ -2561,7 +2561,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Remove all negative effects"
     },
@@ -2623,7 +2623,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Heal comparable to Greater Heal, death immunity for a few turns"
     },
@@ -2651,7 +2651,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Reduce ranged attack and damage by 50%"
     },
@@ -2705,7 +2705,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Reduce melee attack and armor by 50%"
     },
@@ -2734,7 +2734,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Melee attackers become poisoned"
     },
@@ -2766,7 +2766,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Poison DoT that increases each turn"
     },
@@ -3061,7 +3061,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "special": {
         "visual": "vajra_chains"
@@ -3193,7 +3193,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Add fire damage + burning to attacks"
     },
@@ -3219,7 +3219,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Melee damage buff"
     },
@@ -3248,7 +3248,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Increase burning damage dealt by target's attacks"
     },
@@ -3275,7 +3275,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Target treats caster as ally"
     },
@@ -3306,7 +3306,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Fire damage to melee attackers"
     },
@@ -3337,7 +3337,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Lash at enemies entering melee range"
     },
@@ -3365,7 +3365,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Target attacks closest creature indiscriminately"
     },
@@ -3395,7 +3395,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Chance to charm enemies entering melee"
     },
@@ -3430,7 +3430,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Target becomes smoke, gains evasion, can move through enemies, 25% water vulnerability"
     },
@@ -3754,7 +3754,8 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_radius_per_tier"
       },
-      "description": "Blocks line of sight"
+      "description": "Blocks line of sight",
+      "range": 4
     },
     "breath_of_fire": {
       "name": "Breath of Fire",
@@ -4165,7 +4166,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Remove bleeding, poison, disease; deal minor damage"
     },
@@ -4193,7 +4194,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Remove negative mental effects, boost Awareness"
     },
@@ -4280,7 +4281,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Major Focus boost"
     },
@@ -4339,7 +4340,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Remove negative effects, minor fire damage to target"
     },
@@ -4424,7 +4425,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Reduce armor, fire vulnerability"
     },
@@ -4483,7 +4484,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Fire DoT, internal"
     },
@@ -4537,7 +4538,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Fire DoT that deals more damage for each debuff on target"
     },
@@ -4661,7 +4662,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Add air damage + stun chance to attacks"
     },
@@ -4687,7 +4688,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Speed and initiative boost"
     },
@@ -4716,7 +4717,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Immunity to ground/terrain effects"
     },
@@ -4747,7 +4748,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Range, accuracy, and critical boost for ranged attacks"
     },
@@ -4776,7 +4777,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Protection from ranged damage"
     },
@@ -4808,7 +4809,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Aura granting haste and precision to nearby allies"
     },
@@ -4839,7 +4840,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Grant flight"
     },
@@ -5463,7 +5464,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Immunity to physical damage, cannot deal physical, major speed boost"
     },
@@ -5619,7 +5620,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Minor heal, restore Stamina"
     },
@@ -5705,7 +5706,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Grant one additional action this turn"
     },
@@ -5792,7 +5793,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Physical damage and drain stamina"
     },
@@ -5861,7 +5862,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Silence + physical damage over time, Constitution save"
     },
@@ -5926,7 +5927,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Boost to stealth/sneak"
     },
@@ -5980,7 +5981,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Protection from spell damage"
     },
@@ -6010,7 +6011,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Shifting image grants dodge bonus, attacks have miss chance"
     },
@@ -6036,7 +6037,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Target becomes invisible, broken by offensive action"
     },
@@ -6067,7 +6068,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Create illusory copies, attacks may hit copies instead"
     },
@@ -6098,7 +6099,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Chance to reflect spells back to caster (spellpower vs spellpower)"
     },
@@ -6479,7 +6480,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Pin enemy's shadow - rooted, takes damage if they try to move"
     },
@@ -6530,7 +6531,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Remove some mana and deal space damage"
     },
@@ -6595,7 +6596,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "50% chance to negate physical damage"
     },
@@ -6675,7 +6676,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "special": {
         "illusion_of_fear": true
@@ -6760,7 +6761,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "special": {
         "dagger_orbits_target": true,
@@ -6844,7 +6845,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Drain significant mana from target, transfer to caster"
     },
@@ -6981,7 +6982,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Minor dodge buff, attackers are briefly dazzled (accuracy penalty on next attack)"
     },
@@ -7009,7 +7010,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Remove paralysis, slow, root, and earthbound effects"
     },
@@ -7040,7 +7041,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Target can't be targeted or target enemies, breaks on offensive action"
     },
@@ -7126,7 +7127,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Target moves randomly, can't act intentionally"
     },
@@ -7153,7 +7154,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Enemy can move but can't attack or cast for 1 turn"
     },
@@ -7180,7 +7181,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Target moves AND attacks/casts randomly - dangerous to everyone"
     },
@@ -7206,7 +7207,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Paralyze target with dread"
     },
@@ -7289,7 +7290,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Buff initiative"
     },
@@ -7372,7 +7373,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Chance to make enemy disengage from combat"
     },
@@ -7401,7 +7402,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Buff attack and defense"
     },
@@ -7431,7 +7432,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Heal over time"
     },
@@ -7461,7 +7462,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Buff initiative, speed, and damage"
     },
@@ -7490,7 +7491,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Buff defense and magic resistances"
     },
@@ -7556,7 +7557,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Considerably buff target's two highest stats"
     },
@@ -7842,7 +7843,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Heal minor HP, roll to dispel negative effects"
     },
@@ -7903,7 +7904,7 @@
       "target": {
         "type": "single",
         "eligible": "any",
-        "upgrade_scaling": "single → aoe → all"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all"
       },
       "special": {
         "removes_all_magical_effects": true
@@ -7928,7 +7929,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Heal significant HP"
     },
@@ -8116,7 +8117,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Gain insight from ancestors, temporary Awareness and Focus buff"
     },
@@ -8202,7 +8203,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Gain 50% of damage dealt as HP"
     },
@@ -8231,7 +8232,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Deal 50% of damage taken back to attacker"
     },
@@ -8298,7 +8299,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "When an ally dies, gain attack and damage buff for several turns"
     },
@@ -8436,7 +8437,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Debuff defense and speed"
     },
@@ -8464,7 +8465,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Buff that grants lifesteal on all attacks"
     },
@@ -8489,7 +8490,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Debuff attack and defense"
     },
@@ -8514,7 +8515,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Debuff initiative, speed, and defense"
     },
@@ -8544,7 +8545,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Stealth and dodge bonus"
     },
@@ -8606,7 +8607,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Debuff all attributes and deal black damage over time"
     },
@@ -9038,7 +9039,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Steal HP from enemy"
     },
@@ -9297,7 +9298,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Metal corrodes into useless mud. On failed Constitution save: reduces target's damage output and armor."
     },
@@ -9429,7 +9430,7 @@
         "base_size": 3,
         "upgradeable": true,
         "upgrade_scaling": "+1_length_per_tier",
-        "note": "cone_forward targeting not yet implemented in combat_manager.gd — see TODO"
+        "note": "cone_forward targeting not yet implemented in combat_manager.gd \u2014 see TODO"
       },
       "description": "Scatter powdered glass in a cone in front of the caster. All enemies in the cone are Blinded for 3 turns."
     },
@@ -9459,7 +9460,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Encase an ally in a globe of conjured glass. Provides minor armor. When the target takes any damage, the globe shatters outward: moderate slashing damage + guaranteed Bleeding to all enemies within 2 tiles."
     },
@@ -9574,7 +9575,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Crown the target with living crystal. Major Focus and Awareness bonus. 50% chance to shatter and be lost whenever the wearer takes damage."
     },
@@ -9611,7 +9612,7 @@
       "target": {
         "type": "battlefield"
       },
-      "description": "Flood the battlefield with pure crystal light. Instantly removes all stealth, invisibility, blur, smoke-form, and illusion effects from every unit on the field — allies and enemies alike."
+      "description": "Flood the battlefield with pure crystal light. Instantly removes all stealth, invisibility, blur, smoke-form, and illusion effects from every unit on the field \u2014 allies and enemies alike."
     },
     "steam_jet": {
       "name": "Steam Jet",
@@ -9644,7 +9645,7 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_length_per_tier"
       },
-      "description": "Blast of scalding steam in a 3-tile line from the caster toward the cursor — moderate fire damage to all in the path",
+      "description": "Blast of scalding steam in a 3-tile line from the caster toward the cursor \u2014 moderate fire damage to all in the path",
       "domain": "steam"
     },
     "fragrant_sauna": {
@@ -9684,7 +9685,7 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_radius_per_tier"
       },
-      "description": "Envelop allies in healing steam — remove Burning and Poisoned, restore all stamina, heal a little HP",
+      "description": "Envelop allies in healing steam \u2014 remove Burning and Poisoned, restore all stamina, heal a little HP",
       "domain": "steam"
     },
     "geyser": {
@@ -9722,7 +9723,7 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_arm_length_per_tier"
       },
-      "description": "Superheated geyser erupts at target location in a cross AoE — moderate fire damage and throws each target 2-3 tiles in a random direction; bonus damage if thrown into a wall",
+      "description": "Superheated geyser erupts at target location in a cross AoE \u2014 moderate fire damage and throws each target 2-3 tiles in a random direction; bonus damage if thrown into a wall",
       "domain": "steam"
     },
     "scalding_fog": {
@@ -9763,7 +9764,7 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_radius_per_tier"
       },
-      "description": "Summon a persistent cloud of scalding fog. Each turn a creature spends inside it, the damage grows: turn_in_fog × 5 fire damage — light at first, searing by the end",
+      "description": "Summon a persistent cloud of scalding fog. Each turn a creature spends inside it, the damage grows: turn_in_fog \u00d7 5 fire damage \u2014 light at first, searing by the end",
       "domain": "steam"
     },
     "cloudstep": {
@@ -9824,7 +9825,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "The target's body disperses into cloud. Grants 100% immunity to physical and water damage; 50% vulnerability to fire damage. Duration scales with spellpower."
     },
@@ -9851,7 +9852,7 @@
       "target": {
         "type": "ground"
       },
-      "description": "Summon a cloud naga — a flying serpent of exceptional speed, initiative, and dodge. High damage output. Immune to ground effects."
+      "description": "Summon a cloud naga \u2014 a flying serpent of exceptional speed, initiative, and dodge. High damage output. Immune to ground effects."
     },
     "cloud_gate": {
       "name": "Cloud Gate",
@@ -9881,7 +9882,7 @@
       "target": {
         "type": "self"
       },
-      "description": "Open a gate through the clouds. Teleports the entire party to the last teahouse, temple, or town visited. Works in and out of combat — a last resort as much as a convenience."
+      "description": "Open a gate through the clouds. Teleports the entire party to the last teahouse, temple, or town visited. Works in and out of combat \u2014 a last resort as much as a convenience."
     },
     "rainbow_orb": {
       "name": "Rainbow Orb",
@@ -9926,7 +9927,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "A shimmering orb of prismatic light. Each of four effects triggers independently at 25% chance: moderate damage of a random elemental type, Blind, Confuse, or Charm.",
       "domain": "rainbow"
@@ -10015,7 +10016,7 @@
         "type": "global",
         "eligible": "all"
       },
-      "description": "A flash of pure awareness. All allies receive a light heal and have all debuffs lifted. All enemies simultaneously receive the Rainbow Orb — each of its four effects rolling independently per target.",
+      "description": "A flash of pure awareness. All allies receive a light heal and have all debuffs lifted. All enemies simultaneously receive the Rainbow Orb \u2014 each of its four effects rolling independently per target.",
       "domain": "rainbow"
     },
     "rainbow_cloak": {
@@ -10081,9 +10082,9 @@
       "target": {
         "type": "single",
         "eligible": "self",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
-      "description": "+25% fire and water resistance for duration. While active, enemies that strike you in melee receive 1 burning stack — the body radiates heat."
+      "description": "+25% fire and water resistance for duration. While active, enemies that strike you in melee receive 1 burning stack \u2014 the body radiates heat."
     },
     "heat_transfer": {
       "name": "Heat Transfer",
@@ -10224,9 +10225,9 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
-      "description": "Clear all mental debuffs from target. Grant immunity to mental debuffs for spellpower turns (typically 2–4). Note: distinct from Clarity (Fire/White), which instead provides an Awareness buff."
+      "description": "Clear all mental debuffs from target. Grant immunity to mental debuffs for spellpower turns (typically 2\u20134). Note: distinct from Clarity (Fire/White), which instead provides an Awareness buff."
     },
     "divine_eye": {
       "name": "Divine Eye",
@@ -10262,7 +10263,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "Target sees through all stealth, invisibility, blur, and illusion for the rest of combat. +50% range for ranged attacks and spells. Note: distinct from Crystal Light (Earth/Space), which dispels these effects once battlefield-wide rather than granting ongoing personal vision."
     },
@@ -10326,7 +10327,7 @@
             "base_difficulty": 14,
             "difficulty_modifier_per_passed_save": -2,
             "modifier_scope": "per_enemy",
-            "description": "Each enemy rolls FCS at the start of their turn or is confused for 1 turn. Each time a given enemy passes the save, their personal DC drops by 2 — they are slowly seeing through the mirage."
+            "description": "Each enemy rolls FCS at the start of their turn or is confused for 1 turn. Each time a given enemy passes the save, their personal DC drops by 2 \u2014 they are slowly seeing through the mirage."
           },
           "on_fail": [
             "Confused_1"
@@ -10363,7 +10364,7 @@
       "target": {
         "type": "single",
         "eligible": "ally",
-        "upgrade_scaling": "single → aoe → all_allies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_allies"
       },
       "description": "+2 STR and +2 FIN for spellpower-based duration. A resonant chant that sharpens the body for combat."
     },
@@ -10392,7 +10393,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "-2 CON and -2 FCS for spellpower-based duration. A low, sourceless tone that unsettles the body and mind."
     },
@@ -10495,7 +10496,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Engulf target in flames, dealing fire damage and applying heavy burning"
     },
@@ -10568,7 +10569,7 @@
       "target": {
         "type": "single",
         "eligible": "enemy",
-        "upgrade_scaling": "single → aoe → all_enemies"
+        "upgrade_scaling": "single \u2192 aoe \u2192 all_enemies"
       },
       "description": "Drain life from target, healing caster for damage dealt"
     }

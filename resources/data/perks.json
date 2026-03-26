@@ -8829,7 +8829,8 @@
       "requires_perks": [],
       "description": "On death, reassemble after one turn at 50% HP. Triggers once per combat.",
       "flavor": "The bones clatter back together, driven by a hunger that refuses to end.",
-      "is_mantra": false
+      "is_mantra": false,
+      "enemy_only": true
     }
   }
 }

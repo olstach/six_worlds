@@ -324,7 +324,12 @@ func _update_header(character: Dictionary) -> void:
 	name_value.text = character.get("name", "Unknown")
 	race_value.text = character.get("race", "Unknown").capitalize()
 	background_value.text = character.get("background", "Unknown").capitalize()
-	xp_value.text = str(character.get("xp", 0))
+	# Companions have a "free XP" pool (earned since joining, not yet spent).
+	# Show that instead of raw character.xp, which gets reset by the XP-swap pattern.
+	if character.has("companion_id"):
+		xp_value.text = str(int(character.get("free_xp", 0)))
+	else:
+		xp_value.text = str(character.get("xp", 0))
 
 func _update_attributes(character: Dictionary) -> void:
 	# Clear existing
@@ -1855,6 +1860,44 @@ func _build_character_selector() -> void:
 		character_selector_panel.add_child(btn)
 		if member == _current_character:
 			btn.set_pressed_no_signal(true)
+
+	# Prev/next arrow buttons on the right end of the selector bar
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	character_selector_panel.add_child(spacer)
+
+	var prev_btn := Button.new()
+	prev_btn.text = "◄"
+	prev_btn.tooltip_text = "Previous character"
+	prev_btn.custom_minimum_size = Vector2(30, 0)
+	prev_btn.pressed.connect(_navigate_character.bind(-1))
+	character_selector_panel.add_child(prev_btn)
+
+	var next_btn := Button.new()
+	next_btn.text = "►"
+	next_btn.tooltip_text = "Next character"
+	next_btn.custom_minimum_size = Vector2(30, 0)
+	next_btn.pressed.connect(_navigate_character.bind(1))
+	character_selector_panel.add_child(next_btn)
+
+
+func _navigate_character(direction: int) -> void:
+	## Cycle to the prev/next party member.
+	var party := CharacterSystem.get_party()
+	if party.is_empty():
+		return
+	var idx := party.find(_current_character)
+	if idx == -1:
+		idx = 0
+	idx = (idx + direction + party.size()) % party.size()
+	_on_character_selected(party[idx])
+	# Sync the toggle buttons so the correct one is highlighted
+	var buttons: Array = []
+	for child in character_selector_panel.get_children():
+		if child is Button and child.toggle_mode:
+			buttons.append(child)
+	if idx < buttons.size():
+		buttons[idx].set_pressed_no_signal(true)
 
 
 func _on_character_selected(character: Dictionary) -> void:

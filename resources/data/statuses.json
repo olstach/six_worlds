@@ -1959,13 +1959,13 @@
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
-        "awareness_penalty_major",
+		"awareness_penalty_major",
         "focus_penalty_major"
 	  ],
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
-        "cleanse",
+		"cleanse",
         "dispel"
 	  ],
 	  "description": "Mind clouded with filth \u2014 major penalty to Awareness and Focus."
@@ -1983,14 +1983,14 @@
         "dispel"
 	  ],
 	  "special": {
-        "shatters_on_damage_received": {
-          "damage": 20,
-          "damage_type": "slashing",
-          "radius": 2,
-          "statuses": ["Bleeding"],
-          "bleed_guaranteed": true,
-          "consumes_status": true
-        }
+		"shatters_on_damage_received": {
+		  "damage": 20,
+		  "damage_type": "slashing",
+		  "radius": 2,
+		  "statuses": ["Bleeding"],
+		  "bleed_guaranteed": true,
+		  "consumes_status": true
+		}
 	  },
 	  "description": "Encased in a globe of conjured glass. Shatters on any damage received, dealing slashing AoE + guaranteed bleed to all within 2 tiles."
 	},
@@ -1999,7 +1999,7 @@
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
-        "focus_bonus_major",
+		"focus_bonus_major",
         "awareness_bonus_major"
 	  ],
 	  "duration_type": "spellpower",
@@ -2008,7 +2008,7 @@
         "dispel"
 	  ],
 	  "special": {
-        "chance_to_lose_on_damage_received": 50
+		"chance_to_lose_on_damage_received": 50
 	  },
 	  "description": "Crown of living crystal: major Focus and Awareness bonus. 50% chance to shatter and be lost whenever the wearer takes damage."
 	}

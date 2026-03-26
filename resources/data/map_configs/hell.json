@@ -482,6 +482,10 @@
             {
               "type": "item",
               "value": "health_potion"
+            },
+            {
+              "type": "food",
+              "value": 8
             }
           ],
           "weight": 3
@@ -497,6 +501,10 @@
                 15,
                 30
               ]
+            },
+            {
+              "type": "food",
+              "value": 5
             }
           ],
           "weight": 3
@@ -513,6 +521,14 @@
             {
               "type": "mana",
               "value": 15
+            },
+            {
+              "type": "food",
+              "value": 6
+            },
+            {
+              "type": "herbs",
+              "value": 3
             }
           ],
           "one_time": false,
@@ -537,6 +553,13 @@
                 "realm": "human",
                 "amount": 3
               }
+            },
+            {
+              "type": "food",
+              "value": [
+                3,
+                5
+              ]
             }
           ],
           "weight": 2
@@ -549,6 +572,10 @@
             {
               "type": "mana",
               "value": 25
+            },
+            {
+              "type": "herbs",
+              "value": 2
             }
           ],
           "one_time": false,
@@ -575,6 +602,10 @@
             {
               "type": "heal",
               "value": 30
+            },
+            {
+              "type": "food",
+              "value": 5
             }
           ],
           "weight": 4
@@ -685,6 +716,10 @@
             {
               "type": "xp",
               "value": 10
+            },
+            {
+              "type": "food",
+              "value": 4
             }
           ],
           "weight": 3
@@ -811,16 +846,24 @@
                     "copper_ring"
                   ],
                   "strong": [
-                    "good_iron_weapon",
-                    "iron_shield",
+                    "bronze_sword",
+                    "bronze_axe",
+                    "bronze_mace",
+                    "bronze_shield",
                     "padded_armor",
-                    "iron_helmet",
                     "silver_ring",
                     "bone_amulet",
                     "lucky_charm"
                   ]
                 }
               }
+            },
+            {
+              "type": "food",
+              "value": [
+                3,
+                6
+              ]
             }
           ],
           "weight": 2
@@ -852,6 +895,37 @@
             }
           ],
           "weight": 1
+        },
+        {
+          "name": "Frozen Offering",
+          "icon": "treasure",
+          "message": "Someone left food for the shades. It's still edible \u2014 barely.",
+          "rewards": [
+            {
+              "type": "food",
+              "value": 10
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Abandoned Shrine Offerings",
+          "icon": "shrine",
+          "message": "Ritual cakes and grain, preserved by the cold.",
+          "rewards": [
+            {
+              "type": "food",
+              "value": 15
+            },
+            {
+              "type": "karma",
+              "value": {
+                "realm": "human",
+                "amount": 1
+              }
+            }
+          ],
+          "weight": 2
         }
       ],
       "spell_schools": [
@@ -1215,6 +1289,10 @@
             {
               "type": "item",
               "value": "health_potion"
+            },
+            {
+              "type": "food",
+              "value": 7
             }
           ],
           "weight": 3
@@ -1237,6 +1315,10 @@
                 10,
                 25
               ]
+            },
+            {
+              "type": "scrap",
+              "value": 3
             }
           ],
           "weight": 2
@@ -1274,6 +1356,10 @@
             {
               "type": "item",
               "value": "mana_potion"
+            },
+            {
+              "type": "food",
+              "value": 8
             }
           ],
           "weight": 2
@@ -1362,6 +1448,10 @@
                 "flame_oil",
                 "frost_oil"
               ]
+            },
+            {
+              "type": "food",
+              "value": 4
             }
           ],
           "weight": 3
@@ -1394,6 +1484,14 @@
             {
               "type": "mana",
               "value": 20
+            },
+            {
+              "type": "food",
+              "value": 5
+            },
+            {
+              "type": "herbs",
+              "value": 3
             }
           ],
           "weight": 4
@@ -1430,6 +1528,10 @@
             {
               "type": "xp",
               "value": 10
+            },
+            {
+              "type": "food",
+              "value": 4
             }
           ],
           "weight": 3
@@ -1500,6 +1602,13 @@
                 "amount": 3,
                 "combats_remaining": 1
               }
+            },
+            {
+              "type": "scrap",
+              "value": [
+                2,
+                4
+              ]
             }
           ],
           "weight": 2
@@ -1556,10 +1665,11 @@
                     "copper_ring"
                   ],
                   "strong": [
-                    "good_iron_weapon",
-                    "iron_shield",
-                    "chainmail",
-                    "iron_helmet",
+                    "bronze_sword",
+                    "bronze_axe",
+                    "bronze_mace",
+                    "bronze_shield",
+                    "padded_armor",
                     "silver_ring",
                     "bone_amulet",
                     "lucky_charm"
@@ -1593,6 +1703,34 @@
             }
           ],
           "weight": 1
+        },
+        {
+          "name": "Demon's Larder",
+          "icon": "treasure",
+          "message": "Whatever they were keeping here, it's edible enough.",
+          "rewards": [
+            {
+              "type": "food",
+              "value": 12
+            }
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Scorched Offering Bowl",
+          "icon": "shrine",
+          "message": "Still-warm grain and dried flesh. The offering holds.",
+          "rewards": [
+            {
+              "type": "food",
+              "value": 8
+            },
+            {
+              "type": "heal",
+              "value": 10
+            }
+          ],
+          "weight": 2
         }
       ],
       "spell_schools": [
