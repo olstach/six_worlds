@@ -6120,7 +6120,7 @@
       "skill": "enchantment",
       "required_level": 1,
       "requires_perks": [],
-      "description": "Buffs you cast last 1 additional turn.",
+      "description": "Buffs you cast last additional turns, scaling with your Enchantment skill (1 extra turn per 3 levels, minimum 1).",
       "flavor": "",
       "is_mantra": false
     },
@@ -6185,7 +6185,7 @@
       "skill": "enchantment",
       "required_level": 1,
       "requires_perks": [],
-      "description": "Debuffs you cast are 10% more effective (higher penalties).",
+      "description": "Enchantment debuff spells you cast last additional turns, scaling with your Enchantment skill (1 extra turn per 3 levels, minimum 1).",
       "flavor": "",
       "is_mantra": false
     },
