@@ -68,8 +68,24 @@ const TACTICIAN_UPGRADE_ID: String = "tactician"
 
 # Loot system constants
 # Budget-based loot: enemy inventories are collected, filtered, and turned into drops.
-# Items below LOOT_FLOOR_VALUE convert to gold (catches low-tier junk like bone knives).
-const LOOT_FLOOR_VALUE: int = 20
+# Items below the realm's floor value convert to gold — junk in one realm is valuable
+# elsewhere, so the floor rises as the player ascends to higher realms.
+# Calibrated against value_mult in equipment_tables.json:
+#   hell         bone (0.35x) / obsidian (0.90x) — catches bone items (~8–17g)
+#   hungry_ghost bone/obsidian/bronze (0.65x) — catches bone, passes bronze
+#   animal       bronze/iron (1.00x) — catches bone/poor bronze
+#   human        iron/steel (1.50x) — catches bronze, passes good iron and steel
+#   demi_god     steel/damascene (2.50x) — catches iron, passes damascene (~125g+)
+#   god          damascene/sky_iron (5.00x)/vajra (15x) — catches steel, passes sky_iron+
+const LOOT_FLOOR_BY_REALM: Dictionary = {
+	"hell":         25,
+	"hungry_ghost": 35,
+	"animal":       50,
+	"human":        80,
+	"demi_god":    150,
+	"god":         300,
+}
+const LOOT_FLOOR_DEFAULT: int = 20  # Fallback for unknown realms
 # Fraction of the above-floor loot value that actually drops as items.
 # Remaining value leaks to gold at LOOT_OVERFLOW_GOLD_RATE.
 const LOOT_DROP_FRACTION_MIN: float = 0.35
@@ -550,11 +566,15 @@ func _collect_enemy_loot() -> Dictionary:
 					if randf() < LOOT_CONSUMABLE_DROP_CHANCE:
 						consumable_drops.append(item_id)
 
-	# Value floor: cheap junk converts to gold so the player isn't buried in bone knives
+	# Value floor — scales with realm so bone knives are junk in Hell but
+	# iron swords stop dropping as items once the party reaches the human realm.
+	var current_realm: String = GameState.current_world if GameState else ""
+	var loot_floor: int = LOOT_FLOOR_BY_REALM.get(current_realm, LOOT_FLOOR_DEFAULT)
+
 	var above_floor: Array = []
 	for eq in equipment_entries:
-		if eq.value < LOOT_FLOOR_VALUE:
-			bonus_gold += eq.value  # Worth so little, give full value as coin
+		if eq.value < loot_floor:
+			bonus_gold += eq.value  # Auto-coin: not worth the inventory slot here
 		else:
 			above_floor.append(eq)
 
