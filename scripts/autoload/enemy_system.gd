@@ -279,7 +279,7 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	var derived = _calculate_derived_stats(attributes, skills)
 	var equipment = _generate_equipment(archetype.get("equipment_template", {}), effective_budget)
 	var spells = _pick_spells(skills, archetype.get("guaranteed_spells", []))
-	var perks = _build_perks(archetype.get("guaranteed_perks", []))
+	var perks = _build_perks(archetype.get("guaranteed_perks", []), skills)
 
 	# Some enemy types (imps) have a chance to be bare-handed — no equipment at all
 	var no_equip_chance = archetype.get("no_equipment_chance", 0.0)
@@ -454,7 +454,7 @@ func _assign_skills(priorities: Array, budget: int) -> Dictionary:
 			if remaining <= 0:
 				break
 			var current = skills.get(skill_name, 0)
-			if current < 5:
+			if current < 10:
 				skills[skill_name] = current + 1
 				remaining -= 1
 				assigned_any = true
@@ -475,7 +475,7 @@ func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dic
 	var awa = attributes.get("awareness", 10)
 	var luc = attributes.get("luck", 10)
 
-	return {
+	var derived = {
 		"max_hp": 100 + (con - 10) * 10,
 		"current_hp": 100 + (con - 10) * 10,
 		"max_mana": 50 + (awa - 10) * 10,
@@ -487,11 +487,38 @@ func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dic
 		"dodge": fin,
 		"spellpower": foc,
 		"crit_chance": 5 + int((awa + fin + luc) / 6),
-		"damage": 0,     # Added later from equipment
-		"armor": 0,      # Added later from equipment
-		"accuracy": 0,   # Added later from equipment
+		"damage": 0,
+		"armor": 0,
+		"accuracy": 0,
 		"armor_pierce": 0
 	}
+
+	# Apply PerkSystem base skill bonuses — mirrors CharacterSystem.update_derived_stats()
+	# so enemies benefit from the same per-skill-level stat tables as the player.
+	if PerkSystem:
+		for skill_id in skills:
+			var level: int = skills[skill_id]
+			if level <= 0:
+				continue
+			var bonus = PerkSystem.get_base_skill_bonuses_at_level(skill_id, level)
+			if bonus.is_empty():
+				continue
+			derived["accuracy"] += bonus.get("attack", 0)
+			derived["damage"]   += bonus.get("damage", 0)
+			derived["crit_chance"] += bonus.get("crit_chance", 0.0)
+			derived["armor"]       += bonus.get("armor_bonus", 0)
+			derived["armor_pierce"] += bonus.get("armor_penetration", 0)
+			if bonus.has("spellpower"):
+				derived["spellpower"] += int(bonus.get("spellpower", 0))
+			if bonus.has("dodge_bonus"):
+				derived["dodge"] += int(bonus.get("dodge_bonus", 0))
+			if bonus.has("max_stamina"):
+				derived["max_stamina"]   += int(bonus.get("max_stamina", 0))
+				derived["current_stamina"] += int(bonus.get("max_stamina", 0))
+			if bonus.has("initiative_bonus"):
+				derived["initiative"] += int(bonus.get("initiative_bonus", 0))
+
+	return derived
 
 
 ## Map weapon type to physical damage subtype
@@ -590,17 +617,53 @@ func _pick_spells(skills: Dictionary, guaranteed: Array) -> Array:
 	return spell_list
 
 
-## Build perks array from guaranteed perk IDs
-func _build_perks(guaranteed: Array) -> Array:
+## Build perks array from guaranteed perk IDs plus skill-appropriate entry-level perks.
+## guaranteed: perk IDs forced onto this enemy from the archetype definition.
+## skills: enemy skill dict — used to find additional qualifying perks via PerkSystem.
+## Only perks with no requires_perks chain are eligible (enemies have no perk history),
+## capped per skill to avoid over-loading: 1 perk at L1-2, 2 at L3-5, 3 at L6-8, 4 at L9-10.
+func _build_perks(guaranteed: Array, skills: Dictionary = {}) -> Array:
 	var perks: Array = []
+	var owned_ids: Array[String] = []
+
+	# Guaranteed perks first
 	for perk_id in guaranteed:
-		# Try to get perk name from PerkSystem
+		if perk_id in owned_ids:
+			continue
 		var perk_name = perk_id
 		if PerkSystem:
 			var perk_data = PerkSystem.get_perk_data(perk_id)
 			if not perk_data.is_empty():
 				perk_name = perk_data.get("name", perk_id)
 		perks.append({"id": perk_id, "name": perk_name})
+		owned_ids.append(perk_id)
+
+	# Skill-based perks via a mock character (no owned perks = only entry-level qualify)
+	if PerkSystem and not skills.is_empty():
+		var mock_char = {"skills": skills, "perks": []}
+		var eligible = PerkSystem.get_eligible_perks(mock_char)
+		eligible.shuffle()  # Randomise within each skill's budget for variety
+
+		var skill_perk_count: Dictionary = {}
+		for perk_id in eligible:
+			if perk_id in owned_ids:
+				continue
+			var perk_data = PerkSystem.get_perk_data(perk_id)
+			if perk_data.is_empty():
+				continue
+			# Only skill perks (cross-perks are more exotic; leave those to guaranteed list)
+			var skill_id: String = perk_data.get("skill", "")
+			if skill_id == "":
+				continue
+			var skill_level: int = skills.get(skill_id, 0)
+			# Cap perks per skill proportional to skill investment
+			var cap: int = 1 + int(skill_level / 3)
+			if skill_perk_count.get(skill_id, 0) >= cap:
+				continue
+			perks.append({"id": perk_id, "name": perk_data.get("name", perk_id)})
+			owned_ids.append(perk_id)
+			skill_perk_count[skill_id] = skill_perk_count.get(skill_id, 0) + 1
+
 	return perks
 
 

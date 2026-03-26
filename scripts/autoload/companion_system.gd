@@ -247,14 +247,25 @@ func _apply_starting_equipment(character: Dictionary, fixed_equip: Dictionary,
 			var off_type: String = type_data.get("off", "")
 			var set_data := {"main": "", "off": ""}
 			if main_type != "":
-				set_data.main = ItemSystem.generate_weapon(main_type, rarity)
+				# If it's a known item ID use it directly, otherwise generate by weapon type
+				if ItemSystem.item_exists(main_type):
+					set_data.main = main_type
+				else:
+					set_data.main = ItemSystem.generate_weapon(main_type, rarity)
 			if off_type != "":
-				set_data.off = ItemSystem.generate_weapon(off_type, rarity)
+				if ItemSystem.item_exists(off_type):
+					set_data.off = off_type
+				else:
+					set_data.off = ItemSystem.generate_weapon(off_type, rarity)
 			character.equipment[slot] = set_data
 		elif slot in ARMOR_SLOTS:
-			var armor_type: String = type_data if typeof(type_data) == TYPE_STRING else ""
-			if armor_type != "":
-				character.equipment[slot] = ItemSystem.generate_armor(armor_type, rarity)
+			var armor_val: String = type_data if typeof(type_data) == TYPE_STRING else ""
+			if armor_val != "":
+				# If it's a known item ID use it directly, otherwise generate by armor type
+				if ItemSystem.item_exists(armor_val):
+					character.equipment[slot] = armor_val
+				else:
+					character.equipment[slot] = ItemSystem.generate_armor(armor_val, rarity)
 
 
 ## Recruit a companion by id. Deducts gold, builds and stats the character,
