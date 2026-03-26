@@ -2363,6 +2363,37 @@ func _calculate_spell_bonus(caster: Node, spell: Dictionary) -> int:
 	return total_bonus
 
 
+## Unified status effect duration calculation.
+## Spellpower sets the baseline (1 extra turn per 10 points).
+## Enchantment skill adds on top for all status-causing spells (1 extra turn per 2 levels),
+## making it the natural "duration" school regardless of the spell's elemental tag.
+##
+## Fixed integer durations in spells.json are intentional balance decisions and pass through
+## unchanged (e.g. Stun for 1 turn, Entangle for 4 turns).
+## Special strings ("permanent", "combat", "until_save", etc.) return the safe fallback
+## of 3 turns — those spells rely on their status definition's own duration_type logic.
+func _calculate_status_duration(caster: Node, spell: Dictionary, bonus: int) -> int:
+	var dur_field = spell.get("duration", null)
+
+	# Numeric: hard-coded duration — intentional balance decision, pass through unchanged
+	if dur_field is int or dur_field is float:
+		return int(dur_field)
+
+	# "spellpower" or absent: apply unified formula
+	if dur_field == "spellpower" or dur_field == null:
+		var sp_contribution: int = int(bonus / 10)
+		var enchantment_level: int = 0
+		if "character_data" in caster:
+			enchantment_level = caster.character_data.get("skills", {}).get("enchantment", 0)
+		# Enchantment: +1 turn per 2 skill levels (Enc 2=+1 … Enc 10=+5)
+		var enc_contribution: int = int(enchantment_level / 2)
+		return maxi(1, 2 + sp_contribution + enc_contribution)
+
+	# Special strings ("permanent", "combat", "until_save", "fixed", "until_destroyed"):
+	# the status definition's duration_type field handles the real logic; return safe fallback
+	return 3
+
+
 ## Apply spell effects to a target
 ## Reads directly from spells.json format: damage, damage_type, heal, statuses_caused
 func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: int) -> Dictionary:
@@ -2429,17 +2460,11 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 
 	# --- Status effects (from spell.statuses_caused) ---
 	var statuses = spell.get("statuses_caused", [])
-	for status_name in statuses:
-		var duration = 3  # Default duration
-		# Use spellpower-based duration if spell says "spellpower"
-		var dur_field = spell.get("duration", null)
-		if dur_field is int or dur_field is float:
-			duration = int(dur_field)
-		elif dur_field == "spellpower":
-			duration = maxi(1, 2 + int(bonus * 0.1))
-
-		_apply_status_effect(target, status_name, duration, 0, caster)
-		result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
+	if not statuses.is_empty():
+		var duration: int = _calculate_status_duration(caster, spell, bonus)
+		for status_name in statuses:
+			_apply_status_effect(target, status_name, duration, 0, caster)
+			result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
 
 	# --- Status effects on failed save (from spell.statuses_caused_on_failed_save) ---
 	# Used by spells like metal_to_mud: all listed statuses are applied only if the target fails
@@ -2447,12 +2472,7 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 	var save_statuses = spell.get("statuses_caused_on_failed_save", [])
 	if not save_statuses.is_empty():
 		var save_attr = spell.get("save_type", "constitution").to_lower()
-		var save_dur_field = spell.get("duration", null)
-		var save_duration = 3
-		if save_dur_field is int or save_dur_field is float:
-			save_duration = int(save_dur_field)
-		elif save_dur_field == "spellpower":
-			save_duration = maxi(1, 2 + int(bonus * 0.1))
+		var save_duration: int = _calculate_status_duration(caster, spell, bonus)
 		if not _perform_save_roll(target, save_attr):  # false = failed save = effect applies
 			for status_name in save_statuses:
 				_apply_status_effect(target, status_name, save_duration, 0, caster)
@@ -2463,12 +2483,7 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 	var random_statuses = spell.get("on_failed_save_random_one_of", [])
 	if not random_statuses.is_empty():
 		var rand_save_attr = spell.get("save_type", "finesse").to_lower()
-		var rand_dur_field = spell.get("duration", null)
-		var rand_duration = 3
-		if rand_dur_field is int or rand_dur_field is float:
-			rand_duration = int(rand_dur_field)
-		elif rand_dur_field == "spellpower":
-			rand_duration = maxi(1, 2 + int(bonus * 0.1))
+		var rand_duration: int = _calculate_status_duration(caster, spell, bonus)
 		if not _perform_save_roll(target, rand_save_attr):
 			var chosen_status = random_statuses[randi() % random_statuses.size()]
 			_apply_status_effect(target, chosen_status, rand_duration, 0, caster)
@@ -2813,15 +2828,16 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 				apply_damage(chain_target, chain_dmg, "air")
 				result["chain_spark_damage"] = chain_dmg
 
-	# Weakening Gaze (Enchantment 1): debuff spells are 10% more effective (longer duration)
+	# Weakening Gaze (Enchantment 1): Enchantment debuff spells last extra turns,
+	# scaling with Enchantment skill (1 extra turn per 3 levels, minimum 1).
 	if PerkSystem.has_perk(caster_char, "weakening_gaze") and has_debuff:
 		var is_enchant = schools.any(func(s): return s.to_lower() == "enchantment")
 		if is_enchant:
-			# Extend the last-applied debuff by 1 turn
 			if not target.status_effects.is_empty():
 				var last_effect = target.status_effects[-1]
 				if last_effect.get("status", "") != "":
-					last_effect["duration"] = last_effect.get("duration", 1) + 1
+					var enc_lv: int = caster_char.get("skills", {}).get("enchantment", 0)
+					last_effect["duration"] = last_effect.get("duration", 1) + maxi(1, int(enc_lv / 3))
 
 	# Sudden Silence (Sorcery 3): Sorcery damage spells reduce target Spellpower by 25% for 1 turn
 	if PerkSystem.has_perk(caster_char, "sudden_silence") and has_damage:
@@ -2963,10 +2979,12 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 		if PerkSystem.has_perk(source.character_data, "kindled"):
 			duration += 1
 
-	# Lingering Touch (Enchantment 1): buff statuses applied by the caster last 1 extra turn
+	# Lingering Touch (Enchantment 1): buff statuses last extra turns, scaling with
+	# Enchantment skill (1 extra turn per 3 levels, minimum 1).
 	if def.get("type", "") == "buff" and source != null and "character_data" in source:
 		if PerkSystem.has_perk(source.character_data, "lingering_touch"):
-			duration += 1
+			var enc_lv: int = source.character_data.get("skills", {}).get("enchantment", 0)
+			duration += maxi(1, int(enc_lv / 3))
 
 	# Check if already present and handle stacking
 	if unit.has_status(status):

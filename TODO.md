@@ -361,12 +361,12 @@ UI stub exists in Party tab (`_update_followers_list()` / `_create_follower_card
 - [x] ~~Enemy-specific physical resistances~~ — DONE (hell_archetypes.json: frozen_revenant +pierce/slash, -crush; lava_golem/mountain_guardian +slash/pierce; frost_guardian +pierce/slash; demons +pierce/slash)
 - [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
 - [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
-- [ ] **Spell duration unification** — buff/debuff durations are currently inconsistent across spells (some use `"spellpower"`, some `"combat"`, some fixed turns, some `"spellpower_turns"`). Need a unified scaling formula: e.g. base_turns + floor(spellpower / threshold). Affects all enchantment/white spells. Also: `clear_mind` mental immunity and similar conditional immunity spells need their duration to feel proportional to spell level and caster investment.
+- [x] ~~**Spell duration unification**~~ — DONE: `_calculate_status_duration()` in combat_manager.gd. Formula: `2 + floor(bonus/10) + floor(enchantment_level/2)`. Fixed-int durations (Stun 1 turn, etc.) pass through unchanged. `lingering_touch` and `weakening_gaze` perks now scale with Enchantment level (1 turn per 3 levels, min 1) instead of flat +1.
 - [ ] Terrain affecting spell power — no terrain-based spellpower modifiers in combat_manager.gd cast_spell()
 - [ ] Environmental spell interactions — spells create terrain (done); terrain does not yet buff/debuff spells of matching element
-- [ ] Cone AoE targeting — `aoe.type: "cone_forward"` is defined in data but unimplemented in combat_manager.gd and the spell UI. Needed by: `powdered_glass` (Glass domain). Cone should project N tiles forward from caster facing, width scaling with length. See `cast_spell()` targeting resolution and spell highlight logic.
-- [ ] **AoE type systematization** — multiple AoE shapes are defined across spells.json with inconsistent field names and semantics: `"circle"`, `"cross"`, `"line"`, `"cone"`, `"cone_forward"`, `"aoe_self_centered"` (used in `sonic_boom` target type rather than aoe block). Need a single canonical AoE schema — shape, radius/length/width, origin (caster/ground/target), upgradeable, upgrade_scaling — applied uniformly across all spells and resolved consistently in combat_manager.gd. Also: `"aoe_self_centered"` should be expressed as `target.type: "ground"` + `aoe.origin: "caster"`, not as a special target type.
-- [ ] **Out-of-combat spellcasting** — not implemented. Several spells are designed for overworld/camp use (e.g. `cloud_gate`: retreat to last healing location; future utility spells). Needs a spellbook interface accessible from the overworld HUD or pause menu, mana deducted from caster, and spell effect resolved outside combat. `cloud_gate` specifically needs to teleport the party on the map to the last-visited healing-location tile.
+- [x] ~~Cone AoE targeting~~ — DONE
+- [x] ~~**AoE type systematization**~~ — DONE
+- [x] ~~**Out-of-combat spellcasting**~~ — DONE
 - [x] ~~Realm-specific combat terrain themes~~ — DONE (overworld terrain generates realm-appropriate obstacles)
 
 ---
