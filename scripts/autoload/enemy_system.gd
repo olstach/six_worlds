@@ -32,12 +32,12 @@ const SKILL_TO_SCHOOL: Dictionary = {
 	"black_magic": "Black"
 }
 
-# Armor type -> base armor value per power level
-const ARMOR_VALUES: Dictionary = {
-	"none": 0,
-	"light": 2,
-	"medium": 4,
-	"heavy": 6
+# Armor category -> [slot, base_type] pairs to generate.
+# "none" intentionally absent — no entry means no armor items.
+const ARMOR_LOADOUTS: Dictionary = {
+	"light":  [["chest", "armor"], ["head", "hat"],    ["feet", "boots"]],
+	"medium": [["chest", "armor"], ["head", "helmet"], ["legs", "pants"],   ["feet", "boots"]],
+	"heavy":  [["chest", "armor"], ["head", "helmet"], ["legs", "greaves"], ["feet", "boots"], ["hand_l", "gauntlets"]]
 }
 
 
@@ -279,16 +279,11 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	var derived = _calculate_derived_stats(attributes, skills)
 	var equipment = _generate_equipment(archetype.get("equipment_template", {}), effective_budget)
 	var spells = _pick_spells(skills, archetype.get("guaranteed_spells", []))
-	var perks = _build_perks(archetype.get("guaranteed_perks", []))
+	var perks = _build_perks(archetype.get("guaranteed_perks", []), skills)
 
 	# Some enemy types (imps) have a chance to be bare-handed — no equipment at all
 	var no_equip_chance = archetype.get("no_equipment_chance", 0.0)
 	var bare_handed = randf() < no_equip_chance
-
-	# Apply armor bonus to derived stats. Weapon damage/accuracy are no longer added
-	# to derived — they come from the generated weapon's stats dict instead.
-	if not bare_handed:
-		derived.armor += equipment.get("armor_value", 0)
 
 	# Build resistances dict (start with defaults, apply archetype overrides).
 	# Includes "black" as a damage type used by Black magic spells.
@@ -305,8 +300,23 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	for item in archetype.get("starting_inventory", []):
 		inventory.append(item)
 
-	# Build the weapon for CombatUnit — generated items for armed enemies so they
-	# carry real material-tiered weapons with traits and durability.
+	# Map power budget to item rarity — shared by weapon and armor generation.
+	# Realm drives the material tier (e.g. hell → bone/obsidian/bronze); rarity drives quality.
+	var power_scale = effective_budget / 80.0
+	var item_rarity: String
+	if power_scale < 0.5:
+		item_rarity = "common"
+	elif power_scale < 1.0:
+		item_rarity = "uncommon"
+	elif power_scale < 1.5:
+		item_rarity = "rare"
+	elif power_scale < 2.0:
+		item_rarity = "epic"
+	else:
+		item_rarity = "legendary"
+
+	# Build the weapon for CombatUnit — generated items carry real material tiers,
+	# traits, and durability; added to inventory so they drop on death.
 	var equipped_weapon: Dictionary
 	if bare_handed:
 		equipped_weapon = {
@@ -317,27 +327,12 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 		}
 	else:
 		var weapon_type = equipment.get("weapon_type", "sword")
-		# Map power scale to rarity for weapon quality (realm drives material tier)
-		var power_scale = effective_budget / 80.0
-		var weapon_rarity: String
-		if power_scale < 0.5:
-			weapon_rarity = "common"
-		elif power_scale < 1.0:
-			weapon_rarity = "uncommon"
-		elif power_scale < 1.5:
-			weapon_rarity = "rare"
-		elif power_scale < 2.0:
-			weapon_rarity = "epic"
-		else:
-			weapon_rarity = "legendary"
-
-		var gen_id = ItemSystem.generate_weapon(weapon_type, weapon_rarity, "", "", realm)
+		var gen_id = ItemSystem.generate_weapon(weapon_type, item_rarity, "", "", realm)
 		if gen_id != "":
 			equipped_weapon = ItemSystem.get_item(gen_id)
-			# Add to inventory so the weapon can be looted when this enemy is defeated
 			inventory.append({"item_id": gen_id, "quantity": 1})
 		else:
-			# Fallback to hardcoded dict if ItemSystem unavailable
+			# Fallback if ItemSystem unavailable
 			equipped_weapon = {
 				"name": archetype.get("name", "Enemy") + "'s Weapon",
 				"type": weapon_type,
@@ -348,6 +343,24 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 					"range": equipment.get("weapon_range", 1)
 				}
 			}
+
+	# Generate armor items — same material-tiered system as the player.
+	# Each piece's stats contribute to derived (armor, dodge, hp, etc.) and the
+	# item goes into inventory so it can be looted on death.
+	var armor_category: String = equipment.get("armor_type", "none")
+	for slot_entry in ARMOR_LOADOUTS.get(armor_category, []):
+		var armor_gen_id = ItemSystem.generate_armor(slot_entry[1], item_rarity, "", "", realm)
+		if armor_gen_id == "":
+			continue
+		var armor_item = ItemSystem.get_item(armor_gen_id)
+		var piece_stats = armor_item.get("stats", {})
+		derived["armor"]       += piece_stats.get("armor", 0)
+		derived["dodge"]       += piece_stats.get("dodge", 0)
+		derived["max_hp"]      += piece_stats.get("max_hp", 0)
+		derived["current_hp"]  += piece_stats.get("max_hp", 0)
+		derived["max_stamina"] += piece_stats.get("max_stamina", 0)
+		derived["current_stamina"] += piece_stats.get("max_stamina", 0)
+		inventory.append({"item_id": armor_gen_id, "quantity": 1})
 
 	# Generate a procedural name from realm/region/tags, unless this is a named boss.
 	# Race is inferred from archetype tags: imps first, then shades (undead+incorporeal),
@@ -454,7 +467,7 @@ func _assign_skills(priorities: Array, budget: int) -> Dictionary:
 			if remaining <= 0:
 				break
 			var current = skills.get(skill_name, 0)
-			if current < 5:
+			if current < 10:
 				skills[skill_name] = current + 1
 				remaining -= 1
 				assigned_any = true
@@ -475,7 +488,7 @@ func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dic
 	var awa = attributes.get("awareness", 10)
 	var luc = attributes.get("luck", 10)
 
-	return {
+	var derived = {
 		"max_hp": 100 + (con - 10) * 10,
 		"current_hp": 100 + (con - 10) * 10,
 		"max_mana": 50 + (awa - 10) * 10,
@@ -487,11 +500,38 @@ func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dic
 		"dodge": fin,
 		"spellpower": foc,
 		"crit_chance": 5 + int((awa + fin + luc) / 6),
-		"damage": 0,     # Added later from equipment
-		"armor": 0,      # Added later from equipment
-		"accuracy": 0,   # Added later from equipment
+		"damage": 0,
+		"armor": 0,
+		"accuracy": 0,
 		"armor_pierce": 0
 	}
+
+	# Apply PerkSystem base skill bonuses — mirrors CharacterSystem.update_derived_stats()
+	# so enemies benefit from the same per-skill-level stat tables as the player.
+	if PerkSystem:
+		for skill_id in skills:
+			var level: int = skills[skill_id]
+			if level <= 0:
+				continue
+			var bonus = PerkSystem.get_base_skill_bonuses_at_level(skill_id, level)
+			if bonus.is_empty():
+				continue
+			derived["accuracy"] += bonus.get("attack", 0)
+			derived["damage"]   += bonus.get("damage", 0)
+			derived["crit_chance"] += bonus.get("crit_chance", 0.0)
+			derived["armor"]       += bonus.get("armor_bonus", 0)
+			derived["armor_pierce"] += bonus.get("armor_penetration", 0)
+			if bonus.has("spellpower"):
+				derived["spellpower"] += int(bonus.get("spellpower", 0))
+			if bonus.has("dodge_bonus"):
+				derived["dodge"] += int(bonus.get("dodge_bonus", 0))
+			if bonus.has("max_stamina"):
+				derived["max_stamina"]   += int(bonus.get("max_stamina", 0))
+				derived["current_stamina"] += int(bonus.get("max_stamina", 0))
+			if bonus.has("initiative_bonus"):
+				derived["initiative"] += int(bonus.get("initiative_bonus", 0))
+
+	return derived
 
 
 ## Map weapon type to physical damage subtype
@@ -520,10 +560,8 @@ func _generate_equipment(template: Dictionary, power_level: float) -> Dictionary
 	result.weapon_accuracy = int(weapon.get("base_accuracy", 3) + power_scale * 1)
 	result.weapon_range = weapon.get("range", 1)
 
-	# Armor value from armor type
-	var armor_type = template.get("armor_type", "none")
-	var base_armor = ARMOR_VALUES.get(armor_type, 0)
-	result.armor_value = int(base_armor + power_scale * 1.5)
+	# Pass through armor category for item generation in _build_enemy
+	result.armor_type = template.get("armor_type", "none")
 
 	return result
 
@@ -590,17 +628,53 @@ func _pick_spells(skills: Dictionary, guaranteed: Array) -> Array:
 	return spell_list
 
 
-## Build perks array from guaranteed perk IDs
-func _build_perks(guaranteed: Array) -> Array:
+## Build perks array from guaranteed perk IDs plus skill-appropriate entry-level perks.
+## guaranteed: perk IDs forced onto this enemy from the archetype definition.
+## skills: enemy skill dict — used to find additional qualifying perks via PerkSystem.
+## Only perks with no requires_perks chain are eligible (enemies have no perk history),
+## capped per skill to avoid over-loading: 1 perk at L1-2, 2 at L3-5, 3 at L6-8, 4 at L9-10.
+func _build_perks(guaranteed: Array, skills: Dictionary = {}) -> Array:
 	var perks: Array = []
+	var owned_ids: Array[String] = []
+
+	# Guaranteed perks first
 	for perk_id in guaranteed:
-		# Try to get perk name from PerkSystem
+		if perk_id in owned_ids:
+			continue
 		var perk_name = perk_id
 		if PerkSystem:
 			var perk_data = PerkSystem.get_perk_data(perk_id)
 			if not perk_data.is_empty():
 				perk_name = perk_data.get("name", perk_id)
 		perks.append({"id": perk_id, "name": perk_name})
+		owned_ids.append(perk_id)
+
+	# Skill-based perks via a mock character (no owned perks = only entry-level qualify)
+	if PerkSystem and not skills.is_empty():
+		var mock_char = {"skills": skills, "perks": []}
+		var eligible = PerkSystem.get_eligible_perks(mock_char)
+		eligible.shuffle()  # Randomise within each skill's budget for variety
+
+		var skill_perk_count: Dictionary = {}
+		for perk_id in eligible:
+			if perk_id in owned_ids:
+				continue
+			var perk_data = PerkSystem.get_perk_data(perk_id)
+			if perk_data.is_empty():
+				continue
+			# Only skill perks (cross-perks are more exotic; leave those to guaranteed list)
+			var skill_id: String = perk_data.get("skill", "")
+			if skill_id == "":
+				continue
+			var skill_level: int = skills.get(skill_id, 0)
+			# Cap perks per skill proportional to skill investment
+			var cap: int = 1 + int(skill_level / 3)
+			if skill_perk_count.get(skill_id, 0) >= cap:
+				continue
+			perks.append({"id": perk_id, "name": perk_data.get("name", perk_id)})
+			owned_ids.append(perk_id)
+			skill_perk_count[skill_id] = skill_perk_count.get(skill_id, 0) + 1
+
 	return perks
 
 
@@ -771,6 +845,24 @@ func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Arr
 	# Higher power enemies get an extra potion
 	if power_level > 80 and randf() < 0.4:
 		inventory.append({"item_id": "health_potion", "quantity": 1})
+
+	# Healer/support types carry herb bundles (useful in combat; also lootable)
+	var is_healer = false
+	for role in roles:
+		if role in ["support", "healer"]:
+			is_healer = true
+			break
+	if is_healer and randf() < 0.45:
+		inventory.append({"item_id": "herb_bundle", "quantity": 1})
+
+	# Heavily armored fighters accumulate scrap — they repair equipment in the field
+	var armor_cat = archetype.get("equipment_template", {}).get("armor_type", "none")
+	if armor_cat == "heavy" and randf() < 0.35:
+		inventory.append({"item_id": "scrap_metal", "quantity": 1})
+
+	# Casters and supports carry raw reagents for their rituals
+	if has_magic and randf() < 0.30:
+		inventory.append({"item_id": "raw_reagents", "quantity": 1})
 
 	return inventory
 

@@ -277,8 +277,11 @@ func create_player_character(char_name: String, race: String, background: String
 	
 	# Apply background starting skills (will expand with background data)
 	apply_background_skills(character, background)
-	
-	# Calculate derived stats
+
+	# Apply starting equipment from background (adds to inventory and equips)
+	apply_background_equipment(character, background)
+
+	# Calculate derived stats (equipment bonuses are now included)
 	update_derived_stats(character)
 	
 	# Add to party at index 0 (player always first)
@@ -411,6 +414,97 @@ func apply_background_skills(character: Dictionary, background: String) -> void:
 	else:
 		for spell_id in starting_spells:
 			learn_spell(character, spell_id)
+
+## Apply starting equipment from the background definition to the player character.
+## Items are added to the global inventory and immediately equipped.
+## Called during create_player_character() before update_derived_stats().
+func apply_background_equipment(character: Dictionary, background: String) -> void:
+	if not ItemSystem:
+		return
+	var data = get_background_data(background)
+	if data.is_empty():
+		return
+	var equip_data: Dictionary = data.get("starting_equipment", {})
+	if equip_data.is_empty():
+		return
+
+	# Main weapon: may upgrade to a better version based on a chance roll
+	var main_weapon: String = equip_data.get("base_weapon", "")
+	var upgrade_id: String = equip_data.get("weapon_upgrade", "")
+	if upgrade_id != "" and randf() < float(equip_data.get("weapon_upgrade_chance", 0.0)):
+		main_weapon = upgrade_id
+	if main_weapon != "":
+		_add_and_equip(character, main_weapon, "weapon_main")
+
+	# Items list: each item goes to its natural equipment slot
+	for item_id: String in equip_data.get("items", []):
+		if item_id == "":
+			continue
+		var slot = _find_slot_for_item(character, item_id)
+		_add_and_equip(character, item_id, slot)
+
+	# Secondary weapon: equip to weapon set 2 (swap active set temporarily)
+	var secondary: String = equip_data.get("secondary_weapon", "")
+	if secondary != "":
+		character.active_weapon_set = 2
+		_add_and_equip(character, secondary, "weapon_main")
+		character.active_weapon_set = 1
+
+	# Random bonus: one item drawn from the list at the given probability
+	var bonus_list: Array = equip_data.get("random_bonus", [])
+	if not bonus_list.is_empty() and randf() < float(equip_data.get("bonus_chance", 0.0)):
+		var bonus_id: String = bonus_list[randi() % bonus_list.size()]
+		if bonus_id != "":
+			var slot = _find_slot_for_item(character, bonus_id)
+			_add_and_equip(character, bonus_id, slot)
+
+
+## Add item_id to the global inventory then equip it to slot on character.
+## If slot is empty the item is added to inventory only (player can equip manually).
+func _add_and_equip(character: Dictionary, item_id: String, slot: String) -> void:
+	if not ItemSystem.item_exists(item_id):
+		push_warning("CharacterSystem: Unknown starting item '%s'" % item_id)
+		return
+	ItemSystem.add_to_inventory(item_id)
+	if slot != "":
+		ItemSystem.equip_item(character, item_id, slot)
+
+
+## Return the first available equipment slot for item_id based on its type.
+## Prefers empty slots; returns "" when no suitable slot is available.
+func _find_slot_for_item(character: Dictionary, item_id: String) -> String:
+	if not ItemSystem.item_exists(item_id):
+		return ""
+	var item_type: String = ItemSystem.get_item(item_id).get("type", "")
+	var eq: Dictionary = character.get("equipment", {})
+	match item_type:
+		"sword", "dagger", "axe", "mace", "spear", "staff", \
+		"bow", "crossbow", "javelin", "thrown", "club":
+			return "weapon_main"
+		"shield":
+			return "weapon_off"
+		"armor", "robe":
+			return "chest" if eq.get("chest", "") == "" else ""
+		"helmet", "hat", "circlet":
+			return "head" if eq.get("head", "") == "" else ""
+		"boots", "shoes", "sandals":
+			return "feet" if eq.get("feet", "") == "" else ""
+		"pants", "greaves", "leggings":
+			return "legs" if eq.get("legs", "") == "" else ""
+		"gloves", "gauntlets", "bracers":
+			if eq.get("hand_l", "") == "": return "hand_l"
+			if eq.get("hand_r", "") == "": return "hand_r"
+			return ""
+		"ring":
+			if eq.get("ring1", "") == "": return "ring1"
+			if eq.get("ring2", "") == "": return "ring2"
+			return ""
+		"amulet", "necklace", "trinket", "talisman":
+			if eq.get("trinket1", "") == "": return "trinket1"
+			if eq.get("trinket2", "") == "": return "trinket2"
+			return ""
+	return ""
+
 
 ## Increase an attribute (costs XP, exponential scaling)
 func increase_attribute(character: Dictionary, attribute: String, amount: int = 1) -> bool:

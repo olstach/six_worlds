@@ -66,25 +66,42 @@ const CASTER_SKILLS: Array[String] = ["fire_magic", "water_magic", "earth_magic"
 # Tactician upgrade ID for manual deployment
 const TACTICIAN_UPGRADE_ID: String = "tactician"
 
-# Loot drop constants
-# Maps enemy role -> item types that can drop from that role
-const ROLE_LOOT_POOLS: Dictionary = {
-	"frontline": ["sword", "axe", "mace", "spear", "shield", "armor", "helmet", "gauntlets", "greaves", "boots", "pants"],
-	"ranged": ["bow", "thrown", "dagger", "armor", "boots", "gloves", "ring", "hat"],
-	"caster": ["staff", "robe", "hat", "ring", "amulet", "trinket", "charm", "scroll"],
-	"support": ["staff", "robe", "ring", "amulet", "trinket", "potion", "scroll", "charm"],
+# Loot system constants
+# Budget-based loot: enemy inventories are collected, filtered, and turned into drops.
+# Items below the realm's floor value convert to gold — junk in one realm is valuable
+# elsewhere, so the floor rises as the player ascends to higher realms.
+# Calibrated against value_mult in equipment_tables.json:
+#   hell         bone (0.35x) / obsidian (0.90x) — catches bone items (~8–17g)
+#   hungry_ghost bone/obsidian/bronze (0.65x) — catches bone, passes bronze
+#   animal       bronze/iron (1.00x) — catches bone/poor bronze
+#   human        iron/steel (1.50x) — catches bronze, passes good iron and steel
+#   demi_god     steel/damascene (2.50x) — catches iron, passes damascene (~125g+)
+#   god          damascene/sky_iron (5.00x)/vajra (15x) — catches steel, passes sky_iron+
+const LOOT_FLOOR_BY_REALM: Dictionary = {
+	"hell":         25,
+	"hungry_ghost": 35,
+	"animal":       50,
+	"human":        80,
+	"demi_god":    150,
+	"god":         300,
 }
-# Any enemy has a 30% chance to also drop a consumable
-const GLOBAL_CONSUMABLE_TYPES: Array[String] = ["potion", "bomb", "oil"]
-const GLOBAL_CONSUMABLE_CHANCE: float = 0.30
-# Supplies drop alongside normal loot — common, ~half the value of gold
+const LOOT_FLOOR_DEFAULT: int = 20  # Fallback for unknown realms
+# Fraction of the above-floor loot value that actually drops as items.
+# Remaining value leaks to gold at LOOT_OVERFLOW_GOLD_RATE.
+const LOOT_DROP_FRACTION_MIN: float = 0.35
+const LOOT_DROP_FRACTION_MAX: float = 0.65
+# Below-budget overflow becomes gold at this rate (salvage value)
+const LOOT_OVERFLOW_GOLD_RATE: float = 0.20
+# Flat drop chance for each consumable from enemy inventory (potions, bombs, oils)
+const LOOT_CONSUMABLE_DROP_CHANCE: float = 0.50
+# Supplies drop alongside equipment loot — common, regenerates between fights
 const SUPPLY_DROP_IDS: Array[String] = ["rations", "herb_bundle", "scrap_metal"]
-const SUPPLY_DROP_CHANCE: float = 0.50  # 50% chance per combat to drop a supply item
-# Reagents are rarer — only 25% base chance, but 50% from casters/supports
+const SUPPLY_DROP_CHANCE: float = 0.50
+# Reagents are rarer — 25% base, 50% when casters/supports present
 const REAGENT_DROP_ID: String = "raw_reagents"
 const REAGENT_DROP_CHANCE: float = 0.25
 const REAGENT_DROP_CHANCE_CASTER: float = 0.50
-# Base rarity weights (higher = more likely to drop)
+# Base rarity weights (higher = more likely to drop) — still used by boss table picks
 const RARITY_DROP_WEIGHTS: Dictionary = {
 	"common": 100, "uncommon": 50, "rare": 20, "epic": 5, "legendary": 1
 }
@@ -410,7 +427,15 @@ func _calculate_combat_rewards() -> Dictionary:
 		gold_reward += jackpot_amount
 
 	# --- ITEM DROPS ---
-	var item_drops: Array[String] = _generate_loot_drops(enemy_count, ratio, best_luck)
+	# Collect equipment and consumables from enemy inventories (budget-based),
+	# then add supply/reagent/boss drops on top.
+	var loot_result := _collect_enemy_loot()
+	var item_drops: Array[String] = loot_result.get("items", [])
+	gold_reward += loot_result.get("bonus_gold", 0)
+
+	var extra_drops: Array[String] = _generate_loot_drops(enemy_count, ratio, best_luck)
+	for drop_id in extra_drops:
+		item_drops.append(drop_id)
 
 	var rewards := {
 		"xp": xp_reward,
@@ -445,9 +470,10 @@ func _calculate_unit_power(unit: Node) -> float:
 	return power
 
 
-## Generate loot drops based on enemy roles, difficulty, and party skills.
-## Returns an array of item_id strings.
-func _generate_loot_drops(enemy_count: int, difficulty_ratio: float, best_luck: int) -> Array[String]:
+## Generate supply, reagent, and boss guaranteed drops.
+## Role-based random equipment drops have been removed — enemies now carry real inventories
+## that feed the budget-based _collect_enemy_loot() system instead.
+func _generate_loot_drops(enemy_count: int, _difficulty_ratio: float, _best_luck: int) -> Array[String]:
 	var drops: Array[String] = []
 
 	# Collect enemy roles and boss archetype IDs
@@ -465,62 +491,14 @@ func _generate_loot_drops(enemy_count: int, difficulty_ratio: float, best_luck: 
 			else:
 				enemy_roles.append(role)
 
-	# --- Drop count ---
-	# Base: ceil(enemy_count / 2), minimum 1
-	var drop_count: int = maxi(1, ceili(enemy_count / 2.0))
-	# +1 for hard fights
-	if difficulty_ratio >= 1.3:
-		drop_count += 1
-	# Guile bonus: best Guile in party
-	var best_guile := 0
-	for member in CharacterSystem.get_party():
-		var guile_level = member.get("skills", {}).get("guile", 0)
-		if guile_level > best_guile:
-			best_guile = guile_level
-	if best_guile >= 5:
-		drop_count += 2
-	elif best_guile >= 3:
-		drop_count += 1
-	# Bosses add +1 each
-	drop_count += boss_archetype_ids.size()
-	# Cap random drops (boss guaranteed drops added on top)
-	drop_count = mini(drop_count, MAX_RANDOM_DROPS)
-
-	# Build modified rarity weights for this fight
-	var rarity_weights = _get_modified_rarity_weights(difficulty_ratio, best_luck)
-
-	# --- Generate random role-based drops ---
-	for i in range(drop_count):
-		# Pick a role from the enemies we fought (cycle through if needed)
-		var role: String
-		if not enemy_roles.is_empty():
-			role = enemy_roles[i % enemy_roles.size()]
-		else:
-			# Fallback if only bosses (use frontline pool)
-			role = "frontline"
-
-		var allowed_types: Array[String] = []
-		var pool = ROLE_LOOT_POOLS.get(role, [])
-		for t in pool:
-			allowed_types.append(t)
-
-		# 30% chance to add a global consumable instead
-		if randf() < GLOBAL_CONSUMABLE_CHANCE:
-			allowed_types = GLOBAL_CONSUMABLE_TYPES.duplicate()
-
-		var item_id = _pick_item_from_types(allowed_types, rarity_weights)
-		if item_id != "":
-			drops.append(item_id)
-
-	# --- Supply drops (common, roughly half the value of gold) ---
-	# 50% base chance, +1 extra supply per 2 enemies beyond the first
+	# --- Supply drops (rations, herbs, scrap) ---
+	# 50% base chance; scale count with fight size.
 	if randf() < SUPPLY_DROP_CHANCE:
 		var supply_count: int = 1 + (enemy_count / 3)
 		for i in range(supply_count):
-			var supply_id = SUPPLY_DROP_IDS[randi() % SUPPLY_DROP_IDS.size()]
-			drops.append(supply_id)
+			drops.append(SUPPLY_DROP_IDS[randi() % SUPPLY_DROP_IDS.size()])
 
-	# --- Reagent drops (rarer, weighted toward caster/support enemies) ---
+	# --- Reagent drops (rarer; boosted when casters/supports were present) ---
 	var has_casters := false
 	for role in enemy_roles:
 		if role == "caster" or role == "support":
@@ -539,6 +517,103 @@ func _generate_loot_drops(enemy_count: int, difficulty_ratio: float, best_luck: 
 				drops.append(item_id)
 
 	return drops
+
+
+## Collect loot from dead enemy inventories using a budget-based system.
+##
+## How it works (inspired by Diablo 2 treasure classes + Diablo 3 Loot 2.0):
+##   - Items below LOOT_FLOOR_VALUE auto-convert to gold (no junk floods).
+##   - Remaining equipment is sorted best-first by value.
+##   - A randomized drop_fraction of the total value becomes the item budget.
+##   - Items are taken greedily from the sorted list until the budget runs out.
+##   - Over-budget items are salvaged to gold at LOOT_OVERFLOW_GOLD_RATE.
+##   - Consumables (potions, bombs, oils) drop at a flat per-item chance.
+##   - Thievery skill widens the drop_fraction toward the maximum.
+##
+## Returns {"items": Array[String], "bonus_gold": int}
+func _collect_enemy_loot() -> Dictionary:
+	var equipment_entries: Array = []   # {item_id: String, value: int}
+	var consumable_drops: Array[String] = []
+	var bonus_gold: int = 0
+
+	# Walk every dead enemy unit's combat_inventory
+	for unit in all_units:
+		if unit.team != Team.ENEMY:
+			continue
+		for entry in unit.combat_inventory:
+			var item_id: String = entry.get("item_id", "")
+			if item_id == "":
+				continue
+			var qty: int = maxi(1, entry.get("quantity", 1))
+			var item: Dictionary = ItemSystem.get_item(item_id)
+			if item.is_empty():
+				continue
+
+			var item_type: String = item.get("type", "")
+			var is_equipment: bool = (
+				item_type in ItemSystem.WEAPON_TYPES
+				or item_type in ItemSystem.ARMOR_TYPES
+				or item_type in ItemSystem.TALISMAN_TYPES
+			)
+
+			if is_equipment:
+				var item_value: int = item.get("value", 5)
+				for _i in range(qty):
+					equipment_entries.append({"item_id": item_id, "value": item_value})
+			else:
+				# Consumables: flat per-item drop chance
+				for _i in range(qty):
+					if randf() < LOOT_CONSUMABLE_DROP_CHANCE:
+						consumable_drops.append(item_id)
+
+	# Value floor — scales with realm so bone knives are junk in Hell but
+	# iron swords stop dropping as items once the party reaches the human realm.
+	var current_realm: String = GameState.current_world if GameState else ""
+	var loot_floor: int = LOOT_FLOOR_BY_REALM.get(current_realm, LOOT_FLOOR_DEFAULT)
+
+	var above_floor: Array = []
+	for eq in equipment_entries:
+		if eq.value < loot_floor:
+			bonus_gold += eq.value  # Auto-coin: not worth the inventory slot here
+		else:
+			above_floor.append(eq)
+
+	# Sort best items first — ensures the player always gets the most valuable pieces first
+	above_floor.sort_custom(func(a, b): return a.value > b.value)
+
+	# Drop fraction boosted by Thievery — skilled thieves know where to look
+	var best_thievery := 0
+	for member in CharacterSystem.get_party():
+		var t: int = member.get("skills", {}).get("thievery", 0)
+		if t > best_thievery:
+			best_thievery = t
+	var thievery_bonus: float = clampf(best_thievery * 0.03, 0.0, 0.30)
+	var drop_fraction: float = clampf(
+		randf_range(LOOT_DROP_FRACTION_MIN, LOOT_DROP_FRACTION_MAX) + thievery_bonus,
+		LOOT_DROP_FRACTION_MIN, LOOT_DROP_FRACTION_MAX
+	)
+
+	# Budget = fraction of above-floor equipment value
+	var total_value: int = 0
+	for eq in above_floor:
+		total_value += eq.value
+	var budget: int = int(float(total_value) * drop_fraction)
+
+	# Greedy fill: take items from best-first until budget is spent
+	var result_items: Array[String] = []
+	for eq in above_floor:
+		if budget > 0 and eq.value <= budget:
+			result_items.append(eq.item_id)
+			budget -= eq.value
+		else:
+			# Over budget: salvage to gold at reduced rate
+			bonus_gold += int(eq.value * LOOT_OVERFLOW_GOLD_RATE)
+
+	# Append consumable drops (not subject to budget)
+	for item_id in consumable_drops:
+		result_items.append(item_id)
+
+	return {"items": result_items, "bonus_gold": bonus_gold}
 
 
 ## Adjust rarity weights based on difficulty ratio and Luck.
