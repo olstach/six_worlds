@@ -32,12 +32,12 @@ const SKILL_TO_SCHOOL: Dictionary = {
 	"black_magic": "Black"
 }
 
-# Armor type -> base armor value per power level
-const ARMOR_VALUES: Dictionary = {
-	"none": 0,
-	"light": 2,
-	"medium": 4,
-	"heavy": 6
+# Armor category -> [slot, base_type] pairs to generate.
+# "none" intentionally absent — no entry means no armor items.
+const ARMOR_LOADOUTS: Dictionary = {
+	"light":  [["chest", "armor"], ["head", "hat"],    ["feet", "boots"]],
+	"medium": [["chest", "armor"], ["head", "helmet"], ["legs", "pants"],   ["feet", "boots"]],
+	"heavy":  [["chest", "armor"], ["head", "helmet"], ["legs", "greaves"], ["feet", "boots"], ["hand_l", "gauntlets"]]
 }
 
 
@@ -285,11 +285,6 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	var no_equip_chance = archetype.get("no_equipment_chance", 0.0)
 	var bare_handed = randf() < no_equip_chance
 
-	# Apply armor bonus to derived stats. Weapon damage/accuracy are no longer added
-	# to derived — they come from the generated weapon's stats dict instead.
-	if not bare_handed:
-		derived.armor += equipment.get("armor_value", 0)
-
 	# Build resistances dict (start with defaults, apply archetype overrides).
 	# Includes "black" as a damage type used by Black magic spells.
 	var resistances = {
@@ -305,8 +300,23 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	for item in archetype.get("starting_inventory", []):
 		inventory.append(item)
 
-	# Build the weapon for CombatUnit — generated items for armed enemies so they
-	# carry real material-tiered weapons with traits and durability.
+	# Map power budget to item rarity — shared by weapon and armor generation.
+	# Realm drives the material tier (e.g. hell → bone/obsidian/bronze); rarity drives quality.
+	var power_scale = effective_budget / 80.0
+	var item_rarity: String
+	if power_scale < 0.5:
+		item_rarity = "common"
+	elif power_scale < 1.0:
+		item_rarity = "uncommon"
+	elif power_scale < 1.5:
+		item_rarity = "rare"
+	elif power_scale < 2.0:
+		item_rarity = "epic"
+	else:
+		item_rarity = "legendary"
+
+	# Build the weapon for CombatUnit — generated items carry real material tiers,
+	# traits, and durability; added to inventory so they drop on death.
 	var equipped_weapon: Dictionary
 	if bare_handed:
 		equipped_weapon = {
@@ -317,27 +327,12 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 		}
 	else:
 		var weapon_type = equipment.get("weapon_type", "sword")
-		# Map power scale to rarity for weapon quality (realm drives material tier)
-		var power_scale = effective_budget / 80.0
-		var weapon_rarity: String
-		if power_scale < 0.5:
-			weapon_rarity = "common"
-		elif power_scale < 1.0:
-			weapon_rarity = "uncommon"
-		elif power_scale < 1.5:
-			weapon_rarity = "rare"
-		elif power_scale < 2.0:
-			weapon_rarity = "epic"
-		else:
-			weapon_rarity = "legendary"
-
-		var gen_id = ItemSystem.generate_weapon(weapon_type, weapon_rarity, "", "", realm)
+		var gen_id = ItemSystem.generate_weapon(weapon_type, item_rarity, "", "", realm)
 		if gen_id != "":
 			equipped_weapon = ItemSystem.get_item(gen_id)
-			# Add to inventory so the weapon can be looted when this enemy is defeated
 			inventory.append({"item_id": gen_id, "quantity": 1})
 		else:
-			# Fallback to hardcoded dict if ItemSystem unavailable
+			# Fallback if ItemSystem unavailable
 			equipped_weapon = {
 				"name": archetype.get("name", "Enemy") + "'s Weapon",
 				"type": weapon_type,
@@ -348,6 +343,24 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 					"range": equipment.get("weapon_range", 1)
 				}
 			}
+
+	# Generate armor items — same material-tiered system as the player.
+	# Each piece's stats contribute to derived (armor, dodge, hp, etc.) and the
+	# item goes into inventory so it can be looted on death.
+	var armor_category: String = equipment.get("armor_type", "none")
+	for slot_entry in ARMOR_LOADOUTS.get(armor_category, []):
+		var armor_gen_id = ItemSystem.generate_armor(slot_entry[1], item_rarity, "", "", realm)
+		if armor_gen_id == "":
+			continue
+		var armor_item = ItemSystem.get_item(armor_gen_id)
+		var piece_stats = armor_item.get("stats", {})
+		derived["armor"]       += piece_stats.get("armor", 0)
+		derived["dodge"]       += piece_stats.get("dodge", 0)
+		derived["max_hp"]      += piece_stats.get("max_hp", 0)
+		derived["current_hp"]  += piece_stats.get("max_hp", 0)
+		derived["max_stamina"] += piece_stats.get("max_stamina", 0)
+		derived["current_stamina"] += piece_stats.get("max_stamina", 0)
+		inventory.append({"item_id": armor_gen_id, "quantity": 1})
 
 	# Generate a procedural name from realm/region/tags, unless this is a named boss.
 	# Race is inferred from archetype tags: imps first, then shades (undead+incorporeal),
@@ -547,10 +560,8 @@ func _generate_equipment(template: Dictionary, power_level: float) -> Dictionary
 	result.weapon_accuracy = int(weapon.get("base_accuracy", 3) + power_scale * 1)
 	result.weapon_range = weapon.get("range", 1)
 
-	# Armor value from armor type
-	var armor_type = template.get("armor_type", "none")
-	var base_armor = ARMOR_VALUES.get(armor_type, 0)
-	result.armor_value = int(base_armor + power_scale * 1.5)
+	# Pass through armor category for item generation in _build_enemy
+	result.armor_type = template.get("armor_type", "none")
 
 	return result
 
