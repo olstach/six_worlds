@@ -846,6 +846,24 @@ func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Arr
 	if power_level > 80 and randf() < 0.4:
 		inventory.append({"item_id": "health_potion", "quantity": 1})
 
+	# Healer/support types carry herb bundles (useful in combat; also lootable)
+	var is_healer = false
+	for role in roles:
+		if role in ["support", "healer"]:
+			is_healer = true
+			break
+	if is_healer and randf() < 0.45:
+		inventory.append({"item_id": "herb_bundle", "quantity": 1})
+
+	# Heavily armored fighters accumulate scrap — they repair equipment in the field
+	var armor_cat = archetype.get("equipment_template", {}).get("armor_type", "none")
+	if armor_cat == "heavy" and randf() < 0.35:
+		inventory.append({"item_id": "scrap_metal", "quantity": 1})
+
+	# Casters and supports carry raw reagents for their rituals
+	if has_magic and randf() < 0.30:
+		inventory.append({"item_id": "raw_reagents", "quantity": 1})
+
 	return inventory
 
 
