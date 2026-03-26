@@ -67,6 +67,9 @@ var _current_event_object: Dictionary = {}
 # Shop instance and pending outcome (for event→shop flow)
 var _shop_instance: Control = null
 var _pending_shop_outcome: Dictionary = {}
+# Set when a location service button is clicked — shop close returns to location panel
+# instead of showing a result screen.
+var _in_location_mode: bool = false
 
 # Preload shop scene for event→shop flow
 var _shop_scene: PackedScene = preload("res://scenes/ui/shop_ui.tscn")
@@ -142,6 +145,7 @@ func _ready() -> void:
 
 	# Connect event display close signal
 	event_display.event_display_closed.connect(_on_event_display_closed)
+	event_display.service_requested.connect(_on_location_service_requested)
 
 	# Connect EventManager signals for event→combat, event→shop, and event→quest_board
 	EventManager.combat_requested.connect(_on_event_combat_requested)
@@ -306,6 +310,7 @@ func _on_mob_event_triggered(_mob: Dictionary) -> void:
 
 
 func _on_event_display_closed() -> void:
+	_in_location_mode = false
 	_set_event_visible(false)
 	# Remove the source of the event after the chain completes
 	if not _current_event_object.is_empty():
@@ -367,11 +372,21 @@ func _on_event_combat_requested(enemy_group: String, outcome: Dictionary) -> voi
 ## Event outcome triggered shop — open shop as overlay
 func _on_event_shop_requested(shop_id: String, outcome: Dictionary) -> void:
 	_pending_shop_outcome = outcome.duplicate(true)
+	_in_location_mode = false
+	_open_shop_overlay(shop_id)
 
-	# Hide event display (keep it in memory for result after shop closes)
+
+## Location service button clicked — open that service's shop, then return to location panel
+func _on_location_service_requested(shop_id: String) -> void:
+	_in_location_mode = true
+	_pending_shop_outcome = {}
+	_open_shop_overlay(shop_id)
+
+
+## Shared helper: instance the shop_ui scene and open a shop by ID.
+## Called from both the event→shop flow and the location service flow.
+func _open_shop_overlay(shop_id: String) -> void:
 	event_display.visible = false
-
-	# Instance and show shop
 	_shop_instance = _shop_scene.instantiate()
 	shop_overlay.add_child(_shop_instance)
 	_shop_instance.shop_closed.connect(_on_event_shop_closed)
@@ -384,21 +399,26 @@ func _on_event_shop_requested(shop_id: String, outcome: Dictionary) -> void:
 		_on_event_shop_closed()
 
 
-## Shop closed after event→shop flow — show event result and Continue button
+## Shop closed:
+##   - In location mode: restore the location panel so the player can browse other services.
+##   - In event mode: show the event result panel with Continue button as usual.
 func _on_event_shop_closed() -> void:
-	# Remove shop instance
 	if _shop_instance:
 		_shop_instance.queue_free()
 		_shop_instance = null
 	_shop_open = false
 
-	# Clear any event-set price multiplier so it doesn't affect future shops
+	# Clear any event-set price multiplier so it doesn't bleed into subsequent shops
 	GameState.set_flag("event_shop_price_multiplier", 1.0)
 
-	# Show event result panel with shop outcome
 	event_display.visible = true
-	event_display.display_outcome(_pending_shop_outcome)
-	_pending_shop_outcome = {}
+	if _in_location_mode:
+		# Return to location panel — player can browse other services or Leave
+		event_display.restore_location_panel()
+	else:
+		# Normal event→shop flow: show result panel with Continue button
+		event_display.display_outcome(_pending_shop_outcome)
+		_pending_shop_outcome = {}
 
 
 ## Event outcome triggered quest board — open quest board as overlay

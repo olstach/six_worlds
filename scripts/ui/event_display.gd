@@ -16,9 +16,11 @@ extends Control
 @onready var continue_button: Button = $ResultPanel/MarginContainer/VBoxContainer/ContinueButton
 
 signal event_display_closed
+signal service_requested(shop_id: String)
 
 var current_event: Dictionary = {}
 var current_outcome: Dictionary = {}
+var _location_mode: bool = false  # True when displaying a location (service tabs) instead of an event
 
 func _ready() -> void:
 	# Connect to EventManager
@@ -49,7 +51,12 @@ func show_event(event_id: String, object_id: String = "", one_time: bool = false
 
 func _on_event_started(event_data: Dictionary) -> void:
 	current_event = event_data
-	display_event()
+	if event_data.get("type", "") == "location":
+		_location_mode = true
+		display_location()
+	else:
+		_location_mode = false
+		display_event()
 
 func _input(event: InputEvent) -> void:
 	if not visible:
@@ -64,7 +71,7 @@ func _input(event: InputEvent) -> void:
 			_on_continue_button_pressed()
 		return
 
-	# 1-9 selects enabled choice buttons from event panel
+	# 1-9 selects buttons from event/location panel; Escape leaves a location
 	if event_panel.visible:
 		var buttons: Array = []
 		for child in choices_container.get_children():
@@ -72,9 +79,132 @@ func _input(event: InputEvent) -> void:
 				buttons.append(child)
 		if event.keycode >= KEY_1 and event.keycode <= KEY_9:
 			var idx = event.keycode - KEY_1
-			if idx < buttons.size() and not buttons[idx].disabled:
+			if idx < buttons.size() and (not buttons[idx].has_method("is_disabled") or not buttons[idx].disabled):
 				get_viewport().set_input_as_handled()
 				buttons[idx].pressed.emit()
+		elif _location_mode and event.keycode == KEY_ESCAPE:
+			# Escape leaves the location
+			get_viewport().set_input_as_handled()
+			# Trigger the Leave button (always the last button)
+			if not buttons.is_empty():
+				buttons[-1].pressed.emit()
+
+
+## Called by overworld when a service shop closes — restore the location panel
+## without showing a result screen, so the player can browse other services.
+func restore_location_panel() -> void:
+	event_panel.visible = true
+	result_panel.visible = false
+
+
+## Display a multi-service location (town, camp, etc.).
+## Location events have a "services" array instead of "choices".
+## Each service is a button that opens a sub-shop; Leave closes the location.
+func display_location() -> void:
+	for child in choices_container.get_children():
+		child.queue_free()
+
+	title_label.text = current_event.get("title", "Location")
+	description_label.text = current_event.get("text", current_event.get("description", ""))
+
+	# Relabel the prompt to show available services
+	var choices_label = $EventPanel/MarginContainer/VBoxContainer/ChoicesLabel
+	if choices_label:
+		choices_label.text = "Services available:"
+
+	var services: Array = current_event.get("services", [])
+	for service in services:
+		_create_service_button(service)
+
+	_create_location_leave_button()
+
+	event_panel.visible = true
+	result_panel.visible = false
+
+
+## Build a gold-tinted button that opens a sub-shop when clicked.
+func _create_service_button(service: Dictionary) -> void:
+	var button = Button.new()
+	var icon: String = service.get("icon", "🏪")
+	var label: String = service.get("tab_name", "Service")
+	button.text = icon + "  " + label
+	button.custom_minimum_size = Vector2(0, 60)
+
+	var color = Color(0.65, 0.5, 0.12)  # Warm gold
+	var style_normal = StyleBoxFlat.new()
+	style_normal.bg_color = color.darkened(0.55)
+	style_normal.border_width_left = 4
+	style_normal.border_width_right = 4
+	style_normal.border_width_top = 4
+	style_normal.border_width_bottom = 4
+	style_normal.border_color = color
+	style_normal.corner_radius_top_left = 8
+	style_normal.corner_radius_top_right = 8
+	style_normal.corner_radius_bottom_left = 8
+	style_normal.corner_radius_bottom_right = 8
+	style_normal.content_margin_left = 16
+	style_normal.content_margin_right = 16
+	style_normal.content_margin_top = 12
+	style_normal.content_margin_bottom = 12
+
+	var style_hover = style_normal.duplicate()
+	style_hover.bg_color = color.darkened(0.25)
+	style_hover.border_color = color.lightened(0.2)
+
+	button.add_theme_stylebox_override("normal", style_normal)
+	button.add_theme_stylebox_override("hover", style_hover)
+	button.add_theme_color_override("font_color", Color(0.95, 0.85, 0.55))
+	button.add_theme_color_override("font_hover_color", Color.WHITE)
+	button.add_theme_font_size_override("font_size", 20)
+
+	var shop_id: String = service.get("shop_id", "")
+	button.pressed.connect(func():
+		AudioManager.play("ui_click")
+		service_requested.emit(shop_id))
+
+	choices_container.add_child(button)
+
+
+## Leave button for location mode — closes cleanly without a result screen.
+func _create_location_leave_button() -> void:
+	var button = Button.new()
+	button.text = "Leave"
+	button.custom_minimum_size = Vector2(0, 50)
+
+	var color = Color(0.4, 0.4, 0.5)
+	var style_normal = StyleBoxFlat.new()
+	style_normal.bg_color = color.darkened(0.6)
+	style_normal.border_width_left = 4
+	style_normal.border_width_right = 4
+	style_normal.border_width_top = 4
+	style_normal.border_width_bottom = 4
+	style_normal.border_color = color
+	style_normal.corner_radius_top_left = 8
+	style_normal.corner_radius_top_right = 8
+	style_normal.corner_radius_bottom_left = 8
+	style_normal.corner_radius_bottom_right = 8
+	style_normal.content_margin_left = 16
+	style_normal.content_margin_right = 16
+	style_normal.content_margin_top = 12
+	style_normal.content_margin_bottom = 12
+
+	var style_hover = style_normal.duplicate()
+	style_hover.bg_color = color.darkened(0.35)
+
+	button.add_theme_stylebox_override("normal", style_normal)
+	button.add_theme_stylebox_override("hover", style_hover)
+	button.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
+	button.add_theme_color_override("font_hover_color", Color.WHITE)
+
+	button.pressed.connect(func():
+		AudioManager.play("ui_click")
+		event_panel.visible = false
+		result_panel.visible = false
+		visible = false
+		_location_mode = false
+		event_display_closed.emit())
+
+	choices_container.add_child(button)
 
 
 func display_event() -> void:
