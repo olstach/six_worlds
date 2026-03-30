@@ -315,6 +315,41 @@ UI stub exists in Party tab (`_update_followers_list()` / `_create_follower_card
 
 ---
 
+### PERKS.md Maintenance
+
+**Fill empty perk tiers (levels 2, 4, 6, 8):**
+After the remapping, all perks sit at required levels 1, 3, 5, 7, 9, or 10. Levels 2, 4, 6, and 8 are empty. Add 1-2 perks per skill at those levels to smooth progression — either move less-important perks down or design new ones. Not urgent while content is still being added; schedule after other realms have their perk passes.
+
+**Regenerate perks.json after any PERKS.md changes:**
+- Run `tools/parse_perks.py` → regenerates `resources/data/perks.json`
+- Confirm perk count: currently ~527 entries (474 skill_perks + 53 cross_perks)
+
+**Skill tables still need extension to level 10 in PERKS.md:**
+All 35 skills have base bonus tables, but most were written when skill cap was 5. Only Learning, Comedy, and Spears were extended to level 10 this session. All others still show levels 1-5 (or partial 1-8) — extend each to level 10 and add an "11-15 (item bonuses)" note row.
+
+**Perk requirement rebalancing for 0-10 skill scale:**
+Perk `required_level` was remapped (old 5→9) but the DISTRIBUTION along 1-10 is still front-loaded. Capstone perks (e.g. Breath Easy, high-tier Mantras) should land at required_level 8-10. Needs a full pass once all tables are extended.
+
+**Add flavor text to perks that lack it:**
+Many perks — especially weapon perks and general skills — have no flavor line. Adding even a single italicized line per perk improves feel and theming. Not urgent, but worth a pass once content is stable.
+
+**Schools still needing more level 1 perks (from PERKS.md review):**
+- [ ] Swords — only "Read the Line" added (level 1 is otherwise a gap)
+- [ ] Fire Magic — only "Touch the Flame" added
+- [ ] White Magic — only "Clear Light" added
+- [ ] Air Magic, Earth Magic, Water Magic, Black Magic — no level-1 perks at all
+- [ ] Ranged, Maces, Martial Arts, Daggers, Spears — check if any have level-1 perks
+
+**Perks referencing systems not yet implemented (stub in PERKS.md; do not wire until system exists):**
+- `investment` / `trade_empire` (Trade) — needs overworld economy / passive income system
+- `supply_cache` / `extended_march` (Logistics) — needs overworld supply action system
+- `guided_practice` / `the_lineage_continues` (Learning) — needs companion spell-teaching mechanic
+- `trap_sense` / `trap_maker` (Guile/Thievery) — needs persistent trap terrain object system
+- `black_market_contacts` / `fence` (Thievery/Trade) — needs special black-market merchant tier in shops
+- `patron_of_the_arts` (Performance) — needs reputation/renown system
+
+---
+
 ## Medium Priority (Content & Polish)
 
 ### Content
@@ -334,7 +369,7 @@ UI stub exists in Party tab (`_update_followers_list()` / `_create_follower_card
 - [x] ~~Add talisman/equipment generation to shop and loot systems~~ — DONE (procedural items in loot drops + auto-generated shop stock)
 
 ### UI Improvements
-- [ ] Tooltip system expansion — item_tooltip.gd works for items; no tooltips on status effects, terrain tiles, or turn order icons in combat
+- [x] ~~Tooltip system expansion~~ — status effect icons (combat_unit.gd), terrain tile hover (combat_arena.gd), turn order panel (combat_arena.gd), overworld objects/mobs (map_renderer.gd), HUD supply counters (overworld.gd) — DONE
 - [ ] Upgrade selection popup (choose 1 of 4) — no scene or system exists
 - [x] ~~Party management screen~~ — DONE (session 10): Party tab in main_menu shows all members with HP/MP/ST bars, View Stats button switches to Stats tab for any member, Remove button dismisses companions
 
