@@ -308,8 +308,8 @@ func process_food_step(party_size: int, logistics_level: int, lowest_con: int) -
 	var reduction_pct: float = minf(logistics_level * 7.5, 90.0)  # Cap at 90% to always cost at least something
 	var raw_cost: float = party_size * 1.0
 	var reduced_cost: float = raw_cost * (1.0 - reduction_pct / 100.0)
-	# Divide by 3 so a party of 4 eats ~2 food/step instead of 4 — makes food last longer
-	var actual_cost: int = max(1, ceili(reduced_cost / 3.0))
+	# Divide by 15 so a party of 4 eats ~1 food per several steps — food is a background concern, not a crisis
+	var actual_cost: int = max(1, ceili(reduced_cost / 15.0))
 
 	var result := {
 		"food_consumed": 0,
