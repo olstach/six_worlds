@@ -400,8 +400,8 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 			pos = backline_positions[back_idx]
 			back_idx += 1
 		else:
-			# Overflow: place in an available spot
-			pos = Vector2i(13, enemy_units.size())
+			# Overflow: place in enemy zone at next available row
+			pos = Vector2i(ez + 2, cy + enemy_units.size())
 
 		combat_grid.place_unit(unit, pos)
 		enemy_units.append(unit)
@@ -1025,19 +1025,18 @@ func _build_spell_tooltip(spell: Dictionary) -> String:
 
 	# Name
 	lines.append(spell.get("name", "Unknown Spell"))
-	lines.append("")
 
-	# Schools
-	var schools = spell.get("schools", [])
-	if not schools.is_empty():
-		var school_names: Array[String] = []
-		for s in schools:
-			school_names.append(s.capitalize())
-		lines.append("Schools: " + ", ".join(school_names))
+	# Tier display (e.g. "Outer Circle of Cloud" or "Inner Circle of Fire")
+	lines.append(CombatManager.get_spell_tier_display(spell))
+
+	# Skill requirements in grey (e.g. "Requires Water Magic 3, Air Magic 3 or Sorcery 3")
+	var reqs = CombatManager.get_spell_skill_reqs(spell)
+	if reqs != "":
+		lines.append(reqs)
+	lines.append("")
 
 	# Stats line
 	var stats_parts: Array[String] = []
-	stats_parts.append("Level %d" % spell.get("level", 1))
 	stats_parts.append("%d MP" % spell.get("mana_cost", 0))
 	stats_parts.append("Range %d" % spell.get("range", 1))
 	lines.append(" | ".join(stats_parts))

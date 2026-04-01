@@ -785,7 +785,7 @@ func _get_default_procedural_slots() -> Array:
 			slots.append({"category": "weapon", "match_party_skill": true,
 				"rarity": pick_rarity.call(), "count": 1 + randi() % 2})
 			slots.append({"category": "armor", "rarity": pick_rarity.call(), "count": 1})
-		"spell_trainer":
+		"spell_trainer", "domain_spell_trainer":
 			# 1 talisman (casters want trinkets)
 			slots.append({"category": "talisman", "rarity": pick_rarity.call(), "count": 1})
 		"skill_trainer":
@@ -891,6 +891,10 @@ func _get_guild_spell_candidates(school: String, level: int, excluded: Array) ->
 			continue
 		var spell: Dictionary = spell_db[spell_id]
 		if int(spell.get("level", 0)) != level:
+			continue
+		# Domain spells are only available through domain-specific trainers
+		var tags = spell.get("tags", [])
+		if "domain_spell" in tags:
 			continue
 		var matches: bool = false
 		for s in spell.get("schools", []):

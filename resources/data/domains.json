@@ -3,7 +3,10 @@
   "domains": {
     "crystal": {
       "name": "Crystal",
-      "elements": ["Earth", "Space"],
+      "elements": [
+        "Earth",
+        "Space"
+      ],
       "theme": "Clarity, resonance, precision. Crystal focuses and reveals.",
       "spells": [
         "scattered_light",
@@ -16,7 +19,10 @@
     },
     "glass": {
       "name": "Glass",
-      "elements": ["Earth", "Air"],
+      "elements": [
+        "Earth",
+        "Air"
+      ],
       "theme": "Precision, fragility, reflection. Glass wounds and reveals.",
       "spells": [
         "glass_shard",
@@ -29,7 +35,10 @@
     },
     "smoke": {
       "name": "Smoke",
-      "elements": ["Earth", "Fire"],
+      "elements": [
+        "Earth",
+        "Fire"
+      ],
       "theme": "Concealment, suffocation, transformation. Smoke obscures and corrupts.",
       "spells": [
         "smoke_cloud",
@@ -42,7 +51,10 @@
     },
     "mud": {
       "name": "Mud",
-      "elements": ["Earth", "Water"],
+      "elements": [
+        "Earth",
+        "Water"
+      ],
       "theme": "Corruption, weight, tenacity. Mud endures and smothers.",
       "spells": [
         "mudling",
@@ -55,7 +67,10 @@
     },
     "cloud": {
       "name": "Cloud",
-      "elements": ["Water", "Air"],
+      "elements": [
+        "Water",
+        "Air"
+      ],
       "theme": "Transience, sovereignty, height. Cloud moves freely, belongs nowhere, answers to no one.",
       "spells": [
         "cloudstep",
@@ -65,6 +80,86 @@
       ],
       "event": "cloud_palace",
       "description": "Where water surrenders its weight to air, cloud is born — neither earth nor sky, neither solid nor gone. Cloud magic is the discipline of the in-between: it slips past barriers, sheds damage like rain, carries the party home on a breath of wind, and answers a call with something vast and serpentine that lives between the rain and the stars. The nagas who dwell in cloud are rare and sovereign; they do not welcome interruption, but they respect those who know how to approach."
+    },
+    "steam": {
+      "name": "Steam",
+      "elements": [
+        "Water",
+        "Fire"
+      ],
+      "theme": "Purification, eruption, transformation. Steam cleanses and scalds.",
+      "spells": [
+        "steam_jet",
+        "fragrant_sauna",
+        "geyser",
+        "scalding_fog"
+      ],
+      "event": "waterworks",
+      "description": "Where water meets fire, steam is born — neither liquid nor flame, a force that cleanses and scalds in equal measure. Steam magic purifies and erupts: healing mists that strip poison from allies, geysers that hurl enemies skyward, and lingering fog that sears those who linger."
+    },
+    "rainbow": {
+      "name": "Rainbow",
+      "elements": [
+        "Space",
+        "White"
+      ],
+      "theme": "Prismatic chaos, revelation, transcendence. Rainbow dazzles and illuminates.",
+      "spells": [
+        "rainbow_orb",
+        "rainbow_spray",
+        "vision_of_reality",
+        "rainbow_cloak"
+      ],
+      "event": "skygazing_gompa",
+      "description": "Where space refracts through white light, rainbow is born — not one thing but all things at once, shimmering and impossible to hold. Rainbow magic is wildly unpredictable: each spell rolls its own dice, choosing from a palette of effects that might blind, charm, heal, or burn. Those who master it learn to see reality itself as a display of light."
+    },
+    "tummo": {
+      "name": "Tummo",
+      "elements": [
+        "Fire",
+        "Air"
+      ],
+      "theme": "Inner heat, yogic fire, self-transformation. Tummo burns from within.",
+      "spells": [
+        "inner_flame",
+        "heat_transfer",
+        "flash_of_radiance",
+        "blazing_and_dripping"
+      ],
+      "event": "snowcapped_hermitage",
+      "description": "Where fire meets air within the body, tummo is born — the inner heat of yogic practice, the flame that melts the crown and blazes upward from the secret chakra. Tummo magic transforms the caster rather than the world: resistance to the elements, transfer of vitality, and ultimately the blazing and dripping of the inner channels."
+    },
+    "luminosity": {
+      "name": "Luminosity",
+      "elements": [
+        "Fire",
+        "Space"
+      ],
+      "theme": "Clear light, perception, mental mastery. Luminosity reveals and protects the mind.",
+      "spells": [
+        "clear_mind",
+        "divine_eye",
+        "radiant_visage",
+        "shining_mirage"
+      ],
+      "event": "dark_cave",
+      "description": "Where fire illuminates space, luminosity is born — not the light of sun or flame but the clear light of awareness itself. Luminosity magic grants vision that pierces all deception, an aura that shields the mind from manipulation, and illusions so vivid they confuse even those who know what they are seeing."
+    },
+    "sound": {
+      "name": "Sound",
+      "elements": [
+        "Air",
+        "Space"
+      ],
+      "theme": "Vibration, mantra, resonance. Sound shatters and commands.",
+      "spells": [
+        "battle_chant",
+        "eerie_dirge",
+        "sonic_boom",
+        "up_to_eleven"
+      ],
+      "event": "gandharva_court",
+      "description": "Where air vibrates through space, sound is born — not mere noise but the primordial vibration that shapes reality. Sound magic is the discipline of mantra and resonance: battle chants that sharpen the will, dirges that sap the spirit, sonic blasts that shatter armor and silence, and the legendary eleventh note that transcends all structure."
     }
   }
 }

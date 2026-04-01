@@ -942,9 +942,10 @@ func _update_spellbook() -> void:
 		return
 
 	for level in levels:
-		# Level header
+		# Tier header (e.g. "— Outer Circle —")
 		var level_header = Label.new()
-		level_header.text = "— Level " + str(int(level)) + " —"
+		var tier_name = CombatManager.SPELL_TIER_NAMES.get(int(level), "Circle %d" % int(level))
+		level_header.text = "— %s —" % tier_name
 		level_header.add_theme_font_size_override("font_size", 16)
 		level_header.add_theme_color_override("font_color", Color(0.85, 0.75, 0.4))
 		spellbook_list.add_child(level_header)
@@ -995,29 +996,28 @@ func _create_spell_card(spell_id: String, spell_data: Dictionary) -> PanelContai
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top_row.add_child(name_label)
 
-	# School tags
-	for school_name in schools:
-		var school_label = Label.new()
-		school_label.text = school_name
-		school_label.add_theme_color_override("font_color", _get_school_color(school_name))
-		school_label.add_theme_font_size_override("font_size", 12)
-		top_row.add_child(school_label)
-
-	# Subschool
-	var subschool = spell_data.get("subschool", "")
-	if subschool != "":
-		var sub_label = Label.new()
-		sub_label.text = subschool
-		sub_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.55))
-		sub_label.add_theme_font_size_override("font_size", 12)
-		top_row.add_child(sub_label)
-
-	# Mana cost
+	# Mana cost (right-aligned)
 	var mana_label = Label.new()
 	mana_label.text = str(int(spell_data.get("mana_cost", 0))) + " MP"
 	mana_label.add_theme_color_override("font_color", Color(0.4, 0.6, 0.9))
 	mana_label.add_theme_font_size_override("font_size", 12)
 	top_row.add_child(mana_label)
+
+	# Tier display line (e.g. "Outer Circle of Cloud" or "Inner Circle of Fire")
+	var tier_label = Label.new()
+	tier_label.text = CombatManager.get_spell_tier_display(spell_data)
+	tier_label.add_theme_color_override("font_color", Color(0.85, 0.75, 0.4))
+	tier_label.add_theme_font_size_override("font_size", 12)
+	vbox.add_child(tier_label)
+
+	# Skill requirements in grey (e.g. "Requires Water Magic 3, Air Magic 3 or Sorcery 3")
+	var reqs = CombatManager.get_spell_skill_reqs(spell_data)
+	if reqs != "":
+		var reqs_label = Label.new()
+		reqs_label.text = reqs
+		reqs_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		reqs_label.add_theme_font_size_override("font_size", 11)
+		vbox.add_child(reqs_label)
 
 	# Cast button — shown for spells tagged out_of_combat (overworld-castable)
 	var spell_tags: Array = spell_data.get("tags", [])

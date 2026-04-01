@@ -331,14 +331,21 @@ func _create_spell_slot(spell_id: String) -> void:
 	name_label.add_theme_color_override("font_color", Color(0.7, 0.6, 0.9))
 	vbox.add_child(name_label)
 
-	# Schools and level
-	var schools = spell_data.get("schools", [])
-	var level = spell_data.get("level", 1)
-	var info_label = Label.new()
-	info_label.text = "Lv.%d %s" % [level, "/".join(schools)]
-	info_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
-	info_label.add_theme_font_size_override("font_size", 11)
-	vbox.add_child(info_label)
+	# Tier display (e.g. "Outer Circle of Cloud")
+	var tier_label = Label.new()
+	tier_label.text = CombatManager.get_spell_tier_display(spell_data)
+	tier_label.add_theme_color_override("font_color", Color(0.85, 0.75, 0.4))
+	tier_label.add_theme_font_size_override("font_size", 11)
+	vbox.add_child(tier_label)
+
+	# Skill requirements in grey
+	var reqs = CombatManager.get_spell_skill_reqs(spell_data)
+	if reqs != "":
+		var reqs_label = Label.new()
+		reqs_label.text = reqs
+		reqs_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		reqs_label.add_theme_font_size_override("font_size", 10)
+		vbox.add_child(reqs_label)
 
 	# Price
 	var price = ShopSystem.get_spell_cost(spell_id)
@@ -352,7 +359,8 @@ func _create_spell_slot(spell_id: String) -> void:
 	# Learn button(s): guilds show one "Buy" button teaching the whole party,
 	# regular shops show one button per party member.
 	var party = CharacterSystem.get_party()
-	var is_guild = current_shop.get("type", "") == "spell_guild"
+	var shop_type = current_shop.get("type", "")
+	var is_guild = shop_type == "spell_guild" or shop_type == "domain_spell_trainer"
 
 	if party.is_empty():
 		var no_party = Label.new()

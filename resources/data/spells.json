@@ -1,12 +1,5 @@
 {
   "notes": {
-    "mana_costs_by_level": {
-      "1": 15,
-      "2": 40,
-      "3": 75,
-      "4": 135,
-      "5": 225
-    },
     "buff_debuff_scaling": "single target → AoE (circle) → all eligible (allies/enemies)",
     "schools": [
       "earth",
@@ -23,7 +16,7 @@
       "sorcery"
     ],
     "spell_tier_display": {
-      "system": "Tantric Circle tiers — cakra in the sense of ganacakra (circle of practitioners). Display only; the level field stores the skill requirement.",
+      "system": "Tantric Circle tiers. Skills unlock spell tiers at levels 1, 3, 5, 7, 9.",
       "mapping": {
         "1": "Outermost Circle",
         "3": "Outer Circle",
@@ -31,8 +24,14 @@
         "7": "Secret Circle",
         "9": "Unsurpassed Circle"
       },
-      "even_levels": "Cross-school spells at L2/L4 display as the lower tier (L2 → Outermost Circle, L4 → Outer Circle)",
       "etymology": "anuttara (Skt.) = unsurpassed, without superior — highest class of tantra"
+    },
+    "mana_costs_by_tier": {
+      "1 (Outermost)": 15,
+      "2 (Outer)": 40,
+      "3 (Inner)": 75,
+      "4 (Secret)": 135,
+      "5 (Unsurpassed)": 225
     }
   },
   "school_notes": {
@@ -7794,7 +7793,7 @@
         "White",
         "Sorcery"
       ],
-      "level": 2,
+      "level": 1,
       "theme": "heal",
       "tags": [
         "heal",
@@ -9372,7 +9371,7 @@
         "Air",
         "Sorcery"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "glass",
       "domain": "glass",
       "tags": [
@@ -9438,7 +9437,7 @@
         "Air",
         "Summoning"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "glass",
       "domain": "glass",
       "tags": [
@@ -9462,7 +9461,7 @@
         "Space",
         "Sorcery"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "crystal",
       "domain": "crystal",
       "tags": [
@@ -9500,7 +9499,7 @@
         "Space",
         "Summoning"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "crystal",
       "domain": "crystal",
       "tags": [
@@ -9524,7 +9523,7 @@
         "Space",
         "Enchantment"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "crystal",
       "domain": "crystal",
       "tags": [
@@ -9553,7 +9552,7 @@
         "Space",
         "Enchantment"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "crystal",
       "domain": "crystal",
       "tags": [
@@ -9588,7 +9587,7 @@
         "Fire",
         "Sorcery"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "steam",
       "tags": [
         "steam",
@@ -9662,7 +9661,7 @@
         "Fire",
         "Sorcery"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "steam",
       "tags": [
         "steam",
@@ -9700,7 +9699,7 @@
         "Fire",
         "Sorcery"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "steam",
       "tags": [
         "steam",
@@ -9741,7 +9740,7 @@
         "Air",
         "Sorcery"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "cloud",
       "domain": "cloud",
       "tags": [
@@ -9771,7 +9770,7 @@
         "Air",
         "Enchantment"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "cloud",
       "domain": "cloud",
       "tags": [
@@ -9803,7 +9802,7 @@
         "Air",
         "Summoning"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "cloud",
       "domain": "cloud",
       "tags": [
@@ -9828,7 +9827,7 @@
         "Air",
         "Sorcery"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "cloud",
       "domain": "cloud",
       "tags": [
@@ -9858,7 +9857,7 @@
         "White",
         "Sorcery"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "rainbow",
       "tags": [
         "rainbow",
@@ -9906,7 +9905,7 @@
         "White",
         "Sorcery"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "rainbow",
       "tags": [
         "rainbow",
@@ -9993,7 +9992,7 @@
         "White",
         "Sorcery"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "rainbow",
       "tags": [
         "rainbow",
@@ -10136,7 +10135,7 @@
         "Air",
         "Enchantment"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "tummo",
       "domain": "tummo",
       "tags": [
@@ -10170,7 +10169,7 @@
         "Space",
         "White"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "luminosity",
       "domain": "luminosity",
       "tags": [
@@ -10241,7 +10240,7 @@
         "Space",
         "Enchantment"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "luminosity",
       "domain": "luminosity",
       "tags": [
@@ -10274,7 +10273,7 @@
         "Space",
         "Enchantment"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "luminosity",
       "domain": "luminosity",
       "tags": [
@@ -10313,7 +10312,7 @@
         "Space",
         "Enchantment"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "sound",
       "domain": "sound",
       "tags": [
@@ -10412,7 +10411,7 @@
         "Space",
         "Sorcery"
       ],
-      "level": 4,
+      "level": 7,
       "theme": "sound",
       "domain": "sound",
       "tags": [
@@ -10489,7 +10488,7 @@
         "Black",
         "Sorcery"
       ],
-      "level": 2,
+      "level": 3,
       "theme": "void",
       "tags": [
         "black",

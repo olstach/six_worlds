@@ -107,6 +107,55 @@ const RARITY_DROP_WEIGHTS: Dictionary = {
 }
 const MAX_RANDOM_DROPS: int = 5
 
+# Spell tier display names (skill level → tier name)
+const SPELL_TIER_NAMES: Dictionary = {
+	1: "Outermost Circle", 3: "Outer Circle", 5: "Inner Circle",
+	7: "Secret Circle", 9: "Unsurpassed Circle"
+}
+
+# School name → skill name mapping for display
+const SCHOOL_TO_SKILL_NAME: Dictionary = {
+	"earth": "Earth Magic", "water": "Water Magic", "fire": "Fire Magic",
+	"air": "Air Magic", "space": "Space Magic", "white": "White Magic",
+	"black": "Black Magic", "sorcery": "Sorcery", "enchantment": "Enchantment",
+	"summoning": "Summoning"
+}
+
+
+## Get the tier display name for a spell (e.g. "Outer Circle of Cloud" or "Inner Circle of Fire")
+static func get_spell_tier_display(spell: Dictionary) -> String:
+	var level = spell.get("level", 1)
+	var tier_name = SPELL_TIER_NAMES.get(level, "Circle %d" % level)
+	var domain = spell.get("domain", "")
+	if domain != "":
+		return "%s of %s" % [tier_name, domain.capitalize()]
+	# Use first elemental school for the "of X" suffix
+	var schools = spell.get("schools", [])
+	if not schools.is_empty():
+		return "%s of %s" % [tier_name, schools[0]]
+	return tier_name
+
+
+## Build a skill requirements string for a spell (e.g. "Requires Water Magic 3, Air Magic 3 or Sorcery 3")
+static func get_spell_skill_reqs(spell: Dictionary) -> String:
+	var level = spell.get("level", 1)
+	var schools = spell.get("schools", [])
+	var subschool = spell.get("subschool", "")
+	var parts: Array[String] = []
+	for school in schools:
+		var skill_name = SCHOOL_TO_SKILL_NAME.get(school.to_lower(), school)
+		parts.append("%s %d" % [skill_name, level])
+	if subschool != "" and not subschool in schools:
+		var skill_name = SCHOOL_TO_SKILL_NAME.get(subschool.to_lower(), subschool)
+		parts.append("%s %d" % [skill_name, level])
+	if parts.is_empty():
+		return ""
+	if parts.size() == 1:
+		return "Requires " + parts[0]
+	var last = parts.pop_back()
+	return "Requires " + ", ".join(parts) + " or " + last
+
+
 # Damage type → terrain effect mapping (only elements that leave ground effects)
 # Physical subtypes (slashing/crushing/piercing/physical) intentionally excluded — no terrain.
 const DAMAGE_TYPE_TO_TERRAIN_EFFECT: Dictionary = {

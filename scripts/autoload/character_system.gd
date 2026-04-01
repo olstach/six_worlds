@@ -239,6 +239,10 @@ func pick_random_spell_for_party(school: String, level: int) -> String:
 		var spell = _spell_database[spell_id]
 		if int(spell.get("level", 0)) != level:
 			continue
+		# Domain spells are only available through domain-specific trainers
+		var tags = spell.get("tags", [])
+		if "domain_spell" in tags:
+			continue
 		# Match against schools array or subschool field
 		var matches = false
 		for s in spell.get("schools", []):
