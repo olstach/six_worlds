@@ -199,9 +199,8 @@ func _apply_random_spells(character: Dictionary, random_cfg: Dictionary,
 		if not school_match:
 			continue
 		# Check that the character can actually cast it (has the required skill level).
-		# Spell tier 1-5 maps to min skill level 1,3,5,7,9 (tier * 2 - 1).
-		var spell_tier: int = spell.get("level", 1)
-		var required_level: int = spell_tier * 2 - 1
+		# The spell's "level" field IS the minimum skill level required.
+		var required_level: int = spell.get("level", 1)
 		var can_cast := false
 		for s in schools:
 			for skill_name in SKILL_TO_SCHOOL.keys():

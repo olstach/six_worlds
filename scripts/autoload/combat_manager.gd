@@ -2026,14 +2026,16 @@ func get_spell(spell_id: String) -> Dictionary:
 			if raw_range == "melee":
 				spell["range"] = 1
 			else:
-				# Default range based on spell level
+				# Default range based on spell tier (level 1,3,5,7,9 → tier 1-5)
 				var level = spell.get("level", 1)
-				spell["range"] = 3 + level  # Range 4-8 based on level
+				var tier = ceili(level / 2.0)  # 1→1, 2→1, 3→2, 4→2, 5→3, 7→4, 9→5
+				spell["range"] = 3 + tier  # Range 4-8 based on tier
 		elif raw_range is int or raw_range is float:
 			spell["range"] = int(raw_range)
 		else:
 			var level = spell.get("level", 1)
-			spell["range"] = 3 + level
+			var tier = ceili(level / 2.0)
+			spell["range"] = 3 + tier
 
 		return spell
 	return {}
@@ -2081,10 +2083,8 @@ func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dicti
 		return {"success": false, "reason": "Not enough mana"}
 
 	# Check skill requirements - need at least one school at required skill level.
-	# Spell levels 1-5 map to minimum skill levels 1,3,5,7,9 respectively
-	# (spell_level * 2 - 1), reflecting the 10-level skill scale.
-	var spell_tier = spell.get("level", 1)
-	var required_skill_level = spell_tier * 2 - 1
+	# The spell's "level" field IS the minimum skill level required (1,2,3,4,5,7,9).
+	var required_skill_level = spell.get("level", 1)
 	var schools = spell.get("schools", [])
 	var has_skill = false
 

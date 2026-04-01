@@ -349,7 +349,15 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 	# Create player units from party
 	var player_units: Array = []
 	var party = CharacterSystem.get_party()
-	var player_start_positions = [Vector2i(1, 3), Vector2i(1, 5), Vector2i(2, 4), Vector2i(0, 4), Vector2i(2, 2), Vector2i(2, 6), Vector2i(3, 3), Vector2i(3, 5)]
+	# Use center-third deployment zones matching the 48x30 grid layout
+	var gw = combat_grid.grid_size.x
+	var gh = combat_grid.grid_size.y
+	var pz = gw / 3  # player zone start x (16 on 48-wide grid)
+	var cy = gh / 2   # vertical center
+	var player_start_positions = [
+		Vector2i(pz, cy - 2), Vector2i(pz, cy), Vector2i(pz + 1, cy - 1),
+		Vector2i(pz + 1, cy + 1), Vector2i(pz, cy + 2), Vector2i(pz + 1, cy - 3),
+		Vector2i(pz + 1, cy + 3), Vector2i(pz, cy - 4)]
 
 	for i in range(mini(party.size(), player_start_positions.size())):
 		var char_data = party[i]
@@ -361,8 +369,13 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 
 	# Place enemies based on their roles (frontline closer, ranged/caster in back)
 	var enemy_units: Array = []
-	var frontline_positions = [Vector2i(12, 3), Vector2i(12, 5), Vector2i(12, 4), Vector2i(12, 2), Vector2i(12, 6)]
-	var backline_positions = [Vector2i(14, 3), Vector2i(14, 5), Vector2i(14, 4), Vector2i(15, 3), Vector2i(15, 5)]
+	var ez = gw * 2 / 3 - CombatGrid.ENEMY_DEPLOY_COLUMNS  # enemy zone start x (28 on 48-wide)
+	var frontline_positions = [
+		Vector2i(ez + 3, cy - 2), Vector2i(ez + 3, cy), Vector2i(ez + 3, cy - 1),
+		Vector2i(ez + 3, cy - 3), Vector2i(ez + 3, cy + 1)]
+	var backline_positions = [
+		Vector2i(ez + 1, cy - 2), Vector2i(ez + 1, cy), Vector2i(ez + 1, cy - 1),
+		Vector2i(ez, cy - 2), Vector2i(ez, cy)]
 	var front_idx = 0
 	var back_idx = 0
 

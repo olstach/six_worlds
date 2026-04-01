@@ -595,8 +595,8 @@ func _pick_spells(skills: Dictionary, guaranteed: Array) -> Array:
 
 		var spell = all_spells[spell_id]
 		var spell_level = spell.get("level", 1)
-		# Spell tiers 1-5 map to minimum skill levels 1,3,5,7,9 (spell_level * 2 - 1)
-		var required_skill_level = spell_level * 2 - 1
+		# The spell's "level" field IS the minimum skill level required.
+		var required_skill_level = spell_level
 		var spell_schools = spell.get("schools", [])
 
 		# Check if enemy has at least one school at the required skill level

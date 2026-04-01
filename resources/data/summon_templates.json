@@ -18,8 +18,8 @@
       "resistances": {},
       "tags": ["air", "spirit", "utility"]
     },
-    "Frog": {
-      "display_name": "Frog",
+    "Nagarajas_Attendant": {
+      "display_name": "Nagaraja's Attendant",
       "base_hp": 18,
       "base_mana": 0,
       "base_stamina": 30,
@@ -104,23 +104,6 @@
       "resistances": {"earth": 25, "fire": -25},
       "tags": ["earth", "plant", "obstacle"]
     },
-    "Obstacle": {
-      "display_name": "Summoned Obstacle",
-      "base_hp": 45,
-      "base_mana": 0,
-      "base_stamina": 20,
-      "actions": 0,
-      "base_damage": 0,
-      "damage_type": "physical",
-      "base_initiative": 1,
-      "base_movement": 0,
-      "base_dodge": 0,
-      "base_armor": 12,
-      "base_crit": 0,
-      "base_accuracy": 0,
-      "resistances": {"earth": 25},
-      "tags": ["earth", "construct", "obstacle"]
-    },
     "Trickster_Mask": {
       "display_name": "Trickster Mask",
       "base_hp": 20,
@@ -172,8 +155,8 @@
       "resistances": {"physical": 15, "cold": 25},
       "tags": ["black", "undead"]
     },
-    "Boar": {
-      "display_name": "Boar",
+    "Dream_Boar": {
+      "display_name": "Dream Boar",
       "base_hp": 38,
       "base_mana": 0,
       "base_stamina": 45,
@@ -463,8 +446,8 @@
       "resistances": {"holy": 50, "air": 25},
       "tags": ["air", "spirit", "celestial"]
     },
-    "Bear": {
-      "display_name": "Bear",
+    "Mountain_Hermit": {
+      "display_name": "Mountain Hermit",
       "base_hp": 70,
       "base_mana": 0,
       "base_stamina": 60,
