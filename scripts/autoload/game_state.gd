@@ -337,12 +337,12 @@ func process_food_step(party_size: int, logistics_level: int, lowest_con: int) -
 
 		# Track starvation
 		steps_without_food += 1
-		# Grace period: base 10 + 2 per lowest CON in party
-		var grace: int = 10 + (lowest_con * 2)
+		# Grace period: base 50 + 10 per lowest CON in party
+		var grace: int = 50 + (lowest_con * 10)
 		if steps_without_food > grace:
 			is_starving = true
 			result.is_starving = true
-			result.starvation_damage_pct = 2.0  # 2% max HP per step
+			result.starvation_damage_pct = 0.4  # 0.4% max HP per step (same effective rate as old 2% with 5x slower ticks)
 			if steps_without_food == grace + 1:
 				starvation_started.emit()
 
