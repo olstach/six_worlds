@@ -464,6 +464,96 @@
           "one_time": false,
           "weight": 1,
           "tag": "shop"
+        },
+        {
+          "event_id": "the_pit",
+          "name": "The Pit",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "crystal_cave",
+          "name": "Crystal Cave",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "glass_mountain",
+          "name": "Glass Mountain",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "the_smoking_mirror",
+          "name": "The Smoking Mirror",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "cloud_palace",
+          "name": "The Cloud Palace",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "waterworks",
+          "name": "The Waterworks",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "snowcapped_hermitage",
+          "name": "Snow-Capped Hermitage",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "dark_cave",
+          "name": "Dark Cave",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "skygazing_gompa",
+          "name": "Skygazing Gompa",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "court_of_the_musician_prince",
+          "name": "The Court of the Musician Prince",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
         }
       ],
       "pickups": [
@@ -899,7 +989,7 @@
         {
           "name": "Frozen Offering",
           "icon": "treasure",
-          "message": "Someone left food for the shades. It's still edible \u2014 barely.",
+          "message": "Someone left food for the shades. It's still edible — barely.",
           "rewards": [
             {
               "type": "food",
@@ -1271,6 +1361,96 @@
           "one_time": false,
           "weight": 1,
           "tag": "shop"
+        },
+        {
+          "event_id": "the_pit",
+          "name": "The Pit",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "crystal_cave",
+          "name": "Crystal Cave",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "glass_mountain",
+          "name": "Glass Mountain",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "the_smoking_mirror",
+          "name": "The Smoking Mirror",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "cloud_palace",
+          "name": "The Cloud Palace",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "waterworks",
+          "name": "The Waterworks",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "snowcapped_hermitage",
+          "name": "Snow-Capped Hermitage",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "dark_cave",
+          "name": "Dark Cave",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "skygazing_gompa",
+          "name": "Skygazing Gompa",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "court_of_the_musician_prince",
+          "name": "The Court of the Musician Prince",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
         }
       ],
       "pickups": [
