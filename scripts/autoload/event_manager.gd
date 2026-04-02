@@ -595,24 +595,24 @@ func apply_outcome(outcome: Dictionary) -> void:
 		if "food" in cost:
 			var food_amount = _resolve_food_cost(cost.food)
 			if food_amount > 0:
-				GameState.consume_supplies("food", food_amount)
+				GameState.consume_supply("food", food_amount)
 				print("EventManager: Consumed %d food" % food_amount)
 		# food_percent: spend a percentage of current food stores (e.g. the_pit bribe)
 		if "food_percent" in cost:
 			var pct: float = float(cost.food_percent)
 			var current_food: int = GameState.get_supplies("food")
 			var food_amount: int = max(1, int(current_food * pct / 100.0))
-			GameState.consume_supplies("food", food_amount)
+			GameState.consume_supply("food", food_amount)
 			print("EventManager: Consumed %d food (%d%% of stores)" % [food_amount, int(pct)])
 		if "herbs" in cost:
 			var herbs_amount = _resolve_supply_cost(cost.herbs)
 			if herbs_amount > 0:
-				GameState.consume_supplies("herbs", herbs_amount)
+				GameState.consume_supply("herbs", herbs_amount)
 				print("EventManager: Consumed %d herbs" % herbs_amount)
 		if "reagents" in cost:
 			var reagents_amount = _resolve_supply_cost(cost.reagents)
 			if reagents_amount > 0:
-				GameState.consume_supplies("reagents", reagents_amount)
+				GameState.consume_supply("reagents", reagents_amount)
 				print("EventManager: Consumed %d reagents" % reagents_amount)
 
 	# Apply karma changes

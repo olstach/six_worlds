@@ -46,11 +46,11 @@ func get_all_definitions() -> Dictionary:
 func _calculate_spent_xp(character: Dictionary) -> int:
 	var total := 0
 	for attr in character.get("attributes", {}).keys():
-		var val: int = character.attributes[attr]
+		var val: int = character.attributes.get(attr, 10)
 		for v in range(10, val):
 			total += CharacterSystem.calculate_attribute_cost(v, 1)
 	for skill in character.get("skills", {}).keys():
-		var level: int = character.skills[skill]
+		var level: int = character.skills.get(skill, 0)
 		for l in range(1, level + 1):
 			if l < CharacterSystem.SKILL_COSTS.size():
 				total += CharacterSystem.SKILL_COSTS[l]

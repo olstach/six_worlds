@@ -2011,6 +2011,165 @@
 		"chance_to_lose_on_damage_received": 50
 	  },
 	  "description": "Crown of living crystal: major Focus and Awareness bonus. 50% chance to shatter and be lost whenever the wearer takes damage."
+	},
+	{
+	  "name": "Strength_Plus_2",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"strength_bonus"
+	  ],
+	  "bonus_amount": 2,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": ["dispel"],
+	  "description": "+2 Strength."
+	},
+	{
+	  "name": "Finesse_Plus_2",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"finesse_bonus"
+	  ],
+	  "bonus_amount": 2,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": ["dispel"],
+	  "description": "+2 Finesse."
+	},
+	{
+	  "name": "Focus_Plus_3",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"focus_bonus"
+	  ],
+	  "bonus_amount": 3,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": ["dispel"],
+	  "description": "+3 Focus."
+	},
+	{
+	  "name": "Awareness_Plus_3",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"awareness_bonus"
+	  ],
+	  "bonus_amount": 3,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": ["dispel"],
+	  "description": "+3 Awareness."
+	},
+	{
+	  "name": "Constitution_Minus_2",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
+		"constitution_penalty"
+	  ],
+	  "penalty_amount": 2,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": ["dispel", "cleanse"],
+	  "description": "-2 Constitution."
+	},
+	{
+	  "name": "Focus_Minus_2",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
+		"focus_penalty"
+	  ],
+	  "penalty_amount": 2,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": ["dispel", "cleanse"],
+	  "description": "-2 Focus."
+	},
+	{
+	  "name": "Initiative_Debuff",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
+		"initiative_penalty"
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": ["dispel", "cleanse"],
+	  "description": "Reduced initiative, acts later in turn order."
+	},
+	{
+	  "name": "Cleansed",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"remove_all_debuffs",
+		"debuff_immunity"
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "dispellable": false,
+	  "dispel_methods": [],
+	  "description": "All debuffs removed. Immune to new debuffs for 1 turn."
+	},
+	{
+	  "name": "Mental_Immunity",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"immune_to_charm",
+		"immune_to_fear",
+		"immune_to_confusion"
+	  ],
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": ["dispel"],
+	  "description": "Immune to charm, fear, and confusion effects."
+	},
+	{
+	  "name": "Fire_Vulnerable_50",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
+		"fire_vulnerability"
+	  ],
+	  "vulnerability_pct": 50,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": ["dispel", "cleanse"],
+	  "description": "50% extra damage from fire attacks."
+	},
+	{
+	  "name": "Marked_for_Death",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [
+		"damage_taken_increase",
+		"crit_vulnerability"
+	  ],
+	  "damage_increase_pct": 25,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": ["dispel", "cleanse"],
+	  "description": "Marked target takes 25% more damage and is more vulnerable to critical hits."
+	},
+	{
+	  "name": "Rainbow_Cloak",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [
+		"all_element_resistance",
+		"dodge_bonus"
+	  ],
+	  "resistance_pct": 15,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": ["dispel"],
+	  "description": "Shimmering cloak of prismatic light grants resistance to all elements and a dodge bonus."
 	}
   ]
 }

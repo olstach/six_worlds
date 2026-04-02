@@ -47,11 +47,11 @@
       "spells": [
         "firebolt",
         "fireball",
-        "immolate",
+        "hellfire",
         "burning_weapon",
         "voidbolt",
-        "vampiric_touch",
-        "poison_dart",
+        "life_drain",
+        "poison_sting",
         "gloom",
         "curse"
       ],
@@ -89,7 +89,7 @@
           "awareness"
         ],
         "skills": [
-          "white",
+          "white_magic",
           "sorcery",
           "yoga"
         ],
@@ -229,7 +229,7 @@
       },
       "spells": [
         "firebolt",
-        "splash",
+        "ice_bolt",
         "shocking_grasp",
         "stone_spike",
         "lesser_heal",
@@ -1039,7 +1039,7 @@
         "gloom",
         "poison_sting",
         "bark_skin",
-        "splash"
+        "ice_bolt"
       ],
       "training": {
         "attributes": [
