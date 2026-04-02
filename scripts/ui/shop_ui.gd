@@ -188,17 +188,8 @@ func _create_item_slot(item_id: String, quantity: int, is_shop_item: bool) -> vo
 	slot.custom_minimum_size = ITEM_SLOT_SIZE
 
 	# Style the slot
-	var style = StyleBoxFlat.new()
+	var style = UIStyle.make_stylebox(Color(0.4, 0.35, 0.25), 2, 4, 0)
 	style.bg_color = Color(0.15, 0.12, 0.2, 0.9)
-	style.border_width_left = 2
-	style.border_width_right = 2
-	style.border_width_top = 2
-	style.border_width_bottom = 2
-	style.border_color = Color(0.4, 0.35, 0.25, 1)
-	style.corner_radius_top_left = 4
-	style.corner_radius_top_right = 4
-	style.corner_radius_bottom_right = 4
-	style.corner_radius_bottom_left = 4
 	slot.add_theme_stylebox_override("panel", style)
 
 	var margin = MarginContainer.new()
@@ -300,17 +291,8 @@ func _create_spell_slot(spell_id: String) -> void:
 	slot.custom_minimum_size = Vector2(200, 100)
 
 	# Style
-	var style = StyleBoxFlat.new()
+	var style = UIStyle.make_stylebox(Color(0.3, 0.25, 0.5), 2, 4, 0)
 	style.bg_color = Color(0.12, 0.1, 0.18, 0.9)
-	style.border_width_left = 2
-	style.border_width_right = 2
-	style.border_width_top = 2
-	style.border_width_bottom = 2
-	style.border_color = Color(0.3, 0.25, 0.5, 1)
-	style.corner_radius_top_left = 4
-	style.corner_radius_top_right = 4
-	style.corner_radius_bottom_right = 4
-	style.corner_radius_bottom_left = 4
 	slot.add_theme_stylebox_override("panel", style)
 
 	var margin = MarginContainer.new()
@@ -693,17 +675,8 @@ func _create_companion_panel(companion_id: String, def: Dictionary) -> void:
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(0, 140)
 
-	var style = StyleBoxFlat.new()
+	var style = UIStyle.make_stylebox(Color(0.4, 0.3, 0.55), 2, 4, 0)
 	style.bg_color = Color(0.12, 0.1, 0.18, 0.9)
-	style.border_width_left = 2
-	style.border_width_right = 2
-	style.border_width_top = 2
-	style.border_width_bottom = 2
-	style.border_color = Color(0.4, 0.3, 0.55, 1)
-	style.corner_radius_top_left = 4
-	style.corner_radius_top_right = 4
-	style.corner_radius_bottom_right = 4
-	style.corner_radius_bottom_left = 4
 	panel.add_theme_stylebox_override("panel", style)
 
 	var margin = MarginContainer.new()

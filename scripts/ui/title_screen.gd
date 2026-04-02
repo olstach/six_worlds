@@ -145,12 +145,8 @@ func _build_load_panel() -> void:
 
 	_load_panel = PanelContainer.new()
 	_load_panel.custom_minimum_size = Vector2(480, 350)
-	var style = StyleBoxFlat.new()
+	var style = UIStyle.make_stylebox(PANEL_BORDER, 2, 10, 24)
 	style.bg_color = PANEL_BG
-	style.border_color = PANEL_BORDER
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(10)
-	style.set_content_margin_all(24)
 	_load_panel.add_theme_stylebox_override("panel", style)
 	center.add_child(_load_panel)
 
@@ -209,28 +205,14 @@ func _make_slot_button(slot: int) -> Button:
 		btn.add_theme_color_override("font_color", Color.WHITE)
 
 	# Style
-	var normal = StyleBoxFlat.new()
+	var normal = UIStyle.make_stylebox(BTN_BORDER, 1, 6, 8)
 	normal.bg_color = BTN_BG
-	normal.border_color = BTN_BORDER
-	normal.set_border_width_all(1)
-	normal.set_corner_radius_all(6)
-	normal.set_content_margin_all(8)
 	btn.add_theme_stylebox_override("normal", normal)
-
-	var hover = StyleBoxFlat.new()
+	var hover = UIStyle.make_stylebox(BTN_HOVER_BORDER, 1, 6, 8)
 	hover.bg_color = BTN_HOVER_BG
-	hover.border_color = BTN_HOVER_BORDER
-	hover.set_border_width_all(1)
-	hover.set_corner_radius_all(6)
-	hover.set_content_margin_all(8)
 	btn.add_theme_stylebox_override("hover", hover)
-
-	var disabled_style = StyleBoxFlat.new()
+	var disabled_style = UIStyle.make_stylebox(Color(0.2, 0.18, 0.15), 1, 6, 8)
 	disabled_style.bg_color = Color(0.06, 0.04, 0.08)
-	disabled_style.border_color = Color(0.2, 0.18, 0.15)
-	disabled_style.set_border_width_all(1)
-	disabled_style.set_corner_radius_all(6)
-	disabled_style.set_content_margin_all(8)
 	btn.add_theme_stylebox_override("disabled", disabled_style)
 
 	btn.pressed.connect(_on_slot_pressed.bind(slot))
@@ -244,20 +226,11 @@ func _make_button(text: String, min_size: Vector2, font_size: int = 18) -> Butto
 	btn.custom_minimum_size = min_size
 	btn.add_theme_font_size_override("font_size", font_size)
 
-	var normal = StyleBoxFlat.new()
+	var normal = UIStyle.make_stylebox(BTN_BORDER, 2, 6, 8)
 	normal.bg_color = BTN_BG
-	normal.border_color = BTN_BORDER
-	normal.set_border_width_all(2)
-	normal.set_corner_radius_all(6)
-	normal.set_content_margin_all(8)
 	btn.add_theme_stylebox_override("normal", normal)
-
-	var hover = StyleBoxFlat.new()
+	var hover = UIStyle.make_stylebox(BTN_HOVER_BORDER, 2, 6, 8)
 	hover.bg_color = BTN_HOVER_BG
-	hover.border_color = BTN_HOVER_BORDER
-	hover.set_border_width_all(2)
-	hover.set_corner_radius_all(6)
-	hover.set_content_margin_all(8)
 	btn.add_theme_stylebox_override("hover", hover)
 
 	return btn

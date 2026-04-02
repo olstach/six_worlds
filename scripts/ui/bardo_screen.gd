@@ -73,12 +73,7 @@ func _build_ui() -> void:
 	# Main panel
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(600, 500)
-	var panel_style = StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.05, 0.03, 0.07)
-	panel_style.border_color = Color(0.4, 0.25, 0.5)
-	panel_style.set_border_width_all(2)
-	panel_style.set_corner_radius_all(10)
-	panel_style.set_content_margin_all(30)
+	var panel_style = UIStyle.make_stylebox(Color(0.4, 0.25, 0.5), 2, 10, 30, 0.88)
 	panel.add_theme_stylebox_override("panel", panel_style)
 	center.add_child(panel)
 
@@ -168,21 +163,7 @@ func _build_ui() -> void:
 	_begin_btn.add_theme_font_size_override("font_size", 16)
 	_begin_btn.visible = false
 
-	var btn_style = StyleBoxFlat.new()
-	btn_style.bg_color = Color(0.15, 0.1, 0.2)
-	btn_style.border_color = Color(0.5, 0.35, 0.6)
-	btn_style.set_border_width_all(2)
-	btn_style.set_corner_radius_all(6)
-	btn_style.set_content_margin_all(8)
-	_begin_btn.add_theme_stylebox_override("normal", btn_style)
-
-	var btn_hover = StyleBoxFlat.new()
-	btn_hover.bg_color = Color(0.25, 0.15, 0.3)
-	btn_hover.border_color = Color(0.7, 0.5, 0.8)
-	btn_hover.set_border_width_all(2)
-	btn_hover.set_corner_radius_all(6)
-	btn_hover.set_content_margin_all(8)
-	_begin_btn.add_theme_stylebox_override("hover", btn_hover)
+	UIStyle.apply_button_style(_begin_btn, Color(0.5, 0.35, 0.6), 2, 6, 8)
 
 	_begin_btn.pressed.connect(_on_begin_new_life)
 	btn_container.add_child(_begin_btn)

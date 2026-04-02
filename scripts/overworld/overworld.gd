@@ -19,6 +19,7 @@ extends Control
 @onready var party_button: Button = %PartyButton
 @onready var spellbook_button: Button = %SpellbookButton
 @onready var crafting_button: Button = %CraftingButton
+@onready var alchemy_toggle: CheckButton = %AlchemyToggle
 @onready var journal_button: Button = %JournalButton
 @onready var toast_label: Label = %ToastLabel
 
@@ -161,6 +162,8 @@ func _ready() -> void:
 	party_button.pressed.connect(func(): _open_char_sheet_to_tab(2))
 	spellbook_button.pressed.connect(func(): _open_char_sheet_to_tab(3))
 	crafting_button.pressed.connect(func(): _open_char_sheet_to_tab(4))
+	alchemy_toggle.button_pressed = GameState.alchemy_passive_enabled
+	alchemy_toggle.toggled.connect(func(on: bool): GameState.set_alchemy_passive(on))
 	journal_button.pressed.connect(func(): _open_char_sheet_to_tab(5))
 	char_sheet.visibility_changed.connect(_on_char_sheet_visibility_changed)
 	char_sheet.overworld_spell_cast.connect(_on_overworld_spell_cast)
@@ -910,12 +913,7 @@ func _build_main_menu_panel() -> void:
 
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(320, 0)
-	var panel_style = StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.07, 0.05, 0.1)
-	panel_style.border_color = Color(0.45, 0.3, 0.55)
-	panel_style.set_border_width_all(2)
-	panel_style.set_corner_radius_all(10)
-	panel_style.set_content_margin_all(28)
+	var panel_style = UIStyle.make_stylebox(Color(0.45, 0.3, 0.55), 2, 10, 28, 0.85)
 	panel.add_theme_stylebox_override("panel", panel_style)
 	center.add_child(panel)
 	_esc_main_panel = panel
@@ -937,13 +935,8 @@ func _build_main_menu_panel() -> void:
 	vbox.add_child(sep)
 
 	# Helper to build styled buttons
-	var btn_style_base = StyleBoxFlat.new()
+	var btn_style_base = UIStyle.make_stylebox(Color(0.4, 0.28, 0.52), 1, 5, 10)
 	btn_style_base.bg_color = Color(0.12, 0.08, 0.18)
-	btn_style_base.border_color = Color(0.4, 0.28, 0.52)
-	btn_style_base.set_border_width_all(1)
-	btn_style_base.set_corner_radius_all(5)
-	btn_style_base.set_content_margin_all(10)
-
 	var btn_hover_style = btn_style_base.duplicate()
 	btn_hover_style.bg_color = Color(0.2, 0.13, 0.28)
 	btn_hover_style.border_color = Color(0.6, 0.45, 0.75)
@@ -1028,15 +1021,8 @@ func _build_log_panel() -> void:
 	_log_panel.custom_minimum_size = Vector2(320, 240)
 	_log_panel.position = Vector2(-328, -292)
 	_log_panel.visible = false
-	var lp_style := StyleBoxFlat.new()
+	var lp_style := UIStyle.make_stylebox(Color(0.30, 0.25, 0.15), 2, 0, 8)
 	lp_style.bg_color = Color(0.05, 0.04, 0.04, 0.90)
-	lp_style.border_width_left = 2
-	lp_style.border_width_right = 2
-	lp_style.border_width_top = 2
-	lp_style.border_width_bottom = 2
-	lp_style.border_color = Color(0.30, 0.25, 0.15)
-	lp_style.content_margin_left = 8
-	lp_style.content_margin_right = 8
 	lp_style.content_margin_top = 6
 	lp_style.content_margin_bottom = 6
 	_log_panel.add_theme_stylebox_override("panel", lp_style)
@@ -1154,12 +1140,7 @@ func _build_settings_panel() -> void:
 
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(320, 0)
-	var panel_style = StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.07, 0.05, 0.1)
-	panel_style.border_color = Color(0.45, 0.3, 0.55)
-	panel_style.set_border_width_all(2)
-	panel_style.set_corner_radius_all(10)
-	panel_style.set_content_margin_all(28)
+	var panel_style = UIStyle.make_stylebox(Color(0.45, 0.3, 0.55), 2, 10, 28, 0.85)
 	panel.add_theme_stylebox_override("panel", panel_style)
 	center.add_child(panel)
 
@@ -1217,22 +1198,11 @@ func _build_settings_panel() -> void:
 	vbox.add_child(HSeparator.new())
 
 	# Back button
-	var btn_style = StyleBoxFlat.new()
-	btn_style.bg_color = Color(0.12, 0.08, 0.18)
-	btn_style.border_color = Color(0.4, 0.28, 0.52)
-	btn_style.set_border_width_all(1)
-	btn_style.set_corner_radius_all(5)
-	btn_style.set_content_margin_all(10)
-	var btn_hover = btn_style.duplicate()
-	btn_hover.bg_color = Color(0.2, 0.13, 0.28)
-	btn_hover.border_color = Color(0.6, 0.45, 0.75)
-
 	var back_btn = Button.new()
 	back_btn.text = "← Back"
 	back_btn.custom_minimum_size = Vector2(0, 44)
 	back_btn.add_theme_font_size_override("font_size", 15)
-	back_btn.add_theme_stylebox_override("normal", btn_style)
-	back_btn.add_theme_stylebox_override("hover", btn_hover)
+	UIStyle.apply_button_style(back_btn, Color(0.4, 0.28, 0.52), 1, 5, 10)
 	back_btn.add_theme_color_override("font_color", Color(0.7, 0.9, 0.7))
 	back_btn.add_theme_color_override("font_hover_color", Color(0.7, 0.9, 0.7))
 	back_btn.pressed.connect(_on_settings_back)

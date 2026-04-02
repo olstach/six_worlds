@@ -130,29 +130,7 @@ func _create_service_button(service: Dictionary) -> void:
 	button.text = icon + "  " + label
 	button.custom_minimum_size = Vector2(0, 60)
 
-	var color = Color(0.65, 0.5, 0.12)  # Warm gold
-	var style_normal = StyleBoxFlat.new()
-	style_normal.bg_color = color.darkened(0.55)
-	style_normal.border_width_left = 4
-	style_normal.border_width_right = 4
-	style_normal.border_width_top = 4
-	style_normal.border_width_bottom = 4
-	style_normal.border_color = color
-	style_normal.corner_radius_top_left = 8
-	style_normal.corner_radius_top_right = 8
-	style_normal.corner_radius_bottom_left = 8
-	style_normal.corner_radius_bottom_right = 8
-	style_normal.content_margin_left = 16
-	style_normal.content_margin_right = 16
-	style_normal.content_margin_top = 12
-	style_normal.content_margin_bottom = 12
-
-	var style_hover = style_normal.duplicate()
-	style_hover.bg_color = color.darkened(0.25)
-	style_hover.border_color = color.lightened(0.2)
-
-	button.add_theme_stylebox_override("normal", style_normal)
-	button.add_theme_stylebox_override("hover", style_hover)
+	UIStyle.apply_button_style(button, Color(0.65, 0.5, 0.12), 4, 8, 12)
 	button.add_theme_color_override("font_color", Color(0.95, 0.85, 0.55))
 	button.add_theme_color_override("font_hover_color", Color.WHITE)
 	button.add_theme_font_size_override("font_size", 20)
@@ -171,28 +149,7 @@ func _create_location_leave_button() -> void:
 	button.text = "Leave"
 	button.custom_minimum_size = Vector2(0, 50)
 
-	var color = Color(0.4, 0.4, 0.5)
-	var style_normal = StyleBoxFlat.new()
-	style_normal.bg_color = color.darkened(0.6)
-	style_normal.border_width_left = 4
-	style_normal.border_width_right = 4
-	style_normal.border_width_top = 4
-	style_normal.border_width_bottom = 4
-	style_normal.border_color = color
-	style_normal.corner_radius_top_left = 8
-	style_normal.corner_radius_top_right = 8
-	style_normal.corner_radius_bottom_left = 8
-	style_normal.corner_radius_bottom_right = 8
-	style_normal.content_margin_left = 16
-	style_normal.content_margin_right = 16
-	style_normal.content_margin_top = 12
-	style_normal.content_margin_bottom = 12
-
-	var style_hover = style_normal.duplicate()
-	style_hover.bg_color = color.darkened(0.35)
-
-	button.add_theme_stylebox_override("normal", style_normal)
-	button.add_theme_stylebox_override("hover", style_hover)
+	UIStyle.apply_button_style(button, Color(0.4, 0.4, 0.5), 4, 8, 12)
 	button.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
 	button.add_theme_color_override("font_hover_color", Color.WHITE)
 
@@ -240,28 +197,7 @@ func _create_leave_button() -> void:
 	button.text = "Leave"
 	button.custom_minimum_size = Vector2(0, 60)
 
-	var color = Color(0.4, 0.4, 0.5)
-	var style_normal = StyleBoxFlat.new()
-	style_normal.bg_color = color.darkened(0.6)
-	style_normal.border_width_left = 4
-	style_normal.border_width_right = 4
-	style_normal.border_width_top = 4
-	style_normal.border_width_bottom = 4
-	style_normal.border_color = color
-	style_normal.corner_radius_top_left = 8
-	style_normal.corner_radius_top_right = 8
-	style_normal.corner_radius_bottom_left = 8
-	style_normal.corner_radius_bottom_right = 8
-	style_normal.content_margin_left = 16
-	style_normal.content_margin_right = 16
-	style_normal.content_margin_top = 12
-	style_normal.content_margin_bottom = 12
-
-	var style_hover = style_normal.duplicate()
-	style_hover.bg_color = color.darkened(0.4)
-
-	button.add_theme_stylebox_override("normal", style_normal)
-	button.add_theme_stylebox_override("hover", style_hover)
+	UIStyle.apply_button_style(button, Color(0.4, 0.4, 0.5), 4, 8, 12)
 	button.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
 	button.add_theme_color_override("font_hover_color", Color.WHITE)
 
@@ -315,37 +251,9 @@ func create_choice_button(choice: Dictionary, availability: Dictionary) -> void:
 	
 	# Style based on choice type
 	var color = EventManager.CHOICE_COLORS[choice.type]
-	
-	# Create custom style
-	var style_normal = StyleBoxFlat.new()
-	style_normal.bg_color = color.darkened(0.6)
-	style_normal.border_width_left = 4
-	style_normal.border_width_right = 4
-	style_normal.border_width_top = 4
-	style_normal.border_width_bottom = 4
-	style_normal.border_color = color
-	style_normal.corner_radius_top_left = 8
-	style_normal.corner_radius_top_right = 8
-	style_normal.corner_radius_bottom_left = 8
-	style_normal.corner_radius_bottom_right = 8
-	style_normal.content_margin_left = 16
-	style_normal.content_margin_right = 16
-	style_normal.content_margin_top = 12
-	style_normal.content_margin_bottom = 12
-	
-	var style_hover = style_normal.duplicate()
-	style_hover.bg_color = color.darkened(0.4)
-	
-	var style_pressed = style_normal.duplicate()
-	style_pressed.bg_color = color.darkened(0.2)
-	
-	var style_disabled = style_normal.duplicate()
+	UIStyle.apply_button_style(button, color, 4, 8, 12)
+	var style_disabled = UIStyle.make_stylebox(Color(0.4, 0.4, 0.4), 4, 8, 12, 0.5)
 	style_disabled.bg_color = Color(0.2, 0.2, 0.2)
-	style_disabled.border_color = Color(0.4, 0.4, 0.4)
-	
-	button.add_theme_stylebox_override("normal", style_normal)
-	button.add_theme_stylebox_override("hover", style_hover)
-	button.add_theme_stylebox_override("pressed", style_pressed)
 	button.add_theme_stylebox_override("disabled", style_disabled)
 	
 	# Set font color
