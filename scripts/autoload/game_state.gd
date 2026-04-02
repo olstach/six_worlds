@@ -67,6 +67,10 @@ var used_event_choices: Dictionary = {}
 # Format: { object_id: [spell_id, ...] }
 var guild_spell_lists: Dictionary = {}
 
+# Tracks which location events have been visited (for first-visit hooks).
+# Format: { "event_id": true, ... }
+var visited_locations: Dictionary = {}
+
 # Persistent world-state flags used by event chains and quests.
 # Keys are strings; values can be bool, int, or string.
 # Format: { "flag_key": value, ... }
@@ -174,6 +178,7 @@ func start_new_run(spawn_world: String) -> void:
 	food = 50
 	steps_without_food = 0
 	is_starving = false
+	visited_locations = {}
 
 ## Get info about current world
 func get_current_world_info() -> Dictionary:
@@ -426,6 +431,15 @@ func get_flag(key: String, default_value = false) -> Variant:
 	return flags.get(key, default_value)
 
 
+## Check if this is the first time a location event has been visited.
+func is_first_visit(event_id: String) -> bool:
+	return not visited_locations.has(event_id)
+
+## Mark a location as visited.
+func mark_location_visited(event_id: String) -> void:
+	visited_locations[event_id] = true
+
+
 ## Register a new quest. Does nothing if a quest with this id already exists.
 func register_quest(quest: Dictionary) -> void:
 	var quest_id: String = quest.get("id", "")
@@ -593,6 +607,7 @@ func get_save_data() -> Dictionary:
 		"boss_defeated": boss_states,
 		"used_event_choices": used_event_choices.duplicate(true),
 		"guild_spell_lists": guild_spell_lists.duplicate(true),
+		"visited_locations": visited_locations.duplicate(true),
 		"flags": flags.duplicate(true),
 		"active_quests": active_quests.duplicate(true),
 		"completed_quest_ids": completed_quest_ids.duplicate(),
@@ -614,6 +629,7 @@ func load_save_data(data: Dictionary) -> void:
 	is_starving = data.get("is_starving", false)
 	used_event_choices = data.get("used_event_choices", {})
 	guild_spell_lists = data.get("guild_spell_lists", {})
+	visited_locations = data.get("visited_locations", {})
 	flags = data.get("flags", {})
 	active_quests = []
 	for q in data.get("active_quests", []):

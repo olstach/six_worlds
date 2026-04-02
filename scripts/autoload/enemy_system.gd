@@ -320,7 +320,7 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	var equipped_weapon: Dictionary
 	if bare_handed:
 		equipped_weapon = {
-			"name": archetype.get("name", "Enemy") + "'s Claws",
+			"name": "Natural Claws",
 			"type": "unarmed",
 			"damage_type": "crushing",
 			"stats": {"damage": 2, "accuracy": 4, "range": 1}
@@ -334,7 +334,7 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 		else:
 			# Fallback if ItemSystem unavailable
 			equipped_weapon = {
-				"name": archetype.get("name", "Enemy") + "'s Weapon",
+				"name": "Crude " + weapon_type.capitalize(),
 				"type": weapon_type,
 				"damage_type": _get_weapon_damage_type(weapon_type),
 				"stats": {

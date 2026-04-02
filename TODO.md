@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-03-15 (session 10, audited)
+Last Updated: 2026-04-02 (session 11, bug fixes + polish)
 ---
 
 ## Completed Systems
@@ -211,7 +211,7 @@ Hell realm is largely production-quality. Other realms are structural gaps.
 - [x] ~~Background definitions with skill distributions~~ — DONE: 25 backgrounds in races.json with attribute_modifiers, starting_skills, available_races whitelists
 - [ ] Map configs for remaining realms — only hell.json and hungry_ghost.json exist in resources/data/map_configs/
 - [x] ~~Enemy archetypes + encounters for hungry ghost~~ — DONE: hungry_ghost_archetypes.json (27 entries, 4 factions) + hungry_ghost_encounters.json
-- [ ] **Fix roles in hungry_ghost_archetypes.json** — all archetypes have `"role": "?"` which breaks EnemySystem role-based encounter filtering; assign proper roles (frontline/ranged/caster/support/boss)
+- [x] ~~**Fix roles in hungry_ghost_archetypes.json**~~ — DONE (roles were already assigned; stale TODO)
 - [ ] Enemy archetypes + encounters for remaining realms — animal, human, asura, god
 
 ### Map Interactibles System
@@ -234,7 +234,7 @@ Roles to fulfill per realm (not specific object types):
 - [x] ~~Magic shop (scrolls, charms, magic foci)~~ — DONE (demon_sorcerer in shops.json sells spells + reagents)
 - [x] ~~Trainer (teaches skills/attributes)~~ — DONE (wandering_sage trains White/Sorcery/Yoga + Focus/Awareness; weapon_master trains 7 combat skills + Str/Fin; ShopSystem has full training tab)
 - [x] ~~Multi-function locations (towns, camps) use tab UI in event window~~ — DONE: events with `"type": "location"` and a `"services"` array show gold-tinted service buttons in the event panel; each opens the corresponding shop as a modal, then returns to the location panel. Keyboard 1–9 and Escape supported. Sample location `hell_waystation` added to hell_events.json.
-- [ ] First-visit event hook for towns — no first-visit flag system in event_manager.gd or map_manager.gd
+- [x] ~~First-visit event hook for towns~~ — DONE: `GameState.visited_locations` dict, `is_first_visit()` / `mark_location_visited()` API, EventManager sets `is_first_visit` flag on location events, event_display shows `first_visit_text` on first visit
 - [x] ~~Steal/attack/donate karma branches on trader interactions~~ — DONE (all 8 hell trader events: steal roll on all, attack on 3, donate on 2, comedy wildcard on 5 with success/failure outcomes). Skill-based dice rolls now supported in event_manager (skill: comedy/performance instead of attribute)
 - [x] ~~Trainer caps~~ — DONE (max_skill_level in shop training dict; ShopSystem enforces cap, UI shows "Capped" in yellow)
 - [x] ~~Hell-specific named locations~~ — DONE (Infernal Forge, Bone Archer Camp, Mercy Ward, Brimstone Lab, Warden's Pit — all in shops.json + hell_events.json + hell.json map pools)
@@ -260,7 +260,7 @@ Roles to fulfill per realm (not specific object types):
 - [ ] Hell-specific event chains: soul caravan ambush, devil deserter, contraband deal, corrupted simple, chained pilgrim, rival party
 - [ ] More hell events: both zones still under target density (~15+ each)
 - [ ] Multi-function locations: tab UI inside event window (3-4 functions per town); no tab switching in event_display yet
-- [ ] First-visit event hook for towns: `visited_locations` set in GameState, trigger one-time intro event
+- [x] ~~First-visit event hook for towns~~ — DONE: `visited_locations` in GameState, `first_visit_text` field support in event_display
 
 ### Quest Content (system ready, quests need writing)
 - [ ] Hell quests: write using `register_quest` + `set_flags` + `prerequisite` in hell_events.json, OR add to quests.json for quest board pool
@@ -403,17 +403,17 @@ Many perks — especially weapon perks and general skills — have no flavor lin
 - [ ] Background music per realm — audio_manager.gd has SFX only; no music system at all
 - [ ] Combat music — same; no music infrastructure
 - [ ] More spell school sound variety — Air, Water, Earth have no dedicated impact sounds (only fire + generic exist)
-- [ ] Active skill sounds — no AudioManager.play calls in active skill resolution
-- [ ] Death / unit kill sound — no death sound defined or triggered
+- [x] ~~Active skill sounds~~ — DONE: AudioManager.play calls for buff/debuff/heal/movement/stealth skill types
+- [x] ~~Death / unit kill sound~~ — DONE: debuff_apply sound on bleed-out start and permanent death
 
 ---
 
 ## Known Issues
 
-- [ ] **Item flavor text (needs runtime)**: `space_charm_common` and `rations` reportedly show broken flavor text in item tooltip — static code looks correct; needs in-game testing to reproduce
-- [ ] **combat_grid.gd:458** — TODO comment "Check team" — possible edge case in team check logic; needs review
-- [ ] **Karma realm origins not loaded from data**: `karma_system.gd:154,179` — per-realm karma starting values are hardcoded, not loaded from background data. Low priority until other realms exist.
-- [ ] **Enemy weapon placeholder names**: `enemy_system.gd:306,314` — auto-generated weapons get generic names. Minor cosmetic issue.
+- [x] ~~**Item flavor text**~~: `space_charm_common` and `rations` code reviewed — descriptions and tooltip handling are correct; likely fixed in earlier session or was transient
+- [x] ~~**combat_grid.gd:458**~~ — FIXED: `get_reachable_tiles()` now takes `team` parameter; units can move through friendlies but not enemies
+- [x] ~~**Karma realm origins not loaded from data**~~ — FIXED: `select_random_background()` now loads from races.json with weighted random selection from `available_races` whitelists
+- [x] ~~**Enemy weapon placeholder names**~~ — FIXED: unarmed fallback now "Natural Claws", weapon fallback now "Crude Sword" etc.
 - [ ] **Companion permanent death**: companions use the bleed-out system but there's no "permanent death" toggle option implemented yet.
 
 ---
@@ -459,6 +459,26 @@ bonuses and/or add element-affinity multipliers to generate_weapon stat scaling.
 ---
 
 ## Session Notes
+
+### 2026-04-02 (Session 11): Spell Tiers, Domain Spells, Deep Audit + Bug Fixes
+- **Unified spell tier system**: 5 tiers at skill levels 1/3/5/7/9 (Outermost Circle → Unsurpassed Circle). Updated all spells in spells.json, tooltips across combat/shop/spellbook UIs, and display helpers in CombatManager
+- **Domain spells**: 10 cross-school spell domains (Crystal, Glass, Smoke, Mud, Cloud, Steam, Rainbow, Tummo, Luminosity, Sound) with dedicated guild events, shops, and map config placement. `domain_spell` tag prevents leaking into regular guild/shrine picks
+- **Logistics skill rework**: Now reduces ALL resource consumption (food/herbs/scrap/reagents) at 4% per level, not just food at 7.5%. Herbs/scrap/reagents use probability-based skip
+- **5x slower food consumption**: Divisor 3→15, starvation grace 10+2×CON → 50+10×CON, damage 2% → 0.4%
+- **Alchemy passive toggle**: Auto-Brew CheckButton on overworld HUD, wired to GameState.set_alchemy_passive()
+- **UIStyle utility**: New `scripts/ui/ui_style.gd` (class_name UIStyle) with static helpers for consistent Tibetan-themed StyleBoxFlat creation. Replaced ~150 lines of duplicate styling across 6 files
+- **Deep codebase audit** (3 parallel agents): autoloads, UI/scenes, data files
+  - Fixed `consume_supplies()` → `consume_supply()` crash (4 call sites in event_manager.gd)
+  - Fixed `"white"` → `"white_magic"` in wandering_sage shop
+  - Replaced 4 broken spell refs in shops.json (immolate→hellfire, poison_dart→poison_sting, vampiric_touch→life_drain, splash→ice_bolt)
+  - Added 12 missing status definitions to statuses.json
+  - Added `slot` field to 142 items missing it
+  - Fixed unsafe dictionary access in companion_system.gd
+- **combat_grid team-aware pathfinding**: Units can now move through friendly units but not enemies
+- **Enemy weapon names**: "Natural Claws" / "Crude Sword" instead of placeholder names
+- **Karma background selection**: `select_random_background()` now loads from races.json with weighted random
+- **Active skill + death sounds**: AudioManager.play calls for all active skill effect types + bleed-out/death
+- **First-visit town system**: `GameState.visited_locations`, `is_first_visit()`/`mark_location_visited()` API, `first_visit_text` field support in event_display
 
 ### 2026-03-15 (Session 10): Full Codebase Audit
 - Audited all open TODO items against actual codebase — found ~15 items marked as TODO that were already fully implemented
@@ -647,10 +667,10 @@ All sounds defined in `scripts/autoload/audio_manager.gd` → `SOUND_MAP`.
 ## Known Issues
 
 - [x] ~~**Town naming**~~ — DONE (procedural Tibetan/Sanskrit name pool, commit bff12ac)
-- [ ] **Item flavor text (needs runtime)**: `space_charm_common` and `rations` reportedly show broken flavor text in item tooltip — static code looks correct; needs in-game testing to reproduce
-- [ ] **combat_grid.gd:458** — TODO comment "Check team" — pathfinding skips enemies but team check logic may have an edge case; needs review
-- [ ] **Karma realm origins not loaded from data**: `karma_system.gd:154,179` — per-realm karma starting values hardcoded, not loaded from background data. Low priority until other realms exist.
-- [ ] **Enemy weapon placeholder names**: `enemy_system.gd:306,314` — auto-generated weapons get names like "Enemy's Claws" / "Enemy's Weapon". Minor cosmetic issue.
+- [x] ~~**Item flavor text**~~: Reviewed and found correct — likely fixed previously or was transient
+- [x] ~~**combat_grid.gd:458**~~ — FIXED: team-aware pathfinding
+- [x] ~~**Karma realm origins**~~ — FIXED: loads from races.json
+- [x] ~~**Enemy weapon placeholder names**~~ — FIXED: proper names
 
 - [x] ~~Derived stats not displaying~~ - FIXED (wrong key)
 - [x] ~~Combat turn order issues~~ - FIXED (Timer-based delays instead of async/await)

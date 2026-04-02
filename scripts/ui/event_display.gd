@@ -105,7 +105,11 @@ func display_location() -> void:
 		child.queue_free()
 
 	title_label.text = current_event.get("title", "Location")
-	description_label.text = current_event.get("text", current_event.get("description", ""))
+	# Show first-visit intro text if available, otherwise normal description
+	if current_event.get("is_first_visit", false) and current_event.has("first_visit_text"):
+		description_label.text = current_event.get("first_visit_text", "")
+	else:
+		description_label.text = current_event.get("text", current_event.get("description", ""))
 
 	# Relabel the prompt to show available services
 	var choices_label = $EventPanel/MarginContainer/VBoxContainer/ChoicesLabel

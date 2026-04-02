@@ -23,6 +23,9 @@ var karma_scores: Dictionary = {
 # Karma thresholds for significant shifts
 const KARMA_THRESHOLD: int = 100
 
+# Cached background data from races.json (loaded on first use)
+var _background_cache: Dictionary = {}
+
 # Race pools for each realm
 const REALM_RACES: Dictionary = {
 	"hell": ["red_devil", "blue_devil", "green_devil", "yellow_devil", "white_devil", "black_devil"],
@@ -159,18 +162,40 @@ func reincarnate() -> Dictionary:
 		"background": target_background
 	}
 
-## Select random background appropriate for race
+## Select random background appropriate for race, weighted by background data.
+## Loads from races.json — backgrounds with an empty available_races list are universal;
+## otherwise the race must be in the whitelist.
 func select_random_background(race: String) -> String:
-	# TODO: Load from background data files
-	# For now, simple examples
-	var backgrounds = {
-		"red_devil": ["warrior", "berserker", "guard"],
-		"human": ["wanderer", "scholar", "merchant", "monk", "noble"],
-		"naga": ["diplomat", "guardian", "scholar"],
-	}
-	
-	var options = backgrounds.get(race, ["wanderer"])
-	return options[randi() % options.size()]
+	if _background_cache.is_empty():
+		var file = FileAccess.open("res://resources/data/races.json", FileAccess.READ)
+		if file:
+			var json = JSON.new()
+			if json.parse(file.get_as_text()) == OK:
+				_background_cache = json.get_data().get("backgrounds", {})
+	# Build weighted pool of backgrounds available for this race
+	var pool: Array[String] = []
+	var weights: Array[float] = []
+	for bg_id in _background_cache:
+		if bg_id.begins_with("_"):
+			continue
+		var bg: Dictionary = _background_cache[bg_id]
+		var allowed: Array = bg.get("available_races", [])
+		if allowed.is_empty() or race in allowed:
+			pool.append(bg_id)
+			weights.append(float(bg.get("weight", 1)))
+	if pool.is_empty():
+		return "wanderer"
+	# Weighted random selection
+	var total_weight := 0.0
+	for w in weights:
+		total_weight += w
+	var roll := randf() * total_weight
+	var cumulative := 0.0
+	for i in range(pool.size()):
+		cumulative += weights[i]
+		if roll < cumulative:
+			return pool[i]
+	return pool[0]
 
 ## Reduce karma scores partially (some patterns persist)
 func reset_karma_partially() -> void:

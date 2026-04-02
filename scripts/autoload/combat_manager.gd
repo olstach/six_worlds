@@ -1226,7 +1226,7 @@ func get_movement_range(unit: Node) -> Array[Vector2i]:
 
 	var movement = unit.get_movement()
 	var movement_mode = unit.get_movement_mode() if unit.has_method("get_movement_mode") else CombatGrid.MovementMode.NORMAL
-	return combat_grid.get_reachable_tiles(unit.grid_position, movement, movement_mode)
+	return combat_grid.get_reachable_tiles(unit.grid_position, movement, movement_mode, unit.team)
 
 
 ## Move a unit to a target position
@@ -1875,6 +1875,7 @@ func _start_bleed_out(unit: Node) -> void:
 	unit.is_bleeding_out = true
 	unit.bleed_out_turns = BLEED_OUT_TURNS
 	unit.current_hp = 0
+	AudioManager.play("debuff_apply")
 	unit_bleeding_out.emit(unit, BLEED_OUT_TURNS)
 
 
@@ -1882,6 +1883,7 @@ func _start_bleed_out(unit: Node) -> void:
 func _kill_unit(unit: Node) -> void:
 	unit.is_dead = true
 	unit.is_bleeding_out = false
+	AudioManager.play("debuff_apply")
 	unit_died.emit(unit)
 
 	# Shadow Strike (Daggers 3 + Guile 3): killing an enemy enters stealth
@@ -4359,6 +4361,21 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 			return {"success": false, "reason": "Unknown skill effect: " + effect_type}
 
 	if result.get("success", false):
+		# Play sound based on effect type
+		match effect_type:
+			"buff_self", "stance", "buff_allies", "buff_ally", "share_buffs", "double_buffs":
+				AudioManager.play("buff_apply")
+			"debuff_target", "debuff_enemies", "mark_target", "aggro_aura":
+				AudioManager.play("debuff_apply")
+			"heal_self", "revive", "cleanse_and_buff":
+				AudioManager.play("heal")
+			"teleport", "enter_stealth", "retreat", "bonus_movement":
+				AudioManager.play("hit_miss")
+			"overcast", "dispel_and_invert":
+				AudioManager.play("spell_cast")
+			"restore_stamina", "restore_armor", "grant_extra_action":
+				AudioManager.play("buff_apply")
+			# attack_with_bonus, dash_attack, aoe_attack, etc. already play attack sounds internally
 		# Deduct stamina
 		if stamina_cost > 0:
 			user.use_stamina(stamina_cost)
@@ -4543,7 +4560,7 @@ func _resolve_dash_attack(user: Node, combat_data: Dictionary, target_pos: Vecto
 	var best_dist = 999
 	if combat_grid:
 		var movement_mode = user.get_movement_mode() if user.has_method("get_movement_mode") else 0
-		var reachable = combat_grid.get_reachable_tiles(user.grid_position, dash_range, movement_mode)
+		var reachable = combat_grid.get_reachable_tiles(user.grid_position, dash_range, movement_mode, user.team)
 		for tile in reachable:
 			var d = _grid_distance(tile, target_pos)
 			if d > 0 and d <= user.get_attack_range() and d < best_dist:

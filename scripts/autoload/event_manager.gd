@@ -230,6 +230,13 @@ func start_event(event_id: String) -> bool:
 			return false
 	
 	current_event = event_database[event_id].duplicate(true)
+
+	# Track first visits for location events — sets a flag other events can check
+	var event_type = current_event.get("type", "")
+	if event_type == "location":
+		current_event["is_first_visit"] = GameState.is_first_visit(event_id)
+		GameState.mark_location_visited(event_id)
+
 	event_started.emit(current_event)
 	return true
 
