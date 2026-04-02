@@ -746,7 +746,7 @@ func _tick_supply_step() -> void:
 		_spawn_floating_text("Starving!", Color(1.0, 0.15, 0.15))
 
 	# --- Herbs: Medicine passive bonus healing ---
-	var herb_bonus: float = GameState.process_herbs_step(best_medicine)
+	var herb_bonus: float = GameState.process_herbs_step(best_medicine, best_logistics)
 	heal_pct += herb_bonus
 
 	# --- Apply passive healing to all party members ---
@@ -760,13 +760,13 @@ func _tick_supply_step() -> void:
 				derived["current_hp"] = mini(max_hp, cur_hp + heal_amt)
 
 	# --- Scrap: Crafting passive repair (effect applied when durability system is ready) ---
-	GameState.process_scrap_step(best_crafting)
+	GameState.process_scrap_step(best_crafting, best_logistics)
 
 	# --- Reagents: Alchemy passive brewing ---
 	if best_alchemy > 0:
 		var unlocked := _get_unlocked_alchemy_items(party)
 		if not unlocked.is_empty():
-			var brewed: String = GameState.process_alchemy_step(best_alchemy, unlocked)
+			var brewed: String = GameState.process_alchemy_step(best_alchemy, best_logistics, unlocked)
 			if not brewed.is_empty():
 				ItemSystem.add_to_inventory(brewed)
 				var item_data := ItemSystem.get_item(brewed)
