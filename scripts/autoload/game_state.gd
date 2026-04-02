@@ -298,18 +298,18 @@ func consume_supply(supply_type: String, amount: int) -> bool:
 
 ## Called each overworld step — handles food consumption and starvation tracking.
 ## party_size: number of members in party
-## logistics_level: best Logistics skill in party (reduces food cost)
+## logistics_level: best Logistics skill in party (reduces all resource consumption)
 ## lowest_con: lowest Constitution in party (determines starvation grace period)
 ## Returns a dictionary describing what happened this step:
 ##   {food_consumed, is_starving, starvation_damage_pct, healing_active}
 func process_food_step(party_size: int, logistics_level: int, lowest_con: int) -> Dictionary:
-	# Calculate food cost: 1 per member, reduced by Logistics (7.5% per level)
-	# At level 5 = 37.5% reduction, level 10 = 75% — food becomes a non-issue at high levels
-	var reduction_pct: float = minf(logistics_level * 7.5, 90.0)  # Cap at 90% to always cost at least something
+	# Calculate food cost: 1 per member, reduced by Logistics (4% per level)
+	# At level 5 = 20% reduction, level 10 = 40% — helpful but not game-breaking
+	var reduction_pct: float = minf(logistics_level * 4.0, 90.0)  # Cap at 90% to always cost at least something
 	var raw_cost: float = party_size * 1.0
 	var reduced_cost: float = raw_cost * (1.0 - reduction_pct / 100.0)
-	# Divide by 3 so a party of 4 eats ~2 food/step instead of 4 — makes food last longer
-	var actual_cost: int = max(1, ceili(reduced_cost / 3.0))
+	# Divide by 15 so a party of 4 eats ~1 food per several steps — food is a background concern, not a crisis
+	var actual_cost: int = max(1, ceili(reduced_cost / 15.0))
 
 	var result := {
 		"food_consumed": 0,
@@ -337,12 +337,12 @@ func process_food_step(party_size: int, logistics_level: int, lowest_con: int) -
 
 		# Track starvation
 		steps_without_food += 1
-		# Grace period: base 10 + 2 per lowest CON in party
-		var grace: int = 10 + (lowest_con * 2)
+		# Grace period: base 50 + 10 per lowest CON in party
+		var grace: int = 50 + (lowest_con * 10)
 		if steps_without_food > grace:
 			is_starving = true
 			result.is_starving = true
-			result.starvation_damage_pct = 2.0  # 2% max HP per step
+			result.starvation_damage_pct = 0.4  # 0.4% max HP per step (same effective rate as old 2% with 5x slower ticks)
 			if steps_without_food == grace + 1:
 				starvation_started.emit()
 
@@ -351,26 +351,32 @@ func process_food_step(party_size: int, logistics_level: int, lowest_con: int) -
 
 ## Process herb consumption for Medicine passive healing.
 ## medicine_level: best Medicine skill in party
+## logistics_level: best Logistics skill in party (chance to conserve herbs)
 ## Returns bonus heal percentage (0.0 if no herbs or no Medicine skill)
-func process_herbs_step(medicine_level: int) -> float:
+func process_herbs_step(medicine_level: int, logistics_level: int) -> float:
 	if medicine_level <= 0 or herbs <= 0:
 		return 0.0
-	# Consume 1 herb per step when Medicine is active
-	herbs -= 1
-	supply_changed.emit("herbs", herbs, -1)
-	# Bonus healing: 0.5% per Medicine level (on top of base 1% from food)
+	# Logistics gives a 4% chance per level to skip herb consumption this step
+	var conserve_chance: float = minf(logistics_level * 4.0, 90.0) / 100.0
+	if randf() >= conserve_chance:
+		herbs -= 1
+		supply_changed.emit("herbs", herbs, -1)
+	# Bonus healing still applies even if herb was conserved
 	return medicine_level * 0.5
 
 
 ## Process scrap consumption for Smithing passive repair/ammo restore.
 ## smithing_level: best Smithing skill in party
+## logistics_level: best Logistics skill in party (chance to conserve scrap)
 ## Returns dictionary with repair and ammo restore rates (0 if no scrap or no Smithing)
-func process_scrap_step(smithing_level: int) -> Dictionary:
+func process_scrap_step(smithing_level: int, logistics_level: int) -> Dictionary:
 	if smithing_level <= 0 or scrap <= 0:
 		return {"repair_pct": 0.0, "ammo_restore": 0}
-	# Consume 1 scrap per step when Smithing is active
-	scrap -= 1
-	supply_changed.emit("scrap", scrap, -1)
+	# Logistics gives a 4% chance per level to skip scrap consumption this step
+	var conserve_chance: float = minf(logistics_level * 4.0, 90.0) / 100.0
+	if randf() >= conserve_chance:
+		scrap -= 1
+		supply_changed.emit("scrap", scrap, -1)
 	# Repair: 1% durability per Smithing level
 	var repair_pct: float = smithing_level * 1.0
 	# Ammo restore: 1 base + 1 per 3 Smithing levels
@@ -386,9 +392,10 @@ func set_alchemy_passive(enabled: bool) -> void:
 ## Process alchemy passive brewing. Each step has a chance to brew an item
 ## from the alchemist's unlocked tiers.
 ## alchemy_level: best Alchemy skill in party
+## logistics_level: best Logistics skill in party (chance to conserve reagents)
 ## unlocked_item_ids: Array of item IDs the party can brew (from perk tiers)
 ## Returns the item_id brewed, or "" if nothing was brewed this step
-func process_alchemy_step(alchemy_level: int, unlocked_item_ids: Array) -> String:
+func process_alchemy_step(alchemy_level: int, logistics_level: int, unlocked_item_ids: Array) -> String:
 	if not alchemy_passive_enabled:
 		return ""
 	if alchemy_level <= 0 or reagents <= 0 or unlocked_item_ids.is_empty():
@@ -399,9 +406,11 @@ func process_alchemy_step(alchemy_level: int, unlocked_item_ids: Array) -> Strin
 		return ""
 	# Pick a random item from the unlocked pool
 	var brewed_id: String = unlocked_item_ids[randi() % unlocked_item_ids.size()]
-	# Consume reagents (1 for basic, more for high-tier handled by caller if needed)
-	reagents -= 1
-	supply_changed.emit("reagents", reagents, -1)
+	# Logistics gives a 4% chance per level to skip reagent consumption this step
+	var conserve_chance: float = minf(logistics_level * 4.0, 90.0) / 100.0
+	if randf() >= conserve_chance:
+		reagents -= 1
+		supply_changed.emit("reagents", reagents, -1)
 	return brewed_id
 
 
