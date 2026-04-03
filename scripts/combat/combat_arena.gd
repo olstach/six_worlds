@@ -2670,7 +2670,7 @@ func _on_turn_started(unit: Node) -> void:
 	if unit.has_method("play_turn_start_bounce"):
 		unit.play_turn_start_bounce()
 	# Pan camera to active unit so it's always in view
-	_pan_camera_to(combat_grid.tile_center(unit.grid_position))
+	_pan_camera_to(combat_grid.get_tile_center(unit.grid_position))
 
 	# Check for CC behavior override — affects both player and enemy units
 	var cc_behavior = CombatManager.get_cc_behavior(unit)

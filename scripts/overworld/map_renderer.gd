@@ -228,6 +228,101 @@ func _draw() -> void:
 	# --- Layer 7: Hover highlight ---
 	if hover_tile.x >= 0 and hover_tile.x < map_w and hover_tile.y >= 0 and hover_tile.y < map_h:
 		draw_rect(Rect2(hover_tile.x * ts, hover_tile.y * ts, ts, ts), HOVER_COLOR, false, 2.0)
+		_draw_hover_tooltip(hover_tile, ts)
+
+
+## Draw an information tooltip above the hovered tile when it has a mob or object.
+## Uses draw_string/draw_rect so it works in world space with the camera.
+func _draw_hover_tooltip(tile: Vector2i, ts: int) -> void:
+	var tile_center := Vector2(tile.x * ts + ts * 0.5, tile.y * ts + ts * 0.5)
+
+	# Collect what's at this tile
+	var title := ""
+	var subtitle := ""
+	var title_color := Color(0.95, 0.9, 0.7)
+
+	# Check for a mob at this tile first
+	for mob in MapManager.mobs:
+		if mob.position == tile and MapManager.is_tile_visited(tile):
+			title = mob.get("name", "Unknown")
+			var attitude = mob.get("attitude", 1)
+			match attitude:
+				0:  # FRIENDLY
+					subtitle = "Friendly"
+					title_color = Color(0.4, 0.9, 0.5)
+				1:  # HOSTILE
+					subtitle = "Hostile"
+					title_color = Color(1.0, 0.4, 0.4)
+				2:  # AGGRESSIVE
+					subtitle = "Aggressive" + (" — Pursuing!" if mob.get("is_pursuing", false) else "")
+					title_color = Color(1.0, 0.6, 0.2)
+			break
+
+	# Check for an object at this tile
+	if title.is_empty():
+		var obj = MapManager.objects.get(tile, {})
+		if not obj.is_empty() and MapManager.is_tile_visited(tile):
+			# Skip already-collected one-time objects
+			if obj.get("one_time", false) and obj.get("id", "") in MapManager.collected_objects:
+				pass
+			else:
+				title = obj.get("name", "Unknown")
+				# Sub-label from icon type
+				var icon = obj.get("icon", "")
+				match icon:
+					"shop":    subtitle = "Shop"
+					"enemy":   subtitle = "Encounter"
+					"boss":    subtitle = "Boss Encounter"
+					"npc":     subtitle = "NPC"
+					"rest":    subtitle = "Rest Stop"
+					_:
+						match obj.get("type", 0):
+							1: subtitle = "Pickup"   # ObjectType.PICKUP
+							2: subtitle = "Portal"   # ObjectType.PORTAL
+							_: subtitle = "Event"
+				# Use description if available
+				var desc: String = obj.get("data", {}).get("description", "")
+				if desc != "":
+					subtitle = desc
+
+	if title.is_empty():
+		return
+
+	# Build display lines
+	var lines: Array[String] = [title]
+	if subtitle != "":
+		lines.append(subtitle)
+
+	# Measure text for background box
+	var font = ThemeDB.fallback_font
+	var title_size := 9
+	var sub_size := 7
+	var padding := 4.0
+	var line_gap := 3.0
+	var box_w := 0.0
+	for i in lines.size():
+		var sz = title_size if i == 0 else sub_size
+		var w = font.get_string_size(lines[i], HORIZONTAL_ALIGNMENT_LEFT, -1, sz).x
+		box_w = maxf(box_w, w)
+	box_w += padding * 2
+	var box_h := padding * 2 + title_size + (sub_size + line_gap) * (lines.size() - 1)
+
+	# Position box above the tile
+	var box_x := tile_center.x - box_w * 0.5
+	var box_y := tile.y * ts - box_h - 4.0
+
+	# Background
+	draw_rect(Rect2(box_x - 1, box_y - 1, box_w + 2, box_h + 2), Color(0, 0, 0, 0.6))
+	draw_rect(Rect2(box_x, box_y, box_w, box_h), Color(0.1, 0.08, 0.06, 0.88))
+
+	# Title
+	draw_string(font, Vector2(box_x + padding, box_y + padding + title_size),
+		title, HORIZONTAL_ALIGNMENT_LEFT, -1, title_size, title_color)
+
+	# Subtitle
+	if lines.size() > 1:
+		draw_string(font, Vector2(box_x + padding, box_y + padding + title_size + line_gap + sub_size),
+			subtitle, HORIZONTAL_ALIGNMENT_LEFT, -1, sub_size, Color(0.75, 0.75, 0.75, 0.9))
 
 
 func _draw_object_marker(center: Vector2, obj_type: int, ts: int) -> void:

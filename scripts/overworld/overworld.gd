@@ -179,6 +179,18 @@ func _ready() -> void:
 	# Initialize HUD
 	_update_hud()
 
+	# Add hover tooltips to supply counter labels
+	gold_label.mouse_filter = Control.MOUSE_FILTER_PASS
+	gold_label.tooltip_text = "Gold — used for shopping, hiring companions, and bribes"
+	food_label.mouse_filter = Control.MOUSE_FILTER_PASS
+	food_label.tooltip_text = "Food — consumed each step. Running out drains HP."
+	herbs_label.mouse_filter = Control.MOUSE_FILTER_PASS
+	herbs_label.tooltip_text = "Herbs — used for Medicine and Alchemy, healing between fights"
+	scrap_label.mouse_filter = Control.MOUSE_FILTER_PASS
+	scrap_label.tooltip_text = "Scrap — raw material for Crafting"
+	reagents_label.mouse_filter = Control.MOUSE_FILTER_PASS
+	reagents_label.tooltip_text = "Reagents — used for Ritual, Sorcery, and high-level spells"
+
 	# Center camera on party
 	_update_camera()
 
