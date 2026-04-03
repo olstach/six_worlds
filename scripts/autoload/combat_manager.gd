@@ -1252,15 +1252,9 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 	# Zone of Control reactions: check all enemies of this unit for ZoC perks
 	_check_zoc_reactions(unit, from, target)
 
-	# Stealth: moving within 3 tiles of an enemy breaks stealth unless soft_step perk
+	# Stealth detection: enemies within 5 tiles roll AWR checks per step
 	if "is_stealthed" in unit and unit.is_stealthed:
-		var unit_char_ss = unit.character_data if "character_data" in unit else {}
-		var has_soft_step = PerkSystem.has_perk(unit_char_ss, "soft_step")
-		if not has_soft_step:
-			for e in _get_enemies_in_range(unit, 3):
-				_leave_stealth(unit)
-				combat_log.emit("%s's stealth is broken by moving too close!" % unit.unit_name)
-				break
+		_run_stealth_detection(unit)
 
 	return true
 
@@ -1350,26 +1344,30 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		if _stealth_attack and not result.get("crit", false):
 			result["crit"] = true
 			result["damage"] = int(result["damage"] * 1.5)
-		# Break stealth after attacking — unless Shady Dealings (Guile 7) and non-melee
+		# Break stealth / invisibility after attacking
 		if _stealth_attack:
 			var _att_char_sd = attacker.character_data if "character_data" in attacker else {}
-			var _shady = PerkSystem.has_perk(_att_char_sd, "shady_dealings")
-			var _is_melee_sd = not (attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon())
-			if _is_melee_sd:
-				# Melee always breaks stealth
-				_leave_stealth(attacker)
-				combat_log.emit("%s breaks stealth with a melee attack!" % attacker.unit_name)
-			elif not _shady:
-				# No Shady Dealings — ranged also breaks
-				_leave_stealth(attacker)
-				combat_log.emit("%s breaks stealth with an attack!" % attacker.unit_name)
+			var _is_invisible = attacker.has_status("Invisible") if attacker.has_method("has_status") else false
+			if _is_invisible:
+				# Invisible: attacking consumes the Invisible status but stealth persists
+				_remove_status_by_name(attacker, "Invisible")
+				combat_log.emit("%s's invisibility shatters — but remains in the shadows." % attacker.unit_name)
 			else:
-				# Shady Dealings: nearby enemies get an Awareness check to detect
-				if _shady_dealings_detected(attacker):
+				# Regular stealth: break rules apply
+				var _shady = PerkSystem.has_perk(_att_char_sd, "shady_dealings")
+				var _is_melee_sd = not (attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon())
+				if _is_melee_sd:
 					_leave_stealth(attacker)
-					combat_log.emit("An enemy detected %s despite Shady Dealings!" % attacker.unit_name)
+					combat_log.emit("%s breaks stealth with a melee attack!" % attacker.unit_name)
+				elif not _shady:
+					_leave_stealth(attacker)
+					combat_log.emit("%s breaks stealth with an attack!" % attacker.unit_name)
 				else:
-					combat_log.emit("%s stays hidden (Shady Dealings)." % attacker.unit_name)
+					if _shady_dealings_detected(attacker):
+						_leave_stealth(attacker)
+						combat_log.emit("An enemy detected %s despite Shady Dealings!" % attacker.unit_name)
+					else:
+						combat_log.emit("%s stays hidden (Shady Dealings)." % attacker.unit_name)
 
 		# Apply damage
 		apply_damage(defender, result.damage, result.damage_type)
@@ -1810,6 +1808,10 @@ func calculate_magic_damage(caster: Node, target: Node, base_spell_damage: int, 
 
 ## Apply damage to a unit
 func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
+	# God mode: player units take no damage
+	if CheatConsole and CheatConsole.god_mode and "team" in unit and unit.team == Team.PLAYER:
+		unit_damaged.emit(unit, 0, damage_type)
+		return
 	unit.take_damage(damage)
 	unit_damaged.emit(unit, damage, damage_type)
 	# Hit Back Harder (Might 3): taking damage sets a ready flag for +20% bonus on next melee attack
@@ -2175,17 +2177,23 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	if not can_unit_cast(caster):
 		return {"success": false, "reason": "Cannot cast while silenced"}
 
-	# Stealth: spell casting breaks stealth unless Shady Dealings (Guile 7)
+	# Stealth: spell casting breaks stealth unless invisible or Shady Dealings
 	if "is_stealthed" in caster and caster.is_stealthed:
-		var caster_char_sd = caster.character_data if "character_data" in caster else {}
-		if not PerkSystem.has_perk(caster_char_sd, "shady_dealings"):
-			_leave_stealth(caster)
-			combat_log.emit("%s breaks stealth by casting a spell!" % caster.unit_name)
-		elif _shady_dealings_detected(caster):
-			_leave_stealth(caster)
-			combat_log.emit("An enemy detected %s casting despite Shady Dealings!" % caster.unit_name)
+		var _is_inv = caster.has_status("Invisible") if caster.has_method("has_status") else false
+		if _is_inv:
+			# Invisible: casting consumes the Invisible status, stealth persists
+			_remove_status_by_name(caster, "Invisible")
+			combat_log.emit("%s's invisibility shatters from spellcasting — but remains hidden." % caster.unit_name)
 		else:
-			combat_log.emit("%s casts from the shadows (Shady Dealings)." % caster.unit_name)
+			var caster_char_sd = caster.character_data if "character_data" in caster else {}
+			if not PerkSystem.has_perk(caster_char_sd, "shady_dealings"):
+				_leave_stealth(caster)
+				combat_log.emit("%s breaks stealth by casting a spell!" % caster.unit_name)
+			elif _shady_dealings_detected(caster):
+				_leave_stealth(caster)
+				combat_log.emit("An enemy detected %s casting despite Shady Dealings!" % caster.unit_name)
+			else:
+				combat_log.emit("%s casts from the shadows (Shady Dealings)." % caster.unit_name)
 
 	var spell = get_spell(spell_id)
 	if spell.is_empty():
@@ -2590,6 +2598,11 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 			target.heal(cleanse_heal)
 			unit_healed.emit(target, cleanse_heal)
 
+	# --- Special effects (from spell.special) ---
+	var special = spell.get("special", {})
+	if not special.is_empty():
+		_apply_spell_special(caster, target, spell, special, result)
+
 	# --- Legacy effects array support (for future hand-crafted spells) ---
 	var effects = spell.get("effects", [])
 	for effect in effects:
@@ -2780,6 +2793,44 @@ func _spawn_summoned_unit(caster: Node, summon_id: String, target_pos: Vector2i,
 	combat_log.emit("%s summons %s!" % [caster.unit_name, summon_unit.unit_name])
 
 	return {"success": true, "type": "summon", "unit": summon_unit, "position": spawn_pos}
+
+
+## Process spell.special fields: battlefield dispels, see-through-stealth, etc.
+func _apply_spell_special(caster: Node, target: Node, spell: Dictionary, special: Dictionary, result: Dictionary) -> void:
+	# Crystal Light: dispels_all_battlefield — strip listed statuses from ALL units
+	var bf_dispel = special.get("dispels_all_battlefield", [])
+	if not bf_dispel.is_empty():
+		var stripped_count: int = 0
+		for unit in all_units:
+			if unit.is_dead:
+				continue
+			for status_name in bf_dispel:
+				if unit.has_status(status_name):
+					_remove_status_by_name(unit, status_name)
+					stripped_count += 1
+			# Also break stealth on all units (Crystal Light reveals everything)
+			if "is_stealthed" in unit and unit.is_stealthed:
+				_leave_stealth(unit)
+				combat_log.emit("%s is revealed by the blinding light!" % unit.unit_name)
+				stripped_count += 1
+		combat_log.emit("Crystal Light strips %d concealment effects!" % stripped_count)
+		result.effects_applied.append({"type": "battlefield_dispel", "count": stripped_count})
+
+	# Divine Eye: see_through_stealth — grant the target permanent stealth vision
+	var see_through = special.get("see_through_stealth", [])
+	if not see_through.is_empty():
+		if "see_through_stealth" in target:
+			target.see_through_stealth = true
+		else:
+			target.set("see_through_stealth", true)
+		combat_log.emit("%s gains true sight — stealth and illusions cannot fool them!" % target.unit_name)
+		result.effects_applied.append({"type": "true_sight"})
+
+	# stealth_bonus: mark that this spell grants stealth advantage (for detection DC)
+	if special.get("stealth_bonus", false):
+		if "is_stealthed" in target:
+			target.is_stealthed = true
+			combat_log.emit("%s is cloaked in shadow." % target.unit_name)
 
 
 ## Process passive perks that trigger when a spell hits a target.
@@ -3105,6 +3156,11 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 			"Frozen", "Petrified", "Held", "Paralyzed", "Immobilized", "Dominated", "Chaotic"]:
 		_interrupt_mantras(unit, "%s's concentration is broken by %s!" % [unit.unit_name, status])
 
+	# Invisible status grants stealth automatically
+	if status == "Invisible" and "is_stealthed" in unit:
+		unit.is_stealthed = true
+		combat_log.emit("%s fades from sight." % unit.unit_name)
+
 	# Show floating status applied text on the unit
 	if unit.has_method("show_status_applied"):
 		unit.show_status_applied(status)
@@ -3112,6 +3168,22 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	# Update visuals to show new status icon
 	if unit.has_method("_update_visuals"):
 		unit._update_visuals()
+
+
+## Remove a specific status effect by name from a unit. Returns true if found and removed.
+func _remove_status_by_name(unit: Node, status_name: String) -> bool:
+	if not "status_effects" in unit:
+		return false
+	for i in range(unit.status_effects.size() - 1, -1, -1):
+		if unit.status_effects[i].get("status", "") == status_name:
+			var def = _status_effects.get(status_name, {})
+			_on_status_expired(unit, status_name, def)
+			unit.status_effects.remove_at(i)
+			status_effect_expired.emit(unit, status_name)
+			if unit.has_method("show_status_expired"):
+				unit.show_status_expired(status_name)
+			return true
+	return false
 
 
 ## Remove negative status effects using the dispellable flag from status definitions.
@@ -3267,6 +3339,16 @@ func _on_status_expired(unit: Node, status_name: String, def: Dictionary) -> voi
 
 	if "bleed_on_expire" in effects:
 		_apply_status_effect(unit, "Bleeding", 3)
+
+	# Invisible expiry: drop stealth unless unit has Blend In (own stealth ability)
+	if "cannot_be_targeted" in effects and status_name == "Invisible":
+		if "is_stealthed" in unit and unit.is_stealthed:
+			var char_data = unit.character_data if "character_data" in unit else {}
+			if not PerkSystem.has_perk(char_data, "blend_in"):
+				_leave_stealth(unit)
+				combat_log.emit("%s becomes visible as the spell fades." % unit.unit_name)
+			else:
+				combat_log.emit("%s's invisibility fades but stays hidden (Blend In)." % unit.unit_name)
 
 	# Spawn-on-expire effects (Infected spawns fungal creature) — emit signal for
 	# encounter system to handle, since we don't create units directly here
@@ -3775,13 +3857,14 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 
 		"single":
 			# Any enemy in range (Manhattan/diamond for spells)
+			var caster_true_sight = "see_through_stealth" in caster and caster.see_through_stealth
 			for unit in all_units:
 				if not unit.is_alive():
 					continue
 				if unit.team == caster.team:
 					continue
-				# Stealthed units cannot be directly targeted
-				if "is_stealthed" in unit and unit.is_stealthed:
+				# Stealthed/invisible units cannot be targeted unless caster has true sight
+				if not unit.is_targetable() and not caster_true_sight:
 					continue
 				var dist = _spell_distance(caster.grid_position, unit.grid_position)
 				if dist <= spell_range:
@@ -4421,6 +4504,59 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 	return result
 
 
+## ── Stealth Detection System ─────────────────────────────────────────────────
+## 5-tile detection radius.  Each enemy within range rolls:
+##     d20 + Awareness  vs  DC
+## DC scales with distance, Guile skill, Soft Step perk, and Invisibility.
+##
+## Distance → base DC:  5→10, 4→14, 3→18, 2→22, 1→26
+## Guile level:   +2 DC per level
+## Soft Step:     +4 DC
+## Invisibility:  +10 DC  (nearly undetectable)
+##
+## Called after each movement step and by Shady Dealings on non-melee actions.
+
+const _STEALTH_BASE_DC: Dictionary = {5: 10, 4: 14, 3: 18, 2: 22, 1: 26}
+
+## Run detection checks for all enemies within 5 tiles of a stealthed unit.
+## Returns true if detected (stealth broken).
+func _run_stealth_detection(unit: Node) -> bool:
+	if not ("is_stealthed" in unit and unit.is_stealthed):
+		return false
+
+	var char_data = unit.character_data if "character_data" in unit else {}
+	var guile_level: int = char_data.get("skills", {}).get("guile", 0)
+	var has_soft_step: bool = PerkSystem.has_perk(char_data, "soft_step")
+	var is_invisible: bool = unit.has_status("Invisible") if unit.has_method("has_status") else false
+
+	for enemy in all_units:
+		if enemy.is_dead or enemy.team == unit.team:
+			continue
+		var dist = _grid_distance(unit.grid_position, enemy.grid_position)
+		if dist < 1 or dist > 5:
+			continue
+
+		var base_dc: int = _STEALTH_BASE_DC.get(dist, 10)
+		var dc: int = base_dc + (guile_level * 2)
+		if has_soft_step:
+			dc += 4
+		if is_invisible:
+			dc += 10
+
+		var awareness: int = 8
+		if "attributes" in enemy:
+			awareness = enemy.attributes.get("awareness", 8)
+		var roll: int = randi_range(1, 20) + awareness
+
+		if roll >= dc:
+			combat_log.emit("%s (AWR %d, rolled %d vs DC %d) spots %s at range %d!" % [
+				enemy.unit_name, awareness, roll, dc, unit.unit_name, dist])
+			_leave_stealth(unit)
+			return true
+
+	return false
+
+
 ## Enter stealth (blend_in active skill).
 func _resolve_enter_stealth(user: Node) -> Dictionary:
 	if "is_stealthed" in user and user.is_stealthed:
@@ -4468,25 +4604,9 @@ func _leave_stealth(unit: Node) -> void:
 
 
 ## Shady Dealings (Guile 7): when a stealthed unit performs a non-melee action,
-## enemies within 2 tiles each get an Awareness check to detect.
-## Returns true if ANY enemy detects the stealthed unit.
+## use the standard detection system (enemies within 5 tiles get AWR checks).
 func _shady_dealings_detected(unit: Node) -> bool:
-	for other in all_units:
-		if not other.is_alive() or other.team == unit.team:
-			continue
-		var dist = _grid_distance(unit.grid_position, other.grid_position)
-		if dist > 2:
-			continue
-		# Enemy Awareness check: d20 + Awareness vs DC 15 (unit gets +5 bonus = higher DC)
-		var awareness = 8  # default
-		if "attributes" in other:
-			awareness = other.attributes.get("awareness", 8)
-		var roll = randi_range(1, 20) + awareness
-		# DC 20 = tough to detect (stealthy unit has +5 defense built into DC)
-		if roll >= 20:
-			combat_log.emit("%s (Awareness %d) spots movement nearby!" % [other.unit_name, awareness])
-			return true
-	return false
+	return _run_stealth_detection(unit)
 
 
 ## Mark an enemy (call_the_shot). The marking unit's field marks the target node.
@@ -5454,11 +5574,11 @@ func get_active_skill_targets(user: Node, combat_data: Dictionary) -> Array[Vect
 		"self":
 			result.append(user.grid_position)
 		"single_enemy":
-			# All enemy tiles within range (stealthed enemies hidden)
+			# All enemy tiles within range (hidden enemies excluded)
 			for unit in all_units:
 				if not unit.is_alive() or unit.team == user.team:
 					continue
-				if "is_stealthed" in unit and unit.is_stealthed:
+				if not unit.is_targetable():
 					continue
 				var dist = _grid_distance(user.grid_position, unit.grid_position)
 				if dist <= skill_range:
@@ -5497,7 +5617,7 @@ func get_active_skill_targets(user: Node, combat_data: Dictionary) -> Array[Vect
 			for unit in all_units:
 				if not unit.is_alive() or unit.team == user.team:
 					continue
-				if "is_stealthed" in unit and unit.is_stealthed:
+				if not unit.is_targetable():
 					continue
 				var dist = _grid_distance(user.grid_position, unit.grid_position)
 				if dist <= dash_range + attack_range:

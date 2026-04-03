@@ -48,6 +48,7 @@ var call_the_shot_used_this_turn: bool = false  # Prevents call_the_shot from be
 var necromancer_raises: int = 0            # How many undead this unit has raised this combat (max 2)
 var in_free_attack: bool = false           # Recursion guard for cleave/relentless free attacks
 var is_stealthed: bool = false             # Whether this unit is in stealth (shadow_strike system)
+var see_through_stealth: bool = false      # Divine Eye: can target stealthed/invisible units
 var status_effects: Array = []  # Active status effects on this unit
 
 # Active skill stat modifiers: [{stat, value, duration}] — applied by _apply_stat_modifier()
@@ -549,15 +550,18 @@ func is_alive() -> bool:
 	return not is_dead and not is_bleeding_out
 
 
-## Check if unit can be targeted (not dead, not invisible, not in sanctuary)
+## Check if unit can be targeted (not dead, not stealthed, not invisible)
 func is_targetable() -> bool:
 	if is_dead:
 		return false
-	# Invisible and Sanctuary grant cannot_be_targeted
+	# Stealth makes the unit invisible to targeting
+	if is_stealthed:
+		return false
+	# Status effects like Invisible and Sanctuary grant cannot_be_targeted
 	for effect in status_effects:
 		var status_name = effect.get("status", "")
-		var def = CombatManager.get_status_definition(status_name)
-		if "cannot_be_targeted" in def.get("effects", []):
+		var sdef = CombatManager.get_status_definition(status_name)
+		if "cannot_be_targeted" in sdef.get("effects", []):
 			return false
 	return true
 

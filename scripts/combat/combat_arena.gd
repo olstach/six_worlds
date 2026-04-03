@@ -987,7 +987,7 @@ func _on_attack_pressed() -> void:
 	for other in CombatManager.all_units:
 		if not other.is_alive() or other.team == unit.team:
 			continue
-		if "is_stealthed" in other and other.is_stealthed:
+		if not other.is_targetable():
 			continue
 		if other.grid_position in range_area:
 			valid_targets.append(other.grid_position)
@@ -2159,8 +2159,8 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 		_cancel_action_mode()
 		return
 
-	if "is_stealthed" in defender and defender.is_stealthed:
-		_log_message("Target is hidden in stealth!")
+	if not defender.is_targetable():
+		_log_message("Target is hidden!")
 		_cancel_action_mode()
 		return
 
@@ -3955,7 +3955,7 @@ func _find_nearest_enemy(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
 		if not enemy.is_alive():
 			continue
 		# Stealthed units are invisible to AI targeting
-		if "is_stealthed" in enemy and enemy.is_stealthed:
+		if not enemy.is_targetable():
 			continue
 		if "taunt_active" in enemy and enemy.taunt_active:
 			var dist = _grid_distance(unit.grid_position, enemy.grid_position)
@@ -3972,7 +3972,7 @@ func _find_nearest_enemy(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
 		if not enemy.is_alive():
 			continue
 		# Stealthed units are invisible to AI targeting
-		if "is_stealthed" in enemy and enemy.is_stealthed:
+		if not enemy.is_targetable():
 			continue
 		var dist = _grid_distance(unit.grid_position, enemy.grid_position)
 		var effective_dist = dist - (3 if ("active_mantras" in enemy and enemy.active_mantras.size() > 0) else 0)

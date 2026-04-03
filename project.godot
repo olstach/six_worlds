@@ -36,6 +36,7 @@ MapGenerator="*res://scripts/map_gen/map_generator.gd"
 MapManager="*res://scripts/autoload/map_manager.gd"
 SaveManager="*res://scripts/autoload/save_manager.gd"
 AudioManager="*res://scripts/autoload/audio_manager.gd"
+CheatConsole="*res://scripts/autoload/cheat_console.gd"
 
 [debug]
 

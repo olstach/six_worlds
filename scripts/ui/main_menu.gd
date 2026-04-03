@@ -187,7 +187,7 @@ func _ready() -> void:
 	tab_container.set_tab_title(tab_container.get_tab_count() - 1, "Journal")
 
 	# Connect debug button
-	add_xp_button.pressed.connect(_on_add_xp_pressed)
+	add_xp_button.hide()  # Debug button replaced by CheatConsole (F12)
 
 	# Connect companion-only UI
 	autodevelop_toggle.toggled.connect(_on_autodevelop_toggled)

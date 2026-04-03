@@ -1,6 +1,6 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-04-02 (session 11, bug fixes + polish)
+Last Updated: 2026-04-03 (session 12, stealth overhaul + cheat console)
 ---
 
 ## Completed Systems
@@ -460,6 +460,30 @@ bonuses and/or add element-affinity multipliers to generate_weapon stat scaling.
 
 ## Session Notes
 
+### 2026-04-03 (Session 12): Stealth Overhaul, Deployment Phase, Cheat Console
+- **Formation matters**: Reverted friendly pass-through; all units now block movement regardless of team
+- **Tactician deployment phase**: When party has Tactician upgrade (Leadership 2), combat enters manual deployment phase with click-to-place UI, deployment zone highlights, and "Start Battle" confirm button
+- **Stealth system overhaul**: Replaced 3-tile auto-break with 5-tile AWR check system
+  - Detection rolls: d20 + enemy Awareness vs DC (distance-scaled: 5→DC10, 4→DC14, 3→DC18, 2→DC22, 1→DC26)
+  - DC modifiers: +2 per Guile level, +4 Soft Step, +10 Invisibility
+  - Triggered on every movement step within detection radius
+- **Unified targeting**: `is_targetable()` now checks both `is_stealthed` flag AND `cannot_be_targeted` status effects. All targeting code (spell/skill/attack/AI) uses this single function
+- **Invisibility as super-stealth**: Invisible status grants stealth, does NOT break on attack (consumes Invisible status instead), expires by spellpower duration. Units with Blend In keep stealth after invisibility fades
+- **Anti-stealth spell implementation**:
+  - Crystal Light: `dispels_all_battlefield` strips all concealment statuses + breaks stealth on ALL units
+  - Divine Eye: `see_through_stealth` grants permanent true sight (bypasses is_targetable)
+  - Spell special effects system: new `_apply_spell_special()` processes spell.special fields
+- **Blend In perk fixed**: Added "Active" prefix + combat_data so it appears as usable skill in UI
+- **Now You See Me**: Entering stealth clears marks and breaks enemy targeting
+- **Shady Dealings**: Uses the same AWR detection system for consistency
+- **CheatConsole autoload (F12)**: Full cheat system with commands: addxp, addgold, addfood, addherbs, addscrap, addreagents, heal, godmode, learnspell, allspells, addperk, addcompanion, additem, tactician, goto, list, help
+- **Removed old debug features**: Add XP button hidden (replaced by CheatConsole)
+
+### Future: Formation & Positioning
+- [ ] Unit facing system (direction units face affects detection and flanking)
+- [ ] Flanking bonus (attacking from behind/sides gives damage/accuracy bonus)
+- [ ] Tactical Assessment preset formations (Logistics 7 perk)
+
 ### 2026-04-02 (Session 11): Spell Tiers, Domain Spells, Deep Audit + Bug Fixes
 - **Unified spell tier system**: 5 tiers at skill levels 1/3/5/7/9 (Outermost Circle → Unsurpassed Circle). Updated all spells in spells.json, tooltips across combat/shop/spellbook UIs, and display helpers in CombatManager
 - **Domain spells**: 10 cross-school spell domains (Crystal, Glass, Smoke, Mud, Cloud, Steam, Rainbow, Tummo, Luminosity, Sound) with dedicated guild events, shops, and map config placement. `domain_spell` tag prevents leaking into regular guild/shrine picks
@@ -474,7 +498,7 @@ bonuses and/or add element-affinity multipliers to generate_weapon stat scaling.
   - Added 12 missing status definitions to statuses.json
   - Added `slot` field to 142 items missing it
   - Fixed unsafe dictionary access in companion_system.gd
-- **combat_grid team-aware pathfinding**: Units can now move through friendly units but not enemies
+- **combat_grid team-aware pathfinding**: ~~Units can move through friendlies~~ → reverted in session 12 (formation matters)
 - **Enemy weapon names**: "Natural Claws" / "Crude Sword" instead of placeholder names
 - **Karma background selection**: `select_random_background()` now loads from races.json with weighted random
 - **Active skill + death sounds**: AudioManager.play calls for all active skill effect types + bleed-out/death
