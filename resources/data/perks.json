@@ -3242,9 +3242,14 @@
 			"skill": "guile",
 			"required_level": 1,
 			"requires_perks": [],
-			"description": "You can enter stealth in combat (costs 1 action) and attempt stealth-based decisions in dialogue.",
+			"description": "Active (1 Stamina). Enter stealth in combat. Stealthed units cannot be targeted until revealed. Also enables stealth-based dialogue decisions.",
 			"flavor": "",
-			"is_mantra": false
+			"is_mantra": false,
+			"combat_data": {
+				"effect": "enter_stealth",
+				"targeting": "self",
+				"stamina_cost": 1
+			}
 		},
 		"now_you_see_me": {
 			"name": "Now You See Me",

@@ -1226,7 +1226,7 @@ func get_movement_range(unit: Node) -> Array[Vector2i]:
 
 	var movement = unit.get_movement()
 	var movement_mode = unit.get_movement_mode() if unit.has_method("get_movement_mode") else CombatGrid.MovementMode.NORMAL
-	return combat_grid.get_reachable_tiles(unit.grid_position, movement, movement_mode, unit.team)
+	return combat_grid.get_reachable_tiles(unit.grid_position, movement, movement_mode)
 
 
 ## Move a unit to a target position
@@ -1355,9 +1355,21 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			var _att_char_sd = attacker.character_data if "character_data" in attacker else {}
 			var _shady = PerkSystem.has_perk(_att_char_sd, "shady_dealings")
 			var _is_melee_sd = not (attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon())
-			if _is_melee_sd or not _shady:
+			if _is_melee_sd:
+				# Melee always breaks stealth
+				_leave_stealth(attacker)
+				combat_log.emit("%s breaks stealth with a melee attack!" % attacker.unit_name)
+			elif not _shady:
+				# No Shady Dealings — ranged also breaks
 				_leave_stealth(attacker)
 				combat_log.emit("%s breaks stealth with an attack!" % attacker.unit_name)
+			else:
+				# Shady Dealings: nearby enemies get an Awareness check to detect
+				if _shady_dealings_detected(attacker):
+					_leave_stealth(attacker)
+					combat_log.emit("An enemy detected %s despite Shady Dealings!" % attacker.unit_name)
+				else:
+					combat_log.emit("%s stays hidden (Shady Dealings)." % attacker.unit_name)
 
 		# Apply damage
 		apply_damage(defender, result.damage, result.damage_type)
@@ -2168,6 +2180,12 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		var caster_char_sd = caster.character_data if "character_data" in caster else {}
 		if not PerkSystem.has_perk(caster_char_sd, "shady_dealings"):
 			_leave_stealth(caster)
+			combat_log.emit("%s breaks stealth by casting a spell!" % caster.unit_name)
+		elif _shady_dealings_detected(caster):
+			_leave_stealth(caster)
+			combat_log.emit("An enemy detected %s casting despite Shady Dealings!" % caster.unit_name)
+		else:
+			combat_log.emit("%s casts from the shadows (Shady Dealings)." % caster.unit_name)
 
 	var spell = get_spell(spell_id)
 	if spell.is_empty():
@@ -3762,6 +3780,9 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 					continue
 				if unit.team == caster.team:
 					continue
+				# Stealthed units cannot be directly targeted
+				if "is_stealthed" in unit and unit.is_stealthed:
+					continue
 				var dist = _spell_distance(caster.grid_position, unit.grid_position)
 				if dist <= spell_range:
 					valid_positions.append(unit.grid_position)
@@ -4416,6 +4437,7 @@ func _enter_stealth(unit: Node) -> void:
 	var char_data = unit.character_data if "character_data" in unit else {}
 
 	# Now You See Me (Guile 3): entering stealth removes all 1-turn duration debuffs
+	# and breaks enemy targeting (clears marks, taunts pointed at this unit)
 	if PerkSystem.has_perk(char_data, "now_you_see_me"):
 		for i in range(unit.status_effects.size() - 1, -1, -1):
 			var se = unit.status_effects[i]
@@ -4424,7 +4446,13 @@ func _enter_stealth(unit: Node) -> void:
 				var sname = se.get("status", "")
 				unit.status_effects.remove_at(i)
 				status_effect_expired.emit(unit, sname)
-		combat_log.emit("Now You See Me — minor debuffs cleared!")
+		# Break enemy targeting: clear marks and taunt locks aimed at this unit
+		if "is_marked" in unit:
+			unit.is_marked = false
+		for other in all_units:
+			if "marked_target" in other and other.marked_target == unit:
+				other.marked_target = null
+		combat_log.emit("Now You See Me — debuffs cleared, enemy targeting broken!")
 
 
 ## Central helper: leave stealth for a unit and apply all leave-stealth perk effects.
@@ -4437,6 +4465,28 @@ func _leave_stealth(unit: Node) -> void:
 		_apply_status_effect(unit, "Inspired", 1, 0, unit)   # +accuracy proxy
 		_apply_status_effect(unit, "Dodge_Buff", 1, 0, unit) # +dodge proxy
 		combat_log.emit("Where I Meant to Be — +15%% Attack and Dodge for 1 turn!")
+
+
+## Shady Dealings (Guile 7): when a stealthed unit performs a non-melee action,
+## enemies within 2 tiles each get an Awareness check to detect.
+## Returns true if ANY enemy detects the stealthed unit.
+func _shady_dealings_detected(unit: Node) -> bool:
+	for other in all_units:
+		if not other.is_alive() or other.team == unit.team:
+			continue
+		var dist = _grid_distance(unit.grid_position, other.grid_position)
+		if dist > 2:
+			continue
+		# Enemy Awareness check: d20 + Awareness vs DC 15 (unit gets +5 bonus = higher DC)
+		var awareness = 8  # default
+		if "attributes" in other:
+			awareness = other.attributes.get("awareness", 8)
+		var roll = randi_range(1, 20) + awareness
+		# DC 20 = tough to detect (stealthy unit has +5 defense built into DC)
+		if roll >= 20:
+			combat_log.emit("%s (Awareness %d) spots movement nearby!" % [other.unit_name, awareness])
+			return true
+	return false
 
 
 ## Mark an enemy (call_the_shot). The marking unit's field marks the target node.
@@ -4560,7 +4610,7 @@ func _resolve_dash_attack(user: Node, combat_data: Dictionary, target_pos: Vecto
 	var best_dist = 999
 	if combat_grid:
 		var movement_mode = user.get_movement_mode() if user.has_method("get_movement_mode") else 0
-		var reachable = combat_grid.get_reachable_tiles(user.grid_position, dash_range, movement_mode, user.team)
+		var reachable = combat_grid.get_reachable_tiles(user.grid_position, dash_range, movement_mode)
 		for tile in reachable:
 			var d = _grid_distance(tile, target_pos)
 			if d > 0 and d <= user.get_attack_range() and d < best_dist:
@@ -5404,9 +5454,11 @@ func get_active_skill_targets(user: Node, combat_data: Dictionary) -> Array[Vect
 		"self":
 			result.append(user.grid_position)
 		"single_enemy":
-			# All enemy tiles within range
+			# All enemy tiles within range (stealthed enemies hidden)
 			for unit in all_units:
 				if not unit.is_alive() or unit.team == user.team:
+					continue
+				if "is_stealthed" in unit and unit.is_stealthed:
 					continue
 				var dist = _grid_distance(user.grid_position, unit.grid_position)
 				if dist <= skill_range:
@@ -5444,6 +5496,8 @@ func get_active_skill_targets(user: Node, combat_data: Dictionary) -> Array[Vect
 			var attack_range = user.get_attack_range()
 			for unit in all_units:
 				if not unit.is_alive() or unit.team == user.team:
+					continue
+				if "is_stealthed" in unit and unit.is_stealthed:
 					continue
 				var dist = _grid_distance(user.grid_position, unit.grid_position)
 				if dist <= dash_range + attack_range:
@@ -6156,7 +6210,7 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 
 	# Every Opening Is an Invitation: +10% crit vs statused — applied via get_passive_perk_stat_bonus
 	# Anatomy Knowledge: +10% damage vs biological enemies — applied in calculate_physical_damage
-	# Shadow Strike: stealth attacks +50% damage & Silence (stealth system not yet implemented)
+	# Shadow Strike: stealth attacks auto-hit + crit (implemented in attack_unit)
 	# Blood in the Wind: +movement when enemies bleeding (checked in stat getter)
 
 	# Pressure Points (Medicine 7): melee hits vs biological → 15% chance for random debuff

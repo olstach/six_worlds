@@ -407,8 +407,7 @@ func is_occupied(grid_pos: Vector2i) -> bool:
 
 ## Get all tiles reachable within movement range
 ## movement_mode: MovementMode enum - affects height traversal and cost
-## team: moving unit's team (-1 = treat all units as blocking)
-func get_reachable_tiles(start: Vector2i, movement: int, movement_mode: int = MovementMode.NORMAL, team: int = -1) -> Array[Vector2i]:
+func get_reachable_tiles(start: Vector2i, movement: int, movement_mode: int = MovementMode.NORMAL) -> Array[Vector2i]:
 	var reachable: Array[Vector2i] = []
 	var visited: Dictionary = {}
 	var frontier: Array = [[start, 0]]  # [position, cost]
@@ -462,11 +461,9 @@ func get_reachable_tiles(start: Vector2i, movement: int, movement_mode: int = Mo
 				# Flying pays +1 even going down (maintaining altitude control)
 				new_cost += absi(height_diff)
 
-			# Can move through friendly units but not enemies
-			var unit_at = get_unit_at(neighbor)
-			if unit_at != null:
-				if team == -1 or unit_at.team != team:
-					continue  # Enemy or unknown team — blocked
+			# All units block movement — formations matter
+			if get_unit_at(neighbor) != null:
+				continue
 
 			if not visited.has(neighbor) or visited[neighbor] > new_cost:
 				visited[neighbor] = new_cost

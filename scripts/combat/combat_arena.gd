@@ -42,13 +42,19 @@ var examine_content: VBoxContainer = null
 var _context_menu_unit: CombatUnit = null
 
 # Combat state
-enum ActionMode { NONE, MOVE, ATTACK, CAST_SPELL, USE_ITEM, USE_SKILL }
+enum ActionMode { NONE, MOVE, ATTACK, CAST_SPELL, USE_ITEM, USE_SKILL, DEPLOY }
 var current_action_mode: ActionMode = ActionMode.NONE
 var selected_unit: CombatUnit = null
 var selected_spell: Dictionary = {}
 var selected_item: Dictionary = {}
 var selected_skill: Dictionary = {}
 var _last_hovered_tile: Vector2i = Vector2i(-1, -1)  # Track hover to avoid log spam
+
+# Deployment phase state
+var _deploy_pending_chars: Array = []   # Characters waiting to be placed
+var _deploy_current_index: int = 0      # Index into _deploy_pending_chars
+var _deploy_info_label: Label = null     # HUD label showing placement instructions
+var _deploy_confirm_button: Button = null  # "Start Battle" button
 
 # AI turn timer
 var ai_timer: Timer
@@ -176,6 +182,8 @@ func _ready() -> void:
 	CombatManager.unit_died.connect(_on_unit_died)
 	CombatManager.unit_bleeding_out.connect(_on_unit_bleeding_out)
 	CombatManager.action_used.connect(_on_action_used)
+	CombatManager.deployment_phase_started.connect(_on_deployment_phase_started)
+	CombatManager.deployment_phase_ended.connect(_on_deployment_phase_ended)
 
 	# Connect grid signals
 	combat_grid.tile_clicked.connect(_on_tile_clicked)
@@ -346,26 +354,11 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 	# Generate scaled enemies from EnemySystem
 	var enemy_defs = EnemySystem.generate_encounter(enemy_group, region)
 
-	# Create player units from party
-	var player_units: Array = []
+	# Get party characters for deployment
 	var party = CharacterSystem.get_party()
-	# Use center-third deployment zones matching the 48x30 grid layout
 	var gw = combat_grid.grid_size.x
 	var gh = combat_grid.grid_size.y
-	var pz = gw / 3  # player zone start x (16 on 48-wide grid)
-	var cy = gh / 2   # vertical center
-	var player_start_positions = [
-		Vector2i(pz, cy - 2), Vector2i(pz, cy), Vector2i(pz + 1, cy - 1),
-		Vector2i(pz + 1, cy + 1), Vector2i(pz, cy + 2), Vector2i(pz + 1, cy - 3),
-		Vector2i(pz + 1, cy + 3), Vector2i(pz, cy - 4)]
-
-	for i in range(mini(party.size(), player_start_positions.size())):
-		var char_data = party[i]
-		var unit = CombatUnit.new()
-		unit.init_from_character(char_data, CombatManager.Team.PLAYER)
-		combat_grid.place_unit(unit, player_start_positions[i])
-		player_units.append(unit)
-		_log_message("Player: %s placed at %s" % [unit.unit_name, player_start_positions[i]])
+	var cy = gh / 2
 
 	# Place enemies based on their roles (frontline closer, ranged/caster in back)
 	var enemy_units: Array = []
@@ -409,8 +402,152 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 		var role_text = "/".join(roles) if not roles.is_empty() else "fighter"
 		_log_message("Enemy: %s (%s) placed at %s" % [unit.unit_name, role_text, pos])
 
-	# Start combat
-	CombatManager.start_combat(combat_grid, player_units, enemy_units)
+	# Check if party has Tactician upgrade for manual deployment
+	if CombatManager._party_has_tactician():
+		_start_deployment_phase(party, enemy_units)
+	else:
+		# Auto-deploy player units and start combat immediately
+		var player_units: Array = []
+		var pz = gw / 3
+		var player_start_positions = [
+			Vector2i(pz, cy - 2), Vector2i(pz, cy), Vector2i(pz + 1, cy - 1),
+			Vector2i(pz + 1, cy + 1), Vector2i(pz, cy + 2), Vector2i(pz + 1, cy - 3),
+			Vector2i(pz + 1, cy + 3), Vector2i(pz, cy - 4)]
+
+		for i in range(mini(party.size(), player_start_positions.size())):
+			var char_data = party[i]
+			var unit = CombatUnit.new()
+			unit.init_from_character(char_data, CombatManager.Team.PLAYER)
+			combat_grid.place_unit(unit, player_start_positions[i])
+			player_units.append(unit)
+			_log_message("Player: %s placed at %s" % [unit.unit_name, player_start_positions[i]])
+
+		CombatManager.start_combat(combat_grid, player_units, enemy_units)
+
+
+## ── Deployment Phase (Tactician upgrade) ─────────────────────────────────────
+
+## Start manual deployment phase — player clicks tiles to place each party member
+func _start_deployment_phase(party_chars: Array, pre_placed_enemies: Array) -> void:
+	_deploy_pending_chars = party_chars.duplicate()
+	_deploy_current_index = 0
+	current_action_mode = ActionMode.DEPLOY
+
+	# Register pre-placed enemies with CombatManager (they're already on the grid)
+	CombatManager.combat_active = true
+	CombatManager.combat_grid = combat_grid
+	CombatManager.all_units.clear()
+	CombatManager.turn_order.clear()
+	for enemy in pre_placed_enemies:
+		CombatManager.all_units.append(enemy)
+
+	# Show deployment zones and hide action panel
+	combat_grid.show_deployment_zones(true, false)
+	action_panel.hide()
+
+	# Create deployment info label
+	_deploy_info_label = Label.new()
+	_deploy_info_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_deploy_info_label.add_theme_font_size_override("font_size", 18)
+	_deploy_info_label.add_theme_color_override("font_color", Color(0.95, 0.85, 0.4))
+	_deploy_info_label.anchor_left = 0.2
+	_deploy_info_label.anchor_right = 0.8
+	_deploy_info_label.anchor_top = 0.02
+	_deploy_info_label.anchor_bottom = 0.08
+	add_child(_deploy_info_label)
+
+	# Create confirm button (hidden until all units placed)
+	_deploy_confirm_button = Button.new()
+	_deploy_confirm_button.text = "Start Battle"
+	_deploy_confirm_button.anchor_left = 0.4
+	_deploy_confirm_button.anchor_right = 0.6
+	_deploy_confirm_button.anchor_top = 0.08
+	_deploy_confirm_button.anchor_bottom = 0.13
+	_deploy_confirm_button.add_theme_font_size_override("font_size", 16)
+	_deploy_confirm_button.add_theme_color_override("font_color", Color(0.95, 0.85, 0.4))
+	var sb = UIStyle.make_stylebox(Color(0.2, 0.5, 0.2))
+	_deploy_confirm_button.add_theme_stylebox_override("normal", sb)
+	_deploy_confirm_button.pressed.connect(_on_deploy_confirm)
+	_deploy_confirm_button.hide()
+	add_child(_deploy_confirm_button)
+
+	_update_deploy_prompt()
+	_log_message("=== DEPLOYMENT PHASE ===")
+	_log_message("Click a highlighted tile to place each party member.")
+
+
+## Update the deployment prompt text
+func _update_deploy_prompt() -> void:
+	if _deploy_info_label == null:
+		return
+	if _deploy_current_index < _deploy_pending_chars.size():
+		var char_name = _deploy_pending_chars[_deploy_current_index].get("name", "???")
+		var remaining = _deploy_pending_chars.size() - _deploy_current_index
+		_deploy_info_label.text = "Place %s  (%d remaining) — click a green/blue tile" % [char_name, remaining]
+	else:
+		_deploy_info_label.text = "All units placed! Click 'Start Battle' to begin."
+		if _deploy_confirm_button:
+			_deploy_confirm_button.show()
+
+
+## Handle a tile click during deployment phase
+func _deploy_place_at(grid_pos: Vector2i) -> void:
+	if _deploy_current_index >= _deploy_pending_chars.size():
+		return
+
+	# Validate: must be in player zone and unoccupied
+	if not combat_grid.is_in_player_zone(grid_pos):
+		_log_message("Must place in the highlighted deployment zone.")
+		return
+	if combat_grid.is_occupied(grid_pos):
+		_log_message("Tile already occupied.")
+		return
+	# Don't place on hazardous terrain
+	var tile_data = combat_grid.tiles.get(grid_pos)
+	if tile_data != null and not tile_data.walkable:
+		_log_message("Can't deploy on unwalkable terrain.")
+		return
+
+	var char_data = _deploy_pending_chars[_deploy_current_index]
+	var unit = CombatUnit.new()
+	unit.init_from_character(char_data, CombatManager.Team.PLAYER)
+	combat_grid.place_unit(unit, grid_pos)
+	CombatManager.all_units.append(unit)
+
+	_log_message("Placed %s at %s" % [unit.unit_name, grid_pos])
+	_deploy_current_index += 1
+	_update_deploy_prompt()
+
+
+## Confirm deployment and start combat
+func _on_deploy_confirm() -> void:
+	# Clean up deployment UI
+	if _deploy_info_label:
+		_deploy_info_label.queue_free()
+		_deploy_info_label = null
+	if _deploy_confirm_button:
+		_deploy_confirm_button.queue_free()
+		_deploy_confirm_button = null
+
+	combat_grid.clear_highlights()
+	current_action_mode = ActionMode.NONE
+
+	# Finalize: calculate turn order and start combat
+	CombatManager._calculate_turn_order()
+	CombatManager.combat_started.emit()
+	CombatManager._apply_combat_start_perks()
+	CombatManager._start_current_turn()
+
+	_log_message("=== BATTLE BEGINS ===")
+
+
+## Signal handler (unused if we drive deployment ourselves, but kept for completeness)
+func _on_deployment_phase_started(_can_manually_place: bool) -> void:
+	pass
+
+
+func _on_deployment_phase_ended() -> void:
+	pass
 
 
 ## Generate combat grid terrain based on overworld terrain context
@@ -705,6 +842,10 @@ func _on_tile_clicked(grid_pos: Vector2i) -> void:
 			# Try to use active skill at tile
 			_resolve_active_skill(grid_pos)
 
+		ActionMode.DEPLOY:
+			# Place next party member during deployment phase
+			_deploy_place_at(grid_pos)
+
 
 func _on_tile_hovered(grid_pos: Vector2i) -> void:
 	# Show hover highlight
@@ -844,7 +985,11 @@ func _on_attack_pressed() -> void:
 	# Highlight enemies in range as bright targets, rest of range as dim area
 	var valid_targets: Array[Vector2i] = []
 	for other in CombatManager.all_units:
-		if other.is_alive() and other.team != unit.team and other.grid_position in range_area:
+		if not other.is_alive() or other.team == unit.team:
+			continue
+		if "is_stealthed" in other and other.is_stealthed:
+			continue
+		if other.grid_position in range_area:
 			valid_targets.append(other.grid_position)
 	combat_grid.highlight_spell_range_and_area(range_area, valid_targets)
 
@@ -2011,6 +2156,11 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 
 	if defender.team == attacker.team:
 		_log_message("Cannot attack allies!")
+		_cancel_action_mode()
+		return
+
+	if "is_stealthed" in defender and defender.is_stealthed:
+		_log_message("Target is hidden in stealth!")
 		_cancel_action_mode()
 		return
 
@@ -3804,6 +3954,9 @@ func _find_nearest_enemy(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
 	for enemy in enemies:
 		if not enemy.is_alive():
 			continue
+		# Stealthed units are invisible to AI targeting
+		if "is_stealthed" in enemy and enemy.is_stealthed:
+			continue
 		if "taunt_active" in enemy and enemy.taunt_active:
 			var dist = _grid_distance(unit.grid_position, enemy.grid_position)
 			# Treat taunting units as distance 0 to always prefer them
@@ -3817,6 +3970,9 @@ func _find_nearest_enemy(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
 	# so AI prioritises disrupting them. Taunt short-circuit above takes precedence.
 	for enemy in enemies:
 		if not enemy.is_alive():
+			continue
+		# Stealthed units are invisible to AI targeting
+		if "is_stealthed" in enemy and enemy.is_stealthed:
 			continue
 		var dist = _grid_distance(unit.grid_position, enemy.grid_position)
 		var effective_dist = dist - (3 if ("active_mantras" in enemy and enemy.active_mantras.size() > 0) else 0)
