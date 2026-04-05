@@ -44,67 +44,37 @@ Last Updated: 2026-04-05
 - [x] Monk's Robe and Monk's Hood added (+1 Yoga each)
 - NOTE for later: element-specific ritual garb and ritual masks — expand in magic foci session
 
-### Step 8 — Magic Foci
+### Step 8 — Ritual Implements (Magic Foci rework) ✓ DONE
 
-#### Design Rules
-- Type: `focus`. Occupy weapon_main or weapon_off slots (intentional sacrifice — no free slot)
-- One-handed foci are shield-compatible
-- Governed by the **Ritual** skill
-- Material tiers: **Bone** (Phurba + Khatvanga only) → **Copper** → **Silver** → **Gold** → **Sky-Iron** → **Vajra**
-  - Copper/Silver/Gold added to equipment_tables.json as focus-only materials ✓
-- Weapon damage is vestigial (1–5 at most); the real value is in spellpower/mana/school bonuses
-- School coverage: White (Dorje), Space (Drilbu), Summoning (Kangling), Enchantment (Damaru), Black (Khatvanga), Sorcery (Phurba)
+#### System Design (final)
+- **Material** = elemental affinity → school skill bonus (scales with consecration tier)
+  - Copper → Fire magic | Silver → Water magic | Gold → Earth magic | Iron → Air magic
+  - Bronze → Space magic (tiers 1–3) | Sky-iron → Space magic (tiers 4–5)
+  - Conch → White magic | Bone → Black magic
+- **Consecration tier** = quality tier (all base stats scale)
+  - Plain (1) → Blessed (2) → Empowered (3) → Perfected (4) → Legendary (5)
+- **Instrument type** = base functional profile (fixed school bonuses where appropriate)
+  - Dorje: +spellpower only (White now purely from conch material)
+  - Drilbu: +max_mana + Space skill bonus (instrument nature) + material bonus
+  - Khatvanga: +spellpower + max_mana + initiative aura (Black now purely from bone material)
+  - Damaru: +max_mana + Enchantment skill bonus + Rhythm Charge
+  - Kangling: +spellpower + Summoning skill bonus + Chöd Offering
+  - Phurba: +spellpower + Sorcery skill bonus + Throw Phurba
+- **Set bonus**: Dorje + Drilbu of any material in both weapon slots → +3 Spellpower, +3 Mana, +2 Initiative
+- 210 items total: 6 implements × 8 materials × 5 tiers (bronze tiers 1–3 / sky-iron tiers 4–5 for Space)
+- Generator: `tools/generate_implements.py` → `tools/generated_implements.json`
 
-#### Spell Accuracy / Spell Projectiles
-- [ ] **Deferred**: Projectile deviation for spells — only makes sense for spells with a visible physical projectile (firebolt, lightning bolt, etc.). Would need a `"projectile": true` tag in spells.json. Leaving to ferment — not sure if spell misses feel fair vs. ranged weapon misses.
-- [ ] **Deferred**: `spell_accuracy` as a stat distinct from weapon accuracy — some foci could add it, reducing deviation chance on projectile spells.
+#### What was wired earlier (still active)
+- [x] Initiative aura on khatvanga — `get_passive_perk_stat_bonus(unit, "initiative")` equipment section
+- [x] Rhythm Charge (Damaru) — `damaru_charges` on CombatUnit; discount fires in `cast_spell()`
+- [x] Chöd Offering (Kangling) — `_resolve_chod_offering()` in combat_manager.gd
+- [x] Throw Phurba — `_resolve_throw_phurba()`; Subjugated status in statuses.json
+- [x] Set bonus — `calculate_equipment_stats()` detects `set_pair: "dorje_drilbu"`; tooltip shows gold line
 
-#### Set Bonus System (Dorje + Drilbu)
-- [x] Implemented in `calculate_equipment_stats()` — when both weapon slots carry `set_pair: "dorje_drilbu"`, adds +3 Spellpower, +3 Max Mana, +2 Initiative; sets `active_set_bonus` field in equip_bonus for future combat opener hooks
-- [x] Tooltip shows set bonus line in gold when item has `set_pair` field
-
-#### Individual Foci
-
-**Dorje / Vajra** — weapon_main, one-handed
-- Passive: +spellpower, +White magic skill bonus
-- Tiers: Copper → Silver → Gold → Sky-Iron → Vajra
-- [x] Add items to items.json
-
-**Drilbu / Bell** — weapon_off, one-handed
-- Passive: +max_mana, +Space magic skill bonus
-- Tiers: Copper → Silver → Gold → Sky-Iron → Vajra
-- [x] Add items to items.json
-
-**Khatvanga** — weapon_main, two-handed, some weapon damage (5–8)
-- Passive: +spellpower (moderate), +max_mana (smaller), +Black magic skill bonus
-- Passive aura: enemies within melee range have reduced initiative (no action required)
-- Tiers: Bone → Copper → Silver → Gold → Sky-Iron → Vajra
-- [x] Add items to items.json
-- [x] Wire initiative aura in combat_manager.gd — `get_passive_perk_stat_bonus(unit, "initiative")`, equipment section (runs for all units regardless of perks)
-
-**Damaru** — weapon_off, one-handed
-- Passive: +max_mana, +Enchantment skill bonus
-- Active — **Rhythm Charge**: each spell cast while holding the Damaru adds 1 charge (max 3). At 3 charges, next spell costs 40% less mana. Charges reset after the discount fires.
-- Tiers: Copper → Silver → Gold → Sky-Iron → Vajra
-- [x] Add items to items.json
-- [x] Wire charge mechanic — `damaru_charges` on CombatUnit; incremented in `_process_spell_cast_perks()`; discount fires in `cast_spell()` before mana deduction
-
-**Kangling** — weapon_off, one-handed
-- Passive: +spellpower, +Summoning skill bonus
-- Active — **Chöd Offering**: cost is always floor(max_mana × 0.25). Deducted from current mana first; any shortfall comes from HP. Gain spellpower = ceil(cost / 2), stacking until end of combat.
-- Tiers: Copper → Silver → Gold → Sky-Iron → Vajra
-- [x] Add items to items.json
-- [x] Wire Chöd action — `_resolve_chod_offering()` in combat_manager.gd; `chod_spellpower_bonus` on CombatUnit wired into `get_spellpower()`; surfaced via Skills panel in combat_arena.gd
-
-**Phurba** — weapon_main or weapon_off, one-handed, moderate weapon damage (4–5)
-- Passive: +spellpower, +Sorcery skill bonus
-- Active — **Throw Phurba**: whole-battlefield range (capped at 80 tiles), mana cost 15. Damage = throw_base_damage + sorcery×2. DC 16 Focus save → Subjugated 3 turns on failure.
-  - "Subjugated" is distinct from "Pinned" (Trishula): Pinned = no movement. Subjugated = no movement + no attacks.
-- Tiers: Bone → Copper → Silver → Gold → Sky-Iron → Vajra
-- [x] Add items to items.json
-- [x] Add "Subjugated" to statuses.json
-- [x] Wire Throw Phurba action — `_resolve_throw_phurba()` in combat_manager.gd; surfaced via Skills panel
-- [x] Wire Sorcery skill into Phurba damage calculation (base + sorcery_level × 2)
+#### Open / Deferred
+- [ ] **Ritual implement traits** — special properties (e.g. conch pacification aura, bone life-drain proc, sky-iron void field) to be designed in a dedicated session
+- [ ] **Shop distribution** — no shops currently stock implements; add Plain/Blessed tier items to ritual-focused shops
+- [ ] **Spell Accuracy / Spell Projectiles** — deferred, leaving to ferment (see Design Questions)
 
 #### Other weapon mechanics wired this session
 - [x] **Trishula on_crit_status** — `on_crit_status` field checked in `_process_weapon_on_hit_procs()` after crits
@@ -114,25 +84,15 @@ Last Updated: 2026-04-05
 
 #### Ritual Garb
 
-**Design Notes (implement in a dedicated session)**
-- Slot: `chest` (robes) and `head` (masks)
-- Material: no material tiers — ritual garb is unique crafted/found gear
-- Each school of magic gets a matching robe + mask pair:
-  - **White** — Healing Robe + Clarity Mask (+White magic skill, +spellpower, +max_mana)
-  - **Black** — Death Shroud + Skull Mask (+Black magic skill, +spellpower, fear aura)
-  - **Space** — Void Robe + Void Mask (+Space magic skill, +initiative)
-  - **Air** — Wind Dancer Robe + Feather Mask (+Air magic skill, +dodge, +movement)
-  - **Fire** — Flame Mantle + Ember Mask (+Fire magic skill, +crit_chance)
-  - **Water** — Flowing Robe + Wave Mask (+Water magic skill, +healing effectiveness)
-  - **Earth** — Stone Robe + Iron Mask (+Earth magic skill, +armor, +HP)
-  - **Sorcery** — Sorcerer's Robe + Demon Mask (+Sorcery skill, +spellpower, on-kill effect)
-  - **Enchantment** — Enchanter's Robe + Silk Veil (+Enchantment skill, +max_mana, +spell duration)
-  - **Summoning** — Bone Robe + Horn Mask (+Summoning skill, +summoned unit HP)
-  - **Ritual** — Ceremonial Robe + Tantric Crown (+Ritual skill, +mandala effectiveness)
-- Monastic tradition garbs (cross-school, for specific playstyles):
-  - Vajrayana Robe (White + Black + Summoning), Dzogchen Mantle (Space + Air + Yoga)
-- [ ] Add items to items.json
-- [ ] Wire school bonus display in item_tooltip.gd (extend skill_bonuses section for ritual garb)
+**Design (pending implementation session)**
+- Slots: `chest` (robes) and `head` (masks)
+- Same material×consecration system as implements: material = elemental school bonus, tier = power
+- Robes: per-element (one line per element, 5 consecration tiers each)
+- Masks: more specific, per-school (can be more exotic — see existing school list)
+- Monastic cross-school garbs: Vajrayana Robe (White+Black+Summoning), Dzogchen Mantle (Space+Air+Yoga)
+- [ ] Design stat profiles per robe/mask type
+- [ ] Add items to items.json (follow generate_implements.py pattern — write a generator)
+- [ ] Wire school bonus display in item_tooltip.gd if needed (skill_bonuses already shown)
 
 ---
 
