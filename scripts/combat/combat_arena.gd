@@ -901,6 +901,18 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 	else:
 		_hide_cover_tooltip()
 
+	# Show hit% when hovering an enemy target in attack mode
+	if current_action_mode == ActionMode.ATTACK:
+		var current_unit := CombatManager.get_current_unit()
+		var target_unit := combat_grid.get_unit_at(grid_pos)
+		if current_unit != null and target_unit != null and target_unit.team != current_unit.team and target_unit.is_targetable():
+			var hit_pct := CombatManager.calculate_hit_chance(current_unit, target_unit)
+			_show_hit_chance_tooltip(grid_pos, hit_pct)
+		else:
+			_hide_hit_chance_tooltip()
+	else:
+		_hide_hit_chance_tooltip()
+
 	# Show floating tile info tooltip (obstacle, height, terrain effect)
 	_show_tile_tooltip(grid_pos)
 
@@ -967,6 +979,7 @@ func _cancel_action_mode() -> void:
 	combat_grid.clear_aoe_preview()
 	_hide_cover_tooltip()
 	_hide_tile_tooltip()
+	_hide_hit_chance_tooltip()
 	spell_panel.hide()
 	item_panel.hide()
 	skills_panel.hide()
@@ -1582,14 +1595,28 @@ func _try_use_item(target_pos: Vector2i) -> void:
 		_cancel_action_mode()
 		return
 
+	var item_type := selected_item.get("type", "")
+
+	# Cancel action mode before async work
+	_cancel_action_mode()
+
 	var result = CombatManager.use_combat_item(user, selected_item.get("id", ""), target_pos)
+	selected_item = {}
 
 	if not result.get("success", false):
 		_log_message("Failed to use item: " + result.get("reason", "Unknown"))
+		return
+
+	# Animate bomb throw — land at actual (possibly scattered) position
+	if item_type == "bomb":
+		var from_world := _tile_center(user.grid_position)
+		var landing_pos: Vector2i = result.get("target_pos", target_pos)
+		var to_world := _tile_center(landing_pos)
+		await _animate_projectile(from_world, to_world, "bomb")
+		if result.get("bomb_scattered", false):
+			_log_message("  Bomb scattered — landed 1 tile off target!")
 
 	# Success logging handled by _on_item_used_in_combat signal
-	selected_item = {}
-	_cancel_action_mode()
 
 
 func _on_item_used_in_combat(user: Node, item: Dictionary, result: Dictionary) -> void:
@@ -2238,7 +2265,20 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 	# Play attack lunge animation
 	attacker.play_attack_animation(defender.global_position)
 
+	# Cancel action mode early so input is not accepted during animation
+	_cancel_action_mode()
+
 	var result = CombatManager.attack_unit(attacker, defender)
+
+	# Animate projectile for ranged attacks
+	var is_ranged := attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon()
+	if is_ranged and result.success:
+		var proj_type := _get_projectile_type(attacker)
+		var from_world := _tile_center(attacker.grid_position)
+		# If the shot deviated, animate to the actual landing spot
+		var landing := result.get("deviation_landing_pos", defender.grid_position) if not result.get("hit", true) else defender.grid_position
+		var to_world := _tile_center(landing)
+		await _animate_projectile(from_world, to_world, proj_type)
 
 	if result.success:
 		# Log cover info if applicable
@@ -2272,14 +2312,21 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 			_log_message("%s attacks %s - MISS!%s (rolled %.0f vs %.0f%%)" % [
 				attacker.unit_name, defender.unit_name, cover_text, result.roll, result.hit_chance
 			])
+			# Log deviation result for ranged misses
+			if is_ranged and result.has("deviation_landing_pos"):
+				var dev_name: String = result.get("deviation_hit_unit_name", "")
+				if dev_name != "":
+					var friendly := result.get("deviation_hit_team", -1) == attacker.team
+					var friendly_tag := " [FRIENDLY FIRE!]" if friendly else ""
+					_log_message("  Projectile deviates %d tile(s) — hits %s for %d!%s" % [
+						result.deviation_tiles, dev_name, result.deviation_damage, friendly_tag
+					])
 	else:
 		var reason = result.get("reason", "Unknown")
 		if reason == "No line of sight":
 			_log_message("Attack failed: No line of sight!")
 		else:
 			_log_message("Attack failed: " + reason)
-
-	_cancel_action_mode()
 
 
 # ============================================
@@ -2629,6 +2676,81 @@ func _hide_tile_tooltip() -> void:
 	if _tile_tooltip != null:
 		_tile_tooltip.queue_free()
 		_tile_tooltip = null
+
+
+# ============================================
+# PROJECTILE VISUALS & HIT CHANCE TOOLTIP
+# ============================================
+
+## Floating label showing hit% when hovering an attack target
+var _hit_chance_tooltip: Label = null
+
+## Show a hit-chance label above the hovered tile
+func _show_hit_chance_tooltip(grid_pos: Vector2i, hit_chance: float) -> void:
+	_hide_hit_chance_tooltip()
+	_hit_chance_tooltip = Label.new()
+	var pct := clampf(hit_chance, 10.0, 95.0)  # matches the clamp in calculate_hit_chance
+	_hit_chance_tooltip.text = "Hit: %.0f%%" % pct
+	_hit_chance_tooltip.add_theme_font_size_override("font_size", 12)
+	# Green ≥70%, yellow 40-69%, red <40%
+	var col := Color(0.3, 0.9, 0.3) if pct >= 70.0 else (Color(0.95, 0.85, 0.2) if pct >= 40.0 else Color(0.9, 0.3, 0.3))
+	_hit_chance_tooltip.add_theme_color_override("font_color", col)
+	_hit_chance_tooltip.position = combat_grid.grid_to_world(grid_pos) + Vector2(4, -20)
+	_hit_chance_tooltip.z_index = 101
+	combat_grid.add_child(_hit_chance_tooltip)
+
+
+## Hide the hit-chance tooltip
+func _hide_hit_chance_tooltip() -> void:
+	if _hit_chance_tooltip != null:
+		_hit_chance_tooltip.queue_free()
+		_hit_chance_tooltip = null
+
+
+## Animate a projectile from one world position to another, then fade it out.
+## Awaitable — caller should await this to sequence log messages after the visual.
+func _animate_projectile(from_world: Vector2, to_world: Vector2, proj_type: String) -> void:
+	var line := Line2D.new()
+	line.width = 2.5
+	line.default_color = _get_projectile_color(proj_type)
+	line.add_point(from_world)
+	line.add_point(to_world)
+	line.z_index = 50
+	combat_grid.add_child(line)
+	var tween := create_tween()
+	tween.tween_property(line, "modulate:a", 0.0, 0.25)
+	await tween.finished
+	line.queue_free()
+
+
+## Return the line color for a projectile type
+func _get_projectile_color(proj_type: String) -> Color:
+	match proj_type:
+		"arrow":   return Color(0.85, 0.75, 0.3)   # golden brown
+		"bolt":    return Color(0.75, 0.75, 0.85)   # steel grey
+		"javelin": return Color(0.65, 0.5, 0.3)     # wood brown
+		"bomb":    return Color(1.0, 0.55, 0.1)     # orange
+		_:         return Color(1.0, 1.0, 1.0)       # white fallback
+
+
+## Determine projectile type from a unit's equipped weapon
+func _get_projectile_type(unit: CombatUnit) -> String:
+	if not unit.has_method("get_equipped_weapon"):
+		return "arrow"
+	var weapon := unit.get_equipped_weapon()
+	var wtype := weapon.get("type", "")
+	match wtype:
+		"bow":      return "arrow"
+		"crossbow": return "bolt"
+		"thrown":
+			var wclass := weapon.get("weapon_class", "").to_lower()
+			return "javelin" if "javelin" in wclass else "bolt"
+		_: return "arrow"
+
+
+## Tile-center in world coordinates (convenience)
+func _tile_center(grid_pos: Vector2i) -> Vector2:
+	return combat_grid.grid_to_world(grid_pos) + Vector2(combat_grid.tile_size * 0.5, combat_grid.tile_size * 0.5)
 
 
 ## Add message to combat log

@@ -1488,6 +1488,11 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		# Reset consecutive hit streaks on miss
 		attacker.momentum_stacks = 0
 		attacker.unarmed_hit_stacks = 0
+		# Ranged misses: projectile deviates and may hit someone else
+		if is_ranged:
+			var miss_margin: float = result.roll - result.hit_chance
+			var dev = _resolve_projectile_deviation(attacker, defender.grid_position, miss_margin)
+			result.merge(dev, true)
 
 	# Track per-turn attack type counters (after resolving, so 'first attack' checks work)
 	if attacker.has_method("get_equipped_weapon"):
@@ -1507,6 +1512,67 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		use_action(1)
 	unit_attacked.emit(attacker, defender, result)
 	return result
+
+
+## Resolve a ranged projectile miss — calculate deviation and apply damage if it hits someone.
+## Returns a dict with deviation_* fields merged into the attack result.
+func _resolve_projectile_deviation(attacker: Node, intended_pos: Vector2i, miss_margin: float) -> Dictionary:
+	# Deviation distance scales with how badly the shot missed
+	var dev_tiles: int
+	if miss_margin <= 15.0:
+		dev_tiles = 1
+	elif miss_margin <= 35.0:
+		dev_tiles = 2
+	else:
+		dev_tiles = 3
+
+	# 8 compass directions; exclude the one pointing back toward the attacker
+	const DIRS: Array = [
+		Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1),
+		Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)
+	]
+	var back_dir := Vector2i(
+		signi(attacker.grid_position.x - intended_pos.x),
+		signi(attacker.grid_position.y - intended_pos.y)
+	)
+	var valid_dirs: Array[Vector2i] = []
+	for d: Vector2i in DIRS:
+		if d != back_dir:
+			valid_dirs.append(d)
+
+	var dir: Vector2i = valid_dirs[randi() % valid_dirs.size()]
+	var landing := intended_pos + dir * dev_tiles
+
+	# Clamp to grid bounds
+	if combat_grid != null:
+		landing.x = clampi(landing.x, 0, combat_grid.grid_size.x - 1)
+		landing.y = clampi(landing.y, 0, combat_grid.grid_size.y - 1)
+
+	var dev_result := {
+		"deviation_tiles": dev_tiles,
+		"deviation_landing_pos": landing,
+		"deviation_hit_unit_name": "",
+		"deviation_hit_team": -1,
+		"deviation_damage": 0
+	}
+
+	# Check if any living unit occupies the landing tile
+	var stray_target := get_unit_at(landing)
+	if stray_target != null and stray_target.is_alive():
+		var dmg_type: String = attacker.get_weapon_damage_type() if attacker.has_method("get_weapon_damage_type") else "physical"
+		var dmg_result := calculate_physical_damage(attacker, stray_target, dmg_type)
+		var dmg: int = dmg_result.get("damage", 0)
+		apply_damage(stray_target, dmg, dmg_type)
+		dev_result["deviation_hit_unit_name"] = stray_target.unit_name
+		dev_result["deviation_hit_team"] = stray_target.team
+		dev_result["deviation_damage"] = dmg
+		combat_log.emit("  Projectile deviates %d tile(s) — stray hit on %s for %d!" % [
+			dev_tiles, stray_target.unit_name, dmg
+		])
+	else:
+		combat_log.emit("  Projectile deviates %d tile(s) — lands wide." % dev_tiles)
+
+	return dev_result
 
 
 ## Calculate hit chance (percentage)
@@ -4301,12 +4367,33 @@ func _use_bomb(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictionary
 	var alchemy_bonus = _get_alchemy_bonus(user)
 	var total_damage = int(base_damage * (1.0 + alchemy_bonus / 100.0))
 
+	# Bomb scatter: low Alchemy skill means the throw can land off-target by 1 tile.
+	# Alchemy 0 → 50% scatter chance; Alchemy 3+ → no scatter.
+	var actual_target_pos := target_pos
+	var bomb_scattered := false
+	var alchemy_level: int = 0
+	if "character_data" in user:
+		alchemy_level = user.character_data.get("skills", {}).get("alchemy", 0)
+	var scatter_chance := maxf(0.0, 50.0 - alchemy_level * 17.0)
+	if scatter_chance > 0.0 and randf() * 100.0 < scatter_chance:
+		const DIRS8: Array = [
+			Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1),
+			Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)
+		]
+		var scatter_dir: Vector2i = DIRS8[randi() % DIRS8.size()]
+		actual_target_pos = target_pos + scatter_dir
+		if combat_grid != null:
+			actual_target_pos.x = clampi(actual_target_pos.x, 0, combat_grid.grid_size.x - 1)
+			actual_target_pos.y = clampi(actual_target_pos.y, 0, combat_grid.grid_size.y - 1)
+		bomb_scattered = true
+		combat_log.emit("  Bomb lands off-target — scattered 1 tile!")
+
 	# Find units in AoE
 	var hit_units: Array[Node] = []
 	for unit in all_units:
 		if not unit.is_alive():
 			continue
-		var dist = _grid_distance(unit.grid_position, target_pos)
+		var dist = _grid_distance(unit.grid_position, actual_target_pos)
 		if dist <= aoe_radius:
 			if hits_all:
 				hit_units.append(unit)
@@ -4340,13 +4427,15 @@ func _use_bomb(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictionary
 
 		results.append(unit_result)
 
-	# Create ground effects from bomb damage type
-	_create_ground_effects_from_damage(target_pos, aoe_radius, damage_type, 2)
+	# Create ground effects from bomb damage type at actual landing position
+	_create_ground_effects_from_damage(actual_target_pos, aoe_radius, damage_type, 2)
 
 	return {
 		"success": true,
 		"is_bomb": true,
-		"target_pos": target_pos,
+		"target_pos": actual_target_pos,
+		"aimed_pos": target_pos,
+		"bomb_scattered": bomb_scattered,
 		"aoe_radius": aoe_radius,
 		"hit_units": hit_units,
 		"results": results

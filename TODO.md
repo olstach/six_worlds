@@ -55,8 +55,9 @@ Last Updated: 2026-04-03
 - Weapon damage is vestigial (1–5 at most); the real value is in spellpower/mana/school bonuses
 - School coverage: White (Dorje), Space (Drilbu), Summoning (Kangling), Enchantment (Damaru), Black (Khatvanga), Sorcery (Phurba)
 
-#### Spell Accuracy
-- [ ] **TODO (brainstorm later)**: Add `spell_accuracy` as a stat distinct from weapon accuracy — affects hit chance of targeted spells. Some foci would add it.
+#### Spell Accuracy / Spell Projectiles
+- [ ] **Deferred**: Projectile deviation for spells — only makes sense for spells with a visible physical projectile (firebolt, lightning bolt, etc.). Would need a `"projectile": true` tag in spells.json. Leaving to ferment — not sure if spell misses feel fair vs. ranged weapon misses.
+- [ ] **Deferred**: `spell_accuracy` as a stat distinct from weapon accuracy — some foci could add it, reducing deviation chance on projectile spells.
 
 #### Set Bonus System (Dorje + Drilbu)
 - [x] Implemented in `calculate_equipment_stats()` — when both weapon slots carry `set_pair: "dorje_drilbu"`, adds +3 Spellpower, +3 Max Mana, +2 Initiative; sets `active_set_bonus` field in equip_bonus for future combat opener hooks
@@ -136,6 +137,15 @@ Last Updated: 2026-04-03
 ---
 
 ## High Priority
+
+### Projectile System (COMPLETE)
+- [x] Ranged attack misses deviate 1-3 tiles based on how badly the roll failed
+- [x] Deviated projectiles can hit any unit at landing tile (ally or enemy) — logs FRIENDLY FIRE
+- [x] Bomb scatter: Alchemy 0 = 50% chance to land 1 tile off; Alchemy 3+ = no scatter
+- [x] Hit% tooltip when hovering an attack target (green/yellow/red by chance)
+- [x] Line2D projectile animation for ranged attacks and bombs (sprites deferred)
+- [ ] Proper projectile sprites (arrows, bolts, firebombs) — currently line flash only
+- [ ] Spell projectiles — see Magic Foci / Spell Accuracy section above
 
 ### Hell Content
 - [ ] More hell events — both zones still under density target (~15+ events each)
