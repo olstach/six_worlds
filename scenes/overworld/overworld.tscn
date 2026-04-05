@@ -119,13 +119,6 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Crafting (R)"
 
-[node name="AlchemyToggle" type="CheckButton" parent="HUDLayer/TopBar"]
-unique_name_in_owner = true
-layout_mode = 2
-button_pressed = true
-text = "Auto-Brew"
-tooltip_text = "Toggle automatic alchemy brewing (consumes reagents each step)"
-
 [node name="JournalButton" type="Button" parent="HUDLayer/TopBar"]
 unique_name_in_owner = true
 layout_mode = 2

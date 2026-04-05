@@ -322,14 +322,80 @@ func _update_companion_ui(character: Dictionary) -> void:
 
 func _update_header(character: Dictionary) -> void:
 	name_value.text = character.get("name", "Unknown")
-	race_value.text = character.get("race", "Unknown").capitalize()
-	background_value.text = character.get("background", "Unknown").capitalize()
+
+	var race_id = character.get("race", "")
+	var race_data = CharacterSystem.get_race_data(race_id)
+	race_value.text = race_data.get("name", race_id.capitalize().replace("_", " "))
+	race_value.mouse_filter = Control.MOUSE_FILTER_STOP
+	race_value.tooltip_text = _build_race_tooltip(race_id)
+
+	var bg_id = character.get("background", "")
+	var bg_data = CharacterSystem.get_background_data(bg_id)
+	background_value.text = bg_data.get("name", bg_id.capitalize().replace("_", " "))
+	background_value.mouse_filter = Control.MOUSE_FILTER_STOP
+	background_value.tooltip_text = _build_background_tooltip(bg_id)
+
 	# Companions have a "free XP" pool (earned since joining, not yet spent).
 	# Show that instead of raw character.xp, which gets reset by the XP-swap pattern.
 	if character.has("companion_id"):
 		xp_value.text = str(int(character.get("free_xp", 0)))
 	else:
 		xp_value.text = str(character.get("xp", 0))
+
+
+func _build_race_tooltip(race_id: String) -> String:
+	var data = CharacterSystem.get_race_data(race_id)
+	if data.is_empty():
+		return ""
+	var lines: Array[String] = []
+	var desc = data.get("description", "")
+	if desc != "":
+		lines.append(desc)
+	var mods = data.get("attribute_modifiers", {})
+	if not mods.is_empty():
+		var mod_parts: Array[String] = []
+		for attr in mods:
+			var val = int(mods[attr])
+			if val != 0:
+				mod_parts.append(("%+d " % val) + attr.capitalize())
+		if not mod_parts.is_empty():
+			lines.append("")
+			lines.append("Attributes: " + ", ".join(mod_parts))
+	var affinities = data.get("elemental_affinity_bonuses", {})
+	if not affinities.is_empty():
+		var aff_parts: Array[String] = []
+		for elem in affinities:
+			aff_parts.append(elem.capitalize() + " +" + str(int(affinities[elem])))
+		lines.append("Affinity: " + ", ".join(aff_parts))
+	return "\n".join(lines)
+
+
+func _build_background_tooltip(bg_id: String) -> String:
+	var data = CharacterSystem.get_background_data(bg_id)
+	if data.is_empty():
+		return ""
+	var lines: Array[String] = []
+	var desc = data.get("description", "")
+	if desc != "":
+		lines.append(desc)
+	var mods = data.get("attribute_modifiers", {})
+	if not mods.is_empty():
+		var mod_parts: Array[String] = []
+		for attr in mods:
+			var val = int(mods[attr])
+			if val != 0:
+				mod_parts.append(("%+d " % val) + attr.capitalize())
+		if not mod_parts.is_empty():
+			lines.append("")
+			lines.append("Attributes: " + ", ".join(mod_parts))
+	var skills = data.get("starting_skills", {})
+	if not skills.is_empty():
+		var sk_parts: Array[String] = []
+		for sk in skills:
+			sk_parts.append(sk.capitalize().replace("_", " ") + " " + str(int(skills[sk])))
+		lines.append("Skills: " + ", ".join(sk_parts))
+	return "\n".join(lines)
+
 
 func _update_attributes(character: Dictionary) -> void:
 	# Clear existing
@@ -483,12 +549,17 @@ func _update_skills_grid(character: Dictionary) -> void:
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		header_container.add_child(name_label)
 
+		var aff = int(affinities[element])
 		var affinity_label = Label.new()
-		affinity_label.text = "[" + str(int(affinities[element])) + "]"
+		affinity_label.text = "[" + str(aff) + "]"
 		affinity_label.add_theme_color_override("font_color", ELEMENT_COLORS[element])
 		affinity_label.add_theme_font_size_override("font_size", 12)
 		affinity_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		header_container.add_child(affinity_label)
+
+		# Tooltip showing current affinity bonuses
+		header_container.mouse_filter = Control.MOUSE_FILTER_STOP
+		header_container.tooltip_text = _build_affinity_tooltip(element, aff)
 
 		skills_grid.add_child(header_container)
 
@@ -543,6 +614,27 @@ func _update_skills_grid(character: Dictionary) -> void:
 		for i in range(8 - ELEMENT_SKILLS.size() - 1):
 			var spacer = Control.new()
 			skills_grid.add_child(spacer)
+
+func _build_affinity_tooltip(element: String, aff: int) -> String:
+	var lines: Array[String] = ["Affinity: %d" % aff, ""]
+	match element:
+		"space":
+			lines.append("+%.1f Spellpower" % (aff * 0.5))
+			lines.append("+%d%% Mental Resistance" % aff)
+		"air":
+			lines.append("+%.1f Initiative" % (aff * 0.5))
+			lines.append("+%d Movement" % (aff / 10))
+		"fire":
+			lines.append("+%.1f%% Damage" % (aff * 0.5))
+			lines.append("+%.1f Crit Chance" % (aff * 0.3))
+		"water":
+			lines.append("+%.1f Dodge" % (aff * 0.5))
+			lines.append("+%d%% Healing Effectiveness" % aff)
+		"earth":
+			lines.append("+%d Max HP" % (aff * 2))
+			lines.append("+%.1f Armor" % (aff * 0.5))
+	return "\n".join(lines)
+
 
 func _format_skill_name(skill_id: String) -> String:
 	# Convert skill_id like "fire_magic" to "Fire"
@@ -1288,6 +1380,21 @@ func _on_craft_filter_pressed(category: String) -> void:
 
 func _update_crafting_tab() -> void:
 	## Refresh the full crafting tab (character panel + item list).
+	# Sync the auto-brew toggle to the current GameState value each time we open this tab
+	var brew_toggle = craft_filter_bar.get_node_or_null("AutoBrewToggle")
+	if brew_toggle == null:
+		# First open: build the toggle and add it to the filter bar
+		var spacer = Control.new()
+		spacer.custom_minimum_size.x = 10
+		craft_filter_bar.add_child(spacer)
+		brew_toggle = CheckButton.new()
+		brew_toggle.name = "AutoBrewToggle"
+		brew_toggle.text = "Auto-Brew"
+		brew_toggle.tooltip_text = "Automatically brew potions each overworld step (consumes reagents)"
+		brew_toggle.add_theme_font_size_override("font_size", 12)
+		brew_toggle.toggled.connect(func(on: bool): GameState.set_alchemy_passive(on))
+		craft_filter_bar.add_child(brew_toggle)
+	brew_toggle.set_pressed_no_signal(GameState.alchemy_passive_enabled)
 	_update_crafter_panel()
 	_update_craft_list()
 

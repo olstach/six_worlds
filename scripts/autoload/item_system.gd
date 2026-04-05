@@ -1445,10 +1445,7 @@ func generate_weapon_for_party(rarity: String = "common",
 				best_level = level
 				best_type = wtype
 
-	# Fallback to random if no skills found
-	if best_type == "":
-		best_type = ""
-
+	# Fallback: best_type stays "" → generate_weapon picks a random type
 	return generate_weapon(best_type, rarity, material_override, quality_override, realm)
 
 

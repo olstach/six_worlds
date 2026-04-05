@@ -20,7 +20,7 @@ Last Updated: 2026-04-03
 - [x] 4 types: Khanda (balanced), Talwar (fast), Dao (chopper, armor_pierce), Patisa (2H)
 - [x] Full material matrix: bone (Khanda only), bronze/iron/steel (all 4), obsidian (Dao only), damascene/sky_iron/vajra (all 4)
 - [x] Update loot tables and shop item pools — new sword types (Talwar, Dao, Patisa, Khanda) added to all weapon shops and map config loot tiers
-- [x] **`good_iron_weapon` investigated** — `resolve_random_generate()` + `generate_weapon_for_party()` are fully wired in item_system.gd and shop_system.gd; fixed bug in map_manager.gd where `item_random` and `item_random_scaled` rewards were not calling `resolve_random_generate()` before adding template items to inventory
+- [x] **`good_iron_weapon` investigated** — `resolve_random_generate()` + `generate_weapon_for_party()` are fully wired in item_system.gd and shop_system.gd; fixed template resolution bugs in map_manager.gd (`item`, `item_random`, `item_random_scaled`), event_manager.gd (event item rewards), and companion_system.gd (fixed_items)
 
 ### Step 3 — Mace renames ✓ DONE
 - [x] iron_mace → Iron Gada, bone_club → Bone Gada, bronze_mace → Bronze Gada

@@ -22,7 +22,6 @@
       "random_spells": { "count": 1 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "iron_sword", "off": "" },
         "chest": "leather_vest"
       },
       "fixed_items": ["health_potion"]
@@ -75,7 +74,7 @@
       "random_spells": { "count": 0 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "iron_mace", "off": "" },
+        "weapon_set_1": { "main": "mace", "off": "" },
         "chest": "chainmail"
       },
       "fixed_items": []
@@ -102,7 +101,7 @@
       "random_spells": { "count": 0 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "iron_axe", "off": "" },
+        "weapon_set_1": { "main": "axe", "off": "" },
         "chest": "leather_vest"
       },
       "fixed_items": []
@@ -129,7 +128,7 @@
       "random_spells": { "count": 0 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "iron_dagger", "off": "" }
+        "weapon_set_1": { "main": "dagger", "off": "" }
       },
       "fixed_items": []
     },
@@ -236,7 +235,7 @@
       "random_spells": { "count": 1 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "iron_dagger", "off": "" },
+        "weapon_set_1": { "main": "dagger", "off": "" },
         "chest": "cloth_robe"
       },
       "fixed_items": ["health_potion"]
@@ -317,7 +316,7 @@
       "random_spells": { "count": 0 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "iron_dagger", "off": "" },
+        "weapon_set_1": { "main": "dagger", "off": "" },
         "chest": "leather_vest"
       },
       "fixed_items": []
@@ -371,7 +370,7 @@
       "random_spells": { "count": 0 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "iron_sword", "off": "" },
+        "weapon_set_1": { "main": "sword", "off": "" },
         "chest": "leather_vest"
       },
       "fixed_items": []
@@ -398,7 +397,7 @@
       "random_spells": { "count": 0 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "iron_dagger", "off": "" },
+        "weapon_set_1": { "main": "dagger", "off": "" },
         "chest": "leather_vest"
       },
       "fixed_items": []
@@ -425,7 +424,7 @@
       "random_spells": { "count": 1 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "iron_dagger", "off": "" },
+        "weapon_set_1": { "main": "dagger", "off": "" },
         "chest": "cloth_robe"
       },
       "fixed_items": []
@@ -533,7 +532,7 @@
       "random_spells": { "count": 0 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "iron_dagger", "off": "" },
+        "weapon_set_1": { "main": "dagger", "off": "" },
         "chest": "leather_vest"
       },
       "fixed_items": []
@@ -586,7 +585,7 @@
       "random_spells": { "count": 0 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "iron_dagger", "off": "" },
+        "weapon_set_1": { "main": "dagger", "off": "" },
         "chest": "leather_vest"
       },
       "fixed_items": ["health_potion", "health_potion"]

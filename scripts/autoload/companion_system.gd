@@ -336,9 +336,14 @@ func recruit(companion_id: String, free: bool = false) -> Dictionary:
 	_apply_starting_equipment(companion, def.get("fixed_equipment", {}),
 		def.get("starting_equipment", {}), rarity, realm)
 
-	# 10. Fixed items — add to shared party inventory
+	# 10. Fixed items — add to shared party inventory (resolve template items first)
 	for item_id in def.get("fixed_items", []):
-		ItemSystem.add_to_inventory(item_id)
+		var resolved_id: String = item_id
+		if ItemSystem.is_template_item(item_id):
+			var gen_id := ItemSystem.resolve_random_generate(item_id)
+			if gen_id != "":
+				resolved_id = gen_id
+		ItemSystem.add_to_inventory(resolved_id)
 
 	# 11. Recalculate all derived stats
 	CharacterSystem.update_derived_stats(companion)

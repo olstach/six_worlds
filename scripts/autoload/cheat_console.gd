@@ -18,7 +18,7 @@ extends CanvasLayer
 ##   tactician              — Grant the Tactician upgrade
 ##   goto <world>           — Travel to a world (hell, hungry_ghost, animal, human, demigod, god)
 ##   list <type>            — List available IDs (companions, spells, items, perks, worlds)
-##   help                   — Show this help text
+##   help / cheatlist       — Show this help text
 
 var _panel: PanelContainer
 var _input: LineEdit
@@ -120,7 +120,7 @@ func _on_command_submitted(text: String) -> void:
 	var args = parts.slice(1)
 
 	match cmd:
-		"help":
+		"help", "cheatlist":
 			_cmd_help()
 		"addxp":
 			_cmd_addxp(args)
@@ -176,8 +176,9 @@ func _cmd_help() -> void:
 	_log("  addcompanion <id>  Recruit companion for free")
 	_log("  additem <id> [n]   Add item(s) to inventory")
 	_log("  tactician          Grant Tactician upgrade")
-	_log("  goto <world>       Travel to world")
+	_log("  goto <world>       Travel to world (reloads overworld)")
 	_log("  list <type>        List IDs (companions/spells/items/perks/worlds)")
+	_log("  help / cheatlist   Show this list")
 
 
 func _cmd_addxp(args: Array) -> void:
@@ -354,8 +355,10 @@ func _cmd_goto(args: Array) -> void:
 		_log_err("Unknown world: %s. Valid: %s" % [world, ", ".join(GameState.WORLDS.keys())])
 		return
 	GameState.current_world = world
-	_log_ok("Moved to %s" % world)
-	_log("Note: reload the overworld scene to see the change.")
+	GameState.returning_from_combat = false
+	_log_ok("Travelling to %s..." % world)
+	_toggle()
+	get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
 
 
 func _cmd_list(args: Array) -> void:

@@ -1021,8 +1021,13 @@ func _apply_reward(reward: Dictionary) -> void:
 			CompanionSystem.apply_party_xp(int(value))
 
 		"item":
-			# Add item to party inventory
-			ItemSystem.add_to_inventory(str(value))
+			# Add item to party inventory (resolve template items first)
+			var item_id_str := str(value)
+			if ItemSystem.is_template_item(item_id_str):
+				var gen_id := ItemSystem.resolve_random_generate(item_id_str)
+				if gen_id != "":
+					item_id_str = gen_id
+			ItemSystem.add_to_inventory(item_id_str)
 
 		"heal":
 			# Heal all party members by percentage

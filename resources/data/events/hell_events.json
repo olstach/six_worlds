@@ -332,17 +332,17 @@
       "id": "hell_lost_wanderer",
       "title": "The Wanderer",
       "realm": "hell",
-      "text": "Sheltering in a hollow carved by frost, a red-skinned figure sits alone among the ice formations. He does not look up as you approach.\n\n\"They cast me out,\" he says at last. \"Said I was too soft for the Guard. Showed mercy to a poor wretch and got a broken horn for it.\" He gestures to a jagged stump above his left eye.\n\n\"Been wandering since. No patrol, no master. Just cold.\"",
+      "text": "Sheltering in a hollow near the road, a lone figure sits apart from the cold. They do not look up as you approach.\n\n\"Cast out,\" they say at last. \"Showed mercy once when the Guard said not to. Paid for it.\" A short, bitter laugh. \"Been wandering since. No patrol, no master. Just nowhere to be.\"",
       "choices": [
         {
           "id": "offer_place",
           "type": "default",
-          "text": "\"A broken horn is nothing. Travel with us.\"",
+          "text": "\"Nowhere to be sounds like a reason to travel with us.\"",
           "outcome": {
             "type": "recruit_companion",
-            "companion_id": "karnak",
+            "companion_id": "random",
             "free": true,
-            "text": "He looks at you for a long moment, then stands, brushing ice from his armor.\n\n\"Alright. Can't be worse than freezing alone.\"",
+            "text": "They look at you for a long moment, then stand, rolling their shoulders.\n\n\"Alright. Can't be worse than this.\"",
             "karma": {
               "human": 3,
               "god": 2
@@ -355,7 +355,7 @@
           "text": "\"Hell rewards the strong. Find your own way.\"",
           "outcome": {
             "type": "text",
-            "text": "He nods, unsurprised. You leave him to the cold.",
+            "text": "They nod, unsurprised. You leave them to the cold.",
             "karma": {
               "hell": 2
             }

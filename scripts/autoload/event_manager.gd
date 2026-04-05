@@ -448,8 +448,13 @@ func apply_outcome(outcome: Dictionary) -> void:
 
 		if "items" in rewards:
 			for item_id in rewards.items:
-				if ItemSystem.item_exists(item_id):
-					ItemSystem.add_to_inventory(item_id)
+				var resolved_id: String = item_id
+				if ItemSystem.is_template_item(item_id):
+					var gen_id := ItemSystem.resolve_random_generate(item_id)
+					if gen_id != "":
+						resolved_id = gen_id
+				if ItemSystem.item_exists(resolved_id):
+					ItemSystem.add_to_inventory(resolved_id)
 				else:
 					print("EventManager: Unknown item '%s', skipping" % item_id)
 
@@ -650,9 +655,22 @@ func apply_outcome(outcome: Dictionary) -> void:
 			# Do NOT emit event_completed — overworld handles showing result panel
 			return
 		"recruit_companion":
-			# Recruit a named companion into the party
-			# Set "free": true in the outcome to skip the gold cost (event-granted companions)
+			# Recruit a companion into the party.
+			# companion_id: "random" picks a random companion not already in the party.
+			# Set "free": true to skip the gold cost (event-granted companions).
 			var companion_id: String = outcome.get("companion_id", "")
+			if companion_id == "random":
+				var party_names: Array = CharacterSystem.get_party().map(func(c): return c.get("name", ""))
+				var all_ids: Array = CompanionSystem.get_all_definitions().keys()
+				var available: Array = all_ids.filter(func(cid):
+					var def = CompanionSystem.get_definition(cid)
+					return not def.get("name", cid) in party_names
+				)
+				if available.is_empty():
+					push_warning("EventManager: recruit_companion random — all companions already in party")
+					event_completed.emit(outcome)
+					return
+				companion_id = available[randi() % available.size()]
 			if companion_id == "":
 				push_error("EventManager: recruit_companion outcome missing 'companion_id' field")
 			else:
