@@ -131,7 +131,15 @@ def parse_base_bonus_table(lines, start_idx):
                     values[stat] = float(match.group(1))
             else:
                 values[stat] = 0
-        per_level[level] = values
+        # Expand range rows like "11–15" into individual level entries
+        range_match = re.match(r"(\d+)\s*[–\-]\s*(\d+)", level)
+        if range_match:
+            start = int(range_match.group(1))
+            end = int(range_match.group(2))
+            for lvl in range(start, end + 1):
+                per_level[str(lvl)] = values
+        else:
+            per_level[level] = values
         idx += 1
 
     return stat_names, per_level, idx

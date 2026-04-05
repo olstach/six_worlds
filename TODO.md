@@ -167,7 +167,8 @@ Last Updated: 2026-04-05
 ## Medium Priority
 
 ### Perks
-- [ ] PERKS.md: extend base bonus tables to level 10 for 32 remaining skills (Learning, Comedy, Spears already done)
+- [x] Base bonus tables complete for all 35 skills, levels 1–15 (11–15 = item-bonus cap, same value as 10)
+- [x] **Bug fixed**: parse_perks.py now expands `11–15` range rows into individual level keys — perk_system.gd's `str(level)` lookup was silently returning empty dict for levels 11–15
 - [ ] PERKS.md: fill empty perk tiers (levels 2, 4, 6, 8) — 1-2 perks per skill at each
 - [ ] Perk rebalancing — capstone perks should land at required_level 8-10 (distribution still front-loaded)
 - [ ] Add flavor text to perks that lack it

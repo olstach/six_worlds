@@ -46,7 +46,23 @@
 					"attack": 130.0,
 					"damage": 130.0
 				},
-				"11–15": {
+				"11": {
+					"attack": 130.0,
+					"damage": 130.0
+				},
+				"12": {
+					"attack": 130.0,
+					"damage": 130.0
+				},
+				"13": {
+					"attack": 130.0,
+					"damage": 130.0
+				},
+				"14": {
+					"attack": 130.0,
+					"damage": 130.0
+				},
+				"15": {
 					"attack": 130.0,
 					"damage": 130.0
 				}
@@ -98,7 +114,23 @@
 					"attack": 130.0,
 					"crit_chance": 75.0
 				},
-				"11–15": {
+				"11": {
+					"attack": 130.0,
+					"crit_chance": 75.0
+				},
+				"12": {
+					"attack": 130.0,
+					"crit_chance": 75.0
+				},
+				"13": {
+					"attack": 130.0,
+					"crit_chance": 75.0
+				},
+				"14": {
+					"attack": 130.0,
+					"crit_chance": 75.0
+				},
+				"15": {
 					"attack": 130.0,
 					"crit_chance": 75.0
 				}
@@ -150,7 +182,23 @@
 					"spellpower": 130.0,
 					"mana_cost": -100.0
 				},
-				"11–15": {
+				"11": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"12": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"13": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"14": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"15": {
 					"spellpower": 130.0,
 					"mana_cost": -100.0
 				}
@@ -202,7 +250,23 @@
 					"spellpower": 130.0,
 					"mana_cost": -100.0
 				},
-				"11–15": {
+				"11": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"12": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"13": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"14": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"15": {
 					"spellpower": 130.0,
 					"mana_cost": -100.0
 				}
@@ -254,7 +318,23 @@
 					"spellpower": 130.0,
 					"mana_cost": -100.0
 				},
-				"11–15": {
+				"11": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"12": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"13": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"14": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"15": {
 					"spellpower": 130.0,
 					"mana_cost": -100.0
 				}
@@ -306,7 +386,23 @@
 					"charm_effectiveness": 130.0,
 					"trading_price": 50.0
 				},
-				"11–15": {
+				"11": {
+					"charm_effectiveness": 130.0,
+					"trading_price": 50.0
+				},
+				"12": {
+					"charm_effectiveness": 130.0,
+					"trading_price": 50.0
+				},
+				"13": {
+					"charm_effectiveness": 130.0,
+					"trading_price": 50.0
+				},
+				"14": {
+					"charm_effectiveness": 130.0,
+					"trading_price": 50.0
+				},
+				"15": {
 					"charm_effectiveness": 130.0,
 					"trading_price": 50.0
 				}
@@ -358,7 +454,23 @@
 					"mental_resistance": 125.0,
 					"magic_damage_resistance": 75.0
 				},
-				"11–15": {
+				"11": {
+					"mental_resistance": 125.0,
+					"magic_damage_resistance": 75.0
+				},
+				"12": {
+					"mental_resistance": 125.0,
+					"magic_damage_resistance": 75.0
+				},
+				"13": {
+					"mental_resistance": 125.0,
+					"magic_damage_resistance": 75.0
+				},
+				"14": {
+					"mental_resistance": 125.0,
+					"magic_damage_resistance": 75.0
+				},
+				"15": {
 					"mental_resistance": 125.0,
 					"magic_damage_resistance": 75.0
 				}
@@ -410,7 +522,23 @@
 					"attack": 130.0,
 					"crit_chance": 27.0
 				},
-				"11–15": {
+				"11": {
+					"attack": 130.0,
+					"crit_chance": 27.0
+				},
+				"12": {
+					"attack": 130.0,
+					"crit_chance": 27.0
+				},
+				"13": {
+					"attack": 130.0,
+					"crit_chance": 27.0
+				},
+				"14": {
+					"attack": 130.0,
+					"crit_chance": 27.0
+				},
+				"15": {
 					"attack": 130.0,
 					"crit_chance": 27.0
 				}
@@ -462,7 +590,23 @@
 					"damage": 130.0,
 					"crit_chance": 27.0
 				},
-				"11–15": {
+				"11": {
+					"damage": 130.0,
+					"crit_chance": 27.0
+				},
+				"12": {
+					"damage": 130.0,
+					"crit_chance": 27.0
+				},
+				"13": {
+					"damage": 130.0,
+					"crit_chance": 27.0
+				},
+				"14": {
+					"damage": 130.0,
+					"crit_chance": 27.0
+				},
+				"15": {
 					"damage": 130.0,
 					"crit_chance": 27.0
 				}
@@ -514,7 +658,23 @@
 					"spellpower": 130.0,
 					"mana_cost": -100.0
 				},
-				"11–15": {
+				"11": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"12": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"13": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"14": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"15": {
 					"spellpower": 130.0,
 					"mana_cost": -100.0
 				}
@@ -566,7 +726,23 @@
 					"spellpower": 130.0,
 					"status_effect_chance": 75.0
 				},
-				"11–15": {
+				"11": {
+					"spellpower": 130.0,
+					"status_effect_chance": 75.0
+				},
+				"12": {
+					"spellpower": 130.0,
+					"status_effect_chance": 75.0
+				},
+				"13": {
+					"spellpower": 130.0,
+					"status_effect_chance": 75.0
+				},
+				"14": {
+					"spellpower": 130.0,
+					"status_effect_chance": 75.0
+				},
+				"15": {
 					"spellpower": 130.0,
 					"status_effect_chance": 75.0
 				}
@@ -618,7 +794,23 @@
 					"party_xp_gain": 42.0,
 					"party_skill_checks": 10.0
 				},
-				"11–15": {
+				"11": {
+					"party_xp_gain": 42.0,
+					"party_skill_checks": 10.0
+				},
+				"12": {
+					"party_xp_gain": 42.0,
+					"party_skill_checks": 10.0
+				},
+				"13": {
+					"party_xp_gain": 42.0,
+					"party_skill_checks": 10.0
+				},
+				"14": {
+					"party_xp_gain": 42.0,
+					"party_skill_checks": 10.0
+				},
+				"15": {
 					"party_xp_gain": 42.0,
 					"party_skill_checks": 10.0
 				}
@@ -670,7 +862,23 @@
 					"dodge": 50.0,
 					"crit_chance": 55.0
 				},
-				"11–15": {
+				"11": {
+					"dodge": 50.0,
+					"crit_chance": 55.0
+				},
+				"12": {
+					"dodge": 50.0,
+					"crit_chance": 55.0
+				},
+				"13": {
+					"dodge": 50.0,
+					"crit_chance": 55.0
+				},
+				"14": {
+					"dodge": 50.0,
+					"crit_chance": 55.0
+				},
+				"15": {
 					"dodge": 50.0,
 					"crit_chance": 55.0
 				}
@@ -722,7 +930,23 @@
 					"luck_modifier": 50.0,
 					"dodge": 20.0
 				},
-				"11–15": {
+				"11": {
+					"luck_modifier": 50.0,
+					"dodge": 20.0
+				},
+				"12": {
+					"luck_modifier": 50.0,
+					"dodge": 20.0
+				},
+				"13": {
+					"luck_modifier": 50.0,
+					"dodge": 20.0
+				},
+				"14": {
+					"luck_modifier": 50.0,
+					"dodge": 20.0
+				},
+				"15": {
 					"luck_modifier": 50.0,
 					"dodge": 20.0
 				}
@@ -774,7 +998,23 @@
 					"damage": 130.0,
 					"armor_penetration": 75.0
 				},
-				"11–15": {
+				"11": {
+					"damage": 130.0,
+					"armor_penetration": 75.0
+				},
+				"12": {
+					"damage": 130.0,
+					"armor_penetration": 75.0
+				},
+				"13": {
+					"damage": 130.0,
+					"armor_penetration": 75.0
+				},
+				"14": {
+					"damage": 130.0,
+					"armor_penetration": 75.0
+				},
+				"15": {
 					"damage": 130.0,
 					"armor_penetration": 75.0
 				}
@@ -826,7 +1066,23 @@
 					"damage": 130.0,
 					"dodge": 75.0
 				},
-				"11–15": {
+				"11": {
+					"damage": 130.0,
+					"dodge": 75.0
+				},
+				"12": {
+					"damage": 130.0,
+					"dodge": 75.0
+				},
+				"13": {
+					"damage": 130.0,
+					"dodge": 75.0
+				},
+				"14": {
+					"damage": 130.0,
+					"dodge": 75.0
+				},
+				"15": {
 					"damage": 130.0,
 					"dodge": 75.0
 				}
@@ -878,7 +1134,23 @@
 					"spellpower": 130.0,
 					"burning_damage": 130.0
 				},
-				"11–15": {
+				"11": {
+					"spellpower": 130.0,
+					"burning_damage": 130.0
+				},
+				"12": {
+					"spellpower": 130.0,
+					"burning_damage": 130.0
+				},
+				"13": {
+					"spellpower": 130.0,
+					"burning_damage": 130.0
+				},
+				"14": {
+					"spellpower": 130.0,
+					"burning_damage": 130.0
+				},
+				"15": {
 					"spellpower": 130.0,
 					"burning_damage": 130.0
 				}
@@ -930,7 +1202,23 @@
 					"spellpower": 130.0,
 					"initiative": 75.0
 				},
-				"11–15": {
+				"11": {
+					"spellpower": 130.0,
+					"initiative": 75.0
+				},
+				"12": {
+					"spellpower": 130.0,
+					"initiative": 75.0
+				},
+				"13": {
+					"spellpower": 130.0,
+					"initiative": 75.0
+				},
+				"14": {
+					"spellpower": 130.0,
+					"initiative": 75.0
+				},
+				"15": {
 					"spellpower": 130.0,
 					"initiative": 75.0
 				}
@@ -982,7 +1270,23 @@
 					"strength_weapon_damage": 130.0,
 					"stamina": 75.0
 				},
-				"11–15": {
+				"11": {
+					"strength_weapon_damage": 130.0,
+					"stamina": 75.0
+				},
+				"12": {
+					"strength_weapon_damage": 130.0,
+					"stamina": 75.0
+				},
+				"13": {
+					"strength_weapon_damage": 130.0,
+					"stamina": 75.0
+				},
+				"14": {
+					"strength_weapon_damage": 130.0,
+					"stamina": 75.0
+				},
+				"15": {
 					"strength_weapon_damage": 130.0,
 					"stamina": 75.0
 				}
@@ -1034,7 +1338,23 @@
 					"max_companions": 5.0,
 					"morale_effects": 100.0
 				},
-				"11–15": {
+				"11": {
+					"max_companions": 5.0,
+					"morale_effects": 100.0
+				},
+				"12": {
+					"max_companions": 5.0,
+					"morale_effects": 100.0
+				},
+				"13": {
+					"max_companions": 5.0,
+					"morale_effects": 100.0
+				},
+				"14": {
+					"max_companions": 5.0,
+					"morale_effects": 100.0
+				},
+				"15": {
 					"max_companions": 5.0,
 					"morale_effects": 100.0
 				}
@@ -1086,7 +1406,23 @@
 					"morale_effects": 75.0,
 					"social_roll_success": 75.0
 				},
-				"11–15": {
+				"11": {
+					"morale_effects": 75.0,
+					"social_roll_success": 75.0
+				},
+				"12": {
+					"morale_effects": 75.0,
+					"social_roll_success": 75.0
+				},
+				"13": {
+					"morale_effects": 75.0,
+					"social_roll_success": 75.0
+				},
+				"14": {
+					"morale_effects": 75.0,
+					"social_roll_success": 75.0
+				},
+				"15": {
 					"morale_effects": 75.0,
 					"social_roll_success": 75.0
 				}
@@ -1149,7 +1485,27 @@
 					"initiative": 50.0,
 					"crit_chance": 20.0
 				},
-				"11–15": {
+				"11": {
+					"damage": 130.0,
+					"initiative": 50.0,
+					"crit_chance": 20.0
+				},
+				"12": {
+					"damage": 130.0,
+					"initiative": 50.0,
+					"crit_chance": 20.0
+				},
+				"13": {
+					"damage": 130.0,
+					"initiative": 50.0,
+					"crit_chance": 20.0
+				},
+				"14": {
+					"damage": 130.0,
+					"initiative": 50.0,
+					"crit_chance": 20.0
+				},
+				"15": {
 					"damage": 130.0,
 					"initiative": 50.0,
 					"crit_chance": 20.0
@@ -1202,7 +1558,23 @@
 					"spellpower": 130.0,
 					"mana_cost": -100.0
 				},
-				"11–15": {
+				"11": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"12": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"13": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"14": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"15": {
 					"spellpower": 130.0,
 					"mana_cost": -100.0
 				}
@@ -1254,7 +1626,23 @@
 					"spellpower": 130.0,
 					"effect_duration": 75.0
 				},
-				"11–15": {
+				"11": {
+					"spellpower": 130.0,
+					"effect_duration": 75.0
+				},
+				"12": {
+					"spellpower": 130.0,
+					"effect_duration": 75.0
+				},
+				"13": {
+					"spellpower": 130.0,
+					"effect_duration": 75.0
+				},
+				"14": {
+					"spellpower": 130.0,
+					"effect_duration": 75.0
+				},
+				"15": {
 					"spellpower": 130.0,
 					"effect_duration": 75.0
 				}
@@ -1306,7 +1694,23 @@
 					"dodge": 50.0,
 					"movement_speed": 65.0
 				},
-				"11–15": {
+				"11": {
+					"dodge": 50.0,
+					"movement_speed": 65.0
+				},
+				"12": {
+					"dodge": 50.0,
+					"movement_speed": 65.0
+				},
+				"13": {
+					"dodge": 50.0,
+					"movement_speed": 65.0
+				},
+				"14": {
+					"dodge": 50.0,
+					"movement_speed": 65.0
+				},
+				"15": {
 					"dodge": 50.0,
 					"movement_speed": 65.0
 				}
@@ -1358,7 +1762,23 @@
 					"healing_effectiveness_(party)": 130.0,
 					"poison/disease_resistance_(party)": 75.0
 				},
-				"11–15": {
+				"11": {
+					"healing_effectiveness_(party)": 130.0,
+					"poison/disease_resistance_(party)": 75.0
+				},
+				"12": {
+					"healing_effectiveness_(party)": 130.0,
+					"poison/disease_resistance_(party)": 75.0
+				},
+				"13": {
+					"healing_effectiveness_(party)": 130.0,
+					"poison/disease_resistance_(party)": 75.0
+				},
+				"14": {
+					"healing_effectiveness_(party)": 130.0,
+					"poison/disease_resistance_(party)": 75.0
+				},
+				"15": {
 					"healing_effectiveness_(party)": 130.0,
 					"poison/disease_resistance_(party)": 75.0
 				}
@@ -1410,7 +1830,23 @@
 					"consumable_power": 130.0,
 					"crafting_yield": 75.0
 				},
-				"11–15": {
+				"11": {
+					"consumable_power": 130.0,
+					"crafting_yield": 75.0
+				},
+				"12": {
+					"consumable_power": 130.0,
+					"crafting_yield": 75.0
+				},
+				"13": {
+					"consumable_power": 130.0,
+					"crafting_yield": 75.0
+				},
+				"14": {
+					"consumable_power": 130.0,
+					"crafting_yield": 75.0
+				},
+				"15": {
 					"consumable_power": 130.0,
 					"crafting_yield": 75.0
 				}
@@ -1462,7 +1898,23 @@
 					"loot_quality": 75.0,
 					"trap_detection": 85.0
 				},
-				"11–15": {
+				"11": {
+					"loot_quality": 75.0,
+					"trap_detection": 85.0
+				},
+				"12": {
+					"loot_quality": 75.0,
+					"trap_detection": 85.0
+				},
+				"13": {
+					"loot_quality": 75.0,
+					"trap_detection": 85.0
+				},
+				"14": {
+					"loot_quality": 75.0,
+					"trap_detection": 85.0
+				},
+				"15": {
 					"loot_quality": 75.0,
 					"trap_detection": 85.0
 				}
@@ -1514,7 +1966,23 @@
 					"damage": 130.0,
 					"stun_chance": 40.0
 				},
-				"11–15": {
+				"11": {
+					"damage": 130.0,
+					"stun_chance": 40.0
+				},
+				"12": {
+					"damage": 130.0,
+					"stun_chance": 40.0
+				},
+				"13": {
+					"damage": 130.0,
+					"stun_chance": 40.0
+				},
+				"14": {
+					"damage": 130.0,
+					"stun_chance": 40.0
+				},
+				"15": {
 					"damage": 130.0,
 					"stun_chance": 40.0
 				}
@@ -1566,7 +2034,23 @@
 					"armor": 130.0,
 					"max_hp": 40.0
 				},
-				"11–15": {
+				"11": {
+					"armor": 130.0,
+					"max_hp": 40.0
+				},
+				"12": {
+					"armor": 130.0,
+					"max_hp": 40.0
+				},
+				"13": {
+					"armor": 130.0,
+					"max_hp": 40.0
+				},
+				"14": {
+					"armor": 130.0,
+					"max_hp": 40.0
+				},
+				"15": {
 					"armor": 130.0,
 					"max_hp": 40.0
 				}
@@ -1618,7 +2102,23 @@
 					"spellpower": 130.0,
 					"mana_cost": -100.0
 				},
-				"11–15": {
+				"11": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"12": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"13": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"14": {
+					"spellpower": 130.0,
+					"mana_cost": -100.0
+				},
+				"15": {
 					"spellpower": 130.0,
 					"mana_cost": -100.0
 				}
@@ -1670,7 +2170,23 @@
 					"spellpower": 130.0,
 					"summon_hp": 85.0
 				},
-				"11–15": {
+				"11": {
+					"spellpower": 130.0,
+					"summon_hp": 85.0
+				},
+				"12": {
+					"spellpower": 130.0,
+					"summon_hp": 85.0
+				},
+				"13": {
+					"spellpower": 130.0,
+					"summon_hp": 85.0
+				},
+				"14": {
+					"spellpower": 130.0,
+					"summon_hp": 85.0
+				},
+				"15": {
 					"spellpower": 130.0,
 					"summon_hp": 85.0
 				}
@@ -1722,7 +2238,23 @@
 					"supply_duration_(party)": 85.0,
 					"travel_speed_(party)": 60.0
 				},
-				"11–15": {
+				"11": {
+					"supply_duration_(party)": 85.0,
+					"travel_speed_(party)": 60.0
+				},
+				"12": {
+					"supply_duration_(party)": 85.0,
+					"travel_speed_(party)": 60.0
+				},
+				"13": {
+					"supply_duration_(party)": 85.0,
+					"travel_speed_(party)": 60.0
+				},
+				"14": {
+					"supply_duration_(party)": 85.0,
+					"travel_speed_(party)": 60.0
+				},
+				"15": {
 					"supply_duration_(party)": 85.0,
 					"travel_speed_(party)": 60.0
 				}
@@ -1774,7 +2306,23 @@
 					"buy_discount": 60.0,
 					"sell_markup": 70.0
 				},
-				"11–15": {
+				"11": {
+					"buy_discount": 60.0,
+					"sell_markup": 70.0
+				},
+				"12": {
+					"buy_discount": 60.0,
+					"sell_markup": 70.0
+				},
+				"13": {
+					"buy_discount": 60.0,
+					"sell_markup": 70.0
+				},
+				"14": {
+					"buy_discount": 60.0,
+					"sell_markup": 70.0
+				},
+				"15": {
 					"buy_discount": 60.0,
 					"sell_markup": 70.0
 				}
@@ -1826,7 +2374,23 @@
 					"crafting_quality": 130.0,
 					"repair_efficiency": 85.0
 				},
-				"11–15": {
+				"11": {
+					"crafting_quality": 130.0,
+					"repair_efficiency": 85.0
+				},
+				"12": {
+					"crafting_quality": 130.0,
+					"repair_efficiency": 85.0
+				},
+				"13": {
+					"crafting_quality": 130.0,
+					"repair_efficiency": 85.0
+				},
+				"14": {
+					"crafting_quality": 130.0,
+					"repair_efficiency": 85.0
+				},
+				"15": {
 					"crafting_quality": 130.0,
 					"repair_efficiency": 85.0
 				}
@@ -3242,14 +3806,9 @@
 			"skill": "guile",
 			"required_level": 1,
 			"requires_perks": [],
-			"description": "Active (1 Stamina). Enter stealth in combat. Stealthed units cannot be targeted until revealed. Also enables stealth-based dialogue decisions.",
+			"description": "You can enter stealth in combat (costs 1 action) and attempt stealth-based decisions in dialogue.",
 			"flavor": "",
-			"is_mantra": false,
-			"combat_data": {
-				"effect": "enter_stealth",
-				"targeting": "self",
-				"stamina_cost": 1
-			}
+			"is_mantra": false
 		},
 		"now_you_see_me": {
 			"name": "Now You See Me",
