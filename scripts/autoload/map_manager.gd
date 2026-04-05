@@ -1065,6 +1065,11 @@ func _apply_reward(reward: Dictionary) -> void:
 			# Pick a random item from the provided array of item IDs
 			if value is Array and value.size() > 0:
 				var chosen: String = str(value[randi() % value.size()])
+				# Resolve template items (e.g. good_iron_weapon) into real generated items
+				if ItemSystem.is_template_item(chosen):
+					var gen_id = ItemSystem.resolve_random_generate(chosen)
+					if gen_id != "":
+						chosen = gen_id
 				reward["chosen"] = chosen  # store for toast display
 				ItemSystem.add_to_inventory(chosen)
 
@@ -1099,6 +1104,11 @@ func _apply_reward(reward: Dictionary) -> void:
 					pool = tiers.get("medium", tiers.get("weak", tiers.get("strong", [])))
 				if pool.size() > 0:
 					var chosen: String = str(pool[randi() % pool.size()])
+					# Resolve template items (e.g. good_iron_weapon) into real generated items
+					if ItemSystem.is_template_item(chosen):
+						var gen_id = ItemSystem.resolve_random_generate(chosen)
+						if gen_id != "":
+							chosen = gen_id
 					reward["chosen"] = chosen
 					ItemSystem.add_to_inventory(chosen)
 

@@ -515,6 +515,21 @@ func calculate_equipment_stats(character: Dictionary) -> Dictionary:
 	if off_id != "":
 		_add_item_stats(off_id, bonuses)
 
+	# Set bonus: Dorje + Drilbu paired together
+	# Both items carry set_pair = "dorje_drilbu"; matching set on both slots activates the bonus.
+	if main_id != "" and off_id != "":
+		var main_item = get_item(main_id)
+		var off_item = get_item(off_id)
+		var main_set = main_item.get("set_pair", "")
+		var off_set = off_item.get("set_pair", "")
+		if main_set != "" and main_set == off_set:
+			# Bonus: +3 spellpower, +3 max_mana, +2 initiative (Vajra and Bell in harmony)
+			bonuses["spellpower"] += 3
+			bonuses["max_mana"] += 3
+			bonuses["initiative"] += 2
+			# Store the active set name for combat effects (e.g. opener bonus)
+			bonuses["active_set_bonus"] = main_set
+
 	return bonuses
 
 

@@ -123,6 +123,18 @@ func show_item(item: Dictionary, global_pos: Vector2) -> void:
 		skill_val.add_theme_color_override("font_color", Color(0.6, 0.9, 1.0))
 		skill_row.add_child(skill_val)
 
+	# Set bonus indicator (e.g. Dorje + Drilbu)
+	var set_pair = item.get("set_pair", "")
+	if set_pair != "":
+		var set_row = HBoxContainer.new()
+		stats_container.add_child(set_row)
+		var set_label = Label.new()
+		set_label.text = "Set: Vajra & Bell — +3 Spellpower, +3 Mana, +2 Initiative when paired"
+		set_label.add_theme_font_size_override("font_size", 11)
+		set_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
+		set_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		set_row.add_child(set_label)
+
 	# Charm / consumable effects
 	var effect = item.get("effect", {})
 	if not effect.is_empty() and item.get("type", "") == "charm":

@@ -19,8 +19,8 @@ Last Updated: 2026-04-03
 ### Step 2 — Sword type system ✓ DONE
 - [x] 4 types: Khanda (balanced), Talwar (fast), Dao (chopper, armor_pierce), Patisa (2H)
 - [x] Full material matrix: bone (Khanda only), bronze/iron/steel (all 4), obsidian (Dao only), damascene/sky_iron/vajra (all 4)
-- [ ] Update loot tables and shop item pools to reference new sword IDs
-- [ ] **Investigate `good_iron_weapon`** — has a `random_generate` field with `match_party_skill: true`; unclear if wired up in item_system.gd
+- [x] Update loot tables and shop item pools — new sword types (Talwar, Dao, Patisa, Khanda) added to all weapon shops and map config loot tiers
+- [x] **`good_iron_weapon` investigated** — `resolve_random_generate()` + `generate_weapon_for_party()` are fully wired in item_system.gd and shop_system.gd; fixed bug in map_manager.gd where `item_random` and `item_random_scaled` rewards were not calling `resolve_random_generate()` before adding template items to inventory
 
 ### Step 3 — Mace renames ✓ DONE
 - [x] iron_mace → Iron Gada, bone_club → Bone Gada, bronze_mace → Bronze Gada
@@ -59,7 +59,8 @@ Last Updated: 2026-04-03
 - [ ] **TODO (brainstorm later)**: Add `spell_accuracy` as a stat distinct from weapon accuracy — affects hit chance of targeted spells. Some foci would add it.
 
 #### Set Bonus System (Dorje + Drilbu)
-- [ ] **TODO (implement separately)**: When both Dorje (weapon_main) and Drilbu (weapon_off) are equipped simultaneously, apply an additional combined bonus (extra spellpower + a passive combat opener effect). Needs new code in item_system.gd or combat_manager.gd to detect paired equipment.
+- [x] Implemented in `calculate_equipment_stats()` — when both weapon slots carry `set_pair: "dorje_drilbu"`, adds +3 Spellpower, +3 Max Mana, +2 Initiative; sets `active_set_bonus` field in equip_bonus for future combat opener hooks
+- [x] Tooltip shows set bonus line in gold when item has `set_pair` field
 
 #### Individual Foci
 

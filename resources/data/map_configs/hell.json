@@ -926,6 +926,8 @@
                   ],
                   "medium": [
                     "bronze_sword",
+                    "bronze_talwar",
+                    "bronze_dao",
                     "bronze_axe",
                     "bronze_mace",
                     "bronze_dagger",
@@ -937,6 +939,9 @@
                   ],
                   "strong": [
                     "bronze_sword",
+                    "bronze_patisa",
+                    "iron_khanda",
+                    "iron_dao",
                     "bronze_axe",
                     "bronze_mace",
                     "bronze_shield",
@@ -1835,6 +1840,8 @@
                   ],
                   "medium": [
                     "bronze_sword",
+                    "bronze_talwar",
+                    "bronze_dao",
                     "bronze_axe",
                     "bronze_mace",
                     "bronze_dagger",
@@ -1846,6 +1853,9 @@
                   ],
                   "strong": [
                     "bronze_sword",
+                    "bronze_patisa",
+                    "iron_khanda",
+                    "iron_dao",
                     "bronze_axe",
                     "bronze_mace",
                     "bronze_shield",
