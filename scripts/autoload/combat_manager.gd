@@ -85,6 +85,12 @@ const LOOT_FLOOR_BY_REALM: Dictionary = {
 	"demi_god":    150,
 	"god":         300,
 }
+# All 8 compass directions — used by projectile deviation and bomb scatter
+const DIRS_8: Array[Vector2i] = [
+	Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1),
+	Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)
+]
+
 const LOOT_FLOOR_DEFAULT: int = 20  # Fallback for unknown realms
 # Fraction of the above-floor loot value that actually drops as items.
 # Remaining value leaks to gold at LOOT_OVERFLOW_GOLD_RATE.
@@ -1488,10 +1494,11 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		# Reset consecutive hit streaks on miss
 		attacker.momentum_stacks = 0
 		attacker.unarmed_hit_stacks = 0
-		# Ranged misses: projectile deviates and may hit someone else
+		# Ranged misses: projectile deviates and may hit someone else.
+		# Clamp to 0 so forced-miss perks (will_miss_next_attack) don't produce negative margin.
 		if is_ranged:
-			var miss_margin: float = result.roll - result.hit_chance
-			var dev = _resolve_projectile_deviation(attacker, defender.grid_position, miss_margin)
+			var miss_margin: float = maxf(0.0, result.roll - result.hit_chance)
+			var dev = _resolve_projectile_deviation(attacker, defender, miss_margin)
 			result.merge(dev, true)
 
 	# Track per-turn attack type counters (after resolving, so 'first attack' checks work)
@@ -1516,8 +1523,8 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 
 ## Resolve a ranged projectile miss — calculate deviation and apply damage if it hits someone.
 ## Returns a dict with deviation_* fields merged into the attack result.
-func _resolve_projectile_deviation(attacker: Node, intended_pos: Vector2i, miss_margin: float) -> Dictionary:
-	# Deviation distance scales with how badly the shot missed
+func _resolve_projectile_deviation(attacker: Node, defender: Node, miss_margin: float) -> Dictionary:
+	# Deviation distance scales with how badly the shot missed (margin already clamped ≥0 by caller)
 	var dev_tiles: int
 	if miss_margin <= 15.0:
 		dev_tiles = 1
@@ -1526,17 +1533,15 @@ func _resolve_projectile_deviation(attacker: Node, intended_pos: Vector2i, miss_
 	else:
 		dev_tiles = 3
 
-	# 8 compass directions; exclude the one pointing back toward the attacker
-	const DIRS: Array = [
-		Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1),
-		Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)
-	]
+	var intended_pos: Vector2i = defender.grid_position
+
+	# Exclude the direction pointing back toward the attacker so the shot never reverses
 	var back_dir := Vector2i(
 		signi(attacker.grid_position.x - intended_pos.x),
 		signi(attacker.grid_position.y - intended_pos.y)
 	)
 	var valid_dirs: Array[Vector2i] = []
-	for d: Vector2i in DIRS:
+	for d: Vector2i in DIRS_8:
 		if d != back_dir:
 			valid_dirs.append(d)
 
@@ -1556,9 +1561,10 @@ func _resolve_projectile_deviation(attacker: Node, intended_pos: Vector2i, miss_
 		"deviation_damage": 0
 	}
 
-	# Check if any living unit occupies the landing tile
+	# Check if any living unit occupies the landing tile.
+	# Explicitly exclude the original defender — a miss should never hit them as a stray.
 	var stray_target := get_unit_at(landing)
-	if stray_target != null and stray_target.is_alive():
+	if stray_target != null and stray_target != defender and stray_target.is_alive():
 		var dmg_type: String = attacker.get_weapon_damage_type() if attacker.has_method("get_weapon_damage_type") else "physical"
 		var dmg_result := calculate_physical_damage(attacker, stray_target, dmg_type)
 		var dmg: int = dmg_result.get("damage", 0)
@@ -4376,11 +4382,7 @@ func _use_bomb(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictionary
 		alchemy_level = user.character_data.get("skills", {}).get("alchemy", 0)
 	var scatter_chance := maxf(0.0, 50.0 - alchemy_level * 17.0)
 	if scatter_chance > 0.0 and randf() * 100.0 < scatter_chance:
-		const DIRS8: Array = [
-			Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1),
-			Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)
-		]
-		var scatter_dir: Vector2i = DIRS8[randi() % DIRS8.size()]
+		var scatter_dir: Vector2i = DIRS_8[randi() % DIRS_8.size()]
 		actual_target_pos = target_pos + scatter_dir
 		if combat_grid != null:
 			actual_target_pos.x = clampi(actual_target_pos.x, 0, combat_grid.grid_size.x - 1)
