@@ -16,6 +16,10 @@ var team: int = 0  # CombatManager.Team
 # Grid position
 var grid_position: Vector2i = Vector2i.ZERO
 
+# Facing direction (8-directional unit vector: last direction of movement or attack)
+# (1,0)=E, (-1,0)=W, (0,-1)=N, (0,1)=S, diagonals as combinations
+var facing: Vector2i = Vector2i(1, 0)
+
 # Combat state
 var current_hp: int = 100
 var max_hp: int = 100
@@ -34,6 +38,8 @@ var moved_this_turn: bool = false  # Set when unit moves; cleared at turn start 
 var momentum_stacks: int = 0       # Consecutive axe hits; cleared on miss or turn start (momentum perk)
 var unarmed_hit_stacks: int = 0    # Consecutive unarmed hits; cleared on miss or turn start (keep_hitting perk)
 var stationary_stacks: int = 0     # Turns without moving; incremented/reset at turn start (tidal_patience perk)
+var damaru_charges: int = 0        # Spells cast while holding Damaru; at 3 → 40% mana discount on next spell, then reset
+var chod_spellpower_bonus: int = 0 # Accumulated Chöd Offering spellpower; stacks until end of combat
 var last_attacker: Node = null     # Last unit that dealt damage to this unit (used for risen_dead talisman perk)
 var dagger_attacks_this_turn: int = 0    # Dagger attacks made this turn; cleared at turn start (too_fast_to_count perk)
 var ranged_attacks_this_turn: int = 0    # Ranged attacks made this turn; cleared at turn start (one_breath_one_arrow perk)
@@ -888,11 +894,11 @@ func tick_mantras() -> void:
 		active_mantras[perk_id] += 1
 
 
-## Get spellpower (includes status effect bonuses)
+## Get spellpower (includes status effect bonuses and Chöd accumulated bonus)
 func get_spellpower() -> int:
 	var derived = character_data.get("derived", {})
 	var weapon_sp = get_equipped_weapon().get("stats", {}).get("spellpower", 0)
-	return derived.get("spellpower", 0) + weapon_sp + _get_status_stat_bonus("spellpower") + mantra_stat_bonuses.get("spellpower", 0) + _get_stat_modifier_bonus("spellpower")
+	return derived.get("spellpower", 0) + weapon_sp + _get_status_stat_bonus("spellpower") + mantra_stat_bonuses.get("spellpower", 0) + _get_stat_modifier_bonus("spellpower") + chod_spellpower_bonus
 
 
 ## Get magic skill bonus for an element (spellpower from the skill's base_bonuses table)

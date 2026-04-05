@@ -246,23 +246,25 @@ func _center_camera() -> void:
 	var ts = combat_grid.tile_size
 	var gw = combat_grid.grid_size.x
 	var gh = combat_grid.grid_size.y
-	# Set camera bounds to the full grid
-	camera.limit_left = 0
-	camera.limit_top = 0
-	camera.limit_right = gw * ts
-	camera.limit_bottom = gh * ts
-	# Start centered on the battle zone (midpoint between the two deploy zones)
-	var player_center_x = (gw / 3 + CombatGrid.PLAYER_DEPLOY_COLUMNS / 2) * ts
-	var enemy_center_x = (gw * 2 / 3 - CombatGrid.ENEMY_DEPLOY_COLUMNS / 2) * ts
+	# Camera limits are in WORLD space; GridContainer is offset from world origin
+	var origin = grid_container.global_position
+	camera.limit_left   = int(origin.x)
+	camera.limit_top    = int(origin.y)
+	camera.limit_right  = int(origin.x + gw * ts)
+	camera.limit_bottom = int(origin.y + gh * ts)
+	# camera.position is LOCAL within GridContainer, so no offset needed here
+	var player_center_x = (gw / 3 + CombatGrid.PLAYER_DEPLOY_COLUMNS / 2.0) * ts
+	var enemy_center_x  = (gw * 2.0 / 3 - CombatGrid.ENEMY_DEPLOY_COLUMNS / 2.0) * ts
 	camera.position = Vector2((player_center_x + enemy_center_x) / 2.0, gh * ts / 2.0)
 
 
-## Smoothly pan the camera to a world position (clamped to grid bounds)
-func _pan_camera_to(world_pos: Vector2, instant: bool = false) -> void:
+## Smoothly pan the camera to a local grid position (clamped to grid bounds)
+## local_pos is in GridContainer-local space (same as camera.position)
+func _pan_camera_to(local_pos: Vector2, instant: bool = false) -> void:
 	var ts = combat_grid.tile_size
 	var gw = combat_grid.grid_size.x
 	var gh = combat_grid.grid_size.y
-	var target = world_pos.clamp(Vector2.ZERO, Vector2(gw * ts, gh * ts))
+	var target = local_pos.clamp(Vector2.ZERO, Vector2(gw * ts, gh * ts))
 	if instant:
 		camera.position = target
 	else:
@@ -273,6 +275,11 @@ func _pan_camera_to(world_pos: Vector2, instant: bool = false) -> void:
 ## Camera panning speed with WASD (called from _process)
 var _cam_pan_speed: float = 500.0
 
+# Middle-mouse drag panning
+var _is_panning: bool = false
+var _pan_start_mouse: Vector2 = Vector2.ZERO
+var _pan_start_cam: Vector2 = Vector2.ZERO
+
 func _process(delta: float) -> void:
 	var cam_dir = Vector2.ZERO
 	if Input.is_action_pressed("ui_up"):    cam_dir.y -= 1.0
@@ -280,7 +287,11 @@ func _process(delta: float) -> void:
 	if Input.is_action_pressed("ui_left"):  cam_dir.x -= 1.0
 	if Input.is_action_pressed("ui_right"): cam_dir.x += 1.0
 	if cam_dir != Vector2.ZERO:
-		camera.position += cam_dir * _cam_pan_speed * delta
+		var ts = combat_grid.tile_size
+		var gw = combat_grid.grid_size.x
+		var gh = combat_grid.grid_size.y
+		camera.position = (camera.position + cam_dir * _cam_pan_speed * delta).clamp(
+			Vector2.ZERO, Vector2(gw * ts, gh * ts))
 
 
 ## Start a test combat for debugging
@@ -912,6 +923,19 @@ func _input(event: InputEvent) -> void:
 		# The grid's tile_right_clicked handles unit context menus
 		# This catches right-clicks outside the grid
 		_cancel_action_mode()
+	# Middle-mouse drag to pan the camera
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_MIDDLE:
+		_is_panning = event.pressed
+		if event.pressed:
+			_pan_start_mouse = event.global_position
+			_pan_start_cam = camera.position
+	elif event is InputEventMouseMotion and _is_panning:
+		var ts = combat_grid.tile_size
+		var gw = combat_grid.grid_size.x
+		var gh = combat_grid.grid_size.y
+		var delta = _pan_start_mouse - event.global_position
+		camera.position = (_pan_start_cam + delta).clamp(
+			Vector2.ZERO, Vector2(gw * ts, gh * ts))
 
 
 ## Select a unit
@@ -1817,6 +1841,39 @@ func _get_active_skills(unit: CombatUnit) -> Array[Dictionary]:
 				}
 				result.append(skill_info)
 
+	# Weapon-based active abilities from equipped focus items
+	var char_data = unit.character_data if "character_data" in unit else {}
+	for slot in ["weapon_main", "weapon_off"]:
+		var item_id = ItemSystem.get_equipped_item(char_data, slot)
+		if item_id == "":
+			continue
+		var item = ItemSystem.get_item(item_id)
+		# Chöd Offering (Kangling)
+		if item.get("special_mechanic", "") == "chod_offering":
+			result.append({
+				"id": "chod_offering",
+				"name": "Chöd Offering",
+				"description": "Active. Sacrifice 25% of max mana (HP if depleted) to gain Spellpower until end of combat.",
+				"is_mantra": false,
+				"stamina_cost": 0,
+				"skill": "",
+				"combat_data": {"effect": "chod_offering", "targeting": "self", "item_id": item_id},
+			})
+		# Throw Phurba
+		if item.get("active_ability", "") == "throw_phurba":
+			var mana_cost = item.get("throw_mana_cost", 15)
+			var save_dc = item.get("throw_save_dc", 16)
+			result.append({
+				"id": "throw_phurba",
+				"name": "Throw Phurba",
+				"description": "Active (%d Mana). Hurled dagger with unlimited range — Sorcery-scaled damage, Focus save DC %d or Subjugated 3 turns." % [mana_cost, save_dc],
+				"is_mantra": false,
+				"stamina_cost": 0,
+				"skill": "",
+				# Range 80 = covers entire 48×30 combat grid (max Manhattan distance = 78)
+				"combat_data": {"effect": "throw_phurba", "targeting": "single_enemy", "range": 80, "item_id": item_id},
+			})
+
 	return result
 
 
@@ -2000,6 +2057,20 @@ func _resolve_active_skill(target_pos: Vector2i) -> void:
 				if examined:
 					_log_message("  Examining %s..." % examined.unit_name)
 					_show_examine_window(examined)
+
+			"chod_offering":
+				var sp = result.get("spellpower_gained", 0)
+				var hp_cost = result.get("hp_sacrificed", 0)
+				_log_message("  +%d Spellpower from Chöd." % sp)
+				if hp_cost > 0:
+					_log_message("  Mana empty — spent %d HP as sacrifice." % hp_cost)
+
+			"throw_phurba":
+				var t = result.get("target", null)
+				if t:
+					_log_message("  Hit %s for %d damage!" % [t.unit_name, result.get("damage", 0)])
+					if result.get("subjugated", false):
+						_log_message("  %s is Subjugated!" % t.unit_name)
 
 		# Update UI
 		_show_unit_info(unit)

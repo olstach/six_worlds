@@ -52,15 +52,19 @@ func show_item(item: Dictionary, global_pos: Vector2) -> void:
 	item_name_label.text = item.get("name", "Unknown Item")
 	item_name_label.add_theme_color_override("font_color", rarity_color)
 
-	# Item type and slot
-	var item_type = item.get("type", "").capitalize()
-	var slot = item.get("slot", "").replace("_", " ").capitalize()
-	var two_handed = " (Two-Handed)" if item.get("two_handed", false) else ""
-	item_type_label.text = item_type + two_handed
+	# Item type line — use weapon_class if available (e.g. "Curved sword"), else fall back to type
+	var weapon_class: String = item.get("weapon_class", "")
+	var item_type: String = item.get("type", "").capitalize()
+	if weapon_class != "":
+		# weapon_class already encodes two-handedness ("Two-handed sword"), no suffix needed
+		item_type_label.text = weapon_class
+	else:
+		var two_handed: String = " (Two-Handed)" if item.get("two_handed", false) else ""
+		item_type_label.text = item_type + two_handed
 
 	# Rarity
-	var rarity = item.get("rarity", "common").capitalize()
-	item_type_label.text += " - " + rarity
+	var rarity: String = item.get("rarity", "common").capitalize()
+	item_type_label.text += " — " + rarity
 
 	# Description
 	description_label.text = item.get("description", "")
@@ -96,6 +100,28 @@ func show_item(item: Dictionary, global_pos: Vector2) -> void:
 		var val_color = Color(0.4, 0.9, 0.4) if stat_value > 0 else Color(0.9, 0.4, 0.4)
 		stat_val.add_theme_color_override("font_color", val_color)
 		stat_row.add_child(stat_val)
+
+	# Skill bonuses (e.g. Monk's Robe +1 Yoga)
+	var skill_bonuses: Dictionary = item.get("skill_bonuses", {})
+	for skill_id in skill_bonuses:
+		var bonus_total: int = 0
+		for source in skill_bonuses[skill_id]:
+			bonus_total += skill_bonuses[skill_id][source]
+		if bonus_total == 0:
+			continue
+		var skill_row := HBoxContainer.new()
+		stats_container.add_child(skill_row)
+		var skill_name := Label.new()
+		skill_name.text = skill_id.capitalize() + " skill"
+		skill_name.custom_minimum_size.x = 100
+		skill_name.add_theme_font_size_override("font_size", 12)
+		skill_name.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+		skill_row.add_child(skill_name)
+		var skill_val := Label.new()
+		skill_val.text = "+%d" % bonus_total
+		skill_val.add_theme_font_size_override("font_size", 12)
+		skill_val.add_theme_color_override("font_color", Color(0.6, 0.9, 1.0))
+		skill_row.add_child(skill_val)
 
 	# Charm / consumable effects
 	var effect = item.get("effect", {})

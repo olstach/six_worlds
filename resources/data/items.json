@@ -1,28 +1,31 @@
 {
     "items": {
         "iron_sword": {
-            "name": "Iron Sword",
+            "name": "Iron Talwar",
+            "weapon_class": "Curved sword",
             "type": "sword",
             "slot": "weapon_main",
             "two_handed": false,
             "rarity": "common",
             "element": "earth",
-            "weight": 8,
+            "weight": 7,
             "value": 50,
-            "description": "A sturdy blade forged of iron.",
+            "description": "A curved iron saber, lighter than a straight blade. Quick on the draw, precise on the thrust.",
             "requirements": {
-                "strength": 10
+                "strength": 9,
+                "finesse": 10
             },
             "stats": {
-                "damage": 8,
-                "accuracy": 0
+                "damage": 7,
+                "accuracy": 3
             },
             "abilities": [],
             "durability": 85,
             "max_durability": 85
         },
         "bronze_sword": {
-            "name": "Bronze Sword",
+            "name": "Bronze Khanda",
+            "weapon_class": "Sword",
             "type": "sword",
             "slot": "weapon_main",
             "two_handed": false,
@@ -30,20 +33,21 @@
             "element": "earth",
             "weight": 7,
             "value": 35,
-            "description": "An older design, still serviceable.",
+            "description": "A straight double-edged blade of cast bronze. The khanda: balanced, reliable, a soldier's sword.",
             "requirements": {
                 "strength": 8
             },
             "stats": {
                 "damage": 6,
-                "accuracy": 5
+                "accuracy": 2
             },
             "abilities": [],
             "durability": 65,
             "max_durability": 65
         },
         "steel_longsword": {
-            "name": "Steel Longsword",
+            "name": "Steel Khanda",
+            "weapon_class": "Sword",
             "type": "sword",
             "slot": "weapon_main",
             "two_handed": false,
@@ -51,14 +55,512 @@
             "element": "earth",
             "weight": 10,
             "value": 120,
-            "description": "A well-crafted blade of tempered steel.",
+            "description": "A tempered steel khanda, beautifully balanced. The standard by which other blades are judged.",
             "requirements": {
                 "strength": 12
             },
             "stats": {
                 "damage": 12,
+                "accuracy": 2
+            },
+            "abilities": [],
+            "durability": 110,
+            "max_durability": 110
+        },
+        "bronze_talwar": {
+            "name": "Bronze Talwar",
+            "weapon_class": "Curved sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "earth",
+            "weight": 6,
+            "value": 35,
+            "description": "A slender curved blade of bronze. Lighter than a straight sword, quicker in the hand.",
+            "requirements": {
+                "strength": 7,
+                "finesse": 9
+            },
+            "stats": {
+                "damage": 5,
                 "accuracy": 5
             },
+            "abilities": [],
+            "durability": 65,
+            "max_durability": 65
+        },
+        "bronze_dao": {
+            "name": "Bronze Dao",
+            "weapon_class": "Single-edge sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "earth",
+            "weight": 8,
+            "value": 38,
+            "description": "A broad single-edged bronze blade, heavy toward the tip. Unsophisticated in technique, effective in result.",
+            "requirements": {
+                "strength": 9
+            },
+            "stats": {
+                "damage": 7,
+                "accuracy": -1,
+                "armor_pierce": 2
+            },
+            "abilities": [],
+            "durability": 65,
+            "max_durability": 65
+        },
+        "bronze_patisa": {
+            "name": "Bronze Patisa",
+            "weapon_class": "Two-handed sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "common",
+            "element": "earth",
+            "weight": 10,
+            "value": 45,
+            "description": "A wide two-handed bronze sword. Slow to bring to bear, decisive when it arrives.",
+            "requirements": {
+                "strength": 11
+            },
+            "stats": {
+                "damage": 9,
+                "accuracy": 0
+            },
+            "abilities": [],
+            "durability": 65,
+            "max_durability": 65
+        },
+        "iron_khanda": {
+            "name": "Iron Khanda",
+            "weapon_class": "Sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "earth",
+            "weight": 8,
+            "value": 50,
+            "description": "A straight double-edged iron blade. Balanced for cut and thrust alike — the dependable sword of soldiers across a dozen realms.",
+            "requirements": {
+                "strength": 10
+            },
+            "stats": {
+                "damage": 8,
+                "accuracy": 2
+            },
+            "abilities": [],
+            "durability": 85,
+            "max_durability": 85
+        },
+        "iron_dao": {
+            "name": "Iron Dao",
+            "weapon_class": "Single-edge sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "earth",
+            "weight": 9,
+            "value": 55,
+            "description": "A heavy single-edged iron blade, widening toward the tip. Built to chop through armor, not dance around it.",
+            "requirements": {
+                "strength": 11
+            },
+            "stats": {
+                "damage": 9,
+                "accuracy": -1,
+                "armor_pierce": 3
+            },
+            "abilities": [],
+            "durability": 85,
+            "max_durability": 85
+        },
+        "iron_patisa": {
+            "name": "Iron Patisa",
+            "weapon_class": "Two-handed sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "common",
+            "element": "earth",
+            "weight": 12,
+            "value": 65,
+            "description": "A broad two-handed iron blade. Takes both arms to wield and enough strength to mean it.",
+            "requirements": {
+                "strength": 13
+            },
+            "stats": {
+                "damage": 11,
+                "accuracy": 0
+            },
+            "abilities": [],
+            "durability": 85,
+            "max_durability": 85
+        },
+        "steel_talwar": {
+            "name": "Steel Talwar",
+            "weapon_class": "Curved sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "uncommon",
+            "element": "earth",
+            "weight": 9,
+            "value": 125,
+            "description": "A beautifully curved blade of tempered steel. In the right hands it is less a weapon than an argument made conclusively.",
+            "requirements": {
+                "strength": 11,
+                "finesse": 12
+            },
+            "stats": {
+                "damage": 11,
+                "accuracy": 5
+            },
+            "abilities": [],
+            "durability": 110,
+            "max_durability": 110
+        },
+        "steel_dao": {
+            "name": "Steel Dao",
+            "weapon_class": "Single-edge sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "uncommon",
+            "element": "earth",
+            "weight": 11,
+            "value": 130,
+            "description": "A heavy tempered steel dao. Its weight carries through armor that would turn a lesser blade.",
+            "requirements": {
+                "strength": 13
+            },
+            "stats": {
+                "damage": 13,
+                "accuracy": -1,
+                "armor_pierce": 4
+            },
+            "abilities": [],
+            "durability": 110,
+            "max_durability": 110
+        },
+        "steel_patisa": {
+            "name": "Steel Patisa",
+            "weapon_class": "Two-handed sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "uncommon",
+            "element": "earth",
+            "weight": 14,
+            "value": 150,
+            "description": "A massive two-handed blade of tempered steel. Commanders carry it as a statement. Warriors carry it as a fact.",
+            "requirements": {
+                "strength": 15
+            },
+            "stats": {
+                "damage": 16,
+                "accuracy": 0
+            },
+            "abilities": [],
+            "durability": 110,
+            "max_durability": 110
+        },
+        "damascene_khanda": {
+            "name": "Damascene Khanda",
+            "weapon_class": "Sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "earth",
+            "weight": 7,
+            "value": 200,
+            "description": "A straight blade of folded damascene steel, the layered grain visible along the edge. Perfectly balanced, reliably lethal.",
+            "requirements": {
+                "strength": 13
+            },
+            "stats": {
+                "damage": 15,
+                "accuracy": 2
+            },
+            "abilities": [],
+            "durability": 140,
+            "max_durability": 140
+        },
+        "damascene_talwar": {
+            "name": "Damascene Talwar",
+            "weapon_class": "Curved sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "earth",
+            "weight": 6,
+            "value": 210,
+            "description": "A curved damascene blade, patterned like flowing water. Lighter than any common sword of its power, swift enough to seem dishonest.",
+            "requirements": {
+                "strength": 12,
+                "finesse": 13
+            },
+            "stats": {
+                "damage": 14,
+                "accuracy": 6
+            },
+            "abilities": [],
+            "durability": 140,
+            "max_durability": 140
+        },
+        "damascene_dao": {
+            "name": "Damascene Dao",
+            "weapon_class": "Single-edge sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "earth",
+            "weight": 8,
+            "value": 215,
+            "description": "A heavy single-edge blade of folded damascene steel. The watered pattern runs into the edge — which bites through armor as though finding it personally offensive.",
+            "requirements": {
+                "strength": 14
+            },
+            "stats": {
+                "damage": 17,
+                "accuracy": 0,
+                "armor_pierce": 5
+            },
+            "abilities": [],
+            "durability": 140,
+            "max_durability": 140
+        },
+        "damascene_patisa": {
+            "name": "Damascene Patisa",
+            "weapon_class": "Two-handed sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "rare",
+            "element": "earth",
+            "weight": 10,
+            "value": 250,
+            "description": "A broad two-handed damascene blade. Despite the craft that went into making it, its purpose remains entirely unambiguous.",
+            "requirements": {
+                "strength": 15
+            },
+            "stats": {
+                "damage": 21,
+                "accuracy": 0
+            },
+            "abilities": [],
+            "durability": 140,
+            "max_durability": 140
+        },
+        "sky_iron_khanda": {
+            "name": "Sky-iron Khanda",
+            "weapon_class": "Sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "earth",
+            "weight": 6,
+            "value": 400,
+            "description": "Forged from gnam-lcags — Tibetan sky-iron, meteoritic metal that fell from the heavens. Lighter than iron has any right to be. Sacred in its origins.",
+            "requirements": {
+                "strength": 14
+            },
+            "stats": {
+                "damage": 19,
+                "accuracy": 3
+            },
+            "abilities": [],
+            "durability": 180,
+            "max_durability": 180
+        },
+        "sky_iron_talwar": {
+            "name": "Sky-iron Talwar",
+            "weapon_class": "Curved sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "earth",
+            "weight": 5,
+            "value": 415,
+            "description": "A curved blade of meteoritic sky-iron. The metal carries something of the void from which it fell — strikes land with unsettling precision.",
+            "requirements": {
+                "strength": 13,
+                "finesse": 14
+            },
+            "stats": {
+                "damage": 18,
+                "accuracy": 7
+            },
+            "abilities": [],
+            "durability": 180,
+            "max_durability": 180
+        },
+        "sky_iron_dao": {
+            "name": "Sky-iron Dao",
+            "weapon_class": "Single-edge sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "earth",
+            "weight": 7,
+            "value": 430,
+            "description": "A heavy chopping blade of sky-iron. Where ordinary steel fails against armored foes, this finds a way through.",
+            "requirements": {
+                "strength": 15
+            },
+            "stats": {
+                "damage": 21,
+                "accuracy": 1,
+                "armor_pierce": 6
+            },
+            "abilities": [],
+            "durability": 180,
+            "max_durability": 180
+        },
+        "sky_iron_patisa": {
+            "name": "Sky-iron Patisa",
+            "weapon_class": "Two-handed sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "rare",
+            "element": "earth",
+            "weight": 9,
+            "value": 500,
+            "description": "A massive two-handed blade of meteoritic iron. Those who carry it feel the weight of the cosmos in every swing.",
+            "requirements": {
+                "strength": 16
+            },
+            "stats": {
+                "damage": 26,
+                "accuracy": 1
+            },
+            "abilities": [],
+            "durability": 180,
+            "max_durability": 180
+        },
+        "vajra_khanda": {
+            "name": "Vajra Khanda",
+            "weapon_class": "Sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "legendary",
+            "element": "space",
+            "weight": 5,
+            "value": 1200,
+            "description": "A straight blade of vajra-metal, the divine indestructible substance. It will not dull. It will not break. It simply continues.",
+            "requirements": {
+                "strength": 15
+            },
+            "stats": {
+                "damage": 24,
+                "accuracy": 5
+            },
+            "abilities": [],
+            "durability": 9999,
+            "max_durability": 9999
+        },
+        "vajra_talwar": {
+            "name": "Vajra Talwar",
+            "weapon_class": "Curved sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "legendary",
+            "element": "space",
+            "weight": 5,
+            "value": 1250,
+            "description": "A curved vajra blade. In the right hands it is faster than thought — which, in Buddhist philosophy, is saying something.",
+            "requirements": {
+                "strength": 14,
+                "finesse": 15
+            },
+            "stats": {
+                "damage": 23,
+                "accuracy": 9
+            },
+            "abilities": [],
+            "durability": 9999,
+            "max_durability": 9999
+        },
+        "vajra_dao": {
+            "name": "Vajra Dao",
+            "weapon_class": "Single-edge sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "legendary",
+            "element": "space",
+            "weight": 6,
+            "value": 1300,
+            "description": "A heavy single-edge blade of indestructible vajra-metal. Armor is, philosophically speaking, irrelevant.",
+            "requirements": {
+                "strength": 16
+            },
+            "stats": {
+                "damage": 27,
+                "accuracy": 3,
+                "armor_pierce": 8
+            },
+            "abilities": [],
+            "durability": 9999,
+            "max_durability": 9999
+        },
+        "vajra_patisa": {
+            "name": "Vajra Patisa",
+            "weapon_class": "Two-handed sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "legendary",
+            "element": "space",
+            "weight": 8,
+            "value": 1500,
+            "description": "A two-handed blade of divine vajra-metal. It weighs less than a steel sword half its size. The universe, apparently, wants it swung.",
+            "requirements": {
+                "strength": 17
+            },
+            "stats": {
+                "damage": 32,
+                "accuracy": 2
+            },
+            "abilities": [],
+            "durability": 9999,
+            "max_durability": 9999
+        },
+        "steel_urumi": {
+            "name": "Steel Urumi",
+            "weapon_class": "Flexible sword",
+            "type": "sword",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "rare",
+            "element": "air",
+            "weight": 5,
+            "value": 200,
+            "description": "A long flexible blade of tempered steel, worn coiled at the waist. From Kalaripayattu — wielded in flowing arcs that cover the entire body. Requires total commitment; striking all enemies within reach but at reduced precision.",
+            "requirements": {
+                "finesse": 14,
+                "strength": 12
+            },
+            "stats": {
+                "damage": 14,
+                "accuracy": 5
+            },
+            "special_attack": "sweep",
+            "sweep_accuracy_penalty": -15,
             "abilities": [],
             "durability": 110,
             "max_durability": 110
@@ -106,7 +608,8 @@
             "material": "wood"
         },
         "hunting_bow": {
-            "name": "Hunting Bow",
+            "name": "Dhanush",
+            "weapon_class": "Hunting bow",
             "type": "bow",
             "slot": "weapon_main",
             "two_handed": true,
@@ -114,7 +617,7 @@
             "element": "air",
             "weight": 3,
             "value": 40,
-            "description": "A simple bow for hunting game.",
+            "description": "A simple wooden dhanush, the classic bow of hunters and soldiers alike. Balanced between power and ease of use.",
             "requirements": {
                 "finesse": 10
             },
@@ -131,6 +634,7 @@
         },
         "short_bow": {
             "name": "Short Bow",
+            "weapon_class": "Short bow",
             "type": "bow",
             "slot": "weapon_main",
             "two_handed": true,
@@ -138,7 +642,7 @@
             "element": "air",
             "weight": 2,
             "value": 30,
-            "description": "A compact bow, easy to carry.",
+            "description": "A compact bow, easy to carry and quick to draw.",
             "requirements": {
                 "finesse": 8
             },
@@ -155,6 +659,7 @@
         },
         "longbow": {
             "name": "Longbow",
+            "weapon_class": "Longbow",
             "type": "bow",
             "slot": "weapon_main",
             "two_handed": true,
@@ -162,7 +667,7 @@
             "element": "air",
             "weight": 4,
             "value": 80,
-            "description": "A powerful bow requiring great skill to draw.",
+            "description": "A powerful bow requiring great strength to draw. Unmatched range and impact.",
             "requirements": {
                 "finesse": 12,
                 "strength": 10
@@ -177,6 +682,31 @@
             "durability": 40,
             "max_durability": 40,
             "material": "wood"
+        },
+        "composite_bow": {
+            "name": "Composite Bow",
+            "weapon_class": "Composite bow",
+            "type": "bow",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "uncommon",
+            "element": "air",
+            "weight": 3,
+            "value": 60,
+            "description": "A recurve bow of layered horn, sinew and wood — the bow of Central Asian and Tibetan horsemen. Shorter than a longbow but just as powerful, with greater precision.",
+            "requirements": {
+                "finesse": 11
+            },
+            "stats": {
+                "damage": 9,
+                "accuracy": 8,
+                "range": 5,
+                "ammo": 20
+            },
+            "abilities": [],
+            "durability": 55,
+            "max_durability": 55,
+            "material": "composite"
         },
         "throwing_knife": {
             "name": "Throwing Knife",
@@ -198,6 +728,54 @@
                 "crit_chance": 5,
                 "ammo": 5
             },
+            "abilities": []
+        },
+        "iron_chakram": {
+            "name": "Iron Chakram",
+            "weapon_class": "Throwing ring",
+            "type": "thrown",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "uncommon",
+            "element": "air",
+            "weight": 1,
+            "value": 55,
+            "description": "A flat iron throwing ring with a sharpened outer edge. Flies in a stable arc and passes through the first target to strike the second. Retrieve after battle.",
+            "requirements": {
+                "finesse": 10
+            },
+            "stats": {
+                "damage": 6,
+                "accuracy": 14,
+                "range": 4,
+                "ammo": 3
+            },
+            "pass_through": 1,
+            "retrievable": true,
+            "abilities": []
+        },
+        "steel_chakram": {
+            "name": "Steel Chakram",
+            "weapon_class": "Throwing ring",
+            "type": "thrown",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "uncommon",
+            "element": "air",
+            "weight": 1,
+            "value": 130,
+            "description": "A tempered steel chakram, edge-ground to lethal sharpness. Cuts through two targets in a single throw. Sacred to Vishnu — warriors of the god realm carry them as devotion made manifest.",
+            "requirements": {
+                "finesse": 12
+            },
+            "stats": {
+                "damage": 9,
+                "accuracy": 14,
+                "range": 5,
+                "ammo": 3
+            },
+            "pass_through": 1,
+            "retrievable": true,
             "abilities": []
         },
         "iron_dagger": {
@@ -222,6 +800,167 @@
             "durability": 85,
             "max_durability": 85
         },
+        "iron_katar": {
+            "name": "Iron Katar",
+            "weapon_class": "Push dagger",
+            "type": "dagger",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "air",
+            "weight": 2,
+            "value": 40,
+            "description": "A transverse-grip push dagger — the hand passes through an H-shaped handle and the blade extends along the forearm. Difficult to deflect, punishing on a direct hit.",
+            "requirements": {
+                "finesse": 9
+            },
+            "stats": {
+                "damage": 3,
+                "accuracy": 12,
+                "crit_chance": 18
+            },
+            "abilities": [],
+            "durability": 85,
+            "max_durability": 85
+        },
+        "steel_katar": {
+            "name": "Steel Katar",
+            "weapon_class": "Push dagger",
+            "type": "dagger",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "uncommon",
+            "element": "air",
+            "weight": 2,
+            "value": 110,
+            "description": "A finely made steel katar with a folded crossguard. In skilled hands, the direct thrust finds gaps no ordinary dagger could reach.",
+            "requirements": {
+                "finesse": 11
+            },
+            "stats": {
+                "damage": 5,
+                "accuracy": 14,
+                "crit_chance": 22
+            },
+            "abilities": [],
+            "durability": 110,
+            "max_durability": 110
+        },
+        "iron_bichawa": {
+            "name": "Iron Bichawa",
+            "weapon_class": "Parrying dagger",
+            "type": "dagger",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "air",
+            "weight": 2,
+            "value": 40,
+            "description": "A curved iron dagger with a double-looped guard that catches and traps incoming blades. Worn in the off-hand to defend while striking.",
+            "requirements": {
+                "finesse": 9
+            },
+            "stats": {
+                "damage": 4,
+                "accuracy": 14,
+                "parry_effectiveness": 75
+            },
+            "abilities": [],
+            "durability": 85,
+            "max_durability": 85
+        },
+        "steel_bichawa": {
+            "name": "Steel Bichawa",
+            "weapon_class": "Parrying dagger",
+            "type": "dagger",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "uncommon",
+            "element": "air",
+            "weight": 2,
+            "value": 115,
+            "description": "A tempered steel bichawa with a finely wrought scissor-guard. Deflects blows that would break ordinary parrying weapons.",
+            "requirements": {
+                "finesse": 11
+            },
+            "stats": {
+                "damage": 6,
+                "accuracy": 16,
+                "parry_effectiveness": 75
+            },
+            "abilities": [],
+            "durability": 110,
+            "max_durability": 110
+        },
+        "bronze_kukri": {
+            "name": "Bronze Kukri",
+            "weapon_class": "Curved blade",
+            "type": "dagger",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "fire",
+            "weight": 3,
+            "value": 30,
+            "description": "A forward-curved bronze blade, heavy toward the tip. Designed to chop rather than stab — the working knife of the mountain peoples.",
+            "requirements": {
+                "strength": 8,
+                "finesse": 7
+            },
+            "stats": {
+                "damage": 5,
+                "accuracy": 6
+            },
+            "abilities": [],
+            "durability": 65,
+            "max_durability": 65
+        },
+        "iron_kukri": {
+            "name": "Iron Kukri",
+            "weapon_class": "Curved blade",
+            "type": "dagger",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "fire",
+            "weight": 3,
+            "value": 45,
+            "description": "An iron kukri, the blade angling sharply forward. More damage than a dagger, less reach than a sword. The kukri does not split the difference — it ignores it.",
+            "requirements": {
+                "strength": 9,
+                "finesse": 8
+            },
+            "stats": {
+                "damage": 6,
+                "accuracy": 8
+            },
+            "abilities": [],
+            "durability": 85,
+            "max_durability": 85
+        },
+        "steel_kukri": {
+            "name": "Steel Kukri",
+            "weapon_class": "Curved blade",
+            "type": "dagger",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "uncommon",
+            "element": "fire",
+            "weight": 3,
+            "value": 115,
+            "description": "A well-forged steel kukri. The forward curve concentrates force at the point of impact. Light enough to carry everywhere. Reliable enough to use on anything.",
+            "requirements": {
+                "strength": 11,
+                "finesse": 10
+            },
+            "stats": {
+                "damage": 9,
+                "accuracy": 10
+            },
+            "abilities": [],
+            "durability": 110,
+            "max_durability": 110
+        },
         "iron_axe": {
             "name": "Iron Axe",
             "type": "axe",
@@ -244,7 +983,8 @@
             "max_durability": 85
         },
         "iron_mace": {
-            "name": "Iron Mace",
+            "name": "Iron Gada",
+            "weapon_class": "Mace",
             "type": "mace",
             "slot": "weapon_main",
             "two_handed": false,
@@ -252,7 +992,7 @@
             "element": "earth",
             "weight": 9,
             "value": 50,
-            "description": "A heavy iron mace for crushing blows.",
+            "description": "A flanged iron gada, the classical striking weapon of warriors across the subcontinent. Heavy, direct, and very final.",
             "requirements": {
                 "strength": 11
             },
@@ -285,6 +1025,56 @@
             "abilities": [],
             "durability": 40,
             "max_durability": 40
+        },
+        "iron_trishula": {
+            "name": "Iron Trishula",
+            "weapon_class": "Trident",
+            "type": "spear",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "uncommon",
+            "element": "water",
+            "weight": 7,
+            "value": 65,
+            "description": "A three-pronged iron trident — Shiva's emblem made into a weapon of war. The forked head is harder to dodge than a single point, and on a true hit the prongs catch and hold.",
+            "requirements": {
+                "finesse": 10,
+                "strength": 10
+            },
+            "stats": {
+                "damage": 7,
+                "accuracy": 8
+            },
+            "on_crit_status": "pinned",
+            "on_crit_duration": 1,
+            "abilities": [],
+            "durability": 85,
+            "max_durability": 85
+        },
+        "steel_trishula": {
+            "name": "Steel Trishula",
+            "weapon_class": "Trident",
+            "type": "spear",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "uncommon",
+            "element": "water",
+            "weight": 7,
+            "value": 150,
+            "description": "A tempered steel trishula, each prong razor-edged. The divine weapon in its martial form — when all three points connect, the target does not move again quickly.",
+            "requirements": {
+                "finesse": 12,
+                "strength": 11
+            },
+            "stats": {
+                "damage": 11,
+                "accuracy": 10
+            },
+            "on_crit_status": "pinned",
+            "on_crit_duration": 1,
+            "abilities": [],
+            "durability": 110,
+            "max_durability": 110
         },
         "wooden_shield": {
             "name": "Wooden Shield",
@@ -329,7 +1119,7 @@
             "max_durability": 85
         },
         "leather_vest": {
-            "name": "Leather Vest",
+            "name": "Chuba",
             "type": "armor",
             "slot": "chest",
             "two_handed": false,
@@ -337,7 +1127,7 @@
             "element": "earth",
             "weight": 8,
             "value": 40,
-            "description": "Simple leather protection.",
+            "description": "A layered wool travelling coat, the everyday garment of Tibetan highlanders. Worn belted, one shoulder free — practical protection against cold and blade alike.",
             "requirements": {},
             "stats": {
                 "armor": 3,
@@ -381,6 +1171,25 @@
             },
             "abilities": []
         },
+        "lamellar_armor": {
+            "name": "Lamellar Armor",
+            "type": "armor",
+            "slot": "chest",
+            "two_handed": false,
+            "rarity": "uncommon",
+            "element": "earth",
+            "weight": 22,
+            "value": 220,
+            "description": "Rows of overlapping iron plates laced together with cord — the armor of Tibetan and Central Asian warriors. Lighter than chainmail, more protective, and easier to repair in the field.",
+            "requirements": {
+                "strength": 13
+            },
+            "stats": {
+                "armor": 11,
+                "dodge": -6
+            },
+            "abilities": []
+        },
         "cloth_robe": {
             "name": "Cloth Robe",
             "type": "robe",
@@ -395,6 +1204,26 @@
             "stats": {
                 "armor": 1,
                 "max_mana": 10
+            },
+            "abilities": []
+        },
+        "monks_robe": {
+            "name": "Monk's Robe",
+            "type": "robe",
+            "slot": "chest",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "space",
+            "weight": 3,
+            "value": 35,
+            "description": "A saffron-dyed cotton robe, simply cut. Marks the wearer as one who has taken vows. The discipline of monastic life shows in the body.",
+            "requirements": {},
+            "stats": {
+                "armor": 1,
+                "max_mana": 10
+            },
+            "skill_bonuses": {
+                "yoga": {"monks_robe": 1}
             },
             "abilities": []
         },
@@ -446,6 +1275,25 @@
             "requirements": {},
             "stats": {
                 "max_mana": 5
+            },
+            "abilities": []
+        },
+        "monks_hood": {
+            "name": "Monk's Hood",
+            "type": "hat",
+            "slot": "head",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "space",
+            "weight": 1,
+            "value": 25,
+            "description": "A deep cowl worn during practice and meditation. Cuts out the world. In that silence, something steadier than thought becomes available.",
+            "requirements": {},
+            "stats": {
+                "max_mana": 5
+            },
+            "skill_bonuses": {
+                "yoga": {"monks_hood": 1}
             },
             "abilities": []
         },
@@ -676,6 +1524,589 @@
             "abilities": [],
             "durability": 85,
             "max_durability": 85
+        },
+        "copper_dorje": {
+            "name": "Copper Dorje",
+            "weapon_class": "Ritual sceptre",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "space",
+            "weight": 1,
+            "value": 50,
+            "description": "A small copper vajra sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast.",
+            "requirements": {"focus": 8},
+            "stats": {"damage": 2, "spellpower": 4},
+            "skill_bonuses": {"white_magic": {"copper_dorje": 1}},
+            "set_pair": "dorje_drilbu",
+            "abilities": [], "durability": 55, "max_durability": 55
+        },
+        "silver_dorje": {
+            "name": "Silver Dorje",
+            "weapon_class": "Ritual sceptre",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "uncommon",
+            "element": "space",
+            "weight": 1,
+            "value": 200,
+            "description": "A silver vajra, its five-pronged crown representing the five wisdoms. The metal resonates clearly with intention.",
+            "requirements": {"focus": 10},
+            "stats": {"damage": 2, "spellpower": 7},
+            "skill_bonuses": {"white_magic": {"silver_dorje": 1}},
+            "set_pair": "dorje_drilbu",
+            "abilities": [], "durability": 70, "max_durability": 70
+        },
+        "gold_dorje": {
+            "name": "Golden Dorje",
+            "weapon_class": "Ritual sceptre",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "space",
+            "weight": 1,
+            "value": 600,
+            "description": "A gold vajra of masterwork construction. Incorruptible metal for an incorruptible principle. Healers and bodhisattvas prize these above all other tools.",
+            "requirements": {"focus": 12},
+            "stats": {"damage": 2, "spellpower": 11},
+            "skill_bonuses": {"white_magic": {"gold_dorje": 2}},
+            "set_pair": "dorje_drilbu",
+            "abilities": [], "durability": 90, "max_durability": 90
+        },
+        "sky_iron_dorje": {
+            "name": "Sky-iron Dorje",
+            "weapon_class": "Ritual sceptre",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "space",
+            "weight": 1,
+            "value": 1000,
+            "description": "A dorje forged from meteoritic sky-iron. The metal fell from beyond the world — it carries something of that distance in every cast.",
+            "requirements": {"focus": 14},
+            "stats": {"damage": 2, "spellpower": 16},
+            "skill_bonuses": {"white_magic": {"sky_iron_dorje": 2}},
+            "set_pair": "dorje_drilbu",
+            "abilities": [], "durability": 180, "max_durability": 180
+        },
+        "vajra_dorje": {
+            "name": "Vajra Dorje",
+            "weapon_class": "Ritual sceptre",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "legendary",
+            "element": "space",
+            "weight": 1,
+            "value": 2500,
+            "description": "A dorje of true vajra-metal — the indestructible substance made into the symbol of indestructibility. In the stories, these are carried by bodhisattvas who have not slept in centuries.",
+            "requirements": {"focus": 16},
+            "stats": {"damage": 2, "spellpower": 22},
+            "skill_bonuses": {"white_magic": {"vajra_dorje": 3}},
+            "set_pair": "dorje_drilbu",
+            "abilities": [], "durability": 9999, "max_durability": 9999
+        },
+        "copper_drilbu": {
+            "name": "Copper Drilbu",
+            "weapon_class": "Ritual bell",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "space",
+            "weight": 1,
+            "value": 50,
+            "description": "A small copper bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool.",
+            "requirements": {"focus": 8},
+            "stats": {"damage": 0, "max_mana": 15},
+            "skill_bonuses": {"space_magic": {"copper_drilbu": 1}},
+            "set_pair": "dorje_drilbu",
+            "abilities": [], "durability": 55, "max_durability": 55
+        },
+        "silver_drilbu": {
+            "name": "Silver Drilbu",
+            "weapon_class": "Ritual bell",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "uncommon",
+            "element": "space",
+            "weight": 1,
+            "value": 200,
+            "description": "A silver bell with a dorje handle. The tone carries further than copper — and into registers ordinary ears cannot quite follow.",
+            "requirements": {"focus": 10},
+            "stats": {"damage": 0, "max_mana": 25},
+            "skill_bonuses": {"space_magic": {"silver_drilbu": 1}},
+            "set_pair": "dorje_drilbu",
+            "abilities": [], "durability": 70, "max_durability": 70
+        },
+        "gold_drilbu": {
+            "name": "Golden Drilbu",
+            "weapon_class": "Ritual bell",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "space",
+            "weight": 1,
+            "value": 600,
+            "description": "A gold bell of exceptional resonance. The vibration persists long after the hand stops moving. Space magic feels almost effortless when holding this.",
+            "requirements": {"focus": 12},
+            "stats": {"damage": 0, "max_mana": 38},
+            "skill_bonuses": {"space_magic": {"gold_drilbu": 2}},
+            "set_pair": "dorje_drilbu",
+            "abilities": [], "durability": 90, "max_durability": 90
+        },
+        "sky_iron_drilbu": {
+            "name": "Sky-iron Drilbu",
+            "weapon_class": "Ritual bell",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "space",
+            "weight": 1,
+            "value": 1000,
+            "description": "A bell of meteoritic iron. Its tone was described by one lama as 'the sound the void makes when it remembers it is not empty.'",
+            "requirements": {"focus": 14},
+            "stats": {"damage": 0, "max_mana": 52},
+            "skill_bonuses": {"space_magic": {"sky_iron_drilbu": 2}},
+            "set_pair": "dorje_drilbu",
+            "abilities": [], "durability": 180, "max_durability": 180
+        },
+        "vajra_drilbu": {
+            "name": "Vajra Drilbu",
+            "weapon_class": "Ritual bell",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "legendary",
+            "element": "space",
+            "weight": 1,
+            "value": 2500,
+            "description": "A bell of indestructible vajra-metal. It never needs to be rung. It is already ringing.",
+            "requirements": {"focus": 16},
+            "stats": {"damage": 0, "max_mana": 70},
+            "skill_bonuses": {"space_magic": {"vajra_drilbu": 3}},
+            "set_pair": "dorje_drilbu",
+            "abilities": [], "durability": 9999, "max_durability": 9999
+        },
+        "bone_khatvanga": {
+            "name": "Bone Khatvanga",
+            "weapon_class": "Skull staff",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "common",
+            "element": "space",
+            "weight": 5,
+            "value": 25,
+            "description": "A staff of human bone topped with a skull. The emblem of wrathful practice and those who have made friends with death. Enemies flinch from its presence.",
+            "requirements": {"focus": 8},
+            "stats": {"damage": 5, "spellpower": 3, "max_mana": 8},
+            "skill_bonuses": {"black_magic": {"bone_khatvanga": 1}},
+            "passive_aura": "initiative_debuff",
+            "aura_value": -2,
+            "abilities": [], "durability": 30, "max_durability": 30
+        },
+        "copper_khatvanga": {
+            "name": "Copper Khatvanga",
+            "weapon_class": "Skull staff",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "common",
+            "element": "space",
+            "weight": 5,
+            "value": 80,
+            "description": "A copper-shod khatvanga hung with skulls and a small trident. The wrathful weight of it is palpable — enemies hesitate before engaging its bearer.",
+            "requirements": {"focus": 9},
+            "stats": {"damage": 6, "spellpower": 5, "max_mana": 12},
+            "skill_bonuses": {"black_magic": {"copper_khatvanga": 1}},
+            "passive_aura": "initiative_debuff",
+            "aura_value": -3,
+            "abilities": [], "durability": 55, "max_durability": 55
+        },
+        "silver_khatvanga": {
+            "name": "Silver Khatvanga",
+            "weapon_class": "Skull staff",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "uncommon",
+            "element": "space",
+            "weight": 5,
+            "value": 250,
+            "description": "A silver khatvanga of tantric construction, with a vase, a freshly severed head, and a dry skull — the three states of the dead. An extraordinary thing to carry into battle.",
+            "requirements": {"focus": 11, "awareness": 10},
+            "stats": {"damage": 7, "spellpower": 8, "max_mana": 18},
+            "skill_bonuses": {"black_magic": {"silver_khatvanga": 2}},
+            "passive_aura": "initiative_debuff",
+            "aura_value": -4,
+            "abilities": [], "durability": 70, "max_durability": 70
+        },
+        "gold_khatvanga": {
+            "name": "Golden Khatvanga",
+            "weapon_class": "Skull staff",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "rare",
+            "element": "space",
+            "weight": 5,
+            "value": 750,
+            "description": "A gold khatvanga inlaid with turquoise and coral. The ornament contradicts nothing — in tantric tradition, beauty and terror are the same face.",
+            "requirements": {"focus": 13, "awareness": 12},
+            "stats": {"damage": 8, "spellpower": 12, "max_mana": 25},
+            "skill_bonuses": {"black_magic": {"gold_khatvanga": 2}},
+            "passive_aura": "initiative_debuff",
+            "aura_value": -5,
+            "abilities": [], "durability": 90, "max_durability": 90
+        },
+        "sky_iron_khatvanga": {
+            "name": "Sky-iron Khatvanga",
+            "weapon_class": "Skull staff",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "rare",
+            "element": "space",
+            "weight": 5,
+            "value": 1500,
+            "description": "A khatvanga forged from sky-iron. The skull at its crown is ancient. Enemies within reach lose their composure — and then their initiative.",
+            "requirements": {"focus": 15, "awareness": 13},
+            "stats": {"damage": 9, "spellpower": 17, "max_mana": 35},
+            "skill_bonuses": {"black_magic": {"sky_iron_khatvanga": 3}},
+            "passive_aura": "initiative_debuff",
+            "aura_value": -6,
+            "abilities": [], "durability": 180, "max_durability": 180
+        },
+        "vajra_khatvanga": {
+            "name": "Vajra Khatvanga",
+            "weapon_class": "Skull staff",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": true,
+            "rarity": "legendary",
+            "element": "space",
+            "weight": 5,
+            "value": 3500,
+            "description": "Padmasambhava carried one of these. That is the entire description. Enemies who see it do not need to be told what it means.",
+            "requirements": {"focus": 17, "awareness": 14},
+            "stats": {"damage": 10, "spellpower": 24, "max_mana": 48},
+            "skill_bonuses": {"black_magic": {"vajra_khatvanga": 3}},
+            "passive_aura": "initiative_debuff",
+            "aura_value": -8,
+            "abilities": [], "durability": 9999, "max_durability": 9999
+        },
+        "copper_damaru": {
+            "name": "Copper Damaru",
+            "weapon_class": "Ritual drum",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "air",
+            "weight": 1,
+            "value": 55,
+            "description": "A small double-headed drum shaken by a cord. Each beat marks ritual time. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana.",
+            "requirements": {"focus": 8},
+            "stats": {"damage": 0, "max_mana": 18},
+            "skill_bonuses": {"enchantment": {"copper_damaru": 1}},
+            "special_mechanic": "rhythm_charge",
+            "charge_max": 3,
+            "charge_discount": 0.40,
+            "abilities": [], "durability": 55, "max_durability": 55
+        },
+        "silver_damaru": {
+            "name": "Silver Damaru",
+            "weapon_class": "Ritual drum",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "uncommon",
+            "element": "air",
+            "weight": 1,
+            "value": 180,
+            "description": "A silver damaru with a bone handle. The rhythm it sets is harder to break than iron — enchantments woven to its beat tend to hold.",
+            "requirements": {"focus": 10},
+            "stats": {"damage": 0, "max_mana": 30},
+            "skill_bonuses": {"enchantment": {"silver_damaru": 1}},
+            "special_mechanic": "rhythm_charge",
+            "charge_max": 3,
+            "charge_discount": 0.40,
+            "abilities": [], "durability": 70, "max_durability": 70
+        },
+        "gold_damaru": {
+            "name": "Golden Damaru",
+            "weapon_class": "Ritual drum",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "air",
+            "weight": 1,
+            "value": 550,
+            "description": "A golden damaru inlaid with turquoise. The beat it produces is almost musical. Enchantments cast at its third beat last noticeably longer.",
+            "requirements": {"focus": 12},
+            "stats": {"damage": 0, "max_mana": 45},
+            "skill_bonuses": {"enchantment": {"gold_damaru": 2}},
+            "special_mechanic": "rhythm_charge",
+            "charge_max": 3,
+            "charge_discount": 0.40,
+            "abilities": [], "durability": 90, "max_durability": 90
+        },
+        "sky_iron_damaru": {
+            "name": "Sky-iron Damaru",
+            "weapon_class": "Ritual drum",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "air",
+            "weight": 1,
+            "value": 1100,
+            "description": "A damaru of meteoritic iron. The tone it produces is not quite from here. Three beats and the mana practically falls into the spell of its own accord.",
+            "requirements": {"focus": 14},
+            "stats": {"damage": 0, "max_mana": 62},
+            "skill_bonuses": {"enchantment": {"sky_iron_damaru": 2}},
+            "special_mechanic": "rhythm_charge",
+            "charge_max": 3,
+            "charge_discount": 0.40,
+            "abilities": [], "durability": 180, "max_durability": 180
+        },
+        "vajra_damaru": {
+            "name": "Vajra Damaru",
+            "weapon_class": "Ritual drum",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "legendary",
+            "element": "air",
+            "weight": 1,
+            "value": 2700,
+            "description": "An indestructible damaru of vajra-metal. It has been beating since before the practitioner was born. It will be beating after.",
+            "requirements": {"focus": 16},
+            "stats": {"damage": 0, "max_mana": 82},
+            "skill_bonuses": {"enchantment": {"vajra_damaru": 3}},
+            "special_mechanic": "rhythm_charge",
+            "charge_max": 3,
+            "charge_discount": 0.40,
+            "abilities": [], "durability": 9999, "max_durability": 9999
+        },
+        "copper_kangling": {
+            "name": "Copper Kangling",
+            "weapon_class": "Bone trumpet",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "earth",
+            "weight": 1,
+            "value": 65,
+            "description": "A thigh-bone trumpet fitted with a copper mouthpiece. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP.",
+            "requirements": {"focus": 9},
+            "stats": {"damage": 1, "spellpower": 5},
+            "skill_bonuses": {"summoning": {"copper_kangling": 1}},
+            "special_mechanic": "chod_offering",
+            "chod_cost_pct": 0.25,
+            "abilities": [], "durability": 55, "max_durability": 55
+        },
+        "silver_kangling": {
+            "name": "Silver Kangling",
+            "weapon_class": "Bone trumpet",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "uncommon",
+            "element": "earth",
+            "weight": 1,
+            "value": 200,
+            "description": "A kangling mounted in silver fittings. The tone carries further. So does the offering.",
+            "requirements": {"focus": 11},
+            "stats": {"damage": 1, "spellpower": 9},
+            "skill_bonuses": {"summoning": {"silver_kangling": 1}},
+            "special_mechanic": "chod_offering",
+            "chod_cost_pct": 0.25,
+            "abilities": [], "durability": 70, "max_durability": 70
+        },
+        "gold_kangling": {
+            "name": "Golden Kangling",
+            "weapon_class": "Bone trumpet",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "earth",
+            "weight": 1,
+            "value": 600,
+            "description": "A kangling of gold fittings and exceptional age. The Chöd practitioners who carried this gave a great deal of themselves to it. That generosity lingers in the metal.",
+            "requirements": {"focus": 13},
+            "stats": {"damage": 1, "spellpower": 14},
+            "skill_bonuses": {"summoning": {"gold_kangling": 2}},
+            "special_mechanic": "chod_offering",
+            "chod_cost_pct": 0.25,
+            "abilities": [], "durability": 90, "max_durability": 90
+        },
+        "sky_iron_kangling": {
+            "name": "Sky-iron Kangling",
+            "weapon_class": "Bone trumpet",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "earth",
+            "weight": 1,
+            "value": 1200,
+            "description": "A kangling with a mouthpiece of meteoritic iron. What it calls responds faster. What you offer costs the same.",
+            "requirements": {"focus": 15},
+            "stats": {"damage": 1, "spellpower": 20},
+            "skill_bonuses": {"summoning": {"sky_iron_kangling": 2}},
+            "special_mechanic": "chod_offering",
+            "chod_cost_pct": 0.25,
+            "abilities": [], "durability": 180, "max_durability": 180
+        },
+        "vajra_kangling": {
+            "name": "Vajra Kangling",
+            "weapon_class": "Bone trumpet",
+            "type": "focus",
+            "slot": "weapon_off",
+            "two_handed": false,
+            "rarity": "legendary",
+            "element": "earth",
+            "weight": 1,
+            "value": 2800,
+            "description": "A kangling of vajra-metal. It cannot be destroyed. The bone it carries is equally old. Some practitioners believe the two chose each other.",
+            "requirements": {"focus": 17},
+            "stats": {"damage": 1, "spellpower": 27},
+            "skill_bonuses": {"summoning": {"vajra_kangling": 3}},
+            "special_mechanic": "chod_offering",
+            "chod_cost_pct": 0.25,
+            "abilities": [], "durability": 9999, "max_durability": 9999
+        },
+        "bone_phurba": {
+            "name": "Bone Phurba",
+            "weapon_class": "Ritual dagger",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "fire",
+            "weight": 1,
+            "value": 25,
+            "description": "A three-bladed ritual dagger carved from bone. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates.",
+            "requirements": {"focus": 8},
+            "stats": {"damage": 4, "spellpower": 3},
+            "skill_bonuses": {"sorcery": {"bone_phurba": 1}},
+            "active_ability": "throw_phurba",
+            "throw_mana_cost": 15,
+            "throw_base_damage": 8,
+            "throw_save_dc": 16,
+            "abilities": [], "durability": 30, "max_durability": 30
+        },
+        "copper_phurba": {
+            "name": "Copper Phurba",
+            "weapon_class": "Ritual dagger",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "common",
+            "element": "fire",
+            "weight": 1,
+            "value": 70,
+            "description": "A three-bladed copper phurba. The handle depicts Vajrakilaya in wrathful form. It pins obstacles. It subjugates demons. Against mortal enemies it does both.",
+            "requirements": {"focus": 9},
+            "stats": {"damage": 4, "spellpower": 5},
+            "skill_bonuses": {"sorcery": {"copper_phurba": 1}},
+            "active_ability": "throw_phurba",
+            "throw_mana_cost": 15,
+            "throw_base_damage": 10,
+            "throw_save_dc": 16,
+            "abilities": [], "durability": 55, "max_durability": 55
+        },
+        "silver_phurba": {
+            "name": "Silver Phurba",
+            "weapon_class": "Ritual dagger",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "uncommon",
+            "element": "fire",
+            "weight": 1,
+            "value": 210,
+            "description": "A silver phurba of traditional form, its three blades etched with seed syllables. When thrown across the battlefield, it seeks obstacles with unnerving accuracy.",
+            "requirements": {"focus": 11},
+            "stats": {"damage": 5, "spellpower": 9},
+            "skill_bonuses": {"sorcery": {"silver_phurba": 1}},
+            "active_ability": "throw_phurba",
+            "throw_mana_cost": 15,
+            "throw_base_damage": 13,
+            "throw_save_dc": 16,
+            "abilities": [], "durability": 70, "max_durability": 70
+        },
+        "gold_phurba": {
+            "name": "Golden Phurba",
+            "weapon_class": "Ritual dagger",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "fire",
+            "weight": 1,
+            "value": 620,
+            "description": "A gold phurba of exceptional craftsmanship. The Vajrakilaya mantra is inlaid in sky-iron along each blade. Targets struck by its throw find themselves unable to move or act — pinned to the ground of reality.",
+            "requirements": {"focus": 13, "awareness": 11},
+            "stats": {"damage": 5, "spellpower": 14},
+            "skill_bonuses": {"sorcery": {"gold_phurba": 2}},
+            "active_ability": "throw_phurba",
+            "throw_mana_cost": 15,
+            "throw_base_damage": 17,
+            "throw_save_dc": 16,
+            "abilities": [], "durability": 90, "max_durability": 90
+        },
+        "sky_iron_phurba": {
+            "name": "Sky-iron Phurba",
+            "weapon_class": "Ritual dagger",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "rare",
+            "element": "fire",
+            "weight": 1,
+            "value": 1200,
+            "description": "A phurba of meteoritic iron. The material that fell from beyond the world makes an apt instrument for pinning things to this one. The throw hits everything it is meant to hit.",
+            "requirements": {"focus": 15, "awareness": 13},
+            "stats": {"damage": 6, "spellpower": 20},
+            "skill_bonuses": {"sorcery": {"sky_iron_phurba": 2}},
+            "active_ability": "throw_phurba",
+            "throw_mana_cost": 15,
+            "throw_base_damage": 22,
+            "throw_save_dc": 16,
+            "abilities": [], "durability": 180, "max_durability": 180
+        },
+        "vajra_phurba": {
+            "name": "Vajra Phurba",
+            "weapon_class": "Ritual dagger",
+            "type": "focus",
+            "slot": "weapon_main",
+            "two_handed": false,
+            "rarity": "legendary",
+            "element": "fire",
+            "weight": 1,
+            "value": 2800,
+            "description": "The phurba of Vajrakilaya himself, in material form. Whatever it is thrown at stays where it lands. The three blades have never failed to find their mark. They are not looking for the body.",
+            "requirements": {"focus": 17, "awareness": 15},
+            "stats": {"damage": 7, "spellpower": 27},
+            "skill_bonuses": {"sorcery": {"vajra_phurba": 3}},
+            "active_ability": "throw_phurba",
+            "throw_mana_cost": 15,
+            "throw_base_damage": 28,
+            "throw_save_dc": 16,
+            "abilities": [], "durability": 9999, "max_durability": 9999
         },
         "yamas_ledger": {
             "name": "Yama's Ledger",
@@ -2594,7 +4025,8 @@
             "slot": "weapon_off"
         },
         "bone_sword": {
-            "name": "Bone Sword",
+            "name": "Bone Khanda",
+            "weapon_class": "Sword",
             "type": "sword",
             "rarity": "common",
             "material": "bone",
@@ -2602,14 +4034,15 @@
             "accuracy": 0,
             "weight": 5,
             "value": 12,
-            "description": "A wide femur carved into a blade. Heavier than it looks, more fragile than it should be.",
+            "description": "A long bone ground to a double edge. Crude symmetry, brutish balance — the shape of a khanda in the materials of the damned.",
             "skill": "swords",
             "durability": 30,
             "max_durability": 30,
             "slot": "weapon_main"
         },
         "bone_club": {
-            "name": "Bone Club",
+            "name": "Bone Gada",
+            "weapon_class": "Mace",
             "type": "mace",
             "rarity": "common",
             "material": "bone",
@@ -2617,7 +4050,7 @@
             "accuracy": -5,
             "weight": 6,
             "value": 10,
-            "description": "A knobbed bone swung like a mace. Not elegant, but it breaks things.",
+            "description": "A knobbed femur swung like a gada. The form is ancient. The intent is clear.",
             "skill": "maces",
             "durability": 30,
             "max_durability": 30,
@@ -2670,7 +4103,8 @@
             "slot": "weapon_main"
         },
         "bronze_mace": {
-            "name": "Bronze Mace",
+            "name": "Bronze Gada",
+            "weapon_class": "Mace",
             "type": "mace",
             "rarity": "common",
             "material": "bronze",
@@ -2678,7 +4112,7 @@
             "accuracy": 0,
             "weight": 8,
             "value": 26,
-            "description": "A flanged bronze mace. Heavy on the back-swing, satisfying on contact.",
+            "description": "A flanged bronze gada. Heavy on the back-swing, authoritative on contact.",
             "skill": "maces",
             "durability": 65,
             "max_durability": 65,
@@ -2717,15 +4151,17 @@
             "slot": "weapon_off"
         },
         "obsidian_blade": {
-            "name": "Obsidian Blade",
+            "name": "Obsidian Dao",
+            "weapon_class": "Single-edge sword",
             "type": "sword",
             "rarity": "uncommon",
             "material": "obsidian",
-            "damage": 8,
-            "accuracy": 5,
-            "weight": 4,
+            "damage": 10,
+            "accuracy": 0,
+            "armor_pierce": 3,
+            "weight": 5,
             "value": 45,
-            "description": "A wide blade of chipped obsidian, mounted on bone. The edge is terrifying. The structural integrity is not.",
+            "description": "A wide single-edged blade of chipped obsidian. The volcanic glass finds gaps in armor that iron cannot. The structural integrity is terrifying in its own way.",
             "skill": "swords",
             "fragile": true,
             "durability": 20,

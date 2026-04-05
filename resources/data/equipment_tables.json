@@ -10,7 +10,10 @@
 		"steel":       {"tier": 5, "damage_mult": 1.20, "armor_mult": 1.20, "weight_mult": 0.95, "value_mult": 1.50, "base_durability": 110,  "fragility": 1.0, "name_prefix": "Steel"},
 		"damascene":   {"tier": 6, "damage_mult": 1.35, "armor_mult": 1.30, "weight_mult": 0.85, "value_mult": 2.50, "base_durability": 140,  "fragility": 0.8, "name_prefix": "Damascene"},
 		"sky_iron":    {"tier": 7, "damage_mult": 1.50, "armor_mult": 1.55, "weight_mult": 0.75, "value_mult": 5.00, "base_durability": 180,  "fragility": 0.6, "name_prefix": "Sky-iron",  "_note": "Tibetan meteoritic iron (gnam lcags)"},
-		"vajra":       {"tier": 8, "damage_mult": 1.70, "armor_mult": 1.80, "weight_mult": 0.65, "value_mult": 15.0, "base_durability": 9999, "fragility": 0.0, "name_prefix": "Vajra",    "_note": "Indestructible divine metal — never degrades"}
+		"vajra":       {"tier": 8, "damage_mult": 1.70, "armor_mult": 1.80, "weight_mult": 0.65, "value_mult": 15.0, "base_durability": 9999, "fragility": 0.0, "name_prefix": "Vajra",    "_note": "Indestructible divine metal — never degrades"},
+		"copper":      {"tier": 2, "damage_mult": 0.70, "armor_mult": 0.60, "weight_mult": 0.85, "value_mult": 0.50, "base_durability": 55,   "fragility": 1.2, "name_prefix": "Copper",   "allowed_types": ["focus"], "_note": "Traditional material for ritual implements — bells, vajras, offering bowls"},
+		"silver":      {"tier": 4, "damage_mult": 0.75, "armor_mult": 0.65, "weight_mult": 0.80, "value_mult": 2.00, "base_durability": 70,   "fragility": 1.1, "name_prefix": "Silver",   "allowed_types": ["focus"], "_note": "Purified ritual material; associated with the moon and clarity"},
+		"gold":        {"tier": 6, "damage_mult": 0.80, "armor_mult": 0.70, "weight_mult": 0.90, "value_mult": 6.00, "base_durability": 90,   "fragility": 0.9, "name_prefix": "Golden",   "allowed_types": ["focus"], "_note": "Highest earthly ritual material; solar, incorruptible"}
 	},
 
 	"quality_levels": {

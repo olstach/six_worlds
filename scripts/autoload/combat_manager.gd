@@ -124,7 +124,7 @@ const SCHOOL_TO_SKILL_NAME: Dictionary = {
 
 ## Get the tier display name for a spell (e.g. "Outer Circle of Cloud" or "Inner Circle of Fire")
 static func get_spell_tier_display(spell: Dictionary) -> String:
-	var level = spell.get("level", 1)
+	var level = int(spell.get("level", 1))  # Cast to int: JSON may return float, causing dict miss
 	var tier_name = SPELL_TIER_NAMES.get(level, "Circle %d" % level)
 	var domain = spell.get("domain", "")
 	if domain != "":
@@ -322,11 +322,15 @@ func start_combat(grid: Node, player_units: Array, enemy_units: Array) -> void:
 	combat_round = 1
 	last_combat_rewards = {}
 
-	# Add all units
+	# Add all units and set initial facing based on team
 	for unit in player_units:
 		all_units.append(unit)
+		if "facing" in unit:
+			unit.facing = Vector2i(1, 0)   # Players face right toward enemies
 	for unit in enemy_units:
 		all_units.append(unit)
+		if "facing" in unit:
+			unit.facing = Vector2i(-1, 0)  # Enemies face left toward players
 
 	# Calculate turn order based on initiative
 	_calculate_turn_order()
@@ -891,6 +895,11 @@ func end_deployment_phase() -> void:
 
 ## Finalize combat start after deployment
 func _finalize_combat_start() -> void:
+	# Set initial facing based on team (deployment path)
+	for unit in all_units:
+		if "facing" in unit:
+			unit.facing = Vector2i(1, 0) if unit.team == Team.PLAYER else Vector2i(-1, 0)
+
 	# Calculate turn order based on initiative
 	_calculate_turn_order()
 
@@ -1246,6 +1255,10 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 	combat_grid.move_unit(unit, target)
 	unit.moved_this_turn = true
 
+	# Update facing toward movement direction
+	if "facing" in unit and target != from:
+		unit.facing = _dir_toward(from, target)
+
 	use_action(1)
 	unit_moved.emit(unit, from, target)
 
@@ -1302,6 +1315,10 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 	if is_ranged and combat_grid:
 		if not combat_grid.has_line_of_sight(attacker.grid_position, defender.grid_position):
 			return {"success": false, "reason": "No line of sight"}
+
+	# Update attacker facing toward defender
+	if "facing" in attacker:
+		attacker.facing = _dir_toward(attacker.grid_position, defender.grid_position)
 
 	# Shadow Strike: first attack from stealth is a guaranteed crit
 	var _stealth_attack = "is_stealthed" in attacker and attacker.is_stealthed
@@ -1446,6 +1463,25 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		# --- Weapon durability ---
 		_deduct_weapon_durability(attacker)
 
+		# --- Urumi sweep: hit all other adjacent enemies at -15 accuracy ---
+		if attacker.has_method("get_equipped_weapon"):
+			var sweep_weapon = attacker.get_equipped_weapon()
+			if sweep_weapon.get("special_attack", "") == "sweep":
+				var sweep_targets = _get_enemies_in_range(attacker, 1)
+				sweep_targets.erase(defender)  # primary target already hit
+				for sweep_target in sweep_targets:
+					if not sweep_target.is_alive():
+						continue
+					var sweep_hit_chance = calculate_hit_chance(attacker, sweep_target) - 15.0
+					if randf() * 100.0 <= sweep_hit_chance:
+						var sweep_dmg_result = calculate_physical_damage(attacker, sweep_target, weapon_dmg_type)
+						# No crit bonus on sweep hits
+						sweep_dmg_result["crit"] = false
+						sweep_dmg_result["damage"] = int(sweep_dmg_result.get("damage", 0) * 0.75)
+						apply_damage(sweep_target, maxi(1, sweep_dmg_result.get("damage", 0)), weapon_dmg_type)
+						combat_log.emit("%s's urumi sweeps %s!" % [attacker.unit_name, sweep_target.unit_name])
+						result["sweep_hit"] = true
+
 	else:
 		# Attack missed — check dodge/parry perks on defender
 		_process_on_dodge_perks(defender, attacker)
@@ -1580,6 +1616,18 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 			hit_chance += 15.0
 			break  # only check, don't clear — damage calc clears it
 
+	# Ally flank defense: each adjacent ally standing on the defender's exact flank tile
+	# reduces hit chance by 10% (shields the flanks — enables shieldwall tactics)
+	if "facing" in defender and "grid_position" in defender and defender.facing != Vector2i.ZERO:
+		var df = defender.facing
+		var left_flank  = defender.grid_position + Vector2i(-df.y,  df.x)
+		var right_flank = defender.grid_position + Vector2i( df.y, -df.x)
+		for ally in get_team_units(defender.team if "team" in defender else 0):
+			if ally == defender or ally.is_dead or ally.is_bleeding_out:
+				continue
+			if ally.grid_position == left_flank or ally.grid_position == right_flank:
+				hit_chance -= 10.0
+
 	# Clamp to 10-95%
 	return clampf(hit_chance, 10.0, 95.0)
 
@@ -1635,21 +1683,29 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 			if not def_has_adj_ally:
 				crit_chance += 10.0
 
-	# Backstab: +20% crit when an ally of the attacker is adjacent to the defender (flanking)
-	var _backstab_flanked = false
+	# Facing zone: positional bonuses based on where attacker stands relative to defender's facing
+	# Rear gives +20% crit chance; flank and rear both give +20% damage (applied after armor below)
+	var _facing_zone = _get_facing_zone(attacker.grid_position, defender)
+	if _facing_zone == "rear":
+		crit_chance += 20.0
+
+	# Backstab (Daggers perk): dagger + stealth required for the full perk bonus.
+	# Works from flank or rear only — impossible from front.
+	var _backstab_triggered = false
 	if PerkSystem.has_perk(att_char_eoia, "backstab"):
-		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "dagger":
-			for ally in get_team_units(attacker.team if "team" in attacker else 0):
-				if ally == attacker:
-					continue
-				if _grid_distance(ally.grid_position, defender.grid_position) <= 1:
-					crit_chance += 20.0
-					_backstab_flanked = true
-					break
+		var is_dagger_bs = attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "dagger"
+		var is_stealthed_bs = "is_stealthed" in attacker and attacker.is_stealthed
+		if is_dagger_bs and is_stealthed_bs and _facing_zone in ["flank", "rear"]:
+			# Rear gives bigger bonus (+35%) than flank (+25%)
+			crit_chance += 35.0 if _facing_zone == "rear" else 25.0
+			_backstab_triggered = true
+			if defender.has_method("show_combat_text"):
+				var bs_crit = 35 if _facing_zone == "rear" else 25
+				defender.show_combat_text("Backstab! +%d%% crit" % bs_crit, Color(0.75, 0.1, 0.9))
 
 	var crit = randf() * 100.0 <= crit_chance
-	# Backstab: flanked crits deal 2x damage (replacing the 1.5x standard multiplier)
-	var crit_multi = 2.0 if (_backstab_flanked and crit) else 1.5
+	# Backstab crits deal 2x damage (replacing the 1.5x standard multiplier)
+	var crit_multi = 2.0 if (_backstab_triggered and crit) else 1.5
 
 	if crit:
 		damage = int(damage * crit_multi)
@@ -1704,6 +1760,18 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 			armor = maxi(0, armor - pierce)
 
 	damage = maxi(1, damage - armor)
+
+	# Facing zone damage bonus (applied post-armor so it amplifies effective damage)
+	if _facing_zone == "flank":
+		damage = int(damage * 1.20)
+		combat_log.emit("%s attacks from the flank! (+20%% dmg)" % attacker.unit_name)
+		if not _backstab_triggered and defender.has_method("show_combat_text"):
+			defender.show_combat_text("Flanking! +20%", Color(1.0, 0.65, 0.0))
+	elif _facing_zone == "rear":
+		damage = int(damage * 1.20)
+		combat_log.emit("%s attacks from behind! (+20%% dmg, +20%% crit)" % attacker.unit_name)
+		if not _backstab_triggered and defender.has_method("show_combat_text"):
+			defender.show_combat_text("From Behind! +20%", Color(1.0, 0.45, 0.0))
 
 	# Hit Back Harder (Might 3): +20% melee damage after taking any damage; consumed on first attack
 	if "hit_back_ready" in attacker and attacker.hit_back_ready:
@@ -2208,6 +2276,10 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	var spell_range = spell.get("range", 1)
 	var targeting = spell.get("targeting", "single")
 
+	# Update caster facing toward target (non-self spells)
+	if targeting != "self" and "facing" in caster and target_pos != caster.grid_position:
+		caster.facing = _dir_toward(caster.grid_position, target_pos)
+
 	# Self-targeting spells don't need range check
 	if targeting != "self":
 		var distance = _spell_distance(caster.grid_position, target_pos)
@@ -2258,6 +2330,12 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		mana_cost = int(mana_cost * mana_mult)
 		combat_log.emit("%s casts with overcast power!" % caster.unit_name)
 
+	# Damaru rhythm charge discount: at 3 charges → 40% off mana cost, then reset
+	if "damaru_charges" in caster and caster.damaru_charges >= 3:
+		mana_cost = int(mana_cost * 0.60)
+		caster.damaru_charges = 0
+		combat_log.emit("%s's Damaru rhythm peaks — spell costs 40%% less mana!" % caster.unit_name)
+
 	# Deduct mana (sync to character_data so it persists after combat)
 	caster.current_mana -= mana_cost
 	var caster_derived = caster.character_data.get("derived", {})
@@ -2290,6 +2368,57 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		var charm_sp_pct = charm_used.get("spellpower_bonus", 0.0)
 		if charm_sp_pct > 0:
 			spellpower_bonus += int(spellpower_bonus * charm_sp_pct)
+
+	# Terrain affinity: caster standing on matching elemental terrain gets +25% spellpower;
+	# opposed terrain (blessed vs black, cursed vs white) gives -15%.
+	if combat_grid != null:
+		var caster_tile = combat_grid.tiles.get(caster.grid_position)
+		if caster_tile != null and caster_tile.has_effect():
+			var spell_schools_lower = spell.get("schools", []).map(func(s): return s.to_lower())
+			var terrain_sp_pct := 0.0
+			var terrain_label := ""
+			match caster_tile.effect:
+				CombatGrid.TerrainEffect.FIRE:
+					if "fire" in spell_schools_lower:
+						terrain_sp_pct = 0.25
+						terrain_label = "fire"
+				CombatGrid.TerrainEffect.ICE, CombatGrid.TerrainEffect.WET:
+					if "water" in spell_schools_lower:
+						terrain_sp_pct = 0.25
+						terrain_label = "water"
+				CombatGrid.TerrainEffect.STORMY:
+					if "air" in spell_schools_lower:
+						terrain_sp_pct = 0.25
+						terrain_label = "air"
+				CombatGrid.TerrainEffect.POISON, CombatGrid.TerrainEffect.ACID:
+					if "earth" in spell_schools_lower:
+						terrain_sp_pct = 0.25
+						terrain_label = "earth"
+				CombatGrid.TerrainEffect.VOID:
+					if "space" in spell_schools_lower:
+						terrain_sp_pct = 0.25
+						terrain_label = "void"
+				CombatGrid.TerrainEffect.BLESSED:
+					if "white" in spell_schools_lower:
+						terrain_sp_pct = 0.25
+						terrain_label = "blessed"
+					elif "black" in spell_schools_lower:
+						terrain_sp_pct = -0.15
+						terrain_label = "blessed (opposed)"
+				CombatGrid.TerrainEffect.CURSED:
+					if "black" in spell_schools_lower:
+						terrain_sp_pct = 0.25
+						terrain_label = "cursed"
+					elif "white" in spell_schools_lower:
+						terrain_sp_pct = -0.15
+						terrain_label = "cursed (opposed)"
+			if terrain_sp_pct != 0.0:
+				var delta = int(spellpower_bonus * terrain_sp_pct)
+				spellpower_bonus += delta
+				if delta > 0:
+					combat_log.emit("%s draws power from the %s terrain! (+%d spellpower)" % [caster.unit_name, terrain_label, delta])
+				else:
+					combat_log.emit("%s is weakened by the %s terrain! (%d spellpower)" % [caster.unit_name, terrain_label, delta])
 
 	# --- Summoning spells: spawn a unit instead of applying effects to targets ---
 	if summon_id != "" and targeting == "ground":
@@ -3032,6 +3161,16 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 						var sname = applied.get("status", "")
 						if sname != "":
 							_apply_status_effect(splash, sname, 2, 0, caster)
+
+	# Damaru rhythm charge: increment when caster has Damaru in off-hand (charges max at 3, discount fires in cast_spell)
+	if "damaru_charges" in caster and caster.damaru_charges < 3:
+		var caster_char_data = caster.character_data if "character_data" in caster else {}
+		var damaru_id = ItemSystem.get_equipped_item(caster_char_data, "weapon_off")
+		if damaru_id != "":
+			var damaru_item = ItemSystem.get_item(damaru_id)
+			if damaru_item.get("special_mechanic", "") == "damaru_charges":
+				caster.damaru_charges += 1
+				combat_log.emit("%s's Damaru builds rhythm (%d/3)." % [caster.unit_name, caster.damaru_charges])
 
 
 ## Apply a temporary stat modifier
@@ -4257,6 +4396,38 @@ func _grid_distance(a: Vector2i, b: Vector2i) -> int:
 	return maxi(absi(a.x - b.x), absi(a.y - b.y))
 
 
+## Return an 8-directional unit step vector from `from` toward `to`.
+func _dir_toward(from: Vector2i, to: Vector2i) -> Vector2i:
+	var diff = to - from
+	return Vector2i(sign(diff.x), sign(diff.y))
+
+
+## Return the facing zone of `target_unit` as seen from `from_pos`.
+## "front"  — attacker is within ±45° of target's facing (target can see them)
+## "flank"  — attacker is roughly 90° to target's side
+## "rear"   — attacker is within ±45° of target's back
+## Uses dot-product with threshold ±0.5 (cos 60°) so the three arcs are symmetric.
+func _get_facing_zone(from_pos: Vector2i, target_unit: Node) -> String:
+	if not ("facing" in target_unit and "grid_position" in target_unit):
+		return "front"
+	var facing: Vector2i = target_unit.facing
+	if facing == Vector2i.ZERO:
+		return "front"
+	# Vector from target to attacker
+	var to_attacker = from_pos - target_unit.grid_position
+	if to_attacker == Vector2i.ZERO:
+		return "front"
+	var facing_f   = Vector2(facing.x, facing.y).normalized()
+	var to_att_f   = Vector2(to_attacker.x, to_attacker.y).normalized()
+	var dot        = facing_f.dot(to_att_f)
+	if dot > 0.5:
+		return "front"
+	elif dot < -0.5:
+		return "rear"
+	else:
+		return "flank"
+
+
 ## Manhattan distance (diamond shape — used for spell ranges)
 func _spell_distance(a: Vector2i, b: Vector2i) -> int:
 	return absi(a.x - b.x) + absi(a.y - b.y)
@@ -4456,6 +4627,10 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 			result = _resolve_share_buffs(user, combat_data)
 		"double_buffs":
 			result = _resolve_double_buffs(user, combat_data, target_pos)
+		"chod_offering":
+			result = _resolve_chod_offering(user, combat_data)
+		"throw_phurba":
+			result = _resolve_throw_phurba(user, combat_data, target_pos)
 		# --- Deferred (complex UI/system needed) ---
 		"create_images", "imbued_attack", "mass_teleport", "recruit_or_pacify", \
 		"place_trap", "consume_charm", "steal_item", "choose_one", "guard_ally", \
@@ -4537,7 +4712,19 @@ func _run_stealth_detection(unit: Node) -> bool:
 			continue
 
 		var base_dc: int = _STEALTH_BASE_DC.get(dist, 10)
-		var dc: int = base_dc + (guile_level * 2)
+
+		# Facing zone modifier: sneaking up behind someone is easier;
+		# sneaking into their front arc is much harder (they can see you coming)
+		var facing_dc_mod := 0
+		var facing_roll_mod := 0
+		if "facing" in enemy:
+			match _get_facing_zone(unit.grid_position, enemy):
+				"front":
+					facing_roll_mod = enemy.attributes.get("awareness", 8) / 2 if "attributes" in enemy else 4
+				"rear":
+					facing_dc_mod = 6
+
+		var dc: int = base_dc + (guile_level * 2) + facing_dc_mod
 		if has_soft_step:
 			dc += 4
 		if is_invisible:
@@ -4546,7 +4733,7 @@ func _run_stealth_detection(unit: Node) -> bool:
 		var awareness: int = 8
 		if "attributes" in enemy:
 			awareness = enemy.attributes.get("awareness", 8)
-		var roll: int = randi_range(1, 20) + awareness
+		var roll: int = randi_range(1, 20) + awareness + facing_roll_mod
 
 		if roll >= dc:
 			combat_log.emit("%s (AWR %d, rolled %d vs DC %d) spots %s at range %d!" % [
@@ -5564,6 +5751,91 @@ func _resolve_double_buffs(user: Node, combat_data: Dictionary, target_pos: Vect
 	return {"success": true, "target": target, "effects": effects}
 
 
+## Chöd Offering (Kangling): sacrifice 25% of max mana, or HP if mana insufficient.
+## Gain ceil(cost/2) Spellpower stacking until end of combat.
+func _resolve_chod_offering(user: Node, _combat_data: Dictionary) -> Dictionary:
+	var cost = int(floor(user.max_mana * 0.25))
+	if cost <= 0:
+		cost = 1  # minimum sacrifice
+
+	# Deduct from mana first, remainder from HP
+	var mana_used = mini(cost, user.current_mana)
+	var hp_used = cost - mana_used
+	user.current_mana -= mana_used
+	if "character_data" in user:
+		user.character_data.get("derived", {})["current_mana"] = user.current_mana
+
+	if hp_used > 0:
+		apply_damage(user, hp_used, "sacrifice")  # bypass armor — it's a ritual sacrifice
+		combat_log.emit("%s's Chöd cuts into flesh — mana depleted, spending %d HP!" % [user.unit_name, hp_used])
+	else:
+		combat_log.emit("%s performs Chöd Offering — sacrifices %d mana!" % [user.unit_name, mana_used])
+
+	# Gain accumulated Spellpower
+	var sp_gain = ceili(cost / 2.0)
+	user.chod_spellpower_bonus += sp_gain
+	combat_log.emit("%s gains +%d Spellpower from the offering (total +%d)." % [user.unit_name, sp_gain, user.chod_spellpower_bonus])
+
+	return {
+		"success": true,
+		"mana_sacrificed": mana_used,
+		"hp_sacrificed": hp_used,
+		"spellpower_gained": sp_gain,
+		"effects": [{"type": "chod_spellpower", "amount": sp_gain}]
+	}
+
+
+## Throw Phurba: ranged attack (any range), Sorcery-scaled damage.
+## Target makes DC 16 Focus save; failure = Subjugated 3 turns.
+func _resolve_throw_phurba(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	var item_id = combat_data.get("item_id", "")
+	var item = ItemSystem.get_item(item_id) if item_id != "" else {}
+	var mana_cost = item.get("throw_mana_cost", 15)
+	var base_damage = item.get("throw_base_damage", 8)
+	var save_dc = item.get("throw_save_dc", 16)
+
+	if user.current_mana < mana_cost:
+		return {"success": false, "reason": "Not enough mana (%d/%d)" % [user.current_mana, mana_cost]}
+
+	var target = get_unit_at(target_pos)
+	if target == null or not target.is_alive():
+		return {"success": false, "reason": "No target"}
+	if target.team == user.team:
+		return {"success": false, "reason": "Cannot throw at allies"}
+
+	# Deduct mana
+	user.current_mana -= mana_cost
+	if "character_data" in user:
+		user.character_data.get("derived", {})["current_mana"] = user.current_mana
+
+	# Calculate damage: base + sorcery_skill_level * 2
+	var user_char = user.character_data if "character_data" in user else {}
+	var sorcery_level = user_char.get("skills", {}).get("sorcery", 0)
+	var total_damage = base_damage + sorcery_level * 2
+	apply_damage(target, total_damage, "physical")
+	combat_log.emit("%s hurls a Phurba at %s for %d damage!" % [user.unit_name, target.unit_name, total_damage])
+
+	# Focus save vs DC — defender's Focus attribute vs DC
+	var defender_focus = target.character_data.get("attributes", {}).get("focus", 10) if "character_data" in target else 10
+	var save_roll = randi() % 20 + 1 + defender_focus  # d20 + Focus
+	var subjugated = false
+	if save_roll < save_dc:
+		_apply_status_effect(target, "Subjugated", 3, 0, user)
+		subjugated = true
+		combat_log.emit("%s fails the Focus save — Subjugated for 3 turns!" % target.unit_name)
+	else:
+		combat_log.emit("%s resists the Phurba's binding (save %d vs DC %d)." % [target.unit_name, save_roll, save_dc])
+
+	return {
+		"success": true,
+		"hit": true,
+		"damage": total_damage,
+		"target": target,
+		"subjugated": subjugated,
+		"effects": [{"type": "aoe_damage", "target": target, "damage": total_damage}]
+	}
+
+
 ## Get valid target tiles for an active skill based on its targeting type
 func get_active_skill_targets(user: Node, combat_data: Dictionary) -> Array[Vector2i]:
 	var targeting = combat_data.get("targeting", "self")
@@ -5830,8 +6102,36 @@ func _unit_is_unarmored(unit: Node) -> bool:
 func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 	var total := 0
 	var char_data = unit.character_data if "character_data" in unit else {}
+
+	# --- Equipment-based bonuses (apply regardless of whether the unit has perks) ---
+	match stat:
+		"armor":
+			# Bichawa parry: off-hand Bichawa adds (accuracy × parry_effectiveness / 100) to armor
+			var bichawa_id = ItemSystem.get_equipped_item(char_data, "weapon_off")
+			if bichawa_id != "":
+				var bichawa_item = ItemSystem.get_item(bichawa_id)
+				var parry_eff = bichawa_item.get("stats", {}).get("parry_effectiveness", 0)
+				if parry_eff > 0:
+					var acc = unit.get_accuracy() if unit.has_method("get_accuracy") else 0
+					total += int(acc * parry_eff / 100.0)
+		"initiative":
+			# Khatvanga aura: any adjacent enemy wielding a Khatvanga reduces this unit's initiative
+			if "grid_position" in unit and "team" in unit:
+				var enemy_team = 1 - unit.team
+				for enemy in get_team_units(enemy_team):
+					if not "grid_position" in enemy:
+						continue
+					if _grid_distance(unit.grid_position, enemy.grid_position) > 1:
+						continue
+					var enemy_char = enemy.character_data if "character_data" in enemy else {}
+					var khata_id = ItemSystem.get_equipped_item(enemy_char, "weapon_main")
+					if khata_id != "":
+						var khata_item = ItemSystem.get_item(khata_id)
+						if khata_item.get("passive_aura", "") == "initiative_debuff":
+							total -= khata_item.get("aura_value", 3)
+
 	if not char_data.has("perks"):
-		return 0
+		return total  # No perks — return equipment-only bonuses
 
 	match stat:
 		"armor":
@@ -5995,7 +6295,44 @@ func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictionary) -> void:
 	if not attacker.has_method("get_equipped_weapon"):
 		return
-	var passive = attacker.get_equipped_weapon().get("passive", {})
+	var weapon = attacker.get_equipped_weapon()
+
+	# Trishula on_crit_status: apply a status when this attack was a crit
+	if result.get("crit", false):
+		var on_crit_status = weapon.get("on_crit_status", "")
+		if on_crit_status != "":
+			_apply_status_effect(defender, on_crit_status, 1)
+			result["on_crit_status"] = on_crit_status
+
+	# Chakram pass_through: hit the next unit in the attack line beyond the defender
+	var pass_count = weapon.get("pass_through", 0)
+	if pass_count > 0 and "grid_position" in attacker and "grid_position" in defender:
+		var dir = (defender.grid_position - attacker.grid_position)
+		var step_x = 0 if dir.x == 0 else (1 if dir.x > 0 else -1)
+		var step_y = 0 if dir.y == 0 else (1 if dir.y > 0 else -1)
+		var step := Vector2i(step_x, step_y)
+		var check_pos := defender.grid_position + step
+		var passed := 0
+		for _i in range(10):  # sanity cap — walk forward through the grid
+			if passed >= pass_count:
+				break
+			var through_target: Node = null
+			for u in all_units:
+				if u == attacker or u == defender:
+					continue
+				if "grid_position" in u and u.grid_position == check_pos and u.is_alive():
+					through_target = u
+					break
+			if through_target != null:
+				var pass_dmg = int(result.get("damage", 0) * 0.75)
+				pass_dmg = maxi(1, pass_dmg)
+				apply_damage(through_target, pass_dmg, result.get("damage_type", "physical"))
+				combat_log.emit("%s's chakram passes through to %s!" % [attacker.unit_name, through_target.unit_name])
+				result["pass_through_hit"] = true
+				passed += 1
+			check_pos += step
+
+	var passive = weapon.get("passive", {})
 	if passive.is_empty():
 		return
 
