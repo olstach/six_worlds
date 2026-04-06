@@ -90,9 +90,9 @@ Last Updated: 2026-04-05
 - Robes: per-element (one line per element, 5 consecration tiers each)
 - Masks: more specific, per-school (can be more exotic — see existing school list)
 - Monastic cross-school garbs: Vajrayana Robe (White+Black+Summoning), Dzogchen Mantle (Space+Air+Yoga)
-- [ ] Design stat profiles per robe/mask type
-- [ ] Add items to items.json (follow generate_implements.py pattern — write a generator)
-- [ ] Wire school bonus display in item_tooltip.gd if needed (skill_bonuses already shown)
+- [x] Design stat profiles per robe/mask type
+- [x] Add items to items.json (follow generate_implements.py pattern — wrote generate_garb.py)
+- [x] Wire school bonus display in item_tooltip.gd — skill_bonuses already shown, no changes needed
 
 ---
 
@@ -112,8 +112,14 @@ Last Updated: 2026-04-05
 - [ ] Hell event chains: soul caravan ambush, devil deserter, contraband deal, corrupted simple, chained pilgrim, rival party
 - [ ] Hell quest content — write using `register_quest` + `set_flags`; wire `quest_board` outcome into town events
 
+### Hungry Ghost Events — Follow-up (from hungry_ghost_events.json)
+- [x] Add HG shop entries to shops.json: `hg_alchemist`, `hg_veterans_camp`, `hg_charnel_sorcerer`, `hg_black_market`, `hg_wandering_preta`, `hg_spell_shop` (plus existing `hg_bone_merchant`, `hg_teahouse`, `hg_mercenary_guild`, `hg_town_weapons`, `hg_town_magic`, `hg_town_supplies`)
+- [x] Add spell reward tokens to item system: `spell_random_white`, `spell_random_black`, `spell_random` — resolved like `item_random` in `resolve_random_generate()`
+- [x] OR skill requirements in event_manager.gd — `hg_veterans_camp` training choice needs swords 3 OR axes 3 OR maces 3
+- [x] `skeleton_king_duel` encounter entry — boss fight that stops at 10% HP (needs special win condition logic in combat_manager.gd)
+
 ### Other Realms (Content Gaps)
-- [ ] Convert HG_EVENTS.md → hungry_ghost_events.json
+- [x] Convert HG_EVENTS.md → hungry_ghost_events.json
 - [ ] Map configs for remaining realms — only hell.json and hungry_ghost.json exist
 - [ ] Enemy archetypes + encounters for animal, human, asura, god realms (hungry_ghost done: 20 archetypes, 37 encounters)
 - [ ] Event files for remaining realms (animal, human, asura, god)
@@ -205,3 +211,37 @@ Each weapon has an `element` field. Design: high elemental affinity boosts weapo
 
 ### Mantra System
 Some Deity Yoga effects are simplified stat bonuses rather than true unit spawns — acceptable for now?
+
+---
+
+## Deity Systems (Design Phase — Not Yet Started)
+
+### Yidam System (Personal Deity Practice)
+- Deities are **translated** into English (e.g. "Adamantine Terrifier" not "Vajrabhairava") — avoids publishing secret names while communicating meaning
+- Roster built from existing mantra list in PERKS.md; masks as optional head-slot items giving massive Deity Yoga bonus
+- **Relationship stages**: Heard → Connected → Practicing → Established → Realized (persists cross-lifetime from Practicing+)
+- **Mechanics**: mantra accumulation (existing system) is the primary mechanic; high recitation counts unlock deeper stages; commitment to a single deity is mechanically rewarded
+- **Masks** give large Deity Yoga bonus — not required, but reward deity-focused builds
+- **Karma affinity** — some deities more accessible depending on karma profile (to design)
+- **Dedicated spell** per deity — unlocked at Practicing+, deity's signature
+- **Quest chain** per deity — short, encounter-chain style (to design)
+- [ ] Design deity roster (translate names, assign karma affinities, mantras, spells, masks)
+- [ ] Implement relationship tracking (YidamSystem autoload or extend KarmaSystem)
+- [ ] Wire mask bonuses into Deity Yoga activation
+- [ ] Design cross-lifetime persistence rules
+- [ ] Write quest chains per deity
+
+### Dharmapala System (Protector Relationships)
+- Protector deities, **translated names**, accessed via **shrines** on the overworld map
+- Relationship is **transactional** (offering-based) and **worldly** — complements yidam's inner transformative practice
+- **Offerings**: realm-specific items consumed at shrines; each dharmapala wants specific items
+- **Relationship stages**: Stranger → Known → Favorable → Under Protection → Bonded (persists cross-lifetime from Favorable+)
+- **Interventions**: limited uses per dharmapala, refresh between shrines; each reflects the deity's nature (fate rerolls, oracle glimpses, enemy weakening, etc.)
+- **Vow system**: each dharmapala has 1-2 associated behavioral constraints; breaking them damages the relationship
+- Cross-lifetime persistence: at Bonded, full relationship carries; at Favorable, partial meter carries
+- **Synergy with Yidam**: e.g. a Hayagriva yidam + fire-aspect dharmapala creates a natural build
+- **Synergy with equipment**: Black Sorcerer's Robe + Mahakala relationship passive bonus
+- [ ] Design dharmapala roster (translated names, domains, offering requirements, interventions, vows)
+- [ ] Design shrine objects for overworld (map_generator.gd placement)
+- [ ] Implement DharmapalSystem autoload (offering tracking, relationship meters, interventions)
+- [ ] Wire cross-lifetime persistence into KarmaSystem / reincarnation logic

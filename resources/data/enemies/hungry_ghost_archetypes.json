@@ -828,14 +828,15 @@
       ],
       "realm": "hungry_ghost"
     },
-
     "_comment_incorporeal": "=== INCORPOREAL DRIFTERS === Preta and wraith types — the unaffiliated dead drifting through all zones.",
-
     "hg_lost_preta": {
       "_comment": "Dissolving consciousnesses barely present in the physical world. Analogous to hell's tormented shade. Appear in all three zones.",
       "name": "Lost Preta",
       "tier": "shade",
-      "roles": ["frontline", "caster"],
+      "roles": [
+        "frontline",
+        "caster"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 0,
@@ -846,8 +847,14 @@
         "charm": 0,
         "luck": 1
       },
-      "skill_priorities": ["black_magic", "space_magic"],
-      "guaranteed_spells": ["gloom", "suffering"],
+      "skill_priorities": [
+        "black_magic",
+        "space_magic"
+      ],
+      "guaranteed_spells": [
+        "gloom",
+        "suffering"
+      ],
       "guaranteed_perks": [],
       "equipment_template": {
         "weapon": {
@@ -864,15 +871,20 @@
         "physical": 20
       },
       "threat_multiplier": 0.45,
-      "tags": ["undead", "incorporeal"],
+      "tags": [
+        "undead",
+        "incorporeal"
+      ],
       "realm": "hungry_ghost"
     },
-
     "hg_charnel_wraith": {
       "_comment": "Stronger incorporeal from the charnel grounds — more focused and more dangerous than a lost preta.",
       "name": "Charnel Wraith",
       "tier": "shade",
-      "roles": ["caster", "support"],
+      "roles": [
+        "caster",
+        "support"
+      ],
       "region": "charnel_grounds",
       "attribute_weights": {
         "strength": 0,
@@ -883,8 +895,15 @@
         "charm": 0,
         "luck": 0
       },
-      "skill_priorities": ["black_magic", "sorcery"],
-      "guaranteed_spells": ["gloom", "curse", "life_drain"],
+      "skill_priorities": [
+        "black_magic",
+        "sorcery"
+      ],
+      "guaranteed_spells": [
+        "gloom",
+        "curse",
+        "life_drain"
+      ],
       "guaranteed_perks": [],
       "equipment_template": {
         "weapon": {
@@ -901,8 +920,60 @@
         "physical": 30
       },
       "threat_multiplier": 0.55,
-      "tags": ["undead", "incorporeal"],
+      "tags": [
+        "undead",
+        "incorporeal"
+      ],
       "realm": "hungry_ghost"
+    },
+    "hg_skeleton_king": {
+      "name": "Skeleton King",
+      "tier": "boss",
+      "roles": [
+        "boss"
+      ],
+      "region": "dry_graveyards",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 3,
+        "finesse": 2,
+        "awareness": 2,
+        "focus": 1,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "swords",
+        "armor",
+        "might",
+        "black_magic"
+      ],
+      "guaranteed_spells": [
+        "bone_spear",
+        "curse"
+      ],
+      "guaranteed_perks": [],
+      "guaranteed_drops": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "sword",
+          "base_damage": 13,
+          "base_accuracy": 7,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "physical": 20,
+        "earth": 20,
+        "water": -10
+      },
+      "threat_multiplier": 2.0,
+      "tags": [
+        "undead"
+      ],
+      "realm": "hungry_ghost",
+      "duel_stop_hp_pct": 10
     }
   }
 }

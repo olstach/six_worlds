@@ -1155,6 +1155,89 @@
       },
       "available_companions": []
     },
+    "hg_alchemist": {
+      "name": "The Dré Herbalist",
+      "type": "alchemist",
+      "description": "A dré ghost crouches behind a folding table heaped with dried herbs, stoppered gourds, and bundles of something that smells like incense and rot. Its robes are stuffed so full of plant matter that it looks like a walking thicket. It speaks in a dry rasp and seems to genuinely enjoy its trade.",
+      "price_modifier": 0.9,
+      "buys_items": true,
+      "items": {
+        "health_potion": 4,
+        "mana_potion": 3,
+        "antidote": 3,
+        "smelling_salts": 2,
+        "healing_herb": 5,
+        "ghost_pepper": 4,
+        "spirit_salt": 3,
+        "bone_dust": 4,
+        "firebomb": 2,
+        "smoke_bomb": 2,
+        "acid_flask": 2,
+        "rations": 4
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": ["alchemy", "medicine"]
+      }
+    },
+    "hg_black_market": {
+      "name": "The Smuggler's Alcove",
+      "type": "general",
+      "description": "A low tunnel behind a false wall, lit by a single floating ember. The figure inside won't show its face. It trades in things that shouldn't have made it into the hungry ghost realm — quality ironwork, foreign medicines, a few items with the smell of other worlds still on them. Prices reflect the difficulty of getting anything here at all.",
+      "price_modifier": 1.5,
+      "buys_items": true,
+      "items": {
+        "steel_khanda": 1,
+        "steel_talwar": 1,
+        "steel_dao": 1,
+        "iron_katar": 1,
+        "steel_katar": 1,
+        "composite_bow": 1,
+        "chainmail": 1,
+        "lamellar_armor": 1,
+        "iron_helmet": 1,
+        "travelers_amulet": 1,
+        "iron_ring": 1,
+        "steel_ring": 1,
+        "health_potion": 2,
+        "mana_potion": 2,
+        "antidote": 2,
+        "whetstone_oil": 2,
+        "sovereign_oil": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "hg_spell_shop": {
+      "name": "The Bone Library",
+      "type": "spell_trainer",
+      "description": "A sorcerer-ghost has assembled a collection of sutras and grimoires, most of them water-stained or singed at the edges, all of them legible to those with the patience to study. It charges for access by the session — a small candle's worth of time per spell — and answers no questions that aren't paid for.",
+      "price_modifier": 1.1,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "minor_heal",
+        "bless",
+        "slow",
+        "weaken",
+        "bone_spear",
+        "raise_skeleton",
+        "hunger_curse",
+        "corpse_explosion",
+        "ghost_touch",
+        "soul_siphon",
+        "binding_shadows",
+        "mana_drain"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": ["white_magic", "black_magic", "sorcery", "ritual"]
+      }
+    },
     "infernal_forge": {
       "name": "Infernal Forge",
       "type": "blacksmith",

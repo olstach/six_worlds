@@ -10207,6 +10207,2144 @@
                         "throw_mana_cost": 15,
                         "throw_base_damage": 20,
                         "throw_save_dc": 16
+                },
+                "plain_space_ngakpa_robe": {
+                        "name": "Plain Red-And-White Striped Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "space",
+                        "weight": 3,
+                        "value": 40,
+                        "description": "The red-and-white striped chuba of the ngakpa tradition — red for method, white for wisdom. Worn by tantric practitioners who have not taken monastic vows but have taken something harder. The garment is a reminder of what the wearer holds together.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 2
+                        },
+                        "skill_bonuses": {
+                                "space_magic": {
+                                        "plain_space_ngakpa_robe": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "plain_space_ngakpa_crown": {
+                        "name": "Plain Space Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "space",
+                        "weight": 1,
+                        "value": 25,
+                        "description": "The ngakpa's unbound hair is wound and pinned with this ornament. Space practitioners wear it through long retreat and carry it out with them.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 5
+                        },
+                        "skill_bonuses": {
+                                "space_magic": {
+                                        "plain_space_ngakpa_crown": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "blessed_space_ngakpa_robe": {
+                        "name": "Blessed Red-And-White Striped Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "space",
+                        "weight": 3,
+                        "value": 160,
+                        "description": "The red-and-white striped chuba of the ngakpa tradition — red for method, white for wisdom. Worn by tantric practitioners who have not taken monastic vows but have taken something harder. The garment is a reminder of what the wearer holds together.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 3
+                        },
+                        "skill_bonuses": {
+                                "space_magic": {
+                                        "blessed_space_ngakpa_robe": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "blessed_space_ngakpa_crown": {
+                        "name": "Blessed Space Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "space",
+                        "weight": 1,
+                        "value": 100,
+                        "description": "The ngakpa's unbound hair is wound and pinned with this ornament. Space practitioners wear it through long retreat and carry it out with them.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 10
+                        },
+                        "skill_bonuses": {
+                                "space_magic": {
+                                        "blessed_space_ngakpa_crown": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "empowered_space_ngakpa_robe": {
+                        "name": "Empowered Red-And-White Striped Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "space",
+                        "weight": 3,
+                        "value": 480,
+                        "description": "The red-and-white striped chuba of the ngakpa tradition — red for method, white for wisdom. Worn by tantric practitioners who have not taken monastic vows but have taken something harder. The garment is a reminder of what the wearer holds together.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "spellpower": 5
+                        },
+                        "skill_bonuses": {
+                                "space_magic": {
+                                        "empowered_space_ngakpa_robe": 3
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "empowered_space_ngakpa_crown": {
+                        "name": "Empowered Space Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "space",
+                        "weight": 1,
+                        "value": 300,
+                        "description": "The ngakpa's unbound hair is wound and pinned with this ornament. Space practitioners wear it through long retreat and carry it out with them.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 18
+                        },
+                        "skill_bonuses": {
+                                "space_magic": {
+                                        "empowered_space_ngakpa_crown": 3
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "perfected_space_ngakpa_robe": {
+                        "name": "Perfected Red-And-White Striped Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "space",
+                        "weight": 3,
+                        "value": 1100,
+                        "description": "The red-and-white striped chuba of the ngakpa tradition — red for method, white for wisdom. Worn by tantric practitioners who have not taken monastic vows but have taken something harder. The garment is a reminder of what the wearer holds together.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 4,
+                                "spellpower": 9,
+                                "max_mana": 15
+                        },
+                        "skill_bonuses": {
+                                "space_magic": {
+                                        "perfected_space_ngakpa_robe": 4
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "perfected_space_ngakpa_crown": {
+                        "name": "Perfected Space Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "space",
+                        "weight": 1,
+                        "value": 687,
+                        "description": "The ngakpa's unbound hair is wound and pinned with this ornament. Space practitioners wear it through long retreat and carry it out with them.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 28,
+                                "spellpower": 3
+                        },
+                        "skill_bonuses": {
+                                "space_magic": {
+                                        "perfected_space_ngakpa_crown": 4
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "legendary_space_ngakpa_robe": {
+                        "name": "Legendary Red-And-White Striped Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "space",
+                        "weight": 3,
+                        "value": 2800,
+                        "description": "The red-and-white striped chuba of the ngakpa tradition — red for method, white for wisdom. Worn by tantric practitioners who have not taken monastic vows but have taken something harder. The garment is a reminder of what the wearer holds together.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 5,
+                                "spellpower": 14,
+                                "max_mana": 28
+                        },
+                        "skill_bonuses": {
+                                "space_magic": {
+                                        "legendary_space_ngakpa_robe": 5
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "legendary_space_ngakpa_crown": {
+                        "name": "Legendary Space Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "space",
+                        "weight": 1,
+                        "value": 1750,
+                        "description": "The ngakpa's unbound hair is wound and pinned with this ornament. Space practitioners wear it through long retreat and carry it out with them.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "max_mana": 45,
+                                "spellpower": 6
+                        },
+                        "skill_bonuses": {
+                                "space_magic": {
+                                        "legendary_space_ngakpa_crown": 5
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "plain_air_ngakpa_robe": {
+                        "name": "Plain Green Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "air",
+                        "weight": 3,
+                        "value": 40,
+                        "description": "Green cotton, close-woven and lightweight. Air practitioners favor fewer layers and more movement. The color is said to invite the wind's attention.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 2
+                        },
+                        "skill_bonuses": {
+                                "air_magic": {
+                                        "plain_air_ngakpa_robe": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "plain_air_ngakpa_crown": {
+                        "name": "Plain Air Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "air",
+                        "weight": 1,
+                        "value": 25,
+                        "description": "A light ornament of pale metal, worn low on the brow. Air practitioners note that it never seems to sit quite the same way twice.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 5
+                        },
+                        "skill_bonuses": {
+                                "air_magic": {
+                                        "plain_air_ngakpa_crown": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "blessed_air_ngakpa_robe": {
+                        "name": "Blessed Green Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "air",
+                        "weight": 3,
+                        "value": 160,
+                        "description": "Green cotton, close-woven and lightweight. Air practitioners favor fewer layers and more movement. The color is said to invite the wind's attention.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 3
+                        },
+                        "skill_bonuses": {
+                                "air_magic": {
+                                        "blessed_air_ngakpa_robe": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "blessed_air_ngakpa_crown": {
+                        "name": "Blessed Air Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "air",
+                        "weight": 1,
+                        "value": 100,
+                        "description": "A light ornament of pale metal, worn low on the brow. Air practitioners note that it never seems to sit quite the same way twice.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 10
+                        },
+                        "skill_bonuses": {
+                                "air_magic": {
+                                        "blessed_air_ngakpa_crown": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "empowered_air_ngakpa_robe": {
+                        "name": "Empowered Green Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "air",
+                        "weight": 3,
+                        "value": 480,
+                        "description": "Green cotton, close-woven and lightweight. Air practitioners favor fewer layers and more movement. The color is said to invite the wind's attention.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "spellpower": 5
+                        },
+                        "skill_bonuses": {
+                                "air_magic": {
+                                        "empowered_air_ngakpa_robe": 3
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "empowered_air_ngakpa_crown": {
+                        "name": "Empowered Air Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "air",
+                        "weight": 1,
+                        "value": 300,
+                        "description": "A light ornament of pale metal, worn low on the brow. Air practitioners note that it never seems to sit quite the same way twice.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 18
+                        },
+                        "skill_bonuses": {
+                                "air_magic": {
+                                        "empowered_air_ngakpa_crown": 3
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "perfected_air_ngakpa_robe": {
+                        "name": "Perfected Green Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "air",
+                        "weight": 3,
+                        "value": 1100,
+                        "description": "Green cotton, close-woven and lightweight. Air practitioners favor fewer layers and more movement. The color is said to invite the wind's attention.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 4,
+                                "spellpower": 9,
+                                "max_mana": 15
+                        },
+                        "skill_bonuses": {
+                                "air_magic": {
+                                        "perfected_air_ngakpa_robe": 4
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "perfected_air_ngakpa_crown": {
+                        "name": "Perfected Air Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "air",
+                        "weight": 1,
+                        "value": 687,
+                        "description": "A light ornament of pale metal, worn low on the brow. Air practitioners note that it never seems to sit quite the same way twice.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 28,
+                                "spellpower": 3
+                        },
+                        "skill_bonuses": {
+                                "air_magic": {
+                                        "perfected_air_ngakpa_crown": 4
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "legendary_air_ngakpa_robe": {
+                        "name": "Legendary Green Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "air",
+                        "weight": 3,
+                        "value": 2800,
+                        "description": "Green cotton, close-woven and lightweight. Air practitioners favor fewer layers and more movement. The color is said to invite the wind's attention.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 5,
+                                "spellpower": 14,
+                                "max_mana": 28
+                        },
+                        "skill_bonuses": {
+                                "air_magic": {
+                                        "legendary_air_ngakpa_robe": 5
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "legendary_air_ngakpa_crown": {
+                        "name": "Legendary Air Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "air",
+                        "weight": 1,
+                        "value": 1750,
+                        "description": "A light ornament of pale metal, worn low on the brow. Air practitioners note that it never seems to sit quite the same way twice.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "max_mana": 45,
+                                "spellpower": 6
+                        },
+                        "skill_bonuses": {
+                                "air_magic": {
+                                        "legendary_air_ngakpa_crown": 5
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "plain_fire_ngakpa_robe": {
+                        "name": "Plain Red Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "fire",
+                        "weight": 3,
+                        "value": 40,
+                        "description": "Red with orange-bordered trim, the color of the hearth fire that is never fully extinguished. Fire tantra practitioners work with heat as both metaphor and fact. The robe holds warmth longer than the material seems to warrant.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 2
+                        },
+                        "skill_bonuses": {
+                                "fire_magic": {
+                                        "plain_fire_ngakpa_robe": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "plain_fire_ngakpa_crown": {
+                        "name": "Plain Fire Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "fire",
+                        "weight": 1,
+                        "value": 25,
+                        "description": "Copper ornament with a small flame-shaped finial. Warm to the touch even in cold, which practitioners find appropriate.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 5
+                        },
+                        "skill_bonuses": {
+                                "fire_magic": {
+                                        "plain_fire_ngakpa_crown": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "blessed_fire_ngakpa_robe": {
+                        "name": "Blessed Red Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "fire",
+                        "weight": 3,
+                        "value": 160,
+                        "description": "Red with orange-bordered trim, the color of the hearth fire that is never fully extinguished. Fire tantra practitioners work with heat as both metaphor and fact. The robe holds warmth longer than the material seems to warrant.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 3
+                        },
+                        "skill_bonuses": {
+                                "fire_magic": {
+                                        "blessed_fire_ngakpa_robe": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "blessed_fire_ngakpa_crown": {
+                        "name": "Blessed Fire Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "fire",
+                        "weight": 1,
+                        "value": 100,
+                        "description": "Copper ornament with a small flame-shaped finial. Warm to the touch even in cold, which practitioners find appropriate.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 10
+                        },
+                        "skill_bonuses": {
+                                "fire_magic": {
+                                        "blessed_fire_ngakpa_crown": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "empowered_fire_ngakpa_robe": {
+                        "name": "Empowered Red Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "fire",
+                        "weight": 3,
+                        "value": 480,
+                        "description": "Red with orange-bordered trim, the color of the hearth fire that is never fully extinguished. Fire tantra practitioners work with heat as both metaphor and fact. The robe holds warmth longer than the material seems to warrant.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "spellpower": 5
+                        },
+                        "skill_bonuses": {
+                                "fire_magic": {
+                                        "empowered_fire_ngakpa_robe": 3
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "empowered_fire_ngakpa_crown": {
+                        "name": "Empowered Fire Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "fire",
+                        "weight": 1,
+                        "value": 300,
+                        "description": "Copper ornament with a small flame-shaped finial. Warm to the touch even in cold, which practitioners find appropriate.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 18
+                        },
+                        "skill_bonuses": {
+                                "fire_magic": {
+                                        "empowered_fire_ngakpa_crown": 3
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "perfected_fire_ngakpa_robe": {
+                        "name": "Perfected Red Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "fire",
+                        "weight": 3,
+                        "value": 1100,
+                        "description": "Red with orange-bordered trim, the color of the hearth fire that is never fully extinguished. Fire tantra practitioners work with heat as both metaphor and fact. The robe holds warmth longer than the material seems to warrant.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 4,
+                                "spellpower": 9,
+                                "max_mana": 15
+                        },
+                        "skill_bonuses": {
+                                "fire_magic": {
+                                        "perfected_fire_ngakpa_robe": 4
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "perfected_fire_ngakpa_crown": {
+                        "name": "Perfected Fire Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "fire",
+                        "weight": 1,
+                        "value": 687,
+                        "description": "Copper ornament with a small flame-shaped finial. Warm to the touch even in cold, which practitioners find appropriate.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 28,
+                                "spellpower": 3
+                        },
+                        "skill_bonuses": {
+                                "fire_magic": {
+                                        "perfected_fire_ngakpa_crown": 4
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "legendary_fire_ngakpa_robe": {
+                        "name": "Legendary Red Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "fire",
+                        "weight": 3,
+                        "value": 2800,
+                        "description": "Red with orange-bordered trim, the color of the hearth fire that is never fully extinguished. Fire tantra practitioners work with heat as both metaphor and fact. The robe holds warmth longer than the material seems to warrant.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 5,
+                                "spellpower": 14,
+                                "max_mana": 28
+                        },
+                        "skill_bonuses": {
+                                "fire_magic": {
+                                        "legendary_fire_ngakpa_robe": 5
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "legendary_fire_ngakpa_crown": {
+                        "name": "Legendary Fire Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "fire",
+                        "weight": 1,
+                        "value": 1750,
+                        "description": "Copper ornament with a small flame-shaped finial. Warm to the touch even in cold, which practitioners find appropriate.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "max_mana": 45,
+                                "spellpower": 6
+                        },
+                        "skill_bonuses": {
+                                "fire_magic": {
+                                        "legendary_fire_ngakpa_crown": 5
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "plain_water_ngakpa_robe": {
+                        "name": "Plain Blue Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "water",
+                        "weight": 3,
+                        "value": 40,
+                        "description": "Blue, the color of deep water. Water practitioners use it for meditations that require stillness and depth. The robe is heavier than it looks, which is also considered appropriate.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 2
+                        },
+                        "skill_bonuses": {
+                                "water_magic": {
+                                        "plain_water_ngakpa_robe": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "plain_water_ngakpa_crown": {
+                        "name": "Plain Water Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "water",
+                        "weight": 1,
+                        "value": 25,
+                        "description": "Silver-set blue stone, worn at the crown. Reflects light in a way that always looks like water.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 5
+                        },
+                        "skill_bonuses": {
+                                "water_magic": {
+                                        "plain_water_ngakpa_crown": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "blessed_water_ngakpa_robe": {
+                        "name": "Blessed Blue Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "water",
+                        "weight": 3,
+                        "value": 160,
+                        "description": "Blue, the color of deep water. Water practitioners use it for meditations that require stillness and depth. The robe is heavier than it looks, which is also considered appropriate.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 3
+                        },
+                        "skill_bonuses": {
+                                "water_magic": {
+                                        "blessed_water_ngakpa_robe": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "blessed_water_ngakpa_crown": {
+                        "name": "Blessed Water Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "water",
+                        "weight": 1,
+                        "value": 100,
+                        "description": "Silver-set blue stone, worn at the crown. Reflects light in a way that always looks like water.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 10
+                        },
+                        "skill_bonuses": {
+                                "water_magic": {
+                                        "blessed_water_ngakpa_crown": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "empowered_water_ngakpa_robe": {
+                        "name": "Empowered Blue Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "water",
+                        "weight": 3,
+                        "value": 480,
+                        "description": "Blue, the color of deep water. Water practitioners use it for meditations that require stillness and depth. The robe is heavier than it looks, which is also considered appropriate.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "spellpower": 5
+                        },
+                        "skill_bonuses": {
+                                "water_magic": {
+                                        "empowered_water_ngakpa_robe": 3
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "empowered_water_ngakpa_crown": {
+                        "name": "Empowered Water Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "water",
+                        "weight": 1,
+                        "value": 300,
+                        "description": "Silver-set blue stone, worn at the crown. Reflects light in a way that always looks like water.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 18
+                        },
+                        "skill_bonuses": {
+                                "water_magic": {
+                                        "empowered_water_ngakpa_crown": 3
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "perfected_water_ngakpa_robe": {
+                        "name": "Perfected Blue Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "water",
+                        "weight": 3,
+                        "value": 1100,
+                        "description": "Blue, the color of deep water. Water practitioners use it for meditations that require stillness and depth. The robe is heavier than it looks, which is also considered appropriate.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 4,
+                                "spellpower": 9,
+                                "max_mana": 15
+                        },
+                        "skill_bonuses": {
+                                "water_magic": {
+                                        "perfected_water_ngakpa_robe": 4
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "perfected_water_ngakpa_crown": {
+                        "name": "Perfected Water Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "water",
+                        "weight": 1,
+                        "value": 687,
+                        "description": "Silver-set blue stone, worn at the crown. Reflects light in a way that always looks like water.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 28,
+                                "spellpower": 3
+                        },
+                        "skill_bonuses": {
+                                "water_magic": {
+                                        "perfected_water_ngakpa_crown": 4
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "legendary_water_ngakpa_robe": {
+                        "name": "Legendary Blue Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "water",
+                        "weight": 3,
+                        "value": 2800,
+                        "description": "Blue, the color of deep water. Water practitioners use it for meditations that require stillness and depth. The robe is heavier than it looks, which is also considered appropriate.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 5,
+                                "spellpower": 14,
+                                "max_mana": 28
+                        },
+                        "skill_bonuses": {
+                                "water_magic": {
+                                        "legendary_water_ngakpa_robe": 5
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "legendary_water_ngakpa_crown": {
+                        "name": "Legendary Water Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "water",
+                        "weight": 1,
+                        "value": 1750,
+                        "description": "Silver-set blue stone, worn at the crown. Reflects light in a way that always looks like water.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "max_mana": 45,
+                                "spellpower": 6
+                        },
+                        "skill_bonuses": {
+                                "water_magic": {
+                                        "legendary_water_ngakpa_crown": 5
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "plain_earth_ngakpa_robe": {
+                        "name": "Plain Yellow Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "earth",
+                        "weight": 3,
+                        "value": 40,
+                        "description": "Yellow, the color of late-season grain and mountain clay. Earth practice is patient, and practitioners who favor earth magic tend to keep their robes in repair longer than most.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 2
+                        },
+                        "skill_bonuses": {
+                                "earth_magic": {
+                                        "plain_earth_ngakpa_robe": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "plain_earth_ngakpa_crown": {
+                        "name": "Plain Earth Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "earth",
+                        "weight": 1,
+                        "value": 25,
+                        "description": "Gold-set amber, heavy, stable. Earth practitioners tend not to adjust it once it is on.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 5
+                        },
+                        "skill_bonuses": {
+                                "earth_magic": {
+                                        "plain_earth_ngakpa_crown": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "blessed_earth_ngakpa_robe": {
+                        "name": "Blessed Yellow Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "earth",
+                        "weight": 3,
+                        "value": 160,
+                        "description": "Yellow, the color of late-season grain and mountain clay. Earth practice is patient, and practitioners who favor earth magic tend to keep their robes in repair longer than most.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 3
+                        },
+                        "skill_bonuses": {
+                                "earth_magic": {
+                                        "blessed_earth_ngakpa_robe": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "blessed_earth_ngakpa_crown": {
+                        "name": "Blessed Earth Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "earth",
+                        "weight": 1,
+                        "value": 100,
+                        "description": "Gold-set amber, heavy, stable. Earth practitioners tend not to adjust it once it is on.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 10
+                        },
+                        "skill_bonuses": {
+                                "earth_magic": {
+                                        "blessed_earth_ngakpa_crown": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "empowered_earth_ngakpa_robe": {
+                        "name": "Empowered Yellow Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "earth",
+                        "weight": 3,
+                        "value": 480,
+                        "description": "Yellow, the color of late-season grain and mountain clay. Earth practice is patient, and practitioners who favor earth magic tend to keep their robes in repair longer than most.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "spellpower": 5
+                        },
+                        "skill_bonuses": {
+                                "earth_magic": {
+                                        "empowered_earth_ngakpa_robe": 3
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "empowered_earth_ngakpa_crown": {
+                        "name": "Empowered Earth Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "earth",
+                        "weight": 1,
+                        "value": 300,
+                        "description": "Gold-set amber, heavy, stable. Earth practitioners tend not to adjust it once it is on.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 18
+                        },
+                        "skill_bonuses": {
+                                "earth_magic": {
+                                        "empowered_earth_ngakpa_crown": 3
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "perfected_earth_ngakpa_robe": {
+                        "name": "Perfected Yellow Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "earth",
+                        "weight": 3,
+                        "value": 1100,
+                        "description": "Yellow, the color of late-season grain and mountain clay. Earth practice is patient, and practitioners who favor earth magic tend to keep their robes in repair longer than most.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 4,
+                                "spellpower": 9,
+                                "max_mana": 15
+                        },
+                        "skill_bonuses": {
+                                "earth_magic": {
+                                        "perfected_earth_ngakpa_robe": 4
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "perfected_earth_ngakpa_crown": {
+                        "name": "Perfected Earth Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "earth",
+                        "weight": 1,
+                        "value": 687,
+                        "description": "Gold-set amber, heavy, stable. Earth practitioners tend not to adjust it once it is on.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 28,
+                                "spellpower": 3
+                        },
+                        "skill_bonuses": {
+                                "earth_magic": {
+                                        "perfected_earth_ngakpa_crown": 4
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "legendary_earth_ngakpa_robe": {
+                        "name": "Legendary Yellow Ngakpa Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "earth",
+                        "weight": 3,
+                        "value": 2800,
+                        "description": "Yellow, the color of late-season grain and mountain clay. Earth practice is patient, and practitioners who favor earth magic tend to keep their robes in repair longer than most.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 5,
+                                "spellpower": 14,
+                                "max_mana": 28
+                        },
+                        "skill_bonuses": {
+                                "earth_magic": {
+                                        "legendary_earth_ngakpa_robe": 5
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "legendary_earth_ngakpa_crown": {
+                        "name": "Legendary Earth Ngakpa Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "earth",
+                        "weight": 1,
+                        "value": 1750,
+                        "description": "Gold-set amber, heavy, stable. Earth practitioners tend not to adjust it once it is on.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "max_mana": 45,
+                                "spellpower": 6
+                        },
+                        "skill_bonuses": {
+                                "earth_magic": {
+                                        "legendary_earth_ngakpa_crown": 5
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "plain_healers_robe": {
+                        "name": "Plain Healer's Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "water",
+                        "weight": 3,
+                        "value": 45,
+                        "description": "White cotton with saffron-dyed borders and a medicine wheel embroidered at the hem. The sleeves roll back easily. Healers wear it not as display but as identification: you can call on this person.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 2
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "plain_healers_robe": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "plain_healers_crown": {
+                        "name": "Plain Healer's Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "water",
+                        "weight": 1,
+                        "value": 31,
+                        "description": "A white cap edged with gold thread and a small blue stone at the brow. Healers are not hard to spot, and this is half the point.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 5
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "plain_healers_crown": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "blessed_healers_robe": {
+                        "name": "Blessed Healer's Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "water",
+                        "weight": 3,
+                        "value": 180,
+                        "description": "White cotton with saffron-dyed borders and a medicine wheel embroidered at the hem. The sleeves roll back easily. Healers wear it not as display but as identification: you can call on this person.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "max_hp": 8
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "blessed_healers_robe": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "blessed_healers_crown": {
+                        "name": "Blessed Healer's Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "water",
+                        "weight": 1,
+                        "value": 124,
+                        "description": "A white cap edged with gold thread and a small blue stone at the brow. Healers are not hard to spot, and this is half the point.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 10
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "blessed_healers_crown": 1
+                                },
+                                "medicine": {
+                                        "blessed_healers_crown": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "empowered_healers_robe": {
+                        "name": "Empowered Healer's Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "water",
+                        "weight": 3,
+                        "value": 540,
+                        "description": "White cotton with saffron-dyed borders and a medicine wheel embroidered at the hem. The sleeves roll back easily. Healers wear it not as display but as identification: you can call on this person.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "max_hp": 15,
+                                "spellpower": 4
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "empowered_healers_robe": 3
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "empowered_healers_crown": {
+                        "name": "Empowered Healer's Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "water",
+                        "weight": 1,
+                        "value": 372,
+                        "description": "A white cap edged with gold thread and a small blue stone at the brow. Healers are not hard to spot, and this is half the point.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 18
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "empowered_healers_crown": 2
+                                },
+                                "medicine": {
+                                        "empowered_healers_crown": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "perfected_healers_robe": {
+                        "name": "Perfected Healer's Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "water",
+                        "weight": 3,
+                        "value": 1237,
+                        "description": "White cotton with saffron-dyed borders and a medicine wheel embroidered at the hem. The sleeves roll back easily. Healers wear it not as display but as identification: you can call on this person.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 4,
+                                "max_hp": 25,
+                                "spellpower": 7
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "perfected_healers_robe": 4
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "perfected_healers_crown": {
+                        "name": "Perfected Healer's Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "water",
+                        "weight": 1,
+                        "value": 852,
+                        "description": "A white cap edged with gold thread and a small blue stone at the brow. Healers are not hard to spot, and this is half the point.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 28
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "perfected_healers_crown": 2
+                                },
+                                "medicine": {
+                                        "perfected_healers_crown": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "legendary_healers_robe": {
+                        "name": "Legendary Healer's Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "water",
+                        "weight": 3,
+                        "value": 3150,
+                        "description": "White cotton with saffron-dyed borders and a medicine wheel embroidered at the hem. The sleeves roll back easily. Healers wear it not as display but as identification: you can call on this person.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 5,
+                                "max_hp": 40,
+                                "spellpower": 11
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "legendary_healers_robe": 5
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "legendary_healers_crown": {
+                        "name": "Legendary Healer's Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "water",
+                        "weight": 1,
+                        "value": 2170,
+                        "description": "A white cap edged with gold thread and a small blue stone at the brow. Healers are not hard to spot, and this is half the point.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "max_mana": 45
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "legendary_healers_crown": 3
+                                },
+                                "medicine": {
+                                        "legendary_healers_crown": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "plain_black_sorcerer_robe": {
+                        "name": "Plain Black Sorcerer's Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "space",
+                        "weight": 4,
+                        "value": 50,
+                        "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 3
+                        },
+                        "skill_bonuses": {
+                                "black_magic": {
+                                        "plain_black_sorcerer_robe": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "plain_black_sorcerer_crown": {
+                        "name": "Plain Black Sorcerer's Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "space",
+                        "weight": 2,
+                        "value": 35,
+                        "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
+                        "requirements": {
+                                "focus": 8
+                        },
+                        "stats": {
+                                "armor": 1
+                        },
+                        "skill_bonuses": {
+                                "black_magic": {
+                                        "plain_black_sorcerer_crown": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "blessed_black_sorcerer_robe": {
+                        "name": "Blessed Black Sorcerer's Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "space",
+                        "weight": 4,
+                        "value": 200,
+                        "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 3
+                        },
+                        "skill_bonuses": {
+                                "black_magic": {
+                                        "blessed_black_sorcerer_robe": 1
+                                },
+                                "sorcery": {
+                                        "blessed_black_sorcerer_robe": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "blessed_black_sorcerer_crown": {
+                        "name": "Blessed Black Sorcerer's Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "space",
+                        "weight": 2,
+                        "value": 140,
+                        "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
+                        "requirements": {
+                                "focus": 10
+                        },
+                        "stats": {
+                                "armor": 2
+                        },
+                        "skill_bonuses": {
+                                "black_magic": {
+                                        "blessed_black_sorcerer_crown": 1
+                                },
+                                "sorcery": {
+                                        "blessed_black_sorcerer_crown": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "empowered_black_sorcerer_robe": {
+                        "name": "Empowered Black Sorcerer's Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "space",
+                        "weight": 4,
+                        "value": 600,
+                        "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 4,
+                                "spellpower": 5
+                        },
+                        "skill_bonuses": {
+                                "black_magic": {
+                                        "empowered_black_sorcerer_robe": 2
+                                },
+                                "sorcery": {
+                                        "empowered_black_sorcerer_robe": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "empowered_black_sorcerer_crown": {
+                        "name": "Empowered Black Sorcerer's Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "space",
+                        "weight": 2,
+                        "value": 420,
+                        "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
+                        "requirements": {
+                                "focus": 12
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "spellpower": 3
+                        },
+                        "skill_bonuses": {
+                                "black_magic": {
+                                        "empowered_black_sorcerer_crown": 2
+                                },
+                                "sorcery": {
+                                        "empowered_black_sorcerer_crown": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "perfected_black_sorcerer_robe": {
+                        "name": "Perfected Black Sorcerer's Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "space",
+                        "weight": 4,
+                        "value": 1375,
+                        "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 4,
+                                "spellpower": 8,
+                                "initiative": 2
+                        },
+                        "skill_bonuses": {
+                                "black_magic": {
+                                        "perfected_black_sorcerer_robe": 2
+                                },
+                                "sorcery": {
+                                        "perfected_black_sorcerer_robe": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "perfected_black_sorcerer_crown": {
+                        "name": "Perfected Black Sorcerer's Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "space",
+                        "weight": 2,
+                        "value": 962,
+                        "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
+                        "requirements": {
+                                "focus": 14
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "spellpower": 5,
+                                "initiative": 1
+                        },
+                        "skill_bonuses": {
+                                "black_magic": {
+                                        "perfected_black_sorcerer_crown": 2
+                                },
+                                "sorcery": {
+                                        "perfected_black_sorcerer_crown": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "legendary_black_sorcerer_robe": {
+                        "name": "Legendary Black Sorcerer's Robe",
+                        "type": "robe",
+                        "slot": "chest",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "space",
+                        "weight": 4,
+                        "value": 3500,
+                        "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 5,
+                                "spellpower": 12,
+                                "initiative": 3
+                        },
+                        "skill_bonuses": {
+                                "black_magic": {
+                                        "legendary_black_sorcerer_robe": 3
+                                },
+                                "sorcery": {
+                                        "legendary_black_sorcerer_robe": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "legendary_black_sorcerer_crown": {
+                        "name": "Legendary Black Sorcerer's Crown",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "space",
+                        "weight": 2,
+                        "value": 2450,
+                        "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
+                        "requirements": {
+                                "focus": 16
+                        },
+                        "stats": {
+                                "armor": 3,
+                                "spellpower": 8,
+                                "initiative": 2
+                        },
+                        "skill_bonuses": {
+                                "black_magic": {
+                                        "legendary_black_sorcerer_crown": 3
+                                },
+                                "sorcery": {
+                                        "legendary_black_sorcerer_crown": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "plain_pandita_cap": {
+                        "name": "Plain Pandita Cap",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "air",
+                        "weight": 1,
+                        "value": 30,
+                        "description": "A tall brocade cap worn by scholars and translators, marking long years of study. The pandita tradition values accumulated learning over inspired guessing. So does this cap.",
+                        "requirements": {},
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 8
+                        },
+                        "skill_bonuses": {
+                                "learning": {
+                                        "plain_pandita_cap": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "blessed_pandita_cap": {
+                        "name": "Blessed Pandita Cap",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "air",
+                        "weight": 1,
+                        "value": 120,
+                        "description": "A tall brocade cap worn by scholars and translators, marking long years of study. The pandita tradition values accumulated learning over inspired guessing. So does this cap.",
+                        "requirements": {},
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 12
+                        },
+                        "skill_bonuses": {
+                                "learning": {
+                                        "blessed_pandita_cap": 1
+                                },
+                                "yoga": {
+                                        "blessed_pandita_cap": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "empowered_pandita_cap": {
+                        "name": "Empowered Pandita Cap",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "air",
+                        "weight": 1,
+                        "value": 360,
+                        "description": "A tall brocade cap worn by scholars and translators, marking long years of study. The pandita tradition values accumulated learning over inspired guessing. So does this cap.",
+                        "requirements": {
+                                "awareness": 10
+                        },
+                        "stats": {
+                                "armor": 1,
+                                "max_mana": 18
+                        },
+                        "skill_bonuses": {
+                                "learning": {
+                                        "empowered_pandita_cap": 2
+                                },
+                                "yoga": {
+                                        "empowered_pandita_cap": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "perfected_pandita_cap": {
+                        "name": "Perfected Pandita Cap",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "air",
+                        "weight": 1,
+                        "value": 825,
+                        "description": "A tall brocade cap worn by scholars and translators, marking long years of study. The pandita tradition values accumulated learning over inspired guessing. So does this cap.",
+                        "requirements": {
+                                "awareness": 12
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 28
+                        },
+                        "skill_bonuses": {
+                                "learning": {
+                                        "perfected_pandita_cap": 2
+                                },
+                                "yoga": {
+                                        "perfected_pandita_cap": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "legendary_pandita_cap": {
+                        "name": "Legendary Pandita Cap",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "air",
+                        "weight": 1,
+                        "value": 2100,
+                        "description": "A tall brocade cap worn by scholars and translators, marking long years of study. The pandita tradition values accumulated learning over inspired guessing. So does this cap.",
+                        "requirements": {
+                                "awareness": 14
+                        },
+                        "stats": {
+                                "armor": 2,
+                                "max_mana": 40
+                        },
+                        "skill_bonuses": {
+                                "learning": {
+                                        "legendary_pandita_cap": 3
+                                },
+                                "yoga": {
+                                        "legendary_pandita_cap": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
+                },
+                "plain_longlife_cap": {
+                        "name": "Plain Long-life Cap",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "earth",
+                        "weight": 1,
+                        "value": 30,
+                        "description": "A round cap embroidered with the eight auspicious symbols, worn during longevity practices. The tradition holds that the body can be persuaded to cooperate if you approach it correctly. This cap is part of the approach.",
+                        "requirements": {},
+                        "stats": {
+                                "armor": 1,
+                                "max_hp": 8
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "plain_longlife_cap": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 40,
+                        "max_durability": 40
+                },
+                "blessed_longlife_cap": {
+                        "name": "Blessed Long-life Cap",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "common",
+                        "element": "earth",
+                        "weight": 1,
+                        "value": 120,
+                        "description": "A round cap embroidered with the eight auspicious symbols, worn during longevity practices. The tradition holds that the body can be persuaded to cooperate if you approach it correctly. This cap is part of the approach.",
+                        "requirements": {},
+                        "stats": {
+                                "armor": 1,
+                                "max_hp": 15
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "blessed_longlife_cap": 1
+                                },
+                                "medicine": {
+                                        "blessed_longlife_cap": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 65,
+                        "max_durability": 65
+                },
+                "empowered_longlife_cap": {
+                        "name": "Empowered Long-life Cap",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "uncommon",
+                        "element": "earth",
+                        "weight": 1,
+                        "value": 360,
+                        "description": "A round cap embroidered with the eight auspicious symbols, worn during longevity practices. The tradition holds that the body can be persuaded to cooperate if you approach it correctly. This cap is part of the approach.",
+                        "requirements": {},
+                        "stats": {
+                                "armor": 2,
+                                "max_hp": 25
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "empowered_longlife_cap": 2
+                                },
+                                "medicine": {
+                                        "empowered_longlife_cap": 1
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 90,
+                        "max_durability": 90
+                },
+                "perfected_longlife_cap": {
+                        "name": "Perfected Long-life Cap",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "rare",
+                        "element": "earth",
+                        "weight": 1,
+                        "value": 825,
+                        "description": "A round cap embroidered with the eight auspicious symbols, worn during longevity practices. The tradition holds that the body can be persuaded to cooperate if you approach it correctly. This cap is part of the approach.",
+                        "requirements": {},
+                        "stats": {
+                                "armor": 2,
+                                "max_hp": 40
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "perfected_longlife_cap": 2
+                                },
+                                "medicine": {
+                                        "perfected_longlife_cap": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 180,
+                        "max_durability": 180
+                },
+                "legendary_longlife_cap": {
+                        "name": "Legendary Long-life Cap",
+                        "type": "hat",
+                        "slot": "head",
+                        "two_handed": false,
+                        "rarity": "legendary",
+                        "element": "earth",
+                        "weight": 1,
+                        "value": 2100,
+                        "description": "A round cap embroidered with the eight auspicious symbols, worn during longevity practices. The tradition holds that the body can be persuaded to cooperate if you approach it correctly. This cap is part of the approach.",
+                        "requirements": {},
+                        "stats": {
+                                "armor": 3,
+                                "max_hp": 60
+                        },
+                        "skill_bonuses": {
+                                "white_magic": {
+                                        "legendary_longlife_cap": 3
+                                },
+                                "medicine": {
+                                        "legendary_longlife_cap": 2
+                                }
+                        },
+                        "abilities": [],
+                        "durability": 9999,
+                        "max_durability": 9999
                 }
         },
         "item_types": {

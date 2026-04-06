@@ -1187,6 +1187,20 @@ func _check_combat_end() -> int:
 	if not player_alive:
 		return Team.ENEMY   # Player defeat
 
+	# Duel stop condition — some bosses (e.g. skeleton_king_duel) have a duel_stop_hp_pct
+	# field: the fight ends as a player victory when that enemy drops to or below that HP %.
+	for unit in all_units:
+		if unit.team != Team.ENEMY or not unit.is_alive():
+			continue
+		var stop_pct: int = unit.character_data.get("duel_stop_hp_pct", 0)
+		if stop_pct <= 0:
+			continue
+		var max_hp: int = unit.max_hp
+		var cur_hp: int = unit.current_hp
+		if max_hp > 0 and cur_hp * 100 <= max_hp * stop_pct:
+			_log_message("%s yields — the duel is over." % unit.character_data.get("name", "Enemy"))
+			return Team.PLAYER  # Duel victory
+
 	return -1  # Combat continues
 
 

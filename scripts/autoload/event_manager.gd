@@ -313,21 +313,17 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 			else:
 				result.passing_character = passing_char
 		
-		# Check skill requirements
+		# Check skill requirements — multiple skills in the dict are treated as OR
+		# (any one skill meeting its level is sufficient to unlock the choice)
 		if "skills" in reqs:
 			var meets_req = false
 			var passing_char = null
-			var first_skill_name = ""
-			var first_skill_level = 0
-			
+			var skill_labels: Array[String] = []
+
 			for skill_name in reqs.skills:
 				var required_level = reqs.skills[skill_name]
-				
-				# Store first requirement for error message
-				if first_skill_name == "":
-					first_skill_name = skill_name
-					first_skill_level = required_level
-				
+				skill_labels.append(skill_name.replace("_", " ").capitalize() + " " + str(int(required_level)))
+
 				# Check each party member
 				for party_member in CharacterSystem.get_party():
 					var char_skill_level = party_member.skills.get(skill_name, 0)
@@ -335,13 +331,13 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 						meets_req = true
 						passing_char = party_member
 						break
-				
+
 				if meets_req:
 					break
-			
+
 			if not meets_req:
 				result.available = false
-				result.reason = "Requires " + first_skill_name.capitalize().replace("_", " ") + " " + str(int(first_skill_level))
+				result.reason = "Requires " + " / ".join(skill_labels)
 				return result
 			else:
 				result.passing_character = passing_char
@@ -448,6 +444,16 @@ func apply_outcome(outcome: Dictionary) -> void:
 
 		if "items" in rewards:
 			for item_id in rewards.items:
+				# Spell reward tokens — pick a random spell and teach it to the party
+				if item_id in ["spell_random", "spell_random_white", "spell_random_black"]:
+					var school: String
+					match item_id:
+						"spell_random_white": school = "White"
+						"spell_random_black": school = "Black"
+						_: school = ""  # any school
+					_give_random_spell_reward(school)
+					continue
+
 				var resolved_id: String = item_id
 				if ItemSystem.is_template_item(item_id):
 					var gen_id := ItemSystem.resolve_random_generate(item_id)
@@ -548,10 +554,9 @@ func apply_outcome(outcome: Dictionary) -> void:
 			print("EventManager: Restored party HP/mana/stamina")
 
 		# Learn a random spell — e.g. {"school": "white_magic", "level_range": [1, 2]}
-		# Future: pick from spell database. For now, log intent.
 		if "learn_spell" in rewards:
 			var ls = rewards.learn_spell
-			print("EventManager: Learn spell pending — school=%s, levels=%s" % [ls.get("school", "?"), str(ls.get("level_range", []))])
+			_give_random_spell_reward(ls.get("school", ""))
 
 		# Gamble — e.g. {"type": "gold", "win_chance": 0.5, "win_multiplier": 2}
 		# The cost is handled by the choice's "cost" field; this handles the payout.
@@ -729,8 +734,61 @@ func get_random_event_for_realm(realm: String) -> String:
 	for event_id in event_database:
 		if event_database[event_id].realm == realm:
 			realm_events.append(event_id)
-	
+
 	if realm_events.is_empty():
 		return ""
-	
+
 	return realm_events[randi() % realm_events.size()]
+
+
+## Teach a random spell to every party member who doesn't already know it.
+## school: a spell school name like "White", "Black", or "" for any school.
+## Picks one spell across all levels (excluding domain spells), then teaches it to all.
+func _give_random_spell_reward(school: String) -> void:
+	var party = CharacterSystem.get_party()
+	if party.is_empty():
+		return
+
+	# Build list of spells known by ALL party members — skip those
+	var known_by_all: Array = party[0].get("known_spells", []).duplicate()
+	for i in range(1, party.size()):
+		var member_spells = party[i].get("known_spells", [])
+		known_by_all = known_by_all.filter(func(sid): return sid in member_spells)
+
+	var school_lower = school.to_lower()
+	var candidates: Array[String] = []
+	var spell_db = CharacterSystem.get_spell_database()
+
+	for spell_id in spell_db:
+		if spell_id in known_by_all:
+			continue
+		var spell = spell_db[spell_id]
+		# Skip domain spells — those are trainer-exclusive
+		if "domain_spell" in spell.get("tags", []):
+			continue
+		if school_lower == "":
+			candidates.append(spell_id)
+		else:
+			var matches = false
+			for s in spell.get("schools", []):
+				if s.to_lower() == school_lower:
+					matches = true
+					break
+			if not matches and spell.get("subschool", "").to_lower() == school_lower:
+				matches = true
+			if matches:
+				candidates.append(spell_id)
+
+	if candidates.is_empty():
+		print("EventManager: _give_random_spell_reward — no candidates for school='%s'" % school)
+		return
+
+	candidates.shuffle()
+	var chosen_spell: String = candidates[0]
+	var spell_name: String = spell_db[chosen_spell].get("name", chosen_spell)
+
+	for member in party:
+		if not CharacterSystem.knows_spell(member, chosen_spell):
+			CharacterSystem.learn_spell(member, chosen_spell)
+
+	print("EventManager: Party learned spell '%s' (%s)" % [spell_name, chosen_spell])

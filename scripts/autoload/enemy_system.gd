@@ -407,6 +407,11 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 		"inventory": inventory
 	}
 
+	# Copy duel_stop_hp_pct if the archetype has one — read by combat_manager to end
+	# the fight early when this enemy drops to that percentage of their maximum HP.
+	if archetype.has("duel_stop_hp_pct"):
+		enemy["duel_stop_hp_pct"] = archetype["duel_stop_hp_pct"]
+
 	return enemy
 
 
