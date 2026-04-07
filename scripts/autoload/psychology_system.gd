@@ -26,3 +26,103 @@ const CRISIS_VALVE: float = 20.0
 
 func _ready() -> void:
 	print("PsychologySystem initialized")
+
+
+## Returns how strongly this character reacts to triggers of the given element.
+## Sourced from elemental affinity. Affinity 10 → 1.0×, affinity 40 → ~2.4×.
+## This is an approximation — tune as needed during playtesting.
+func _intensity_multiplier(character: Dictionary, element: String) -> float:
+	var affinity: float = 10.0
+	if "elements" in character and element in character.elements:
+		affinity = max(1.0, float(character.elements[element]))
+	return 1.0 + log(affinity / 10.0)
+
+
+## Apply emotional pressure to a character for the given element.
+## amount is positive (toward wisdom) or negative (toward klesha).
+## Intensity is multiplied by the character's elemental affinity.
+func apply_pressure(character: Dictionary, element: String, amount: float) -> void:
+	if not "emotional_pressure" in character:
+		return
+	if not element in character.emotional_pressure:
+		return
+
+	# Ensure crossing tracker exists (used by _check_thresholds)
+	if not "emotional_crisis_fired" in character:
+		character["emotional_crisis_fired"] = {}
+
+	var scaled: float = amount * _intensity_multiplier(character, element)
+	character.emotional_pressure[element] = clamp(
+		character.emotional_pressure[element] + scaled,
+		-100.0, 100.0
+	)
+	_check_thresholds(character, element)
+
+
+## Stub — implemented in Task 4.
+func _check_thresholds(_character: Dictionary, _element: String) -> void:
+	pass
+
+
+## Returns all active emotional statuses for a character.
+## Each entry: {element, level ("minor"/"major"), polarity ("dark"/"bright"), label}
+func get_active_statuses(character: Dictionary) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	if not "emotional_pressure" in character:
+		return result
+	for element in ELEMENTS:
+		var pressure: float = character.emotional_pressure.get(element, 0.0)
+		var abs_p: float = abs(pressure)
+		var polarity: String = "bright" if pressure >= 0 else "dark"
+		if abs_p >= THRESHOLD_MAJOR:
+			result.append({
+				"element": element,
+				"level": "major",
+				"polarity": polarity,
+				"label": get_emotional_label(character, element)
+			})
+		elif abs_p >= THRESHOLD_MINOR:
+			result.append({
+				"element": element,
+				"level": "minor",
+				"polarity": polarity,
+				"label": get_emotional_label(character, element)
+			})
+	return result
+
+
+## Returns the display name for the character's current emotional state in this element.
+## Returns "" if pressure is in the neutral zone (below ±33).
+func get_emotional_label(character: Dictionary, element: String) -> String:
+	if not "emotional_pressure" in character:
+		return ""
+	var pressure: float = character.emotional_pressure.get(element, 0.0)
+	var abs_p: float = abs(pressure)
+	if abs_p < THRESHOLD_MINOR:
+		return ""
+	var dark: bool = pressure < 0
+
+	# crisis label (abs >= 75)
+	if abs_p >= THRESHOLD_CRISIS:
+		match element:
+			"space": return "Absent" if dark else "Luminous"
+			"fire":  return "Consumed" if dark else "Radiant"
+			"water": return "Poisonous" if dark else "Compassionate"
+			"earth": return "Humiliated" if dark else "Unshakeable"
+			"air":   return "Envious" if dark else "Brilliant"
+	# major label (abs >= 50)
+	if abs_p >= THRESHOLD_MAJOR:
+		match element:
+			"space": return "Dissociated" if dark else "Open"
+			"fire":  return "Craving" if dark else "Magnetizing"
+			"water": return "Grief-struck" if dark else "Clear-eyed"
+			"earth": return "Arrogant" if dark else "Equanimous"
+			"air":   return "Paranoid" if dark else "Inspired"
+	# minor label (abs >= 33)
+	match element:
+		"space": return "Confused" if dark else "Clear-headed"
+		"fire":  return "Restless" if dark else "Warm"
+		"water": return "Irritable" if dark else "Focused"
+		"earth": return "Insecure" if dark else "Grounded"
+		"air":   return "Anxious" if dark else "Alert"
+	return ""
