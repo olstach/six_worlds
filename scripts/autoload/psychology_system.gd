@@ -32,7 +32,7 @@ func _ready() -> void:
 ## Sourced from elemental affinity. Affinity 10 → 1.0×, affinity 40 → ~2.4×.
 ## This is an approximation — tune as needed during playtesting.
 func _intensity_multiplier(character: Dictionary, element: String) -> float:
-	var affinity: float = 10.0
+	var affinity: float = 10.0  # default: log(10/10) = 0 → 1.0× multiplier when no affinity data
 	if "elements" in character and element in character.elements:
 		affinity = max(1.0, float(character.elements[element]))
 	return 1.0 + log(affinity / 10.0)
@@ -65,7 +65,7 @@ func _check_thresholds(_character: Dictionary, _element: String) -> void:
 
 
 ## Returns all active emotional statuses for a character.
-## Each entry: {element, level ("minor"/"major"), polarity ("dark"/"bright"), label}
+## Each entry: {element, level ("minor"/"major"/"crisis"), polarity ("dark"/"bright"), label}
 func get_active_statuses(character: Dictionary) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	if not "emotional_pressure" in character:
@@ -74,7 +74,14 @@ func get_active_statuses(character: Dictionary) -> Array[Dictionary]:
 		var pressure: float = character.emotional_pressure.get(element, 0.0)
 		var abs_p: float = abs(pressure)
 		var polarity: String = "bright" if pressure >= 0 else "dark"
-		if abs_p >= THRESHOLD_MAJOR:
+		if abs_p >= THRESHOLD_CRISIS:
+			result.append({
+				"element": element,
+				"level": "crisis",
+				"polarity": polarity,
+				"label": get_emotional_label(character, element)
+			})
+		elif abs_p >= THRESHOLD_MAJOR:
 			result.append({
 				"element": element,
 				"level": "major",
