@@ -78,17 +78,14 @@ All tiers advance time by `HOURS_PER_REST = 8` regardless.
 ### Healing Formula
 
 ```
-restored = floor(max_stat * tier_pct)
-           + floor(max_stat * medicine_bonus)
+medicine_bonus = best_medicine_level * 0.02   # +2% per Medicine level, linear
+restore_pct    = tier_base_pct + medicine_bonus
+restored       = floor(max_stat * restore_pct)
 ```
 
-Medicine bonus per tier (best Medicine skill in party):
-- Medicine 1–3: +5% to all tiers
-- Medicine 4–6: +10%
-- Medicine 7–9: +15%
-- Medicine 10:  +20%
+Medicine scales continuously: Medicine 5 = +10%, Medicine 10 = +20%. No tiers.
 
-Caps at 100% of max stat total.
+`restore_pct` can exceed 1.0 — the overage becomes **temporary HP** (or mana/stamina) above the normal maximum. Temporary HP decays on the next combat hit. This is the hook for perks like "Well-Rested" (full rest + high Medicine grants temp HP = 10% max HP). No hard cap on restore_pct — perks may push it further.
 
 ### Pressure Decay
 
@@ -99,7 +96,34 @@ Calls `PsychologySystem.decay_toward_baseline(character, decay_amount)` for each
 
 ### Durability Restore
 
-Tier 2/3 restore item durability for all equipped items on each party member. For each equipped item with a `durability` field, increase it by the tier percentage (capped at `max_durability`). This requires a helper function `_restore_party_durability(pct: float)` in `overworld.gd` that iterates equipped slots — the existing Smithing passive in `process_scrap_step` only does per-step micro-repairs and is not reusable here.
+Tier 2/3 restore item durability for all equipped items on each party member, scaled by the best Smithing skill in the party:
+
+```
+smithing_restore_pct = best_smithing_level * 5%    # Smithing 10 = 50% per rest
+actual_pct           = min(tier_max_pct, smithing_restore_pct)
+scrap_consumed       = tier_base_scrap + floor(best_smithing_level / 3)
+```
+
+- With no Smithing: durability restore is 0% (scrap still consumed for camp setup)
+- Smithing 5: 25% durability restore; Smithing 10: 50%
+- Tier 3 caps at 100% (Smithing 10 reaches this with some perk headroom)
+- Scrap cost scales slightly with Smithing — better repairs cost more material
+
+This requires a helper `_restore_party_durability(pct: float)` in `overworld.gd` iterating equipped slots. The existing `process_scrap_step` is per-step micro-repair and is not reused here.
+
+### Logistics Cost Reduction
+
+Best Logistics skill in the party reduces all rest resource costs:
+
+```
+food_discount_per_member = floor(best_logistics / 3)   # Logistics 3→-1, 6→-2, 9→-3
+herb_scrap_discount      = floor(best_logistics / 4)   # Logistics 4→-1, 8→-2
+food_per_member          = max(1, base_food - food_discount_per_member)
+herbs_cost               = max(0, base_herbs - herb_scrap_discount)
+scrap_cost               = max(0, base_scrap - herb_scrap_discount)   # before Smithing bonus
+```
+
+Logistics 10 saves 3 food per member and 2 herbs/scrap — meaningful for large parties.
 
 ### Perk Hook
 
@@ -107,7 +131,11 @@ After restoring each character, call:
 ```gdscript
 _process_rest_perks(character, tier)
 ```
-This function is empty in this implementation but wired so future perks (e.g. Safe Campsite, Yoga 7 "Lucid Rest") can hook in without touching the rest logic.
+Empty in this implementation but wired for future perks. Examples of what can go here:
+- **Safe Campsite** (existing perk) — rest without triggering random encounter check
+- **Lucid Rest** (Yoga 7) — additional pressure decay equal to Yoga level
+- **Well-Rested** (Medicine 8) — grants temp HP = 15% max HP on Full Rest
+- **Field Surgeon** (Medicine 6) — restores one bleed-out character to 1 HP on Full Rest
 
 ### UI
 
