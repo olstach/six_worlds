@@ -124,6 +124,11 @@ const BASE_CHARACTER: Dictionary = {
 		"air":   0.0,
 	},
 
+	# Tracks which elemental crisis events have already fired (prevents re-firing same crossing).
+	# Format: {"fire_dark": true, "water_bright": true, ...}
+	# Populated lazily by PsychologySystem — initialized here for save/load consistency.
+	"emotional_crisis_fired": {},
+
 	# Upgrades/perks gained
 	"upgrades": [],
 

@@ -33,10 +33,11 @@ func _ready() -> void:
 ## Sourced from elemental affinity. Affinity 10 → 1.0×, affinity 40 → ~2.4×.
 ## This is an approximation — tune as needed during playtesting.
 func _intensity_multiplier(character: Dictionary, element: String) -> float:
+	## Sourced from elemental affinity. Affinity 10 → 1.0×, affinity 40 → ~2.4×, affinity 1 → ~0.1× (minimum).
 	var affinity: float = 10.0  # default: log(10/10) = 0 → 1.0× multiplier when no affinity data
 	if "elements" in character and element in character.elements:
 		affinity = max(1.0, float(character.elements[element]))
-	return 1.0 + log(affinity / 10.0)
+	return max(0.1, 1.0 + log(affinity / 10.0))
 
 
 ## Apply emotional pressure to a character for the given element.
