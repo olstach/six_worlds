@@ -869,6 +869,10 @@
                 "iron_dagger",
                 "leather_cap",
                 "health_potion"
+              ],
+              "pressure": [
+                {"element": "water", "amount": -15},
+                {"element": "earth", "amount": -8}
               ]
             },
             "karma": {
@@ -1364,7 +1368,11 @@
             "type": "text",
             "text": "'I was a warlord,' they whisper. 'I burned a hundred homes. I thought fear was power. Now I know — fear is just fear. And cruelty is just cruelty dressed up as strength.'\n\nThey look at you with haunted eyes. 'Don't make my mistakes, traveler. Power without compassion is just a longer chain.'",
             "rewards": {
-              "xp": 4
+              "xp": 4,
+              "pressure": [
+                {"element": "water", "amount": -20},
+                {"element": "space", "amount": -8}
+              ]
             },
             "karma": {
               "human": 3,
@@ -1586,7 +1594,11 @@
             "type": "text",
             "text": "You watch the rhythm of the flow, counting between surges. Three... two... one... NOW!\n\nYou sprint across the brief gap, heat searing your boots but not quite burning through. You make it to the other side with singed clothes and a racing heart — but alive and ahead of those who would turn back.",
             "rewards": {
-              "xp": 8
+              "xp": 8,
+              "pressure": [
+                {"element": "fire", "amount": 12},
+                {"element": "air", "amount": 10}
+              ]
             },
             "karma": {
               "human": 2,

@@ -571,6 +571,22 @@ func apply_outcome(outcome: Dictionary) -> void:
 			else:
 				print("EventManager: Gamble lost.")
 
+		# Emotional pressure — e.g. [{"element": "water", "amount": -20}, ...]
+		# Applied to all party members. Each entry shifts one element.
+		if "pressure" in rewards:
+			var pressure_list = rewards.pressure
+			if pressure_list is Dictionary:
+				pressure_list = [pressure_list]  # allow single dict or array
+			for party_member in CharacterSystem.get_party():
+				for entry in pressure_list:
+					var element: String = str(entry.get("element", ""))
+					var amount: float = float(entry.get("amount", 0.0))
+					if not element in PsychologySystem.ELEMENTS:
+						continue
+					if amount == 0.0:
+						continue
+					PsychologySystem.apply_pressure(party_member, element, amount)
+
 		# gold_returned: the NPC refuses the money and gives it back (e.g. dark cave yogini)
 		if "gold_returned" in rewards and rewards.gold_returned:
 			# Cost was deducted when the choice cost was applied; refund the gold cost here.
