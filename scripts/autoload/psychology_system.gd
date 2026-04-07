@@ -179,3 +179,20 @@ func _on_autonomous_event(character: Dictionary, element: String, polarity: Stri
 		if member == character:
 			continue
 		apply_pressure(member, entry.element, entry.amount)
+
+
+## Drift all elemental pressures toward the character's emotional baseline.
+## Call this on rest (camp, inn, etc.). decay_amount is how far each element moves per call.
+func decay_toward_baseline(character: Dictionary, decay_amount: float = 10.0) -> void:
+	if not "emotional_pressure" in character or not "emotional_baseline" in character:
+		return
+	for element in ELEMENTS:
+		var current: float = character.emotional_pressure.get(element, 0.0)
+		var baseline: float = character.emotional_baseline.get(element, 0.0)
+		if abs(current - baseline) <= decay_amount:
+			character.emotional_pressure[element] = baseline
+		elif current > baseline:
+			character.emotional_pressure[element] = current - decay_amount
+		else:
+			character.emotional_pressure[element] = current + decay_amount
+		_check_thresholds(character, element)
