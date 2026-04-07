@@ -103,7 +103,27 @@ const BASE_CHARACTER: Dictionary = {
 		"air": 0,
 		"space": 0
 	},
-	
+
+	# Elemental emotional pressure: -100 (deep klesha) to +100 (deep wisdom)
+	"emotional_pressure": {
+		"space": 0.0,
+		"fire":  0.0,
+		"water": 0.0,
+		"earth": 0.0,
+		"air":   0.0,
+	},
+
+	# Starting emotional baseline per element — copied from race data at creation.
+	# PsychologySystem reads this as the resting point pressure drifts toward.
+	# Future: yidam practice and karma will modify this at runtime.
+	"emotional_baseline": {
+		"space": 0.0,
+		"fire":  0.0,
+		"water": 0.0,
+		"earth": 0.0,
+		"air":   0.0,
+	},
+
 	# Upgrades/perks gained
 	"upgrades": [],
 
@@ -379,6 +399,12 @@ func apply_race_modifiers(character: Dictionary, race: String) -> void:
 			var spell_id = _pick_random_spell(schools, level, character.get("known_spells", []))
 			if spell_id != "":
 				learn_spell(character, spell_id)
+
+	# Copy emotional baseline from race data
+	if "emotional_baseline" in data:
+		for element in data.emotional_baseline:
+			if element in character.emotional_baseline:
+				character.emotional_baseline[element] = float(data.emotional_baseline[element])
 
 
 ## Apply background starting skills and attribute tweaks from races.json backgrounds data
