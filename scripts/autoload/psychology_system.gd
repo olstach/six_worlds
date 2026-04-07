@@ -26,6 +26,7 @@ const CRISIS_VALVE: float = 20.0
 
 func _ready() -> void:
 	print("PsychologySystem initialized")
+	autonomous_event_triggered.connect(_on_autonomous_event)
 
 
 ## Returns how strongly this character reacts to triggers of the given element.
@@ -59,9 +60,30 @@ func apply_pressure(character: Dictionary, element: String, amount: float) -> vo
 	_check_thresholds(character, element)
 
 
-## Stub — implemented in Task 4.
-func _check_thresholds(_character: Dictionary, _element: String) -> void:
-	pass
+## Called after every apply_pressure. Detects threshold crossings and fires effects.
+func _check_thresholds(character: Dictionary, element: String) -> void:
+	var pressure: float = character.emotional_pressure[element]
+	var abs_p: float = abs(pressure)
+	var polarity: String = "bright" if pressure >= 0 else "dark"
+	var crisis_key: String = element + "_" + polarity
+
+	if abs_p >= THRESHOLD_CRISIS:
+		# Fire autonomous event once per crossing
+		if not character.emotional_crisis_fired.get(crisis_key, false):
+			character.emotional_crisis_fired[crisis_key] = true
+			# Partial valve: discharge reduces pressure by CRISIS_VALVE toward neutral
+			var valve_direction: float = -1.0 if pressure > 0 else 1.0
+			character.emotional_pressure[element] = clamp(
+				pressure + (CRISIS_VALVE * valve_direction),
+				-100.0, 100.0
+			)
+			print("PsychologySystem: %s — %s crisis (%s)" % [
+				character.get("name", "?"), element, polarity
+			])
+			autonomous_event_triggered.emit(character, element, polarity)
+	else:
+		# Pressure dropped back below crisis — reset so next crossing fires again
+		character.emotional_crisis_fired.erase(crisis_key)
 
 
 ## Returns all active emotional statuses for a character.
@@ -133,3 +155,25 @@ func get_emotional_label(character: Dictionary, element: String) -> String:
 		"earth": return "Insecure" if dark else "Grounded"
 		"air":   return "Anxious" if dark else "Alert"
 	return ""
+
+
+## Applies emotional fallout to other party members when a dark autonomous event fires.
+## Witnessing a character's crisis is destabilizing for the rest of the party.
+func _on_autonomous_event(character: Dictionary, element: String, polarity: String) -> void:
+	if polarity != "dark":
+		return  # Wisdom events are positive — fallout mechanic is future work
+	# Each dark element has a characteristic effect on witnesses
+	var fallout: Dictionary = {
+		"fire":  {"element": "water", "amount": -8.0},
+		"water": {"element": "air",   "amount": -8.0},
+		"earth": {"element": "water", "amount": -10.0},
+		"air":   {"element": "air",   "amount": -8.0},
+		"space": {"element": "space", "amount": -5.0},
+	}
+	if not element in fallout:
+		return
+	var entry: Dictionary = fallout[element]
+	for member in CharacterSystem.get_party():
+		if member == character:
+			continue
+		apply_pressure(member, entry.element, entry.amount)
