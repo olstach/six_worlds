@@ -62,6 +62,8 @@ func apply_pressure(character: Dictionary, element: String, amount: float) -> vo
 
 ## Called after every apply_pressure. Detects threshold crossings and fires effects.
 func _check_thresholds(character: Dictionary, element: String) -> void:
+	if not "emotional_crisis_fired" in character:
+		character["emotional_crisis_fired"] = {}
 	var pressure: float = character.emotional_pressure[element]
 	var abs_p: float = abs(pressure)
 	var polarity: String = "bright" if pressure >= 0 else "dark"
