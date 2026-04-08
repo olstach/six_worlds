@@ -1005,7 +1005,17 @@
         "attributes": [],
         "skills": []
       },
-      "available_companions": [],
+      "available_companions": [
+        "tsering", "rasabhava", "saka", "mehr",
+        "vilasa", "marmajna",
+        "kripana", "yasha",
+        "nurse_bones", "hustle_bones",
+        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
+        "prashan", "temba",
+        "durvasa", "gomchen",
+        "choki", "nangwa",
+        "drupchen", "khedrup"
+      ],
       "rest": {
         "teapot_cost": 30,
         "teapot_restore_pct": 50,
@@ -1045,7 +1055,17 @@
           "armor"
         ]
       },
-      "available_companions": []
+      "available_companions": [
+        "tsering", "rasabhava", "saka", "mehr",
+        "vilasa", "marmajna",
+        "kripana", "yasha",
+        "nurse_bones", "hustle_bones",
+        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
+        "prashan", "temba",
+        "durvasa", "gomchen",
+        "choki", "nangwa",
+        "drupchen", "khedrup"
+      ]
     },
     "hg_town_magic": {
       "name": "Whispering Shrine",
@@ -1078,7 +1098,17 @@
           "earth_magic"
         ]
       },
-      "available_companions": []
+      "available_companions": [
+        "tsering", "rasabhava", "saka", "mehr",
+        "vilasa", "marmajna",
+        "kripana", "yasha",
+        "nurse_bones", "hustle_bones",
+        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
+        "prashan", "temba",
+        "durvasa", "gomchen",
+        "choki", "nangwa",
+        "drupchen", "khedrup"
+      ]
     },
     "hg_town_supplies": {
       "name": "Gravedigger's Supply",
@@ -1101,7 +1131,17 @@
         "attributes": [],
         "skills": []
       },
-      "available_companions": []
+      "available_companions": [
+        "tsering", "rasabhava", "saka", "mehr",
+        "vilasa", "marmajna",
+        "kripana", "yasha",
+        "nurse_bones", "hustle_bones",
+        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
+        "prashan", "temba",
+        "durvasa", "gomchen",
+        "choki", "nangwa",
+        "drupchen", "khedrup"
+      ]
     },
     "hg_mercenary_guild": {
       "name": "Undertakers' Lodge",
@@ -1137,7 +1177,17 @@
         "attributes": [],
         "skills": []
       },
-      "available_companions": []
+      "available_companions": [
+        "tsering", "rasabhava", "saka", "mehr",
+        "vilasa", "marmajna",
+        "kripana", "yasha",
+        "nurse_bones", "hustle_bones",
+        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
+        "prashan", "temba",
+        "durvasa", "gomchen",
+        "choki", "nangwa",
+        "drupchen", "khedrup"
+      ]
     },
     "hg_veterans_camp": {
       "name": "The Old Guard",
@@ -1153,7 +1203,17 @@
         "attributes": [],
         "skills": []
       },
-      "available_companions": []
+      "available_companions": [
+        "tsering", "rasabhava", "saka", "mehr",
+        "vilasa", "marmajna",
+        "kripana", "yasha",
+        "nurse_bones", "hustle_bones",
+        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
+        "prashan", "temba",
+        "durvasa", "gomchen",
+        "choki", "nangwa",
+        "drupchen", "khedrup"
+      ]
     },
     "hg_alchemist": {
       "name": "The Dré Herbalist",
