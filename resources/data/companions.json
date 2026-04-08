@@ -667,7 +667,7 @@
       "fixed_equipment": {},
       "starting_equipment": {
         "weapon_set_1": { "main": "iron_axe", "off": "" },
-        "chest": "chuba"
+        "chest": "leather_vest"
       },
       "fixed_items": []
     },
@@ -720,8 +720,8 @@
       "random_spells": { "count": 0 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "dhanush", "off": "" },
-        "chest": "chuba"
+        "weapon_set_1": { "main": "hunting_bow", "off": "" },
+        "chest": "leather_vest"
       },
       "fixed_items": []
     },
@@ -1071,7 +1071,7 @@
       "fixed_equipment": {},
       "starting_equipment": {
         "weapon_set_1": { "main": "bone_dagger", "off": "" },
-        "chest": "chuba"
+        "chest": "leather_vest"
       },
       "fixed_items": []
     },
@@ -1151,7 +1151,7 @@
       "random_spells": { "count": 0 },
       "fixed_equipment": {},
       "starting_equipment": {
-        "weapon_set_1": { "main": "iron_gada", "off": "" },
+        "weapon_set_1": { "main": "iron_mace", "off": "" },
         "chest": "monks_robe"
       },
       "fixed_items": []
