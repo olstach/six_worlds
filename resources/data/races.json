@@ -349,6 +349,46 @@
 	  "resistances": {},
 	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
+	"preserved": {
+	  "name": "Preserved",
+	  "realm": "hungry_ghost",
+	  "description": "Alchemical oils, mantras, and mineral compounds have halted your decay while others rotted to bone. The lords of their kind among the Rolang — rare, aware, and dangerous. You remember considerably more than most of your kind, and have had long years of stillness to put that memory to use.",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": -1,
+		"constitution": 1,
+		"focus": 0,
+		"awareness": 2,
+		"charm": -1,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 30,
+		"finesse": 22,
+		"constitution": 32,
+		"focus": 28,
+		"awareness": 30,
+		"charm": 20,
+		"luck": 27
+	  },
+	  "elemental_affinity_bonuses": {
+		"earth": 3
+	  },
+	  "starting_skills": {
+		"alchemy": 2,
+		"black_magic": 1
+	  },
+	  "starting_spells": [],
+	  "reincarnation_weight": 15,
+	  "typical_backgrounds": [
+		"preserved",
+		"charnel_yogi",
+		"scholar",
+		"former_soldier"
+	  ],
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	},
 	"skeleton": {
 	  "name": "Skeleton",
 	  "realm": "hungry_ghost",
