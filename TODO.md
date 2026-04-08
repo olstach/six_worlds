@@ -127,6 +127,7 @@ Last Updated: 2026-04-05
 
 ### Companions
 - [ ] Camp Followers system — UI stub exists in Party tab (`_update_followers_list()`); no backend
+- [ ] Bespoke recruitment events for HG companions — organic recruitment outside shops; not every companion needs one, priority targets: Mehr (golden glint in the dark), Chöki (near still water), Nangwa (haunting a ruined library), Prashan (riddle challenge), Nyingje (found tending other undead), Khedrup (mid-recitation on an auspicious rock), Rasabhava (preservation lab, examine his notes), Durvasa (bound by reflected curse, Air magic / Ritual to stabilize), Gomchen (meditating amid binding contracts)
 
 ---
 

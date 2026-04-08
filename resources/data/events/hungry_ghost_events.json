@@ -217,6 +217,7 @@
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "random",
+            "companion_pool": ["tsering", "drupchen"],
             "free": true,
             "text": "You haul it clear of the earth — a confused rolang, blinking in the grey light. It looks at its hands, then at you. Something surfaces in its eyes. Not a full mind, but enough. It stays close to your heel like a dog that's found someone.",
             "karma": {
@@ -244,6 +245,7 @@
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "random",
+            "companion_pool": ["tsering", "drupchen"],
             "free": true,
             "text": "You get both hands under the soil and heave. The earth gives. The rolang sits up, dazed and blinking. It looks at you for a long moment, then slowly nods. It will follow you.",
             "karma": {
@@ -1177,7 +1179,7 @@
           },
           "outcome": {
             "type": "recruit_companion",
-            "companion_id": "random",
+            "companion_id": "temba",
             "free": true,
             "text": "The offering is correct. The incantation is correct. A shape emerges from the mound's dark — a dralha, a warrior-chieftain, still bearing the weapons of a kingdom that has not existed in centuries. It looks at you with eyes that have not looked at anything for a very long time.",
             "karma": {
@@ -1645,6 +1647,7 @@
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "random",
+            "companion_pool": ["iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon", "nurse_bones", "hustle_bones"],
             "free": true,
             "text": "It takes a few minutes of material to break through the professional sullenness. Then one skeleton starts laughing. Then another. By the end, the lodge is rowdy and welcoming. One of the mercenaries pulls you aside afterward. \"That was good. I could use a change of scene. You taking on crew?\"",
             "karma": {
@@ -3266,7 +3269,7 @@
           },
           "outcome_success": {
             "type": "recruit_companion",
-            "companion_id": "random",
+            "companion_id": "iron_oath",
             "free": true,
             "text": "The bones rise and coalesce — dozens of fragments assembling into something massive. It looks at you with eyes made of hollow sockets and memory. Then, slowly, it kneels.",
             "karma": {
