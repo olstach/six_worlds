@@ -14,6 +14,7 @@ extends Control
 @onready var scrap_label: Label = %ScrapLabel
 @onready var reagents_label: Label = %ReagentsLabel
 @onready var terrain_label: Label = %TerrainLabel
+@onready var time_label: Label = %TimeLabel
 @onready var char_sheet_button: Button = %CharSheetButton
 @onready var equipment_button: Button = %EquipmentButton
 @onready var party_button: Button = %PartyButton
@@ -180,9 +181,9 @@ journal_button.pressed.connect(func(): _open_char_sheet_to_tab(5))
 	gold_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	gold_label.tooltip_text = "Gold — used for shopping, hiring companions, and bribes"
 	food_label.mouse_filter = Control.MOUSE_FILTER_PASS
-	food_label.tooltip_text = "Food — consumed each step. Running out drains HP."
+	food_label.tooltip_text = "Food — consumed when resting. Feeds the party between combats."
 	herbs_label.mouse_filter = Control.MOUSE_FILTER_PASS
-	herbs_label.tooltip_text = "Herbs — used for Medicine and Alchemy, healing between fights"
+	herbs_label.tooltip_text = "Herbs — consumed when resting (Camp and Full Rest). Boosts healing recovery."
 	scrap_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	scrap_label.tooltip_text = "Scrap — raw material for Crafting"
 	reagents_label.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -254,6 +255,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				GameState.advance_time(GameState.HOURS_PER_STEP)
 				MapManager.tick_mobs()
 				_tick_overworld_statuses()
+				_update_time_label()
 				get_viewport().set_input_as_handled()
 			KEY_ESCAPE:
 				if _main_menu_open:
@@ -282,6 +284,7 @@ func _update_hud() -> void:
 	scrap_label.text = "Scrap: " + str(GameState.scrap)
 	reagents_label.text = "Reagents: " + str(GameState.reagents)
 	_update_terrain_label()
+	_update_time_label()
 
 
 func _update_terrain_label() -> void:
@@ -299,6 +302,10 @@ func _update_terrain_label() -> void:
 	else:
 		speed_text = " (Blocked)"
 	terrain_label.text = terrain_name + speed_text
+
+
+func _update_time_label() -> void:
+	time_label.text = "Day %d — %s" % [GameState.current_day + 1, GameState.get_time_of_day_label()]
 
 
 # ============================================
@@ -674,6 +681,7 @@ func _on_party_moved(_from: Vector2i, _to: Vector2i) -> void:
 	GameState.advance_time(GameState.HOURS_PER_STEP)
 	_update_terrain_label()
 	_tick_overworld_statuses()
+	_update_time_label()
 	_tick_supply_step()
 	_check_party_death()
 
@@ -901,6 +909,7 @@ func _do_rest(tier: int) -> void:
 	# === Toast ===
 	var day_str := "Day %d — %s" % [GameState.current_day + 1, GameState.get_time_of_day_label()]
 	_show_toast("Party rested. %s." % day_str)
+	_update_time_label()
 
 
 ## Show a toast when the player casts a spell from the overworld spellbook.
