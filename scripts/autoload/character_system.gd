@@ -75,6 +75,7 @@ const BASE_CHARACTER: Dictionary = {
 		"armor": 0,
 		"accuracy": 0,
 		"armor_pierce": 0,
+		"temp_hp": 0,            # Temporary HP from rest overheal; absorbed before real HP
 		# Current resistances: racial base + equipment + permanent perk bonuses
 		# In-combat spell/status bonuses are applied on top in CombatUnit.get_resistance()
 		"resistances": {}

@@ -130,13 +130,13 @@ Full spec: `docs/superpowers/specs/2026-04-08-rest-time-system-design.md`
 
 Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick/Camp/Full), food system rework (food only consumed at rest, not per step).
 
-- [ ] **Task 1** — Add `hours_elapsed`, `advance_time()`, `day_changed` signal, `current_day`/`hour_of_day` computed properties, `get_time_of_day_label()` to `game_state.gd`; wire save/load
-- [ ] **Task 2** — Add `MapManager.tick_mobs()` method (patrol step without player movement); add Space = Wait action in `overworld.gd` that calls it + advances time + ticks statuses
-- [ ] **Task 3** — Remove per-step food drain: gut `process_food_step()`, `process_herbs_step()`, starvation damage, per-step HP heal, `steps_without_food`; update `_tick_supply_step()` accordingly
-- [ ] **Task 4** — Implement `_do_rest(tier)` in `overworld.gd`: deduct resources (with Logistics discount), restore HP/mana/stamina (with Medicine continuous bonus + temp HP overflow), decay emotional pressure, restore durability (with Smithing scaling + scrap cost), advance time, emit toast
-- [ ] **Task 5** — Build rest UI: button in HUD, popup panel with 3 tier options showing costs + affordability, result toast; update supplies.json starting values
-- [ ] **Task 6** — Add time display to overworld HUD ("Day N — Evening"); update `_tick_supply_step` to call `advance_time` on each player move
-- [ ] **Task 7** — Wire temp HP: add `temp_hp` field to character derived stats; combat_manager absorbs temp HP before real HP on damage
+- [x] **Task 1** — Add `hours_elapsed`, `advance_time()`, `day_changed` signal, `current_day`/`hour_of_day` computed properties, `get_time_of_day_label()` to `game_state.gd`; wire save/load
+- [x] **Task 2** — Add `MapManager.tick_mobs()` method (patrol step without player movement); add Space = Wait action in `overworld.gd` that calls it + advances time + ticks statuses
+- [x] **Task 3** — Remove per-step food drain: gut `process_food_step()`, `process_herbs_step()`, starvation damage, per-step HP heal, `steps_without_food`; update `_tick_supply_step()` accordingly
+- [x] **Task 4** — Implement `_do_rest(tier)` in `overworld.gd`: deduct resources (with Logistics discount), restore HP/mana/stamina (with Medicine continuous bonus + temp HP overflow), decay emotional pressure, restore durability (with Smithing scaling + scrap cost), advance time, emit toast
+- [x] **Task 5** — Build rest UI: button in HUD, popup panel with 3 tier options showing costs + affordability, result toast; update supplies.json starting values
+- [x] **Task 6** — Add time display to overworld HUD ("Day N — Evening"); update `_tick_supply_step` to call `advance_time` on each player move
+- [x] **Task 7** — Wire temp HP: add `temp_hp` field to character derived stats; combat_manager absorbs temp HP before real HP on damage
 
 **Follow-up (after core system lands):**
 - [ ] Lunar calendar events — `day_changed` signal is the hook; add cyclic event checks (full moon = day 14, 28... etc.)

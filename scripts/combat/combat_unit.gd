@@ -23,6 +23,7 @@ var facing: Vector2i = Vector2i(1, 0)
 # Combat state
 var current_hp: int = 100
 var max_hp: int = 100
+var temp_hp: int = 0    # Absorbed before real HP; granted by rest overheal
 var current_mana: int = 50
 var max_mana: int = 50
 var current_stamina: int = 50
@@ -151,6 +152,7 @@ func init_from_character(char_data: Dictionary, unit_team: int) -> void:
 	var derived = char_data.get("derived", {})
 	max_hp = derived.get("max_hp", 100)
 	current_hp = derived.get("current_hp", max_hp)
+	temp_hp = derived.get("temp_hp", 0)
 	max_mana = derived.get("max_mana", 50)
 	current_mana = derived.get("current_mana", max_mana)
 	max_stamina = derived.get("max_stamina", 50)
@@ -1001,12 +1003,20 @@ func set_resistance(damage_type: String, value: float) -> void:
 # DAMAGE & HEALING
 # ============================================
 
-## Take damage
+## Take damage — temp_hp (from rest overheal) is absorbed first
 func take_damage(amount: int) -> void:
+	if temp_hp > 0:
+		if amount <= temp_hp:
+			temp_hp -= amount
+			amount = 0
+		else:
+			amount -= temp_hp
+			temp_hp = 0
 	current_hp = maxi(0, current_hp - amount)
 	# Keep character_data in sync so HP persists after combat
 	var derived_hp = character_data.get("derived", {})
 	derived_hp["current_hp"] = current_hp
+	derived_hp["temp_hp"]    = temp_hp
 	_update_visuals()
 
 	# Show damage number

@@ -1545,9 +1545,10 @@ func tick_mobs() -> void:
 			MobMode.PATROL:
 				_process_patrol_mob(mob, 0.0)
 			MobMode.ROAMING:
-				# Force the roam timer to expire so the mob actually moves
-				mob.roam_timer = 0.0
-				_process_roaming_mob(mob, 100.0)  # large delta to bypass the timer
+				_process_roaming_mob(mob, 100.0)  # large delta forces timer to expire
+		# Aggressive mobs check for pursuit regardless of movement mode
+		if mob.attitude == MobAttitude.AGGRESSIVE:
+			_process_aggressive_mob(mob, 0.0)
 
 
 # ============================================

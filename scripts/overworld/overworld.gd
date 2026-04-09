@@ -854,13 +854,11 @@ func _open_rest_panel() -> void:
 	var party := CharacterSystem.get_party()
 	var party_size := party.size()
 
-	# Best skills across party
-	var best_medicine  := 0
+	# Best skills across party (medicine not needed here — _do_rest computes it independently)
 	var best_logistics := 0
 	var best_smithing  := 0
 	for char in party:
 		var sk: Dictionary = char.get("skills", {})
-		best_medicine  = maxi(best_medicine,  int(sk.get("medicine",  0)))
 		best_logistics = maxi(best_logistics, int(sk.get("logistics", 0)))
 		best_smithing  = maxi(best_smithing,  int(sk.get("smithing",  0)))
 
@@ -930,7 +928,7 @@ func _open_rest_panel() -> void:
 			cost_parts.append("Herbs: %d" % herbs_costs[i])
 			cost_parts.append("Scrap: %d" % scrap_costs[i])
 		var cost_str := " | ".join(cost_parts)
-		tier_btn.text = "%s\n%s\n%s" % [tier_names[i], cost_str, tier_restores[i]]
+		tier_btn.text = "%s\n%s\n%s  |  %s" % [tier_names[i], cost_str, tier_restores[i], tier_pressure[i]]
 		tier_btn.custom_minimum_size = Vector2(0, 64)
 		tier_btn.add_theme_font_size_override("font_size", 13)
 		tier_btn.disabled = not can_afford
@@ -1015,11 +1013,16 @@ func _do_rest(tier: int) -> void:
 
 	for char in party:
 		var derived: Dictionary = char.get("derived", {})
-		# HP — cap at max for now (temp_hp overflow added in separate task)
 		var max_hp:      int = int(derived.get("max_hp",      100))
 		var max_mana:    int = int(derived.get("max_mana",     50))
 		var max_stamina: int = int(derived.get("max_stamina",  50))
-		derived["current_hp"]      = mini(max_hp,      int(derived.get("current_hp",      max_hp))      + floori(max_hp      * restore_pct))
+		# HP: overheal above max becomes temp_hp (absorbed first in combat)
+		var new_hp: int = int(derived.get("current_hp", max_hp)) + floori(max_hp * restore_pct)
+		if new_hp > max_hp:
+			derived["temp_hp"]     = new_hp - max_hp
+			derived["current_hp"]  = max_hp
+		else:
+			derived["current_hp"]  = new_hp
 		derived["current_mana"]    = mini(max_mana,    int(derived.get("current_mana",    max_mana))    + floori(max_mana    * restore_pct))
 		derived["current_stamina"] = mini(max_stamina, int(derived.get("current_stamina", max_stamina)) + floori(max_stamina * restore_pct))
 
