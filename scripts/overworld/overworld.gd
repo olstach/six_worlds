@@ -671,6 +671,7 @@ func _on_char_sheet_visibility_changed() -> void:
 # ============================================
 
 func _on_party_moved(_from: Vector2i, _to: Vector2i) -> void:
+	GameState.advance_time(GameState.HOURS_PER_STEP)
 	_update_terrain_label()
 	_tick_overworld_statuses()
 	_tick_supply_step()
@@ -724,62 +725,23 @@ func _tick_overworld_statuses() -> void:
 
 ## Process one step's worth of supply consumption and passive effects.
 ## Called from _on_party_moved after status ticks.
+## Food and herbs are no longer consumed per step — they are consumed only at rest.
 func _tick_supply_step() -> void:
 	var party := CharacterSystem.get_party()
 	if party.is_empty():
 		return
 
-	# Gather per-party-member stats needed for supply calculations
-	var party_size := party.size()
 	var best_logistics := 0
-	var best_medicine  := 0
 	var best_crafting  := 0
 	var best_alchemy   := 0
-	var lowest_con     := 999
 
 	for char in party:
 		var skills: Dictionary = char.get("skills", {})
 		best_logistics = maxi(best_logistics, int(skills.get("logistics", 0)))
-		best_medicine  = maxi(best_medicine,  int(skills.get("medicine",  0)))
 		best_crafting  = maxi(best_crafting,  int(skills.get("crafting",  0)))
 		best_alchemy   = maxi(best_alchemy,   int(skills.get("alchemy",   0)))
-		lowest_con     = mini(lowest_con, int(char.get("attributes", {}).get("constitution", 10)))
 
-	if lowest_con == 999:
-		lowest_con = 10
-
-	# --- Food: consumption, starvation, base passive healing ---
-	var food_result := GameState.process_food_step(party_size, best_logistics, lowest_con)
-	var heal_pct := 0.0
-
-	if food_result.get("healing_active", false):
-		heal_pct = 1.0  # 1% max HP per step when fed
-
-	if food_result.get("is_starving", false):
-		var dmg_pct: float = food_result.get("starvation_damage_pct", 2.0)
-		for char in party:
-			var derived: Dictionary = char.get("derived", {})
-			var max_hp: int = derived.get("max_hp", 100)
-			var dmg: int = maxi(1, int(max_hp * dmg_pct / 100.0))
-			derived["current_hp"] = maxi(0, derived.get("current_hp", max_hp) - dmg)
-		_show_toast("Party is starving! −%d%% HP per step" % int(dmg_pct))
-		_spawn_floating_text("Starving!", Color(1.0, 0.15, 0.15))
-
-	# --- Herbs: Medicine passive bonus healing ---
-	var herb_bonus: float = GameState.process_herbs_step(best_medicine, best_logistics)
-	heal_pct += herb_bonus
-
-	# --- Apply passive healing to all party members ---
-	if heal_pct > 0.0:
-		for char in party:
-			var derived: Dictionary = char.get("derived", {})
-			var max_hp: int = derived.get("max_hp", 100)
-			var cur_hp: int = derived.get("current_hp", max_hp)
-			if cur_hp < max_hp:
-				var heal_amt: int = maxi(1, int(max_hp * heal_pct / 100.0))
-				derived["current_hp"] = mini(max_hp, cur_hp + heal_amt)
-
-	# --- Scrap: Crafting passive repair (effect applied when durability system is ready) ---
+	# --- Scrap: Crafting passive repair ---
 	GameState.process_scrap_step(best_crafting, best_logistics)
 
 	# --- Reagents: Alchemy passive brewing ---

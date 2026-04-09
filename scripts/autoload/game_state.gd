@@ -11,8 +11,6 @@ extends Node
 # Signals
 signal gold_changed(new_amount: int, change: int)
 signal supply_changed(supply_type: String, new_amount: int, change: int)
-signal starvation_started()   # Emitted when food runs out and grace period expires
-signal starvation_ended()     # Emitted when food is obtained while starving
 signal quest_completed(quest_id: String, quest_name: String, reward: Dictionary)
 signal overworld_log_updated(message: String)
 signal day_changed(new_day: int)   # Fired when current_day increments. Hook for future lunar events.
@@ -47,10 +45,6 @@ var current_day: int:
 
 var hour_of_day: int:
 	get: return hours_elapsed % HOURS_PER_DAY
-
-# Starvation tracking — when food hits 0, a grace period starts before HP drain
-var steps_without_food: int = 0  # Counts up while food == 0
-var is_starving: bool = false    # True once grace period expires and HP is draining
 
 # Scene transition state (for passing data across scene changes)
 var pending_combat_mob: Dictionary = {}  # Mob data passed to combat arena
@@ -188,10 +182,7 @@ func player_died() -> void:
 func start_new_run(spawn_world: String) -> void:
 	is_alive = true
 	current_world = spawn_world
-	# Reset food and starvation state for the new life
 	food = 50
-	steps_without_food = 0
-	is_starving = false
 	visited_locations = {}
 	hours_elapsed = 0
 
@@ -304,11 +295,6 @@ func add_supply(supply_type: String, amount: int) -> void:
 	match supply_type:
 		"food":
 			food += amount
-			# If we were starving and just got food, reset starvation
-			if is_starving:
-				is_starving = false
-				steps_without_food = 0
-				starvation_ended.emit()
 		"herbs":
 			herbs += amount
 		"scrap":
@@ -335,75 +321,6 @@ func consume_supply(supply_type: String, amount: int) -> bool:
 		"reagents": reagents -= amount
 	supply_changed.emit(supply_type, get_supply(supply_type), -amount)
 	return true
-
-
-## Called each overworld step — handles food consumption and starvation tracking.
-## party_size: number of members in party
-## logistics_level: best Logistics skill in party (reduces all resource consumption)
-## lowest_con: lowest Constitution in party (determines starvation grace period)
-## Returns a dictionary describing what happened this step:
-##   {food_consumed, is_starving, starvation_damage_pct, healing_active}
-func process_food_step(party_size: int, logistics_level: int, lowest_con: int) -> Dictionary:
-	# Calculate food cost: 1 per member, reduced by Logistics (4% per level)
-	# At level 5 = 20% reduction, level 10 = 40% — helpful but not game-breaking
-	var reduction_pct: float = minf(logistics_level * 4.0, 90.0)  # Cap at 90% to always cost at least something
-	var raw_cost: float = party_size * 1.0
-	var reduced_cost: float = raw_cost * (1.0 - reduction_pct / 100.0)
-	# Divide by 15 so a party of 4 eats ~1 food per several steps — food is a background concern, not a crisis
-	var actual_cost: int = max(1, ceili(reduced_cost / 15.0))
-
-	var result := {
-		"food_consumed": 0,
-		"is_starving": false,
-		"starvation_damage_pct": 0.0,
-		"healing_active": true
-	}
-
-	if food >= actual_cost:
-		food -= actual_cost
-		result.food_consumed = actual_cost
-		steps_without_food = 0
-		if is_starving:
-			is_starving = false
-			starvation_ended.emit()
-		supply_changed.emit("food", food, -actual_cost)
-	else:
-		# Eat whatever's left, then go hungry
-		var eaten := food
-		food = 0
-		if eaten > 0:
-			supply_changed.emit("food", 0, -eaten)
-		result.food_consumed = eaten
-		result.healing_active = false  # No food = no passive healing
-
-		# Track starvation
-		steps_without_food += 1
-		# Grace period: base 50 + 10 per lowest CON in party
-		var grace: int = 50 + (lowest_con * 10)
-		if steps_without_food > grace:
-			is_starving = true
-			result.is_starving = true
-			result.starvation_damage_pct = 0.4  # 0.4% max HP per step (same effective rate as old 2% with 5x slower ticks)
-			if steps_without_food == grace + 1:
-				starvation_started.emit()
-
-	return result
-
-
-## Process herb consumption for Medicine passive healing.
-## medicine_level: best Medicine skill in party
-## logistics_level: best Logistics skill in party (chance to conserve herbs)
-## Returns bonus heal percentage (0.0 if no herbs or no Medicine skill)
-func process_herbs_step(medicine_level: int, logistics_level: int) -> float:
-	if medicine_level <= 0 or herbs <= 0:
-		return 0.0
-	# Logistics gives a 4% chance per level to skip herb consumption this step
-	var conserve_chance: float = minf(logistics_level * 4.0, 90.0) / 100.0
-	if randf() >= conserve_chance:
-		herbs -= 1
-		supply_changed.emit("herbs", herbs, -1)
-	# Bonus healing still applies even if herb was conserved
-	return medicine_level * 0.5
 
 
 ## Process scrap consumption for Smithing passive repair/ammo restore.
@@ -638,8 +555,6 @@ func get_save_data() -> Dictionary:
 		"scrap": scrap,
 		"reagents": reagents,
 		"alchemy_passive_enabled": alchemy_passive_enabled,
-		"steps_without_food": steps_without_food,
-		"is_starving": is_starving,
 		"boss_defeated": boss_states,
 		"used_event_choices": used_event_choices.duplicate(true),
 		"guild_spell_lists": guild_spell_lists.duplicate(true),
@@ -662,8 +577,6 @@ func load_save_data(data: Dictionary) -> void:
 	scrap = data.get("scrap", 15)
 	reagents = data.get("reagents", 10)
 	alchemy_passive_enabled = data.get("alchemy_passive_enabled", true)
-	steps_without_food = data.get("steps_without_food", 0)
-	is_starving = data.get("is_starving", false)
 	used_event_choices = data.get("used_event_choices", {})
 	guild_spell_lists = data.get("guild_spell_lists", {})
 	visited_locations = data.get("visited_locations", {})
