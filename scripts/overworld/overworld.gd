@@ -678,7 +678,7 @@ func _on_party_moved(_from: Vector2i, _to: Vector2i) -> void:
 	_check_party_death()
 
 
-## Check if all party members have died from starvation or status damage.
+## Check if all party members have died from status damage or other sources.
 ## If so, transition to the Bardo death screen.
 func _check_party_death() -> void:
 	var party := CharacterSystem.get_party()
