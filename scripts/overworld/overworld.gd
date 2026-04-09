@@ -247,6 +247,14 @@ func _unhandled_input(event: InputEvent) -> void:
 				# Message log toggle
 				_toggle_log_panel()
 				get_viewport().set_input_as_handled()
+			KEY_SPACE:
+				if _event_open or _shop_open or _quest_board_open or _main_menu_open or _char_sheet_open:
+					return
+				# Wait action: advance time + tick mobs + tick statuses
+				GameState.advance_time(GameState.HOURS_PER_STEP)
+				MapManager.tick_mobs()
+				_tick_overworld_statuses()
+				get_viewport().set_input_as_handled()
 			KEY_ESCAPE:
 				if _main_menu_open:
 					_close_main_menu()

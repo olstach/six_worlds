@@ -1535,6 +1535,21 @@ func resume_mobs() -> void:
 	pass
 
 
+## Advance all mobs by one patrol/roam step — called by the overworld Wait action.
+## Unlike _process_mobs(), this is step-based (not frame-based) and has no delta.
+func tick_mobs() -> void:
+	for mob in mobs:
+		if mob.is_moving:
+			continue  # Already mid-move, skip this tick
+		match mob.get("mode", MobMode.STATIONARY):
+			MobMode.PATROL:
+				_process_patrol_mob(mob, 0.0)
+			MobMode.ROAMING:
+				# Force the roam timer to expire so the mob actually moves
+				mob.roam_timer = 0.0
+				_process_roaming_mob(mob, 100.0)  # large delta to bypass the timer
+
+
 # ============================================
 # EXPLORATION DISCOVERY
 # ============================================
