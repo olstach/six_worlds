@@ -15,12 +15,14 @@ signal starvation_started()   # Emitted when food runs out and grace period expi
 signal starvation_ended()     # Emitted when food is obtained while starving
 signal quest_completed(quest_id: String, quest_name: String, reward: Dictionary)
 signal overworld_log_updated(message: String)
+signal day_changed(new_day: int)   # Fired when current_day increments. Hook for future lunar events.
 
 # Current run data
 var current_world: String = "hell"  # Which world the player is currently in
 var unlocked_worlds: Array[String] = ["hell"]  # Worlds player can travel to
 var is_alive: bool = true
 var current_run_number: int = 1  # How many times player has reincarnated
+var hours_elapsed: int = 0   # Total hours since run start. Never resets mid-run.
 
 # Party resources
 var gold: int = 100  # Starting gold
@@ -33,6 +35,18 @@ var reagents: int = 10  # Consumed by Alchemy passive to brew items; can be togg
 
 # Alchemy passive toggle — player can disable to hoard reagents for active crafting
 var alchemy_passive_enabled: bool = true
+
+# Time system constants
+const HOURS_PER_STEP: int = 2   # Each overworld step (move or Wait) advances this
+const HOURS_PER_REST: int = 8   # Additional hours advanced when party rests
+const HOURS_PER_DAY:  int = 24
+
+# Computed time properties
+var current_day: int:
+	get: return hours_elapsed / HOURS_PER_DAY
+
+var hour_of_day: int:
+	get: return hours_elapsed % HOURS_PER_DAY
 
 # Starvation tracking — when food hits 0, a grace period starts before HP drain
 var steps_without_food: int = 0  # Counts up while food == 0
@@ -179,6 +193,7 @@ func start_new_run(spawn_world: String) -> void:
 	steps_without_food = 0
 	is_starving = false
 	visited_locations = {}
+	hours_elapsed = 0
 
 ## Get info about current world
 func get_current_world_info() -> Dictionary:
@@ -187,6 +202,26 @@ func get_current_world_info() -> Dictionary:
 ## Check if player has reached the final realm
 func has_reached_final_realm() -> bool:
 	return current_world == "god" and WORLDS["god"].boss_defeated
+
+
+## Advance the time clock by the given number of hours.
+## Fires day_changed when the day counter increments.
+func advance_time(hours: int) -> void:
+	var old_day: int = current_day
+	hours_elapsed += hours
+	var new_day: int = current_day
+	if new_day > old_day:
+		day_changed.emit(new_day)
+
+## Returns the time-of-day label for the current hour.
+func get_time_of_day_label() -> String:
+	var h: int = hour_of_day
+	if   h >= 4  and h < 8:  return "Dawn"
+	elif h >= 8  and h < 12: return "Morning"
+	elif h >= 12 and h < 16: return "Afternoon"
+	elif h >= 16 and h < 20: return "Evening"
+	elif h >= 20:             return "Night"
+	else:                     return "Deep Night"   # 0–3
 
 
 # ============================================
@@ -611,6 +646,7 @@ func get_save_data() -> Dictionary:
 		"flags": flags.duplicate(true),
 		"active_quests": active_quests.duplicate(true),
 		"completed_quest_ids": completed_quest_ids.duplicate(),
+		"hours_elapsed": hours_elapsed,
 	}
 
 
@@ -638,6 +674,7 @@ func load_save_data(data: Dictionary) -> void:
 	for id in data.get("completed_quest_ids", []):
 		completed_quest_ids.append(str(id))
 	overworld_log = []  # session-only; always start fresh on load
+	hours_elapsed = data.get("hours_elapsed", 0)
 
 	# Restore unlocked worlds
 	unlocked_worlds.clear()
