@@ -732,17 +732,17 @@ func _tick_supply_step() -> void:
 		return
 
 	var best_logistics := 0
-	var best_crafting  := 0
+	var best_smithing  := 0
 	var best_alchemy   := 0
 
 	for char in party:
 		var skills: Dictionary = char.get("skills", {})
 		best_logistics = maxi(best_logistics, int(skills.get("logistics", 0)))
-		best_crafting  = maxi(best_crafting,  int(skills.get("crafting",  0)))
+		best_smithing  = maxi(best_smithing,  int(skills.get("smithing",  0)))
 		best_alchemy   = maxi(best_alchemy,   int(skills.get("alchemy",   0)))
 
-	# --- Scrap: Crafting passive repair ---
-	GameState.process_scrap_step(best_crafting, best_logistics)
+	# --- Scrap: Smithing passive repair ---
+	GameState.process_scrap_step(best_smithing, best_logistics)
 
 	# --- Reagents: Alchemy passive brewing ---
 	if best_alchemy > 0:
@@ -784,6 +784,123 @@ func _get_unlocked_alchemy_items(party: Array) -> Array:
 				for item_id in tier.get("items", []):
 					unlocked.append(str(item_id))
 	return unlocked
+
+
+## Hook for rest perks — called for each character after healing/decay. Empty for now.
+func _process_rest_perks(_character: Dictionary, _tier: int) -> void:
+	pass
+
+
+## Restore durability on all equipped items for all party members by the given fraction.
+## Only works on runtime items (generated weapons/armor) that track durability.
+func _restore_party_durability(restore_pct: float) -> void:
+	var party := CharacterSystem.get_party()
+	var armor_slots: Array[String] = ["head", "chest", "hand_l", "hand_r", "legs", "feet"]
+	for char in party:
+		var equipment: Dictionary = char.get("equipment", {})
+		# Armor slots
+		for slot in armor_slots:
+			var item_id: String = equipment.get(slot, "")
+			if item_id.is_empty():
+				continue
+			var item_data: Dictionary = ItemSystem.get_item(item_id)
+			var max_dur: int = int(item_data.get("max_durability", 0))
+			if max_dur <= 0:
+				continue
+			var cur_dur: int = int(item_data.get("durability", max_dur))
+			var restored: int = mini(max_dur, cur_dur + maxi(1, int(max_dur * restore_pct)))
+			ItemSystem.update_item_durability(item_id, restored)
+		# Weapon sets
+		for set_key in ["weapon_set_1", "weapon_set_2"]:
+			var ws: Dictionary = equipment.get(set_key, {})
+			for sub in ["main", "off"]:
+				var item_id: String = ws.get(sub, "")
+				if item_id.is_empty():
+					continue
+				var item_data: Dictionary = ItemSystem.get_item(item_id)
+				var max_dur: int = int(item_data.get("max_durability", 0))
+				if max_dur <= 0:
+					continue
+				var cur_dur: int = int(item_data.get("durability", max_dur))
+				var restored: int = mini(max_dur, cur_dur + maxi(1, int(max_dur * restore_pct)))
+				ItemSystem.update_item_durability(item_id, restored)
+
+
+## Perform a rest action for the party.
+## tier: 1 (Quick Rest), 2 (Camp), 3 (Full Rest)
+func _do_rest(tier: int) -> void:
+	var party := CharacterSystem.get_party()
+	if party.is_empty():
+		return
+
+	# Best skill levels in party
+	var best_medicine  := 0
+	var best_smithing  := 0
+	var best_logistics := 0
+	for char in party:
+		var skills: Dictionary = char.get("skills", {})
+		best_medicine  = maxi(best_medicine,  int(skills.get("medicine",  0)))
+		best_smithing  = maxi(best_smithing,  int(skills.get("smithing",  0)))
+		best_logistics = maxi(best_logistics, int(skills.get("logistics", 0)))
+
+	# === Resource costs ===
+	# Food: per-member flat cost, reduced by Logistics
+	var food_discount_per_member: int = best_logistics / 3   # Logistics 3→1, 6→2, 9→3
+	var herb_scrap_discount: int      = best_logistics / 4   # Logistics 4→1, 8→2
+	var base_food_per_member: Array[int]  = [2, 4, 6]         # tier 1/2/3
+	var base_herbs:           Array[int]  = [0, 2, 4]
+	var base_scrap_camp:      Array[int]  = [0, 2, 4]          # base before smithing add
+
+	var food_per_member: int = maxi(1, base_food_per_member[tier - 1] - food_discount_per_member)
+	var food_cost:       int = food_per_member * party.size()
+	var herbs_cost:      int = maxi(0, base_herbs[tier - 1] - herb_scrap_discount)
+	# Scrap: base after logistics discount + extra for Smithing repairs
+	var scrap_cost: int = maxi(0, base_scrap_camp[tier - 1] - herb_scrap_discount) \
+	                      + (best_smithing / 3)
+
+	# Consume resources
+	GameState.consume_supply("food", food_cost)
+	if tier >= 2:
+		GameState.consume_supply("herbs", herbs_cost)
+		GameState.consume_supply("scrap", scrap_cost)
+
+	# === Healing ===
+	# Base restore pct by tier; Medicine adds +2% per level
+	var tier_base_pct: float  = [0.4, 0.7, 1.0][tier - 1]
+	var medicine_bonus: float = best_medicine * 0.02
+	var restore_pct: float    = tier_base_pct + medicine_bonus
+
+	for char in party:
+		var derived: Dictionary = char.get("derived", {})
+		# HP — cap at max for now (temp_hp overflow added in separate task)
+		var max_hp:      int = int(derived.get("max_hp",      100))
+		var max_mana:    int = int(derived.get("max_mana",     50))
+		var max_stamina: int = int(derived.get("max_stamina",  50))
+		derived["current_hp"]      = mini(max_hp,      int(derived.get("current_hp",      max_hp))      + floori(max_hp      * restore_pct))
+		derived["current_mana"]    = mini(max_mana,    int(derived.get("current_mana",    max_mana))    + floori(max_mana    * restore_pct))
+		derived["current_stamina"] = mini(max_stamina, int(derived.get("current_stamina", max_stamina)) + floori(max_stamina * restore_pct))
+
+		# === Pressure decay ===
+		var decay_amount: float = [20.0, 40.0, 100.0][tier - 1]
+		PsychologySystem.decay_toward_baseline(char, decay_amount)
+
+		# === Perk hook ===
+		_process_rest_perks(char, tier)
+
+	# === Durability restore (tier 2+) ===
+	if tier >= 2:
+		var smithing_restore_pct: float = best_smithing * 0.05     # 5% per Smithing level
+		var tier_max_pct: float          = [0.0, 0.2, 1.0][tier - 1]
+		var actual_pct: float            = minf(tier_max_pct, smithing_restore_pct)
+		if actual_pct > 0.0:
+			_restore_party_durability(actual_pct)
+
+	# === Advance time ===
+	GameState.advance_time(GameState.HOURS_PER_REST)
+
+	# === Toast ===
+	var day_str := "Day %d — %s" % [GameState.current_day + 1, GameState.get_time_of_day_label()]
+	_show_toast("Party rested. %s." % day_str)
 
 
 ## Show a toast when the player casts a spell from the overworld spellbook.
