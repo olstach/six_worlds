@@ -21,6 +21,7 @@ extends Control
 @onready var spellbook_button: Button = %SpellbookButton
 @onready var crafting_button: Button = %CraftingButton
 @onready var journal_button: Button = %JournalButton
+@onready var rest_button: Button = %RestButton
 @onready var toast_label: Label = %ToastLabel
 
 # Event overlay controls (children of EventOverlay CanvasLayer)
@@ -46,6 +47,8 @@ var _char_sheet_open: bool = false
 var _shop_open: bool = false
 var _main_menu_open: bool = false
 var _quest_board_open: bool = false
+var _rest_open: bool = false
+var _rest_layer: CanvasLayer = null
 var _quest_board_instance: Control = null
 var _quest_board_layer: CanvasLayer = null
 
@@ -177,6 +180,9 @@ journal_button.pressed.connect(func(): _open_char_sheet_to_tab(5))
 	# Initialize HUD
 	_update_hud()
 
+	# Connect rest button
+	rest_button.pressed.connect(_open_rest_panel)
+
 	# Add hover tooltips to supply counter labels
 	gold_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	gold_label.tooltip_text = "Gold — used for shopping, hiring companions, and bribes"
@@ -258,7 +264,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				_update_time_label()
 				get_viewport().set_input_as_handled()
 			KEY_ESCAPE:
-				if _main_menu_open:
+				if _rest_open:
+					_close_rest_panel()
+					get_viewport().set_input_as_handled()
+				elif _main_menu_open:
 					_close_main_menu()
 					get_viewport().set_input_as_handled()
 				elif _char_sheet_open:
@@ -832,6 +841,132 @@ func _restore_party_durability(restore_pct: float) -> void:
 				var cur_dur: int = int(item_data.get("durability", max_dur))
 				var restored: int = mini(max_dur, cur_dur + maxi(1, int(max_dur * restore_pct)))
 				ItemSystem.update_item_durability(item_id, restored)
+
+
+## Opens the rest popup. Computes costs from current party + skills.
+func _open_rest_panel() -> void:
+	if _rest_open or _event_open or _shop_open or _quest_board_open or _main_menu_open or _char_sheet_open:
+		return
+
+	_rest_open = true
+	rest_button.disabled = true
+
+	var party := CharacterSystem.get_party()
+	var party_size := party.size()
+
+	# Best skills across party
+	var best_medicine  := 0
+	var best_logistics := 0
+	var best_smithing  := 0
+	for char in party:
+		var sk: Dictionary = char.get("skills", {})
+		best_medicine  = maxi(best_medicine,  int(sk.get("medicine",  0)))
+		best_logistics = maxi(best_logistics, int(sk.get("logistics", 0)))
+		best_smithing  = maxi(best_smithing,  int(sk.get("smithing",  0)))
+
+	var food_discount: int       = best_logistics / 3
+	var herb_scrap_discount: int = best_logistics / 4
+
+	# Costs per tier [1, 2, 3]
+	var food_costs: Array[int]  = [
+		maxi(1, 2 - food_discount) * party_size,
+		maxi(1, 4 - food_discount) * party_size,
+		maxi(1, 6 - food_discount) * party_size,
+	]
+	var herbs_costs: Array[int] = [0, maxi(0, 2 - herb_scrap_discount), maxi(0, 4 - herb_scrap_discount)]
+	var scrap_costs: Array[int] = [
+		0,
+		maxi(0, 2 - herb_scrap_discount) + (best_smithing / 3),
+		maxi(0, 4 - herb_scrap_discount) + (best_smithing / 3),
+	]
+	var tier_names: Array[String]    = ["Quick Rest", "Camp", "Full Rest"]
+	var tier_restores: Array[String] = ["40% HP/Mana/Stamina", "70% HP/Mana/Stamina", "Full HP/Mana/Stamina"]
+	var tier_pressure: Array[String] = ["+20 pressure decay", "+40 pressure decay", "Full pressure reset"]
+
+	# Build panel on a CanvasLayer above the HUD
+	_rest_layer = CanvasLayer.new()
+	_rest_layer.layer = 28
+	add_child(_rest_layer)
+
+	var dimmer := ColorRect.new()
+	dimmer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dimmer.color = Color(0, 0, 0, 0.6)
+	_rest_layer.add_child(dimmer)
+
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_rest_layer.add_child(center)
+
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(360, 0)
+	var panel_style = UIStyle.make_stylebox(Color(0.3, 0.45, 0.35), 2, 10, 28, 0.9)
+	panel.add_theme_stylebox_override("panel", panel_style)
+	center.add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 10)
+	panel.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "REST"
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", Color(0.65, 0.9, 0.65))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	var sep := HSeparator.new()
+	vbox.add_child(sep)
+
+	# Build three tier buttons
+	for i in range(3):
+		var tier: int = i + 1
+		var can_afford: bool = GameState.food >= food_costs[i]
+		if tier >= 2:
+			can_afford = can_afford and GameState.herbs >= herbs_costs[i] and GameState.scrap >= scrap_costs[i]
+
+		var tier_btn := Button.new()
+		var cost_parts: Array[String] = ["Food: %d" % food_costs[i]]
+		if tier >= 2:
+			cost_parts.append("Herbs: %d" % herbs_costs[i])
+			cost_parts.append("Scrap: %d" % scrap_costs[i])
+		var cost_str := " | ".join(cost_parts)
+		tier_btn.text = "%s\n%s\n%s" % [tier_names[i], cost_str, tier_restores[i]]
+		tier_btn.custom_minimum_size = Vector2(0, 64)
+		tier_btn.add_theme_font_size_override("font_size", 13)
+		tier_btn.disabled = not can_afford
+		if can_afford:
+			var btn_style = UIStyle.make_stylebox(Color(0.25, 0.5, 0.3), 1, 6, 10)
+			tier_btn.add_theme_stylebox_override("normal", btn_style)
+			var hover_style = UIStyle.make_stylebox(Color(0.35, 0.65, 0.4), 1, 6, 10)
+			tier_btn.add_theme_stylebox_override("hover", hover_style)
+			tier_btn.pressed.connect(_confirm_rest.bind(tier))
+		else:
+			tier_btn.tooltip_text = "Cannot afford this rest tier"
+		vbox.add_child(tier_btn)
+
+	var cancel_sep := HSeparator.new()
+	vbox.add_child(cancel_sep)
+
+	var cancel_btn := Button.new()
+	cancel_btn.text = "Cancel  [Esc]"
+	cancel_btn.custom_minimum_size = Vector2(0, 40)
+	cancel_btn.pressed.connect(_close_rest_panel)
+	vbox.add_child(cancel_btn)
+
+
+## Called when a tier button is pressed. Closes panel then rests.
+func _confirm_rest(tier: int) -> void:
+	_close_rest_panel()
+	_do_rest(tier)
+
+
+## Close the rest panel.
+func _close_rest_panel() -> void:
+	_rest_open = false
+	rest_button.disabled = false
+	if is_instance_valid(_rest_layer):
+		_rest_layer.queue_free()
+		_rest_layer = null
 
 
 ## Perform a rest action for the party.
