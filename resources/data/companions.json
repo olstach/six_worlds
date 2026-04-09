@@ -643,6 +643,626 @@
         "chest": "cloth_robe"
       },
       "fixed_items": []
+    },
+
+    "tsering": {
+      "id": "tsering",
+      "name": "Tsering",
+      "race": "rolang",
+      "background": "shambler",
+      "flavor_text": "Worked every day of his life with diligence and nothing to show for it. No time to rest, no time to reflect. He is still moving, still laboring. He is not entirely sure why.",
+      "portrait": "",
+      "recruitment_cost": 500,
+      "build_weights": {
+        "axes": 5,
+        "armor": 4,
+        "logistics": 3
+      },
+      "fixed_starter": {
+        "skills": { "axes": 2, "armor": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_axe", "off": "" },
+        "chest": "leather_vest"
+      },
+      "fixed_items": []
+    },
+
+    "rasabhava": {
+      "id": "rasabhava",
+      "name": "Rasabhava",
+      "race": "preserved",
+      "background": "charnel_yogi",
+      "flavor_text": "His formula for eternal preservation was correct in every detail. He finished mixing it the night before he died. He has had some time to consider the timing.",
+      "portrait": "",
+      "recruitment_cost": 800,
+      "build_weights": {
+        "alchemy": 5,
+        "summoning": 4,
+        "enchantment": 3
+      },
+      "fixed_starter": {
+        "skills": { "summoning": 2, "enchantment": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": ["health_potion"]
+    },
+
+    "saka": {
+      "id": "saka",
+      "name": "Saka",
+      "race": "preserved",
+      "background": "hunter",
+      "flavor_text": "Desiccated by the white salt flats of a desert that keeps its dead well. Still carrying the composite bow he carved from horn and sinew. Still knows which direction the game runs.",
+      "portrait": "",
+      "recruitment_cost": 650,
+      "build_weights": {
+        "ranged": 5,
+        "guile": 3,
+        "logistics": 3
+      },
+      "fixed_starter": {
+        "skills": { "ranged": 2, "guile": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "hunting_bow", "off": "" },
+        "chest": "leather_vest"
+      },
+      "fixed_items": []
+    },
+
+    "mehr": {
+      "id": "mehr",
+      "name": "Mehr",
+      "race": "preserved",
+      "background": "priest",
+      "flavor_text": "Tall, one-eyed, recovered from a tar pit with most of her prophecies intact. The one that failed was accurate. The court simply did not want to hear it.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "fire_magic": 5,
+        "space_magic": 4,
+        "medicine": 3
+      },
+      "fixed_starter": {
+        "skills": { "fire_magic": 2, "space_magic": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": ["firebolt"],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "vilasa": {
+      "id": "vilasa",
+      "name": "Vilasa",
+      "race": "shaza",
+      "background": "noble",
+      "flavor_text": "Boredom is a dangerous condition in a man without constraints and an unshakeable certainty of his own superiority. He passed through every conventional pleasure and kept going. By the end, the only question was what came next.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "persuasion": 5,
+        "guile": 4,
+        "black_magic": 3
+      },
+      "fixed_starter": {
+        "skills": { "persuasion": 2, "guile": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_katar", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "marmajna": {
+      "id": "marmajna",
+      "name": "Marmajna",
+      "race": "shaza",
+      "background": "healer",
+      "flavor_text": "A physician of genuine skill who understood the body as a system of resources. He began with cadavers. The logic that followed was, he still insists, impeccable. Exactly where the line was — he is still working on that.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "medicine": 5,
+        "alchemy": 4,
+        "sorcery": 3
+      },
+      "fixed_starter": {
+        "skills": { "medicine": 2, "alchemy": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "bone_dagger", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": ["health_potion", "health_potion"]
+    },
+
+    "kripana": {
+      "id": "kripana",
+      "name": "Kripana",
+      "race": "yidag",
+      "background": "merchant",
+      "flavor_text": "A wealthy man who spent nothing, ate little, and wore his clothing until it dissolved. He died sitting on his gold. In the hungry ghost realm, the gold is gone. The hunger is not.",
+      "portrait": "",
+      "recruitment_cost": 500,
+      "build_weights": {
+        "trade": 5,
+        "thievery": 4,
+        "daggers": 3
+      },
+      "fixed_starter": {
+        "skills": { "trade": 2 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "bone_dagger", "off": "" }
+      },
+      "fixed_items": []
+    },
+
+    "nurse_bones": {
+      "id": "nurse_bones",
+      "name": "Nurse Bones",
+      "race": "skeleton",
+      "background": "healer",
+      "flavor_text": "Non-violent by choice. She patches up whoever needs patching up, including enemies, which the party finds occasionally inconvenient.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "white_magic": 5,
+        "medicine": 4,
+        "grace": 3
+      },
+      "fixed_starter": {
+        "skills": { "white_magic": 2, "medicine": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": ["lesser_heal"],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": ["health_potion"]
+    },
+
+    "hustle_bones": {
+      "id": "hustle_bones",
+      "name": "Hustle Bones",
+      "race": "skeleton",
+      "background": "merchant",
+      "flavor_text": "Has traded his finger joints for better deals, his ribs for bulk discounts, and one femur for something he won't discuss. Still in profit, last he checked.",
+      "portrait": "",
+      "recruitment_cost": 650,
+      "build_weights": {
+        "trade": 5,
+        "logistics": 4,
+        "earth_magic": 3
+      },
+      "fixed_starter": {
+        "skills": { "trade": 2, "logistics": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "prashan": {
+      "id": "prashan",
+      "name": "Prashan",
+      "race": "vetala",
+      "background": "scholar",
+      "flavor_text": "Spent centuries asking riddles at crossroads. When the charnel grounds ran short of interesting passersby, he went looking for them. He is still looking for the question no one can answer.",
+      "portrait": "",
+      "recruitment_cost": 800,
+      "build_weights": {
+        "learning": 5,
+        "ritual": 3,
+        "persuasion": 4
+      },
+      "fixed_starter": {
+        "skills": { "ritual": 2, "persuasion": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "temba": {
+      "id": "temba",
+      "name": "Temba",
+      "race": "dralha",
+      "background": "warrior",
+      "flavor_text": "Outcast at twelve. Followed at twenty. United the clans at thirty-five through sheer force of demonstrated possibility — showing them what happened when people stopped fighting each other long enough to eat. He never stopped being the outcast kid trying to feed people through a bad winter.",
+      "portrait": "",
+      "recruitment_cost": 850,
+      "build_weights": {
+        "leadership": 5,
+        "swords": 4,
+        "armor": 3
+      },
+      "fixed_starter": {
+        "skills": { "swords": 2, "armor": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_khanda", "off": "" },
+        "chest": "chainmail"
+      },
+      "fixed_items": []
+    },
+
+    "iron_oath": {
+      "id": "iron_oath",
+      "name": "Iron Oath",
+      "race": "skeleton_iron",
+      "background": "former_soldier",
+      "flavor_text": "His commanding officer fell in battle three hundred years ago. The order to stand down was never transmitted. He kept his post. He is not pleased about having been relieved of it.",
+      "portrait": "",
+      "recruitment_cost": 650,
+      "build_weights": {
+        "swords": 5,
+        "might": 4,
+        "armor": 3
+      },
+      "fixed_starter": {
+        "skills": { "swords": 2, "armor": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_khanda", "off": "" },
+        "chest": "chainmail"
+      },
+      "fixed_items": []
+    },
+
+    "the_chronicler": {
+      "id": "the_chronicler",
+      "name": "The Chronicler",
+      "race": "skeleton_turquoise",
+      "background": "bone_dancer",
+      "flavor_text": "Remembers the genealogies of peoples who left no other trace anywhere in the six worlds. Recites them anyway. Someone has to.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "learning": 5,
+        "performance": 3,
+        "comedy": 3
+      },
+      "fixed_starter": {
+        "skills": { "learning": 2, "comedy": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "nyingje": {
+      "id": "nyingje",
+      "name": "Nyingje",
+      "race": "skeleton_silver",
+      "background": "monk",
+      "flavor_text": "Made a vow to remain until every being in this realm found its way out. Still here. Still trying. Probably the oldest being in the charnel grounds, and the least troubled by it.",
+      "portrait": "",
+      "recruitment_cost": 800,
+      "build_weights": {
+        "yoga": 5,
+        "white_magic": 4,
+        "medicine": 3
+      },
+      "fixed_starter": {
+        "skills": { "yoga": 2 },
+        "known_spells": []
+      },
+      "fixed_spells": ["lesser_heal"],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "monks_robe"
+      },
+      "fixed_items": ["health_potion"]
+    },
+
+    "shantipala": {
+      "id": "shantipala",
+      "name": "Shantipala",
+      "race": "skeleton_copper",
+      "background": "courtier",
+      "flavor_text": "Brokered peace between enemies by naming what each side secretly needed and daring them to deny it out loud. Now performs the same service at the Skeleton King's copper mirror court, with mixed results.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "persuasion": 5,
+        "leadership": 4,
+        "fire_magic": 3
+      },
+      "fixed_starter": {
+        "skills": { "leadership": 2, "persuasion": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "peldon": {
+      "id": "peldon",
+      "name": "Peldon",
+      "race": "skeleton_golden",
+      "background": "merchant",
+      "flavor_text": "Ran the village market for forty years. Knew every price, every shortage, every family's circumstances. Indispensable and invisible in equal measure. She finds she cannot stop being useful.",
+      "portrait": "",
+      "recruitment_cost": 600,
+      "build_weights": {
+        "logistics": 5,
+        "trade": 4,
+        "medicine": 3
+      },
+      "fixed_starter": {
+        "skills": { "logistics": 2, "medicine": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "bone_dagger", "off": "" },
+        "chest": "leather_vest"
+      },
+      "fixed_items": []
+    },
+
+    "choki": {
+      "id": "choki",
+      "name": "Chöki",
+      "race": "dre",
+      "background": "wanderer",
+      "flavor_text": "Left to gather in the forest. Came back to find the village gone — a flash flood, no warning, nothing left. Drowned herself in the same river three days later. Still here, still not sure what she is waiting for.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "water_magic": 5,
+        "enchantment": 4,
+        "logistics": 3
+      },
+      "fixed_starter": {
+        "skills": { "water_magic": 2, "logistics": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "nangwa": {
+      "id": "nangwa",
+      "name": "Nangwa",
+      "race": "dre",
+      "background": "scholar",
+      "flavor_text": "Died mid-sentence, mid-proof, mid-thought. The argument is almost certainly sound. He just needs a moment to finish it. He has needed this moment for quite some time now.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "learning": 5,
+        "space_magic": 4,
+        "enchantment": 3
+      },
+      "fixed_starter": {
+        "skills": { "learning": 2, "space_magic": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "drupchen": {
+      "id": "drupchen",
+      "name": "Drupchen",
+      "race": "rolang",
+      "background": "monk",
+      "flavor_text": "Performed every ritual, recited every text, accumulated every merit point. Believed none of it. He is in the hungry ghost realm, which he finds philosophically interesting now that he can no longer attribute it to coincidence.",
+      "portrait": "",
+      "recruitment_cost": 650,
+      "build_weights": {
+        "ritual": 5,
+        "yoga": 3,
+        "maces": 3
+      },
+      "fixed_starter": {
+        "skills": { "ritual": 2, "yoga": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "iron_mace", "off": "" },
+        "chest": "monks_robe"
+      },
+      "fixed_items": []
+    },
+
+    "khedrup": {
+      "id": "khedrup",
+      "name": "Khedrup",
+      "race": "preserved",
+      "background": "charnel_yogi",
+      "flavor_text": "Treated the dharma as a system to be optimized. Found every multiplying formula, every auspicious day, every legitimate shortcut. He preserved himself flawlessly. He is still in the hungry ghost realm. He is reviewing his calculations.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "alchemy": 5,
+        "ritual": 4,
+        "black_magic": 3
+      },
+      "fixed_starter": {
+        "skills": { "ritual": 2, "sorcery": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 1 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "monks_robe"
+      },
+      "fixed_items": []
+    },
+
+    "yasha": {
+      "id": "yasha",
+      "name": "Yasha",
+      "race": "yidag",
+      "background": "bone_dancer",
+      "flavor_text": "Always one performance away from being truly seen, truly remembered. Still performing. The halls are empty now but the hunger for recognition does not consult the audience.",
+      "portrait": "",
+      "recruitment_cost": 550,
+      "build_weights": {
+        "performance": 5,
+        "persuasion": 4,
+        "comedy": 3
+      },
+      "fixed_starter": {
+        "skills": { "performance": 2, "persuasion": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 0 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "durvasa": {
+      "id": "durvasa",
+      "name": "Durvasa",
+      "race": "gyelpo",
+      "background": "sorcerer",
+      "flavor_text": "Professional curse-caster, contract work only, reliable until his final commission. His target had a solid practice of the Devourer of Curses. The invoice was never collected.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "sorcery": 5,
+        "air_magic": 4,
+        "ritual": 3
+      },
+      "fixed_starter": {
+        "skills": { "sorcery": 2, "air_magic": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 2 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "cloth_robe"
+      },
+      "fixed_items": []
+    },
+
+    "gomchen": {
+      "id": "gomchen",
+      "name": "Gomchen",
+      "race": "gyelpo",
+      "background": "monk",
+      "flavor_text": "A master of ten thousand sutras who found that political dominance within the monastery walls required a different kind of mastery. He acquired it. He was very good at it. He is here.",
+      "portrait": "",
+      "recruitment_cost": 850,
+      "build_weights": {
+        "ritual": 5,
+        "sorcery": 4,
+        "leadership": 3
+      },
+      "fixed_starter": {
+        "skills": { "sorcery": 1, "leadership": 1 },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": { "count": 2 },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_set_1": { "main": "wooden_staff", "off": "" },
+        "chest": "monks_robe"
+      },
+      "fixed_items": []
     }
   }
 }

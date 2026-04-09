@@ -127,6 +127,7 @@ Last Updated: 2026-04-05
 
 ### Companions
 - [ ] Camp Followers system — UI stub exists in Party tab (`_update_followers_list()`); no backend
+- [ ] Bespoke recruitment events for HG companions — organic recruitment outside shops; not every companion needs one, priority targets: Mehr (golden glint in the dark), Chöki (near still water), Nangwa (haunting a ruined library), Prashan (riddle challenge), Nyingje (found tending other undead), Khedrup (mid-recitation on an auspicious rock), Rasabhava (preservation lab, examine his notes), Durvasa (bound by reflected curse, Air magic / Ritual to stabilize), Gomchen (meditating amid binding contracts)
 
 ---
 
@@ -162,6 +163,8 @@ Last Updated: 2026-04-05
 ### Content
 - [ ] More consumable items — no realm-specific variants currently
 - [ ] Cursed equipment — "cursed" is only a status effect/terrain type; no cursed items in items.json
+- [ ] Astrological spells for Space magic school — divination/prophecy flavor; celestial mechanics (eclipses, conjunctions as triggers or effects); motivates Sun Priestess companion's Space magic skills
+- [ ] Paushtikakarma spells for Earth magic school — wealth multiplication, prosperity, dowsing for buried goods/ore; gives mechanical teeth to trade/merchant builds (Hustle Bones companion, Trade+Earth magic synergy)
 
 ### Audio
 - [ ] Background music per realm
