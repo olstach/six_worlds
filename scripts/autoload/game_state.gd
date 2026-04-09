@@ -207,11 +207,12 @@ func has_reached_final_realm() -> bool:
 ## Advance the time clock by the given number of hours.
 ## Fires day_changed when the day counter increments.
 func advance_time(hours: int) -> void:
+	if hours <= 0:
+		return
 	var old_day: int = current_day
 	hours_elapsed += hours
-	var new_day: int = current_day
-	if new_day > old_day:
-		day_changed.emit(new_day)
+	if current_day > old_day:
+		day_changed.emit(current_day)
 
 ## Returns the time-of-day label for the current hour.
 func get_time_of_day_label() -> String:
