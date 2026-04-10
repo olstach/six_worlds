@@ -1903,7 +1903,7 @@
                         "rarity": "uncommon",
                         "weight": 0,
                         "value": 60,
-                        "description": "A consecrated prayer bead of moderate power.",
+                        "description": "A consecrated prayer bead fashioned from a sacred tree.",
                         "effect": {
                                 "school": "white",
                                 "mana_reduction": 0.3,
@@ -1917,7 +1917,7 @@
                         "rarity": "rare",
                         "weight": 0,
                         "value": 100,
-                        "description": "A sanctified relic that amplifies divine magic.",
+                        "description": "A pill of herbs, incense ashes and rare charms, empowered in a long ceremony.",
                         "effect": {
                                 "school": "white",
                                 "mana_reduction": 0.45,
@@ -1931,7 +1931,7 @@
                         "rarity": "epic",
                         "weight": 0,
                         "value": 160,
-                        "description": "A sacred relic radiating divine light. Greatly empowers White magic.",
+                        "description": "A pearl found among the cremation ashes of a liberated practitioner.",
                         "effect": {
                                 "school": "white",
                                 "mana_reduction": 0.6,
@@ -1959,7 +1959,7 @@
                         "rarity": "uncommon",
                         "weight": 0,
                         "value": 60,
-                        "description": "A flickering ember charm of moderate intensity.",
+                        "description": "A small red crystal, glowing softly and warm to the touch.",
                         "effect": {
                                 "school": "fire",
                                 "mana_reduction": 0.3,
@@ -1973,7 +1973,7 @@
                         "rarity": "rare",
                         "weight": 0,
                         "value": 100,
-                        "description": "A blazing cinder that intensifies flame magic.",
+                        "description": "A supernaturally crimson scale off the tail of a lizard yogini from the Sun.",
                         "effect": {
                                 "school": "fire",
                                 "mana_reduction": 0.45,
@@ -1987,7 +1987,7 @@
                         "rarity": "epic",
                         "weight": 0,
                         "value": 160,
-                        "description": "A shard of elemental flame. Vastly empowers Fire magic.",
+                        "description": "A phial with a flicker of elemental flame that never goes out.",
                         "effect": {
                                 "school": "fire",
                                 "mana_reduction": 0.6,
@@ -2001,7 +2001,7 @@
                         "rarity": "common",
                         "weight": 0,
                         "value": 30,
-                        "description": "A polished stone inscribed with earthen runes. Reduces the mana cost of your next Earth spell.",
+                        "description": "A piece of fossilized wood inscribed with a mantra of Prithivi. Reduces the mana cost of your next Earth spell.",
                         "effect": {
                                 "school": "earth",
                                 "mana_reduction": 0.15,
@@ -2043,7 +2043,7 @@
                         "rarity": "epic",
                         "weight": 0,
                         "value": 160,
-                        "description": "A fragment of the World Mountain. Vastly empowers Earth magic.",
+                        "description": "A golden chip off Sumeru, the World Mountain. Vastly empowers Earth magic.",
                         "effect": {
                                 "school": "earth",
                                 "mana_reduction": 0.6,
@@ -2057,7 +2057,7 @@
                         "rarity": "common",
                         "weight": 0,
                         "value": 30,
-                        "description": "A vial of enchanted dew. Reduces the mana cost of your next Water spell.",
+                        "description": "A phial of dew gathered on the first morning of the year. Reduces the mana cost of your next Water spell.",
                         "effect": {
                                 "school": "water",
                                 "mana_reduction": 0.15,
@@ -2085,7 +2085,7 @@
                         "rarity": "common",
                         "weight": 0,
                         "value": 30,
-                        "description": "A shard of void crystal. Reduces the mana cost of your next Space spell.",
+                        "description": "A small namkha woven of white and sky-blue thread. Reduces the mana cost of your next Space spell.",
                         "effect": {
                                 "school": "space",
                                 "mana_reduction": 0.15,
@@ -2127,7 +2127,7 @@
                         "rarity": "common",
                         "weight": 0,
                         "value": 30,
-                        "description": "A woven cord of binding thread. Reduces the mana cost of your next Enchantment spell.",
+                        "description": "A little jar of colorful powder. Reduces the mana cost of your next Enchantment spell.",
                         "effect": {
                                 "school": "enchantment",
                                 "mana_reduction": 0.15,
@@ -2141,7 +2141,7 @@
                         "rarity": "common",
                         "weight": 0,
                         "value": 30,
-                        "description": "A clay figurine of a spirit beast. Reduces the mana cost of your next Summoning spell.",
+                        "description": "A clay figurine of a spirit deer. Reduces the mana cost of your next Summoning spell.",
                         "effect": {
                                 "school": "summoning",
                                 "mana_reduction": 0.15,
@@ -12366,7 +12366,7 @@
                         "rarity": "rare",
                         "weight": 0,
                         "value": 100,
-                        "description": "A thunderstone from the peak of a holy mountain. Smells faintly of lightning.",
+                        "description": "A thunderstone from the peak of a holy mountain, smelling faintly of ozone.",
                         "effect": {
                                 "school": "air",
                                 "mana_reduction": 0.45,
@@ -12380,7 +12380,7 @@
                         "rarity": "epic",
                         "weight": 0,
                         "value": 160,
-                        "description": "A storm-spirit's wing-tip, bound in silver wire. Carrying it changes the weather slightly.",
+                        "description": "A lightning in a bottle, sealed safely with empowered silver wire.",
                         "effect": {
                                 "school": "air",
                                 "mana_reduction": 0.6,
@@ -12408,7 +12408,7 @@
                         "rarity": "rare",
                         "weight": 0,
                         "value": 100,
-                        "description": "A shard of shadow-glass from the Bardo. Leaches light from nearby flames.",
+                        "description": "A shard of a gyalpo sorcerer's magic mirror. Leaches light from nearby flames.",
                         "effect": {
                                 "school": "black",
                                 "mana_reduction": 0.45,
@@ -12422,7 +12422,7 @@
                         "rarity": "epic",
                         "weight": 0,
                         "value": 160,
-                        "description": "A death-lord's seal, stripped from a condemned warlord. Heavier than it looks.",
+                        "description": "A talismanic seal stripped from a dead rakshasa warlord. Heavier than it looks.",
                         "effect": {
                                 "school": "black",
                                 "mana_reduction": 0.6,
@@ -12436,7 +12436,7 @@
                         "rarity": "uncommon",
                         "weight": 0,
                         "value": 60,
-                        "description": "A chip of glacial ice that never melts. Slows the mana burn of Water spells.",
+                        "description": "A chip of glacial ice that never melts.",
                         "effect": {
                                 "school": "water",
                                 "mana_reduction": 0.3,
@@ -12450,7 +12450,7 @@
                         "rarity": "rare",
                         "weight": 0,
                         "value": 100,
-                        "description": "A pearl formed in cold mountain springs. Warm to the touch, cold at the heart.",
+                        "description": "A pearl formed in cold mountain springs, so clear it is almost translucent.",
                         "effect": {
                                 "school": "water",
                                 "mana_reduction": 0.45,
@@ -12464,7 +12464,7 @@
                         "rarity": "epic",
                         "weight": 0,
                         "value": 160,
-                        "description": "A drop of primordial water sealed in amber. The amber is always cold.",
+                        "description": "A drop of water from the primordial ocean sealed in amber.",
                         "effect": {
                                 "school": "water",
                                 "mana_reduction": 0.6,
@@ -12478,7 +12478,7 @@
                         "rarity": "uncommon",
                         "weight": 0,
                         "value": 60,
-                        "description": "A fragment of shattered mirror from a teleportation mishap. Distance folds around it.",
+                        "description": "A looking glass, through which distance seems slightly different each time one looks.",
                         "effect": {
                                 "school": "space",
                                 "mana_reduction": 0.3,
@@ -12492,7 +12492,7 @@
                         "rarity": "rare",
                         "weight": 0,
                         "value": 100,
-                        "description": "A lens ground from compressed void. Through it, walls look thinner.",
+                        "description": "A piece of strangely light crystal, brought over from a dream. Through it, walls look thinner.",
                         "effect": {
                                 "school": "space",
                                 "mana_reduction": 0.45,
@@ -12506,7 +12506,7 @@
                         "rarity": "epic",
                         "weight": 0,
                         "value": 160,
-                        "description": "A splinter from the axis mundi. Space bends slightly wherever it is held.",
+                        "description": "A small bubble of perfect void, encased in a star sapphire.",
                         "effect": {
                                 "school": "space",
                                 "mana_reduction": 0.6,
@@ -12520,7 +12520,7 @@
                         "rarity": "uncommon",
                         "weight": 0,
                         "value": 60,
-                        "description": "A copper sigil etched with a finishing syllable. The sound of it is almost audible.",
+                        "description": "A planetary sigil sealed in copper. When you put your ear to it, you can hear the seed syllable in its hum.",
                         "effect": {
                                 "school": "sorcery",
                                 "mana_reduction": 0.3,
@@ -12534,7 +12534,7 @@
                         "rarity": "rare",
                         "weight": 0,
                         "value": 100,
-                        "description": "A compressed spell-knot from a battle sorcerer's kit. Still crackles with residual discharge.",
+                        "description": "A compressed spell-knot from a battle sorcerer's kit.",
                         "effect": {
                                 "school": "sorcery",
                                 "mana_reduction": 0.45,
@@ -12548,7 +12548,7 @@
                         "rarity": "epic",
                         "weight": 0,
                         "value": 160,
-                        "description": "A sorcerer's last breath, sealed in lacquer. The power in it is ready to go somewhere.",
+                        "description": "A mahasiddha's last breath, sealed in lacquer.",
                         "effect": {
                                 "school": "sorcery",
                                 "mana_reduction": 0.6,
@@ -12562,7 +12562,7 @@
                         "rarity": "uncommon",
                         "weight": 0,
                         "value": 60,
-                        "description": "A braided talisman of consecrated silk. The knots hold enchantment well.",
+                        "description": "A braided talisman of consecrated silk.",
                         "effect": {
                                 "school": "enchantment",
                                 "mana_reduction": 0.3,
@@ -12576,7 +12576,7 @@
                         "rarity": "rare",
                         "weight": 0,
                         "value": 100,
-                        "description": "An ancient binding-thread still humming with woven intent. Difficult to untie.",
+                        "description": "A little hibiscus flower, forever fresh and fragrant.",
                         "effect": {
                                 "school": "enchantment",
                                 "mana_reduction": 0.45,
@@ -12590,7 +12590,7 @@
                         "rarity": "epic",
                         "weight": 0,
                         "value": 160,
-                        "description": "A master enchanter's final working, compressed to a hand-sized form. Still active.",
+                        "description": "The string from a gandharva's sitar, woven into an ornamental loop.",
                         "effect": {
                                 "school": "enchantment",
                                 "mana_reduction": 0.6,
@@ -12604,7 +12604,7 @@
                         "rarity": "uncommon",
                         "weight": 0,
                         "value": 60,
-                        "description": "A clay tablet marked with a spirit's true name. The clay is slightly warm.",
+                        "description": "A doll depicting a guardian deity, filled with herbs and paper talismans.",
                         "effect": {
                                 "school": "summoning",
                                 "mana_reduction": 0.3,
@@ -12618,7 +12618,7 @@
                         "rarity": "rare",
                         "weight": 0,
                         "value": 100,
-                        "description": "A binding coin from a spirit pact. One side shows a creature; the other shows nothing.",
+                        "description": "A binding coin from a great chieftain's burial mound.",
                         "effect": {
                                 "school": "summoning",
                                 "mana_reduction": 0.45,
@@ -12632,7 +12632,7 @@
                         "rarity": "epic",
                         "weight": 0,
                         "value": 160,
-                        "description": "A summoner's compact \u2014 the kind spirits actually respect. Ancient ink, still binding.",
+                        "description": "A small scroll of otherworldly writing on sky-blue silk, bound in a dakini's hair.",
                         "effect": {
                                 "school": "summoning",
                                 "mana_reduction": 0.6,
