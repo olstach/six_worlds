@@ -513,7 +513,12 @@
         "scroll_bless": 1,
         "scroll_magic_missile": 1,
         "scroll_voidbolt": 1,
-        "rations": 5
+        "rations": 5,
+        "white_charm_common": 2,
+        "space_charm_common": 2,
+        "air_charm_common": 1,
+        "fire_charm_common": 1,
+        "fire_charm_middling": 1
       },
       "spells": [
         "lesser_heal",
@@ -634,7 +639,12 @@
         "scroll_magic_missile": 1,
         "scroll_voidbolt": 1,
         "scroll_slow": 1,
-        "bone_dagger": 2
+        "bone_dagger": 2,
+        "fire_charm_common": 2,
+        "black_charm_common": 2,
+        "sorcery_charm_common": 2,
+        "white_charm_common": 1,
+        "earth_charm_common": 1
       },
       "spells": [
         "firebolt",
@@ -740,7 +750,9 @@
         "herb_bundle": 5,
         "raw_reagents": 4,
         "oak_staff": 1,
-        "rations": 5
+        "rations": 5,
+        "earth_charm_common": 2,
+        "earth_charm_middling": 1
       },
       "spells": [],
       "training": {
@@ -760,7 +772,10 @@
         "mana_potion": 3,
         "herb_bundle": 4,
         "cloth_robe": 1,
-        "rations": 5
+        "rations": 5,
+        "water_charm_common": 2,
+        "earth_charm_common": 1,
+        "white_charm_common": 1
       },
       "spells": [],
       "training": {
@@ -779,7 +794,9 @@
       "items": {
         "prayer_beads": 3,
         "cloth_robe": 1,
-        "rations": 5
+        "rations": 5,
+        "air_charm_common": 2,
+        "air_charm_middling": 1
       },
       "spells": [],
       "training": {
@@ -798,7 +815,10 @@
       "items": {
         "prayer_beads": 4,
         "raw_reagents": 3,
-        "rations": 5
+        "rations": 5,
+        "white_charm_common": 2,
+        "white_charm_middling": 1,
+        "space_charm_common": 1
       },
       "spells": [],
       "training": {
@@ -817,7 +837,9 @@
       "items": {
         "prayer_beads": 3,
         "cloth_hood": 1,
-        "rations": 5
+        "rations": 5,
+        "space_charm_common": 2,
+        "water_charm_common": 1
       },
       "spells": [],
       "training": {
@@ -856,7 +878,10 @@
         "raw_reagents": 5,
         "prayer_beads": 2,
         "cloth_robe": 1,
-        "rations": 5
+        "rations": 5,
+        "summoning_charm_common": 2,
+        "enchantment_charm_common": 2,
+        "summoning_charm_middling": 1
       },
       "spells": [],
       "training": {
@@ -896,7 +921,9 @@
         "fire_bomb": 3,
         "flame_oil": 4,
         "ember_core": 2,
-        "rations": 5
+        "rations": 5,
+        "fire_charm_common": 3,
+        "fire_charm_middling": 1
       },
       "spells": [],
       "training": {
@@ -916,7 +943,11 @@
         "poison_bomb": 3,
         "alchemists_pouch": 3,
         "raw_reagents": 5,
-        "rations": 5
+        "rations": 5,
+        "black_charm_common": 2,
+        "black_charm_middling": 1,
+        "sorcery_charm_common": 2,
+        "fire_charm_common": 1
       },
       "spells": [],
       "training": {
@@ -954,7 +985,10 @@
       "items": {
         "rations": 5,
         "black_charm_common": 2,
-        "water_charm_common": 2
+        "black_charm_middling": 1,
+        "black_charm_rare": 1,
+        "water_charm_common": 2,
+        "water_charm_middling": 1
       },
       "spells": [
         "curse",
@@ -985,7 +1019,9 @@
         "herb_bundle": 5,
         "health_potion": 3,
         "antidote": 3,
-        "raw_reagents": 2
+        "raw_reagents": 2,
+        "white_charm_common": 1,
+        "earth_charm_common": 1
       },
       "spells": [],
       "training": {
@@ -1106,7 +1142,10 @@
       "items": {
         "rations": 5,
         "white_charm_common": 2,
-        "black_charm_common": 2
+        "black_charm_common": 2,
+        "white_charm_middling": 1,
+        "earth_charm_common": 1,
+        "water_charm_common": 1
       },
       "spells": [
         "lesser_heal",
@@ -1321,7 +1360,10 @@
         "firebomb": 2,
         "smoke_bomb": 2,
         "acid_flask": 2,
-        "rations": 4
+        "rations": 4,
+        "fire_charm_common": 2,
+        "earth_charm_common": 2,
+        "water_charm_common": 2
       },
       "spells": [],
       "training": {
@@ -1355,7 +1397,11 @@
         "mana_potion": 2,
         "antidote": 2,
         "whetstone_oil": 2,
-        "sovereign_oil": 1
+        "sovereign_oil": 1,
+        "fire_charm_rare": 1,
+        "black_charm_rare": 1,
+        "space_charm_rare": 1,
+        "sorcery_charm_rare": 1
       },
       "spells": [],
       "training": {
@@ -1371,11 +1417,15 @@
       "buys_items": false,
       "items": {
         "white_charm_common": 2,
+        "white_charm_middling": 1,
         "black_charm_common": 2,
+        "black_charm_middling": 1,
         "space_charm_common": 2,
+        "space_charm_middling": 1,
         "sorcery_charm_common": 2,
-        "enchantment_charm_common": 2,
-        "summoning_charm_common": 2
+        "sorcery_charm_middling": 1,
+        "enchantment_charm_common": 1,
+        "summoning_charm_common": 1
       },
       "spells": [
         "minor_heal",

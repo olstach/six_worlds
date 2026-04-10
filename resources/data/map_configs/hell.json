@@ -824,9 +824,14 @@
               "value": [
                 "fire_charm_common",
                 "black_charm_common",
-                "sorcery_charm_common",
                 "white_charm_common",
-                "earth_charm_common"
+                "earth_charm_common",
+                "water_charm_common",
+                "air_charm_common",
+                "space_charm_common",
+                "sorcery_charm_common",
+                "enchantment_charm_common",
+                "summoning_charm_common"
               ]
             }
           ],
@@ -994,7 +999,7 @@
         {
           "name": "Frozen Offering",
           "icon": "treasure",
-          "message": "Someone left food for the shades. It's still edible — barely.",
+          "message": "Someone left food for the shades. It's still edible \u2014 barely.",
           "rewards": [
             {
               "type": "food",
@@ -1731,9 +1736,18 @@
               "value": [
                 "fire_charm_common",
                 "black_charm_common",
-                "sorcery_charm_common",
                 "white_charm_common",
-                "earth_charm_common"
+                "earth_charm_common",
+                "water_charm_common",
+                "air_charm_common",
+                "space_charm_common",
+                "sorcery_charm_common",
+                "enchantment_charm_common",
+                "summoning_charm_common",
+                "fire_charm_middling",
+                "black_charm_middling",
+                "sorcery_charm_middling",
+                "earth_charm_middling"
               ]
             }
           ],

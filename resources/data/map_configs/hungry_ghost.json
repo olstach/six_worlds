@@ -77,7 +77,7 @@
       ]
     },
     {
-      "_comment": "Top-right section. Final zone — reached by going UP through the horizontal wall from the graveyard.",
+      "_comment": "Top-right section. Final zone \u2014 reached by going UP through the horizontal wall from the graveyard.",
       "id": "charnel_grounds",
       "rows": [
         0,
@@ -185,7 +185,7 @@
       }
     },
     {
-      "_comment": "Guards the vertical wall pass (swamp → graveyard crossing).",
+      "_comment": "Guards the vertical wall pass (swamp \u2192 graveyard crossing).",
       "type": "pass_guardian",
       "zone": "vertical_divider",
       "position": "at_pass",
@@ -196,7 +196,7 @@
       }
     },
     {
-      "_comment": "Guards the horizontal wall pass (graveyard → charnel grounds crossing).",
+      "_comment": "Guards the horizontal wall pass (graveyard \u2192 charnel grounds crossing).",
       "type": "pass_guardian",
       "zone": "horizontal_divider",
       "position": "at_pass",
@@ -819,11 +819,16 @@
             {
               "type": "item_random",
               "value": [
-                "water_charm_common",
+                "fire_charm_common",
                 "black_charm_common",
                 "white_charm_common",
                 "earth_charm_common",
-                "sorcery_charm_common"
+                "water_charm_common",
+                "air_charm_common",
+                "space_charm_common",
+                "sorcery_charm_common",
+                "enchantment_charm_common",
+                "summoning_charm_common"
               ]
             }
           ],
@@ -1473,7 +1478,13 @@
                 "scroll_lesser_heal",
                 "scroll_wind_step",
                 "fire_charm_common",
-                "white_charm_common"
+                "white_charm_common",
+                "black_charm_common",
+                "water_charm_common",
+                "earth_charm_common",
+                "air_charm_common",
+                "space_charm_common",
+                "sorcery_charm_common"
               ]
             }
           ],
@@ -1572,11 +1583,21 @@
             {
               "type": "item_random",
               "value": [
-                "water_charm_common",
+                "fire_charm_common",
                 "black_charm_common",
                 "white_charm_common",
                 "earth_charm_common",
-                "sorcery_charm_common"
+                "water_charm_common",
+                "air_charm_common",
+                "space_charm_common",
+                "sorcery_charm_common",
+                "enchantment_charm_common",
+                "summoning_charm_common",
+                "water_charm_middling",
+                "black_charm_middling",
+                "white_charm_middling",
+                "earth_charm_middling",
+                "sorcery_charm_middling"
               ]
             }
           ],
@@ -2310,11 +2331,21 @@
             {
               "type": "item_random",
               "value": [
-                "water_charm_common",
-                "black_charm_common",
-                "white_charm_common",
-                "earth_charm_common",
-                "sorcery_charm_common"
+                "fire_charm_middling",
+                "black_charm_middling",
+                "white_charm_middling",
+                "earth_charm_middling",
+                "water_charm_middling",
+                "air_charm_middling",
+                "space_charm_middling",
+                "sorcery_charm_middling",
+                "enchantment_charm_middling",
+                "summoning_charm_middling",
+                "water_charm_rare",
+                "black_charm_rare",
+                "white_charm_rare",
+                "earth_charm_rare",
+                "sorcery_charm_rare"
               ]
             }
           ],
