@@ -100,7 +100,7 @@ Five elemental pressure meters per character (−100 klesha ↔ +100 wisdom). Pr
 
 #### Open / Deferred
 - [ ] **Ritual implement traits** — special properties (e.g. conch pacification aura, bone life-drain proc, sky-iron void field) to be designed in a dedicated session
-- [ ] **Shop distribution** — no shops currently stock implements; add Plain/Blessed tier items to ritual-focused shops
+- [x] **Shop distribution** — Plain/Blessed implements added to 11 shops (hg_spell_shop, hg_charnel_sorcerer, hg_town_magic, hell_hidden_gompa, hell_yogini_circle, hell_circle_of_yoginis, hell_crossroads_stupa, hell_eternal_fire, hell_mirror_lake, hell_sacred_grove, hell_garuda_roost); added to zone-tier loot pools in hell + HG; 11 magic companions given school-appropriate plain implements.
 - [ ] **Spell Accuracy / Spell Projectiles** — deferred, leaving to ferment (see Design Questions)
 
 #### Other weapon mechanics wired this session
@@ -173,7 +173,7 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 - [ ] Map configs for remaining realms — only hell.json and hungry_ghost.json exist
 - [ ] Enemy archetypes + encounters for animal, human, asura, god realms (hungry_ghost done: 20 archetypes, 37 encounters)
 - [ ] Event files for remaining realms (animal, human, asura, god)
-- [ ] Companion definitions for remaining realms (companions.json has hell only)
+- [ ] Companion definitions for remaining realms (47 companions exist across hell + HG; animal, human, asura, god still empty)
 
 ### Companions
 - [ ] Camp Followers system — UI stub exists in Party tab (`_update_followers_list()`); no backend
@@ -187,7 +187,7 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 - [x] Base bonus tables complete for all 35 skills, levels 1–15 (11–15 = item-bonus cap, same value as 10)
 - [x] **Bug fixed**: parse_perks.py now expands `11–15` range rows into individual level keys — perk_system.gd's `str(level)` lookup was silently returning empty dict for levels 11–15
 - [ ] PERKS.md: fill empty perk tiers (levels 2, 4, 6, 8) — 1-2 perks per skill at each
-- [ ] Perk rebalancing — capstone perks should land at required_level 8-10 (distribution still front-loaded)
+- [x] Perk rebalancing — 29 required_level changes across fire, air, space, sorcery, black, summoning, ritual, yoga, enchantment, earth, water magic. Worst offenders (fire L3:6→3, air L5:5→2, space L5:5→3, sorcery L5:5→3) fixed. Strong capstones (dabbler, burn_the_breath, forced_translation, cyclone_mastery) moved to L8. All perk-chain dependencies preserved.
 - [ ] Add flavor text to perks that lack it
 
 **Deferred perks (need new systems before wiring):**
@@ -211,7 +211,8 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 - [ ] Tactical Assessment preset formations (Logistics 7 perk)
 
 ### Content
-- [ ] More consumable items — no realm-specific variants currently
+- [x] Magic-school charms — all 10 schools × 4 tiers (common/middling/rare/unique) complete with thematic descriptions; distributed across hell + HG shops, loot tables (tier-escalated by zone), and 24 magic-focused companion starting inventories
+- [ ] More consumable items — realm-specific potions, oils, scrolls still thin
 - [ ] Cursed equipment — "cursed" is only a status effect/terrain type; no cursed items in items.json
 - [ ] Astrological spells for Space magic school — divination/prophecy flavor; celestial mechanics (eclipses, conjunctions as triggers or effects); motivates Sun Priestess companion's Space magic skills
 - [ ] Paushtikakarma spells for Earth magic school — wealth multiplication, prosperity, dowsing for buried goods/ore; gives mechanical teeth to trade/merchant builds (Hustle Bones companion, Trade+Earth magic synergy)
@@ -234,7 +235,7 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 - [ ] Playtest hell realm end-to-end (combat, shops, events, quest board, portal transition)
 - [ ] Balance pass on spell mana costs (15/40/75/135/225 by level)
 - [ ] Test all 326 spells load and cast correctly
-- [ ] Item flavor text: `space_charm_common` and `rations` may show broken tooltip — needs in-game testing
+- [x] Item flavor text: `space_charm_common` and `rations` — tooltip code verified correct (charm effects shown at lines 139–158 item_tooltip.gd, supply info at 161–171). `space_charm_common` added to `hg_spell_shop`, `hg_charnel_sorcerer`, `hg_town_magic` so it is now reachable in-game.
 
 ---
 

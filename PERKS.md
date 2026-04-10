@@ -231,7 +231,7 @@ _Requires: Space 3_
 Single-target teleport spells also affect allies within 1 tile of the original target.
 
 **Forced Translation**
-_Requires: Space 5_
+_Requires: Space 8_
 Teleport spells may now target enemies (Focus save to resist). On success, enemies are displaced to a random adjacent tile rather than freely placed.
 
 **Everyone Is Somewhere Else Now**
@@ -241,7 +241,7 @@ Active (20 Mana, once per combat). A teleport spell affects all allies _or_ all 
 ---
 
 **Extended Binding**
-_Requires: Space 3_
+_Requires: Space 4_
 Single-target binding effects gain a 1-tile AoE.
 
 **No Escape**
@@ -263,7 +263,7 @@ Enemies hit by Space damage spells suffer -10% Focus and -3 Initiative for 2 tur
 ### Space Mantras
 
 **Diamond Nail Mantra**
-_Requires: Space 5_
+_Requires: Space 6_
 
 Ongoing effect (3-tile radius):
 Each turn, enemies suffer stacking -1 Movement, -10% teleport success, and -5% Dodge (stacks up to 5 times).
@@ -446,7 +446,7 @@ _Requires: Black 1_
 Lifesteal effects heal 25% more HP.
 
 **Shared Hunger**
-_Requires: Black 5, Blood Pact_
+_Requires: Black 4, Blood Pact_
 Vampiric/lifesteal buffs also affect allies within 2 tiles at 50% effectiveness.
 
 **Soul Feast**
@@ -483,7 +483,7 @@ All enemies in line of sight suffer -20% Attack, -20% Armor, -5 Initiative, and 
 ---
 
 **Mantra of the Blood Drinkers**
-_Requires: Black 5_
+_Requires: Black 7_
 
 Ongoing effect (line of sight):
 Enemies suffer stacking Black damage (5% Spellpower/turn, stacks up to 5 times). Damage dealt is reflected as healing to the caster and allies within 2 tiles.
@@ -593,7 +593,7 @@ _Requires: Yoga 9, Steadfast Spirit_
 Passing a saving throw against a status effect has a 50% chance to reflect it back to the caster.
 
 **Aegis of Tranquility**
-_Requires: Yoga 5_
+_Requires: Yoga 7_
 +20% resistance to all elemental damage.
 
 **Inner Focus**
@@ -613,7 +613,7 @@ Non-violent dialogue successes also improve karma (small hidden reduction to neg
 ---
 
 **Pacify the Confused**
-_Requires: Yoga 5_
+_Requires: Yoga 6_
 Active. Target enemy makes a Focus save. On failure, stops fighting for 2-4 turns. If combat ends during this time, the enemy does not re-engage. Full XP still granted.
 
 **Aura of Peace**
@@ -823,7 +823,7 @@ When you successfully Dodge, 50% chance to reposition behind the attacker, deali
 ---
 
 **Gust Step**
-_Requires: Air 1_
+_Requires: Air 2_
 Jump, Levitate, and Fly spells also grant +1 Movement and +2 Initiative for 2 turns.
 
 **Swift Zephyr**
@@ -843,17 +843,17 @@ _Requires: Air 1_
 Active (3 Mana). Buff the caster's Attack by +15% and crit chance by +10% for 2 turns.
 
 **Perfect Volley**
-_Requires: Air 5_
+_Requires: Air 6_
 Active (8 Mana). Allies within 2 tiles gain +15% ranged Attack and +10% crit chance for 2 turns.
 
 ---
 
 **Scattering Gust**
-_Requires: Air 1_
+_Requires: Air 4_
 Spells that push enemies also have a 25% chance of knockdown (Constitution save).
 
 **Cyclone Mastery**
-_Requires: Air 5, Scattering Gust_
+_Requires: Air 8, Scattering Gust_
 Push effects are 50% stronger (push 1 extra tile) and knockdown chance increases to 40%.
 
 ---
@@ -863,7 +863,7 @@ _Requires: Air 1_
 All your attacks deal an additional 10% of weapon damage as Air damage.
 
 **Chain Spark**
-_Requires: Air 5_
+_Requires: Air 7_
 Lightning spells have a 30% chance to chain to 1 additional target within 2 tiles for 50% damage.
 
 **Conduit of Rudra**
@@ -943,7 +943,7 @@ _Requires: Ritual 7_
 Spells that apply a status effect gain a secondary rider (choose one at time of casting): -1 Movement, -10% to one resistance, or -2 Initiative for 2 turns.
 
 **Dabbler**
-_Requires: Ritual 5_
+_Requires: Ritual 8_
 Unlock all level 1 spells from every school.
 
 ---
@@ -1467,7 +1467,7 @@ Passive. If a Fire spell deals no Burning but hits successfully, it still pushes
 _The pressure arrives before the heat._
 
 **Hungry Flames**
-_Requires: Fire 3_
+_Requires: Fire 5_
 Burning enemies have a 25% chance per turn to spread Burning (1 stack) to enemies within 1 tile.
 
 **Feed the Fire**
@@ -1491,7 +1491,7 @@ Enemies killed while burning leave behind a burning terrain effect (2 fire damag
 ---
 
 **Shared Heat**
-_Requires: Fire 3_
+_Requires: Fire 4_
 Fire enchantments (Burning Weapon, Bloodlust, Fan the Flames) gain a 1-tile AoE around the target.
 
 **Circle of Embers**
@@ -1547,7 +1547,7 @@ Fire summons gain a burning aura: enemies within 1 tile take 2 fire damage per t
 ### Fire Mantras
 
 **Mantra of the Lotus Blaze**
-_Requires: Fire 3_
+_Requires: Fire 6_
 
 Ongoing effect (line of sight):
 All enemies must pass increasingly difficult Constitution saves (starting DC 10, +2 per turn) or gain 1 stack of Burning.
@@ -1628,7 +1628,7 @@ Passive. Casting a spell without moving that turn grants +8% spellpower to the n
 _Rest is stored velocity._
 
 **Burn the Breath**
-_Requires: Sorcery 5_
+_Requires: Sorcery 8_
 Active. The next spell gains +100% Spellpower, but you take damage equal to 25% of the mana cost as HP loss. (Additive with other overcast effects.)
 
 **Say It Louder**
@@ -1668,7 +1668,7 @@ Enemies hit by Sorcery spells suffer -25% Initiative for 1 turn.
 ---
 
 **Short Words, Sharp Meaning**
-_Requires: Sorcery 5_
+_Requires: Sorcery 6_
 Sorcery spells can critically hit (15% chance, +50% damage).
 
 **No Follow-Up Needed**
@@ -2113,11 +2113,11 @@ Once per combat, when an ally would begin bleeding out, automatically cast a fre
 ---
 
 **Fog of War**
-_Requires: Water 3_
+_Requires: Water 4_
 Active (5 Mana). Create a fog bank in a 2-tile radius. Enemies inside suffer -20% accuracy. Ranged attacks and targeted spells cannot pass through fog. Lasts 3 turns.
 
 **Black Ice**
-_Requires: Water 5_
+_Requires: Water 6_
 Active (6 Mana). Create ice terrain in a 2-tile radius for 3 turns. Enemies moving through it must pass a Finesse save or fall prone. Allies are unaffected.
 
 **Water's Memory**
@@ -2147,7 +2147,7 @@ Active (once per combat, 15 Mana). All enemies in a 3-tile radius take Water dam
 ### Water Mantras
 
 **Mantra of the Medicine Buddha**
-_Requires: Water 3_
+_Requires: Water 5_
 
 Ongoing effect (3-tile radius):
 Each turn, the ally with the lowest HP% in radius regains increasing HP (5% Spellpower per stack, stacks up to 5). All allies gain +5% resistance to poison and disease per stack.
@@ -2201,7 +2201,7 @@ Buffs that affect a single stat also grant a +5% bonus to a related stat (Armor 
 ---
 
 **Generous Spirit**
-_Requires: Enchantment 3_
+_Requires: Enchantment 6_
 Single-target buffs can be split between 2 targets at 75% effectiveness each.
 
 **Spreading Warmth**
@@ -2243,7 +2243,7 @@ Active (8 Mana, once per combat). Double the effectiveness of all active buffs o
 ---
 
 **Reactive Shielding**
-_Requires: Enchantment 3_
+_Requires: Enchantment 4_
 When a buffed ally takes damage, 15% chance that the buff absorbs 25% of the damage instead.
 
 **Sympathetic Bond**
@@ -2266,7 +2266,7 @@ All allies gain +25% to all stats. Buffs on allies cannot be dispelled or overwr
 ---
 
 **Mantra of the Binding Word**
-_Requires: Enchantment 7_
+_Requires: Enchantment 8_
 
 Ongoing effect (line of sight):
 Each turn, enemies suffer a random minor debuff (-5% to a random stat). Debuffs are stacking and persist until the mantra ends.
@@ -2809,7 +2809,7 @@ _Requires: Earth 3_
 Earth damage spells have a 20% chance to apply Brittle (-15% Armor) for 2 turns.
 
 **Tremor**
-_Requires: Earth 3_
+_Requires: Earth 4_
 Earth AoE spells have a 25% chance to knock enemies prone (Finesse save negates).
 
 **Weight of the Mountain**
@@ -2823,11 +2823,11 @@ Active (once per combat, 12 Mana). Target enemy must pass a Constitution save at
 ---
 
 **Raise Wall**
-_Requires: Earth 3_
+_Requires: Earth 5_
 Active (6 Mana). Create a stone wall (3 tiles long, blocks movement and line of sight). Destructible (moderate HP). Lasts 4 turns.
 
 **Fortify Position**
-_Requires: Earth 5, Raise Wall_
+_Requires: Earth 6, Raise Wall_
 Allies adjacent to your stone walls gain +10% Armor and +10% resistance to ranged attacks.
 
 **Crumbling Avalanche**
@@ -2909,7 +2909,7 @@ _Requires: Summoning 1_
 Summons gain +10% damage resistance.
 
 **Empowered Creatures**
-_Requires: Summoning 3_
+_Requires: Summoning 4_
 Summons gain +15% Attack and +10% Damage.
 
 **Lasting Bond**
@@ -2923,7 +2923,7 @@ Your strongest active summon (highest base stats) gains +30% to all stats.
 ---
 
 **Strength in Numbers**
-_Requires: Summoning 3_
+_Requires: Summoning 6_
 You may maintain 1 additional summon active simultaneously.
 
 **Horde Master**
