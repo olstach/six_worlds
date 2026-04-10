@@ -831,7 +831,14 @@
                 "space_charm_common",
                 "sorcery_charm_common",
                 "enchantment_charm_common",
-                "summoning_charm_common"
+                "summoning_charm_common",
+                "plain_copper_dorje",
+                "plain_silver_dorje",
+                "plain_gold_dorje",
+                "plain_iron_dorje",
+                "plain_bronze_dorje",
+                "plain_conch_dorje",
+                "plain_bone_dorje"
               ]
             }
           ],
@@ -999,7 +1006,7 @@
         {
           "name": "Frozen Offering",
           "icon": "treasure",
-          "message": "Someone left food for the shades. It's still edible \u2014 barely.",
+          "message": "Someone left food for the shades. It's still edible — barely.",
           "rewards": [
             {
               "type": "food",
@@ -1636,7 +1643,13 @@
                 "frost_bomb",
                 "poison_bomb",
                 "flame_oil",
-                "frost_oil"
+                "frost_oil",
+                "plain_copper_dorje",
+                "plain_copper_drilbu",
+                "plain_copper_phurba",
+                "plain_copper_damaru",
+                "plain_copper_kangling",
+                "plain_copper_khatvanga"
               ]
             },
             {
@@ -1747,7 +1760,18 @@
                 "fire_charm_middling",
                 "black_charm_middling",
                 "sorcery_charm_middling",
-                "earth_charm_middling"
+                "earth_charm_middling",
+                "plain_copper_drilbu",
+                "plain_silver_drilbu",
+                "plain_gold_drilbu",
+                "plain_iron_drilbu",
+                "plain_bronze_drilbu",
+                "plain_conch_drilbu",
+                "plain_bone_drilbu",
+                "blessed_copper_dorje",
+                "blessed_iron_dorje",
+                "blessed_bone_khatvanga",
+                "blessed_bronze_drilbu"
               ]
             }
           ],

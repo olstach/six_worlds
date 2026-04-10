@@ -37,7 +37,7 @@
       "name": "Serji",
       "race": "red_devil",
       "background": "former_soldier",
-      "flavor_text": "The biggest man in the hot hell gym \u2014 and the one who walked out. Not because he won, but because winning there stopped meaning anything.",
+      "flavor_text": "The biggest man in the hot hell gym — and the one who walked out. Not because he won, but because winning there stopped meaning anything.",
       "portrait": "",
       "recruitment_cost": 650,
       "build_weights": {
@@ -166,7 +166,7 @@
       "name": "Tejasimha",
       "race": "red_devil",
       "background": "raider",
-      "flavor_text": "First matches, then houses, then whole districts. He died laughing in a fire he started \u2014 hearty, genuine laughter, right to the end.",
+      "flavor_text": "First matches, then houses, then whole districts. He died laughing in a fire he started — hearty, genuine laughter, right to the end.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
@@ -195,7 +195,8 @@
         "chest": "cloth_robe"
       },
       "fixed_items": [
-        "fire_charm_middling"
+        "fire_charm_middling",
+        "plain_copper_dorje"
       ]
     },
     "water_lily": {
@@ -314,7 +315,7 @@
       "name": "Niyamendra",
       "race": "blue_devil",
       "background": "noble",
-      "flavor_text": "Court bureaucrat of a petty king, who found his true calling in the invention of regulations. He can freeze any ordinary process in place \u2014 paperwork is eternal.",
+      "flavor_text": "Court bureaucrat of a petty king, who found his true calling in the invention of regulations. He can freeze any ordinary process in place — paperwork is eternal.",
       "portrait": "",
       "recruitment_cost": 600,
       "build_weights": {
@@ -415,10 +416,10 @@
     },
     "vayuvega": {
       "id": "vayuvega",
-      "name": "V\u0101yuvega",
+      "name": "Vāyuvega",
       "race": "green_devil",
       "background": "former_soldier",
-      "flavor_text": "Battle mage for a gang in life \u2014 a firm believer in hitting hard first and letting the questions sort themselves out among the survivors.",
+      "flavor_text": "Battle mage for a gang in life — a firm believer in hitting hard first and letting the questions sort themselves out among the survivors.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
@@ -446,12 +447,13 @@
         "chest": "cloth_robe"
       },
       "fixed_items": [
-        "air_charm_middling"
+        "air_charm_middling",
+        "plain_iron_dorje"
       ]
     },
     "angulimala": {
       "id": "angulimala",
-      "name": "Angulim\u0101la",
+      "name": "Angulimāla",
       "race": "green_devil",
       "background": "executioner",
       "flavor_text": "Executioner of a crime syndicate, known for a particular professional habit involving fingers. He is fast, precise, and oddly graceful about it.",
@@ -558,7 +560,7 @@
       "name": "Shiny Needle",
       "race": "yellow_devil",
       "background": "noble",
-      "flavor_text": "She prided herself on being the prettiest. When age threatened that, she found an elegant solution \u2014 draining the lifeforce of rivals through carefully rehearsed enchantments. She called it skincare.",
+      "flavor_text": "She prided herself on being the prettiest. When age threatened that, she found an elegant solution — draining the lifeforce of rivals through carefully rehearsed enchantments. She called it skincare.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
@@ -660,15 +662,16 @@
         "chest": "cloth_robe"
       },
       "fixed_items": [
-        "black_charm_middling"
+        "black_charm_middling",
+        "plain_bone_khatvanga"
       ]
     },
     "dyutapati": {
       "id": "dyutapati",
-      "name": "Dy\u016btapati",
+      "name": "Dyūtapati",
       "race": "black_devil",
       "background": "merchant",
-      "flavor_text": "Owner of a casino in hell \u2014 cigar always lit, odds always in his favour, smile always present. The house wins. He is the house.",
+      "flavor_text": "Owner of a casino in hell — cigar always lit, odds always in his favour, smile always present. The house wins. He is the house.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
@@ -734,7 +737,7 @@
       "name": "Ayurmangala",
       "race": "white_devil",
       "background": "scholar",
-      "flavor_text": "Fascinated by humanoid anatomy the way a botanist is fascinated by plants. Can be persuaded to forego vivisection of party members \u2014 keeping them alive is, after all, a more interesting experiment.",
+      "flavor_text": "Fascinated by humanoid anatomy the way a botanist is fascinated by plants. Can be persuaded to forego vivisection of party members — keeping them alive is, after all, a more interesting experiment.",
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
@@ -802,7 +805,8 @@
       },
       "fixed_items": [
         "health_potion",
-        "white_charm_middling"
+        "white_charm_middling",
+        "plain_conch_dorje"
       ]
     },
     "vimohini": {
@@ -838,7 +842,8 @@
         "chest": "cloth_robe"
       },
       "fixed_items": [
-        "enchantment_charm_middling"
+        "enchantment_charm_middling",
+        "plain_copper_damaru"
       ]
     },
     "tsering": {
@@ -1023,7 +1028,7 @@
       "name": "Marmajna",
       "race": "shaza",
       "background": "healer",
-      "flavor_text": "A physician of genuine skill who understood the body as a system of resources. He began with cadavers. The logic that followed was, he still insists, impeccable. Exactly where the line was \u2014 he is still working on that.",
+      "flavor_text": "A physician of genuine skill who understood the body as a system of resources. He began with cadavers. The logic that followed was, he still insists, impeccable. Exactly where the line was — he is still working on that.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
@@ -1195,14 +1200,16 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": []
+      "fixed_items": [
+        "plain_bronze_drilbu"
+      ]
     },
     "temba": {
       "id": "temba",
       "name": "Temba",
       "race": "dralha",
       "background": "warrior",
-      "flavor_text": "Outcast at twelve. Followed at twenty. United the clans at thirty-five through sheer force of demonstrated possibility \u2014 showing them what happened when people stopped fighting each other long enough to eat. He never stopped being the outcast kid trying to feed people through a bad winter.",
+      "flavor_text": "Outcast at twelve. Followed at twenty. United the clans at thirty-five through sheer force of demonstrated possibility — showing them what happened when people stopped fighting each other long enough to eat. He never stopped being the outcast kid trying to feed people through a bad winter.",
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
@@ -1406,10 +1413,10 @@
     },
     "choki": {
       "id": "choki",
-      "name": "Ch\u00f6ki",
+      "name": "Chöki",
       "race": "dre",
       "background": "wanderer",
-      "flavor_text": "Left to gather in the forest. Came back to find the village gone \u2014 a flash flood, no warning, nothing left. Drowned herself in the same river three days later. Still here, still not sure what she is waiting for.",
+      "flavor_text": "Left to gather in the forest. Came back to find the village gone — a flash flood, no warning, nothing left. Drowned herself in the same river three days later. Still here, still not sure what she is waiting for.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
@@ -1437,7 +1444,8 @@
         "chest": "cloth_robe"
       },
       "fixed_items": [
-        "water_charm_middling"
+        "water_charm_middling",
+        "plain_silver_drilbu"
       ]
     },
     "nangwa": {
@@ -1509,7 +1517,8 @@
         "chest": "monks_robe"
       },
       "fixed_items": [
-        "white_charm_common"
+        "white_charm_common",
+        "plain_conch_dorje"
       ]
     },
     "khedrup": {
@@ -1545,7 +1554,8 @@
         "chest": "monks_robe"
       },
       "fixed_items": [
-        "black_charm_common"
+        "black_charm_common",
+        "plain_bone_khatvanga"
       ]
     },
     "yasha": {
@@ -1615,7 +1625,8 @@
         "chest": "cloth_robe"
       },
       "fixed_items": [
-        "sorcery_charm_middling"
+        "sorcery_charm_middling",
+        "plain_copper_phurba"
       ]
     },
     "gomchen": {
@@ -1651,7 +1662,8 @@
         "chest": "monks_robe"
       },
       "fixed_items": [
-        "sorcery_charm_common"
+        "sorcery_charm_common",
+        "plain_iron_phurba"
       ]
     }
   }

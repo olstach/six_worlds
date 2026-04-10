@@ -73,7 +73,7 @@ Last Updated: 2026-04-05
 
 #### Open / Deferred
 - [ ] **Ritual implement traits** — special properties (e.g. conch pacification aura, bone life-drain proc, sky-iron void field) to be designed in a dedicated session
-- [ ] **Shop distribution** — no shops currently stock ritual implements; add Plain/Blessed tier items to ritual-focused shops.
+- [x] **Shop distribution** — Plain/Blessed implements added to 11 shops (hg_spell_shop, hg_charnel_sorcerer, hg_town_magic, hell_hidden_gompa, hell_yogini_circle, hell_circle_of_yoginis, hell_crossroads_stupa, hell_eternal_fire, hell_mirror_lake, hell_sacred_grove, hell_garuda_roost); added to zone-tier loot pools in hell + HG; 11 magic companions given school-appropriate plain implements.
 - [ ] **Spell Accuracy / Spell Projectiles** — deferred, leaving to ferment (see Design Questions)
 
 #### Other weapon mechanics wired this session
