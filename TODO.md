@@ -73,7 +73,7 @@ Last Updated: 2026-04-05
 
 #### Open / Deferred
 - [ ] **Ritual implement traits** — special properties (e.g. conch pacification aura, bone life-drain proc, sky-iron void field) to be designed in a dedicated session
-- [ ] **Shop distribution** — no shops currently stock ritual implements; add Plain/Blessed tier items to ritual-focused shops. (Common magic-school charms now stocked in hg_spell_shop, hg_charnel_sorcerer, hg_town_magic.)
+- [ ] **Shop distribution** — no shops currently stock ritual implements; add Plain/Blessed tier items to ritual-focused shops.
 - [ ] **Spell Accuracy / Spell Projectiles** — deferred, leaving to ferment (see Design Questions)
 
 #### Other weapon mechanics wired this session
@@ -123,7 +123,7 @@ Last Updated: 2026-04-05
 - [ ] Map configs for remaining realms — only hell.json and hungry_ghost.json exist
 - [ ] Enemy archetypes + encounters for animal, human, asura, god realms (hungry_ghost done: 20 archetypes, 37 encounters)
 - [ ] Event files for remaining realms (animal, human, asura, god)
-- [ ] Companion definitions for remaining realms (companions.json has hell only)
+- [ ] Companion definitions for remaining realms (47 companions exist across hell + HG; animal, human, asura, god still empty)
 
 ### Companions
 - [ ] Camp Followers system — UI stub exists in Party tab (`_update_followers_list()`); no backend
@@ -161,7 +161,8 @@ Last Updated: 2026-04-05
 - [ ] Tactical Assessment preset formations (Logistics 7 perk)
 
 ### Content
-- [ ] More consumable items — no realm-specific variants currently
+- [x] Magic-school charms — all 10 schools × 4 tiers (common/middling/rare/unique) complete with thematic descriptions; distributed across hell + HG shops, loot tables (tier-escalated by zone), and 24 magic-focused companion starting inventories
+- [ ] More consumable items — realm-specific potions, oils, scrolls still thin
 - [ ] Cursed equipment — "cursed" is only a status effect/terrain type; no cursed items in items.json
 - [ ] Astrological spells for Space magic school — divination/prophecy flavor; celestial mechanics (eclipses, conjunctions as triggers or effects); motivates Sun Priestess companion's Space magic skills
 - [ ] Paushtikakarma spells for Earth magic school — wealth multiplication, prosperity, dowsing for buried goods/ore; gives mechanical teeth to trade/merchant builds (Hustle Bones companion, Trade+Earth magic synergy)
