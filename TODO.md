@@ -73,7 +73,7 @@ Last Updated: 2026-04-05
 
 #### Open / Deferred
 - [ ] **Ritual implement traits** — special properties (e.g. conch pacification aura, bone life-drain proc, sky-iron void field) to be designed in a dedicated session
-- [ ] **Shop distribution** — no shops currently stock implements; add Plain/Blessed tier items to ritual-focused shops
+- [ ] **Shop distribution** — no shops currently stock ritual implements; add Plain/Blessed tier items to ritual-focused shops. (Common magic-school charms now stocked in hg_spell_shop, hg_charnel_sorcerer, hg_town_magic.)
 - [ ] **Spell Accuracy / Spell Projectiles** — deferred, leaving to ferment (see Design Questions)
 
 #### Other weapon mechanics wired this session
@@ -137,7 +137,7 @@ Last Updated: 2026-04-05
 - [x] Base bonus tables complete for all 35 skills, levels 1–15 (11–15 = item-bonus cap, same value as 10)
 - [x] **Bug fixed**: parse_perks.py now expands `11–15` range rows into individual level keys — perk_system.gd's `str(level)` lookup was silently returning empty dict for levels 11–15
 - [ ] PERKS.md: fill empty perk tiers (levels 2, 4, 6, 8) — 1-2 perks per skill at each
-- [ ] Perk rebalancing — capstone perks should land at required_level 8-10 (distribution still front-loaded)
+- [x] Perk rebalancing — 29 required_level changes across fire, air, space, sorcery, black, summoning, ritual, yoga, enchantment, earth, water magic. Worst offenders (fire L3:6→3, air L5:5→2, space L5:5→3, sorcery L5:5→3) fixed. Strong capstones (dabbler, burn_the_breath, forced_translation, cyclone_mastery) moved to L8. All perk-chain dependencies preserved.
 - [ ] Add flavor text to perks that lack it
 
 **Deferred perks (need new systems before wiring):**
@@ -184,7 +184,7 @@ Last Updated: 2026-04-05
 - [ ] Playtest hell realm end-to-end (combat, shops, events, quest board, portal transition)
 - [ ] Balance pass on spell mana costs (15/40/75/135/225 by level)
 - [ ] Test all 326 spells load and cast correctly
-- [ ] Item flavor text: `space_charm_common` and `rations` may show broken tooltip — needs in-game testing
+- [x] Item flavor text: `space_charm_common` and `rations` — tooltip code verified correct (charm effects shown at lines 139–158 item_tooltip.gd, supply info at 161–171). `space_charm_common` added to `hg_spell_shop`, `hg_charnel_sorcerer`, `hg_town_magic` so it is now reachable in-game.
 
 ---
 

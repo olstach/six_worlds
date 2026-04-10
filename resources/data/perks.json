@@ -2687,7 +2687,7 @@
 		"forced_translation": {
 			"name": "Forced Translation",
 			"skill": "space_magic",
-			"required_level": 5,
+			"required_level": 8,
 			"requires_perks": [],
 			"description": "Teleport spells may now target enemies (Focus save to resist). On success, enemies are displaced to a random adjacent tile rather than freely placed.",
 			"flavor": "",
@@ -2707,7 +2707,7 @@
 		"extended_binding": {
 			"name": "Extended Binding",
 			"skill": "space_magic",
-			"required_level": 3,
+			"required_level": 4,
 			"requires_perks": [],
 			"description": "Single-target binding effects gain a 1-tile AoE.",
 			"flavor": "",
@@ -2745,9 +2745,9 @@
 		"diamond_nail_mantra": {
 			"name": "Diamond Nail Mantra",
 			"skill": "space_magic",
-			"required_level": 5,
+			"required_level": 6,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Each turn, enemies suffer stacking -1 Movement, -10% teleport success, and -5% Dodge (stacks up to 5 times). Deity Yoga — Pierce the Obstructors: All enemies in a 4-tile radius take major Space damage (50% Spellpower) each turn in addition to the movement penalties.",
+			"description": "Ongoing effect (3-tile radius): Each turn, enemies suffer stacking -1 Movement, -10% teleport success, and -5% Dodge (stacks up to 5 times). Deity Yoga \u2014 Pierce the Obstructors: All enemies in a 4-tile radius take major Space damage (50% Spellpower) each turn in addition to the movement penalties.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -2756,7 +2756,7 @@
 			"skill": "space_magic",
 			"required_level": 3,
 			"requires_perks": [],
-			"description": "Ongoing effect: Each turn, the caster gains stacking +5% Dodge and +5% magic resistance (stacks up to 5 times). Deity Yoga — Hall of Reflections: All attacks and single-target spells targeting the caster have a 60% chance of reflecting fully to the attacker. Dodge bonuses are shared with allies within 3 tiles.",
+			"description": "Ongoing effect: Each turn, the caster gains stacking +5% Dodge and +5% magic resistance (stacks up to 5 times). Deity Yoga \u2014 Hall of Reflections: All attacks and single-target spells targeting the caster have a 60% chance of reflecting fully to the attacker. Dodge bonuses are shared with allies within 3 tiles.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -2866,7 +2866,7 @@
 			"skill": "white_magic",
 			"required_level": 3,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Each turn, allies gain stacking regeneration (+3% max HP/turn, stacks up to 5 times) and +10% resistance to fear and despair. Deity Yoga — Field of Refuge: - All allies automatically succeed morale and fear saves - 30% of incoming damage to allies is redirected to the caster - All healing effects are maximized (no variance, full value)",
+			"description": "Ongoing effect (3-tile radius): Each turn, allies gain stacking regeneration (+3% max HP/turn, stacks up to 5 times) and +10% resistance to fear and despair. Deity Yoga \u2014 Field of Refuge: - All allies automatically succeed morale and fear saves - 30% of incoming damage to allies is redirected to the caster - All healing effects are maximized (no variance, full value)",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -2875,7 +2875,7 @@
 			"skill": "white_magic",
 			"required_level": 5,
 			"requires_perks": [],
-			"description": "Ongoing effect (line of sight): Each turn, enemies who attacked last turn suffer stacking -5% Attack and -5% Damage (stacks up to 5 times). Deity Yoga — Turning the Law: - Enemies who attack take 30% of their dealt damage as reflected White damage - Allies gain +20% Attack against enemies affected by the Wheel - Status effects applied by allies cannot be resisted for 1 round",
+			"description": "Ongoing effect (line of sight): Each turn, enemies who attacked last turn suffer stacking -5% Attack and -5% Damage (stacks up to 5 times). Deity Yoga \u2014 Turning the Law: - Enemies who attack take 30% of their dealt damage as reflected White damage - Allies gain +20% Attack against enemies affected by the Wheel - Status effects applied by allies cannot be resisted for 1 round",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -2884,7 +2884,7 @@
 			"skill": "white_magic",
 			"required_level": 7,
 			"requires_perks": [],
-			"description": "Ongoing effect: Each turn, the caster gains stacking +5% Armor, +5% all resistances, and immunity to forced movement (stacks up to 5 times). Deity Yoga — Pillar of the World: - The caster cannot drop below 1 HP - Allies within 3 tiles gain +30% all resistances - Area denial and corruption terrain effects are suppressed within 4 tiles",
+			"description": "Ongoing effect: Each turn, the caster gains stacking +5% Armor, +5% all resistances, and immunity to forced movement (stacks up to 5 times). Deity Yoga \u2014 Pillar of the World: - The caster cannot drop below 1 HP - Allies within 3 tiles gain +30% all resistances - Area denial and corruption terrain effects are suppressed within 4 tiles",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -2947,7 +2947,7 @@
 		"shared_hunger": {
 			"name": "Shared Hunger",
 			"skill": "black_magic",
-			"required_level": 5,
+			"required_level": 4,
 			"requires_perks": [
 				"blood_pact"
 			],
@@ -2996,16 +2996,16 @@
 			"skill": "black_magic",
 			"required_level": 5,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Each turn, enemies suffer stacking -5% Armor and -5% resistance, and lose 3% of max Stamina and Mana (stacks up to 5 times). Deity Yoga — Abyssal Gaze: All enemies in line of sight suffer -20% Attack, -20% Armor, -5 Initiative, and lose 8% of max Stamina and Mana each turn.",
+			"description": "Ongoing effect (3-tile radius): Each turn, enemies suffer stacking -5% Armor and -5% resistance, and lose 3% of max Stamina and Mana (stacks up to 5 times). Deity Yoga \u2014 Abyssal Gaze: All enemies in line of sight suffer -20% Attack, -20% Armor, -5 Initiative, and lose 8% of max Stamina and Mana each turn.",
 			"flavor": "",
 			"is_mantra": true
 		},
 		"mantra_of_the_blood_drinkers": {
 			"name": "Mantra of the Blood Drinkers",
 			"skill": "black_magic",
-			"required_level": 5,
+			"required_level": 7,
 			"requires_perks": [],
-			"description": "Ongoing effect (line of sight): Enemies suffer stacking Black damage (5% Spellpower/turn, stacks up to 5 times). Damage dealt is reflected as healing to the caster and allies within 2 tiles. Deity Yoga — Wrathful Dance: - All damage dealt to enemies by any source is reflected as healing to allies in line of sight (50% of damage dealt) - Enemies suffer -20% Armor",
+			"description": "Ongoing effect (line of sight): Enemies suffer stacking Black damage (5% Spellpower/turn, stacks up to 5 times). Damage dealt is reflected as healing to the caster and allies within 2 tiles. Deity Yoga \u2014 Wrathful Dance: - All damage dealt to enemies by any source is reflected as healing to allies in line of sight (50% of damage dealt) - Enemies suffer -20% Armor",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -3014,7 +3014,7 @@
 			"skill": "black_magic",
 			"required_level": 9,
 			"requires_perks": [],
-			"description": "Ongoing effect (4-tile radius): Each turn, Black summons regain 10% max HP and enemies in the area take stacking Black damage (3% Spellpower/turn, stacks up to 5 times). Deity Yoga — Nowhere to Run: - Summons act immediately at the start of each turn with +30% damage - Any enemy killed in the area has a 40% chance to rise as a temporary Black summon",
+			"description": "Ongoing effect (4-tile radius): Each turn, Black summons regain 10% max HP and enemies in the area take stacking Black damage (3% Spellpower/turn, stacks up to 5 times). Deity Yoga \u2014 Nowhere to Run: - Summons act immediately at the start of each turn with +30% damage - Any enemy killed in the area has a 40% chance to rise as a temporary Black summon",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -3130,7 +3130,7 @@
 		"aegis_of_tranquility": {
 			"name": "Aegis of Tranquility",
 			"skill": "yoga",
-			"required_level": 5,
+			"required_level": 7,
 			"requires_perks": [],
 			"description": "+20% resistance to all elemental damage.",
 			"flavor": "",
@@ -3168,7 +3168,7 @@
 		"pacify_the_confused": {
 			"name": "Pacify the Confused",
 			"skill": "yoga",
-			"required_level": 5,
+			"required_level": 6,
 			"requires_perks": [],
 			"description": "Active. Target enemy makes a Focus save. On failure, stops fighting for 2-4 turns. If combat ends during this time, the enemy does not re-engage. Full XP still granted.",
 			"flavor": "",
@@ -3190,7 +3190,7 @@
 			"skill": "yoga",
 			"required_level": 3,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Each turn, the caster and allies regain 2% max HP, 2% max Mana, and 2% max Stamina (increases by 1% each turn, up to 5%). Deity Yoga — Tranquil Flow: All allies gain immunity to mental effects and 50% chance to resist all debuffs.",
+			"description": "Ongoing effect (3-tile radius): Each turn, the caster and allies regain 2% max HP, 2% max Mana, and 2% max Stamina (increases by 1% each turn, up to 5%). Deity Yoga \u2014 Tranquil Flow: All allies gain immunity to mental effects and 50% chance to resist all debuffs.",
 			"flavor": "",
 			"is_mantra": true,
 			"also_requires": {
@@ -3202,7 +3202,7 @@
 			"skill": "yoga",
 			"required_level": 7,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Each turn, raise all resistances of allies by +3% (stacks up to +15%). Deity Yoga — Immovable Spirit: Every turn, all enemies in line of sight make a Focus save. On failure: Pacified. On success: -50% Attack and Damage (non-stackable) until next turn.",
+			"description": "Ongoing effect (3-tile radius): Each turn, raise all resistances of allies by +3% (stacks up to +15%). Deity Yoga \u2014 Immovable Spirit: Every turn, all enemies in line of sight make a Focus save. On failure: Pacified. On success: -50% Attack and Damage (non-stackable) until next turn.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -3437,7 +3437,7 @@
 		"gust_step": {
 			"name": "Gust Step",
 			"skill": "air_magic",
-			"required_level": 1,
+			"required_level": 2,
 			"requires_perks": [],
 			"description": "Jump, Levitate, and Fly spells also grant +1 Movement and +2 Initiative for 2 turns.",
 			"flavor": "",
@@ -3477,7 +3477,7 @@
 		"perfect_volley": {
 			"name": "Perfect Volley",
 			"skill": "air_magic",
-			"required_level": 5,
+			"required_level": 6,
 			"requires_perks": [],
 			"description": "Active (8 Mana). Allies within 2 tiles gain +15% ranged Attack and +10% crit chance for 2 turns.",
 			"flavor": "",
@@ -3486,7 +3486,7 @@
 		"scattering_gust": {
 			"name": "Scattering Gust",
 			"skill": "air_magic",
-			"required_level": 1,
+			"required_level": 4,
 			"requires_perks": [],
 			"description": "Spells that push enemies also have a 25% chance of knockdown (Constitution save).",
 			"flavor": "",
@@ -3495,7 +3495,7 @@
 		"cyclone_mastery": {
 			"name": "Cyclone Mastery",
 			"skill": "air_magic",
-			"required_level": 5,
+			"required_level": 8,
 			"requires_perks": [
 				"scattering_gust"
 			],
@@ -3515,7 +3515,7 @@
 		"chain_spark": {
 			"name": "Chain Spark",
 			"skill": "air_magic",
-			"required_level": 5,
+			"required_level": 7,
 			"requires_perks": [],
 			"description": "Lightning spells have a 30% chance to chain to 1 additional target within 2 tiles for 50% damage.",
 			"flavor": "",
@@ -3557,7 +3557,7 @@
 			"skill": "air_magic",
 			"required_level": 3,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Allies gain a stacking +1 bonus to all d20 rolls (stacks up to +5). Deity Yoga — All-Accomplishing Wisdom: All of the caster's rolls gain +10 and cannot critically fail.",
+			"description": "Ongoing effect (3-tile radius): Allies gain a stacking +1 bonus to all d20 rolls (stacks up to +5). Deity Yoga \u2014 All-Accomplishing Wisdom: All of the caster's rolls gain +10 and cannot critically fail.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -3566,7 +3566,7 @@
 			"skill": "air_magic",
 			"required_level": 5,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Each turn, allies gain stacking +1 Movement and +3% crit chance (stacks up to 5 times). Deity Yoga — Lord of Hosts: Each turn, summon 1-3 Rudras (low HP, high Speed and damage, Air/Sorcery-tagged). They act immediately.",
+			"description": "Ongoing effect (3-tile radius): Each turn, allies gain stacking +1 Movement and +3% crit chance (stacks up to 5 times). Deity Yoga \u2014 Lord of Hosts: Each turn, summon 1-3 Rudras (low HP, high Speed and damage, Air/Sorcery-tagged). They act immediately.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -3609,7 +3609,7 @@
 		"dabbler": {
 			"name": "Dabbler",
 			"skill": "ritual",
-			"required_level": 5,
+			"required_level": 8,
 			"requires_perks": [],
 			"description": "Unlock all level 1 spells from every school.",
 			"flavor": "",
@@ -3681,7 +3681,7 @@
 			"skill": "ritual",
 			"required_level": 3,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Each turn, the caster and allies regain 2% max Mana (increases by 1%/turn, up to 5%). Deity Yoga — The Rainbow Web: All spell costs reduced by 50% and Spellpower increased by 50% for all allies.",
+			"description": "Ongoing effect (3-tile radius): Each turn, the caster and allies regain 2% max Mana (increases by 1%/turn, up to 5%). Deity Yoga \u2014 The Rainbow Web: All spell costs reduced by 50% and Spellpower increased by 50% for all allies.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -3690,7 +3690,7 @@
 			"skill": "ritual",
 			"required_level": 7,
 			"requires_perks": [],
-			"description": "Ongoing effect: Each turn, the caster gains a stacking +5% Spellpower bonus (stacks up to 5 times). Deity Yoga — Bottomless Well: All spells are cast as if the caster has level 5 in the relevant skill. If they already do, +50% Spellpower.",
+			"description": "Ongoing effect: Each turn, the caster gains a stacking +5% Spellpower bonus (stacks up to 5 times). Deity Yoga \u2014 Bottomless Well: All spells are cast as if the caster has level 5 in the relevant skill. If they already do, +50% Spellpower.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -4379,7 +4379,7 @@
 		"hungry_flames": {
 			"name": "Hungry Flames",
 			"skill": "fire_magic",
-			"required_level": 3,
+			"required_level": 5,
 			"requires_perks": [],
 			"description": "Burning enemies have a 25% chance per turn to spread Burning (1 stack) to enemies within 1 tile.",
 			"flavor": "",
@@ -4424,7 +4424,7 @@
 		"shared_heat": {
 			"name": "Shared Heat",
 			"skill": "fire_magic",
-			"required_level": 3,
+			"required_level": 4,
 			"requires_perks": [],
 			"description": "Fire enchantments (Burning Weapon, Bloodlust, Fan the Flames) gain a 1-tile AoE around the target.",
 			"flavor": "",
@@ -4525,9 +4525,9 @@
 		"mantra_of_the_lotus_blaze": {
 			"name": "Mantra of the Lotus Blaze",
 			"skill": "fire_magic",
-			"required_level": 3,
+			"required_level": 6,
 			"requires_perks": [],
-			"description": "Ongoing effect (line of sight): All enemies must pass increasingly difficult Constitution saves (starting DC 10, +2 per turn) or gain 1 stack of Burning. Deity Yoga — Body of the Lotus Sun: At the start of each turn, all burning enemies explode, dealing Fire damage in a 1-tile radius equal to 10% of their max HP per Burning stack.",
+			"description": "Ongoing effect (line of sight): All enemies must pass increasingly difficult Constitution saves (starting DC 10, +2 per turn) or gain 1 stack of Burning. Deity Yoga \u2014 Body of the Lotus Sun: At the start of each turn, all burning enemies explode, dealing Fire damage in a 1-tile radius equal to 10% of their max HP per Burning stack.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -4536,7 +4536,7 @@
 			"skill": "fire_magic",
 			"required_level": 3,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): All enemies must pass increasingly difficult Focus saves (starting DC 10, +2 per turn) or become Charmed for 2 turns. Deity Yoga — The Dance that Magnetizes the World: Enemies who critically fail the Focus save become Dominated instead of Charmed. Any enemy targeting the caster must pass a Focus save or lose their action.",
+			"description": "Ongoing effect (3-tile radius): All enemies must pass increasingly difficult Focus saves (starting DC 10, +2 per turn) or become Charmed for 2 turns. Deity Yoga \u2014 The Dance that Magnetizes the World: Enemies who critically fail the Focus save become Dominated instead of Charmed. Any enemy targeting the caster must pass a Focus save or lose their action.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -4545,7 +4545,7 @@
 			"skill": "fire_magic",
 			"required_level": 5,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Caster and allies gain stacking +2 Initiative and +1 Movement per turn (stacks up to 5 times). Deity Yoga — The Neigh that Shakes the Steppe: All allies gain the full Initiative/Movement bonus plus +20% Attack and +20% Damage, and all melee attacks apply 1 stack of Burning.",
+			"description": "Ongoing effect (3-tile radius): Caster and allies gain stacking +2 Initiative and +1 Movement per turn (stacks up to 5 times). Deity Yoga \u2014 The Neigh that Shakes the Steppe: All allies gain the full Initiative/Movement bonus plus +20% Attack and +20% Damage, and all melee attacks apply 1 stack of Burning.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -4606,7 +4606,7 @@
 		"burn_the_breath": {
 			"name": "Burn the Breath",
 			"skill": "sorcery",
-			"required_level": 5,
+			"required_level": 8,
 			"requires_perks": [],
 			"description": "Active. The next spell gains +100% Spellpower, but you take damage equal to 25% of the mana cost as HP loss. (Additive with other overcast effects.)",
 			"flavor": "",
@@ -4683,7 +4683,7 @@
 		"short_words_sharp_meaning": {
 			"name": "Short Words, Sharp Meaning",
 			"skill": "sorcery",
-			"required_level": 5,
+			"required_level": 6,
 			"requires_perks": [],
 			"description": "Sorcery spells can critically hit (15% chance, +50% damage).",
 			"flavor": "",
@@ -4714,7 +4714,7 @@
 			"skill": "sorcery",
 			"required_level": 5,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Each turn, allies gain stacking +5% magic damage resistance and +5% chance to negate incoming debuffs (stacks up to 5 times). Deity Yoga — She Would Drink the Blood of the World: Calculate the average percentage of HP lost across all allies. Deal that percentage of max HP as Sorcery damage to all enemies. Transfer all debuffs from allies to enemies, distributed randomly.",
+			"description": "Ongoing effect (3-tile radius): Each turn, allies gain stacking +5% magic damage resistance and +5% chance to negate incoming debuffs (stacks up to 5 times). Deity Yoga \u2014 She Would Drink the Blood of the World: Calculate the average percentage of HP lost across all allies. Deal that percentage of max HP as Sorcery damage to all enemies. Transfer all debuffs from allies to enemies, distributed randomly.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -5355,7 +5355,7 @@
 		"fog_of_war": {
 			"name": "Fog of War",
 			"skill": "water_magic",
-			"required_level": 3,
+			"required_level": 4,
 			"requires_perks": [],
 			"description": "Active (5 Mana). Create a fog bank in a 2-tile radius. Enemies inside suffer -20% accuracy. Ranged attacks and targeted spells cannot pass through fog. Lasts 3 turns.",
 			"flavor": "",
@@ -5364,7 +5364,7 @@
 		"black_ice": {
 			"name": "Black Ice",
 			"skill": "water_magic",
-			"required_level": 5,
+			"required_level": 6,
 			"requires_perks": [],
 			"description": "Active (6 Mana). Create ice terrain in a 2-tile radius for 3 turns. Enemies moving through it must pass a Finesse save or fall prone. Allies are unaffected.",
 			"flavor": "",
@@ -5418,9 +5418,9 @@
 		"mantra_of_the_medicine_buddha": {
 			"name": "Mantra of the Medicine Buddha",
 			"skill": "water_magic",
-			"required_level": 3,
+			"required_level": 5,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Each turn, the ally with the lowest HP% in radius regains increasing HP (5% Spellpower per stack, stacks up to 5). All allies gain +5% resistance to poison and disease per stack. Deity Yoga — The Healing That Asks Nothing: All allies are healed for 50% of max HP and cleansed of all negative status effects. For 2 turns, all healing effects on allies are tripled.",
+			"description": "Ongoing effect (3-tile radius): Each turn, the ally with the lowest HP% in radius regains increasing HP (5% Spellpower per stack, stacks up to 5). All allies gain +5% resistance to poison and disease per stack. Deity Yoga \u2014 The Healing That Asks Nothing: All allies are healed for 50% of max HP and cleansed of all negative status effects. For 2 turns, all healing effects on allies are tripled.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -5429,7 +5429,7 @@
 			"skill": "water_magic",
 			"required_level": 7,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Each turn, enemies suffer stacking cold damage (3% Spellpower, stacks up to 5) and -1 Movement per stack. Allies gain +3% resistance to all damage per stack. Deity Yoga — Mirror of Still Water: All incoming damage to the caster and allies within 3 tiles is reflected back at 50%. All enemies in line of sight are Frozen for 1 turn (no save).",
+			"description": "Ongoing effect (3-tile radius): Each turn, enemies suffer stacking cold damage (3% Spellpower, stacks up to 5) and -1 Movement per stack. Allies gain +3% resistance to all damage per stack. Deity Yoga \u2014 Mirror of Still Water: All incoming damage to the caster and allies within 3 tiles is reflected back at 50%. All enemies in line of sight are Frozen for 1 turn (no save).",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -5463,7 +5463,7 @@
 		"generous_spirit": {
 			"name": "Generous Spirit",
 			"skill": "enchantment",
-			"required_level": 3,
+			"required_level": 6,
 			"requires_perks": [],
 			"description": "Single-target buffs can be split between 2 targets at 75% effectiveness each.",
 			"flavor": "",
@@ -5548,7 +5548,7 @@
 		"reactive_shielding": {
 			"name": "Reactive Shielding",
 			"skill": "enchantment",
-			"required_level": 3,
+			"required_level": 4,
 			"requires_perks": [],
 			"description": "When a buffed ally takes damage, 15% chance that the buff absorbs 25% of the damage instead.",
 			"flavor": "",
@@ -5568,16 +5568,16 @@
 			"skill": "enchantment",
 			"required_level": 3,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Each turn, allies gain a random minor buff (+5% to one of: Attack, Armor, Dodge, Spellpower, Initiative). Buffs are stacking and persist until the mantra ends. Deity Yoga — The Gem That Grants All Prayers: All allies gain +25% to all stats. Buffs on allies cannot be dispelled or overwritten for the duration.",
+			"description": "Ongoing effect (3-tile radius): Each turn, allies gain a random minor buff (+5% to one of: Attack, Armor, Dodge, Spellpower, Initiative). Buffs are stacking and persist until the mantra ends. Deity Yoga \u2014 The Gem That Grants All Prayers: All allies gain +25% to all stats. Buffs on allies cannot be dispelled or overwritten for the duration.",
 			"flavor": "",
 			"is_mantra": true
 		},
 		"mantra_of_the_binding_word": {
 			"name": "Mantra of the Binding Word",
 			"skill": "enchantment",
-			"required_level": 7,
+			"required_level": 8,
 			"requires_perks": [],
-			"description": "Ongoing effect (line of sight): Each turn, enemies suffer a random minor debuff (-5% to a random stat). Debuffs are stacking and persist until the mantra ends. Deity Yoga — Nothing Escapes the Word: All enemies suffer -25% to all stats. Debuffs on enemies cannot be cleansed. All enemy buffs are suppressed for the duration.",
+			"description": "Ongoing effect (line of sight): Each turn, enemies suffer a random minor debuff (-5% to a random stat). Debuffs are stacking and persist until the mantra ends. Deity Yoga \u2014 Nothing Escapes the Word: All enemies suffer -25% to all stats. Debuffs on enemies cannot be cleansed. All enemy buffs are suppressed for the duration.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -6392,7 +6392,7 @@
 		"tremor": {
 			"name": "Tremor",
 			"skill": "earth_magic",
-			"required_level": 3,
+			"required_level": 4,
 			"requires_perks": [],
 			"description": "Earth AoE spells have a 25% chance to knock enemies prone (Finesse save negates).",
 			"flavor": "",
@@ -6419,7 +6419,7 @@
 		"raise_wall": {
 			"name": "Raise Wall",
 			"skill": "earth_magic",
-			"required_level": 3,
+			"required_level": 5,
 			"requires_perks": [],
 			"description": "Active (6 Mana). Create a stone wall (3 tiles long, blocks movement and line of sight). Destructible (moderate HP). Lasts 4 turns.",
 			"flavor": "",
@@ -6428,7 +6428,7 @@
 		"fortify_position": {
 			"name": "Fortify Position",
 			"skill": "earth_magic",
-			"required_level": 5,
+			"required_level": 6,
 			"requires_perks": [
 				"raise_wall"
 			],
@@ -6497,7 +6497,7 @@
 			"skill": "earth_magic",
 			"required_level": 3,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Each turn, allies gain stacking +3% Armor and +3% physical damage resistance (stacks up to 5 times). The ground beneath allies becomes blessed, granting 2% max HP regeneration per turn. Deity Yoga — He Who Bears the Weight of All Worlds: All allies gain +40% Armor and immunity to all forced movement and knockdown. Enemies in contact with the ground take Earth damage (20% Spellpower) per turn. Allies cannot be reduced below 1 HP for the duration.",
+			"description": "Ongoing effect (3-tile radius): Each turn, allies gain stacking +3% Armor and +3% physical damage resistance (stacks up to 5 times). The ground beneath allies becomes blessed, granting 2% max HP regeneration per turn. Deity Yoga \u2014 He Who Bears the Weight of All Worlds: All allies gain +40% Armor and immunity to all forced movement and knockdown. Enemies in contact with the ground take Earth damage (20% Spellpower) per turn. Allies cannot be reduced below 1 HP for the duration.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -6506,7 +6506,7 @@
 			"skill": "earth_magic",
 			"required_level": 7,
 			"requires_perks": [],
-			"description": "Ongoing effect: Each turn, crystal formations grow on 1 random tile within 3 tiles of the caster (blocks movement, has moderate HP). Allies adjacent to crystals gain +5% to all stats per adjacent crystal. Deity Yoga — The Mountain That Does Not Bend: Create a crystalline barrier encompassing all allies within 4 tiles. The barrier absorbs all incoming damage from outside (total HP = 200% of caster's Spellpower). While the barrier holds, allies inside gain +20% to all stats.",
+			"description": "Ongoing effect: Each turn, crystal formations grow on 1 random tile within 3 tiles of the caster (blocks movement, has moderate HP). Allies adjacent to crystals gain +5% to all stats per adjacent crystal. Deity Yoga \u2014 The Mountain That Does Not Bend: Create a crystalline barrier encompassing all allies within 4 tiles. The barrier absorbs all incoming damage from outside (total HP = 200% of caster's Spellpower). While the barrier holds, allies inside gain +20% to all stats.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -6522,7 +6522,7 @@
 		"empowered_creatures": {
 			"name": "Empowered Creatures",
 			"skill": "summoning",
-			"required_level": 3,
+			"required_level": 4,
 			"requires_perks": [],
 			"description": "Summons gain +15% Attack and +10% Damage.",
 			"flavor": "",
@@ -6549,7 +6549,7 @@
 		"strength_in_numbers": {
 			"name": "Strength in Numbers",
 			"skill": "summoning",
-			"required_level": 3,
+			"required_level": 6,
 			"requires_perks": [],
 			"description": "You may maintain 1 additional summon active simultaneously.",
 			"flavor": "",
@@ -6647,7 +6647,7 @@
 			"skill": "summoning",
 			"required_level": 3,
 			"requires_perks": [],
-			"description": "Ongoing effect (3-tile radius): Each turn, summon a minor spirit guardian (1 HP, high Dodge, non-attacking). Each guardian provides +3% Armor to the nearest ally. Up to 4 spirit guardians can exist simultaneously. Deity Yoga — The Four Walls of Heaven: Summon 4 powerful Guardian Kings at the cardinal points around the caster. Each has high HP, high Armor, moderate damage, and provides +10% Armor and +10% resistance to one element (one per King) for all allies within 3 tiles. They last until destroyed.",
+			"description": "Ongoing effect (3-tile radius): Each turn, summon a minor spirit guardian (1 HP, high Dodge, non-attacking). Each guardian provides +3% Armor to the nearest ally. Up to 4 spirit guardians can exist simultaneously. Deity Yoga \u2014 The Four Walls of Heaven: Summon 4 powerful Guardian Kings at the cardinal points around the caster. Each has high HP, high Armor, moderate damage, and provides +10% Armor and +10% resistance to one element (one per King) for all allies within 3 tiles. They last until destroyed.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -6656,7 +6656,7 @@
 			"skill": "summoning",
 			"required_level": 7,
 			"requires_perks": [],
-			"description": "Ongoing effect: Each turn, the caster's Spellpower for summoning increases by +5% (stacks up to 5 times). All active summons gain +3% to all stats per stack. Deity Yoga — The Tower That Contains All Realms: Your next summoning spell calls the most powerful version of that creature. The summon has triple HP, double damage, and radiates an aura (2-tile radius) that grants allies +10% to all stats and inflicts enemies with -10% to all stats.",
+			"description": "Ongoing effect: Each turn, the caster's Spellpower for summoning increases by +5% (stacks up to 5 times). All active summons gain +3% to all stats per stack. Deity Yoga \u2014 The Tower That Contains All Realms: Your next summoning spell calls the most powerful version of that creature. The summon has triple HP, double damage, and radiates an aura (2-tile radius) that grants allies +10% to all stats and inflicts enemies with -10% to all stats.",
 			"flavor": "",
 			"is_mantra": true
 		},
@@ -7224,7 +7224,7 @@
 				"white_magic": 5,
 				"enchantment": 3
 			},
-			"description": "Your single-target healing spells also apply a minor buff (Regen, +10% Armor, or +10% Dodge — chosen randomly) for 2 turns.",
+			"description": "Your single-target healing spells also apply a minor buff (Regen, +10% Armor, or +10% Dodge \u2014 chosen randomly) for 2 turns.",
 			"flavor": "",
 			"is_mantra": false
 		},
@@ -7356,7 +7356,7 @@
 				"alchemy": 5,
 				"thievery": 3
 			},
-			"description": "Weapon coatings last twice as long (double applications per dose). During events, you can poison food, drink, or supplies — targets are Weakened for their next encounter.",
+			"description": "Weapon coatings last twice as long (double applications per dose). During events, you can poison food, drink, or supplies \u2014 targets are Weakened for their next encounter.",
 			"flavor": "",
 			"is_mantra": false
 		},
@@ -7379,7 +7379,7 @@
 				"guile": 3,
 				"crafting": 3
 			},
-			"description": "Can create trapped objects that deal damage and apply a status effect when enemies interact with them. During events, can sabotage enemy equipment — reducing their Attack or Armor by 15% for the next encounter.",
+			"description": "Can create trapped objects that deal damage and apply a status effect when enemies interact with them. During events, can sabotage enemy equipment \u2014 reducing their Attack or Armor by 15% for the next encounter.",
 			"flavor": "",
 			"is_mantra": false
 		},
@@ -7607,7 +7607,7 @@
 			"category": "elemental_mastery",
 			"requirements": {},
 			"description": "Fire damage +15%. Immune to fear and morale penalties. Leadership and Performance effect durations +1 turn.",
-			"flavor": "Passion is not consumed — it is shared.",
+			"flavor": "Passion is not consumed \u2014 it is shared.",
 			"is_mantra": false,
 			"special_requirement": "fire_affinity_25"
 		},

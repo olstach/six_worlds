@@ -298,7 +298,7 @@
     "hell_teahouse_cold": {
       "name": "Teahouse",
       "type": "teahouse",
-      "description": "A dim waystation where the desperate catch their breath. The barkeeper keeps a pot of Lapsang Souchong going — its smoke is the closest thing to warmth in the frozen wastes.",
+      "description": "A dim waystation where the desperate catch their breath. The barkeeper keeps a pot of Lapsang Souchong going \u2014 its smoke is the closest thing to warmth in the frozen wastes.",
       "price_modifier": 1.2,
       "buys_items": false,
       "items": {
@@ -459,7 +459,7 @@
     "hell_veterans_camp": {
       "name": "Veterans' Camp",
       "type": "veteran_camp",
-      "description": "A camp of soldiers who survived long enough to have something to teach. They charge for lessons — nothing is free in hell.",
+      "description": "A camp of soldiers who survived long enough to have something to teach. They charge for lessons \u2014 nothing is free in hell.",
       "price_modifier": 1.0,
       "buys_items": false,
       "items": {
@@ -500,7 +500,7 @@
     "hell_yogini_circle": {
       "name": "Yogini Circle",
       "type": "yogini_circle",
-      "description": "A circle of Dakinis — fierce, half-wild tantric practitioners. They trade knowledge for gold and ask no questions about what you plan to do with it.",
+      "description": "A circle of Dakinis \u2014 fierce, half-wild tantric practitioners. They trade knowledge for gold and ask no questions about what you plan to do with it.",
       "price_modifier": 1.15,
       "buys_items": false,
       "items": {
@@ -927,7 +927,7 @@
     "hg_bone_merchant": {
       "name": "Bone Merchant",
       "type": "general",
-      "description": "A skeleton trader squats among the dry graves, its jaw clicking as it counts coins with bony fingers. The wares are crude but functional — carved from the bones of those who no longer need them.",
+      "description": "A skeleton trader squats among the dry graves, its jaw clicking as it counts coins with bony fingers. The wares are crude but functional \u2014 carved from the bones of those who no longer need them.",
       "price_modifier": 1.1,
       "buys_items": true,
       "items": {
@@ -948,11 +948,13 @@
     "hg_charnel_sorcerer": {
       "name": "Charnel Sorcerer",
       "type": "spell_trainer",
-      "description": "A vetala perches atop a crumbling funerary monument, its stolen body draped in rotting silk. It trades in dark knowledge — curses, poisons, and the thin art of pulling life from the dying.",
+      "description": "A vetala perches atop a crumbling funerary monument, its stolen body draped in rotting silk. It trades in dark knowledge \u2014 curses, poisons, and the thin art of pulling life from the dying.",
       "price_modifier": 1.3,
       "buys_items": false,
       "items": {
-        "rations": 5
+        "rations": 5,
+        "black_charm_common": 2,
+        "water_charm_common": 2
       },
       "spells": [
         "curse",
@@ -975,7 +977,7 @@
     "hg_wandering_preta": {
       "name": "Wandering Preta",
       "type": "general",
-      "description": "A gaunt, distended figure with a neck like a needle and a belly like a drum. It clutches its wares with desperate hands, willing to trade food for almost anything — though it can never eat enough to be satisfied.",
+      "description": "A gaunt, distended figure with a neck like a needle and a belly like a drum. It clutches its wares with desperate hands, willing to trade food for almost anything \u2014 though it can never eat enough to be satisfied.",
       "price_modifier": 0.9,
       "buys_items": true,
       "items": {
@@ -1006,15 +1008,29 @@
         "skills": []
       },
       "available_companions": [
-        "tsering", "rasabhava", "saka", "mehr",
-        "vilasa", "marmajna",
-        "kripana", "yasha",
-        "nurse_bones", "hustle_bones",
-        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
-        "prashan", "temba",
-        "durvasa", "gomchen",
-        "choki", "nangwa",
-        "drupchen", "khedrup"
+        "tsering",
+        "rasabhava",
+        "saka",
+        "mehr",
+        "vilasa",
+        "marmajna",
+        "kripana",
+        "yasha",
+        "nurse_bones",
+        "hustle_bones",
+        "iron_oath",
+        "the_chronicler",
+        "nyingje",
+        "shantipala",
+        "peldon",
+        "prashan",
+        "temba",
+        "durvasa",
+        "gomchen",
+        "choki",
+        "nangwa",
+        "drupchen",
+        "khedrup"
       ],
       "rest": {
         "teapot_cost": 30,
@@ -1028,7 +1044,7 @@
     "hg_town_weapons": {
       "name": "Crossbones Armory",
       "type": "town",
-      "description": "A squat stone building marked with crossed femurs above the door. The smith inside is alive — barely — and forges weapons from scavenged iron and whatever the gravediggers bring in.",
+      "description": "A squat stone building marked with crossed femurs above the door. The smith inside is alive \u2014 barely \u2014 and forges weapons from scavenged iron and whatever the gravediggers bring in.",
       "price_modifier": 1.15,
       "buys_items": true,
       "items": {
@@ -1056,25 +1072,41 @@
         ]
       },
       "available_companions": [
-        "tsering", "rasabhava", "saka", "mehr",
-        "vilasa", "marmajna",
-        "kripana", "yasha",
-        "nurse_bones", "hustle_bones",
-        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
-        "prashan", "temba",
-        "durvasa", "gomchen",
-        "choki", "nangwa",
-        "drupchen", "khedrup"
+        "tsering",
+        "rasabhava",
+        "saka",
+        "mehr",
+        "vilasa",
+        "marmajna",
+        "kripana",
+        "yasha",
+        "nurse_bones",
+        "hustle_bones",
+        "iron_oath",
+        "the_chronicler",
+        "nyingje",
+        "shantipala",
+        "peldon",
+        "prashan",
+        "temba",
+        "durvasa",
+        "gomchen",
+        "choki",
+        "nangwa",
+        "drupchen",
+        "khedrup"
       ]
     },
     "hg_town_magic": {
       "name": "Whispering Shrine",
       "type": "town",
-      "description": "Faded prayer flags hang from a cracked shrine where the boundary between the living and dead has worn thin. The priests here teach what they remember of the old arts — healing and hexing in equal measure.",
+      "description": "Faded prayer flags hang from a cracked shrine where the boundary between the living and dead has worn thin. The priests here teach what they remember of the old arts \u2014 healing and hexing in equal measure.",
       "price_modifier": 1.2,
       "buys_items": false,
       "items": {
-        "rations": 5
+        "rations": 5,
+        "white_charm_common": 2,
+        "black_charm_common": 2
       },
       "spells": [
         "lesser_heal",
@@ -1099,21 +1131,35 @@
         ]
       },
       "available_companions": [
-        "tsering", "rasabhava", "saka", "mehr",
-        "vilasa", "marmajna",
-        "kripana", "yasha",
-        "nurse_bones", "hustle_bones",
-        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
-        "prashan", "temba",
-        "durvasa", "gomchen",
-        "choki", "nangwa",
-        "drupchen", "khedrup"
+        "tsering",
+        "rasabhava",
+        "saka",
+        "mehr",
+        "vilasa",
+        "marmajna",
+        "kripana",
+        "yasha",
+        "nurse_bones",
+        "hustle_bones",
+        "iron_oath",
+        "the_chronicler",
+        "nyingje",
+        "shantipala",
+        "peldon",
+        "prashan",
+        "temba",
+        "durvasa",
+        "gomchen",
+        "choki",
+        "nangwa",
+        "drupchen",
+        "khedrup"
       ]
     },
     "hg_town_supplies": {
       "name": "Gravedigger's Supply",
       "type": "town",
-      "description": "A practical establishment run by those who tend to the dead for a living. The shelves are well stocked — people always need supplies in a land where nothing grows.",
+      "description": "A practical establishment run by those who tend to the dead for a living. The shelves are well stocked \u2014 people always need supplies in a land where nothing grows.",
       "price_modifier": 1.0,
       "buys_items": true,
       "items": {
@@ -1132,21 +1178,35 @@
         "skills": []
       },
       "available_companions": [
-        "tsering", "rasabhava", "saka", "mehr",
-        "vilasa", "marmajna",
-        "kripana", "yasha",
-        "nurse_bones", "hustle_bones",
-        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
-        "prashan", "temba",
-        "durvasa", "gomchen",
-        "choki", "nangwa",
-        "drupchen", "khedrup"
+        "tsering",
+        "rasabhava",
+        "saka",
+        "mehr",
+        "vilasa",
+        "marmajna",
+        "kripana",
+        "yasha",
+        "nurse_bones",
+        "hustle_bones",
+        "iron_oath",
+        "the_chronicler",
+        "nyingje",
+        "shantipala",
+        "peldon",
+        "prashan",
+        "temba",
+        "durvasa",
+        "gomchen",
+        "choki",
+        "nangwa",
+        "drupchen",
+        "khedrup"
       ]
     },
     "hg_mercenary_guild": {
       "name": "Undertakers' Lodge",
       "type": "mercenary_guild",
-      "description": "A fortified charnel house where the realm's hired fighters gather between jobs. They call themselves undertakers — they put things in the ground, one way or another.",
+      "description": "A fortified charnel house where the realm's hired fighters gather between jobs. They call themselves undertakers \u2014 they put things in the ground, one way or another.",
       "price_modifier": 1.1,
       "buys_items": false,
       "accepted_item_types": [
@@ -1178,15 +1238,29 @@
         "skills": []
       },
       "available_companions": [
-        "tsering", "rasabhava", "saka", "mehr",
-        "vilasa", "marmajna",
-        "kripana", "yasha",
-        "nurse_bones", "hustle_bones",
-        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
-        "prashan", "temba",
-        "durvasa", "gomchen",
-        "choki", "nangwa",
-        "drupchen", "khedrup"
+        "tsering",
+        "rasabhava",
+        "saka",
+        "mehr",
+        "vilasa",
+        "marmajna",
+        "kripana",
+        "yasha",
+        "nurse_bones",
+        "hustle_bones",
+        "iron_oath",
+        "the_chronicler",
+        "nyingje",
+        "shantipala",
+        "peldon",
+        "prashan",
+        "temba",
+        "durvasa",
+        "gomchen",
+        "choki",
+        "nangwa",
+        "drupchen",
+        "khedrup"
       ]
     },
     "hg_veterans_camp": {
@@ -1204,21 +1278,35 @@
         "skills": []
       },
       "available_companions": [
-        "tsering", "rasabhava", "saka", "mehr",
-        "vilasa", "marmajna",
-        "kripana", "yasha",
-        "nurse_bones", "hustle_bones",
-        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
-        "prashan", "temba",
-        "durvasa", "gomchen",
-        "choki", "nangwa",
-        "drupchen", "khedrup"
+        "tsering",
+        "rasabhava",
+        "saka",
+        "mehr",
+        "vilasa",
+        "marmajna",
+        "kripana",
+        "yasha",
+        "nurse_bones",
+        "hustle_bones",
+        "iron_oath",
+        "the_chronicler",
+        "nyingje",
+        "shantipala",
+        "peldon",
+        "prashan",
+        "temba",
+        "durvasa",
+        "gomchen",
+        "choki",
+        "nangwa",
+        "drupchen",
+        "khedrup"
       ]
     },
     "hg_alchemist": {
-      "name": "The Dré Herbalist",
+      "name": "The Dr\u00e9 Herbalist",
       "type": "alchemist",
-      "description": "A dré ghost crouches behind a folding table heaped with dried herbs, stoppered gourds, and bundles of something that smells like incense and rot. Its robes are stuffed so full of plant matter that it looks like a walking thicket. It speaks in a dry rasp and seems to genuinely enjoy its trade.",
+      "description": "A dr\u00e9 ghost crouches behind a folding table heaped with dried herbs, stoppered gourds, and bundles of something that smells like incense and rot. Its robes are stuffed so full of plant matter that it looks like a walking thicket. It speaks in a dry rasp and seems to genuinely enjoy its trade.",
       "price_modifier": 0.9,
       "buys_items": true,
       "items": {
@@ -1238,13 +1326,16 @@
       "spells": [],
       "training": {
         "attributes": [],
-        "skills": ["alchemy", "medicine"]
+        "skills": [
+          "alchemy",
+          "medicine"
+        ]
       }
     },
     "hg_black_market": {
       "name": "The Smuggler's Alcove",
       "type": "general",
-      "description": "A low tunnel behind a false wall, lit by a single floating ember. The figure inside won't show its face. It trades in things that shouldn't have made it into the hungry ghost realm — quality ironwork, foreign medicines, a few items with the smell of other worlds still on them. Prices reflect the difficulty of getting anything here at all.",
+      "description": "A low tunnel behind a false wall, lit by a single floating ember. The figure inside won't show its face. It trades in things that shouldn't have made it into the hungry ghost realm \u2014 quality ironwork, foreign medicines, a few items with the smell of other worlds still on them. Prices reflect the difficulty of getting anything here at all.",
       "price_modifier": 1.5,
       "buys_items": true,
       "items": {
@@ -1275,10 +1366,17 @@
     "hg_spell_shop": {
       "name": "The Bone Library",
       "type": "spell_trainer",
-      "description": "A sorcerer-ghost has assembled a collection of sutras and grimoires, most of them water-stained or singed at the edges, all of them legible to those with the patience to study. It charges for access by the session — a small candle's worth of time per spell — and answers no questions that aren't paid for.",
+      "description": "A sorcerer-ghost has assembled a collection of sutras and grimoires, most of them water-stained or singed at the edges, all of them legible to those with the patience to study. It charges for access by the session \u2014 a small candle's worth of time per spell \u2014 and answers no questions that aren't paid for.",
       "price_modifier": 1.1,
       "buys_items": false,
-      "items": {},
+      "items": {
+        "white_charm_common": 2,
+        "black_charm_common": 2,
+        "space_charm_common": 2,
+        "sorcery_charm_common": 2,
+        "enchantment_charm_common": 2,
+        "summoning_charm_common": 2
+      },
       "spells": [
         "minor_heal",
         "bless",
@@ -1295,7 +1393,12 @@
       ],
       "training": {
         "attributes": [],
-        "skills": ["white_magic", "black_magic", "sorcery", "ritual"]
+        "skills": [
+          "white_magic",
+          "black_magic",
+          "sorcery",
+          "ritual"
+        ]
       }
     },
     "infernal_forge": {
@@ -1389,7 +1492,7 @@
     "mercy_ward": {
       "name": "Mercy Ward",
       "type": "healer",
-      "description": "A tent with clean bandages, a smell of herbs, and a medic who patches up anyone who can pay — no questions, no karma, no judgment. In hell this is rare enough to be miraculous.",
+      "description": "A tent with clean bandages, a smell of herbs, and a medic who patches up anyone who can pay \u2014 no questions, no karma, no judgment. In hell this is rare enough to be miraculous.",
       "price_modifier": 1.0,
       "buys_items": false,
       "items": {
@@ -1459,7 +1562,7 @@
     "wardens_pit": {
       "name": "Warden's Pit",
       "type": "skill_trainer",
-      "description": "The pit warden runs the eastern patrols and teaches her soldiers to fight. For coin she'll train outsiders too — up to a point. She has standards.",
+      "description": "The pit warden runs the eastern patrols and teaches her soldiers to fight. For coin she'll train outsiders too \u2014 up to a point. She has standards.",
       "price_modifier": 1.05,
       "buys_items": false,
       "items": {
@@ -1529,7 +1632,7 @@
     "tummo_domain_shop": {
       "name": "The Hermit's Fire",
       "type": "domain_spell_trainer",
-      "description": "The hermit teaches the inner fire — the heat that blazes upward from the secret chakra and melts the crown. These practices cannot be found in any guild.",
+      "description": "The hermit teaches the inner fire \u2014 the heat that blazes upward from the secret chakra and melts the crown. These practices cannot be found in any guild.",
       "price_modifier": 1.5,
       "buys_items": false,
       "items": {},
@@ -1571,7 +1674,7 @@
     "sound_domain_shop": {
       "name": "The Gandharva's Gift",
       "type": "domain_spell_trainer",
-      "description": "The gandharva prince teaches the art of sound — mantra, resonance, and the spaces between notes. These arts cannot be found in any guild.",
+      "description": "The gandharva prince teaches the art of sound \u2014 mantra, resonance, and the spaces between notes. These arts cannot be found in any guild.",
       "price_modifier": 1.5,
       "buys_items": false,
       "items": {},
@@ -1736,7 +1839,7 @@
     "smoke_domain_shop": {
       "name": "Whispers of the Shattered Mirror",
       "type": "domain_spell_trainer",
-      "description": "Knowledge gleaned from smoke and reflection. These arts cannot be taught in any guild — only glimpsed in the mirror's darkness.",
+      "description": "Knowledge gleaned from smoke and reflection. These arts cannot be taught in any guild \u2014 only glimpsed in the mirror's darkness.",
       "price_modifier": 1.5,
       "buys_items": false,
       "items": {},
@@ -1757,7 +1860,7 @@
     "mud_domain_shop": {
       "name": "Mudling Elder's Teaching",
       "type": "domain_spell_trainer",
-      "description": "The elder mudling has agreed to teach the secrets of mud-working. These spells cannot be found in any guild — buy now or lose the chance.",
+      "description": "The elder mudling has agreed to teach the secrets of mud-working. These spells cannot be found in any guild \u2014 buy now or lose the chance.",
       "price_modifier": 1.5,
       "buys_items": false,
       "items": {},
@@ -1799,7 +1902,7 @@
     "cloud_domain_shop": {
       "name": "Songs of the Cloud Nagas",
       "type": "domain_spell_trainer",
-      "description": "The nagas coil around you, humming in their deep rain-voices. What they know of cloud and sky and the space between water and air cannot be found in any guild — and will not be offered twice.",
+      "description": "The nagas coil around you, humming in their deep rain-voices. What they know of cloud and sky and the space between water and air cannot be found in any guild \u2014 and will not be offered twice.",
       "price_modifier": 1.5,
       "buys_items": false,
       "items": {},
