@@ -1,6 +1,33 @@
 # Six Worlds - TODO
 
-Last Updated: 2026-04-05
+Last Updated: 2026-04-07
+
+---
+
+## Psychology System (Layer 1)
+
+Full spec: `docs/superpowers/specs/2026-04-07-psychology-system-design.md`
+Full plan: `docs/superpowers/plans/2026-04-07-psychology-system.md`
+
+Five elemental pressure meters per character (−100 klesha ↔ +100 wisdom). Pressure from events and combat → status effects at ±33/±50 → autonomous events at ±75.
+
+- [ ] **Task 1** — Create `scripts/autoload/psychology_system.gd` skeleton; register after KarmaSystem in `project.godot`
+- [ ] **Task 2** — Add `emotional_pressure` + `emotional_baseline` to BASE_CHARACTER in `character_system.gd`; add `emotional_baseline` field to all races in `races.json`; wire baseline copy in `_apply_race_modifiers()`
+- [ ] **Task 3** — Implement core pressure logic: `apply_pressure()`, `_intensity_multiplier()`, `get_active_statuses()`, `get_emotional_label()` (all named states for all 5 elements × 2 poles × 3 tiers)
+- [ ] **Task 4** — Implement `_check_thresholds()`: fires `autonomous_event_triggered` signal once per crossing, partial valve (+20 back toward neutral), resets on recovery. Connect signal to `_on_autonomous_event()` for inter-party fallout pressure
+- [ ] **Task 5** — Implement `decay_toward_baseline()` for rest system integration
+- [ ] **Task 6** — Wire event outcomes: add `pressure` field handler in `event_manager.gd apply_outcome()`; add `pressure` fields to 3 example hell events
+- [ ] **Task 7** — Wire combat hooks in `combat_manager.gd`: unit death → Water −15 to witnesses; victory → Fire/Air +10; defeat → Earth −10/Space −5
+- [ ] **Task 8** — Show dominant emotional label in character sheet UI (`main_menu.gd`)
+- [ ] **Task 9** — Wire Leadership + Comedy perks to `apply_pressure()` calls
+
+**Future layers (not yet started):**
+- Layer 2: Personality traits & quirks (individual threshold modifiers, trigger predispositions)
+- Layer 3: Intervention mechanic (social skills let one character help another)
+- Yidam integration: mantra practice raises brightness baseline per element
+- Rest system: `decay_toward_baseline()` called on camp/inn rest
+- Chronic darkness counter: accumulates debuffs for time spent below −50
+- Character sheet psychology tab: elemental tendency bars + active statuses + traits
 
 ---
 
@@ -73,7 +100,7 @@ Last Updated: 2026-04-05
 
 #### Open / Deferred
 - [ ] **Ritual implement traits** — special properties (e.g. conch pacification aura, bone life-drain proc, sky-iron void field) to be designed in a dedicated session
-- [ ] **Shop distribution** — no shops currently stock implements; add Plain/Blessed tier items to ritual-focused shops
+- [x] **Shop distribution** — Plain/Blessed implements added to 11 shops (hg_spell_shop, hg_charnel_sorcerer, hg_town_magic, hell_hidden_gompa, hell_yogini_circle, hell_circle_of_yoginis, hell_crossroads_stupa, hell_eternal_fire, hell_mirror_lake, hell_sacred_grove, hell_garuda_roost); added to zone-tier loot pools in hell + HG; 11 magic companions given school-appropriate plain implements.
 - [ ] **Spell Accuracy / Spell Projectiles** — deferred, leaving to ferment (see Design Questions)
 
 #### Other weapon mechanics wired this session
@@ -97,6 +124,29 @@ Last Updated: 2026-04-05
 ---
 
 ## High Priority
+
+### Rest & Time System
+Full spec: `docs/superpowers/specs/2026-04-08-rest-time-system-design.md`
+
+Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick/Camp/Full), food system rework (food only consumed at rest, not per step).
+
+- [x] **Task 1** — Add `hours_elapsed`, `advance_time()`, `day_changed` signal, `current_day`/`hour_of_day` computed properties, `get_time_of_day_label()` to `game_state.gd`; wire save/load
+- [x] **Task 2** — Add `MapManager.tick_mobs()` method (patrol step without player movement); add Space = Wait action in `overworld.gd` that calls it + advances time + ticks statuses
+- [x] **Task 3** — Remove per-step food drain: gut `process_food_step()`, `process_herbs_step()`, starvation damage, per-step HP heal, `steps_without_food`; update `_tick_supply_step()` accordingly
+- [x] **Task 4** — Implement `_do_rest(tier)` in `overworld.gd`: deduct resources (with Logistics discount), restore HP/mana/stamina (with Medicine continuous bonus + temp HP overflow), decay emotional pressure, restore durability (with Smithing scaling + scrap cost), advance time, emit toast
+- [x] **Task 5** — Build rest UI: button in HUD, popup panel with 3 tier options showing costs + affordability, result toast; update supplies.json starting values
+- [x] **Task 6** — Add time display to overworld HUD ("Day N — Evening"); update `_tick_supply_step` to call `advance_time` on each player move
+- [x] **Task 7** — Wire temp HP: add `temp_hp` field to character derived stats; combat_manager absorbs temp HP before real HP on damage
+
+**Follow-up (after core system lands):**
+- [ ] Lunar calendar events — `day_changed` signal is the hook; add cyclic event checks (full moon = day 14, 28... etc.)
+- [ ] Realm-specific rest events — "something stirs in the night" flavour event chance when resting in hell/hungry ghost
+- [ ] Rest perks — wire `_process_rest_perks(character, tier)`: Safe Campsite (no encounter on rest), Lucid Rest (Yoga 7, extra pressure decay), Well-Rested (Medicine 8, temp HP on full rest), Field Surgeon (Medicine 6, revive bleed-out on full rest)
+- [ ] Yoga skill boosts pressure decay rate during rest (Yoga level adds to decay_amount)
+- [ ] Day/night visual changes on overworld map (lighting overlay, different mob behavior)
+- [ ] Block rest when hostile mob is adjacent (optional tension mechanic)
+
+---
 
 ### Projectile System (COMPLETE)
 - [x] Ranged attack misses deviate 1-3 tiles based on how badly the roll failed
@@ -123,10 +173,11 @@ Last Updated: 2026-04-05
 - [ ] Map configs for remaining realms — only hell.json and hungry_ghost.json exist
 - [ ] Enemy archetypes + encounters for animal, human, asura, god realms (hungry_ghost done: 20 archetypes, 37 encounters)
 - [ ] Event files for remaining realms (animal, human, asura, god)
-- [ ] Companion definitions for remaining realms (companions.json has hell only)
+- [ ] Companion definitions for remaining realms (47 companions exist across hell + HG; animal, human, asura, god still empty)
 
 ### Companions
 - [ ] Camp Followers system — UI stub exists in Party tab (`_update_followers_list()`); no backend
+- [ ] Bespoke recruitment events for HG companions — organic recruitment outside shops; not every companion needs one, priority targets: Mehr (golden glint in the dark), Chöki (near still water), Nangwa (haunting a ruined library), Prashan (riddle challenge), Nyingje (found tending other undead), Khedrup (mid-recitation on an auspicious rock), Rasabhava (preservation lab, examine his notes), Durvasa (bound by reflected curse, Air magic / Ritual to stabilize), Gomchen (meditating amid binding contracts)
 
 ---
 
@@ -136,7 +187,7 @@ Last Updated: 2026-04-05
 - [x] Base bonus tables complete for all 35 skills, levels 1–15 (11–15 = item-bonus cap, same value as 10)
 - [x] **Bug fixed**: parse_perks.py now expands `11–15` range rows into individual level keys — perk_system.gd's `str(level)` lookup was silently returning empty dict for levels 11–15
 - [ ] PERKS.md: fill empty perk tiers (levels 2, 4, 6, 8) — 1-2 perks per skill at each
-- [ ] Perk rebalancing — capstone perks should land at required_level 8-10 (distribution still front-loaded)
+- [x] Perk rebalancing — 29 required_level changes across fire, air, space, sorcery, black, summoning, ritual, yoga, enchantment, earth, water magic. Worst offenders (fire L3:6→3, air L5:5→2, space L5:5→3, sorcery L5:5→3) fixed. Strong capstones (dabbler, burn_the_breath, forced_translation, cyclone_mastery) moved to L8. All perk-chain dependencies preserved.
 - [ ] Add flavor text to perks that lack it
 
 **Deferred perks (need new systems before wiring):**
@@ -160,7 +211,8 @@ Last Updated: 2026-04-05
 - [ ] Tactical Assessment preset formations (Logistics 7 perk)
 
 ### Content
-- [ ] More consumable items — currently: 13 potions, 15 bombs, 12 oils, 21 scrolls, 21 charms; all generic (no realm-specific variants)
+- [x] ~~Magic-school charms~~ — all 10 schools × 4 tiers (common/middling/rare/unique) complete with thematic descriptions; distributed across hell + HG shops, loot tables (tier-escalated by zone), and 24 magic-focused companion starting inventories
+- [ ] More consumable items — realm-specific potions, oils, scrolls still thin
 - [ ] More equipment — 24 rare/epic items exist; no legendary tier; could use more variety
 - [ ] More upgrades/perks
 - [x] ~~Alchemy crafting system~~: Reagents supply type, 3 crafting branches (Remedies/Munitions/Applications) × 3 tiers, perk-unlocked, passive brewing toggle — DONE
@@ -174,6 +226,8 @@ Last Updated: 2026-04-05
 - [x] ~~Wire up `random_generate` template items to use the new procedural generation~~ — DONE
 - [x] ~~Integrate talisman perk effects into combat (poison_immune, regen, thorns, etc.)~~ — DONE (all combat perks wired; karma_sight is event-system only)
 - [x] ~~Add talisman/equipment generation to shop and loot systems~~ — DONE (procedural items in loot drops + auto-generated shop stock)
+- [ ] Astrological spells for Space magic school — divination/prophecy flavor; celestial mechanics (eclipses, conjunctions as triggers or effects); motivates Sun Priestess companion's Space magic skills
+- [ ] Paushtikakarma spells for Earth magic school — wealth multiplication, prosperity, dowsing for buried goods/ore; gives mechanical teeth to trade/merchant builds (Hustle Bones companion, Trade+Earth magic synergy)
 
 ### UI Improvements
 - [ ] Tooltip system expansion — item_tooltip.gd works for items; no tooltips on status effects, terrain tiles, or turn order icons in combat
@@ -216,7 +270,7 @@ Last Updated: 2026-04-05
 - [ ] Playtest hell realm end-to-end (combat, shops, events, quest board, portal transition)
 - [ ] Balance pass on spell mana costs (15/40/75/135/225 by level)
 - [ ] Test all 326 spells load and cast correctly
-- [ ] Item flavor text: `space_charm_common` and `rations` may show broken tooltip — needs in-game testing
+- [x] Item flavor text: `space_charm_common` and `rations` — tooltip code verified correct (charm effects shown at lines 139–158 item_tooltip.gd, supply info at 161–171). `space_charm_common` added to `hg_spell_shop`, `hg_charnel_sorcerer`, `hg_town_magic` so it is now reachable in-game.
 
 ---
 

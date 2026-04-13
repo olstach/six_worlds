@@ -47,7 +47,8 @@
 	  "todo": [
         "better_starting_weapon: start with a tier-2 melee weapon instead of tier-1"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 15, "water": 10, "earth": 0, "air": 0}
 	},
 	"blue_devil": {
 	  "name": "Blue Devil",
@@ -97,7 +98,8 @@
 		"soul_jailer",
         "guard"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"yellow_devil": {
 	  "name": "Yellow Devil",
@@ -145,7 +147,8 @@
 	  "todo": [
         "extra_starting_gold: begin with 50 bonus gold"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"green_devil": {
 	  "name": "Green Devil",
@@ -194,7 +197,8 @@
 		"infernal_scribe",
         "spy"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"black_devil": {
 	  "name": "Black Devil",
@@ -252,7 +256,8 @@
 		"infernal_scribe",
         "penitent"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"white_devil": {
 	  "name": "White Devil",
@@ -303,7 +308,8 @@
 		"diplomat",
         "infernal_scribe"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"rolang": {
 	  "name": "Rolang",
@@ -340,7 +346,48 @@
 		"preserved",
         "bog_warden"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	},
+	"preserved": {
+	  "name": "Preserved",
+	  "realm": "hungry_ghost",
+	  "description": "Alchemical oils, mantras, and mineral compounds have halted your decay while others rotted to bone. The lords of their kind among the Rolang — rare, aware, and dangerous. You remember considerably more than most of your kind, and have had long years of stillness to put that memory to use.",
+	  "attribute_modifiers": {
+		"strength": 0,
+		"finesse": -1,
+		"constitution": 1,
+		"focus": 0,
+		"awareness": 2,
+		"charm": -1,
+		"luck": 0
+	  },
+	  "attribute_caps": {
+		"strength": 30,
+		"finesse": 22,
+		"constitution": 32,
+		"focus": 28,
+		"awareness": 30,
+		"charm": 20,
+		"luck": 27
+	  },
+	  "elemental_affinity_bonuses": {
+		"earth": 3
+	  },
+	  "starting_skills": {
+		"alchemy": 2,
+		"black_magic": 1
+	  },
+	  "starting_spells": [],
+	  "reincarnation_weight": 15,
+	  "typical_backgrounds": [
+		"preserved",
+		"charnel_yogi",
+		"scholar",
+		"former_soldier"
+	  ],
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"skeleton": {
 	  "name": "Skeleton",
@@ -377,7 +424,8 @@
 		"charnel_yogi",
         "penitent"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"dralha": {
 	  "name": "Dralha",
@@ -417,7 +465,8 @@
 		"raider",
         "guard"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"gyelpo": {
 	  "name": "Gyelpo",
@@ -462,7 +511,8 @@
 		"priest",
         "penitent"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"dre": {
 	  "name": "Dr\u00e9",
@@ -502,7 +552,8 @@
 	  ],
 	  "resistances": {
 		"physical": 50
-	  }
+	  },
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"vetala": {
 	  "name": "Vetala",
@@ -549,7 +600,8 @@
 		"scholar",
         "former_soldier"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"naga": {
 	  "name": "Naga",
@@ -586,7 +638,8 @@
 		"scholar",
         "priest"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"bee": {
 	  "name": "Bee",
@@ -615,7 +668,8 @@
 	  "starting_spells": [],
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"yaksha": {
 	  "name": "Yaksha",
@@ -644,7 +698,8 @@
 	  "starting_spells": [],
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"human": {
 	  "name": "Human",
@@ -681,7 +736,8 @@
 		"warrior",
         "farmer"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 5, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"nomad": {
 	  "name": "Nomad",
@@ -710,7 +766,8 @@
 	  "starting_spells": [],
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"mountain_folk": {
 	  "name": "Mountain Folk",
@@ -739,7 +796,8 @@
 	  "starting_spells": [],
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"trader": {
 	  "name": "Trader",
@@ -768,7 +826,8 @@
 	  "starting_spells": [],
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"tsen": {
 	  "name": "Tsen",
@@ -797,7 +856,8 @@
 	  "starting_spells": [],
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"rudra": {
 	  "name": "Rudra",
@@ -826,7 +886,8 @@
 	  "starting_spells": [],
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"gandharva": {
 	  "name": "Gandharva",
@@ -855,7 +916,8 @@
 	  "starting_spells": [],
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"apsara": {
 	  "name": "Apsara",
@@ -884,7 +946,8 @@
 	  "starting_spells": [],
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"planetary_deity": {
 	  "name": "Planetary Deity",
@@ -913,7 +976,8 @@
 	  "starting_spells": [],
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"shaza": {
 	  "name": "Shaza",
@@ -950,7 +1014,8 @@
 		"former_soldier",
         "hunter"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"yidag": {
 	  "name": "Yidag",
@@ -987,7 +1052,8 @@
 		"beggar",
         "penitent"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"skeleton_silver": {
 	  "name": "Silver Skeleton",
@@ -1024,7 +1090,8 @@
 		"charnel_yogi",
         "penitent"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"skeleton_copper": {
 	  "name": "Copper Skeleton",
@@ -1061,7 +1128,8 @@
 		"courtier",
         "bone_dancer"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"skeleton_golden": {
 	  "name": "Golden Skeleton",
@@ -1097,7 +1165,8 @@
 		"merchant",
         "catacomb_keeper"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"skeleton_iron": {
 	  "name": "Iron Skeleton",
@@ -1134,7 +1203,8 @@
 		"guard",
         "charnel_yogi"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	},
 	"skeleton_turquoise": {
 	  "name": "Turquoise Skeleton",
@@ -1171,7 +1241,8 @@
 		"wanderer",
         "catacomb_keeper"
 	  ],
-	  "resistances": {}
+	  "resistances": {},
+	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
 	}
   },
   "backgrounds": {

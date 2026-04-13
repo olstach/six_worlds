@@ -381,6 +381,9 @@ func end_combat(victory: bool) -> void:
 	# Sync player unit state back to character_data before clearing units
 	_sync_combat_state_to_characters()
 
+	# Apply post-combat emotional pressure to all player characters
+	_apply_post_combat_pressure(victory)
+
 	combat_active = false
 	_deployment_phase = false
 	combat_ended.emit(victory)
@@ -389,6 +392,19 @@ func end_combat(victory: bool) -> void:
 	all_units.clear()
 	turn_order.clear()
 	combat_grid = null
+
+
+## Apply emotional pressure to party based on combat outcome.
+func _apply_post_combat_pressure(victory: bool) -> void:
+	var party = CharacterSystem.get_party()
+	if victory:
+		for member in party:
+			PsychologySystem.apply_pressure(member, "fire", 10.0)
+			PsychologySystem.apply_pressure(member, "air", 10.0)
+	else:
+		for member in party:
+			PsychologySystem.apply_pressure(member, "earth", -10.0)
+			PsychologySystem.apply_pressure(member, "space", -5.0)
 
 
 ## Write current HP, mana, and persisting DoT statuses back to character_data
@@ -2052,6 +2068,15 @@ func _kill_unit(unit: Node) -> void:
 	unit.is_dead = true
 	unit.is_bleeding_out = false
 	AudioManager.play("debuff_apply")
+
+	# Witnessing a party member die affects all other player units emotionally
+	if unit.team == Team.PLAYER:
+		for other_unit in all_units:
+			if other_unit == unit or other_unit.team != Team.PLAYER:
+				continue
+			if "character_data" in other_unit:
+				PsychologySystem.apply_pressure(other_unit.character_data, "water", -15.0)
+
 	unit_died.emit(unit)
 
 	# Shadow Strike (Daggers 3 + Guile 3): killing an enemy enters stealth
@@ -5355,6 +5380,10 @@ func _resolve_restore_stamina(user: Node, combat_data: Dictionary) -> Dictionary
 		var amount = maxi(1, int(ally.max_stamina * pct / 100.0))
 		ally.restore_stamina(amount)
 		effects.append({"type": "stamina_restore", "target": ally, "amount": amount})
+		# Psychology: comic relief lifts air (levity/wit) and space (freedom from worry) pressure in allies
+		if "character_data" in ally:
+			PsychologySystem.apply_pressure(ally.character_data, "air", 8.0)
+			PsychologySystem.apply_pressure(ally.character_data, "space", 5.0)
 	combat_log.emit("%s rallies the party — all allies restore %d%% stamina!" % [user.unit_name, pct])
 	return {"success": true, "effects": effects}
 
@@ -6759,6 +6788,10 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 			var ally_dmg = int(ally.get_attack_damage() * 0.10) if ally.has_method("get_attack_damage") else 2
 			if ally_dmg > 0:
 				_apply_stat_modifier(ally, "damage", ally_dmg, 2)
+			# Psychology: rallying leadership inspires earth stability and fire drive in nearby allies
+			if "character_data" in ally:
+				PsychologySystem.apply_pressure(ally.character_data, "earth", 5.0)
+				PsychologySystem.apply_pressure(ally.character_data, "fire", 3.0)
 
 	# Avatar of the Storm (Air 5): all allies gain +5% Air bonus damage and 10% stun chance on attacks
 	# Applied as an aura: if any ally of the attacker has this perk, the bonus applies

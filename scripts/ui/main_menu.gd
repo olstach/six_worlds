@@ -323,6 +323,40 @@ func _update_companion_ui(character: Dictionary) -> void:
 func _update_header(character: Dictionary) -> void:
 	name_value.text = character.get("name", "Unknown")
 
+	# Show the character's dominant emotional state beneath the name.
+	# The dominant state is: highest severity (crisis > major > minor),
+	# with dark states taking priority over bright at equal severity.
+	var emotion_label_node_name: String = "EmotionStateLabel"
+	var name_block: Node = name_value.get_parent()  # NameBlock VBoxContainer
+	var emotion_label: Label
+	if name_block.has_node(emotion_label_node_name):
+		emotion_label = name_block.get_node(emotion_label_node_name)
+	else:
+		emotion_label = Label.new()
+		emotion_label.name = emotion_label_node_name
+		emotion_label.add_theme_font_size_override("font_size", 11)
+		name_block.add_child(emotion_label)
+
+	if not PsychologySystem:
+		emotion_label.visible = false
+	else:
+		var statuses: Array[Dictionary] = PsychologySystem.get_active_statuses(character)
+		if not statuses.is_empty():
+			# Weight: severity (0/1/2) × 10 + dark bonus (1 for dark, 0 for bright)
+			var dominant: Dictionary = statuses[0]
+			for s in statuses:
+				var s_sev: int = 2 if s.get("level", "minor") == "crisis" else (1 if s.get("level", "minor") == "major" else 0)
+				var d_sev: int = 2 if dominant.get("level", "minor") == "crisis" else (1 if dominant.get("level", "minor") == "major" else 0)
+				var s_weight: int = s_sev * 10 + (1 if s.get("polarity", "bright") == "dark" else 0)
+				var d_weight: int = d_sev * 10 + (1 if dominant.get("polarity", "bright") == "dark" else 0)
+				if s_weight > d_weight:
+					dominant = s
+			emotion_label.text = dominant.get("label", "")
+			emotion_label.modulate = Color(0.9, 0.5, 0.2) if dominant.get("polarity", "bright") == "dark" else Color(0.5, 0.9, 0.5)
+			emotion_label.visible = true
+		else:
+			emotion_label.visible = false
+
 	var race_id = character.get("race", "")
 	var race_data = CharacterSystem.get_race_data(race_id)
 	race_value.text = race_data.get("name", race_id.capitalize().replace("_", " "))

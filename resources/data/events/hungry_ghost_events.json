@@ -217,6 +217,7 @@
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "random",
+            "companion_pool": ["tsering", "drupchen"],
             "free": true,
             "text": "You haul it clear of the earth — a confused rolang, blinking in the grey light. It looks at its hands, then at you. Something surfaces in its eyes. Not a full mind, but enough. It stays close to your heel like a dog that's found someone.",
             "karma": {
@@ -244,6 +245,7 @@
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "random",
+            "companion_pool": ["tsering", "drupchen"],
             "free": true,
             "text": "You get both hands under the soil and heave. The earth gives. The rolang sits up, dazed and blinking. It looks at you for a long moment, then slowly nods. It will follow you.",
             "karma": {
@@ -1177,7 +1179,7 @@
           },
           "outcome": {
             "type": "recruit_companion",
-            "companion_id": "random",
+            "companion_id": "temba",
             "free": true,
             "text": "The offering is correct. The incantation is correct. A shape emerges from the mound's dark — a dralha, a warrior-chieftain, still bearing the weapons of a kingdom that has not existed in centuries. It looks at you with eyes that have not looked at anything for a very long time.",
             "karma": {
@@ -1645,6 +1647,7 @@
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "random",
+            "companion_pool": ["iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon", "nurse_bones", "hustle_bones"],
             "free": true,
             "text": "It takes a few minutes of material to break through the professional sullenness. Then one skeleton starts laughing. Then another. By the end, the lodge is rowdy and welcoming. One of the mercenaries pulls you aside afterward. \"That was good. I could use a change of scene. You taking on crew?\"",
             "karma": {
@@ -3266,7 +3269,7 @@
           },
           "outcome_success": {
             "type": "recruit_companion",
-            "companion_id": "random",
+            "companion_id": "iron_oath",
             "free": true,
             "text": "The bones rise and coalesce — dozens of fragments assembling into something massive. It looks at you with eyes made of hollow sockets and memory. Then, slowly, it kneels.",
             "karma": {
@@ -5732,6 +5735,634 @@
             "karma": {
               "god": 12
             }
+          }
+        }
+      ]
+    },
+
+    "hg_mehr": {
+      "id": "hg_mehr",
+      "title": "The Eye in the Dark",
+      "realm": "hungry_ghost",
+      "text": "Something catches the thin light of the charnel grounds and throws it back — gold, steady, unblinking. Not an insect. Not a torch. An eye. Set in the face of a preserved woman standing knee-deep in black water, watching you with the patience of someone who has been here a long time.",
+      "choices": [
+        {
+          "id": "call_out",
+          "type": "default",
+          "text": "Call out to her",
+          "outcome": {
+            "type": "text",
+            "text": "She answers. Dry, measured, without warmth or hostility. She answers your questions the way a stone does if you press your ear to it. She is not interested in traveling. You are not sufficiently interesting.",
+            "rewards": { "xp": 5 },
+            "karma": {}
+          }
+        },
+        {
+          "id": "ritual_flame",
+          "type": "requirement",
+          "text": "Light a ritual flame — the old greeting of the Sun priesthood",
+          "requirements": {
+            "skills": { "fire_magic": 5 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "mehr",
+            "free": true,
+            "text": "The flame catches her attention in a way nothing else would. She straightens. Her golden eye moves before the other one does. 'Where did you learn that form?' She is already wading toward you before you finish answering.",
+            "karma": { "god": 3 }
+          }
+        },
+        {
+          "id": "read_the_signs",
+          "type": "requirement",
+          "text": "Ask about the prophecy — you have enough to read what she was reading",
+          "requirements": {
+            "skills": { "space_magic": 4 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "mehr",
+            "free": true,
+            "text": "Her good eye narrows. The gold one does not move. 'That is the first intelligent question anyone has asked me in a very long time.' A pause. 'Come. Walk with me while I explain what it actually said.'",
+            "karma": { "human": 2 }
+          }
+        },
+        {
+          "id": "speak_as_equal",
+          "type": "roll",
+          "text": "Speak to her as an equal — not with reverence, not with wariness",
+          "requirements": {
+            "roll": { "attribute": "charm", "difficulty": 14 }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "mehr",
+            "free": true,
+            "text": "She studies you for a long moment. 'You have the manner of someone who has survived things,' she says. 'I find that more persuasive than credentials.' She wades toward you.",
+            "karma": { "human": 3 }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "She looks at you the way she must have looked at the court before they threw her in the tar pit. 'I have heard every manner of introduction,' she says. 'Go.'",
+            "karma": {}
+          }
+        }
+      ]
+    },
+
+    "hg_choki": {
+      "id": "hg_choki",
+      "title": "The Gathering",
+      "realm": "hungry_ghost",
+      "text": "At the edge of a bog with no wind and no movement, a girl sits watching the water. She does not look up. She has been here long enough that moss has grown around where she sits. She is holding a bundle of forest plants that dried to nothing long ago.",
+      "choices": [
+        {
+          "id": "leave_her",
+          "type": "default",
+          "text": "Leave her to the water",
+          "outcome": {
+            "type": "text",
+            "text": "The bog is silent as you walk away. You don't hear her move.",
+            "rewards": { "xp": 3 },
+            "karma": { "animal": 1 }
+          }
+        },
+        {
+          "id": "touch_the_water",
+          "type": "requirement",
+          "text": "Touch the water beside her — let it speak for you",
+          "requirements": {
+            "skills": { "water_magic": 4 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "choki",
+            "free": true,
+            "text": "The water stirs slightly under your hand. She watches it. 'It was like that,' she says. 'One moment there was nothing. Then—' She trails off. Then: 'You are going somewhere. Can I come?'",
+            "karma": { "water": 3, "human": 2 }
+          }
+        },
+        {
+          "id": "ask_what_she_gathered",
+          "type": "requirement",
+          "text": "Ask her what she was gathering when the flood came",
+          "requirements": {
+            "skills": { "logistics": 5 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "choki",
+            "free": true,
+            "text": "She finally looks up. Something in the question — the specificity of it, the acknowledgment of what she was doing when she left — gets through where comfort never would. She tells you everything she was carrying. She asks if you need a guide.",
+            "karma": { "human": 4 }
+          }
+        },
+        {
+          "id": "sit_in_silence",
+          "type": "roll",
+          "text": "Sit beside her without speaking — wait for her to acknowledge you",
+          "requirements": {
+            "roll": { "attribute": "awareness", "difficulty": 15 }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "choki",
+            "free": true,
+            "text": "The silence stretches to an hour. Then two. Then she says: 'You're still here.' After another long while: 'Most people leave.' She looks at you sideways. 'Where are you going?'",
+            "karma": { "human": 3, "animal": 2 }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "She doesn't acknowledge you. The waiting becomes its own kind of grief. You eventually stand and go.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+
+    "hg_nangwa": {
+      "id": "hg_nangwa",
+      "title": "The Unfinished Argument",
+      "realm": "hungry_ghost",
+      "text": "In the collapsed shell of what was once a library — shelves of ash, scrolls of smoke — a barely-visible figure moves between the ruins. It is picking up nothing, reading nothing, but its lips are moving. Occasionally it stops, gestures at empty air, shakes its head, and starts again from the beginning.",
+      "choices": [
+        {
+          "id": "watch_and_leave",
+          "type": "default",
+          "text": "Watch him for a while, then leave",
+          "outcome": {
+            "type": "text",
+            "text": "He doesn't notice you leave. The argument continues.",
+            "rewards": { "xp": 4 },
+            "karma": {}
+          }
+        },
+        {
+          "id": "complete_his_sentence",
+          "type": "requirement",
+          "text": "Complete his sentence — you can see where the argument is going",
+          "requirements": {
+            "skills": { "learning": 5 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "nangwa",
+            "free": true,
+            "text": "He stops. Turns toward you with the most attention he has given anything in centuries. He seems to become slightly more present in the physical world as he focuses. 'Walk with me,' he says. 'I think better when I walk. Tell me if I have this right.'",
+            "karma": { "human": 3 }
+          }
+        },
+        {
+          "id": "reach_through_space",
+          "type": "requirement",
+          "text": "Reach toward him through space — make contact with the part of him that is still here",
+          "requirements": {
+            "skills": { "space_magic": 4 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "nangwa",
+            "free": true,
+            "text": "For a moment, genuine contact. He startles. Looks at his hands as if seeing them for the first time in a while. 'Oh,' he says. 'I have been quite far away.' He looks at you with new attention. 'Would you stay nearby? I find I concentrate better when someone is present.'",
+            "karma": { "space": 2 }
+          }
+        },
+        {
+          "id": "follow_the_argument",
+          "type": "roll",
+          "text": "Follow the argument — interrupt at the right moment",
+          "requirements": {
+            "roll": { "attribute": "focus", "difficulty": 14 }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "nangwa",
+            "free": true,
+            "text": "You catch the flaw and name it. He stops mid-gesture. 'Say that again.' You do. He is silent for a full minute. Then: 'I hadn't considered that approach.' A longer silence. 'Come with me while I think it through. I need a sounding board.'",
+            "karma": { "human": 2 }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "Your interjection breaks his concentration entirely. He dissipates for a moment, then reforms, looking confused and irritated. You have cost him hours of work.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+
+    "hg_prashan": {
+      "id": "hg_prashan",
+      "title": "The Crossroads Question",
+      "realm": "hungry_ghost",
+      "text": "A vetala perches on a crumbling milestone, its mismatched layers of stolen cloth draped over a body it wears like a borrowed coat. It turns its head at your approach with the particular alertness of someone who has been waiting for exactly this. 'Ah,' it says. 'A traveler. I have a question for you.'",
+      "choices": [
+        {
+          "id": "refuse",
+          "type": "default",
+          "text": "Refuse to engage",
+          "outcome": {
+            "type": "text",
+            "text": "'As you like. You will be back. They always come back when they have had time to think of an answer.' It settles in to wait.",
+            "rewards": { "xp": 4 },
+            "karma": {}
+          }
+        },
+        {
+          "id": "ask_a_better_question",
+          "type": "requirement",
+          "text": "Ask it a better question instead of answering",
+          "requirements": {
+            "skills": { "learning": 6 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "prashan",
+            "free": true,
+            "text": "It goes very still. This has not happened before — or not for a very long time. 'You—' It stops. 'Where did you—' Stops again. Slowly, a smile spreads across a face not quite designed for it. 'All right. This is excellent. You will come with me. I insist.'",
+            "karma": { "air": 3, "human": 2 }
+          }
+        },
+        {
+          "id": "tell_a_joke",
+          "type": "requirement",
+          "text": "Tell it a joke instead of answering",
+          "requirements": {
+            "skills": { "comedy": 4 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "prashan",
+            "free": true,
+            "text": "It blinks. Then, despite itself, makes a sound. Then another. 'That is — oh, that is terrible. That is genuinely terrible.' Its head is listing sideways with laughter. 'Come, I'll show you something better. I promise.'",
+            "karma": { "human": 3 }
+          }
+        },
+        {
+          "id": "answer_the_riddle",
+          "type": "roll",
+          "text": "Answer the riddle",
+          "requirements": {
+            "roll": { "attribute": "awareness", "difficulty": 15 }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "prashan",
+            "free": true,
+            "text": "It tilts its head. Then further. Then further still, nearly upside down. 'Hmm.' A long pause. 'That is either a very good answer or a very bad one, and I cannot immediately tell which.' It straightens. 'I need to follow this further. Come with me.'",
+            "karma": { "human": 2 }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "'No. That is the obvious answer. Everyone says that.' It gestures dismissively. 'Go away. Come back when you have thought more carefully.'",
+            "karma": {}
+          }
+        }
+      ]
+    },
+
+    "hg_nyingje": {
+      "id": "hg_nyingje",
+      "title": "The Round",
+      "realm": "hungry_ghost",
+      "text": "Among the ruins of a catacomb, a silver skeleton moves methodically from form to form — rolangs, dré, the occasional barely-present ghost. It is tending them. Binding wounds that will not heal, offering a hand to things that won't take it, reciting something under its breath to creatures that cannot hear. It does not seem to need an audience.",
+      "choices": [
+        {
+          "id": "leave_without_disturbing",
+          "type": "default",
+          "text": "Leave without disturbing her",
+          "outcome": {
+            "type": "text",
+            "text": "She doesn't look up as you go. The recitation continues.",
+            "rewards": { "xp": 6 },
+            "karma": { "god": 3, "human": 2 }
+          }
+        },
+        {
+          "id": "help_with_work",
+          "type": "requirement",
+          "text": "Help her with her round — tend alongside her",
+          "requirements": {
+            "skills": { "white_magic": 5 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "nyingje",
+            "free": true,
+            "text": "You work in silence for a while. She watches your technique without comment. Then: 'You have been taught properly.' A pause. 'By whom?' By the time you finish answering, you are both walking. You realize later you agreed to travel together without either of you saying so directly.",
+            "karma": { "god": 5, "human": 3 }
+          }
+        },
+        {
+          "id": "meditate_nearby",
+          "type": "requirement",
+          "text": "Sit in meditation nearby — make yourself a point of stillness in this place",
+          "requirements": {
+            "skills": { "yoga": 5 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "nyingje",
+            "free": true,
+            "text": "She completes her round and comes back to where you are sitting. Waits. When you open your eyes, she is very close. 'You practice,' she says. It is not a question. A pause. 'I will walk with you for a while.'",
+            "karma": { "god": 4 }
+          }
+        },
+        {
+          "id": "ask_directly",
+          "type": "roll",
+          "text": "Ask her directly: will you travel with us?",
+          "requirements": {
+            "roll": { "attribute": "charm", "difficulty": 16 }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "nyingje",
+            "free": true,
+            "text": "She pauses in her work. Studies you with empty eye sockets that somehow convey careful attention. 'You are going further than here,' she says. 'There will be beings who need tending there too.' She finishes with her current patient, then stands. 'I will come.'",
+            "karma": { "god": 4, "human": 2 }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "'I am needed here.' She returns to her work without hostility. It is simply true.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+
+    "hg_khedrup": {
+      "id": "hg_khedrup",
+      "title": "The Auspicious Count",
+      "realm": "hungry_ghost",
+      "text": "On a flat rock carved with auspicious symbols, a preserved rolang sits in full meditation posture, counting beads with extraordinary precision. His lips move with sub-vocalized counts. Beside him, a pile of tally marks in the stone suggests he has been at this particular session for a very long time. He has the focused look of a man who is almost sure his formula is right.",
+      "choices": [
+        {
+          "id": "leave_him",
+          "type": "default",
+          "text": "Leave him to his counting",
+          "outcome": {
+            "type": "text",
+            "text": "The counting continues. The tally marks accumulate.",
+            "rewards": { "xp": 3 },
+            "karma": {}
+          }
+        },
+        {
+          "id": "spot_the_flaw",
+          "type": "requirement",
+          "text": "Point out a flaw in his formula — you can see where the multiplier breaks down",
+          "requirements": {
+            "skills": { "ritual": 5 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "khedrup",
+            "free": true,
+            "text": "His hand stops on the beads. He looks up for the first time. 'Show me.' You do. He studies it. Studies you. Then: 'I may need to revise my methodology. I would welcome a second opinion — going forward.'",
+            "karma": { "human": 2 }
+          }
+        },
+        {
+          "id": "examine_preservation",
+          "type": "requirement",
+          "text": "Examine his preserved state — make a technical observation",
+          "requirements": {
+            "skills": { "alchemy": 4 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "khedrup",
+            "free": true,
+            "text": "'Copper oxide as the fixative?' He looks up sharply. 'How did you—' He examines his own hand, then back at you. 'What else can you tell?' The conversation goes on for some time. By the end he is standing. 'I should like to continue this. If you're traveling, I'll accompany you as far as convenient.'",
+            "karma": {}
+          }
+        },
+        {
+          "id": "wait_for_the_count",
+          "type": "roll",
+          "text": "Wait for him to complete his count — do not interrupt",
+          "requirements": {
+            "roll": { "attribute": "focus", "difficulty": 14 }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "khedrup",
+            "free": true,
+            "text": "Three hours. Four. He reaches the end of his calculation, opens his eyes, and finds you there. 'You waited.' A pause. 'Most don't.' He consults his tallies. 'This is inconvenient. I will need to adjust for your presence in the calculation. Sit down. What is your birth star?'",
+            "karma": { "human": 2 }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You shift at the wrong moment. He loses count, closes his eyes, and begins again from the beginning without acknowledging you.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+
+    "hg_rasabhava": {
+      "id": "hg_rasabhava",
+      "title": "The Formula",
+      "realm": "hungry_ghost",
+      "text": "In a low-ceilinged catacomb chamber, a preserved zombie works steadily at a cluttered bench. Phials, powders, a bellows made of preserved lung. The formula on the stone tablet before him is enormously complex. He is at the part he always reaches before noticing something is wrong and starting over. He has not looked up.",
+      "choices": [
+        {
+          "id": "leave_him",
+          "type": "default",
+          "text": "Leave him to it",
+          "outcome": {
+            "type": "text",
+            "text": "He doesn't notice you leave. He's found something to check.",
+            "rewards": { "xp": 4 },
+            "karma": {}
+          }
+        },
+        {
+          "id": "identify_breakdown",
+          "type": "requirement",
+          "text": "Identify the phase where the formula breaks down",
+          "requirements": {
+            "skills": { "alchemy": 5 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "rasabhava",
+            "free": true,
+            "text": "'The stabilization phase — your catalyst ratio shifts at temperature.' He goes absolutely still. 'Say that again.' You do. He checks it three times. 'I have been wrong for forty-three years.' He closes his eyes. Opens them. 'I believe I need a different sort of problem. Will you have me?'",
+            "karma": { "human": 2 }
+          }
+        },
+        {
+          "id": "suggest_summoning",
+          "type": "requirement",
+          "text": "Ask what he is trying to preserve and whether it can be summoned instead",
+          "requirements": {
+            "skills": { "summoning": 3 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "rasabhava",
+            "free": true,
+            "text": "He looks up for the first time. 'You're suggesting — instead of physical fixation, a binding of—' He sets down his tools. 'That would require a collaborator.' A pause. He looks at you properly. 'Come in. Close the door. I want to try something.'",
+            "karma": {}
+          }
+        },
+        {
+          "id": "read_the_formula",
+          "type": "roll",
+          "text": "Read the formula over his shoulder — try to spot what keeps going wrong",
+          "requirements": {
+            "roll": { "attribute": "awareness", "difficulty": 13 }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "rasabhava",
+            "free": true,
+            "text": "You see it — a small error in the stabilization phase, invisible in isolation but fatal in combination. 'There,' you say. He looks. Silence. 'That can't be right. I've checked it six—' He checks it again. 'Oh.' The smallest, most deflated sound. Then: 'Are you traveling? I may want to get out of this room.'",
+            "karma": { "human": 1 }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You can follow the general outline but the specifics are beyond you. He doesn't look up.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+
+    "hg_durvasa": {
+      "id": "hg_durvasa",
+      "title": "The Contained Curse",
+      "realm": "hungry_ghost",
+      "text": "In a hollow beneath a collapsed stupa, a gyelpo sits within a circle of his own making — binding signs carved into the stone, faintly active. He is maintaining a careful stillness. Whatever is bound is inside him. He watches you approach with eyes that are doing a great deal of work to remain calm.",
+      "choices": [
+        {
+          "id": "leave_him",
+          "type": "default",
+          "text": "Leave him to it — this is his problem",
+          "outcome": {
+            "type": "text",
+            "text": "You feel his eyes on your back as you leave. The sigils continue to glow.",
+            "karma": { "hell": 2 }
+          }
+        },
+        {
+          "id": "disperse_with_air",
+          "type": "requirement",
+          "text": "Diffuse the bound energy through the air — disperse it gradually",
+          "requirements": {
+            "skills": { "air_magic": 5 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "durvasa",
+            "free": true,
+            "text": "It takes time. It takes all the steadiness you have. Gradually the sigils stop glowing. He slumps, then straightens. He looks at his hands, then at you. 'You have done this before,' he says. 'No,' you say. He considers this. 'Hm. I owe you a debt. How are you traveling?'",
+            "karma": { "air": 3, "human": 3 }
+          }
+        },
+        {
+          "id": "perform_reversal",
+          "type": "requirement",
+          "text": "Perform a proper reversal — unmake the binding through ceremony",
+          "requirements": {
+            "skills": { "ritual": 6 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "durvasa",
+            "free": true,
+            "text": "The curse unwrites itself, step by step. He exhales for the first time in what sounds like a very long time. 'Thorough,' he says. 'Methodical. I appreciate methodical.' He stands slowly. 'Whoever taught you that taught you well. I find myself without current employment. Are you taking work?'",
+            "karma": { "human": 3 }
+          }
+        },
+        {
+          "id": "read_the_binding",
+          "type": "roll",
+          "text": "Try to read the binding — understand what you are dealing with",
+          "requirements": {
+            "roll": { "attribute": "focus", "difficulty": 15 }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "durvasa",
+            "free": true,
+            "text": "A death-curse, reflected and internalized. He has been holding it in containment since it returned to him. 'How long?' you ask. He answers. You do not ask again. You sit across from him and begin talking through options. By the time the sigils fade, you are colleagues.",
+            "karma": { "human": 2 }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You can see something is deeply wrong but not what. He watches you fail to understand with the patience of someone who has been sitting very still for a very long time.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+
+    "hg_gomchen": {
+      "id": "hg_gomchen",
+      "title": "The Contract Web",
+      "realm": "hungry_ghost",
+      "text": "In a monastery that has somehow persisted in the charnel grounds — crumbling but still standing, its prayer flags bleached to grey — a gyelpo meditates in the central hall. Carved into every surface around him: contracts. Obligation clauses. Reciprocal bindings. The accumulated leverage of a long political career, frozen in stone. He sits in the center of it with his eyes slightly open.",
+      "choices": [
+        {
+          "id": "leave_him",
+          "type": "default",
+          "text": "Leave him to his contracts",
+          "outcome": {
+            "type": "text",
+            "text": "The hall is silent except for the slow erosion of stone.",
+            "karma": { "hell": 1 }
+          }
+        },
+        {
+          "id": "dissolve_the_binding",
+          "type": "requirement",
+          "text": "Dissolve the primary binding — force the keystone obligation apart",
+          "requirements": {
+            "skills": { "sorcery": 6 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "gomchen",
+            "free": true,
+            "text": "The stone cracks. The inscription flakes. He exhales slowly. 'I felt that.' The rest of the web loosens by degrees. He opens his eyes fully. 'You have just made me more dangerous. I hope you know what you are doing.' He stands, after effort. 'I owe you a debt. I prefer to pay them personally.'",
+            "karma": { "human": 3 }
+          }
+        },
+        {
+          "id": "read_obligations_back",
+          "type": "requirement",
+          "text": "Read the obligations back to him — enumerate the full cost of what he is holding",
+          "requirements": {
+            "skills": { "black_magic": 5 }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "gomchen",
+            "free": true,
+            "text": "You read them back slowly. Each one. He is very still. When you finish, the hall is quiet. 'I know,' he says. 'Say it again. Slower.' You do. When you finish the second time, something changes in his face. 'I have been very foolish,' he says quietly. 'Will you walk with me? I need to think outside these walls.'",
+            "karma": { "human": 4 }
+          }
+        },
+        {
+          "id": "find_the_keystone",
+          "type": "roll",
+          "text": "Study the contract web — try to find the obligation everything else depends on",
+          "requirements": {
+            "roll": { "attribute": "awareness", "difficulty": 16 }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "gomchen",
+            "free": true,
+            "text": "You find it — a debt of precedence, buried under thirty layers of mutual obligation. You point to it without speaking. His eyes focus for the first time. 'You see it,' he says. 'No one has seen it.' A long pause. 'Then you are someone worth traveling with. Come.'",
+            "karma": { "human": 2 }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The web is too complex. Everything connects to everything else. He watches you fail to find the thread without expression.",
+            "karma": {}
           }
         }
       ]

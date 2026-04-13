@@ -14,12 +14,14 @@ extends Control
 @onready var scrap_label: Label = %ScrapLabel
 @onready var reagents_label: Label = %ReagentsLabel
 @onready var terrain_label: Label = %TerrainLabel
+@onready var time_label: Label = %TimeLabel
 @onready var char_sheet_button: Button = %CharSheetButton
 @onready var equipment_button: Button = %EquipmentButton
 @onready var party_button: Button = %PartyButton
 @onready var spellbook_button: Button = %SpellbookButton
 @onready var crafting_button: Button = %CraftingButton
 @onready var journal_button: Button = %JournalButton
+@onready var rest_button: Button = %RestButton
 @onready var toast_label: Label = %ToastLabel
 
 # Event overlay controls (children of EventOverlay CanvasLayer)
@@ -45,6 +47,8 @@ var _char_sheet_open: bool = false
 var _shop_open: bool = false
 var _main_menu_open: bool = false
 var _quest_board_open: bool = false
+var _rest_open: bool = false
+var _rest_layer: CanvasLayer = null
 var _quest_board_instance: Control = null
 var _quest_board_layer: CanvasLayer = null
 
@@ -176,13 +180,16 @@ journal_button.pressed.connect(func(): _open_char_sheet_to_tab(5))
 	# Initialize HUD
 	_update_hud()
 
+	# Connect rest button
+	rest_button.pressed.connect(_open_rest_panel)
+
 	# Add hover tooltips to supply counter labels
 	gold_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	gold_label.tooltip_text = "Gold — used for shopping, hiring companions, and bribes"
 	food_label.mouse_filter = Control.MOUSE_FILTER_PASS
-	food_label.tooltip_text = "Food — consumed each step. Running out drains HP."
+	food_label.tooltip_text = "Food — consumed when resting. Feeds the party between combats."
 	herbs_label.mouse_filter = Control.MOUSE_FILTER_PASS
-	herbs_label.tooltip_text = "Herbs — used for Medicine and Alchemy, healing between fights"
+	herbs_label.tooltip_text = "Herbs — consumed when resting (Camp and Full Rest). Boosts healing recovery."
 	scrap_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	scrap_label.tooltip_text = "Scrap — raw material for Crafting"
 	reagents_label.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -247,8 +254,20 @@ func _unhandled_input(event: InputEvent) -> void:
 				# Message log toggle
 				_toggle_log_panel()
 				get_viewport().set_input_as_handled()
+			KEY_SPACE:
+				if _event_open or _shop_open or _quest_board_open or _main_menu_open or _char_sheet_open:
+					return
+				# Wait action: advance time + tick mobs + tick statuses
+				GameState.advance_time(GameState.HOURS_PER_STEP)
+				MapManager.tick_mobs()
+				_tick_overworld_statuses()
+				_update_time_label()
+				get_viewport().set_input_as_handled()
 			KEY_ESCAPE:
-				if _main_menu_open:
+				if _rest_open:
+					_close_rest_panel()
+					get_viewport().set_input_as_handled()
+				elif _main_menu_open:
 					_close_main_menu()
 					get_viewport().set_input_as_handled()
 				elif _char_sheet_open:
@@ -274,6 +293,7 @@ func _update_hud() -> void:
 	scrap_label.text = "Scrap: " + str(GameState.scrap)
 	reagents_label.text = "Reagents: " + str(GameState.reagents)
 	_update_terrain_label()
+	_update_time_label()
 
 
 func _update_terrain_label() -> void:
@@ -291,6 +311,10 @@ func _update_terrain_label() -> void:
 	else:
 		speed_text = " (Blocked)"
 	terrain_label.text = terrain_name + speed_text
+
+
+func _update_time_label() -> void:
+	time_label.text = "Day %d — %s" % [GameState.current_day + 1, GameState.get_time_of_day_label()]
 
 
 # ============================================
@@ -663,13 +687,15 @@ func _on_char_sheet_visibility_changed() -> void:
 # ============================================
 
 func _on_party_moved(_from: Vector2i, _to: Vector2i) -> void:
+	GameState.advance_time(GameState.HOURS_PER_STEP)
 	_update_terrain_label()
 	_tick_overworld_statuses()
+	_update_time_label()
 	_tick_supply_step()
 	_check_party_death()
 
 
-## Check if all party members have died from starvation or status damage.
+## Check if all party members have died from status damage or other sources.
 ## If so, transition to the Bardo death screen.
 func _check_party_death() -> void:
 	var party := CharacterSystem.get_party()
@@ -716,63 +742,24 @@ func _tick_overworld_statuses() -> void:
 
 ## Process one step's worth of supply consumption and passive effects.
 ## Called from _on_party_moved after status ticks.
+## Food and herbs are no longer consumed per step — they are consumed only at rest.
 func _tick_supply_step() -> void:
 	var party := CharacterSystem.get_party()
 	if party.is_empty():
 		return
 
-	# Gather per-party-member stats needed for supply calculations
-	var party_size := party.size()
 	var best_logistics := 0
-	var best_medicine  := 0
-	var best_crafting  := 0
+	var best_smithing  := 0
 	var best_alchemy   := 0
-	var lowest_con     := 999
 
 	for char in party:
 		var skills: Dictionary = char.get("skills", {})
 		best_logistics = maxi(best_logistics, int(skills.get("logistics", 0)))
-		best_medicine  = maxi(best_medicine,  int(skills.get("medicine",  0)))
-		best_crafting  = maxi(best_crafting,  int(skills.get("crafting",  0)))
+		best_smithing  = maxi(best_smithing,  int(skills.get("smithing",  0)))
 		best_alchemy   = maxi(best_alchemy,   int(skills.get("alchemy",   0)))
-		lowest_con     = mini(lowest_con, int(char.get("attributes", {}).get("constitution", 10)))
 
-	if lowest_con == 999:
-		lowest_con = 10
-
-	# --- Food: consumption, starvation, base passive healing ---
-	var food_result := GameState.process_food_step(party_size, best_logistics, lowest_con)
-	var heal_pct := 0.0
-
-	if food_result.get("healing_active", false):
-		heal_pct = 1.0  # 1% max HP per step when fed
-
-	if food_result.get("is_starving", false):
-		var dmg_pct: float = food_result.get("starvation_damage_pct", 2.0)
-		for char in party:
-			var derived: Dictionary = char.get("derived", {})
-			var max_hp: int = derived.get("max_hp", 100)
-			var dmg: int = maxi(1, int(max_hp * dmg_pct / 100.0))
-			derived["current_hp"] = maxi(0, derived.get("current_hp", max_hp) - dmg)
-		_show_toast("Party is starving! −%d%% HP per step" % int(dmg_pct))
-		_spawn_floating_text("Starving!", Color(1.0, 0.15, 0.15))
-
-	# --- Herbs: Medicine passive bonus healing ---
-	var herb_bonus: float = GameState.process_herbs_step(best_medicine, best_logistics)
-	heal_pct += herb_bonus
-
-	# --- Apply passive healing to all party members ---
-	if heal_pct > 0.0:
-		for char in party:
-			var derived: Dictionary = char.get("derived", {})
-			var max_hp: int = derived.get("max_hp", 100)
-			var cur_hp: int = derived.get("current_hp", max_hp)
-			if cur_hp < max_hp:
-				var heal_amt: int = maxi(1, int(max_hp * heal_pct / 100.0))
-				derived["current_hp"] = mini(max_hp, cur_hp + heal_amt)
-
-	# --- Scrap: Crafting passive repair (effect applied when durability system is ready) ---
-	GameState.process_scrap_step(best_crafting, best_logistics)
+	# --- Scrap: Smithing passive repair ---
+	GameState.process_scrap_step(best_smithing, best_logistics)
 
 	# --- Reagents: Alchemy passive brewing ---
 	if best_alchemy > 0:
@@ -814,6 +801,253 @@ func _get_unlocked_alchemy_items(party: Array) -> Array:
 				for item_id in tier.get("items", []):
 					unlocked.append(str(item_id))
 	return unlocked
+
+
+## Hook for rest perks — called for each character after healing/decay. Empty for now.
+func _process_rest_perks(_character: Dictionary, _tier: int) -> void:
+	pass
+
+
+## Restore durability on all equipped items for all party members by the given fraction.
+## Only works on runtime items (generated weapons/armor) that track durability.
+func _restore_party_durability(restore_pct: float) -> void:
+	var party := CharacterSystem.get_party()
+	var armor_slots: Array[String] = ["head", "chest", "hand_l", "hand_r", "legs", "feet"]
+	for char in party:
+		var equipment: Dictionary = char.get("equipment", {})
+		# Armor slots
+		for slot in armor_slots:
+			var item_id: String = equipment.get(slot, "")
+			if item_id.is_empty():
+				continue
+			var item_data: Dictionary = ItemSystem.get_item(item_id)
+			var max_dur: int = int(item_data.get("max_durability", 0))
+			if max_dur <= 0:
+				continue
+			var cur_dur: int = int(item_data.get("durability", max_dur))
+			var restored: int = mini(max_dur, cur_dur + maxi(1, int(max_dur * restore_pct)))
+			ItemSystem.update_item_durability(item_id, restored)
+		# Weapon sets
+		for set_key in ["weapon_set_1", "weapon_set_2"]:
+			var ws: Dictionary = equipment.get(set_key, {})
+			for sub in ["main", "off"]:
+				var item_id: String = ws.get(sub, "")
+				if item_id.is_empty():
+					continue
+				var item_data: Dictionary = ItemSystem.get_item(item_id)
+				var max_dur: int = int(item_data.get("max_durability", 0))
+				if max_dur <= 0:
+					continue
+				var cur_dur: int = int(item_data.get("durability", max_dur))
+				var restored: int = mini(max_dur, cur_dur + maxi(1, int(max_dur * restore_pct)))
+				ItemSystem.update_item_durability(item_id, restored)
+
+
+## Opens the rest popup. Computes costs from current party + skills.
+func _open_rest_panel() -> void:
+	if _rest_open or _event_open or _shop_open or _quest_board_open or _main_menu_open or _char_sheet_open:
+		return
+
+	_rest_open = true
+	rest_button.disabled = true
+
+	var party := CharacterSystem.get_party()
+	var party_size := party.size()
+
+	# Best skills across party (medicine not needed here — _do_rest computes it independently)
+	var best_logistics := 0
+	var best_smithing  := 0
+	for char in party:
+		var sk: Dictionary = char.get("skills", {})
+		best_logistics = maxi(best_logistics, int(sk.get("logistics", 0)))
+		best_smithing  = maxi(best_smithing,  int(sk.get("smithing",  0)))
+
+	var food_discount: int       = best_logistics / 3
+	var herb_scrap_discount: int = best_logistics / 4
+
+	# Costs per tier [1, 2, 3]
+	var food_costs: Array[int]  = [
+		maxi(1, 2 - food_discount) * party_size,
+		maxi(1, 4 - food_discount) * party_size,
+		maxi(1, 6 - food_discount) * party_size,
+	]
+	var herbs_costs: Array[int] = [0, maxi(0, 2 - herb_scrap_discount), maxi(0, 4 - herb_scrap_discount)]
+	var scrap_costs: Array[int] = [
+		0,
+		maxi(0, 2 - herb_scrap_discount) + (best_smithing / 3),
+		maxi(0, 4 - herb_scrap_discount) + (best_smithing / 3),
+	]
+	var tier_names: Array[String]    = ["Quick Rest", "Camp", "Full Rest"]
+	var tier_restores: Array[String] = ["40% HP/Mana/Stamina", "70% HP/Mana/Stamina", "Full HP/Mana/Stamina"]
+	var tier_pressure: Array[String] = ["+20 pressure decay", "+40 pressure decay", "Full pressure reset"]
+
+	# Build panel on a CanvasLayer above the HUD
+	_rest_layer = CanvasLayer.new()
+	_rest_layer.layer = 28
+	add_child(_rest_layer)
+
+	var dimmer := ColorRect.new()
+	dimmer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dimmer.color = Color(0, 0, 0, 0.6)
+	_rest_layer.add_child(dimmer)
+
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_rest_layer.add_child(center)
+
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(360, 0)
+	var panel_style = UIStyle.make_stylebox(Color(0.3, 0.45, 0.35), 2, 10, 28, 0.9)
+	panel.add_theme_stylebox_override("panel", panel_style)
+	center.add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 10)
+	panel.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "REST"
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", Color(0.65, 0.9, 0.65))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	var sep := HSeparator.new()
+	vbox.add_child(sep)
+
+	# Build three tier buttons
+	for i in range(3):
+		var tier: int = i + 1
+		var can_afford: bool = GameState.food >= food_costs[i]
+		if tier >= 2:
+			can_afford = can_afford and GameState.herbs >= herbs_costs[i] and GameState.scrap >= scrap_costs[i]
+
+		var tier_btn := Button.new()
+		var cost_parts: Array[String] = ["Food: %d" % food_costs[i]]
+		if tier >= 2:
+			cost_parts.append("Herbs: %d" % herbs_costs[i])
+			cost_parts.append("Scrap: %d" % scrap_costs[i])
+		var cost_str := " | ".join(cost_parts)
+		tier_btn.text = "%s\n%s\n%s  |  %s" % [tier_names[i], cost_str, tier_restores[i], tier_pressure[i]]
+		tier_btn.custom_minimum_size = Vector2(0, 64)
+		tier_btn.add_theme_font_size_override("font_size", 13)
+		tier_btn.disabled = not can_afford
+		if can_afford:
+			var btn_style = UIStyle.make_stylebox(Color(0.25, 0.5, 0.3), 1, 6, 10)
+			tier_btn.add_theme_stylebox_override("normal", btn_style)
+			var hover_style = UIStyle.make_stylebox(Color(0.35, 0.65, 0.4), 1, 6, 10)
+			tier_btn.add_theme_stylebox_override("hover", hover_style)
+			tier_btn.pressed.connect(_confirm_rest.bind(tier))
+		else:
+			tier_btn.tooltip_text = "Cannot afford this rest tier"
+		vbox.add_child(tier_btn)
+
+	var cancel_sep := HSeparator.new()
+	vbox.add_child(cancel_sep)
+
+	var cancel_btn := Button.new()
+	cancel_btn.text = "Cancel  [Esc]"
+	cancel_btn.custom_minimum_size = Vector2(0, 40)
+	cancel_btn.pressed.connect(_close_rest_panel)
+	vbox.add_child(cancel_btn)
+
+
+## Called when a tier button is pressed. Closes panel then rests.
+func _confirm_rest(tier: int) -> void:
+	_close_rest_panel()
+	_do_rest(tier)
+
+
+## Close the rest panel.
+func _close_rest_panel() -> void:
+	_rest_open = false
+	rest_button.disabled = false
+	if is_instance_valid(_rest_layer):
+		_rest_layer.queue_free()
+		_rest_layer = null
+
+
+## Perform a rest action for the party.
+## tier: 1 (Quick Rest), 2 (Camp), 3 (Full Rest)
+func _do_rest(tier: int) -> void:
+	var party := CharacterSystem.get_party()
+	if party.is_empty():
+		return
+
+	# Best skill levels in party
+	var best_medicine  := 0
+	var best_smithing  := 0
+	var best_logistics := 0
+	for char in party:
+		var skills: Dictionary = char.get("skills", {})
+		best_medicine  = maxi(best_medicine,  int(skills.get("medicine",  0)))
+		best_smithing  = maxi(best_smithing,  int(skills.get("smithing",  0)))
+		best_logistics = maxi(best_logistics, int(skills.get("logistics", 0)))
+
+	# === Resource costs ===
+	# Food: per-member flat cost, reduced by Logistics
+	var food_discount_per_member: int = best_logistics / 3   # Logistics 3→1, 6→2, 9→3
+	var herb_scrap_discount: int      = best_logistics / 4   # Logistics 4→1, 8→2
+	var base_food_per_member: Array[int]  = [2, 4, 6]         # tier 1/2/3
+	var base_herbs:           Array[int]  = [0, 2, 4]
+	var base_scrap_camp:      Array[int]  = [0, 2, 4]          # base before smithing add
+
+	var food_per_member: int = maxi(1, base_food_per_member[tier - 1] - food_discount_per_member)
+	var food_cost:       int = food_per_member * party.size()
+	var herbs_cost:      int = maxi(0, base_herbs[tier - 1] - herb_scrap_discount)
+	# Scrap: base after logistics discount + extra for Smithing repairs
+	var scrap_cost: int = maxi(0, base_scrap_camp[tier - 1] - herb_scrap_discount) \
+	                      + (best_smithing / 3)
+
+	# Consume resources
+	GameState.consume_supply("food", food_cost)
+	if tier >= 2:
+		GameState.consume_supply("herbs", herbs_cost)
+		GameState.consume_supply("scrap", scrap_cost)
+
+	# === Healing ===
+	# Base restore pct by tier; Medicine adds +2% per level
+	var tier_base_pct: float  = [0.4, 0.7, 1.0][tier - 1]
+	var medicine_bonus: float = best_medicine * 0.02
+	var restore_pct: float    = tier_base_pct + medicine_bonus
+
+	for char in party:
+		var derived: Dictionary = char.get("derived", {})
+		var max_hp:      int = int(derived.get("max_hp",      100))
+		var max_mana:    int = int(derived.get("max_mana",     50))
+		var max_stamina: int = int(derived.get("max_stamina",  50))
+		# HP: overheal above max becomes temp_hp (absorbed first in combat)
+		var new_hp: int = int(derived.get("current_hp", max_hp)) + floori(max_hp * restore_pct)
+		if new_hp > max_hp:
+			derived["temp_hp"]     = new_hp - max_hp
+			derived["current_hp"]  = max_hp
+		else:
+			derived["current_hp"]  = new_hp
+		derived["current_mana"]    = mini(max_mana,    int(derived.get("current_mana",    max_mana))    + floori(max_mana    * restore_pct))
+		derived["current_stamina"] = mini(max_stamina, int(derived.get("current_stamina", max_stamina)) + floori(max_stamina * restore_pct))
+
+		# === Pressure decay ===
+		var decay_amount: float = [20.0, 40.0, 100.0][tier - 1]
+		PsychologySystem.decay_toward_baseline(char, decay_amount)
+
+		# === Perk hook ===
+		_process_rest_perks(char, tier)
+
+	# === Durability restore (tier 2+) ===
+	if tier >= 2:
+		var smithing_restore_pct: float = best_smithing * 0.05     # 5% per Smithing level
+		var tier_max_pct: float          = [0.0, 0.2, 1.0][tier - 1]
+		var actual_pct: float            = minf(tier_max_pct, smithing_restore_pct)
+		if actual_pct > 0.0:
+			_restore_party_durability(actual_pct)
+
+	# === Advance time ===
+	GameState.advance_time(GameState.HOURS_PER_REST)
+
+	# === Toast ===
+	var day_str := "Day %d — %s" % [GameState.current_day + 1, GameState.get_time_of_day_label()]
+	_show_toast("Party rested. %s." % day_str)
+	_update_time_label()
 
 
 ## Show a toast when the player casts a spell from the overworld spellbook.
