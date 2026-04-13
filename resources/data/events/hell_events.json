@@ -363,6 +363,114 @@
         }
       ]
     },
+    "hell_frozen_traveler": {
+      "id": "hell_frozen_traveler",
+      "title": "Frozen Traveler",
+      "realm": "hell",
+      "zone": "cold",
+      "blocking": false,
+      "one_time": true,
+      "icon": "npc",
+      "weight": 3,
+      "text": "A shivering figure huddles by the roadside, barely conscious. Their robes are torn and frostbitten skin shows through the gaps.\n\n\"Please... I've been wandering for so long. I can't feel my hands anymore. Is this... is this what I deserve?\"",
+      "choices": [
+        {
+          "id": "heal",
+          "type": "requirement",
+          "text": "Tend to their wounds",
+          "requirements": {
+            "skills": {
+              "medicine": 1
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You work quickly. Color returns to their face — they look surprised, as if they'd forgotten warmth was possible. They press a trinket into your hands without words.",
+            "rewards": {
+              "xp": 8,
+              "items": [
+                "prayer_beads"
+              ]
+            },
+            "karma": {
+              "hell": -5,
+              "human": 5,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "give_gold",
+          "type": "default",
+          "text": "Give them some gold and food",
+          "cost": {
+            "gold": "small",
+            "food": 1
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They weep with gratitude and speak quietly of a lifetime spent hoarding while others starved. They understand now what they didn't then.",
+            "rewards": {
+              "xp": 4
+            },
+            "karma": {
+              "hell": -3,
+              "human": 4,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "purify",
+          "type": "requirement",
+          "text": "Offer them a small purification rite",
+          "requirements": {
+            "skills": {
+              "ritual": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You bless a little water with mantras and wash their hands and forehead. It's not much — but it's something. They breathe a little easier.",
+            "rewards": {
+              "xp": 5
+            },
+            "karma": {
+              "human": 2,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "ask",
+          "type": "default",
+          "text": "Ask how they came to be here",
+          "outcome": {
+            "type": "text",
+            "text": "They were a corrupt tax collector. They tell you plainly, without excuses. They understand now what their life cost others.",
+            "rewards": {
+              "xp": 3
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "pass",
+          "type": "default",
+          "text": "Walk past without stopping",
+          "outcome": {
+            "type": "text",
+            "text": "They watch you go in silence. The cold feels a little sharper afterward.",
+            "karma": {
+              "hell": 2,
+              "animal": 2
+            }
+          }
+        }
+      ]
+    },
     "hell_lava_guardian": {
       "id": "hell_lava_guardian",
       "title": "Lava Guardian",
@@ -616,15 +724,72 @@
           }
         },
         {
+          "id": "space_sense",
+          "type": "requirement",
+          "text": "Calm yourself and feel the space of the cave from the entrance",
+          "requirements": {
+            "skills": {
+              "space_magic": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The details remain hazy, but you quickly perceive the shape of the danger ahead and proceed accordingly. You emerge with a few useful finds.",
+            "rewards": {
+              "xp": 8,
+              "items": [
+                "health_potion",
+                "mana_potion"
+              ]
+            },
+            "karma": {
+              "human": 2,
+              "god": 1
+            }
+          }
+        },
+        {
+          "id": "graceful_entry",
+          "type": "requirement",
+          "text": "Enter the cave with lightness and poise",
+          "requirements": {
+            "skills": {
+              "grace": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Nimbly avoiding the obvious trap, you move through the cave with ease and soon find the hidden cache.",
+            "rewards": {
+              "xp": 8,
+              "items": [
+                "health_potion",
+                "mana_potion"
+              ]
+            },
+            "karma": {
+              "human": 2,
+              "animal": 2
+            }
+          }
+        },
+        {
           "id": "leave",
           "type": "default",
           "text": "The cave looks dangerous — best to move on",
           "outcome": {
             "type": "text",
-            "text": "Discretion is the better part of valor.",
+            "text": "Discretion is the better part of valor. On your way out you notice a small cache near the entrance someone else left behind.",
+            "rewards": {
+              "items": [
+                "health_potion",
+                "mana_potion"
+              ]
+            },
             "karma": {
-              "hungry_ghost": 1,
-              "animal": 1
+              "human": 2,
+              "animal": 2,
+              "asura": 2
             }
           }
         }
@@ -902,6 +1067,27 @@
           }
         },
         {
+          "id": "haggle",
+          "type": "requirement",
+          "text": "Haggle for better prices",
+          "requirements": {
+            "skills": {
+              "trade": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The trader seems amused, and after a short back-and-forth, grants you a discount. \"Fine, fine. A fair deal.\" You walk away having spent less than expected.",
+            "rewards": {
+              "xp": 4,
+              "gold_reward": "small"
+            },
+            "karma": {
+              "human": 4
+            }
+          }
+        },
+        {
           "id": "move_on",
           "type": "default",
           "text": "Decline politely and move on",
@@ -987,6 +1173,26 @@
           }
         },
         {
+          "id": "comedy_frozen",
+          "type": "requirement",
+          "text": "My eyelids are frozen in place, friend — but you have my full attention",
+          "requirements": {
+            "skills": {
+              "comedy": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "He laughs in surprise — a real laugh, not a polite one. The conversation that follows is warm in a way that has nothing to do with temperature. You both leave a little lighter.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "human": 5
+            }
+          }
+        },
+        {
           "id": "move_on",
           "type": "default",
           "text": "Wish him well and continue on your journey",
@@ -1022,7 +1228,7 @@
             "type": "text",
             "text": "Hours pass until you notice the movement hidden in the stillness.",
             "rewards": {
-              "xp": 5,
+              "xp": 15,
               "skill_up": {
                 "skill": "water_magic",
                 "amount": 1,
@@ -1030,7 +1236,7 @@
               }
             },
             "karma": {
-              "god": 5,
+              "god": 4,
               "human": 3
             }
           }
@@ -1048,10 +1254,10 @@
             "type": "text",
             "text": "Time dissolves into the frozen cascades.",
             "rewards": {
-              "xp": 10
+              "xp": 12
             },
             "karma": {
-              "god": 5,
+              "god": 4,
               "human": 3
             }
           }
@@ -1267,6 +1473,29 @@
           }
         },
         {
+          "id": "comedy_guaranteed",
+          "type": "requirement",
+          "text": "Mostly guaranteed, or guaranteed you'd mostly survive?",
+          "requirements": {
+            "skills": {
+              "comedy": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The trader chuckles, genuinely surprised. \"Ha! That's... that's actually good.\" They root around and toss you something small. \"On the house, clown. First honest laugh I've had in decades.\"",
+            "rewards": {
+              "xp": 5,
+              "items": [
+                "earth_charm_common"
+              ]
+            },
+            "karma": {
+              "human": 4
+            }
+          }
+        },
+        {
           "id": "comedy",
           "type": "roll",
           "text": "Make a joke about their 'no refunds if you fall into lava' policy",
@@ -1361,6 +1590,28 @@
           }
         },
         {
+          "id": "purification",
+          "type": "requirement",
+          "text": "Offer a ritual purification to shorten their suffering",
+          "requirements": {
+            "skills": {
+              "ritual": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They nod somewhat absent-mindedly, numbed by the pain. You perform the rite as best you can under the circumstances. By the end they seem somewhat relieved — not freed, but perhaps a little less alone in their torment.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "human": 3,
+              "god": 4,
+              "hell": -3
+            }
+          }
+        },
+        {
           "id": "talk",
           "type": "default",
           "text": "Ask what crime brought them here",
@@ -1422,7 +1673,7 @@
           "text": "Challenge them to a contest of performance instead",
           "requirements": {
             "skills": {
-              "performance": 2
+              "performance": 3
             }
           },
           "outcome": {
@@ -1462,6 +1713,30 @@
           }
         },
         {
+          "id": "sorcery_strike",
+          "type": "requirement",
+          "text": "Strike the demon down with sorcery before he finishes boasting",
+          "requirements": {
+            "skills": {
+              "sorcery": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The crowd falls utterly silent. Then it erupts — equal parts outrage and awe. The champion collapses. The gatekeeper stares at you for a long moment, then steps aside.",
+            "rewards": {
+              "xp": 12,
+              "items": [
+                "fire_crystal"
+              ]
+            },
+            "karma": {
+              "asura": 4,
+              "human": 3
+            }
+          }
+        },
+        {
           "id": "decline",
           "type": "default",
           "text": "Decline and walk away",
@@ -1479,7 +1754,7 @@
       "id": "hell_volcanic_cave",
       "title": "The Volcanic Cave",
       "realm": "hell",
-      "text": "A cave entrance glows red with the heat of magma flowing within. The walls pulse with veins of liquid fire, casting dancing shadows. Deep within, you can hear a rhythmic sound — like a heartbeat, or the slow breathing of something enormous.\n\nThe heat is nearly unbearable, but you can see the glint of something valuable deeper inside.",
+      "text": "A cave entrance glows red with the heat of magma flowing within. The walls pulse with veins of liquid fire, casting dancing shadows. Deep within, you can hear a rhythmic sound — like a heartbeat, or the slow breathing of something enormous.\n\nThe heat is nearly unbearable, but you can see the glint of valuables deeper inside.",
       "choices": [
         {
           "id": "enter",
@@ -1563,6 +1838,32 @@
           }
         },
         {
+          "id": "grace_vent",
+          "type": "requirement",
+          "text": "Move quickly and lightly between the thermal vents",
+          "requirements": {
+            "skills": {
+              "grace": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Uncomfortable, but nevertheless doable — like so many things in life. You thread between the vents with quick, precise movements and find what you came for.",
+            "rewards": {
+              "xp": 8,
+              "items": [
+                "health_potion",
+                "fire_resistance_potion"
+              ]
+            },
+            "karma": {
+              "animal": 3,
+              "human": 3,
+              "asura": 3
+            }
+          }
+        },
+        {
           "id": "leave",
           "type": "default",
           "text": "The heat is too dangerous — move on",
@@ -1613,6 +1914,28 @@
             },
             "karma": {
               "hell": 1
+            }
+          }
+        },
+        {
+          "id": "grace_dance",
+          "type": "requirement",
+          "text": "Time your steps to the lava's rhythm and dance your way across",
+          "requirements": {
+            "skills": {
+              "grace": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "And a-one, and a-two... You cross in a series of precise, unhurried steps that somehow feel like dancing. The lava surges around your feet and misses every time.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "animal": 3,
+              "human": 3,
+              "asura": 3
             }
           }
         },
@@ -1705,14 +2028,14 @@
           "text": "Study the carved mantras closely",
           "requirements": {
             "skills": {
-              "ritual": 2
+              "ritual": 1
             }
           },
           "outcome": {
             "type": "text",
             "text": "You study the faded letters until they become clearer.",
             "rewards": {
-              "xp": 6,
+              "xp": 8,
               "learn_spell": {
                 "school": "white_magic",
                 "level_range": [
@@ -1724,6 +2047,27 @@
             "karma": {
               "god": 4,
               "human": 3
+            }
+          }
+        },
+        {
+          "id": "prayer_flags",
+          "type": "requirement",
+          "text": "Study the prayer flags and what sustains them",
+          "requirements": {
+            "skills": {
+              "air_magic": 1
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Somehow kept together by their inner charge rather than outer weave, the flags can still teach you something about how intention outlasts form.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "god": 2,
+              "human": 2
             }
           }
         },
@@ -1830,6 +2174,26 @@
               "hell": -2
             }
           }
+        },
+        {
+          "id": "comedy_license",
+          "type": "requirement",
+          "text": "Point out that you cannot be subject to an official without a valid 16-F operating license",
+          "requirements": {
+            "skills": {
+              "comedy": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Stumped at first, the devil taps his quill against his chin, then nods slowly. Game recognizes game. He waves you through without another word.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "human": 5
+            }
+          }
         }
       ]
     },
@@ -1895,6 +2259,27 @@
               "god": 4,
               "human": 4,
               "hell": -3
+            }
+          }
+        },
+        {
+          "id": "comedy_oracle",
+          "type": "requirement",
+          "text": "You've been here since time immemorial and still haven't found a way out — not sure I should be taking advice",
+          "requirements": {
+            "skills": {
+              "comedy": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "A long silence. Then, from somewhere within the ice, a sound like grinding stone that might be a laugh. \"Ha. The first wit in eight hundred years.\" Something like self-doubt flickers in those ancient eyes — and something else. Respect.",
+            "rewards": {
+              "xp": 5
+            },
+            "karma": {
+              "human": 2,
+              "asura": 1
             }
           }
         },
@@ -1994,6 +2379,28 @@
           }
         },
         {
+          "id": "smoke_offering",
+          "type": "requirement",
+          "text": "Prepare a smoke offering for the lingering spirits",
+          "requirements": {
+            "skills": {
+              "ritual": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "\"Ghosts, gods, lords of this land — come forth and take your fill in peace!\"\n\nThe smoke rises in spirals more purposeful than the wind allows. The watching presence gathers around the offering. For a moment, the village feels inhabited again.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "human": 3,
+              "god": 3,
+              "hell": -2
+            }
+          }
+        },
+        {
           "id": "leave",
           "type": "default",
           "text": "Leave the village alone",
@@ -2022,8 +2429,8 @@
               "xp": 6
             },
             "karma": {
-              "animal": 3,
-              "human": 2
+              "animal": 2,
+              "human": 4
             }
           }
         },
@@ -2038,7 +2445,7 @@
           },
           "outcome": {
             "type": "text",
-            "text": "You extend your awareness through fire, and the creature responds immediately — not with words, but with sensation: the pleasure of heat, the memory of a world younger and hotter, the understanding that fire is not destruction but transformation.\n\nWhen the contact ends, you carry something of that understanding with you. Your fire magic feels different — deeper.",
+            "text": "You extend your awareness through fire, and the creature responds immediately — not with words, but with sensation: the pleasure of heat, the memory of a world younger and hotter, the understanding that fire is not destruction but transformation.\n\nWhen the contact ends, you carry something of that understanding with you. Afterwards your experience of heat seems somehow deeper, more meaningful.",
             "rewards": {
               "xp": 14
             },
@@ -2063,6 +2470,28 @@
             },
             "karma": {
               "animal": 3
+            }
+          }
+        },
+        {
+          "id": "perform_awe",
+          "type": "requirement",
+          "text": "Sit down and begin playing — let the awe move through you into music",
+          "requirements": {
+            "skills": {
+              "performance": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "A melody comes, slowly at first. The creature surfaces again and stays, its great head resting at the lava's edge, watching. Two strange witnesses to each other's existence, sharing something that has no name.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "animal": 4,
+              "human": 3,
+              "god": 2
             }
           }
         },
