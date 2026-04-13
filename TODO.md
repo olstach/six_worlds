@@ -160,19 +160,54 @@ Last Updated: 2026-04-05
 - [ ] Tactical Assessment preset formations (Logistics 7 perk)
 
 ### Content
-- [ ] More consumable items — no realm-specific variants currently
-- [ ] Cursed equipment — "cursed" is only a status effect/terrain type; no cursed items in items.json
+- [ ] More consumable items — currently: 13 potions, 15 bombs, 12 oils, 21 scrolls, 21 charms; all generic (no realm-specific variants)
+- [ ] More equipment — 24 rare/epic items exist; no legendary tier; could use more variety
+- [ ] More upgrades/perks
+- [x] ~~Alchemy crafting system~~: Reagents supply type, 3 crafting branches (Remedies/Munitions/Applications) × 3 tiers, perk-unlocked, passive brewing toggle — DONE
+- [x] ~~Resource-gathering perks~~: Alchemical Recycling (Alchemy 3), Herbalist (Medicine 3), Scavenger (Smithing 3) — DONE
+- [x] ~~Crafting UI tab~~ — DONE (key: R; character picker, Potions/Bombs/Oils filter, craftable/locked recipe list with reagent cost)
+- [x] ~~More scroll varieties~~: 17 scrolls added (common: magic_missile, voidbolt, shocking_grasp, stone_spike, bless, cure, slow; uncommon: fireball, blizzard, chain_lightning, earthquake, haste, stone_skin, regeneration, blink, dispel, confusion). Distributed to demon_sorcerer, wandering_sage, general_store, hell_town_magic, hell_yogini_circle, mercy_ward
+- [ ] **Cursed items**: not implemented — "cursed" is currently only a status effect and a terrain type; no cursed equipment in items.json
+- [x] ~~**Equipment generation system**~~: procedural weapons, armor, and talismans — DONE
+- [x] ~~**Talisman system**~~: persistent equippable trinket-slot items with stat/skill/perk bonuses — DONE
+- [x] ~~**Equipment traits**~~: weapon/armor modifier system (sharp, reinforced, etc.) — DONE
+- [x] ~~Wire up `random_generate` template items to use the new procedural generation~~ — DONE
+- [x] ~~Integrate talisman perk effects into combat (poison_immune, regen, thorns, etc.)~~ — DONE (all combat perks wired; karma_sight is event-system only)
+- [x] ~~Add talisman/equipment generation to shop and loot systems~~ — DONE (procedural items in loot drops + auto-generated shop stock)
+
+### UI Improvements
+- [ ] Tooltip system expansion — item_tooltip.gd works for items; no tooltips on status effects, terrain tiles, or turn order icons in combat
+- [ ] Upgrade selection popup (choose 1 of 4) — no scene or system exists
+- [x] ~~Party management screen~~ — DONE (session 10): Party tab in main_menu shows all members with HP/MP/ST bars, View Stats button switches to Stats tab for any member, Remove button dismisses companions
+
+### Combat Improvements
+- [x] ~~Active skills fully functional (stamina costs, targeting, effects)~~ — DONE (25+ skills with combat_data, stamina/cooldown system)
+- [x] ~~AI using consumable items (enemy potion/scroll usage)~~ — DONE (AI health/mana potions, bombs, oils)
+- [x] ~~AI using active skills~~ — DONE (scoring system, prioritized decision tree)
+- [x] ~~Enemy-specific physical resistances~~ — DONE (hell_archetypes.json: frozen_revenant +pierce/slash, -crush; lava_golem/mountain_guardian +slash/pierce; frost_guardian +pierce/slash; demons +pierce/slash)
+- [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
+- [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
+- [ ] **Spell duration unification** — buff/debuff durations are currently inconsistent across spells (some use `"spellpower"`, some `"combat"`, some fixed turns, some `"spellpower_turns"`). Need a unified scaling formula: e.g. base_turns + floor(spellpower / threshold). Affects all enchantment/white spells. Also: `clear_mind` mental immunity and similar conditional immunity spells need their duration to feel proportional to spell level and caster investment.
+- [ ] Terrain affecting spell power — no terrain-based spellpower modifiers in combat_manager.gd cast_spell()
+- [ ] Environmental spell interactions — spells create terrain (done); terrain does not yet buff/debuff spells of matching element
+- [x] ~~**AoE type systematization**~~ — DONE. `AoEResolver` static class in `scripts/autoload/aoe_resolver.gd` is now the single source of truth for all AoE shapes: `circle`, `nova`, `around_caster`, `line`, `cone`, `cone_forward`, `cross`, `band`, `vertical_line`, `field_of_view`. All spells with an `"aoe"` block now get `targeting: "aoe"` and are resolved through `AoEResolver.get_tiles()` in combat_manager, combat_grid, and combat_arena. Canonical data schema uses `size`, `width`, `origin`, `safe_center`. To add a new shape: one function + two match branches in aoe_resolver.gd.
+- [ ] Cone AoE targeting UI — `cone` and `cone_forward` shapes are now computed correctly by `AoEResolver`, but the preview highlight in combat_arena still shows the full range area during targeting (correct tiles shown on hover but not on range highlight). Also `cone_forward` direction should lock to caster's facing rather than requiring the player to aim. Needed by: `powdered_glass` (Glass domain).
+- [ ] **Out-of-combat spellcasting** — not implemented. Several spells are designed for overworld/camp use (e.g. `cloud_gate`: retreat to last healing location; future utility spells). Needs a spellbook interface accessible from the overworld HUD or pause menu, mana deducted from caster, and spell effect resolved outside combat. `cloud_gate` specifically needs to teleport the party on the map to the last-visited healing-location tile.
+- [x] ~~Realm-specific combat terrain themes~~ — DONE (overworld terrain generates realm-appropriate obstacles)
+
+---
+
+## Low Priority (Nice to Have)
+
+### Save/Load Improvements
+- [x] Multiple save slots (3 slots)
+- [x] Auto-save functionality
+- [ ] Meta-progression (affinities, persistent upgrades across runs) — not implemented; save_manager.gd handles per-run state only, no cross-run persistence
 
 ### Audio
 - [ ] Background music per realm
 - [ ] Combat music
 - [ ] Air, Water, Earth spell impact sounds (only fire + generic exist)
-
----
-
-## Low Priority
-
-- [ ] Meta-progression (cross-run persistence) — save_manager handles per-run state only
 
 ---
 

@@ -2213,26 +2213,55 @@ func get_spell(spell_id: String) -> Dictionary:
 			var target_type = target.get("type", "single")
 			var eligible = target.get("eligible", "enemy")
 
-			# Map to expected targeting values
-			match target_type:
-				"single":
-					if eligible == "ally":
-						spell["targeting"] = "single_ally"
-					elif eligible == "corpse":
-						spell["targeting"] = "single_corpse"
+			# Any spell with an "aoe" block is an AoE spell, regardless of target.type
+			if "aoe" in spell:
+				spell["targeting"] = "aoe"
+				var aoe: Dictionary = spell["aoe"].duplicate()
+				# Normalize the primary size field (accept base_size / radius as aliases)
+				if not "size" in aoe:
+					if "base_size" in aoe and not (aoe.base_size is String):
+						aoe["size"] = int(aoe.base_size)
+					elif "radius" in aoe:
+						aoe["size"] = int(aoe.radius)
 					else:
-						spell["targeting"] = "single"
-				"self":
-					spell["targeting"] = "self"
-				"aoe", "circle":
-					spell["targeting"] = "aoe_circle"
-					# AoE radius can be in target.radius or spell.aoe.base_size
-					var aoe_data = spell.get("aoe", {})
-					spell["aoe_radius"] = target.get("radius", aoe_data.get("base_size", 2))
-				"chain":
-					spell["targeting"] = "chain"
-				_:
-					spell["targeting"] = target_type
+						aoe["size"] = 2
+				# "battlefield_width" string → -1 sentinel (resolved to grid.x at runtime)
+				if aoe.get("size") == "battlefield_width":
+					aoe["size"] = -1
+				# Ensure origin is set
+				if not "origin" in aoe:
+					if aoe.get("type") == "around_caster":
+						aoe["origin"] = "caster"
+					elif target.get("origin") == "caster" or target.get("centered_on") == "caster":
+						aoe["origin"] = "caster"
+					else:
+						aoe["origin"] = "target"
+				spell["aoe"] = aoe
+				# Keep aoe_radius for backwards compat (ground effects + item code uses it)
+				var sz: int = aoe.get("size", 2)
+				spell["aoe_radius"] = sz if sz > 0 else 2
+			else:
+				# No aoe block: dispatch on target.type
+				match target_type:
+					"single":
+						if eligible == "ally":
+							spell["targeting"] = "single_ally"
+						elif eligible == "corpse":
+							spell["targeting"] = "single_corpse"
+						else:
+							spell["targeting"] = "single"
+					"self":
+						spell["targeting"] = "self"
+					"aoe", "circle":
+						# Legacy: no aoe block, treat as circle
+						spell["targeting"] = "aoe"
+						var r: int = target.get("radius", 2)
+						spell["aoe"] = {"type": "circle", "size": r, "origin": "target"}
+						spell["aoe_radius"] = r
+					"chain":
+						spell["targeting"] = "chain"
+					_:
+						spell["targeting"] = target_type
 
 		# Default targeting if still missing
 		if not "targeting" in spell:
@@ -2376,7 +2405,8 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	var summon_id = spell.get("summon", "")
 	var targets = _get_spell_targets(caster, spell, target_pos)
 	# Ground-targeting (summoning) spells don't need a unit target — just a valid tile
-	if targets.is_empty() and targeting != "self" and targeting != "ground":
+	# AoE spells may legally fire into empty space (terrain effects still apply)
+	if targets.is_empty() and targeting != "self" and targeting != "ground" and targeting != "aoe":
 		return {"success": false, "reason": "No valid targets"}
 
 	# Calculate base mana cost
@@ -2551,7 +2581,7 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		results.append(effect_result)
 
 	# Create ground effects for AoE spells that deal elemental damage
-	if targeting == "aoe_circle":
+	if targeting == "aoe":
 		var spell_damage_type = spell.get("damage_type", "")
 		if spell_damage_type != "":
 			var aoe_radius = spell.get("aoe_radius", 1)
@@ -2596,23 +2626,31 @@ func _get_spell_targets(caster: Node, spell: Dictionary, target_pos: Vector2i) -
 			if unit and unit.is_bleeding_out:
 				targets.append(unit)
 
-		"aoe_circle":
-			var radius = spell.get("aoe_radius", 1)
-			var center = target_pos
-			if spell.get("aoe_center", "") == "self":
-				center = caster.grid_position
-
+		"aoe":
+			var aoe_def: Dictionary = spell.get("aoe", {"type": "circle", "size": 2, "origin": "target"})
+			var grid_sz = Vector2i(16, 10)
+			if combat_grid:
+				grid_sz = combat_grid.grid_size
+			var aoe_tiles = AoEResolver.get_tiles(aoe_def, caster.grid_position, target_pos, grid_sz)
+			var is_offensive = _spell_is_offensive(spell)
 			for unit in all_units:
 				if not unit.is_alive() and not unit.is_bleeding_out:
 					continue
-				var dist = _grid_distance(unit.grid_position, center)
-				if dist <= radius:
-					# For offensive AoE, only hit enemies (unless friendly fire enabled)
-					var is_offensive = _spell_is_offensive(spell)
+				if unit.grid_position in aoe_tiles:
 					if is_offensive and unit.team != caster.team:
 						targets.append(unit)
 					elif not is_offensive and unit.team == caster.team:
 						targets.append(unit)
+
+		"all_enemies":
+			for unit in all_units:
+				if unit.is_alive() and unit.team != caster.team:
+					targets.append(unit)
+
+		"all_allies":
+			for unit in all_units:
+				if unit.is_alive() and unit.team == caster.team and unit != caster:
+					targets.append(unit)
 
 		"chain":
 			# Start with primary target, chain to nearby enemies
@@ -4117,7 +4155,7 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 				if dist <= spell_range:
 					valid_positions.append(unit.grid_position)
 
-		"aoe_circle", "chain":
+		"aoe", "chain":
 			# Any position in range (for AoE center selection)
 			if combat_grid:
 				for x in range(combat_grid.grid_size.x):
