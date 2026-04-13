@@ -2738,14 +2738,16 @@ func _calculate_spell_bonus(caster: Node, spell: Dictionary) -> int:
 
 
 ## Unified status effect duration calculation.
-## Spellpower sets the baseline (1 extra turn per 10 points).
-## Enchantment skill adds on top for all status-causing spells (1 extra turn per 2 levels),
-## making it the natural "duration" school regardless of the spell's elemental tag.
+## Base 2 turns + Enchantment skill (main modifier, +1 per 2 levels) + Spellpower (secondary, +1 per 15 points).
+## Enchantment is the primary scaling axis: a dedicated enchanter doubles the duration
+## that raw spellpower alone would produce.
 ##
 ## Fixed integer durations in spells.json are intentional balance decisions and pass through
-## unchanged (e.g. Stun for 1 turn, Entangle for 4 turns).
-## Special strings ("permanent", "combat", "until_save", etc.) return the safe fallback
-## of 3 turns — those spells rely on their status definition's own duration_type logic.
+## unchanged (e.g. Blessed Shot = 1 turn, Searing Orb terrain = 4 turns).
+## "combat": used by spells that last until combat ends (returns 999; status definition
+## or special handler owns the real cleanup logic).
+## Other special strings ("permanent", "until_save", "until_destroyed") return 3 as a safe
+## fallback — those spells rely on their status definition's duration_type for actual expiry.
 func _calculate_status_duration(caster: Node, spell: Dictionary, bonus: int) -> int:
 	var dur_field = spell.get("duration", null)
 
@@ -2753,17 +2755,24 @@ func _calculate_status_duration(caster: Node, spell: Dictionary, bonus: int) -> 
 	if dur_field is int or dur_field is float:
 		return int(dur_field)
 
-	# "spellpower" or absent: apply unified formula
-	if dur_field == "spellpower" or dur_field == null:
-		var sp_contribution: int = int(bonus / 10)
+	# "combat": lasts the entire combat encounter
+	if dur_field == "combat":
+		return 999
+
+	# "spellpower" or legacy "spellpower_turns" (or absent): unified scaling formula.
+	# Enchantment is the main modifier; spellpower contributes less to keep dedicated
+	# enchanters clearly ahead of raw-power builds.
+	if dur_field == "spellpower" or dur_field == "spellpower_turns" or dur_field == null:
 		var enchantment_level: int = 0
 		if "character_data" in caster:
 			enchantment_level = caster.character_data.get("skills", {}).get("enchantment", 0)
-		# Enchantment: +1 turn per 2 skill levels (Enc 2=+1 … Enc 10=+5)
+		# Enchantment: +1 turn per 2 skill levels (Enc 2=+1 … Enc 14=+7)
 		var enc_contribution: int = int(enchantment_level / 2)
-		return maxi(1, 2 + sp_contribution + enc_contribution)
+		# Spellpower: +1 turn per 15 points (secondary — typical SP 10–30 adds +0 to +2)
+		var sp_contribution: int = int(bonus / 15)
+		return maxi(1, 2 + enc_contribution + sp_contribution)
 
-	# Special strings ("permanent", "combat", "until_save", "fixed", "until_destroyed"):
+	# Other special strings ("permanent", "until_save", "until_destroyed"):
 	# the status definition's duration_type field handles the real logic; return safe fallback
 	return 3
 
