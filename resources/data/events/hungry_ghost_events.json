@@ -1612,6 +1612,27 @@
           }
         },
         {
+          "id": "unarmed_demo",
+          "type": "requirement",
+          "text": "Demonstrate unarmed technique — get their attention",
+          "requirements": {
+            "skills": {
+              "unarmed": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You find a cleared space and run through a form — not showing off, just working. The lodge goes quiet in the particular way it gets when something unexpected is happening.\n\nA mercenary with no visible weapons walks over and watches carefully. 'Who trained you?' You talk for an hour. She introduces you to three people who turn out to be worth knowing.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "asura": 2,
+              "human": 3
+            }
+          }
+        },
+        {
           "id": "offer_services",
           "type": "requirement",
           "text": "Offer your fighting services — take a contract",
@@ -1745,6 +1766,24 @@
             "text": "You push a wind through the bog. The mist tears and scatters. A clean path opens.",
             "rewards": {
               "xp": 10
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "sealed_armor",
+          "type": "requirement",
+          "text": "Seal your joints against the mist before crossing",
+          "requirements": {
+            "skills": {
+              "armor": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You know exactly where the mist gets in — the seams, the collar gap, the wrist joints. You seal them all before you step off solid ground. The crossing is still unpleasant but the mist finds no purchase. You arrive on the far bank clean.",
+            "rewards": {
+              "xp": 8
             },
             "karma": {}
           }
@@ -1966,6 +2005,27 @@
             },
             "karma": {
               "god": 7
+            }
+          }
+        },
+        {
+          "id": "survey_armor",
+          "type": "requirement",
+          "text": "Survey the fallen armor — read who these were",
+          "requirements": {
+            "skills": {
+              "armor": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You walk the field reading armor the way others read books — construction methods, battle damage, repairs, the wear patterns of years of use. Three factions, at minimum, all fighting each other. The oldest armor is local; the other two came from somewhere else.\n\nOne piece near the center shows signs of combat on all sides simultaneously. Whoever wore it died surrounded — held their ground far longer than the math suggested was possible.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "human": 4,
+              "god": 2
             }
           }
         }
@@ -2440,6 +2500,27 @@
           }
         },
         {
+          "id": "guide_with_reach",
+          "type": "requirement",
+          "text": "Guide the horde with your spear — use reach to steer them",
+          "requirements": {
+            "skills": {
+              "spears": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You work the edges of the horde with your spear horizontal, using reach and presence to deflect the outermost rolangs. The mindless dead respond to obstacle and pressure — they don't fight back, they just redirect. Your leverage at the flank shifts the whole column gradually, like guiding a slow river.\n\nIt takes two hours and the spear gets heavy. But the horde turns, and the village is no longer in its path.",
+            "rewards": {
+              "xp": 16
+            },
+            "karma": {
+              "human": 4,
+              "god": 3
+            }
+          }
+        },
+        {
           "id": "follow",
           "type": "requirement",
           "text": "Follow them — see where they're going",
@@ -2641,6 +2722,28 @@
             "text": "Booing. A rib bone bounces off your head. The announcer wags a finger: \"Not what they came for, friend.\"",
             "karma": {}
           }
+        },
+        {
+          "id": "archery_contest",
+          "type": "requirement",
+          "text": "Propose an archery contest as an alternative spectacle",
+          "requirements": {
+            "skills": {
+              "ranged": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The announcer considers with a long click of its jaw. 'Unusual. We have never done that.' A pause. 'We will try it.'\n\nTargets are assembled from spare ribs and skulls with remarkable speed. The contest draws a crowd intrigued by novelty. You hit every target cleanly. The skeletons are not sure if they like this more or less than combat — but they are watching.\n\nThe gold reflects the attendance.",
+            "rewards": {
+              "xp": 10,
+              "gold": "moderate"
+            },
+            "karma": {
+              "human": 3,
+              "asura": 1
+            }
+          }
         }
       ]
     },
@@ -2822,6 +2925,30 @@
             },
             "karma": {
               "human": 3
+            }
+          }
+        },
+        {
+          "id": "command_assertion",
+          "type": "requirement",
+          "text": "Assert field command — suggest a redeployment",
+          "requirements": {
+            "skills": {
+              "leadership": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You study the camp's layout and defensive positioning before saying anything. Then you lay out a redeployment — one that accounts for the patterns you've observed in this realm, the cover the terrain offers, the direction of the usual threats.\n\nThe grizzled skeleton is quiet for a long time.\n\n'Show me on the map.'\n\nYou work together for an hour. Their defensive position improves considerably. They give you something from the supply cache in recognition — not payment, but acknowledgment.",
+            "rewards": {
+              "xp": 16,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "asura": 2,
+              "human": 4
             }
           }
         }
@@ -3163,6 +3290,51 @@
             },
             "karma": {
               "human": 3
+            }
+          }
+        },
+        {
+          "id": "peer_command",
+          "type": "requirement",
+          "text": "Speak to it as a peer commander",
+          "requirements": {
+            "skills": {
+              "leadership": 5
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You don't ask permission and you don't defer — you address it the way one field commander addresses another, with the specific confidence of someone who has made the same decisions under worse conditions.\n\nThe dralha reads this immediately. Its posture shifts — not submission, but respect.\n\n'Where are you headed?' You tell it. 'The southern route is safer. We cleared it two days ago.' It turns the column without further words.\n\nYou have, without planning to, just exchanged tactical intelligence with an undead warlord. Both parties leave better informed.",
+            "rewards": {
+              "xp": 14
+            },
+            "karma": {
+              "human": 4,
+              "asura": 2
+            }
+          }
+        },
+        {
+          "id": "infantry_presentation",
+          "type": "requirement",
+          "text": "Fall in with the column — present yourself as infantry",
+          "requirements": {
+            "skills": {
+              "spears": 3
+            }
+          },
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "rolang_mob",
+            "difficulty": "easy",
+            "text": "You fall in with the column, spear at the correct angle, march at the correct pace. The column incorporates you without ceremony. The brief engagement at the far side of the patrol route goes quickly with the warband behind you.",
+            "rewards": {
+              "xp": 10,
+              "gold": "moderate"
+            },
+            "karma": {
+              "asura": 3,
+              "human": 1
             }
           }
         }
@@ -3651,6 +3823,46 @@
             },
             "karma": {
               "human": 3
+            }
+          }
+        },
+        {
+          "id": "pick_off",
+          "type": "requirement",
+          "text": "Pick off the hunters as they close — surgical precision",
+          "requirements": {
+            "skills": {
+              "daggers": 5
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You wait for the lead shaza to enter knife range, drop it cleanly, and move through the pack targeting vital points. The rest of them scatter when they realize what's happening — they hunt in groups because they have to, and a group suddenly three smaller is no longer a group with confidence.\n\nYou walk on. The survivors do not follow.",
+            "rewards": {
+              "xp": 14
+            },
+            "karma": {
+              "asura": 3
+            }
+          }
+        },
+        {
+          "id": "systematic_shooting",
+          "type": "requirement",
+          "text": "Keep them at range — shoot them down before they close",
+          "requirements": {
+            "skills": {
+              "ranged": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You back up to maintain distance and start shooting — not panicked, but methodical, picking the ones moving to flank first. The shaza are confident close-in hunters and terrible at range. You stay outside their distance and well within yours. They figure this out on the third volley and decide you are not worth the cost.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "asura": 2
             }
           }
         }
@@ -4397,6 +4609,76 @@
               "god": 6
             }
           }
+        },
+        {
+          "id": "joint_lock",
+          "type": "requirement",
+          "text": "Fight unarmed — use joint locks and throws",
+          "requirements": {
+            "skills": {
+              "unarmed": 4
+            }
+          },
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "skeleton_elite",
+            "difficulty": "easy",
+            "text": "You cross your arms over your chest and bow, empty-handed. The iron skeleton looks at you for a long moment. Then it accepts the terms. What follows is not a sword fight.",
+            "rewards": {
+              "xp": 14,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "asura": 3,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "smash_sword_arm",
+          "type": "requirement",
+          "text": "Smash its sword arm — end the fight before it starts",
+          "requirements": {
+            "skills": {
+              "maces": 4
+            }
+          },
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "skeleton_elite",
+            "difficulty": "easy",
+            "text": "Your first move is not a block — it's a strike at the wrist holding the sword. Iron on iron. The skeleton stumbles back, sword arm compromised. The duel continues, but on your terms now.",
+            "rewards": {
+              "xp": 14
+            },
+            "karma": {
+              "asura": 3
+            }
+          }
+        },
+        {
+          "id": "keep_range",
+          "type": "requirement",
+          "text": "Fight at reach — keep it off its blade advantage",
+          "requirements": {
+            "skills": {
+              "spears": 4
+            }
+          },
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "skeleton_elite",
+            "difficulty": "easy",
+            "text": "The iron skeleton has a short sword. You have a spear. The reach disparity matters more than the skill gap. You manage distance and let it exhaust itself against your range.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "asura": 2
+            }
+          }
         }
       ]
     },
@@ -4474,6 +4756,27 @@
             },
             "karma": {
               "god": 4
+            }
+          }
+        },
+        {
+          "id": "read_truth_spell",
+          "type": "requirement",
+          "text": "Study the enchantment behind the mirror",
+          "requirements": {
+            "skills": {
+              "enchantment": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The enchantment is elegant — a truth-compulsion layered over a reflection spell, calibrated not to lie but not to flatter either. It shows what is, precisely and without context.\n\nYou study the structure for a while. The skeleton watches you study it.\n\n'Most people just look in,' it says.\n\n'Most people aren't trying to understand it.'\n\nThe skeleton polishes in silence. 'You just did both,' it says. 'You looked in when you read it.'",
+            "rewards": {
+              "xp": 14
+            },
+            "karma": {
+              "god": 5,
+              "human": 2
             }
           }
         }
@@ -4747,6 +5050,26 @@
             "text": "The binding fails. The hound in question is offended and snaps at you. The pack loses interest and trots away.",
             "karma": {}
           }
+        },
+        {
+          "id": "drop_alpha",
+          "type": "requirement",
+          "text": "Drop the alpha at distance — scatter the pack",
+          "requirements": {
+            "skills": {
+              "ranged": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You identify the pack leader — the one the others keep watching — and put a shot between its shoulder blades at range. Clean drop. The pack scatters immediately, the hierarchy dissolved in one shot. No further engagement required.\n\nSomewhere behind you, a green flame flickers once and goes out.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "asura": 2
+            }
+          }
         }
       ]
     },
@@ -4829,6 +5152,27 @@
             "text": "The dré notices. Its keening changes pitch.",
             "karma": {
               "hell": 3
+            }
+          }
+        },
+        {
+          "id": "build_pyre",
+          "type": "requirement",
+          "text": "Build a proper pyre from what's available",
+          "requirements": {
+            "skills": {
+              "crafting": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The existing pyre was assembled wrong — too loose, wrong timber arrangement, no heat concentration. You break it down and rebuild it properly in forty minutes, using the scavenged materials as they should be used.\n\nThe dré watches you work in silence. When you light it, the fire catches cleanly and burns hot. Not the same as the proper rites — the spirit knows the difference — but the dré settles at the fire's edge with something that is almost quiet.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "god": 5,
+              "human": 3
             }
           }
         },
@@ -5123,6 +5467,27 @@
             "difficulty": "normal",
             "text": "The invisible hand does not let go. What was carrying the lantern turns its attention to you.",
             "karma": {}
+          }
+        },
+        {
+          "id": "identify_enchantment",
+          "type": "requirement",
+          "text": "Study the enchantment — understand what drives the loop",
+          "requirements": {
+            "skills": {
+              "enchantment": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The enchantment is a grief-loop — a mourning spell that has outlasted its caster by centuries, still running because no one cancelled it. The procession is real; the love in it is real. It just doesn't know it's allowed to stop.\n\nYou cannot dissolve it with enchantment alone, but now you understand its structure. The next person who walks beside these lanterns might be able to give it the permission it's been missing.",
+            "rewards": {
+              "xp": 14
+            },
+            "karma": {
+              "god": 6,
+              "human": 2
+            }
           }
         }
       ]

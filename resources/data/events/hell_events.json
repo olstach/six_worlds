@@ -93,6 +93,29 @@
               "human": 2
             }
           }
+        },
+        {
+          "id": "daggers_blitz",
+          "type": "requirement",
+          "text": "Strike fast and precisely — take them down before they can sound the alarm",
+          "requirements": {
+            "skills": {
+              "daggers": 3
+            }
+          },
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "demon_patrol",
+            "difficulty": "normal",
+            "text": "You move in fast, targeting the gaps in their armor. They barely have time to react before the first one goes down. The fight continues, but the terms are yours.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "asura": 3,
+              "hell": 2
+            }
+          }
         }
       ]
     },
@@ -877,6 +900,28 @@
               "animal": 2
             }
           }
+        },
+        {
+          "id": "summon_guide",
+          "type": "requirement",
+          "text": "Summon a guide spirit to show her the way forward",
+          "requirements": {
+            "skills": {
+              "summoning": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You call a guide spirit — one of the patient ones, without agenda — and ask it to wait with her. It settles beside the old woman with the quality of something that has done this before.\n\nShe looks at it for a long moment. Then at you. 'You can see me.' Not a question anymore. A fact, confirmed.\n\nThe guide spirit takes her hand. Her form steadies. Something releases in her posture.\n\nYou leave them together.",
+            "rewards": {
+              "xp": 14
+            },
+            "karma": {
+              "hell": -7,
+              "god": 6,
+              "human": 3
+            }
+          }
         }
       ]
     },
@@ -1632,6 +1677,31 @@
           }
         },
         {
+          "id": "armored_grip",
+          "type": "requirement",
+          "text": "Use your gauntlets to grip the molten chain",
+          "requirements": {
+            "skills": {
+              "armor": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You know exactly where to grip through the gauntlets — the cooler sections, the fulcrum points. It takes strength and technique both. The chain holds long enough to matter, then a link gives way with a sound like a bell. The prisoner slides free and looks at their hands as if seeing them for the first time in a long while.",
+            "rewards": {
+              "xp": 10,
+              "items": [
+                "demon_key"
+              ]
+            },
+            "karma": {
+              "hell": -6,
+              "human": 5,
+              "god": 4
+            }
+          }
+        },
+        {
           "id": "leave",
           "type": "default",
           "text": "Turn away — this is their punishment",
@@ -2194,6 +2264,27 @@
               "human": 5
             }
           }
+        },
+        {
+          "id": "forge_pass",
+          "type": "requirement",
+          "text": "Lift the official seal and forge yourself a transit pass",
+          "requirements": {
+            "skills": {
+              "thievery": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "While arguing about Section 12, Subsection B, you palm the bureaucrat's official seal from the desk. A minute later you hand over a transit pass that is, technically, correct in every particular except that you wrote it yourself.\n\nThe demon examines it at length. Stamps it. Files it. Waves you through.\n\n'Everything in order. Move along.'",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "hungry_ghost": 3,
+              "human": 1
+            }
+          }
         }
       ]
     },
@@ -2401,6 +2492,30 @@
           }
         },
         {
+          "id": "summon_spirit",
+          "type": "requirement",
+          "text": "Compel a spirit to speak directly",
+          "requirements": {
+            "skills": {
+              "summoning": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You speak the words of compulsion and a presence coalesces at the well — not comfortable about it, but present. A shape like a man, with no features you can hold in mind.\n\n'You pulled me back.' Not angry. Just tired. 'Ask, then.'\n\nYou ask what happened here. It tells you, precisely and without sentiment. A plague, a decision, a long argument about whether to stay or go, and the people who chose wrong and knew it immediately. You listen until it dissolves on its own.\n\nThe village doesn't feel empty anymore — it feels, now, like somewhere that used to be full.",
+            "rewards": {
+              "xp": 12,
+              "items": [
+                "soul_stone"
+              ]
+            },
+            "karma": {
+              "human": 4,
+              "hell": -3
+            }
+          }
+        },
+        {
           "id": "leave",
           "type": "default",
           "text": "Leave the village alone",
@@ -2594,6 +2709,48 @@
           }
         },
         {
+          "id": "unarmed_technique",
+          "type": "requirement",
+          "text": "Demonstrate your empty-hand technique",
+          "requirements": {
+            "skills": {
+              "unarmed": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You step onto the practice floor without a weapon. The training stops. The sensei crosses its arms and watches. You run through your forms — clean, deliberate, unflinching. When you finish, the demons exchange a look. The sensei inclines its head once.\n\n'Not our style. But real.' You train alongside them for an hour. The forms absorb each other at the edges.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "asura": 4,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "leadership_session",
+          "type": "requirement",
+          "text": "Assert yourself as a senior practitioner — take over the session",
+          "requirements": {
+            "skills": {
+              "leadership": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You step in and redirect the group through a correction sequence — you've seen this error before, in better-equipped dojos. The sensei observes with narrowed eyes. Then steps back.\n\nYou run the session for thirty minutes. The demons are better for it. The sensei says nothing at the end, which is the only acknowledgment available.",
+            "rewards": {
+              "xp": 14
+            },
+            "karma": {
+              "asura": 3,
+              "human": 4
+            }
+          }
+        },
+        {
           "id": "leave",
           "type": "default",
           "text": "Decline the invitation and move on",
@@ -2672,6 +2829,31 @@
             },
             "karma": {
               "human": 2
+            }
+          }
+        },
+        {
+          "id": "physical_locks",
+          "type": "requirement",
+          "text": "Bypass the physical locks on the forbidden vault",
+          "requirements": {
+            "skills": {
+              "thievery": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "There's a physical vault behind the restricted stacks — older than the archive, predating whatever bureaucracy runs this place. The locks are mechanical, not magical, which means they respond to skill rather than credentials.\n\nFifteen minutes of careful work. The vault opens on a collection that even the restricted section doesn't have clearance for. You read quickly, memorize what you can, and leave before the librarian notices the vault is open.\n\nThe knowledge is extraordinary. You are also immediately on at least three lists you were not on before.",
+            "rewards": {
+              "xp": 14,
+              "items": [
+                "scroll_firebolt",
+                "mana_potion"
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 4,
+              "hell": 2
             }
           }
         },
@@ -2818,7 +3000,7 @@
           "text": "Narrate the fight dramatically for the crowd",
           "requirements": {
             "skills": {
-              "performance": 2
+              "performance": 3
             }
           },
           "outcome": {
@@ -2855,6 +3037,77 @@
               "hell": 2,
               "asura": 2,
               "human": 2
+            }
+          }
+        },
+        {
+          "id": "knife_fight",
+          "type": "requirement",
+          "text": "Enter as a knife-fighter — blades against the arena's weapons",
+          "requirements": {
+            "skills": {
+              "daggers": 3
+            }
+          },
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "demon_patrol",
+            "difficulty": "normal",
+            "text": "The crowd goes quiet as you draw blades instead of the expected weapon. Then louder.",
+            "rewards": {
+              "xp": 12,
+              "gold_reward": "moderate"
+            },
+            "karma": {
+              "asura": 4,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "unarmed_fight",
+          "type": "requirement",
+          "text": "Fight unarmed — no weapons, just technique",
+          "requirements": {
+            "skills": {
+              "unarmed": 3
+            }
+          },
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "demon_patrol",
+            "difficulty": "normal",
+            "text": "The gatekeeper grins wider than usual. The crowd loses its mind.",
+            "rewards": {
+              "xp": 12,
+              "gold_reward": "moderate"
+            },
+            "karma": {
+              "asura": 5
+            }
+          }
+        },
+        {
+          "id": "bone_mace",
+          "type": "requirement",
+          "text": "Pick up an arena bone-club — meet them on local terms",
+          "requirements": {
+            "skills": {
+              "maces": 3
+            }
+          },
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "demon_patrol",
+            "difficulty": "normal",
+            "text": "You grab a femur from the ground and weigh it in your hand. The arena crowd approves of the improvisation.",
+            "rewards": {
+              "xp": 10,
+              "gold_reward": "moderate"
+            },
+            "karma": {
+              "asura": 3,
+              "hell": 2
             }
           }
         }
@@ -3026,6 +3279,54 @@
           }
         },
         {
+          "id": "careful_cut",
+          "type": "requirement",
+          "text": "Cut the cord carefully — avoid any trigger mechanisms",
+          "requirements": {
+            "skills": {
+              "daggers": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You find the right angle and draw a single precise cut through the cord. The package opens clean, the trap still intact and inert, the contents untouched. A health potion and forty gold, secured without incident.",
+            "rewards": {
+              "xp": 6,
+              "items": [
+                "health_potion"
+              ],
+              "gold": 40
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "thievery_bypass",
+          "type": "requirement",
+          "text": "Assess it with professional eyes — you've handled worse",
+          "requirements": {
+            "skills": {
+              "thievery": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The trigger mechanism is amateur work — a pressure seal under the bow. You disable it in thirty seconds without opening the package, then open it cleanly. Good loot, poorly protected.",
+            "rewards": {
+              "xp": 8,
+              "items": [
+                "health_potion"
+              ],
+              "gold": 45
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
           "id": "leave",
           "type": "default",
           "text": "Leave it — gifts in hell are seldom genuine",
@@ -3189,6 +3490,27 @@
           }
         },
         {
+          "id": "enchantment_read",
+          "type": "requirement",
+          "text": "Read the binding structure",
+          "requirements": {
+            "skills": {
+              "enchantment": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The chain is an enchantment you can read, if not immediately undo — a layered binding keyed to the pilgrim's own guilt, tightening every time they try to escape and loosening, slightly, when they accept the weight of what they did. You explain this to the pilgrim. Their breathing changes.\n\n'So it responds to understanding, not force,' they say. They look at the chain differently. You leave them with a map.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "human": 5,
+              "hell": -3
+            }
+          }
+        },
+        {
           "id": "attempt_help",
           "type": "default",
           "text": "Try to help break the chain",
@@ -3271,6 +3593,69 @@
             "karma": {
               "god": 8,
               "hell": -8
+            }
+          }
+        },
+        {
+          "id": "armor_recognition",
+          "type": "requirement",
+          "text": "Study the armor — find out who they were",
+          "requirements": {
+            "skills": {
+              "armor": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You walk the front rank with trained eyes, reading the armor's construction, its repairs, its modifications. The plates are layered for siege conditions, not field skirmishes. The insignia has been filed off — but the filing pattern tells you who filed it and why. These were household guard for someone who did not want to be found.\n\nThey were winning. They almost made it.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "human": 4,
+              "hell": -2
+            }
+          }
+        },
+        {
+          "id": "summon_soldier",
+          "type": "requirement",
+          "text": "Rouse one soldier — ask what happened",
+          "requirements": {
+            "skills": {
+              "summoning": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You reach into the ice with the words and one figure stirs — not freed, but present. A young soldier, not more than twenty when they marched.\n\n'We were winning,' they say. Voice like ice on stone. 'The gate was opening. And then — he told us to stop.'\n\n'Who?'\n\nThe soldier's eyes go distant. 'The one we came for.' They settle back into the ice. The answer costs you more than you expected.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "human": 5,
+              "hell": -3
+            }
+          }
+        },
+        {
+          "id": "read_formation",
+          "type": "requirement",
+          "text": "Read the formation — understand the battle order",
+          "requirements": {
+            "skills": {
+              "logistics": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The formation is a textbook advance-and-secure pattern, adapted for unknown terrain. Scouts ahead, heavies in the center, supply line staggered back. Whoever commanded this force was good — methodical, experienced, careful with their people.\n\nThe supply wagons are at the back of the column. They stopped mid-resupply. Whatever halted them came as a command, not a defeat.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "human": 3,
+              "god": 2
             }
           }
         },
@@ -3443,6 +3828,29 @@
           }
         },
         {
+          "id": "systematic_survey",
+          "type": "requirement",
+          "text": "Survey the market systematically — map what's actually here",
+          "requirements": {
+            "skills": {
+              "logistics": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You work through the stalls in a pattern — quadrant by quadrant, comparing prices, noting quality, identifying which merchants specialize and which are generalists. By the end you have a clear picture of what this market contains and what it's worth.\n\nThe most valuable stall turns out to be one you'd have walked past entirely: a narrow booth near the east exit, staffed by a demon with seven arms who handles bulk orders for things you didn't know you needed in quantity.",
+            "rewards": {
+              "xp": 8,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
           "id": "watch",
           "type": "default",
           "text": "Watch the crowds instead of buying",
@@ -3550,6 +3958,30 @@
           }
         },
         {
+          "id": "construct_container",
+          "type": "requirement",
+          "text": "Build a fireproof carry-container from materials at hand",
+          "requirements": {
+            "skills": {
+              "crafting": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You find fire-hardened bricks from the outer wall, a metal frame, hinges from a collapsed cabinet. The construction takes twenty minutes you don't quite have. But it works — a crude sealed box, clay-and-ash compound holding against the heat.\n\nYou carry it in, load the best of the center shelf's contents methodically, and exit as the roof comes down behind you. The box is intact. The books inside are dusty but unburned.",
+            "rewards": {
+              "xp": 12,
+              "items": [
+                "scroll_firebolt",
+                "scroll_lesser_heal"
+              ]
+            },
+            "karma": {
+              "human": 5
+            }
+          }
+        },
+        {
           "id": "witness",
           "type": "default",
           "text": "Stand and witness the burning",
@@ -3625,6 +4057,49 @@
               "human": 6,
               "god": 4,
               "hell": -5
+            }
+          }
+        },
+        {
+          "id": "assign_roles",
+          "type": "requirement",
+          "text": "Help them organize more effectively",
+          "requirements": {
+            "skills": {
+              "leadership": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You spend an hour with them, helping them think through what they're actually trying to do and who is best suited to what. The soldier takes watch. The artist keeps morale. The merchant manages what they find. The tax collector, reluctantly, handles records — 'At least I'm using it for something real this time.'\n\nThe structure clicks into place. They look more purposeful than any group has a right to in this realm.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "human": 5,
+              "hell": -4,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "rotation_plan",
+          "type": "requirement",
+          "text": "Set up a sustainable rotation so the suffering doesn't compound",
+          "requirements": {
+            "skills": {
+              "logistics": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You map out their resources: what they have, what they need, what they can acquire, where the choke points are. The pattern of their suffering isn't random — there's a rhythm to it, and rhythms can be managed.\n\nYou draw up a rotation that gives each of them genuine rest between the harder stretches. The tax collector calls it 'the first fair system I've ever been part of,' and laughs at themselves for saying it.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "human": 4,
+              "hell": -3
             }
           }
         },
@@ -3710,6 +4185,55 @@
             "karma": {
               "human": 4,
               "asura": 3
+            }
+          }
+        },
+        {
+          "id": "shore_enchantments",
+          "type": "requirement",
+          "text": "Examine the binding that keeps her here",
+          "requirements": {
+            "skills": {
+              "enchantment": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You examine the bindings with careful attention and find that the enchantment keeping her tied to the forge is fraying — not by neglect, but by completion. The forge was her life's work. The binding was always meant to loosen when the work was done.\n\nYou don't repair it. You make it more transparent to her instead. She stares at her hands for a long moment.\n\n'Oh,' she says. 'I see.' The hammer stays. She does not.",
+            "rewards": {
+              "xp": 14,
+              "items": [
+                "fire_crystal"
+              ]
+            },
+            "karma": {
+              "god": 7,
+              "hell": -6,
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "work_forge",
+          "type": "requirement",
+          "text": "Work beside her at the forge",
+          "requirements": {
+            "skills": {
+              "crafting": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You pick up a hammer and begin. Your technique is rougher than hers — she corrects your grip twice without words, just a precise adjustment of your hand. You work side by side for an hour in the rhythm of the forge.\n\nWhen you leave, she is still at the bellows, but something in her rhythm has changed. A little faster. A little more alive.",
+            "rewards": {
+              "xp": 8,
+              "items": [
+                "good_iron_weapon"
+              ]
+            },
+            "karma": {
+              "human": 4,
+              "asura": 2
             }
           }
         },
