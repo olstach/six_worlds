@@ -2561,6 +2561,27 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 				else:
 					combat_log.emit("%s is weakened by the %s terrain! (%d spellpower)" % [caster.unit_name, terrain_label, delta])
 
+	# Lunar & weekday spellpower bonuses
+	var calendar_schools: Array = spell.get("schools", []).map(func(s: String): return s.to_lower())
+
+	# Full moon → White +20%; new moon → Black +20%
+	if GameState.is_full_moon() and "white" in calendar_schools:
+		var delta := int(spellpower_bonus * 0.20)
+		spellpower_bonus += delta
+		combat_log.emit("%s is empowered by the full moon! (+%d spellpower)" % [caster.unit_name, delta])
+	elif GameState.is_new_moon() and "black" in calendar_schools:
+		var delta := int(spellpower_bonus * 0.20)
+		spellpower_bonus += delta
+		combat_log.emit("%s draws power from the new moon's darkness! (+%d spellpower)" % [caster.unit_name, delta])
+
+	# Weekday school bonus: each day of the week favours one magic school (+20%)
+	# Sun=Fire, Mon=Water, Tue=Sorcery, Wed=Space, Thu=Air, Fri=Enchantment, Sat=Earth
+	var weekday_school := GameState.get_weekday_school()
+	if weekday_school in calendar_schools:
+		var delta := int(spellpower_bonus * 0.20)
+		spellpower_bonus += delta
+		combat_log.emit("%s, %s magic — +%d spellpower" % [GameState.get_weekday_name(), weekday_school.capitalize(), delta])
+
 	# --- Summoning spells: spawn a unit instead of applying effects to targets ---
 	if summon_id != "" and targeting == "ground":
 		use_action(1)

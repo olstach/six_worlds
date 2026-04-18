@@ -39,6 +39,12 @@ const HOURS_PER_STEP: int = 2   # Each overworld step (move or Wait) advances th
 const HOURS_PER_REST: int = 8   # Additional hours advanced when party rests
 const HOURS_PER_DAY:  int = 24
 
+# Lunar calendar constants (28-day month = 4 exact weeks)
+# Month starts on Sunday; full/new moon always fall on Saturday (Saturn's day)
+const LUNAR_MONTH_DAYS: int = 28
+const FULL_MOON_DAY:    int = 14   # Middle of the month
+const NEW_MOON_DAY:     int = 28   # Last day — month begins the day after new moon
+
 # Computed time properties
 var current_day: int:
 	get: return hours_elapsed / HOURS_PER_DAY
@@ -214,6 +220,75 @@ func get_time_of_day_label() -> String:
 	elif h >= 16 and h < 20: return "Evening"
 	elif h >= 20:             return "Night"
 	else:                     return "Deep Night"   # 0–3
+
+
+# ============================================
+# LUNAR CALENDAR & WEEKDAYS
+# ============================================
+#
+# 28-day month, week starts Sunday. Because 28 = 4×7, weeks and months
+# stay perfectly aligned forever: day 1 always Sunday, day 14 & 28 always Saturday.
+#
+# Weekday → magic school bonus (+20% spellpower when casting that school):
+#   Sunday    (0) → Fire
+#   Monday    (1) → Water
+#   Tuesday   (2) → Sorcery
+#   Wednesday (3) → Space
+#   Thursday  (4) → Air
+#   Friday    (5) → Enchantment
+#   Saturday  (6) → Earth     (also: Full Moon = White +20%, New Moon = Black +20%)
+
+const WEEKDAY_NAMES: Array = [
+	"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+]
+const WEEKDAY_SCHOOLS: Array = [
+	"fire", "water", "sorcery", "space", "air", "enchantment", "earth"
+]
+
+
+## Returns the current weekday index (0 = Sunday … 6 = Saturday).
+func get_weekday() -> int:
+	return current_day % 7
+
+
+## Returns the weekday name, e.g. "Wednesday".
+func get_weekday_name() -> String:
+	return WEEKDAY_NAMES[get_weekday()]
+
+
+## Returns the magic school boosted today, e.g. "space".
+func get_weekday_school() -> String:
+	return WEEKDAY_SCHOOLS[get_weekday()]
+
+
+## Returns the current day within the lunar month (1–28).
+func get_lunar_day() -> int:
+	return (current_day % LUNAR_MONTH_DAYS) + 1
+
+
+## Returns true on the 14th lunar day (full moon).
+func is_full_moon() -> bool:
+	return get_lunar_day() == FULL_MOON_DAY
+
+
+## Returns true on the 28th lunar day (new moon — last day of the cycle).
+func is_new_moon() -> bool:
+	return get_lunar_day() == NEW_MOON_DAY
+
+
+## Returns a display string like "Wednesday, 11th lunar day" or "Saturday, 14th lunar day (Full Moon)".
+func get_lunar_day_label() -> String:
+	var d := get_lunar_day()
+	var suffix: String
+	match d:
+		1, 21: suffix = "st"
+		2, 22: suffix = "nd"
+		3, 23: suffix = "rd"
+		_:     suffix = "th"
+	var phase := ""
+	if d == FULL_MOON_DAY: phase = " (Full Moon)"
+	elif d == NEW_MOON_DAY: phase = " (New Moon)"
+	return "%s, %d%s lunar day%s" % [get_weekday_name(), d, suffix, phase]
 
 
 # ============================================

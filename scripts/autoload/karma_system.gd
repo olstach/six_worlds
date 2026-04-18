@@ -88,9 +88,13 @@ func _ready() -> void:
 func add_karma(realm: String, amount: int, action_description: String = "") -> void:
 	if realm not in karma_scores:
 		return
-	
+
+	# Full moon and new moon amplify all karmic changes by 50% (positive and negative alike)
+	if GameState.is_full_moon() or GameState.is_new_moon():
+		amount = roundi(amount * 1.5)
+
 	karma_scores[realm] += amount
-	
+
 	karma_changed.emit(realm, karma_scores[realm])
 
 ## Process a choice/action and apply its karma consequences

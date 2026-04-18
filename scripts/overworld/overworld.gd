@@ -144,6 +144,9 @@ func _ready() -> void:
 	GameState.gold_changed.connect(_on_gold_changed)
 	GameState.supply_changed.connect(_on_supply_changed)
 
+	# Connect day change for lunar calendar effects
+	GameState.day_changed.connect(_on_day_changed)
+
 	# Connect discovery signal (hidden finds on ruins/forest/etc.)
 	MapManager.discovery_made.connect(_on_discovery_made)
 
@@ -314,7 +317,7 @@ func _update_terrain_label() -> void:
 
 
 func _update_time_label() -> void:
-	time_label.text = "Day %d — %s" % [GameState.current_day + 1, GameState.get_time_of_day_label()]
+	time_label.text = "%s\n%s" % [GameState.get_lunar_day_label(), GameState.get_time_of_day_label()]
 
 
 # ============================================
@@ -1045,7 +1048,7 @@ func _do_rest(tier: int) -> void:
 	GameState.advance_time(GameState.HOURS_PER_REST)
 
 	# === Toast ===
-	var day_str := "Day %d — %s" % [GameState.current_day + 1, GameState.get_time_of_day_label()]
+	var day_str := "%s, %s" % [GameState.get_lunar_day_label(), GameState.get_time_of_day_label()]
 	_show_toast("Party rested. %s." % day_str)
 	_update_time_label()
 
@@ -1109,6 +1112,20 @@ func _show_toast(msg: String) -> void:
 	toast_label.modulate.a = 1.0
 	_toast_timer = TOAST_DURATION
 	GameState.append_overworld_log(msg)
+
+
+## Fires whenever the calendar day rolls over. Handles full moon and new moon effects.
+func _on_day_changed(_new_day: int) -> void:
+	_update_time_label()
+	if GameState.is_full_moon():
+		# Full Moon (15th lunar day): restore 20% mana to all party members
+		for char in CharacterSystem.party:
+			var derived: Dictionary = char.get("derived", {})
+			var max_mana: int = int(derived.get("max_mana", 50))
+			derived["current_mana"] = mini(max_mana, int(derived.get("current_mana", max_mana)) + floori(max_mana * 0.2))
+		_show_toast("Full moon — the dharma light shines. The party's mana is partially restored.")
+	elif GameState.is_new_moon():
+		_show_toast("New moon — the realm grows darker. Spirits are restless tonight.")
 
 
 ## Spawn a floating text label above the party (screen-space, camera-independent).

@@ -21,6 +21,7 @@ signal overworld_spell_cast(spell_name: String, detail: String)
 @onready var derived_container: VBoxContainer = %DerivedContainer
 @onready var skills_grid: GridContainer = %SkillsGrid
 @onready var perks_container: VBoxContainer = %PerksContainer
+@onready var quirks_container: VBoxContainer = %QuirksContainer
 @onready var spellbook_list: VBoxContainer = %SpellbookList
 @onready var spell_filter_bar: HBoxContainer = %SpellFilterBar
 @onready var crafter_panel: HBoxContainer = %CrafterPanel
@@ -305,6 +306,7 @@ func _refresh_display() -> void:
 	_update_derived_stats(character)
 	_update_skills_grid(character)
 	_update_perks_list(character)
+	_update_quirks(character)
 	_update_companion_ui(character)
 
 
@@ -831,6 +833,73 @@ func _update_perks_list(character: Dictionary) -> void:
 		row.add_child(desc_label)
 
 		perks_container.add_child(row)
+
+
+func _update_quirks(character: Dictionary) -> void:
+	for child in quirks_container.get_children():
+		child.queue_free()
+
+	var char_quirks: Array = character.get("quirks", [])
+	if char_quirks.is_empty():
+		var empty_label := Label.new()
+		empty_label.text = "No quirks."
+		empty_label.add_theme_font_size_override("font_size", 12)
+		empty_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		quirks_container.add_child(empty_label)
+		return
+
+	# Category display order and colours
+	var category_colors := {
+		"physical":    Color(0.85, 0.75, 0.55),
+		"personality": Color(0.7,  0.85, 1.0),
+		"behavioral":  Color(0.65, 0.9,  0.65),
+		"acquired":    Color(0.9,  0.6,  0.6),
+	}
+
+	for quirk_id in char_quirks:
+		var q := QuirkSystem.get_quirk(quirk_id)
+		if q.is_empty():
+			continue
+
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 6)
+
+		# Coloured name label
+		var name_label := Label.new()
+		name_label.text = q.get("name", quirk_id)
+		name_label.add_theme_font_size_override("font_size", 13)
+		var cat: String = q.get("category", "acquired")
+		name_label.add_theme_color_override("font_color", category_colors.get(cat, Color.WHITE))
+		name_label.custom_minimum_size.x = 140
+		row.add_child(name_label)
+
+		# Short mechanical summary (stat changes, pressure offsets)
+		var effects: Array[String] = []
+		for attr in q.get("stat_modifiers", {}):
+			var val: int = int(q["stat_modifiers"][attr])
+			effects.append(("%+d " % val) + attr.capitalize())
+		for skill in q.get("skill_modifiers", {}):
+			var val: int = int(q["skill_modifiers"][skill])
+			effects.append(("%+d " % val) + skill.replace("_", " ").capitalize())
+		var effect_label := Label.new()
+		effect_label.text = "  ".join(effects) if not effects.is_empty() else ""
+		effect_label.add_theme_font_size_override("font_size", 11)
+		effect_label.add_theme_color_override("font_color", Color(0.75, 0.75, 0.75))
+		effect_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(effect_label)
+
+		# Tooltip with full description and purge info
+		var purge_info := ""
+		var purgeable_by: Array = q.get("purgeable_by", [])
+		if not purgeable_by.is_empty():
+			var skill_names := []
+			for s in purgeable_by:
+				skill_names.append(s.capitalize() + " " + str(q.get("purge_difficulty", 1)))
+			purge_info = "\nCan be shed through: " + " / ".join(skill_names)
+		row.tooltip_text = q.get("description", "") + purge_info
+		row.mouse_filter = Control.MOUSE_FILTER_STOP
+
+		quirks_container.add_child(row)
 
 
 # ============================================

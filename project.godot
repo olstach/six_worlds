@@ -24,6 +24,7 @@ config/icon="res://icon.svg"
 
 GameState="*res://scripts/autoload/game_state.gd"
 PerkSystem="*res://scripts/autoload/perk_system.gd"
+QuirkSystem="*res://scripts/autoload/quirk_system.gd"
 CharacterSystem="*res://scripts/autoload/character_system.gd"
 ItemSystem="*res://scripts/autoload/item_system.gd"
 CompanionSystem="*res://scripts/autoload/companion_system.gd"

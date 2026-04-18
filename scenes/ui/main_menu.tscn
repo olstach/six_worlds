@@ -270,6 +270,30 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 2
 
+[node name="QuirksPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent"]
+layout_mode = 2
+
+[node name="QuirksMargin" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/QuirksPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 10
+
+[node name="QuirksVBox" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/QuirksPanel/QuirksMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="QuirksTitle" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/QuirksPanel/QuirksMargin/QuirksVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "QUIRKS"
+
+[node name="QuirksContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/QuirksPanel/QuirksMargin/QuirksVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 2
+
 [node name="Equipment" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 20

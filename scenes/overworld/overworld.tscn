@@ -37,9 +37,9 @@ layer = 10
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = 16.0
-offset_top = 12.0
+offset_top = 8.0
 offset_right = -16.0
-offset_bottom = 42.0
+offset_bottom = 56.0
 theme_override_constants/separation = 30
 
 [node name="RealmLabel" type="Label" parent="HUDLayer/TopBar"]
@@ -95,7 +95,7 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.7, 0.85, 1.0, 1)
-text = "Day 1 — Deep Night"
+text = "Sunday, 1st lunar day\nDeep Night"
 
 [node name="RestButton" type="Button" parent="HUDLayer/TopBar"]
 unique_name_in_owner = true

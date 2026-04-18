@@ -22,7 +22,12 @@ Five elemental pressure meters per character (−100 klesha ↔ +100 wisdom). Pr
 - [ ] **Task 9** — Wire Leadership + Comedy perks to `apply_pressure()` calls
 
 **Future layers (not yet started):**
-- Layer 2: Personality traits & quirks (individual threshold modifiers, trigger predispositions)
+- [x] ~~**Layer 2: Personality traits & quirks**~~ — QuirkSystem autoload + quirks.json (40 quirks: 10 physical, 14 personality, 10 behavioral, 10 acquired). Stat modifiers flow into `update_derived_stats()`; skill modifiers written to `skill_bonuses["quirks"]` source; pressure offsets shift `emotional_baseline`; event_tags unlock blue choices in event_manager. UI panel in character sheet (coloured by category, mechanical summary, purge tooltip). Bugs fixed: attribute event checks now include quirk bonuses; effective skill level clamped to 0 floor; purge check uses effective not raw skill.
+
+### Quirk System — Remaining Work
+- [ ] **Autonomous actions** — `event_tags` exist on quirks but nothing consumes them at runtime. When `autonomous_event_triggered` fires (pressure crisis), look up the character's quirks, find any with matching `event_tags`, and trigger a narrative micro-event (log message, forced choice, or stat consequence). E.g. `hot_tempered` at Fire crisis → attacks nearest ally; `timid` at Air crisis → flees from combat position. Needs a small dispatch table in event_manager or a new `_resolve_quirk_autonomous()` in psychology_system.
+- [ ] **Player character starting quirks** — no mechanism to assign quirks to the player character at run start. Options: (a) random 1–2 inborn quirks from the physical/personality pools at character creation, (b) background unlocks specific quirks, (c) player picks from a short list. Pick approach and implement.
+- [ ] **Companion quirk data** — add `"quirks": [...]` arrays to actual companion definitions in the companion data file; currently the system supports it but no companion has any quirks assigned.
 - Layer 3: Intervention mechanic (social skills let one character help another)
 - Yidam integration: mantra practice raises brightness baseline per element
 - Rest system: `decay_toward_baseline()` called on camp/inn rest
@@ -139,7 +144,7 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 - [x] **Task 7** — Wire temp HP: add `temp_hp` field to character derived stats; combat_manager absorbs temp HP before real HP on damage
 
 **Follow-up (after core system lands):**
-- [ ] Lunar calendar events — `day_changed` signal is the hook; add cyclic event checks (full moon = day 14, 28... etc.)
+- [x] ~~**Lunar calendar system**~~ — 28-day lunar month (4×7, always week-aligned), full moon day 14 / new moon day 28 (both Saturday). Two-line HUD label ("Sunday, 1st lunar day / Deep Night"). Full moon: White magic +20% spellpower + mana partial restore + toast; new moon: Black magic +20% + toast. Both: karma weight ×1.5. Weekday school bonus system: Sun=Fire, Mon=Water, Tue=Sorcery, Wed=Space, Thu=Air, Fri=Enchantment, Sat=Earth — each gives +20% spellpower to that school. All wired into `game_state.gd`, `combat_manager.gd`, `karma_system.gd`, `overworld.gd`, `overworld.tscn`.
 - [ ] Realm-specific rest events — "something stirs in the night" flavour event chance when resting in hell/hungry ghost
 - [ ] Rest perks — wire `_process_rest_perks(character, tier)`: Safe Campsite (no encounter on rest), Lucid Rest (Yoga 7, extra pressure decay), Well-Rested (Medicine 8, temp HP on full rest), Field Surgeon (Medicine 6, revive bleed-out on full rest)
 - [ ] Yoga skill boosts pressure decay rate during rest (Yoga level adds to decay_amount)
@@ -161,6 +166,7 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 - [ ] More hell events — both zones still under density target (~15+ events each)
 - [ ] Hell event chains: soul caravan ambush, devil deserter, contraband deal, corrupted simple, chained pilgrim, rival party
 - [ ] Hell quest content — write using `register_quest` + `set_flags`; wire `quest_board` outcome into town events
+- [ ] Review all existing events (hell + HG) — audit choices per event and add missing blue/yellow options where only grey exists; aim for at least 2 meaningful skill/attribute checks per event
 
 ### Hungry Ghost Events — Follow-up (from hungry_ghost_events.json)
 - [x] Add HG shop entries to shops.json: `hg_alchemist`, `hg_veterans_camp`, `hg_charnel_sorcerer`, `hg_black_market`, `hg_wandering_preta`, `hg_spell_shop` (plus existing `hg_bone_merchant`, `hg_teahouse`, `hg_mercenary_guild`, `hg_town_weapons`, `hg_town_magic`, `hg_town_supplies`)
@@ -178,6 +184,7 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 ### Companions
 - [ ] Camp Followers system — UI stub exists in Party tab (`_update_followers_list()`); no backend
 - [ ] Bespoke recruitment events for HG companions — organic recruitment outside shops; not every companion needs one, priority targets: Mehr (golden glint in the dark), Chöki (near still water), Nangwa (haunting a ruined library), Prashan (riddle challenge), Nyingje (found tending other undead), Khedrup (mid-recitation on an auspicious rock), Rasabhava (preservation lab, examine his notes), Durvasa (bound by reflected curse, Air magic / Ritual to stabilize), Gomchen (meditating amid binding contracts)
+- [ ] More companions for the hungry ghost realm — current HG roster may be thin; design and add new companion definitions to companion data file
 
 ---
 
@@ -241,9 +248,10 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 - [x] ~~Enemy-specific physical resistances~~ — DONE (hell_archetypes.json: frozen_revenant +pierce/slash, -crush; lava_golem/mountain_guardian +slash/pierce; frost_guardian +pierce/slash; demons +pierce/slash)
 - [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
 - [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
-- [ ] **Spell duration unification** — buff/debuff durations are currently inconsistent across spells (some use `"spellpower"`, some `"combat"`, some fixed turns, some `"spellpower_turns"`). Need a unified scaling formula: e.g. base_turns + floor(spellpower / threshold). Affects all enchantment/white spells. Also: `clear_mind` mental immunity and similar conditional immunity spells need their duration to feel proportional to spell level and caster investment.
+- [x] ~~**Spell duration unification**~~ — unified formula: base 2 + floor(Enchantment/2) [main] + floor(spellpower/15) [secondary]. `clear_mind` fixed (`"spellpower_turns"` typo now `"spellpower"`). `doom` made explicit integer 3. `"combat"` → 999 turns. All 128 `"spellpower"` spells already used the formula.
 - [ ] Terrain affecting spell power — no terrain-based spellpower modifiers in combat_manager.gd cast_spell()
 - [ ] Environmental spell interactions — spells create terrain (done); terrain does not yet buff/debuff spells of matching element
+- [ ] **Summoning bonus from overworld terrain** — Summoning spellpower gets +25% based on the overworld tile type where combat takes place (ruins/charnel grounds, forest, mountain, river/lake each evoke different resident spirits). Requires passing the overworld terrain type into the combat context at combat start. Tradition: nagas in water, earth spirits in mountains, hungry ghosts in charnel grounds, nature spirits in forest. Design the full terrain→spirit type→bonus table before implementing.
 - [x] ~~**AoE type systematization**~~ — DONE. `AoEResolver` static class in `scripts/autoload/aoe_resolver.gd` is now the single source of truth for all AoE shapes: `circle`, `nova`, `around_caster`, `line`, `cone`, `cone_forward`, `cross`, `band`, `vertical_line`, `field_of_view`. All spells with an `"aoe"` block now get `targeting: "aoe"` and are resolved through `AoEResolver.get_tiles()` in combat_manager, combat_grid, and combat_arena. Canonical data schema uses `size`, `width`, `origin`, `safe_center`. To add a new shape: one function + two match branches in aoe_resolver.gd.
 - [ ] Cone AoE targeting UI — `cone` and `cone_forward` shapes are now computed correctly by `AoEResolver`, but the preview highlight in combat_arena still shows the full range area during targeting (correct tiles shown on hover but not on range highlight). Also `cone_forward` direction should lock to caster's facing rather than requiring the player to aim. Needed by: `powdered_glass` (Glass domain).
 - [ ] **Out-of-combat spellcasting** — not implemented. Several spells are designed for overworld/camp use (e.g. `cloud_gate`: retreat to last healing location; future utility spells). Needs a spellbook interface accessible from the overworld HUD or pause menu, mana deducted from caster, and spell effect resolved outside combat. `cloud_gate` specifically needs to teleport the party on the map to the last-visited healing-location tile.

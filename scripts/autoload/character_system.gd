@@ -158,7 +158,12 @@ const BASE_CHARACTER: Dictionary = {
 
 	# Active weapon set (1 or 2)
 	"active_weapon_set": 1,
-	
+
+	# Character quirks — list of quirk IDs (see quirks.json / QuirkSystem)
+	# Inborn quirks are set at character creation or in companion definitions.
+	# Acquired quirks are added/removed during the run via QuirkSystem.add_quirk/remove_quirk.
+	"quirks": [],
+
 	# Persistent progression data
 	"affinities": [],  # Skills that have reached max level in previous lives
 	"persistent_upgrades": []  # Rare upgrades that survive reincarnation
@@ -611,7 +616,7 @@ func _get_effective_skill_level(character: Dictionary, skill_id: String) -> int:
 	var bonus = 0
 	for source in bonus_sources:
 		bonus += int(bonus_sources[source])
-	return mini(base + bonus, 15)
+	return clampi(base + bonus, 0, 15)
 
 
 ## Update the character's element affinity totals from their skill levels.
@@ -711,10 +716,29 @@ func update_derived_stats(character: Dictionary) -> void:
 	if PerkSystem:
 		affinity_bonus = PerkSystem.get_affinity_bonuses(character)
 
-	# Apply equipment attribute bonuses first
+	# Collect quirk attribute bonuses
+	var quirk_attr_bonus: Dictionary = {}
+	if QuirkSystem:
+		quirk_attr_bonus = QuirkSystem.get_attribute_bonus(character)
+
+	# Apply equipment + quirk attribute bonuses to get effective attributes
 	var effective_attrs = {}
 	for attr_key in attrs:
-		effective_attrs[attr_key] = attrs[attr_key] + equip_bonus.get(attr_key, 0)
+		effective_attrs[attr_key] = attrs[attr_key] + equip_bonus.get(attr_key, 0) + quirk_attr_bonus.get(attr_key, 0)
+
+	# Refresh quirk skill bonuses (clear old pass first, then re-add from current quirks)
+	if not "skill_bonuses" in character:
+		character["skill_bonuses"] = {}
+	for skill_id in character["skill_bonuses"]:
+		character["skill_bonuses"][skill_id].erase("quirks")
+	if QuirkSystem:
+		for quirk_id in character.get("quirks", []):
+			var q := QuirkSystem.get_quirk(quirk_id)
+			for skill_id in q.get("skill_modifiers", {}):
+				if not skill_id in character["skill_bonuses"]:
+					character["skill_bonuses"][skill_id] = {}
+				var prev: int = character["skill_bonuses"][skill_id].get("quirks", 0)
+				character["skill_bonuses"][skill_id]["quirks"] = prev + int(q["skill_modifiers"][skill_id])
 
 	# HP from Constitution + equipment + earth affinity
 	var old_max_hp = derived.get("max_hp", 100)
