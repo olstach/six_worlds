@@ -153,6 +153,36 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 
 ---
 
+### Rest Sadhana System (Full Rest Extended Actions)
+
+During Full Rest (camp or inn), characters with relevant skills can perform a **sadhana** — an extended practice that trades normal rest recovery for a lasting benefit. Choosing a sadhana cuts HP/Mana/Stamina recovery roughly in half (you're meditating or working instead of sleeping). Only one sadhana may be performed per rest.
+
+**Karma Purification (Yoga + Ritual)** — first sadhana to implement:
+- Unlocks at Yoga 3. Automatically targets the lowest realm first (hell → hungry_ghost → animal → human → asura → god), carrying any remainder up the chain.
+- Yoga 3: d20+Yoga vs DC 12 → on success, purify 20 karma. Yoga 5: DC 8, 35 karma. Yoga 7+: automatic (no roll), 50 karma.
+- Also decays emotional pressure at 1.5× normal rest rate.
+- **Ritual augmentation** (optional add-on, stacks on top of the Yoga base):
+  - Tier 1 — Smoke Offering (Ritual 2+): costs herbs/incense → +15 karma purified
+  - Tier 2 — Torma Offering (Ritual 4+): costs reagents + 20 mana → +30 karma purified, splits across two realms
+  - Tier 3 — Mandala Offering (Ritual 6+): costs reagents + 40 mana + deeper rest cut → +50 karma purified; also lowers effective purge_difficulty of one chosen purgeable quirk by 2 for this attempt
+- **Full moon bonus**: ×1.5 to all karma purified (the lunar calendar already amplifies karma weight on full/new moons — same hook applies here).
+- Quirk purging: at Yoga 5+, can simultaneously attempt `QuirkSystem.try_purge()` on one purgeable quirk using the yoga skill; Ritual Tier 3 can lower the effective difficulty by 2.
+
+**Future sadhanas (design pending, do not implement yet):**
+- **Alchemy** (Alchemy 3+): brew one batch of potions or reagents during rest, consuming raw herbs; output scales with skill level; replaces normal alchemy crafting from inventory.
+- **Smithing** (Smithing 4+): perform a deep repair or minor enhancement on one weapon/armour piece beyond the standard durability restoration; costs scrap and extra time.
+- **Ritual magic schools** (Ritual 5+ + relevant school): spend rest time creating a temporary enchantment, charging a focus item, or preparing a lasting mandala that grants a party-wide spellpower buff for the next combat.
+- **White Magic purification prayer** (White Magic 3 or perk): weaker form of karma purification (~15-20 karma, no quirk purge) accessible without Yoga investment; costs mana rather than physical recovery.
+- **Yidam yoga / Dharmapala offerings**: extended deity or protector practice — see Deity Systems section.
+
+**Implementation notes:**
+- New "Practice Sadhana" button/option in the Full Rest UI popup (alongside the existing three rest tiers).
+- `_do_sadhana(type, ritual_tier)` function in `overworld.gd`; karma logic in `karma_system.gd` (`perform_purification(yoga_level, ritual_tier)`).
+- UI should show the sadhana options with costs and current realm karma (partially revealed — see design question below).
+- **Design question**: karma is hidden from the player. Revealing which realms to purify requires either always auto-targeting lowest realm (simplest, current plan) or letting Yoga 7 perk unlock "karma insight" to pick manually. Start with auto-targeting and add the perk later.
+
+---
+
 ### Projectile System (COMPLETE)
 - [x] Ranged attack misses deviate 1-3 tiles based on how badly the roll failed
 - [x] Deviated projectiles can hit any unit at landing tile (ally or enemy) — logs FRIENDLY FIRE
