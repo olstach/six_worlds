@@ -99,12 +99,13 @@ func remove_quirk(character: Dictionary, quirk_id: String) -> void:
 
 
 ## Attempt to purge a quirk via a skill-based practice (yoga, ritual).
+## difficulty_modifier reduces the effective required level (e.g. Mandala Offering gives -2).
 ## Returns true if the purge succeeds (character has the required skill at required level).
-func try_purge(character: Dictionary, quirk_id: String, skill_used: String) -> bool:
+func try_purge(character: Dictionary, quirk_id: String, skill_used: String, difficulty_modifier: int = 0) -> bool:
 	var q := get_quirk(quirk_id)
 	if skill_used not in q.get("purgeable_by", []):
 		return false
-	var required_level: int = q.get("purge_difficulty", 1)
+	var required_level: int = maxi(1, q.get("purge_difficulty", 1) - difficulty_modifier)
 	# Use effective skill level (base + equipment/race/quirk bonuses) for consistency
 	var base_skill: int = character.get("skills", {}).get(skill_used, 0)
 	var bonus_sources: Dictionary = character.get("skill_bonuses", {}).get(skill_used, {})
