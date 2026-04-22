@@ -1063,6 +1063,7 @@ func _open_activity_panel(tier: int, food_cost: int, herbs_cost: int, scrap_cost
 				cost_parts.append("%s: %d" % [res.capitalize(), costs[res]])
 			cost_str = " [%s]" % " | ".join(cost_parts)
 
+		var can_afford: bool = activity.get("can_afford", true)
 		var btn := Button.new()
 		btn.text = "%s%s\n%s — by %s" % [
 			activity.get("name", act_id), cost_str,
@@ -1070,11 +1071,14 @@ func _open_activity_panel(tier: int, food_cost: int, herbs_cost: int, scrap_cost
 		]
 		btn.custom_minimum_size = Vector2(0, 54)
 		btn.add_theme_font_size_override("font_size", 12)
-		btn.disabled = is_stub
+		btn.disabled = is_stub or not can_afford
 
 		if is_stub:
 			btn.add_theme_stylebox_override("normal", UIStyle.make_stylebox(Color(0.2, 0.2, 0.2), 1, 4, 8, 0.6))
 			btn.tooltip_text = "Requires a future system — coming soon"
+		elif not can_afford:
+			btn.add_theme_stylebox_override("normal", UIStyle.make_stylebox(Color(0.3, 0.2, 0.2), 1, 4, 8, 0.7))
+			btn.tooltip_text = "Cannot afford the extra costs for this activity"
 		else:
 			btn.add_theme_stylebox_override("normal", UIStyle.make_stylebox(Color(0.22, 0.38, 0.26), 1, 4, 8))
 			btn.add_theme_stylebox_override("hover",  UIStyle.make_stylebox(Color(0.3,  0.52, 0.35), 1, 4, 8))
@@ -1159,7 +1163,7 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 	var scouted   := "scout" in selected_activities
 	var effective_tier := tier
 	if not is_safe and not scouted and tier >= 2:
-		if CampSystem.roll_disturbance(tier, GameState.current_realm, GameState.hour_of_day):
+		if CampSystem.roll_disturbance(tier, GameState.current_world, GameState.hour_of_day):
 			effective_tier = maxi(1, tier - 1)
 			if selected_activities.size() > 0:
 				selected_activities = selected_activities.slice(0, selected_activities.size() - 1)

@@ -163,7 +163,7 @@ const ACTIVITIES: Array = [
 		"min_tier": 2,
 		"costs": {},
 		"description": "Hone edges and re-wrap grips",
-		"effect_desc": "+4 accuracy next combat (performer only — party scope pending)",
+		"effect_desc": "+4 accuracy next combat (party-wide)",
 	},
 	{
 		"id": "spar",
@@ -189,8 +189,21 @@ func get_available_activities(party: Array, rest_tier: int, _is_safe_camp: bool)
 			continue
 		var out: Dictionary = activity.duplicate()
 		out["performer"] = _best_performer(party, activity)
+		out["can_afford"] = _can_afford_costs(activity.get("costs", {}))
 		result.append(out)
 	return result
+
+
+## Returns true if the party can currently pay the extra activity costs.
+func _can_afford_costs(costs: Dictionary) -> bool:
+	for resource in costs:
+		var needed: int = costs[resource]
+		match resource:
+			"herbs":    if GameState.herbs    < needed: return false
+			"reagents": if GameState.reagents < needed: return false
+			"scrap":    if GameState.scrap    < needed: return false
+			"food":     if GameState.food     < needed: return false
+	return true
 
 
 ## Roll for disturbance at rest start. Returns true if rest is disturbed.
@@ -365,8 +378,9 @@ func _exec_herb_preparation(performer: Dictionary) -> Dictionary:
 
 
 func _exec_brew_potions(performer: Dictionary) -> Dictionary:
+	if not GameState.consume_supply("reagents", 2):
+		return {"message": "Not enough reagents to brew potions.", "ok": false}
 	var alchemy := CharacterSystem.get_effective_skill_level(performer, "alchemy")
-	GameState.consume_supply("reagents", 2)
 	var count := clampi(1 + alchemy / 3, 1, 3)
 	var item_pool := ["health_potion", "greater_health_potion", "mana_potion"]
 	var brewed: Array[String] = []
@@ -381,8 +395,9 @@ func _exec_brew_potions(performer: Dictionary) -> Dictionary:
 
 
 func _exec_brew_combat(performer: Dictionary) -> Dictionary:
+	if not GameState.consume_supply("reagents", 3):
+		return {"message": "Not enough reagents to brew combat supplies.", "ok": false}
 	var alchemy := CharacterSystem.get_effective_skill_level(performer, "alchemy")
-	GameState.consume_supply("reagents", 3)
 	var count := 1 + int(alchemy >= 6)
 	var item_pool := ["fire_bomb", "poison_bomb", "acid_bomb"]
 	var brewed: Array[String] = []
@@ -397,7 +412,8 @@ func _exec_brew_combat(performer: Dictionary) -> Dictionary:
 
 
 func _exec_deep_repair(party: Array) -> Dictionary:
-	GameState.consume_supply("scrap", 3)
+	if not GameState.consume_supply("scrap", 3):
+		return {"message": "Not enough scrap for deep repair.", "ok": false}
 	var armor_slots: Array[String] = ["head", "chest", "hand_l", "hand_r", "legs", "feet"]
 	for char in party:
 		var equipment: Dictionary = char.get("equipment", {})
@@ -417,17 +433,15 @@ func _exec_deep_repair(party: Array) -> Dictionary:
 					var max_dur: int = int(item_data.get("max_durability", 0))
 					if max_dur > 0:
 						ItemSystem.update_item_durability(item_id, max_dur)
-	return {"message": "All equipment restored to full durability.", "ok": true}
+	return {"message": "All equipped items restored to full durability.", "ok": true}
 
 
 func _exec_weapon_work(party: Array) -> Dictionary:
-	GameState.consume_supply("scrap", 2)
+	if not GameState.consume_supply("scrap", 2):
+		return {"message": "Not enough scrap for weapon work.", "ok": false}
+	# One buff appended once — active_map_buffs applies globally to all characters.
+	GameState.active_map_buffs.append({"stat": "accuracy", "amount": 4, "combats_remaining": 1})
 	for char in party:
-		GameState.active_map_buffs.append({
-			"stat": "accuracy",
-			"amount": 4,
-			"combats_remaining": 1,
-		})
 		CharacterSystem.update_derived_stats(char)
 	return {"message": "Weapons honed. Party gains +4 accuracy next combat.", "ok": true}
 
@@ -442,9 +456,10 @@ func _exec_campfire_story(performer: Dictionary, party: Array) -> Dictionary:
 
 
 func _exec_encouraging_words(party: Array) -> Dictionary:
+	# One buff entry each — active_map_buffs applies globally to all characters.
+	GameState.active_map_buffs.append({"stat": "initiative", "amount": 2, "combats_remaining": 1})
+	GameState.active_map_buffs.append({"stat": "finesse",    "amount": 2, "combats_remaining": 1})
 	for char in party:
-		GameState.active_map_buffs.append({"stat": "initiative", "amount": 2, "combats_remaining": 1})
-		GameState.active_map_buffs.append({"stat": "finesse",    "amount": 2, "combats_remaining": 1})
 		CharacterSystem.update_derived_stats(char)
 	return {"message": "The party rallies. +2 Initiative and Finesse next combat.", "ok": true}
 

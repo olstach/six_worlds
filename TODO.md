@@ -216,6 +216,32 @@ The current three-tier rest system handles resource costs and recovery correctly
 - [x] **Task 10** — Safe camp integration: `"safe_camp": true` added to hell/HG teahouses, hidden gompas, and skygazing gompa events. `_check_is_safe_camp()` in overworld checks current tile's event for this flag. Safe camps: no food cost, disturbance chance 0.
 - [x] **Task 11** — `"trigger": "camp"` events added to domain_events.json: `camp_night_vision` (any realm), `camp_wandering_spirit` (any realm), `camp_fire_omen` (hell). `EventManager.get_random_camp_event(realm)` added.
 
+#### Camp System — Manual Review & Extension (post-implementation)
+
+Needs a hands-on play session to balance, extend, and wire the remaining gaps:
+
+**Activities to add:**
+- [ ] **Night Music** (Performance 5+) — deeper morale; small chance of triggering a camp encounter (traveller, passing spirit). Needs camp event wiring from within an activity result.
+- [ ] **Guile Work** (Guile 4+) — set a false trail or trap; mechanical effect TBD (reduce next mob patrol range? chance of ambush avoidance?). Strong flavour, light mechanics.
+- [ ] **Set Snares** (Crafting 2+ or Thievery 2+) — overnight food/material gain; small creature encounter chance. Needs a "resolve on next move" deferred effect.
+- [ ] **Drill** (Leadership 5+) — party initiative bonus next combat. Similar to Encouraging Words but combat-only; requires Leadership 5 vs 3, so a separate slot option.
+- [ ] **Protector Offering** (Ritual 2+) — dharmapala offering at a camp shrine; deferred until DharmapalaSystem exists.
+- [ ] **Craft Item** (Crafting 3+) — make basic tools/rope/ammo from scrap. Needs a simple crafting recipe table.
+- [ ] **Craft Charm** (Ritual 3+ + magic school 3+) — consumable charm with school-specific effect. Needs schema for camp-crafted charms.
+- [ ] **Mantra Recitation** (Yoga 2+) — currently a stub. Wire to a `mantra_count` field on the character and a threshold for future yidam relationship progress.
+
+**Wiring gaps:**
+- [ ] **Disturbance → camp event**: When `roll_disturbance()` returns true, call `EventManager.get_random_camp_event(realm)` and trigger it via the event display system. Currently disturbance only reduces rest effectiveness with a toast — no actual event fires. (Wiring requires post-rest event queue or mid-rest event hook.)
+- [ ] **More camp events**: Write 3–5 camp events per realm (hell, hungry ghost, plus any/cross-realm). Currently only 3 total exist. Target: at least 2 per realm + 3 any-realm.
+- [ ] **Location-specific activity suppression**: TODO design said some activities unavailable at teahouses (smithing) or enhanced at gompas (sadhana). Add `"suppress_activities": [...]` and `"enhance_activities": [...]` to safe camp event dicts and wire into `get_available_activities()`.
+- [ ] **Sadhana cost preview**: Sadhana auto-picks the best ritual tier — but the player can't see which tier will fire or what it will cost before confirming. Add a preview line to the button text (e.g., "Torma Offering — Reagents: 2").
+
+**Balance review (needs playtesting):**
+- [ ] Forage yield (herbs + food) relative to rest costs — may be too generous or too low depending on realm.
+- [ ] Brew Potions count (1–3) vs reagent cost (2) — compare to what 2 reagents buys in shops.
+- [ ] Pressure decay total with Full Rest + Sadhana = 250 (100 base + 150 sadhana). May be excessive; consider whether sadhana should replace rather than stack with rest pressure decay.
+- [ ] Activity slot count (Camp=1, Full=2) — whether Logistics perk for +1 slot should be implemented.
+
 ---
 
 ### Diseases & Major Wounds
