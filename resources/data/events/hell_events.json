@@ -4456,6 +4456,7 @@
       "id": "hell_teahouse_cold",
       "title": "Teahouse",
       "realm": "hell",
+      "safe_camp": true,
       "text": "A low building crouches at the edge of the frozen waste, smoke leaking from the roof. Inside, a few silent figures nurse cups of something warm. The barkeeper glances up without expression.",
       "choices": [
         {
@@ -4481,6 +4482,7 @@
       "id": "hell_teahouse_fire",
       "title": "Teahouse",
       "realm": "hell",
+      "safe_camp": true,
       "text": "A squat building half-buried in ash. The sign is burned off but the smell of tea — strong, smoky, almost pleasant — cuts through the sulphur. The door is open.",
       "choices": [
         {
@@ -4631,6 +4633,7 @@
       "id": "hell_hidden_gompa",
       "title": "Hidden Gompa",
       "realm": "hell",
+      "safe_camp": true,
       "text": "Practitioners come to this place seeking solitude and peace. The ground itself vibrates with the power of their meditation, mantric syllables appearing spontaneously in the rock.",
       "choices": [
         {

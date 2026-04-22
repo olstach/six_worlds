@@ -862,6 +862,8 @@ func update_derived_stats(character: Dictionary) -> void:
 					derived["loot_chance_pct"] = derived.get("loot_chance_pct", 0) + amount
 				"xp_gain_pct":
 					derived["xp_gain_pct"] = derived.get("xp_gain_pct", 0) + amount
+				"accuracy":
+					derived["accuracy"] = derived.get("accuracy", 0) + amount
 			# Handle *_resistance map buffs generically (match doesn't support wildcards)
 			if stat.ends_with("_resistance"):
 				var element = stat.replace("_resistance", "")

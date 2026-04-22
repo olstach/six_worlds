@@ -204,17 +204,17 @@ The current three-tier rest system handles resource costs and recovery correctly
 - **Spar** (any weapon skill 4+) — two characters, minor XP toward that weapon skill
 
 #### Implementation tasks
-- [ ] **Task 1** — Redesign rest panel UI: tier selection → activity slot panel (1–2 buttons per slot, drawn from available skills in party). Sadhana appears here naturally as one activity option rather than a separate section.
-- [ ] **Task 2** — `CampSystem` autoload (or module in `overworld.gd`): `get_available_activities(party)` returns list of available camp skill dicts based on party skills; `execute_activity(activity_id, character)` runs the activity logic.
-- [ ] **Task 3** — Implement disturbance check at rest start: roll chance by location/realm/time; on trigger, pause rest → launch combat encounter → on win, deduct 1 slot + proportional recovery; on loss, cancel rest.
-- [ ] **Task 4** — Comment out passive alchemy step-production in `game_state.gd` (do not delete — tag with `# PLAYTEST: move to camp-only?`).
-- [ ] **Task 5** — Implement medical activities: Herb Preparation, Field Surgery (including wound/disease status cure).
-- [ ] **Task 6** — Implement alchemical activities: Brew Potions, Brew Poisons/Bombs.
-- [ ] **Task 7** — Implement craft activities: Deep Repair, Weapon Work, Craft Item, Craft Charm/Talisman.
-- [ ] **Task 8** — Implement social activities: Campfire Story, Encouraging Words, Night Music.
-- [ ] **Task 9** — Implement intelligence/survival activities: Study, Scout, Forage, Set Snares, Guile Work, Sharpen, Drill, Spar.
-- [ ] **Task 10** — Safe camp integration: add `camp_actions: []` field to relevant map tile/location dicts; wire to activity panel to inject location-specific options and suppress unavailable ones.
-- [ ] **Task 11** — Camp-only events: add `"trigger": "camp"` flag to event_manager; write 3–5 camp-only events per realm (night visions, wandering spirit, traveller by firelight, etc.).
+- [x] **Task 1** — Redesign rest panel UI: tier selection → activity slot panel (1–2 buttons per slot, drawn from available skills in party). Sadhana appears here naturally as one activity option rather than a separate section.
+- [x] **Task 2** — `CampSystem` autoload: `get_available_activities(party)` returns list of available camp skill dicts based on party skills; `execute_activity(activity_id, character)` runs the activity logic.
+- [x] **Task 3** — Disturbance check at rest start: roll chance by realm/time; on trigger, rest tier drops by 1 and one activity slot is lost. Full combat trigger deferred (complex). Scout activity or safe camp negates disturbance.
+- [x] **Task 4** — Passive alchemy step-production commented out in `overworld.gd` `_tick_supply_step()` with `# PLAYTEST: move to camp-only?` tag. `Brew Potions` and `Brew Bombs & Poisons` camp activities replace it.
+- [x] **Task 5** — Herb Preparation (Medicine 2+) implemented. Field Surgery stubbed (disease system coming next).
+- [x] **Task 6** — Brew Potions (Alchemy 3+) and Brew Bombs & Poisons (Alchemy 4+) implemented.
+- [x] **Task 7** — Deep Repair (Smithing 2+) and Weapon Work (Smithing 4+) implemented. Craft Item / Craft Charm deferred (needs crafting system).
+- [x] **Task 8** — Campfire Story (Performance/Comedy 3+) and Encouraging Words (Leadership 3+) implemented. Night Music deferred (needs camp event trigger from activities).
+- [x] **Task 9** — Study (Learning 2+), Forage (Logistics 2+), Scout (Logistics 3+), Sharpen (weapon 3+), Spar (weapon 4+) implemented. Set Snares and Guile Work deferred (flavour-only, no system yet). Drill deferred (same as Encouraging Words but weaker).
+- [x] **Task 10** — Safe camp integration: `"safe_camp": true` added to hell/HG teahouses, hidden gompas, and skygazing gompa events. `_check_is_safe_camp()` in overworld checks current tile's event for this flag. Safe camps: no food cost, disturbance chance 0.
+- [x] **Task 11** — `"trigger": "camp"` events added to domain_events.json: `camp_night_vision` (any realm), `camp_wandering_spirit` (any realm), `camp_fire_omen` (hell). `EventManager.get_random_camp_event(realm)` added.
 
 ---
 

@@ -780,6 +780,22 @@ func get_random_event_for_realm(realm: String) -> String:
 	return realm_events[randi() % realm_events.size()]
 
 
+## Returns a random camp-trigger event ID for the given realm, or "" if none available.
+## Camp events have "trigger": "camp" and realm matching "any" or the current realm.
+func get_random_camp_event(realm: String) -> String:
+	var camp_events: Array[String] = []
+	for event_id in event_database:
+		var ev: Dictionary = event_database[event_id]
+		if ev.get("trigger", "") != "camp":
+			continue
+		var ev_realm: String = ev.get("realm", "any")
+		if ev_realm == "any" or ev_realm == realm:
+			camp_events.append(event_id)
+	if camp_events.is_empty():
+		return ""
+	return camp_events[randi() % camp_events.size()]
+
+
 ## Teach a random spell to every party member who doesn't already know it.
 ## school: a spell school name like "White", "Black", or "" for any school.
 ## Picks one spell across all levels (excluding domain spells), then teaches it to all.
