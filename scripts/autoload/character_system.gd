@@ -609,8 +609,10 @@ func upgrade_skill(character: Dictionary, skill: String) -> bool:
 	return false
 
 ## Get effective skill level including item/race bonuses (capped at 15 for display).
+## Returns the effective skill level for a character including all bonuses
+## from quirks, equipment, and race. Clamped to [0, 15].
 ## skill_bonuses format: {"skill_id": {"source_name": amount, ...}, ...}
-func _get_effective_skill_level(character: Dictionary, skill_id: String) -> int:
+func get_effective_skill_level(character: Dictionary, skill_id: String) -> int:
 	var base = character.get("skills", {}).get(skill_id, 0)
 	var bonus_sources = character.get("skill_bonuses", {}).get(skill_id, {})
 	var bonus = 0
@@ -801,7 +803,7 @@ func update_derived_stats(character: Dictionary) -> void:
 	if PerkSystem:
 		var all_skills = character.get("skills", {})
 		for skill_id in all_skills:
-			var effective_level = _get_effective_skill_level(character, skill_id)
+			var effective_level = get_effective_skill_level(character, skill_id)
 			if effective_level == 0:
 				continue
 			var bonus = PerkSystem.get_base_skill_bonuses_at_level(skill_id, effective_level)

@@ -857,13 +857,16 @@ func _open_rest_panel() -> void:
 	var party := CharacterSystem.get_party()
 	var party_size := party.size()
 
-	# Best skills across party (medicine not needed here — _do_rest computes it independently)
+	# Best skills across party — use effective levels so quirk/equipment bonuses count
 	var best_logistics := 0
 	var best_smithing  := 0
+	var best_yoga      := 0
+	var best_ritual    := 0
 	for char in party:
-		var sk: Dictionary = char.get("skills", {})
-		best_logistics = maxi(best_logistics, int(sk.get("logistics", 0)))
-		best_smithing  = maxi(best_smithing,  int(sk.get("smithing",  0)))
+		best_logistics = maxi(best_logistics, CharacterSystem.get_effective_skill_level(char, "logistics"))
+		best_smithing  = maxi(best_smithing,  CharacterSystem.get_effective_skill_level(char, "smithing"))
+		best_yoga      = maxi(best_yoga,      CharacterSystem.get_effective_skill_level(char, "yoga"))
+		best_ritual    = maxi(best_ritual,    CharacterSystem.get_effective_skill_level(char, "ritual"))
 
 	var food_discount: int       = best_logistics / 3
 	var herb_scrap_discount: int = best_logistics / 4
@@ -945,6 +948,89 @@ func _open_rest_panel() -> void:
 			tier_btn.tooltip_text = "Cannot afford this rest tier"
 		vbox.add_child(tier_btn)
 
+	# === Sadhana section (Full Rest + practice, 50% recovery) ===
+	var sad_sep := HSeparator.new()
+	vbox.add_child(sad_sep)
+
+	if best_yoga < 3:
+		var no_yoga_lbl := Label.new()
+		no_yoga_lbl.text = "Sadhana: requires Yoga 3"
+		no_yoga_lbl.add_theme_color_override("font_color", Color(0.45, 0.45, 0.45))
+		no_yoga_lbl.add_theme_font_size_override("font_size", 12)
+		no_yoga_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(no_yoga_lbl)
+	else:
+		var sad_hdr := Label.new()
+		sad_hdr.text = "Sadhana  (Full Rest • 50% recovery)"
+		sad_hdr.add_theme_font_size_override("font_size", 12)
+		sad_hdr.add_theme_color_override("font_color", Color(0.75, 0.65, 0.9))
+		sad_hdr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(sad_hdr)
+
+		# Approximate karma per yoga level (display only — full moon not factored in)
+		var base_karma := 20 if best_yoga < 5 else (35 if best_yoga < 7 else 50)
+		var roll_note  := " (chance)" if best_yoga < 7 else ""
+
+		# Full-rest base costs shared by all sadhana tiers
+		var full_food  := food_costs[2]
+		var full_herbs := herbs_costs[2]
+		var full_scrap := scrap_costs[2]
+		var can_full   := GameState.food >= full_food and GameState.herbs >= full_herbs and GameState.scrap >= full_scrap
+
+		var tiers: Array[Dictionary] = [
+			{ "name": "Yoga Practice",    "xherbs": 0, "xreagents": 0, "mana_per": 0,  "karma_bonus": 0,  "min_ritual": 0, "min_yoga": 3 },
+			{ "name": "Smoke Offering",   "xherbs": 2, "xreagents": 0, "mana_per": 0,  "karma_bonus": 15, "min_ritual": 2, "min_yoga": 3 },
+			{ "name": "Torma Offering",   "xherbs": 0, "xreagents": 2, "mana_per": 10, "karma_bonus": 30, "min_ritual": 4, "min_yoga": 3 },
+			{ "name": "Mandala Offering", "xherbs": 0, "xreagents": 3, "mana_per": 15, "karma_bonus": 50, "min_ritual": 6, "min_yoga": 5 },
+		]
+		for t in range(tiers.size()):
+			var td        := tiers[t]
+			if best_yoga < td.min_yoga or best_ritual < td.min_ritual:
+				continue
+			var xherbs    := td.xherbs    as int
+			var xreagents := td.xreagents as int
+			var mana_cost := td.mana_per  as int
+			var karma_ttl := base_karma + (td.karma_bonus as int)
+			var tier_name := td.name      as String
+
+			var can_afford := can_full \
+				and GameState.herbs    >= full_herbs + xherbs \
+				and GameState.reagents >= xreagents
+
+			var cost_parts: Array[String] = ["Food: %d" % full_food]
+			var total_herbs := full_herbs + xherbs
+			if total_herbs > 0:
+				cost_parts.append("Herbs: %d" % total_herbs)
+			if full_scrap > 0:
+				cost_parts.append("Scrap: %d" % full_scrap)
+			if xreagents > 0:
+				cost_parts.append("Reagents: %d" % xreagents)
+			if mana_cost > 0:
+				cost_parts.append("-%d Mana each" % mana_cost)
+
+			var purge_note := ""
+			if best_yoga >= 5:
+				purge_note = " + quirk purge"
+				if t == 3:
+					purge_note += " (easier)"
+
+			var sad_btn := Button.new()
+			sad_btn.text = "%s\n%s\n~%d karma%s%s" % [
+				tier_name, " | ".join(cost_parts), karma_ttl, roll_note, purge_note
+			]
+			sad_btn.custom_minimum_size = Vector2(0, 64)
+			sad_btn.add_theme_font_size_override("font_size", 12)
+			sad_btn.disabled = not can_afford
+			if can_afford:
+				var bs := UIStyle.make_stylebox(Color(0.28, 0.18, 0.42), 1, 6, 10)
+				var bh := UIStyle.make_stylebox(Color(0.42, 0.28, 0.62), 1, 6, 10)
+				sad_btn.add_theme_stylebox_override("normal", bs)
+				sad_btn.add_theme_stylebox_override("hover", bh)
+				sad_btn.pressed.connect(_confirm_sadhana.bind(t))
+			else:
+				sad_btn.tooltip_text = "Cannot afford"
+			vbox.add_child(sad_btn)
+
 	var cancel_sep := HSeparator.new()
 	vbox.add_child(cancel_sep)
 
@@ -970,6 +1056,144 @@ func _close_rest_panel() -> void:
 		_rest_layer = null
 
 
+## Called when a sadhana tier button is pressed.
+func _confirm_sadhana(ritual_tier: int) -> void:
+	_close_rest_panel()
+	_do_sadhana(ritual_tier)
+
+
+## Perform a sadhana practice during Full Rest.
+## Costs Full-Rest resources + ritual materials; restores at 50%; purifies karma.
+## ritual_tier: 0 (yoga only), 1 (smoke offering), 2 (torma), 3 (mandala)
+func _do_sadhana(ritual_tier: int) -> void:
+	var party := CharacterSystem.get_party()
+	if party.is_empty():
+		return
+
+	# Best effective skill levels across party (includes quirk/equipment bonuses)
+	var best_yoga      := 0
+	var best_ritual    := 0
+	var best_logistics := 0
+	var best_smithing  := 0
+	for char in party:
+		best_yoga      = maxi(best_yoga,      CharacterSystem.get_effective_skill_level(char, "yoga"))
+		best_ritual    = maxi(best_ritual,    CharacterSystem.get_effective_skill_level(char, "ritual"))
+		best_logistics = maxi(best_logistics, CharacterSystem.get_effective_skill_level(char, "logistics"))
+		best_smithing  = maxi(best_smithing,  CharacterSystem.get_effective_skill_level(char, "smithing"))
+
+	if best_yoga < 3:
+		return  # Guard — button should never be visible below Yoga 3
+
+	# === Full-Rest base resource costs (same formula as _do_rest tier 3) ===
+	var food_discount:      int = best_logistics / 3
+	var herb_scrap_discount: int = best_logistics / 4
+	var food_cost:  int = maxi(1, 6 - food_discount) * party.size()
+	var herbs_cost: int = maxi(0, 4 - herb_scrap_discount)
+	var scrap_cost: int = maxi(0, 4 - herb_scrap_discount) + (best_smithing / 3)
+
+	# Ritual extra costs: [extra_herbs, extra_reagents, mana_per_member]
+	const RITUAL_EXTRA: Array = [[0,0,0],[2,0,0],[0,2,10],[0,3,15]]
+	var extra         := RITUAL_EXTRA[ritual_tier]
+	var extra_herbs   := extra[0] as int
+	var extra_reagents := extra[1] as int
+	var mana_per      := extra[2] as int
+
+	GameState.consume_supply("food",     food_cost)
+	GameState.consume_supply("herbs",    herbs_cost + extra_herbs)
+	GameState.consume_supply("scrap",    scrap_cost)
+	if extra_reagents > 0:
+		GameState.consume_supply("reagents", extra_reagents)
+
+	# === Recovery at 50% (meditation cuts into sleep time) ===
+	for char in party:
+		var derived: Dictionary = char.get("derived", {})
+		var max_hp:      int = int(derived.get("max_hp",      100))
+		var max_mana:    int = int(derived.get("max_mana",     50))
+		var max_stamina: int = int(derived.get("max_stamina",  50))
+		derived["current_hp"]      = mini(max_hp,      int(derived.get("current_hp",      max_hp))      + floori(max_hp      * 0.5))
+		derived["current_stamina"] = mini(max_stamina, int(derived.get("current_stamina", max_stamina)) + floori(max_stamina * 0.5))
+		# Mana: recover 50% then subtract ritual cost in one clamped operation
+		derived["current_mana"] = clampi(
+			int(derived.get("current_mana", max_mana)) + floori(max_mana * 0.5) - mana_per,
+			0, max_mana)
+
+	# === Pressure decay at 1.5× full rest (100.0 × 1.5) ===
+	for char in party:
+		PsychologySystem.decay_toward_baseline(char, 150.0)
+		_process_rest_perks(char, 3)  # tier 3 equivalent — ensures future rest perks apply
+
+	# === Karma purification ===
+	var result: Dictionary = KarmaSystem.perform_purification(best_yoga, ritual_tier)
+
+	# === Quirk purge — targets the most advanced practitioner in the party ===
+	# Yoga 5+: attempt yoga-purgeable quirks on the party member with highest yoga.
+	# Ritual tier 1+: also attempt ritual-only quirks on the highest ritual member.
+	# Mandala offering (tier 3) lowers effective purge difficulty by 2.
+	var purged_quirk     := ""
+	var purged_char_name := ""
+	var diff_mod         := 2 if ritual_tier == 3 else 0
+
+	if best_yoga >= 5:
+		# Find the party member with the highest effective yoga
+		var best_char: Dictionary = {}
+		var best_level := 0
+		for char in party:
+			var lvl := CharacterSystem.get_effective_skill_level(char, "yoga")
+			if lvl > best_level:
+				best_level = lvl
+				best_char = char
+		if not best_char.is_empty():
+			for quirk_id in best_char.get("quirks", []).duplicate():
+				if QuirkSystem.try_purge(best_char, quirk_id, "yoga", diff_mod):
+					purged_quirk     = QuirkSystem.get_quirk_name(quirk_id)
+					purged_char_name = best_char.get("name", "")
+					break
+
+	# Ritual-only quirks (blood_handed, oath_breaker, lapsed…): highest ritual member
+	if purged_quirk.is_empty() and ritual_tier >= 1:
+		var best_char: Dictionary = {}
+		var best_level := 0
+		for char in party:
+			var lvl := CharacterSystem.get_effective_skill_level(char, "ritual")
+			if lvl > best_level:
+				best_level = lvl
+				best_char = char
+		if not best_char.is_empty():
+			for quirk_id in best_char.get("quirks", []).duplicate():
+				var q := QuirkSystem.get_quirk(quirk_id)
+				var purgeable: Array = q.get("purgeable_by", [])
+				if "ritual" in purgeable and not "yoga" in purgeable:
+					if QuirkSystem.try_purge(best_char, quirk_id, "ritual", diff_mod):
+						purged_quirk     = QuirkSystem.get_quirk_name(quirk_id)
+						purged_char_name = best_char.get("name", "")
+						break
+
+	# === Durability restore (full smithing scaling — you had downtime) ===
+	var smithing_pct: float = best_smithing * 0.05  # best_smithing is already effective level
+	if smithing_pct > 0.0:
+		_restore_party_durability(smithing_pct)
+
+	# === Advance time ===
+	GameState.advance_time(GameState.HOURS_PER_REST)
+
+	# === Toast ===
+	var day_str := "%s, %s" % [GameState.get_lunar_day_label(), GameState.get_time_of_day_label()]
+	var toast: String
+	if not result.success:
+		toast = "Sadhana: the practice faltered — no karma purified. %s." % day_str
+	elif result.total > 0:
+		var realm_names: Array[String] = []
+		for r in result.realms:
+			realm_names.append((r.realm as String).replace("_", " ").capitalize())
+		toast = "Sadhana: purified %d karma (%s). %s." % [result.total, ", ".join(realm_names), day_str]
+	else:
+		toast = "Sadhana complete — no harmful karma to purify. %s." % day_str
+	if not purged_quirk.is_empty():
+		toast += "\n%s has shed the '%s' trait." % [purged_char_name, purged_quirk]
+	_show_toast(toast)
+	_update_time_label()
+
+
 ## Perform a rest action for the party.
 ## tier: 1 (Quick Rest), 2 (Camp), 3 (Full Rest)
 func _do_rest(tier: int) -> void:
@@ -977,15 +1201,14 @@ func _do_rest(tier: int) -> void:
 	if party.is_empty():
 		return
 
-	# Best skill levels in party
+	# Best effective skill levels in party (includes quirk/equipment bonuses)
 	var best_medicine  := 0
 	var best_smithing  := 0
 	var best_logistics := 0
 	for char in party:
-		var skills: Dictionary = char.get("skills", {})
-		best_medicine  = maxi(best_medicine,  int(skills.get("medicine",  0)))
-		best_smithing  = maxi(best_smithing,  int(skills.get("smithing",  0)))
-		best_logistics = maxi(best_logistics, int(skills.get("logistics", 0)))
+		best_medicine  = maxi(best_medicine,  CharacterSystem.get_effective_skill_level(char, "medicine"))
+		best_smithing  = maxi(best_smithing,  CharacterSystem.get_effective_skill_level(char, "smithing"))
+		best_logistics = maxi(best_logistics, CharacterSystem.get_effective_skill_level(char, "logistics"))
 
 	# === Resource costs ===
 	# Food: per-member flat cost, reduced by Logistics

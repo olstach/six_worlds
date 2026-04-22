@@ -153,6 +153,99 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 
 ---
 
+### Camp System (Full Overhaul of Rest UI & Activities)
+
+The current three-tier rest system handles resource costs and recovery correctly, and karma purification sadhana is implemented. This overhaul turns the Full Rest and Camp tiers into a proper two-stage decision: **pick rest tier → pick camp activities**.
+
+#### Design decisions (settled)
+- **Slots**: Quick Rest = 0 activity slots, Camp = 1, Full Rest = 2. Logistics perks can add +1 slot.
+- **Party pool**: Activities draw from a shared pool. Any character can contribute one action per slot, but each character can only perform one activity per rest.
+- **Disturbance**: Fires at the *start* of rest (before any activities). If combat is triggered, the party fights immediately. Win → rest continues but loses 1 slot and proportional recovery (e.g., 2-slot rest becomes 1-slot, recovery cut accordingly). Lose/flee → rest fails entirely.
+  - Disturbance chance scales with: location type (wilderness > road > town outskirts > inn = 0), time of day (night higher), realm (hell/HG much higher), and is negated by Logistics perk "Safe Campsite".
+- **Safe camps** (inns, teahouses, monasteries): no food cost, disturbance chance = 0, access to a `camp_actions` dict on the map tile object for location-specific activities and events. Some regular camp activities may be unavailable (no smithing in a teahouse); social ones may be enhanced (Performance in front of an audience = better effect).
+- **Crafting skills are camp-only**: passive per-step alchemy production is commented out (not deleted) pending playtesting. No new resource types needed.
+
+#### Camp activity list (to implement as camp skills)
+
+*Spiritual:*
+- **Sadhana** (Yoga 3+) — karma purification ✓ *implemented*
+- **Mantra Recitation** (Yoga 2+) — small yidam/dharmapala relationship progress; low-skill entry point for the deity systems
+- **Protector Offering** (Ritual 2+) — dharmapala offering at camp altar; deferred until DharmapalaSystem exists
+
+*Medical / Alchemical:*
+- **Herb Preparation** (Medicine 2+) — process raw herbs into more efficient healing forms; small passive HP restore bonus next rest
+- **Field Surgery** (Medicine 4+) — cure bleeding, poison, infection, and camp-only wound/disease statuses (see Diseases & Wounds section); costs herbs
+- **Brew Potions** (Alchemy 3+) — convert herbs + reagents into healing/buff potions; output count and quality scale with Alchemy level; replaces passive step-based brewing
+- **Brew Poisons & Bombs** (Alchemy 4+) — combat consumables; costs reagents
+
+*Craft / Maintenance:*
+- **Deep Repair** (Smithing 2+) — full durability restore on all party equipment beyond the passive smithing scaling already in `_do_rest`
+- **Weapon Work** (Smithing 4+) — temporary +accuracy or +damage on one weapon, lasts until next rest
+- **Craft Item** (Crafting 3+) — make tools, rope, ammunition, basic equipment from scrap/materials
+- **Craft Charm or Talisman** (Ritual 3+ + relevant magic school 3+) — create a consumable charm with a minor magical effect tied to the school used; costs reagents + herbs; values TBD in playtesting
+
+*Social / Morale:*
+- **Campfire Story** (Performance 3+ or Comedy 3+) — party-wide pressure reduction; Comedy variant tends toward Air/Fire pressure, Performance toward Water/Earth
+- **Encouraging Words** (Leadership 3+) — small stat buff for party members for next combat, or reduce one character's pressure significantly
+- **Night Music** (Performance 5+) — deeper morale effect; chance of drawing in a friendly passing-traveller event
+
+*Intelligence / Scouting:*
+- **Study Recent Events** (Learning 2+) — XP bonus for one character derived from recent encounters; scales with Learning level
+- **Scout Surroundings** (Logistics 3+) — choose: reduce disturbance chance for next camp OR reveal nearby map tiles OR identify forage opportunities
+- **Guile Work** (Guile 4+) — arrange a false trail, plant evidence, set a future trap; vague mechanical effect TBD, strong flavour
+
+*Survival / Foraging:*
+- **Forage** (Logistics 2+) — recover herbs and some food from terrain; yield varies by realm and biome
+- **Set Snares** (Crafting 2+ or Thievery 2+) — passive food and small material gain overnight; small chance of triggering a creature encounter
+
+*Combat Prep (limited presence by design):*
+- **Sharpen Weapons** (any weapon skill 3+) — temporary +accuracy for that character's attacks next combat
+- **Drill** (Leadership 5+) — party initiative bonus next fight
+- **Spar** (any weapon skill 4+) — two characters, minor XP toward that weapon skill
+
+#### Implementation tasks
+- [ ] **Task 1** — Redesign rest panel UI: tier selection → activity slot panel (1–2 buttons per slot, drawn from available skills in party). Sadhana appears here naturally as one activity option rather than a separate section.
+- [ ] **Task 2** — `CampSystem` autoload (or module in `overworld.gd`): `get_available_activities(party)` returns list of available camp skill dicts based on party skills; `execute_activity(activity_id, character)` runs the activity logic.
+- [ ] **Task 3** — Implement disturbance check at rest start: roll chance by location/realm/time; on trigger, pause rest → launch combat encounter → on win, deduct 1 slot + proportional recovery; on loss, cancel rest.
+- [ ] **Task 4** — Comment out passive alchemy step-production in `game_state.gd` (do not delete — tag with `# PLAYTEST: move to camp-only?`).
+- [ ] **Task 5** — Implement medical activities: Herb Preparation, Field Surgery (including wound/disease status cure).
+- [ ] **Task 6** — Implement alchemical activities: Brew Potions, Brew Poisons/Bombs.
+- [ ] **Task 7** — Implement craft activities: Deep Repair, Weapon Work, Craft Item, Craft Charm/Talisman.
+- [ ] **Task 8** — Implement social activities: Campfire Story, Encouraging Words, Night Music.
+- [ ] **Task 9** — Implement intelligence/survival activities: Study, Scout, Forage, Set Snares, Guile Work, Sharpen, Drill, Spar.
+- [ ] **Task 10** — Safe camp integration: add `camp_actions: []` field to relevant map tile/location dicts; wire to activity panel to inject location-specific options and suppress unavailable ones.
+- [ ] **Task 11** — Camp-only events: add `"trigger": "camp"` flag to event_manager; write 3–5 camp-only events per realm (night visions, wandering spirit, traveller by firelight, etc.).
+
+---
+
+### Diseases & Major Wounds
+
+Persistent negative status effects from combat or events that do not fully clear with normal rest — requiring camp-based Medicine to cure. Adds mechanical weight to attrition and makes Medicine more meaningful beyond passive HP bonuses.
+
+#### Types (initial set, expand per realm)
+- **Infected Wound** — slow HP drain each rest until cured; acquired from certain enemy attacks or untreated bleeds
+- **Broken Bone** — Finesse penalty (movement, dodge, initiative); camp-only cure (splint + herbs); takes 2 full rests to heal even with Medicine
+- **Fever** — Constitution penalty, increased food consumption, worsens with bad rests; cured by Medicine + herbs
+- **Frostbite** — cold-hell specific; Finesse + Strength penalty; cured by warmth (camp fire) + Medicine
+- **Corruption** — hell/hungry-ghost specific; psychological + stat penalty; resists normal medicine, needs Ritual or Yoga to treat
+
+#### Design notes
+- These statuses persist across rest tiers — Quick Rest does not remove them at all; Camp rest slows progression; Full Rest + Field Surgery cures them
+- Medicine skill level determines cure success: some wounds require Medicine 3+, severe ones Medicine 5+
+- Infection can worsen if untreated (escalation: infected wound → fever → worse)
+- Events should be able to apply these (e.g., the lava event burning a character, the cold-hell freezing someone)
+- UI: wound statuses appear in character sheet and in combat UI alongside normal status effects, visually distinct (persistent icon, no timer)
+- Future: diseases specific to each realm (hungry ghost realm malnutrition disease, animal realm parasites, etc.)
+
+#### Implementation tasks
+- [ ] Define wound/disease statuses in `statuses.json` with `persistent: true` flag so they survive between combats and rests
+- [ ] Wire escalation: `_tick_persistent_wounds()` called at each rest in `_do_rest()` / `_do_sadhana()` — untreated infection gets worse, frostbite spreads
+- [ ] Field Surgery camp activity cures one wound/disease per use (see Camp System Task 5)
+- [ ] Event outcomes can apply persistent wound statuses (add to `apply_outcome()` in event_manager)
+- [ ] Character sheet and combat UI: show persistent wound icons distinctly
+
+---
+
 ### Projectile System (COMPLETE)
 - [x] Ranged attack misses deviate 1-3 tiles based on how badly the roll failed
 - [x] Deviated projectiles can hit any unit at landing tile (ally or enemy) — logs FRIENDLY FIRE

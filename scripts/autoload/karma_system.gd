@@ -82,6 +82,8 @@ const RACE_WEIGHTS: Dictionary = {
 }
 
 func _ready() -> void:
+	for realm in REALM_ORDER:
+		assert(realm in karma_scores, "REALM_ORDER contains realm not in karma_scores: " + realm)
 	print("KarmaSystem initialized")
 
 ## Add karma to a specific realm based on player actions
@@ -213,16 +215,69 @@ func get_karma_report() -> String:
 		report += "  " + realm + ": " + str(karma_scores[realm]) + "\n"
 	return report
 
-## Check if player can perform karma purification ritual
-func can_purify_karma(realm: String, required_items: Array) -> bool:
-	# TODO: Check if player has required ritual items
-	return false
+# Realm hierarchy lowest → highest; purification targets this order
+const REALM_ORDER: Array[String] = ["hell", "hungry_ghost", "animal", "human", "asura", "god"]
 
-## Perform karma purification ritual
-func purify_karma(realm: String, amount: int) -> void:
+## Calculate and apply karma purification during a sadhana rest practice.
+## yoga_level: best Yoga skill in party. ritual_tier: 0 (none) – 3 (mandala).
+## Returns { "success": bool, "total": int, "realms": Array[Dictionary] }
+## where realms = [{ "realm": String, "amount": int }].
+func perform_purification(yoga_level: int, ritual_tier: int) -> Dictionary:
+	var base_amount := 0
+
+	# Yoga determines base amount and whether a roll is required
+	if yoga_level >= 7:
+		base_amount = 50                              # Reliable — no roll
+	elif yoga_level >= 5:
+		var roll := randi() % 20 + 1 + yoga_level    # d20 + Yoga vs DC 8
+		if roll < 8:
+			return { "success": false, "total": 0, "realms": [] }
+		base_amount = 35
+	elif yoga_level >= 3:
+		var roll := randi() % 20 + 1 + yoga_level    # d20 + Yoga vs DC 12
+		if roll < 12:
+			return { "success": false, "total": 0, "realms": [] }
+		base_amount = 20
+	else:
+		return { "success": false, "total": 0, "realms": [] }
+
+	# Ritual augmentation adds on top of the yoga base
+	match ritual_tier:
+		1: base_amount += 15
+		2: base_amount += 30
+		3: base_amount += 50
+
+	# Full moon / new moon amplifies purification (mirrors the karma weight multiplier)
+	if GameState.is_full_moon() or GameState.is_new_moon():
+		base_amount = roundi(base_amount * 1.5)
+
+	# Distribute starting from the lowest realm, carrying remainder upward
+	var remaining := base_amount
+	var realms_affected: Array[Dictionary] = []
+	for realm in REALM_ORDER:
+		if remaining <= 0:
+			break
+		var current := karma_scores.get(realm, 0)
+		if current <= 0:
+			continue
+		var to_purify := mini(remaining, current)
+		_purify_karma_internal(realm, to_purify)
+		realms_affected.append({ "realm": realm, "amount": to_purify })
+		remaining -= to_purify
+
+	return { "success": true, "total": base_amount - remaining, "realms": realms_affected }
+
+
+## Internal: reduce karma for one realm and emit the change signal.
+func _purify_karma_internal(realm: String, amount: int) -> void:
 	if realm in karma_scores:
 		karma_scores[realm] = max(0, karma_scores[realm] - amount)
 		karma_changed.emit(realm, karma_scores[realm])
+
+
+## Perform karma purification ritual (direct, legacy call — prefer perform_purification).
+func purify_karma(realm: String, amount: int) -> void:
+	_purify_karma_internal(realm, amount)
 
 
 # ============================================
