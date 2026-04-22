@@ -857,17 +857,16 @@ func _open_rest_panel() -> void:
 	var party := CharacterSystem.get_party()
 	var party_size := party.size()
 
-	# Best skills across party (medicine not needed here — _do_rest computes it independently)
+	# Best skills across party — use effective levels so quirk/equipment bonuses count
 	var best_logistics := 0
 	var best_smithing  := 0
 	var best_yoga      := 0
 	var best_ritual    := 0
 	for char in party:
-		var sk: Dictionary = char.get("skills", {})
-		best_logistics = maxi(best_logistics, int(sk.get("logistics", 0)))
-		best_smithing  = maxi(best_smithing,  int(sk.get("smithing",  0)))
-		best_yoga      = maxi(best_yoga,      int(sk.get("yoga",      0)))
-		best_ritual    = maxi(best_ritual,    int(sk.get("ritual",    0)))
+		best_logistics = maxi(best_logistics, CharacterSystem.get_effective_skill_level(char, "logistics"))
+		best_smithing  = maxi(best_smithing,  CharacterSystem.get_effective_skill_level(char, "smithing"))
+		best_yoga      = maxi(best_yoga,      CharacterSystem.get_effective_skill_level(char, "yoga"))
+		best_ritual    = maxi(best_ritual,    CharacterSystem.get_effective_skill_level(char, "ritual"))
 
 	var food_discount: int       = best_logistics / 3
 	var herb_scrap_discount: int = best_logistics / 4
@@ -978,24 +977,21 @@ func _open_rest_panel() -> void:
 		var full_scrap := scrap_costs[2]
 		var can_full   := GameState.food >= full_food and GameState.herbs >= full_herbs and GameState.scrap >= full_scrap
 
-		# [extra_herbs, extra_reagents, mana_per_member, karma_bonus, min_ritual_sk, min_yoga_sk]
-		var tiers := [
-			[0, 0, 0,  0,  0, 3, "Yoga Practice"],
-			[2, 0, 0,  15, 2, 3, "Smoke Offering"],
-			[0, 2, 10, 30, 4, 3, "Torma Offering"],
-			[0, 3, 15, 50, 6, 5, "Mandala Offering"],
+		var tiers: Array[Dictionary] = [
+			{ "name": "Yoga Practice",    "xherbs": 0, "xreagents": 0, "mana_per": 0,  "karma_bonus": 0,  "min_ritual": 0, "min_yoga": 3 },
+			{ "name": "Smoke Offering",   "xherbs": 2, "xreagents": 0, "mana_per": 0,  "karma_bonus": 15, "min_ritual": 2, "min_yoga": 3 },
+			{ "name": "Torma Offering",   "xherbs": 0, "xreagents": 2, "mana_per": 10, "karma_bonus": 30, "min_ritual": 4, "min_yoga": 3 },
+			{ "name": "Mandala Offering", "xherbs": 0, "xreagents": 3, "mana_per": 15, "karma_bonus": 50, "min_ritual": 6, "min_yoga": 5 },
 		]
 		for t in range(tiers.size()):
 			var td        := tiers[t]
-			var min_rit   := td[4] as int
-			var min_yoga  := td[5] as int
-			if best_yoga < min_yoga or best_ritual < min_rit:
+			if best_yoga < td.min_yoga or best_ritual < td.min_ritual:
 				continue
-			var xherbs    := td[0] as int
-			var xreagents := td[1] as int
-			var mana_cost := td[2] as int
-			var karma_ttl := base_karma + (td[3] as int)
-			var tier_name := td[6] as String
+			var xherbs    := td.xherbs    as int
+			var xreagents := td.xreagents as int
+			var mana_cost := td.mana_per  as int
+			var karma_ttl := base_karma + (td.karma_bonus as int)
+			var tier_name := td.name      as String
 
 			var can_afford := can_full \
 				and GameState.herbs    >= full_herbs + xherbs \
@@ -1074,17 +1070,16 @@ func _do_sadhana(ritual_tier: int) -> void:
 	if party.is_empty():
 		return
 
-	# Best skills across party
+	# Best effective skill levels across party (includes quirk/equipment bonuses)
 	var best_yoga      := 0
 	var best_ritual    := 0
 	var best_logistics := 0
 	var best_smithing  := 0
 	for char in party:
-		var sk: Dictionary = char.get("skills", {})
-		best_yoga      = maxi(best_yoga,      int(sk.get("yoga",      0)))
-		best_ritual    = maxi(best_ritual,    int(sk.get("ritual",    0)))
-		best_logistics = maxi(best_logistics, int(sk.get("logistics", 0)))
-		best_smithing  = maxi(best_smithing,  int(sk.get("smithing",  0)))
+		best_yoga      = maxi(best_yoga,      CharacterSystem.get_effective_skill_level(char, "yoga"))
+		best_ritual    = maxi(best_ritual,    CharacterSystem.get_effective_skill_level(char, "ritual"))
+		best_logistics = maxi(best_logistics, CharacterSystem.get_effective_skill_level(char, "logistics"))
+		best_smithing  = maxi(best_smithing,  CharacterSystem.get_effective_skill_level(char, "smithing"))
 
 	if best_yoga < 3:
 		return  # Guard — button should never be visible below Yoga 3
@@ -1116,46 +1111,65 @@ func _do_sadhana(ritual_tier: int) -> void:
 		var max_mana:    int = int(derived.get("max_mana",     50))
 		var max_stamina: int = int(derived.get("max_stamina",  50))
 		derived["current_hp"]      = mini(max_hp,      int(derived.get("current_hp",      max_hp))      + floori(max_hp      * 0.5))
-		derived["current_mana"]    = mini(max_mana,    int(derived.get("current_mana",    max_mana))    + floori(max_mana    * 0.5))
 		derived["current_stamina"] = mini(max_stamina, int(derived.get("current_stamina", max_stamina)) + floori(max_stamina * 0.5))
-		# Mana spent on ritual preparation (deducted after recovery)
-		if mana_per > 0:
-			derived["current_mana"] = maxi(0, int(derived.get("current_mana", 0)) - mana_per)
+		# Mana: recover 50% then subtract ritual cost in one clamped operation
+		derived["current_mana"] = clampi(
+			int(derived.get("current_mana", max_mana)) + floori(max_mana * 0.5) - mana_per,
+			0, max_mana)
 
-	# === Pressure decay at 1.5× full rest ===
+	# === Pressure decay at 1.5× full rest (100.0 × 1.5) ===
 	for char in party:
 		PsychologySystem.decay_toward_baseline(char, 150.0)
+		_process_rest_perks(char, 3)  # tier 3 equivalent — ensures future rest perks apply
 
 	# === Karma purification ===
 	var result: Dictionary = KarmaSystem.perform_purification(best_yoga, ritual_tier)
 
-	# === Quirk purge (Yoga 5+; Mandala offering lowers difficulty by 2) ===
-	var purged_quirk := ""
+	# === Quirk purge — targets the most advanced practitioner in the party ===
+	# Yoga 5+: attempt yoga-purgeable quirks on the party member with highest yoga.
+	# Ritual tier 1+: also attempt ritual-only quirks on the highest ritual member.
+	# Mandala offering (tier 3) lowers effective purge difficulty by 2.
+	var purged_quirk     := ""
 	var purged_char_name := ""
+	var diff_mod         := 2 if ritual_tier == 3 else 0
+
 	if best_yoga >= 5:
-		var player := CharacterSystem.get_player()
-		var diff_mod := 2 if ritual_tier == 3 else 0
-		# Yoga-purgeable quirks first
-		for quirk_id in player.get("quirks", []).duplicate():
-			if QuirkSystem.try_purge(player, quirk_id, "yoga", diff_mod):
-				purged_quirk     = QuirkSystem.get_quirk_name(quirk_id)
-				purged_char_name = player.get("name", "")
-				break
-	# Ritual-only quirks (blood_handed, oath_breaker, lapsed…) at any ritual tier
-	if purged_quirk.is_empty() and ritual_tier >= 1:
-		var player := CharacterSystem.get_player()
-		var diff_mod := 2 if ritual_tier == 3 else 0
-		for quirk_id in player.get("quirks", []).duplicate():
-			var q := QuirkSystem.get_quirk(quirk_id)
-			var purgeable: Array = q.get("purgeable_by", [])
-			if "ritual" in purgeable and not "yoga" in purgeable:
-				if QuirkSystem.try_purge(player, quirk_id, "ritual", diff_mod):
+		# Find the party member with the highest effective yoga
+		var best_char: Dictionary = {}
+		var best_level := 0
+		for char in party:
+			var lvl := CharacterSystem.get_effective_skill_level(char, "yoga")
+			if lvl > best_level:
+				best_level = lvl
+				best_char = char
+		if not best_char.is_empty():
+			for quirk_id in best_char.get("quirks", []).duplicate():
+				if QuirkSystem.try_purge(best_char, quirk_id, "yoga", diff_mod):
 					purged_quirk     = QuirkSystem.get_quirk_name(quirk_id)
-					purged_char_name = player.get("name", "")
+					purged_char_name = best_char.get("name", "")
 					break
 
+	# Ritual-only quirks (blood_handed, oath_breaker, lapsed…): highest ritual member
+	if purged_quirk.is_empty() and ritual_tier >= 1:
+		var best_char: Dictionary = {}
+		var best_level := 0
+		for char in party:
+			var lvl := CharacterSystem.get_effective_skill_level(char, "ritual")
+			if lvl > best_level:
+				best_level = lvl
+				best_char = char
+		if not best_char.is_empty():
+			for quirk_id in best_char.get("quirks", []).duplicate():
+				var q := QuirkSystem.get_quirk(quirk_id)
+				var purgeable: Array = q.get("purgeable_by", [])
+				if "ritual" in purgeable and not "yoga" in purgeable:
+					if QuirkSystem.try_purge(best_char, quirk_id, "ritual", diff_mod):
+						purged_quirk     = QuirkSystem.get_quirk_name(quirk_id)
+						purged_char_name = best_char.get("name", "")
+						break
+
 	# === Durability restore (full smithing scaling — you had downtime) ===
-	var smithing_pct: float = best_smithing * 0.05
+	var smithing_pct: float = best_smithing * 0.05  # best_smithing is already effective level
 	if smithing_pct > 0.0:
 		_restore_party_durability(smithing_pct)
 
@@ -1187,15 +1201,14 @@ func _do_rest(tier: int) -> void:
 	if party.is_empty():
 		return
 
-	# Best skill levels in party
+	# Best effective skill levels in party (includes quirk/equipment bonuses)
 	var best_medicine  := 0
 	var best_smithing  := 0
 	var best_logistics := 0
 	for char in party:
-		var skills: Dictionary = char.get("skills", {})
-		best_medicine  = maxi(best_medicine,  int(skills.get("medicine",  0)))
-		best_smithing  = maxi(best_smithing,  int(skills.get("smithing",  0)))
-		best_logistics = maxi(best_logistics, int(skills.get("logistics", 0)))
+		best_medicine  = maxi(best_medicine,  CharacterSystem.get_effective_skill_level(char, "medicine"))
+		best_smithing  = maxi(best_smithing,  CharacterSystem.get_effective_skill_level(char, "smithing"))
+		best_logistics = maxi(best_logistics, CharacterSystem.get_effective_skill_level(char, "logistics"))
 
 	# === Resource costs ===
 	# Food: per-member flat cost, reduced by Logistics

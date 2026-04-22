@@ -82,6 +82,8 @@ const RACE_WEIGHTS: Dictionary = {
 }
 
 func _ready() -> void:
+	for realm in REALM_ORDER:
+		assert(realm in karma_scores, "REALM_ORDER contains realm not in karma_scores: " + realm)
 	print("KarmaSystem initialized")
 
 ## Add karma to a specific realm based on player actions
