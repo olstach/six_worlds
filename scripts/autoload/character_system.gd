@@ -873,16 +873,16 @@ func update_derived_stats(character: Dictionary) -> void:
 				var element = stat.replace("_resistance", "")
 				derived["resistances"][element] = derived["resistances"].get(element, 0) + amount
 
-	# Apply persistent wound/disease stat penalties
-	if WoundSystem:
-		var wound_penalties = WoundSystem.get_stat_penalties(character)
+	# Apply persistent wound/disease stat penalties (percentage-based, multiplicative).
+	# get_stat_penalties returns e.g. {"dodge": -25, "max_hp": -20} meaning -25%, -20%.
+	if WoundSystem and not character.get("wounds", []).is_empty():
+		var wound_penalties := WoundSystem.get_stat_penalties(character)
 		for stat in wound_penalties:
-			derived[stat] = derived.get(stat, 0) + wound_penalties[stat]
-		# Clamp current_hp to reduced max_hp (wounds can shrink the pool)
-		if "max_hp" in wound_penalties:
-			derived.current_hp = min(derived.get("current_hp", derived.max_hp), derived.max_hp)
-		if "max_stamina" in wound_penalties:
-			derived.current_stamina = min(derived.get("current_stamina", derived.max_stamina), derived.max_stamina)
+			var base_val: float = float(derived.get(stat, 0))
+			derived[stat] = int(base_val * (1.0 + float(wound_penalties[stat]) / 100.0))
+		# Clamp current values into the (possibly reduced) maxima
+		derived.current_hp = min(derived.get("current_hp", derived.max_hp), derived.max_hp)
+		derived.current_stamina = min(derived.get("current_stamina", derived.max_stamina), derived.max_stamina)
 
 ## Get player character
 func get_player() -> Dictionary:

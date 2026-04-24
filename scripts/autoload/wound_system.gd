@@ -10,7 +10,7 @@ extends Node
 ## of Qud style). For now it's display/flavour only.
 
 # ── Wound/disease definitions ───────────────────────────────────────────────
-# stat_penalties: direct adjustments to derived stats
+# stat_penalties_pct: percentage reductions applied multiplicatively to derived stats
 # escalates_to: wound id this becomes if untreated
 # escalation_rests: how many rests before escalation
 # cure_medicine_level: minimum Medicine skill to treat via Field Surgery
@@ -18,11 +18,12 @@ extends Node
 
 const WOUND_TYPES: Dictionary = {
 
-	# ── Physical wounds (crits) ──────────────────────────────────────────
+	# ── Physical wounds (from crits) ─────────────────────────────────────
+	# stat_penalties_pct values are % reductions applied to the derived stat.
 	"deep_cut": {
 		"display_name": "Deep Cut",
 		"category": "wound",
-		"stat_penalties": {"dodge": -5, "accuracy": -3},
+		"stat_penalties_pct": {"dodge": -15, "max_hp": -10},
 		"escalates_to": "infected_wound",
 		"escalation_rests": 2,
 		"cure_medicine_level": 2,
@@ -31,7 +32,7 @@ const WOUND_TYPES: Dictionary = {
 	"concussion": {
 		"display_name": "Concussion",
 		"category": "wound",
-		"stat_penalties": {"spellpower": -3, "initiative": -3},
+		"stat_penalties_pct": {"spellpower": -20, "initiative": -15},
 		"escalates_to": "brain_fever",
 		"escalation_rests": 3,
 		"cure_medicine_level": 3,
@@ -40,7 +41,7 @@ const WOUND_TYPES: Dictionary = {
 	"broken_rib": {
 		"display_name": "Broken Rib",
 		"category": "wound",
-		"stat_penalties": {"max_hp": -10, "max_stamina": -10},
+		"stat_penalties_pct": {"max_hp": -20, "max_stamina": -20},
 		"escalates_to": "internal_bleeding",
 		"escalation_rests": 2,
 		"cure_medicine_level": 4,
@@ -51,27 +52,27 @@ const WOUND_TYPES: Dictionary = {
 	"rot_sickness": {
 		"display_name": "Rot Sickness",
 		"category": "disease",
-		"stat_penalties": {"max_hp": -10, "dodge": -3},
+		"stat_penalties_pct": {"max_hp": -15, "dodge": -15},
 		"escalates_to": "death_rot",
 		"escalation_rests": 3,
 		"cure_medicine_level": 4,
 		"description": "Undead taint spreads through the blood.",
 	},
-	"bone_fever": {
-		"display_name": "Bone Fever",
+	"marrow_chill": {
+		"display_name": "Marrow Chill",
 		"category": "disease",
-		"stat_penalties": {"initiative": -5, "spellpower": -3},
-		"escalates_to": "bone_sickness",
+		"stat_penalties_pct": {"initiative": -20, "spellpower": -15},
+		"escalates_to": "bone_fever",
 		"escalation_rests": 3,
 		"cure_medicine_level": 3,
-		"description": "A spectral chill has settled deep into the bones.",
+		"description": "A spectral cold has settled deep into the bones.",
 	},
 
 	# ── Escalated wounds ─────────────────────────────────────────────────
 	"infected_wound": {
 		"display_name": "Infected Wound",
 		"category": "wound",
-		"stat_penalties": {"dodge": -10, "accuracy": -5, "max_hp": -10},
+		"stat_penalties_pct": {"dodge": -25, "max_hp": -20, "max_stamina": -10},
 		"escalates_to": "",
 		"escalation_rests": 0,
 		"cure_medicine_level": 5,
@@ -80,7 +81,7 @@ const WOUND_TYPES: Dictionary = {
 	"brain_fever": {
 		"display_name": "Brain Fever",
 		"category": "disease",
-		"stat_penalties": {"spellpower": -5, "initiative": -5, "max_hp": -5},
+		"stat_penalties_pct": {"spellpower": -30, "initiative": -25, "max_hp": -15},
 		"escalates_to": "",
 		"escalation_rests": 0,
 		"cure_medicine_level": 6,
@@ -89,7 +90,7 @@ const WOUND_TYPES: Dictionary = {
 	"internal_bleeding": {
 		"display_name": "Internal Bleeding",
 		"category": "wound",
-		"stat_penalties": {"max_hp": -20, "max_stamina": -15},
+		"stat_penalties_pct": {"max_hp": -35, "max_stamina": -25},
 		"escalates_to": "",
 		"escalation_rests": 0,
 		"cure_medicine_level": 6,
@@ -98,20 +99,20 @@ const WOUND_TYPES: Dictionary = {
 	"death_rot": {
 		"display_name": "Death Rot",
 		"category": "disease",
-		"stat_penalties": {"max_hp": -15, "dodge": -5, "accuracy": -5},
+		"stat_penalties_pct": {"max_hp": -25, "dodge": -20, "initiative": -10},
 		"escalates_to": "",
 		"escalation_rests": 0,
 		"cure_medicine_level": 7,
 		"description": "Necromantic corruption is consuming the body.",
 	},
-	"bone_sickness": {
-		"display_name": "Bone Sickness",
+	"bone_fever": {
+		"display_name": "Bone Fever",
 		"category": "disease",
-		"stat_penalties": {"initiative": -10, "spellpower": -5, "max_hp": -10},
+		"stat_penalties_pct": {"initiative": -30, "spellpower": -20, "max_hp": -20},
 		"escalates_to": "",
 		"escalation_rests": 0,
 		"cure_medicine_level": 6,
-		"description": "The fever has spread. Bones feel like glass.",
+		"description": "The chill has broken into a raging fever. Bones feel like glass.",
 	},
 }
 
@@ -119,7 +120,7 @@ const WOUND_TYPES: Dictionary = {
 const CRIT_WOUND_POOL: Array[String] = ["deep_cut", "concussion", "broken_rib"]
 
 # Random disease pool for undead/diseased enemy hits
-const DISEASE_POOL: Array[String] = ["rot_sickness", "bone_fever"]
+const DISEASE_POOL: Array[String] = ["rot_sickness", "marrow_chill"]
 
 
 # ── Public API ───────────────────────────────────────────────────────────────
@@ -239,6 +240,9 @@ func tick_wounds(character: Dictionary) -> Array[String]:
 
 
 ## Compute total stat penalties from all active wounds. Called by update_derived_stats.
+## Returns summed percentage penalties per stat key.
+## Keys are plain stat names (e.g. "dodge", "max_hp"); values are summed % integers (e.g. -25).
+## Applied multiplicatively in update_derived_stats: derived[stat] *= (1 + pct/100).
 func get_stat_penalties(character: Dictionary) -> Dictionary:
 	if not "wounds" in character or character.wounds.is_empty():
 		return {}
@@ -248,8 +252,8 @@ func get_stat_penalties(character: Dictionary) -> Dictionary:
 		var wdef: Dictionary = WOUND_TYPES.get(wid, {})
 		if wdef.is_empty():
 			continue
-		for stat in wdef.get("stat_penalties", {}):
-			totals[stat] = totals.get(stat, 0) + wdef.stat_penalties[stat]
+		for stat in wdef.get("stat_penalties_pct", {}):
+			totals[stat] = totals.get(stat, 0) + wdef.stat_penalties_pct[stat]
 	return totals
 
 
