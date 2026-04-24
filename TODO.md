@@ -616,17 +616,32 @@ When a wound arrives without an explicit `body_location`, assign one via `BodySy
 
 No fingers/toes. Eyes deferred — build the base system first, extend later.
 
-### Implementation Order (when ready)
+### Attack Chain Balance Note
 
-1. `BodySystem` autoload + `BODY_PLANS` const: human, four_armed, serpentine
-2. `get_available_slots(character)` replacing hardcoded slot references in ItemSystem / CharacterSheet UI
-3. Wire `body_location` on wounds → penalty derivation from part category (removes per-wound penalty dicts from WoundSystem)
-4. `assign_random_wound_location()` called in CombatManager and EventManager when location is empty
-5. `sever_part()` / `regrow_part()` + event/combat hooks; limb drop on ground tile
-6. Natural weapons: `locked` flag on part; UI slot lock; natural weapon stats in combat
-7. Multi-weapon attack chain in CombatManager: Finesse probability formula per arm index
-8. Extra legs → movement/weight/dodge bonuses in `update_derived_stats`
-9. Prosthetics item type
+Multi-armed characters are intentionally strong against lower-world beings — that's thematically correct (a six-armed Asura facing a human should feel overwhelming). Balance levers to tune during playtesting:
+- Per-extra-arm accuracy penalty (e.g. -5% accuracy per arm beyond the first)
+- Per-extra-arm damage scalar (e.g. 85% damage on arm 3+)
+- These are additive nerfs on top of the probability chain, not replacements for it
+- Expect multi-armed races to be rare in hell/hungry-ghost realms and dominant in asura/deva — the power gap is a feature if the player earns it through reincarnation
+
+### Implementation Plan (Next Session)
+
+**Phase 1 — Foundation** (do before animal realm content):
+1. `BodySystem` autoload: `BODY_PLANS` const (human, four_armed, serpentine), `get_available_slots()`, `get_part_for_slot()`, migration fallback for existing characters
+2. Replace hardcoded slot dict in CharacterSheet UI and ItemSystem with `get_available_slots()`
+3. Wire `body_location` on wounds to part-category penalty derivation; call `assign_random_wound_location()` when location is empty
+
+**Phase 2 — Limb dynamics** (same session or next):
+4. `sever_part()` / `regrow_part()`: cascades to children, unequips items, hooks into combat and events
+5. Natural weapons: `locked` flag on body plan parts; locked slot UI; natural weapon stats in combat resolution
+
+**Phase 3 — Multi-limb mechanics** (when asura/deva/animal realm content begins):
+6. Multi-weapon attack chain in CombatManager: Finesse probability formula per arm index; accuracy/damage scalars as balance dials
+7. Extra leg pairs → movement/weight/dodge bonuses in `update_derived_stats`
+8. Prosthetics item type
+9. Additional species plans (avian, centipede, bear, snow_lion, etc.) as content demands
+
+---
 10. More species plans as animal realm content is built
 
 ---
