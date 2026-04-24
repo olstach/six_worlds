@@ -525,47 +525,109 @@ Items with `"prosthetic_for": "arm"` (or a specific part id) can be attached to 
 
 ### Species / Body Plans to Define
 
-| Species | Notes |
+| Species | Arms | Legs | Notes |
+|---|---|---|---|
+| human | 2 (hand slots) | 2 (foot slot) | Standard — current hardcoded slots map exactly |
+| four_armed | 4 (hand slots) | 2 | Deva/Asura realm; multi-weapon chain governs extra arms |
+| six_armed | 6 (hand slots) | 2 | High deva/wrathful deity forms |
+| serpentine | 2 | 0 (tail) | Naga / animal realm; tail = movement bonus, no foot slot |
+| avian | 2 (wing-arms?) | 2 | Garuda; wings as back slot; partial-arm option TBD |
+| centipede | 2 | 6+ | Animal realm; each extra leg pair = speed/weight bonus |
+| undead_humanoid | 2 | 2 | Same as human; `missing_parts` list can be pre-populated |
+| ethereal | 0 | 0 | Ghost-type — head + torso only; no limb equipment |
+
+### Multi-Weapon Attack Chain (NEW COMBAT MECHANIC — DECIDED)
+
+The core insight: **one sensomotor cortex drives all limbs**. Extra arms are real attack opportunities, but coordination degrades. Finesse governs the probability chain.
+
+**Attack resolution per combat turn:**
+1. Arm 1 (dominant): always attacks — 100%
+2. Arm 2 (off-hand): `50 + (Finesse - 10) * 5`% — 50% at Finesse 10, 100% at Finesse 20
+3. Arm 3: `25 + (Finesse - 10) * 4`% — 25% at Fin 10, 65% at Fin 20
+4. Arm 4: `10 + (Finesse - 10) * 3`% — 10% at Fin 10, 40% at Fin 20
+5. Arm 5: `5 + (Finesse - 10) * 2`% — 5% at Fin 10, 25% at Fin 20
+6. Arm 6: `(Finesse - 10) * 2`% — 0% at Fin 10, 20% at Fin 20 (perks needed to reliably land this)
+
+**Formula**: `chance[n] = base[n] + (Finesse - 10) * scale[n]`, capped 0–100%.
+
+Humans always land arm 2 (they just have one off-hand, the formula still applies — at Fin 10 a human with a two-weapon build has 50% off-hand attack chance, which already creates incentive to raise Finesse even for 2-armed chars).
+
+**Perk design space** (from TODO design notes):
+- *Akimbo* (Finesse 14+): +20% to all secondary arm attack chances
+- *Coordinated Strikes* (Finesse 16+, multi-arm species): chains reset on kill — if arm 3 kills an enemy, arm 4 gets a fresh roll
+- *Thunderclap* (six-armed, Finesse 18+): if all arms fire in one turn, deal bonus AoE
+- *Iron Cortex* (perk): removes the probability chain entirely for arms 1–2 (always both fire); arms 3+ still roll
+
+**Extra legs — separate mechanic**:
+Extra leg pairs don't attack. Each pair beyond 2 provides:
+- +1 movement per pair
+- +20 weight capacity per pair
+- +5% dodge per pair (more stable base, harder to trip)
+
+### Natural Weapons (DECIDED)
+
+Parts in a body plan can have a `natural_weapon` dict. Two modes:
+
+```gdscript
+# Locked: part always has this weapon, cannot equip items in this slot.
+# Used for: cat claws, mantis blades, wolf bite (jaw = head slot).
+{"id": "claw", "display_name": "Claw", "damage_dice": "1d4", "damage_type": "slashing",
+ "locked": true}
+
+# Unlocked: natural weapon exists but slot can still take items (overrides natural weapon when equipped).
+# Used for: weak humanoid fists (everyone has them), minor horns, etc.
+{"id": "fist", "display_name": "Fist", "damage_dice": "1d3", "damage_type": "blunt",
+ "locked": false}
+```
+
+`locked: true` → the `equip_slot` field on that part is ignored; the natural weapon is always the attack. The UI shows the natural weapon stats in that slot with a lock icon, no equip button.
+
+Natural weapon items live outside the normal item database — they're defined inline on the body plan part. Damage scales with species level/XP like any weapon (future: `natural_weapon_scaling` table per species).
+
+**Animal realm species examples:**
+- `snow_lion`: arm parts → locked claws (1d6 slashing) + locked bite on head (1d8 piercing)
+- `mantis`: arm parts → locked mantis blades (2d4 slashing, +crit chance)
+- `bear`: arm parts → locked claws (1d8 slashing); body plan has extra torso HP bonus
+- `naga`: arm parts → unlocked (can use weapons); tail → natural weapon "constrict" (special grapple attack)
+
+### Limb Loss in Combat (DECIDED)
+
+- Losing limbs mid-combat: **yes**. Triggered by severe hits targeting a specific body part (once wound-body location system is active)
+- Limb loss is **not permanent** by default — it's a serious wound state, not death
+- Recovery methods (in rough order of accessibility): White magic regeneration spell (high level), temple "bodily restoration" service (expensive gold), rare magical event ("Axolotl's Blessing", "Waters of the Living Mountain", etc.), long rest with Medicine 8+ (field regrowth — extraordinary)
+- In-combat effects of severed limb: immediate: weapon in that slot drops to ground tile, attack chain shortened. Persistent: `missing_parts` entry, all wounds on that part removed (part is gone), stat penalties from part category apply
+- Enemies can also lose limbs — a zombie losing its sword arm becomes unarmed. Implement for enemies when body system is live; defer for PC mid-combat until the system is stable
+
+### Wound Location — Random Assignment (DECIDED)
+
+When a wound arrives without an explicit `body_location`, assign one via `BodySystem.assign_random_wound_location(character, wound_category)`. Weighted by anatomical surface area:
+
+| Part category | Weight |
 |---|---|
-| human | Standard — current hardcoded slots map exactly to this |
-| four_armed | Deva/Asura realm — adds arm_l2 + arm_r2 with hand slots; 4 simultaneous weapon slots (balance TBD) |
-| serpentine | Naga / animal realm — no legs, tail replaces foot slot; 2 arms |
-| avian | Garuda / animal realm — wings (back slot), reduced or no arms |
-| undead_humanoid | Same topology as human; missing_parts can include any; no foot slot (they drag) |
-| ethereal | Ghost-type — head + torso only; no limb slots at all |
+| torso | 35% |
+| arm (each) | 15% |
+| leg (each) | 10% |
+| head | 10% |
+| foot (each) | 2.5% |
 
-### New Autoload: BodySystem
+(Values for human; scaled proportionally for other species.) Extra arms/legs in multi-limb species redistribute weight evenly across all limbs. Missing parts are excluded from the pool.
 
-Key functions:
-- `get_body_plan(character)` — returns the full topology dict for the character's species
-- `get_available_slots(character)` — active equip slots (excludes missing parts + prosthetics override)
-- `get_part_for_slot(character, slot_id)` — reverse lookup (slot → part id)
-- `sever_part(character, part_id)` — adds to missing_parts, cascades to children, unequips items
-- `regrow_part(character, part_id)` — removes from missing_parts
-- `attach_prosthetic(character, part_id, item_id)` — wires the prosthetic
-- `get_wound_penalties_for_location(part_id, wound_severity)` — derives stat penalties from part category
-- `assign_random_wound_location(character, wound_category)` — picks a valid body part for a new wound
+### Granularity (DECIDED)
 
-### Migration
-
-Existing characters (no `body_plan` key) default to `"species": "human"` with empty `missing_parts`. `get_available_slots()` checks for the key and falls back to the current hardcoded list during transition. This means the body system can be added incrementally without breaking existing saves.
-
-### Open Design Questions
-
-1. **Four-armed combat balance** — 4 simultaneous weapon slots is potentially very powerful. Options: only 2 arms can act per combat round (just like humans, extra arms are passive/hold shields); OR extra arms get -20% effectiveness; OR treat it as a class feature that costs character resources. Leaning toward the first — extra arms = extra off-hand slots, not extra attacks.
-2. **Animal realm PCs** — if the player can incarnate as an animal (bear, snow lion, etc.), do they get a body plan with no hands? How does equipment work? Could be interesting: "natural weapons" that are built into the body plan rather than items.
-3. **Mid-combat part destruction** — should enemies' limbs be destructible during combat (chopping a zombie's arm off makes it unarmed)? High implementation cost. Defer unless it becomes a design priority.
-4. **Granularity** — fingers/toes? Almost certainly no. Eyes are tempting (blindness from head trauma, one-eyed pirate flavour) but adds complexity. Probably just head → eye as a sub-location is enough.
-5. **Wound-location assignment** — when a wound has no explicit `body_location`, should we assign one randomly? Makes combat feel more physical. Could weight by target body profile (big torso = more likely torso hits, etc.).
+No fingers/toes. Eyes deferred — build the base system first, extend later.
 
 ### Implementation Order (when ready)
 
-1. `BodySystem` autoload + `BODY_PLANS` const for human + four_armed
-2. `get_available_slots()` replacing hardcoded slot references in ItemSystem / CharacterSheet UI
-3. Wire `body_location` on wounds to actual penalty derivation (replacing current per-wound penalty dicts)
-4. `sever_part` / `regrow_part` + event hooks
-5. Prosthetics item type
-6. More species plans as higher-world content is built
+1. `BodySystem` autoload + `BODY_PLANS` const: human, four_armed, serpentine
+2. `get_available_slots(character)` replacing hardcoded slot references in ItemSystem / CharacterSheet UI
+3. Wire `body_location` on wounds → penalty derivation from part category (removes per-wound penalty dicts from WoundSystem)
+4. `assign_random_wound_location()` called in CombatManager and EventManager when location is empty
+5. `sever_part()` / `regrow_part()` + event/combat hooks; limb drop on ground tile
+6. Natural weapons: `locked` flag on part; UI slot lock; natural weapon stats in combat
+7. Multi-weapon attack chain in CombatManager: Finesse probability formula per arm index
+8. Extra legs → movement/weight/dodge bonuses in `update_derived_stats`
+9. Prosthetics item type
+10. More species plans as animal realm content is built
 
 ---
 
