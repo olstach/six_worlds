@@ -273,6 +273,7 @@ Persistent negative status effects from combat or events that do not fully clear
 - [ ] Character sheet and combat UI: show persistent wound icons distinctly (deferred — no character sheet UI yet)
 - [ ] Temple/facility healing UI: call `WoundSystem.heal_at_facility(char, medicine_equivalent)` — stub ready, needs shop/temple scene
 - [ ] Realm-specific wound types (hungry ghost malnutrition, animal realm parasites, hell frostbite/burns) — extend WOUND_TYPES when realms are built
+- [ ] More wound/disease variety: currently 5 base types (3 wounds, 2 diseases). Target ~8–10 base types eventually; e.g. arrow wound (ranged-specific, different penalties from deep cut), poisoned wound (disease + damage hybrid), spiritual corruption (hell/hungry-ghost specific, resists medicine, needs Ritual/Yoga). See design notes in "Design Thinking: Wounds, Rest & Calendar" section.
 
 ---
 
@@ -447,6 +448,124 @@ These three new systems create a lot of design space. Notes to think through bef
 - **Calendar-gated rest events**: the existing camp event system could use `lunar_day_required` field — on certain days a wandering spirit or auspicious vision appears, triggered by the existing `get_random_camp_event()` hook
 - **Realm-time tension**: some realms should feel like time matters more (Hell = every rest costs more resources; Hungry Ghost = no rest recovery without food — already partially true); the calendar/time advance makes this tangible
 - **Seasonal mechanics**: placeholder idea — if the calendar ever tracks seasons (not yet planned), certain diseases should be more likely (winter → bone fever chance up, summer → rot sickness down)
+
+---
+
+## Body Parts System (Design Phase)
+
+A dedicated session deferred from the wounds implementation. The `body_location` field on wound entries is the current hook — it stores a part id as a string but nothing reads it yet.
+
+### Goal
+
+Replace the hardcoded flat equipment slot dict on `BASE_CHARACTER` with a **dynamic body plan** generated from a species definition. This unlocks:
+- Location-specific wound penalties (leg wound = movement, arm wound = combat, head = cognitive)
+- Multi-armed characters in higher worlds (deva, asura) with real extra weapon/hand slots
+- Limb loss from severe wounds — temporary or permanent
+- Prosthetics as items that slot into missing parts
+
+### Proposed Data Model
+
+Every character gets a `body_plan` key. Rather than storing all part state on the character, the *definition* (part topology) lives in a `BodySystem.BODY_PLANS` const keyed by species, and the character stores only runtime state (missing parts, prosthetics):
+
+```gdscript
+"body_plan": {
+    "species": "human",      # key into BodySystem.BODY_PLANS
+    "missing_parts": [],     # part ids that have been severed
+    "prosthetics": {},       # {part_id: item_id} for attached prosthetics
+}
+```
+
+`BodySystem.BODY_PLANS["human"]` defines the topology:
+
+```gdscript
+{
+    "parts": [
+        {"id": "head",   "category": "head",  "equip_slot": "head",   "parent": "torso",  "children": []},
+        {"id": "torso",  "category": "torso", "equip_slot": "chest",  "parent": "",       "children": ["arm_l","arm_r","leg_l","leg_r","head"]},
+        {"id": "arm_l",  "category": "arm",   "equip_slot": "hand_l", "parent": "torso",  "children": []},
+        {"id": "arm_r",  "category": "arm",   "equip_slot": "hand_r", "parent": "torso",  "children": []},
+        {"id": "leg_l",  "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["foot_l"]},
+        {"id": "leg_r",  "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["foot_r"]},
+        {"id": "foot_l", "category": "foot",  "equip_slot": "feet",   "parent": "leg_l",  "children": []},
+        {"id": "foot_r", "category": "foot",  "equip_slot": "",       "parent": "leg_r",  "children": []},
+    ]
+}
+```
+
+A four-armed deva species simply adds `arm_l2`, `arm_r2` with their own `equip_slot` values. `BodySystem.get_available_slots(character)` replaces the hardcoded slot list everywhere.
+
+### Part Category → Wound Penalty Table
+
+When a wound's `body_location` matches a part, its penalty type is determined by the part's category, not hardcoded per-wound. This lets us define wounds generically:
+
+| Part category | Default penalty type | Example |
+|---|---|---|
+| head | spellpower, initiative | concussion on head part |
+| arm | dodge, damage | deep cut on arm part |
+| leg | movement, initiative | deep cut on leg part |
+| torso | max_hp, max_stamina | broken rib on torso |
+| foot | movement | twisted ankle |
+
+This means `body_location` on a wound becomes mechanically meaningful, not just flavour.
+
+### Limb Loss
+
+- Wounds of `severity: "severe"` on a non-torso, non-head part have a small chance (5–10%) to sever it
+- Severing adds the part id to `missing_parts`; its children (e.g. foot when leg is severed) are also added
+- Items equipped in those slots are unequipped and returned to inventory
+- `BodySystem.get_available_slots()` skips missing parts → UI automatically loses those slot buttons
+- Recovery options: White magic regrowth spell, temple "body restoration" service (expensive), rare event
+
+### Prosthetics
+
+Items with `"prosthetic_for": "arm"` (or a specific part id) can be attached to a missing part:
+- Full prosthetic (magical limb): restores slot, may give special properties (flame arm → fire damage on melee)
+- Partial prosthetic (splint, hook): restores partial function, no equipment slot
+- Stored in `body_plan.prosthetics` as `{part_id: item_id}`
+
+### Species / Body Plans to Define
+
+| Species | Notes |
+|---|---|
+| human | Standard — current hardcoded slots map exactly to this |
+| four_armed | Deva/Asura realm — adds arm_l2 + arm_r2 with hand slots; 4 simultaneous weapon slots (balance TBD) |
+| serpentine | Naga / animal realm — no legs, tail replaces foot slot; 2 arms |
+| avian | Garuda / animal realm — wings (back slot), reduced or no arms |
+| undead_humanoid | Same topology as human; missing_parts can include any; no foot slot (they drag) |
+| ethereal | Ghost-type — head + torso only; no limb slots at all |
+
+### New Autoload: BodySystem
+
+Key functions:
+- `get_body_plan(character)` — returns the full topology dict for the character's species
+- `get_available_slots(character)` — active equip slots (excludes missing parts + prosthetics override)
+- `get_part_for_slot(character, slot_id)` — reverse lookup (slot → part id)
+- `sever_part(character, part_id)` — adds to missing_parts, cascades to children, unequips items
+- `regrow_part(character, part_id)` — removes from missing_parts
+- `attach_prosthetic(character, part_id, item_id)` — wires the prosthetic
+- `get_wound_penalties_for_location(part_id, wound_severity)` — derives stat penalties from part category
+- `assign_random_wound_location(character, wound_category)` — picks a valid body part for a new wound
+
+### Migration
+
+Existing characters (no `body_plan` key) default to `"species": "human"` with empty `missing_parts`. `get_available_slots()` checks for the key and falls back to the current hardcoded list during transition. This means the body system can be added incrementally without breaking existing saves.
+
+### Open Design Questions
+
+1. **Four-armed combat balance** — 4 simultaneous weapon slots is potentially very powerful. Options: only 2 arms can act per combat round (just like humans, extra arms are passive/hold shields); OR extra arms get -20% effectiveness; OR treat it as a class feature that costs character resources. Leaning toward the first — extra arms = extra off-hand slots, not extra attacks.
+2. **Animal realm PCs** — if the player can incarnate as an animal (bear, snow lion, etc.), do they get a body plan with no hands? How does equipment work? Could be interesting: "natural weapons" that are built into the body plan rather than items.
+3. **Mid-combat part destruction** — should enemies' limbs be destructible during combat (chopping a zombie's arm off makes it unarmed)? High implementation cost. Defer unless it becomes a design priority.
+4. **Granularity** — fingers/toes? Almost certainly no. Eyes are tempting (blindness from head trauma, one-eyed pirate flavour) but adds complexity. Probably just head → eye as a sub-location is enough.
+5. **Wound-location assignment** — when a wound has no explicit `body_location`, should we assign one randomly? Makes combat feel more physical. Could weight by target body profile (big torso = more likely torso hits, etc.).
+
+### Implementation Order (when ready)
+
+1. `BodySystem` autoload + `BODY_PLANS` const for human + four_armed
+2. `get_available_slots()` replacing hardcoded slot references in ItemSystem / CharacterSheet UI
+3. Wire `body_location` on wounds to actual penalty derivation (replacing current per-wound penalty dicts)
+4. `sever_part` / `regrow_part` + event hooks
+5. Prosthetics item type
+6. More species plans as higher-world content is built
 
 ---
 
