@@ -164,6 +164,10 @@ const BASE_CHARACTER: Dictionary = {
 	# Acquired quirks are added/removed during the run via QuirkSystem.add_quirk/remove_quirk.
 	"quirks": [],
 
+	# Persistent wounds and diseases (survive between combats; healed by Medicine or facilities)
+	# Each entry: {id, body_location, rests_untreated, source}
+	"wounds": [],
+
 	# Persistent progression data
 	"affinities": [],  # Skills that have reached max level in previous lives
 	"persistent_upgrades": []  # Rare upgrades that survive reincarnation
@@ -868,6 +872,17 @@ func update_derived_stats(character: Dictionary) -> void:
 			if stat.ends_with("_resistance"):
 				var element = stat.replace("_resistance", "")
 				derived["resistances"][element] = derived["resistances"].get(element, 0) + amount
+
+	# Apply persistent wound/disease stat penalties
+	if WoundSystem:
+		var wound_penalties = WoundSystem.get_stat_penalties(character)
+		for stat in wound_penalties:
+			derived[stat] = derived.get(stat, 0) + wound_penalties[stat]
+		# Clamp current_hp to reduced max_hp (wounds can shrink the pool)
+		if "max_hp" in wound_penalties:
+			derived.current_hp = min(derived.get("current_hp", derived.max_hp), derived.max_hp)
+		if "max_stamina" in wound_penalties:
+			derived.current_stamina = min(derived.get("current_stamina", derived.max_stamina), derived.max_stamina)
 
 ## Get player character
 func get_player() -> Dictionary:

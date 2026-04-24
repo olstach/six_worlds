@@ -264,11 +264,15 @@ Persistent negative status effects from combat or events that do not fully clear
 - Future: diseases specific to each realm (hungry ghost realm malnutrition disease, animal realm parasites, etc.)
 
 #### Implementation tasks
-- [ ] Define wound/disease statuses in `statuses.json` with `persistent: true` flag so they survive between combats and rests
-- [ ] Wire escalation: `_tick_persistent_wounds()` called at each rest in `_do_rest()` / `_do_sadhana()` — untreated infection gets worse, frostbite spreads
-- [ ] Field Surgery camp activity cures one wound/disease per use (see Camp System Task 5)
-- [ ] Event outcomes can apply persistent wound statuses (add to `apply_outcome()` in event_manager)
-- [ ] Character sheet and combat UI: show persistent wound icons distinctly
+- [x] Define wound/disease statuses — implemented as `WoundSystem.WOUND_TYPES` const in `scripts/autoload/wound_system.gd` (5 base types + 5 escalated forms). Stored as `wounds: Array` on character dicts. No `persistent: true` flag needed in statuses.json since the wound system is separate from combat status effects.
+- [x] Wire escalation: `WoundSystem.tick_wounds(char)` called at each rest in `overworld._do_rest()` after camp activities execute (so Field Surgery cures first). Untreated wounds increment `rests_untreated`; crossing threshold escalates to next form.
+- [x] Field Surgery camp activity implemented in `camp_system._exec_field_surgery()` — calls `WoundSystem.cure_wounds_field_surgery(performer, party)`. Medicine level gates which wound severity can be treated (cure_medicine_level per wound type). Stub removed.
+- [x] Event outcomes can apply wounds: `"wound": {"id": "deep_cut", "target": "random"}` in any event outcome's `rewards` block, handled by `event_manager.apply_outcome()`.
+- [x] Combat wiring: crit hits have 25% chance to apply a random wound to player characters; hits from undead/diseased enemies have 15% chance to apply a disease — both in `combat_manager._process_weapon_on_hit_procs()`.
+- [x] Stat penalties wired in `character_system.update_derived_stats()` via `WoundSystem.get_stat_penalties()`.
+- [ ] Character sheet and combat UI: show persistent wound icons distinctly (deferred — no character sheet UI yet)
+- [ ] Temple/facility healing UI: call `WoundSystem.heal_at_facility(char, medicine_equivalent)` — stub ready, needs shop/temple scene
+- [ ] Realm-specific wound types (hungry ghost malnutrition, animal realm parasites, hell frostbite/burns) — extend WOUND_TYPES when realms are built
 
 ---
 

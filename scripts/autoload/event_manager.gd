@@ -608,6 +608,24 @@ func apply_outcome(outcome: Dictionary) -> void:
 						continue
 					PsychologySystem.apply_pressure(party_member, element, amount)
 
+		# Wound/disease outcome — e.g. {"id": "deep_cut", "target": "random"} or {"id": "rot_sickness", "target": "all"}
+		# target: "all" applies to every party member, "random" picks one.
+		if "wound" in rewards:
+			var wound_entry = rewards.wound
+			var wound_id: String = str(wound_entry.get("id", ""))
+			var wound_target: String = str(wound_entry.get("target", "random"))
+			var body_loc: String = str(wound_entry.get("body_location", ""))
+			if wound_id != "" and WoundSystem:
+				var party = CharacterSystem.get_party()
+				var targets: Array = []
+				if wound_target == "all":
+					targets = party
+				elif not party.is_empty():
+					targets = [party[randi() % party.size()]]
+				for char in targets:
+					WoundSystem.apply_wound(char, wound_id, body_loc, "event")
+					print("EventManager: Applied wound '%s' to %s" % [wound_id, char.get("name", "?")])
+
 		# gold_returned: the NPC refuses the money and gives it back (e.g. dark cave yogini)
 		if "gold_returned" in rewards and rewards.gold_returned:
 			# Cost was deducted when the choice cost was applied; refund the gold cost here.

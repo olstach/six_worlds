@@ -1224,6 +1224,13 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 			var result := CampSystem.execute_activity(act_id, performer, party)
 			activity_messages.append(result.get("message", ""))
 
+	# === Tick persistent wounds (after activities so Field Surgery cures first) ===
+	var wound_messages: Array[String] = []
+	if WoundSystem:
+		for char in party:
+			var escalations := WoundSystem.tick_wounds(char)
+			wound_messages.append_array(escalations)
+
 	# === Advance time ===
 	GameState.advance_time(GameState.HOURS_PER_REST)
 
@@ -1233,6 +1240,9 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 	for msg in activity_messages:
 		if not msg.is_empty():
 			toast += "\n" + msg
+	for msg in wound_messages:
+		if not msg.is_empty():
+			toast += "\n⚠ " + msg
 	_show_toast(toast)
 	_update_time_label()
 

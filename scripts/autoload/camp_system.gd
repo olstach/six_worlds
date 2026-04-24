@@ -57,8 +57,7 @@ const ACTIVITIES: Array = [
 		"min_tier": 2,
 		"costs": {"herbs": 2},
 		"description": "Treat bleeds, infections, wounds, and diseases",
-		"effect_desc": "Cure persistent wounds/diseases (disease system — future)",
-		"stub": true,
+		"effect_desc": "Cure persistent wounds/diseases; higher Medicine treats more severe conditions",
 	},
 	# ─── ALCHEMY ─────────────────────────────────────────────────────
 	{
@@ -233,6 +232,7 @@ func execute_activity(activity_id: String, performer: Dictionary, party: Array) 
 		"scout":             return _exec_scout()
 		"sharpen":           return _exec_sharpen(performer)
 		"spar":              return _exec_spar(performer)
+		"field_surgery":     return _exec_field_surgery(performer, party)
 	return {"message": "Activity '%s' not implemented." % activity_id, "ok": false}
 
 
@@ -503,6 +503,18 @@ func _exec_sharpen(performer: Dictionary) -> Dictionary:
 func _exec_spar(performer: Dictionary) -> Dictionary:
 	CharacterSystem.grant_xp(performer, 8)
 	return {"message": "%s spars in the firelight and gains 8 XP." % performer.get("name", "Performer"), "ok": true}
+
+
+func _exec_field_surgery(performer: Dictionary, party: Array) -> Dictionary:
+	if not GameState.consume_supply("herbs", 2):
+		return {"message": "Not enough herbs for field surgery.", "ok": false}
+	var result := WoundSystem.cure_wounds_field_surgery(performer, party)
+	var msgs: Array = result.get("messages", [])
+	var summary := "\n".join(msgs) if not msgs.is_empty() else "No wounds treated."
+	return {
+		"message": "%s performs field surgery.\n%s" % [performer.get("name", "Performer"), summary],
+		"ok": true,
+	}
 
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
