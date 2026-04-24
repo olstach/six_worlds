@@ -164,6 +164,10 @@ const BASE_CHARACTER: Dictionary = {
 	# Acquired quirks are added/removed during the run via QuirkSystem.add_quirk/remove_quirk.
 	"quirks": [],
 
+	# Persistent wounds and diseases (survive between combats; healed by Medicine or facilities)
+	# Each entry: {id, body_location, rests_untreated, source}
+	"wounds": [],
+
 	# Persistent progression data
 	"affinities": [],  # Skills that have reached max level in previous lives
 	"persistent_upgrades": []  # Rare upgrades that survive reincarnation
@@ -862,10 +866,23 @@ func update_derived_stats(character: Dictionary) -> void:
 					derived["loot_chance_pct"] = derived.get("loot_chance_pct", 0) + amount
 				"xp_gain_pct":
 					derived["xp_gain_pct"] = derived.get("xp_gain_pct", 0) + amount
+				"accuracy":
+					derived["accuracy"] = derived.get("accuracy", 0) + amount
 			# Handle *_resistance map buffs generically (match doesn't support wildcards)
 			if stat.ends_with("_resistance"):
 				var element = stat.replace("_resistance", "")
 				derived["resistances"][element] = derived["resistances"].get(element, 0) + amount
+
+	# Apply persistent wound/disease stat penalties (percentage-based, multiplicative).
+	# get_stat_penalties returns e.g. {"dodge": -25, "max_hp": -20} meaning -25%, -20%.
+	if WoundSystem and not character.get("wounds", []).is_empty():
+		var wound_penalties := WoundSystem.get_stat_penalties(character)
+		for stat in wound_penalties:
+			var base_val: float = float(derived.get(stat, 0))
+			derived[stat] = int(base_val * (1.0 + float(wound_penalties[stat]) / 100.0))
+		# Clamp current values into the (possibly reduced) maxima
+		derived.current_hp = min(derived.get("current_hp", derived.max_hp), derived.max_hp)
+		derived.current_stamina = min(derived.get("current_stamina", derived.max_stamina), derived.max_stamina)
 
 ## Get player character
 func get_player() -> Dictionary:

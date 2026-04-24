@@ -204,17 +204,43 @@ The current three-tier rest system handles resource costs and recovery correctly
 - **Spar** (any weapon skill 4+) — two characters, minor XP toward that weapon skill
 
 #### Implementation tasks
-- [ ] **Task 1** — Redesign rest panel UI: tier selection → activity slot panel (1–2 buttons per slot, drawn from available skills in party). Sadhana appears here naturally as one activity option rather than a separate section.
-- [ ] **Task 2** — `CampSystem` autoload (or module in `overworld.gd`): `get_available_activities(party)` returns list of available camp skill dicts based on party skills; `execute_activity(activity_id, character)` runs the activity logic.
-- [ ] **Task 3** — Implement disturbance check at rest start: roll chance by location/realm/time; on trigger, pause rest → launch combat encounter → on win, deduct 1 slot + proportional recovery; on loss, cancel rest.
-- [ ] **Task 4** — Comment out passive alchemy step-production in `game_state.gd` (do not delete — tag with `# PLAYTEST: move to camp-only?`).
-- [ ] **Task 5** — Implement medical activities: Herb Preparation, Field Surgery (including wound/disease status cure).
-- [ ] **Task 6** — Implement alchemical activities: Brew Potions, Brew Poisons/Bombs.
-- [ ] **Task 7** — Implement craft activities: Deep Repair, Weapon Work, Craft Item, Craft Charm/Talisman.
-- [ ] **Task 8** — Implement social activities: Campfire Story, Encouraging Words, Night Music.
-- [ ] **Task 9** — Implement intelligence/survival activities: Study, Scout, Forage, Set Snares, Guile Work, Sharpen, Drill, Spar.
-- [ ] **Task 10** — Safe camp integration: add `camp_actions: []` field to relevant map tile/location dicts; wire to activity panel to inject location-specific options and suppress unavailable ones.
-- [ ] **Task 11** — Camp-only events: add `"trigger": "camp"` flag to event_manager; write 3–5 camp-only events per realm (night visions, wandering spirit, traveller by firelight, etc.).
+- [x] **Task 1** — Redesign rest panel UI: tier selection → activity slot panel (1–2 buttons per slot, drawn from available skills in party). Sadhana appears here naturally as one activity option rather than a separate section.
+- [x] **Task 2** — `CampSystem` autoload: `get_available_activities(party)` returns list of available camp skill dicts based on party skills; `execute_activity(activity_id, character)` runs the activity logic.
+- [x] **Task 3** — Disturbance check at rest start: roll chance by realm/time; on trigger, rest tier drops by 1 and one activity slot is lost. Full combat trigger deferred (complex). Scout activity or safe camp negates disturbance.
+- [x] **Task 4** — Passive alchemy step-production commented out in `overworld.gd` `_tick_supply_step()` with `# PLAYTEST: move to camp-only?` tag. `Brew Potions` and `Brew Bombs & Poisons` camp activities replace it.
+- [x] **Task 5** — Herb Preparation (Medicine 2+) implemented. Field Surgery stubbed (disease system coming next).
+- [x] **Task 6** — Brew Potions (Alchemy 3+) and Brew Bombs & Poisons (Alchemy 4+) implemented.
+- [x] **Task 7** — Deep Repair (Smithing 2+) and Weapon Work (Smithing 4+) implemented. Craft Item / Craft Charm deferred (needs crafting system).
+- [x] **Task 8** — Campfire Story (Performance/Comedy 3+) and Encouraging Words (Leadership 3+) implemented. Night Music deferred (needs camp event trigger from activities).
+- [x] **Task 9** — Study (Learning 2+), Forage (Logistics 2+), Scout (Logistics 3+), Sharpen (weapon 3+), Spar (weapon 4+) implemented. Set Snares and Guile Work deferred (flavour-only, no system yet). Drill deferred (same as Encouraging Words but weaker).
+- [x] **Task 10** — Safe camp integration: `"safe_camp": true` added to hell/HG teahouses, hidden gompas, and skygazing gompa events. `_check_is_safe_camp()` in overworld checks current tile's event for this flag. Safe camps: no food cost, disturbance chance 0.
+- [x] **Task 11** — `"trigger": "camp"` events added to domain_events.json: `camp_night_vision` (any realm), `camp_wandering_spirit` (any realm), `camp_fire_omen` (hell). `EventManager.get_random_camp_event(realm)` added.
+
+#### Camp System — Manual Review & Extension (post-implementation)
+
+Needs a hands-on play session to balance, extend, and wire the remaining gaps:
+
+**Activities to add:**
+- [ ] **Night Music** (Performance 5+) — deeper morale; small chance of triggering a camp encounter (traveller, passing spirit). Needs camp event wiring from within an activity result.
+- [ ] **Guile Work** (Guile 4+) — set a false trail or trap; mechanical effect TBD (reduce next mob patrol range? chance of ambush avoidance?). Strong flavour, light mechanics.
+- [ ] **Set Snares** (Crafting 2+ or Thievery 2+) — overnight food/material gain; small creature encounter chance. Needs a "resolve on next move" deferred effect.
+- [ ] **Drill** (Leadership 5+) — party initiative bonus next combat. Similar to Encouraging Words but combat-only; requires Leadership 5 vs 3, so a separate slot option.
+- [ ] **Protector Offering** (Ritual 2+) — dharmapala offering at a camp shrine; deferred until DharmapalaSystem exists.
+- [ ] **Craft Item** (Crafting 3+) — make basic tools/rope/ammo from scrap. Needs a simple crafting recipe table.
+- [ ] **Craft Charm** (Ritual 3+ + magic school 3+) — consumable charm with school-specific effect. Needs schema for camp-crafted charms.
+- [ ] **Mantra Recitation** (Yoga 2+) — currently a stub. Wire to a `mantra_count` field on the character and a threshold for future yidam relationship progress.
+
+**Wiring gaps:**
+- [ ] **Disturbance → camp event**: When `roll_disturbance()` returns true, call `EventManager.get_random_camp_event(realm)` and trigger it via the event display system. Currently disturbance only reduces rest effectiveness with a toast — no actual event fires. (Wiring requires post-rest event queue or mid-rest event hook.)
+- [ ] **More camp events**: Write 3–5 camp events per realm (hell, hungry ghost, plus any/cross-realm). Currently only 3 total exist. Target: at least 2 per realm + 3 any-realm.
+- [ ] **Location-specific activity suppression**: TODO design said some activities unavailable at teahouses (smithing) or enhanced at gompas (sadhana). Add `"suppress_activities": [...]` and `"enhance_activities": [...]` to safe camp event dicts and wire into `get_available_activities()`.
+- [ ] **Sadhana cost preview**: Sadhana auto-picks the best ritual tier — but the player can't see which tier will fire or what it will cost before confirming. Add a preview line to the button text (e.g., "Torma Offering — Reagents: 2").
+
+**Balance review (needs playtesting):**
+- [ ] Forage yield (herbs + food) relative to rest costs — may be too generous or too low depending on realm.
+- [ ] Brew Potions count (1–3) vs reagent cost (2) — compare to what 2 reagents buys in shops.
+- [ ] Pressure decay total with Full Rest + Sadhana = 250 (100 base + 150 sadhana). May be excessive; consider whether sadhana should replace rather than stack with rest pressure decay.
+- [ ] Activity slot count (Camp=1, Full=2) — whether Logistics perk for +1 slot should be implemented.
 
 ---
 
@@ -238,11 +264,16 @@ Persistent negative status effects from combat or events that do not fully clear
 - Future: diseases specific to each realm (hungry ghost realm malnutrition disease, animal realm parasites, etc.)
 
 #### Implementation tasks
-- [ ] Define wound/disease statuses in `statuses.json` with `persistent: true` flag so they survive between combats and rests
-- [ ] Wire escalation: `_tick_persistent_wounds()` called at each rest in `_do_rest()` / `_do_sadhana()` — untreated infection gets worse, frostbite spreads
-- [ ] Field Surgery camp activity cures one wound/disease per use (see Camp System Task 5)
-- [ ] Event outcomes can apply persistent wound statuses (add to `apply_outcome()` in event_manager)
-- [ ] Character sheet and combat UI: show persistent wound icons distinctly
+- [x] Define wound/disease statuses — implemented as `WoundSystem.WOUND_TYPES` const in `scripts/autoload/wound_system.gd` (5 base types + 5 escalated forms). Stored as `wounds: Array` on character dicts. No `persistent: true` flag needed in statuses.json since the wound system is separate from combat status effects.
+- [x] Wire escalation: `WoundSystem.tick_wounds(char)` called at each rest in `overworld._do_rest()` after camp activities execute (so Field Surgery cures first). Untreated wounds increment `rests_untreated`; crossing threshold escalates to next form.
+- [x] Field Surgery camp activity implemented in `camp_system._exec_field_surgery()` — calls `WoundSystem.cure_wounds_field_surgery(performer, party)`. Medicine level gates which wound severity can be treated (cure_medicine_level per wound type). Stub removed.
+- [x] Event outcomes can apply wounds: `"wound": {"id": "deep_cut", "target": "random"}` in any event outcome's `rewards` block, handled by `event_manager.apply_outcome()`.
+- [x] Combat wiring: crit hits have 25% chance to apply a random wound to player characters; hits from undead/diseased enemies have 15% chance to apply a disease — both in `combat_manager._process_weapon_on_hit_procs()`.
+- [x] Stat penalties wired in `character_system.update_derived_stats()` via `WoundSystem.get_stat_penalties()`.
+- [ ] Character sheet and combat UI: show persistent wound icons distinctly (deferred — no character sheet UI yet)
+- [ ] Temple/facility healing UI: call `WoundSystem.heal_at_facility(char, medicine_equivalent)` — stub ready, needs shop/temple scene
+- [ ] Realm-specific wound types (hungry ghost malnutrition, animal realm parasites, hell frostbite/burns) — extend WOUND_TYPES when realms are built
+- [ ] More wound/disease variety: currently 5 base types (3 wounds, 2 diseases). Target ~8–10 base types eventually; e.g. arrow wound (ranged-specific, different penalties from deep cut), poisoned wound (disease + damage hybrid), spiritual corruption (hell/hungry-ghost specific, resists medicine, needs Ritual/Yoga). See design notes in "Design Thinking: Wounds, Rest & Calendar" section.
 
 ---
 
@@ -372,6 +403,246 @@ Persistent negative status effects from combat or events that do not fully clear
 - [ ] Balance pass on spell mana costs (15/40/75/135/225 by level)
 - [ ] Test all 326 spells load and cast correctly
 - [x] Item flavor text: `space_charm_common` and `rations` — tooltip code verified correct (charm effects shown at lines 139–158 item_tooltip.gd, supply info at 161–171). `space_charm_common` added to `hg_spell_shop`, `hg_charnel_sorcerer`, `hg_town_magic` so it is now reachable in-game.
+
+---
+
+## Design Thinking: Wounds, Rest & Calendar — Perks, Spells, Weapon Effects
+
+These three new systems create a lot of design space. Notes to think through before the next implementation pass.
+
+### Perks & Wounds
+
+- **Wound resistance perks** — e.g. "Hardened" (Constitution 14+): 50% chance any crit wound is negated; "Undead Hunter" (Earth magic 3+): immune to diseases from undead attacks
+- **Field Medic perk** (Medicine 6): Field Surgery now cures ALL wounds on the target, including escalated forms — no longer gated by medicine level per-wound
+- **Stubborn Body perk** (Constitution 15+): wounds escalate 1 rest later (escalation_rests +1 global bonus); worth implementing as a `character.wound_escalation_delay` field checked in `tick_wounds`
+- **Klesha / wound interaction**: each wound category could apply elemental pressure — physical wounds → Earth pressure, disease → Water pressure (rot/decay)
+
+### Perks & Rest
+
+- **Light Sleeper** (Awareness 12+): Quick Rest (tier 1) heals an additional 10% HP — reduces the penalty for being interrupted; currently Quick Rest only gives 40%
+- **Meditator's Repose** (Yoga 4+): Full Rest always counts as "safe camp" for the disturbance roll — even in hostile territory the character's stillness fends off spirits; interesting Yoga payoff
+- **Iron Constitution** (Constitution 14+): Medicine bonus to heal_pct doubles at Full Rest — character heals efficiently without a healer in the party
+- **Logistics perk passives**: already half-designed — rest food cost reduced, forage yield increased; wire into `_do_rest` and `_exec_forage`
+
+### Perks & Calendar
+
+- **Lunar calendar perks**: certain perks could give bonuses on specific lunar days (e.g. "Full Moon Practitioner": +5 spellpower on day 15); needs a `PerkSystem.check_lunar_bonus(character)` hook called in `update_derived_stats`
+- **Auspicious Days**: certain events or activities could be gated on auspicious calendar positions — simpler to just add `"auspicious_day_bonus"` to activities, boosting XP or resource gain
+
+### Spells & Wounds
+
+- **White magic healing spells** should be able to cure wounds out of combat — currently no mechanism; suggest: add `"cures_wound_category": "wound"` or `"cures_wound_id": "deep_cut"` to spell definitions; `apply_spell_outcome` in CombatManager (or overworld spell handler) checks this
+- **Antidote / Cure Disease spells** (Water magic): natural fit for curing the disease category of wounds; could reduce `rests_untreated` by 1 rather than cure outright (weakened form for balance)
+- **Ritual mandala**: a Full Rest with Ritual activity could lower wound escalation counters across the party (represents purification) — simpler than a spell, wires into the existing Ritual activity stub
+- **Harm / Inflict Wound spells** (Black magic): should be able to apply wounds to enemies too, not just players — means enemies could accumulate wounds, which would make sense if a boss-fight-spanning wound system is ever added
+
+### Weapon Effects & Wounds
+
+- **Undead-tagged weapons** (e.g. bone weapons, grave-iron): hits have disease_chance passive proc, same as enemy undead hits — add `"disease_chance": 15` to weapon passive and check in `_process_weapon_on_hit_procs`
+- **Wound-applying weapon traits**: a dagger with `"wound_chance": 20` and `"wound_type": "deep_cut"` — bleed-focused weapons that reliably inflict persistent wounds, not just combat bleed status; this creates a distinct class of "attrition weapons"
+- **Healing weapons** (White magic enchantment): melee hits could reduce target's `rests_untreated` by 1 — passive tick-down mechanic; probably overpowered, but interesting for a dedicated healer-fighter
+- **Silver weapons**: already a natural fit for "undead" enemies; could grant disease immunity to the wielder (touching undead with silver purifies) — simple passive flag on weapon
+
+### Calendar & System Integration
+
+- **Calendar-gated rest events**: the existing camp event system could use `lunar_day_required` field — on certain days a wandering spirit or auspicious vision appears, triggered by the existing `get_random_camp_event()` hook
+- **Realm-time tension**: some realms should feel like time matters more (Hell = every rest costs more resources; Hungry Ghost = no rest recovery without food — already partially true); the calendar/time advance makes this tangible
+- **Seasonal mechanics**: placeholder idea — if the calendar ever tracks seasons (not yet planned), certain diseases should be more likely (winter → bone fever chance up, summer → rot sickness down)
+
+---
+
+## Body Parts System (Design Phase)
+
+A dedicated session deferred from the wounds implementation. The `body_location` field on wound entries is the current hook — it stores a part id as a string but nothing reads it yet.
+
+### Goal
+
+Replace the hardcoded flat equipment slot dict on `BASE_CHARACTER` with a **dynamic body plan** generated from a species definition. This unlocks:
+- Location-specific wound penalties (leg wound = movement, arm wound = combat, head = cognitive)
+- Multi-armed characters in higher worlds (deva, asura) with real extra weapon/hand slots
+- Limb loss from severe wounds — temporary or permanent
+- Prosthetics as items that slot into missing parts
+
+### Proposed Data Model
+
+Every character gets a `body_plan` key. Rather than storing all part state on the character, the *definition* (part topology) lives in a `BodySystem.BODY_PLANS` const keyed by species, and the character stores only runtime state (missing parts, prosthetics):
+
+```gdscript
+"body_plan": {
+    "species": "human",      # key into BodySystem.BODY_PLANS
+    "missing_parts": [],     # part ids that have been severed
+    "prosthetics": {},       # {part_id: item_id} for attached prosthetics
+}
+```
+
+`BodySystem.BODY_PLANS["human"]` defines the topology:
+
+```gdscript
+{
+    "parts": [
+        {"id": "head",   "category": "head",  "equip_slot": "head",   "parent": "torso",  "children": []},
+        {"id": "torso",  "category": "torso", "equip_slot": "chest",  "parent": "",       "children": ["arm_l","arm_r","leg_l","leg_r","head"]},
+        {"id": "arm_l",  "category": "arm",   "equip_slot": "hand_l", "parent": "torso",  "children": []},
+        {"id": "arm_r",  "category": "arm",   "equip_slot": "hand_r", "parent": "torso",  "children": []},
+        {"id": "leg_l",  "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["foot_l"]},
+        {"id": "leg_r",  "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["foot_r"]},
+        {"id": "foot_l", "category": "foot",  "equip_slot": "feet",   "parent": "leg_l",  "children": []},
+        {"id": "foot_r", "category": "foot",  "equip_slot": "",       "parent": "leg_r",  "children": []},
+    ]
+}
+```
+
+A four-armed deva species simply adds `arm_l2`, `arm_r2` with their own `equip_slot` values. `BodySystem.get_available_slots(character)` replaces the hardcoded slot list everywhere.
+
+### Part Category → Wound Penalty Table
+
+When a wound's `body_location` matches a part, its penalty type is determined by the part's category, not hardcoded per-wound. This lets us define wounds generically:
+
+| Part category | Default penalty type | Example |
+|---|---|---|
+| head | spellpower, initiative | concussion on head part |
+| arm | dodge, damage | deep cut on arm part |
+| leg | movement, initiative | deep cut on leg part |
+| torso | max_hp, max_stamina | broken rib on torso |
+| foot | movement | twisted ankle |
+
+This means `body_location` on a wound becomes mechanically meaningful, not just flavour.
+
+### Limb Loss
+
+- Wounds of `severity: "severe"` on a non-torso, non-head part have a small chance (5–10%) to sever it
+- Severing adds the part id to `missing_parts`; its children (e.g. foot when leg is severed) are also added
+- Items equipped in those slots are unequipped and returned to inventory
+- `BodySystem.get_available_slots()` skips missing parts → UI automatically loses those slot buttons
+- Recovery options: White magic regrowth spell, temple "body restoration" service (expensive), rare event
+
+### Prosthetics
+
+Items with `"prosthetic_for": "arm"` (or a specific part id) can be attached to a missing part:
+- Full prosthetic (magical limb): restores slot, may give special properties (flame arm → fire damage on melee)
+- Partial prosthetic (splint, hook): restores partial function, no equipment slot
+- Stored in `body_plan.prosthetics` as `{part_id: item_id}`
+
+### Species / Body Plans to Define
+
+| Species | Arms | Legs | Notes |
+|---|---|---|---|
+| human | 2 (hand slots) | 2 (foot slot) | Standard — current hardcoded slots map exactly |
+| four_armed | 4 (hand slots) | 2 | Deva/Asura realm; multi-weapon chain governs extra arms |
+| six_armed | 6 (hand slots) | 2 | High deva/wrathful deity forms |
+| serpentine | 2 | 0 (tail) | Naga / animal realm; tail = movement bonus, no foot slot |
+| avian | 2 (wing-arms?) | 2 | Garuda; wings as back slot; partial-arm option TBD |
+| centipede | 2 | 6+ | Animal realm; each extra leg pair = speed/weight bonus |
+| undead_humanoid | 2 | 2 | Same as human; `missing_parts` list can be pre-populated |
+| ethereal | 0 | 0 | Ghost-type — head + torso only; no limb equipment |
+
+### Multi-Weapon Attack Chain (NEW COMBAT MECHANIC — DECIDED)
+
+The core insight: **one sensomotor cortex drives all limbs**. Extra arms are real attack opportunities, but coordination degrades. Finesse governs the probability chain.
+
+**Attack resolution per combat turn:**
+1. Arm 1 (dominant): always attacks — 100%
+2. Arm 2 (off-hand): `50 + (Finesse - 10) * 5`% — 50% at Finesse 10, 100% at Finesse 20
+3. Arm 3: `25 + (Finesse - 10) * 4`% — 25% at Fin 10, 65% at Fin 20
+4. Arm 4: `10 + (Finesse - 10) * 3`% — 10% at Fin 10, 40% at Fin 20
+5. Arm 5: `5 + (Finesse - 10) * 2`% — 5% at Fin 10, 25% at Fin 20
+6. Arm 6: `(Finesse - 10) * 2`% — 0% at Fin 10, 20% at Fin 20 (perks needed to reliably land this)
+
+**Formula**: `chance[n] = base[n] + (Finesse - 10) * scale[n]`, capped 0–100%.
+
+Humans always land arm 2 (they just have one off-hand, the formula still applies — at Fin 10 a human with a two-weapon build has 50% off-hand attack chance, which already creates incentive to raise Finesse even for 2-armed chars).
+
+**Perk design space** (from TODO design notes):
+- *Akimbo* (Finesse 14+): +20% to all secondary arm attack chances
+- *Coordinated Strikes* (Finesse 16+, multi-arm species): chains reset on kill — if arm 3 kills an enemy, arm 4 gets a fresh roll
+- *Thunderclap* (six-armed, Finesse 18+): if all arms fire in one turn, deal bonus AoE
+- *Iron Cortex* (perk): removes the probability chain entirely for arms 1–2 (always both fire); arms 3+ still roll
+
+**Extra legs — separate mechanic**:
+Extra leg pairs don't attack. Each pair beyond 2 provides:
+- +1 movement per pair
+- +20 weight capacity per pair
+- +5% dodge per pair (more stable base, harder to trip)
+
+### Natural Weapons (DECIDED)
+
+Parts in a body plan can have a `natural_weapon` dict. Two modes:
+
+```gdscript
+# Locked: part always has this weapon, cannot equip items in this slot.
+# Used for: cat claws, mantis blades, wolf bite (jaw = head slot).
+{"id": "claw", "display_name": "Claw", "damage_dice": "1d4", "damage_type": "slashing",
+ "locked": true}
+
+# Unlocked: natural weapon exists but slot can still take items (overrides natural weapon when equipped).
+# Used for: weak humanoid fists (everyone has them), minor horns, etc.
+{"id": "fist", "display_name": "Fist", "damage_dice": "1d3", "damage_type": "blunt",
+ "locked": false}
+```
+
+`locked: true` → the `equip_slot` field on that part is ignored; the natural weapon is always the attack. The UI shows the natural weapon stats in that slot with a lock icon, no equip button.
+
+Natural weapon items live outside the normal item database — they're defined inline on the body plan part. Damage scales with species level/XP like any weapon (future: `natural_weapon_scaling` table per species).
+
+**Animal realm species examples:**
+- `snow_lion`: arm parts → locked claws (1d6 slashing) + locked bite on head (1d8 piercing)
+- `mantis`: arm parts → locked mantis blades (2d4 slashing, +crit chance)
+- `bear`: arm parts → locked claws (1d8 slashing); body plan has extra torso HP bonus
+- `naga`: arm parts → unlocked (can use weapons); tail → natural weapon "constrict" (special grapple attack)
+
+### Limb Loss in Combat (DECIDED)
+
+- Losing limbs mid-combat: **yes**. Triggered by severe hits targeting a specific body part (once wound-body location system is active)
+- Limb loss is **not permanent** by default — it's a serious wound state, not death
+- Recovery methods (in rough order of accessibility): White magic regeneration spell (high level), temple "bodily restoration" service (expensive gold), rare magical event ("Axolotl's Blessing", "Waters of the Living Mountain", etc.), long rest with Medicine 8+ (field regrowth — extraordinary)
+- In-combat effects of severed limb: immediate: weapon in that slot drops to ground tile, attack chain shortened. Persistent: `missing_parts` entry, all wounds on that part removed (part is gone), stat penalties from part category apply
+- Enemies can also lose limbs — a zombie losing its sword arm becomes unarmed. Implement for enemies when body system is live; defer for PC mid-combat until the system is stable
+
+### Wound Location — Random Assignment (DECIDED)
+
+When a wound arrives without an explicit `body_location`, assign one via `BodySystem.assign_random_wound_location(character, wound_category)`. Weighted by anatomical surface area:
+
+| Part category | Weight |
+|---|---|
+| torso | 35% |
+| arm (each) | 15% |
+| leg (each) | 10% |
+| head | 10% |
+| foot (each) | 2.5% |
+
+(Values for human; scaled proportionally for other species.) Extra arms/legs in multi-limb species redistribute weight evenly across all limbs. Missing parts are excluded from the pool.
+
+### Granularity (DECIDED)
+
+No fingers/toes. Eyes deferred — build the base system first, extend later.
+
+### Attack Chain Balance Note
+
+Multi-armed characters are intentionally strong against lower-world beings — that's thematically correct (a six-armed Asura facing a human should feel overwhelming). Balance levers to tune during playtesting:
+- Per-extra-arm accuracy penalty (e.g. -5% accuracy per arm beyond the first)
+- Per-extra-arm damage scalar (e.g. 85% damage on arm 3+)
+- These are additive nerfs on top of the probability chain, not replacements for it
+- Expect multi-armed races to be rare in hell/hungry-ghost realms and dominant in asura/deva — the power gap is a feature if the player earns it through reincarnation
+
+### Implementation Plan (Next Session)
+
+**Phase 1 — Foundation** (do before animal realm content):
+1. `BodySystem` autoload: `BODY_PLANS` const (human, four_armed, serpentine), `get_available_slots()`, `get_part_for_slot()`, migration fallback for existing characters
+2. Replace hardcoded slot dict in CharacterSheet UI and ItemSystem with `get_available_slots()`
+3. Wire `body_location` on wounds to part-category penalty derivation; call `assign_random_wound_location()` when location is empty
+
+**Phase 2 — Limb dynamics** (same session or next):
+4. `sever_part()` / `regrow_part()`: cascades to children, unequips items, hooks into combat and events
+5. Natural weapons: `locked` flag on body plan parts; locked slot UI; natural weapon stats in combat resolution
+
+**Phase 3 — Multi-limb mechanics** (when asura/deva/animal realm content begins):
+6. Multi-weapon attack chain in CombatManager: Finesse probability formula per arm index; accuracy/damage scalars as balance dials
+7. Extra leg pairs → movement/weight/dodge bonuses in `update_derived_stats`
+8. Prosthetics item type
+9. Additional species plans (avian, centipede, bear, snow_lion, etc.) as content demands
+
+---
+10. More species plans as animal realm content is built
 
 ---
 

@@ -608,6 +608,24 @@ func apply_outcome(outcome: Dictionary) -> void:
 						continue
 					PsychologySystem.apply_pressure(party_member, element, amount)
 
+		# Wound/disease outcome — e.g. {"id": "deep_cut", "target": "random"} or {"id": "rot_sickness", "target": "all"}
+		# target: "all" applies to every party member, "random" picks one.
+		if "wound" in rewards:
+			var wound_entry = rewards.wound
+			var wound_id: String = str(wound_entry.get("id", ""))
+			var wound_target: String = str(wound_entry.get("target", "random"))
+			var body_loc: String = str(wound_entry.get("body_location", ""))
+			if wound_id != "" and WoundSystem:
+				var party = CharacterSystem.get_party()
+				var targets: Array = []
+				if wound_target == "all":
+					targets = party
+				elif not party.is_empty():
+					targets = [party[randi() % party.size()]]
+				for char in targets:
+					WoundSystem.apply_wound(char, wound_id, body_loc, "event")
+					print("EventManager: Applied wound '%s' to %s" % [wound_id, char.get("name", "?")])
+
 		# gold_returned: the NPC refuses the money and gives it back (e.g. dark cave yogini)
 		if "gold_returned" in rewards and rewards.gold_returned:
 			# Cost was deducted when the choice cost was applied; refund the gold cost here.
@@ -778,6 +796,22 @@ func get_random_event_for_realm(realm: String) -> String:
 		return ""
 
 	return realm_events[randi() % realm_events.size()]
+
+
+## Returns a random camp-trigger event ID for the given realm, or "" if none available.
+## Camp events have "trigger": "camp" and realm matching "any" or the current realm.
+func get_random_camp_event(realm: String) -> String:
+	var camp_events: Array[String] = []
+	for event_id in event_database:
+		var ev: Dictionary = event_database[event_id]
+		if ev.get("trigger", "") != "camp":
+			continue
+		var ev_realm: String = ev.get("realm", "any")
+		if ev_realm == "any" or ev_realm == realm:
+			camp_events.append(event_id)
+	if camp_events.is_empty():
+		return ""
+	return camp_events[randi() % camp_events.size()]
 
 
 ## Teach a random spell to every party member who doesn't already know it.

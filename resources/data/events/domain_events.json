@@ -1131,6 +1131,7 @@
       "domain": "rainbow",
       "realm": "any",
       "rarity": "rare",
+      "safe_camp": true,
       "description": "On the open terrace of a small gompa, a yogi sits gazing single-pointedly at the sky. A soft rainbow shimmer is reflected in their eyes. As you approach, they smile and greet you with a gesture.",
       "choices": [
         {
@@ -1304,6 +1305,114 @@
           "outcome": {
             "type": "text",
             "text": "You step back into the open air. Inside, the music continues without interruption."
+          }
+        }
+      ]
+    },
+
+    "camp_night_vision": {
+      "id": "camp_night_vision",
+      "title": "A Dream Between Watches",
+      "trigger": "camp",
+      "realm": "any",
+      "rarity": "uncommon",
+      "description": "In the deep hours of the night, one of the party stirs from sleep with something vivid and strange behind their eyes.",
+      "choices": [
+        {
+          "id": "remember",
+          "text": "Hold onto the vision — it felt like a warning.",
+          "type": "requirement",
+          "requirements": {"skills": {"yoga": 3}},
+          "outcome": {
+            "type": "text",
+            "text": "The image is clear: a path, a figure, a moment yet to come. Whether prophecy or fancy, it burns itself into memory. The dreamer rises feeling purposeful.",
+            "rewards": {"xp": 20, "karma": {"hell": -5}}
+          }
+        },
+        {
+          "id": "ignore",
+          "text": "Let it fade — dreams are just noise.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "By morning it is gone. Just a dream, probably. The camp breaks in ordinary silence."
+          }
+        }
+      ]
+    },
+
+    "camp_wandering_spirit": {
+      "id": "camp_wandering_spirit",
+      "title": "A Visitor in the Night",
+      "trigger": "camp",
+      "realm": "any",
+      "rarity": "uncommon",
+      "description": "The fire has burned low. In the outer dark, something moves — not threatening, not quite gone. A presence lingers at the edge of the light.",
+      "choices": [
+        {
+          "id": "offer_food",
+          "text": "Leave a small offering of food at the fire's edge.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "In the morning, the offering is gone. The camp feels lighter somehow. Something difficult has passed through and moved on.",
+            "rewards": {"karma": {"hungry_ghost": -10}}
+          }
+        },
+        {
+          "id": "speak_to_it",
+          "text": "Speak to it — ask what it wants.",
+          "type": "requirement",
+          "requirements": {"skills": {"ritual": 2}},
+          "outcome": {
+            "type": "text",
+            "text": "It does not answer with words, but it turns toward the sound of your voice and then recedes, as if the acknowledgement itself was enough. A small thing done well.",
+            "rewards": {"karma": {"hungry_ghost": -15}, "xp": 10}
+          }
+        },
+        {
+          "id": "ward_off",
+          "text": "Drive it off with noise and light.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "It retreats into the dark. The camp is quiet after, but something about the night feels heavier."
+          }
+        }
+      ]
+    },
+
+    "camp_fire_omen": {
+      "id": "camp_fire_omen",
+      "title": "Figures in the Smoke",
+      "trigger": "camp",
+      "realm": "hell",
+      "rarity": "uncommon",
+      "description": "The campfire flares without fuel. In the smoke, shapes coil and reform — faces, or something like faces — watching.",
+      "choices": [
+        {
+          "id": "read_omen",
+          "text": "Watch the smoke and try to read it.",
+          "type": "roll",
+          "attribute": "awareness",
+          "dc": 14,
+          "outcome": {
+            "type": "text",
+            "text": "The smoke forms something unmistakable — a path you haven't taken, a face you'll encounter, a moment of decision that has not yet arrived. The fire dims and the vision closes.",
+            "rewards": {"xp": 25}
+          },
+          "failure_outcome": {
+            "type": "text",
+            "text": "The shapes shift too fast. By the time anything resolves, the fire has died back to coals. You saw something, but cannot say what."
+          }
+        },
+        {
+          "id": "extinguish",
+          "text": "Smother the fire. You don't want to see.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "The smoke curls and dissipates into the dark. The camp is cold for the rest of the night. Nothing comes of it, but nothing was risked either."
           }
         }
       ]

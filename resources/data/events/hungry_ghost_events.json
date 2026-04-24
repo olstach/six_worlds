@@ -725,6 +725,7 @@
       "id": "hg_teahouse_event",
       "title": "The Last Cup",
       "realm": "hungry_ghost",
+      "safe_camp": true,
       "text": "In an impossible pocket of warmth among the grey wastes, a skeletal figure in fine robes serves tea to the dead. The smell is real — jasmine and wood smoke, somehow surviving in this realm. Dead patrons sit quietly at low tables. A hand-painted sign above the door reads: ALL ARE WELCOME. PAYMENT EXPECTED.",
       "choices": [
         {
