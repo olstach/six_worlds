@@ -405,6 +405,51 @@ Persistent negative status effects from combat or events that do not fully clear
 
 ---
 
+## Design Thinking: Wounds, Rest & Calendar — Perks, Spells, Weapon Effects
+
+These three new systems create a lot of design space. Notes to think through before the next implementation pass.
+
+### Perks & Wounds
+
+- **Wound resistance perks** — e.g. "Hardened" (Constitution 14+): 50% chance any crit wound is negated; "Undead Hunter" (Earth magic 3+): immune to diseases from undead attacks
+- **Field Medic perk** (Medicine 6): Field Surgery now cures ALL wounds on the target, including escalated forms — no longer gated by medicine level per-wound
+- **Stubborn Body perk** (Constitution 15+): wounds escalate 1 rest later (escalation_rests +1 global bonus); worth implementing as a `character.wound_escalation_delay` field checked in `tick_wounds`
+- **Klesha / wound interaction**: each wound category could apply elemental pressure — physical wounds → Earth pressure, disease → Water pressure (rot/decay)
+
+### Perks & Rest
+
+- **Light Sleeper** (Awareness 12+): Quick Rest (tier 1) heals an additional 10% HP — reduces the penalty for being interrupted; currently Quick Rest only gives 40%
+- **Meditator's Repose** (Yoga 4+): Full Rest always counts as "safe camp" for the disturbance roll — even in hostile territory the character's stillness fends off spirits; interesting Yoga payoff
+- **Iron Constitution** (Constitution 14+): Medicine bonus to heal_pct doubles at Full Rest — character heals efficiently without a healer in the party
+- **Logistics perk passives**: already half-designed — rest food cost reduced, forage yield increased; wire into `_do_rest` and `_exec_forage`
+
+### Perks & Calendar
+
+- **Lunar calendar perks**: certain perks could give bonuses on specific lunar days (e.g. "Full Moon Practitioner": +5 spellpower on day 15); needs a `PerkSystem.check_lunar_bonus(character)` hook called in `update_derived_stats`
+- **Auspicious Days**: certain events or activities could be gated on auspicious calendar positions — simpler to just add `"auspicious_day_bonus"` to activities, boosting XP or resource gain
+
+### Spells & Wounds
+
+- **White magic healing spells** should be able to cure wounds out of combat — currently no mechanism; suggest: add `"cures_wound_category": "wound"` or `"cures_wound_id": "deep_cut"` to spell definitions; `apply_spell_outcome` in CombatManager (or overworld spell handler) checks this
+- **Antidote / Cure Disease spells** (Water magic): natural fit for curing the disease category of wounds; could reduce `rests_untreated` by 1 rather than cure outright (weakened form for balance)
+- **Ritual mandala**: a Full Rest with Ritual activity could lower wound escalation counters across the party (represents purification) — simpler than a spell, wires into the existing Ritual activity stub
+- **Harm / Inflict Wound spells** (Black magic): should be able to apply wounds to enemies too, not just players — means enemies could accumulate wounds, which would make sense if a boss-fight-spanning wound system is ever added
+
+### Weapon Effects & Wounds
+
+- **Undead-tagged weapons** (e.g. bone weapons, grave-iron): hits have disease_chance passive proc, same as enemy undead hits — add `"disease_chance": 15` to weapon passive and check in `_process_weapon_on_hit_procs`
+- **Wound-applying weapon traits**: a dagger with `"wound_chance": 20` and `"wound_type": "deep_cut"` — bleed-focused weapons that reliably inflict persistent wounds, not just combat bleed status; this creates a distinct class of "attrition weapons"
+- **Healing weapons** (White magic enchantment): melee hits could reduce target's `rests_untreated` by 1 — passive tick-down mechanic; probably overpowered, but interesting for a dedicated healer-fighter
+- **Silver weapons**: already a natural fit for "undead" enemies; could grant disease immunity to the wielder (touching undead with silver purifies) — simple passive flag on weapon
+
+### Calendar & System Integration
+
+- **Calendar-gated rest events**: the existing camp event system could use `lunar_day_required` field — on certain days a wandering spirit or auspicious vision appears, triggered by the existing `get_random_camp_event()` hook
+- **Realm-time tension**: some realms should feel like time matters more (Hell = every rest costs more resources; Hungry Ghost = no rest recovery without food — already partially true); the calendar/time advance makes this tangible
+- **Seasonal mechanics**: placeholder idea — if the calendar ever tracks seasons (not yet planned), certain diseases should be more likely (winter → bone fever chance up, summer → rot sickness down)
+
+---
+
 ## Design Questions
 
 ### Karma Visibility

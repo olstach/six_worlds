@@ -6505,8 +6505,8 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 		if on_crit_status != "":
 			_apply_status_effect(defender, on_crit_status, 1)
 			result["on_crit_status"] = on_crit_status
-		# 25% chance a crit inflicts a persistent wound on player characters
-		if WoundSystem and defender.team == Team.PLAYER and randf() < 0.25:
+		# 20% chance a crit inflicts a persistent wound on player characters
+		if WoundSystem and defender.team == Team.PLAYER and randf() < 0.20:
 			var char_data = defender.character_data
 			var wound_id = WoundSystem.apply_random_crit_wound(char_data)
 			if wound_id != "":
