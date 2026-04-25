@@ -674,6 +674,61 @@ Multi-armed characters are intentionally strong against lower-world beings — t
 
 ---
 
+## Body/Wound System — Audit Findings & Remaining Work
+
+Deep audit completed. Bugs fixed in this session; remaining issues and design debt below.
+
+### Bugs Fixed
+- [x] **`sever_part()` didn't drop weapons**: arm_r sever now also unequips `weapon_main`; arm_l unequips `weapon_off`. Convention: arm_r = main hand, arm_l = off-hand.
+- [x] **O(n²) stat recalcs in field surgery / `heal_at_facility`**: `cure_wound()` now accepts `_update_stats=false`; loops defer the single recalc to after all wounds removed.
+- [x] **Natural weapon accuracy**: `_get_weapon_skill_name()` now falls back to `weapon.get("skill_tag", "")` for natural weapons (type = ""), so claws/fists/bites correctly use `unarmed` skill for accuracy bonuses.
+- [x] **Multi-arm wound/disease storm**: `_execute_arm_chain_attack()` no longer calls `_process_weapon_on_hit_procs()` — wound procs, disease procs, oil, and sweep only fire on the primary arm attack.
+- [x] **`get_dominant_natural_weapon()` missing head/tail fallback**: now falls back to locked head/tail natural weapons (bite, beak) when all arms are severed.
+- [x] **`akimbo` perk missing from perks.json**: added under Finesse skill tree (required_level 7); `coordinated_strikes` added at required_level 10, requires akimbo.
+
+### Remaining Issues
+
+#### HIGH — Wrong mechanics
+- [ ] **Multi-arm chain fires for all characters, not just dual-wielders**: at Finesse 10 every 2-armed character (including bare-handed humans) gets a 50% free off-hand attack per turn. This was intended only for "two-weapon builds" per design notes. Consider: only fire arm 2 chain if weapon_off has an item equipped OR if a natural weapon is the main weapon (all natural weapon builds). Design call needed.
+- [ ] **Wound penalty additive stacking**: two separate arm wounds sum their percentages before a single multiplicative application (`dodge * (1 - 0.50)` instead of `dodge * 0.75 * 0.75`). Additive is more lenient; chained multiplication was the design intent but makes early wound accumulation very punishing. Document the chosen approach explicitly in `get_stat_penalties()`.
+
+#### MEDIUM — Incomplete integration
+- [ ] **Enemy `body_plan` missing**: enemies are created without `body_plan`; `BodySystem.get_body_plan_def()` defaults to "human". Fine now, but prevents multi-armed enemy bodies, locked natural weapons on enemies, or enemy limb-loss events. Add `"body_plan"` population to `EnemySystem._build_unit_data()` using archetype `species` field (add species to archetype JSON schema).
+- [ ] **Companion `body_plan` missing**: companions created from companions.json data don't necessarily go through BASE_CHARACTER initialization. Check `CompanionSystem` — if companions with non-human species (future naga, avian companions) don't get body_plan set, they'll always be treated as human. Add body_plan default in companion creation.
+- [ ] **Inventory full on sever**: `ItemSystem.unequip_item()` silently fails if inventory is full (push_warning only). A severed limb whose inventory is full will leave the weapon in an orphaned equipped state. Add a fallback: if inventory full, drop the item to a ground tile (future item-drop system) or force-remove from slot without adding to inventory.
+- [ ] **`sever_part` for arm_l2/arm_r2**: extra arms (four-armed species) have equip slots hand_l2/hand_r2 but no weapon slots. If arm_l2 is severed and the character was somehow using it to hold a weapon (future mechanic), no weapon is dropped. Add `weapon_main2`/`weapon_off2` slot handling when that system is built.
+- [ ] **Prosthetic items need stat entries**: item type "prosthetic" registered in items.json but no actual prosthetic items exist. Create at least one per body region (hand, leg, foot) for each material tier when the craftable items pass comes.
+- [ ] **Missing limb stat penalty**: severed limbs have no inherent stat penalty beyond losing the equipment in that slot. A character with both arms severed still has full base stats (just can't equip weapons). Consider adding a permanent `missing_part` penalty table to BodySystem similar to WOUND_PENALTIES.
+
+#### LOW — Polish / missing flavor
+- [ ] **Character sheet doesn't show wounds or missing parts**: wounds array exists on characters but no UI panel displays active wounds, their locations, or missing limbs. Add to character sheet as a third tab or alongside the health bar.
+- [ ] **`field_medic` perk ambiguity**: `field_medic` in perks.json is an in-combat instant-heal action (25% Awareness as HP). The design notes in this TODO describe a different out-of-combat field_medic perk (cures ALL wounds regardless of medicine level). These are two different things — rename the in-combat version or create a separate `wound_specialist` perk for the out-of-combat wound-cure effect.
+- [ ] **Multi-arm attack chain balance dial**: the `result["extra_arm_results"]` array is not yet used by combat UI or log summary. UI should indicate how many arms connected ("Arm 2: 12 dmg" etc.) — currently only the raw combat_log messages show this.
+
+### Design Debt: Perks, Spells & Items Needing Body/Wound Integration
+
+These are all additions/changes that should happen in a dedicated tuning pass:
+
+#### Perks to add (reference: "Design Thinking: Wounds, Rest & Calendar" section)
+- [ ] `hardened` (Constitution 14+): 50% chance any incoming crit wound is negated — add to `combat_manager._process_weapon_on_hit_procs()` crit wound block
+- [ ] `undead_hunter` (Earth magic 3+): immune to diseases from undead/diseased attacker hits — add check in same location
+- [ ] `stubborn_body` (Constitution 15+): +1 to all `escalation_rests` thresholds — implement as `character.wound_escalation_delay` checked in `WoundSystem.tick_wounds()`
+- [ ] `wound_specialist` / out-of-combat variant of field_medic: Medicine 6+ — Field Surgery cures all wounds regardless of `cure_medicine_level`; wire into `cure_wounds_field_surgery()`
+- [ ] `iron_cortex`: removes probability check for arms 1–2 (both always fire); arms 3+ still roll normally — add to multi-arm chain in `attack_unit()`
+
+#### Spells to add/modify (reference same section)
+- [ ] White magic: add `"cures_wound_id"` or `"cures_wound_category"` field to healing spell definitions; `apply_spell_outcome()` in CombatManager (or overworld spell handler) should check this field and call `WoundSystem.cure_wound()`
+- [ ] Water magic Antidote: reduces `rests_untreated` counter by 1 rather than curing outright — add `"reduce_escalation": 1` field to spell def; wire into spell outcome handler
+- [ ] Black magic: add `"inflict_wound"` field to dark harm spells (wound_id + chance); wire into apply_spell_outcome
+
+#### Items to add/modify
+- [ ] Weapon trait `wound_chance` + `wound_type`: e.g. `"wound_chance": 20, "wound_type": "deep_cut"` on daggers/bleed weapons — add handling in `_process_weapon_on_hit_procs()` alongside existing crit wound check
+- [ ] Weapon trait `disease_chance` + `disease_type`: for bone/undead-tainted weapons — add handling same location
+- [ ] Silver weapons: add `"disease_immune_on_hit"` passive — wielder is immune to disease procs from the target they just hit (purification on contact); add to on-hit proc logic
+- [ ] Review all existing weapon/armor items for any that reference arms, legs, or specific body parts — none currently do, but thematic armors (bracers for arm wounds, sabatons for foot wounds) could reduce wound chance for their body location
+
+---
+
 ## Design Questions
 
 ### Karma Visibility

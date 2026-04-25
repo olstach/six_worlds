@@ -1337,7 +1337,9 @@ func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int) 
 		result.merge(damage_result, true)
 		apply_damage(defender, result.damage, weapon_dmg_type)
 		_process_on_hit_perks(attacker, defender, result)
-		_process_weapon_on_hit_procs(attacker, defender, result)
+		# Note: _process_weapon_on_hit_procs is intentionally NOT called here.
+		# Wound/disease procs fire only on the primary arm attack (in attack_unit), not per chain arm.
+		# Oil, sweep, and other weapon passives also only apply to the primary strike.
 		var msg: String = "Arm %d: %s → %s for %d%s" % [
 			arm_number, attacker.unit_name, defender.unit_name, result.damage,
 			" (crit!)" if result.get("crit", false) else ""

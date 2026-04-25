@@ -4349,6 +4349,24 @@
 			"flavor": "",
 			"is_mantra": false
 		},
+		"akimbo": {
+			"name": "Akimbo",
+			"skill": "finesse",
+			"required_level": 7,
+			"requires_perks": [],
+			"description": "Passive. All secondary arm attack chances in the multi-arm chain are increased by +20% (e.g. off-hand chance 50%→70% at Finesse 10).",
+			"flavor": "Two weapons, one intent.",
+			"is_mantra": false
+		},
+		"coordinated_strikes": {
+			"name": "Coordinated Strikes",
+			"skill": "finesse",
+			"required_level": 10,
+			"requires_perks": ["akimbo"],
+			"description": "Passive (multi-arm species only). If an arm in the attack chain kills its target, reset the chain — the next arm rolls independently rather than stopping.",
+			"flavor": "The body learns to celebrate without pausing.",
+			"is_mantra": false
+		},
 		"kindled": {
 			"name": "Kindled",
 			"skill": "fire_magic",

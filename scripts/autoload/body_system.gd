@@ -258,10 +258,12 @@ func is_slot_locked(character: Dictionary, slot_id: String) -> bool:
 	return get_natural_weapon(character, slot_id).get("locked", false)
 
 
-## Natural weapon from the first available (non-missing) arm. Used as unarmed fallback in combat.
+## Natural weapon from the first available arm. Falls back to head/tail if all arms are gone.
+## Used as unarmed fallback in combat when no weapon is equipped.
 func get_dominant_natural_weapon(character: Dictionary) -> Dictionary:
 	var plan := get_body_plan_def(character)
 	var missing: Array = character.get("body_plan", {}).get("missing_parts", [])
+	# Primary: first available arm-category part
 	for part in plan.parts:
 		if part.get("category") != "arm":
 			continue
@@ -269,6 +271,15 @@ func get_dominant_natural_weapon(character: Dictionary) -> Dictionary:
 			continue
 		var nw: Dictionary = part.get("natural_weapon", {})
 		if not nw.is_empty():
+			return nw.duplicate()
+	# Fallback: head or tail (bite, beak) when all arms are severed
+	for part in plan.parts:
+		if not part.get("category") in ["head", "leg"]:
+			continue
+		if part.id in missing:
+			continue
+		var nw: Dictionary = part.get("natural_weapon", {})
+		if not nw.is_empty() and nw.get("locked", false):
 			return nw.duplicate()
 	return {}
 
@@ -292,6 +303,12 @@ func sever_part(character: Dictionary, part_id: String) -> Array[String]:
 				var slot: String = part.get("equip_slot", "")
 				if slot != "" and ItemSystem:
 					ItemSystem.unequip_item(character, slot)
+				# Arms also unequip their corresponding weapon slot.
+				# Convention: arm_r = main hand (weapon_main), arm_l = off-hand (weapon_off).
+				if part.get("category") == "arm" and ItemSystem:
+					match pid:
+						"arm_r": ItemSystem.unequip_item(character, "weapon_main")
+						"arm_l": ItemSystem.unequip_item(character, "weapon_off")
 				break
 
 	if CharacterSystem:

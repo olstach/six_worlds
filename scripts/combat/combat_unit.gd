@@ -816,7 +816,8 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 		"bow", "thrown":
 			return "ranged"
 		_:
-			return ""
+			# Natural weapons carry skill_tag directly (e.g. "unarmed" for fists/claws/bites)
+			return get_equipped_weapon().get("skill_tag", "")
 
 
 ## Get armor value (includes status effect and perk bonuses)

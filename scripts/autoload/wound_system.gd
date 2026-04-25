@@ -183,12 +183,13 @@ func apply_random_disease(character: Dictionary, attacker_tag: String = "undead"
 
 
 ## Cure one wound by id. Returns true if the wound was found and removed.
-func cure_wound(character: Dictionary, wound_id: String) -> bool:
+## Pass _update_stats=false when calling from a loop to batch the stat recalc.
+func cure_wound(character: Dictionary, wound_id: String, _update_stats: bool = true) -> bool:
 	_ensure_wounds_field(character)
 	for i in range(character.wounds.size()):
 		if character.wounds[i].get("id") == wound_id:
 			character.wounds.remove_at(i)
-			if CharacterSystem:
+			if _update_stats and CharacterSystem:
 				CharacterSystem.update_derived_stats(character)
 			return true
 	return false
@@ -213,10 +214,12 @@ func cure_wounds_field_surgery(performer: Dictionary, party: Array) -> Dictionar
 			if medicine >= wdef.get("cure_medicine_level", 99):
 				to_remove.append(wid)
 		for wid in to_remove:
-			cure_wound(char, wid)
+			cure_wound(char, wid, false)  # skip per-cure stat recalc; do once below
 			var wdef = WOUND_TYPES.get(wid, {})
 			cured_names.append(char.get("name", "?"))
 			messages.append("%s's %s treated." % [char.get("name", "?"), wdef.get("display_name", wid)])
+		if not to_remove.is_empty() and CharacterSystem:
+			CharacterSystem.update_derived_stats(char)
 	if messages.is_empty():
 		messages.append("No treatable wounds found (Medicine %d too low, or no wounds)." % medicine)
 	return {"cured": cured_names, "messages": messages}
@@ -305,8 +308,10 @@ func heal_at_facility(character: Dictionary, medicine_equivalent: int) -> Dictio
 		if not wdef.is_empty() and medicine_equivalent >= wdef.get("cure_medicine_level", 99):
 			to_remove.append(wid)
 	for wid in to_remove:
-		cure_wound(character, wid)
+		cure_wound(character, wid, false)  # skip per-cure stat recalc; do once below
 		messages.append(WOUND_TYPES[wid].get("display_name", wid) + " healed.")
+	if not to_remove.is_empty() and CharacterSystem:
+		CharacterSystem.update_derived_stats(character)
 	if messages.is_empty():
 		messages.append("No treatable wounds found.")
 	return {"messages": messages, "count": to_remove.size()}
