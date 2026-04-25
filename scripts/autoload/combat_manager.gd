@@ -1314,6 +1314,69 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 
 ## Perform an attack from one unit to another.
 ## reaction=true: skips can_act() check and use_action() cost (for free attacks and ZoC reactions).
+## Execute one extra arm hit in the multi-arm attack chain.
+## chain_chance (0–100): the probability that caused this arm to fire.
+## Wound and disease proc chances scale proportionally (e.g. arm 2 at 50% fire chance
+## gets 50% of the primary arm's proc rates — a glancing brush is less likely to sever).
+## No action cost, no further arm chain, no ammo or durability deduction.
+## Oil, sweep, and other weapon passives only apply to the primary arm.
+func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, chain_chance: float) -> Dictionary:
+	var weapon_dmg_type: String = "crushing"
+	if attacker.has_method("get_weapon_damage_type"):
+		weapon_dmg_type = attacker.get_weapon_damage_type()
+	var hit_chance: float = calculate_hit_chance(attacker, defender)
+	var roll: float = randf() * 100.0
+	var hit: bool = roll <= hit_chance
+	var result: Dictionary = {
+		"arm_number": arm_number,
+		"hit": hit,
+		"hit_chance": hit_chance,
+		"roll": roll,
+		"damage": 0,
+		"crit": false,
+		"damage_type": weapon_dmg_type,
+	}
+	if hit:
+		var damage_result := calculate_physical_damage(attacker, defender, weapon_dmg_type)
+		result.merge(damage_result, true)
+		apply_damage(defender, result.damage, weapon_dmg_type)
+		_process_on_hit_perks(attacker, defender, result)
+
+		# Wound and disease procs — scaled by chain_chance so later arms are less likely to inflict.
+		# chain_chance is 0–100; divide by 100 to get a 0–1 multiplier.
+		var scale: float = chain_chance / 100.0
+		if WoundSystem and defender.team == Team.PLAYER:
+			if result.get("crit", false) and randf() < 0.20 * scale:
+				var char_data = defender.character_data
+				var wound_id = WoundSystem.apply_random_crit_wound(char_data)
+				if wound_id != "":
+					combat_log.emit("Arm %d: %s received a %s!" % [
+						arm_number, defender.unit_name,
+						WoundSystem.WOUND_TYPES.get(wound_id, {}).get("display_name", wound_id)
+					])
+					result["persistent_wound"] = wound_id
+			if attacker.team == Team.ENEMY:
+				var attacker_tags: Array = attacker.character_data.get("tags", []) if "character_data" in attacker else []
+				if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15 * scale:
+					var tag_source: String = "undead" if "undead" in attacker_tags else "diseased"
+					var disease_id = WoundSystem.apply_random_disease(defender.character_data, tag_source)
+					if disease_id != "":
+						combat_log.emit("Arm %d: %s afflicted with %s!" % [
+							arm_number, defender.unit_name,
+							WoundSystem.WOUND_TYPES.get(disease_id, {}).get("display_name", disease_id)
+						])
+						result["persistent_disease"] = disease_id
+
+		var msg: String = "Arm %d: %s → %s for %d%s" % [
+			arm_number, attacker.unit_name, defender.unit_name, result.damage,
+			" (crit!)" if result.get("crit", false) else ""
+		]
+		combat_log.emit(msg)
+	else:
+		combat_log.emit("Arm %d: %s misses %s" % [arm_number, attacker.unit_name, defender.unit_name])
+	return result
+
+
 func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dictionary:
 	if not reaction and not can_act(1):
 		return {"success": false, "reason": "No actions remaining"}
@@ -1547,6 +1610,32 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 
 	if not reaction:
 		use_action(1)
+
+	# Multi-arm attack chain: each arm beyond the first fires probabilistically based on Finesse.
+	# Melee only; chain stops when an arm fails its roll (coordination degraded).
+	var extra_arm_results: Array[Dictionary] = []
+	if not reaction and not is_ranged and BodySystem:
+		var char_data: Dictionary = attacker.character_data if "character_data" in attacker else {}
+		var arm_count: int = BodySystem.get_attack_arm_count(char_data)
+		if arm_count > 1:
+			var finesse: int = char_data.get("attributes", {}).get("finesse", 10)
+			var akimbo_bonus: float = 20.0 if PerkSystem.has_perk(char_data, "akimbo") else 0.0
+			for arm_index in range(1, arm_count):
+				var arm_number: int = arm_index + 1
+				var fire_chance: float = clampf(
+					BodySystem.get_arm_attack_chance(finesse, arm_number) + akimbo_bonus,
+					0.0, 100.0
+				)
+				if randf() * 100.0 <= fire_chance:
+					if defender.is_alive():
+						var extra := _execute_arm_chain_attack(attacker, defender, arm_number, fire_chance)
+						extra_arm_results.append(extra)
+						if not defender.is_alive():
+							break
+				else:
+					break  # Coordination degraded; remaining arms don't roll
+	result["extra_arm_results"] = extra_arm_results
+
 	unit_attacked.emit(attacker, defender, result)
 	return result
 

@@ -604,6 +604,12 @@ func get_equipped_weapon() -> Dictionary:
 		if weapon_id != "":
 			return ItemSystem.get_item(weapon_id)
 
+	# No equipped weapon — fall back to natural weapon (e.g. fists)
+	if BodySystem:
+		var natural := BodySystem.get_dominant_natural_weapon(character_data)
+		if not natural.is_empty():
+			return natural
+
 	return {}
 
 
@@ -755,7 +761,12 @@ func get_attack_damage() -> int:
 
 	# Read weapon damage directly from the equipped weapon
 	var weapon = get_equipped_weapon()
-	var weapon_damage = weapon.get("stats", {}).get("damage", 2)
+	var weapon_damage: int
+	if weapon.has("damage_min"):
+		# Natural weapon — roll from range; Unarmed skill bonus flows through derived.damage below
+		weapon_damage = randi_range(weapon.get("damage_min", 1), weapon.get("damage_max", weapon.get("damage_min", 1)))
+	else:
+		weapon_damage = weapon.get("stats", {}).get("damage", 2)
 	var base_damage = weapon_damage
 
 	if is_ranged_weapon():
@@ -805,7 +816,8 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 		"bow", "thrown":
 			return "ranged"
 		_:
-			return ""
+			# Natural weapons carry skill_tag directly (e.g. "unarmed" for fists/claws/bites)
+			return get_equipped_weapon().get("skill_tag", "")
 
 
 ## Get armor value (includes status effect and perk bonuses)

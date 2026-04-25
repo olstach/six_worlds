@@ -12861,6 +12861,13 @@
                 },
                 "supply": {
                         "category": "supply"
+                },
+                "prosthetic": {
+                        "category": "prosthetic",
+                        "slots": [
+                                "head", "hand_l", "hand_r", "hand_l2", "hand_r2",
+                                "legs", "feet"
+                        ]
                 }
         },
         "rarities": {

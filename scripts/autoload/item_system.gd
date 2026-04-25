@@ -192,6 +192,18 @@ func equip_item(character: Dictionary, item_id: String, slot: String) -> bool:
 		push_warning("ItemSystem: Item cannot be equipped to slot ", slot)
 		return false
 
+	# Reject if the target body part is missing (prosthetics are exempt — they fill the gap)
+	# or if the slot is locked by a natural weapon.
+	var is_prosthetic: bool = item_type == "prosthetic"
+	if BodySystem and not is_prosthetic:
+		var part := BodySystem.get_part_for_slot(character, slot)
+		if not part.is_empty() and part.get("id", "") in character.get("body_plan", {}).get("missing_parts", []):
+			push_warning("ItemSystem: Cannot equip to slot '%s' — body part is missing." % slot)
+			return false
+		if BodySystem.is_slot_locked(character, slot):
+			push_warning("ItemSystem: Slot '%s' is locked by a natural weapon." % slot)
+			return false
+
 	# Check two-handed weapon handling
 	var is_two_handed = item.get("two_handed", false)
 
@@ -492,10 +504,12 @@ func calculate_equipment_stats(character: Dictionary) -> Dictionary:
 
 	var equipment = character.get("equipment", {})
 
-	# Standard slots
-	# hand_r is a visual mirror of hand_l (gloves come in pairs), so only hand_l counts for stats
-	var slots_to_check = ["head", "chest", "hand_l", "legs", "feet",
-						  "ring1", "ring2", "amulet", "trinket1", "trinket2"]
+	# Standard slots — driven by body plan so multi-armed characters pick up extra hand slots.
+	# hand_r mirrors hand_l for glove stats; BodySystem.get_equipment_slots skips empty equip_slots.
+	var slots_to_check: Array[String] = BodySystem.get_equipment_slots(character) if BodySystem else [
+		"head", "chest", "hand_l", "hand_r", "legs", "feet",
+		"ring1", "ring2", "amulet", "trinket1", "trinket2"
+	]
 
 	for slot in slots_to_check:
 		var item_id = equipment.get(slot, "")
