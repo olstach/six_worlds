@@ -626,10 +626,13 @@ Multi-armed characters are intentionally strong against lower-world beings — t
 
 ### Implementation Plan (Next Session)
 
-**Phase 1 — Foundation** (do before animal realm content):
-1. `BodySystem` autoload: `BODY_PLANS` const (human, four_armed, serpentine), `get_available_slots()`, `get_part_for_slot()`, migration fallback for existing characters
-2. Replace hardcoded slot dict in CharacterSheet UI and ItemSystem with `get_available_slots()`
-3. Wire `body_location` on wounds to part-category penalty derivation; call `assign_random_wound_location()` when location is empty
+**Phase 1 — Foundation** ✓ COMPLETE:
+1. [x] `BodySystem` autoload: `BODY_PLANS` const (human, four_armed, serpentine), `get_equipment_slots()`, `get_arm_slots()`, `get_part_category()`, `get_wound_penalties()`, `assign_random_wound_location()`, `get_part_for_slot()`, `is_multi_armed()`
+2. [x] `ItemSystem.calculate_equipment_stats()` now calls `BodySystem.get_equipment_slots(character)` — four-armed characters automatically pick up hand_l2/hand_r2 item stats
+3. [x] `CharacterSystem._find_slot_for_item()` uses `BodySystem.get_arm_slots()` for gloves — finds extra hand slots on multi-armed species
+4. [x] `WoundSystem` refactored: removed `stat_penalties_pct` from wound type defs; added `severity` + `forced_location`; `get_stat_penalties()` now derives penalties from `body_location` part category + severity via `BodySystem.get_wound_penalties()`
+5. [x] `apply_wound()` auto-assigns location: forced_location → random via `BodySystem.assign_random_wound_location()` → "torso" fallback
+6. [x] `BASE_CHARACTER` gains `body_plan: {species, missing_parts, prosthetics}`; old characters without the key default to "human" gracefully
 
 **Phase 2 — Limb dynamics** (same session or next):
 4. `sever_part()` / `regrow_part()`: cascades to children, unequips items, hooks into combat and events

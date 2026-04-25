@@ -168,6 +168,14 @@ const BASE_CHARACTER: Dictionary = {
 	# Each entry: {id, body_location, rests_untreated, source}
 	"wounds": [],
 
+	# Body plan runtime state. Species key looks up topology in BodySystem.BODY_PLANS.
+	# Old characters without this field default to "human" via BodySystem.get_body_plan_def().
+	"body_plan": {
+		"species": "human",
+		"missing_parts": [],   # part ids currently severed
+		"prosthetics": {},     # {part_id: item_id} for attached prosthetics
+	},
+
 	# Persistent progression data
 	"affinities": [],  # Skills that have reached max level in previous lives
 	"persistent_upgrades": []  # Rare upgrades that survive reincarnation
@@ -537,8 +545,8 @@ func _find_slot_for_item(character: Dictionary, item_id: String) -> String:
 		"pants", "greaves", "leggings":
 			return "legs" if eq.get("legs", "") == "" else ""
 		"gloves", "gauntlets", "bracers":
-			if eq.get("hand_l", "") == "": return "hand_l"
-			if eq.get("hand_r", "") == "": return "hand_r"
+			for arm_slot in BodySystem.get_arm_slots(character):
+				if eq.get(arm_slot, "") == "": return arm_slot
 			return ""
 		"ring":
 			if eq.get("ring1", "") == "": return "ring1"

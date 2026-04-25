@@ -3,27 +3,27 @@ extends Node
 ##
 ## Wounds accumulate on characters from crits, undead attacks, and events.
 ## They persist through rests and escalate if untreated, requiring Medicine
-## skill or a healing facility to cure. Stat penalties are applied in
-## CharacterSystem.update_derived_stats().
-##
-## Body-location field is a thin hook for a future body-parts system (Caves
-## of Qud style). For now it's display/flavour only.
+## skill or a healing facility to cure. Stat penalties are derived from the
+## wound's severity combined with the body_location's part category — see
+## BodySystem.WOUND_PENALTIES. Applied in CharacterSystem.update_derived_stats().
 
 # ── Wound/disease definitions ───────────────────────────────────────────────
-# stat_penalties_pct: percentage reductions applied multiplicatively to derived stats
+# severity: "light" | "moderate" | "severe" — determines penalty magnitude
+#   via BodySystem.WOUND_PENALTIES[part_category][severity]
+# forced_location: part id always assigned to this wound type ("" = random)
 # escalates_to: wound id this becomes if untreated
-# escalation_rests: how many rests before escalation
+# escalation_rests: how many rests before escalation (0 = never escalates further)
 # cure_medicine_level: minimum Medicine skill to treat via Field Surgery
-# category: "wound" (physical trauma) or "disease" (infectious/necrotic)
+# category: "wound" (physical trauma) | "disease" (infectious/necrotic)
 
 const WOUND_TYPES: Dictionary = {
 
 	# ── Physical wounds (from crits) ─────────────────────────────────────
-	# stat_penalties_pct values are % reductions applied to the derived stat.
 	"deep_cut": {
 		"display_name": "Deep Cut",
 		"category": "wound",
-		"stat_penalties_pct": {"dodge": -15, "max_hp": -10},
+		"severity": "light",
+		"forced_location": "",       # random arm/leg/torso
 		"escalates_to": "infected_wound",
 		"escalation_rests": 2,
 		"cure_medicine_level": 2,
@@ -32,7 +32,8 @@ const WOUND_TYPES: Dictionary = {
 	"concussion": {
 		"display_name": "Concussion",
 		"category": "wound",
-		"stat_penalties_pct": {"spellpower": -20, "initiative": -15},
+		"severity": "moderate",
+		"forced_location": "head",
 		"escalates_to": "brain_fever",
 		"escalation_rests": 3,
 		"cure_medicine_level": 3,
@@ -41,7 +42,8 @@ const WOUND_TYPES: Dictionary = {
 	"broken_rib": {
 		"display_name": "Broken Rib",
 		"category": "wound",
-		"stat_penalties_pct": {"max_hp": -20, "max_stamina": -20},
+		"severity": "moderate",
+		"forced_location": "torso",
 		"escalates_to": "internal_bleeding",
 		"escalation_rests": 2,
 		"cure_medicine_level": 4,
@@ -52,7 +54,8 @@ const WOUND_TYPES: Dictionary = {
 	"rot_sickness": {
 		"display_name": "Rot Sickness",
 		"category": "disease",
-		"stat_penalties_pct": {"max_hp": -15, "dodge": -15},
+		"severity": "light",
+		"forced_location": "",       # random
 		"escalates_to": "death_rot",
 		"escalation_rests": 3,
 		"cure_medicine_level": 4,
@@ -61,7 +64,8 @@ const WOUND_TYPES: Dictionary = {
 	"marrow_chill": {
 		"display_name": "Marrow Chill",
 		"category": "disease",
-		"stat_penalties_pct": {"initiative": -20, "spellpower": -15},
+		"severity": "light",
+		"forced_location": "",       # random
 		"escalates_to": "bone_fever",
 		"escalation_rests": 3,
 		"cure_medicine_level": 3,
@@ -69,10 +73,12 @@ const WOUND_TYPES: Dictionary = {
 	},
 
 	# ── Escalated wounds ─────────────────────────────────────────────────
+	# Location is inherited from the original wound entry — not re-assigned on escalation.
 	"infected_wound": {
 		"display_name": "Infected Wound",
 		"category": "wound",
-		"stat_penalties_pct": {"dodge": -25, "max_hp": -20, "max_stamina": -10},
+		"severity": "severe",
+		"forced_location": "",
 		"escalates_to": "",
 		"escalation_rests": 0,
 		"cure_medicine_level": 5,
@@ -81,7 +87,8 @@ const WOUND_TYPES: Dictionary = {
 	"brain_fever": {
 		"display_name": "Brain Fever",
 		"category": "disease",
-		"stat_penalties_pct": {"spellpower": -30, "initiative": -25, "max_hp": -15},
+		"severity": "severe",
+		"forced_location": "head",
 		"escalates_to": "",
 		"escalation_rests": 0,
 		"cure_medicine_level": 6,
@@ -90,7 +97,8 @@ const WOUND_TYPES: Dictionary = {
 	"internal_bleeding": {
 		"display_name": "Internal Bleeding",
 		"category": "wound",
-		"stat_penalties_pct": {"max_hp": -35, "max_stamina": -25},
+		"severity": "severe",
+		"forced_location": "torso",
 		"escalates_to": "",
 		"escalation_rests": 0,
 		"cure_medicine_level": 6,
@@ -99,7 +107,8 @@ const WOUND_TYPES: Dictionary = {
 	"death_rot": {
 		"display_name": "Death Rot",
 		"category": "disease",
-		"stat_penalties_pct": {"max_hp": -25, "dodge": -20, "initiative": -10},
+		"severity": "severe",
+		"forced_location": "",
 		"escalates_to": "",
 		"escalation_rests": 0,
 		"cure_medicine_level": 7,
@@ -108,7 +117,8 @@ const WOUND_TYPES: Dictionary = {
 	"bone_fever": {
 		"display_name": "Bone Fever",
 		"category": "disease",
-		"stat_penalties_pct": {"initiative": -30, "spellpower": -20, "max_hp": -20},
+		"severity": "severe",
+		"forced_location": "",
 		"escalates_to": "",
 		"escalation_rests": 0,
 		"cure_medicine_level": 6,
@@ -126,18 +136,25 @@ const DISEASE_POOL: Array[String] = ["rot_sickness", "marrow_chill"]
 # ── Public API ───────────────────────────────────────────────────────────────
 
 ## Apply a wound/disease to a character. Returns false if already has this wound.
+## body_location: specific part id; if "" uses forced_location from wound type,
+## then falls back to BodySystem.assign_random_wound_location().
 func apply_wound(character: Dictionary, wound_id: String, body_location: String = "", source: String = "") -> bool:
 	if not wound_id in WOUND_TYPES:
 		push_warning("WoundSystem: unknown wound '%s'" % wound_id)
 		return false
 	_ensure_wounds_field(character)
-	# Don't apply duplicate wound ids
 	for existing in character.wounds:
 		if existing.get("id") == wound_id:
 			return false
+	# Resolve location: explicit → forced_location on wound type → random
+	var location := body_location
+	if location == "":
+		location = WOUND_TYPES[wound_id].get("forced_location", "")
+	if location == "" and BodySystem:
+		location = BodySystem.assign_random_wound_location(character)
 	character.wounds.append({
 		"id": wound_id,
-		"body_location": body_location,
+		"body_location": location,
 		"rests_untreated": 0,
 		"source": source,
 	})
@@ -240,8 +257,9 @@ func tick_wounds(character: Dictionary) -> Array[String]:
 
 
 ## Compute total stat penalties from all active wounds. Called by update_derived_stats.
-## Returns summed percentage penalties per stat key.
-## Keys are plain stat names (e.g. "dodge", "max_hp"); values are summed % integers (e.g. -25).
+## Summed percentage penalties for all active wounds, keyed by stat name.
+## Each wound's penalties are derived from its body_location's part category
+## and the wound type's severity, via BodySystem.WOUND_PENALTIES.
 ## Applied multiplicatively in update_derived_stats: derived[stat] *= (1 + pct/100).
 func get_stat_penalties(character: Dictionary) -> Dictionary:
 	if not "wounds" in character or character.wounds.is_empty():
@@ -252,8 +270,12 @@ func get_stat_penalties(character: Dictionary) -> Dictionary:
 		var wdef: Dictionary = WOUND_TYPES.get(wid, {})
 		if wdef.is_empty():
 			continue
-		for stat in wdef.get("stat_penalties_pct", {}):
-			totals[stat] = totals.get(stat, 0) + wdef.stat_penalties_pct[stat]
+		var location: String = entry.get("body_location", "torso")
+		var part_cat: String = BodySystem.get_part_category(character, location) if BodySystem else "torso"
+		var severity: String = wdef.get("severity", "light")
+		var penalties: Dictionary = BodySystem.get_wound_penalties(part_cat, severity) if BodySystem else {}
+		for stat in penalties:
+			totals[stat] = totals.get(stat, 0) + penalties[stat]
 	return totals
 
 

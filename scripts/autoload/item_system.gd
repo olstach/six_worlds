@@ -492,10 +492,12 @@ func calculate_equipment_stats(character: Dictionary) -> Dictionary:
 
 	var equipment = character.get("equipment", {})
 
-	# Standard slots
-	# hand_r is a visual mirror of hand_l (gloves come in pairs), so only hand_l counts for stats
-	var slots_to_check = ["head", "chest", "hand_l", "legs", "feet",
-						  "ring1", "ring2", "amulet", "trinket1", "trinket2"]
+	# Standard slots — driven by body plan so multi-armed characters pick up extra hand slots.
+	# hand_r mirrors hand_l for glove stats; BodySystem.get_equipment_slots skips empty equip_slots.
+	var slots_to_check: Array[String] = BodySystem.get_equipment_slots(character) if BodySystem else [
+		"head", "chest", "hand_l", "hand_r", "legs", "feet",
+		"ring1", "ring2", "amulet", "trinket1", "trinket2"
+	]
 
 	for slot in slots_to_check:
 		var item_id = equipment.get(slot, "")
