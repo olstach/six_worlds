@@ -788,6 +788,14 @@ func update_derived_stats(character: Dictionary) -> void:
 	# Dodge from Finesse + equipment + water affinity
 	derived.dodge = effective_attrs.finesse + equip_bonus.get("dodge", 0) + affinity_bonus.get("dodge", 0)
 
+	# Extra leg pairs: each pair beyond the first gives +1 movement, +5 dodge, +20 weight_limit
+	if BodySystem:
+		var extra_pairs: int = BodySystem.get_extra_leg_pairs(character)
+		if extra_pairs > 0:
+			derived.movement += extra_pairs
+			derived.dodge += extra_pairs * 5
+			derived.weight_limit += extra_pairs * 20
+
 	# Spellpower from Focus + equipment + space affinity
 	derived.spellpower = effective_attrs.focus + equip_bonus.get("spellpower", 0) + affinity_bonus.get("spellpower", 0)
 

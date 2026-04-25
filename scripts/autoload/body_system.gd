@@ -65,9 +65,9 @@ const BODY_PLANS: Dictionary = {
 			{"id": "head",   "category": "head",  "equip_slot": "head",   "parent": "torso",  "children": []},
 			{"id": "torso",  "category": "torso", "equip_slot": "chest",  "parent": "",       "children": ["head", "arm_l", "arm_r", "leg_l", "leg_r"]},
 			{"id": "arm_l",  "category": "arm",   "equip_slot": "hand_l", "parent": "torso",  "children": [],
-				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_min": 1, "damage_max": 3, "damage_type": "crushing", "skill_tag": "unarmed"}},
 			{"id": "arm_r",  "category": "arm",   "equip_slot": "hand_r", "parent": "torso",  "children": [],
-				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_min": 1, "damage_max": 3, "damage_type": "crushing", "skill_tag": "unarmed"}},
 			{"id": "leg_l",  "category": "leg",   "equip_slot": "legs",   "parent": "torso",  "children": ["foot_l"]},
 			{"id": "leg_r",  "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["foot_r"]},
 			{"id": "foot_l", "category": "foot",  "equip_slot": "feet",   "parent": "leg_l",  "children": []},
@@ -80,13 +80,13 @@ const BODY_PLANS: Dictionary = {
 			{"id": "head",    "category": "head",  "equip_slot": "head",    "parent": "torso",  "children": []},
 			{"id": "torso",   "category": "torso", "equip_slot": "chest",   "parent": "",       "children": ["head", "arm_l", "arm_r", "arm_l2", "arm_r2", "leg_l", "leg_r"]},
 			{"id": "arm_l",   "category": "arm",   "equip_slot": "hand_l",  "parent": "torso",  "children": [],
-				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_min": 1, "damage_max": 3, "damage_type": "crushing", "skill_tag": "unarmed"}},
 			{"id": "arm_r",   "category": "arm",   "equip_slot": "hand_r",  "parent": "torso",  "children": [],
-				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_min": 1, "damage_max": 3, "damage_type": "crushing", "skill_tag": "unarmed"}},
 			{"id": "arm_l2",  "category": "arm",   "equip_slot": "hand_l2", "parent": "torso",  "children": [],
-				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_min": 1, "damage_max": 3, "damage_type": "crushing", "skill_tag": "unarmed"}},
 			{"id": "arm_r2",  "category": "arm",   "equip_slot": "hand_r2", "parent": "torso",  "children": [],
-				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_min": 1, "damage_max": 3, "damage_type": "crushing", "skill_tag": "unarmed"}},
 			{"id": "leg_l",   "category": "leg",   "equip_slot": "legs",    "parent": "torso",  "children": ["foot_l"]},
 			{"id": "leg_r",   "category": "leg",   "equip_slot": "",        "parent": "torso",  "children": ["foot_r"]},
 			{"id": "foot_l",  "category": "foot",  "equip_slot": "feet",    "parent": "leg_l",  "children": []},
@@ -100,11 +100,50 @@ const BODY_PLANS: Dictionary = {
 			{"id": "head",  "category": "head",  "equip_slot": "head",   "parent": "torso", "children": []},
 			{"id": "torso", "category": "torso", "equip_slot": "chest",  "parent": "",      "children": ["head", "arm_l", "arm_r", "tail"]},
 			{"id": "arm_l", "category": "arm",   "equip_slot": "hand_l", "parent": "torso", "children": [],
-				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_min": 1, "damage_max": 3, "damage_type": "crushing", "skill_tag": "unarmed"}},
 			{"id": "arm_r", "category": "arm",   "equip_slot": "hand_r", "parent": "torso", "children": [],
-				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_min": 1, "damage_max": 3, "damage_type": "crushing", "skill_tag": "unarmed"}},
 			# Tail: valid wound location, no equip slot, counts as leg category for penalties
 			{"id": "tail",  "category": "leg",   "equip_slot": "",       "parent": "torso", "children": []},
+		]
+	},
+
+	# Snow lion — big cat; locked claws on arms, locked bite on head (no helmet slot)
+	"snow_lion": {
+		"parts": [
+			{"id": "head",   "category": "head",  "equip_slot": "head",   "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": true, "name": "Bite", "damage_min": 3, "damage_max": 8, "damage_type": "piercing", "skill_tag": "unarmed"}},
+			{"id": "torso",  "category": "torso", "equip_slot": "chest",  "parent": "",       "children": ["head", "arm_l", "arm_r", "leg_l", "leg_r"]},
+			{"id": "arm_l",  "category": "arm",   "equip_slot": "hand_l", "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": true, "name": "Claw", "damage_min": 2, "damage_max": 6, "damage_type": "slashing", "skill_tag": "unarmed"}},
+			{"id": "arm_r",  "category": "arm",   "equip_slot": "hand_r", "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": true, "name": "Claw", "damage_min": 2, "damage_max": 6, "damage_type": "slashing", "skill_tag": "unarmed"}},
+			{"id": "leg_l",  "category": "leg",   "equip_slot": "legs",   "parent": "torso",  "children": ["foot_l"]},
+			{"id": "leg_r",  "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["foot_r"]},
+			{"id": "foot_l", "category": "foot",  "equip_slot": "feet",   "parent": "leg_l",  "children": []},
+			{"id": "foot_r", "category": "foot",  "equip_slot": "",       "parent": "leg_r",  "children": []},
+		]
+	},
+
+	# Avian — bird-form; wings are arm-category wound targets with wing-rake;
+	# locked beak on head (no helmet); locked talons on feet (no boots)
+	"avian": {
+		"parts": [
+			{"id": "head",    "category": "head",  "equip_slot": "head",   "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": true, "name": "Beak", "damage_min": 1, "damage_max": 5, "damage_type": "piercing", "skill_tag": "unarmed"}},
+			{"id": "torso",   "category": "torso", "equip_slot": "chest",  "parent": "",       "children": ["head", "wing_l", "wing_r", "leg_l", "leg_r"]},
+			# Wings: arm-category wound targets with wing-rake natural attack; no equip slot
+			{"id": "wing_l",  "category": "arm",   "equip_slot": "",       "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": false, "name": "Wing Rake", "damage_min": 1, "damage_max": 4, "damage_type": "slashing", "skill_tag": "unarmed"}},
+			{"id": "wing_r",  "category": "arm",   "equip_slot": "",       "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": false, "name": "Wing Rake", "damage_min": 1, "damage_max": 4, "damage_type": "slashing", "skill_tag": "unarmed"}},
+			{"id": "leg_l",   "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["talon_l"]},
+			{"id": "leg_r",   "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["talon_r"]},
+			# Talons: locked natural weapons, no equip slot
+			{"id": "talon_l", "category": "foot",  "equip_slot": "",       "parent": "leg_l",  "children": [],
+				"natural_weapon": {"locked": true, "name": "Talon", "damage_min": 2, "damage_max": 5, "damage_type": "slashing", "skill_tag": "unarmed"}},
+			{"id": "talon_r", "category": "foot",  "equip_slot": "",       "parent": "leg_r",  "children": [],
+				"natural_weapon": {"locked": true, "name": "Talon", "damage_min": 2, "damage_max": 5, "damage_type": "slashing", "skill_tag": "unarmed"}},
 		]
 	},
 }
@@ -282,3 +321,39 @@ func _collect_parts_to_sever(plan: Dictionary, part_id: String) -> Array[String]
 				result.append_array(_collect_parts_to_sever(plan, child_id))
 			break
 	return result
+
+
+## Count of all non-missing arm-category parts (includes armless wings, etc.).
+## Used by the multi-arm attack chain to determine how many arm attacks to attempt.
+func get_attack_arm_count(character: Dictionary) -> int:
+	var plan := get_body_plan_def(character)
+	var missing: Array = character.get("body_plan", {}).get("missing_parts", [])
+	var count := 0
+	for part in plan.parts:
+		if part.get("category") == "arm" and not part.id in missing:
+			count += 1
+	return count
+
+
+## Extra leg pairs beyond the first, accounting for missing legs.
+## Humans/serpentines return 0. A 6-legged creature returns 2.
+func get_extra_leg_pairs(character: Dictionary) -> int:
+	var plan := get_body_plan_def(character)
+	var missing: Array = character.get("body_plan", {}).get("missing_parts", [])
+	var leg_count := 0
+	for part in plan.parts:
+		if part.get("category") == "leg" and not part.id in missing:
+			leg_count += 1
+	return maxi(0, leg_count / 2 - 1)
+
+
+## Probability (0–100) that arm arm_number fires during a multi-arm attack chain.
+## arm_number 1 = primary arm (always 100%); 2–6 use the Finesse probability formula.
+## Formula: chance[n] = base[n] + (Finesse - 10) * scale[n], clamped 0–100%.
+func get_arm_attack_chance(finesse: int, arm_number: int) -> float:
+	if arm_number <= 1:
+		return 100.0
+	var bases:  Array[float] = [50.0, 25.0, 10.0,  5.0, 0.0]
+	var scales: Array[float] = [ 5.0,  4.0,  3.0,  2.0, 2.0]
+	var i: int = mini(arm_number - 2, bases.size() - 1)
+	return clampf(bases[i] + float(finesse - 10) * scales[i], 0.0, 100.0)

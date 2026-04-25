@@ -761,7 +761,12 @@ func get_attack_damage() -> int:
 
 	# Read weapon damage directly from the equipped weapon
 	var weapon = get_equipped_weapon()
-	var weapon_damage = weapon.get("stats", {}).get("damage", 2)
+	var weapon_damage: int
+	if weapon.has("damage_min"):
+		# Natural weapon — roll from range; Unarmed skill bonus flows through derived.damage below
+		weapon_damage = randi_range(weapon.get("damage_min", 1), weapon.get("damage_max", weapon.get("damage_min", 1)))
+	else:
+		weapon_damage = weapon.get("stats", {}).get("damage", 2)
 	var base_damage = weapon_damage
 
 	if is_ranged_weapon():

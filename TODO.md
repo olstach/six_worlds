@@ -656,14 +656,21 @@ Multi-armed characters are intentionally strong against lower-world beings — t
 7. [x] `CombatUnit.get_equipped_weapon()` — falls back to `BodySystem.get_dominant_natural_weapon()` when no weapon equipped
 8. [x] `EventManager.apply_outcome()` — `sever_part` reward: `{"target": "random"/"all", "part": "arm_l"}` (part optional for random non-vital limb)
 
-**Phase 3 — Multi-limb mechanics** (when asura/deva/animal realm content begins):
-6. Multi-weapon attack chain in CombatManager: Finesse probability formula per arm index; accuracy/damage scalars as balance dials
-7. Extra leg pairs → movement/weight/dodge bonuses in `update_derived_stats`
-8. Prosthetics item type
-9. Additional species plans (avian, centipede, bear, snow_lion, etc.) as content demands
+**Phase 3 — Multi-limb mechanics** ✓ DONE:
+6. [x] Multi-arm attack chain in `CombatManager._execute_arm_chain_attack()` + `attack_unit()`: Finesse probability formula per arm; chain stops on first failed roll; `akimbo` perk adds +20%; extra arm results in `result["extra_arm_results"]`
+7. [x] `BodySystem.get_arm_attack_chance(finesse, arm_number)` — formula: arm2 = 50+5×(fin-10), arm3 = 25+4×, arm4 = 10+3×, arm5 = 5+2×, arm6 = 0+2×, all clamped 0–100%
+8. [x] `BodySystem.get_attack_arm_count()` — counts all arm-category parts including slotless wings
+9. [x] Extra leg pairs: `BodySystem.get_extra_leg_pairs()` + applied in `CharacterSystem.update_derived_stats()`: +1 movement / +5 dodge / +20 weight_limit per extra pair beyond the first
+10. [x] Prosthetics item type in `items.json`; `ItemSystem.equip_item()` bypasses missing-part check for prosthetics (prosthetics fill the gap)
+11. [x] New species: `snow_lion` (locked claws 2–6 slashing + locked bite 3–8 piercing on head), `avian` (wing rake 1–4 slashing + locked beak 1–5 piercing + locked talons 2–5 slashing)
+12. [x] Natural weapon damage: `damage_min`/`damage_max` range (no dice notation); rolled via `randi_range` in `CombatUnit.get_attack_damage()`
+13. Equipment slot answer: yes — severing a limb removes its slot from `get_equipment_slots()` immediately; the equipped item is returned to inventory by `sever_part()`
 
----
-10. More species plans as animal realm content is built
+**Remaining / deferred for later:**
+- Coordinated Strikes perk: chain resets on kill for arms 3+ (perk exists in perks.json but chain logic doesn't check it yet)
+- Head natural weapons (bite, beak) not part of the arm attack chain — needs a "head special attack" action or configurable primary-slot override
+- Prosthetic stat entries in items.json (item type registered, no actual prosthetic items yet)
+- More species: centipede (many legs), bear, etc. as animal realm content is built
 
 ---
 
