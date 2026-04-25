@@ -192,6 +192,16 @@ func equip_item(character: Dictionary, item_id: String, slot: String) -> bool:
 		push_warning("ItemSystem: Item cannot be equipped to slot ", slot)
 		return false
 
+	# Reject if the target body part is missing or has a locked natural weapon
+	if BodySystem:
+		var part := BodySystem.get_part_for_slot(character, slot)
+		if not part.is_empty() and part.get("id", "") in character.get("body_plan", {}).get("missing_parts", []):
+			push_warning("ItemSystem: Cannot equip to slot '%s' — body part is missing." % slot)
+			return false
+		if BodySystem.is_slot_locked(character, slot):
+			push_warning("ItemSystem: Slot '%s' is locked by a natural weapon." % slot)
+			return false
+
 	# Check two-handed weapon handling
 	var is_two_handed = item.get("two_handed", false)
 

@@ -64,8 +64,10 @@ const BODY_PLANS: Dictionary = {
 		"parts": [
 			{"id": "head",   "category": "head",  "equip_slot": "head",   "parent": "torso",  "children": []},
 			{"id": "torso",  "category": "torso", "equip_slot": "chest",  "parent": "",       "children": ["head", "arm_l", "arm_r", "leg_l", "leg_r"]},
-			{"id": "arm_l",  "category": "arm",   "equip_slot": "hand_l", "parent": "torso",  "children": []},
-			{"id": "arm_r",  "category": "arm",   "equip_slot": "hand_r", "parent": "torso",  "children": []},
+			{"id": "arm_l",  "category": "arm",   "equip_slot": "hand_l", "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
+			{"id": "arm_r",  "category": "arm",   "equip_slot": "hand_r", "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
 			{"id": "leg_l",  "category": "leg",   "equip_slot": "legs",   "parent": "torso",  "children": ["foot_l"]},
 			{"id": "leg_r",  "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["foot_r"]},
 			{"id": "foot_l", "category": "foot",  "equip_slot": "feet",   "parent": "leg_l",  "children": []},
@@ -77,10 +79,14 @@ const BODY_PLANS: Dictionary = {
 		"parts": [
 			{"id": "head",    "category": "head",  "equip_slot": "head",    "parent": "torso",  "children": []},
 			{"id": "torso",   "category": "torso", "equip_slot": "chest",   "parent": "",       "children": ["head", "arm_l", "arm_r", "arm_l2", "arm_r2", "leg_l", "leg_r"]},
-			{"id": "arm_l",   "category": "arm",   "equip_slot": "hand_l",  "parent": "torso",  "children": []},
-			{"id": "arm_r",   "category": "arm",   "equip_slot": "hand_r",  "parent": "torso",  "children": []},
-			{"id": "arm_l2",  "category": "arm",   "equip_slot": "hand_l2", "parent": "torso",  "children": []},
-			{"id": "arm_r2",  "category": "arm",   "equip_slot": "hand_r2", "parent": "torso",  "children": []},
+			{"id": "arm_l",   "category": "arm",   "equip_slot": "hand_l",  "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
+			{"id": "arm_r",   "category": "arm",   "equip_slot": "hand_r",  "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
+			{"id": "arm_l2",  "category": "arm",   "equip_slot": "hand_l2", "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
+			{"id": "arm_r2",  "category": "arm",   "equip_slot": "hand_r2", "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
 			{"id": "leg_l",   "category": "leg",   "equip_slot": "legs",    "parent": "torso",  "children": ["foot_l"]},
 			{"id": "leg_r",   "category": "leg",   "equip_slot": "",        "parent": "torso",  "children": ["foot_r"]},
 			{"id": "foot_l",  "category": "foot",  "equip_slot": "feet",    "parent": "leg_l",  "children": []},
@@ -93,8 +99,10 @@ const BODY_PLANS: Dictionary = {
 		"parts": [
 			{"id": "head",  "category": "head",  "equip_slot": "head",   "parent": "torso", "children": []},
 			{"id": "torso", "category": "torso", "equip_slot": "chest",  "parent": "",      "children": ["head", "arm_l", "arm_r", "tail"]},
-			{"id": "arm_l", "category": "arm",   "equip_slot": "hand_l", "parent": "torso", "children": []},
-			{"id": "arm_r", "category": "arm",   "equip_slot": "hand_r", "parent": "torso", "children": []},
+			{"id": "arm_l", "category": "arm",   "equip_slot": "hand_l", "parent": "torso", "children": [],
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
+			{"id": "arm_r", "category": "arm",   "equip_slot": "hand_r", "parent": "torso", "children": [],
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_dice": "1d3", "damage_type": "crushing", "skill_tag": "unarmed"}},
 			# Tail: valid wound location, no equip slot, counts as leg category for penalties
 			{"id": "tail",  "category": "leg",   "equip_slot": "",       "parent": "torso", "children": []},
 		]
@@ -195,3 +203,82 @@ func assign_random_wound_location(character: Dictionary) -> String:
 ## True if this character's species has any arm slots beyond the standard two.
 func is_multi_armed(character: Dictionary) -> bool:
 	return get_arm_slots(character).size() > 2
+
+
+## Natural weapon data for the part that owns the given equip slot. Returns {} if none.
+func get_natural_weapon(character: Dictionary, slot_id: String) -> Dictionary:
+	var plan := get_body_plan_def(character)
+	for part in plan.parts:
+		if part.get("equip_slot", "") == slot_id:
+			return part.get("natural_weapon", {}).duplicate()
+	return {}
+
+
+## True if the part owning slot_id has a locked natural weapon (cannot equip items over it).
+func is_slot_locked(character: Dictionary, slot_id: String) -> bool:
+	return get_natural_weapon(character, slot_id).get("locked", false)
+
+
+## Natural weapon from the first available (non-missing) arm. Used as unarmed fallback in combat.
+func get_dominant_natural_weapon(character: Dictionary) -> Dictionary:
+	var plan := get_body_plan_def(character)
+	var missing: Array = character.get("body_plan", {}).get("missing_parts", [])
+	for part in plan.parts:
+		if part.get("category") != "arm":
+			continue
+		if part.id in missing:
+			continue
+		var nw: Dictionary = part.get("natural_weapon", {})
+		if not nw.is_empty():
+			return nw.duplicate()
+	return {}
+
+
+## Severs a body part and all its descendants.
+## Unequips items from affected slots. Returns the list of severed part ids.
+func sever_part(character: Dictionary, part_id: String) -> Array[String]:
+	var plan := get_body_plan_def(character)
+	if not "body_plan" in character:
+		character["body_plan"] = {"species": "human", "missing_parts": [], "prosthetics": {}}
+	var bp: Dictionary = character["body_plan"]
+	if not "missing_parts" in bp:
+		bp["missing_parts"] = []
+
+	var to_sever: Array[String] = _collect_parts_to_sever(plan, part_id)
+	for pid in to_sever:
+		if not pid in bp["missing_parts"]:
+			bp["missing_parts"].append(pid)
+		for part in plan.parts:
+			if part.id == pid:
+				var slot: String = part.get("equip_slot", "")
+				if slot != "" and ItemSystem:
+					ItemSystem.unequip_item(character, slot)
+				break
+
+	if CharacterSystem:
+		CharacterSystem.update_derived_stats(character)
+	return to_sever
+
+
+## Restores a severed part and all its descendants (removes the whole subtree from missing_parts).
+func regrow_part(character: Dictionary, part_id: String) -> void:
+	var plan := get_body_plan_def(character)
+	var bp: Dictionary = character.get("body_plan", {})
+	if not "missing_parts" in bp:
+		return
+	var to_restore: Array[String] = _collect_parts_to_sever(plan, part_id)
+	for pid in to_restore:
+		bp["missing_parts"].erase(pid)
+	if CharacterSystem:
+		CharacterSystem.update_derived_stats(character)
+
+
+# Recursive helper — collects part_id and all parts in its children arrays.
+func _collect_parts_to_sever(plan: Dictionary, part_id: String) -> Array[String]:
+	var result: Array[String] = [part_id]
+	for part in plan.parts:
+		if part.id == part_id:
+			for child_id in part.get("children", []):
+				result.append_array(_collect_parts_to_sever(plan, child_id))
+			break
+	return result

@@ -604,6 +604,12 @@ func get_equipped_weapon() -> Dictionary:
 		if weapon_id != "":
 			return ItemSystem.get_item(weapon_id)
 
+	# No equipped weapon — fall back to natural weapon (e.g. fists)
+	if BodySystem:
+		var natural := BodySystem.get_dominant_natural_weapon(character_data)
+		if not natural.is_empty():
+			return natural
+
 	return {}
 
 

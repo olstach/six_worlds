@@ -626,6 +626,38 @@ func apply_outcome(outcome: Dictionary) -> void:
 					WoundSystem.apply_wound(char, wound_id, body_loc, "event")
 					print("EventManager: Applied wound '%s' to %s" % [wound_id, char.get("name", "?")])
 
+		# Sever a body part — e.g. {"target": "random", "part": "arm_l"}
+		# "part" may be omitted to sever a random non-vital part (arm/leg/foot).
+		if "sever_part" in rewards:
+			var sever = rewards.sever_part
+			var part_id: String = str(sever.get("part", ""))
+			var sever_target: String = str(sever.get("target", "random"))
+			if BodySystem:
+				var party = CharacterSystem.get_party()
+				var targets: Array = []
+				if sever_target == "all":
+					targets = party
+				elif not party.is_empty():
+					targets = [party[randi() % party.size()]]
+				for char in targets:
+					var actual_part := part_id
+					if actual_part == "":
+						var plan := BodySystem.get_body_plan_def(char)
+						var missing: Array = char.get("body_plan", {}).get("missing_parts", [])
+						var severable: Array[String] = []
+						for p in plan.parts:
+							if p.get("category") in ["arm", "leg", "foot"] and not p.id in missing:
+								severable.append(p.id)
+						if not severable.is_empty():
+							actual_part = severable[randi() % severable.size()]
+					if actual_part != "":
+						var severed: Array[String] = BodySystem.sever_part(char, actual_part)
+						var part_name: String = actual_part.replace("_", " ").capitalize()
+						print("EventManager: %s lost %s%s" % [
+							char.get("name", "?"), part_name,
+							(" (and %d child parts)" % (severed.size() - 1)) if severed.size() > 1 else ""
+						])
+
 		# gold_returned: the NPC refuses the money and gives it back (e.g. dark cave yogini)
 		if "gold_returned" in rewards and rewards.gold_returned:
 			# Cost was deducted when the choice cost was applied; refund the gold cost here.

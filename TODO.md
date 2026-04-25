@@ -406,6 +406,21 @@ Persistent negative status effects from combat or events that do not fully clear
 
 ---
 
+## Wound Penalty Balance Review
+
+The `WOUND_PENALTIES` table in `body_system.gd` was written without playtesting. Needs a dedicated balance pass once combat is in a playable state.
+
+**Key questions:**
+- Do percentage penalties feel proportionate across character stat ranges? (a character with Finesse 8 vs Finesse 16 will feel arm wounds very differently)
+- Severe head wound: −30% spellpower + −25% initiative + −15% max_hp — is this too punishing relative to severe torso (−35% max_hp + −25% stamina)?
+- Foot penalties (movement/initiative only) may be too mild relative to leg penalties; consider whether severed feet should apply a persistent `prone` or `immobilized` status instead
+- Disease penalties use the same table as physical wounds via `body_location` — consider whether diseases should have their own penalty profile (e.g. rot_sickness at torso should probably apply a max_mana or spellpower penalty to reflect debilitation, not just HP)
+- The `rests_untreated` escalation thresholds (2–3 rests) — are they too fast given that rests already cost resources? Playtesting will determine this.
+
+**See also:** Naga species (serpentine body plan) will need a tailored balance pass since they have no legs and can't receive leg/foot wounds.
+
+---
+
 ## Design Thinking: Wounds, Rest & Calendar — Perks, Spells, Weapon Effects
 
 These three new systems create a lot of design space. Notes to think through before the next implementation pass.
@@ -634,9 +649,12 @@ Multi-armed characters are intentionally strong against lower-world beings — t
 5. [x] `apply_wound()` auto-assigns location: forced_location → random via `BodySystem.assign_random_wound_location()` → "torso" fallback
 6. [x] `BASE_CHARACTER` gains `body_plan: {species, missing_parts, prosthetics}`; old characters without the key default to "human" gracefully
 
-**Phase 2 — Limb dynamics** (same session or next):
-4. `sever_part()` / `regrow_part()`: cascades to children, unequips items, hooks into combat and events
-5. Natural weapons: `locked` flag on body plan parts; locked slot UI; natural weapon stats in combat resolution
+**Phase 2 — Limb dynamics** ✓ DONE:
+4. [x] `sever_part()` / `regrow_part()` in BodySystem: cascades to children, unequips items, updates derived stats
+5. [x] Natural weapons on all arm parts in BODY_PLANS (`locked: false` = fist fallback); `get_natural_weapon()`, `is_slot_locked()`, `get_dominant_natural_weapon()`
+6. [x] `ItemSystem.equip_item()` — rejects equip to missing body part slot or locked natural weapon slot
+7. [x] `CombatUnit.get_equipped_weapon()` — falls back to `BodySystem.get_dominant_natural_weapon()` when no weapon equipped
+8. [x] `EventManager.apply_outcome()` — `sever_part` reward: `{"target": "random"/"all", "part": "arm_l"}` (part optional for random non-vital limb)
 
 **Phase 3 — Multi-limb mechanics** (when asura/deva/animal realm content begins):
 6. Multi-weapon attack chain in CombatManager: Finesse probability formula per arm index; accuracy/damage scalars as balance dials
