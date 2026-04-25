@@ -682,7 +682,7 @@ Deep audit completed. Bugs fixed in this session; remaining issues and design de
 - [x] **`sever_part()` didn't drop weapons**: arm_r sever now also unequips `weapon_main`; arm_l unequips `weapon_off`. Convention: arm_r = main hand, arm_l = off-hand.
 - [x] **O(n²) stat recalcs in field surgery / `heal_at_facility`**: `cure_wound()` now accepts `_update_stats=false`; loops defer the single recalc to after all wounds removed.
 - [x] **Natural weapon accuracy**: `_get_weapon_skill_name()` now falls back to `weapon.get("skill_tag", "")` for natural weapons (type = ""), so claws/fists/bites correctly use `unarmed` skill for accuracy bonuses.
-- [x] **Multi-arm wound/disease storm**: `_execute_arm_chain_attack()` no longer calls `_process_weapon_on_hit_procs()` — wound procs, disease procs, oil, and sweep only fire on the primary arm attack.
+- [x] **Multi-arm wound/disease scaling**: chain arm wound/disease proc chances scale by `chain_chance / 100.0` — arm 2 at 50% fire chance gets 10% crit-wound chance (vs 20% primary), arm 3 at 25% gets 5%, etc. Oil, sweep, and other weapon passives still primary-only.
 - [x] **`get_dominant_natural_weapon()` missing head/tail fallback**: now falls back to locked head/tail natural weapons (bite, beak) when all arms are severed.
 - [x] **`akimbo` perk missing from perks.json**: added under Finesse skill tree (required_level 7); `coordinated_strikes` added at required_level 10, requires akimbo.
 

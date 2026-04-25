@@ -1315,8 +1315,12 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 ## Perform an attack from one unit to another.
 ## reaction=true: skips can_act() check and use_action() cost (for free attacks and ZoC reactions).
 ## Execute one extra arm hit in the multi-arm attack chain.
+## chain_chance (0–100): the probability that caused this arm to fire.
+## Wound and disease proc chances scale proportionally (e.g. arm 2 at 50% fire chance
+## gets 50% of the primary arm's proc rates — a glancing brush is less likely to sever).
 ## No action cost, no further arm chain, no ammo or durability deduction.
-func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int) -> Dictionary:
+## Oil, sweep, and other weapon passives only apply to the primary arm.
+func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, chain_chance: float) -> Dictionary:
 	var weapon_dmg_type: String = "crushing"
 	if attacker.has_method("get_weapon_damage_type"):
 		weapon_dmg_type = attacker.get_weapon_damage_type()
@@ -1337,9 +1341,32 @@ func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int) 
 		result.merge(damage_result, true)
 		apply_damage(defender, result.damage, weapon_dmg_type)
 		_process_on_hit_perks(attacker, defender, result)
-		# Note: _process_weapon_on_hit_procs is intentionally NOT called here.
-		# Wound/disease procs fire only on the primary arm attack (in attack_unit), not per chain arm.
-		# Oil, sweep, and other weapon passives also only apply to the primary strike.
+
+		# Wound and disease procs — scaled by chain_chance so later arms are less likely to inflict.
+		# chain_chance is 0–100; divide by 100 to get a 0–1 multiplier.
+		var scale: float = chain_chance / 100.0
+		if WoundSystem and defender.team == Team.PLAYER:
+			if result.get("crit", false) and randf() < 0.20 * scale:
+				var char_data = defender.character_data
+				var wound_id = WoundSystem.apply_random_crit_wound(char_data)
+				if wound_id != "":
+					combat_log.emit("Arm %d: %s received a %s!" % [
+						arm_number, defender.unit_name,
+						WoundSystem.WOUND_TYPES.get(wound_id, {}).get("display_name", wound_id)
+					])
+					result["persistent_wound"] = wound_id
+			if attacker.team == Team.ENEMY:
+				var attacker_tags: Array = attacker.character_data.get("tags", []) if "character_data" in attacker else []
+				if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15 * scale:
+					var tag_source: String = "undead" if "undead" in attacker_tags else "diseased"
+					var disease_id = WoundSystem.apply_random_disease(defender.character_data, tag_source)
+					if disease_id != "":
+						combat_log.emit("Arm %d: %s afflicted with %s!" % [
+							arm_number, defender.unit_name,
+							WoundSystem.WOUND_TYPES.get(disease_id, {}).get("display_name", disease_id)
+						])
+						result["persistent_disease"] = disease_id
+
 		var msg: String = "Arm %d: %s → %s for %d%s" % [
 			arm_number, attacker.unit_name, defender.unit_name, result.damage,
 			" (crit!)" if result.get("crit", false) else ""
@@ -1601,7 +1628,7 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 				)
 				if randf() * 100.0 <= fire_chance:
 					if defender.is_alive():
-						var extra := _execute_arm_chain_attack(attacker, defender, arm_number)
+						var extra := _execute_arm_chain_attack(attacker, defender, arm_number, fire_chance)
 						extra_arm_results.append(extra)
 						if not defender.is_alive():
 							break
