@@ -1,4 +1,4 @@
-# Companion Quirk Assignments
+# EDIT_LATER
 
 Quirk category key: **P** = Personality · **Ph** = Physical · **B** = Behavioral · **A** = Acquired
 
@@ -82,3 +82,72 @@ Characters whose quirks have entries in `QUIRK_CRISIS_REACTIONS` (will produce n
 - **Grief-struck / Melancholic** concentrated in HG companions whose deaths involved loss
 - **Devout / Lapsed** pair creates interesting contrast (Nyingje's genuine faith vs. Drupchen's hollow form vs. Gomchen's cynical scholarship)
 - Physical quirks (Strong, Quick, Sharp-eyed) used sparingly — mostly for companions defined by a physical characteristic
+
+---
+
+## Camp System Changes (for review)
+
+### camp_system.gd
+
+**Mantra Recitation** — stub removed; now active:
+- Increments `character["mantra_count"]` by the performer's Yoga level (min 1)
+- Applies a small pressure calm (20-point decay toward baseline for the performer)
+- Message shows running total; Yidam system will read `mantra_count` when implemented
+
+**Night Music** (new, Performance 5+, Social):
+- Party-wide 50-point pressure decay (deeper than Campfire Story's 30)
+- 20% chance to draw a camp event (calls `EventManager.get_random_camp_event()`)
+- At Performance 7+, the message notes the music drew something closer
+
+**Cover Tracks / Guile Work** (new, Guile 4+, Survival):
+- Sets `GameState.flags["guile_work_done"] = true`
+- Wired into `roll_disturbance()`: −20% disturbance chance on next rest (flag consumed)
+- Ambush reduction note in message (−25% next combat ambush chance) — pending combat system
+
+**Combat Drill** (new, Leadership 5+, Combat Prep):
+- Appends `{"stat": "initiative", "amount": 3, "combats_remaining": 1}` to `active_map_buffs`
+- Stacks with Encouraging Words (which gives +2 initiative) — review whether this is too strong
+
+**Craft Camp Supplies** (new, Smithing 3+, Maintenance):
+- Costs 2 scrap; produces 1 item (or 2 at Smithing 5+)
+- Item pool: Rope, Torch, Bandage, Arrowhead — edit `CRAFT_TABLE` const if you want different items or item IDs
+- Uses `ItemSystem.add_to_inventory(id, 1)` — verify these item IDs exist in items.json
+
+**Sadhana cost preview** (overworld.gd `_open_activity_panel`):
+- Button text now shows which ritual tier will auto-select, e.g. "Torma Offering (reagents: 2)"
+- Preview runs `CampSystem.get_sadhana_preview(performer)` — edit tier thresholds there if tuning
+
+---
+
+### overworld.gd
+
+**Disturbance → camp event**:
+- When `roll_disturbance()` returns true, stores a random camp event ID in `_disturbance_event_id`
+- After rest completes (after final toast), calls `call_deferred("_show_camp_event", event_id)`
+- `_show_camp_event()` pauses movement and shows the event in the full event display (same as location events)
+- If night_music also triggered a camp event in the same rest, disturbance event takes priority
+
+---
+
+### domain_events.json
+
+**Karma bug fix**: Moved `"karma"` out of `"rewards"` into the outer outcome dict in:
+- `camp_night_vision` → "remember" choice
+- `camp_wandering_spirit` → "offer_food" and "speak_to_it" choices
+- Also added food costs to the wandering spirit offerings (felt free before)
+
+**6 new camp events added**:
+
+| ID | Realm | Summary |
+|----|-------|---------|
+| `camp_ember_voices` | hell | Fire speaks; Yoga 2 req to understand it; Awareness roll to address it |
+| `camp_guardian_threshold` | hell | Old grievance at camp edge; Persuasion 2 or Ritual 2 to resolve |
+| `camp_whispered_offering` | hungry_ghost | Supplies arranged by unseen hands; leave food or consecrate (Ritual 2) |
+| `camp_creditor` | hungry_ghost | Debt collector appears; Trade 3 negotiates, or pay/refuse |
+| `camp_shared_dream` | any | Party all dream the same thing; Yoga 2 to read it, Learning 2 to record |
+| `camp_stranger_fire` | any | Another camp visible; Charm roll to approach, or signal/observe |
+
+**Review notes**:
+- `camp_creditor` deducts gold via `"cost": {"gold": 30}` or 50 — tune to economy
+- `camp_whispered_offering` deducts food — check against forage yield balance
+- All karma values are tentative; adjust once karma-to-reincarnation tuning is done
