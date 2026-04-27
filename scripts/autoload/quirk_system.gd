@@ -56,6 +56,17 @@ func has_quirk(character: Dictionary, quirk_id: String) -> bool:
 	return quirk_id in character.get("quirks", [])
 
 
+## Returns all quirk IDs that are inborn and belong to the given category.
+## category: "physical", "personality", "behavioral", or "acquired"
+func get_inborn_quirks(category: String) -> Array[String]:
+	var result: Array[String] = []
+	for quirk_id in _quirks:
+		var q: Dictionary = _quirks[quirk_id]
+		if q.get("inborn", false) and q.get("category", "") == category:
+			result.append(quirk_id)
+	return result
+
+
 ## Returns the total attribute bonus dict from all of the character's quirks.
 ## Keys are attribute names ("strength", "charm", etc.), values are summed ints.
 func get_attribute_bonus(character: Dictionary) -> Dictionary:

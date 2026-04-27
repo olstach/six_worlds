@@ -330,13 +330,25 @@ func create_player_character(char_name: String, race: String, background: String
 
 	# Calculate derived stats (equipment bonuses are now included)
 	update_derived_stats(character)
-	
+
+	# Assign 1 random inborn physical quirk + 1 random inborn personality quirk.
+	# add_quirk() applies pressure baseline offsets and re-derives stats internally.
+	if QuirkSystem:
+		var physical: Array[String] = QuirkSystem.get_inborn_quirks("physical")
+		var personality: Array[String] = QuirkSystem.get_inborn_quirks("personality")
+		physical.shuffle()
+		personality.shuffle()
+		if not physical.is_empty():
+			QuirkSystem.add_quirk(character, physical[0])
+		if not personality.is_empty():
+			QuirkSystem.add_quirk(character, personality[0])
+
 	# Add to party at index 0 (player always first)
 	if party.is_empty():
 		party.append(character)
 	else:
 		party[0] = character
-	
+
 	character_updated.emit(character)
 
 

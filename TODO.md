@@ -11,23 +11,23 @@ Full plan: `docs/superpowers/plans/2026-04-07-psychology-system.md`
 
 Five elemental pressure meters per character (−100 klesha ↔ +100 wisdom). Pressure from events and combat → status effects at ±33/±50 → autonomous events at ±75.
 
-- [ ] **Task 1** — Create `scripts/autoload/psychology_system.gd` skeleton; register after KarmaSystem in `project.godot`
-- [ ] **Task 2** — Add `emotional_pressure` + `emotional_baseline` to BASE_CHARACTER in `character_system.gd`; add `emotional_baseline` field to all races in `races.json`; wire baseline copy in `_apply_race_modifiers()`
-- [ ] **Task 3** — Implement core pressure logic: `apply_pressure()`, `_intensity_multiplier()`, `get_active_statuses()`, `get_emotional_label()` (all named states for all 5 elements × 2 poles × 3 tiers)
-- [ ] **Task 4** — Implement `_check_thresholds()`: fires `autonomous_event_triggered` signal once per crossing, partial valve (+20 back toward neutral), resets on recovery. Connect signal to `_on_autonomous_event()` for inter-party fallout pressure
-- [ ] **Task 5** — Implement `decay_toward_baseline()` for rest system integration
-- [ ] **Task 6** — Wire event outcomes: add `pressure` field handler in `event_manager.gd apply_outcome()`; add `pressure` fields to 3 example hell events
-- [ ] **Task 7** — Wire combat hooks in `combat_manager.gd`: unit death → Water −15 to witnesses; victory → Fire/Air +10; defeat → Earth −10/Space −5
-- [ ] **Task 8** — Show dominant emotional label in character sheet UI (`main_menu.gd`)
-- [ ] **Task 9** — Wire Leadership + Comedy perks to `apply_pressure()` calls
+- [x] **Task 1** — Create `scripts/autoload/psychology_system.gd` skeleton; register after KarmaSystem in `project.godot`
+- [x] **Task 2** — Add `emotional_pressure` + `emotional_baseline` to BASE_CHARACTER in `character_system.gd`; add `emotional_baseline` field to all races in `races.json`; wire baseline copy in `_apply_race_modifiers()`
+- [x] **Task 3** — Implement core pressure logic: `apply_pressure()`, `_intensity_multiplier()`, `get_active_statuses()`, `get_emotional_label()` (all named states for all 5 elements × 2 poles × 3 tiers)
+- [x] **Task 4** — Implement `_check_thresholds()`: fires `autonomous_event_triggered` signal once per crossing, partial valve (+20 back toward neutral), resets on recovery. Connect signal to `_on_autonomous_event()` for inter-party fallout pressure
+- [x] **Task 5** — Implement `decay_toward_baseline()` for rest system integration
+- [x] **Task 6** — Wire event outcomes: add `pressure` field handler in `event_manager.gd apply_outcome()`; add `pressure` fields to 3 example hell events
+- [x] **Task 7** — Wire combat hooks in `combat_manager.gd`: unit death → Water −15 to witnesses; victory → Fire/Air +10; defeat → Earth −10/Space −5
+- [x] **Task 8** — Show dominant emotional label in character sheet UI (`main_menu.gd`)
+- [x] **Task 9** — Wire Leadership + Comedy perks to `apply_pressure()` calls
 
 **Future layers (not yet started):**
 - [x] ~~**Layer 2: Personality traits & quirks**~~ — QuirkSystem autoload + quirks.json (40 quirks: 10 physical, 14 personality, 10 behavioral, 10 acquired). Stat modifiers flow into `update_derived_stats()`; skill modifiers written to `skill_bonuses["quirks"]` source; pressure offsets shift `emotional_baseline`; event_tags unlock blue choices in event_manager. UI panel in character sheet (coloured by category, mechanical summary, purge tooltip). Bugs fixed: attribute event checks now include quirk bonuses; effective skill level clamped to 0 floor; purge check uses effective not raw skill.
 
 ### Quirk System — Remaining Work
-- [ ] **Autonomous actions** — `event_tags` exist on quirks but nothing consumes them at runtime. When `autonomous_event_triggered` fires (pressure crisis), look up the character's quirks, find any with matching `event_tags`, and trigger a narrative micro-event (log message, forced choice, or stat consequence). E.g. `hot_tempered` at Fire crisis → attacks nearest ally; `timid` at Air crisis → flees from combat position. Needs a small dispatch table in event_manager or a new `_resolve_quirk_autonomous()` in psychology_system.
-- [ ] **Player character starting quirks** — no mechanism to assign quirks to the player character at run start. Options: (a) random 1–2 inborn quirks from the physical/personality pools at character creation, (b) background unlocks specific quirks, (c) player picks from a short list. Pick approach and implement.
-- [ ] **Companion quirk data** — add `"quirks": [...]` arrays to actual companion definitions in the companion data file; currently the system supports it but no companion has any quirks assigned.
+- [x] ~~**Autonomous actions**~~ — `QUIRK_CRISIS_REACTIONS` dispatch table in `psychology_system.gd` covers 18 personality/behavioral/acquired event_tags × up to 2 element+polarity combinations each. `_resolve_quirk_reactions()` fires from `_on_autonomous_event` for both bright and dark crises. Virtue quirks (brave, patient, composed, generous, devout) partially counteract their element; dark quirks (hot_tempered, timid, haunted, grief_struck, etc.) amplify the crisis or spread fallout to the party. `emotional_crisis_log` signal emitted for UI display.
+- [x] ~~**Player character starting quirks**~~ — `create_player_character()` in `character_system.gd` now assigns 1 random inborn physical + 1 random inborn personality quirk via `QuirkSystem.get_inborn_quirks(category)` + `add_quirk()`. `start_new_life()` inherits this automatically.
+- [x] ~~**Companion quirk data**~~ — all 47 companions (24 hell + 23 HG) now have `"quirks": [...]` arrays in `companions.json`. Character list with rationale at `docs/companion_quirks.md`.
 - Layer 3: Intervention mechanic (social skills let one character help another)
 - Yidam integration: mantra practice raises brightness baseline per element
 - Rest system: `decay_toward_baseline()` called on camp/inn rest
