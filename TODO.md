@@ -221,20 +221,20 @@ The current three-tier rest system handles resource costs and recovery correctly
 Needs a hands-on play session to balance, extend, and wire the remaining gaps:
 
 **Activities to add:**
-- [ ] **Night Music** (Performance 5+) — deeper morale; small chance of triggering a camp encounter (traveller, passing spirit). Needs camp event wiring from within an activity result.
-- [ ] **Guile Work** (Guile 4+) — set a false trail or trap; mechanical effect TBD (reduce next mob patrol range? chance of ambush avoidance?). Strong flavour, light mechanics.
+- [x] ~~**Night Music** (Performance 5+)~~ — 50-point party pressure decay + 20% chance to trigger a camp event via `result["camp_event_id"]`; overworld picks it up and shows it after rest.
+- [x] ~~**Guile Work** (Guile 4+)~~ — sets `GameState.flags["guile_work_done"]`; consumed by `roll_disturbance()` for −20% chance next rest. Ambush reduction noted in message but pending combat system.
 - [ ] **Set Snares** (Crafting 2+ or Thievery 2+) — overnight food/material gain; small creature encounter chance. Needs a "resolve on next move" deferred effect.
-- [ ] **Drill** (Leadership 5+) — party initiative bonus next combat. Similar to Encouraging Words but combat-only; requires Leadership 5 vs 3, so a separate slot option.
+- [x] ~~**Drill** (Leadership 5+)~~ — appends `{"stat": "initiative", "amount": 3}` to `active_map_buffs`; +3 initiative next combat.
 - [ ] **Protector Offering** (Ritual 2+) — dharmapala offering at a camp shrine; deferred until DharmapalaSystem exists.
-- [ ] **Craft Item** (Crafting 3+) — make basic tools/rope/ammo from scrap. Needs a simple crafting recipe table.
+- [x] ~~**Craft Item** (Smithing 3+)~~ — 2 scrap → 1–2 items from `CRAFT_TABLE` (rope, torch, bandage, arrowhead); 2nd item unlocked at Smithing 5+. Verify item IDs exist in items.json.
 - [ ] **Craft Charm** (Ritual 3+ + magic school 3+) — consumable charm with school-specific effect. Needs schema for camp-crafted charms.
-- [ ] **Mantra Recitation** (Yoga 2+) — currently a stub. Wire to a `mantra_count` field on the character and a threshold for future yidam relationship progress.
+- [x] ~~**Mantra Recitation** (Yoga 2+)~~ — stub removed; increments `character["mantra_count"]` by Yoga level; small pressure decay for performer. Yidam system will read the counter when built.
 
 **Wiring gaps:**
-- [ ] **Disturbance → camp event**: When `roll_disturbance()` returns true, call `EventManager.get_random_camp_event(realm)` and trigger it via the event display system. Currently disturbance only reduces rest effectiveness with a toast — no actual event fires. (Wiring requires post-rest event queue or mid-rest event hook.)
-- [ ] **More camp events**: Write 3–5 camp events per realm (hell, hungry ghost, plus any/cross-realm). Currently only 3 total exist. Target: at least 2 per realm + 3 any-realm.
+- [x] ~~**Disturbance → camp event**~~ — `_disturbance_event_id` stored on disturbance; `call_deferred("_show_camp_event", id)` fires after final toast. `_show_camp_event()` pauses movement and shows event display, same as location events.
+- [x] ~~**More camp events**~~ — 9 total now (was 3): added `camp_ember_voices`, `camp_guardian_threshold` (hell); `camp_whispered_offering`, `camp_creditor` (hungry_ghost); `camp_shared_dream`, `camp_stranger_fire` (any). Also fixed karma-in-rewards bug in two original events.
 - [ ] **Location-specific activity suppression**: TODO design said some activities unavailable at teahouses (smithing) or enhanced at gompas (sadhana). Add `"suppress_activities": [...]` and `"enhance_activities": [...]` to safe camp event dicts and wire into `get_available_activities()`.
-- [ ] **Sadhana cost preview**: Sadhana auto-picks the best ritual tier — but the player can't see which tier will fire or what it will cost before confirming. Add a preview line to the button text (e.g., "Torma Offering — Reagents: 2").
+- [x] ~~**Sadhana cost preview**~~ — `CampSystem.get_sadhana_preview(performer)` computes which tier would auto-select; button shows e.g. "Torma Offering (reagents: 2) · ~20–100 karma purified".
 
 **Balance review (needs playtesting):**
 - [ ] Forage yield (herbs + food) relative to rest costs — may be too generous or too low depending on realm.
@@ -273,7 +273,7 @@ Persistent negative status effects from combat or events that do not fully clear
 - [ ] Character sheet and combat UI: show persistent wound icons distinctly (deferred — no character sheet UI yet)
 - [ ] Temple/facility healing UI: call `WoundSystem.heal_at_facility(char, medicine_equivalent)` — stub ready, needs shop/temple scene
 - [ ] Realm-specific wound types (hungry ghost malnutrition, animal realm parasites, hell frostbite/burns) — extend WOUND_TYPES when realms are built
-- [ ] More wound/disease variety: currently 5 base types (3 wounds, 2 diseases). Target ~8–10 base types eventually; e.g. arrow wound (ranged-specific, different penalties from deep cut), poisoned wound (disease + damage hybrid), spiritual corruption (hell/hungry-ghost specific, resists medicine, needs Ritual/Yoga). See design notes in "Design Thinking: Wounds, Rest & Calendar" section.
+- [ ] More wound/disease variety: currently 5 base types (3 wounds, 2 diseases). Target ~8–10 base types eventually; e.g. arrow wound (ranged-specific, different penalties from deep cut), poisoned wound (disease + damage hybrid), spiritual corruption (hell/hungry-ghost specific, resists medicine, needs Ritual/Yoga). **Design presented for review — see companion_quirks.md (EDIT_LATER).**
 
 ---
 
