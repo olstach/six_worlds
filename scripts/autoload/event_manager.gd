@@ -363,10 +363,21 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 			else:
 				result.passing_character = passing_char
 
+		# Check not_trait requirement — blocks the option if any party member has the trait.
+		# Useful for: "only offer blessing if not already devout", "can't lose eye twice", etc.
+		if "not_trait" in reqs:
+			var blocked_trait: String = reqs["not_trait"]
+			for party_member in CharacterSystem.get_party():
+				if blocked_trait in party_member.get("traits", []):
+					result.available = false
+					result.reason = TraitSystem.get_trait_name(blocked_trait) + " already present"
+					return result
+
 	return result
 
-## Execute a choice (with roll if needed)
-func make_choice(choice: Dictionary) -> Dictionary:
+## Execute a choice (with roll if needed).
+## passing_character: the party member who enabled a blue/requirement choice (may be null).
+func make_choice(choice: Dictionary, passing_character = null) -> Dictionary:
 	choice_made.emit(choice)
 	
 	var outcome = {}
@@ -426,9 +437,11 @@ func make_choice(choice: Dictionary) -> Dictionary:
 		# Non-roll choice, use standard outcome
 		outcome = choice.outcome.duplicate(true) if "outcome" in choice else {}
 	
-	# Carry the choice's cost into the outcome so apply_outcome can deduct it
+	# Carry the choice's cost and enabling character into the outcome
 	if "cost" in choice:
 		outcome["cost"] = choice.cost
+	if passing_character != null:
+		outcome["passing_character"] = passing_character
 
 	# Apply outcome
 	apply_outcome(outcome)
@@ -670,11 +683,18 @@ func apply_outcome(outcome: Dictionary) -> void:
 			else:
 					print("EventManager: gold_returned set but no gold cost found to refund")
 
-		# Add/remove traits — e.g. {"id": "devout", "target": "player"} or just "trait_id"
-		# target: "player" (default), "random" (random party member), "all"
-		for key in ["add_trait", "remove_trait"]:
-			if key in rewards:
-				var entry = rewards[key]
+		# Add/remove traits.
+		# Singular:  "add_trait": "devout"  or  "add_trait": {"id": "devout", "target": "player"}
+		# Plural:    "add_traits": ["devout", "composed"]  (same target rules, applied to each)
+		# target values: "player" (default), "passing_char" (who enabled blue choice), "random", "all"
+		for key in ["add_trait", "remove_trait", "add_traits", "remove_traits"]:
+			if not key in rewards:
+				continue
+			var is_remove: bool = key.begins_with("remove")
+			var entries = rewards[key]
+			if not entries is Array:
+				entries = [entries]
+			for entry in entries:
 				var trait_id: String
 				var target_mode: String = "player"
 				if entry is String:
@@ -687,16 +707,19 @@ func apply_outcome(outcome: Dictionary) -> void:
 				var party := CharacterSystem.get_party()
 				var targets: Array = []
 				match target_mode:
-					"all":    targets = party
-					"random": if not party.is_empty(): targets = [party[randi() % party.size()]]
+					"all":          targets = party
+					"random":       if not party.is_empty(): targets = [party[randi() % party.size()]]
+					"passing_char":
+						var pc = outcome.get("passing_character")
+						if pc != null: targets = [pc]
 					_:
 						var player := CharacterSystem.get_player()
 						if player: targets = [player]
 				for char in targets:
-					if key == "add_trait":
-						TraitSystem.add_trait(char, trait_id)
-					else:
+					if is_remove:
 						TraitSystem.remove_trait(char, trait_id)
+					else:
+						TraitSystem.add_trait(char, trait_id)
 					print("EventManager: %s '%s' on %s" % [key, trait_id, char.get("name", "?")])
 
 	# Write world-state flags declared by this outcome
