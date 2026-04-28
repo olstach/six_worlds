@@ -37,6 +37,16 @@ const ACTIVITIES: Array = [
 		"description": "Quiet mantra accumulation toward yidam relationship",
 		"effect_desc": "Builds mantra count by Yoga level; small pressure calm",
 	},
+	{
+		"id": "spiritual_cleansing",
+		"name": "Spiritual Cleansing",
+		"category": "Spiritual",
+		"skill_req": {"ritual": 3},
+		"min_tier": 2,
+		"costs": {},
+		"description": "A purification rite targeting psychic corruption and spiritual miasma",
+		"effect_desc": "Cures Psychic Miasma and Spiritual Corruption (Ritual 3/5 required)",
+	},
 	# ─── MEDICAL ─────────────────────────────────────────────────────
 	{
 		"id": "herb_preparation",
@@ -283,7 +293,8 @@ func get_sadhana_preview(performer: Dictionary) -> Dictionary:
 func execute_activity(activity_id: String, performer: Dictionary, party: Array) -> Dictionary:
 	match activity_id:
 		"sadhana":            return _exec_sadhana(performer, party)
-		"mantra_recitation":  return _exec_mantra_recitation(performer)
+		"mantra_recitation":   return _exec_mantra_recitation(performer)
+		"spiritual_cleansing": return _exec_spiritual_cleansing(performer, party)
 		"herb_preparation":   return _exec_herb_preparation(performer)
 		"brew_potions":       return _exec_brew_potions(performer)
 		"brew_combat":        return _exec_brew_combat(performer)
@@ -571,6 +582,23 @@ func _exec_sharpen(performer: Dictionary) -> Dictionary:
 func _exec_spar(performer: Dictionary) -> Dictionary:
 	CharacterSystem.grant_xp(performer, 8)
 	return {"message": "%s spars in the firelight and gains 8 XP." % performer.get("name", "Performer"), "ok": true}
+
+
+func _exec_spiritual_cleansing(performer: Dictionary, party: Array) -> Dictionary:
+	var ritual := CharacterSystem.get_effective_skill_level(performer, "ritual")
+	var all_messages: Array[String] = []
+	for char in party:
+		var result := WoundSystem.try_spiritual_cure(char, "ritual", ritual)
+		all_messages.append_array(result.get("messages", []))
+	if all_messages.is_empty():
+		return {
+			"message": "%s performs a purification rite. No spiritual afflictions present." % performer.get("name", "Performer"),
+			"ok": true,
+		}
+	return {
+		"message": "%s performs a purification rite.\n%s" % [performer.get("name", "Performer"), "\n".join(all_messages)],
+		"ok": true,
+	}
 
 
 func _exec_mantra_recitation(performer: Dictionary) -> Dictionary:

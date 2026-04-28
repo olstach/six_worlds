@@ -156,86 +156,64 @@ Characters whose quirks have entries in `QUIRK_CRISIS_REACTIONS` (will produce n
 
 ## New Wound & Disease Types (for review before implementation)
 
-Current wound system has **5 base types** (deep_cut, concussion, broken_rib, rot_sickness, marrow_chill) + 5 escalated forms. Target is 8–10 base types. Below are 5 proposed additions — edit names, descriptions, and cure levels before implementation.
-
-Each entry shows: ID · display name · category · severity · forced location · escalation path · minimum Medicine to cure via Field Surgery · how it's applied · design rationale.
+Current wound system now has **8 base types** (deep_cut, concussion, broken_rib, rot_sickness, marrow_chill + barbed_wound, sprain, burn, poisoned_blood, psychic_miasma) + 7 escalated forms. **`infected_wound` display name changed to "Seeping Wound".**
 
 ---
 
 ### Physical Wounds
 
-**`barbed_wound`** · Barbed Wound · wound · light · random arm/leg
-- Escalates to: `infected_wound` after 2 rests (same as deep_cut)
-- Cure: Medicine 2
-- Applied by: ranged weapon crits (separate from melee CRIT_WOUND_POOL — added to a new RANGED_CRIT_WOUND_POOL)
-- Description: "An arrow or thorn lodged partway in — worse to remove quickly than to leave. Pulling it wrong tears."
-- Rationale: Distinct from deep_cut in flavour; gives ranged crits a different wound outcome rather than sharing the melee pool.
+**`barbed_wound`** · Barbed Wound · wound · light · random
+- Escalates to: `infected_wound` (Seeping Wound) after 2 rests · Cure: Medicine 2
+- Applied by: ranged weapon crits (RANGED_CRIT_WOUND_POOL)
+- ✅ Implemented
 
-**`sprain`** · Sprain · wound · light · forced foot/leg (foot_l or foot_r, then leg fallback)
-- Escalates to: nothing — self-cures or needs one rest with Medicine 1
-- Cure: Medicine 1 (trivial)
-- Applied by: fall events, bad terrain events, not combat crits
-- Description: "A twisted joint — painful but not dangerous. Movement is compromised until it settles."
-- Rationale: Very low stakes, purely event-applied. Fills the bottom of the severity ladder. Edit: is there anything at the foot penalty level worth having? Or should this not exist?
+**`sprain`** · Sprain · wound · light · random location
+- Escalates to: nothing · Cure: Medicine 1
+- Applied by: fall/terrain events only; not in any combat crit pool
+- ✅ Implemented
 
-**`burn`** · Burn · wound · moderate (light if minor fire source) · random arm or torso
-- Escalates to: `infected_wound` after 3 rests (burned skin is infection-prone)
-- Cure: Medicine 3
-- Applied by: fire spell crits at high damage, lava event outcomes, fire terrain contact at end of turn
-- Description: "Seared skin and scorched tissue — agonising on contact with anything, including armor."
-- Rationale: Hell is full of fire. Nothing in the wound system is fire-specific. This would be the main output of the lava and fire events. Edit: severity — light or moderate? Moderate gives meaningful armor penalty.
+**`burn`** · Burn · wound · **moderate** · random location
+- Escalates to: `infected_wound` (Seeping Wound) after 3 rests · Cure: Medicine 3
+- Applied by: fire spell crits, lava events, fire terrain — add `burn` to CRIT_WOUND_POOL or a fire-specific pool when fire enemies are designed
+- ✅ Implemented
 
 ---
 
 ### Diseases
 
 **`poisoned_blood`** · Poisoned Blood · disease · moderate · random
-- Escalates to: `venom_shock` (new severe form, cure Medicine 7) after 3 rests
-- Cure: Medicine 3 (Alchemy 3 as alternate cure — needs `alternate_cure_skill` field if you want it, or just leave as Medicine)
-- Applied by: poison-weapon enemy hits, poison bomb splash, event outcomes (snake bite, tainted water, bad meal)
-- Description: "A toxin is working through the bloodstream. Strength drains first, then clarity."
-- Rationale: Poison is a major combat element (poison bombs, poison status) but nothing in the wound system represents lasting poison. This fills that gap. Alchemy as alternate cure is thematic but needs new code — your call.
+- Escalates to: `venom_shock` after 3 rests · Cure: Medicine 3
+- Applied by: `poison`-tagged enemies (new POISON_DISEASE_POOL in combat_manager), event outcomes
+- ✅ Implemented
 
-**`spiritual_corruption`** · Spiritual Corruption · disease · moderate · random
-- Escalates to: `spiritual_dissolution` (new severe form) after 4 rests
-- Cure: Medicine 6 (very hard via medicine alone), OR Yoga 3 / Ritual 3 — **needs design decision** (see below)
-- Applied by: hell/HG-specific event outcomes, demon "taint" attacks, failed dark ritual outcomes
-- Description: "Hell energies have taken root in the subtle channels. The body fights but the spirit is losing ground."
-- Rationale: Realm-flavoured disease that creates mechanical incentive for spiritual practice during hell/HG runs. The "resists medicine" aspect is the interesting design problem.
+**`psychic_miasma`** · Psychic Miasma · disease · moderate · random
+- Escalates to: `spiritual_corruption` after 4 rests
+- Cure: Medicine 7 (hard) OR **Ritual 3** via Spiritual Cleansing camp activity
+- Applied by: hell/HG events, demon taint, failed ritual outcomes
+- ✅ Implemented (Option C with Ritual)
 
 ---
 
-### New Escalated Forms (for the above)
+### Escalated Forms
 
-**`venom_shock`** · Venom Shock · disease · severe · random
-- Escalates to: nothing
+**`venom_shock`** · **Mortification** *(placeholder — confirm display name)* · disease · severe
 - Cure: Medicine 7
-- Description: "The poison has reached crisis — organs strained, consciousness uncertain."
+- ⚠️ Display name TBD — options: Mortification / Black Flux / Fell Choler / The Darkening
 
-**`spiritual_dissolution`** · Spiritual Dissolution · disease · severe · random
-- Escalates to: nothing
-- Cure: see design decision below
-- Description: "The character is coming apart at the subtle level. Only deep practice can reverse this."
-
----
-
-### Design Decision: Spiritual Corruption Cure Mechanic
-
-Three options — pick one before implementation:
-
-**Option A — High medicine threshold**: cure_medicine_level = 7 for corruption, 8 for dissolution. Medicine can treat it if skilled enough; no new code needed. Simple but loses the "resists medicine, needs ritual/yoga" flavour.
-
-**Option B — Alternate cure skill field**: add `"alternate_cure_skill": {"yoga": 3}` (or ritual) to the wound type. Field Surgery ignores this; a new camp activity **Spiritual Cleansing** (Yoga 3+ or Ritual 3+) calls a new `WoundSystem.try_spiritual_cure()` function. Moderate implementation cost; cleanest design.
-
-**Option C — Quirk-style purge**: treat as a purgeable condition — `WoundSystem.try_purge_wound(character, wound_id, skill_used)` mirroring QuirkSystem.try_purge(). Same code as Option B but slightly simpler interface. Very consistent with existing systems.
-
-Recommendation: **Option B or C** — they're equivalent in implementation effort and both preserve the flavour. The "Spiritual Cleansing" activity would pair naturally with Mantra Recitation in the Spiritual category. Your call on whether it goes on the activity list as a new activity or as an upgraded version of Mantra Recitation at higher Yoga levels.
+**`spiritual_corruption`** · Spiritual Corruption · disease · severe
+- Cure: Medicine 8 (essentially incurable without ritual) OR **Ritual 5**
+- ✅ Implemented
 
 ---
 
-### Notes on the Existing Wound Pool
+### Implemented: New Combat Wiring
 
-Two pools to edit in `wound_system.gd` if the new types are approved:
-- `CRIT_WOUND_POOL` (melee crits): currently `["deep_cut", "concussion", "broken_rib"]` — add `burn` if desired for fire-using enemies; leave barbed_wound off (it's ranged-specific)
-- `DISEASE_POOL` (undead/diseased hits): currently `["rot_sickness", "marrow_chill"]` — add `poisoned_blood` if appropriate for poison-type enemies
-- New: `RANGED_CRIT_WOUND_POOL` — `["barbed_wound", "deep_cut"]` — for ranged weapon crits; needs a new check in combat_manager.gd's crit proc block
+- Ranged weapon crits now draw from `RANGED_CRIT_WOUND_POOL` (`["barbed_wound", "deep_cut", "concussion"]`) instead of the melee pool — detected via `weapon.skill_tag == "ranged"`
+- `poison`-tagged enemies now have a 15% chance to apply `poisoned_blood` via new `POISON_DISEASE_POOL`
+- New camp activity: **Spiritual Cleansing** (Ritual 3+) calls `WoundSystem.try_spiritual_cure()` for the whole party
+
+### Still needed
+
+- Add `burn` to a fire-enemy-specific wound pool (or to CRIT_WOUND_POOL for fire-using enemies — design call when fire archetypes are built)
+- Add event outcomes using `"wound": {"id": "barbed_wound"}`, `"wound": {"id": "sprain"}`, `"wound": {"id": "burn"}` to appropriate events (lava pit, trapped passage, etc.)
+- Add `"tags": ["poison"]` to any relevant enemy archetypes in hell_archetypes.json / hg_archetypes.json
