@@ -668,7 +668,36 @@ func apply_outcome(outcome: Dictionary) -> void:
 					GameState.add_gold(refund)
 					print("EventManager: Gold returned (%d)" % refund)
 			else:
-				print("EventManager: gold_returned set but no gold cost found to refund")
+					print("EventManager: gold_returned set but no gold cost found to refund")
+
+		# Add/remove traits — e.g. {"id": "devout", "target": "player"} or just "trait_id"
+		# target: "player" (default), "random" (random party member), "all"
+		for key in ["add_trait", "remove_trait"]:
+			if key in rewards:
+				var entry = rewards[key]
+				var trait_id: String
+				var target_mode: String = "player"
+				if entry is String:
+					trait_id = entry
+				else:
+					trait_id = str(entry.get("id", ""))
+					target_mode = str(entry.get("target", "player"))
+				if trait_id.is_empty() or not TraitSystem:
+					continue
+				var party := CharacterSystem.get_party()
+				var targets: Array = []
+				match target_mode:
+					"all":    targets = party
+					"random": if not party.is_empty(): targets = [party[randi() % party.size()]]
+					_:
+						var player := CharacterSystem.get_player()
+						if player: targets = [player]
+				for char in targets:
+					if key == "add_trait":
+						TraitSystem.add_trait(char, trait_id)
+					else:
+						TraitSystem.remove_trait(char, trait_id)
+					print("EventManager: %s '%s' on %s" % [key, trait_id, char.get("name", "?")])
 
 	# Write world-state flags declared by this outcome
 	if "set_flags" in outcome:

@@ -848,18 +848,6 @@ func _update_quirks(character: Dictionary) -> void:
 		quirks_container.add_child(empty_label)
 		return
 
-	# Category display order and colours
-	var category_colors := {
-		"racial":      Color(0.9,  0.8,  0.4),
-		"habitat":     Color(0.5,  0.85, 0.7),
-		"role":        Color(0.7,  0.6,  0.9),
-		"unique":      Color(0.9,  0.7,  0.5),
-		"physical":    Color(0.85, 0.75, 0.55),
-		"personality": Color(0.7,  0.85, 1.0),
-		"behavioral":  Color(0.65, 0.9,  0.65),
-		"acquired":    Color(0.9,  0.6,  0.6),
-	}
-
 	for trait_id in char_traits:
 		var t := TraitSystem.get_trait(trait_id)
 		if t.is_empty():
@@ -868,12 +856,9 @@ func _update_quirks(character: Dictionary) -> void:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 6)
 
-		# Coloured name label
 		var name_label := Label.new()
 		name_label.text = t.get("name", trait_id)
 		name_label.add_theme_font_size_override("font_size", 13)
-		var cat: String = t.get("category", "acquired")
-		name_label.add_theme_color_override("font_color", category_colors.get(cat, Color.WHITE))
 		name_label.custom_minimum_size.x = 140
 		row.add_child(name_label)
 
