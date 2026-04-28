@@ -159,10 +159,10 @@ const BASE_CHARACTER: Dictionary = {
 	# Active weapon set (1 or 2)
 	"active_weapon_set": 1,
 
-	# Character quirks — list of quirk IDs (see quirks.json / QuirkSystem)
-	# Inborn quirks are set at character creation or in companion definitions.
-	# Acquired quirks are added/removed during the run via QuirkSystem.add_quirk/remove_quirk.
-	"quirks": [],
+	# Character traits — list of trait IDs (see traits.json / TraitSystem)
+	# Racial traits are applied automatically from race starting_traits at creation.
+	# Acquired traits are added/removed during the run via TraitSystem.add_trait/remove_trait.
+	"traits": [],
 
 	# Persistent wounds and diseases (survive between combats; healed by Medicine or facilities)
 	# Each entry: {id, body_location, rests_untreated, source}
@@ -422,6 +422,12 @@ func apply_race_modifiers(character: Dictionary, race: String) -> void:
 			var spell_id = _pick_random_spell(schools, level, character.get("known_spells", []))
 			if spell_id != "":
 				learn_spell(character, spell_id)
+
+	# Apply starting traits from race (racial identity traits, habitat, etc.)
+	var race_traits: Array = data.get("starting_traits", [])
+	for trait_id in race_traits:
+		if TraitSystem:
+			TraitSystem.add_trait(character, trait_id)
 
 	# Copy emotional baseline from race data
 	if "emotional_baseline" in data:
@@ -730,29 +736,29 @@ func update_derived_stats(character: Dictionary) -> void:
 	if PerkSystem:
 		affinity_bonus = PerkSystem.get_affinity_bonuses(character)
 
-	# Collect quirk attribute bonuses
-	var quirk_attr_bonus: Dictionary = {}
-	if QuirkSystem:
-		quirk_attr_bonus = QuirkSystem.get_attribute_bonus(character)
+	# Collect trait attribute bonuses
+	var trait_attr_bonus: Dictionary = {}
+	if TraitSystem:
+		trait_attr_bonus = TraitSystem.get_attribute_bonus(character)
 
-	# Apply equipment + quirk attribute bonuses to get effective attributes
+	# Apply equipment + trait attribute bonuses to get effective attributes
 	var effective_attrs = {}
 	for attr_key in attrs:
-		effective_attrs[attr_key] = attrs[attr_key] + equip_bonus.get(attr_key, 0) + quirk_attr_bonus.get(attr_key, 0)
+		effective_attrs[attr_key] = attrs[attr_key] + equip_bonus.get(attr_key, 0) + trait_attr_bonus.get(attr_key, 0)
 
-	# Refresh quirk skill bonuses (clear old pass first, then re-add from current quirks)
+	# Refresh trait skill bonuses (clear old pass first, then re-add from current traits)
 	if not "skill_bonuses" in character:
 		character["skill_bonuses"] = {}
 	for skill_id in character["skill_bonuses"]:
-		character["skill_bonuses"][skill_id].erase("quirks")
-	if QuirkSystem:
-		for quirk_id in character.get("quirks", []):
-			var q := QuirkSystem.get_quirk(quirk_id)
-			for skill_id in q.get("skill_modifiers", {}):
+		character["skill_bonuses"][skill_id].erase("traits")
+	if TraitSystem:
+		for trait_id in character.get("traits", []):
+			var t := TraitSystem.get_trait(trait_id)
+			for skill_id in t.get("skill_modifiers", {}):
 				if not skill_id in character["skill_bonuses"]:
 					character["skill_bonuses"][skill_id] = {}
-				var prev: int = character["skill_bonuses"][skill_id].get("quirks", 0)
-				character["skill_bonuses"][skill_id]["quirks"] = prev + int(q["skill_modifiers"][skill_id])
+				var prev: int = character["skill_bonuses"][skill_id].get("traits", 0)
+				character["skill_bonuses"][skill_id]["traits"] = prev + int(t["skill_modifiers"][skill_id])
 
 	# HP from Constitution + equipment + earth affinity
 	var old_max_hp = derived.get("max_hp", 100)

@@ -345,9 +345,9 @@ func recruit(companion_id: String, free: bool = false) -> Dictionary:
 				resolved_id = gen_id
 		ItemSystem.add_to_inventory(resolved_id)
 
-	# 10.5. Starting quirks — apply pressure baseline offsets; stat modifiers handled in step 11
-	for quirk_id in def.get("quirks", []):
-		QuirkSystem.add_quirk(companion, quirk_id)
+	# 10.5. Starting traits — apply pressure baseline offsets; stat modifiers handled in step 11
+	for trait_id in def.get("traits", []):
+		TraitSystem.add_trait(companion, trait_id)
 
 	# 11. Recalculate all derived stats
 	CharacterSystem.update_derived_stats(companion)

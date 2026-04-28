@@ -300,8 +300,8 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 				for party_member in CharacterSystem.get_party():
 					var base_val: int = party_member.attributes.get(attr_name, 0)
 					var quirk_bonus: int = 0
-					if QuirkSystem:
-						quirk_bonus = QuirkSystem.get_attribute_bonus(party_member).get(attr_name, 0)
+					if TraitSystem:
+						quirk_bonus = TraitSystem.get_attribute_bonus(party_member).get(attr_name, 0)
 					if base_val + quirk_bonus >= required_value:
 						meets_req = true
 						passing_char = party_member
@@ -346,19 +346,19 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 			else:
 				result.passing_character = passing_char
 
-		# Check quirk requirement — any party member with the quirk enables the option
-		if "quirk" in reqs:
-			var required_quirk: String = reqs["quirk"]
+		# Check trait requirement — any party member with the trait enables the option
+		if "trait" in reqs:
+			var required_trait: String = reqs["trait"]
 			var meets_req := false
 			var passing_char = null
 			for party_member in CharacterSystem.get_party():
-				if required_quirk in party_member.get("quirks", []):
+				if required_trait in party_member.get("traits", []):
 					meets_req = true
 					passing_char = party_member
 					break
 			if not meets_req:
 				result.available = false
-				result.reason = "Requires: " + QuirkSystem.get_quirk_name(required_quirk)
+				result.reason = "Requires: " + TraitSystem.get_trait_name(required_trait)
 				return result
 			else:
 				result.passing_character = passing_char

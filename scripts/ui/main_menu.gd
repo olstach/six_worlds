@@ -839,10 +839,10 @@ func _update_quirks(character: Dictionary) -> void:
 	for child in quirks_container.get_children():
 		child.queue_free()
 
-	var char_quirks: Array = character.get("quirks", [])
-	if char_quirks.is_empty():
+	var char_traits: Array = character.get("traits", [])
+	if char_traits.is_empty():
 		var empty_label := Label.new()
-		empty_label.text = "No quirks."
+		empty_label.text = "No traits."
 		empty_label.add_theme_font_size_override("font_size", 12)
 		empty_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
 		quirks_container.add_child(empty_label)
@@ -850,15 +850,19 @@ func _update_quirks(character: Dictionary) -> void:
 
 	# Category display order and colours
 	var category_colors := {
+		"racial":      Color(0.9,  0.8,  0.4),
+		"habitat":     Color(0.5,  0.85, 0.7),
+		"role":        Color(0.7,  0.6,  0.9),
+		"unique":      Color(0.9,  0.7,  0.5),
 		"physical":    Color(0.85, 0.75, 0.55),
 		"personality": Color(0.7,  0.85, 1.0),
 		"behavioral":  Color(0.65, 0.9,  0.65),
 		"acquired":    Color(0.9,  0.6,  0.6),
 	}
 
-	for quirk_id in char_quirks:
-		var q := QuirkSystem.get_quirk(quirk_id)
-		if q.is_empty():
+	for trait_id in char_traits:
+		var t := TraitSystem.get_trait(trait_id)
+		if t.is_empty():
 			continue
 
 		var row := HBoxContainer.new()
@@ -866,20 +870,20 @@ func _update_quirks(character: Dictionary) -> void:
 
 		# Coloured name label
 		var name_label := Label.new()
-		name_label.text = q.get("name", quirk_id)
+		name_label.text = t.get("name", trait_id)
 		name_label.add_theme_font_size_override("font_size", 13)
-		var cat: String = q.get("category", "acquired")
+		var cat: String = t.get("category", "acquired")
 		name_label.add_theme_color_override("font_color", category_colors.get(cat, Color.WHITE))
 		name_label.custom_minimum_size.x = 140
 		row.add_child(name_label)
 
 		# Short mechanical summary (stat changes, pressure offsets)
 		var effects: Array[String] = []
-		for attr in q.get("stat_modifiers", {}):
-			var val: int = int(q["stat_modifiers"][attr])
+		for attr in t.get("stat_modifiers", {}):
+			var val: int = int(t["stat_modifiers"][attr])
 			effects.append(("%+d " % val) + attr.capitalize())
-		for skill in q.get("skill_modifiers", {}):
-			var val: int = int(q["skill_modifiers"][skill])
+		for skill in t.get("skill_modifiers", {}):
+			var val: int = int(t["skill_modifiers"][skill])
 			effects.append(("%+d " % val) + skill.replace("_", " ").capitalize())
 		var effect_label := Label.new()
 		effect_label.text = "  ".join(effects) if not effects.is_empty() else ""
@@ -890,13 +894,13 @@ func _update_quirks(character: Dictionary) -> void:
 
 		# Tooltip with full description and purge info
 		var purge_info := ""
-		var purgeable_by: Array = q.get("purgeable_by", [])
+		var purgeable_by: Array = t.get("purgeable_by", [])
 		if not purgeable_by.is_empty():
 			var skill_names := []
 			for s in purgeable_by:
-				skill_names.append(s.capitalize() + " " + str(q.get("purge_difficulty", 1)))
+				skill_names.append(s.capitalize() + " " + str(t.get("purge_difficulty", 1)))
 			purge_info = "\nCan be shed through: " + " / ".join(skill_names)
-		row.tooltip_text = q.get("description", "") + purge_info
+		row.tooltip_text = t.get("description", "") + purge_info
 		row.mouse_filter = Control.MOUSE_FILTER_STOP
 
 		quirks_container.add_child(row)
