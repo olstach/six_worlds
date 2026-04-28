@@ -674,7 +674,7 @@ Multi-armed characters are intentionally strong against lower-world beings — t
 
 ---
 
-## Body/Wound System — Audit Findings & Remaining Work
+## Body/Wound System — Audit ✓ COMPLETE (Remaining Issues Tracked Below)
 
 Deep audit completed. Bugs fixed in this session; remaining issues and design debt below.
 
