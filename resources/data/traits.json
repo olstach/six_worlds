@@ -790,38 +790,6 @@
     "purgeable_by": [],
     "purge_difficulty": 0
   },
-  "undead_nature": {
-    "name": "Undead Nature",
-    "description": "The body is dead, or was never fully alive. Disease finds little purchase; the usual urgencies of flesh have gone quiet.",
-    "category": "racial",
-    "inborn": true,
-    "stat_modifiers": {},
-    "pressure_modifiers": {
-      "water": -5
-    },
-    "skill_modifiers": {},
-    "event_tags": [
-      "undead",
-      "undead_nature"
-    ],
-    "purgeable_by": [],
-    "purge_difficulty": 0
-  },
-  "spirit_nature": {
-    "name": "Spirit Nature",
-    "description": "More will than flesh — a being of accumulated intention, desire, or power that refuses to dissolve.",
-    "category": "racial",
-    "inborn": true,
-    "stat_modifiers": {},
-    "pressure_modifiers": {},
-    "skill_modifiers": {},
-    "event_tags": [
-      "spirit",
-      "spirit_nature"
-    ],
-    "purgeable_by": [],
-    "purge_difficulty": 0
-  },
   "serpentine": {
     "name": "Serpentine",
     "description": "A body built for water and coiling grace. Equally at home in the deep as on land.",
@@ -1049,6 +1017,97 @@
     "purge_difficulty": 0,
     "todo": [
       "darkness_immunity: no darkness penalty in combat when darkness system is implemented"
+    ]
+  },
+  "undead": {
+    "name": "Undead",
+    "description": "The body is dead, or was never fully alive. Disease and poison find less purchase; the usual urgencies of flesh have gone quiet.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": -5
+    },
+    "skill_modifiers": {},
+    "resistances": {
+      "disease": 50,
+      "poison": 25
+    },
+    "event_tags": [
+      "undead",
+      "undead_nature"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "todo": [
+      "disease_resistance: apply 50% reduction to disease damage/effects in combat system",
+      "poison_resistance: apply 25% reduction to poison damage in combat system"
+    ]
+  },
+  "incorporeal": {
+    "name": "Incorporeal",
+    "description": "Barely present in the physical world — more dissolution than body. Physical violence finds little purchase. Lacking a body, material wealth and food hold no interest.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "constitution": -1
+    },
+    "pressure_modifiers": {
+      "earth": -5
+    },
+    "skill_modifiers": {},
+    "resistances": {
+      "physical": 50
+    },
+    "event_tags": [
+      "incorporeal",
+      "non_physical"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "todo": [
+      "physical_resistance: apply 50% reduction to physical damage in combat system"
+    ]
+  },
+  "ancient_memory": {
+    "name": "Ancient Memory",
+    "description": "Long ages of accumulated experience have sharpened recall and insight. What others learn in a lifetime, this being has lived through many times over.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "awareness": 1
+    },
+    "pressure_modifiers": {},
+    "skill_modifiers": {
+      "learning": 1
+    },
+    "event_tags": [
+      "ancient_memory",
+      "long_lived"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "insatiable": {
+    "name": "Insatiable",
+    "description": "Consumed by hunger that can never be satisfied — the defining curse of the yidag birth. Consumes 50% more food; receives 50% less healing from rest.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "earth": 10,
+      "water": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "insatiable",
+      "hungry_ghost_curse"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "todo": [
+      "food_consumption: consume 50% more food per meal and rest",
+      "rest_healing: receive 50% less HP and MP from rest"
     ]
   }
 }

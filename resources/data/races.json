@@ -409,7 +409,7 @@
                 "air": 0
             },
             "starting_traits": [
-                "undead_nature"
+                "undead"
             ]
         },
         "preserved": {
@@ -458,7 +458,7 @@
                 "air": 0
             },
             "starting_traits": [
-                "undead_nature"
+                "undead"
             ]
         },
         "skeleton": {
@@ -505,7 +505,7 @@
                 "air": 0
             },
             "starting_traits": [
-                "undead_nature"
+                "undead"
             ]
         },
         "dralha": {
@@ -554,9 +554,7 @@
                 "earth": 0,
                 "air": 0
             },
-            "starting_traits": [
-                "spirit_nature"
-            ]
+            "starting_traits": []
         },
         "gyelpo": {
             "name": "Gyelpo",
@@ -610,7 +608,7 @@
                 "air": 0
             },
             "starting_traits": [
-                "spirit_nature"
+                "ancient_memory"
             ]
         },
         "dre": {
@@ -646,12 +644,8 @@
                 "penitent",
                 "wanderer"
             ],
-            "todo": [
-                "physical_damage_reduction: implement 50% physical damage immunity in combat system"
-            ],
-            "resistances": {
-                "physical": 50
-            },
+            "todo": [],
+            "resistances": {},
             "emotional_baseline": {
                 "space": 0,
                 "fire": 0,
@@ -660,7 +654,7 @@
                 "air": 0
             },
             "starting_traits": [
-                "spirit_nature"
+                "incorporeal"
             ]
         },
         "vetala": {
@@ -717,7 +711,7 @@
                 "air": 0
             },
             "starting_traits": [
-                "spirit_nature"
+                "ancient_memory"
             ]
         },
         "naga": {
@@ -1199,7 +1193,7 @@
                 "air": 0
             },
             "starting_traits": [
-                "spirit_nature"
+                "predator_grace"
             ]
         },
         "yidag": {
@@ -1246,7 +1240,7 @@
                 "air": 0
             },
             "starting_traits": [
-                "spirit_nature"
+                "insatiable"
             ]
         },
         "skeleton_silver": {
@@ -1293,7 +1287,7 @@
                 "air": 0
             },
             "starting_traits": [
-                "undead_nature"
+                "undead"
             ]
         },
         "skeleton_copper": {
@@ -1340,7 +1334,7 @@
                 "air": 0
             },
             "starting_traits": [
-                "undead_nature"
+                "undead"
             ]
         },
         "skeleton_golden": {
@@ -1386,7 +1380,7 @@
                 "air": 0
             },
             "starting_traits": [
-                "undead_nature"
+                "undead"
             ]
         },
         "skeleton_iron": {
@@ -1433,7 +1427,8 @@
                 "air": 0
             },
             "starting_traits": [
-                "undead_nature"
+                "undead",
+                "armored"
             ]
         },
         "skeleton_turquoise": {
@@ -1480,7 +1475,7 @@
                 "air": 0
             },
             "starting_traits": [
-                "undead_nature"
+                "undead"
             ]
         },
         "bhramara": {
