@@ -54,7 +54,7 @@ func refresh_display() -> void:
 
 func update_header() -> void:
 	name_label.text = current_character.name
-	race_label.text = current_character.race.capitalize()
+	race_label.text = current_character.get("birth", "").capitalize()
 	background_label.text = current_character.background.capitalize()
 	xp_total_label.text = "XP Total: " + str(current_character.get("xp_earned", current_character.xp))
 	xp_free_label.text = "Free XP: " + str(current_character.xp)

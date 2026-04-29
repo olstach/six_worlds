@@ -8,7 +8,7 @@ extends Node
 ## - Manages meta-progression (affinities, persistent upgrades)
 
 signal karma_changed(realm: String, new_value: int)
-signal reincarnation_determined(target_realm: String, target_race: String)
+signal reincarnation_determined(target_realm: String, target_birth: String)
 
 # Hidden karma scores (player doesn't see exact numbers)
 var karma_scores: Dictionary = {
@@ -26,8 +26,8 @@ const KARMA_THRESHOLD: int = 100
 # Cached background data from races.json (loaded on first use)
 var _background_cache: Dictionary = {}
 
-# Race pools for each realm
-const REALM_RACES: Dictionary = {
+# Birth pools for each realm
+const REALM_BIRTHS: Dictionary = {
 	"hell": ["red_devil", "blue_devil", "green_devil", "yellow_devil", "white_devil", "black_devil"],
 	"hungry_ghost": ["rolang", "skeleton", "skeleton_silver", "skeleton_copper", "skeleton_golden", "skeleton_iron", "skeleton_turquoise", "dralha", "gyelpo", "dre", "vetala", "shaza", "yidag"],
 	"animal": ["naga", "bee", "yaksha"],
@@ -36,8 +36,8 @@ const REALM_RACES: Dictionary = {
 	"god": ["gandharva", "apsara", "planetary_deity"]
 }
 
-# Race rarity weights (higher = more common)
-const RACE_WEIGHTS: Dictionary = {
+# Birth rarity weights (higher = more common)
+const BIRTH_WEIGHTS: Dictionary = {
 	# Hell realm
 	"red_devil": 30,
 	"blue_devil": 30,
@@ -124,54 +124,54 @@ func determine_reincarnation_realm() -> String:
 
 	return highest_realm
 
-## Select a random race from the reincarnation realm
-func select_race_from_realm(realm: String) -> String:
-	if realm not in REALM_RACES:
+## Select a random birth from the reincarnation realm
+func select_birth_from_realm(realm: String) -> String:
+	if realm not in REALM_BIRTHS:
 		return "human"
-	
-	var available_races = REALM_RACES[realm]
+
+	var available_births = REALM_BIRTHS[realm]
 	var weights: Array[int] = []
-	
+
 	# Build weight array
-	for race in available_races:
-		weights.append(RACE_WEIGHTS.get(race, 10))
-	
+	for birth in available_births:
+		weights.append(BIRTH_WEIGHTS.get(birth, 10))
+
 	# Weighted random selection
 	var total_weight = 0
 	for w in weights:
 		total_weight += w
-	
+
 	var roll = randi() % total_weight
 	var cumulative = 0
-	
-	for i in range(available_races.size()):
+
+	for i in range(available_births.size()):
 		cumulative += weights[i]
 		if roll < cumulative:
-			return available_races[i]
-	
-	return available_races[0]  # Fallback
+			return available_births[i]
+
+	return available_births[0]  # Fallback
 
 ## Handle full reincarnation process
 func reincarnate() -> Dictionary:
 	var target_realm = determine_reincarnation_realm()
-	var target_race = select_race_from_realm(target_realm)
-	var target_background = select_random_background(target_race)
-	
-	reincarnation_determined.emit(target_realm, target_race)
-	
+	var target_birth = select_birth_from_realm(target_realm)
+	var target_background = select_random_background(target_birth)
+
+	reincarnation_determined.emit(target_realm, target_birth)
+
 	# Reset karma slightly (fresh start, but patterns persist)
 	reset_karma_partially()
-	
+
 	return {
 		"realm": target_realm,
-		"race": target_race,
+		"birth": target_birth,
 		"background": target_background
 	}
 
-## Select random background appropriate for race, weighted by background data.
+## Select random background appropriate for birth, weighted by background data.
 ## Loads from races.json — backgrounds with an empty available_races list are universal;
-## otherwise the race must be in the whitelist.
-func select_random_background(race: String) -> String:
+## otherwise the birth must be in the whitelist.
+func select_random_background(birth: String) -> String:
 	if _background_cache.is_empty():
 		var file = FileAccess.open("res://resources/data/races.json", FileAccess.READ)
 		if file:
@@ -186,7 +186,7 @@ func select_random_background(race: String) -> String:
 			continue
 		var bg: Dictionary = _background_cache[bg_id]
 		var allowed: Array = bg.get("available_races", [])
-		if allowed.is_empty() or race in allowed:
+		if allowed.is_empty() or birth in allowed:
 			pool.append(bg_id)
 			weights.append(float(bg.get("weight", 1)))
 	if pool.is_empty():

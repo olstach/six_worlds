@@ -367,21 +367,21 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	# then biological devils, then elementals (no biology).
 	var tags = archetype.get("tags", [])
 	var is_boss = "boss" in archetype.get("roles", [])
-	var race: String
+	var enemy_type: String
 	if "imp" in tags:
-		race = "imp"
+		enemy_type = "imp"
 	elif "undead" in tags and "incorporeal" in tags:
-		race = "shade"
+		enemy_type = "shade"
 	elif "biological" in tags or "devil" in tags:
-		race = "devil"
+		enemy_type = "devil"
 	else:
-		race = "elemental"
+		enemy_type = "elemental"
 
 	var enemy_name: String
 	if is_boss or name_parts.is_empty():
 		enemy_name = archetype.get("name", "Enemy")
 	else:
-		enemy_name = generate_enemy_name(realm, tags, region, race)
+		enemy_name = generate_enemy_name(realm, tags, region, enemy_type)
 
 	# For bare-handed enemies, name the claws after the enemy.
 	# Generated weapons already have proper names (e.g. "Fine Obsidian Sword") — keep them.

@@ -206,11 +206,11 @@ func _run_bardo_sequence() -> void:
 
 	# Step 4: Show race
 	await get_tree().create_timer(RESULT_STEP_DELAY).timeout
-	var race_id = _reincarnation_result.get("race", "human")
-	var race_data = CharacterSystem.get_race_data(race_id)
-	var race_name = race_data.get("name", race_id.replace("_", " ").capitalize())
-	var race_desc = race_data.get("description", "")
-	_add_result_line("As a...", race_name, realm_info.color.lightened(0.2), race_desc)
+	var birth_id = _reincarnation_result.get("birth", "human")
+	var birth_data = CharacterSystem.get_birth_data(birth_id)
+	var birth_name = birth_data.get("name", birth_id.replace("_", " ").capitalize())
+	var birth_desc = birth_data.get("description", "")
+	_add_result_line("As a...", birth_name, realm_info.color.lightened(0.2), birth_desc)
 
 	# Step 5: Show background
 	await get_tree().create_timer(RESULT_STEP_DELAY).timeout
@@ -299,14 +299,14 @@ func _fade_and_goto(scene_path: String) -> void:
 ## Player clicks "Begin New Life" — create new character and start new run
 func _on_begin_new_life() -> void:
 	var realm = _reincarnation_result.get("realm", "hell")
-	var race = _reincarnation_result.get("race", "human")
+	var birth = _reincarnation_result.get("birth", "human")
 	var background = _reincarnation_result.get("background", "wanderer")
 
 	# Generate a name for the new character
-	var new_name = _generate_name(race, realm)
+	var new_name = _generate_name(birth, realm)
 
 	# Create the new character, preserving persistent progression
-	CharacterSystem.start_new_life(new_name, race, background)
+	CharacterSystem.start_new_life(new_name, birth, background)
 
 	# Reset game state for new run
 	GameState.is_party_wiped = false
@@ -325,9 +325,9 @@ func _on_begin_new_life() -> void:
 	_fade_and_goto("res://scenes/overworld/overworld.tscn")
 
 
-## Generate a thematic name based on race/realm
+## Generate a thematic name based on birth/realm
 ## These are simple placeholders — can be expanded with name lists later
-func _generate_name(race: String, realm: String) -> String:
+func _generate_name(birth: String, realm: String) -> String:
 	var hell_names = ["Mara", "Yama", "Rahu", "Kali", "Rudra", "Agni", "Vetala"]
 	# Hungry ghost names draw from Tibetan preta lore and Sanskrit sources.
 	# Sub-races covered: yidag (pretas proper), rolang (reanimated corpses),

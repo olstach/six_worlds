@@ -359,11 +359,11 @@ func _update_header(character: Dictionary) -> void:
 		else:
 			emotion_label.visible = false
 
-	var race_id = character.get("race", "")
-	var race_data = CharacterSystem.get_race_data(race_id)
-	race_value.text = race_data.get("name", race_id.capitalize().replace("_", " "))
+	var birth_id = character.get("birth", "")
+	var birth_data = CharacterSystem.get_birth_data(birth_id)
+	race_value.text = birth_data.get("name", birth_id.capitalize().replace("_", " "))
 	race_value.mouse_filter = Control.MOUSE_FILTER_STOP
-	race_value.tooltip_text = _build_race_tooltip(race_id)
+	race_value.tooltip_text = _build_birth_tooltip(birth_id)
 
 	var bg_id = character.get("background", "")
 	var bg_data = CharacterSystem.get_background_data(bg_id)
@@ -379,8 +379,8 @@ func _update_header(character: Dictionary) -> void:
 		xp_value.text = str(character.get("xp", 0))
 
 
-func _build_race_tooltip(race_id: String) -> String:
-	var data = CharacterSystem.get_race_data(race_id)
+func _build_birth_tooltip(birth_id: String) -> String:
+	var data = CharacterSystem.get_birth_data(birth_id)
 	if data.is_empty():
 		return ""
 	var lines: Array[String] = []

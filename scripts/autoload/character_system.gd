@@ -19,8 +19,8 @@ signal perk_selection_requested(character_data: Dictionary, perks: Array)
 var party: Array[Dictionary] = []
 var max_party_size: int = 8
 
-# Race and background data loaded from JSON
-var _race_data: Dictionary = {}
+# Birth and background data loaded from JSON
+var _birth_data: Dictionary = {}
 var _background_data: Dictionary = {}
 
 # Spell database for random starting spell selection
@@ -41,7 +41,7 @@ const SKILL_MAX_LEVEL: int = 10
 # Base character template
 const BASE_CHARACTER: Dictionary = {
 	"name": "Unnamed",
-	"race": "human",
+	"birth": "human",
 	"background": "wanderer",
 	"xp": 50,  # Starting XP — enough to pick up two skills at level 2 or dabble in several
 	"xp_earned": 50,  # Lifetime total XP earned (never decreases)
@@ -182,14 +182,14 @@ const BASE_CHARACTER: Dictionary = {
 }
 
 func _ready() -> void:
-	_load_race_data()
+	_load_birth_data()
 	_load_spell_database()
-	print("CharacterSystem initialized with ", _race_data.size(), " races, ",
+	print("CharacterSystem initialized with ", _birth_data.size(), " births, ",
 		_background_data.size(), " backgrounds, ", _spell_database.size(), " spells")
 
 
-## Load race and background definitions from JSON
-func _load_race_data() -> void:
+## Load birth and background definitions from JSON
+func _load_birth_data() -> void:
 	var file_path = "res://resources/data/races.json"
 	if not FileAccess.file_exists(file_path):
 		push_warning("CharacterSystem: races.json not found")
@@ -209,7 +209,7 @@ func _load_race_data() -> void:
 		return
 
 	var data = json.get_data()
-	_race_data = data.get("races", {})
+	_birth_data = data.get("races", {})
 	_background_data = data.get("backgrounds", {})
 
 
@@ -303,9 +303,9 @@ func pick_random_spell_for_party(school: String, level: int) -> String:
 	return candidates[0]
 
 
-## Get race data dictionary for a given race ID
-func get_race_data(race_id: String) -> Dictionary:
-	return _race_data.get(race_id, {})
+## Get birth data dictionary for a given birth ID
+func get_birth_data(birth_id: String) -> Dictionary:
+	return _birth_data.get(birth_id, {})
 
 
 ## Get background data dictionary for a given background ID
@@ -313,14 +313,14 @@ func get_background_data(background_id: String) -> Dictionary:
 	return _background_data.get(background_id, {})
 
 ## Create the player character
-func create_player_character(char_name: String, race: String, background: String) -> void:
+func create_player_character(char_name: String, birth: String, background: String) -> void:
 	var character = BASE_CHARACTER.duplicate(true)
 	character.name = char_name
-	character.race = race
+	character.birth = birth
 	character.background = background
-	
-	# Apply race modifiers (will expand with race data)
-	apply_race_modifiers(character, race)
+
+	# Apply birth modifiers
+	apply_birth_modifiers(character, birth)
 	
 	# Apply background starting skills (will expand with background data)
 	apply_background_skills(character, background)
@@ -343,7 +343,7 @@ func create_player_character(char_name: String, race: String, background: String
 ## Start a new life after reincarnation.
 ## Preserves persistent data (affinities, upgrades) from the old character.
 ## Clears party, inventory, gold and creates a fresh character.
-func start_new_life(char_name: String, race: String, background: String) -> void:
+func start_new_life(char_name: String, birth: String, background: String) -> void:
 	# Save persistent data from old player before wiping
 	var old_player = get_player()
 	var old_affinities: Array = []
@@ -357,7 +357,7 @@ func start_new_life(char_name: String, race: String, background: String) -> void
 	ItemSystem.clear_inventory()
 
 	# Create the new character
-	create_player_character(char_name, race, background)
+	create_player_character(char_name, birth, background)
 
 	# Restore persistent progression
 	var new_player = get_player()
@@ -366,9 +366,9 @@ func start_new_life(char_name: String, race: String, background: String) -> void
 
 
 
-## Apply racial attribute modifiers from races.json data
-func apply_race_modifiers(character: Dictionary, race: String) -> void:
-	var data = get_race_data(race)
+## Apply birth attribute modifiers from races.json data
+func apply_birth_modifiers(character: Dictionary, birth: String) -> void:
+	var data = get_birth_data(birth)
 	if data.is_empty():
 		return
 

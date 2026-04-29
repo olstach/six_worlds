@@ -709,10 +709,10 @@ func _create_companion_panel(companion_id: String, def: Dictionary) -> void:
 	name_row.add_child(cost_label)
 
 	# Race · Background identity line
-	var race_name: String = def.get("race", "").replace("_", " ").capitalize()
+	var birth_name: String = def.get("birth", "").replace("_", " ").capitalize()
 	var bg_name: String = def.get("background", "").replace("_", " ").capitalize()
 	var identity_label = Label.new()
-	identity_label.text = "%s · %s" % [race_name, bg_name]
+	identity_label.text = "%s · %s" % [birth_name, bg_name]
 	identity_label.add_theme_font_size_override("font_size", 12)
 	identity_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.7))
 	vbox.add_child(identity_label)

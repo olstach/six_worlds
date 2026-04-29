@@ -4427,11 +4427,11 @@ func _show_examine_window(unit: CombatUnit) -> void:
 	var flavor = ""
 	if is_player:
 		# Player: show race description
-		var race_id = char_data.get("race", "")
-		if race_id != "":
+		var birth_id = char_data.get("birth", "")
+		if birth_id != "":
 			var races_data = _get_races_data()
-			var race_def = races_data.get(race_id, {})
-			flavor = race_def.get("description", "")
+			var birth_def = races_data.get(birth_id, {})
+			flavor = birth_def.get("description", "")
 		var bg_id = char_data.get("background", "")
 		if bg_id != "" and flavor == "":
 			flavor = bg_id.replace("_", " ").capitalize()
