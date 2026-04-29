@@ -1,15 +1,18 @@
 {
   "_comment": "Trait definitions. category values: racial, habitat, role, unique, physical, personality, behavioral, acquired. inborn=true means present at creation (racial traits, congenital quirks). purgeable_by lists skills that can remove the trait via try_purge().",
-
   "strong": {
     "name": "Strong",
     "description": "An unusually powerful build.",
     "category": "physical",
     "inborn": true,
-    "stat_modifiers": { "strength": 1 },
+    "stat_modifiers": {
+      "strength": 1
+    },
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["strong"],
+    "event_tags": [
+      "strong"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -18,10 +21,14 @@
     "description": "A fragile constitution, easily tired and slow to heal.",
     "category": "physical",
     "inborn": true,
-    "stat_modifiers": { "constitution": -1 },
+    "stat_modifiers": {
+      "constitution": -1
+    },
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["frail"],
+    "event_tags": [
+      "frail"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -30,10 +37,14 @@
     "description": "An awkward gait that hampers quick movement.",
     "category": "physical",
     "inborn": true,
-    "stat_modifiers": { "finesse": -1 },
+    "stat_modifiers": {
+      "finesse": -1
+    },
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["clubfooted"],
+    "event_tags": [
+      "clubfooted"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -42,10 +53,14 @@
     "description": "Naturally fast reflexes and light feet.",
     "category": "physical",
     "inborn": true,
-    "stat_modifiers": { "finesse": 1 },
+    "stat_modifiers": {
+      "finesse": 1
+    },
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["quick"],
+    "event_tags": [
+      "quick"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -54,10 +69,14 @@
     "description": "Nothing escapes their notice.",
     "category": "physical",
     "inborn": true,
-    "stat_modifiers": { "awareness": 1 },
+    "stat_modifiers": {
+      "awareness": 1
+    },
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["sharp_eyed"],
+    "event_tags": [
+      "sharp_eyed"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -66,10 +85,14 @@
     "description": "Misses things others catch; struggles in the dark.",
     "category": "physical",
     "inborn": true,
-    "stat_modifiers": { "awareness": -1 },
+    "stat_modifiers": {
+      "awareness": -1
+    },
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["hard_of_hearing"],
+    "event_tags": [
+      "hard_of_hearing"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -81,7 +104,10 @@
     "stat_modifiers": {},
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["iron_stomach", "food"],
+    "event_tags": [
+      "iron_stomach",
+      "food"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -90,10 +116,16 @@
     "description": "A pleasing appearance that opens doors.",
     "category": "physical",
     "inborn": true,
-    "stat_modifiers": { "charm": 1 },
-    "pressure_modifiers": { "air": 5 },
+    "stat_modifiers": {
+      "charm": 1
+    },
+    "pressure_modifiers": {
+      "air": 5
+    },
     "skill_modifiers": {},
-    "event_tags": ["attractive"],
+    "event_tags": [
+      "attractive"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -102,10 +134,16 @@
     "description": "Never fully at rest; always half-alert.",
     "category": "physical",
     "inborn": true,
-    "stat_modifiers": { "awareness": 1 },
-    "pressure_modifiers": { "water": 5 },
+    "stat_modifiers": {
+      "awareness": 1
+    },
+    "pressure_modifiers": {
+      "water": 5
+    },
     "skill_modifiers": {},
-    "event_tags": ["light_sleeper"],
+    "event_tags": [
+      "light_sleeper"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -117,7 +155,9 @@
     "stat_modifiers": {},
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["night_owl"],
+    "event_tags": [
+      "night_owl"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -126,11 +166,20 @@
     "description": "Quick to anger, slow to forgive.",
     "category": "personality",
     "inborn": true,
-    "stat_modifiers": { "charm": -1 },
-    "pressure_modifiers": { "fire": 15 },
+    "stat_modifiers": {
+      "charm": -1
+    },
+    "pressure_modifiers": {
+      "fire": 15
+    },
     "skill_modifiers": {},
-    "event_tags": ["hot_tempered"],
-    "purgeable_by": ["yoga", "ritual"],
+    "event_tags": [
+      "hot_tempered"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
     "purge_difficulty": 3
   },
   "patient": {
@@ -139,9 +188,13 @@
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": { "fire": -10 },
+    "pressure_modifiers": {
+      "fire": -10
+    },
     "skill_modifiers": {},
-    "event_tags": ["patient"],
+    "event_tags": [
+      "patient"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -151,9 +204,13 @@
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": { "water": -10 },
+    "pressure_modifiers": {
+      "water": -10
+    },
     "skill_modifiers": {},
-    "event_tags": ["brave"],
+    "event_tags": [
+      "brave"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -162,11 +219,20 @@
     "description": "Easily frightened; prefers to avoid confrontation.",
     "category": "personality",
     "inborn": true,
-    "stat_modifiers": { "charm": -1 },
-    "pressure_modifiers": { "water": 15 },
+    "stat_modifiers": {
+      "charm": -1
+    },
+    "pressure_modifiers": {
+      "water": 15
+    },
     "skill_modifiers": {},
-    "event_tags": ["timid"],
-    "purgeable_by": ["yoga", "ritual"],
+    "event_tags": [
+      "timid"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
     "purge_difficulty": 3
   },
   "curious": {
@@ -176,8 +242,12 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {},
-    "skill_modifiers": { "learning": 1 },
-    "event_tags": ["curious"],
+    "skill_modifiers": {
+      "learning": 1
+    },
+    "event_tags": [
+      "curious"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -189,8 +259,12 @@
     "stat_modifiers": {},
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["stubborn"],
-    "purgeable_by": ["yoga"],
+    "event_tags": [
+      "stubborn"
+    ],
+    "purgeable_by": [
+      "yoga"
+    ],
     "purge_difficulty": 4
   },
   "trusting": {
@@ -198,10 +272,15 @@
     "description": "Extends goodwill freely, perhaps too freely.",
     "category": "personality",
     "inborn": true,
-    "stat_modifiers": { "charm": 1, "awareness": -1 },
+    "stat_modifiers": {
+      "charm": 1,
+      "awareness": -1
+    },
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["trusting"],
+    "event_tags": [
+      "trusting"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -210,11 +289,18 @@
     "description": "Trusts no one at face value.",
     "category": "personality",
     "inborn": true,
-    "stat_modifiers": { "charm": -1, "awareness": 1 },
+    "stat_modifiers": {
+      "charm": -1,
+      "awareness": 1
+    },
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["suspicious"],
-    "purgeable_by": ["yoga"],
+    "event_tags": [
+      "suspicious"
+    ],
+    "purgeable_by": [
+      "yoga"
+    ],
     "purge_difficulty": 3
   },
   "greedy": {
@@ -223,10 +309,19 @@
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": { "earth": 10 },
-    "skill_modifiers": { "trade": 1 },
-    "event_tags": ["greedy"],
-    "purgeable_by": ["yoga", "ritual"],
+    "pressure_modifiers": {
+      "earth": 10
+    },
+    "skill_modifiers": {
+      "trade": 1
+    },
+    "event_tags": [
+      "greedy"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
     "purge_difficulty": 3
   },
   "generous": {
@@ -234,10 +329,16 @@
     "description": "Gives freely, expects little in return.",
     "category": "personality",
     "inborn": true,
-    "stat_modifiers": { "charm": 1 },
-    "pressure_modifiers": { "earth": -5 },
+    "stat_modifiers": {
+      "charm": 1
+    },
+    "pressure_modifiers": {
+      "earth": -5
+    },
     "skill_modifiers": {},
-    "event_tags": ["generous"],
+    "event_tags": [
+      "generous"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -247,10 +348,17 @@
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": { "water": 10 },
+    "pressure_modifiers": {
+      "water": 10
+    },
     "skill_modifiers": {},
-    "event_tags": ["melancholic"],
-    "purgeable_by": ["yoga", "ritual"],
+    "event_tags": [
+      "melancholic"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
     "purge_difficulty": 2
   },
   "vain": {
@@ -258,11 +366,20 @@
     "description": "Takes great pride in their appearance and reputation.",
     "category": "personality",
     "inborn": true,
-    "stat_modifiers": { "charm": 1 },
-    "pressure_modifiers": { "air": 10 },
+    "stat_modifiers": {
+      "charm": 1
+    },
+    "pressure_modifiers": {
+      "air": 10
+    },
     "skill_modifiers": {},
-    "event_tags": ["vain"],
-    "purgeable_by": ["yoga", "ritual"],
+    "event_tags": [
+      "vain"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
     "purge_difficulty": 3
   },
   "forgetful": {
@@ -272,8 +389,12 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {},
-    "skill_modifiers": { "learning": -1 },
-    "event_tags": ["forgetful"],
+    "skill_modifiers": {
+      "learning": -1
+    },
+    "event_tags": [
+      "forgetful"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -284,8 +405,12 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {},
-    "skill_modifiers": { "learning": 1 },
-    "event_tags": ["sharp_memory"],
+    "skill_modifiers": {
+      "learning": 1
+    },
+    "event_tags": [
+      "sharp_memory"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -297,7 +422,10 @@
     "stat_modifiers": {},
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["gourmand", "food"],
+    "event_tags": [
+      "gourmand",
+      "food"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -309,7 +437,10 @@
     "stat_modifiers": {},
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["bird_lover", "animals"],
+    "event_tags": [
+      "bird_lover",
+      "animals"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -318,11 +449,17 @@
     "description": "Cannot resist a wager. The rush of chance is irresistible.",
     "category": "behavioral",
     "inborn": true,
-    "stat_modifiers": { "luck": 1 },
+    "stat_modifiers": {
+      "luck": 1
+    },
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["gambler"],
-    "purgeable_by": ["yoga"],
+    "event_tags": [
+      "gambler"
+    ],
+    "purgeable_by": [
+      "yoga"
+    ],
     "purge_difficulty": 3
   },
   "storyteller": {
@@ -332,8 +469,12 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {},
-    "skill_modifiers": { "persuasion": 1 },
-    "event_tags": ["storyteller"],
+    "skill_modifiers": {
+      "persuasion": 1
+    },
+    "event_tags": [
+      "storyteller"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -345,7 +486,9 @@
     "stat_modifiers": {},
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["collector"],
+    "event_tags": [
+      "collector"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -355,10 +498,17 @@
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": { "space": 5 },
+    "pressure_modifiers": {
+      "space": 5
+    },
     "skill_modifiers": {},
-    "event_tags": ["superstitious"],
-    "purgeable_by": ["yoga", "ritual"],
+    "event_tags": [
+      "superstitious"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
     "purge_difficulty": 2
   },
   "night_drinker": {
@@ -369,8 +519,12 @@
     "stat_modifiers": {},
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["night_drinker"],
-    "purgeable_by": ["yoga"],
+    "event_tags": [
+      "night_drinker"
+    ],
+    "purgeable_by": [
+      "yoga"
+    ],
     "purge_difficulty": 3
   },
   "paranoid": {
@@ -378,11 +532,22 @@
     "description": "Always watching. Always expecting the worst.",
     "category": "behavioral",
     "inborn": false,
-    "stat_modifiers": { "awareness": 1, "charm": -1 },
-    "pressure_modifiers": { "space": 10 },
+    "stat_modifiers": {
+      "awareness": 1,
+      "charm": -1
+    },
+    "pressure_modifiers": {
+      "space": 10
+    },
     "skill_modifiers": {},
-    "event_tags": ["paranoid", "suspicious"],
-    "purgeable_by": ["yoga", "ritual"],
+    "event_tags": [
+      "paranoid",
+      "suspicious"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
     "purge_difficulty": 4
   },
   "dreamer": {
@@ -390,10 +555,16 @@
     "description": "Lives partly elsewhere; visions come more readily.",
     "category": "behavioral",
     "inborn": true,
-    "stat_modifiers": { "focus": 1 },
-    "pressure_modifiers": { "space": -5 },
+    "stat_modifiers": {
+      "focus": 1
+    },
+    "pressure_modifiers": {
+      "space": -5
+    },
     "skill_modifiers": {},
-    "event_tags": ["dreamer"],
+    "event_tags": [
+      "dreamer"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -405,7 +576,9 @@
     "stat_modifiers": {},
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["fastidious"],
+    "event_tags": [
+      "fastidious"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -415,10 +588,18 @@
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
-    "pressure_modifiers": { "water": 15, "space": 5 },
+    "pressure_modifiers": {
+      "water": 15,
+      "space": 5
+    },
     "skill_modifiers": {},
-    "event_tags": ["haunted"],
-    "purgeable_by": ["yoga", "ritual"],
+    "event_tags": [
+      "haunted"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
     "purge_difficulty": 4
   },
   "war_hardened": {
@@ -426,11 +607,20 @@
     "description": "Violence no longer shocks. The battlefield feels like home.",
     "category": "acquired",
     "inborn": false,
-    "stat_modifiers": { "constitution": 1 },
-    "pressure_modifiers": { "water": -10, "fire": 10 },
+    "stat_modifiers": {
+      "constitution": 1
+    },
+    "pressure_modifiers": {
+      "water": -10,
+      "fire": 10
+    },
     "skill_modifiers": {},
-    "event_tags": ["war_hardened"],
-    "purgeable_by": ["yoga"],
+    "event_tags": [
+      "war_hardened"
+    ],
+    "purgeable_by": [
+      "yoga"
+    ],
     "purge_difficulty": 4
   },
   "grief_struck": {
@@ -439,10 +629,17 @@
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
-    "pressure_modifiers": { "water": 20 },
+    "pressure_modifiers": {
+      "water": 20
+    },
     "skill_modifiers": {},
-    "event_tags": ["grief_struck"],
-    "purgeable_by": ["yoga", "ritual"],
+    "event_tags": [
+      "grief_struck"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
     "purge_difficulty": 3
   },
   "blood_handed": {
@@ -451,10 +648,17 @@
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
-    "pressure_modifiers": { "fire": 10, "earth": -5 },
+    "pressure_modifiers": {
+      "fire": 10,
+      "earth": -5
+    },
     "skill_modifiers": {},
-    "event_tags": ["blood_handed"],
-    "purgeable_by": ["ritual"],
+    "event_tags": [
+      "blood_handed"
+    ],
+    "purgeable_by": [
+      "ritual"
+    ],
     "purge_difficulty": 5
   },
   "oath_breaker": {
@@ -462,11 +666,19 @@
     "description": "Has broken a solemn vow. The weight of it is visible.",
     "category": "acquired",
     "inborn": false,
-    "stat_modifiers": { "charm": -2 },
-    "pressure_modifiers": { "earth": -10 },
+    "stat_modifiers": {
+      "charm": -2
+    },
+    "pressure_modifiers": {
+      "earth": -10
+    },
     "skill_modifiers": {},
-    "event_tags": ["oath_breaker"],
-    "purgeable_by": ["ritual"],
+    "event_tags": [
+      "oath_breaker"
+    ],
+    "purgeable_by": [
+      "ritual"
+    ],
     "purge_difficulty": 5
   },
   "devout": {
@@ -476,8 +688,13 @@
     "inborn": false,
     "stat_modifiers": {},
     "pressure_modifiers": {},
-    "skill_modifiers": { "yoga": 1, "ritual": 1 },
-    "event_tags": ["devout"],
+    "skill_modifiers": {
+      "yoga": 1,
+      "ritual": 1
+    },
+    "event_tags": [
+      "devout"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -488,9 +705,15 @@
     "inborn": false,
     "stat_modifiers": {},
     "pressure_modifiers": {},
-    "skill_modifiers": { "ritual": -1 },
-    "event_tags": ["lapsed"],
-    "purgeable_by": ["ritual"],
+    "skill_modifiers": {
+      "ritual": -1
+    },
+    "event_tags": [
+      "lapsed"
+    ],
+    "purgeable_by": [
+      "ritual"
+    ],
     "purge_difficulty": 3
   },
   "composed": {
@@ -499,9 +722,14 @@
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
-    "pressure_modifiers": { "fire": -5, "water": -5 },
+    "pressure_modifiers": {
+      "fire": -5,
+      "water": -5
+    },
     "skill_modifiers": {},
-    "event_tags": ["composed"],
+    "event_tags": [
+      "composed"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -510,10 +738,17 @@
     "description": "A rare flash of clarity that has left a permanent mark.",
     "category": "acquired",
     "inborn": false,
-    "stat_modifiers": { "focus": 1 },
-    "pressure_modifiers": { "space": -10, "fire": -5 },
+    "stat_modifiers": {
+      "focus": 1
+    },
+    "pressure_modifiers": {
+      "space": -10,
+      "fire": -5
+    },
     "skill_modifiers": {},
-    "event_tags": ["enlightened"],
+    "event_tags": [
+      "enlightened"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -523,24 +758,35 @@
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
-    "pressure_modifiers": { "earth": -10, "water": 10 },
+    "pressure_modifiers": {
+      "earth": -10,
+      "water": 10
+    },
     "skill_modifiers": {},
-    "event_tags": ["addiction"],
-    "purgeable_by": ["yoga", "ritual"],
+    "event_tags": [
+      "addiction"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
     "purge_difficulty": 4
   },
-
   "_comment_racial": "--- RACIAL TRAITS — applied automatically via race starting_traits ---",
-
   "hell_born": {
     "name": "Hell-born",
     "description": "Forged in the fires and torments of hell. Instinctively at home in its violence and hierarchy.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": { "fire": -5 },
+    "pressure_modifiers": {
+      "fire": -5
+    },
     "skill_modifiers": {},
-    "event_tags": ["hell_born", "infernal"],
+    "event_tags": [
+      "hell_born",
+      "infernal"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -550,9 +796,14 @@
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": { "water": -5 },
+    "pressure_modifiers": {
+      "water": -5
+    },
     "skill_modifiers": {},
-    "event_tags": ["undead", "undead_nature"],
+    "event_tags": [
+      "undead",
+      "undead_nature"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -564,7 +815,10 @@
     "stat_modifiers": {},
     "pressure_modifiers": {},
     "skill_modifiers": {},
-    "event_tags": ["spirit", "spirit_nature"],
+    "event_tags": [
+      "spirit",
+      "spirit_nature"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -574,10 +828,227 @@
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": { "water": -5 },
+    "pressure_modifiers": {
+      "water": -5
+    },
     "skill_modifiers": {},
-    "event_tags": ["serpentine", "aquatic"],
+    "event_tags": [
+      "serpentine",
+      "aquatic",
+      "oceanic"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
+  },
+  "_comment_animal_realm": "--- ANIMAL REALM TRAITS — habitat and archetype traits, applied via starting_traits ---",
+  "aquatic": {
+    "name": "Aquatic",
+    "description": "Born of the water. Breathes and moves freely in aquatic environments. If the entire party shares this trait, the party may traverse water tiles without penalty in both combat and overworld.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": -5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "aquatic",
+      "oceanic",
+      "water_breather"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "todo": [
+      "water_tile_movement: grant party-wide water traversal when all members have aquatic"
+    ]
+  },
+  "flying": {
+    "name": "Flying",
+    "description": "Sustained winged flight. +1 Finesse from aerial agility. If the entire party shares this trait, the party may traverse air tiles and elevated terrain in combat and overworld.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "finesse": 1
+    },
+    "pressure_modifiers": {
+      "air": -5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "skyborn",
+      "avian",
+      "flying"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "todo": [
+      "air_tile_movement: grant party-wide air traversal when all members have flying"
+    ]
+  },
+  "armored": {
+    "name": "Armored",
+    "description": "Dense natural plating — chitin, thick hide, or bone — makes this creature hard to put down. +2 Constitution, -1 Finesse.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "constitution": 2,
+      "finesse": -1
+    },
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "armored",
+      "heavy_form"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "predator_grace": {
+    "name": "Predator's Grace",
+    "description": "The natural speed and precision of a born hunter. +2 Finesse, -1 Constitution.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "finesse": 2,
+      "constitution": -1
+    },
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "swift",
+      "predator_grace"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "colony_mind": {
+    "name": "Colony Mind",
+    "description": "Born into a collective, this creature is never truly alone. Shared purpose dampens individual anxiety. All psychological pressures reduced by 5.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "fire": -5,
+      "water": -5,
+      "earth": -5,
+      "air": -5,
+      "space": -5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "colony_mind",
+      "collective"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "bulky": {
+    "name": "Bulky",
+    "description": "A massive build that weathers punishment others could not survive. +1 Constitution.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "constitution": 1
+    },
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "bulky",
+      "bear_kin"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "venom_ward": {
+    "name": "Venom Ward",
+    "description": "Generations of hunting venomous prey have made this creature resistant to poisons. 50% reduction to poison damage.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "resistances": {
+      "poison": 50
+    },
+    "event_tags": [
+      "venom_ward",
+      "venom_immune"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "todo": [
+      "poison_resistance: apply 50% reduction when combat system handles poison damage"
+    ]
+  },
+  "nimble_mischief": {
+    "name": "Nimble Mischief",
+    "description": "Quick hands and a quicker mind. +1 Guile.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {
+      "guile": 1
+    },
+    "event_tags": [
+      "nimble_mischief",
+      "trickster"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "taloned_strike": {
+    "name": "Taloned Strike",
+    "description": "Natural weapons of uncommon sharpness. +1 Unarmed.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {
+      "unarmed": 1
+    },
+    "event_tags": [
+      "taloned_strike",
+      "raptor_kin"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "swift_wing": {
+    "name": "Swift Wing",
+    "description": "Exceptional speed even among flying creatures. +1 Finesse.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "finesse": 1
+    },
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "swift_wing",
+      "swift_flier"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "night_vision": {
+    "name": "Night Vision",
+    "description": "Sees equally in darkness and light, perceiving what others miss. +1 Awareness. No penalty in darkness.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "awareness": 1
+    },
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "night_vision",
+      "owl_kin"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "todo": [
+      "darkness_immunity: no darkness penalty in combat when darkness system is implemented"
+    ]
   }
 }
