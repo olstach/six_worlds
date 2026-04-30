@@ -162,6 +162,11 @@ func _ready() -> void:
 	# Connect companion overflow signal to show mastery popup
 	CompanionSystem.companion_overflow.connect(_on_companion_overflow)
 
+	# Connect PsychologySystem signals so emotional crises surface as toasts
+	if PsychologySystem:
+		PsychologySystem.autonomous_event_triggered.connect(_on_psychology_crisis)
+		PsychologySystem.emotional_crisis_log.connect(_on_emotional_crisis_log)
+
 	# Connect char sheet button and visibility sync
 	char_sheet_button.pressed.connect(func(): _open_char_sheet_to_tab(0))
 	equipment_button.pressed.connect(func(): _open_char_sheet_to_tab(1))
@@ -1323,6 +1328,23 @@ func _sample_terrain_context(center: Vector2i) -> Dictionary:
 		"counts": terrain_counts,
 		"region": MapManager.get_region_at(center)
 	}
+
+
+## Called when a character's pressure crosses ±75 and triggers an autonomous emotional event.
+func _on_psychology_crisis(character: Dictionary, element: String, polarity: String) -> void:
+	var char_name: String = character.get("name", "?")
+	var label: String = PsychologySystem.get_emotional_label(character, element)
+	var msg: String
+	if polarity == "dark":
+		msg = "%s is overwhelmed — %s [%s crisis]" % [char_name, label, element.capitalize()]
+	else:
+		msg = "%s achieves clarity — %s [%s]" % [char_name, label, element.capitalize()]
+	_show_toast(msg)
+
+
+## Called when a quirk reaction fires (e.g. phobia triggered, trauma response).
+func _on_emotional_crisis_log(character_name: String, message: String) -> void:
+	_show_toast(message)
 
 
 func _show_toast(msg: String) -> void:

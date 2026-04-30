@@ -912,6 +912,14 @@ func update_derived_stats(character: Dictionary) -> void:
 		derived.current_hp = min(derived.get("current_hp", derived.max_hp), derived.max_hp)
 		derived.current_stamina = min(derived.get("current_stamina", derived.max_stamina), derived.max_stamina)
 
+	# Apply flat stat penalties from missing body parts (severed limbs etc.).
+	# These are additive reductions (not %-based), clamped to 0 to avoid negatives.
+	if BodySystem and not character.get("body_plan", {}).get("missing_parts", []).is_empty():
+		var limb_penalties := BodySystem.get_missing_part_penalties(character)
+		for stat in limb_penalties:
+			if stat in derived:
+				derived[stat] = maxi(0, derived[stat] + limb_penalties[stat])
+
 ## Get player character
 func get_player() -> Dictionary:
 	if party.is_empty():

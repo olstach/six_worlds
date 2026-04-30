@@ -30,7 +30,8 @@ Five elemental pressure meters per character (−100 klesha ↔ +100 wisdom). Pr
 - [x] ~~**Companion quirk data**~~ — all 47 companions (24 hell + 23 HG) now have `"quirks": [...]` arrays in `companions.json`. Character list with rationale at `docs/companion_quirks.md`.
 - Layer 3: Intervention mechanic (social skills let one character help another)
 - Yidam integration: mantra practice raises brightness baseline per element
-- Rest system: `decay_toward_baseline()` called on camp/inn rest
+- [x] ~~Rest system: `decay_toward_baseline()` called on camp/inn rest~~ — wired in overworld._do_rest() and camp_system sadhana/story activities
+- [x] ~~PsychologySystem signals connected in overworld + combat_arena~~ — `autonomous_event_triggered` shows toast in overworld; `emotional_crisis_log` shows toast in overworld and appends to combat log in arena
 - Chronic darkness counter: accumulates debuffs for time spent below −50
 - Character sheet psychology tab: elemental tendency bars + active statuses + traits
 
@@ -689,21 +690,21 @@ Deep audit completed. Bugs fixed in this session; remaining issues and design de
 ### Remaining Issues
 
 #### HIGH — Wrong mechanics
-- [ ] **Multi-arm chain fires for all characters, not just dual-wielders**: at Finesse 10 every 2-armed character (including bare-handed humans) gets a 50% free off-hand attack per turn. This was intended only for "two-weapon builds" per design notes. Consider: only fire arm 2 chain if weapon_off has an item equipped OR if a natural weapon is the main weapon (all natural weapon builds). Design call needed.
-- [ ] **Wound penalty additive stacking**: two separate arm wounds sum their percentages before a single multiplicative application (`dodge * (1 - 0.50)` instead of `dodge * 0.75 * 0.75`). Additive is more lenient; chained multiplication was the design intent but makes early wound accumulation very punishing. Document the chosen approach explicitly in `get_stat_penalties()`.
+- [x] ~~**Multi-arm chain fires for all characters, not just dual-wielders**~~ — Fixed in `combat_manager.gd`: chain now only fires when `arm_count > 2` (multi-armed species), OR off-hand slot is occupied (dual-wielder), OR primary arm has a locked natural weapon (snow_lion, avian). Bare-handed humans no longer get a free 50% off-hand roll.
+- [x] ~~**Wound penalty additive stacking**~~ — Documented explicitly in `WoundSystem.get_stat_penalties()`: additive stacking is intentional (lenient vs chained multiplication which punishes early accumulation too hard).
 
 #### MEDIUM — Incomplete integration
-- [ ] **Enemy `body_plan` missing**: enemies are created without `body_plan`; `BodySystem.get_body_plan_def()` defaults to "human". Fine now, but prevents multi-armed enemy bodies, locked natural weapons on enemies, or enemy limb-loss events. Add `"body_plan"` population to `EnemySystem._build_unit_data()` using archetype `species` field (add species to archetype JSON schema).
-- [ ] **Companion `body_plan` missing**: companions created from companions.json data don't necessarily go through BASE_CHARACTER initialization. Check `CompanionSystem` — if companions with non-human species (future naga, avian companions) don't get body_plan set, they'll always be treated as human. Add body_plan default in companion creation.
-- [ ] **Inventory full on sever**: `ItemSystem.unequip_item()` silently fails if inventory is full (push_warning only). A severed limb whose inventory is full will leave the weapon in an orphaned equipped state. Add a fallback: if inventory full, drop the item to a ground tile (future item-drop system) or force-remove from slot without adding to inventory.
-- [ ] **`sever_part` for arm_l2/arm_r2**: extra arms (four-armed species) have equip slots hand_l2/hand_r2 but no weapon slots. If arm_l2 is severed and the character was somehow using it to hold a weapon (future mechanic), no weapon is dropped. Add `weapon_main2`/`weapon_off2` slot handling when that system is built.
-- [ ] **Prosthetic items need stat entries**: item type "prosthetic" registered in items.json but no actual prosthetic items exist. Create at least one per body region (hand, leg, foot) for each material tier when the craftable items pass comes.
-- [ ] **Missing limb stat penalty**: severed limbs have no inherent stat penalty beyond losing the equipment in that slot. A character with both arms severed still has full base stats (just can't equip weapons). Consider adding a permanent `missing_part` penalty table to BodySystem similar to WOUND_PENALTIES.
+- [x] ~~**Enemy `body_plan` missing**~~ — Fixed in `EnemySystem._build_enemy()`: now sets `body_plan` (species from archetype or "human"), `wounds: []`, and `quirks: []` on every generated enemy.
+- [x] ~~**Companion `body_plan` missing**~~ — Not a bug: `CompanionSystem.recruit()` uses `CharacterSystem.BASE_CHARACTER.duplicate(true)` which already includes `body_plan`, `wounds`, `emotional_pressure`, and `quirks`.
+- [x] ~~**Inventory full on sever**~~ — Fixed in `BodySystem.sever_part()`: if `unequip_item()` returns false (inventory full), the slot is force-cleared directly on `character.equipment` so the item doesn't remain in an orphaned equipped state (item is lost rather than returned).
+- [ ] **`sever_part` for arm_l2/arm_r2**: extra arms (four-armed species) have equip slots hand_l2/hand_r2 but no weapon slots. Add `weapon_main2`/`weapon_off2` slot handling when that system is built.
+- [ ] **Prosthetic items need stat entries**: item type "prosthetic" registered but no actual prosthetic items exist. Create per body region (hand, leg, foot) when the craftable items pass comes.
+- [x] ~~**Missing limb stat penalty**~~ — Fixed: `BodySystem.MISSING_PART_PENALTIES` const + `get_missing_part_penalties()` helper added; wired into `CharacterSystem.update_derived_stats()` after wound penalties. Arm loss: -2 damage, -5 stamina. Leg loss: -1 movement, -5 dodge. Foot loss: -1 movement.
 
 #### LOW — Polish / missing flavor
-- [ ] **Character sheet doesn't show wounds or missing parts**: wounds array exists on characters but no UI panel displays active wounds, their locations, or missing limbs. Add to character sheet as a third tab or alongside the health bar.
-- [ ] **`field_medic` perk ambiguity**: `field_medic` in perks.json is an in-combat instant-heal action (25% Awareness as HP). The design notes in this TODO describe a different out-of-combat field_medic perk (cures ALL wounds regardless of medicine level). These are two different things — rename the in-combat version or create a separate `wound_specialist` perk for the out-of-combat wound-cure effect.
-- [ ] **Multi-arm attack chain balance dial**: the `result["extra_arm_results"]` array is not yet used by combat UI or log summary. UI should indicate how many arms connected ("Arm 2: 12 dmg" etc.) — currently only the raw combat_log messages show this.
+- [ ] **Character sheet doesn't show wounds or missing parts**: wounds array exists on characters but no UI panel displays active wounds, their locations, or missing limbs.
+- [x] ~~**`field_medic` perk ambiguity**~~ — Resolved: `field_medic` stays as in-combat heal (Medicine 1). `wound_specialist` (Medicine 6) added to perks.json as the out-of-combat wound-cure perk; wired into `camp_system._exec_field_surgery()` and `WoundSystem.cure_wounds_field_surgery()` via `override_all` param.
+- [ ] **Multi-arm attack chain balance dial**: `result["extra_arm_results"]` not yet used by combat UI — UI should show "Arm 2: 12 dmg" etc. Currently only raw combat_log messages show this.
 
 ### Design Debt: Perks, Spells & Items Needing Body/Wound Integration
 
@@ -713,7 +714,7 @@ These are all additions/changes that should happen in a dedicated tuning pass:
 - [ ] `hardened` (Constitution 14+): 50% chance any incoming crit wound is negated — add to `combat_manager._process_weapon_on_hit_procs()` crit wound block
 - [ ] `undead_hunter` (Earth magic 3+): immune to diseases from undead/diseased attacker hits — add check in same location
 - [ ] `stubborn_body` (Constitution 15+): +1 to all `escalation_rests` thresholds — implement as `character.wound_escalation_delay` checked in `WoundSystem.tick_wounds()`
-- [ ] `wound_specialist` / out-of-combat variant of field_medic: Medicine 6+ — Field Surgery cures all wounds regardless of `cure_medicine_level`; wire into `cure_wounds_field_surgery()`
+- [x] ~~`wound_specialist`~~ — Added to perks.json (Medicine 6+); wired into camp_system._exec_field_surgery() and WoundSystem.cure_wounds_field_surgery()
 - [ ] `iron_cortex`: removes probability check for arms 1–2 (both always fire); arms 3+ still roll normally — add to multi-arm chain in `attack_unit()`
 
 #### Spells to add/modify (reference same section)

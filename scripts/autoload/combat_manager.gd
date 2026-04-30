@@ -1618,22 +1618,33 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		var char_data: Dictionary = attacker.character_data if "character_data" in attacker else {}
 		var arm_count: int = BodySystem.get_attack_arm_count(char_data)
 		if arm_count > 1:
-			var finesse: int = char_data.get("attributes", {}).get("finesse", 10)
-			var akimbo_bonus: float = 20.0 if PerkSystem.has_perk(char_data, "akimbo") else 0.0
-			for arm_index in range(1, arm_count):
-				var arm_number: int = arm_index + 1
-				var fire_chance: float = clampf(
-					BodySystem.get_arm_attack_chance(finesse, arm_number) + akimbo_bonus,
-					0.0, 100.0
-				)
-				if randf() * 100.0 <= fire_chance:
-					if defender.is_alive():
-						var extra := _execute_arm_chain_attack(attacker, defender, arm_number, fire_chance)
-						extra_arm_results.append(extra)
-						if not defender.is_alive():
-							break
-				else:
-					break  # Coordination degraded; remaining arms don't roll
+			# Only chain for dual-wielders, natural weapon species, or genuinely multi-armed characters
+			var should_chain: bool = (arm_count > 2)
+			if not should_chain:
+				var weapon_set: int = char_data.get("active_weapon_set", 1)
+				var off_slot: String = "weapon_off" if weapon_set == 1 else "weapon_off_2"
+				var oh_id: String = char_data.get("equipment", {}).get(off_slot, "")
+				should_chain = (oh_id != "")
+			if not should_chain:
+				var primary_nw: Dictionary = BodySystem.get_natural_weapon(char_data, "hand_r")
+				should_chain = primary_nw.get("locked", false)
+			if should_chain:
+				var finesse: int = char_data.get("attributes", {}).get("finesse", 10)
+				var akimbo_bonus: float = 20.0 if PerkSystem.has_perk(char_data, "akimbo") else 0.0
+				for arm_index in range(1, arm_count):
+					var arm_number: int = arm_index + 1
+					var fire_chance: float = clampf(
+						BodySystem.get_arm_attack_chance(finesse, arm_number) + akimbo_bonus,
+						0.0, 100.0
+					)
+					if randf() * 100.0 <= fire_chance:
+						if defender.is_alive():
+							var extra := _execute_arm_chain_attack(attacker, defender, arm_number, fire_chance)
+							extra_arm_results.append(extra)
+							if not defender.is_alive():
+								break
+					else:
+						break  # Coordination degraded; remaining arms don't roll
 	result["extra_arm_results"] = extra_arm_results
 
 	unit_attacked.emit(attacker, defender, result)

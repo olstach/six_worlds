@@ -295,7 +295,8 @@ func cure_wound(character: Dictionary, wound_id: String, _update_stats: bool = t
 
 ## Field Surgery: a Medicine-skilled character treats the whole party.
 ## Returns a dict: {"cured": [names], "messages": [strings]}
-func cure_wounds_field_surgery(performer: Dictionary, party: Array) -> Dictionary:
+## Pass override_all=true (from the wound_specialist perk) to bypass per-wound medicine level gates.
+func cure_wounds_field_surgery(performer: Dictionary, party: Array, override_all: bool = false) -> Dictionary:
 	var medicine: int = 0
 	if CharacterSystem:
 		medicine = CharacterSystem.get_effective_skill_level(performer, "medicine")
@@ -309,7 +310,7 @@ func cure_wounds_field_surgery(performer: Dictionary, party: Array) -> Dictionar
 			var wdef: Dictionary = WOUND_TYPES.get(wid, {})
 			if wdef.is_empty():
 				continue
-			if medicine >= wdef.get("cure_medicine_level", 99):
+			if override_all or medicine >= wdef.get("cure_medicine_level", 99):
 				to_remove.append(wid)
 		for wid in to_remove:
 			cure_wound(char, wid, false)  # skip per-cure stat recalc; do once below
@@ -358,7 +359,9 @@ func tick_wounds(character: Dictionary) -> Array[String]:
 
 
 ## Compute total stat penalties from all active wounds. Called by update_derived_stats.
-## Summed percentage penalties for all active wounds, keyed by stat name.
+## Penalties are ADDITIVE across wounds (two arm wounds sum their percentages before the
+## single multiplicative application). This is intentional — chained multiplication would
+## be too punishing early when wound accumulation is still rare.
 ## Each wound's penalties are derived from its body_location's part category
 ## and the wound type's severity, via BodySystem.WOUND_PENALTIES.
 ## Applied multiplicatively in update_derived_stats: derived[stat] *= (1 + pct/100).

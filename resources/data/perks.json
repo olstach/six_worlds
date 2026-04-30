@@ -5747,6 +5747,15 @@
 			"flavor": "",
 			"is_mantra": false
 		},
+		"wound_specialist": {
+			"name": "Wound Specialist",
+			"skill": "medicine",
+			"required_level": 6,
+			"requires_perks": [],
+			"description": "Camp (Field Surgery): cures ALL wounds and diseases on the target regardless of their required Medicine level. Requires Field Surgery camp activity.",
+			"flavor": "Some cuts need more than a bandage.",
+			"is_mantra": false
+		},
 		"diagnosis": {
 			"name": "Diagnosis",
 			"skill": "medicine",

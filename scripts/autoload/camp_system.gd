@@ -670,7 +670,8 @@ func _exec_craft_item(performer: Dictionary) -> Dictionary:
 func _exec_field_surgery(performer: Dictionary, party: Array) -> Dictionary:
 	if not GameState.consume_supply("herbs", 2):
 		return {"message": "Not enough herbs for field surgery.", "ok": false}
-	var result := WoundSystem.cure_wounds_field_surgery(performer, party)
+	var override_all: bool = PerkSystem.has_perk(performer, "wound_specialist") if PerkSystem else false
+	var result := WoundSystem.cure_wounds_field_surgery(performer, party, override_all)
 	var msgs: Array = result.get("messages", [])
 	var summary := "\n".join(msgs) if not msgs.is_empty() else "No wounds treated."
 	return {

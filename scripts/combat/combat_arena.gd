@@ -226,6 +226,10 @@ func _ready() -> void:
 	# Connect general combat log
 	CombatManager.combat_log.connect(_on_combat_log)
 
+	# Connect PsychologySystem so crisis messages appear in the combat log
+	if PsychologySystem:
+		PsychologySystem.emotional_crisis_log.connect(_on_psychology_crisis_log_combat)
+
 	# Hide spell panel initially
 	spell_panel.hide()
 
@@ -2763,6 +2767,11 @@ func _tile_center(grid_pos: Vector2i) -> Vector2:
 
 
 ## Add message to combat log
+## Called when a quirk reaction fires mid-combat (e.g. witnessing a death triggers a phobia).
+func _on_psychology_crisis_log_combat(character_name: String, message: String) -> void:
+	_log_message("[Psychology] " + message)
+
+
 func _log_message(msg: String) -> void:
 	combat_log.append_text(msg + "\n")
 	# Auto-scroll to bottom
