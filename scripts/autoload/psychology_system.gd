@@ -13,8 +13,208 @@ extends Node
 ## The overworld/arena should display a log message or mini-event in response.
 signal autonomous_event_triggered(character: Dictionary, element: String, polarity: String)
 
+## Emitted when a quirk crisis reaction fires, providing a narrative log for the UI.
+## Connect in overworld.gd / combat_arena.gd to show a toast or combat log entry.
+signal emotional_crisis_log(character_name: String, message: String)
+
 ## All five elements in order
 const ELEMENTS: Array[String] = ["space", "fire", "water", "earth", "air"]
+
+## Dispatch table: quirk event_tag → {element_polarity → reaction}.
+## reaction keys: "log" (string, %s = char name), "self_pressure" (Array of {element, amount}),
+##                "party_pressure" (Array of {element, amount})
+## Self-pressure applies to the character in crisis; party_pressure applies to all other members.
+const QUIRK_CRISIS_REACTIONS: Dictionary = {
+	"hot_tempered": {
+		"fire_dark": {
+			"log": "%s flies into a rage.",
+			"party_pressure": [{"element": "water", "amount": -10.0}]
+		},
+		"water_dark": {
+			"log": "%s's grief curdles into bitter anger.",
+			"self_pressure": [{"element": "fire", "amount": -15.0}]
+		}
+	},
+	"patient": {
+		"fire_dark": {
+			"log": "%s breathes through the surge, drawing on deep reserves of calm.",
+			"self_pressure": [{"element": "fire", "amount": 20.0}]
+		},
+		"earth_dark": {
+			"log": "%s remains unmoved even as the weight presses in.",
+			"self_pressure": [{"element": "earth", "amount": 15.0}]
+		}
+	},
+	"brave": {
+		"water_dark": {
+			"log": "%s faces the fear head-on — courage steadies them.",
+			"self_pressure": [{"element": "water", "amount": 20.0}]
+		},
+		"earth_dark": {
+			"log": "%s stands firm, refusing to be beaten down.",
+			"self_pressure": [{"element": "earth", "amount": 15.0}]
+		}
+	},
+	"timid": {
+		"water_dark": {
+			"log": "%s freezes, paralyzed by fear.",
+			"self_pressure": [{"element": "space", "amount": -15.0}]
+		},
+		"air_dark": {
+			"log": "%s retreats inward, consumed by dread.",
+			"self_pressure": [{"element": "space", "amount": -10.0}, {"element": "fire", "amount": -8.0}]
+		}
+	},
+	"curious": {
+		"space_dark": {
+			"log": "%s reaches desperately for meaning, grasping at anything to understand.",
+			"self_pressure": [{"element": "air", "amount": 10.0}]
+		},
+		"space_bright": {
+			"log": "%s's curiosity ignites in the clarity.",
+			"party_pressure": [{"element": "air", "amount": 5.0}]
+		}
+	},
+	"stubborn": {
+		"earth_dark": {
+			"log": "%s digs in, refusing to yield to anything.",
+			"self_pressure":  [{"element": "earth", "amount": 10.0}],
+			"party_pressure": [{"element": "air",   "amount": -8.0}]
+		}
+	},
+	"suspicious": {
+		"air_dark": {
+			"log": "%s's paranoia peaks — enemies everywhere.",
+			"party_pressure": [{"element": "air", "amount": -12.0}]
+		}
+	},
+	"paranoid": {
+		"air_dark": {
+			"log": "%s is consumed by paranoid certainty — no one can be trusted.",
+			"party_pressure": [{"element": "air", "amount": -15.0}, {"element": "water", "amount": -8.0}]
+		},
+		"space_dark": {
+			"log": "%s becomes convinced of betrayal.",
+			"party_pressure": [{"element": "water", "amount": -10.0}]
+		}
+	},
+	"greedy": {
+		"earth_dark": {
+			"log": "%s's greed surfaces — resources feel scarce.",
+			"party_pressure": [{"element": "water", "amount": -8.0}]
+		},
+		"fire_dark": {
+			"log": "%s schemes for advantage even mid-crisis.",
+			"self_pressure": [{"element": "earth", "amount": 8.0}]
+		}
+	},
+	"generous": {
+		"water_dark": {
+			"log": "%s opens their heart even to the grief.",
+			"self_pressure": [{"element": "water", "amount": 15.0}]
+		},
+		"earth_dark": {
+			"log": "%s gives freely, trying to restore what's broken.",
+			"party_pressure": [{"element": "water", "amount": 8.0}]
+		}
+	},
+	"melancholic": {
+		"water_dark": {
+			"log": "%s sinks into familiar darkness.",
+			"self_pressure":  [{"element": "air",   "amount": -10.0}],
+			"party_pressure": [{"element": "water", "amount": -5.0}]
+		},
+		"earth_dark": {
+			"log": "%s takes the weight inward, deepening the desolation.",
+			"self_pressure": [{"element": "water", "amount": -8.0}]
+		}
+	},
+	"vain": {
+		"air_dark": {
+			"log": "%s's vanity twists into bitter envy.",
+			"party_pressure": [{"element": "air", "amount": -10.0}]
+		},
+		"earth_dark": {
+			"log": "%s's pride becomes brittle rage.",
+			"self_pressure": [{"element": "fire", "amount": -10.0}]
+		}
+	},
+	"haunted": {
+		"water_dark": {
+			"log": "%s is overwhelmed by haunting visions.",
+			"party_pressure": [{"element": "space", "amount": -8.0}]
+		},
+		"space_dark": {
+			"log": "%s loses themselves in the past.",
+			"self_pressure": [{"element": "water", "amount": -10.0}]
+		}
+	},
+	"war_hardened": {
+		"water_dark": {
+			"log": "%s dissociates, reverting to soldier-mode — a familiar numbness.",
+			"self_pressure": [{"element": "water", "amount": 15.0}]
+		}
+	},
+	"grief_struck": {
+		"water_dark": {
+			"log": "%s is overwhelmed by the weight of loss.",
+			"self_pressure":  [{"element": "space", "amount": -15.0}],
+			"party_pressure": [{"element": "water", "amount": -8.0}]
+		}
+	},
+	"blood_handed": {
+		"water_dark": {
+			"log": "%s drowns in remorse for past actions.",
+			"self_pressure": [{"element": "space", "amount": -10.0}]
+		},
+		"fire_dark": {
+			"log": "%s's past violence resurfaces in the crisis.",
+			"self_pressure": [{"element": "earth", "amount": -10.0}]
+		}
+	},
+	"composed": {
+		"fire_dark": {
+			"log": "%s maintains composure, drawing strength from hard-won calm.",
+			"self_pressure": [{"element": "fire", "amount": 20.0}]
+		},
+		"water_dark": {
+			"log": "%s accepts the grief with practiced stillness.",
+			"self_pressure": [{"element": "water", "amount": 15.0}]
+		}
+	},
+	"addiction": {
+		"fire_dark": {
+			"log": "%s reaches for their habit to dull the craving.",
+			"self_pressure": [{"element": "earth", "amount": -10.0}, {"element": "water", "amount": -5.0}]
+		},
+		"water_dark": {
+			"log": "%s drowns the grief in familiar escape.",
+			"self_pressure": [{"element": "fire", "amount": 8.0}, {"element": "earth", "amount": -8.0}]
+		}
+	},
+	"devout": {
+		"water_dark": {
+			"log": "%s turns to prayer, finding stillness in the form.",
+			"self_pressure": [{"element": "water", "amount": 15.0}]
+		},
+		"earth_dark": {
+			"log": "%s grounds themselves in devotional practice.",
+			"self_pressure": [{"element": "earth", "amount": 10.0}]
+		}
+	},
+	"lapsed": {
+		"space_dark": {
+			"log": "%s reaches for old prayers but finds only empty forms.",
+			"self_pressure": [{"element": "space", "amount": -10.0}]
+		}
+	},
+	"enlightened": {
+		"space_bright": {
+			"log": "%s's insight deepens in the luminous clarity.",
+			"party_pressure": [{"element": "space", "amount": 5.0}]
+		}
+	},
+}
 
 ## Threshold levels
 const THRESHOLD_MINOR: float    = 33.0
@@ -160,11 +360,52 @@ func get_emotional_label(character: Dictionary, element: String) -> String:
 	return ""
 
 
+## Checks the character's quirks for any reaction matching this element+polarity crisis.
+## Applies self/party pressure effects and emits emotional_crisis_log for each reaction found.
+func _resolve_quirk_reactions(character: Dictionary, element: String, polarity: String) -> void:
+	if not QuirkSystem:
+		return
+	var key: String = element + "_" + polarity
+	var char_name: String = character.get("name", "?")
+	for quirk_id in character.get("quirks", []):
+		var q: Dictionary = QuirkSystem.get_quirk(quirk_id)
+		var fired: bool = false
+		for tag in q.get("event_tags", []):
+			if fired:
+				break  # only the first matching tag fires per quirk
+			var tag_reactions: Dictionary = QUIRK_CRISIS_REACTIONS.get(tag, {})
+			if not key in tag_reactions:
+				continue
+			fired = true
+			var reaction: Dictionary = tag_reactions[key]
+			var log_msg: String = reaction.get("log", "") % char_name
+			if log_msg != "":
+				print("PsychologySystem: " + log_msg)
+				emotional_crisis_log.emit(char_name, log_msg)
+			for entry in reaction.get("self_pressure", []):
+				var el: String = str(entry.get("element", ""))
+				var amt: float = float(entry.get("amount", 0.0))
+				if el in ELEMENTS and amt != 0.0:
+					apply_pressure(character, el, amt)
+			for entry in reaction.get("party_pressure", []):
+				var el: String = str(entry.get("element", ""))
+				var amt: float = float(entry.get("amount", 0.0))
+				if not el in ELEMENTS or amt == 0.0:
+					continue
+				for member in CharacterSystem.get_party():
+					if member == character:
+						continue
+					apply_pressure(member, el, amt)
+
+
 ## Applies emotional fallout to other party members when a dark autonomous event fires.
 ## Witnessing a character's crisis is destabilizing for the rest of the party.
 func _on_autonomous_event(character: Dictionary, element: String, polarity: String) -> void:
+	# Quirk reactions apply to both bright and dark crises
+	_resolve_quirk_reactions(character, element, polarity)
+
 	if polarity != "dark":
-		return  # Wisdom events are positive — fallout mechanic is future work
+		return  # Base fallout for dark only — bright events are positive
 	# Each dark element has a characteristic effect on witnesses
 	var fallout: Dictionary = {
 		"fire":  {"element": "water", "amount": -8.0},

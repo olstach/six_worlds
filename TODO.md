@@ -11,23 +11,23 @@ Full plan: `docs/superpowers/plans/2026-04-07-psychology-system.md`
 
 Five elemental pressure meters per character (−100 klesha ↔ +100 wisdom). Pressure from events and combat → status effects at ±33/±50 → autonomous events at ±75.
 
-- [ ] **Task 1** — Create `scripts/autoload/psychology_system.gd` skeleton; register after KarmaSystem in `project.godot`
-- [ ] **Task 2** — Add `emotional_pressure` + `emotional_baseline` to BASE_CHARACTER in `character_system.gd`; add `emotional_baseline` field to all races in `races.json`; wire baseline copy in `_apply_race_modifiers()`
-- [ ] **Task 3** — Implement core pressure logic: `apply_pressure()`, `_intensity_multiplier()`, `get_active_statuses()`, `get_emotional_label()` (all named states for all 5 elements × 2 poles × 3 tiers)
-- [ ] **Task 4** — Implement `_check_thresholds()`: fires `autonomous_event_triggered` signal once per crossing, partial valve (+20 back toward neutral), resets on recovery. Connect signal to `_on_autonomous_event()` for inter-party fallout pressure
-- [ ] **Task 5** — Implement `decay_toward_baseline()` for rest system integration
-- [ ] **Task 6** — Wire event outcomes: add `pressure` field handler in `event_manager.gd apply_outcome()`; add `pressure` fields to 3 example hell events
-- [ ] **Task 7** — Wire combat hooks in `combat_manager.gd`: unit death → Water −15 to witnesses; victory → Fire/Air +10; defeat → Earth −10/Space −5
-- [ ] **Task 8** — Show dominant emotional label in character sheet UI (`main_menu.gd`)
-- [ ] **Task 9** — Wire Leadership + Comedy perks to `apply_pressure()` calls
+- [x] **Task 1** — Create `scripts/autoload/psychology_system.gd` skeleton; register after KarmaSystem in `project.godot`
+- [x] **Task 2** — Add `emotional_pressure` + `emotional_baseline` to BASE_CHARACTER in `character_system.gd`; add `emotional_baseline` field to all races in `races.json`; wire baseline copy in `_apply_race_modifiers()`
+- [x] **Task 3** — Implement core pressure logic: `apply_pressure()`, `_intensity_multiplier()`, `get_active_statuses()`, `get_emotional_label()` (all named states for all 5 elements × 2 poles × 3 tiers)
+- [x] **Task 4** — Implement `_check_thresholds()`: fires `autonomous_event_triggered` signal once per crossing, partial valve (+20 back toward neutral), resets on recovery. Connect signal to `_on_autonomous_event()` for inter-party fallout pressure
+- [x] **Task 5** — Implement `decay_toward_baseline()` for rest system integration
+- [x] **Task 6** — Wire event outcomes: add `pressure` field handler in `event_manager.gd apply_outcome()`; add `pressure` fields to 3 example hell events
+- [x] **Task 7** — Wire combat hooks in `combat_manager.gd`: unit death → Water −15 to witnesses; victory → Fire/Air +10; defeat → Earth −10/Space −5
+- [x] **Task 8** — Show dominant emotional label in character sheet UI (`main_menu.gd`)
+- [x] **Task 9** — Wire Leadership + Comedy perks to `apply_pressure()` calls
 
 **Future layers (not yet started):**
 - [x] ~~**Layer 2: Personality traits & quirks**~~ — QuirkSystem autoload + quirks.json (40 quirks: 10 physical, 14 personality, 10 behavioral, 10 acquired). Stat modifiers flow into `update_derived_stats()`; skill modifiers written to `skill_bonuses["quirks"]` source; pressure offsets shift `emotional_baseline`; event_tags unlock blue choices in event_manager. UI panel in character sheet (coloured by category, mechanical summary, purge tooltip). Bugs fixed: attribute event checks now include quirk bonuses; effective skill level clamped to 0 floor; purge check uses effective not raw skill.
 
 ### Quirk System — Remaining Work
-- [ ] **Autonomous actions** — `event_tags` exist on quirks but nothing consumes them at runtime. When `autonomous_event_triggered` fires (pressure crisis), look up the character's quirks, find any with matching `event_tags`, and trigger a narrative micro-event (log message, forced choice, or stat consequence). E.g. `hot_tempered` at Fire crisis → attacks nearest ally; `timid` at Air crisis → flees from combat position. Needs a small dispatch table in event_manager or a new `_resolve_quirk_autonomous()` in psychology_system.
-- [ ] **Player character starting quirks** — no mechanism to assign quirks to the player character at run start. Options: (a) random 1–2 inborn quirks from the physical/personality pools at character creation, (b) background unlocks specific quirks, (c) player picks from a short list. Pick approach and implement.
-- [ ] **Companion quirk data** — add `"quirks": [...]` arrays to actual companion definitions in the companion data file; currently the system supports it but no companion has any quirks assigned.
+- [x] ~~**Autonomous actions**~~ — `QUIRK_CRISIS_REACTIONS` dispatch table in `psychology_system.gd` covers 18 personality/behavioral/acquired event_tags × up to 2 element+polarity combinations each. `_resolve_quirk_reactions()` fires from `_on_autonomous_event` for both bright and dark crises. Virtue quirks (brave, patient, composed, generous, devout) partially counteract their element; dark quirks (hot_tempered, timid, haunted, grief_struck, etc.) amplify the crisis or spread fallout to the party. `emotional_crisis_log` signal emitted for UI display.
+- [x] ~~**Player character starting quirks**~~ — `create_player_character()` in `character_system.gd` now assigns 1 random inborn physical + 1 random inborn personality quirk via `QuirkSystem.get_inborn_quirks(category)` + `add_quirk()`. `start_new_life()` inherits this automatically.
+- [x] ~~**Companion quirk data**~~ — all 47 companions (24 hell + 23 HG) now have `"quirks": [...]` arrays in `companions.json`. Character list with rationale at `docs/companion_quirks.md`.
 - Layer 3: Intervention mechanic (social skills let one character help another)
 - Yidam integration: mantra practice raises brightness baseline per element
 - Rest system: `decay_toward_baseline()` called on camp/inn rest
@@ -221,20 +221,20 @@ The current three-tier rest system handles resource costs and recovery correctly
 Needs a hands-on play session to balance, extend, and wire the remaining gaps:
 
 **Activities to add:**
-- [ ] **Night Music** (Performance 5+) — deeper morale; small chance of triggering a camp encounter (traveller, passing spirit). Needs camp event wiring from within an activity result.
-- [ ] **Guile Work** (Guile 4+) — set a false trail or trap; mechanical effect TBD (reduce next mob patrol range? chance of ambush avoidance?). Strong flavour, light mechanics.
+- [x] ~~**Night Music** (Performance 5+)~~ — 50-point party pressure decay + 20% chance to trigger a camp event via `result["camp_event_id"]`; overworld picks it up and shows it after rest.
+- [x] ~~**Guile Work** (Guile 4+)~~ — sets `GameState.flags["guile_work_done"]`; consumed by `roll_disturbance()` for −20% chance next rest. Ambush reduction noted in message but pending combat system.
 - [ ] **Set Snares** (Crafting 2+ or Thievery 2+) — overnight food/material gain; small creature encounter chance. Needs a "resolve on next move" deferred effect.
-- [ ] **Drill** (Leadership 5+) — party initiative bonus next combat. Similar to Encouraging Words but combat-only; requires Leadership 5 vs 3, so a separate slot option.
+- [x] ~~**Drill** (Leadership 5+)~~ — appends `{"stat": "initiative", "amount": 3}` to `active_map_buffs`; +3 initiative next combat.
 - [ ] **Protector Offering** (Ritual 2+) — dharmapala offering at a camp shrine; deferred until DharmapalaSystem exists.
-- [ ] **Craft Item** (Crafting 3+) — make basic tools/rope/ammo from scrap. Needs a simple crafting recipe table.
+- [x] ~~**Craft Item** (Smithing 3+)~~ — 2 scrap → 1–2 items from `CRAFT_TABLE` (rope, torch, bandage, arrowhead); 2nd item unlocked at Smithing 5+. Verify item IDs exist in items.json.
 - [ ] **Craft Charm** (Ritual 3+ + magic school 3+) — consumable charm with school-specific effect. Needs schema for camp-crafted charms.
-- [ ] **Mantra Recitation** (Yoga 2+) — currently a stub. Wire to a `mantra_count` field on the character and a threshold for future yidam relationship progress.
+- [x] ~~**Mantra Recitation** (Yoga 2+)~~ — stub removed; increments `character["mantra_count"]` by Yoga level; small pressure decay for performer. Yidam system will read the counter when built.
 
 **Wiring gaps:**
-- [ ] **Disturbance → camp event**: When `roll_disturbance()` returns true, call `EventManager.get_random_camp_event(realm)` and trigger it via the event display system. Currently disturbance only reduces rest effectiveness with a toast — no actual event fires. (Wiring requires post-rest event queue or mid-rest event hook.)
-- [ ] **More camp events**: Write 3–5 camp events per realm (hell, hungry ghost, plus any/cross-realm). Currently only 3 total exist. Target: at least 2 per realm + 3 any-realm.
+- [x] ~~**Disturbance → camp event**~~ — `_disturbance_event_id` stored on disturbance; `call_deferred("_show_camp_event", id)` fires after final toast. `_show_camp_event()` pauses movement and shows event display, same as location events.
+- [x] ~~**More camp events**~~ — 9 total now (was 3): added `camp_ember_voices`, `camp_guardian_threshold` (hell); `camp_whispered_offering`, `camp_creditor` (hungry_ghost); `camp_shared_dream`, `camp_stranger_fire` (any). Also fixed karma-in-rewards bug in two original events.
 - [ ] **Location-specific activity suppression**: TODO design said some activities unavailable at teahouses (smithing) or enhanced at gompas (sadhana). Add `"suppress_activities": [...]` and `"enhance_activities": [...]` to safe camp event dicts and wire into `get_available_activities()`.
-- [ ] **Sadhana cost preview**: Sadhana auto-picks the best ritual tier — but the player can't see which tier will fire or what it will cost before confirming. Add a preview line to the button text (e.g., "Torma Offering — Reagents: 2").
+- [x] ~~**Sadhana cost preview**~~ — `CampSystem.get_sadhana_preview(performer)` computes which tier would auto-select; button shows e.g. "Torma Offering (reagents: 2) · ~20–100 karma purified".
 
 **Balance review (needs playtesting):**
 - [ ] Forage yield (herbs + food) relative to rest costs — may be too generous or too low depending on realm.
@@ -273,7 +273,7 @@ Persistent negative status effects from combat or events that do not fully clear
 - [ ] Character sheet and combat UI: show persistent wound icons distinctly (deferred — no character sheet UI yet)
 - [ ] Temple/facility healing UI: call `WoundSystem.heal_at_facility(char, medicine_equivalent)` — stub ready, needs shop/temple scene
 - [ ] Realm-specific wound types (hungry ghost malnutrition, animal realm parasites, hell frostbite/burns) — extend WOUND_TYPES when realms are built
-- [ ] More wound/disease variety: currently 5 base types (3 wounds, 2 diseases). Target ~8–10 base types eventually; e.g. arrow wound (ranged-specific, different penalties from deep cut), poisoned wound (disease + damage hybrid), spiritual corruption (hell/hungry-ghost specific, resists medicine, needs Ritual/Yoga). See design notes in "Design Thinking: Wounds, Rest & Calendar" section.
+- [ ] More wound/disease variety: currently 5 base types (3 wounds, 2 diseases). Target ~8–10 base types eventually; e.g. arrow wound (ranged-specific, different penalties from deep cut), poisoned wound (disease + damage hybrid), spiritual corruption (hell/hungry-ghost specific, resists medicine, needs Ritual/Yoga). **Design presented for review — see companion_quirks.md (EDIT_LATER).**
 
 ---
 
@@ -674,7 +674,7 @@ Multi-armed characters are intentionally strong against lower-world beings — t
 
 ---
 
-## Body/Wound System — Audit Findings & Remaining Work
+## Body/Wound System — Audit ✓ COMPLETE (Remaining Issues Tracked Below)
 
 Deep audit completed. Bugs fixed in this session; remaining issues and design debt below.
 

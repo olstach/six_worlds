@@ -35,8 +35,17 @@ const ACTIVITIES: Array = [
 		"min_tier": 2,
 		"costs": {},
 		"description": "Quiet mantra accumulation toward yidam relationship",
-		"effect_desc": "Relationship progress (Yidam system — future)",
-		"stub": true,
+		"effect_desc": "Builds mantra count by Yoga level; small pressure calm",
+	},
+	{
+		"id": "spiritual_cleansing",
+		"name": "Spiritual Cleansing",
+		"category": "Spiritual",
+		"skill_req": {"ritual": 3},
+		"min_tier": 2,
+		"costs": {},
+		"description": "A purification rite targeting psychic corruption and spiritual miasma",
+		"effect_desc": "Cures Psychic Miasma and Spiritual Corruption (Ritual 3/5 required)",
 	},
 	# ─── MEDICAL ─────────────────────────────────────────────────────
 	{
@@ -103,6 +112,16 @@ const ACTIVITIES: Array = [
 	},
 	# ─── SOCIAL ──────────────────────────────────────────────────────
 	{
+		"id": "night_music",
+		"name": "Night Music",
+		"category": "Social",
+		"skill_req": {"performance": 5},
+		"min_tier": 2,
+		"costs": {},
+		"description": "A long musical session — lifts spirits and may draw a passing presence",
+		"effect_desc": "Deep pressure decay; 20% chance of a camp encounter",
+	},
+	{
 		"id": "campfire_story",
 		"name": "Campfire Story",
 		"category": "Social",
@@ -153,6 +172,16 @@ const ACTIVITIES: Array = [
 		"description": "Secure the perimeter before settling in",
 		"effect_desc": "No disturbance this rest; reveal nearby tiles",
 	},
+	{
+		"id": "guile_work",
+		"name": "Cover Tracks",
+		"category": "Survival",
+		"skill_req": {"guile": 4},
+		"min_tier": 2,
+		"costs": {},
+		"description": "Obscure the camp and lay false trails into the dark",
+		"effect_desc": "−20% disturbance chance next rest; −25% ambush chance next combat",
+	},
 	# ─── COMBAT PREP ─────────────────────────────────────────────────
 	{
 		"id": "sharpen",
@@ -173,6 +202,27 @@ const ACTIVITIES: Array = [
 		"costs": {},
 		"description": "Light sparring session to keep reflexes sharp",
 		"effect_desc": "Performer gains 8 XP",
+	},
+	{
+		"id": "drill",
+		"name": "Combat Drill",
+		"category": "Combat Prep",
+		"skill_req": {"leadership": 5},
+		"min_tier": 2,
+		"costs": {},
+		"description": "Run the party through formations and reaction drills",
+		"effect_desc": "+3 Initiative for all — next combat",
+	},
+	# ─── CRAFTING ────────────────────────────────────────────────────
+	{
+		"id": "craft_item",
+		"name": "Craft Camp Supplies",
+		"category": "Maintenance",
+		"skill_req": {"smithing": 3},
+		"min_tier": 2,
+		"costs": {"scrap": 2},
+		"description": "Shape raw scrap into useful field gear",
+		"effect_desc": "Gain 1–2 supplies (rope, torch, bandage, or arrowhead)",
 	},
 ]
 
@@ -212,27 +262,56 @@ func roll_disturbance(rest_tier: int, realm: String, hour_of_day: int) -> bool:
 		base_chance += 0.15
 	if hour_of_day >= 20 or hour_of_day < 5:
 		base_chance += 0.10
+	if GameState.flags.get("guile_work_done", false):
+		base_chance -= 0.20
+		GameState.set_flag("guile_work_done", false)
 	return randf() < base_chance
+
+
+## Returns a preview dict for what sadhana tier would auto-select given the performer and current supplies.
+func get_sadhana_preview(performer: Dictionary) -> Dictionary:
+	var yoga_level   := CharacterSystem.get_effective_skill_level(performer, "yoga")
+	var ritual_level := CharacterSystem.get_effective_skill_level(performer, "ritual")
+	var ritual_tier := 0
+	if ritual_level >= 2 and GameState.herbs >= 2:
+		ritual_tier = 1
+	if ritual_level >= 4 and GameState.reagents >= 2:
+		ritual_tier = 2
+	if ritual_level >= 6 and yoga_level >= 5 and GameState.reagents >= 3:
+		ritual_tier = 3
+	var tier_names := [
+		"Yoga Practice (free)",
+		"Smoke Offering (herbs: 2)",
+		"Torma Offering (reagents: 2)",
+		"Mandala Offering (reagents: 3)",
+	]
+	return {"tier_name": tier_names[ritual_tier], "tier": ritual_tier}
 
 
 ## Execute a selected activity. Consumes additional resources and applies effects.
 ## Returns {message: String, ok: bool}.
 func execute_activity(activity_id: String, performer: Dictionary, party: Array) -> Dictionary:
 	match activity_id:
-		"sadhana":           return _exec_sadhana(performer, party)
-		"herb_preparation":  return _exec_herb_preparation(performer)
-		"brew_potions":      return _exec_brew_potions(performer)
-		"brew_combat":       return _exec_brew_combat(performer)
-		"deep_repair":       return _exec_deep_repair(party)
-		"weapon_work":       return _exec_weapon_work(party)
-		"campfire_story":    return _exec_campfire_story(performer, party)
-		"encouraging_words": return _exec_encouraging_words(party)
-		"study":             return _exec_study(performer)
-		"forage":            return _exec_forage(performer, party)
-		"scout":             return _exec_scout()
-		"sharpen":           return _exec_sharpen(performer)
-		"spar":              return _exec_spar(performer)
-		"field_surgery":     return _exec_field_surgery(performer, party)
+		"sadhana":            return _exec_sadhana(performer, party)
+		"mantra_recitation":   return _exec_mantra_recitation(performer)
+		"spiritual_cleansing": return _exec_spiritual_cleansing(performer, party)
+		"herb_preparation":   return _exec_herb_preparation(performer)
+		"brew_potions":       return _exec_brew_potions(performer)
+		"brew_combat":        return _exec_brew_combat(performer)
+		"deep_repair":        return _exec_deep_repair(party)
+		"weapon_work":        return _exec_weapon_work(party)
+		"craft_item":         return _exec_craft_item(performer)
+		"night_music":        return _exec_night_music(performer, party)
+		"campfire_story":     return _exec_campfire_story(performer, party)
+		"encouraging_words":  return _exec_encouraging_words(party)
+		"study":              return _exec_study(performer)
+		"forage":             return _exec_forage(performer, party)
+		"scout":              return _exec_scout()
+		"guile_work":         return _exec_guile_work()
+		"sharpen":            return _exec_sharpen(performer)
+		"spar":               return _exec_spar(performer)
+		"drill":              return _exec_drill(party)
+		"field_surgery":      return _exec_field_surgery(performer, party)
 	return {"message": "Activity '%s' not implemented." % activity_id, "ok": false}
 
 
@@ -503,6 +582,89 @@ func _exec_sharpen(performer: Dictionary) -> Dictionary:
 func _exec_spar(performer: Dictionary) -> Dictionary:
 	CharacterSystem.grant_xp(performer, 8)
 	return {"message": "%s spars in the firelight and gains 8 XP." % performer.get("name", "Performer"), "ok": true}
+
+
+func _exec_spiritual_cleansing(performer: Dictionary, party: Array) -> Dictionary:
+	var ritual := CharacterSystem.get_effective_skill_level(performer, "ritual")
+	var all_messages: Array[String] = []
+	for char in party:
+		var result := WoundSystem.try_spiritual_cure(char, "ritual", ritual)
+		all_messages.append_array(result.get("messages", []))
+	if all_messages.is_empty():
+		return {
+			"message": "%s performs a purification rite. No spiritual afflictions present." % performer.get("name", "Performer"),
+			"ok": true,
+		}
+	return {
+		"message": "%s performs a purification rite.\n%s" % [performer.get("name", "Performer"), "\n".join(all_messages)],
+		"ok": true,
+	}
+
+
+func _exec_mantra_recitation(performer: Dictionary) -> Dictionary:
+	var yoga_level := CharacterSystem.get_effective_skill_level(performer, "yoga")
+	var increment := maxi(1, yoga_level)
+	performer["mantra_count"] = int(performer.get("mantra_count", 0)) + increment
+	PsychologySystem.decay_toward_baseline(performer, 20.0)
+	return {
+		"message": "%s sits in quiet recitation. Mantra count: %d (+%d)." % [
+			performer.get("name", "Performer"), performer["mantra_count"], increment
+		],
+		"ok": true,
+	}
+
+
+func _exec_night_music(performer: Dictionary, party: Array) -> Dictionary:
+	var performance := CharacterSystem.get_effective_skill_level(performer, "performance")
+	for char in party:
+		PsychologySystem.decay_toward_baseline(char, 50.0)
+	var msg := "%s plays long into the night. Old tensions dissolve in the sound." % performer.get("name", "Performer")
+	if performance >= 7:
+		msg += " The performance was exceptional — something stirred at the edge of the dark."
+	var result: Dictionary = {"message": msg, "ok": true}
+	if randf() < 0.20:
+		var event_id := EventManager.get_random_camp_event(GameState.current_world)
+		if not event_id.is_empty():
+			result["camp_event_id"] = event_id
+	return result
+
+
+func _exec_guile_work() -> Dictionary:
+	GameState.set_flag("guile_work_done", true)
+	return {
+		"message": "False trails set, signs obscured. The camp is harder to find. Next rest: −20% disturbance. Next combat: −25% ambush chance.",
+		"ok": true,
+	}
+
+
+func _exec_drill(party: Array) -> Dictionary:
+	GameState.active_map_buffs.append({"stat": "initiative", "amount": 3, "combats_remaining": 1})
+	for char in party:
+		CharacterSystem.update_derived_stats(char)
+	return {"message": "The party runs drills until the fire burns low. +3 Initiative next combat.", "ok": true}
+
+
+const CRAFT_TABLE: Array = [
+	{"id": "rope",      "name": "Rope"},
+	{"id": "torch",     "name": "Torch"},
+	{"id": "bandage",   "name": "Bandage"},
+	{"id": "arrowhead", "name": "Arrowhead"},
+]
+
+func _exec_craft_item(performer: Dictionary) -> Dictionary:
+	if not GameState.consume_supply("scrap", 2):
+		return {"message": "Not enough scrap to craft.", "ok": false}
+	var smithing := CharacterSystem.get_effective_skill_level(performer, "smithing")
+	var count := 1 + int(smithing >= 5)
+	var crafted: Array[String] = []
+	for _i in range(count):
+		var recipe: Dictionary = CRAFT_TABLE[randi() % CRAFT_TABLE.size()]
+		ItemSystem.add_to_inventory(recipe.id, 1)
+		crafted.append(recipe.name)
+	return {
+		"message": "%s works the scrap into useful kit: %s." % [performer.get("name", "Performer"), ", ".join(crafted)],
+		"ok": true,
+	}
 
 
 func _exec_field_surgery(performer: Dictionary, party: Array) -> Dictionary:

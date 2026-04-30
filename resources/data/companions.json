@@ -30,7 +30,8 @@
       },
       "fixed_items": [
         "health_potion"
-      ]
+      ],
+      "quirks": ["devout", "brave"]
     },
     "serji": {
       "id": "serji",
@@ -60,7 +61,8 @@
       "starting_equipment": {
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["war_hardened", "composed"]
     },
     "red_peony": {
       "id": "red_peony",
@@ -93,7 +95,8 @@
         },
         "chest": "chainmail"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["strong", "hot_tempered"]
     },
     "raktamatta": {
       "id": "raktamatta",
@@ -126,7 +129,8 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["fastidious", "stubborn"]
     },
     "jawbreaker": {
       "id": "jawbreaker",
@@ -159,7 +163,8 @@
           "off": ""
         }
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["quick", "gambler"]
     },
     "tejasimha": {
       "id": "tejasimha",
@@ -197,7 +202,8 @@
       "fixed_items": [
         "fire_charm_middling",
         "plain_copper_dorje"
-      ]
+      ],
+      "quirks": ["curious", "vain"]
     },
     "water_lily": {
       "id": "water_lily",
@@ -235,7 +241,8 @@
       },
       "fixed_items": [
         "water_charm_middling"
-      ]
+      ],
+      "quirks": ["composed", "brave"]
     },
     "dvijihva": {
       "id": "dvijihva",
@@ -271,7 +278,8 @@
       },
       "fixed_items": [
         "enchantment_charm_common"
-      ]
+      ],
+      "quirks": ["greedy", "stubborn"]
     },
     "yaga_mataji": {
       "id": "yaga_mataji",
@@ -308,7 +316,8 @@
       "fixed_items": [
         "health_potion",
         "black_charm_common"
-      ]
+      ],
+      "quirks": ["fastidious", "suspicious"]
     },
     "niyamendra": {
       "id": "niyamendra",
@@ -344,7 +353,8 @@
       },
       "fixed_items": [
         "water_charm_common"
-      ]
+      ],
+      "quirks": ["fastidious", "patient"]
     },
     "leraya": {
       "id": "leraya",
@@ -378,7 +388,8 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["curious", "stubborn"]
     },
     "samvibrahmi": {
       "id": "samvibrahmi",
@@ -412,7 +423,8 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["paranoid", "suspicious"]
     },
     "vayuvega": {
       "id": "vayuvega",
@@ -449,7 +461,8 @@
       "fixed_items": [
         "air_charm_middling",
         "plain_iron_dorje"
-      ]
+      ],
+      "quirks": ["hot_tempered", "brave"]
     },
     "angulimala": {
       "id": "angulimala",
@@ -483,7 +496,8 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["fastidious", "sharp_memory"]
     },
     "kanjus": {
       "id": "kanjus",
@@ -517,7 +531,8 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["greedy", "stubborn"]
     },
     "sarpatailaka": {
       "id": "sarpatailaka",
@@ -553,7 +568,8 @@
       },
       "fixed_items": [
         "earth_charm_common"
-      ]
+      ],
+      "quirks": ["greedy", "gambler"]
     },
     "shiny_needle": {
       "id": "shiny_needle",
@@ -589,7 +605,8 @@
       },
       "fixed_items": [
         "enchantment_charm_common"
-      ]
+      ],
+      "quirks": ["vain", "addiction"]
     },
     "princess_spiderface": {
       "id": "princess_spiderface",
@@ -627,7 +644,8 @@
       },
       "fixed_items": [
         "space_charm_middling"
-      ]
+      ],
+      "quirks": ["generous", "trusting"]
     },
     "sineater_thirteen": {
       "id": "sineater_thirteen",
@@ -664,7 +682,8 @@
       "fixed_items": [
         "black_charm_middling",
         "plain_bone_khatvanga"
-      ]
+      ],
+      "quirks": ["haunted", "curious"]
     },
     "dyutapati": {
       "id": "dyutapati",
@@ -698,7 +717,8 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["greedy", "patient"]
     },
     "coolhead_hotblood": {
       "id": "coolhead_hotblood",
@@ -730,7 +750,8 @@
       },
       "fixed_items": [
         "black_charm_common"
-      ]
+      ],
+      "quirks": ["hot_tempered", "sharp_memory"]
     },
     "ayurmangala": {
       "id": "ayurmangala",
@@ -767,7 +788,8 @@
       "fixed_items": [
         "health_potion",
         "health_potion"
-      ]
+      ],
+      "quirks": ["curious", "fastidious"]
     },
     "amlamarjari": {
       "id": "amlamarjari",
@@ -807,7 +829,8 @@
         "health_potion",
         "white_charm_middling",
         "plain_conch_dorje"
-      ]
+      ],
+      "quirks": ["generous", "night_drinker"]
     },
     "vimohini": {
       "id": "vimohini",
@@ -844,7 +867,8 @@
       "fixed_items": [
         "enchantment_charm_middling",
         "plain_copper_damaru"
-      ]
+      ],
+      "quirks": ["dreamer", "haunted"]
     },
     "tsering": {
       "id": "tsering",
@@ -878,7 +902,8 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["stubborn", "war_hardened"]
     },
     "rasabhava": {
       "id": "rasabhava",
@@ -915,7 +940,8 @@
       "fixed_items": [
         "health_potion",
         "summoning_charm_common"
-      ]
+      ],
+      "quirks": ["curious", "composed"]
     },
     "saka": {
       "id": "saka",
@@ -949,7 +975,8 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["patient", "stubborn"]
     },
     "mehr": {
       "id": "mehr",
@@ -987,7 +1014,8 @@
       },
       "fixed_items": [
         "fire_charm_middling"
-      ]
+      ],
+      "quirks": ["sharp_eyed", "brave"]
     },
     "vilasa": {
       "id": "vilasa",
@@ -1021,7 +1049,8 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["vain", "greedy"]
     },
     "marmajna": {
       "id": "marmajna",
@@ -1059,7 +1088,8 @@
         "health_potion",
         "health_potion",
         "sorcery_charm_common"
-      ]
+      ],
+      "quirks": ["curious", "stubborn"]
     },
     "kripana": {
       "id": "kripana",
@@ -1091,7 +1121,8 @@
           "off": ""
         }
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["greedy", "addiction"]
     },
     "nurse_bones": {
       "id": "nurse_bones",
@@ -1130,7 +1161,8 @@
       "fixed_items": [
         "health_potion",
         "white_charm_middling"
-      ]
+      ],
+      "quirks": ["generous", "devout"]
     },
     "hustle_bones": {
       "id": "hustle_bones",
@@ -1166,7 +1198,8 @@
       },
       "fixed_items": [
         "earth_charm_common"
-      ]
+      ],
+      "quirks": ["greedy", "gambler"]
     },
     "prashan": {
       "id": "prashan",
@@ -1202,7 +1235,8 @@
       },
       "fixed_items": [
         "plain_bronze_drilbu"
-      ]
+      ],
+      "quirks": ["curious", "sharp_memory"]
     },
     "temba": {
       "id": "temba",
@@ -1236,7 +1270,8 @@
         },
         "chest": "chainmail"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["generous", "brave"]
     },
     "iron_oath": {
       "id": "iron_oath",
@@ -1270,7 +1305,8 @@
         },
         "chest": "chainmail"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["stubborn", "war_hardened"]
     },
     "the_chronicler": {
       "id": "the_chronicler",
@@ -1304,7 +1340,8 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["sharp_memory", "melancholic"]
     },
     "nyingje": {
       "id": "nyingje",
@@ -1341,7 +1378,8 @@
       },
       "fixed_items": [
         "health_potion"
-      ]
+      ],
+      "quirks": ["patient", "devout"]
     },
     "shantipala": {
       "id": "shantipala",
@@ -1375,7 +1413,8 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["trusting", "generous"]
     },
     "peldon": {
       "id": "peldon",
@@ -1409,7 +1448,8 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["generous", "patient"]
     },
     "choki": {
       "id": "choki",
@@ -1446,7 +1486,8 @@
       "fixed_items": [
         "water_charm_middling",
         "plain_silver_drilbu"
-      ]
+      ],
+      "quirks": ["grief_struck", "melancholic"]
     },
     "nangwa": {
       "id": "nangwa",
@@ -1482,7 +1523,8 @@
       },
       "fixed_items": [
         "space_charm_common"
-      ]
+      ],
+      "quirks": ["curious", "stubborn"]
     },
     "drupchen": {
       "id": "drupchen",
@@ -1519,7 +1561,8 @@
       "fixed_items": [
         "white_charm_common",
         "plain_conch_dorje"
-      ]
+      ],
+      "quirks": ["lapsed", "stubborn"]
     },
     "khedrup": {
       "id": "khedrup",
@@ -1556,7 +1599,8 @@
       "fixed_items": [
         "black_charm_common",
         "plain_bone_khatvanga"
-      ]
+      ],
+      "quirks": ["stubborn", "superstitious"]
     },
     "yasha": {
       "id": "yasha",
@@ -1590,7 +1634,8 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "quirks": ["vain", "melancholic"]
     },
     "durvasa": {
       "id": "durvasa",
@@ -1627,7 +1672,8 @@
       "fixed_items": [
         "sorcery_charm_middling",
         "plain_copper_phurba"
-      ]
+      ],
+      "quirks": ["blood_handed", "stubborn"]
     },
     "gomchen": {
       "id": "gomchen",
@@ -1664,7 +1710,8 @@
       "fixed_items": [
         "sorcery_charm_common",
         "plain_iron_phurba"
-      ]
+      ],
+      "quirks": ["lapsed", "vain"]
     }
   }
 }

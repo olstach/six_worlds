@@ -1326,7 +1326,8 @@
           "outcome": {
             "type": "text",
             "text": "The image is clear: a path, a figure, a moment yet to come. Whether prophecy or fancy, it burns itself into memory. The dreamer rises feeling purposeful.",
-            "rewards": {"xp": 20, "karma": {"hell": -5}}
+            "rewards": {"xp": 20},
+            "karma": {"hell": -5}
           }
         },
         {
@@ -1356,7 +1357,8 @@
           "outcome": {
             "type": "text",
             "text": "In the morning, the offering is gone. The camp feels lighter somehow. Something difficult has passed through and moved on.",
-            "rewards": {"karma": {"hungry_ghost": -10}}
+            "karma": {"hungry_ghost": -10},
+            "cost": {"food": 1}
           }
         },
         {
@@ -1367,7 +1369,9 @@
           "outcome": {
             "type": "text",
             "text": "It does not answer with words, but it turns toward the sound of your voice and then recedes, as if the acknowledgement itself was enough. A small thing done well.",
-            "rewards": {"karma": {"hungry_ghost": -15}, "xp": 10}
+            "rewards": {"xp": 10},
+            "karma": {"hungry_ghost": -15},
+            "cost": {"food": 1}
           }
         },
         {
@@ -1413,6 +1417,273 @@
           "outcome": {
             "type": "text",
             "text": "The smoke curls and dissipates into the dark. The camp is cold for the rest of the night. Nothing comes of it, but nothing was risked either."
+          }
+        }
+      ]
+    },
+
+    "camp_ember_voices": {
+      "id": "camp_ember_voices",
+      "title": "The Fire Speaks",
+      "trigger": "camp",
+      "realm": "hell",
+      "rarity": "uncommon",
+      "description": "Deep in the night, the campfire rises without reason. Between the popping of burning wood, something close to words — close enough that three people heard three different things.",
+      "choices": [
+        {
+          "id": "listen",
+          "text": "Sit quietly and listen for meaning.",
+          "type": "requirement",
+          "requirements": {"skills": {"yoga": 2}},
+          "outcome": {
+            "type": "text",
+            "text": "The words aren't in any language, but the meaning arrives whole: a route, a danger, a name that matters. Whether this realm is warning you or baiting you, the information feels true.",
+            "rewards": {"xp": 20},
+            "karma": {"hell": 5}
+          }
+        },
+        {
+          "id": "speak_back",
+          "text": "Answer it — ask what it wants.",
+          "type": "roll",
+          "attribute": "awareness",
+          "dc": 12,
+          "outcome": {
+            "type": "text",
+            "text": "The fire brightens, then settles. Something received your address. The embers arrange and rearrange in patterns that suggest approval. You feel, briefly, observed and acknowledged.",
+            "rewards": {"xp": 15},
+            "karma": {"hell": 10}
+          },
+          "failure_outcome": {
+            "type": "text",
+            "text": "The fire goes out. All of it, without smoke or cooling, just gone. It takes a long time to relight. No one speaks much after."
+          }
+        },
+        {
+          "id": "ignore",
+          "text": "It's the heat. Go back to sleep.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "By morning the fire is cold ash. Whether anything was there or not, it is settled now."
+          }
+        }
+      ]
+    },
+
+    "camp_guardian_threshold": {
+      "id": "camp_guardian_threshold",
+      "title": "At the Edge of the Light",
+      "trigger": "camp",
+      "realm": "hell",
+      "rarity": "uncommon",
+      "description": "Something stands at the very limit of the firelight. It has been there for some time. It is not threatening — it simply waits, in the particular way that a very old grievance waits.",
+      "choices": [
+        {
+          "id": "hear_out",
+          "text": "Invite it to speak. A grievance aired is one less thing blocking the path.",
+          "type": "requirement",
+          "requirements": {"skills": {"persuasion": 2}},
+          "outcome": {
+            "type": "text",
+            "text": "It speaks, or something like speaking happens. The story is circular and old — a wrong done long before any of you were born, compounding through each retelling. You acknowledge it without agreeing. The presence recedes satisfied, or at least finished.",
+            "karma": {"hell": 15}
+          }
+        },
+        {
+          "id": "ward_ritual",
+          "text": "Perform a brief warding. Give it a boundary rather than an audience.",
+          "type": "requirement",
+          "requirements": {"skills": {"ritual": 2}},
+          "outcome": {
+            "type": "text",
+            "text": "The ritual is imperfect but sincere. The presence retreats from the boundary you've established. By morning it is gone, and the camp feels marginally warmer for it."
+          }
+        },
+        {
+          "id": "wait_out",
+          "text": "Watch it until dawn. It has to leave with the light.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "It does leave with the light. One of the party barely slept. The camp breaks in an uneasy silence that no one names."
+          }
+        }
+      ]
+    },
+
+    "camp_whispered_offering": {
+      "id": "camp_whispered_offering",
+      "title": "What Was Left Out",
+      "trigger": "camp",
+      "realm": "hungry_ghost",
+      "rarity": "uncommon",
+      "description": "You wake to find the camp's food supplies disturbed. Nothing taken — but arranged. Placed. A small portion of each item separated from the rest, set near the fire's edge, as if left for someone who didn't eat.",
+      "choices": [
+        {
+          "id": "leave_more",
+          "text": "Leave a proper offering — deliberately, this time.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You set it out with care. By the next morning, the portion is gone, and whatever sorted your supplies has not returned.",
+            "karma": {"hungry_ghost": -15},
+            "cost": {"food": 2}
+          }
+        },
+        {
+          "id": "ritual_offering",
+          "text": "Consecrate the offering properly with a brief ritual.",
+          "type": "requirement",
+          "requirements": {"skills": {"ritual": 2}},
+          "outcome": {
+            "type": "text",
+            "text": "Consecrated food reaches further in this realm than it has any right to. The arrangement disappears, and for a moment you catch something at the periphery of the firelight that might have been gratitude.",
+            "rewards": {"xp": 10},
+            "karma": {"hungry_ghost": -25},
+            "cost": {"food": 1}
+          }
+        },
+        {
+          "id": "secure",
+          "text": "Secure the supplies and post a watch.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "Nothing more is disturbed that night. In the morning the small arranged portion is still there, untouched."
+          }
+        }
+      ]
+    },
+
+    "camp_creditor": {
+      "id": "camp_creditor",
+      "title": "The Outstanding Balance",
+      "trigger": "camp",
+      "realm": "hungry_ghost",
+      "rarity": "uncommon",
+      "description": "A figure in a creditor's sash steps into the firelight. It looks like no one in particular. It knows exactly who you are.",
+      "choices": [
+        {
+          "id": "negotiate",
+          "text": "Enter into negotiation — there is always a way to restructure.",
+          "type": "requirement",
+          "requirements": {"skills": {"trade": 3}},
+          "outcome": {
+            "type": "text",
+            "text": "Three rounds of negotiation in the cold air. You emerge with an arrangement no one is happy with, which is the mark of a good deal. The creditor departs without incident. The ledger, as far as you can tell, now balances.",
+            "karma": {"hungry_ghost": -10},
+            "cost": {"gold": 30}
+          }
+        },
+        {
+          "id": "pay",
+          "text": "Pay what it asks without argument.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "It accepts payment. It looks faintly disappointed that there was nothing to argue about. It leaves. The camp feels lighter.",
+            "karma": {"hungry_ghost": -5},
+            "cost": {"gold": 50}
+          }
+        },
+        {
+          "id": "refuse",
+          "text": "Tell it you don't recognise the debt.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "It notes this down in a ledger you cannot see. It does not argue. It leaves, which is somehow worse than if it had."
+          }
+        }
+      ]
+    },
+
+    "camp_shared_dream": {
+      "id": "camp_shared_dream",
+      "title": "The Same Dream",
+      "trigger": "camp",
+      "realm": "any",
+      "rarity": "uncommon",
+      "description": "In the morning it becomes clear that every member of the party dreamed the same thing. The details vary — but the place, the light, the unspoken pressure of it — identical.",
+      "choices": [
+        {
+          "id": "compare_notes",
+          "text": "Sit together and map the differences. There's something in the overlap.",
+          "type": "requirement",
+          "requirements": {"skills": {"yoga": 2}},
+          "outcome": {
+            "type": "text",
+            "text": "The point where all accounts agree is a detail no one remarked on individually — a mark, a position, a quality of attention. When you locate it, something like recognition moves through the group. A shared dream properly examined becomes a kind of preparation.",
+            "rewards": {"xp": 25},
+            "karma": {"hell": -5, "hungry_ghost": -5}
+          }
+        },
+        {
+          "id": "write_it_down",
+          "text": "Record what you remember before it fades.",
+          "type": "requirement",
+          "requirements": {"skills": {"learning": 2}},
+          "outcome": {
+            "type": "text",
+            "text": "Committed to paper, the dream becomes a document. Whether it's useful or not, it's no longer just a feeling in the air between you — it's a record, and records have a way of meaning something eventually.",
+            "rewards": {"xp": 15}
+          }
+        },
+        {
+          "id": "move_on",
+          "text": "Say nothing. Dreams are not decisions.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "The camp breaks in ordinary silence. Whatever the dream was trying to say, it did not say it."
+          }
+        }
+      ]
+    },
+
+    "camp_stranger_fire": {
+      "id": "camp_stranger_fire",
+      "title": "Another Light",
+      "trigger": "camp",
+      "realm": "any",
+      "rarity": "uncommon",
+      "description": "A light on the hillside — too steady and too warm to be a spirit. Another camp. They haven't signalled, but they haven't hidden either.",
+      "choices": [
+        {
+          "id": "approach",
+          "text": "Walk over and introduce yourself.",
+          "type": "roll",
+          "attribute": "charm",
+          "dc": 11,
+          "outcome": {
+            "type": "text",
+            "text": "Traders, or something close to traders — three of them, neutral in disposition, willing to part with supplies at a fair price. You part on workmanlike terms.",
+            "rewards": {"gold": 20, "xp": 10}
+          },
+          "failure_outcome": {
+            "type": "text",
+            "text": "They receive you with flat unfriendliness. Not hostile — but by the time you've returned to your own fire, you've gained nothing and spent an awkward hour."
+          }
+        },
+        {
+          "id": "signal",
+          "text": "Signal peacefully and wait to see if they respond.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "They signal back — a single lamp moved twice. Then nothing more. Whoever they are, they're occupied or cautious. You sleep well enough anyway."
+          }
+        },
+        {
+          "id": "watch",
+          "text": "Keep watch and observe without contact.",
+          "type": "requirement",
+          "requirements": {"skills": {"logistics": 2}},
+          "outcome": {
+            "type": "text",
+            "text": "Their fire goes out before yours. Two of them — moving efficiently, no wasted motion. Scouts or couriers, from their routine. Nothing threatening. The knowledge costs you some sleep but not much.",
+            "rewards": {"xp": 10}
           }
         }
       ]

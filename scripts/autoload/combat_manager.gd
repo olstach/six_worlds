@@ -6594,10 +6594,16 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 		if on_crit_status != "":
 			_apply_status_effect(defender, on_crit_status, 1)
 			result["on_crit_status"] = on_crit_status
-		# 20% chance a crit inflicts a persistent wound on player characters
+		# 20% chance a crit inflicts a persistent wound on player characters.
+		# Ranged weapons (skill_tag: "ranged") draw from the ranged wound pool.
 		if WoundSystem and defender.team == Team.PLAYER and randf() < 0.20:
 			var char_data = defender.character_data
-			var wound_id = WoundSystem.apply_random_crit_wound(char_data)
+			var is_ranged: bool = weapon.get("skill_tag", "") == "ranged"
+			var wound_id: String
+			if is_ranged:
+				wound_id = WoundSystem.apply_random_ranged_crit_wound(char_data)
+			else:
+				wound_id = WoundSystem.apply_random_crit_wound(char_data)
 			if wound_id != "":
 				combat_log.emit("%s received a %s!" % [
 					defender.unit_name,
@@ -6605,13 +6611,23 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 				])
 				result["persistent_wound"] = wound_id
 
-	# 15% chance hits from undead/diseased enemies inflict a disease on player characters
+	# 15% chance hits from undead/diseased enemies inflict a disease on player characters.
+	# 15% chance hits from poison-tagged enemies inflict poisoned blood.
 	if WoundSystem and attacker.team == Team.ENEMY and defender.team == Team.PLAYER:
 		var attacker_tags: Array = attacker.character_data.get("tags", [])
 		if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15:
 			var tag_source = "undead" if "undead" in attacker_tags else "diseased"
 			var char_data = defender.character_data
 			var disease_id = WoundSystem.apply_random_disease(char_data, tag_source)
+			if disease_id != "":
+				combat_log.emit("%s has been afflicted with %s!" % [
+					defender.unit_name,
+					WoundSystem.WOUND_TYPES.get(disease_id, {}).get("display_name", disease_id)
+				])
+				result["persistent_disease"] = disease_id
+		elif "poison" in attacker_tags and randf() < 0.15:
+			var char_data = defender.character_data
+			var disease_id = WoundSystem.apply_random_poison_disease(char_data)
 			if disease_id != "":
 				combat_log.emit("%s has been afflicted with %s!" % [
 					defender.unit_name,

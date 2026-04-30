@@ -1063,11 +1063,16 @@ func _open_activity_panel(tier: int, food_cost: int, herbs_cost: int, scrap_cost
 				cost_parts.append("%s: %d" % [res.capitalize(), costs[res]])
 			cost_str = " [%s]" % " | ".join(cost_parts)
 
+		var effect_line: String = activity.get("effect_desc", "")
+		if act_id == "sadhana" and not performer.is_empty():
+			var preview := CampSystem.get_sadhana_preview(performer)
+			effect_line = preview.tier_name + " · " + effect_line
+
 		var can_afford: bool = activity.get("can_afford", true)
 		var btn := Button.new()
 		btn.text = "%s%s\n%s — by %s" % [
 			activity.get("name", act_id), cost_str,
-			activity.get("effect_desc", ""), perf_name
+			effect_line, perf_name
 		]
 		btn.custom_minimum_size = Vector2(0, 54)
 		btn.add_theme_font_size_override("font_size", 12)
@@ -1162,12 +1167,14 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 	var is_safe   := _check_is_safe_camp()
 	var scouted   := "scout" in selected_activities
 	var effective_tier := tier
+	var _disturbance_event_id: String = ""
 	if not is_safe and not scouted and tier >= 2:
 		if CampSystem.roll_disturbance(tier, GameState.current_world, GameState.hour_of_day):
 			effective_tier = maxi(1, tier - 1)
 			if selected_activities.size() > 0:
 				selected_activities = selected_activities.slice(0, selected_activities.size() - 1)
 			_show_toast("The rest was disturbed! Reduced to %s effectiveness." % ["Quick Rest", "Camp", "Full Rest"][effective_tier - 1])
+			_disturbance_event_id = EventManager.get_random_camp_event(GameState.current_world)
 
 	# === Consume resources ===
 	GameState.consume_supply("food", food_cost)
@@ -1213,6 +1220,7 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 
 	# === Execute camp activities ===
 	var activity_messages: Array[String] = []
+	var _activity_camp_event_id: String = ""
 	if not selected_activities.is_empty():
 		for act_id in selected_activities:
 			var act_def: Dictionary = {}
@@ -1223,6 +1231,8 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 			var performer: Dictionary = CampSystem._best_performer(party, act_def)
 			var result := CampSystem.execute_activity(act_id, performer, party)
 			activity_messages.append(result.get("message", ""))
+			if _activity_camp_event_id.is_empty():
+				_activity_camp_event_id = result.get("camp_event_id", "")
 
 	# === Tick persistent wounds (after activities so Field Surgery cures first) ===
 	var wound_messages: Array[String] = []
@@ -1245,6 +1255,21 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 			toast += "\n⚠ " + msg
 	_show_toast(toast)
 	_update_time_label()
+
+	# === Post-rest camp event (disturbance or night_music) ===
+	var pending_camp_event: String = _disturbance_event_id if not _disturbance_event_id.is_empty() else _activity_camp_event_id
+	if not pending_camp_event.is_empty():
+		call_deferred("_show_camp_event", pending_camp_event)
+
+
+## Show a camp event in the event display after a rest concludes.
+## Used for disturbance encounters and night_music draws.
+func _show_camp_event(event_id: String) -> void:
+	if event_id.is_empty() or not EventManager.event_database.has(event_id):
+		return
+	MapManager.pause_movement()
+	_set_event_visible(true)
+	event_display.show_event(event_id, "", false)
 
 
 ## Show a toast when the player casts a spell from the overworld spellbook.
