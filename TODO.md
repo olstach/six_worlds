@@ -675,9 +675,10 @@ Multi-armed characters are intentionally strong against lower-world beings — t
 
 ---
 
-## Body/Wound System — Audit ✓ COMPLETE (Remaining Issues Tracked Below)
+## Body/Wound System — Audit ✓ COMPLETE (Second pass 2026-04-30)
 
-Deep audit completed. Bugs fixed in this session; remaining issues and design debt below.
+First audit fixed: sever weapon drop, O(n²) stat recalcs, natural weapon accuracy, multi-arm proc scaling, dominant natural weapon fallback, akimbo perk.
+Second audit fixed: multi-arm chain gate, enemy body_plan, inventory-full-on-sever, missing limb penalties, psychology signal connections, wound_specialist perk, wound stacking docs.
 
 ### Bugs Fixed
 - [x] **`sever_part()` didn't drop weapons**: arm_r sever now also unequips `weapon_main`; arm_l unequips `weapon_off`. Convention: arm_r = main hand, arm_l = off-hand.
