@@ -234,9 +234,12 @@ func _ready() -> void:
 ## This is an approximation — tune as needed during playtesting.
 func _intensity_multiplier(character: Dictionary, element: String) -> float:
 	## Sourced from elemental affinity. Affinity 10 → 1.0×, affinity 40 → ~2.4×, affinity 1 → ~0.1× (minimum).
-	var affinity: float = 10.0  # default: log(10/10) = 0 → 1.0× multiplier when no affinity data
+	## Zero affinity means no build-up yet — treat as neutral (10.0) so new characters react normally.
+	var affinity: float = 10.0  # default: log(10/10) = 0 → 1.0× multiplier
 	if "elements" in character and element in character.elements:
-		affinity = max(1.0, float(character.elements[element]))
+		var raw: float = float(character.elements[element])
+		if raw > 0.0:
+			affinity = raw  # 0 stays at 10.0 (neutral) — only use raw if affinity has built up
 	return max(0.1, 1.0 + log(affinity / 10.0))
 
 
