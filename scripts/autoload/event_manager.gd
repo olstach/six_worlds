@@ -658,6 +658,19 @@ func apply_outcome(outcome: Dictionary) -> void:
 							(" (and %d child parts)" % (severed.size() - 1)) if severed.size() > 1 else ""
 						])
 
+		# Supply rewards — e.g. {"food": 2, "herbs": 1}
+		if "supplies" in rewards:
+			var supply_rewards = rewards.supplies
+			for supply_type in supply_rewards:
+				var amount: int = int(supply_rewards[supply_type])
+				if amount > 0:
+					GameState.add_supply(supply_type, amount)
+
+		# Flag rewards — e.g. {"found_bone_raft_name": true}
+		if "flags" in rewards:
+			for flag_key in rewards.flags:
+				GameState.set_flag(flag_key, rewards.flags[flag_key])
+
 		# gold_returned: the NPC refuses the money and gives it back (e.g. dark cave yogini)
 		if "gold_returned" in rewards and rewards.gold_returned:
 			# Cost was deducted when the choice cost was applied; refund the gold cost here.

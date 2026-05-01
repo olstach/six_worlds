@@ -217,7 +217,10 @@
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "random",
-            "companion_pool": ["tsering", "drupchen"],
+            "companion_pool": [
+              "tsering",
+              "drupchen"
+            ],
             "free": true,
             "text": "You haul it clear of the earth — a confused rolang, blinking in the grey light. It looks at its hands, then at you. Something surfaces in its eyes. Not a full mind, but enough. It stays close to your heel like a dog that's found someone.",
             "karma": {
@@ -245,7 +248,10 @@
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "random",
-            "companion_pool": ["tsering", "drupchen"],
+            "companion_pool": [
+              "tsering",
+              "drupchen"
+            ],
             "free": true,
             "text": "You get both hands under the soil and heave. The earth gives. The rolang sits up, dazed and blinking. It looks at you for a long moment, then slowly nods. It will follow you.",
             "karma": {
@@ -1669,7 +1675,15 @@
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "random",
-            "companion_pool": ["iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon", "nurse_bones", "hustle_bones"],
+            "companion_pool": [
+              "iron_oath",
+              "the_chronicler",
+              "nyingje",
+              "shantipala",
+              "peldon",
+              "nurse_bones",
+              "hustle_bones"
+            ],
             "free": true,
             "text": "It takes a few minutes of material to break through the professional sullenness. Then one skeleton starts laughing. Then another. By the end, the lodge is rowdy and welcoming. One of the mercenaries pulls you aside afterward. \"That was good. I could use a change of scene. You taking on crew?\"",
             "karma": {
@@ -6105,7 +6119,6 @@
         }
       ]
     },
-
     "hg_mehr": {
       "id": "hg_mehr",
       "title": "The Eye in the Dark",
@@ -6119,7 +6132,9 @@
           "outcome": {
             "type": "text",
             "text": "She answers. Dry, measured, without warmth or hostility. She answers your questions the way a stone does if you press your ear to it. She is not interested in traveling. You are not sufficiently interesting.",
-            "rewards": { "xp": 5 },
+            "rewards": {
+              "xp": 5
+            },
             "karma": {}
           }
         },
@@ -6128,14 +6143,18 @@
           "type": "requirement",
           "text": "Light a ritual flame — the old greeting of the Sun priesthood",
           "requirements": {
-            "skills": { "fire_magic": 5 }
+            "skills": {
+              "fire_magic": 5
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "mehr",
             "free": true,
             "text": "The flame catches her attention in a way nothing else would. She straightens. Her golden eye moves before the other one does. 'Where did you learn that form?' She is already wading toward you before you finish answering.",
-            "karma": { "god": 3 }
+            "karma": {
+              "god": 3
+            }
           }
         },
         {
@@ -6143,14 +6162,18 @@
           "type": "requirement",
           "text": "Ask about the prophecy — you have enough to read what she was reading",
           "requirements": {
-            "skills": { "space_magic": 4 }
+            "skills": {
+              "space_magic": 4
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "mehr",
             "free": true,
             "text": "Her good eye narrows. The gold one does not move. 'That is the first intelligent question anyone has asked me in a very long time.' A pause. 'Come. Walk with me while I explain what it actually said.'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           }
         },
         {
@@ -6158,14 +6181,19 @@
           "type": "roll",
           "text": "Speak to her as an equal — not with reverence, not with wariness",
           "requirements": {
-            "roll": { "attribute": "charm", "difficulty": 14 }
+            "roll": {
+              "attribute": "charm",
+              "difficulty": 14
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "mehr",
             "free": true,
             "text": "She studies you for a long moment. 'You have the manner of someone who has survived things,' she says. 'I find that more persuasive than credentials.' She wades toward you.",
-            "karma": { "human": 3 }
+            "karma": {
+              "human": 3
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6175,7 +6203,6 @@
         }
       ]
     },
-
     "hg_choki": {
       "id": "hg_choki",
       "title": "The Gathering",
@@ -6189,8 +6216,12 @@
           "outcome": {
             "type": "text",
             "text": "The bog is silent as you walk away. You don't hear her move.",
-            "rewards": { "xp": 3 },
-            "karma": { "animal": 1 }
+            "rewards": {
+              "xp": 3
+            },
+            "karma": {
+              "animal": 1
+            }
           }
         },
         {
@@ -6198,14 +6229,19 @@
           "type": "requirement",
           "text": "Touch the water beside her — let it speak for you",
           "requirements": {
-            "skills": { "water_magic": 4 }
+            "skills": {
+              "water_magic": 4
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "choki",
             "free": true,
             "text": "The water stirs slightly under your hand. She watches it. 'It was like that,' she says. 'One moment there was nothing. Then—' She trails off. Then: 'You are going somewhere. Can I come?'",
-            "karma": { "water": 3, "human": 2 }
+            "karma": {
+              "water": 3,
+              "human": 2
+            }
           }
         },
         {
@@ -6213,14 +6249,18 @@
           "type": "requirement",
           "text": "Ask her what she was gathering when the flood came",
           "requirements": {
-            "skills": { "logistics": 5 }
+            "skills": {
+              "logistics": 5
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "choki",
             "free": true,
             "text": "She finally looks up. Something in the question — the specificity of it, the acknowledgment of what she was doing when she left — gets through where comfort never would. She tells you everything she was carrying. She asks if you need a guide.",
-            "karma": { "human": 4 }
+            "karma": {
+              "human": 4
+            }
           }
         },
         {
@@ -6228,14 +6268,20 @@
           "type": "roll",
           "text": "Sit beside her without speaking — wait for her to acknowledge you",
           "requirements": {
-            "roll": { "attribute": "awareness", "difficulty": 15 }
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": 15
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "choki",
             "free": true,
             "text": "The silence stretches to an hour. Then two. Then she says: 'You're still here.' After another long while: 'Most people leave.' She looks at you sideways. 'Where are you going?'",
-            "karma": { "human": 3, "animal": 2 }
+            "karma": {
+              "human": 3,
+              "animal": 2
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6245,7 +6291,6 @@
         }
       ]
     },
-
     "hg_nangwa": {
       "id": "hg_nangwa",
       "title": "The Unfinished Argument",
@@ -6259,7 +6304,9 @@
           "outcome": {
             "type": "text",
             "text": "He doesn't notice you leave. The argument continues.",
-            "rewards": { "xp": 4 },
+            "rewards": {
+              "xp": 4
+            },
             "karma": {}
           }
         },
@@ -6268,14 +6315,18 @@
           "type": "requirement",
           "text": "Complete his sentence — you can see where the argument is going",
           "requirements": {
-            "skills": { "learning": 5 }
+            "skills": {
+              "learning": 5
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "nangwa",
             "free": true,
             "text": "He stops. Turns toward you with the most attention he has given anything in centuries. He seems to become slightly more present in the physical world as he focuses. 'Walk with me,' he says. 'I think better when I walk. Tell me if I have this right.'",
-            "karma": { "human": 3 }
+            "karma": {
+              "human": 3
+            }
           }
         },
         {
@@ -6283,14 +6334,18 @@
           "type": "requirement",
           "text": "Reach toward him through space — make contact with the part of him that is still here",
           "requirements": {
-            "skills": { "space_magic": 4 }
+            "skills": {
+              "space_magic": 4
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "nangwa",
             "free": true,
             "text": "For a moment, genuine contact. He startles. Looks at his hands as if seeing them for the first time in a while. 'Oh,' he says. 'I have been quite far away.' He looks at you with new attention. 'Would you stay nearby? I find I concentrate better when someone is present.'",
-            "karma": { "space": 2 }
+            "karma": {
+              "space": 2
+            }
           }
         },
         {
@@ -6298,14 +6353,19 @@
           "type": "roll",
           "text": "Follow the argument — interrupt at the right moment",
           "requirements": {
-            "roll": { "attribute": "focus", "difficulty": 14 }
+            "roll": {
+              "attribute": "focus",
+              "difficulty": 14
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "nangwa",
             "free": true,
             "text": "You catch the flaw and name it. He stops mid-gesture. 'Say that again.' You do. He is silent for a full minute. Then: 'I hadn't considered that approach.' A longer silence. 'Come with me while I think it through. I need a sounding board.'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6315,7 +6375,6 @@
         }
       ]
     },
-
     "hg_prashan": {
       "id": "hg_prashan",
       "title": "The Crossroads Question",
@@ -6329,7 +6388,9 @@
           "outcome": {
             "type": "text",
             "text": "'As you like. You will be back. They always come back when they have had time to think of an answer.' It settles in to wait.",
-            "rewards": { "xp": 4 },
+            "rewards": {
+              "xp": 4
+            },
             "karma": {}
           }
         },
@@ -6338,14 +6399,19 @@
           "type": "requirement",
           "text": "Ask it a better question instead of answering",
           "requirements": {
-            "skills": { "learning": 6 }
+            "skills": {
+              "learning": 6
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "prashan",
             "free": true,
             "text": "It goes very still. This has not happened before — or not for a very long time. 'You—' It stops. 'Where did you—' Stops again. Slowly, a smile spreads across a face not quite designed for it. 'All right. This is excellent. You will come with me. I insist.'",
-            "karma": { "air": 3, "human": 2 }
+            "karma": {
+              "air": 3,
+              "human": 2
+            }
           }
         },
         {
@@ -6353,14 +6419,18 @@
           "type": "requirement",
           "text": "Tell it a joke instead of answering",
           "requirements": {
-            "skills": { "comedy": 4 }
+            "skills": {
+              "comedy": 4
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "prashan",
             "free": true,
             "text": "It blinks. Then, despite itself, makes a sound. Then another. 'That is — oh, that is terrible. That is genuinely terrible.' Its head is listing sideways with laughter. 'Come, I'll show you something better. I promise.'",
-            "karma": { "human": 3 }
+            "karma": {
+              "human": 3
+            }
           }
         },
         {
@@ -6368,14 +6438,19 @@
           "type": "roll",
           "text": "Answer the riddle",
           "requirements": {
-            "roll": { "attribute": "awareness", "difficulty": 15 }
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": 15
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "prashan",
             "free": true,
             "text": "It tilts its head. Then further. Then further still, nearly upside down. 'Hmm.' A long pause. 'That is either a very good answer or a very bad one, and I cannot immediately tell which.' It straightens. 'I need to follow this further. Come with me.'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6385,7 +6460,6 @@
         }
       ]
     },
-
     "hg_nyingje": {
       "id": "hg_nyingje",
       "title": "The Round",
@@ -6399,8 +6473,13 @@
           "outcome": {
             "type": "text",
             "text": "She doesn't look up as you go. The recitation continues.",
-            "rewards": { "xp": 6 },
-            "karma": { "god": 3, "human": 2 }
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "god": 3,
+              "human": 2
+            }
           }
         },
         {
@@ -6408,14 +6487,19 @@
           "type": "requirement",
           "text": "Help her with her round — tend alongside her",
           "requirements": {
-            "skills": { "white_magic": 5 }
+            "skills": {
+              "white_magic": 5
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "nyingje",
             "free": true,
             "text": "You work in silence for a while. She watches your technique without comment. Then: 'You have been taught properly.' A pause. 'By whom?' By the time you finish answering, you are both walking. You realize later you agreed to travel together without either of you saying so directly.",
-            "karma": { "god": 5, "human": 3 }
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
           }
         },
         {
@@ -6423,14 +6507,18 @@
           "type": "requirement",
           "text": "Sit in meditation nearby — make yourself a point of stillness in this place",
           "requirements": {
-            "skills": { "yoga": 5 }
+            "skills": {
+              "yoga": 5
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "nyingje",
             "free": true,
             "text": "She completes her round and comes back to where you are sitting. Waits. When you open your eyes, she is very close. 'You practice,' she says. It is not a question. A pause. 'I will walk with you for a while.'",
-            "karma": { "god": 4 }
+            "karma": {
+              "god": 4
+            }
           }
         },
         {
@@ -6438,14 +6526,20 @@
           "type": "roll",
           "text": "Ask her directly: will you travel with us?",
           "requirements": {
-            "roll": { "attribute": "charm", "difficulty": 16 }
+            "roll": {
+              "attribute": "charm",
+              "difficulty": 16
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "nyingje",
             "free": true,
             "text": "She pauses in her work. Studies you with empty eye sockets that somehow convey careful attention. 'You are going further than here,' she says. 'There will be beings who need tending there too.' She finishes with her current patient, then stands. 'I will come.'",
-            "karma": { "god": 4, "human": 2 }
+            "karma": {
+              "god": 4,
+              "human": 2
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6455,7 +6549,6 @@
         }
       ]
     },
-
     "hg_khedrup": {
       "id": "hg_khedrup",
       "title": "The Auspicious Count",
@@ -6469,7 +6562,9 @@
           "outcome": {
             "type": "text",
             "text": "The counting continues. The tally marks accumulate.",
-            "rewards": { "xp": 3 },
+            "rewards": {
+              "xp": 3
+            },
             "karma": {}
           }
         },
@@ -6478,14 +6573,18 @@
           "type": "requirement",
           "text": "Point out a flaw in his formula — you can see where the multiplier breaks down",
           "requirements": {
-            "skills": { "ritual": 5 }
+            "skills": {
+              "ritual": 5
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "khedrup",
             "free": true,
             "text": "His hand stops on the beads. He looks up for the first time. 'Show me.' You do. He studies it. Studies you. Then: 'I may need to revise my methodology. I would welcome a second opinion — going forward.'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           }
         },
         {
@@ -6493,7 +6592,9 @@
           "type": "requirement",
           "text": "Examine his preserved state — make a technical observation",
           "requirements": {
-            "skills": { "alchemy": 4 }
+            "skills": {
+              "alchemy": 4
+            }
           },
           "outcome": {
             "type": "recruit_companion",
@@ -6508,14 +6609,19 @@
           "type": "roll",
           "text": "Wait for him to complete his count — do not interrupt",
           "requirements": {
-            "roll": { "attribute": "focus", "difficulty": 14 }
+            "roll": {
+              "attribute": "focus",
+              "difficulty": 14
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "khedrup",
             "free": true,
             "text": "Three hours. Four. He reaches the end of his calculation, opens his eyes, and finds you there. 'You waited.' A pause. 'Most don't.' He consults his tallies. 'This is inconvenient. I will need to adjust for your presence in the calculation. Sit down. What is your birth star?'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6525,7 +6631,6 @@
         }
       ]
     },
-
     "hg_rasabhava": {
       "id": "hg_rasabhava",
       "title": "The Formula",
@@ -6539,7 +6644,9 @@
           "outcome": {
             "type": "text",
             "text": "He doesn't notice you leave. He's found something to check.",
-            "rewards": { "xp": 4 },
+            "rewards": {
+              "xp": 4
+            },
             "karma": {}
           }
         },
@@ -6548,14 +6655,18 @@
           "type": "requirement",
           "text": "Identify the phase where the formula breaks down",
           "requirements": {
-            "skills": { "alchemy": 5 }
+            "skills": {
+              "alchemy": 5
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "rasabhava",
             "free": true,
             "text": "'The stabilization phase — your catalyst ratio shifts at temperature.' He goes absolutely still. 'Say that again.' You do. He checks it three times. 'I have been wrong for forty-three years.' He closes his eyes. Opens them. 'I believe I need a different sort of problem. Will you have me?'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           }
         },
         {
@@ -6563,7 +6674,9 @@
           "type": "requirement",
           "text": "Ask what he is trying to preserve and whether it can be summoned instead",
           "requirements": {
-            "skills": { "summoning": 3 }
+            "skills": {
+              "summoning": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
@@ -6578,14 +6691,19 @@
           "type": "roll",
           "text": "Read the formula over his shoulder — try to spot what keeps going wrong",
           "requirements": {
-            "roll": { "attribute": "awareness", "difficulty": 13 }
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": 13
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "rasabhava",
             "free": true,
             "text": "You see it — a small error in the stabilization phase, invisible in isolation but fatal in combination. 'There,' you say. He looks. Silence. 'That can't be right. I've checked it six—' He checks it again. 'Oh.' The smallest, most deflated sound. Then: 'Are you traveling? I may want to get out of this room.'",
-            "karma": { "human": 1 }
+            "karma": {
+              "human": 1
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6595,7 +6713,6 @@
         }
       ]
     },
-
     "hg_durvasa": {
       "id": "hg_durvasa",
       "title": "The Contained Curse",
@@ -6609,7 +6726,9 @@
           "outcome": {
             "type": "text",
             "text": "You feel his eyes on your back as you leave. The sigils continue to glow.",
-            "karma": { "hell": 2 }
+            "karma": {
+              "hell": 2
+            }
           }
         },
         {
@@ -6617,14 +6736,19 @@
           "type": "requirement",
           "text": "Diffuse the bound energy through the air — disperse it gradually",
           "requirements": {
-            "skills": { "air_magic": 5 }
+            "skills": {
+              "air_magic": 5
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "durvasa",
             "free": true,
             "text": "It takes time. It takes all the steadiness you have. Gradually the sigils stop glowing. He slumps, then straightens. He looks at his hands, then at you. 'You have done this before,' he says. 'No,' you say. He considers this. 'Hm. I owe you a debt. How are you traveling?'",
-            "karma": { "air": 3, "human": 3 }
+            "karma": {
+              "air": 3,
+              "human": 3
+            }
           }
         },
         {
@@ -6632,14 +6756,18 @@
           "type": "requirement",
           "text": "Perform a proper reversal — unmake the binding through ceremony",
           "requirements": {
-            "skills": { "ritual": 6 }
+            "skills": {
+              "ritual": 6
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "durvasa",
             "free": true,
             "text": "The curse unwrites itself, step by step. He exhales for the first time in what sounds like a very long time. 'Thorough,' he says. 'Methodical. I appreciate methodical.' He stands slowly. 'Whoever taught you that taught you well. I find myself without current employment. Are you taking work?'",
-            "karma": { "human": 3 }
+            "karma": {
+              "human": 3
+            }
           }
         },
         {
@@ -6647,14 +6775,19 @@
           "type": "roll",
           "text": "Try to read the binding — understand what you are dealing with",
           "requirements": {
-            "roll": { "attribute": "focus", "difficulty": 15 }
+            "roll": {
+              "attribute": "focus",
+              "difficulty": 15
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "durvasa",
             "free": true,
             "text": "A death-curse, reflected and internalized. He has been holding it in containment since it returned to him. 'How long?' you ask. He answers. You do not ask again. You sit across from him and begin talking through options. By the time the sigils fade, you are colleagues.",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6664,7 +6797,6 @@
         }
       ]
     },
-
     "hg_gomchen": {
       "id": "hg_gomchen",
       "title": "The Contract Web",
@@ -6678,7 +6810,9 @@
           "outcome": {
             "type": "text",
             "text": "The hall is silent except for the slow erosion of stone.",
-            "karma": { "hell": 1 }
+            "karma": {
+              "hell": 1
+            }
           }
         },
         {
@@ -6686,14 +6820,18 @@
           "type": "requirement",
           "text": "Dissolve the primary binding — force the keystone obligation apart",
           "requirements": {
-            "skills": { "sorcery": 6 }
+            "skills": {
+              "sorcery": 6
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "gomchen",
             "free": true,
             "text": "The stone cracks. The inscription flakes. He exhales slowly. 'I felt that.' The rest of the web loosens by degrees. He opens his eyes fully. 'You have just made me more dangerous. I hope you know what you are doing.' He stands, after effort. 'I owe you a debt. I prefer to pay them personally.'",
-            "karma": { "human": 3 }
+            "karma": {
+              "human": 3
+            }
           }
         },
         {
@@ -6701,14 +6839,18 @@
           "type": "requirement",
           "text": "Read the obligations back to him — enumerate the full cost of what he is holding",
           "requirements": {
-            "skills": { "black_magic": 5 }
+            "skills": {
+              "black_magic": 5
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "gomchen",
             "free": true,
             "text": "You read them back slowly. Each one. He is very still. When you finish, the hall is quiet. 'I know,' he says. 'Say it again. Slower.' You do. When you finish the second time, something changes in his face. 'I have been very foolish,' he says quietly. 'Will you walk with me? I need to think outside these walls.'",
-            "karma": { "human": 4 }
+            "karma": {
+              "human": 4
+            }
           }
         },
         {
@@ -6716,14 +6858,19 @@
           "type": "roll",
           "text": "Study the contract web — try to find the obligation everything else depends on",
           "requirements": {
-            "roll": { "attribute": "awareness", "difficulty": 16 }
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": 16
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "gomchen",
             "free": true,
             "text": "You find it — a debt of precedence, buried under thirty layers of mutual obligation. You point to it without speaking. His eyes focus for the first time. 'You see it,' he says. 'No one has seen it.' A long pause. 'Then you are someone worth traveling with. Come.'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6747,7 +6894,9 @@
             "type": "text",
             "text": "\"Keep the living alive. Slow the dead down. Somewhere in between there's a tea that tastes almost good.\" It hands you a bundle without ceremony. You take it.",
             "rewards": {
-              "items": ["herbs"],
+              "items": [
+                "herbs"
+              ],
               "xp": 4
             },
             "karma": {
@@ -6874,7 +7023,9 @@
             "type": "text",
             "text": "The merchant turns to re-tie a bundle. In the gap, your hand moves. You're three paces gone before it straightens up. It doesn't seem to notice — or doesn't care. Possibly both.",
             "rewards": {
-              "items": ["item_random"]
+              "items": [
+                "item_random"
+              ]
             },
             "karma": {
               "hungry_ghost": 4
@@ -6887,6 +7038,1150 @@
             "text": "The merchant doesn't turn around. \"I can smell the living,\" it says. \"I can smell them reaching.\" It produces a heavy implement from the cart.",
             "karma": {
               "hungry_ghost": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_preta_wail": {
+      "id": "hg_preta_wail",
+      "title": "The Wailing",
+      "realm": "hungry_ghost",
+      "text": "A chorus of voices rises from just beneath the waterline — hungry ghosts calling out in a language that is not quite sound. The words, if words they are, convey only need.",
+      "choices": [
+        {
+          "id": "press_on",
+          "type": "default",
+          "text": "Press on, ignoring the calls",
+          "outcome": {
+            "type": "text",
+            "text": "Nothing reaches you. The voices fade behind you.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "listen",
+          "type": "roll",
+          "text": "Listen carefully — try to understand",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": 12
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "One voice becomes distinct. A name. Something that mattered, once, somewhere.",
+            "rewards": {
+              "xp": 30,
+              "buffs": [
+                {
+                  "stat": "awareness",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The need fills your mind for a moment. Hollow.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              }
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "yoga_mantra",
+          "type": "requirement",
+          "text": "Chant a mantra of compassion for them",
+          "requirements": {
+            "skills": {
+              "yoga": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The voices quiet, one by one. It doesn't solve anything. It might help anyway.",
+            "rewards": {
+              "xp": 32
+            },
+            "karma": {
+              "human": 2,
+              "hungry_ghost": -2
+            }
+          }
+        }
+      ]
+    },
+    "hg_will_o_wisp": {
+      "id": "hg_will_o_wisp",
+      "title": "Will-o'-Wisp",
+      "realm": "hungry_ghost",
+      "text": "A faint light dances ahead, moving just fast enough to stay out of reach. It has no face — just a glow, and an implied direction.",
+      "choices": [
+        {
+          "id": "let_drift",
+          "type": "default",
+          "text": "Let it drift away",
+          "outcome": {
+            "type": "text",
+            "text": "You watch it go. It doesn't look back.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "follow",
+          "type": "roll",
+          "text": "Follow it",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": 13
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "It leads you to a dry patch of ground, then vanishes. Something is buried just beneath the surface.",
+            "rewards": {
+              "xp": 12,
+              "items": [
+                "water_charm_common"
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You step wrong. Bog, not ground. You pull yourself out soaked.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              }
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "recognize_spirit",
+          "type": "requirement",
+          "text": "Recognize it as a trapped spirit",
+          "requirements": {
+            "skills": {
+              "air_magic": 3,
+              "space_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You know this pattern. A soul caught between awareness and dissolution. You speak the syllable that releases it. It brightens, briefly, then goes out.",
+            "rewards": {
+              "xp": 35,
+              "buffs": [
+                {
+                  "stat": "awareness",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "human": 3,
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_swamp_spirit": {
+      "id": "hg_swamp_spirit",
+      "title": "Swamp Spirit",
+      "realm": "hungry_ghost",
+      "text": "A translucent figure stands ankle-deep in still water across a narrow channel. It watches you with the expression of someone who has forgotten where they were going.",
+      "choices": [
+        {
+          "id": "wave_continue",
+          "type": "default",
+          "text": "Wave and continue",
+          "outcome": {
+            "type": "text",
+            "text": "It raises a hand in response. You don't look back.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "speak_gently",
+          "type": "roll",
+          "text": "Speak to it gently — ask if it needs help",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": 11
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "It doesn't answer in words, but something shifts. It presses a cold hand briefly to your forehead, then walks away into the mist.",
+            "rewards": {
+              "buffs": [
+                {
+                  "stat": "strength",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "constitution",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "finesse",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "focus",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "awareness",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "luck",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "human": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "It stares at you for a long moment, then sinks slowly into the water. You're not sure what you said wrong.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "offer_guidance",
+          "type": "requirement",
+          "text": "Offer guidance toward liberation",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You know the practice for this. It takes most of an hour. The spirit becomes more present, then less, then gone — in the right direction.",
+            "rewards": {
+              "xp": 45
+            },
+            "karma": {
+              "human": 3,
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_bone_raft": {
+      "id": "hg_bone_raft",
+      "title": "Bone Raft",
+      "realm": "hungry_ghost",
+      "text": "A crude raft of lashed femurs floats slowly past on the current. Something wrapped in waxed cloth sits in the middle. It's addressed to someone.",
+      "choices": [
+        {
+          "id": "let_drift",
+          "type": "default",
+          "text": "Let it drift by",
+          "outcome": {
+            "type": "text",
+            "text": "Whoever it's for, it's not you.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "grab_it",
+          "type": "roll",
+          "text": "Grab it before it floats out of reach",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": 10
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "You snag it. The cloth is still dry inside.",
+            "rewards": {
+              "xp": 8,
+              "gold": "small",
+              "items": [
+                "health_potion"
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You lean too far. You get wet. The raft keeps going.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              }
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "read_address",
+          "type": "requirement",
+          "text": "Notice the name on the address — read it before it's gone",
+          "requirements": {
+            "attributes": {
+              "awareness": 14
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You can't retrieve it. But you read the name. It means something, even if you're not sure what yet.",
+            "rewards": {
+              "xp": 28,
+              "flags": {
+                "found_bone_raft_name": true
+              }
+            },
+            "karma": {}
+          }
+        }
+      ]
+    },
+    "hg_weeping_shrine": {
+      "id": "hg_weeping_shrine",
+      "title": "Weeping Shrine",
+      "realm": "hungry_ghost",
+      "text": "A small shrine on a mud-island, half-sunk. Water seeps continuously from the cracks in the stone — it has been weeping so long the ground beneath is stained dark.",
+      "choices": [
+        {
+          "id": "offering",
+          "type": "default",
+          "text": "Make an offering and move on",
+          "outcome": {
+            "type": "text",
+            "text": "The shrine accepts. The weeping continues.",
+            "rewards": {
+              "xp": 15
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "meditate",
+          "type": "roll",
+          "text": "Meditate on what the shrine mourns",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": 13
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "The grief becomes specific. A name, a cause, an old loss. Understanding doesn't fix it, but understanding tends to be useful.",
+            "rewards": {
+              "xp": 32,
+              "buffs": [
+                {
+                  "stat": "awareness",
+                  "amount": 3,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "Grief doesn't always explain itself. You sit with it anyway.",
+            "rewards": {
+              "xp": 5
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "purify",
+          "type": "requirement",
+          "text": "Perform a proper purification ceremony",
+          "requirements": {
+            "skills": {
+              "ritual": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The weeping slows, then stops — for the first time in however long. The shrine feels lighter. So do you.",
+            "rewards": {
+              "xp": 28,
+              "restore": {
+                "hp_percent": 25
+              }
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_sacrifice_post": {
+      "id": "hg_sacrifice_post",
+      "title": "Sacrifice Post",
+      "realm": "hungry_ghost",
+      "text": "A wooden post driven into the mud, hung with trinkets, cloth strips, dried flowers. The offerings are from multiple eras — some ancient, some recent. Whatever this appeases, it is still being appeased.",
+      "choices": [
+        {
+          "id": "small_offering",
+          "type": "default",
+          "text": "Add something small to the post",
+          "cost": {
+            "gold": "tiny"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It costs you almost nothing.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "human": 1,
+              "god": 1
+            }
+          }
+        },
+        {
+          "id": "identify",
+          "type": "roll",
+          "text": "Try to identify what this protects against",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": 12
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "You piece it together from the nature of the offerings. The swamp has teeth, and this is how the locals have been keeping them dull.",
+            "rewards": {
+              "xp": 22,
+              "buffs": [
+                {
+                  "stat": "dodge",
+                  "amount": 10,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "Folk magic doesn't always leave notes. You make a small offering anyway.",
+            "rewards": {
+              "xp": 4
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "take_charms",
+          "type": "requirement",
+          "text": "Take several of the more potent-looking charms",
+          "requirements": {
+            "skills": {
+              "black_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They're not yours to take, but they're functional.",
+            "rewards": {
+              "xp": 8,
+              "items": [
+                "black_charm_common",
+                "water_charm_common"
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 3,
+              "human": -2
+            }
+          }
+        }
+      ]
+    },
+    "hg_funeral_rites": {
+      "id": "hg_funeral_rites",
+      "title": "Funeral Rites",
+      "realm": "hungry_ghost",
+      "text": "A skeleton sits beside a crumbling grave, methodically arranging offerings — flowers long since turned to dust, fruit that is only the shape of fruit. It works without hurry, with complete attention.",
+      "choices": [
+        {
+          "id": "dont_disturb",
+          "type": "default",
+          "text": "Don't disturb it",
+          "outcome": {
+            "type": "text",
+            "text": "Some things should be left alone. You pass at a respectful distance.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "watch",
+          "type": "roll",
+          "text": "Watch what it is arranging — try to understand",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": 12
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "You recognize the pattern. Old funeral rites, obscure but correct. Someone taught this skeleton well.",
+            "rewards": {
+              "xp": 35,
+              "buffs": [
+                {
+                  "stat": "awareness",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You shift your weight. A branch snaps. The skeleton freezes. You hold your breath. Then it continues, ignoring you entirely.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "help_rites",
+          "type": "requirement",
+          "text": "Kneel and help perform the rites correctly",
+          "requirements": {
+            "skills": {
+              "yoga": 3,
+              "ritual": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It turns to look at you when you kneel. A long pause. Then it extends a handful of dust-flowers toward you, and together you finish the ceremony.",
+            "rewards": {
+              "xp": 40,
+              "restore": {
+                "hp_percent": 20
+              }
+            },
+            "karma": {
+              "human": 3,
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_memory_echo": {
+      "id": "hg_memory_echo",
+      "title": "Memory Echo",
+      "realm": "hungry_ghost",
+      "text": "A shimmer in the graveyard air, like heat haze — but it's cold here. For a moment you see a family at a meal. Vivid, fully real. Then gone, leaving only the smell of food that isn't there.",
+      "choices": [
+        {
+          "id": "move_on",
+          "type": "default",
+          "text": "Blink and move on",
+          "outcome": {
+            "type": "text",
+            "text": "Some things are just residue of lives. You don't need to understand every one.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "hold_vision",
+          "type": "roll",
+          "text": "Hold the vision — try to understand who they were",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": 13
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "A life becomes briefly comprehensible. The attachment, the warmth, and what happened to it.",
+            "rewards": {
+              "xp": 40,
+              "buffs": [
+                {
+                  "stat": "spellpower",
+                  "amount": 3,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The hunger in the image reaches you before the meaning does. You feel it in your chest for an hour.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              }
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "study_echo",
+          "type": "requirement",
+          "text": "Study the echo's magical structure",
+          "requirements": {
+            "skills": {
+              "black_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "A well-preserved echo. Whoever imprinted it was powerful in life, and thoroughly unresolved.",
+            "rewards": {
+              "xp": 20,
+              "buffs": [
+                {
+                  "stat": "focus",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "awareness",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 1
+            }
+          }
+        }
+      ]
+    },
+    "hg_skeleton_musician": {
+      "id": "hg_skeleton_musician",
+      "title": "Skeleton Musician",
+      "realm": "hungry_ghost",
+      "text": "A skeleton sits on a gravestone, playing a two-stringed instrument with surprising skill. The music is slow and strange and not entirely unpleasant. It stops when it notices you.",
+      "choices": [
+        {
+          "id": "nod_pass",
+          "type": "default",
+          "text": "Nod respectfully and pass",
+          "outcome": {
+            "type": "text",
+            "text": "It watches you go. When you're far enough away, the music resumes.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "play_along",
+          "type": "roll",
+          "text": "Play along, or try to match the melody",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": 11
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "It tilts its head at you, then picks up the tempo. You manage to follow. For a few minutes, in a graveyard in the hungry ghost realm, something like music happens.",
+            "rewards": {
+              "xp": 22,
+              "buffs": [
+                {
+                  "stat": "charm",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "human": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "Your contribution is not musically interesting. The skeleton watches you politely until you stop.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "sing",
+          "type": "requirement",
+          "text": "Sing for the musician",
+          "requirements": {
+            "skills": {
+              "performance": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It tilts its head at you, then picks up the tempo to match your voice. For a few minutes, in a graveyard in the hungry ghost realm, something like music happens.",
+            "rewards": {
+              "xp": 22,
+              "buffs": [
+                {
+                  "stat": "charm",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "comedy",
+          "type": "requirement",
+          "text": "Tell a joke",
+          "requirements": {
+            "skills": {
+              "comedy": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It makes no sound. But the jaw moves, and the ribcage shakes, and the instrument ends up upright and the musician hunched over it in a posture that can only be described as helpless.",
+            "rewards": {
+              "xp": 18,
+              "items": [
+                "air_charm_common"
+              ]
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_dust_storm": {
+      "id": "hg_dust_storm",
+      "title": "Dust Storm",
+      "realm": "hungry_ghost",
+      "text": "A wall of bone-dry grit sweeps across the graveyard with no warning. There's nowhere to shelter. You're going to take this one.",
+      "choices": [
+        {
+          "id": "push_through",
+          "type": "default",
+          "text": "Push through",
+          "outcome": {
+            "type": "text",
+            "text": "You bow your head and walk. It gets in everywhere.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              },
+              "buffs": [
+                {
+                  "stat": "constitution",
+                  "amount": -2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "brace_or_dodge",
+          "type": "roll",
+          "text": "Brace against it — or dodge the worst of it",
+          "requirements": {
+            "roll": {
+              "attribute": "constitution",
+              "difficulty": 13
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "You turn your back, cover your face, wait it out. It passes.",
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "It's worse than you thought.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              },
+              "buffs": [
+                {
+                  "stat": "constitution",
+                  "amount": -2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "earth_windbreak",
+          "type": "requirement",
+          "text": "Raise a wind-break with earth magic",
+          "requirements": {
+            "skills": {
+              "earth_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "A low ridge of packed earth takes the worst of it. You emerge into clear air already reforming your thoughts about dry graveyards.",
+            "rewards": {
+              "xp": 10,
+              "buffs": [
+                {
+                  "stat": "constitution",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          }
+        }
+      ]
+    },
+    "hg_dancing_dead": {
+      "id": "hg_dancing_dead",
+      "title": "The Dancing Dead",
+      "realm": "hungry_ghost",
+      "text": "A ring of corpses dances in perfect silence around an empty throne. Their movements are stiff but coordinated, as if memory persists where intention does not. They do not appear to notice you.",
+      "choices": [
+        {
+          "id": "slip_past",
+          "type": "default",
+          "text": "Slip past the outer edge carefully",
+          "outcome": {
+            "type": "text",
+            "text": "Whatever they are celebrating, or mourning, continues without you.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "join_ring",
+          "type": "roll",
+          "text": "Join the ring — dance with them",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": 13
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Your body finds the rhythm. For a moment you are part of something very old and very strange. When the dance ends, you are on the other side of the ring.",
+            "rewards": {
+              "xp": 18,
+              "buffs": [
+                {
+                  "stat": "finesse",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "luck",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You misstep. The ring shifts. They look at you all at once. Then, somehow worse, they resume — leaving you outside it.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "complete_ritual",
+          "type": "requirement",
+          "text": "Recognize the ceremony and complete your part",
+          "requirements": {
+            "skills": {
+              "ritual": 3,
+              "performance": 5
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "This is a specific ceremony. You've seen fragments of it. You take the empty throne, perform your part. When you rise, the dance resolves — the figures slow, then still, with something like satisfaction.",
+            "rewards": {
+              "xp": 45
+            },
+            "karma": {
+              "human": 2,
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_spirit_fire": {
+      "id": "hg_spirit_fire",
+      "title": "Spirit Fires",
+      "realm": "hungry_ghost",
+      "text": "Three fires burn without fuel at the edge of the charnel grounds. One is pale blue, one is deep green, one is a colour that doesn't have a name. None of them give off heat.",
+      "choices": [
+        {
+          "id": "walk_around",
+          "type": "default",
+          "text": "Walk around them",
+          "outcome": {
+            "type": "text",
+            "text": "They seem to watch you go — or seem to.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "study",
+          "type": "roll",
+          "text": "Approach and study them",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": 12
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Each one is a distinct consciousness, in the earliest stage of what might become a ghost or might become something else. You learn something from how they burn.",
+            "rewards": {
+              "xp": 20,
+              "buffs": [
+                {
+                  "stat": "spellpower",
+                  "amount": 3,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "focus",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The nameless-coloured one flares. The heat is not physical. You step back.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              }
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "elemental_study",
+          "type": "requirement",
+          "text": "Understand their elemental nature",
+          "requirements": {
+            "skills": {
+              "fire_magic": 3,
+              "sorcery": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Three elements, one process. You spend time with each one, and each one teaches you something.",
+            "rewards": {
+              "xp": 35,
+              "items": [
+                "fire_charm_common"
+              ]
+            },
+            "karma": {}
+          }
+        }
+      ]
+    },
+    "hg_charnel_feast": {
+      "id": "hg_charnel_feast",
+      "title": "Charnel Feast",
+      "realm": "hungry_ghost",
+      "text": "A long table laid out in the open, covered in a feast that looks perfect and smells wrong. Seated pretas reach for food endlessly — it passes through without satisfying anything. The table is infinite. The hunger is infinite. Neither notices you standing at the edge.",
+      "choices": [
+        {
+          "id": "turn_away",
+          "type": "default",
+          "text": "Turn away quickly",
+          "outcome": {
+            "type": "text",
+            "text": "The right call.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "eat_anyway",
+          "type": "roll",
+          "text": "Eat anyway — you're hungry, and it looks real enough",
+          "requirements": {
+            "roll": {
+              "attribute": "constitution",
+              "difficulty": 14
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "It's real enough. Strange but real. It sits wrong for an hour, then doesn't.",
+            "rewards": {
+              "restore": {
+                "hp_percent": 30
+              },
+              "supplies": {
+                "food": 2
+              }
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You understand, briefly and completely, what it is like to need something and have it provide nothing at all.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "moderate",
+                "target": "all"
+              },
+              "buffs": [
+                {
+                  "stat": "constitution",
+                  "amount": -3,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "yoga_observe",
+          "type": "requirement",
+          "text": "Sit with the nature of what you're seeing",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You observe the feast without hunger. The pretas slow, one by one, and watch you — the strange creature at the edge of the table who is not reaching. Something about this interests them.",
+            "rewards": {
+              "xp": 55,
+              "buffs": [
+                {
+                  "stat": "focus",
+                  "amount": 3,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "human": 3,
+              "hungry_ghost": -3
+            }
+          }
+        },
+        {
+          "id": "steal_candleholders",
+          "type": "requirement",
+          "text": "Pocket the gold candleholders — they look real",
+          "requirements": {
+            "skills": {
+              "thievery": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They are real. Everything solid about this table is real.",
+            "rewards": {
+              "xp": 8,
+              "gold": "moderate"
+            },
+            "karma": {
+              "hungry_ghost": 3,
+              "human": -2
+            }
+          }
+        }
+      ]
+    },
+    "hg_sigh_of_relief": {
+      "id": "hg_sigh_of_relief",
+      "title": "A Sigh of Relief",
+      "realm": "hungry_ghost",
+      "text": "A small cairn with a folded cloth on top. Written in a careful hand: \"You are not as lost as you feel.\"",
+      "choices": [
+        {
+          "id": "read_move_on",
+          "type": "default",
+          "text": "Read it. Move on.",
+          "outcome": {
+            "type": "text",
+            "text": "You are not as lost as you feel.",
+            "rewards": {
+              "xp": 8,
+              "restore": {
+                "hp_percent": 15,
+                "mana_percent": 15
+              }
+            },
+            "karma": {
+              "human": 1
             }
           }
         }

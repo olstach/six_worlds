@@ -930,6 +930,10 @@ func update_derived_stats(character: Dictionary) -> void:
 					pass  # future: social/event roll bonuses
 				"luck":
 					derived["crit_chance"] = derived.get("crit_chance", 0.0) + amount
+				"spellpower":
+					derived["spellpower"] = derived.get("spellpower", 0) + amount
+				"dodge":
+					derived["dodge"] = derived.get("dodge", 0) + amount
 				"spellpower_fire":
 					derived["spellpower_fire"] = derived.get("spellpower_fire", 0) + amount
 				"initiative":
