@@ -828,9 +828,13 @@ func _get_unlocked_alchemy_items(party: Array) -> Array:
 	return unlocked
 
 
-## Hook for rest perks — called for each character after healing/decay. Empty for now.
-func _process_rest_perks(_character: Dictionary, _tier: int) -> void:
-	pass
+## Hook for rest perks — called for each character after healing/decay.
+func _process_rest_perks(character: Dictionary, _tier: int) -> void:
+	# Lucid Rest (Yoga 7): accumulate mantra at half Yoga level during any rest
+	if PerkSystem.has_perk(character, "lucid_rest"):
+		var yoga_level := CharacterSystem.get_effective_skill_level(character, "yoga")
+		var increment := maxi(1, yoga_level / 2)
+		character["mantra_count"] = int(character.get("mantra_count", 0)) + increment
 
 
 ## Restore durability on all equipped items for all party members by the given fraction.
@@ -1044,7 +1048,16 @@ func _open_activity_panel(tier: int, food_cost: int, herbs_cost: int, scrap_cost
 	outer_vbox.add_child(HSeparator.new())
 
 	var party     := CharacterSystem.get_party()
-	var available := CampSystem.get_available_activities(party, tier, is_safe)
+	# Read location-specific suppress/enhance lists from the safe camp event dict
+	var _loc_event: Dictionary = {}
+	var _loc_obj := MapManager.get_object_at(MapManager.party_position)
+	if not _loc_obj.is_empty():
+		var _loc_event_id: String = _loc_obj.get("event_id", "")
+		if not _loc_event_id.is_empty():
+			_loc_event = EventManager.event_database.get(_loc_event_id, {})
+	var _suppress: Array = _loc_event.get("suppress_activities", [])
+	var _enhance: Array  = _loc_event.get("enhance_activities", [])
+	var available := CampSystem.get_available_activities(party, tier, is_safe, _suppress, _enhance)
 
 	# Track selection
 	var selected_ids: Array[String] = []
@@ -1187,12 +1200,17 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 		best_smithing = maxi(best_smithing, CharacterSystem.get_effective_skill_level(char, "smithing"))
 
 	# === Disturbance check ===
-	# Scout activity or safe camp eliminates disturbance chance.
+	# Scout activity, safe camp location, or Safe Campsite perk eliminates disturbance chance.
 	var is_safe   := _check_is_safe_camp()
 	var scouted   := "scout" in selected_activities
+	var has_safe_campsite := false
+	for char in party:
+		if PerkSystem.has_perk(char, "safe_campsite"):
+			has_safe_campsite = true
+			break
 	var effective_tier := tier
 	var _disturbance_event_id: String = ""
-	if not is_safe and not scouted and tier >= 2:
+	if not is_safe and not scouted and not has_safe_campsite and tier >= 2:
 		if CampSystem.roll_disturbance(tier, GameState.current_world, GameState.hour_of_day):
 			effective_tier = maxi(1, tier - 1)
 			if selected_activities.size() > 0:
@@ -1214,7 +1232,9 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 
 	var tier_base_pct: float  = [0.4, 0.7, 1.0][effective_tier - 1]
 	var medicine_bonus: float = best_medicine * 0.02
-	var restore_pct: float    = tier_base_pct + medicine_bonus + (0.15 if herb_prep else 0.0)
+	var restore_pct: float    = tier_base_pct + medicine_bonus \
+		+ (0.15 if herb_prep else 0.0) \
+		+ (0.15 if has_safe_campsite else 0.0)
 
 	for char in party:
 		var derived: Dictionary = char.get("derived", {})
@@ -1230,9 +1250,26 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 		derived["current_mana"]    = mini(max_mana,    int(derived.get("current_mana",    max_mana))    + floori(max_mana    * restore_pct))
 		derived["current_stamina"] = mini(max_stamina, int(derived.get("current_stamina", max_stamina)) + floori(max_stamina * restore_pct))
 
-		var decay_amount: float = [20.0, 40.0, 100.0][effective_tier - 1]
+		# Yoga skill increases pressure decay: +2 per Yoga level on top of tier base
+		var yoga_level: int = CharacterSystem.get_effective_skill_level(char, "yoga")
+		var decay_amount: float = [20.0, 40.0, 100.0][effective_tier - 1] + yoga_level * 2.0
 		PsychologySystem.decay_toward_baseline(char, decay_amount)
 		_process_rest_perks(char, effective_tier)
+
+	# === Well-Rested perk (Medicine 8): party-wide combat buff after a full rest ===
+	if effective_tier >= 3:
+		var has_well_rested := false
+		for char in party:
+			if PerkSystem.has_perk(char, "well_rested"):
+				has_well_rested = true
+				break
+		if has_well_rested:
+			GameState.active_map_buffs.append({"stat": "awareness",    "amount": 3, "combats_remaining": 1, "source": "Well-Rested"})
+			GameState.active_map_buffs.append({"stat": "constitution", "amount": 2, "combats_remaining": 1, "source": "Well-Rested"})
+			GameState.active_map_buffs.append({"stat": "initiative",   "amount": 5, "combats_remaining": 1, "source": "Well-Rested"})
+			for char in party:
+				CharacterSystem.update_derived_stats(char)
+			_show_toast("The party is well rested. Combat buffs active until next battle.")
 
 	# === Durability restore (tier 2+) ===
 	if effective_tier >= 2:

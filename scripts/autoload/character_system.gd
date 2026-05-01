@@ -127,6 +127,10 @@ const BASE_CHARACTER: Dictionary = {
 	# Permanent racial resistances (set once at character creation from races.json)
 	# Format: {"physical": 50, "fire": 25, ...}  values are percentages
 	"base_resistances": {},
+
+	# Named racial traits (e.g. "Skeletal", "Incorporeal"). Purely informational after
+	# apply_race_modifiers() has translated them into base_resistances and other fields.
+	"racial_traits": [],
 	
 	# Elemental affinities (built up through skill usage)
 	"elements": {
@@ -375,6 +379,11 @@ func create_player_character(char_name: String, race: String, background: String
 		if not personality.is_empty():
 			QuirkSystem.add_quirk(character, personality[0])
 
+	# Apply racial traits that have side effects beyond resistances/stats
+	if "extra_starting_gold" in character.get("racial_traits", []):
+		if GameState:
+			GameState.add_gold(50)
+
 	# Add to party at index 0 (player always first)
 	if party.is_empty():
 		party.append(character)
@@ -467,6 +476,11 @@ func apply_race_modifiers(character: Dictionary, race: String) -> void:
 			if spell_id != "":
 				learn_spell(character, spell_id)
 
+	# Store racial trait names on the character (for UI display and trait-specific hooks)
+	var traits: Array = data.get("racial_traits", [])
+	if not traits.is_empty():
+		character["racial_traits"] = traits.duplicate()
+
 	# Copy emotional baseline from race data
 	if "emotional_baseline" in data:
 		for element in data.emotional_baseline:
@@ -525,10 +539,13 @@ func apply_background_equipment(character: Dictionary, background: String) -> vo
 	if equip_data.is_empty():
 		return
 
-	# Main weapon: may upgrade to a better version based on a chance roll
+	# Main weapon: may upgrade to a better version based on a chance roll.
+	# better_starting_weapon racial trait guarantees the upgrade if one is defined.
 	var main_weapon: String = equip_data.get("base_weapon", "")
 	var upgrade_id: String = equip_data.get("weapon_upgrade", "")
-	if upgrade_id != "" and randf() < float(equip_data.get("weapon_upgrade_chance", 0.0)):
+	var has_better_weapon_trait: bool = "better_starting_weapon" in character.get("racial_traits", [])
+	var upgrade_chance: float = 1.0 if has_better_weapon_trait else float(equip_data.get("weapon_upgrade_chance", 0.0))
+	if upgrade_id != "" and randf() < upgrade_chance:
 		main_weapon = upgrade_id
 	if main_weapon != "":
 		_add_and_equip(character, main_weapon, "weapon_main")

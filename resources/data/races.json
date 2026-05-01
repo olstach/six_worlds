@@ -44,9 +44,7 @@
 		"raider",
         "torturer"
 	  ],
-	  "todo": [
-        "better_starting_weapon: start with a tier-2 melee weapon instead of tier-1"
-	  ],
+	  "racial_traits": ["better_starting_weapon"],
 	  "resistances": {},
 	  "emotional_baseline": {
 		"space": 0,
@@ -156,9 +154,7 @@
 		"infernal_scribe",
         "torturer"
 	  ],
-	  "todo": [
-        "extra_starting_gold: begin with 50 bonus gold"
-	  ],
+	  "racial_traits": ["extra_starting_gold"],
 	  "resistances": {},
 	  "emotional_baseline": {
 		"space": 0,
@@ -472,7 +468,8 @@
 		"charnel_yogi",
         "penitent"
 	  ],
-	  "resistances": {},
+	  "racial_traits": ["Skeletal"],
+	  "resistances": {"piercing": 50, "crushing": -50},
 	  "emotional_baseline": {
 		"space": 0,
 		"fire": 0,
@@ -613,9 +610,7 @@
 		"penitent",
         "wanderer"
 	  ],
-	  "todo": [
-        "physical_damage_reduction: implement 50% physical damage immunity in combat system"
-	  ],
+	  "racial_traits": ["Incorporeal"],
 	  "resistances": {
 		"physical": 50
 	  },
@@ -1252,7 +1247,8 @@
 		"charnel_yogi",
         "penitent"
 	  ],
-	  "resistances": {},
+	  "racial_traits": ["Skeletal"],
+	  "resistances": {"piercing": 50, "crushing": -50},
 	  "emotional_baseline": {
 		"space": 0,
 		"fire": 0,
@@ -1296,7 +1292,8 @@
 		"courtier",
         "bone_dancer"
 	  ],
-	  "resistances": {},
+	  "racial_traits": ["Skeletal"],
+	  "resistances": {"piercing": 50, "crushing": -50},
 	  "emotional_baseline": {
 		"space": 0,
 		"fire": 0,
@@ -1339,7 +1336,8 @@
 		"merchant",
         "catacomb_keeper"
 	  ],
-	  "resistances": {},
+	  "racial_traits": ["Skeletal"],
+	  "resistances": {"piercing": 50, "crushing": -50},
 	  "emotional_baseline": {
 		"space": 0,
 		"fire": 0,
@@ -1383,7 +1381,8 @@
 		"guard",
         "charnel_yogi"
 	  ],
-	  "resistances": {},
+	  "racial_traits": ["Skeletal"],
+	  "resistances": {"piercing": 50, "crushing": -50},
 	  "emotional_baseline": {
 		"space": 0,
 		"fire": 0,
@@ -1427,7 +1426,8 @@
 		"wanderer",
         "catacomb_keeper"
 	  ],
-	  "resistances": {},
+	  "racial_traits": ["Skeletal"],
+	  "resistances": {"piercing": 50, "crushing": -50},
 	  "emotional_baseline": {
 		"space": 0,
 		"fire": 0,

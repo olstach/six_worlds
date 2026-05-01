@@ -407,7 +407,7 @@ func is_occupied(grid_pos: Vector2i) -> bool:
 
 ## Get all tiles reachable within movement range
 ## movement_mode: MovementMode enum - affects height traversal and cost
-func get_reachable_tiles(start: Vector2i, movement: int, movement_mode: int = MovementMode.NORMAL) -> Array[Vector2i]:
+func get_reachable_tiles(start: Vector2i, movement: int, movement_mode: int = MovementMode.NORMAL, pass_through_units: bool = false) -> Array[Vector2i]:
 	var reachable: Array[Vector2i] = []
 	var visited: Dictionary = {}
 	var frontier: Array = [[start, 0]]  # [position, cost]
@@ -420,7 +420,7 @@ func get_reachable_tiles(start: Vector2i, movement: int, movement_mode: int = Mo
 		var cost: int = current[1]
 
 		if cost <= movement and pos != start:
-			# Don't include tiles with enemies or obstacles (can't move through)
+			# Don't include tiles with obstacles; units block destination even with pass_through_units
 			var unit_at = get_unit_at(pos)
 			var tile_data = tiles.get(pos)
 			var has_blocking_obstacle = tile_data != null and tile_data.obstacle != ObstacleType.NONE and tile_data.obstacle != ObstacleType.BARRICADE
@@ -461,8 +461,8 @@ func get_reachable_tiles(start: Vector2i, movement: int, movement_mode: int = Mo
 				# Flying pays +1 even going down (maintaining altitude control)
 				new_cost += absi(height_diff)
 
-			# All units block movement — formations matter
-			if get_unit_at(neighbor) != null:
+			# Units block traversal unless pass_through_units is set (Smoke_Form, Phase_Wind)
+			if not pass_through_units and get_unit_at(neighbor) != null:
 				continue
 
 			if not visited.has(neighbor) or visited[neighbor] > new_cost:

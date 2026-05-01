@@ -229,16 +229,23 @@ const ACTIVITIES: Array = [
 
 ## Returns activities available to this party for the given rest tier.
 ## Each result dict gets a "performer" key set to the best party member for it.
-func get_available_activities(party: Array, rest_tier: int, _is_safe_camp: bool) -> Array[Dictionary]:
+## Returns available camp activities for the party at the given rest tier.
+## suppress_ids: activity IDs blocked at this location (e.g. "smithing" at a teahouse).
+## enhance_ids:  activity IDs flagged as enhanced at this location (passed through as "enhanced" bool).
+func get_available_activities(party: Array, rest_tier: int, _is_safe_camp: bool,
+		suppress_ids: Array = [], enhance_ids: Array = []) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for activity in ACTIVITIES:
 		if activity.get("min_tier", 1) > rest_tier:
+			continue
+		if activity.get("id", "") in suppress_ids:
 			continue
 		if not _party_meets_req(party, activity):
 			continue
 		var out: Dictionary = activity.duplicate()
 		out["performer"] = _best_performer(party, activity)
 		out["can_afford"] = _can_afford_costs(activity.get("costs", {}))
+		out["enhanced"] = activity.get("id", "") in enhance_ids
 		result.append(out)
 	return result
 
