@@ -257,7 +257,7 @@ func perform_purification(yoga_level: int, ritual_tier: int) -> Dictionary:
 	for realm in REALM_ORDER:
 		if remaining <= 0:
 			break
-		var current := karma_scores.get(realm, 0)
+		var current: int = karma_scores.get(realm, 0)
 		if current <= 0:
 			continue
 		var to_purify := mini(remaining, current)

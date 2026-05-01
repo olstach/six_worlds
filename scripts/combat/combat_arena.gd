@@ -1608,7 +1608,7 @@ func _try_use_item(target_pos: Vector2i) -> void:
 		_cancel_action_mode()
 		return
 
-	var item_type := selected_item.get("type", "")
+	var item_type: String = selected_item.get("type", "")
 
 	# Cancel action mode before async work
 	_cancel_action_mode()
@@ -2284,12 +2284,12 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 	var result = CombatManager.attack_unit(attacker, defender)
 
 	# Animate projectile for ranged attacks
-	var is_ranged := attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon()
+	var is_ranged: bool = attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon()
 	if is_ranged and result.success:
 		var proj_type := _get_projectile_type(attacker)
 		var from_world := _tile_center(attacker.grid_position)
 		# If the shot deviated, animate to the actual landing spot
-		var landing := result.get("deviation_landing_pos", defender.grid_position) if not result.get("hit", true) else defender.grid_position
+		var landing: Vector2i = result.get("deviation_landing_pos", defender.grid_position) if not result.get("hit", true) else defender.grid_position
 		var to_world := _tile_center(landing)
 		await _animate_projectile(from_world, to_world, proj_type)
 
@@ -2329,7 +2329,7 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 			if is_ranged and result.has("deviation_landing_pos"):
 				var dev_name: String = result.get("deviation_hit_unit_name", "")
 				if dev_name != "":
-					var friendly := result.get("deviation_hit_team", -1) == attacker.team
+					var friendly: bool = result.get("deviation_hit_team", -1) == attacker.team
 					var friendly_tag := " [FRIENDLY FIRE!]" if friendly else ""
 					_log_message("  Projectile deviates %d tile(s) — hits %s for %d!%s" % [
 						result.deviation_tiles, dev_name, result.deviation_damage, friendly_tag
@@ -2751,12 +2751,12 @@ func _get_projectile_type(unit: CombatUnit) -> String:
 	if not unit.has_method("get_equipped_weapon"):
 		return "arrow"
 	var weapon := unit.get_equipped_weapon()
-	var wtype := weapon.get("type", "")
+	var wtype: String = weapon.get("type", "")
 	match wtype:
 		"bow":      return "arrow"
 		"crossbow": return "bolt"
 		"thrown":
-			var wclass := weapon.get("weapon_class", "").to_lower()
+			var wclass: String = weapon.get("weapon_class", "").to_lower()
 			return "javelin" if "javelin" in wclass else "bolt"
 		_: return "arrow"
 
@@ -2768,7 +2768,7 @@ func _tile_center(grid_pos: Vector2i) -> Vector2:
 
 ## Add message to combat log
 ## Called when a quirk reaction fires mid-combat (e.g. witnessing a death triggers a phobia).
-func _on_psychology_crisis_log_combat(character_name: String, message: String) -> void:
+func _on_psychology_crisis_log_combat(_character_name: String, message: String) -> void:
 	_log_message("[Psychology] " + message)
 
 
@@ -2804,6 +2804,8 @@ func _stabilize_bleeding_companions() -> void:
 		if unit.is_bleeding_out:
 			unit.is_bleeding_out = false
 			unit.current_hp = 1
+			# Write back to character data so the unit doesn't spawn dead next combat
+			unit.character_data.get("derived", {})["current_hp"] = 1
 			_log_message("%s is stabilized — barely alive." % unit.unit_name)
 
 ## Remove companions who died (bleed-out expired) from the party permanently.
@@ -3598,7 +3600,10 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 	if CombatManager.get_current_unit() != unit:
 		return
 
-	var player_units = CombatManager.get_team_units(CombatManager.Team.PLAYER)
+	# Summons on the player's team target enemies; true enemies target the player team
+	var opposing_team: int = CombatManager.Team.ENEMY if unit.team == CombatManager.Team.PLAYER \
+		else CombatManager.Team.PLAYER
+	var player_units = CombatManager.get_team_units(opposing_team)
 	if player_units.is_empty():
 		CombatManager.end_turn()
 		return
@@ -3784,10 +3789,10 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 func _get_spell_ai_range(spell: Dictionary) -> int:
 	var target_data = spell.get("target", {})
 	var raw_range = target_data.get("range", spell.get("range", ""))
-	if raw_range == "melee":
-		return 1
-	elif raw_range is int or raw_range is float:
+	if raw_range is int or raw_range is float:
 		return int(raw_range)
+	elif raw_range == "melee":
+		return 1
 	else:
 		# No range specified — default by level (level 1 = range 4, level 3 = range 6, etc.)
 		var level = spell.get("level", 1)

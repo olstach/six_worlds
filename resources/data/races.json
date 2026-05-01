@@ -48,7 +48,13 @@
         "better_starting_weapon: start with a tier-2 melee weapon instead of tier-1"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 15, "water": 10, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 15,
+		"water": 10,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"blue_devil": {
 	  "name": "Blue Devil",
@@ -99,7 +105,13 @@
         "guard"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"yellow_devil": {
 	  "name": "Yellow Devil",
@@ -148,7 +160,13 @@
         "extra_starting_gold: begin with 50 bonus gold"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"green_devil": {
 	  "name": "Green Devil",
@@ -198,7 +216,13 @@
         "spy"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"black_devil": {
 	  "name": "Black Devil",
@@ -257,7 +281,13 @@
         "penitent"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"white_devil": {
 	  "name": "White Devil",
@@ -309,7 +339,13 @@
         "infernal_scribe"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"rolang": {
 	  "name": "Rolang",
@@ -347,12 +383,18 @@
         "bog_warden"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"preserved": {
 	  "name": "Preserved",
 	  "realm": "hungry_ghost",
-	  "description": "Alchemical oils, mantras, and mineral compounds have halted your decay while others rotted to bone. The lords of their kind among the Rolang — rare, aware, and dangerous. You remember considerably more than most of your kind, and have had long years of stillness to put that memory to use.",
+	  "description": "Alchemical oils, mantras, and mineral compounds have halted your decay while others rotted to bone. The lords of their kind among the Rolang \u2014 rare, aware, and dangerous. You remember considerably more than most of your kind, and have had long years of stillness to put that memory to use.",
 	  "attribute_modifiers": {
 		"strength": 0,
 		"finesse": -1,
@@ -384,10 +426,16 @@
 		"preserved",
 		"charnel_yogi",
 		"scholar",
-		"former_soldier"
+        "former_soldier"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"skeleton": {
 	  "name": "Skeleton",
@@ -425,7 +473,13 @@
         "penitent"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"dralha": {
 	  "name": "Dralha",
@@ -466,7 +520,13 @@
         "guard"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"gyelpo": {
 	  "name": "Gyelpo",
@@ -512,7 +572,13 @@
         "penitent"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"dre": {
 	  "name": "Dr\u00e9",
@@ -553,7 +619,13 @@
 	  "resistances": {
 		"physical": 50
 	  },
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"vetala": {
 	  "name": "Vetala",
@@ -601,7 +673,13 @@
         "former_soldier"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"naga": {
 	  "name": "Naga",
@@ -639,7 +717,13 @@
         "priest"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"bee": {
 	  "name": "Bee",
@@ -669,7 +753,13 @@
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"yaksha": {
 	  "name": "Yaksha",
@@ -699,7 +789,13 @@
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"human": {
 	  "name": "Human",
@@ -737,7 +833,13 @@
         "farmer"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 5, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 5,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"nomad": {
 	  "name": "Nomad",
@@ -767,7 +869,13 @@
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"mountain_folk": {
 	  "name": "Mountain Folk",
@@ -797,7 +905,13 @@
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"trader": {
 	  "name": "Trader",
@@ -827,7 +941,13 @@
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"tsen": {
 	  "name": "Tsen",
@@ -857,7 +977,13 @@
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"rudra": {
 	  "name": "Rudra",
@@ -887,7 +1013,13 @@
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"gandharva": {
 	  "name": "Gandharva",
@@ -917,7 +1049,13 @@
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"apsara": {
 	  "name": "Apsara",
@@ -947,7 +1085,13 @@
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"planetary_deity": {
 	  "name": "Planetary Deity",
@@ -977,7 +1121,13 @@
 	  "reincarnation_weight": 0,
 	  "typical_backgrounds": [],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"shaza": {
 	  "name": "Shaza",
@@ -1015,7 +1165,13 @@
         "hunter"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"yidag": {
 	  "name": "Yidag",
@@ -1053,7 +1209,13 @@
         "penitent"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"skeleton_silver": {
 	  "name": "Silver Skeleton",
@@ -1091,7 +1253,13 @@
         "penitent"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"skeleton_copper": {
 	  "name": "Copper Skeleton",
@@ -1129,7 +1297,13 @@
         "bone_dancer"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"skeleton_golden": {
 	  "name": "Golden Skeleton",
@@ -1166,7 +1340,13 @@
         "catacomb_keeper"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"skeleton_iron": {
 	  "name": "Iron Skeleton",
@@ -1204,7 +1384,13 @@
         "charnel_yogi"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	},
 	"skeleton_turquoise": {
 	  "name": "Turquoise Skeleton",
@@ -1242,7 +1428,13 @@
         "catacomb_keeper"
 	  ],
 	  "resistances": {},
-	  "emotional_baseline": {"space": 0, "fire": 0, "water": 0, "earth": 0, "air": 0}
+	  "emotional_baseline": {
+		"space": 0,
+		"fire": 0,
+		"water": 0,
+		"earth": 0,
+		"air": 0
+	  }
 	}
   },
   "backgrounds": {
@@ -2326,6 +2518,25 @@
         "dre"
 	  ],
 	  "weight": 4
+	},
+	"healer": {
+	  "name": "Healer",
+	  "description": "Trained in white magic and the medical arts, devoted to the restoration of body and spirit.",
+	  "attribute_modifiers": {
+		"focus": 1,
+		"awareness": 2,
+		"strength": -2
+	  },
+	  "starting_skills": {
+		"white_magic": 2,
+		"medicine": 1
+	  },
+	  "starting_spells": [
+		"lesser_heal",
+        "cure"
+	  ],
+	  "available_races": [],
+	  "weight": 3
 	}
   }
 }

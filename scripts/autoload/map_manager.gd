@@ -1281,6 +1281,7 @@ func _process_mobs(delta: float) -> void:
 					_process_roaming_mob(mob, delta)
 
 			# Aggressive mobs check for pursuit regardless of movement mode
+			# (pursuit is intentionally allowed to override a freshly-queued patrol step)
 			if mob.attitude == MobAttitude.AGGRESSIVE:
 				_process_aggressive_mob(mob, delta)
 

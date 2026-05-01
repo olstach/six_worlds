@@ -1083,6 +1083,11 @@ func _start_current_turn() -> void:
 	if unit == null:
 		return
 
+	# Units with no actions (illusions/decoys) skip their turn automatically
+	if unit.get_max_actions() == 0:
+		_advance_turn()
+		return
+
 	# Process bleed-out for dying units
 	if unit.is_bleeding_out:
 		unit.bleed_out_turns -= 1
@@ -1214,7 +1219,7 @@ func _check_combat_end() -> int:
 		var max_hp: int = unit.max_hp
 		var cur_hp: int = unit.current_hp
 		if max_hp > 0 and cur_hp * 100 <= max_hp * stop_pct:
-			_log_message("%s yields — the duel is over." % unit.character_data.get("name", "Enemy"))
+			combat_log.emit("%s yields — the duel is over." % unit.character_data.get("name", "Enemy"))
 			return Team.PLAYER  # Duel victory
 
 	return -1  # Combat continues
@@ -1623,7 +1628,8 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			if not should_chain:
 				var weapon_set: int = char_data.get("active_weapon_set", 1)
 				var off_slot: String = "weapon_off" if weapon_set == 1 else "weapon_off_2"
-				var oh_id: String = char_data.get("equipment", {}).get(off_slot, "")
+				var equipment_dict: Dictionary = char_data.get("equipment", {})
+				var oh_id: String = equipment_dict.get(off_slot, "")
 				should_chain = (oh_id != "")
 			if not should_chain:
 				var primary_nw: Dictionary = BodySystem.get_natural_weapon(char_data, "hand_r")
@@ -2351,7 +2357,7 @@ func get_spell(spell_id: String) -> Dictionary:
 					else:
 						aoe["size"] = 2
 				# "battlefield_width" string → -1 sentinel (resolved to grid.x at runtime)
-				if aoe.get("size") == "battlefield_width":
+				if str(aoe.get("size", "")) == "battlefield_width":
 					aoe["size"] = -1
 				# Ensure origin is set
 				if not "origin" in aoe:
@@ -2688,6 +2694,69 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		var summon_result = _spawn_summoned_unit(caster, summon_id, target_pos, spellpower_bonus)
 		spell_cast.emit(caster, spell, [], [summon_result])
 		return {"success": true, "spell": spell, "targets": [], "results": [summon_result], "mana_cost": mana_cost}
+
+	# --- Illusion spells: spawn a decoy unit that draws enemy attacks ---
+	if targeting == "ground" and spell.get("special", {}).get("creates_illusion", false):
+		use_action(1)
+		var duration = spellpower_bonus if spell.get("duration", 0) == "spellpower" else int(spell.get("duration", 3))
+		if duration <= 0:
+			duration = 3
+		var illusion_hp = maxi(5, spellpower_bonus * 2)
+		var illusion_data: Dictionary = {
+			"name": "Decoy",
+			"archetype_name": "Illusion",
+			"max_hp": illusion_hp,
+			"max_mana": 0,
+			"actions": 0,  # Illusions can't act
+			"resistances": {},
+			"inventory": [],
+			"skills": {},
+			"known_spells": [],
+			"perks": [],
+			"tags": ["illusion", "decoy"],
+			"derived": {
+				"max_hp": illusion_hp, "current_hp": illusion_hp,
+				"max_mana": 0, "current_mana": 0,
+				"max_stamina": 10, "current_stamina": 10,
+				"initiative": 0, "movement": 0,
+				"dodge": 0, "armor": 0, "crit_chance": 0.0,
+				"accuracy": 0, "damage": 0, "damage_type": "none"
+			},
+			"equipped_weapon": {"name": "None", "damage": 0, "damage_type": "none", "range": 1}
+		}
+		var decoy_unit = CombatUnit.new()
+		decoy_unit.summoner_id = caster.get_instance_id()
+		decoy_unit.init_as_enemy(illusion_data)
+		decoy_unit.team = caster.team
+		# Find a valid spawn position
+		var spawn_pos = Vector2i(-1, -1)
+		if combat_grid != null and not combat_grid.is_occupied(target_pos) and combat_grid.is_valid_position(target_pos):
+			spawn_pos = target_pos
+		else:
+			for radius in range(1, 4):
+				for dx in range(-radius, radius + 1):
+					for dy in range(-radius, radius + 1):
+						if abs(dx) != radius and abs(dy) != radius:
+							continue
+						var candidate = target_pos + Vector2i(dx, dy)
+						if combat_grid != null and combat_grid.is_valid_position(candidate) and not combat_grid.is_occupied(candidate):
+							spawn_pos = candidate
+							break
+					if spawn_pos != Vector2i(-1, -1):
+						break
+				if spawn_pos != Vector2i(-1, -1):
+					break
+		if spawn_pos == Vector2i(-1, -1):
+			return {"success": false, "reason": "No space for decoy", "mana_cost": 0}
+		combat_grid.place_unit(decoy_unit, spawn_pos)
+		all_units.append(decoy_unit)
+		turn_order.append(decoy_unit)
+		unit_deployed.emit(decoy_unit, spawn_pos)
+		combat_log.emit("%s creates a Decoy — %d HP, lasts %d turns!" % [caster.unit_name, illusion_hp, duration])
+		var illusion_result = {"success": true, "type": "illusion", "unit": decoy_unit, "position": spawn_pos, "duration": duration}
+		spell_cast.emit(caster, spell, [], [illusion_result])
+		_process_spell_cast_perks(caster, null, spell, illusion_result)
+		return {"success": true, "spell": spell, "targets": [], "results": [illusion_result], "mana_cost": mana_cost}
 
 	# --- Ground-effect spells: place terrain effects at target location ---
 	# e.g. smoke_cloud — blocks_line_of_sight in spell.special means SMOKE terrain
@@ -6650,10 +6719,10 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 	var pass_count = weapon.get("pass_through", 0)
 	if pass_count > 0 and "grid_position" in attacker and "grid_position" in defender:
 		var dir = (defender.grid_position - attacker.grid_position)
-		var step_x = 0 if dir.x == 0 else (1 if dir.x > 0 else -1)
-		var step_y = 0 if dir.y == 0 else (1 if dir.y > 0 else -1)
+		var step_x: int = 0 if dir.x == 0 else (1 if dir.x > 0 else -1)
+		var step_y: int = 0 if dir.y == 0 else (1 if dir.y > 0 else -1)
 		var step := Vector2i(step_x, step_y)
-		var check_pos := defender.grid_position + step
+		var check_pos: Vector2i = defender.grid_position + step
 		var passed := 0
 		for _i in range(10):  # sanity cap — walk forward through the grid
 			if passed >= pass_count:

@@ -12710,6 +12710,14 @@
                         "skill": "ranged",
                         "damage_type": "piercing"
                 },
+                "focus": {
+                        "category": "weapon",
+                        "slots": [
+                                "weapon_main"
+                        ],
+                        "ranged": false,
+                        "damage_type": "crushing"
+                },
                 "shield": {
                         "category": "weapon",
                         "slots": [

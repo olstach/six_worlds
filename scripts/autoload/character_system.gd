@@ -38,6 +38,38 @@ const SKILL_COSTS: Array[int] = [0, 5, 10, 18, 28, 42, 59, 80, 106, 137, 175]
 # Maximum purchasable skill level (items/race can push effective level up to 15)
 const SKILL_MAX_LEVEL: int = 10
 
+# Penalties applied per negative skill level (from quirks/debuffs pushing skills below 0).
+# Values are per level below 0; e.g. learning at -2 gives xp_gain_pct = -20.0.
+const NEGATIVE_SKILL_PENALTIES: Dictionary = {
+	"swords":       {"accuracy": -4, "damage": -2},
+	"axes":         {"accuracy": -4, "damage": -2},
+	"maces":        {"accuracy": -4, "damage": -2},
+	"daggers":      {"accuracy": -4, "damage": -2},
+	"spears":       {"accuracy": -4, "damage": -2},
+	"ranged":       {"accuracy": -4, "damage": -2},
+	"unarmed":      {"accuracy": -4, "damage": -2},
+	"martial_arts": {"accuracy": -4, "damage": -2},
+	"armor":        {"armor": -2, "damage_reduction_pct": -0.01},
+	"space_magic":  {"spellpower": -3},
+	"air_magic":    {"spellpower": -3},
+	"fire_magic":   {"spellpower": -3},
+	"water_magic":  {"spellpower": -3},
+	"earth_magic":  {"spellpower": -3},
+	"white_magic":  {"spellpower": -3},
+	"black_magic":  {"spellpower": -3},
+	"sorcery":      {"spellpower": -3},
+	"enchantment":  {"spellpower": -3},
+	"summoning":    {"spellpower": -3},
+	"ritual":       {"spellpower": -2},
+	"yoga":         {"spellpower": -2},
+	"learning":     {"xp_gain_pct": -10.0},
+	"medicine":     {"healing_bonus_pct": -5.0},
+	"guile":        {"dodge": -2},
+	"grace":        {"dodge": -2, "initiative": -1},
+	"might":        {"damage": -3},
+	"thievery":     {"dodge": -2},
+}
+
 # Base character template
 const BASE_CHARACTER: Dictionary = {
 	"name": "Unnamed",
@@ -632,9 +664,10 @@ func upgrade_skill(character: Dictionary, skill: String) -> bool:
 		return true
 	return false
 
-## Get effective skill level including item/race bonuses (capped at 15 for display).
+## Get effective skill level including item/race bonuses.
 ## Returns the effective skill level for a character including all bonuses
-## from quirks, equipment, and race. Clamped to [0, 15].
+## from quirks, equipment, and race. Clamped to [-5, 15].
+## Negative values (from quirks like Forgetful) apply penalties in update_derived_stats.
 ## skill_bonuses format: {"skill_id": {"source_name": amount, ...}, ...}
 func get_effective_skill_level(character: Dictionary, skill_id: String) -> int:
 	var base = character.get("skills", {}).get(skill_id, 0)
@@ -642,7 +675,7 @@ func get_effective_skill_level(character: Dictionary, skill_id: String) -> int:
 	var bonus = 0
 	for source in bonus_sources:
 		bonus += int(bonus_sources[source])
-	return clampi(base + bonus, 0, 15)
+	return clampi(base + bonus, -5, 15)
 
 
 ## Update the character's element affinity totals from their skill levels.
@@ -860,6 +893,17 @@ func update_derived_stats(character: Dictionary) -> void:
 				derived["max_stamina"] = derived.get("max_stamina", 50) + int(bonus.get("max_stamina", 0))
 			if bonus.has("initiative_bonus"):
 				derived["initiative"] = derived.get("initiative", 0) + int(bonus.get("initiative_bonus", 0))
+
+	# Apply penalties for negative skill levels (quirks/debuffs pushing skills below 0).
+	for skill_id in NEGATIVE_SKILL_PENALTIES:
+		var eff := get_effective_skill_level(character, skill_id)
+		if eff >= 0:
+			continue
+		var penalty_per_level: Dictionary = NEGATIVE_SKILL_PENALTIES[skill_id]
+		var levels_negative: int = -eff  # e.g. eff=-2 → 2 levels of penalty
+		for stat in penalty_per_level:
+			var total_penalty = penalty_per_level[stat] * levels_negative
+			derived[stat] = derived.get(stat, 0) + total_penalty
 
 	# Apply active map buffs from simples/shrines.
 	# Attribute-type buffs translate to their most direct derived-stat effects

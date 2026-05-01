@@ -174,8 +174,8 @@ func display_event() -> void:
 		child.queue_free()
 
 	# Set title and description
-	title_label.text = current_event.title
-	description_label.text = current_event.text
+	title_label.text = current_event.get("title", "")
+	description_label.text = current_event.get("text", current_event.get("description", ""))
 
 	# Create choice buttons; track whether any are available
 	var any_available = false

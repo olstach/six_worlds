@@ -6732,6 +6732,165 @@
           }
         }
       ]
+    },
+    "hg_bog_hermit": {
+      "id": "hg_bog_hermit",
+      "title": "Bog Hermit",
+      "realm": "hungry_ghost",
+      "text": "A gaunt figure crouches in the reed beds, sorting through bundles of grey-green herbs with practiced hands. It is alive — or near enough to count. It looks up without alarm.\n\n\"You find herbs growing in the shade,\" it says by way of greeting, as if this explains everything. It holds up a sprig of something. \"Helps with the rot. Mostly.\"",
+      "choices": [
+        {
+          "id": "ask_herbs",
+          "type": "default",
+          "text": "Ask what the herbs are for",
+          "outcome": {
+            "type": "text",
+            "text": "\"Keep the living alive. Slow the dead down. Somewhere in between there's a tea that tastes almost good.\" It hands you a bundle without ceremony. You take it.",
+            "rewards": {
+              "items": ["herbs"],
+              "xp": 4
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "medicine_check",
+          "type": "requirement",
+          "text": "Discuss the pharmacopoeia of the dead realm",
+          "requirements": {
+            "skills": {
+              "medicine": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You name what you recognise. The hermit corrects you once, with precision, then settles into a real conversation — the first, you suspect, it has had in some time. You leave knowing more than you arrived with.",
+            "rewards": {
+              "xp": 14
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "yoga_meditation",
+          "type": "requirement",
+          "text": "Sit with it a while — you have nowhere better to be",
+          "requirements": {
+            "skills": {
+              "yoga": 1
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You sit. The hermit works. The bog makes its sounds. After a long silence it says: \"Most people run through here.\" Another silence. \"Thank you for not running.\"",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "god": 4,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "trade",
+          "type": "default",
+          "text": "Ask if it trades",
+          "outcome": {
+            "type": "text",
+            "text": "\"I trade in knowledge, mostly. I already have everything else I need.\" It gestures at the grey sky, the toxic water, the rustling reeds. It seems to mean it. You move on.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+    "hg_corpse_merchant": {
+      "id": "hg_corpse_merchant",
+      "title": "Corpse Merchant",
+      "realm": "hungry_ghost",
+      "text": "A broad figure in a waxed coat stands over a cart heaped with cloth-wrapped bundles, sealed jars, and objects you decline to examine closely. Its face is partially masked. It does not smell good, but it has clearly made peace with this.\n\n\"Everything recovered in good condition,\" it says. \"Relative condition. Relative good.\"",
+      "choices": [
+        {
+          "id": "browse",
+          "type": "default",
+          "text": "Browse the goods",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_bone_merchant",
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "ask_origin",
+          "type": "default",
+          "text": "Ask where the goods come from",
+          "outcome": {
+            "type": "text",
+            "text": "\"The dead leave things behind. I collect them. Consider it a service.\" A pause. \"To commerce. Also arguably to the dead. They weren't using it.\"",
+            "rewards": {
+              "xp": 3
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "trade_haggle",
+          "type": "requirement",
+          "text": "Haggle — this is salvage, not retail",
+          "requirements": {
+            "skills": {
+              "trade": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You explain the theory of salvage pricing. The merchant listens with professional attention and adjusts its margins. \"Fair. You know the trade.\" The discount is modest but genuine.",
+            "rewards": {
+              "xp": 6,
+              "gold": 20
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "rob",
+          "type": "roll",
+          "text": "Pocket something while it looks away",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": 14
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "The merchant turns to re-tie a bundle. In the gap, your hand moves. You're three paces gone before it straightens up. It doesn't seem to notice — or doesn't care. Possibly both.",
+            "rewards": {
+              "items": ["item_random"]
+            },
+            "karma": {
+              "hungry_ghost": 4
+            }
+          },
+          "outcome_failure": {
+            "type": "combat",
+            "enemy_group": "demon_patrol",
+            "difficulty": "normal",
+            "text": "The merchant doesn't turn around. \"I can smell the living,\" it says. \"I can smell them reaching.\" It produces a heavy implement from the cart.",
+            "karma": {
+              "hungry_ghost": 3
+            }
+          }
+        }
+      ]
     }
   }
 }

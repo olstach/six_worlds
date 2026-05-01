@@ -173,7 +173,7 @@ func _ready() -> void:
 	party_button.pressed.connect(func(): _open_char_sheet_to_tab(2))
 	spellbook_button.pressed.connect(func(): _open_char_sheet_to_tab(3))
 	crafting_button.pressed.connect(func(): _open_char_sheet_to_tab(4))
-journal_button.pressed.connect(func(): _open_char_sheet_to_tab(5))
+	journal_button.pressed.connect(func(): _open_char_sheet_to_tab(5))
 	char_sheet.visibility_changed.connect(_on_char_sheet_visibility_changed)
 	char_sheet.overworld_spell_cast.connect(_on_overworld_spell_cast)
 
@@ -556,7 +556,7 @@ func _on_pickup_collected(obj: Dictionary, rewards: Array) -> void:
 			"food":
 				parts.append("+%d food" % int(rval))
 			"damage":
-				parts.append("[color=#ef4444]-%d HP (cursed!)[/color]" % int(rval))
+				parts.append("-%d HP (cursed!)" % int(rval))
 			"cleanse":
 				parts.append("Statuses cleared")
 			"spell":
@@ -653,8 +653,24 @@ func _on_portal_entered(destination: Dictionary) -> void:
 	if dest_map.is_empty():
 		_show_toast("Portal leads nowhere...")
 		return
-	MapManager.load_map(dest_map)
-	_update_hud()
+	MapManager.pause_movement()
+	# Fade to black, load the new realm while fully dark, then fade back out
+	var overlay = ColorRect.new()
+	overlay.color = Color.BLACK
+	overlay.modulate.a = 0.0
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.z_index = 200
+	add_child(overlay)
+	var tween = create_tween()
+	tween.tween_property(overlay, "modulate:a", 1.0, 0.4)
+	tween.tween_callback(func():
+		MapManager.load_map(dest_map)
+		_update_hud()
+	)
+	tween.tween_interval(0.1)  # One frame of breathing room after load
+	tween.tween_property(overlay, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(overlay.queue_free)
 
 
 # ============================================
@@ -952,14 +968,17 @@ func _open_rest_panel() -> void:
 		if can_afford:
 			tier_btn.add_theme_stylebox_override("normal", UIStyle.make_stylebox(Color(0.25, 0.5, 0.3), 1, 6, 10))
 			tier_btn.add_theme_stylebox_override("hover",  UIStyle.make_stylebox(Color(0.35, 0.65, 0.4), 1, 6, 10))
-			# Quick Rest has 0 activity slots — execute directly
 			if tier == 1:
-				tier_btn.pressed.connect(_confirm_rest.bind(
-					tier, food_costs[i], herbs_costs[i], scrap_costs[i], []))
+				# Capture loop vars by value; lambda avoids typed-array coercion issues with bind()
+				var _t := tier; var _fc := food_costs[i]; var _hc := herbs_costs[i]; var _sc := scrap_costs[i]
+				tier_btn.pressed.connect(func():
+					var acts: Array[String] = []
+					_confirm_rest(_t, _fc, _hc, _sc, acts))
 			else:
 				tier_btn.pressed.connect(_open_activity_panel.bind(
 					tier, food_costs[i], herbs_costs[i], scrap_costs[i], is_safe))
 		else:
+			tier_btn.add_theme_stylebox_override("normal", UIStyle.make_stylebox(Color(0.3, 0.3, 0.3), 1, 6, 10))
 			tier_btn.tooltip_text = "Cannot afford this rest tier"
 		vbox.add_child(tier_btn)
 
@@ -1189,7 +1208,7 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 
 	# === Healing ===
 	# herb_prep_bonus from a previous camp activity adds +15% HP restore.
-	var herb_prep := GameState.flags.get("herb_prep_bonus", false)
+	var herb_prep: bool = GameState.flags.get("herb_prep_bonus", false)
 	if herb_prep:
 		GameState.set_flag("herb_prep_bonus", false)
 
@@ -1300,7 +1319,24 @@ func _on_supply_changed(supply_type: String, new_amount: int, _change: int) -> v
 
 func _on_discovery_made(_pos: Vector2i, discovery: Dictionary) -> void:
 	# Reward is already applied by MapManager._check_discovery()
-	_show_toast(discovery.get("message", "You found something!"))
+	var message: String = discovery.get("message", "You found something!")
+	# Append a second line describing exactly what was found
+	var dtype: String = discovery.get("type", "")
+	var dvalue = discovery.get("value", 0)
+	match dtype:
+		"gold":
+			message += "\n+%d gold" % int(dvalue)
+		"xp":
+			message += "\n+%d XP" % int(dvalue)
+		"heal":
+			message += "\nRestored %d%% HP" % int(dvalue)
+		"item":
+			var item_name: String = dvalue
+			var item_data := ItemSystem.get_item(str(dvalue))
+			if not item_data.is_empty():
+				item_name = item_data.get("name", str(dvalue))
+			message += "\nFound: %s" % item_name
+	_show_toast(message)
 	# Update gold display in case gold was found
 	gold_label.text = "Gold: " + str(GameState.gold)
 
@@ -1343,12 +1379,14 @@ func _on_psychology_crisis(character: Dictionary, element: String, polarity: Str
 
 
 ## Called when a quirk reaction fires (e.g. phobia triggered, trauma response).
-func _on_emotional_crisis_log(character_name: String, message: String) -> void:
+func _on_emotional_crisis_log(_character_name: String, message: String) -> void:
 	_show_toast(message)
 
 
 func _show_toast(msg: String) -> void:
 	toast_label.text = msg
+	# Two-line toasts use a smaller font so both lines fit comfortably
+	toast_label.add_theme_font_size_override("font_size", 16 if "\n" in msg else 20)
 	toast_label.visible = true
 	toast_label.modulate.a = 1.0
 	_toast_timer = TOAST_DURATION

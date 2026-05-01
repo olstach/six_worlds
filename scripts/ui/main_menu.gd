@@ -54,7 +54,7 @@ const EQUIPMENT_SLOTS := {
 	"hand_r": {"name": "Hands", "types": ["gloves", "gauntlets", "bracers"]},
 	"legs": {"name": "Legs", "types": ["pants", "greaves", "leggings"]},
 	"feet": {"name": "Feet", "types": ["boots", "shoes", "sandals"]},
-	"weapon_main": {"name": "Main Hand", "types": ["sword", "axe", "mace", "spear", "dagger", "staff", "bow"]},
+	"weapon_main": {"name": "Main Hand", "types": ["sword", "axe", "mace", "spear", "dagger", "staff", "bow", "focus"]},
 	"weapon_off": {"name": "Off Hand", "types": ["sword", "dagger", "shield"]},
 	"ring1": {"name": "Ring", "types": ["ring"]},
 	"ring2": {"name": "Ring", "types": ["ring"]},

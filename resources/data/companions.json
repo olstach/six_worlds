@@ -31,14 +31,18 @@
       "fixed_items": [
         "health_potion"
       ],
-      "quirks": ["devout", "brave"]
+      "quirks": [
+        "devout",
+        "brave"
+      ],
+      "realm": "hell"
     },
     "serji": {
       "id": "serji",
       "name": "Serji",
       "race": "red_devil",
       "background": "former_soldier",
-      "flavor_text": "The biggest man in the hot hell gym — and the one who walked out. Not because he won, but because winning there stopped meaning anything.",
+      "flavor_text": "The biggest man in the hot hell gym \u2014 and the one who walked out. Not because he won, but because winning there stopped meaning anything.",
       "portrait": "",
       "recruitment_cost": 650,
       "build_weights": {
@@ -62,7 +66,11 @@
         "chest": "leather_vest"
       },
       "fixed_items": [],
-      "quirks": ["war_hardened", "composed"]
+      "quirks": [
+        "war_hardened",
+        "composed"
+      ],
+      "realm": "hell"
     },
     "red_peony": {
       "id": "red_peony",
@@ -96,7 +104,11 @@
         "chest": "chainmail"
       },
       "fixed_items": [],
-      "quirks": ["strong", "hot_tempered"]
+      "quirks": [
+        "strong",
+        "hot_tempered"
+      ],
+      "realm": "hell"
     },
     "raktamatta": {
       "id": "raktamatta",
@@ -130,7 +142,11 @@
         "chest": "leather_vest"
       },
       "fixed_items": [],
-      "quirks": ["fastidious", "stubborn"]
+      "quirks": [
+        "fastidious",
+        "stubborn"
+      ],
+      "realm": "hell"
     },
     "jawbreaker": {
       "id": "jawbreaker",
@@ -164,14 +180,18 @@
         }
       },
       "fixed_items": [],
-      "quirks": ["quick", "gambler"]
+      "quirks": [
+        "quick",
+        "gambler"
+      ],
+      "realm": "hell"
     },
     "tejasimha": {
       "id": "tejasimha",
       "name": "Tejasimha",
       "race": "red_devil",
       "background": "raider",
-      "flavor_text": "First matches, then houses, then whole districts. He died laughing in a fire he started — hearty, genuine laughter, right to the end.",
+      "flavor_text": "First matches, then houses, then whole districts. He died laughing in a fire he started \u2014 hearty, genuine laughter, right to the end.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
@@ -203,7 +223,11 @@
         "fire_charm_middling",
         "plain_copper_dorje"
       ],
-      "quirks": ["curious", "vain"]
+      "quirks": [
+        "curious",
+        "vain"
+      ],
+      "realm": "hell"
     },
     "water_lily": {
       "id": "water_lily",
@@ -242,7 +266,11 @@
       "fixed_items": [
         "water_charm_middling"
       ],
-      "quirks": ["composed", "brave"]
+      "quirks": [
+        "composed",
+        "brave"
+      ],
+      "realm": "hell"
     },
     "dvijihva": {
       "id": "dvijihva",
@@ -279,7 +307,11 @@
       "fixed_items": [
         "enchantment_charm_common"
       ],
-      "quirks": ["greedy", "stubborn"]
+      "quirks": [
+        "greedy",
+        "stubborn"
+      ],
+      "realm": "hell"
     },
     "yaga_mataji": {
       "id": "yaga_mataji",
@@ -317,14 +349,18 @@
         "health_potion",
         "black_charm_common"
       ],
-      "quirks": ["fastidious", "suspicious"]
+      "quirks": [
+        "fastidious",
+        "suspicious"
+      ],
+      "realm": "hell"
     },
     "niyamendra": {
       "id": "niyamendra",
       "name": "Niyamendra",
       "race": "blue_devil",
       "background": "noble",
-      "flavor_text": "Court bureaucrat of a petty king, who found his true calling in the invention of regulations. He can freeze any ordinary process in place — paperwork is eternal.",
+      "flavor_text": "Court bureaucrat of a petty king, who found his true calling in the invention of regulations. He can freeze any ordinary process in place \u2014 paperwork is eternal.",
       "portrait": "",
       "recruitment_cost": 600,
       "build_weights": {
@@ -354,7 +390,11 @@
       "fixed_items": [
         "water_charm_common"
       ],
-      "quirks": ["fastidious", "patient"]
+      "quirks": [
+        "fastidious",
+        "patient"
+      ],
+      "realm": "hell"
     },
     "leraya": {
       "id": "leraya",
@@ -389,7 +429,11 @@
         "chest": "leather_vest"
       },
       "fixed_items": [],
-      "quirks": ["curious", "stubborn"]
+      "quirks": [
+        "curious",
+        "stubborn"
+      ],
+      "realm": "hell"
     },
     "samvibrahmi": {
       "id": "samvibrahmi",
@@ -424,14 +468,18 @@
         "chest": "leather_vest"
       },
       "fixed_items": [],
-      "quirks": ["paranoid", "suspicious"]
+      "quirks": [
+        "paranoid",
+        "suspicious"
+      ],
+      "realm": "hell"
     },
     "vayuvega": {
       "id": "vayuvega",
-      "name": "Vāyuvega",
+      "name": "V\u0101yuvega",
       "race": "green_devil",
       "background": "former_soldier",
-      "flavor_text": "Battle mage for a gang in life — a firm believer in hitting hard first and letting the questions sort themselves out among the survivors.",
+      "flavor_text": "Battle mage for a gang in life \u2014 a firm believer in hitting hard first and letting the questions sort themselves out among the survivors.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
@@ -462,11 +510,15 @@
         "air_charm_middling",
         "plain_iron_dorje"
       ],
-      "quirks": ["hot_tempered", "brave"]
+      "quirks": [
+        "hot_tempered",
+        "brave"
+      ],
+      "realm": "hell"
     },
     "angulimala": {
       "id": "angulimala",
-      "name": "Angulimāla",
+      "name": "Angulim\u0101la",
       "race": "green_devil",
       "background": "executioner",
       "flavor_text": "Executioner of a crime syndicate, known for a particular professional habit involving fingers. He is fast, precise, and oddly graceful about it.",
@@ -497,7 +549,11 @@
         "chest": "leather_vest"
       },
       "fixed_items": [],
-      "quirks": ["fastidious", "sharp_memory"]
+      "quirks": [
+        "fastidious",
+        "sharp_memory"
+      ],
+      "realm": "hell"
     },
     "kanjus": {
       "id": "kanjus",
@@ -532,7 +588,11 @@
         "chest": "leather_vest"
       },
       "fixed_items": [],
-      "quirks": ["greedy", "stubborn"]
+      "quirks": [
+        "greedy",
+        "stubborn"
+      ],
+      "realm": "hell"
     },
     "sarpatailaka": {
       "id": "sarpatailaka",
@@ -569,14 +629,18 @@
       "fixed_items": [
         "earth_charm_common"
       ],
-      "quirks": ["greedy", "gambler"]
+      "quirks": [
+        "greedy",
+        "gambler"
+      ],
+      "realm": "hell"
     },
     "shiny_needle": {
       "id": "shiny_needle",
       "name": "Shiny Needle",
       "race": "yellow_devil",
       "background": "noble",
-      "flavor_text": "She prided herself on being the prettiest. When age threatened that, she found an elegant solution — draining the lifeforce of rivals through carefully rehearsed enchantments. She called it skincare.",
+      "flavor_text": "She prided herself on being the prettiest. When age threatened that, she found an elegant solution \u2014 draining the lifeforce of rivals through carefully rehearsed enchantments. She called it skincare.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
@@ -606,7 +670,11 @@
       "fixed_items": [
         "enchantment_charm_common"
       ],
-      "quirks": ["vain", "addiction"]
+      "quirks": [
+        "vain",
+        "addiction"
+      ],
+      "realm": "hell"
     },
     "princess_spiderface": {
       "id": "princess_spiderface",
@@ -645,7 +713,11 @@
       "fixed_items": [
         "space_charm_middling"
       ],
-      "quirks": ["generous", "trusting"]
+      "quirks": [
+        "generous",
+        "trusting"
+      ],
+      "realm": "hell"
     },
     "sineater_thirteen": {
       "id": "sineater_thirteen",
@@ -683,14 +755,18 @@
         "black_charm_middling",
         "plain_bone_khatvanga"
       ],
-      "quirks": ["haunted", "curious"]
+      "quirks": [
+        "haunted",
+        "curious"
+      ],
+      "realm": "hell"
     },
     "dyutapati": {
       "id": "dyutapati",
-      "name": "Dyūtapati",
+      "name": "Dy\u016btapati",
       "race": "black_devil",
       "background": "merchant",
-      "flavor_text": "Owner of a casino in hell — cigar always lit, odds always in his favour, smile always present. The house wins. He is the house.",
+      "flavor_text": "Owner of a casino in hell \u2014 cigar always lit, odds always in his favour, smile always present. The house wins. He is the house.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
@@ -718,7 +794,11 @@
         "chest": "leather_vest"
       },
       "fixed_items": [],
-      "quirks": ["greedy", "patient"]
+      "quirks": [
+        "greedy",
+        "patient"
+      ],
+      "realm": "hell"
     },
     "coolhead_hotblood": {
       "id": "coolhead_hotblood",
@@ -751,14 +831,18 @@
       "fixed_items": [
         "black_charm_common"
       ],
-      "quirks": ["hot_tempered", "sharp_memory"]
+      "quirks": [
+        "hot_tempered",
+        "sharp_memory"
+      ],
+      "realm": "hell"
     },
     "ayurmangala": {
       "id": "ayurmangala",
       "name": "Ayurmangala",
       "race": "white_devil",
       "background": "scholar",
-      "flavor_text": "Fascinated by humanoid anatomy the way a botanist is fascinated by plants. Can be persuaded to forego vivisection of party members — keeping them alive is, after all, a more interesting experiment.",
+      "flavor_text": "Fascinated by humanoid anatomy the way a botanist is fascinated by plants. Can be persuaded to forego vivisection of party members \u2014 keeping them alive is, after all, a more interesting experiment.",
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
@@ -789,7 +873,11 @@
         "health_potion",
         "health_potion"
       ],
-      "quirks": ["curious", "fastidious"]
+      "quirks": [
+        "curious",
+        "fastidious"
+      ],
+      "realm": "hell"
     },
     "amlamarjari": {
       "id": "amlamarjari",
@@ -830,7 +918,11 @@
         "white_charm_middling",
         "plain_conch_dorje"
       ],
-      "quirks": ["generous", "night_drinker"]
+      "quirks": [
+        "generous",
+        "night_drinker"
+      ],
+      "realm": "hell"
     },
     "vimohini": {
       "id": "vimohini",
@@ -868,7 +960,11 @@
         "enchantment_charm_middling",
         "plain_copper_damaru"
       ],
-      "quirks": ["dreamer", "haunted"]
+      "quirks": [
+        "dreamer",
+        "haunted"
+      ],
+      "realm": "hell"
     },
     "tsering": {
       "id": "tsering",
@@ -903,7 +999,11 @@
         "chest": "leather_vest"
       },
       "fixed_items": [],
-      "quirks": ["stubborn", "war_hardened"]
+      "quirks": [
+        "stubborn",
+        "war_hardened"
+      ],
+      "realm": "hungry_ghost"
     },
     "rasabhava": {
       "id": "rasabhava",
@@ -941,7 +1041,11 @@
         "health_potion",
         "summoning_charm_common"
       ],
-      "quirks": ["curious", "composed"]
+      "quirks": [
+        "curious",
+        "composed"
+      ],
+      "realm": "hungry_ghost"
     },
     "saka": {
       "id": "saka",
@@ -976,7 +1080,11 @@
         "chest": "leather_vest"
       },
       "fixed_items": [],
-      "quirks": ["patient", "stubborn"]
+      "quirks": [
+        "patient",
+        "stubborn"
+      ],
+      "realm": "hungry_ghost"
     },
     "mehr": {
       "id": "mehr",
@@ -1015,7 +1123,11 @@
       "fixed_items": [
         "fire_charm_middling"
       ],
-      "quirks": ["sharp_eyed", "brave"]
+      "quirks": [
+        "sharp_eyed",
+        "brave"
+      ],
+      "realm": "hungry_ghost"
     },
     "vilasa": {
       "id": "vilasa",
@@ -1050,14 +1162,18 @@
         "chest": "cloth_robe"
       },
       "fixed_items": [],
-      "quirks": ["vain", "greedy"]
+      "quirks": [
+        "vain",
+        "greedy"
+      ],
+      "realm": "hungry_ghost"
     },
     "marmajna": {
       "id": "marmajna",
       "name": "Marmajna",
       "race": "shaza",
       "background": "healer",
-      "flavor_text": "A physician of genuine skill who understood the body as a system of resources. He began with cadavers. The logic that followed was, he still insists, impeccable. Exactly where the line was — he is still working on that.",
+      "flavor_text": "A physician of genuine skill who understood the body as a system of resources. He began with cadavers. The logic that followed was, he still insists, impeccable. Exactly where the line was \u2014 he is still working on that.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
@@ -1089,7 +1205,11 @@
         "health_potion",
         "sorcery_charm_common"
       ],
-      "quirks": ["curious", "stubborn"]
+      "quirks": [
+        "curious",
+        "stubborn"
+      ],
+      "realm": "hungry_ghost"
     },
     "kripana": {
       "id": "kripana",
@@ -1122,7 +1242,11 @@
         }
       },
       "fixed_items": [],
-      "quirks": ["greedy", "addiction"]
+      "quirks": [
+        "greedy",
+        "addiction"
+      ],
+      "realm": "hungry_ghost"
     },
     "nurse_bones": {
       "id": "nurse_bones",
@@ -1162,7 +1286,11 @@
         "health_potion",
         "white_charm_middling"
       ],
-      "quirks": ["generous", "devout"]
+      "quirks": [
+        "generous",
+        "devout"
+      ],
+      "realm": "hungry_ghost"
     },
     "hustle_bones": {
       "id": "hustle_bones",
@@ -1199,7 +1327,11 @@
       "fixed_items": [
         "earth_charm_common"
       ],
-      "quirks": ["greedy", "gambler"]
+      "quirks": [
+        "greedy",
+        "gambler"
+      ],
+      "realm": "hungry_ghost"
     },
     "prashan": {
       "id": "prashan",
@@ -1236,14 +1368,18 @@
       "fixed_items": [
         "plain_bronze_drilbu"
       ],
-      "quirks": ["curious", "sharp_memory"]
+      "quirks": [
+        "curious",
+        "sharp_memory"
+      ],
+      "realm": "hungry_ghost"
     },
     "temba": {
       "id": "temba",
       "name": "Temba",
       "race": "dralha",
       "background": "warrior",
-      "flavor_text": "Outcast at twelve. Followed at twenty. United the clans at thirty-five through sheer force of demonstrated possibility — showing them what happened when people stopped fighting each other long enough to eat. He never stopped being the outcast kid trying to feed people through a bad winter.",
+      "flavor_text": "Outcast at twelve. Followed at twenty. United the clans at thirty-five through sheer force of demonstrated possibility \u2014 showing them what happened when people stopped fighting each other long enough to eat. He never stopped being the outcast kid trying to feed people through a bad winter.",
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
@@ -1271,7 +1407,11 @@
         "chest": "chainmail"
       },
       "fixed_items": [],
-      "quirks": ["generous", "brave"]
+      "quirks": [
+        "generous",
+        "brave"
+      ],
+      "realm": "hungry_ghost"
     },
     "iron_oath": {
       "id": "iron_oath",
@@ -1306,7 +1446,11 @@
         "chest": "chainmail"
       },
       "fixed_items": [],
-      "quirks": ["stubborn", "war_hardened"]
+      "quirks": [
+        "stubborn",
+        "war_hardened"
+      ],
+      "realm": "hungry_ghost"
     },
     "the_chronicler": {
       "id": "the_chronicler",
@@ -1341,7 +1485,11 @@
         "chest": "cloth_robe"
       },
       "fixed_items": [],
-      "quirks": ["sharp_memory", "melancholic"]
+      "quirks": [
+        "sharp_memory",
+        "melancholic"
+      ],
+      "realm": "hungry_ghost"
     },
     "nyingje": {
       "id": "nyingje",
@@ -1379,7 +1527,11 @@
       "fixed_items": [
         "health_potion"
       ],
-      "quirks": ["patient", "devout"]
+      "quirks": [
+        "patient",
+        "devout"
+      ],
+      "realm": "hungry_ghost"
     },
     "shantipala": {
       "id": "shantipala",
@@ -1414,7 +1566,11 @@
         "chest": "cloth_robe"
       },
       "fixed_items": [],
-      "quirks": ["trusting", "generous"]
+      "quirks": [
+        "trusting",
+        "generous"
+      ],
+      "realm": "hungry_ghost"
     },
     "peldon": {
       "id": "peldon",
@@ -1449,14 +1605,18 @@
         "chest": "leather_vest"
       },
       "fixed_items": [],
-      "quirks": ["generous", "patient"]
+      "quirks": [
+        "generous",
+        "patient"
+      ],
+      "realm": "hungry_ghost"
     },
     "choki": {
       "id": "choki",
-      "name": "Chöki",
+      "name": "Ch\u00f6ki",
       "race": "dre",
       "background": "wanderer",
-      "flavor_text": "Left to gather in the forest. Came back to find the village gone — a flash flood, no warning, nothing left. Drowned herself in the same river three days later. Still here, still not sure what she is waiting for.",
+      "flavor_text": "Left to gather in the forest. Came back to find the village gone \u2014 a flash flood, no warning, nothing left. Drowned herself in the same river three days later. Still here, still not sure what she is waiting for.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
@@ -1487,7 +1647,11 @@
         "water_charm_middling",
         "plain_silver_drilbu"
       ],
-      "quirks": ["grief_struck", "melancholic"]
+      "quirks": [
+        "grief_struck",
+        "melancholic"
+      ],
+      "realm": "hungry_ghost"
     },
     "nangwa": {
       "id": "nangwa",
@@ -1524,7 +1688,11 @@
       "fixed_items": [
         "space_charm_common"
       ],
-      "quirks": ["curious", "stubborn"]
+      "quirks": [
+        "curious",
+        "stubborn"
+      ],
+      "realm": "hungry_ghost"
     },
     "drupchen": {
       "id": "drupchen",
@@ -1562,7 +1730,11 @@
         "white_charm_common",
         "plain_conch_dorje"
       ],
-      "quirks": ["lapsed", "stubborn"]
+      "quirks": [
+        "lapsed",
+        "stubborn"
+      ],
+      "realm": "hungry_ghost"
     },
     "khedrup": {
       "id": "khedrup",
@@ -1600,7 +1772,11 @@
         "black_charm_common",
         "plain_bone_khatvanga"
       ],
-      "quirks": ["stubborn", "superstitious"]
+      "quirks": [
+        "stubborn",
+        "superstitious"
+      ],
+      "realm": "hungry_ghost"
     },
     "yasha": {
       "id": "yasha",
@@ -1635,7 +1811,11 @@
         "chest": "cloth_robe"
       },
       "fixed_items": [],
-      "quirks": ["vain", "melancholic"]
+      "quirks": [
+        "vain",
+        "melancholic"
+      ],
+      "realm": "hungry_ghost"
     },
     "durvasa": {
       "id": "durvasa",
@@ -1673,7 +1853,11 @@
         "sorcery_charm_middling",
         "plain_copper_phurba"
       ],
-      "quirks": ["blood_handed", "stubborn"]
+      "quirks": [
+        "blood_handed",
+        "stubborn"
+      ],
+      "realm": "hungry_ghost"
     },
     "gomchen": {
       "id": "gomchen",
@@ -1711,7 +1895,11 @@
         "sorcery_charm_common",
         "plain_iron_phurba"
       ],
-      "quirks": ["lapsed", "vain"]
+      "quirks": [
+        "lapsed",
+        "vain"
+      ],
+      "realm": "hungry_ghost"
     }
   }
 }
