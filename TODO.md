@@ -147,7 +147,7 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 **Follow-up (after core system lands):**
 - [x] ~~**Lunar calendar system**~~ — 28-day lunar month (4×7, always week-aligned), full moon day 14 / new moon day 28 (both Saturday). Two-line HUD label ("Sunday, 1st lunar day / Deep Night"). Full moon: White magic +20% spellpower + mana partial restore + toast; new moon: Black magic +20% + toast. Both: karma weight ×1.5. Weekday school bonus system: Sun=Fire, Mon=Water, Tue=Sorcery, Wed=Space, Thu=Air, Fri=Enchantment, Sat=Earth — each gives +20% spellpower to that school. All wired into `game_state.gd`, `combat_manager.gd`, `karma_system.gd`, `overworld.gd`, `overworld.tscn`.
 - [ ] Realm-specific rest events — "something stirs in the night" flavour event chance when resting in hell/hungry ghost
-- [ ] Rest perks — wire `_process_rest_perks(character, tier)`: Safe Campsite (no encounter on rest), Lucid Rest (Yoga 7, extra pressure decay), Well-Rested (Medicine 8, temp HP on full rest), Field Surgeon (Medicine 6, revive bleed-out on full rest)
+- [x] ~~Rest perks — wire `_process_rest_perks(character, tier)`~~ — **Safe Campsite** (Logistics 3): any party member with the perk eliminates disturbances + +15% HP restore. **Lucid Rest** (Yoga 7): accumulates mantra at Yoga÷2 during any rest tier, no activity slot needed. **Well-Rested** (Medicine 8): after Full Rest, party gets Awareness +3 / Constitution +2 / Initiative +5 for 1 combat via `active_map_buffs`. **Field Surgeon** (Medicine 6): using a medicine item in combat triggers a Medicine roll (d20+Medicine vs DC 14); on success cures one wound mid-fight. All three perks added to perks.json.
 - [ ] Yoga skill boosts pressure decay rate during rest (Yoga level adds to decay_amount)
 - [ ] Day/night visual changes on overworld map (lighting overlay, different mob behavior)
 - [ ] Block rest when hostile mob is adjacent (optional tension mechanic)
@@ -791,3 +791,105 @@ Some Deity Yoga effects are simplified stat bonuses rather than true unit spawns
 - [ ] Design shrine objects for overworld (map_generator.gd placement)
 - [ ] Implement DharmapalSystem autoload (offering tracking, relationship meters, interventions)
 - [ ] Wire cross-lifetime persistence into KarmaSystem / reincarnation logic
+
+---
+
+## Project Audit — 2026-05-01
+
+Full sweep of unimplemented, unfinished, and unconnected systems.
+
+### High Priority — Actionable Fixes
+
+**Character Sheet UI gaps:**
+- [ ] Wounds/body display panel — `character.wounds[]` is tracked by WoundSystem but nothing renders it in the character sheet; no display of active wounds, severity, or penalties
+- [ ] Psychology panel is minimal — only shows dominant emotional label; no per-element pressure bars, no baseline vs current comparison, no active status list
+
+**Combat system gaps:**
+- [ ] Extra arm attack results not shown in combat log — `extra_arm_results` are computed and applied silently; the UI should display "Arm 2: 12 dmg" etc. in the combat log
+- [ ] Cone AoE targeting preview is wrong — combat_arena shows full-range highlight instead of cone silhouette; `cone_forward` doesn't lock to caster facing
+
+**Status effects — wired in this session:**
+- [x] `_get_status_stat_bonus()` additions: `range_bonus` (+2 range), `finesse_bonus` (+5 dodge/+3 init), `damage_boost` (+15 dmg), `focus_penalty` (−3 spellpower), `focus_penalty_major` (−8), `awareness_penalty_major` (−8 init/−5 sp), `awareness_bonus_major` (+8 init/+5 sp), `armor_bonus_minor` (+5 armor), `minor_all_stats_bonus` (+5 all), `all_stats_penalty` (−5 all)
+- [x] `get_resistance()` addition: `magic_resistance_bonus` (+15 vs non-physical, Praying)
+- [x] `_apply_status_effect()` guards: `debuff_immunity` (Cleansed blocks debuffs), Mental_Immunity (`immune_to_charm/fear/confusion`), `remove_all_debuffs` fires `_cleanse_status_effects` on apply
+- [x] `attack_unit()`: `cannot_make_weapon_attacks` (Disarmed), `next_attack_misses` (Force_Miss status consumed on next attack), `next_ranged_guaranteed_hit` (Blessed_Shot consumed on hit)
+- [x] `calculate_physical_damage()`: `crit_vulnerability` (+25% crit chance against Marked_for_Death target)
+- [x] `apply_damage()`: `damage_taken_increase` (Marked_for_Death ×1.5 incoming damage)
+- [x] Turn start: `grants_extra_action` (Extra_Action gives +1 action and is consumed)
+- [x] `_unit_has_effect(unit, effect_name)` helper added to combat_manager.gd
+
+**Status effects — wired in follow-up pass:**
+- [x] `get_resistance()`: `air_immune` (Lightning_Form alias), `physical_immune` (Thin_Air alias), `fire_vulnerability` (reads `vulnerability_pct` field), `all_element_resistance` (reads `resistance_pct` field, Rainbow_Cloak)
+- [x] `calculate_hit_chance()`: `attacks_have_miss_chance` (Blurred −20% hit chance on top of dodge_bonus)
+- [x] `attack_unit()`: `immune_to_ranged` (Storm_Lord, ranged attacks auto-fail), `ranged_damage_reduction` (Air_Shield ×0.75), Sanctuary `cannot_target_enemies` + `cannot_be_targeted` guards, `breaks_on_offensive_action` removes Sanctuary on attack
+- [x] `cast_spell()`: Sanctuary blocks offensive spells (`cannot_target_enemies`), `breaks_on_offensive_action` removes Sanctuary on offensive cast
+- [x] `_apply_spell_effects()`: `spell_damage_reduction` (Magic_Shield / Golden_Defense ×0.75 after resistance)
+- [x] `_process_on_hit_perks()`: `stun_chance_on_hit` (Electrified_Weapon 25% Stunned on any hit)
+- [x] `_process_status_effects()` DoT: `increase_burning_damage_dealt` (Fan_the_Flames: fire DoT from this source ×1.5)
+- [x] Turn start: `skip_next_action` (Prone: −1 action to stand up, status consumed)
+- [x] `apply_damage()`: `hp_cannot_drop_below_1` (Death_Immunity: HP floor at 1)
+
+**Status effects — still not wired:**
+- [ ] `Taunt` (`must_attack_taunter`): requires AI targeting override — affected unit must target the taunter; complex AI integration deferred
+- [ ] `constitution_bonus`/`constitution_penalty` (Constitution_Buff / Constitution_Minus_2): affects max_hp mid-combat, requires HP recalculation system not yet built
+- [ ] Aura status effects (Soothing_Presence, Guardian_Kings, etc.): handled per-mantra, not via status effects — architecture differs
+- [ ] Karmic_Bond / `share_healing_75_percent` + `linked_to_ally`: shared HP system not built
+- [ ] Eternal_Vow (`return_on_death_next_turn` / `return_with_20_percent_hp`): resurrection not built
+- [ ] Magic_Mirror (`spell_reflect_chance`): spell reflection not built
+- [ ] Mirror_Images (`copies_absorb_attacks` / `illusory_copies`): illusory copy system not built
+- [ ] `grants_flight` / `loses_flight` / `immune_to_melee_unless_flyer`: flight system not built
+- [ ] `controlled_by_caster` (Dominated): full AI control system deferred
+- [ ] `forced_movement_toward_target` (Lured): force movement on unit's turn deferred
+- [ ] `buffs_all_stats_considerably` (Divine_Champion) / `buffs_two_highest_stats` (Divinely_Inspired): needs values defined
+- [ ] `focus_save_on_damage` (Swarmed): reactive save on each hit deferred
+- [ ] `hp_shield` (Mantric_Armor `until_destroyed` duration): damage absorption shield with persistent value not built
+- [ ] `death_resistance` (Ancestors_Blessing): survive-one-fatal-hit system not built
+- [ ] Moderate-complexity moderate: `can_move_through_enemies`, `immune_to_ground_effects`, `immune_to_terrain_hazards`, `immune_to_water_terrain`, `cannot_deal_physical`, `damage_on_move_attempt`, `prone_chance_on_movement`, `stealth_bonus`, `attack_damage_buff_when_ally_dies`, `aura_reduces_enemy_spell_damage`
+
+**Race features not wired:**
+- [ ] `red_devil`: `better_starting_weapon` — TODO note in races.json but not implemented; red devils get the same starting weapons as everyone else
+- [ ] `yellow_devil`: `extra_starting_gold` — TODO note in races.json, not implemented
+- [ ] `skeleton`: 50% physical damage reduction defined in races.json `base_resistances`, but combat_manager ignores `base_resistances` on enemies; only CombatUnit loaded from character_dict gets them
+
+**Overworld gaps:**
+- [ ] `_process_rest_perks` now handles Lucid Rest; Yoga skill level itself should also boost `decay_amount` during rest (Yoga 1–10 adding 2–20 to decay)
+- [ ] Location-specific camp activity suppression/enhancement — `suppress_activities` and `enhance_activities` fields exist in map object design but `get_available_activities()` never reads them
+
+### Medium Priority
+
+**Prosthetic items:**
+- [ ] `item_system.gd` registers "prosthetic" as a valid type and `equip_item` has a bypass for missing parts, but zero prosthetic items exist in `items.json` — the whole limb-loss → prosthetic flow has no data to use
+
+**Race descriptions:**
+- [ ] ~8 races in `races.json` have placeholder descriptions (TODO: Fill in description)
+
+**Shambler balance:**
+- [ ] `shambler` race has -7 net attribute total with no compensating passive — design note says add fear/mind immunity or reduced XP cost for unarmed/might
+
+### Low Priority / Design Phase
+
+**Combat features:**
+- [ ] Terrain spell power modifiers — tiles with fire/water/etc. terrain don't boost matching-school spells cast on them
+- [ ] Summoning terrain bonus — summoning spellpower should get +25% based on matching overworld terrain (water = nagas, mountains = earth spirits, etc.)
+- [ ] Out-of-combat spellcasting — utility spells like `cloud_gate` are designed for overworld use but no spellbook UI exists outside combat
+
+**Psychology:**
+- [ ] Chronic darkness counter — accumulate debuffs for time spent below −50 pressure (not started)
+- [ ] Yidam integration — mantra practice raises brightness baseline per element (depends on YidamSystem)
+- [ ] Layer 3 intervention mechanic — social skills let one character help another's pressure
+
+**Camp:**
+- [ ] Protector Offering camp activity — deferred until DharmapalSystem exists
+- [ ] Craft Charm camp activity — needs charm schema design
+- [ ] Set Snares camp activity — deferred (needs "resolve on next move" system)
+
+**Items:**
+- [ ] Cursed items — type registered, no actual cursed items exist yet
+- [ ] Ritual implement special traits — conch pacification aura, bone life-drain proc, sky-iron void field (design deferred)
+
+### Confirmed Complete (previously thought missing)
+- Psychology Layer 3 (crisis/valve mechanic) — fully implemented in `psychology_system.gd`
+- Wound/disease application on crits — wired in `combat_manager.gd`
+- Background system — all fields (`attribute_modifiers`, `starting_skills`, `starting_equipment`, `starting_spells`) are fully applied; no "abilities" field exists in data, nothing is missing
+- Spell outcomes — all 6 types handled; all reward keys have code handlers
+- Summoning school — complete; no in-game tutorial but mechanics work
