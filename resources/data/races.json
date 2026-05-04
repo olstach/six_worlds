@@ -1841,9 +1841,10 @@
       "starting_spells": [],
       "reincarnation_weight": 0,
       "typical_backgrounds": [
-        "warrior",
-        "raider",
-        "hunter"
+        "lord_of_the_range",
+        "the_hungry",
+        "maneater",
+        "hedonist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1884,10 +1885,10 @@
       "starting_spells": [],
       "reincarnation_weight": 20,
       "typical_backgrounds": [
-        "warrior",
-        "guard",
-        "berserker",
-        "farmer"
+        "old_tusk",
+        "sounder_guard",
+        "mycelium_tender",
+        "sounder_matron"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1931,9 +1932,10 @@
       "starting_spells": [],
       "reincarnation_weight": 15,
       "typical_backgrounds": [
-        "warrior",
-        "hunter",
-        "raider"
+        "cache_master",
+        "canopy_ambush",
+        "forest_drifter",
+        "hedonist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1978,10 +1980,10 @@
       "starting_spells": [],
       "reincarnation_weight": 25,
       "typical_backgrounds": [
-        "warrior",
-        "guard",
-        "wanderer",
-        "hunter"
+        "range_reader",
+        "ceremonial_dancer",
+        "herb_walker",
+        "elder_voice"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -2026,9 +2028,10 @@
       "starting_spells": [],
       "reincarnation_weight": 15,
       "typical_backgrounds": [
-        "wanderer",
-        "trickster",
-        "raider"
+        "troop_elder",
+        "shrine_keeper",
+        "jugaad",
+        "forest_thief"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -3742,6 +3745,270 @@
       "available_races": [
         "vetala",
         "dre"
+      ],
+      "weight": 4
+    },
+    "lord_of_the_range": {
+      "name": "Lord of the Range",
+      "description": "Every tree in three valleys has been marked. The boundaries are maintained with absolute precision — a scratch here, a spray there, a half-eaten carcass arranged just so at the crossing. When lesser things feel watched in the deep forest, they are right.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "unarmed": 2,
+        "martial_arts": 1
+      },
+      "available_races": [
+        "rakshasa"
+      ],
+      "weight": 4
+    },
+    "the_hungry": {
+      "name": "The Hungry",
+      "description": "Territory has not been claimed yet. The days pass in constant movement — eating whatever can be caught, fighting what challenges, retreating from nothing. The hunger is not a problem. It is the condition of becoming.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "unarmed": 1,
+        "martial_arts": 1,
+        "guile": 1
+      },
+      "available_races": [
+        "rakshasa"
+      ],
+      "weight": 5
+    },
+    "maneater": {
+      "name": "Maneater",
+      "description": "They tried keeping fires at the forest's edge. It didn't help. Now there is one who comes when she will, takes what she will, leaves when she is finished. The fires don't frighten her. She has learned the settlement schedules.",
+      "attribute_modifiers": {
+        "finesse": 1
+      },
+      "starting_skills": {
+        "unarmed": 2,
+        "guile": 1
+      },
+      "available_races": [
+        "rakshasa"
+      ],
+      "weight": 3
+    },
+    "old_tusk": {
+      "name": "Old Tusk",
+      "description": "Forty seasons in these hills. I know which hollows flood in the rains and which stay dry. Where the healing clay is for the wallow. The slope where truffle runs deepest. The young ones follow me because memory outlasts tusks.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "earth_magic": 2,
+        "medicine": 1,
+        "logistics": 1
+      },
+      "available_races": [
+        "varaha"
+      ],
+      "weight": 4
+    },
+    "sounder_guard": {
+      "name": "Sounder Guard",
+      "description": "When something comes for the piglets it meets me first. There are boar-marks on wolves, leopards, a bear that learned better. The front of my face is a record of everything that has tested what is mine.",
+      "attribute_modifiers": {
+        "constitution": 1
+      },
+      "starting_skills": {
+        "martial_arts": 2,
+        "armor": 1
+      },
+      "available_races": [
+        "varaha"
+      ],
+      "weight": 5
+    },
+    "mycelium_tender": {
+      "name": "Mycelium Tender",
+      "description": "Most of the forest walks above the real richness — the fungal networks, the tuber gardens, the mycelium world that feeds everything else from below. I work underneath.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "earth_magic": 1,
+        "alchemy": 2
+      },
+      "available_races": [
+        "varaha"
+      ],
+      "weight": 4
+    },
+    "sounder_matron": {
+      "name": "Sounder Matron",
+      "description": "She doesn't lead by being the largest or the most aggressive. She leads because she remembers the year the eastern valley flooded, and the year the wolves came in winter, and what worked both times. The sounder follows her because the sounder has tested every alternative.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "leadership": 2,
+        "logistics": 1,
+        "medicine": 1
+      },
+      "available_races": [
+        "varaha"
+      ],
+      "weight": 3
+    },
+    "cache_master": {
+      "name": "Cache Master",
+      "description": "Three kills in the ironwood tree. Two more near the river crossing. Memory is the art — a leopard who forgets their caches starves in winter. I remember every one. I have never been hungry.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "guile": 2,
+        "logistics": 1
+      },
+      "available_races": [
+        "shardula"
+      ],
+      "weight": 4
+    },
+    "canopy_ambush": {
+      "name": "Canopy Ambush",
+      "description": "They look for danger on the ground. They check behind rocks, test the wind for scent. They never look up. By the time they see me I am already resolved.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "daggers": 1,
+        "guile": 1,
+        "martial_arts": 1
+      },
+      "available_races": [
+        "shardula"
+      ],
+      "weight": 4
+    },
+    "forest_drifter": {
+      "name": "Forest Drifter",
+      "description": "No particular territory. No particular schedule. The road between the settlements has interesting smells — traders with dried meat, merchants with shiny things, pilgrims with nothing worth stealing. A hunt when hungry, a trade when bored, a long sleep in a warm patch of sunlight when neither seems worth the effort.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "guile": 1,
+        "thievery": 1,
+        "trade": 1,
+        "comedy": 1
+      },
+      "available_races": [
+        "shardula"
+      ],
+      "weight": 4
+    },
+    "hedonist": {
+      "name": "Hedonist",
+      "description": "Not interested in territory, dominion, or legacy. Interested in the next experience — the feast after the hunt, the fear on a stranger's face, the music from the village fire that reaches the treeline. The unpredictability is not a flaw. It is the point.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "performance": 2,
+        "guile": 1,
+        "black_magic": 1
+      },
+      "available_races": [
+        "rakshasa",
+        "shardula"
+      ],
+      "weight": 3
+    },
+    "range_reader": {
+      "name": "Range Reader",
+      "description": "Every clearing is a risk and a reward. I go first, I go last, reading every edge for the colour that doesn't belong, the shadow that holds still while the leaves move. The herd waits for my signal. The pack waits for my report. The skill is the same either way.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "guile": 1,
+        "ranged": 1
+      },
+      "available_races": [
+        "gana"
+      ],
+      "weight": 5
+    },
+    "ceremonial_dancer": {
+      "name": "Ceremonial Dancer",
+      "description": "In the long cold the pack makes a circle and calls to the dark until something answers. I am the one who knows when to start and when the call is complete. // The clearing belongs to whoever can hold it longest — through display, through stamina, through the formal language of antlers. I know all the vocabulary.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "performance": 1,
+        "ritual": 1,
+        "persuasion": 1
+      },
+      "available_races": [
+        "gana"
+      ],
+      "weight": 4
+    },
+    "herb_walker": {
+      "name": "Herb Walker",
+      "description": "The old female eats grass when ill, slows for the lame elk, reads the forest not for the kill but for the whole. The pack follows her medicine more than her speed. // I know the slope where the bitter herb grows that cures the wasting sickness. I know the clay that draws out poison. The herd comes to me when something goes wrong.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "medicine": 2,
+        "earth_magic": 1
+      },
+      "available_races": [
+        "gana"
+      ],
+      "weight": 4
+    },
+    "elder_voice": {
+      "name": "Elder Voice",
+      "description": "The alpha doesn't lead by being fastest or most violent. The alpha leads because the pack has tested every alternative and this one keeps them fed. // The old buck's scars are a curriculum. Every predator that tried and failed left a lesson. The herd follows him toward the safe water.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "leadership": 2,
+        "persuasion": 1,
+        "logistics": 1
+      },
+      "available_races": [
+        "gana"
+      ],
+      "weight": 3
+    },
+    "troop_elder": {
+      "name": "Troop Elder",
+      "description": "I know which fig ripens first and which mango is always bitter. I know who should not sit next to whom at the sleeping tree, which young males are building coalitions, which females are calculating. The troop is a city in the canopy.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "persuasion": 2,
+        "learning": 1
+      },
+      "available_races": [
+        "vanara"
+      ],
+      "weight": 3
+    },
+    "shrine_keeper": {
+      "name": "Shrine Keeper",
+      "description": "The great fig tree has been sacred since before memory. I leave offerings at the roots — a smooth stone, a bright beetle, a length of vine arranged just so. I do not know why. My mother did it. And hers.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "ritual": 2,
+        "yoga": 1
+      },
+      "available_races": [
+        "vanara"
+      ],
+      "weight": 3
+    },
+    "jugaad": {
+      "name": "Jugaad",
+      "description": "The camp near the river has a forge. I watched them for a season before I went in. They thought I wanted food. I wanted to understand what they were doing with fire and metal. The first tool I made was better than theirs. The seventh one they couldn't explain. I take requests now, in exchange for food and a formal agreement with their dogs.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "crafting": 2,
+        "guile": 1,
+        "learning": 1
+      },
+      "available_races": [
+        "vanara"
+      ],
+      "weight": 4
+    },
+    "forest_thief": {
+      "name": "Forest Thief",
+      "description": "The settlements at the forest edge have interesting things — bright cloth, sweet foods, objects whose purpose I don't understand but which catch the light magnificently. I know which dogs bark and which don't. I know when the guards sleep.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "thievery": 2,
+        "guile": 1
+      },
+      "available_races": [
+        "vanara"
       ],
       "weight": 4
     }
