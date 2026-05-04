@@ -2077,9 +2077,9 @@
       "starting_spells": [],
       "reincarnation_weight": 15,
       "typical_backgrounds": [
-        "warrior",
-        "hunter",
-        "guardian"
+        "sky_lord",
+        "stooper",
+        "jessed_hawk"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -2125,9 +2125,9 @@
       "starting_spells": [],
       "reincarnation_weight": 20,
       "typical_backgrounds": [
-        "wanderer",
-        "spy",
-        "guardian"
+        "post_runner",
+        "temple_dove",
+        "conference_pilgrim"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -2174,9 +2174,9 @@
       "starting_spells": [],
       "reincarnation_weight": 15,
       "typical_backgrounds": [
-        "wanderer",
-        "scholar",
-        "trickster"
+        "night_scholar",
+        "ill_omen",
+        "fortune_seeker"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -4009,6 +4009,133 @@
       },
       "available_races": [
         "vanara"
+      ],
+      "weight": 4
+    },
+    "sky_lord": {
+      "name": "Sky Lord",
+      "description": "Three valleys. Every road, field, and creature visible at once from the high thermal. Others look at their feet and call that seeing. You look at everything from above and call it home. The ground is not the world. The ground is what you look at when you want to know where you are.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "unarmed": 1,
+        "might": 1,
+        "logistics": 1
+      },
+      "available_races": [
+        "shyena"
+      ],
+      "weight": 4
+    },
+    "stooper": {
+      "name": "Stooper",
+      "description": "Two hundred wing-lengths of silent fall. The wind becomes a pressure, then a scream, then nothing — because at the end of the stoop there is no more thinking, only the moment of contact. Everything else you do in your life is preparation for this or recovery from it.",
+      "attribute_modifiers": {
+        "finesse": 1
+      },
+      "starting_skills": {
+        "unarmed": 2,
+        "martial_arts": 1
+      },
+      "available_races": [
+        "shyena"
+      ],
+      "weight": 5
+    },
+    "jessed_hawk": {
+      "name": "Jessed Hawk",
+      "description": "Trained, hooded, tethered, fed by hand. You learned the wrist and the lure, the falconer's whistle, the particular quality of patience that humans confuse with obedience. You watched their settlements from above for years before you understood what you were seeing. Now you are neither fully wild nor fully tame, and you know things that neither world suspects.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "guile": 2,
+        "learning": 1
+      },
+      "available_races": [
+        "shyena"
+      ],
+      "weight": 3
+    },
+    "post_runner": {
+      "name": "Post Runner",
+      "description": "The peak where two passes cross. The lone horn of rock three days east. The great cliff above the frozen lake. You know every one — the approach thermals, the best perches, who is likely to be there. The route is not how you travel. The route is who you are.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "logistics": 2,
+        "guile": 1
+      },
+      "available_races": [
+        "kapota"
+      ],
+      "weight": 6
+    },
+    "temple_dove": {
+      "name": "Temple Dove",
+      "description": "Hatched in the temple courtyard, fed on offerings, trained to carry prayers tied to your leg between shrines. You never needed to find food. You never needed to know where you were going — the route was always already known. You are out in the wider world now, and it is strange: loud, directionless, full of things that were not in the prayers.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "ritual": 2,
+        "yoga": 1
+      },
+      "available_races": [
+        "kapota"
+      ],
+      "weight": 4
+    },
+    "conference_pilgrim": {
+      "name": "Conference Pilgrim",
+      "description": "You made the journey. The thirty gathered at the highest waypoint — the one above the clouds that is on no one's map — and found what was there. Some say the Simurgh was not there. Some say the Simurgh was exactly there. You came back, and it is difficult to explain what you found, except that you are no longer looking for it.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "yoga": 2,
+        "space_magic": 1
+      },
+      "available_races": [
+        "kapota"
+      ],
+      "weight": 2
+    },
+    "night_scholar": {
+      "name": "Night Scholar",
+      "description": "The waypoint at midnight is a different place than the waypoint at noon. The day-birds leave things: messages, feathers, the warm impressions of bodies on stone. You read it all. You know more about what happens in the light hours than any creature who was there for them. Knowledge accumulates in the dark.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "learning": 2,
+        "black_magic": 1
+      },
+      "available_races": [
+        "uluka"
+      ],
+      "weight": 4
+    },
+    "ill_omen": {
+      "name": "Ill Omen",
+      "description": "You have been appearing before catastrophes since before you can remember. You arrive; something happens. You learn not to take it personally. Eventually you learn to take it very personally — to arrive where you choose, and let the catastrophe follow from that. An omen is only uncontrolled prophecy.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "black_magic": 2,
+        "performance": 1
+      },
+      "available_races": [
+        "uluka"
+      ],
+      "weight": 2
+    },
+    "fortune_seeker": {
+      "name": "Fortune Seeker",
+      "description": "The hollow log three wing-lengths off the ground, just off the north pass — there is silver in it. You know this the way you know where the mice run. The buried thing, the hidden cache, the lost object — they have a particular quality in the dark that found and visible things lack. Lakshmi moves in circles you can follow.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "thievery": 1,
+        "trade": 1,
+        "guile": 1
+      },
+      "available_races": [
+        "uluka"
       ],
       "weight": 4
     }
