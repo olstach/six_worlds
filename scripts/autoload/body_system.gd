@@ -125,6 +125,28 @@ const BODY_PLANS: Dictionary = {
 		]
 	},
 
+	# Mantis — raptorial forelegs are locked blades (no weapons equippable);
+	# 4 walking legs give +1 movement, +5 dodge via get_extra_leg_pairs()
+	"mantis": {
+		"parts": [
+			{"id": "head",   "category": "head",  "equip_slot": "head",   "parent": "torso",  "children": []},
+			{"id": "torso",  "category": "torso", "equip_slot": "chest",  "parent": "",       "children": ["head", "arm_l", "arm_r", "leg_l", "leg_r", "leg_l2", "leg_r2"]},
+			# Raptorial forelegs: locked blades — can wear bracers but cannot equip weapons.
+			# skill_tags picks the better of unarmed or swords for attack rolls.
+			{"id": "arm_l",  "category": "arm",   "equip_slot": "hand_l", "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": true, "name": "Mantis Blade", "damage_min": 5, "damage_max": 11, "damage_type": "slashing", "skill_tags": ["unarmed", "swords"]}},
+			{"id": "arm_r",  "category": "arm",   "equip_slot": "hand_r", "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": true, "name": "Mantis Blade", "damage_min": 5, "damage_max": 11, "damage_type": "slashing", "skill_tags": ["unarmed", "swords"]}},
+			# Four walking legs — extra pair gives movement/dodge bonus
+			{"id": "leg_l",  "category": "leg",   "equip_slot": "legs",   "parent": "torso",  "children": ["foot_l"]},
+			{"id": "leg_r",  "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["foot_r"]},
+			{"id": "leg_l2", "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": []},
+			{"id": "leg_r2", "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": []},
+			{"id": "foot_l", "category": "foot",  "equip_slot": "feet",   "parent": "leg_l",  "children": []},
+			{"id": "foot_r", "category": "foot",  "equip_slot": "",       "parent": "leg_r",  "children": []},
+		]
+	},
+
 	# Avian — bird-form; wings are arm-category wound targets with wing-rake;
 	# locked beak on head (no helmet); locked talons on feet (no boots)
 	"avian": {

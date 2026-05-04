@@ -760,7 +760,8 @@
       },
       "starting_traits": [
         "serpentine"
-      ]
+      ],
+      "body_plan_species": "serpentine"
     },
     "yaksha": {
       "name": "Yaksha",
@@ -1761,7 +1762,8 @@
       },
       "starting_traits": [
         "predator_grace"
-      ]
+      ],
+      "body_plan_species": "mantis"
     },
     "patanga": {
       "name": "Patanga",
@@ -2088,7 +2090,8 @@
         "flying",
         "armored",
         "taloned_strike"
-      ]
+      ],
+      "body_plan_species": "avian"
     },
     "kapota": {
       "name": "Kapota",
@@ -2135,7 +2138,8 @@
         "flying",
         "predator_grace",
         "swift_wing"
-      ]
+      ],
+      "body_plan_species": "avian"
     },
     "uluka": {
       "name": "Uluka",
@@ -2182,7 +2186,8 @@
       "starting_traits": [
         "flying",
         "night_vision"
-      ]
+      ],
+      "body_plan_species": "avian"
     }
   },
   "backgrounds": {

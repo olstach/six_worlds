@@ -423,6 +423,11 @@ func apply_birth_modifiers(character: Dictionary, birth: String) -> void:
 			if spell_id != "":
 				learn_spell(character, spell_id)
 
+	# Set body plan species from birth data (overrides BASE_CHARACTER "human" default)
+	var body_species: String = data.get("body_plan_species", "")
+	if body_species != "":
+		character["body_plan"]["species"] = body_species
+
 	# Apply starting traits from race (racial identity traits, habitat, etc.)
 	var race_traits: Array = data.get("starting_traits", [])
 	for trait_id in race_traits:

@@ -816,8 +816,19 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 		"bow", "thrown":
 			return "ranged"
 		_:
-			# Natural weapons carry skill_tag directly (e.g. "unarmed" for fists/claws/bites)
-			return get_equipped_weapon().get("skill_tag", "")
+			# Natural weapons carry skill_tag (single) or skill_tags (array — pick best).
+			var weapon := get_equipped_weapon()
+			var tags: Array = weapon.get("skill_tags", [])
+			if not tags.is_empty():
+				var best_skill := tags[0]
+				var best_level := CharacterSystem.get_effective_skill_level(character_data, best_skill)
+				for tag in tags.slice(1):
+					var lvl := CharacterSystem.get_effective_skill_level(character_data, tag)
+					if lvl > best_level:
+						best_level = lvl
+						best_skill = tag
+				return best_skill
+			return weapon.get("skill_tag", "")
 
 
 ## Get armor value (includes status effect and perk bonuses)
