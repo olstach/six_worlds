@@ -729,6 +729,13 @@ These are all additions/changes that should happen in a dedicated tuning pass:
 - [ ] Silver weapons: add `"disease_immune_on_hit"` passive — wielder is immune to disease procs from the target they just hit (purification on contact); add to on-hit proc logic
 - [ ] Review all existing weapon/armor items for any that reference arms, legs, or specific body parts — none currently do, but thematic armors (bracers for arm wounds, sabatons for foot wounds) could reduce wound chance for their body location
 
+#### Face slot — Masks (design session needed)
+- [ ] Masks are a major design space — ceremonial, deity, elemental, school-specific; defer to a dedicated pass
+- [ ] Masks should sit in the `face` slot (type `"mask"`) — already mapped in `_find_slot_for_item()`
+- [ ] Consider: deity masks give large Deity Yoga bonus (see Deity Yoga section); school masks give skill_bonuses to a single school; elemental masks give elemental resistance + minor affinity bonus
+- [ ] Possible types: wrathful (combat stats), peaceful (healing/buff bonuses), animal form (special abilities), ritual (Ritual/Yoga bonuses)
+- [ ] Cross-reference with Ritual Garb section (ritual garb masks vs. combat masks vs. deity masks — may need separate type tags)
+
 ---
 
 ## Design Questions

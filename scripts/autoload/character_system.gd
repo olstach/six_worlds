@@ -569,6 +569,10 @@ func _find_slot_for_item(character: Dictionary, item_id: String) -> String:
 			if eq.get("trinket1", "") == "": return "trinket1"
 			if eq.get("trinket2", "") == "": return "trinket2"
 			return ""
+		"cape", "cloak", "mantle", "backpack":
+			return "back" if eq.get("back", "") == "" else ""
+		"eyewear", "face_cloth", "mask", "veil":
+			return "face" if eq.get("face", "") == "" else ""
 	return ""
 
 
@@ -815,8 +819,8 @@ func update_derived_stats(character: Dictionary) -> void:
 	# Crit chance from Awareness + Finesse + Luck + equipment + fire affinity
 	derived.crit_chance = 5 + int((effective_attrs.awareness + effective_attrs.finesse + effective_attrs.luck) / 6) + equip_bonus.get("crit_chance", 0) + affinity_bonus.get("crit_chance", 0)
 
-	# Weight limit from Strength
-	derived.weight_limit = 100 + (effective_attrs.strength - 10) * 10
+	# Weight limit from Strength + equipment (e.g. backpack)
+	derived.weight_limit = 100 + (effective_attrs.strength - 10) * 10 + equip_bonus.get("weight_limit", 0)
 
 	# Combat stats from equipment + earth affinity
 	derived.damage = equip_bonus.get("damage", 0)
