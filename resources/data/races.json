@@ -795,9 +795,10 @@
       "starting_spells": [],
       "reincarnation_weight": 0,
       "typical_backgrounds": [
-        "guardian",
-        "wanderer",
-        "trickster"
+        "caravan_guard",
+        "still_hunter",
+        "pollen_rishi",
+        "meadow_ward"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1509,10 +1510,11 @@
       "starting_spells": [],
       "reincarnation_weight": 20,
       "typical_backgrounds": [
-        "warrior",
-        "guard",
-        "guardian",
-        "farmer"
+        "hive_architect",
+        "network_node",
+        "far_scout",
+        "honey_alchemist",
+        "caravan_guard"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1697,9 +1699,9 @@
       "starting_spells": [],
       "reincarnation_weight": 20,
       "typical_backgrounds": [
-        "warrior",
-        "guard",
-        "farmer"
+        "caravan_guard",
+        "tunneler",
+        "tunnel_merchant"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1744,9 +1746,10 @@
       "starting_spells": [],
       "reincarnation_weight": 15,
       "typical_backgrounds": [
-        "warrior",
-        "hunter",
-        "raider"
+        "caravan_guard",
+        "still_hunter",
+        "blade_contemplative",
+        "jaina"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1790,8 +1793,9 @@
       "starting_spells": [],
       "reincarnation_weight": 15,
       "typical_backgrounds": [
-        "wanderer",
-        "trickster"
+        "far_scout",
+        "flame_seeker",
+        "pollen_rishi"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -3429,6 +3433,279 @@
         "makara"
       ],
       "weight": 2
+    },
+    "hive_architect": {
+      "name": "Hive Architect",
+      "description": "The comb is not built — it grows, cell by cell, through ten thousand coordinated decisions. You were one of them.",
+      "attribute_modifiers": {
+        "constitution": 1
+      },
+      "starting_skills": {
+        "crafting": 2,
+        "earth_magic": 1,
+        "logistics": 1
+      },
+      "available_races": [
+        "bhramara"
+      ],
+      "weight": 6
+    },
+    "network_node": {
+      "name": "Node of the Queen's Web",
+      "description": "You held a position in the real-time flow of the hive's collective mind. Not a soldier, not a builder — a relay, a processor, a voice in the continuous hum.",
+      "attribute_modifiers": {
+        "focus": 1
+      },
+      "starting_skills": {
+        "ritual": 2,
+        "water_magic": 1,
+        "yoga": 1
+      },
+      "starting_spells": [
+        {
+          "school": "Water",
+          "level": 1,
+          "count": 1
+        }
+      ],
+      "available_races": [
+        "bhramara"
+      ],
+      "weight": 2
+    },
+    "far_scout": {
+      "name": "Far Scout",
+      "description": "The hive's eyes go further than its walls. You mapped the meadow in pollen-language and brought it home in your body.",
+      "attribute_modifiers": {
+        "finesse": 1
+      },
+      "starting_skills": {
+        "air_magic": 1,
+        "logistics": 2
+      },
+      "starting_equipment": {
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_dagger",
+        "weapon_upgrade_chance": 0.3
+      },
+      "available_races": [
+        "bhramara",
+        "patanga"
+      ],
+      "weight": 6
+    },
+    "honey_alchemist": {
+      "name": "Honey-Keeper",
+      "description": "The honey is not food. It is memory, medicine, and slow fire. You know the difference between a healing batch and a poisoned one.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "alchemy": 2,
+        "medicine": 1
+      },
+      "available_races": [
+        "bhramara"
+      ],
+      "weight": 5
+    },
+    "caravan_guard": {
+      "name": "Caravan Guard",
+      "description": "The trade roads between hive-cities need walking. You walk them heavy and slow, and nothing touches the cargo.",
+      "attribute_modifiers": {
+        "strength": 1
+      },
+      "starting_skills": {
+        "armor": 1,
+        "spears": 1,
+        "might": 1
+      },
+      "starting_equipment": {
+        "base_weapon": "iron_spear",
+        "weapon_upgrade": "steel_spear",
+        "weapon_upgrade_chance": 0.2,
+        "items": [
+          "chuba"
+        ]
+      },
+      "available_races": [
+        "dura",
+        "khadga",
+        "bhramara",
+        "yaksha"
+      ],
+      "weight": 7
+    },
+    "tunneler": {
+      "name": "Tunneler",
+      "description": "You dig. What others call the underworld is simply where you work. The roots of the meadow are familiar as a face.",
+      "attribute_modifiers": {
+        "strength": 1
+      },
+      "starting_skills": {
+        "earth_magic": 1,
+        "crafting": 2,
+        "might": 1
+      },
+      "starting_equipment": {
+        "base_weapon": "bronze_gada",
+        "weapon_upgrade": "iron_gada",
+        "weapon_upgrade_chance": 0.25
+      },
+      "available_races": [
+        "dura"
+      ],
+      "weight": 6
+    },
+    "tunnel_merchant": {
+      "name": "Tunnel Merchant",
+      "description": "The surface roads belong to those who fear nothing. The tunnel roads belong to you. Your caravan of great beetles moves slow and sure through passages older than memory, and the surface predators never knew you passed.",
+      "attribute_modifiers": {
+        "charm": 1
+      },
+      "starting_skills": {
+        "trade": 2,
+        "logistics": 2
+      },
+      "available_races": [
+        "dura"
+      ],
+      "weight": 6
+    },
+    "still_hunter": {
+      "name": "Still Hunter",
+      "description": "You do not chase. You find the right place, and you wait. The prey comes to you eventually. It always does.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "daggers": 2,
+        "guile": 1
+      },
+      "starting_equipment": {
+        "base_weapon": "iron_dagger",
+        "weapon_upgrade": "steel_katar",
+        "weapon_upgrade_chance": 0.2
+      },
+      "available_races": [
+        "khadga",
+        "yaksha"
+      ],
+      "weight": 6
+    },
+    "blade_contemplative": {
+      "name": "Blade Contemplative",
+      "description": "The mantis holds perfectly still before it moves. So do you. The strike is not an act of violence — it is the end of a very long thought.",
+      "attribute_modifiers": {
+        "finesse": 1
+      },
+      "starting_skills": {
+        "martial_arts": 2,
+        "yoga": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "monks_robe",
+          "monks_hood"
+        ]
+      },
+      "available_races": [
+        "khadga"
+      ],
+      "weight": 5
+    },
+    "jaina": {
+      "name": "Jaina",
+      "description": "You looked at your blades and understood the problem. They were made for one thing only, and that thing leaves a mark on the soul. You chose the longer road: discipline, the practice of not-harming, and finally the great fast that others call death but you know as the last purification.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "yoga": 2,
+        "ritual": 1,
+        "learning": 1
+      },
+      "available_races": [
+        "khadga"
+      ],
+      "weight": 2,
+      "todo": [
+        "karma_wiring: Jaina characters should accumulate animal-realm karma more slowly and drift toward human/god karma through non-violent play choices. Wire a background event_tag (jaina) into KarmaSystem so that karma-modifying event outcomes reduce animal karma at a discount and amplify human/god gains. The long fast (sallekhana) could eventually be a late-game event triggered by high yoga + jaina background tag."
+      ]
+    },
+    "flame_seeker": {
+      "name": "Flame-Seeker",
+      "description": "The flame is a teacher. You have studied it your whole life. It has not yet consumed you.",
+      "attribute_modifiers": {
+        "focus": 1
+      },
+      "starting_skills": {
+        "fire_magic": 3,
+        "yoga": 1
+      },
+      "starting_spells": [
+        {
+          "school": "Fire",
+          "level": 1,
+          "count": 2
+        },
+        {
+          "school": "Fire",
+          "level": 2,
+          "count": 1
+        }
+      ],
+      "available_races": [
+        "patanga"
+      ],
+      "weight": 2
+    },
+    "pollen_rishi": {
+      "name": "Pollen Rishi",
+      "description": "You move between the flowering nodes of the meadow's invisible geography, accumulating knowledge the way a wing accumulates dust.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "learning": 2,
+        "space_magic": 1,
+        "yoga": 1
+      },
+      "starting_spells": [
+        {
+          "school": "Space",
+          "level": 1,
+          "count": 1
+        }
+      ],
+      "available_races": [
+        "patanga",
+        "yaksha"
+      ],
+      "weight": 4
+    },
+    "meadow_ward": {
+      "name": "Meadow Ward",
+      "description": "You are bound to a place. The meadow's health is your health. Strangers who wish safe passage learn to speak to you first.",
+      "attribute_modifiers": {
+        "charm": 1
+      },
+      "starting_skills": {
+        "earth_magic": 1,
+        "ritual": 2,
+        "persuasion": 1
+      },
+      "starting_spells": [
+        {
+          "school": "Earth",
+          "level": 1,
+          "count": 1
+        }
+      ],
+      "available_races": [
+        "yaksha"
+      ],
+      "weight": 5
     },
     "trickster": {
       "name": "Trickster",
