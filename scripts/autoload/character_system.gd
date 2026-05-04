@@ -139,9 +139,11 @@ const BASE_CHARACTER: Dictionary = {
 	# Known spells (spell IDs the character has learned)
 	"known_spells": [],
 
-	# Equipment slots (12-slot system with weapon sets)
+	# Equipment slots (14-slot system with weapon sets; face/back universal from body system)
 	"equipment": {
 		"head": "",
+		"face": "",
+		"back": "",
 		"chest": "",
 		"hand_l": "",
 		"hand_r": "",
@@ -799,12 +801,12 @@ func update_derived_stats(character: Dictionary) -> void:
 	# Dodge from Finesse + equipment + water affinity
 	derived.dodge = effective_attrs.finesse + equip_bonus.get("dodge", 0) + affinity_bonus.get("dodge", 0)
 
-	# Extra leg pairs: each pair beyond the first gives +1 movement, +5 dodge, +20 weight_limit
+	# Extra leg pairs: each pair beyond the first gives +2 movement, +10 dodge, +20 weight_limit
 	if BodySystem:
 		var extra_pairs: int = BodySystem.get_extra_leg_pairs(character)
 		if extra_pairs > 0:
-			derived.movement += extra_pairs
-			derived.dodge += extra_pairs * 5
+			derived.movement += extra_pairs * 2
+			derived.dodge += extra_pairs * 10
 			derived.weight_limit += extra_pairs * 20
 
 	# Spellpower from Focus + equipment + space affinity

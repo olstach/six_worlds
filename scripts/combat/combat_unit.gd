@@ -847,8 +847,11 @@ func get_armor_pierce() -> int:
 func get_crit_chance() -> float:
 	var derived = character_data.get("derived", {})
 	var mantra_crit = float(mantra_stat_bonuses.get("crit_chance", 0))
-	var weapon_crit = float(get_equipped_weapon().get("stats", {}).get("crit_chance", 0))
-	return float(derived.get("crit_chance", 5)) + weapon_crit + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance")) + maxf(0.0, mantra_crit) + float(_get_stat_modifier_bonus("crit_chance"))
+	var equipped := get_equipped_weapon()
+	var weapon_crit = float(equipped.get("stats", {}).get("crit_chance", 0))
+	# Natural weapons can carry a crit_bonus field (e.g. mantis blades +10%)
+	var natural_crit = float(equipped.get("crit_bonus", 0))
+	return float(derived.get("crit_chance", 5)) + weapon_crit + natural_crit + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance")) + maxf(0.0, mantra_crit) + float(_get_stat_modifier_bonus("crit_chance"))
 
 
 ## Get current stamina

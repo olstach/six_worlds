@@ -16,15 +16,30 @@ const WOUND_PENALTIES: Dictionary = {
 		"moderate": {"spellpower": -20, "initiative": -15},
 		"severe":   {"spellpower": -30, "initiative": -25, "max_hp": -15},
 	},
+	"face": {
+		"light":    {"spellpower": -10, "initiative": -10},
+		"moderate": {"spellpower": -20, "initiative": -15},
+		"severe":   {"spellpower": -30, "initiative": -25, "max_hp": -10},
+	},
 	"torso": {
 		"light":    {"max_hp": -10, "max_stamina": -10},
 		"moderate": {"max_hp": -20, "max_stamina": -20},
 		"severe":   {"max_hp": -35, "max_stamina": -25},
 	},
+	"back": {
+		"light":    {"max_stamina": -10},
+		"moderate": {"max_hp": -10, "max_stamina": -15},
+		"severe":   {"max_hp": -20, "max_stamina": -25},
+	},
 	"arm": {
 		"light":    {"dodge": -15, "max_stamina": -5},
 		"moderate": {"dodge": -25, "max_stamina": -10},
 		"severe":   {"dodge": -30, "max_stamina": -15, "max_hp": -10},
+	},
+	"wing": {
+		"light":    {"movement": -10, "initiative": -10},
+		"moderate": {"movement": -20, "initiative": -15},
+		"severe":   {"movement": -35, "initiative": -25, "max_hp": -10},
 	},
 	"leg": {
 		"light":    {"initiative": -10, "movement": -10},
@@ -45,12 +60,15 @@ const LOCATION_WEIGHTS: Dictionary = {
 	"arm":   15,
 	"leg":   10,
 	"head":  10,
-	"foot":  3,
+	"back":  10,
+	"wing":   8,
+	"face":   5,
+	"foot":   3,
 }
 
 # Accessory slots exist for all species regardless of body plan.
 const ACCESSORY_SLOTS: Array[String] = [
-	"ring1", "ring2", "amulet", "trinket1", "trinket2"
+	"face", "back", "ring1", "ring2", "amulet", "trinket1", "trinket2"
 ]
 
 # ── Body plan definitions ─────────────────────────────────────────────────────
@@ -134,9 +152,9 @@ const BODY_PLANS: Dictionary = {
 			# Raptorial forelegs: locked blades — can wear bracers but cannot equip weapons.
 			# skill_tags picks the better of unarmed or swords for attack rolls.
 			{"id": "arm_l",  "category": "arm",   "equip_slot": "hand_l", "parent": "torso",  "children": [],
-				"natural_weapon": {"locked": true, "name": "Mantis Blade", "damage_min": 5, "damage_max": 11, "damage_type": "slashing", "skill_tags": ["unarmed", "swords"]}},
+				"natural_weapon": {"locked": true, "name": "Mantis Blade", "damage_min": 5, "damage_max": 11, "damage_type": "slashing", "skill_tags": ["unarmed", "swords"], "crit_bonus": 10}},
 			{"id": "arm_r",  "category": "arm",   "equip_slot": "hand_r", "parent": "torso",  "children": [],
-				"natural_weapon": {"locked": true, "name": "Mantis Blade", "damage_min": 5, "damage_max": 11, "damage_type": "slashing", "skill_tags": ["unarmed", "swords"]}},
+				"natural_weapon": {"locked": true, "name": "Mantis Blade", "damage_min": 5, "damage_max": 11, "damage_type": "slashing", "skill_tags": ["unarmed", "swords"], "crit_bonus": 10}},
 			# Four walking legs — extra pair gives movement/dodge bonus
 			{"id": "leg_l",  "category": "leg",   "equip_slot": "legs",   "parent": "torso",  "children": ["foot_l"]},
 			{"id": "leg_r",  "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["foot_r"]},
@@ -147,21 +165,25 @@ const BODY_PLANS: Dictionary = {
 		]
 	},
 
-	# Avian — bird-form; wings are arm-category wound targets with wing-rake;
-	# locked beak on head (no helmet); locked talons on feet (no boots)
+	# Avian — garuda/tengu form: proper arms (can wield weapons), wings on back,
+	# locked beak on face slot, locked talons on feet.
 	"avian": {
 		"parts": [
-			{"id": "head",    "category": "head",  "equip_slot": "head",   "parent": "torso",  "children": [],
+			{"id": "head",    "category": "head",  "equip_slot": "head",   "parent": "torso",  "children": ["face"]},
+			# Beak on face slot — locked, no helmet displaced; head slot free for hoods/crowns
+			{"id": "face",    "category": "face",  "equip_slot": "face",   "parent": "head",   "children": [],
 				"natural_weapon": {"locked": true, "name": "Beak", "damage_min": 1, "damage_max": 5, "damage_type": "piercing", "skill_tag": "unarmed"}},
-			{"id": "torso",   "category": "torso", "equip_slot": "chest",  "parent": "",       "children": ["head", "wing_l", "wing_r", "leg_l", "leg_r"]},
-			# Wings: arm-category wound targets with wing-rake natural attack; no equip slot
-			{"id": "wing_l",  "category": "arm",   "equip_slot": "",       "parent": "torso",  "children": [],
-				"natural_weapon": {"locked": false, "name": "Wing Rake", "damage_min": 1, "damage_max": 4, "damage_type": "slashing", "skill_tag": "unarmed"}},
-			{"id": "wing_r",  "category": "arm",   "equip_slot": "",       "parent": "torso",  "children": [],
-				"natural_weapon": {"locked": false, "name": "Wing Rake", "damage_min": 1, "damage_max": 4, "damage_type": "slashing", "skill_tag": "unarmed"}},
+			{"id": "torso",   "category": "torso", "equip_slot": "chest",  "parent": "",       "children": ["head", "back", "arm_l", "arm_r", "leg_l", "leg_r"]},
+			# Wings: back-mounted, wound category "wing"; locked slot (not a weapon, just flight)
+			{"id": "back",    "category": "wing",  "equip_slot": "back",   "parent": "torso",  "children": [], "locked": true},
+			# Arms: birds have proper arms (garuda/tengu style) — can equip weapons
+			{"id": "arm_l",   "category": "arm",   "equip_slot": "hand_l", "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_min": 1, "damage_max": 3, "damage_type": "crushing", "skill_tag": "unarmed"}},
+			{"id": "arm_r",   "category": "arm",   "equip_slot": "hand_r", "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": false, "name": "Fist", "damage_min": 1, "damage_max": 3, "damage_type": "crushing", "skill_tag": "unarmed"}},
 			{"id": "leg_l",   "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["talon_l"]},
 			{"id": "leg_r",   "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["talon_r"]},
-			# Talons: locked natural weapons, no equip slot
+			# Talons: locked natural weapons; no boot slot (feet are talons)
 			{"id": "talon_l", "category": "foot",  "equip_slot": "",       "parent": "leg_l",  "children": [],
 				"natural_weapon": {"locked": true, "name": "Talon", "damage_min": 2, "damage_max": 5, "damage_type": "slashing", "skill_tag": "unarmed"}},
 			{"id": "talon_r", "category": "foot",  "equip_slot": "",       "parent": "leg_r",  "children": [],
@@ -191,7 +213,11 @@ func get_equipment_slots(character: Dictionary) -> Array[String]:
 		if s == "" or part.id in missing:
 			continue
 		slots.append(s)
-	slots.append_array(ACCESSORY_SLOTS)
+	# Add universal accessory slots, skipping any already provided by the body plan
+	# (avian back/face slots come from the body plan; humans get them from here)
+	for s in ACCESSORY_SLOTS:
+		if not s in slots:
+			slots.append(s)
 	return slots
 
 
@@ -275,9 +301,17 @@ func get_natural_weapon(character: Dictionary, slot_id: String) -> Dictionary:
 	return {}
 
 
-## True if the part owning slot_id has a locked natural weapon (cannot equip items over it).
+## True if the part owning slot_id is locked (cannot equip items).
+## Checks natural_weapon.locked first; falls back to part-level "locked" flag
+## (used for wing/back slots that block items but have no natural weapon).
 func is_slot_locked(character: Dictionary, slot_id: String) -> bool:
-	return get_natural_weapon(character, slot_id).get("locked", false)
+	if get_natural_weapon(character, slot_id).get("locked", false):
+		return true
+	var plan := get_body_plan_def(character)
+	for part in plan.parts:
+		if part.get("equip_slot", "") == slot_id:
+			return part.get("locked", false)
+	return false
 
 
 ## Natural weapon from the first available arm. Falls back to head/tail if all arms are gone.
@@ -294,9 +328,9 @@ func get_dominant_natural_weapon(character: Dictionary) -> Dictionary:
 		var nw: Dictionary = part.get("natural_weapon", {})
 		if not nw.is_empty():
 			return nw.duplicate()
-	# Fallback: head or tail (bite, beak) when all arms are severed
+	# Fallback: head/face/tail natural weapons when all arms are severed
 	for part in plan.parts:
-		if not part.get("category") in ["head", "leg"]:
+		if not part.get("category") in ["head", "face", "leg"]:
 			continue
 		if part.id in missing:
 			continue
