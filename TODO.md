@@ -362,6 +362,7 @@ Persistent negative status effects from combat or events that do not fully clear
 - [ ] Paushtikakarma spells for Earth magic school — wealth multiplication, prosperity, dowsing for buried goods/ore; gives mechanical teeth to trade/merchant builds (Hustle Bones companion, Trade+Earth magic synergy)
 
 ### UI Improvements
+- [ ] **Rename "race" → "birth" in scene nodes** — code variables `race_label` / `race_value` and the scene node names `RaceLabel` / `RaceValue` still use old terminology. Two files + their scenes: `new_character_sheet.gd` (`@onready var race_label` → `birth_label`, node path `.../RaceLabel`); `main_menu.gd` (`@onready var race_value` → `birth_value`, unique name `%RaceValue`). Both `.tscn` files need the node renamed first, then the `@onready` variable and all usages updated.
 - [ ] Tooltip system expansion — item_tooltip.gd works for items; no tooltips on status effects, terrain tiles, or turn order icons in combat
 - [ ] Upgrade selection popup (choose 1 of 4) — no scene or system exists
 - [x] ~~Party management screen~~ — DONE (session 10): Party tab in main_menu shows all members with HP/MP/ST bars, View Stats button switches to Stats tab for any member, Remove button dismisses companions
