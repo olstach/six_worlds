@@ -1515,7 +1515,8 @@
         "network_node",
         "far_scout",
         "honey_alchemist",
-        "caravan_guard"
+        "caravan_guard",
+        "swarm_caller"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1560,7 +1561,9 @@
       "typical_backgrounds": [
         "coral_guard",
         "wreck_gleaner",
-        "current_herald"
+        "current_herald",
+        "vent_warden",
+        "keel_rider"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1702,7 +1705,9 @@
       "typical_backgrounds": [
         "caravan_guard",
         "tunneler",
-        "tunnel_merchant"
+        "tunnel_merchant",
+        "root_shaper",
+        "shell_wright"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1983,7 +1988,8 @@
         "range_reader",
         "ceremonial_dancer",
         "herb_walker",
-        "elder_voice"
+        "elder_voice",
+        "forest_singer"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -2031,7 +2037,8 @@
         "troop_elder",
         "shrine_keeper",
         "jugaad",
-        "forest_thief"
+        "forest_thief",
+        "treetop_wit"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -2127,7 +2134,8 @@
       "typical_backgrounds": [
         "post_runner",
         "temple_dove",
-        "conference_pilgrim"
+        "conference_pilgrim",
+        "waypoint_gossip"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -3865,8 +3873,8 @@
       "attribute_modifiers": {},
       "starting_skills": {
         "daggers": 1,
-        "guile": 1,
-        "martial_arts": 1
+        "martial_arts": 1,
+        "grace": 1
       },
       "available_races": [
         "shardula"
@@ -3894,8 +3902,8 @@
       "attribute_modifiers": {},
       "starting_skills": {
         "performance": 2,
-        "guile": 1,
-        "black_magic": 1
+        "black_magic": 1,
+        "grace": 1
       },
       "available_races": [
         "rakshasa",
@@ -3910,8 +3918,8 @@
         "awareness": 1
       },
       "starting_skills": {
-        "guile": 1,
-        "ranged": 1
+        "ranged": 1,
+        "grace": 1
       },
       "available_races": [
         "gana"
@@ -4064,7 +4072,7 @@
       },
       "starting_skills": {
         "logistics": 2,
-        "guile": 1
+        "grace": 1
       },
       "available_races": [
         "kapota"
@@ -4136,6 +4144,116 @@
       },
       "available_races": [
         "uluka"
+      ],
+      "weight": 4
+    },
+    "vent_warden": {
+      "name": "Vent Warden",
+      "description": "The chimneys are older than memory — older than the coral palace, older than the names of the ocean-born. Where the thermal vents breathe, life clusters around the heat. You hold the threshold. You were not appointed to this. You are the threshold.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "sorcery": 2,
+        "maces": 1,
+        "armor": 1
+      },
+      "available_races": [
+        "karka"
+      ],
+      "weight": 3
+    },
+    "keel_rider": {
+      "name": "Keel Rider",
+      "description": "You found that boats go places if you hold on to the underside and wait. You have been to ports whose names you cannot pronounce. You have watched markets from below the dock pilings. You know more about distant trade than the merchants who paid for passage, and you got there for free.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "learning": 1,
+        "trade": 1,
+        "comedy": 1,
+        "grace": 1
+      },
+      "available_races": [
+        "karka"
+      ],
+      "weight": 4
+    },
+    "root_shaper": {
+      "name": "Root Shaper",
+      "description": "The tuber doesn't know it's being guided. The root finds the right direction because the direction is good, and you make the direction good. Enchantment is not force — it is a very patient suggestion.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "enchantment": 2,
+        "earth_magic": 1
+      },
+      "available_races": [
+        "dura"
+      ],
+      "weight": 4
+    },
+    "shell_wright": {
+      "name": "Shell Wright",
+      "description": "The shed carapace is not waste. It is material — harder than wood, lighter than iron, shaped already by the body that wore it. You learned to work it: to cut, to layer, to join. What you make fits the one who will wear it because you understand what it is to be armoured from birth.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "crafting": 2,
+        "armor": 1
+      },
+      "available_races": [
+        "dura"
+      ],
+      "weight": 4
+    },
+    "swarm_caller": {
+      "name": "Swarm Caller",
+      "description": "The hive can extend beyond the hive. You learned to ask rather than just know — to reach through the network and draw a portion of it toward you. The swarm comes when called. It is not a weapon. It is a form of speech.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "summoning": 2,
+        "air_magic": 1
+      },
+      "available_races": [
+        "bhramara"
+      ],
+      "weight": 3
+    },
+    "treetop_wit": {
+      "name": "Treetop Wit",
+      "description": "The line between funny and frightening is a matter of timing. You work both sides of it from a height, with an audience that can't easily leave. The fall is never accidental. The recovery is always the point.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "comedy": 2,
+        "performance": 1,
+        "grace": 1
+      },
+      "available_races": [
+        "vanara"
+      ],
+      "weight": 4
+    },
+    "waypoint_gossip": {
+      "name": "Waypoint Gossip",
+      "description": "Messages are cargo. Stories are currency. You carry both and charge for neither, because the one who gives freely is the one everyone is glad to see at the waypoint. You know more about what is happening across three mountain ranges than any of the people it is happening to.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "comedy": 1,
+        "persuasion": 1,
+        "learning": 1
+      },
+      "available_races": [
+        "kapota"
+      ],
+      "weight": 4
+    },
+    "forest_singer": {
+      "name": "Forest Singer",
+      "description": "The clearing competition. The howling circle at full moon. The display that says: I am here, I am this, does anyone want to respond? Some do it for territory. You do it because the doing is the point — the song carrying further than you can see, the answer coming back from somewhere unexpected.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "performance": 1,
+        "comedy": 1,
+        "grace": 1
+      },
+      "available_races": [
+        "gana"
       ],
       "weight": 4
     }
