@@ -3277,7 +3277,7 @@
         "naga",
         "makara"
       ],
-      "weight": 4
+      "weight": 3
     },
     "sea_dancer": {
       "name": "Sea-Silk Dancer",
@@ -3376,18 +3376,19 @@
       "available_races": [
         "naga"
       ],
-      "weight": 3
+      "weight": 2
     },
     "current_herald": {
       "name": "Herald of the Undersea Roads",
       "description": "News travels fast in the deep. You are faster.",
       "attribute_modifiers": {
-        "finesse": 1
+        "finesse": 1,
+        "awareness": 1
       },
       "starting_skills": {
-        "awareness": 2,
         "air_magic": 1,
-        "guile": 1
+        "guile": 1,
+        "logistics": 1
       },
       "starting_equipment": {
         "base_weapon": "bone_dagger",
@@ -3427,7 +3428,7 @@
       "available_races": [
         "makara"
       ],
-      "weight": 3
+      "weight": 2
     },
     "trickster": {
       "name": "Trickster",
