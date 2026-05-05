@@ -1,0 +1,1312 @@
+{
+  "events": {
+
+    "_comment_guilds": "=== UNIVERSAL GUILDS — animal realm flavor ===",
+
+    "animal_sacred_grove": {
+      "id": "animal_sacred_grove",
+      "title": "Sacred Grove",
+      "realm": "animal",
+      "text": "Yaksha-marked trees and colored ropes wound around ancient root systems indicate the boundaries of this place. The grove has been tended so long it breathes on its own — the leaves move when nothing else does. Yaksha and Yakshini commune with followers here in the old way: no temples, no intermediaries, just the practitioners and the inhabited earth beneath their feet.",
+      "choices": [
+        {
+          "id": "approach",
+          "type": "default",
+          "text": "Approach the practitioners",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_sacred_grove",
+            "text": "A Yakshini turns and regards you without surprise. Earth magic has a price — she names it."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave them to their work",
+          "outcome": {
+            "type": "text",
+            "text": "You walk on. The light here filters differently than the rest of the forest — warmer, somehow, as though the sun is paying attention."
+          }
+        }
+      ]
+    },
+
+    "animal_temple_of_the_naga": {
+      "id": "animal_temple_of_the_naga",
+      "title": "Temple of the Naga",
+      "realm": "animal",
+      "text": "Offerings of saffron-milk and wild flowers line the path to the shrine — fresh, which means someone was here recently. The naga temple here is older than the settlements that surround it, and the naga who receive worship here are older still. Their presence is felt as a weight in the air, like the moment before rain.",
+      "choices": [
+        {
+          "id": "ask_teachings",
+          "type": "default",
+          "text": "Ask about their teachings",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_temple_of_the_naga",
+            "text": "A practitioner rises smoothly and names the spells they can teach. The price is gold. The naga do not haggle."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on without disturbing the offerings",
+          "outcome": {
+            "type": "text",
+            "text": "You don't touch the flowers. The scent of saffron and something older follows you for a while."
+          }
+        }
+      ]
+    },
+
+    "animal_garuda_roost": {
+      "id": "animal_garuda_roost",
+      "title": "Garuda Roost",
+      "realm": "animal",
+      "text": "A horned pole rises from the high ground — above the canopy where it can be seen from the air, or from a cliff edge visible to anything that flies. The garudas pass through this realm regularly on their circuits between worlds. Followers of all species gather here to wait, to offer, and sometimes to receive teachings when the great birds land. Shyena and kapota are among the most devoted.",
+      "choices": [
+        {
+          "id": "speak",
+          "type": "default",
+          "text": "Speak to the worshippers",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_garuda_roost",
+            "text": "One of the worshippers looks up. They teach Air magic here. The price is negotiable, but only within reason."
+          }
+        },
+        {
+          "id": "offering",
+          "type": "default",
+          "text": "Leave an offering and go",
+          "outcome": {
+            "type": "text",
+            "text": "You set something at the base of the pole and move on. The ribbons flutter."
+          }
+        }
+      ]
+    },
+
+    "animal_hidden_gompa": {
+      "id": "animal_hidden_gompa",
+      "title": "Hidden Gompa",
+      "realm": "animal",
+      "text": "A structure of woven branches and packed earth, half-reclaimed by the forest. Inside, mantric syllables are audible — not quite human in their cadence, adjusted over years of practice to harmonize with birdsong and the sounds of the forest. Monks who withdrew from the human realm into the animal realm for solitude. They have been here a long time. The animals have grown accustomed to them.",
+      "safe_camp": true,
+      "choices": [
+        {
+          "id": "enter",
+          "type": "default",
+          "text": "Knock and ask to enter",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_hidden_gompa",
+            "text": "After a pause, the door opens. A monk gestures you inside. Space magic. What do you need?"
+          }
+        },
+        {
+          "id": "pass",
+          "type": "default",
+          "text": "Don't disturb them",
+          "outcome": {
+            "type": "text",
+            "text": "You walk past quietly. The mantras continue without interruption."
+          }
+        }
+      ]
+    },
+
+    "animal_medicinal_garden": {
+      "id": "animal_medicinal_garden",
+      "title": "Medicinal Garden",
+      "realm": "animal",
+      "text": "A clearing carved from the forest floor, every inch cultivated with medicinal plants. Some healers here were born in these forests; others retreated from human settlements to practice more freely. The knowledge is older than any of them — root-knowledge, bark-knowledge, the deep grammar of the healing forest. The teachers share it openly, for a fee.",
+      "choices": [
+        {
+          "id": "learn",
+          "type": "default",
+          "text": "Ask to learn",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_medicinal_garden",
+            "text": "A healer looks up from her work and nods. She names her price without ceremony."
+          }
+        },
+        {
+          "id": "pass",
+          "type": "default",
+          "text": "Leave them to their work",
+          "outcome": {
+            "type": "text",
+            "text": "You leave without disturbing them. The scent of growing things follows you for some time."
+          }
+        }
+      ]
+    },
+
+    "animal_black_lodge": {
+      "id": "animal_black_lodge",
+      "title": "Black Lodge",
+      "realm": "animal",
+      "text": "The entrance is low, partially hidden by undergrowth. You would miss it if you were not looking. Inside: incense so thick it stings, a khatvanga propped against the wall streaming black ribbons. The practitioner here works alone, without students, without oversight — the animal realm affords the privacy that the human realm did not. They turn when you enter, without surprise.",
+      "choices": [
+        {
+          "id": "learn",
+          "type": "default",
+          "text": "Ask to learn",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_black_lodge",
+            "text": "A hand gestures to a list scratched into the bark of the wall. Spells. Prices. No preamble."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Back out",
+          "outcome": {
+            "type": "text",
+            "text": "You step back into the daylight. The khatvanga watches you leave."
+          }
+        }
+      ]
+    },
+
+    "animal_yogini_circle": {
+      "id": "animal_yogini_circle",
+      "title": "Circle of the Yoginis",
+      "realm": "animal",
+      "text": "A ring of standing stones in a forest clearing or on a meadow hill — no ceiling, built that way intentionally so the witches can land when they fly in from the sky. The sixty-four forms are inscribed on the inner face of each stone in a script that predates the current tradition of inscription. Practitioners who come here have traveled a long way to reach this circle.",
+      "choices": [
+        {
+          "id": "enter",
+          "type": "default",
+          "text": "Enter the circle",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_yogini_circle",
+            "text": "One of the practitioners turns and gestures. No words needed."
+          }
+        },
+        {
+          "id": "pass",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You back away slowly. The air around the circle hums for a long time after."
+          }
+        }
+      ]
+    },
+
+    "animal_mirror_lake": {
+      "id": "animal_mirror_lake",
+      "title": "Mirror Lake",
+      "realm": "animal",
+      "text": "A lake so still it seems to reflect a different sky — no wind reaches it, or the water ignores the wind. Enchantment practitioners gather at the shore to meditate on appearance and reality. In a realm where a deer's world and a wolf's world overlap in the same territory and neither sees what the other sees, the question has obvious urgency.",
+      "choices": [
+        {
+          "id": "sit",
+          "type": "default",
+          "text": "Sit and listen",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_mirror_lake",
+            "text": "A practitioner meets your eyes in the reflection before turning around. They can teach Enchantment. The lake makes everything seem like a fair price."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Walk away from the still water",
+          "outcome": {
+            "type": "text",
+            "text": "You step back. The image on the water holds for a moment longer than it should, then dissolves."
+          }
+        }
+      ]
+    },
+
+    "animal_crossroads_stupa": {
+      "id": "animal_crossroads_stupa",
+      "title": "Crossroads Stupa",
+      "realm": "animal",
+      "text": "Where the old game trails intersect, someone built a stupa centuries ago. The mortar between the stones includes offerings pressed in during construction — seeds, feathers, a cracked egg. Butter lamps burn at the base. The place smells of juniper smoke and something that has been burning for a very long time.",
+      "choices": [
+        {
+          "id": "approach",
+          "type": "default",
+          "text": "Approach the stupa",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_crossroads_stupa",
+            "text": "A practitioner emerges from behind the stupa. Summoning magic — the crossroads is the right place for it. Gold is the price."
+          }
+        },
+        {
+          "id": "observe",
+          "type": "default",
+          "text": "Observe from a distance",
+          "outcome": {
+            "type": "text",
+            "text": "You watch the butter lamps in the wind. Some things are better left undisturbed."
+          }
+        }
+      ]
+    },
+
+    "animal_eternal_fire": {
+      "id": "animal_eternal_fire",
+      "title": "Temple of the Eternal Fire",
+      "realm": "animal",
+      "text": "The fire burns at the entrance to a cave, or near a volcanic vent, or at the base of an ancient tree struck by lightning and somehow still alive — wherever the ground produces heat that can be consecrated. The priests who tend it wear white and speak rarely. Creatures of many species come to pay respects. The fire does not discriminate.",
+      "choices": [
+        {
+          "id": "approach",
+          "type": "default",
+          "text": "Approach the priests",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_eternal_fire",
+            "text": "A priest turns from the flame and regards you. He names the spells, and then the prices."
+          }
+        },
+        {
+          "id": "respect",
+          "type": "default",
+          "text": "Pay your respects and leave",
+          "outcome": {
+            "type": "text",
+            "text": "You bow before the flame and step back. The fire reflected in your eyes for some time after."
+          }
+        }
+      ]
+    },
+
+    "_comment_teahouses": "=== TEAHOUSES — one per zone ===",
+
+    "animal_ocean_teahouse": {
+      "id": "animal_ocean_teahouse",
+      "title": "Tide Shelter",
+      "realm": "animal",
+      "safe_camp": true,
+      "text": "A structure built into a sea cliff, half-submerged at high tide and bone-dry at low. A fire burns in a sealed alcove. Along the benches: naga, karka, and silhouettes you don't immediately place. The keeper is a broad and unhurried makara current who settled down forty years ago and has been pouring the same tea blend since. Nobody asks the recipe.",
+      "choices": [
+        {
+          "id": "sit",
+          "type": "default",
+          "text": "Sit down",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_ocean_teahouse",
+            "text": "You take a seat. The current sets down a cup without asking."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You keep going. The smell of salt and smoke follows you out of the cliff."
+          }
+        }
+      ]
+    },
+
+    "animal_forest_teahouse": {
+      "id": "animal_forest_teahouse",
+      "title": "Forest Teahouse",
+      "realm": "animal",
+      "safe_camp": true,
+      "text": "A platform structure high in the canopy, reachable by rope bridges from three directions. The vanara who run it have been doing so since before any of them can remember. The tea is brewed from forest herbs you don't recognize and tastes like rain, bark, and something that is not quite spice. It is very good.",
+      "choices": [
+        {
+          "id": "sit",
+          "type": "default",
+          "text": "Sit down",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_forest_teahouse",
+            "text": "You take a platform seat. A vanara sets down cups without ceremony."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "The smell of forest tea follows you along the rope bridge."
+          }
+        }
+      ]
+    },
+
+    "animal_meadow_teahouse": {
+      "id": "animal_meadow_teahouse",
+      "title": "Watering Hole Teahouse",
+      "realm": "animal",
+      "safe_camp": true,
+      "text": "A low structure at the edge of the great watering hole, where the land slopes gently down to the water. The truce of thirst holds here — every creature in the meadow observes it, because the keeper enforces it, and the keeper has been here longer than any of them. Inside: food, drink, and improbable peace.",
+      "choices": [
+        {
+          "id": "sit",
+          "type": "default",
+          "text": "Sit down",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_meadow_teahouse",
+            "text": "You take a table. Nobody challenges you. This is the truce."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You walk past the watering hole without stopping. The smell of water and cooking carries far on open ground."
+          }
+        }
+      ]
+    },
+
+    "_comment_mercenary": "=== MERCENARY GUILDS ===",
+
+    "animal_ocean_mercenary_guild": {
+      "id": "animal_ocean_mercenary_guild",
+      "title": "Mercenary Guild",
+      "realm": "animal",
+      "text": "A fortified reef structure flying a plain banner — the same universal mercenary symbol, translated into something that can survive salt water. Inside, armed figures clean weapons or sleep. The work available in the ocean is different from the work available on land, and the going rate reflects the depth.",
+      "choices": [
+        {
+          "id": "browse",
+          "type": "default",
+          "text": "Browse their services",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_mercenary_guild",
+            "text": "The quartermaster produces a list. Rates, availability, terms."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the mercenaries to their maintenance."
+          }
+        }
+      ]
+    },
+
+    "animal_forest_mercenary_guild": {
+      "id": "animal_forest_mercenary_guild",
+      "title": "Mercenary Guild",
+      "realm": "animal",
+      "text": "A fortified outpost at the forest edge, flying a plain black banner between two old trees. The figures inside are armoured in hide and shell-plate — practical for the terrain. They look up when you enter with the universal expression of people who do this professionally.",
+      "choices": [
+        {
+          "id": "browse",
+          "type": "default",
+          "text": "Browse their services",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_mercenary_guild",
+            "text": "The quartermaster opens a case and waits."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the mercenaries to their sharpening."
+          }
+        }
+      ]
+    },
+
+    "animal_meadow_mercenary_guild": {
+      "id": "animal_meadow_mercenary_guild",
+      "title": "Mercenary Guild",
+      "realm": "animal",
+      "text": "A stockaded compound at a crossroads of migration routes, flying the universal mercenary banner on a pole tall enough to be seen from a distance. Inside, armoured figures play dice and argue rates. The work in the open meadow is the most visible and the most dangerous, and the prices reflect that.",
+      "choices": [
+        {
+          "id": "browse",
+          "type": "default",
+          "text": "Browse their services",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_mercenary_guild",
+            "text": "The quartermaster nods and produces a list. Standard rates. Meadow surcharge."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You skirt the compound and keep moving."
+          }
+        }
+      ]
+    },
+
+    "_comment_training": "=== TRAINING CAMPS ===",
+
+    "animal_ocean_training_camp": {
+      "id": "animal_ocean_training_camp",
+      "title": "Naga Training Grounds",
+      "realm": "animal",
+      "text": "A reef plateau where naga warriors train daily — the drills are ancient and precise. They accept outsiders who show genuine commitment. The water here slows everything and makes every technique twice as demanding, which is the point.",
+      "choices": [
+        {
+          "id": "train",
+          "type": "default",
+          "text": "Ask about training",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_ocean_training_camp",
+            "text": "A senior naga warrior looks you over once. 'Two sessions. Choose carefully.'"
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "The drills continue without you."
+          }
+        }
+      ]
+    },
+
+    "animal_forest_training_camp": {
+      "id": "animal_forest_training_camp",
+      "title": "Tracker's Training Ground",
+      "realm": "animal",
+      "text": "A clearing used by those who hunt without being hunted — trackers, scouts, the nimble-fingered and the quick-footed. The vanara here share techniques that have been refined over many generations in this specific forest. Some of it translates; all of it is worth knowing.",
+      "choices": [
+        {
+          "id": "train",
+          "type": "default",
+          "text": "Ask about training",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_forest_training_camp",
+            "text": "A vanara elder with patient eyes names two skills. 'Which two? Choose once.'"
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the clearing. The forest returns to its own lesson."
+          }
+        }
+      ]
+    },
+
+    "animal_meadow_training_camp": {
+      "id": "animal_meadow_training_camp",
+      "title": "Open-Field Training Ground",
+      "realm": "animal",
+      "text": "A camp at the edge of the open plain where fighters train in the exposed, unforgiving style demanded by meadow combat — no cover, long sight lines, everything decided by strength and endurance. The yaksha veterans who run it have a simple philosophy: you learn to take a hit, and then you learn to give one back harder.",
+      "choices": [
+        {
+          "id": "train",
+          "type": "default",
+          "text": "Ask about training",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_meadow_training_camp",
+            "text": "'We can teach two things. Once each. Make your choices.'"
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "The veteran returns to drilling her students."
+          }
+        }
+      ]
+    },
+
+    "_comment_towns": "=== TOWNS — three types per zone ===",
+
+    "animal_ocean_town_weapons": {
+      "id": "animal_ocean_town_weapons",
+      "title": "Town",
+      "realm": "animal",
+      "text": "A trading post built into a sea cliff and expanded outward on platform structures above the tideline. Karka shell-wrights and naga-forged spear merchants dominate the market. The clang of metalwork reaches out into open water. Most things for sale here were made to puncture something.",
+      "choices": [
+        {
+          "id": "enter",
+          "type": "default",
+          "text": "Enter the market",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_town_weapons",
+            "text": "You push through to the main stalls."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You skirt the settlement along the reef."
+          }
+        }
+      ]
+    },
+
+    "animal_ocean_town_magic": {
+      "id": "animal_ocean_town_magic",
+      "title": "Town",
+      "realm": "animal",
+      "text": "A settlement built around a thermal vent, where the rising current brings strange minerals and stranger ideas. Water mages and naga sorcerers work from alcoves along the main tunnel. The air smells of sulfur and concentration. Someone is always arguing about the nature of current.",
+      "choices": [
+        {
+          "id": "enter",
+          "type": "default",
+          "text": "Enter the settlement",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_town_magic",
+            "text": "You find the practitioners' quarter."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the argument unresolved."
+          }
+        }
+      ]
+    },
+
+    "animal_ocean_town_supplies": {
+      "id": "animal_ocean_town_supplies",
+      "title": "Town",
+      "realm": "animal",
+      "text": "A market platform on stilts above the tidal flat. Everything needed to survive the reef and deep water — preserved food, medicine, rope, breathing equipment. The sign reads: WHAT YOU NEED. NO QUESTIONS. The price is printed underneath, which saves time.",
+      "choices": [
+        {
+          "id": "enter",
+          "type": "default",
+          "text": "Enter the market",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_town_supplies",
+            "text": "The shopkeeper nods without looking up."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You keep going."
+          }
+        }
+      ]
+    },
+
+    "animal_forest_town_weapons": {
+      "id": "animal_forest_town_weapons",
+      "title": "Town",
+      "realm": "animal",
+      "text": "A market at the forest's edge where different territories agree, briefly, to exchange. Dura shell-wright craftsmanship, vanara jugaad improvisation, shardula-claw handles on daggers sold by gana traders who got them somewhere no one is explaining. The weapons here are practical and tell stories.",
+      "choices": [
+        {
+          "id": "enter",
+          "type": "default",
+          "text": "Enter the market",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_town_weapons",
+            "text": "You push through the stalls."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You skirt the settlement and continue into the trees."
+          }
+        }
+      ]
+    },
+
+    "animal_forest_town_magic": {
+      "id": "animal_forest_town_magic",
+      "title": "Town",
+      "realm": "animal",
+      "text": "A forest settlement where the mycelium network runs under every building and the practitioners who use it for communication have built a small trade in that adjacency. Alchemy, earth magic, summoning — the disciplines that grow from understanding what is underground. The shelves smell of soil and something fermented.",
+      "choices": [
+        {
+          "id": "enter",
+          "type": "default",
+          "text": "Enter the settlement",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_town_magic",
+            "text": "You find the practitioners' stalls."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the forest scholars to their arguments."
+          }
+        }
+      ]
+    },
+
+    "animal_forest_town_supplies": {
+      "id": "animal_forest_town_supplies",
+      "title": "Town",
+      "realm": "animal",
+      "text": "A clearing settlement where four game trails meet. Sounder matrons and herb-walkers tend most of the stalls. Food preserved in bark and clay, medicines extracted from things most travelers walk past without recognizing, tools for the deep forest. It is honest trade in a place that doesn't demand credentials.",
+      "choices": [
+        {
+          "id": "enter",
+          "type": "default",
+          "text": "Enter the market",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_town_supplies",
+            "text": "The matron at the nearest stall sizes you up and names a fair price."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You keep walking. The smell of drying herbs follows you down the trail."
+          }
+        }
+      ]
+    },
+
+    "animal_meadow_town_weapons": {
+      "id": "animal_meadow_town_weapons",
+      "title": "Town",
+      "realm": "animal",
+      "text": "An armorer's compound at a crossroads of migration routes, built low and solid to survive the open-ground seasons. Dura shell-wright work alongside yaksha-enchanted blades and khadga-horn handles. The merchants here have traveled to get here and priced accordingly. Everything for sale is worth carrying a long way.",
+      "choices": [
+        {
+          "id": "enter",
+          "type": "default",
+          "text": "Enter the compound",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_town_weapons",
+            "text": "You find the weapons hall."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You continue across the open ground."
+          }
+        }
+      ]
+    },
+
+    "animal_meadow_town_magic": {
+      "id": "animal_meadow_town_magic",
+      "title": "Town",
+      "realm": "animal",
+      "text": "A settlement gathered around a yaksha standing stone, which functions as both landmark and practice anchor. Enchantment, earth magic, white healing — the disciplines that thrive in open country where the sky is visible and the earth is close. The practitioners here are travelers themselves, stopping as they always stop.",
+      "choices": [
+        {
+          "id": "enter",
+          "type": "default",
+          "text": "Enter the settlement",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_town_magic",
+            "text": "You find the practitioners' quarter around the standing stone."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the stone to its practitioners."
+          }
+        }
+      ]
+    },
+
+    "animal_meadow_town_supplies": {
+      "id": "animal_meadow_town_supplies",
+      "title": "Town",
+      "realm": "animal",
+      "text": "A trading post at the great watering hole, where the migration routes converge and every creature passes through eventually. The merchants here have learned not to ask where anyone is going. Essential goods for the long traversal: food for crossing open ground, medicine for what open ground does to you, equipment for what you find at the end of it.",
+      "choices": [
+        {
+          "id": "enter",
+          "type": "default",
+          "text": "Enter the market",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_town_supplies",
+            "text": "The shopkeeper glances up briefly and goes back to counting stock."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "You keep moving. The watering hole glitters to your left."
+          }
+        }
+      ]
+    },
+
+    "_comment_domain_guilds": "=== DOMAIN GUILDS — animal realm special locations ===",
+
+    "naga_palace": {
+      "id": "naga_palace",
+      "title": "The Naga Palace",
+      "realm": "animal",
+      "text": "A coral arch rises from the reef, inscribed with naga glyphs marking territorial sovereignty. Two naga warriors flank the entrance but do not move to stop you. Beyond the arch, chambers of living coral lit by bioluminescent algae descend into the deep. Water magic and enchantment traditions have been practiced here without interruption since before the reef was reef.",
+      "choices": [
+        {
+          "id": "study",
+          "type": "default",
+          "text": "Ask to study here",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_naga_palace",
+            "text": "A court official receives you with formal courtesy. They have everything the ocean's magic traditions offer. The price is calibrated to what you can pay, which means they already know."
+          }
+        },
+        {
+          "id": "observe",
+          "type": "requirement",
+          "text": "Observe the court protocol and withdraw respectfully",
+          "requirements": {
+            "skills": {"grace": 1}
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You bow in the naga manner — low, without breaking eye contact — and withdraw. The court watches. A minor official nods very slightly.\n\nYou have not been insulted. In naga terms, this is an achievement.",
+            "rewards": {"xp": 15},
+            "karma": {"animal": 2}
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Withdraw without seeking entry",
+          "outcome": {
+            "type": "text",
+            "text": "You turn and leave the arch behind. The two warriors watch you go without expression."
+          }
+        }
+      ]
+    },
+
+    "ancient_banyan": {
+      "id": "ancient_banyan",
+      "title": "The Ancient Banyan",
+      "realm": "animal",
+      "text": "No one told you the tree existed, but you found it anyway. The banyan's aerial roots form a labyrinth; its canopy covers a quarter mile in every direction. The Vanara Elder sits in the first great fork, weaving something from spider silk and what you eventually realize is solidified starlight.\n\nThe tree has the attention of something older than itself. Earth magic and summoning traditions have always known about this place.",
+      "choices": [
+        {
+          "id": "study",
+          "type": "default",
+          "text": "Approach the Elder and ask to study",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_ancient_banyan",
+            "text": "The Elder looks down from the fork with unhurried eyes. She names a price for her teaching. It is not small."
+          }
+        },
+        {
+          "id": "meditate",
+          "type": "requirement",
+          "text": "Sit beneath the roots in silence",
+          "requirements": {
+            "skills": {"yoga": 2}
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You sit with your back against a root as wide as a wall and close your eyes. The tree breathes. You breathe. After a time — you cannot say how long — something shifts: a sense of patience that is not your own, accumulated over centuries, seeping in through the bark.",
+            "rewards": {"xp": 25},
+            "karma": {"animal": 3, "human": 2}
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Walk away from the ancient tree",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the labyrinth of roots behind. The canopy covers you until you are out of the grove, and then the light returns all at once."
+          }
+        }
+      ]
+    },
+
+    "termite_cathedral": {
+      "id": "termite_cathedral",
+      "title": "Termite Cathedral",
+      "realm": "animal",
+      "text": "The mound rises fifteen feet, engineered with an architect's precision for temperature and airflow. Carved archways mark the entrance in a script older than any living tradition. Inside, something hums at a frequency felt in the chest rather than heard by the ear. Yaksha practitioners and bhramara allies have used this place as a center of earth-consciousness work for as long as the mound has stood.",
+      "choices": [
+        {
+          "id": "study",
+          "type": "default",
+          "text": "Seek instruction",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_termite_cathedral",
+            "text": "A yaksha practitioner emerges from the main chamber. Earth magic, summoning, and the basics of alchemy — the cathedral has all three. She names the prices plainly."
+          }
+        },
+        {
+          "id": "offering",
+          "type": "default",
+          "text": "Leave an offering at the base of the mound",
+          "outcome": {
+            "type": "text",
+            "text": "You set your offering at the carved archway and stand back. The hum shifts frequency very slightly — just once. You take that as acknowledgement.",
+            "rewards": {"xp": 10},
+            "karma": {"animal": 2}
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Move on",
+          "outcome": {
+            "type": "text",
+            "text": "The hum follows you for longer than the mound is visible."
+          }
+        }
+      ]
+    },
+
+    "birds_congress": {
+      "id": "birds_congress",
+      "title": "Conference of the Birds",
+      "realm": "animal",
+      "text": "The great assembly tree rises alone on a ridge where forest meets meadow — visible from both territories, which is why it was chosen. Every bird of the realm comes here when the season is right. Kapota and shyena roost three branches apart in a truce older than memory.\n\nA kapota elder calls the session to order with a chant that names every species present. You recognize the structure: a congress, a parliament. They are looking for something. They are, in the old story, always looking for the Simurgh. And, in the old story, they are the Simurgh — but they haven't arrived at that part yet.",
+      "choices": [
+        {
+          "id": "attend",
+          "type": "default",
+          "text": "Attend the congress and learn from the teachings",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_birds_congress",
+            "text": "A kapota messenger escorts you to an observer's perch. Air magic, space magic, and the white traditions of the sky practitioners — all available. The price is a story you haven't told anyone else."
+          }
+        },
+        {
+          "id": "listen",
+          "type": "requirement",
+          "text": "Listen to the full session without speaking",
+          "requirements": {
+            "attributes": {"awareness": 14}
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You sit at the base of the tree for the full congress — hours, perhaps longer. The birds speak in twenty overlapping languages and you understand almost none of it.\n\nBut near the end, when the elder names the purpose of the journey, you understand that part. Not the words — the shape of it. The search that finds itself.",
+            "rewards": {"xp": 30},
+            "karma": {"animal": 3, "human": 3, "god": 2}
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave the birds to their congress",
+          "outcome": {
+            "type": "text",
+            "text": "You descend from the ridge. The chant continues behind you, diminishing into the wind."
+          }
+        }
+      ]
+    },
+
+    "bone_forest": {
+      "id": "bone_forest",
+      "title": "The Bone Forest",
+      "realm": "animal",
+      "text": "The bones are organized, not scattered. Skulls face east, spines curve north, limb bones arranged radially from the center as though following a diagram. Something has been doing this for a very long time. In the center of the clearing, a practitioner in dark robes performs a slow ritual over a fresh death — a khadga, enormous, at peace.\n\nThey don't look up when you approach.\n\n'Looking for death lessons,' they say. 'Or life ones. They're the same here.'",
+      "choices": [
+        {
+          "id": "study",
+          "type": "default",
+          "text": "Ask to learn",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "animal_bone_forest",
+            "text": "The practitioner rises, unhurried. Black magic and summoning — the traditions that work with what remains. They name the spells and the prices without ceremony."
+          }
+        },
+        {
+          "id": "assist",
+          "type": "requirement",
+          "text": "Help with the ritual",
+          "requirements": {
+            "skills": {"yoga": 1}
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You take your position across the body from the practitioner and mirror their movements as best you can. The ritual has its own grammar; you improvise where you don't know the words.\n\nThe khadga's presence, enormous even in death, seems to hold still for a moment. Then it passes, as presences do.",
+            "rewards": {"xp": 20},
+            "karma": {"animal": 3}
+          }
+        },
+        {
+          "id": "respect",
+          "type": "default",
+          "text": "Leave respectfully",
+          "outcome": {
+            "type": "text",
+            "text": "You bow toward the center of the bone arrangement and leave without disturbing anything. The practitioner has already returned to their work."
+          }
+        }
+      ]
+    },
+
+    "_comment_simple": "=== SIMPLE / TOAST EVENTS ===",
+
+    "animal_sigh_of_relief": {
+      "id": "animal_sigh_of_relief",
+      "title": "The Great Stag",
+      "realm": "animal",
+      "text": "In a forest clearing — or on an open hillside, or at the edge of the reef where the light reaches — you find a great stag standing alone. His rack is hung with orchids. Around him, smaller creatures have gathered: a rabbit, two kapota pigeons, a young vanara sitting cross-legged. The stag is lowering his head, letting them feed from the flowers and mosses growing between his antlers.\n\nNo one has asked him to do this. He simply knows it is time.",
+      "choices": [
+        {
+          "id": "meditate",
+          "type": "requirement",
+          "text": "Meditate in the presence of this",
+          "requirements": {
+            "skills": {"yoga": 2}
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You settle into stillness. The stag's attention moves over you once, and then returns to the gathered creatures. That moment of attention is enough — something clear passes through you and keeps going.\n\nYou remember that generosity is not sacrifice. It is just knowing it is time.",
+            "rewards": {"xp": 15},
+            "karma": {"animal": -3, "human": 3, "god": 5}
+          }
+        },
+        {
+          "id": "give",
+          "type": "default",
+          "text": "Leave some of your food for those gathered",
+          "outcome": {
+            "type": "text",
+            "text": "You set down what you can spare and step back. The vanara reaches it first, then shares without being asked.\n\nThe stag watches. He has seen this before — the chain of giving. It always surprises him a little.",
+            "rewards": {"xp": 10},
+            "karma": {"animal": 2, "human": 3}
+          }
+        },
+        {
+          "id": "watch",
+          "type": "default",
+          "text": "Watch from the treeline",
+          "outcome": {
+            "type": "text",
+            "text": "You stay at the edge of the clearing and watch until the stag lifts his head and the gathered creatures drift away. Then the clearing is just a clearing again.\n\nYou carry the image of it for a long time.",
+            "rewards": {"xp": 8},
+            "karma": {"animal": 1}
+          }
+        },
+        {
+          "id": "take",
+          "type": "default",
+          "text": "Approach and take from what is being offered",
+          "outcome": {
+            "type": "text",
+            "text": "You walk into the clearing. The gathered creatures scatter. The stag raises his head and looks at you with amber eyes.\n\nHe does not move. He does not attack. He simply regards you until you leave.\n\nYou feel, for a long time afterward, that you have been recognized.",
+            "karma": {"animal": 3, "hungry_ghost": 5}
+          }
+        }
+      ]
+    },
+
+    "animal_crossroads_shrine": {
+      "id": "animal_crossroads_shrine",
+      "title": "Crossroads Shrine",
+      "realm": "animal",
+      "text": "Where three animal trails cross, someone built a cairn of stones. Prayer flags, thread, feathers pressed flat between layers of bark, bones arranged with obvious care — offerings that don't specify any particular tradition but cover their bases. A single butter lamp burns in a notch in the topmost stone.",
+      "choices": [
+        {
+          "id": "offering",
+          "type": "default",
+          "text": "Leave an offering",
+          "outcome": {
+            "type": "text",
+            "text": "You add something of yours to the cairn. The butter lamp flickers once in still air.",
+            "rewards": {"xp": 8},
+            "karma": {"animal": 2}
+          }
+        },
+        {
+          "id": "meditate",
+          "type": "requirement",
+          "text": "Sit for a moment and breathe",
+          "requirements": {
+            "skills": {"yoga": 1}
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You sit at the base of the cairn. At a crossroads, all directions are valid — this is what makes them sacred. For a moment you remember all of them.",
+            "rewards": {"xp": 12},
+            "karma": {"animal": 2, "human": 1}
+          }
+        },
+        {
+          "id": "pass",
+          "type": "default",
+          "text": "Pass without disturbing anything",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the lamp to its burning."
+          }
+        }
+      ]
+    },
+
+    "_comment_landmarks": "=== FIXED LANDMARK EVENTS ===",
+
+    "animal_ocean_naga_greeting": {
+      "id": "animal_ocean_naga_greeting",
+      "title": "The Naga's Greeting",
+      "realm": "animal",
+      "text": "A naga rises from the reef ahead — long, scaled, regarding you with amber eyes that haven't blinked. She circles once, slowly, then stops with her coils wound loosely around a pillar of coral.\n\n'You are not of this water,' she says. It is not quite a question.\n\nShe is assessing you. This happens every time something new arrives in the ocean realm. She does not find it alarming — only relevant.",
+      "choices": [
+        {
+          "id": "introduce",
+          "type": "default",
+          "text": "Introduce yourself and explain your purpose",
+          "outcome": {
+            "type": "text",
+            "text": "You speak plainly. She listens without interrupting, which is the naga equivalent of a warm welcome.\n\nWhen you finish, she unwinds from the coral pillar and gestures toward the open water. 'The western currents carry the faster trade. The eastern ones are watched.' She does not explain by whom.\n\nYou have been received.",
+            "rewards": {"xp": 10}
+          }
+        },
+        {
+          "id": "stand_ground",
+          "type": "roll",
+          "text": "Stand your ground without speaking",
+          "roll": {"stat": "constitution", "dc": 12},
+          "outcome": {
+            "type": "text",
+            "text": "You hold her gaze without flinching. She is silent for a long moment.\n\n'Ah,' she says finally, and uncoils. She seems, somehow, pleased. 'The quiet ones always know where they're going.'",
+            "rewards": {"xp": 15}
+          }
+        },
+        {
+          "id": "offer_gift",
+          "type": "default",
+          "text": "Offer a gift",
+          "outcome": {
+            "type": "text",
+            "text": "She examines the gift with the patience of someone for whom time is elastic. Then she accepts it.\n\nIn return, she describes three things: where the food is, where the danger is, and where the old temple lies. You did not ask about the temple. She offers it anyway, as though it were simply the correct exchange.",
+            "rewards": {"xp": 20},
+            "karma": {"animal": 2}
+          }
+        }
+      ]
+    },
+
+    "animal_karka_reef_warden": {
+      "id": "animal_karka_reef_warden",
+      "title": "Reef Warden",
+      "realm": "animal",
+      "text": "The pass through the coral barrier is narrow and long. Halfway through, a karka fills it completely — shell the width of the passage, claws braced against the coral walls, eyes fixed on you.\n\nShe is not sleeping. She has been watching since you entered the corridor.\n\nThe thermal vent behind her produces a faint heat that rises through the passage. This is her vent. This is her pass. These things are not in question.",
+      "choices": [
+        {
+          "id": "negotiate",
+          "type": "roll",
+          "text": "Attempt to negotiate passage",
+          "roll": {"stat": "charm", "dc": 14},
+          "outcome": {
+            "type": "text",
+            "text": "You speak to her in terms she respects — this is her territory, you acknowledge it; you need to pass, you explain why; you will not return unless invited.\n\nHer eyes do not change. But after a long pause, she steps aside — just enough. The passage is tight. She watches every inch of it.",
+            "rewards": {"xp": 20}
+          }
+        },
+        {
+          "id": "pay_toll",
+          "type": "default",
+          "text": "Offer gold as a crossing toll",
+          "outcome": {
+            "type": "text",
+            "text": "She looks at the gold. She looks at you. She reaches out one claw and takes it with surprising delicacy.\n\nThen she moves aside. The passage is yours. She adds the gold to a pile you hadn't noticed — there is a system here, practiced over years. You are not the first to find this more efficient than the alternative.",
+            "rewards": {"xp": 10}
+          }
+        },
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Fight your way through",
+          "outcome": {
+            "type": "combat",
+            "encounter": "animal_karka_vent",
+            "text": "She braces. Her claws score the coral walls. Whatever comes next, she will not move from this vent."
+          }
+        },
+        {
+          "id": "retreat",
+          "type": "default",
+          "text": "Retreat and find another route",
+          "outcome": {
+            "type": "text",
+            "text": "You back out of the passage the way you came. There are other passes — you will find them.\n\nBehind you, the karka returns to her vigil without comment. This happens, too."
+          }
+        }
+      ]
+    },
+
+    "animal_ridge_predator": {
+      "id": "animal_ridge_predator",
+      "title": "Ridge Predator",
+      "realm": "animal",
+      "text": "The pass through the thorn ridge narrows to a ledge barely wide enough to walk single file. At its midpoint, something large sits very still.\n\nA shardula — a leopard of immense size, pale as the rock, watching you from exactly the spot the path must cross. His tail moves once, slowly. He does not rise.\n\nHe is neither blocking nor permitting. He is simply here, as he has been here many times before, watching what comes through.",
+      "choices": [
+        {
+          "id": "ritual_greeting",
+          "type": "requirement",
+          "text": "Make the formal greeting between predator-kin",
+          "requirements": {
+            "skills": {"yoga": 1}
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You lower your gaze, expose your throat briefly, and then meet his eyes again without aggression — the grammar of predator recognition. It takes composure you didn't know you had.\n\nHe considers this for a long moment. Then he stands, turns, and walks to the edge of the ledge, leaving the path clear. He watches you cross without looking away.",
+            "rewards": {"xp": 25}
+          }
+        },
+        {
+          "id": "proceed",
+          "type": "roll",
+          "text": "Proceed slowly, making no threatening gesture",
+          "roll": {"stat": "finesse", "dc": 13},
+          "outcome": {
+            "type": "text",
+            "text": "You walk forward with the deliberate calm of something that does not consider itself prey. Each step measured. Gaze steady.\n\nHe watches the whole crossing. When you reach the other side, he blinks once — slowly — and looks away. You have been assessed and found unremarkable. In predator terms, this is the best outcome.",
+            "rewards": {"xp": 15}
+          }
+        },
+        {
+          "id": "offer_food",
+          "type": "default",
+          "text": "Set down some food and step back",
+          "outcome": {
+            "type": "text",
+            "text": "You set a portion of food on the rock and retreat two steps. He looks at the offering, looks at you, and then — with the total lack of embarrassment of something that does not require gratitude — takes it.\n\nThe path is yours.",
+            "rewards": {"xp": 10}
+          }
+        },
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Challenge him",
+          "outcome": {
+            "type": "combat",
+            "encounter": "animal_shardula_lone",
+            "text": "He rises from the rock in one fluid motion. His ears flatten. He has done this before."
+          }
+        }
+      ]
+    },
+
+    "animal_boss_simha_king": {
+      "id": "animal_boss_simha_king",
+      "title": "The King of Beasts",
+      "realm": "animal",
+      "text": "The oldest part of the forest is where he sits — where the trees are so wide you could sleep in their roots and the canopy blocks all direct sun. The simha king does not rise when you approach.\n\nHe is the largest lion you have ever imagined possible. His mane is the color of old wood. He is already ancient in legends that are themselves old. The portal to the Human Realm shimmers behind him in the roots of the oldest tree.\n\nHe is not blocking it, exactly. He is simply here, as he has always been here — at the threshold, at the end of the animal realm, where the path changes.\n\nHis gaze crosses your party without hurry, taking careful measure.",
+      "choices": [
+        {
+          "id": "bow",
+          "type": "requirement",
+          "text": "Approach peacefully and bow",
+          "requirements": {
+            "skills": {"yoga": 2}
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You approach slowly and bow — low and long. When you rise, he has not moved, but something in his posture has changed: the calculation has left it.\n\n'You have learned something here,' he says, in a voice like the ground settling. 'Go forward. Don't waste it.'\n\nHe stands and walks aside. The portal is clear.",
+            "rewards": {"xp": 50},
+            "karma": {"animal": -10, "human": 5, "god": 5}
+          }
+        },
+        {
+          "id": "tribute",
+          "type": "roll",
+          "text": "Offer tribute worthy of a king",
+          "roll": {"stat": "charm", "dc": 16},
+          "outcome": {
+            "type": "text",
+            "text": "You present what you have with the ceremony the moment deserves. He examines it without touching it — not the goods, but the gesture.\n\n'Adequate,' he says. He steps aside without further ceremony. 'The realm of humans is expecting something. Try not to disappoint it.'",
+            "rewards": {"xp": 30}
+          }
+        },
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Prove your worth in combat",
+          "outcome": {
+            "type": "combat",
+            "encounter": "animal_boss_simha_king",
+            "text": "He rises slowly — no urgency, no anger. He has simply agreed to your terms. His voice carries one last note before the charge:\n\n'Good. I wanted to see if you could.'"
+          }
+        },
+        {
+          "id": "circle",
+          "type": "roll",
+          "text": "Attempt to find another way through",
+          "roll": {"stat": "finesse", "dc": 18},
+          "outcome": {
+            "type": "text",
+            "text": "You study the roots, the shadows, the angles. There is a gap — not much of one, but enough.\n\nAs you slip through, his voice reaches you from the center of the clearing: 'Clever. But you'll find cleverness has limits, further on.'\n\nHe does not pursue.",
+            "rewards": {"xp": 20}
+          }
+        }
+      ]
+    }
+
+  }
+}
