@@ -1,0 +1,1461 @@
+{
+  "archetypes": {
+    "_comment_ocean": "=== OCEAN REGION ===",
+    "animal_naga_warrior": {
+      "name": "Naga Warrior",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "ocean",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 3,
+        "finesse": 2,
+        "awareness": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "spears",
+        "armor",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "spear",
+          "base_damage": 10,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "medium"
+      },
+      "resistances": {
+        "water": 20,
+        "space": 10
+      },
+      "threat_multiplier": 1.1,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_naga_sorcerer": {
+      "name": "Naga Sorcerer",
+      "tier": "devil",
+      "roles": [
+        "caster"
+      ],
+      "region": "ocean",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 1,
+        "awareness": 3,
+        "focus": 4,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "water_magic",
+        "sorcery",
+        "space_magic"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 4,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "water": 25,
+        "space": 15
+      },
+      "threat_multiplier": 1.2,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_karka_guardian": {
+      "name": "Karka Guardian",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "ocean",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 4,
+        "finesse": 0,
+        "awareness": 1,
+        "focus": 2,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "sorcery",
+        "maces",
+        "armor"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "mace",
+          "base_damage": 10,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "physical": 20,
+        "earth": 15,
+        "crushing": -10
+      },
+      "threat_multiplier": 1.1,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_karka_crusher": {
+      "name": "Karka Crusher",
+      "tier": "shade",
+      "roles": [
+        "frontline"
+      ],
+      "region": "ocean",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 3,
+        "finesse": 1,
+        "awareness": 0,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "unarmed",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 8,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "medium"
+      },
+      "resistances": {
+        "physical": 15,
+        "earth": 10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_matsya_hunter": {
+      "name": "Matsya Hunter",
+      "tier": "shade",
+      "roles": [
+        "skirmisher"
+      ],
+      "region": "ocean",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 4,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "spears",
+        "grace"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "spear",
+          "base_damage": 7,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "water": 15
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_matsya_shoal": {
+      "_comment": "Weak individually; pack bonus applies when 3+ present in encounter",
+      "name": "Matsya Shoal",
+      "tier": "imp",
+      "roles": [
+        "frontline"
+      ],
+      "region": "ocean",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "unarmed",
+        "water_magic"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 4,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "water": 10
+      },
+      "threat_multiplier": 0.7,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_makara_titan": {
+      "name": "Makara Titan",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "ocean",
+      "attribute_weights": {
+        "strength": 5,
+        "constitution": 4,
+        "finesse": 0,
+        "awareness": 0,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "unarmed",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 14,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "water": 20,
+        "crushing": 15,
+        "physical": 10
+      },
+      "threat_multiplier": 1.4,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_makara_current": {
+      "name": "Makara Currentmaster",
+      "tier": "devil",
+      "roles": [
+        "caster",
+        "support"
+      ],
+      "region": "ocean",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 2,
+        "finesse": 2,
+        "awareness": 3,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "water_magic",
+        "enchantment"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 5,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "water": 30
+      },
+      "threat_multiplier": 1.1,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "_comment_meadow": "=== MEADOW REGION ===",
+    "animal_yaksha_guardian": {
+      "name": "Yaksha Guardian",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "meadow",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 2,
+        "finesse": 2,
+        "awareness": 1,
+        "focus": 2,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "earth_magic",
+        "axes",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "axe",
+          "base_damage": 11,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "medium"
+      },
+      "resistances": {
+        "earth": 20,
+        "air": -10
+      },
+      "threat_multiplier": 1.1,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_yaksha_shaman": {
+      "name": "Yaksha Shaman",
+      "tier": "devil",
+      "roles": [
+        "caster"
+      ],
+      "region": "meadow",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 1,
+        "awareness": 2,
+        "focus": 4,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "earth_magic",
+        "summoning"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 4,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "earth": 25
+      },
+      "threat_multiplier": 1.2,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_dura_soldier": {
+      "name": "Dura Soldier",
+      "tier": "shade",
+      "roles": [
+        "frontline"
+      ],
+      "region": "meadow",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 4,
+        "finesse": 0,
+        "awareness": 0,
+        "focus": 0,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "maces",
+        "armor"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "mace",
+          "base_damage": 8,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "physical": 20,
+        "crushing": -10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_dura_burrower": {
+      "_comment": "Burrow spell teleports it adjacent to a target for a melee strike; TODO: full burrow emergence animation/mechanic",
+      "name": "Dura Burrower",
+      "tier": "shade",
+      "roles": [
+        "skirmisher"
+      ],
+      "region": "meadow",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 2,
+        "finesse": 2,
+        "awareness": 1,
+        "focus": 2,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "earth_magic",
+        "unarmed"
+      ],
+      "guaranteed_spells": [
+        "burrow"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 9,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "medium"
+      },
+      "resistances": {
+        "earth": 15,
+        "physical": 10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_khadga_blade": {
+      "_comment": "Natural mantis blades; very high crit chance from high finesse + unarmed crit perks",
+      "name": "Khadga Blade",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "meadow",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 1,
+        "finesse": 4,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "unarmed",
+        "martial_arts"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 11,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "slashing": 10
+      },
+      "threat_multiplier": 1.2,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_khadga_ambusher": {
+      "_comment": "Arrives from concealment; guile perks grant blend_in/cheap_shot; first-strike opening",
+      "name": "Khadga Ambusher",
+      "tier": "shade",
+      "roles": [
+        "skirmisher"
+      ],
+      "region": "meadow",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 4,
+        "awareness": 3,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "daggers",
+        "guile"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 8,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "slashing": 5
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_bhramara_soldier": {
+      "name": "Bhramara Soldier",
+      "tier": "shade",
+      "roles": [
+        "frontline"
+      ],
+      "region": "meadow",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 2,
+        "finesse": 3,
+        "awareness": 1,
+        "focus": 1,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "spears",
+        "air_magic"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "spear",
+          "base_damage": 8,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "air": 15
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal",
+        "flying"
+      ],
+      "realm": "animal"
+    },
+    "animal_bhramara_drone": {
+      "_comment": "Support caster that calls reinforcements; weak alone but dangerous when it completes a summon",
+      "name": "Bhramara Drone",
+      "tier": "imp",
+      "roles": [
+        "support"
+      ],
+      "region": "meadow",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 2,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "summoning",
+        "air_magic"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 4,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "air": 10
+      },
+      "threat_multiplier": 0.8,
+      "tags": [
+        "biological",
+        "animal",
+        "flying"
+      ],
+      "realm": "animal"
+    },
+    "animal_patanga_ascetic": {
+      "name": "Patanga Ascetic",
+      "tier": "shade",
+      "roles": [
+        "support",
+        "caster"
+      ],
+      "region": "meadow",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 2,
+        "awareness": 3,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "air_magic",
+        "ritual",
+        "yoga"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 3,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "air": 20,
+        "fire": -15
+      },
+      "threat_multiplier": 0.9,
+      "tags": [
+        "biological",
+        "animal",
+        "flying"
+      ],
+      "realm": "animal"
+    },
+    "animal_patanga_seeker": {
+      "_comment": "TODO: erratic_movement AI type — high finesse/grace perks approximate unpredictability for now",
+      "name": "Patanga Flame Seeker",
+      "tier": "shade",
+      "roles": [
+        "frontline"
+      ],
+      "region": "meadow",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 5,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "fire_magic",
+        "grace"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 6,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "fire": 20,
+        "earth": -15
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal",
+        "flying"
+      ],
+      "realm": "animal"
+    },
+    "_comment_forest": "=== FOREST REGION ===",
+    "animal_rakshasa_hunter": {
+      "name": "Rakshasa Hunter",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 4,
+        "constitution": 2,
+        "finesse": 3,
+        "awareness": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "unarmed",
+        "martial_arts"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 12,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "slashing": 10,
+        "physical": 5
+      },
+      "threat_multiplier": 1.2,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_rakshasa_maneater": {
+      "_comment": "Boss-tier lone predator; targets lowest-HP party member; TODO: priority_target AI behavior",
+      "name": "Rakshasa Maneater",
+      "tier": "boss",
+      "roles": [
+        "frontline"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 4,
+        "constitution": 3,
+        "finesse": 4,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "unarmed",
+        "martial_arts",
+        "guile"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 16,
+          "base_accuracy": 7,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "slashing": 15,
+        "physical": 10
+      },
+      "threat_multiplier": 1.6,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_varaha_charger": {
+      "_comment": "Tusk charge; maces perk concussive_force gives knockback on crits",
+      "name": "Varaha Charger",
+      "tier": "shade",
+      "roles": [
+        "frontline"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 3,
+        "finesse": 1,
+        "awareness": 0,
+        "focus": 0,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "maces",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "mace",
+          "base_damage": 9,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "medium"
+      },
+      "resistances": {
+        "physical": 10,
+        "crushing": 5
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_varaha_elder": {
+      "_comment": "Sounder tactician; heals allies via medicine perks; raises aggression when sounder-mates are wounded",
+      "name": "Varaha Elder",
+      "tier": "devil",
+      "roles": [
+        "support"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 3,
+        "finesse": 1,
+        "awareness": 2,
+        "focus": 3,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "earth_magic",
+        "medicine"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 6,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "earth": 15,
+        "physical": 10
+      },
+      "threat_multiplier": 1.1,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_shardula_stalker": {
+      "_comment": "Flanking predator; grace perks give evasion while repositioning; attacks from unexpected angles",
+      "name": "Shardula Stalker",
+      "tier": "devil",
+      "roles": [
+        "skirmisher"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 1,
+        "finesse": 4,
+        "awareness": 3,
+        "focus": 0,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "daggers",
+        "grace"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 10,
+          "base_accuracy": 7,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "slashing": 10
+      },
+      "threat_multiplier": 1.1,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_shardula_ambusher": {
+      "_comment": "Drops from canopy; guile perks give first-strike advantage; retreats after opening hit",
+      "name": "Shardula Ambusher",
+      "tier": "shade",
+      "roles": [
+        "skirmisher"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 1,
+        "finesse": 4,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "martial_arts",
+        "guile"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 8,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "slashing": 5
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_gana_runner": {
+      "_comment": "Pack hunter; grace perks give terrain_mastery; TODO: pack_bonus AI when 3+ gana present",
+      "name": "Gana Pack Runner",
+      "tier": "shade",
+      "roles": [
+        "frontline"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 2,
+        "finesse": 3,
+        "awareness": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "martial_arts",
+        "grace"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 7,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {},
+      "threat_multiplier": 0.9,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_gana_howler": {
+      "_comment": "Pack support; enchantment perks buff allies and weaken party members",
+      "name": "Gana Howler",
+      "tier": "shade",
+      "roles": [
+        "support"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 2,
+        "finesse": 2,
+        "awareness": 3,
+        "focus": 2,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "enchantment",
+        "ritual"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 5,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {},
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_vanara_skirmisher": {
+      "_comment": "Throws rocks and alchemical bombs; taunt forces party member to attack it; TODO: confuse special attack",
+      "name": "Vanara Skirmisher",
+      "tier": "shade",
+      "roles": [
+        "ranged"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 4,
+        "awareness": 3,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "ranged",
+        "alchemy"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [
+        "taunt"
+      ],
+      "equipment_template": {
+        "weapon": {
+          "type": "thrown",
+          "base_damage": 6,
+          "base_accuracy": 6,
+          "range": 3
+        },
+        "armor_type": "none"
+      },
+      "resistances": {},
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_vanara_elder": {
+      "_comment": "Troop director; leadership perks give formation bonuses to nearby vanara",
+      "name": "Vanara Elder",
+      "tier": "shade",
+      "roles": [
+        "support"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 2,
+        "finesse": 2,
+        "awareness": 3,
+        "focus": 3,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "white_magic",
+        "earth_magic",
+        "leadership"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 4,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {},
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "_comment_sky": "=== SKY REGION ===",
+    "animal_shyena_stooper": {
+      "_comment": "Aerial dive attacker; flying tag; martial_arts perks give first-strike on initial dive",
+      "name": "Shyena Stooper",
+      "tier": "devil",
+      "roles": [
+        "skirmisher"
+      ],
+      "region": "sky",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 1,
+        "finesse": 5,
+        "awareness": 3,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "unarmed",
+        "martial_arts"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 11,
+          "base_accuracy": 7,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "air": 15,
+        "earth": -10
+      },
+      "threat_multiplier": 1.1,
+      "tags": [
+        "biological",
+        "animal",
+        "flying"
+      ],
+      "realm": "animal"
+    },
+    "animal_shyena_lord": {
+      "_comment": "Territorial boss; might perks give enrage-style bonuses when below 50% HP",
+      "name": "Shyena Sky Lord",
+      "tier": "boss",
+      "roles": [
+        "frontline"
+      ],
+      "region": "sky",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 2,
+        "finesse": 4,
+        "awareness": 4,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "unarmed",
+        "martial_arts",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 15,
+          "base_accuracy": 7,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "air": 20,
+        "earth": -10
+      },
+      "threat_multiplier": 1.5,
+      "tags": [
+        "biological",
+        "animal",
+        "flying"
+      ],
+      "realm": "animal"
+    },
+    "animal_kapota_messenger": {
+      "_comment": "Fast support; disrupts party formation; grace perks make it very hard to pin down",
+      "name": "Kapota Messenger",
+      "tier": "imp",
+      "roles": [
+        "support"
+      ],
+      "region": "sky",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 4,
+        "awareness": 3,
+        "focus": 0,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "air_magic",
+        "grace"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 3,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "air": 15
+      },
+      "threat_multiplier": 0.7,
+      "tags": [
+        "biological",
+        "animal",
+        "flying"
+      ],
+      "realm": "animal"
+    },
+    "animal_kapota_flock": {
+      "_comment": "Flying mob; individually weak but overwhelming in numbers; grace perks give evasion bonus",
+      "name": "Kapota Flock",
+      "tier": "shade",
+      "roles": [
+        "frontline"
+      ],
+      "region": "sky",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 4,
+        "awareness": 2,
+        "focus": 1,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "air_magic",
+        "grace"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 5,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "air": 10
+      },
+      "threat_multiplier": 0.9,
+      "tags": [
+        "biological",
+        "animal",
+        "flying"
+      ],
+      "realm": "animal"
+    },
+    "animal_uluka_nightwatcher": {
+      "_comment": "Fires black magic from range in darkness; high awareness gives initiative advantage",
+      "name": "Uluka Nightwatcher",
+      "tier": "shade",
+      "roles": [
+        "ranged",
+        "caster"
+      ],
+      "region": "sky",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 4,
+        "focus": 2,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "black_magic",
+        "ranged"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 6,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "black": 10,
+        "air": 10
+      },
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal",
+        "flying"
+      ],
+      "realm": "animal"
+    },
+    "animal_uluka_omen": {
+      "_comment": "Ill omen debuffer; performance perks like heckle_the_will and stage_fright lower party morale/stats",
+      "name": "Uluka Ill Omen",
+      "tier": "devil",
+      "roles": [
+        "caster"
+      ],
+      "region": "sky",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 1,
+        "finesse": 2,
+        "awareness": 4,
+        "focus": 3,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "black_magic",
+        "performance"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 4,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "black": 15,
+        "air": 10,
+        "white": -15
+      },
+      "threat_multiplier": 1.2,
+      "tags": [
+        "biological",
+        "animal",
+        "flying"
+      ],
+      "realm": "animal"
+    }
+  }
+}

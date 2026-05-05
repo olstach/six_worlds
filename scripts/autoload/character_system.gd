@@ -241,6 +241,8 @@ func _pick_random_spell(schools: Array, level: int, already_known: Array) -> Str
 		if spell_id in already_known:
 			continue
 		var spell = _spell_database[spell_id]
+		if spell.get("enemy_only", false):
+			continue
 		if int(spell.get("level", 0)) != level:
 			continue
 		var spell_schools = spell.get("schools", [])
@@ -282,6 +284,8 @@ func pick_random_spell_for_party(school: String, level: int) -> String:
 		if spell_id in known_by_all:
 			continue
 		var spell = _spell_database[spell_id]
+		if spell.get("enemy_only", false):
+			continue
 		if int(spell.get("level", 0)) != level:
 			continue
 		# Domain spells are only available through domain-specific trainers

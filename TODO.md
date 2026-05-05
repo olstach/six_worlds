@@ -375,6 +375,12 @@ Persistent negative status effects from combat or events that do not fully clear
 - [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
 - [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
 - [x] ~~**Spell duration unification**~~ — unified formula: base 2 + floor(Enchantment/2) [main] + floor(spellpower/15) [secondary]. `clear_mind` fixed (`"spellpower_turns"` typo now `"spellpower"`). `doom` made explicit integer 3. `"combat"` → 999 turns. All 128 `"spellpower"` spells already used the formula.
+- [ ] **Complex enemy AI behavior types** — current AI is a single scoring loop. Several archetypes need distinct behavior modes not yet implemented:
+  - `erratic_movement`: random repositioning each turn before attacking (patanga_seeker); weight movement randomly in scoring rather than always advancing
+  - `priority_target`: preferentially targets lowest-HP or most-isolated party member (rakshasa_maneater); add target-selection pre-pass before action scoring
+  - `pack_bonus`: grants attack/dodge boost when N+ allies of same type are alive (gana_runner, matsya_shoal); check tag+count in derived stat calculation
+  - `burrow_emerge`: teleport-to-adjacent + guaranteed melee attack in same turn (dura_burrower); special handling in `burrow` spell resolution in combat_manager
+  - General approach: add optional `"ai_behavior"` field to archetype JSON; EnemySystem passes it into CombatUnit; CombatManager checks it during AI turn
 - [ ] Terrain affecting spell power — no terrain-based spellpower modifiers in combat_manager.gd cast_spell()
 - [ ] Environmental spell interactions — spells create terrain (done); terrain does not yet buff/debuff spells of matching element
 - [ ] **Summoning bonus from overworld terrain** — Summoning spellpower gets +25% based on the overworld tile type where combat takes place (ruins/charnel grounds, forest, mountain, river/lake each evoke different resident spirits). Requires passing the overworld terrain type into the combat context at combat start. Tradition: nagas in water, earth spirits in mountains, hungry ghosts in charnel grounds, nature spirits in forest. Design the full terrain→spirit type→bonus table before implementing.
