@@ -523,16 +523,20 @@ func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dic
 				continue
 			derived["accuracy"] += bonus.get("attack", 0)
 			derived["damage"]   += bonus.get("damage", 0)
+			derived["damage"]   += bonus.get("strength_weapon_damage", 0)
 			derived["crit_chance"] += bonus.get("crit_chance", 0.0)
-			derived["armor"]       += bonus.get("armor_bonus", 0)
+			derived["armor"]       += bonus.get("armor", 0)
 			derived["armor_pierce"] += bonus.get("armor_penetration", 0)
+			derived["max_hp"] += int(bonus.get("max_hp", 0))
+			derived["current_hp"] += int(bonus.get("max_hp", 0))
 			if bonus.has("spellpower"):
 				derived["spellpower"] += int(bonus.get("spellpower", 0))
-			if bonus.has("dodge_bonus"):
-				derived["dodge"] += int(bonus.get("dodge_bonus", 0))
-			if bonus.has("max_stamina"):
-				derived["max_stamina"]   += int(bonus.get("max_stamina", 0))
-				derived["current_stamina"] += int(bonus.get("max_stamina", 0))
+			derived["mana_cost_reduction"] = derived.get("mana_cost_reduction", 0) + int(bonus.get("mana_cost", 0))
+			derived["dodge"] += int(bonus.get("dodge", 0))
+			var stamina_bonus := int(bonus.get("stamina", 0))
+			derived["max_stamina"]   += stamina_bonus
+			derived["current_stamina"] += stamina_bonus
+			derived["initiative"] += int(bonus.get("initiative", 0))
 			if bonus.has("initiative_bonus"):
 				derived["initiative"] += int(bonus.get("initiative_bonus", 0))
 

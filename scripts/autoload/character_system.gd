@@ -853,22 +853,23 @@ func update_derived_stats(character: Dictionary) -> void:
 			# Combat skill bonuses
 			derived["accuracy"] = derived.get("accuracy", 0) + bonus.get("attack", 0)
 			derived["damage"] = derived.get("damage", 0) + bonus.get("damage", 0)
+			derived["damage"] = derived.get("damage", 0) + bonus.get("strength_weapon_damage", 0)
 			derived["crit_chance"] = derived.get("crit_chance", 0.0) + bonus.get("crit_chance", 0.0)
-			derived["armor"] = derived.get("armor", 0) + bonus.get("armor_bonus", 0)
+			derived["armor"] = derived.get("armor", 0) + bonus.get("armor", 0)
 			derived["armor_pierce"] = derived.get("armor_pierce", 0) + bonus.get("armor_penetration", 0)
-			# Armor skill: damage reduction
+			# Armor skill: HP and damage reduction
+			derived["max_hp"] = derived.get("max_hp", 100) + int(bonus.get("max_hp", 0))
 			if bonus.has("damage_reduction_pct"):
 				derived["damage_reduction_pct"] = derived.get("damage_reduction_pct", 0.0) + bonus.get("damage_reduction_pct", 0.0)
 			# Magic school bonuses
 			if bonus.has("spellpower"):
 				derived["spellpower"] = derived.get("spellpower", 0) + int(bonus.get("spellpower", 0))
-			# General skill bonuses that directly affect derived stats
-			if bonus.has("dodge_bonus"):
-				derived["dodge"] = derived.get("dodge", 0) + int(bonus.get("dodge_bonus", 0))
-			if bonus.has("max_stamina"):
-				derived["max_stamina"] = derived.get("max_stamina", 50) + int(bonus.get("max_stamina", 0))
-			if bonus.has("initiative_bonus"):
-				derived["initiative"] = derived.get("initiative", 0) + int(bonus.get("initiative_bonus", 0))
+			# Mana cost reduction (negative values in data = cost reduction per cast)
+			derived["mana_cost_reduction"] = derived.get("mana_cost_reduction", 0) + int(bonus.get("mana_cost", 0))
+			# General skill bonuses — key names match data exactly
+			derived["dodge"] = derived.get("dodge", 0) + int(bonus.get("dodge", 0))
+			derived["max_stamina"] = derived.get("max_stamina", 50) + int(bonus.get("stamina", 0))
+			derived["initiative"] = derived.get("initiative", 0) + int(bonus.get("initiative", 0))
 
 	# Apply active map buffs from simples/shrines.
 	# Attribute-type buffs translate to their most direct derived-stat effects
