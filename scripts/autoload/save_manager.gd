@@ -156,8 +156,6 @@ func start_new_game(slot: int) -> void:
 	GameState.herbs = 20
 	GameState.scrap = 15
 	GameState.reagents = 10
-	GameState.steps_without_food = 0
-	GameState.is_starving = false
 	GameState.active_map_buffs = []
 	GameState.used_event_choices = {}
 	GameState.guild_spell_lists = {}

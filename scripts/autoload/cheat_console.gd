@@ -17,6 +17,8 @@ extends CanvasLayer
 ##   additem <id> [count]   — Add item(s) to inventory
 ##   tactician              — Grant the Tactician upgrade
 ##   goto <world>           — Travel to a world (hell, hungry_ghost, animal, human, demigod, god)
+##   pressure <elem> <amt>  — Apply emotional pressure to player (elem: space/fire/water/earth/air, amt: ±float)
+##   emotions               — Show full emotional state of all party members
 ##   list <type>            — List available IDs (companions, spells, items, perks, worlds)
 ##   help / cheatlist       — Show this help text
 
@@ -36,7 +38,7 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_debug_console"):
+	if InputMap.has_action("ui_debug_console") and event.is_action_pressed("ui_debug_console"):
 		_toggle()
 		get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.pressed and event.keycode == KEY_F12:
@@ -154,6 +156,10 @@ func _on_command_submitted(text: String) -> void:
 			_cmd_goto(args)
 		"list":
 			_cmd_list(args)
+		"pressure":
+			_cmd_pressure(args)
+		"emotions":
+			_cmd_emotions()
 		_:
 			_log_err("Unknown command: " + cmd + ". Type 'help' for commands.")
 
@@ -178,6 +184,8 @@ func _cmd_help() -> void:
 	_log("  tactician          Grant Tactician upgrade")
 	_log("  goto <world>       Travel to world (reloads overworld)")
 	_log("  list <type>        List IDs (companions/spells/items/perks/worlds)")
+	_log("  pressure <e> <n>   Apply pressure to player (e.g. pressure fire -30)")
+	_log("  emotions           Show emotional state of all party members")
 	_log("  help / cheatlist   Show this list")
 
 
@@ -415,3 +423,54 @@ func _cmd_list(args: Array) -> void:
 
 		_:
 			_log_err("Unknown list type. Use: companions, spells, items, perks, worlds")
+
+
+func _cmd_pressure(args: Array) -> void:
+	if args.size() < 2:
+		_log_err("Usage: pressure <element> <amount>  (e.g. pressure fire -30)")
+		_log("  Elements: space fire water earth air")
+		return
+	var element: String = args[0].to_lower()
+	if not element in PsychologySystem.ELEMENTS:
+		_log_err("Unknown element '%s'. Use: space fire water earth air" % element)
+		return
+	var amount: float = float(args[1])
+	if amount == 0.0:
+		_log_err("Amount must be non-zero")
+		return
+	var char_data = CharacterSystem.get_player()
+	if char_data.is_empty():
+		_log_err("No active character")
+		return
+	var before: float = char_data.get("emotional_pressure", {}).get(element, 0.0)
+	PsychologySystem.apply_pressure(char_data, element, amount)
+	var after: float = char_data.get("emotional_pressure", {}).get(element, 0.0)
+	var label: String = PsychologySystem.get_emotional_label(char_data, element)
+	var label_str: String = " → [color=cyan]%s[/color]" % label if label != "" else ""
+	_log_ok("%s %s pressure: %.1f → %.1f%s" % [
+		char_data.get("name", "?"), element, before, after, label_str])
+
+
+func _cmd_emotions() -> void:
+	var party = CharacterSystem.get_party()
+	if party.is_empty():
+		_log_err("No party members")
+		return
+	_log("[color=gold]── Emotional State ──[/color]")
+	for char_data in party:
+		var char_name: String = char_data.get("name", "?")
+		var pressure: Dictionary = char_data.get("emotional_pressure", {})
+		_log("[color=yellow]%s[/color]" % char_name)
+		for element in PsychologySystem.ELEMENTS:
+			var p: float = pressure.get(element, 0.0)
+			var label: String = PsychologySystem.get_emotional_label(char_data, element)
+			# Color: bright = green, dark = red, neutral = grey
+			var bar_color: String
+			if p >= PsychologySystem.THRESHOLD_MINOR:
+				bar_color = "green"
+			elif p <= -PsychologySystem.THRESHOLD_MINOR:
+				bar_color = "red"
+			else:
+				bar_color = "gray"
+			var label_part: String = "  [color=cyan]%s[/color]" % label if label != "" else ""
+			_log("  [color=%s]%s: %+.1f[/color]%s" % [bar_color, element, p, label_part])

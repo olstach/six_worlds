@@ -63,11 +63,6 @@ A towering demon in ornate black and gold armor stands before the Realm Gate. It
 → Text — hours dissolve into the earth, days dissolve into the sky, finally the boundary dissolves into space.
 → XP: 20 | Karma: god+10, human+5, hell-10
 
----
-
-## Cold Hell — Event Pool
-
----
 
 ### DEMON PATROL
 *Blocking | One-time | Icon: enemy | Weight: 3*
@@ -88,7 +83,6 @@ Three demons in frost-crusted armor block the path ahead. Their captain, a horne
 consume a small amount of gold
 → Success: Text — slip through shadows undetected | XP: 6 | Karma: animal+3, human+2
 → Failure: Combat: demon_patrol (hard) — spotted | Karma: hell+5
-
 
 **[Default] Offer them gold to look the other way**
 consume a moderate amount of gold
@@ -170,6 +164,10 @@ A shivering figure huddles by the roadside, barely conscious. Their robes are to
 → Text — they watch you go in silence; the cold feels a little sharper
 → Karma: hell+2, animal+2
 
+**[Ritual 2] Offer them a purification**
+- Text - Bless some water with mantras and wash their hands and forehead. It's not much, but it's something.
+- XP: 5 | Karma: human+2, god+2
+
 ---
 
 ### FROZEN CAVE
@@ -189,8 +187,15 @@ Scratches on the cave walls suggest others have entered before. Not all of the s
 
 **[Default] The cave looks dangerous — best to move on**
 → Text — discretion is the better part of valor
-→ Karma: —
+→ Karma: — Items: health_potion, mana_potion | Karma: human+2, animal+2, asura+2
 
+**[Space 2] - Calm down and feel the space around you, then in the cave**
+- Text - the details remain hazy, but you quickly spot the danger ahead and proceed accordingly.
+- Karma: human+2, god+1
+
+**[Grace 2] Enter the cave gracefully**
+- Text - Nimbly avoiding the obvious trap, you soon find the hidden cache.
+-
 ---
 
 ### TORMENTED SOUL
@@ -229,7 +234,7 @@ The shrine radiates a faint warmth — a tiny island of peace in the frozen wast
 → Text — incense flares briefly; feeling of calm
 → XP: 2 | Karma: god+2, human+1
 
-**[Yoga 1] Enter deep meditation at the sacred crossroads**
+**[Yoga 1] Enter meditation at the sacred crossroads**
 → Text — the mandala seems to glow; energy flows through you
 → XP: 3 | Karma: god+3, human+2
 
@@ -252,15 +257,15 @@ The shrine radiates a faint warmth — a tiny island of peace in the frozen wast
 
 Before a magnificent frozen waterfall, a yogi sits in perfect stillness. Ice crystals have formed on their eyelashes and hair. The waterfall behind them is frozen mid-cascade.
 
-*"Ah. A visitor who can see beyond the cold. Come, sit. The water remembers what it was, and what it will become."*
+*"Ah. A visitor who can see beyond the cold. Come, sit. The water remembers what it was, and knows what it will become."*
 
 **[Water Magic 1] Ask to learn water magic techniques**
 → Text — hours beside the frozen falls; feel the flow within stillness
-→ XP: 15 | Karma: god+5, human+3
+→ XP: 15 | Karma: god+4, human+3
 
 **[Yoga 2] Meditate together on the nature of impermanence**
 → Text — consciousness merges with the waterfall; experience the moment of freezing
-→ XP: 12 | Karma: god+8, human+3
+→ XP: 12 | Karma: god+4, human+3
 
 **[Default] Watch the yogi's meditation in silence**
 → Text — the cold seems to lessen; you stop fighting it
@@ -289,12 +294,15 @@ It radiates a stillness entirely at odds with everything else in this frozen was
 
 **[Ritual 1] Study the carved mantras closely**
 → Text — prayers of purification and liberation; copy lines into memory
-→ XP: 10 | Karma: god+4, human+3
+→ XP: 8 | Karma: god+4, human+3
 
 **[Default] Leave a small offering and move on**
 → Text — leave a few coins; the flags flutter once in farewell
 → XP: 2 | Karma: god+2, hell-1
 
+**[Air magic 1] Study the prayer flags**
+- Text: somehow kept together by their inner charge rather than outer weave, the flags can still teach you something.
+- XP: 8 | Karma: god+2, human+2
 ---
 
 ### DEMON CHECKPOINT
@@ -322,6 +330,9 @@ You do not have a Form 7-B. Form 7-B does not exist.
 → Text — 40-minute forensic argument; bureaucrat shaken; waves you through with haunted eyes
 → XP: 10 | Karma: human+4, hell-3
 
+**[Comedy 2] Explain that you are not beholden to a public servant without the 16-F license**
+- Text - Stumped at first, the devil nods slowly - game recognizes game.
+- XP: 10 | Karma: human +5
 ---
 
 ### ICE ORACLE
@@ -337,7 +348,7 @@ A figure is frozen solid inside a pillar of ice — upright, arms folded, expres
 
 **[White Magic 2] Open your mind and commune with it directly**
 → Text — centuries of passing souls; their fears and small kindnesses; deep clarity
-→ XP: 12 | Karma: god+5, human+3
+→ XP: 10 | Karma: god+5, human+3
 
 **[Awareness 13] Ask about the nature of this realm**
 → Text — "This realm is a mirror. The cold here is the cold these souls carried within them."
@@ -347,6 +358,9 @@ A figure is frozen solid inside a pillar of ice — upright, arms folded, expres
 → Text — "Go well. The path is yours." It watches you with something like hope
 → Karma: human+1
 
+**[Comedy 2] You've stayed here so long and still found no way out? I'm not sure if it'a good idea to listen**
+- Text - "He murmurs gruffly under his breath, not entirely without self-doubt"
+- XP: 5 | Karma: human+2, asura+1
 ---
 
 ### GHOST VILLAGE
@@ -370,6 +384,9 @@ Stone buildings stand perfectly preserved — doors hanging open, fires long dea
 → Text — keep your eyes forward; the watching feeling follows you, then fades
 → Karma: —
 
+**[Ritual 3] Prepare a smoke offering for the lingering spirits**
+- Text - "Ghosts, gods, lords of this land, come forth and take your fill in peace!"
+- XP: 8 | Karma: human+3, god+3
 ---
 
 ## Cold Hell — Mob Events
@@ -401,7 +418,9 @@ A weathered monk in tattered robes approaches, seemingly at peace despite the fr
 → Text — "The cold cannot touch a warm heart." He walks into the frost, leaving no footprints
 → XP: 2 | Karma: human+1
 
----
+**[Comedy 2] My eyelids are frozen in place, friend**
+- Text - He laughs surprised. The following conversation fills you both with warmth.
+- XP: 8 | Karma: human+5
 
 ### WANDERING PEDDLER
 *Roaming friendly mob | Icon: merchant | Weight: 2 | Tag: shop*
@@ -422,6 +441,9 @@ A hunched figure dragging a heavy sack waves you down.
 → Text — "Your loss! If you change your mind, I'll be around. Always around..."
 → Karma: —
 
+**[Trade 2] Haggle for better prices**
+- Text - The trader seems amused, and after a short back-and-forth, grants you a discount.
+- XP: 4 | Karma: human+4
 ---
 
 ## Fire Hell — Event Pool
@@ -474,6 +496,9 @@ A demon merchant sits cross-legged on a fireproof blanket, surrounded by wares t
 → Text — "Stay warm! Well, you'll have no choice about that down here!"
 → Karma: —
 
+**[Comedy 2] Mostly guaranteed, or guaranteed I'd mostly survive?**
+- Text - The trader chuckles surprised and throws you a little trinket. "That's on the house, clown"
+- XP: 5 | Karma:human+4 | Item: common earth charm
 ---
 
 ### BURNING PRISONER
@@ -490,6 +515,10 @@ A figure writhes in chains of molten metal, suspended above a pit of glowing coa
 **[White Magic 2] Use healing magic to ease their suffering**
 → Text — can't break the chains, but can mend what they've broken; prisoner breathes freely; weeps clean tears through the soot
 → XP: 8 | Karma: hell-5, human+5, god+8
+
+**[Ritual 3] Offer a purification to shorten their suffering**
+- Text - They nod somewhat absent-mindedly, numbed by the pain. By the end of the ritual they seem somewhat relieved.
+- XP: 8 | Karma: human+3, god+4
 
 **[Default] Ask what crime brought them here**
 → Text — "I was a warlord. I burned a hundred homes. I thought fear was power."
@@ -512,7 +541,7 @@ An arena of scorched stone rises from the lava fields, its tiers filled with dem
 → Combat: demon_patrol (hard) — arena champions pour in
 → Karma: asura+5, hell+2
 
-**[Performance 2] Challenge them to a contest of performance instead**
+**[Performance 3] Challenge them to a contest of performance instead**
 → Text — tell the tale of a warrior who conquered through art; demons listen, rapt; showered with prizes
 → XP: 12 | Items: fire_crystal | Karma: asura+3, human+5
 
@@ -524,6 +553,9 @@ An arena of scorched stone rises from the lava fields, its tiers filled with dem
 → Text — boos follow you, but no one moves to stop you; sometimes the bravest choice looks like retreat
 → Karma: human+2
 
+**[Sorcery 4] Strike the demon down with magic before he finishes boasting**
+- Text - the crowd first falls silent, then erupts.
+XP: 12 | - Karma: asura+4, human+3
 ---
 
 ### VOLCANIC CAVE
@@ -531,7 +563,7 @@ An arena of scorched stone rises from the lava fields, its tiers filled with dem
 
 A cave entrance glows red with the heat of magma flowing within. The walls pulse with veins of liquid fire. Deep within, a rhythmic sound — like a heartbeat, or the slow breathing of something enormous.
 
-The heat is nearly unbearable, but you can see the glint of something valuable deeper inside.
+The heat is nearly unbearable, but you can see the glint of valuables deeper inside.
 
 **[Roll: Constitution DC 14] Brave the heat and explore the cave**
 → Success: Text — push through; ancient demon forges still glowing; remarkable equipment and supplies | XP: 10 | Items: health_potion, fire_resistance_potion | Karma: human+2
@@ -544,6 +576,10 @@ The heat is nearly unbearable, but you can see the glint of something valuable d
 **[Learning 2] Listen to the heartbeat sound from the entrance**
 → Text — too regular for a creature; it's the pulse of the realm itself; Naraka has a heartbeat; this cave is one of its arteries
 → XP: 8 | Karma: human+4, god+2
+
+**[Grace 2] Do your best to move quickly and avoid the thermal vents**
+- Text - Uncomfortable, but nevertheless doable, like so many things in life.
+- XP: 8 | Karma: animal+3, human+3, asura+3 | Items: health_potion, fire_resistance_potion |
 
 **[Default] The heat is too dangerous — move on**
 → Text — the glow pulses with what might be disappointment
@@ -561,6 +597,10 @@ Then you notice: the flow pulses. There are moments when it thins, gaps between 
 **[Roll: Finesse DC 14] Time the surges and dash across**
 → Success: Text — sprint across the brief gap; singed clothes, racing heart | XP: 8 | Karma: human+2, animal+2
 → Failure: Text — mistime the surge; leap back; minor burns; healthy respect for lava | XP: 3 | Karma: hell+1
+
+**[Grace 3] Time your steps to the rhythm and dance your way through**
+- Text - And a-one, and a-two...
+- XP: 8 | Karma: animal+3, human+3, asura+3
 
 **[Earth Magic 2] Use earth magic to create a stone bridge**
 → Text — pull stone from bedrock; it rises hissing above the lava; you cross safely; bridge lasts for others too
@@ -581,10 +621,10 @@ It regards you with what you can only describe as curiosity.
 
 **[Default] Watch it in respectful silence**
 → Text — mesmerizing fluid movements; it rises and sinks; sinks below; lava glows brighter where it passed
-→ XP: 6 | Karma: animal+3, human+2
+→ XP: 6 | Karma: animal+2, human+4
 
 **[Fire Magic 2] Commune with it through fire magic**
-→ Text — extend awareness through fire; it responds; sensation of heat and the memory of a younger world; your fire magic feels deeper
+→ Text — extend awareness through fire; it responds; sensation of heat and the memory of a younger world; afterwards your experience of heat seems somehow deeper, more meaningful.
 → XP: 14 | Karma: animal+4, god+3
 
 **[Default] Drop something metallic into the lava as an offering**
@@ -595,6 +635,7 @@ It regards you with what you can only describe as curiosity.
 → Combat: lava_guardian (hard) — ancient eyes shift from curious to cold
 → Karma: animal-5, hell+3
 
+**[Performance 3] Struck by awe, sit down and begin strumming, until a melody comes 
 ---
 
 ### DEMON DOJO

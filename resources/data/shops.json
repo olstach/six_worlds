@@ -1,1821 +1,2144 @@
 {
-  "shops": {
-    "hell_merchant": {
-      "name": "Tormented Peddler",
-      "type": "general",
-      "description": "A twisted soul who trades in suffering... and useful goods.",
-      "price_modifier": 1.2,
-      "buys_items": true,
-      "items": {
-        "bone_dagger": 3,
-        "bone_sword": 2,
-        "bone_club": 2,
-        "bronze_sword": 1,
-        "bronze_talwar": 1,
-        "bronze_dao": 1,
-        "leather_vest": 4,
-        "leather_cap": 4,
-        "leather_boots": 4,
-        "health_potion": 3,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
+    "shops": {
+        "hell_merchant": {
+            "name": "Tormented Peddler",
+            "type": "general",
+            "description": "A twisted soul who trades in suffering... and useful goods.",
+            "price_modifier": 1.2,
+            "buys_items": true,
+            "items": {
+                "bone_dagger": 3,
+                "bone_sword": 2,
+                "bone_club": 2,
+                "bronze_sword": 1,
+                "bronze_talwar": 1,
+                "bronze_dao": 1,
+                "leather_vest": 4,
+                "leather_cap": 4,
+                "leather_boots": 4,
+                "health_potion": 3,
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "demon_sorcerer": {
+            "name": "Infernal Magister",
+            "type": "spell_trainer",
+            "description": "A powerful demon who teaches the dark arts... for a price.",
+            "price_modifier": 1.3,
+            "buys_items": false,
+            "items": {
+                "wooden_staff": 1,
+                "oak_staff": 1,
+                "cloth_robe": 2,
+                "cloth_hood": 2,
+                "prayer_beads": 1,
+                "raw_reagents": 5,
+                "alchemists_pouch": 2,
+                "scroll_magic_missile": 1,
+                "scroll_voidbolt": 1,
+                "scroll_slow": 1,
+                "scroll_confusion": 1,
+                "scroll_dispel": 1,
+                "rations": 5
+            },
+            "spells": [
+                "firebolt",
+                "fireball",
+                "hellfire",
+                "burning_weapon",
+                "voidbolt",
+                "life_drain",
+                "poison_sting",
+                "gloom",
+                "curse"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "wandering_sage": {
+            "name": "Wandering Sage",
+            "type": "skill_trainer",
+            "description": "A mysterious figure who can unlock your hidden potential.",
+            "price_modifier": 0.9,
+            "buys_items": false,
+            "items": {
+                "raw_reagents": 3,
+                "alchemists_pouch": 1,
+                "scroll_bless": 1,
+                "scroll_cure": 1,
+                "scroll_regeneration": 1,
+                "scroll_blink": 1
+            },
+            "spells": [
+                "lesser_heal",
+                "greater_heal",
+                "cure",
+                "bless",
+                "regeneration",
+                "magic_missile",
+                "blink"
+            ],
+            "training": {
+                "attributes": [
+                    "focus",
+                    "awareness"
+                ],
+                "skills": [
+                    "white_magic",
+                    "sorcery",
+                    "yoga"
+                ],
+                "max_skill_level": 6
+            }
+        },
+        "weapon_master": {
+            "name": "Weapon Master",
+            "type": "skill_trainer",
+            "description": "A grizzled veteran who teaches combat techniques.",
+            "price_modifier": 1.1,
+            "buys_items": true,
+            "accepted_item_types": [
+                "weapon",
+                "armor",
+                "shield"
+            ],
+            "items": {
+                "bronze_sword": 2,
+                "bronze_talwar": 2,
+                "bronze_dao": 1,
+                "bronze_patisa": 1,
+                "bronze_axe": 2,
+                "bronze_mace": 2,
+                "bronze_spear": 2,
+                "iron_sword": 1,
+                "iron_khanda": 1,
+                "iron_dao": 1,
+                "iron_patisa": 1,
+                "iron_axe": 1,
+                "iron_mace": 1,
+                "wooden_spear": 2,
+                "short_bow": 2,
+                "hunting_bow": 1,
+                "bronze_dagger": 3,
+                "iron_dagger": 1,
+                "obsidian_dagger": 1,
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [
+                    "strength",
+                    "finesse"
+                ],
+                "skills": [
+                    "swords",
+                    "axes",
+                    "maces",
+                    "spears",
+                    "ranged",
+                    "daggers",
+                    "armor"
+                ],
+                "max_skill_level": 7
+            }
+        },
+        "frozen_merchant": {
+            "name": "Frozen Merchant",
+            "type": "general",
+            "description": "Frost-covered wares from a resilient trader in the frozen wastes.",
+            "price_modifier": 1.15,
+            "buys_items": true,
+            "items": {
+                "bone_dagger": 3,
+                "bone_sword": 2,
+                "bronze_sword": 1,
+                "bronze_talwar": 1,
+                "bronze_dao": 1,
+                "bronze_dagger": 1,
+                "leather_vest": 3,
+                "padded_armor": 2,
+                "leather_boots": 4,
+                "leather_gloves": 3,
+                "health_potion": 4,
+                "rations": 6
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "ember_merchant": {
+            "name": "Ember Merchant",
+            "type": "general",
+            "description": "Fire-forged goods from the burning half of Naraka. Everything radiates warmth.",
+            "price_modifier": 1.2,
+            "buys_items": true,
+            "items": {
+                "bone_dagger": 3,
+                "bone_sword": 2,
+                "bone_club": 2,
+                "bronze_axe": 1,
+                "bronze_dao": 1,
+                "obsidian_blade": 1,
+                "leather_vest": 3,
+                "leather_boots": 4,
+                "health_potion": 3,
+                "rations": 5,
+                "obsidian_dagger": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "wandering_peddler": {
+            "name": "Wandering Peddler",
+            "type": "general",
+            "description": "Eclectic trinkets and supplies scavenged from the frozen wastes.",
+            "price_modifier": 1.3,
+            "buys_items": true,
+            "items": {
+                "bone_dagger": 2,
+                "bone_club": 1,
+                "leather_gloves": 3,
+                "leather_cap": 3,
+                "health_potion": 2,
+                "rations": 3
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "general_store": {
+            "name": "General Store",
+            "type": "mixed",
+            "description": "A well-stocked shop with a bit of everything.",
+            "price_modifier": 1.0,
+            "buys_items": true,
+            "items": {
+                "bone_dagger": 4,
+                "bone_sword": 3,
+                "bone_club": 2,
+                "bronze_sword": 2,
+                "bronze_talwar": 1,
+                "bronze_dao": 1,
+                "bronze_dagger": 2,
+                "short_bow": 2,
+                "leather_vest": 4,
+                "leather_boots": 5,
+                "leather_gloves": 4,
+                "health_potion": 4,
+                "rations": 8
+            },
+            "spells": [
+                "firebolt",
+                "ice_bolt",
+                "shocking_grasp",
+                "stone_spike",
+                "lesser_heal",
+                "magic_missile"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hell_tavern": {
+            "name": "Devil's Rest",
+            "type": "general",
+            "description": "A dim roadhouse where the desperate gather. Someone at the bar looks like they're between allegiances.",
+            "price_modifier": 1.0,
+            "buys_items": false,
+            "available_companions": [
+                "karnak",
+                "serji",
+                "red_peony",
+                "raktamatta",
+                "jawbreaker",
+                "tejasimha",
+                "water_lily",
+                "dvijihva",
+                "yaga_mataji",
+                "niyamendra",
+                "leraya",
+                "samvibrahmi",
+                "vayuvega",
+                "angulimala",
+                "kanjus",
+                "sarpatailaka",
+                "shiny_needle",
+                "princess_spiderface",
+                "sineater_thirteen",
+                "dyutapati",
+                "coolhead_hotblood",
+                "ayurmangala",
+                "amlamarjari",
+                "vimohini"
+            ],
+            "items": {
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hell_teahouse_cold": {
+            "name": "Teahouse",
+            "type": "teahouse",
+            "description": "A dim waystation where the desperate catch their breath. The barkeeper keeps a pot of Lapsang Souchong going \u2014 its smoke is the closest thing to warmth in the frozen wastes.",
+            "price_modifier": 1.2,
+            "buys_items": false,
+            "items": {
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "available_companions": [
+                "karnak",
+                "serji",
+                "red_peony",
+                "raktamatta",
+                "jawbreaker",
+                "tejasimha",
+                "water_lily",
+                "dvijihva",
+                "yaga_mataji",
+                "niyamendra",
+                "leraya",
+                "samvibrahmi",
+                "vayuvega",
+                "angulimala",
+                "kanjus",
+                "sarpatailaka",
+                "shiny_needle",
+                "princess_spiderface",
+                "sineater_thirteen",
+                "dyutapati",
+                "coolhead_hotblood",
+                "ayurmangala",
+                "amlamarjari",
+                "vimohini"
+            ],
+            "rest": {
+                "teapot_cost": 30,
+                "teapot_restore_pct": 50,
+                "night_cost": 80,
+                "night_restore_pct": 100,
+                "teapot_food": 10,
+                "night_food": 25
+            }
+        },
+        "hell_teahouse_fire": {
+            "name": "Teahouse",
+            "type": "teahouse",
+            "description": "The tea here is brewed in volcanic water. It tastes like char and smoke and something almost familiar. The barkeeper doesn't ask where you've been.",
+            "price_modifier": 1.2,
+            "buys_items": false,
+            "items": {
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "available_companions": [
+                "karnak",
+                "serji",
+                "red_peony",
+                "raktamatta",
+                "jawbreaker",
+                "tejasimha",
+                "water_lily",
+                "dvijihva",
+                "yaga_mataji",
+                "niyamendra",
+                "leraya",
+                "samvibrahmi",
+                "vayuvega",
+                "angulimala",
+                "kanjus",
+                "sarpatailaka",
+                "shiny_needle",
+                "princess_spiderface",
+                "sineater_thirteen",
+                "dyutapati",
+                "coolhead_hotblood",
+                "ayurmangala",
+                "amlamarjari",
+                "vimohini"
+            ],
+            "rest": {
+                "teapot_cost": 30,
+                "teapot_restore_pct": 50,
+                "night_cost": 80,
+                "night_restore_pct": 100,
+                "teapot_food": 10,
+                "night_food": 25
+            }
+        },
+        "hell_mercenary_guild": {
+            "name": "Mercenary Guild",
+            "type": "mercenary_guild",
+            "description": "A fortified post where demonic soldiers hire out between assignments. Their equipment is functional, their prices are fair, their loyalty is negotiable.",
+            "price_modifier": 1.1,
+            "buys_items": true,
+            "accepted_item_types": [
+                "weapon",
+                "armor",
+                "shield"
+            ],
+            "items": {
+                "bronze_sword": 2,
+                "bronze_talwar": 2,
+                "bronze_dao": 1,
+                "bronze_patisa": 1,
+                "bronze_dagger": 3,
+                "bronze_axe": 2,
+                "bronze_mace": 2,
+                "bronze_spear": 2,
+                "iron_sword": 1,
+                "iron_khanda": 1,
+                "iron_dao": 1,
+                "short_bow": 2,
+                "leather_vest": 3,
+                "padded_armor": 2,
+                "leather_boots": 3,
+                "leather_gloves": 3,
+                "obsidian_blade": 1,
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "available_companions": [
+                "karnak",
+                "serji",
+                "red_peony",
+                "raktamatta",
+                "jawbreaker",
+                "tejasimha",
+                "water_lily",
+                "dvijihva",
+                "yaga_mataji",
+                "niyamendra",
+                "leraya",
+                "samvibrahmi",
+                "vayuvega",
+                "angulimala",
+                "kanjus",
+                "sarpatailaka",
+                "shiny_needle",
+                "princess_spiderface",
+                "sineater_thirteen",
+                "dyutapati",
+                "coolhead_hotblood",
+                "ayurmangala",
+                "amlamarjari",
+                "vimohini"
+            ]
+        },
+        "hell_veterans_camp": {
+            "name": "Veterans' Camp",
+            "type": "veteran_camp",
+            "description": "A camp of soldiers who survived long enough to have something to teach. They charge for lessons \u2014 nothing is free in hell.",
+            "price_modifier": 1.0,
+            "buys_items": false,
+            "items": {
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "available_companions": [
+                "karnak",
+                "serji",
+                "red_peony",
+                "raktamatta",
+                "jawbreaker",
+                "tejasimha",
+                "water_lily",
+                "dvijihva",
+                "yaga_mataji",
+                "niyamendra",
+                "leraya",
+                "samvibrahmi",
+                "vayuvega",
+                "angulimala",
+                "kanjus",
+                "sarpatailaka",
+                "shiny_needle",
+                "princess_spiderface",
+                "sineater_thirteen",
+                "dyutapati",
+                "coolhead_hotblood",
+                "ayurmangala",
+                "amlamarjari",
+                "vimohini"
+            ]
+        },
+        "hell_yogini_circle": {
+            "name": "Yogini Circle",
+            "type": "yogini_circle",
+            "description": "A circle of Dakinis \u2014 fierce, half-wild tantric practitioners. They trade knowledge for gold and ask no questions about what you plan to do with it.",
+            "price_modifier": 1.15,
+            "buys_items": false,
+            "items": {
+                "raw_reagents": 8,
+                "alchemists_pouch": 3,
+                "prayer_beads": 2,
+                "oak_staff": 1,
+                "cloth_robe": 1,
+                "cloth_hood": 1,
+                "scroll_bless": 1,
+                "scroll_magic_missile": 1,
+                "scroll_voidbolt": 1,
+                "rations": 5,
+                "white_charm_common": 2,
+                "space_charm_common": 2,
+                "air_charm_common": 1,
+                "fire_charm_common": 1,
+                "fire_charm_middling": 1,
+                "plain_copper_damaru": 3,
+                "plain_silver_damaru": 2,
+                "blessed_copper_damaru": 1
+            },
+            "spells": [
+                "lesser_heal",
+                "greater_heal",
+                "bless",
+                "regeneration",
+                "magic_missile",
+                "blink",
+                "voidbolt",
+                "gloom",
+                "curse"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "available_companions": [
+                "karnak",
+                "serji",
+                "red_peony",
+                "raktamatta",
+                "jawbreaker",
+                "tejasimha",
+                "water_lily",
+                "dvijihva",
+                "yaga_mataji",
+                "niyamendra",
+                "leraya",
+                "samvibrahmi",
+                "vayuvega",
+                "angulimala",
+                "kanjus",
+                "sarpatailaka",
+                "shiny_needle",
+                "princess_spiderface",
+                "sineater_thirteen",
+                "dyutapati",
+                "coolhead_hotblood",
+                "ayurmangala",
+                "amlamarjari",
+                "vimohini"
+            ]
+        },
+        "hell_town_weapons": {
+            "name": "Town",
+            "type": "town",
+            "description": "A cluster of hovels that qualifies as a settlement. The main trade here is war.",
+            "price_modifier": 1.1,
+            "buys_items": true,
+            "items": {
+                "bone_dagger": 4,
+                "bone_sword": 3,
+                "bone_club": 3,
+                "bone_spear": 2,
+                "bronze_sword": 2,
+                "bronze_talwar": 1,
+                "bronze_dao": 1,
+                "bronze_patisa": 1,
+                "bronze_dagger": 2,
+                "bronze_axe": 1,
+                "bronze_mace": 1,
+                "wooden_spear": 2,
+                "short_bow": 2,
+                "leather_vest": 3,
+                "leather_boots": 3,
+                "leather_gloves": 3,
+                "obsidian_dagger": 1,
+                "obsidian_blade": 1,
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "available_companions": [
+                "karnak",
+                "serji",
+                "red_peony",
+                "raktamatta",
+                "jawbreaker",
+                "tejasimha",
+                "water_lily",
+                "dvijihva",
+                "yaga_mataji",
+                "niyamendra",
+                "leraya",
+                "samvibrahmi",
+                "vayuvega",
+                "angulimala",
+                "kanjus",
+                "sarpatailaka",
+                "shiny_needle",
+                "princess_spiderface",
+                "sineater_thirteen",
+                "dyutapati",
+                "coolhead_hotblood",
+                "ayurmangala",
+                "amlamarjari",
+                "vimohini"
+            ]
+        },
+        "hell_town_magic": {
+            "name": "Town",
+            "type": "town",
+            "description": "A settlement that has drawn more than its share of sorcerers and wandering scholars. The apothecary is always busy.",
+            "price_modifier": 1.15,
+            "buys_items": true,
+            "items": {
+                "raw_reagents": 8,
+                "alchemists_pouch": 3,
+                "prayer_beads": 2,
+                "oak_staff": 1,
+                "cloth_robe": 2,
+                "cloth_hood": 2,
+                "rations": 5,
+                "herb_bundle": 5,
+                "scroll_magic_missile": 1,
+                "scroll_voidbolt": 1,
+                "scroll_slow": 1,
+                "bone_dagger": 2,
+                "fire_charm_common": 2,
+                "black_charm_common": 2,
+                "sorcery_charm_common": 2,
+                "white_charm_common": 1,
+                "earth_charm_common": 1
+            },
+            "spells": [
+                "firebolt",
+                "lesser_heal",
+                "magic_missile",
+                "gloom",
+                "curse",
+                "blink"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "available_companions": [
+                "karnak",
+                "serji",
+                "red_peony",
+                "raktamatta",
+                "jawbreaker",
+                "tejasimha",
+                "water_lily",
+                "dvijihva",
+                "yaga_mataji",
+                "niyamendra",
+                "leraya",
+                "samvibrahmi",
+                "vayuvega",
+                "angulimala",
+                "kanjus",
+                "sarpatailaka",
+                "shiny_needle",
+                "princess_spiderface",
+                "sineater_thirteen",
+                "dyutapati",
+                "coolhead_hotblood",
+                "ayurmangala",
+                "amlamarjari",
+                "vimohini"
+            ]
+        },
+        "hell_town_supplies": {
+            "name": "Town",
+            "type": "town",
+            "description": "A trading post that survives on practicality. The sign reads: FOOD. TOOLS. NO CREDIT. It is the most honest thing you have seen in hell.",
+            "price_modifier": 1.05,
+            "buys_items": true,
+            "items": {
+                "rations": 12,
+                "travel_provisions": 5,
+                "herb_bundle": 8,
+                "raw_reagents": 5,
+                "alchemists_pouch": 2,
+                "leather_vest": 2,
+                "leather_boots": 3,
+                "leather_gloves": 3,
+                "health_potion": 3,
+                "mana_potion": 2,
+                "scrap_metal": 8,
+                "salvage_kit": 3,
+                "bone_dagger": 2
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "available_companions": [
+                "karnak",
+                "serji",
+                "red_peony",
+                "raktamatta",
+                "jawbreaker",
+                "tejasimha",
+                "water_lily",
+                "dvijihva",
+                "yaga_mataji",
+                "niyamendra",
+                "leraya",
+                "samvibrahmi",
+                "vayuvega",
+                "angulimala",
+                "kanjus",
+                "sarpatailaka",
+                "shiny_needle",
+                "princess_spiderface",
+                "sineater_thirteen",
+                "dyutapati",
+                "coolhead_hotblood",
+                "ayurmangala",
+                "amlamarjari",
+                "vimohini"
+            ]
+        },
+        "hell_sacred_grove": {
+            "name": "Sacred Grove",
+            "type": "spell_guild",
+            "description": "The dappled light streaming through the dense canopy seems like living gold. The Yakshas and Yakshinis come to commune with their followers in this place, marked with colored ropes on the tree trunks and prayer flags hanging from the branches.",
+            "price_modifier": 1.15,
+            "buys_items": false,
+            "guild_school": "Earth",
+            "guild_max_tier": 3,
+            "items": {
+                "herb_bundle": 5,
+                "raw_reagents": 4,
+                "oak_staff": 1,
+                "rations": 5,
+                "earth_charm_common": 2,
+                "earth_charm_middling": 1,
+                "plain_gold_dorje": 3,
+                "plain_gold_drilbu": 2,
+                "blessed_gold_dorje": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hell_temple_of_the_naga": {
+            "name": "Temple of the Naga",
+            "type": "spell_guild",
+            "description": "In every world some beings are born innately attuned to the mindstreams of the Naga. Temples arise where they practice, communing with their reptilian friends and patrons through offerings of saffron milk, fruits and flowers.",
+            "price_modifier": 1.15,
+            "buys_items": false,
+            "guild_school": "Water",
+            "guild_max_tier": 3,
+            "items": {
+                "mana_potion": 3,
+                "herb_bundle": 4,
+                "cloth_robe": 1,
+                "rations": 5,
+                "water_charm_common": 2,
+                "earth_charm_common": 1,
+                "white_charm_common": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hell_garuda_roost": {
+            "name": "Garuda Roost",
+            "type": "spell_guild",
+            "description": "A tall pole with a horned symbol at the top rises from the ground, sacred stones and offerings heaped at its base, colorful ribbons fluttering in the wind. The worshippers say the Garudas come to perch at the top during their long travels.",
+            "price_modifier": 1.2,
+            "buys_items": false,
+            "guild_school": "Air",
+            "guild_max_tier": 3,
+            "items": {
+                "prayer_beads": 3,
+                "cloth_robe": 1,
+                "rations": 5,
+                "air_charm_common": 2,
+                "air_charm_middling": 1,
+                "plain_iron_dorje": 3,
+                "plain_iron_drilbu": 2,
+                "blessed_iron_dorje": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hell_hidden_gompa": {
+            "name": "Hidden Gompa",
+            "type": "spell_guild",
+            "description": "Practitioners come to this place seeking solitude and peace. The ground itself vibrates with the power of their meditation, mantric syllables appearing spontaneously in the rock.",
+            "price_modifier": 1.2,
+            "buys_items": false,
+            "guild_school": "Space",
+            "guild_max_tier": 3,
+            "items": {
+                "prayer_beads": 4,
+                "raw_reagents": 3,
+                "rations": 5,
+                "white_charm_common": 2,
+                "white_charm_middling": 1,
+                "space_charm_common": 1,
+                "plain_bronze_dorje": 2,
+                "plain_bronze_drilbu": 2,
+                "blessed_bronze_dorje": 1,
+                "blessed_bronze_drilbu": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hell_mirror_lake": {
+            "name": "Mirror Lake",
+            "type": "spell_guild",
+            "description": "Mirages flicker over the mercurial surface of the lake. Followers of the Goddess of Illusion gather around, meditating on the fleeting nature of phenomena and exchanging stories of their dreams.",
+            "price_modifier": 1.25,
+            "buys_items": false,
+            "guild_school": "Enchantment",
+            "guild_max_tier": 3,
+            "items": {
+                "prayer_beads": 3,
+                "cloth_hood": 1,
+                "rations": 5,
+                "space_charm_common": 2,
+                "water_charm_common": 1,
+                "plain_silver_dorje": 3,
+                "plain_silver_drilbu": 2,
+                "blessed_silver_dorje": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hell_crossroads_stupa": {
+            "name": "Crossroads Stupa",
+            "type": "spell_guild",
+            "description": "The wind carries the smell of sacred juniper smoke and sacrificial wine far from this place. As you come closer, you see little heaps of tormas and butter lamps, some still burning.",
+            "price_modifier": 1.2,
+            "buys_items": false,
+            "guild_school": "Summoning",
+            "guild_max_tier": 3,
+            "items": {
+                "raw_reagents": 6,
+                "prayer_beads": 2,
+                "rations": 5,
+                "plain_iron_phurba": 2,
+                "plain_copper_phurba": 2,
+                "blessed_iron_phurba": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hell_circle_of_yoginis": {
+            "name": "Circle of the Yoginis",
+            "type": "spell_guild",
+            "description": "The inward-facing side of this circular stone wall is carved with the bizarre forms of sixty four Yoginis. There is no ceiling, so the witches can land when they come flying from vast space to meet their earthly sisters.",
+            "price_modifier": 1.2,
+            "buys_items": false,
+            "guild_school": "Sorcery",
+            "guild_max_tier": 3,
+            "items": {
+                "raw_reagents": 5,
+                "prayer_beads": 2,
+                "cloth_robe": 1,
+                "rations": 5,
+                "summoning_charm_common": 2,
+                "enchantment_charm_common": 2,
+                "summoning_charm_middling": 1,
+                "plain_bone_kangling": 3,
+                "plain_iron_kangling": 2,
+                "blessed_bone_kangling": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hell_medicinal_garden": {
+            "name": "Medicinal Garden",
+            "type": "spell_guild",
+            "description": "The air is vibrant with the aroma of medicinal herbs and flowers. The healers cultivating them are happy to share some of their knowledge for the benefit of all suffering beings.",
+            "price_modifier": 1.15,
+            "buys_items": false,
+            "guild_school": "White",
+            "guild_max_tier": 3,
+            "items": {
+                "herb_bundle": 8,
+                "health_potion": 3,
+                "prayer_beads": 3,
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hell_eternal_fire": {
+            "name": "Temple of the Eternal Fire",
+            "type": "spell_guild",
+            "description": "Priests clad in white robes have been guarding the sacred fire since time immemorial. Many come to pay their respects and seek visions in the dancing flames.",
+            "price_modifier": 1.25,
+            "buys_items": false,
+            "guild_school": "Fire",
+            "guild_max_tier": 3,
+            "items": {
+                "fire_bomb": 3,
+                "flame_oil": 4,
+                "ember_core": 2,
+                "rations": 5,
+                "fire_charm_common": 3,
+                "fire_charm_middling": 1,
+                "plain_copper_dorje": 3,
+                "plain_copper_drilbu": 2,
+                "blessed_copper_dorje": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hell_black_lodge": {
+            "name": "Black Lodge",
+            "type": "spell_guild",
+            "description": "The entrance is half-buried in the earth, marked only with a crooked khatvanga topped with a skull and streaming black ribbons reeking of smoke and poison. As you enter, the darkness overwhelms you - until you notice the glint of a sneering smile.",
+            "price_modifier": 1.3,
+            "buys_items": false,
+            "guild_school": "Black",
+            "guild_max_tier": 3,
+            "items": {
+                "poison_bomb": 3,
+                "alchemists_pouch": 3,
+                "raw_reagents": 5,
+                "rations": 5,
+                "black_charm_common": 2,
+                "black_charm_middling": 1,
+                "sorcery_charm_common": 2,
+                "fire_charm_common": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hg_bone_merchant": {
+            "name": "Bone Merchant",
+            "type": "general",
+            "description": "A skeleton trader squats among the dry graves, its jaw clicking as it counts coins with bony fingers. The wares are crude but functional \u2014 carved from the bones of those who no longer need them.",
+            "price_modifier": 1.1,
+            "buys_items": true,
+            "items": {
+                "bone_sword": 2,
+                "bone_dagger": 2,
+                "bone_club": 2,
+                "leather_vest": 2,
+                "health_potion": 5,
+                "rations": 3,
+                "herb_bundle": 3
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hg_charnel_sorcerer": {
+            "name": "Charnel Sorcerer",
+            "type": "spell_trainer",
+            "description": "A vetala perches atop a crumbling funerary monument, its stolen body draped in rotting silk. It trades in dark knowledge \u2014 curses, poisons, and the thin art of pulling life from the dying.",
+            "price_modifier": 1.3,
+            "buys_items": false,
+            "items": {
+                "rations": 5,
+                "black_charm_common": 2,
+                "black_charm_middling": 1,
+                "black_charm_rare": 1,
+                "water_charm_common": 2,
+                "water_charm_middling": 1,
+                "plain_bone_khatvanga": 2,
+                "plain_bone_phurba": 2,
+                "blessed_bone_khatvanga": 1
+            },
+            "spells": [
+                "curse",
+                "gloom",
+                "poison_sting",
+                "life_drain",
+                "lesser_heal"
+            ],
+            "training": {
+                "attributes": [
+                    "focus",
+                    "awareness"
+                ],
+                "skills": [
+                    "black_magic",
+                    "water_magic"
+                ]
+            }
+        },
+        "hg_wandering_preta": {
+            "name": "Wandering Preta",
+            "type": "general",
+            "description": "A gaunt, distended figure with a neck like a needle and a belly like a drum. It clutches its wares with desperate hands, willing to trade food for almost anything \u2014 though it can never eat enough to be satisfied.",
+            "price_modifier": 0.9,
+            "buys_items": true,
+            "items": {
+                "rations": 8,
+                "herb_bundle": 5,
+                "health_potion": 3,
+                "antidote": 3,
+                "raw_reagents": 2,
+                "white_charm_common": 1,
+                "earth_charm_common": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hg_teahouse": {
+            "name": "The Last Cup",
+            "type": "teahouse",
+            "description": "A lantern glows faintly above a low doorway carved into a burial mound. Inside, a quiet figure brews tea from dried flowers that grow only on graves. The dead do not drink, but the living are welcome to rest.",
+            "price_modifier": 1.0,
+            "buys_items": false,
+            "items": {
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "available_companions": [
+                "tsering",
+                "rasabhava",
+                "saka",
+                "mehr",
+                "vilasa",
+                "marmajna",
+                "kripana",
+                "yasha",
+                "nurse_bones",
+                "hustle_bones",
+                "iron_oath",
+                "the_chronicler",
+                "nyingje",
+                "shantipala",
+                "peldon",
+                "prashan",
+                "temba",
+                "durvasa",
+                "gomchen",
+                "choki",
+                "nangwa",
+                "drupchen",
+                "khedrup"
+            ],
+            "rest": {
+                "teapot_cost": 30,
+                "teapot_restore_pct": 50,
+                "night_cost": 80,
+                "night_restore_pct": 100,
+                "teapot_food": 10,
+                "night_food": 25
+            }
+        },
+        "hg_town_weapons": {
+            "name": "Crossbones Armory",
+            "type": "town",
+            "description": "A squat stone building marked with crossed femurs above the door. The smith inside is alive \u2014 barely \u2014 and forges weapons from scavenged iron and whatever the gravediggers bring in.",
+            "price_modifier": 1.15,
+            "buys_items": true,
+            "items": {
+                "iron_sword": 1,
+                "iron_khanda": 2,
+                "iron_dao": 1,
+                "iron_patisa": 1,
+                "iron_axe": 2,
+                "iron_mace": 2,
+                "iron_dagger": 2,
+                "hunting_bow": 1,
+                "chainmail": 2,
+                "leather_vest": 3,
+                "iron_shield": 1,
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": [
+                    "swords",
+                    "axes",
+                    "maces",
+                    "armor"
+                ]
+            },
+            "available_companions": [
+                "tsering",
+                "rasabhava",
+                "saka",
+                "mehr",
+                "vilasa",
+                "marmajna",
+                "kripana",
+                "yasha",
+                "nurse_bones",
+                "hustle_bones",
+                "iron_oath",
+                "the_chronicler",
+                "nyingje",
+                "shantipala",
+                "peldon",
+                "prashan",
+                "temba",
+                "durvasa",
+                "gomchen",
+                "choki",
+                "nangwa",
+                "drupchen",
+                "khedrup"
+            ]
+        },
+        "hg_town_magic": {
+            "name": "Whispering Shrine",
+            "type": "town",
+            "description": "Faded prayer flags hang from a cracked shrine where the boundary between the living and dead has worn thin. The priests here teach what they remember of the old arts \u2014 healing and hexing in equal measure.",
+            "price_modifier": 1.2,
+            "buys_items": false,
+            "items": {
+                "rations": 5,
+                "white_charm_common": 2,
+                "black_charm_common": 2,
+                "white_charm_middling": 1,
+                "earth_charm_common": 1,
+                "water_charm_common": 1,
+                "plain_bronze_dorje": 2,
+                "plain_copper_damaru": 2,
+                "plain_iron_kangling": 1
+            },
+            "spells": [
+                "lesser_heal",
+                "cure",
+                "bless",
+                "curse",
+                "gloom",
+                "poison_sting",
+                "bark_skin",
+                "ice_bolt"
+            ],
+            "training": {
+                "attributes": [
+                    "focus",
+                    "awareness"
+                ],
+                "skills": [
+                    "white_magic",
+                    "black_magic",
+                    "water_magic",
+                    "earth_magic"
+                ]
+            },
+            "available_companions": [
+                "tsering",
+                "rasabhava",
+                "saka",
+                "mehr",
+                "vilasa",
+                "marmajna",
+                "kripana",
+                "yasha",
+                "nurse_bones",
+                "hustle_bones",
+                "iron_oath",
+                "the_chronicler",
+                "nyingje",
+                "shantipala",
+                "peldon",
+                "prashan",
+                "temba",
+                "durvasa",
+                "gomchen",
+                "choki",
+                "nangwa",
+                "drupchen",
+                "khedrup"
+            ]
+        },
+        "hg_town_supplies": {
+            "name": "Gravedigger's Supply",
+            "type": "town",
+            "description": "A practical establishment run by those who tend to the dead for a living. The shelves are well stocked \u2014 people always need supplies in a land where nothing grows.",
+            "price_modifier": 1.0,
+            "buys_items": true,
+            "items": {
+                "rations": 10,
+                "travel_provisions": 5,
+                "herb_bundle": 8,
+                "health_potion": 5,
+                "mana_potion": 3,
+                "antidote": 5,
+                "raw_reagents": 3,
+                "scrap_metal": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "available_companions": [
+                "tsering",
+                "rasabhava",
+                "saka",
+                "mehr",
+                "vilasa",
+                "marmajna",
+                "kripana",
+                "yasha",
+                "nurse_bones",
+                "hustle_bones",
+                "iron_oath",
+                "the_chronicler",
+                "nyingje",
+                "shantipala",
+                "peldon",
+                "prashan",
+                "temba",
+                "durvasa",
+                "gomchen",
+                "choki",
+                "nangwa",
+                "drupchen",
+                "khedrup"
+            ]
+        },
+        "hg_mercenary_guild": {
+            "name": "Undertakers' Lodge",
+            "type": "mercenary_guild",
+            "description": "A fortified charnel house where the realm's hired fighters gather between jobs. They call themselves undertakers \u2014 they put things in the ground, one way or another.",
+            "price_modifier": 1.1,
+            "buys_items": false,
+            "accepted_item_types": [
+                "weapon",
+                "armor",
+                "shield"
+            ],
+            "items": {
+                "bronze_sword": 2,
+                "bronze_talwar": 2,
+                "bronze_dao": 1,
+                "bronze_dagger": 3,
+                "bronze_axe": 2,
+                "bronze_mace": 2,
+                "bronze_spear": 2,
+                "iron_sword": 1,
+                "iron_khanda": 1,
+                "iron_dao": 1,
+                "short_bow": 2,
+                "leather_vest": 3,
+                "padded_armor": 2,
+                "leather_boots": 3,
+                "leather_gloves": 3,
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "available_companions": [
+                "tsering",
+                "rasabhava",
+                "saka",
+                "mehr",
+                "vilasa",
+                "marmajna",
+                "kripana",
+                "yasha",
+                "nurse_bones",
+                "hustle_bones",
+                "iron_oath",
+                "the_chronicler",
+                "nyingje",
+                "shantipala",
+                "peldon",
+                "prashan",
+                "temba",
+                "durvasa",
+                "gomchen",
+                "choki",
+                "nangwa",
+                "drupchen",
+                "khedrup"
+            ]
+        },
+        "hg_veterans_camp": {
+            "name": "The Old Guard",
+            "type": "veteran_camp",
+            "description": "A ring of tents around a guttering fire, where warriors who have survived the hungry ghost realm long enough gather to share what they know. Their eyes have the hollow look of those who have seen too much decay.",
+            "price_modifier": 1.0,
+            "buys_items": false,
+            "items": {
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "available_companions": [
+                "tsering",
+                "rasabhava",
+                "saka",
+                "mehr",
+                "vilasa",
+                "marmajna",
+                "kripana",
+                "yasha",
+                "nurse_bones",
+                "hustle_bones",
+                "iron_oath",
+                "the_chronicler",
+                "nyingje",
+                "shantipala",
+                "peldon",
+                "prashan",
+                "temba",
+                "durvasa",
+                "gomchen",
+                "choki",
+                "nangwa",
+                "drupchen",
+                "khedrup"
+            ]
+        },
+        "hg_alchemist": {
+            "name": "The Dr\u00e9 Herbalist",
+            "type": "alchemist",
+            "description": "A dr\u00e9 ghost crouches behind a folding table heaped with dried herbs, stoppered gourds, and bundles of something that smells like incense and rot. Its robes are stuffed so full of plant matter that it looks like a walking thicket. It speaks in a dry rasp and seems to genuinely enjoy its trade.",
+            "price_modifier": 0.9,
+            "buys_items": true,
+            "items": {
+                "health_potion": 4,
+                "mana_potion": 3,
+                "antidote": 3,
+                "smelling_salts": 2,
+                "healing_herb": 5,
+                "ghost_pepper": 4,
+                "spirit_salt": 3,
+                "bone_dust": 4,
+                "firebomb": 2,
+                "smoke_bomb": 2,
+                "acid_flask": 2,
+                "rations": 4,
+                "fire_charm_common": 2,
+                "earth_charm_common": 2,
+                "water_charm_common": 2
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": [
+                    "alchemy",
+                    "medicine"
+                ]
+            }
+        },
+        "hg_black_market": {
+            "name": "The Smuggler's Alcove",
+            "type": "general",
+            "description": "A low tunnel behind a false wall, lit by a single floating ember. The figure inside won't show its face. It trades in things that shouldn't have made it into the hungry ghost realm \u2014 quality ironwork, foreign medicines, a few items with the smell of other worlds still on them. Prices reflect the difficulty of getting anything here at all.",
+            "price_modifier": 1.5,
+            "buys_items": true,
+            "items": {
+                "steel_khanda": 1,
+                "steel_talwar": 1,
+                "steel_dao": 1,
+                "iron_katar": 1,
+                "steel_katar": 1,
+                "composite_bow": 1,
+                "chainmail": 1,
+                "lamellar_armor": 1,
+                "iron_helmet": 1,
+                "travelers_amulet": 1,
+                "iron_ring": 1,
+                "steel_ring": 1,
+                "health_potion": 2,
+                "mana_potion": 2,
+                "antidote": 2,
+                "whetstone_oil": 2,
+                "sovereign_oil": 1,
+                "fire_charm_rare": 1,
+                "black_charm_rare": 1,
+                "space_charm_rare": 1,
+                "sorcery_charm_rare": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hg_spell_shop": {
+            "name": "The Bone Library",
+            "type": "spell_trainer",
+            "description": "A sorcerer-ghost has assembled a collection of sutras and grimoires, most of them water-stained or singed at the edges, all of them legible to those with the patience to study. It charges for access by the session \u2014 a small candle's worth of time per spell \u2014 and answers no questions that aren't paid for.",
+            "price_modifier": 1.1,
+            "buys_items": false,
+            "items": {
+                "white_charm_common": 2,
+                "white_charm_middling": 1,
+                "black_charm_common": 2,
+                "black_charm_middling": 1,
+                "space_charm_common": 2,
+                "space_charm_middling": 1,
+                "sorcery_charm_common": 2,
+                "sorcery_charm_middling": 1,
+                "enchantment_charm_common": 1,
+                "summoning_charm_common": 1,
+                "plain_conch_dorje": 2,
+                "plain_bone_khatvanga": 2,
+                "plain_iron_phurba": 2,
+                "blessed_conch_dorje": 1
+            },
+            "spells": [
+                "minor_heal",
+                "bless",
+                "slow",
+                "weaken",
+                "bone_spear",
+                "raise_skeleton",
+                "hunger_curse",
+                "corpse_explosion",
+                "ghost_touch",
+                "soul_siphon",
+                "binding_shadows",
+                "mana_drain"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": [
+                    "white_magic",
+                    "black_magic",
+                    "sorcery",
+                    "ritual"
+                ]
+            }
+        },
+        "infernal_forge": {
+            "name": "Infernal Forge",
+            "type": "blacksmith",
+            "description": "Heat-warped iron, a bone-white anvil, and a demon who hasn't slept in three hundred years. The weapons here are ugly and they work.",
+            "price_modifier": 1.15,
+            "buys_items": true,
+            "accepted_item_types": [
+                "weapon",
+                "armor",
+                "shield"
+            ],
+            "items": {
+                "iron_sword": 1,
+                "iron_khanda": 1,
+                "iron_dao": 1,
+                "iron_patisa": 1,
+                "steel_longsword": 1,
+                "steel_talwar": 1,
+                "steel_dao": 1,
+                "iron_axe": 3,
+                "iron_mace": 2,
+                "wooden_spear": 1,
+                "chainmail": 1,
+                "good_iron_armor": 1,
+                "iron_helmet": 1,
+                "iron_shield": 2,
+                "leather_vest": 1,
+                "leather_boots": 1,
+                "scrap_metal": 8,
+                "salvage_kit": 3,
+                "flame_oil": 2,
+                "whetstone_oil": 2,
+                "sovereign_oil": 1,
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [
+                    "strength"
+                ],
+                "skills": [
+                    "axes",
+                    "maces",
+                    "might"
+                ],
+                "max_skill_level": 6
+            }
+        },
+        "bone_archer_camp": {
+            "name": "Bone Archer Camp",
+            "type": "fletcher",
+            "description": "A fortified camp of skeleton archers who've been here long enough to start trading. Their fletching is excellent. Their interpersonal skills are not.",
+            "price_modifier": 1.1,
+            "buys_items": true,
+            "accepted_item_types": [
+                "weapon",
+                "armor"
+            ],
+            "items": {
+                "short_bow": 2,
+                "hunting_bow": 2,
+                "longbow": 1,
+                "iron_dagger": 3,
+                "throwing_knife": 5,
+                "leather_vest": 2,
+                "leather_cap": 2,
+                "leather_boots": 2,
+                "leather_gloves": 2,
+                "scrap_metal": 5,
+                "smoke_bomb": 2,
+                "flashbang": 2,
+                "frost_bomb": 1,
+                "poison_bomb": 1,
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [
+                    "finesse"
+                ],
+                "skills": [
+                    "ranged",
+                    "daggers",
+                    "guile"
+                ],
+                "max_skill_level": 5
+            }
+        },
+        "mercy_ward": {
+            "name": "Mercy Ward",
+            "type": "healer",
+            "description": "A tent with clean bandages, a smell of herbs, and a medic who patches up anyone who can pay \u2014 no questions, no karma, no judgment. In hell this is rare enough to be miraculous.",
+            "price_modifier": 1.0,
+            "buys_items": false,
+            "items": {
+                "health_potion": 4,
+                "greater_health_potion": 2,
+                "mana_potion": 2,
+                "antidote": 3,
+                "cure_all": 2,
+                "stamina_tonic": 2,
+                "herb_bundle": 5,
+                "apothecary_pouch": 2,
+                "scroll_cure": 2,
+                "rations": 5
+            },
+            "spells": [
+                "lesser_heal",
+                "greater_heal",
+                "cure",
+                "regeneration",
+                "bless"
+            ],
+            "training": {
+                "attributes": [
+                    "constitution"
+                ],
+                "skills": [
+                    "medicine"
+                ],
+                "max_skill_level": 5
+            }
+        },
+        "brimstone_lab": {
+            "name": "Brimstone Lab",
+            "type": "alchemist",
+            "description": "A rickety structure of cracked glass and boiling tubes. The alchemist here has survived seventeen explosions. This gives them a certain confidence.",
+            "price_modifier": 1.2,
+            "buys_items": false,
+            "items": {
+                "health_potion": 2,
+                "mana_potion": 2,
+                "fire_bomb": 3,
+                "frost_bomb": 2,
+                "poison_bomb": 2,
+                "acid_bomb": 2,
+                "thunder_bomb": 1,
+                "smoke_bomb": 3,
+                "flashbang": 2,
+                "flame_oil": 2,
+                "frost_oil": 2,
+                "poison_oil": 2,
+                "holy_oil": 1,
+                "acid_flask": 2,
+                "raw_reagents": 8,
+                "alchemists_pouch": 3,
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [
+                    "awareness"
+                ],
+                "skills": [
+                    "alchemy"
+                ]
+            }
+        },
+        "wardens_pit": {
+            "name": "Warden's Pit",
+            "type": "skill_trainer",
+            "description": "The pit warden runs the eastern patrols and teaches her soldiers to fight. For coin she'll train outsiders too \u2014 up to a point. She has standards.",
+            "price_modifier": 1.05,
+            "buys_items": false,
+            "items": {
+                "wooden_spear": 2,
+                "chainmail": 1,
+                "leather_vest": 2,
+                "iron_shield": 1,
+                "scrap_metal": 4,
+                "rations": 5
+            },
+            "spells": [],
+            "training": {
+                "attributes": [
+                    "strength",
+                    "constitution"
+                ],
+                "skills": [
+                    "spears",
+                    "armor",
+                    "might"
+                ],
+                "max_skill_level": 5
+            }
+        },
+        "steam_domain_shop": {
+            "name": "Secrets of the Bathhouse",
+            "type": "domain_spell_trainer",
+            "description": "The old frog settles onto the edge of the pool, pours two cups of tea, and begins to talk. What it knows about steam and the place where water meets fire cannot be found in any guild.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "steam_jet",
+                "fragrant_sauna",
+                "geyser",
+                "scalding_fog"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "rainbow_domain_shop": {
+            "name": "Teachings of the Skygazing Gompa",
+            "type": "domain_spell_trainer",
+            "description": "The yogi shares what they know of the rainbow body and the prismatic nature of mind. These spells cannot be found in any guild.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "rainbow_orb",
+                "rainbow_spray",
+                "vision_of_reality",
+                "rainbow_cloak"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "tummo_domain_shop": {
+            "name": "The Hermit's Fire",
+            "type": "domain_spell_trainer",
+            "description": "The hermit teaches the inner fire \u2014 the heat that blazes upward from the secret chakra and melts the crown. These practices cannot be found in any guild.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "inner_flame",
+                "heat_transfer",
+                "flash_of_radiance",
+                "blazing_and_dripping"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "luminosity_domain_shop": {
+            "name": "Teachings of the Dark Cave",
+            "type": "domain_spell_trainer",
+            "description": "The unseen teacher shares what they know of the clear light. These practices cannot be found in any guild.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "clear_mind",
+                "divine_eye",
+                "radiant_visage",
+                "shining_mirage"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "sound_domain_shop": {
+            "name": "The Gandharva's Gift",
+            "type": "domain_spell_trainer",
+            "description": "The gandharva prince teaches the art of sound \u2014 mantra, resonance, and the spaces between notes. These arts cannot be found in any guild.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "battle_chant",
+                "eerie_dirge",
+                "sonic_boom",
+                "up_to_eleven"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "hg_black_lodge": {
+            "name": "Black Lodge",
+            "type": "spell_guild",
+            "description": "A mound of bones marks the entrance, a khatvanga hung with a skull and black silk. Inside, something moves that may not be fully alive. It knows what you want.",
+            "price_modifier": 1.3,
+            "buys_items": false,
+            "guild_school": "Black",
+            "guild_max_tier": 3,
+            "items": {
+                "poison_bomb": 2,
+                "alchemists_pouch": 3,
+                "raw_reagents": 5,
+                "rations": 5,
+                "black_charm_common": 2,
+                "black_charm_middling": 1,
+                "plain_bone_khatvanga": 2,
+                "plain_bone_phurba": 2,
+                "blessed_bone_khatvanga": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hg_circle_of_yoginis": {
+            "name": "Circle of the Yoginis",
+            "type": "spell_guild",
+            "description": "Sixty-four forms carved into standing bones, forming a ring on the charnel ground. The earth inside is worn smooth by countless ritual footprints. The witches still come.",
+            "price_modifier": 1.2,
+            "buys_items": false,
+            "guild_school": "Sorcery",
+            "guild_max_tier": 3,
+            "items": {
+                "raw_reagents": 5,
+                "prayer_beads": 2,
+                "cloth_robe": 1,
+                "rations": 5,
+                "summoning_charm_common": 2,
+                "enchantment_charm_common": 2,
+                "summoning_charm_middling": 1,
+                "plain_bone_kangling": 3,
+                "plain_iron_kangling": 2,
+                "blessed_bone_kangling": 1
+            },
+            "spells": [],
+            "training": {
+                "attributes": [],
+                "skills": []
+            }
+        },
+        "hg_crossroads_stupa": {
+            "name": "Crossroads Stupa",
+            "type": "domain_spell_trainer",
+            "description": "At the intersection of the ancient paths, a stupa rises from layers of offerings \u2014 skulls, prayer flags, bones wrapped in cloth. The practitioners here call back what has been lost.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "zombie",
+                "skeleton",
+                "vetala",
+                "skeleton_troop"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "hg_hidden_gompa": {
+            "name": "Hidden Gompa",
+            "type": "domain_spell_trainer",
+            "description": "A small monastery sits undisturbed between the burial grounds, its walls marked with painted eyes. The monks here practice for the benefit of all beings caught between lives.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "shimmer",
+                "freedom",
+                "sanctuary",
+                "invulnerability"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "hg_mirror_lake": {
+            "name": "Mirror Lake",
+            "type": "domain_spell_trainer",
+            "description": "The surface of the lake reflects not the sky but something else \u2014 other realms, other moments. Practitioners sit at its edge, learning to bend what is seen.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "chameleon",
+                "blur",
+                "invisibility",
+                "magic_mirror"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "hg_sacred_grove": {
+            "name": "Sacred Grove",
+            "type": "domain_spell_trainer",
+            "description": "A stand of ancient trees whose roots grow through charnel earth. Offerings of food hang from the branches \u2014 the hungry ghosts can smell them but cannot eat. Practitioners here speak to both the living and the dead.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "converse_with_the_dead",
+                "ancestral_spirit",
+                "lifelink",
+                "ancestral_guardian"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "hg_temple_of_the_naga": {
+            "name": "Temple of the Naga",
+            "type": "domain_spell_trainer",
+            "description": "A low temple built around a black-water pool. The nagas who dwell in such pools are guardians of the dead. Their human followers leave milk offerings at the water's edge and learn what the serpents are willing to teach.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "frog",
+                "naga",
+                "ice_totem",
+                "naga_host"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "crystal_domain_shop": {
+            "name": "Crystal Cave",
+            "type": "domain_spell_trainer",
+            "description": "Where earth is compressed to perfection by space, crystal grows \u2014 ordered, resonant, and perfectly transparent. The formations here focus light and awareness to a razor edge.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "scattered_light",
+                "crystal_guardian",
+                "crystal_diadem",
+                "crystal_light"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "glass_domain_shop": {
+            "name": "Glass Mountain",
+            "type": "domain_spell_trainer",
+            "description": "Where earth is seized by air and made impossibly thin, glass is born \u2014 transparent, silent, and lethal when broken. What can be learned here punishes the careless and rewards precision.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "glass_shard",
+                "powdered_glass",
+                "globe_of_glass",
+                "glass_mine"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "smoke_domain_shop": {
+            "name": "The Smoking Mirror",
+            "type": "domain_spell_trainer",
+            "description": "Where fire meets earth, smoke is born \u2014 neither solid nor flame, a thing between states. The mirror shows not the world but what the world hides. What is taught here lingers like smoke.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "smoke_cloud",
+                "smoke_imp",
+                "choking_smoke",
+                "smoke_form"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "mud_domain_shop": {
+            "name": "The Pit",
+            "type": "domain_spell_trainer",
+            "description": "Where earth and water meet without ceremony, mud is born \u2014 patient, heavy, and suffocating. What can be learned here endures and smothers. It is not elegant. It does not need to be.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "mudling",
+                "metal_to_mud",
+                "rain_of_mud",
+                "mindmuck"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        },
+        "cloud_domain_shop": {
+            "name": "Songs of the Cloud Nagas",
+            "type": "domain_spell_trainer",
+            "description": "The nagas coil around you, humming in their deep rain-voices. What they know of cloud and sky and the space between water and air cannot be found in any guild \u2014 and will not be offered twice.",
+            "price_modifier": 1.5,
+            "buys_items": false,
+            "items": {},
+            "spells": [
+                "cloudstep",
+                "cloudform",
+                "cloud_serpent",
+                "cloud_gate"
+            ],
+            "training": {
+                "attributes": [],
+                "skills": []
+            },
+            "tabs": [
+                "spells"
+            ]
+        }
     },
-    "demon_sorcerer": {
-      "name": "Infernal Magister",
-      "type": "spell_trainer",
-      "description": "A powerful demon who teaches the dark arts... for a price.",
-      "price_modifier": 1.3,
-      "buys_items": false,
-      "items": {
-        "wooden_staff": 1,
-        "oak_staff": 1,
-        "cloth_robe": 2,
-        "cloth_hood": 2,
-        "prayer_beads": 1,
-        "raw_reagents": 5,
-        "alchemists_pouch": 2,
-        "scroll_magic_missile": 1,
-        "scroll_voidbolt": 1,
-        "scroll_slow": 1,
-        "scroll_confusion": 1,
-        "scroll_dispel": 1,
-        "rations": 5
-      },
-      "spells": [
-        "firebolt",
-        "fireball",
-        "hellfire",
-        "burning_weapon",
-        "voidbolt",
-        "life_drain",
-        "poison_sting",
-        "gloom",
-        "curse"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "wandering_sage": {
-      "name": "Wandering Sage",
-      "type": "skill_trainer",
-      "description": "A mysterious figure who can unlock your hidden potential.",
-      "price_modifier": 0.9,
-      "buys_items": false,
-      "items": {
-        "raw_reagents": 3,
-        "alchemists_pouch": 1,
-        "scroll_bless": 1,
-        "scroll_cure": 1,
-        "scroll_regeneration": 1,
-        "scroll_blink": 1
-      },
-      "spells": [
-        "lesser_heal",
-        "greater_heal",
-        "cure",
-        "bless",
-        "regeneration",
-        "magic_missile",
-        "blink"
-      ],
-      "training": {
-        "attributes": [
-          "focus",
-          "awareness"
-        ],
-        "skills": [
-          "white_magic",
-          "sorcery",
-          "yoga"
-        ],
-        "max_skill_level": 6
-      }
-    },
-    "weapon_master": {
-      "name": "Weapon Master",
-      "type": "skill_trainer",
-      "description": "A grizzled veteran who teaches combat techniques.",
-      "price_modifier": 1.1,
-      "buys_items": true,
-      "accepted_item_types": [
-        "weapon",
-        "armor",
-        "shield"
-      ],
-      "items": {
-        "bronze_sword": 2,
-        "bronze_talwar": 2,
-        "bronze_dao": 1,
-        "bronze_patisa": 1,
-        "bronze_axe": 2,
-        "bronze_mace": 2,
-        "bronze_spear": 2,
-        "iron_sword": 1,
-        "iron_khanda": 1,
-        "iron_dao": 1,
-        "iron_patisa": 1,
-        "iron_axe": 1,
-        "iron_mace": 1,
-        "wooden_spear": 2,
-        "short_bow": 2,
-        "hunting_bow": 1,
-        "bronze_dagger": 3,
-        "iron_dagger": 1,
-        "obsidian_dagger": 1,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [
-          "strength",
-          "finesse"
-        ],
-        "skills": [
-          "swords",
-          "axes",
-          "maces",
-          "spears",
-          "ranged",
-          "daggers",
-          "armor"
-        ],
-        "max_skill_level": 7
-      }
-    },
-    "frozen_merchant": {
-      "name": "Frozen Merchant",
-      "type": "general",
-      "description": "Frost-covered wares from a resilient trader in the frozen wastes.",
-      "price_modifier": 1.15,
-      "buys_items": true,
-      "items": {
-        "bone_dagger": 3,
-        "bone_sword": 2,
-        "bronze_sword": 1,
-        "bronze_talwar": 1,
-        "bronze_dao": 1,
-        "bronze_dagger": 1,
-        "leather_vest": 3,
-        "padded_armor": 2,
-        "leather_boots": 4,
-        "leather_gloves": 3,
-        "health_potion": 4,
-        "rations": 6
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "ember_merchant": {
-      "name": "Ember Merchant",
-      "type": "general",
-      "description": "Fire-forged goods from the burning half of Naraka. Everything radiates warmth.",
-      "price_modifier": 1.2,
-      "buys_items": true,
-      "items": {
-        "bone_dagger": 3,
-        "bone_sword": 2,
-        "bone_club": 2,
-        "bronze_axe": 1,
-        "bronze_dao": 1,
-        "obsidian_blade": 1,
-        "leather_vest": 3,
-        "leather_boots": 4,
-        "health_potion": 3,
-        "rations": 5,
-        "obsidian_dagger": 1
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "wandering_peddler": {
-      "name": "Wandering Peddler",
-      "type": "general",
-      "description": "Eclectic trinkets and supplies scavenged from the frozen wastes.",
-      "price_modifier": 1.3,
-      "buys_items": true,
-      "items": {
-        "bone_dagger": 2,
-        "bone_club": 1,
-        "leather_gloves": 3,
-        "leather_cap": 3,
-        "health_potion": 2,
-        "rations": 3
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "general_store": {
-      "name": "General Store",
-      "type": "mixed",
-      "description": "A well-stocked shop with a bit of everything.",
-      "price_modifier": 1.0,
-      "buys_items": true,
-      "items": {
-        "bone_dagger": 4,
-        "bone_sword": 3,
-        "bone_club": 2,
-        "bronze_sword": 2,
-        "bronze_talwar": 1,
-        "bronze_dao": 1,
-        "bronze_dagger": 2,
-        "short_bow": 2,
-        "leather_vest": 4,
-        "leather_boots": 5,
-        "leather_gloves": 4,
-        "health_potion": 4,
-        "rations": 8
-      },
-      "spells": [
-        "firebolt",
-        "ice_bolt",
-        "shocking_grasp",
-        "stone_spike",
-        "lesser_heal",
-        "magic_missile"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hell_tavern": {
-      "name": "Devil's Rest",
-      "type": "general",
-      "description": "A dim roadhouse where the desperate gather. Someone at the bar looks like they're between allegiances.",
-      "price_modifier": 1.0,
-      "buys_items": false,
-      "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
-      ],
-      "items": {
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hell_teahouse_cold": {
-      "name": "Teahouse",
-      "type": "teahouse",
-      "description": "A dim waystation where the desperate catch their breath. The barkeeper keeps a pot of Lapsang Souchong going — its smoke is the closest thing to warmth in the frozen wastes.",
-      "price_modifier": 1.2,
-      "buys_items": false,
-      "items": {
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
-      ],
-      "rest": {
-        "teapot_cost": 30,
-        "teapot_restore_pct": 50,
-        "night_cost": 80,
-        "night_restore_pct": 100,
-        "teapot_food": 10,
-        "night_food": 25
-      }
-    },
-    "hell_teahouse_fire": {
-      "name": "Teahouse",
-      "type": "teahouse",
-      "description": "The tea here is brewed in volcanic water. It tastes like char and smoke and something almost familiar. The barkeeper doesn't ask where you've been.",
-      "price_modifier": 1.2,
-      "buys_items": false,
-      "items": {
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
-      ],
-      "rest": {
-        "teapot_cost": 30,
-        "teapot_restore_pct": 50,
-        "night_cost": 80,
-        "night_restore_pct": 100,
-        "teapot_food": 10,
-        "night_food": 25
-      }
-    },
-    "hell_mercenary_guild": {
-      "name": "Mercenary Guild",
-      "type": "mercenary_guild",
-      "description": "A fortified post where demonic soldiers hire out between assignments. Their equipment is functional, their prices are fair, their loyalty is negotiable.",
-      "price_modifier": 1.1,
-      "buys_items": true,
-      "accepted_item_types": [
-        "weapon",
-        "armor",
-        "shield"
-      ],
-      "items": {
-        "bronze_sword": 2,
-        "bronze_talwar": 2,
-        "bronze_dao": 1,
-        "bronze_patisa": 1,
-        "bronze_dagger": 3,
-        "bronze_axe": 2,
-        "bronze_mace": 2,
-        "bronze_spear": 2,
-        "iron_sword": 1,
-        "iron_khanda": 1,
-        "iron_dao": 1,
-        "short_bow": 2,
-        "leather_vest": 3,
-        "padded_armor": 2,
-        "leather_boots": 3,
-        "leather_gloves": 3,
-        "obsidian_blade": 1,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
-      ]
-    },
-    "hell_veterans_camp": {
-      "name": "Veterans' Camp",
-      "type": "veteran_camp",
-      "description": "A camp of soldiers who survived long enough to have something to teach. They charge for lessons — nothing is free in hell.",
-      "price_modifier": 1.0,
-      "buys_items": false,
-      "items": {
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
-      ]
-    },
-    "hell_yogini_circle": {
-      "name": "Yogini Circle",
-      "type": "yogini_circle",
-      "description": "A circle of Dakinis — fierce, half-wild tantric practitioners. They trade knowledge for gold and ask no questions about what you plan to do with it.",
-      "price_modifier": 1.15,
-      "buys_items": false,
-      "items": {
-        "raw_reagents": 8,
-        "alchemists_pouch": 3,
-        "prayer_beads": 2,
-        "oak_staff": 1,
-        "cloth_robe": 1,
-        "cloth_hood": 1,
-        "scroll_bless": 1,
-        "scroll_magic_missile": 1,
-        "scroll_voidbolt": 1,
-        "rations": 5
-      },
-      "spells": [
-        "lesser_heal",
-        "greater_heal",
-        "bless",
-        "regeneration",
-        "magic_missile",
-        "blink",
-        "voidbolt",
-        "gloom",
-        "curse"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
-      ]
-    },
-    "hell_town_weapons": {
-      "name": "Town",
-      "type": "town",
-      "description": "A cluster of hovels that qualifies as a settlement. The main trade here is war.",
-      "price_modifier": 1.1,
-      "buys_items": true,
-      "items": {
-        "bone_dagger": 4,
-        "bone_sword": 3,
-        "bone_club": 3,
-        "bone_spear": 2,
-        "bronze_sword": 2,
-        "bronze_talwar": 1,
-        "bronze_dao": 1,
-        "bronze_patisa": 1,
-        "bronze_dagger": 2,
-        "bronze_axe": 1,
-        "bronze_mace": 1,
-        "wooden_spear": 2,
-        "short_bow": 2,
-        "leather_vest": 3,
-        "leather_boots": 3,
-        "leather_gloves": 3,
-        "obsidian_dagger": 1,
-        "obsidian_blade": 1,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
-      ]
-    },
-    "hell_town_magic": {
-      "name": "Town",
-      "type": "town",
-      "description": "A settlement that has drawn more than its share of sorcerers and wandering scholars. The apothecary is always busy.",
-      "price_modifier": 1.15,
-      "buys_items": true,
-      "items": {
-        "raw_reagents": 8,
-        "alchemists_pouch": 3,
-        "prayer_beads": 2,
-        "oak_staff": 1,
-        "cloth_robe": 2,
-        "cloth_hood": 2,
-        "rations": 5,
-        "herb_bundle": 5,
-        "scroll_magic_missile": 1,
-        "scroll_voidbolt": 1,
-        "scroll_slow": 1,
-        "bone_dagger": 2
-      },
-      "spells": [
-        "firebolt",
-        "lesser_heal",
-        "magic_missile",
-        "gloom",
-        "curse",
-        "blink"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
-      ]
-    },
-    "hell_town_supplies": {
-      "name": "Town",
-      "type": "town",
-      "description": "A trading post that survives on practicality. The sign reads: FOOD. TOOLS. NO CREDIT. It is the most honest thing you have seen in hell.",
-      "price_modifier": 1.05,
-      "buys_items": true,
-      "items": {
-        "rations": 12,
-        "travel_provisions": 5,
-        "herb_bundle": 8,
-        "raw_reagents": 5,
-        "alchemists_pouch": 2,
-        "leather_vest": 2,
-        "leather_boots": 3,
-        "leather_gloves": 3,
-        "health_potion": 3,
-        "mana_potion": 2,
-        "scrap_metal": 8,
-        "salvage_kit": 3,
-        "bone_dagger": 2
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
-      ]
-    },
-    "hell_sacred_grove": {
-      "name": "Sacred Grove",
-      "type": "spell_guild",
-      "description": "The dappled light streaming through the dense canopy seems like living gold. The Yakshas and Yakshinis come to commune with their followers in this place, marked with colored ropes on the tree trunks and prayer flags hanging from the branches.",
-      "price_modifier": 1.15,
-      "buys_items": false,
-      "guild_school": "Earth",
-      "guild_max_tier": 3,
-      "items": {
-        "herb_bundle": 5,
-        "raw_reagents": 4,
-        "oak_staff": 1,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hell_temple_of_the_naga": {
-      "name": "Temple of the Naga",
-      "type": "spell_guild",
-      "description": "In every world some beings are born innately attuned to the mindstreams of the Naga. Temples arise where they practice, communing with their reptilian friends and patrons through offerings of saffron milk, fruits and flowers.",
-      "price_modifier": 1.15,
-      "buys_items": false,
-      "guild_school": "Water",
-      "guild_max_tier": 3,
-      "items": {
-        "mana_potion": 3,
-        "herb_bundle": 4,
-        "cloth_robe": 1,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hell_garuda_roost": {
-      "name": "Garuda Roost",
-      "type": "spell_guild",
-      "description": "A tall pole with a horned symbol at the top rises from the ground, sacred stones and offerings heaped at its base, colorful ribbons fluttering in the wind. The worshippers say the Garudas come to perch at the top during their long travels.",
-      "price_modifier": 1.2,
-      "buys_items": false,
-      "guild_school": "Air",
-      "guild_max_tier": 3,
-      "items": {
-        "prayer_beads": 3,
-        "cloth_robe": 1,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hell_hidden_gompa": {
-      "name": "Hidden Gompa",
-      "type": "spell_guild",
-      "description": "Practitioners come to this place seeking solitude and peace. The ground itself vibrates with the power of their meditation, mantric syllables appearing spontaneously in the rock.",
-      "price_modifier": 1.2,
-      "buys_items": false,
-      "guild_school": "Space",
-      "guild_max_tier": 3,
-      "items": {
-        "prayer_beads": 4,
-        "raw_reagents": 3,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hell_mirror_lake": {
-      "name": "Mirror Lake",
-      "type": "spell_guild",
-      "description": "Mirages flicker over the mercurial surface of the lake. Followers of the Goddess of Illusion gather around, meditating on the fleeting nature of phenomena and exchanging stories of their dreams.",
-      "price_modifier": 1.25,
-      "buys_items": false,
-      "guild_school": "Enchantment",
-      "guild_max_tier": 3,
-      "items": {
-        "prayer_beads": 3,
-        "cloth_hood": 1,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hell_crossroads_stupa": {
-      "name": "Crossroads Stupa",
-      "type": "spell_guild",
-      "description": "The wind carries the smell of sacred juniper smoke and sacrificial wine far from this place. As you come closer, you see little heaps of tormas and butter lamps, some still burning.",
-      "price_modifier": 1.2,
-      "buys_items": false,
-      "guild_school": "Summoning",
-      "guild_max_tier": 3,
-      "items": {
-        "raw_reagents": 6,
-        "prayer_beads": 2,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hell_circle_of_yoginis": {
-      "name": "Circle of the Yoginis",
-      "type": "spell_guild",
-      "description": "The inward-facing side of this circular stone wall is carved with the bizarre forms of sixty four Yoginis. There is no ceiling, so the witches can land when they come flying from vast space to meet their earthly sisters.",
-      "price_modifier": 1.2,
-      "buys_items": false,
-      "guild_school": "Sorcery",
-      "guild_max_tier": 3,
-      "items": {
-        "raw_reagents": 5,
-        "prayer_beads": 2,
-        "cloth_robe": 1,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hell_medicinal_garden": {
-      "name": "Medicinal Garden",
-      "type": "spell_guild",
-      "description": "The air is vibrant with the aroma of medicinal herbs and flowers. The healers cultivating them are happy to share some of their knowledge for the benefit of all suffering beings.",
-      "price_modifier": 1.15,
-      "buys_items": false,
-      "guild_school": "White",
-      "guild_max_tier": 3,
-      "items": {
-        "herb_bundle": 8,
-        "health_potion": 3,
-        "prayer_beads": 3,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hell_eternal_fire": {
-      "name": "Temple of the Eternal Fire",
-      "type": "spell_guild",
-      "description": "Priests clad in white robes have been guarding the sacred fire since time immemorial. Many come to pay their respects and seek visions in the dancing flames.",
-      "price_modifier": 1.25,
-      "buys_items": false,
-      "guild_school": "Fire",
-      "guild_max_tier": 3,
-      "items": {
-        "fire_bomb": 3,
-        "flame_oil": 4,
-        "ember_core": 2,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hell_black_lodge": {
-      "name": "Black Lodge",
-      "type": "spell_guild",
-      "description": "The entrance is half-buried in the earth, marked only with a crooked khatvanga topped with a skull and streaming black ribbons reeking of smoke and poison. As you enter, the darkness overwhelms you - until you notice the glint of a sneering smile.",
-      "price_modifier": 1.3,
-      "buys_items": false,
-      "guild_school": "Black",
-      "guild_max_tier": 3,
-      "items": {
-        "poison_bomb": 3,
-        "alchemists_pouch": 3,
-        "raw_reagents": 5,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hg_bone_merchant": {
-      "name": "Bone Merchant",
-      "type": "general",
-      "description": "A skeleton trader squats among the dry graves, its jaw clicking as it counts coins with bony fingers. The wares are crude but functional — carved from the bones of those who no longer need them.",
-      "price_modifier": 1.1,
-      "buys_items": true,
-      "items": {
-        "bone_sword": 2,
-        "bone_dagger": 2,
-        "bone_club": 2,
-        "leather_vest": 2,
-        "health_potion": 5,
-        "rations": 3,
-        "herb_bundle": 3
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hg_charnel_sorcerer": {
-      "name": "Charnel Sorcerer",
-      "type": "spell_trainer",
-      "description": "A vetala perches atop a crumbling funerary monument, its stolen body draped in rotting silk. It trades in dark knowledge — curses, poisons, and the thin art of pulling life from the dying.",
-      "price_modifier": 1.3,
-      "buys_items": false,
-      "items": {
-        "rations": 5
-      },
-      "spells": [
-        "curse",
-        "gloom",
-        "poison_sting",
-        "life_drain",
-        "lesser_heal"
-      ],
-      "training": {
-        "attributes": [
-          "focus",
-          "awareness"
-        ],
-        "skills": [
-          "black_magic",
-          "water_magic"
-        ]
-      }
-    },
-    "hg_wandering_preta": {
-      "name": "Wandering Preta",
-      "type": "general",
-      "description": "A gaunt, distended figure with a neck like a needle and a belly like a drum. It clutches its wares with desperate hands, willing to trade food for almost anything — though it can never eat enough to be satisfied.",
-      "price_modifier": 0.9,
-      "buys_items": true,
-      "items": {
-        "rations": 8,
-        "herb_bundle": 5,
-        "health_potion": 3,
-        "antidote": 3,
-        "raw_reagents": 2
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hg_teahouse": {
-      "name": "The Last Cup",
-      "type": "teahouse",
-      "description": "A lantern glows faintly above a low doorway carved into a burial mound. Inside, a quiet figure brews tea from dried flowers that grow only on graves. The dead do not drink, but the living are welcome to rest.",
-      "price_modifier": 1.0,
-      "buys_items": false,
-      "items": {
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "available_companions": [
-        "tsering", "rasabhava", "saka", "mehr",
-        "vilasa", "marmajna",
-        "kripana", "yasha",
-        "nurse_bones", "hustle_bones",
-        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
-        "prashan", "temba",
-        "durvasa", "gomchen",
-        "choki", "nangwa",
-        "drupchen", "khedrup"
-      ],
-      "rest": {
-        "teapot_cost": 30,
-        "teapot_restore_pct": 50,
-        "night_cost": 80,
-        "night_restore_pct": 100,
-        "teapot_food": 10,
-        "night_food": 25
-      }
-    },
-    "hg_town_weapons": {
-      "name": "Crossbones Armory",
-      "type": "town",
-      "description": "A squat stone building marked with crossed femurs above the door. The smith inside is alive — barely — and forges weapons from scavenged iron and whatever the gravediggers bring in.",
-      "price_modifier": 1.15,
-      "buys_items": true,
-      "items": {
-        "iron_sword": 1,
-        "iron_khanda": 2,
-        "iron_dao": 1,
-        "iron_patisa": 1,
-        "iron_axe": 2,
-        "iron_mace": 2,
-        "iron_dagger": 2,
-        "hunting_bow": 1,
-        "chainmail": 2,
-        "leather_vest": 3,
-        "iron_shield": 1,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": [
-          "swords",
-          "axes",
-          "maces",
-          "armor"
-        ]
-      },
-      "available_companions": [
-        "tsering", "rasabhava", "saka", "mehr",
-        "vilasa", "marmajna",
-        "kripana", "yasha",
-        "nurse_bones", "hustle_bones",
-        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
-        "prashan", "temba",
-        "durvasa", "gomchen",
-        "choki", "nangwa",
-        "drupchen", "khedrup"
-      ]
-    },
-    "hg_town_magic": {
-      "name": "Whispering Shrine",
-      "type": "town",
-      "description": "Faded prayer flags hang from a cracked shrine where the boundary between the living and dead has worn thin. The priests here teach what they remember of the old arts — healing and hexing in equal measure.",
-      "price_modifier": 1.2,
-      "buys_items": false,
-      "items": {
-        "rations": 5
-      },
-      "spells": [
-        "lesser_heal",
-        "cure",
-        "bless",
-        "curse",
-        "gloom",
-        "poison_sting",
-        "bark_skin",
-        "ice_bolt"
-      ],
-      "training": {
-        "attributes": [
-          "focus",
-          "awareness"
-        ],
-        "skills": [
-          "white_magic",
-          "black_magic",
-          "water_magic",
-          "earth_magic"
-        ]
-      },
-      "available_companions": [
-        "tsering", "rasabhava", "saka", "mehr",
-        "vilasa", "marmajna",
-        "kripana", "yasha",
-        "nurse_bones", "hustle_bones",
-        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
-        "prashan", "temba",
-        "durvasa", "gomchen",
-        "choki", "nangwa",
-        "drupchen", "khedrup"
-      ]
-    },
-    "hg_town_supplies": {
-      "name": "Gravedigger's Supply",
-      "type": "town",
-      "description": "A practical establishment run by those who tend to the dead for a living. The shelves are well stocked — people always need supplies in a land where nothing grows.",
-      "price_modifier": 1.0,
-      "buys_items": true,
-      "items": {
-        "rations": 10,
-        "travel_provisions": 5,
-        "herb_bundle": 8,
-        "health_potion": 5,
-        "mana_potion": 3,
-        "antidote": 5,
-        "raw_reagents": 3,
-        "scrap_metal": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "available_companions": [
-        "tsering", "rasabhava", "saka", "mehr",
-        "vilasa", "marmajna",
-        "kripana", "yasha",
-        "nurse_bones", "hustle_bones",
-        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
-        "prashan", "temba",
-        "durvasa", "gomchen",
-        "choki", "nangwa",
-        "drupchen", "khedrup"
-      ]
-    },
-    "hg_mercenary_guild": {
-      "name": "Undertakers' Lodge",
-      "type": "mercenary_guild",
-      "description": "A fortified charnel house where the realm's hired fighters gather between jobs. They call themselves undertakers — they put things in the ground, one way or another.",
-      "price_modifier": 1.1,
-      "buys_items": false,
-      "accepted_item_types": [
-        "weapon",
-        "armor",
-        "shield"
-      ],
-      "items": {
-        "bronze_sword": 2,
-        "bronze_talwar": 2,
-        "bronze_dao": 1,
-        "bronze_dagger": 3,
-        "bronze_axe": 2,
-        "bronze_mace": 2,
-        "bronze_spear": 2,
-        "iron_sword": 1,
-        "iron_khanda": 1,
-        "iron_dao": 1,
-        "short_bow": 2,
-        "leather_vest": 3,
-        "padded_armor": 2,
-        "leather_boots": 3,
-        "leather_gloves": 3,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "available_companions": [
-        "tsering", "rasabhava", "saka", "mehr",
-        "vilasa", "marmajna",
-        "kripana", "yasha",
-        "nurse_bones", "hustle_bones",
-        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
-        "prashan", "temba",
-        "durvasa", "gomchen",
-        "choki", "nangwa",
-        "drupchen", "khedrup"
-      ]
-    },
-    "hg_veterans_camp": {
-      "name": "The Old Guard",
-      "type": "veteran_camp",
-      "description": "A ring of tents around a guttering fire, where warriors who have survived the hungry ghost realm long enough gather to share what they know. Their eyes have the hollow look of those who have seen too much decay.",
-      "price_modifier": 1.0,
-      "buys_items": false,
-      "items": {
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "available_companions": [
-        "tsering", "rasabhava", "saka", "mehr",
-        "vilasa", "marmajna",
-        "kripana", "yasha",
-        "nurse_bones", "hustle_bones",
-        "iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon",
-        "prashan", "temba",
-        "durvasa", "gomchen",
-        "choki", "nangwa",
-        "drupchen", "khedrup"
-      ]
-    },
-    "hg_alchemist": {
-      "name": "The Dré Herbalist",
-      "type": "alchemist",
-      "description": "A dré ghost crouches behind a folding table heaped with dried herbs, stoppered gourds, and bundles of something that smells like incense and rot. Its robes are stuffed so full of plant matter that it looks like a walking thicket. It speaks in a dry rasp and seems to genuinely enjoy its trade.",
-      "price_modifier": 0.9,
-      "buys_items": true,
-      "items": {
-        "health_potion": 4,
-        "mana_potion": 3,
-        "antidote": 3,
-        "smelling_salts": 2,
-        "healing_herb": 5,
-        "ghost_pepper": 4,
-        "spirit_salt": 3,
-        "bone_dust": 4,
-        "firebomb": 2,
-        "smoke_bomb": 2,
-        "acid_flask": 2,
-        "rations": 4
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": ["alchemy", "medicine"]
-      }
-    },
-    "hg_black_market": {
-      "name": "The Smuggler's Alcove",
-      "type": "general",
-      "description": "A low tunnel behind a false wall, lit by a single floating ember. The figure inside won't show its face. It trades in things that shouldn't have made it into the hungry ghost realm — quality ironwork, foreign medicines, a few items with the smell of other worlds still on them. Prices reflect the difficulty of getting anything here at all.",
-      "price_modifier": 1.5,
-      "buys_items": true,
-      "items": {
-        "steel_khanda": 1,
-        "steel_talwar": 1,
-        "steel_dao": 1,
-        "iron_katar": 1,
-        "steel_katar": 1,
-        "composite_bow": 1,
-        "chainmail": 1,
-        "lamellar_armor": 1,
-        "iron_helmet": 1,
-        "travelers_amulet": 1,
-        "iron_ring": 1,
-        "steel_ring": 1,
-        "health_potion": 2,
-        "mana_potion": 2,
-        "antidote": 2,
-        "whetstone_oil": 2,
-        "sovereign_oil": 1
-      },
-      "spells": [],
-      "training": {
-        "attributes": [],
-        "skills": []
-      }
-    },
-    "hg_spell_shop": {
-      "name": "The Bone Library",
-      "type": "spell_trainer",
-      "description": "A sorcerer-ghost has assembled a collection of sutras and grimoires, most of them water-stained or singed at the edges, all of them legible to those with the patience to study. It charges for access by the session — a small candle's worth of time per spell — and answers no questions that aren't paid for.",
-      "price_modifier": 1.1,
-      "buys_items": false,
-      "items": {},
-      "spells": [
-        "minor_heal",
-        "bless",
-        "slow",
-        "weaken",
-        "bone_spear",
-        "raise_skeleton",
-        "hunger_curse",
-        "corpse_explosion",
-        "ghost_touch",
-        "soul_siphon",
-        "binding_shadows",
-        "mana_drain"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": ["white_magic", "black_magic", "sorcery", "ritual"]
-      }
-    },
-    "infernal_forge": {
-      "name": "Infernal Forge",
-      "type": "blacksmith",
-      "description": "Heat-warped iron, a bone-white anvil, and a demon who hasn't slept in three hundred years. The weapons here are ugly and they work.",
-      "price_modifier": 1.15,
-      "buys_items": true,
-      "accepted_item_types": [
-        "weapon",
-        "armor",
-        "shield"
-      ],
-      "items": {
-        "iron_sword": 1,
-        "iron_khanda": 1,
-        "iron_dao": 1,
-        "iron_patisa": 1,
-        "steel_longsword": 1,
-        "steel_talwar": 1,
-        "steel_dao": 1,
-        "iron_axe": 3,
-        "iron_mace": 2,
-        "wooden_spear": 1,
-        "chainmail": 1,
-        "good_iron_armor": 1,
-        "iron_helmet": 1,
-        "iron_shield": 2,
-        "leather_vest": 1,
-        "leather_boots": 1,
-        "scrap_metal": 8,
-        "salvage_kit": 3,
-        "flame_oil": 2,
-        "whetstone_oil": 2,
-        "sovereign_oil": 1,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [
-          "strength"
-        ],
-        "skills": [
-          "axes",
-          "maces",
-          "might"
-        ],
-        "max_skill_level": 6
-      }
-    },
-    "bone_archer_camp": {
-      "name": "Bone Archer Camp",
-      "type": "fletcher",
-      "description": "A fortified camp of skeleton archers who've been here long enough to start trading. Their fletching is excellent. Their interpersonal skills are not.",
-      "price_modifier": 1.1,
-      "buys_items": true,
-      "accepted_item_types": [
-        "weapon",
-        "armor"
-      ],
-      "items": {
-        "short_bow": 2,
-        "hunting_bow": 2,
-        "longbow": 1,
-        "iron_dagger": 3,
-        "throwing_knife": 5,
-        "leather_vest": 2,
-        "leather_cap": 2,
-        "leather_boots": 2,
-        "leather_gloves": 2,
-        "scrap_metal": 5,
-        "smoke_bomb": 2,
-        "flashbang": 2,
-        "frost_bomb": 1,
-        "poison_bomb": 1,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [
-          "finesse"
-        ],
-        "skills": [
-          "ranged",
-          "daggers",
-          "guile"
-        ],
-        "max_skill_level": 5
-      }
-    },
-    "mercy_ward": {
-      "name": "Mercy Ward",
-      "type": "healer",
-      "description": "A tent with clean bandages, a smell of herbs, and a medic who patches up anyone who can pay — no questions, no karma, no judgment. In hell this is rare enough to be miraculous.",
-      "price_modifier": 1.0,
-      "buys_items": false,
-      "items": {
-        "health_potion": 4,
-        "greater_health_potion": 2,
-        "mana_potion": 2,
-        "antidote": 3,
-        "cure_all": 2,
-        "stamina_tonic": 2,
-        "herb_bundle": 5,
-        "apothecary_pouch": 2,
-        "scroll_cure": 2,
-        "rations": 5
-      },
-      "spells": [
-        "lesser_heal",
-        "greater_heal",
-        "cure",
-        "regeneration",
-        "bless"
-      ],
-      "training": {
-        "attributes": [
-          "constitution"
-        ],
-        "skills": [
-          "medicine"
-        ],
-        "max_skill_level": 5
-      }
-    },
-    "brimstone_lab": {
-      "name": "Brimstone Lab",
-      "type": "alchemist",
-      "description": "A rickety structure of cracked glass and boiling tubes. The alchemist here has survived seventeen explosions. This gives them a certain confidence.",
-      "price_modifier": 1.2,
-      "buys_items": false,
-      "items": {
-        "health_potion": 2,
-        "mana_potion": 2,
-        "fire_bomb": 3,
-        "frost_bomb": 2,
-        "poison_bomb": 2,
-        "acid_bomb": 2,
-        "thunder_bomb": 1,
-        "smoke_bomb": 3,
-        "flashbang": 2,
-        "flame_oil": 2,
-        "frost_oil": 2,
-        "poison_oil": 2,
-        "holy_oil": 1,
-        "acid_flask": 2,
-        "raw_reagents": 8,
-        "alchemists_pouch": 3,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [
-          "awareness"
-        ],
-        "skills": [
-          "alchemy"
-        ]
-      }
-    },
-    "wardens_pit": {
-      "name": "Warden's Pit",
-      "type": "skill_trainer",
-      "description": "The pit warden runs the eastern patrols and teaches her soldiers to fight. For coin she'll train outsiders too — up to a point. She has standards.",
-      "price_modifier": 1.05,
-      "buys_items": false,
-      "items": {
-        "wooden_spear": 2,
-        "chainmail": 1,
-        "leather_vest": 2,
-        "iron_shield": 1,
-        "scrap_metal": 4,
-        "rations": 5
-      },
-      "spells": [],
-      "training": {
-        "attributes": [
-          "strength",
-          "constitution"
-        ],
-        "skills": [
-          "spears",
-          "armor",
-          "might"
-        ],
-        "max_skill_level": 5
-      }
-    },
-    "steam_domain_shop": {
-      "name": "Secrets of the Bathhouse",
-      "type": "domain_spell_trainer",
-      "description": "The old frog settles onto the edge of the pool, pours two cups of tea, and begins to talk. What it knows about steam and the place where water meets fire cannot be found in any guild.",
-      "price_modifier": 1.5,
-      "buys_items": false,
-      "items": {},
-      "spells": [
-        "steam_jet",
-        "fragrant_sauna",
-        "geyser",
-        "scalding_fog"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "tabs": [
-        "spells"
-      ]
-    },
-    "rainbow_domain_shop": {
-      "name": "Teachings of the Skygazing Gompa",
-      "type": "domain_spell_trainer",
-      "description": "The yogi shares what they know of the rainbow body and the prismatic nature of mind. These spells cannot be found in any guild.",
-      "price_modifier": 1.5,
-      "buys_items": false,
-      "items": {},
-      "spells": [
-        "rainbow_orb",
-        "rainbow_spray",
-        "vision_of_reality",
-        "rainbow_cloak"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "tabs": [
-        "spells"
-      ]
-    },
-    "tummo_domain_shop": {
-      "name": "The Hermit's Fire",
-      "type": "domain_spell_trainer",
-      "description": "The hermit teaches the inner fire — the heat that blazes upward from the secret chakra and melts the crown. These practices cannot be found in any guild.",
-      "price_modifier": 1.5,
-      "buys_items": false,
-      "items": {},
-      "spells": [
-        "inner_flame",
-        "heat_transfer",
-        "flash_of_radiance",
-        "blazing_and_dripping"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "tabs": [
-        "spells"
-      ]
-    },
-    "luminosity_domain_shop": {
-      "name": "Teachings of the Dark Cave",
-      "type": "domain_spell_trainer",
-      "description": "The unseen teacher shares what they know of the clear light. These practices cannot be found in any guild.",
-      "price_modifier": 1.5,
-      "buys_items": false,
-      "items": {},
-      "spells": [
-        "clear_mind",
-        "divine_eye",
-        "radiant_visage",
-        "shining_mirage"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "tabs": [
-        "spells"
-      ]
-    },
-    "sound_domain_shop": {
-      "name": "The Gandharva's Gift",
-      "type": "domain_spell_trainer",
-      "description": "The gandharva prince teaches the art of sound — mantra, resonance, and the spaces between notes. These arts cannot be found in any guild.",
-      "price_modifier": 1.5,
-      "buys_items": false,
-      "items": {},
-      "spells": [
-        "battle_chant",
-        "eerie_dirge",
-        "sonic_boom",
-        "up_to_eleven"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "tabs": [
-        "spells"
-      ]
+    "shop_types": {
+        "general": {
+            "description": "Sells items only",
+            "tabs": [
+                "items"
+            ]
+        },
+        "spell_trainer": {
+            "description": "Teaches spells, may sell magical items",
+            "tabs": [
+                "spells",
+                "items"
+            ]
+        },
+        "skill_trainer": {
+            "description": "Trains skills and attributes, may sell items",
+            "tabs": [
+                "training",
+                "items"
+            ]
+        },
+        "mixed": {
+            "description": "Offers items, spells, and possibly training",
+            "tabs": [
+                "items",
+                "spells",
+                "training"
+            ]
+        },
+        "teahouse": {
+            "description": "Rest and recruit companions",
+            "tabs": [
+                "rest",
+                "companions"
+            ]
+        },
+        "mercenary_guild": {
+            "description": "Weapons, armour, and fighters for hire",
+            "tabs": [
+                "items",
+                "companions"
+            ]
+        },
+        "veteran_camp": {
+            "description": "Combat skill training and veterans for hire",
+            "tabs": [
+                "training",
+                "companions"
+            ]
+        },
+        "yogini_circle": {
+            "description": "Spells, magic supplies, and spiritual companions",
+            "tabs": [
+                "spells",
+                "items",
+                "companions"
+            ]
+        },
+        "spell_guild": {
+            "description": "Teaches a fixed curriculum of spells in one school. Curriculum is stable per location.",
+            "tabs": [
+                "spells",
+                "items"
+            ]
+        },
+        "town": {
+            "description": "General goods and companions",
+            "tabs": [
+                "items",
+                "companions"
+            ]
+        },
+        "blacksmith": {
+            "description": "Weapons, armor, and weapon oils; buys equipment",
+            "tabs": [
+                "items",
+                "training"
+            ]
+        },
+        "fletcher": {
+            "description": "Ranged weapons, throwables, and light armor; buys equipment",
+            "tabs": [
+                "items",
+                "training"
+            ]
+        },
+        "healer": {
+            "description": "Healing supplies and white magic spells",
+            "tabs": [
+                "items",
+                "spells",
+                "training"
+            ]
+        },
+        "alchemist": {
+            "description": "Potions, bombs, oils, and alchemy training",
+            "tabs": [
+                "items",
+                "training"
+            ]
+        }
     }
-  },
-  "shop_types": {
-    "general": {
-      "description": "Sells items only",
-      "tabs": [
-        "items"
-      ]
-    },
-    "spell_trainer": {
-      "description": "Teaches spells, may sell magical items",
-      "tabs": [
-        "spells",
-        "items"
-      ]
-    },
-    "skill_trainer": {
-      "description": "Trains skills and attributes, may sell items",
-      "tabs": [
-        "training",
-        "items"
-      ]
-    },
-    "mixed": {
-      "description": "Offers items, spells, and possibly training",
-      "tabs": [
-        "items",
-        "spells",
-        "training"
-      ]
-    },
-    "teahouse": {
-      "description": "Rest and recruit companions",
-      "tabs": [
-        "rest",
-        "companions"
-      ]
-    },
-    "mercenary_guild": {
-      "description": "Weapons, armour, and fighters for hire",
-      "tabs": [
-        "items",
-        "companions"
-      ]
-    },
-    "veteran_camp": {
-      "description": "Combat skill training and veterans for hire",
-      "tabs": [
-        "training",
-        "companions"
-      ]
-    },
-    "yogini_circle": {
-      "description": "Spells, magic supplies, and spiritual companions",
-      "tabs": [
-        "spells",
-        "items",
-        "companions"
-      ]
-    },
-    "spell_guild": {
-      "description": "Teaches a fixed curriculum of spells in one school. Curriculum is stable per location.",
-      "tabs": [
-        "spells",
-        "items"
-      ]
-    },
-    "town": {
-      "description": "General goods and companions",
-      "tabs": [
-        "items",
-        "companions"
-      ]
-    },
-    "blacksmith": {
-      "description": "Weapons, armor, and weapon oils; buys equipment",
-      "tabs": [
-        "items",
-        "training"
-      ]
-    },
-    "fletcher": {
-      "description": "Ranged weapons, throwables, and light armor; buys equipment",
-      "tabs": [
-        "items",
-        "training"
-      ]
-    },
-    "healer": {
-      "description": "Healing supplies and white magic spells",
-      "tabs": [
-        "items",
-        "spells",
-        "training"
-      ]
-    },
-    "alchemist": {
-      "description": "Potions, bombs, oils, and alchemy training",
-      "tabs": [
-        "items",
-        "training"
-      ]
-    },
-    "crystal_domain_shop": {
-      "name": "The Yogi's Teaching",
-      "type": "domain_spell_trainer",
-      "description": "The yogi shares what he knows with those who approach in the right spirit. The spells he teaches are not found in any guild.",
-      "price_modifier": 1.5,
-      "buys_items": false,
-      "items": {},
-      "spells": [
-        "scattered_light",
-        "crystal_guardian",
-        "crystal_diadem",
-        "crystal_light"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "tabs": [
-        "spells"
-      ]
-    },
-    "glass_domain_shop": {
-      "name": "Fragments of the Glass Mountain",
-      "type": "domain_spell_trainer",
-      "description": "Knowledge cut from the mountain itself. Impossibly sharp, perfectly clear. These spells cannot be found in any guild.",
-      "price_modifier": 1.5,
-      "buys_items": false,
-      "items": {},
-      "spells": [
-        "glass_shard",
-        "powdered_glass",
-        "globe_of_glass",
-        "glass_mine"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "tabs": [
-        "spells"
-      ]
-    },
-    "smoke_domain_shop": {
-      "name": "Whispers of the Shattered Mirror",
-      "type": "domain_spell_trainer",
-      "description": "Knowledge gleaned from smoke and reflection. These arts cannot be taught in any guild — only glimpsed in the mirror's darkness.",
-      "price_modifier": 1.5,
-      "buys_items": false,
-      "items": {},
-      "spells": [
-        "smoke_cloud",
-        "smoke_imp",
-        "choking_smoke",
-        "smoke_form"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "tabs": [
-        "spells"
-      ]
-    },
-    "mud_domain_shop": {
-      "name": "Mudling Elder's Teaching",
-      "type": "domain_spell_trainer",
-      "description": "The elder mudling has agreed to teach the secrets of mud-working. These spells cannot be found in any guild — buy now or lose the chance.",
-      "price_modifier": 1.5,
-      "buys_items": false,
-      "items": {},
-      "spells": [
-        "mudling",
-        "metal_to_mud",
-        "rain_of_mud",
-        "mindmuck"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "tabs": [
-        "spells"
-      ]
-    },
-    "steam_domain_shop": {
-      "name": "The Frog-Spirit's Teaching",
-      "type": "domain_spell_trainer",
-      "description": "The old frog settles onto the edge of the pool, pours two cups of tea, and begins to talk. What it knows about steam and the place where water meets fire cannot be found in any guild.",
-      "price_modifier": 1.5,
-      "buys_items": false,
-      "items": {},
-      "spells": [
-        "steam_jet",
-        "fragrant_sauna",
-        "geyser",
-        "scalding_fog"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "tabs": [
-        "spells"
-      ]
-    },
-    "cloud_domain_shop": {
-      "name": "Songs of the Cloud Nagas",
-      "type": "domain_spell_trainer",
-      "description": "The nagas coil around you, humming in their deep rain-voices. What they know of cloud and sky and the space between water and air cannot be found in any guild — and will not be offered twice.",
-      "price_modifier": 1.5,
-      "buys_items": false,
-      "items": {},
-      "spells": [
-        "cloudstep",
-        "cloudform",
-        "cloud_serpent",
-        "cloud_gate"
-      ],
-      "training": {
-        "attributes": [],
-        "skills": []
-      },
-      "tabs": [
-        "spells"
-      ]
-    }
-  }
 }

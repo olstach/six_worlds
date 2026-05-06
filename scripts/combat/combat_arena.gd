@@ -226,6 +226,10 @@ func _ready() -> void:
 	# Connect general combat log
 	CombatManager.combat_log.connect(_on_combat_log)
 
+	# Connect PsychologySystem so crisis messages appear in the combat log
+	if PsychologySystem:
+		PsychologySystem.emotional_crisis_log.connect(_on_psychology_crisis_log_combat)
+
 	# Hide spell panel initially
 	spell_panel.hide()
 
@@ -865,9 +869,13 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 	# Show AoE preview when targeting AoE spells or AoE scrolls
 	if current_action_mode == ActionMode.CAST_SPELL and not selected_spell.is_empty():
 		var targeting = selected_spell.get("targeting", "single")
-		if targeting == "aoe_circle":
-			var radius = selected_spell.get("aoe_radius", 1)
-			combat_grid.show_aoe_preview(grid_pos, radius)
+		if targeting == "aoe":
+			var aoe_def = selected_spell.get("aoe", {"type": "circle", "size": 2})
+			var caster = CombatManager.get_current_unit()
+			if caster:
+				combat_grid.show_aoe_shape_preview(aoe_def, caster.grid_position, grid_pos)
+			else:
+				combat_grid.clear_aoe_preview()
 		else:
 			combat_grid.clear_aoe_preview()
 	elif current_action_mode == ActionMode.USE_ITEM and not selected_item.is_empty():
@@ -875,9 +883,13 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 		if sel_type == "scroll":
 			var spell_id = selected_item.get("spell_id", "")
 			var spell = CombatManager.get_spell(spell_id)
-			if not spell.is_empty() and spell.get("targeting", "") == "aoe_circle":
-				var radius = spell.get("aoe_radius", 1)
-				combat_grid.show_aoe_preview(grid_pos, radius)
+			if not spell.is_empty() and spell.get("targeting", "") == "aoe":
+				var aoe_def = spell.get("aoe", {"type": "circle", "size": 2})
+				var caster = CombatManager.get_current_unit()
+				if caster:
+					combat_grid.show_aoe_shape_preview(aoe_def, caster.grid_position, grid_pos)
+				else:
+					combat_grid.clear_aoe_preview()
 			else:
 				combat_grid.clear_aoe_preview()
 		elif sel_type == "bomb":
@@ -1235,13 +1247,13 @@ func _build_spell_tooltip(spell: Dictionary) -> String:
 			target_text = "Single Ally"
 		"single_corpse":
 			target_text = "Downed Ally"
-		"aoe_circle":
-			var radius = spell.get("aoe_radius", 1)
-			var center = spell.get("aoe_center", "target")
-			if center == "self":
-				target_text = "AoE (Radius %d, centered on self)" % radius
-			else:
-				target_text = "AoE (Radius %d)" % radius
+		"aoe":
+			var aoe_def = spell.get("aoe", {"type": "circle", "size": 2})
+			target_text = AoEResolver.describe(aoe_def)
+		"all_enemies":
+			target_text = "All Enemies"
+		"all_allies":
+			target_text = "All Allies"
 		"chain":
 			var chain_count = spell.get("chain_targets", 3)
 			target_text = "Chain (up to %d targets)" % chain_count
@@ -1335,8 +1347,9 @@ func _on_spell_selected(spell: Dictionary) -> void:
 
 	# Log with range info
 	var range_text = "Range: %d" % spell_range
-	if spell_data.get("targeting") == "aoe_circle":
-		range_text += ", AoE radius: %d" % spell_data.get("aoe_radius", 1)
+	if spell_data.get("targeting") == "aoe":
+		var aoe_def = spell_data.get("aoe", {"type": "circle", "size": 2})
+		range_text += ", %s" % AoEResolver.describe(aoe_def)
 
 	if valid_targets.is_empty():
 		_log_message("No valid targets in range for %s (%s)" % [spell.name, range_text])
@@ -1595,7 +1608,7 @@ func _try_use_item(target_pos: Vector2i) -> void:
 		_cancel_action_mode()
 		return
 
-	var item_type := selected_item.get("type", "")
+	var item_type: String = selected_item.get("type", "")
 
 	# Cancel action mode before async work
 	_cancel_action_mode()
@@ -2271,12 +2284,12 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 	var result = CombatManager.attack_unit(attacker, defender)
 
 	# Animate projectile for ranged attacks
-	var is_ranged := attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon()
+	var is_ranged: bool = attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon()
 	if is_ranged and result.success:
 		var proj_type := _get_projectile_type(attacker)
 		var from_world := _tile_center(attacker.grid_position)
 		# If the shot deviated, animate to the actual landing spot
-		var landing := result.get("deviation_landing_pos", defender.grid_position) if not result.get("hit", true) else defender.grid_position
+		var landing: Vector2i = result.get("deviation_landing_pos", defender.grid_position) if not result.get("hit", true) else defender.grid_position
 		var to_world := _tile_center(landing)
 		await _animate_projectile(from_world, to_world, proj_type)
 
@@ -2316,7 +2329,7 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 			if is_ranged and result.has("deviation_landing_pos"):
 				var dev_name: String = result.get("deviation_hit_unit_name", "")
 				if dev_name != "":
-					var friendly := result.get("deviation_hit_team", -1) == attacker.team
+					var friendly: bool = result.get("deviation_hit_team", -1) == attacker.team
 					var friendly_tag := " [FRIENDLY FIRE!]" if friendly else ""
 					_log_message("  Projectile deviates %d tile(s) — hits %s for %d!%s" % [
 						result.deviation_tiles, dev_name, result.deviation_damage, friendly_tag
@@ -2738,12 +2751,12 @@ func _get_projectile_type(unit: CombatUnit) -> String:
 	if not unit.has_method("get_equipped_weapon"):
 		return "arrow"
 	var weapon := unit.get_equipped_weapon()
-	var wtype := weapon.get("type", "")
+	var wtype: String = weapon.get("type", "")
 	match wtype:
 		"bow":      return "arrow"
 		"crossbow": return "bolt"
 		"thrown":
-			var wclass := weapon.get("weapon_class", "").to_lower()
+			var wclass: String = weapon.get("weapon_class", "").to_lower()
 			return "javelin" if "javelin" in wclass else "bolt"
 		_: return "arrow"
 
@@ -2754,6 +2767,11 @@ func _tile_center(grid_pos: Vector2i) -> Vector2:
 
 
 ## Add message to combat log
+## Called when a quirk reaction fires mid-combat (e.g. witnessing a death triggers a phobia).
+func _on_psychology_crisis_log_combat(_character_name: String, message: String) -> void:
+	_log_message("[Psychology] " + message)
+
+
 func _log_message(msg: String) -> void:
 	combat_log.append_text(msg + "\n")
 	# Auto-scroll to bottom
@@ -2786,6 +2804,8 @@ func _stabilize_bleeding_companions() -> void:
 		if unit.is_bleeding_out:
 			unit.is_bleeding_out = false
 			unit.current_hp = 1
+			# Write back to character data so the unit doesn't spawn dead next combat
+			unit.character_data.get("derived", {})["current_hp"] = 1
 			_log_message("%s is stabilized — barely alive." % unit.unit_name)
 
 ## Remove companions who died (bleed-out expired) from the party permanently.
@@ -3580,7 +3600,10 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 	if CombatManager.get_current_unit() != unit:
 		return
 
-	var player_units = CombatManager.get_team_units(CombatManager.Team.PLAYER)
+	# Summons on the player's team target enemies; true enemies target the player team
+	var opposing_team: int = CombatManager.Team.ENEMY if unit.team == CombatManager.Team.PLAYER \
+		else CombatManager.Team.PLAYER
+	var player_units = CombatManager.get_team_units(opposing_team)
 	if player_units.is_empty():
 		CombatManager.end_turn()
 		return
@@ -3766,10 +3789,10 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 func _get_spell_ai_range(spell: Dictionary) -> int:
 	var target_data = spell.get("target", {})
 	var raw_range = target_data.get("range", spell.get("range", ""))
-	if raw_range == "melee":
-		return 1
-	elif raw_range is int or raw_range is float:
+	if raw_range is int or raw_range is float:
 		return int(raw_range)
+	elif raw_range == "melee":
+		return 1
 	else:
 		# No range specified — default by level (level 1 = range 4, level 3 = range 6, etc.)
 		var level = spell.get("level", 1)
@@ -3811,29 +3834,27 @@ func _ai_try_cast_spell(unit: CombatUnit, spells: Array[Dictionary], enemies: Ar
 						target_pos = enemy.grid_position
 						break
 
-			"aoe_circle":
-				# Target position with most enemies
-				var aoe_radius = spell.get("aoe_radius", 1)
+			"aoe":
+				# Find the target position that maximizes enemies hit by the AoE shape
+				var aoe_def: Dictionary = spell.get("aoe", {"type": "circle", "size": 2, "origin": "target"})
+				var grid_sz = Vector2i(16, 10)
+				if combat_grid:
+					grid_sz = combat_grid.grid_size
 				var best_pos = Vector2i(-1, -1)
 				var best_count = 0
 
-				# Check each enemy position as potential center
 				for enemy in enemies:
 					if not enemy.is_alive():
 						continue
 					var dist = _grid_distance(unit.grid_position, enemy.grid_position)
 					if dist > spell_range:
 						continue
-
-					# Count enemies in AoE
+					var aoe_tiles = AoEResolver.get_tiles(aoe_def, unit.grid_position,
+							enemy.grid_position, grid_sz)
 					var count = 0
 					for other in enemies:
-						if not other.is_alive():
-							continue
-						var aoe_dist = _grid_distance(enemy.grid_position, other.grid_position)
-						if aoe_dist <= aoe_radius:
+						if other.is_alive() and other.grid_position in aoe_tiles:
 							count += 1
-
 					if count > best_count:
 						best_count = count
 						best_pos = enemy.grid_position

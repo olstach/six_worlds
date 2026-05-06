@@ -345,6 +345,10 @@ func recruit(companion_id: String, free: bool = false) -> Dictionary:
 				resolved_id = gen_id
 		ItemSystem.add_to_inventory(resolved_id)
 
+	# 10.5. Starting quirks — apply pressure baseline offsets; stat modifiers handled in step 11
+	for quirk_id in def.get("quirks", []):
+		QuirkSystem.add_quirk(companion, quirk_id)
+
 	# 11. Recalculate all derived stats
 	CharacterSystem.update_derived_stats(companion)
 
@@ -481,9 +485,12 @@ func apply_party_xp(base_amount: int) -> void:
 	var multiplier := get_xp_multiplier()
 	var final_amount := maxi(1, int(float(base_amount) * multiplier))
 	for member in CharacterSystem.get_party():
-		CharacterSystem.grant_xp(member, final_amount)
+		# Per-character xp_gain_pct modifier (e.g. negative from low learning skill)
+		var xp_pct: float = member.get("derived", {}).get("xp_gain_pct", 0.0)
+		var member_amount := maxi(1, int(float(final_amount) * (1.0 + xp_pct / 100.0)))
+		CharacterSystem.grant_xp(member, member_amount)
 		if member.has("free_xp"):
-			member.free_xp += final_amount
+			member.free_xp += member_amount
 			if member.get("autodevelop", false):
 				if not _is_overflow_mode(member):
 					_try_autodevelop(member)

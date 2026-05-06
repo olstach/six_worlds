@@ -38,6 +38,38 @@ const SKILL_COSTS: Array[int] = [0, 5, 10, 18, 28, 42, 59, 80, 106, 137, 175]
 # Maximum purchasable skill level (items/race can push effective level up to 15)
 const SKILL_MAX_LEVEL: int = 10
 
+# Penalties applied per negative skill level (from quirks/debuffs pushing skills below 0).
+# Values are per level below 0; e.g. learning at -2 gives xp_gain_pct = -20.0.
+const NEGATIVE_SKILL_PENALTIES: Dictionary = {
+	"swords":       {"accuracy": -4, "damage": -2},
+	"axes":         {"accuracy": -4, "damage": -2},
+	"maces":        {"accuracy": -4, "damage": -2},
+	"daggers":      {"accuracy": -4, "damage": -2},
+	"spears":       {"accuracy": -4, "damage": -2},
+	"ranged":       {"accuracy": -4, "damage": -2},
+	"unarmed":      {"accuracy": -4, "damage": -2},
+	"martial_arts": {"accuracy": -4, "damage": -2},
+	"armor":        {"armor": -2, "damage_reduction_pct": -0.01},
+	"space_magic":  {"spellpower": -3},
+	"air_magic":    {"spellpower": -3},
+	"fire_magic":   {"spellpower": -3},
+	"water_magic":  {"spellpower": -3},
+	"earth_magic":  {"spellpower": -3},
+	"white_magic":  {"spellpower": -3},
+	"black_magic":  {"spellpower": -3},
+	"sorcery":      {"spellpower": -3},
+	"enchantment":  {"spellpower": -3},
+	"summoning":    {"spellpower": -3},
+	"ritual":       {"spellpower": -2},
+	"yoga":         {"spellpower": -2},
+	"learning":     {"xp_gain_pct": -10.0},
+	"medicine":     {"healing_bonus_pct": -5.0},
+	"guile":        {"dodge": -2},
+	"grace":        {"dodge": -2, "initiative": -1},
+	"might":        {"damage": -3},
+	"thievery":     {"dodge": -2},
+}
+
 # Base character template
 const BASE_CHARACTER: Dictionary = {
 	"name": "Unnamed",
@@ -75,6 +107,7 @@ const BASE_CHARACTER: Dictionary = {
 		"armor": 0,
 		"accuracy": 0,
 		"armor_pierce": 0,
+		"temp_hp": 0,            # Temporary HP from rest overheal; absorbed before real HP
 		# Current resistances: racial base + equipment + permanent perk bonuses
 		# In-combat spell/status bonuses are applied on top in CombatUnit.get_resistance()
 		"resistances": {}
@@ -94,6 +127,10 @@ const BASE_CHARACTER: Dictionary = {
 	# Permanent racial resistances (set once at character creation from races.json)
 	# Format: {"physical": 50, "fire": 25, ...}  values are percentages
 	"base_resistances": {},
+
+	# Named racial traits (e.g. "Skeletal", "Incorporeal"). Purely informational after
+	# apply_race_modifiers() has translated them into base_resistances and other fields.
+	"racial_traits": [],
 	
 	# Elemental affinities (built up through skill usage)
 	"elements": {
@@ -157,7 +194,24 @@ const BASE_CHARACTER: Dictionary = {
 
 	# Active weapon set (1 or 2)
 	"active_weapon_set": 1,
-	
+
+	# Character quirks — list of quirk IDs (see quirks.json / QuirkSystem)
+	# Inborn quirks are set at character creation or in companion definitions.
+	# Acquired quirks are added/removed during the run via QuirkSystem.add_quirk/remove_quirk.
+	"quirks": [],
+
+	# Persistent wounds and diseases (survive between combats; healed by Medicine or facilities)
+	# Each entry: {id, body_location, rests_untreated, source}
+	"wounds": [],
+
+	# Body plan runtime state. Species key looks up topology in BodySystem.BODY_PLANS.
+	# Old characters without this field default to "human" via BodySystem.get_body_plan_def().
+	"body_plan": {
+		"species": "human",
+		"missing_parts": [],   # part ids currently severed
+		"prosthetics": {},     # {part_id: item_id} for attached prosthetics
+	},
+
 	# Persistent progression data
 	"affinities": [],  # Skills that have reached max level in previous lives
 	"persistent_upgrades": []  # Rare upgrades that survive reincarnation
@@ -312,13 +366,30 @@ func create_player_character(char_name: String, race: String, background: String
 
 	# Calculate derived stats (equipment bonuses are now included)
 	update_derived_stats(character)
-	
+
+	# Assign 1 random inborn physical quirk + 1 random inborn personality quirk.
+	# add_quirk() applies pressure baseline offsets and re-derives stats internally.
+	if QuirkSystem:
+		var physical: Array[String] = QuirkSystem.get_inborn_quirks("physical")
+		var personality: Array[String] = QuirkSystem.get_inborn_quirks("personality")
+		physical.shuffle()
+		personality.shuffle()
+		if not physical.is_empty():
+			QuirkSystem.add_quirk(character, physical[0])
+		if not personality.is_empty():
+			QuirkSystem.add_quirk(character, personality[0])
+
+	# Apply racial traits that have side effects beyond resistances/stats
+	if "extra_starting_gold" in character.get("racial_traits", []):
+		if GameState:
+			GameState.add_gold(50)
+
 	# Add to party at index 0 (player always first)
 	if party.is_empty():
 		party.append(character)
 	else:
 		party[0] = character
-	
+
 	character_updated.emit(character)
 
 
@@ -405,6 +476,11 @@ func apply_race_modifiers(character: Dictionary, race: String) -> void:
 			if spell_id != "":
 				learn_spell(character, spell_id)
 
+	# Store racial trait names on the character (for UI display and trait-specific hooks)
+	var traits: Array = data.get("racial_traits", [])
+	if not traits.is_empty():
+		character["racial_traits"] = traits.duplicate()
+
 	# Copy emotional baseline from race data
 	if "emotional_baseline" in data:
 		for element in data.emotional_baseline:
@@ -463,10 +539,13 @@ func apply_background_equipment(character: Dictionary, background: String) -> vo
 	if equip_data.is_empty():
 		return
 
-	# Main weapon: may upgrade to a better version based on a chance roll
+	# Main weapon: may upgrade to a better version based on a chance roll.
+	# better_starting_weapon racial trait guarantees the upgrade if one is defined.
 	var main_weapon: String = equip_data.get("base_weapon", "")
 	var upgrade_id: String = equip_data.get("weapon_upgrade", "")
-	if upgrade_id != "" and randf() < float(equip_data.get("weapon_upgrade_chance", 0.0)):
+	var has_better_weapon_trait: bool = "better_starting_weapon" in character.get("racial_traits", [])
+	var upgrade_chance: float = 1.0 if has_better_weapon_trait else float(equip_data.get("weapon_upgrade_chance", 0.0))
+	if upgrade_id != "" and randf() < upgrade_chance:
 		main_weapon = upgrade_id
 	if main_weapon != "":
 		_add_and_equip(character, main_weapon, "weapon_main")
@@ -527,8 +606,8 @@ func _find_slot_for_item(character: Dictionary, item_id: String) -> String:
 		"pants", "greaves", "leggings":
 			return "legs" if eq.get("legs", "") == "" else ""
 		"gloves", "gauntlets", "bracers":
-			if eq.get("hand_l", "") == "": return "hand_l"
-			if eq.get("hand_r", "") == "": return "hand_r"
+			for arm_slot in BodySystem.get_arm_slots(character):
+				if eq.get(arm_slot, "") == "": return arm_slot
 			return ""
 		"ring":
 			if eq.get("ring1", "") == "": return "ring1"
@@ -602,15 +681,18 @@ func upgrade_skill(character: Dictionary, skill: String) -> bool:
 		return true
 	return false
 
-## Get effective skill level including item/race bonuses (capped at 15 for display).
+## Get effective skill level including item/race bonuses.
+## Returns the effective skill level for a character including all bonuses
+## from quirks, equipment, and race. Clamped to [-5, 15].
+## Negative values (from quirks like Forgetful) apply penalties in update_derived_stats.
 ## skill_bonuses format: {"skill_id": {"source_name": amount, ...}, ...}
-func _get_effective_skill_level(character: Dictionary, skill_id: String) -> int:
+func get_effective_skill_level(character: Dictionary, skill_id: String) -> int:
 	var base = character.get("skills", {}).get(skill_id, 0)
 	var bonus_sources = character.get("skill_bonuses", {}).get(skill_id, {})
 	var bonus = 0
 	for source in bonus_sources:
 		bonus += int(bonus_sources[source])
-	return mini(base + bonus, 15)
+	return clampi(base + bonus, -5, 15)
 
 
 ## Update the character's element affinity totals from their skill levels.
@@ -710,10 +792,29 @@ func update_derived_stats(character: Dictionary) -> void:
 	if PerkSystem:
 		affinity_bonus = PerkSystem.get_affinity_bonuses(character)
 
-	# Apply equipment attribute bonuses first
+	# Collect quirk attribute bonuses
+	var quirk_attr_bonus: Dictionary = {}
+	if QuirkSystem:
+		quirk_attr_bonus = QuirkSystem.get_attribute_bonus(character)
+
+	# Apply equipment + quirk attribute bonuses to get effective attributes
 	var effective_attrs = {}
 	for attr_key in attrs:
-		effective_attrs[attr_key] = attrs[attr_key] + equip_bonus.get(attr_key, 0)
+		effective_attrs[attr_key] = attrs[attr_key] + equip_bonus.get(attr_key, 0) + quirk_attr_bonus.get(attr_key, 0)
+
+	# Refresh quirk skill bonuses (clear old pass first, then re-add from current quirks)
+	if not "skill_bonuses" in character:
+		character["skill_bonuses"] = {}
+	for skill_id in character["skill_bonuses"]:
+		character["skill_bonuses"][skill_id].erase("quirks")
+	if QuirkSystem:
+		for quirk_id in character.get("quirks", []):
+			var q := QuirkSystem.get_quirk(quirk_id)
+			for skill_id in q.get("skill_modifiers", {}):
+				if not skill_id in character["skill_bonuses"]:
+					character["skill_bonuses"][skill_id] = {}
+				var prev: int = character["skill_bonuses"][skill_id].get("quirks", 0)
+				character["skill_bonuses"][skill_id]["quirks"] = prev + int(q["skill_modifiers"][skill_id])
 
 	# HP from Constitution + equipment + earth affinity
 	var old_max_hp = derived.get("max_hp", 100)
@@ -749,6 +850,14 @@ func update_derived_stats(character: Dictionary) -> void:
 	# Dodge from Finesse + equipment + water affinity
 	derived.dodge = effective_attrs.finesse + equip_bonus.get("dodge", 0) + affinity_bonus.get("dodge", 0)
 
+	# Extra leg pairs: each pair beyond the first gives +1 movement, +5 dodge, +20 weight_limit
+	if BodySystem:
+		var extra_pairs: int = BodySystem.get_extra_leg_pairs(character)
+		if extra_pairs > 0:
+			derived.movement += extra_pairs
+			derived.dodge += extra_pairs * 5
+			derived.weight_limit += extra_pairs * 20
+
 	# Spellpower from Focus + equipment + space affinity
 	derived.spellpower = effective_attrs.focus + equip_bonus.get("spellpower", 0) + affinity_bonus.get("spellpower", 0)
 
@@ -776,7 +885,7 @@ func update_derived_stats(character: Dictionary) -> void:
 	if PerkSystem:
 		var all_skills = character.get("skills", {})
 		for skill_id in all_skills:
-			var effective_level = _get_effective_skill_level(character, skill_id)
+			var effective_level = get_effective_skill_level(character, skill_id)
 			if effective_level == 0:
 				continue
 			var bonus = PerkSystem.get_base_skill_bonuses_at_level(skill_id, effective_level)
@@ -801,6 +910,17 @@ func update_derived_stats(character: Dictionary) -> void:
 				derived["max_stamina"] = derived.get("max_stamina", 50) + int(bonus.get("max_stamina", 0))
 			if bonus.has("initiative_bonus"):
 				derived["initiative"] = derived.get("initiative", 0) + int(bonus.get("initiative_bonus", 0))
+
+	# Apply penalties for negative skill levels (quirks/debuffs pushing skills below 0).
+	for skill_id in NEGATIVE_SKILL_PENALTIES:
+		var eff := get_effective_skill_level(character, skill_id)
+		if eff >= 0:
+			continue
+		var penalty_per_level: Dictionary = NEGATIVE_SKILL_PENALTIES[skill_id]
+		var levels_negative: int = -eff  # e.g. eff=-2 → 2 levels of penalty
+		for stat in penalty_per_level:
+			var total_penalty = penalty_per_level[stat] * levels_negative
+			derived[stat] = derived.get(stat, 0) + total_penalty
 
 	# Apply active map buffs from simples/shrines.
 	# Attribute-type buffs translate to their most direct derived-stat effects
@@ -827,6 +947,10 @@ func update_derived_stats(character: Dictionary) -> void:
 					pass  # future: social/event roll bonuses
 				"luck":
 					derived["crit_chance"] = derived.get("crit_chance", 0.0) + amount
+				"spellpower":
+					derived["spellpower"] = derived.get("spellpower", 0) + amount
+				"dodge":
+					derived["dodge"] = derived.get("dodge", 0) + amount
 				"spellpower_fire":
 					derived["spellpower_fire"] = derived.get("spellpower_fire", 0) + amount
 				"initiative":
@@ -835,10 +959,31 @@ func update_derived_stats(character: Dictionary) -> void:
 					derived["loot_chance_pct"] = derived.get("loot_chance_pct", 0) + amount
 				"xp_gain_pct":
 					derived["xp_gain_pct"] = derived.get("xp_gain_pct", 0) + amount
+				"accuracy":
+					derived["accuracy"] = derived.get("accuracy", 0) + amount
 			# Handle *_resistance map buffs generically (match doesn't support wildcards)
 			if stat.ends_with("_resistance"):
 				var element = stat.replace("_resistance", "")
 				derived["resistances"][element] = derived["resistances"].get(element, 0) + amount
+
+	# Apply persistent wound/disease stat penalties (percentage-based, multiplicative).
+	# get_stat_penalties returns e.g. {"dodge": -25, "max_hp": -20} meaning -25%, -20%.
+	if WoundSystem and not character.get("wounds", []).is_empty():
+		var wound_penalties := WoundSystem.get_stat_penalties(character)
+		for stat in wound_penalties:
+			var base_val: float = float(derived.get(stat, 0))
+			derived[stat] = int(base_val * (1.0 + float(wound_penalties[stat]) / 100.0))
+		# Clamp current values into the (possibly reduced) maxima
+		derived.current_hp = min(derived.get("current_hp", derived.max_hp), derived.max_hp)
+		derived.current_stamina = min(derived.get("current_stamina", derived.max_stamina), derived.max_stamina)
+
+	# Apply flat stat penalties from missing body parts (severed limbs etc.).
+	# These are additive reductions (not %-based), clamped to 0 to avoid negatives.
+	if BodySystem and not character.get("body_plan", {}).get("missing_parts", []).is_empty():
+		var limb_penalties := BodySystem.get_missing_part_penalties(character)
+		for stat in limb_penalties:
+			if stat in derived:
+				derived[stat] = maxi(0, derived[stat] + limb_penalties[stat])
 
 ## Get player character
 func get_player() -> Dictionary:

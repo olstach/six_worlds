@@ -1083,6 +1083,11 @@ func _start_current_turn() -> void:
 	if unit == null:
 		return
 
+	# Units with no actions (illusions/decoys) skip their turn automatically
+	if unit.get_max_actions() == 0:
+		_advance_turn()
+		return
+
 	# Process bleed-out for dying units
 	if unit.is_bleeding_out:
 		unit.bleed_out_turns -= 1
@@ -1116,6 +1121,18 @@ func _start_current_turn() -> void:
 
 	# Reset actions for this turn
 	unit.actions_remaining = unit.get_max_actions()
+
+	# Extra_Action status: grants 1 bonus action this turn, then the status is consumed
+	if _unit_has_effect(unit, "grants_extra_action"):
+		unit.actions_remaining += 1
+		_remove_status_by_name(unit, "Extra_Action")
+		combat_log.emit("%s surges with extra energy — gains a bonus action!" % unit.unit_name)
+
+	# Prone (skip_next_action): costs 1 action to stand up at the start of this turn
+	if _unit_has_effect(unit, "skip_next_action"):
+		unit.actions_remaining = maxi(0, unit.actions_remaining - 1)
+		_remove_status_by_name(unit, "Prone")
+		combat_log.emit("%s struggles to their feet — loses 1 action." % unit.unit_name)
 
 	# Restore stamina each turn (base 5 + Finesse/5, so characters recover ~7-12/turn)
 	var finesse = unit.character_data.get("attributes", {}).get("finesse", 10)
@@ -1214,7 +1231,7 @@ func _check_combat_end() -> int:
 		var max_hp: int = unit.max_hp
 		var cur_hp: int = unit.current_hp
 		if max_hp > 0 and cur_hp * 100 <= max_hp * stop_pct:
-			_log_message("%s yields — the duel is over." % unit.character_data.get("name", "Enemy"))
+			combat_log.emit("%s yields — the duel is over." % unit.character_data.get("name", "Enemy"))
 			return Team.PLAYER  # Duel victory
 
 	return -1  # Combat continues
@@ -1269,9 +1286,13 @@ func get_movement_range(unit: Node) -> Array[Vector2i]:
 	if combat_grid == null:
 		return []
 
+	if not can_unit_move(unit):
+		return []
+
 	var movement = unit.get_movement()
 	var movement_mode = unit.get_movement_mode() if unit.has_method("get_movement_mode") else CombatGrid.MovementMode.NORMAL
-	return combat_grid.get_reachable_tiles(unit.grid_position, movement, movement_mode)
+	var pass_through = _unit_has_effect(unit, "can_move_through_enemies")
+	return combat_grid.get_reachable_tiles(unit.grid_position, movement, movement_mode, pass_through)
 
 
 ## Move a unit to a target position
@@ -1280,6 +1301,14 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 		return false
 
 	if not can_act(1):
+		return false
+
+	# Shadow_Pinned: damage_on_move_attempt — takes damage if they try to move while pinned
+	# (movement is already blocked via blocks_movement; this fires for AI attempts or edge cases)
+	if not can_unit_move(unit):
+		if _unit_has_effect(unit, "damage_on_move_attempt"):
+			apply_damage(unit, 8, "physical")
+			combat_log.emit("%s strains against the shadow pin and takes damage!" % unit.unit_name)
 		return false
 
 	var valid_tiles = get_movement_range(unit)
@@ -1298,6 +1327,11 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 	use_action(1)
 	unit_moved.emit(unit, from, target)
 
+	# Slippery_Terrain: prone_chance_on_movement — 35% chance to fall prone after any move
+	if _unit_has_effect(unit, "prone_chance_on_movement") and randf() < 0.35:
+		_apply_status_effect(unit, "Knocked_Down", 1, 0, null)
+		combat_log.emit("%s slips on the treacherous ground!" % unit.unit_name)
+
 	# Zone of Control reactions: check all enemies of this unit for ZoC perks
 	_check_zoc_reactions(unit, from, target)
 
@@ -1314,6 +1348,69 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 
 ## Perform an attack from one unit to another.
 ## reaction=true: skips can_act() check and use_action() cost (for free attacks and ZoC reactions).
+## Execute one extra arm hit in the multi-arm attack chain.
+## chain_chance (0–100): the probability that caused this arm to fire.
+## Wound and disease proc chances scale proportionally (e.g. arm 2 at 50% fire chance
+## gets 50% of the primary arm's proc rates — a glancing brush is less likely to sever).
+## No action cost, no further arm chain, no ammo or durability deduction.
+## Oil, sweep, and other weapon passives only apply to the primary arm.
+func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, chain_chance: float) -> Dictionary:
+	var weapon_dmg_type: String = "crushing"
+	if attacker.has_method("get_weapon_damage_type"):
+		weapon_dmg_type = attacker.get_weapon_damage_type()
+	var hit_chance: float = calculate_hit_chance(attacker, defender)
+	var roll: float = randf() * 100.0
+	var hit: bool = roll <= hit_chance
+	var result: Dictionary = {
+		"arm_number": arm_number,
+		"hit": hit,
+		"hit_chance": hit_chance,
+		"roll": roll,
+		"damage": 0,
+		"crit": false,
+		"damage_type": weapon_dmg_type,
+	}
+	if hit:
+		var damage_result := calculate_physical_damage(attacker, defender, weapon_dmg_type)
+		result.merge(damage_result, true)
+		apply_damage(defender, result.damage, weapon_dmg_type)
+		_process_on_hit_perks(attacker, defender, result)
+
+		# Wound and disease procs — scaled by chain_chance so later arms are less likely to inflict.
+		# chain_chance is 0–100; divide by 100 to get a 0–1 multiplier.
+		var scale: float = chain_chance / 100.0
+		if WoundSystem and defender.team == Team.PLAYER:
+			if result.get("crit", false) and randf() < 0.20 * scale:
+				var char_data = defender.character_data
+				var wound_id = WoundSystem.apply_random_crit_wound(char_data)
+				if wound_id != "":
+					combat_log.emit("Arm %d: %s received a %s!" % [
+						arm_number, defender.unit_name,
+						WoundSystem.WOUND_TYPES.get(wound_id, {}).get("display_name", wound_id)
+					])
+					result["persistent_wound"] = wound_id
+			if attacker.team == Team.ENEMY:
+				var attacker_tags: Array = attacker.character_data.get("tags", []) if "character_data" in attacker else []
+				if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15 * scale:
+					var tag_source: String = "undead" if "undead" in attacker_tags else "diseased"
+					var disease_id = WoundSystem.apply_random_disease(defender.character_data, tag_source)
+					if disease_id != "":
+						combat_log.emit("Arm %d: %s afflicted with %s!" % [
+							arm_number, defender.unit_name,
+							WoundSystem.WOUND_TYPES.get(disease_id, {}).get("display_name", disease_id)
+						])
+						result["persistent_disease"] = disease_id
+
+		var msg: String = "Arm %d: %s → %s for %d%s" % [
+			arm_number, attacker.unit_name, defender.unit_name, result.damage,
+			" (crit!)" if result.get("crit", false) else ""
+		]
+		combat_log.emit(msg)
+	else:
+		combat_log.emit("Arm %d: %s misses %s" % [arm_number, attacker.unit_name, defender.unit_name])
+	return result
+
+
 func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dictionary:
 	if not reaction and not can_act(1):
 		return {"success": false, "reason": "No actions remaining"}
@@ -1321,6 +1418,19 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 	# Forgetful / Pacified units cannot attack
 	if not can_unit_attack(attacker):
 		return {"success": false, "reason": "Cannot attack in current state"}
+
+	# Disarmed units cannot make weapon attacks (they can still cast spells)
+	if _unit_has_effect(attacker, "cannot_make_weapon_attacks"):
+		combat_log.emit("%s is disarmed and cannot make weapon attacks!" % attacker.unit_name)
+		return {"success": false, "reason": "Disarmed — cannot make weapon attacks"}
+
+	# Sanctuary: attacker under Sanctuary cannot target enemies
+	if _unit_has_effect(attacker, "cannot_target_enemies"):
+		return {"success": false, "reason": "Sanctuary — cannot target enemies"}
+
+	# Sanctuary on defender: cannot be targeted by attacks
+	if _unit_has_effect(defender, "cannot_be_targeted") and not defender.has_status("Invisible"):
+		return {"success": false, "reason": "Target is protected — cannot be attacked"}
 
 	# Charmed units cannot attack the caster who charmed them
 	var charm_source = get_cc_source(attacker, "charmed")
@@ -1334,6 +1444,10 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			var fx_def = _status_effects.get(fx.get("status", ""), {})
 			if "cannot_use_ranged" in fx_def.get("effects", []):
 				return {"success": false, "reason": "Cannot use ranged attacks while blinded"}
+		# Storm_Lord's immune_to_ranged: ranged attacks against this defender auto-fail
+		if _unit_has_effect(defender, "immune_to_ranged"):
+			combat_log.emit("%s's storm form deflects the ranged attack!" % defender.unit_name)
+			return {"success": false, "reason": "Target immune to ranged attacks"}
 
 	# Check range (adjacent for melee, will expand for ranged later)
 	var distance = _grid_distance(attacker.grid_position, defender.grid_position)
@@ -1356,6 +1470,11 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 	if "facing" in attacker:
 		attacker.facing = _dir_toward(attacker.grid_position, defender.grid_position)
 
+	# Sanctuary breaks when attacker takes any offensive action
+	if _unit_has_effect(attacker, "breaks_on_offensive_action"):
+		_remove_status_by_name(attacker, "Sanctuary")
+		combat_log.emit("%s's Sanctuary shatters as they take aggressive action!" % attacker.unit_name)
+
 	# Shadow Strike: first attack from stealth is a guaranteed crit
 	var _stealth_attack = "is_stealthed" in attacker and attacker.is_stealthed
 
@@ -1369,6 +1488,18 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		hit = false
 		attacker.will_miss_next_attack = false
 		combat_log.emit("%s swings wide — it was supposed to miss!" % attacker.unit_name)
+	# Force_Miss status (next_attack_misses effect) also forces a miss and then expires
+	if not _stealth_attack and hit and _unit_has_effect(attacker, "next_attack_misses"):
+		hit = false
+		_remove_status_by_name(attacker, "Force_Miss")
+		combat_log.emit("%s's attack goes completely wide!" % attacker.unit_name)
+
+	# Blessed_Shot: next_ranged_guaranteed_hit forces a hit for ranged weapon attacks, then expires
+	var _is_ranged_bshot = attacker.is_ranged_weapon() if attacker.has_method("is_ranged_weapon") else false
+	if not hit and _is_ranged_bshot and _unit_has_effect(attacker, "next_ranged_guaranteed_hit"):
+		hit = true
+		_remove_status_by_name(attacker, "Blessed_Shot")
+		combat_log.emit("%s's shot is divinely guided — guaranteed hit!" % attacker.unit_name)
 
 	# Get weapon damage type (slashing, crushing, piercing)
 	var weapon_dmg_type = attacker.get_weapon_damage_type() if attacker.has_method("get_weapon_damage_type") else "crushing"
@@ -1392,6 +1523,10 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		# Calculate damage
 		var damage_result = calculate_physical_damage(attacker, defender, weapon_dmg_type)
 		result.merge(damage_result, true)
+
+		# Air_Shield: ranged attacks deal 25% less damage to the defender
+		if is_ranged and _unit_has_effect(defender, "ranged_damage_reduction"):
+			result["damage"] = int(result["damage"] * 0.75)
 
 		# Shadow Strike: stealth attack is always a crit (apply crit multiplier if not already a crit)
 		if _stealth_attack and not result.get("crit", false):
@@ -1547,6 +1682,44 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 
 	if not reaction:
 		use_action(1)
+
+	# Multi-arm attack chain: each arm beyond the first fires probabilistically based on Finesse.
+	# Melee only; chain stops when an arm fails its roll (coordination degraded).
+	var extra_arm_results: Array[Dictionary] = []
+	if not reaction and not is_ranged and BodySystem:
+		var char_data: Dictionary = attacker.character_data if "character_data" in attacker else {}
+		var arm_count: int = BodySystem.get_attack_arm_count(char_data)
+		if arm_count > 1:
+			# Only chain for dual-wielders, natural weapon species, or genuinely multi-armed characters
+			var should_chain: bool = (arm_count > 2)
+			if not should_chain:
+				var weapon_set: int = char_data.get("active_weapon_set", 1)
+				var off_slot: String = "weapon_off" if weapon_set == 1 else "weapon_off_2"
+				var equipment_dict: Dictionary = char_data.get("equipment", {})
+				var oh_id: String = equipment_dict.get(off_slot, "")
+				should_chain = (oh_id != "")
+			if not should_chain:
+				var primary_nw: Dictionary = BodySystem.get_natural_weapon(char_data, "hand_r")
+				should_chain = primary_nw.get("locked", false)
+			if should_chain:
+				var finesse: int = char_data.get("attributes", {}).get("finesse", 10)
+				var akimbo_bonus: float = 20.0 if PerkSystem.has_perk(char_data, "akimbo") else 0.0
+				for arm_index in range(1, arm_count):
+					var arm_number: int = arm_index + 1
+					var fire_chance: float = clampf(
+						BodySystem.get_arm_attack_chance(finesse, arm_number) + akimbo_bonus,
+						0.0, 100.0
+					)
+					if randf() * 100.0 <= fire_chance:
+						if defender.is_alive():
+							var extra := _execute_arm_chain_attack(attacker, defender, arm_number, fire_chance)
+							extra_arm_results.append(extra)
+							if not defender.is_alive():
+								break
+					else:
+						break  # Coordination degraded; remaining arms don't roll
+	result["extra_arm_results"] = extra_arm_results
+
 	unit_attacked.emit(attacker, defender, result)
 	return result
 
@@ -1730,12 +1903,20 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 			if ally.grid_position == left_flank or ally.grid_position == right_flank:
 				hit_chance -= 10.0
 
+	# Blurred: defender's blurred state causes an extra 20% miss chance on all attacks
+	if _unit_has_effect(defender, "attacks_have_miss_chance"):
+		hit_chance -= 20.0
+
 	# Clamp to 10-95%
 	return clampf(hit_chance, 10.0, 95.0)
 
 
 ## Calculate physical damage (slashing, crushing, or piercing)
 func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String = "crushing") -> Dictionary:
+	# Thin_Air: unit cannot deal physical damage at all
+	if _unit_has_effect(attacker, "cannot_deal_physical"):
+		return {"damage": 0, "crit": false, "armor_pen": 0}
+
 	# Base damage from weapon + attribute + skill
 	var base_damage = attacker.get_attack_damage()
 
@@ -1804,6 +1985,10 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 			if defender.has_method("show_combat_text"):
 				var bs_crit = 35 if _facing_zone == "rear" else 25
 				defender.show_combat_text("Backstab! +%d%% crit" % bs_crit, Color(0.75, 0.1, 0.9))
+
+	# Marked_for_Death: defender has crit_vulnerability (+25% crit chance against them)
+	if _unit_has_effect(defender, "crit_vulnerability"):
+		crit_chance += 25.0
 
 	var crit = randf() * 100.0 <= crit_chance
 	# Backstab crits deal 2x damage (replacing the 1.5x standard multiplier)
@@ -1982,6 +2167,16 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 	if CheatConsole and CheatConsole.god_mode and "team" in unit and unit.team == Team.PLAYER:
 		unit_damaged.emit(unit, 0, damage_type)
 		return
+
+	# Marked_for_Death: damage_taken_increase makes unit take 50% more damage
+	if damage > 0 and _unit_has_effect(unit, "damage_taken_increase"):
+		damage = int(damage * 1.5)
+
+	# Death_Immunity: hp_cannot_drop_below_1 — cap damage so unit stays at 1 HP minimum
+	if damage > 0 and _unit_has_effect(unit, "hp_cannot_drop_below_1"):
+		damage = mini(damage, unit.current_hp - 1)
+		damage = maxi(0, damage)
+
 	unit.take_damage(damage)
 	unit_damaged.emit(unit, damage, damage_type)
 	# Hit Back Harder (Might 3): taking damage sets a ready flag for +20% bonus on next melee attack
@@ -2198,6 +2393,16 @@ func _kill_unit(unit: Node) -> void:
 			combat_log.emit("The Lord of Death claims %s's soul!" % unit.unit_name)
 			break  # Only one resurrection per death event
 
+	# Ancestral_Vengeance: when an ally dies, each other ally with this status gains a damage buff
+	var dead_team = unit.team if "team" in unit else -1
+	for av_unit in all_units:
+		if av_unit == unit or av_unit.is_dead:
+			continue
+		if "team" in av_unit and av_unit.team == dead_team:
+			if _unit_has_effect(av_unit, "attack_damage_buff_when_ally_dies"):
+				_apply_status_effect(av_unit, "Rage", 2, 0, null)
+				combat_log.emit("%s is filled with ancestral rage at the loss of %s!" % [av_unit.unit_name, unit.unit_name])
+
 	# Remove from turn order and fix the current index
 	var idx = turn_order.find(unit)
 	if idx != -1:
@@ -2238,26 +2443,55 @@ func get_spell(spell_id: String) -> Dictionary:
 			var target_type = target.get("type", "single")
 			var eligible = target.get("eligible", "enemy")
 
-			# Map to expected targeting values
-			match target_type:
-				"single":
-					if eligible == "ally":
-						spell["targeting"] = "single_ally"
-					elif eligible == "corpse":
-						spell["targeting"] = "single_corpse"
+			# Any spell with an "aoe" block is an AoE spell, regardless of target.type
+			if "aoe" in spell:
+				spell["targeting"] = "aoe"
+				var aoe: Dictionary = spell["aoe"].duplicate()
+				# Normalize the primary size field (accept base_size / radius as aliases)
+				if not "size" in aoe:
+					if "base_size" in aoe and not (aoe.base_size is String):
+						aoe["size"] = int(aoe.base_size)
+					elif "radius" in aoe:
+						aoe["size"] = int(aoe.radius)
 					else:
-						spell["targeting"] = "single"
-				"self":
-					spell["targeting"] = "self"
-				"aoe", "circle":
-					spell["targeting"] = "aoe_circle"
-					# AoE radius can be in target.radius or spell.aoe.base_size
-					var aoe_data = spell.get("aoe", {})
-					spell["aoe_radius"] = target.get("radius", aoe_data.get("base_size", 2))
-				"chain":
-					spell["targeting"] = "chain"
-				_:
-					spell["targeting"] = target_type
+						aoe["size"] = 2
+				# "battlefield_width" string → -1 sentinel (resolved to grid.x at runtime)
+				if str(aoe.get("size", "")) == "battlefield_width":
+					aoe["size"] = -1
+				# Ensure origin is set
+				if not "origin" in aoe:
+					if aoe.get("type") == "around_caster":
+						aoe["origin"] = "caster"
+					elif target.get("origin") == "caster" or target.get("centered_on") == "caster":
+						aoe["origin"] = "caster"
+					else:
+						aoe["origin"] = "target"
+				spell["aoe"] = aoe
+				# Keep aoe_radius for backwards compat (ground effects + item code uses it)
+				var sz: int = aoe.get("size", 2)
+				spell["aoe_radius"] = sz if sz > 0 else 2
+			else:
+				# No aoe block: dispatch on target.type
+				match target_type:
+					"single":
+						if eligible == "ally":
+							spell["targeting"] = "single_ally"
+						elif eligible == "corpse":
+							spell["targeting"] = "single_corpse"
+						else:
+							spell["targeting"] = "single"
+					"self":
+						spell["targeting"] = "self"
+					"aoe", "circle":
+						# Legacy: no aoe block, treat as circle
+						spell["targeting"] = "aoe"
+						var r: int = target.get("radius", 2)
+						spell["aoe"] = {"type": "circle", "size": r, "origin": "target"}
+						spell["aoe_radius"] = r
+					"chain":
+						spell["targeting"] = "chain"
+					_:
+						spell["targeting"] = target_type
 
 		# Default targeting if still missing
 		if not "targeting" in spell:
@@ -2356,6 +2590,21 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	if not can_unit_cast(caster):
 		return {"success": false, "reason": "Cannot cast while silenced"}
 
+	# Sanctuary: block offensive spells; break Sanctuary if they try to cast offensively
+	if _unit_has_effect(caster, "cannot_target_enemies"):
+		var spell_check = get_spell(spell_id)
+		var spell_targeting = spell_check.get("targeting", "single")
+		# Self/ally spells are still allowed under Sanctuary
+		if spell_targeting not in ["self", "ally", "allies"]:
+			return {"success": false, "reason": "Sanctuary — cannot cast offensive spells"}
+
+	# Sanctuary breaks when casting any offensive spell
+	if _unit_has_effect(caster, "breaks_on_offensive_action"):
+		var spell_break_check = get_spell(spell_id)
+		if spell_break_check.get("targeting", "single") not in ["self", "ally", "allies"]:
+			_remove_status_by_name(caster, "Sanctuary")
+			combat_log.emit("%s's Sanctuary shatters as they cast offensively!" % caster.unit_name)
+
 	# Stealth: spell casting breaks stealth unless invisible or Shady Dealings
 	if "is_stealthed" in caster and caster.is_stealthed:
 		var _is_inv = caster.has_status("Invisible") if caster.has_method("has_status") else false
@@ -2401,7 +2650,8 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	var summon_id = spell.get("summon", "")
 	var targets = _get_spell_targets(caster, spell, target_pos)
 	# Ground-targeting (summoning) spells don't need a unit target — just a valid tile
-	if targets.is_empty() and targeting != "self" and targeting != "ground":
+	# AoE spells may legally fire into empty space (terrain effects still apply)
+	if targets.is_empty() and targeting != "self" and targeting != "ground" and targeting != "aoe":
 		return {"success": false, "reason": "No valid targets"}
 
 	# Calculate base mana cost
@@ -2531,12 +2781,96 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 				else:
 					combat_log.emit("%s is weakened by the %s terrain! (%d spellpower)" % [caster.unit_name, terrain_label, delta])
 
+	# Lunar & weekday spellpower bonuses
+	var calendar_schools: Array = spell.get("schools", []).map(func(s: String): return s.to_lower())
+
+	# Full moon → White +20%; new moon → Black +20%
+	if GameState.is_full_moon() and "white" in calendar_schools:
+		var delta := int(spellpower_bonus * 0.20)
+		spellpower_bonus += delta
+		combat_log.emit("%s is empowered by the full moon! (+%d spellpower)" % [caster.unit_name, delta])
+	elif GameState.is_new_moon() and "black" in calendar_schools:
+		var delta := int(spellpower_bonus * 0.20)
+		spellpower_bonus += delta
+		combat_log.emit("%s draws power from the new moon's darkness! (+%d spellpower)" % [caster.unit_name, delta])
+
+	# Weekday school bonus: each day of the week favours one magic school (+20%)
+	# Sun=Fire, Mon=Water, Tue=Sorcery, Wed=Space, Thu=Air, Fri=Enchantment, Sat=Earth
+	var weekday_school := GameState.get_weekday_school()
+	if weekday_school in calendar_schools:
+		var delta := int(spellpower_bonus * 0.20)
+		spellpower_bonus += delta
+		combat_log.emit("%s, %s magic — +%d spellpower" % [GameState.get_weekday_name(), weekday_school.capitalize(), delta])
+
 	# --- Summoning spells: spawn a unit instead of applying effects to targets ---
 	if summon_id != "" and targeting == "ground":
 		use_action(1)
 		var summon_result = _spawn_summoned_unit(caster, summon_id, target_pos, spellpower_bonus)
 		spell_cast.emit(caster, spell, [], [summon_result])
 		return {"success": true, "spell": spell, "targets": [], "results": [summon_result], "mana_cost": mana_cost}
+
+	# --- Illusion spells: spawn a decoy unit that draws enemy attacks ---
+	if targeting == "ground" and spell.get("special", {}).get("creates_illusion", false):
+		use_action(1)
+		var duration = spellpower_bonus if spell.get("duration", 0) == "spellpower" else int(spell.get("duration", 3))
+		if duration <= 0:
+			duration = 3
+		var illusion_hp = maxi(5, spellpower_bonus * 2)
+		var illusion_data: Dictionary = {
+			"name": "Decoy",
+			"archetype_name": "Illusion",
+			"max_hp": illusion_hp,
+			"max_mana": 0,
+			"actions": 0,  # Illusions can't act
+			"resistances": {},
+			"inventory": [],
+			"skills": {},
+			"known_spells": [],
+			"perks": [],
+			"tags": ["illusion", "decoy"],
+			"derived": {
+				"max_hp": illusion_hp, "current_hp": illusion_hp,
+				"max_mana": 0, "current_mana": 0,
+				"max_stamina": 10, "current_stamina": 10,
+				"initiative": 0, "movement": 0,
+				"dodge": 0, "armor": 0, "crit_chance": 0.0,
+				"accuracy": 0, "damage": 0, "damage_type": "none"
+			},
+			"equipped_weapon": {"name": "None", "damage": 0, "damage_type": "none", "range": 1}
+		}
+		var decoy_unit = CombatUnit.new()
+		decoy_unit.summoner_id = caster.get_instance_id()
+		decoy_unit.init_as_enemy(illusion_data)
+		decoy_unit.team = caster.team
+		# Find a valid spawn position
+		var spawn_pos = Vector2i(-1, -1)
+		if combat_grid != null and not combat_grid.is_occupied(target_pos) and combat_grid.is_valid_position(target_pos):
+			spawn_pos = target_pos
+		else:
+			for radius in range(1, 4):
+				for dx in range(-radius, radius + 1):
+					for dy in range(-radius, radius + 1):
+						if abs(dx) != radius and abs(dy) != radius:
+							continue
+						var candidate = target_pos + Vector2i(dx, dy)
+						if combat_grid != null and combat_grid.is_valid_position(candidate) and not combat_grid.is_occupied(candidate):
+							spawn_pos = candidate
+							break
+					if spawn_pos != Vector2i(-1, -1):
+						break
+				if spawn_pos != Vector2i(-1, -1):
+					break
+		if spawn_pos == Vector2i(-1, -1):
+			return {"success": false, "reason": "No space for decoy", "mana_cost": 0}
+		combat_grid.place_unit(decoy_unit, spawn_pos)
+		all_units.append(decoy_unit)
+		turn_order.append(decoy_unit)
+		unit_deployed.emit(decoy_unit, spawn_pos)
+		combat_log.emit("%s creates a Decoy — %d HP, lasts %d turns!" % [caster.unit_name, illusion_hp, duration])
+		var illusion_result = {"success": true, "type": "illusion", "unit": decoy_unit, "position": spawn_pos, "duration": duration}
+		spell_cast.emit(caster, spell, [], [illusion_result])
+		_process_spell_cast_perks(caster, null, spell, illusion_result)
+		return {"success": true, "spell": spell, "targets": [], "results": [illusion_result], "mana_cost": mana_cost}
 
 	# --- Ground-effect spells: place terrain effects at target location ---
 	# e.g. smoke_cloud — blocks_line_of_sight in spell.special means SMOKE terrain
@@ -2576,7 +2910,7 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		results.append(effect_result)
 
 	# Create ground effects for AoE spells that deal elemental damage
-	if targeting == "aoe_circle":
+	if targeting == "aoe":
 		var spell_damage_type = spell.get("damage_type", "")
 		if spell_damage_type != "":
 			var aoe_radius = spell.get("aoe_radius", 1)
@@ -2621,23 +2955,31 @@ func _get_spell_targets(caster: Node, spell: Dictionary, target_pos: Vector2i) -
 			if unit and unit.is_bleeding_out:
 				targets.append(unit)
 
-		"aoe_circle":
-			var radius = spell.get("aoe_radius", 1)
-			var center = target_pos
-			if spell.get("aoe_center", "") == "self":
-				center = caster.grid_position
-
+		"aoe":
+			var aoe_def: Dictionary = spell.get("aoe", {"type": "circle", "size": 2, "origin": "target"})
+			var grid_sz = Vector2i(16, 10)
+			if combat_grid:
+				grid_sz = combat_grid.grid_size
+			var aoe_tiles = AoEResolver.get_tiles(aoe_def, caster.grid_position, target_pos, grid_sz)
+			var is_offensive = _spell_is_offensive(spell)
 			for unit in all_units:
 				if not unit.is_alive() and not unit.is_bleeding_out:
 					continue
-				var dist = _grid_distance(unit.grid_position, center)
-				if dist <= radius:
-					# For offensive AoE, only hit enemies (unless friendly fire enabled)
-					var is_offensive = _spell_is_offensive(spell)
+				if unit.grid_position in aoe_tiles:
 					if is_offensive and unit.team != caster.team:
 						targets.append(unit)
 					elif not is_offensive and unit.team == caster.team:
 						targets.append(unit)
+
+		"all_enemies":
+			for unit in all_units:
+				if unit.is_alive() and unit.team != caster.team:
+					targets.append(unit)
+
+		"all_allies":
+			for unit in all_units:
+				if unit.is_alive() and unit.team == caster.team and unit != caster:
+					targets.append(unit)
 
 		"chain":
 			# Start with primary target, chain to nearby enemies
@@ -2700,14 +3042,16 @@ func _calculate_spell_bonus(caster: Node, spell: Dictionary) -> int:
 
 
 ## Unified status effect duration calculation.
-## Spellpower sets the baseline (1 extra turn per 10 points).
-## Enchantment skill adds on top for all status-causing spells (1 extra turn per 2 levels),
-## making it the natural "duration" school regardless of the spell's elemental tag.
+## Base 2 turns + Enchantment skill (main modifier, +1 per 2 levels) + Spellpower (secondary, +1 per 15 points).
+## Enchantment is the primary scaling axis: a dedicated enchanter doubles the duration
+## that raw spellpower alone would produce.
 ##
 ## Fixed integer durations in spells.json are intentional balance decisions and pass through
-## unchanged (e.g. Stun for 1 turn, Entangle for 4 turns).
-## Special strings ("permanent", "combat", "until_save", etc.) return the safe fallback
-## of 3 turns — those spells rely on their status definition's own duration_type logic.
+## unchanged (e.g. Blessed Shot = 1 turn, Searing Orb terrain = 4 turns).
+## "combat": used by spells that last until combat ends (returns 999; status definition
+## or special handler owns the real cleanup logic).
+## Other special strings ("permanent", "until_save", "until_destroyed") return 3 as a safe
+## fallback — those spells rely on their status definition's duration_type for actual expiry.
 func _calculate_status_duration(caster: Node, spell: Dictionary, bonus: int) -> int:
 	var dur_field = spell.get("duration", null)
 
@@ -2715,17 +3059,24 @@ func _calculate_status_duration(caster: Node, spell: Dictionary, bonus: int) -> 
 	if dur_field is int or dur_field is float:
 		return int(dur_field)
 
-	# "spellpower" or absent: apply unified formula
-	if dur_field == "spellpower" or dur_field == null:
-		var sp_contribution: int = int(bonus / 10)
+	# "combat": lasts the entire combat encounter
+	if dur_field == "combat":
+		return 999
+
+	# "spellpower" or legacy "spellpower_turns" (or absent): unified scaling formula.
+	# Enchantment is the main modifier; spellpower contributes less to keep dedicated
+	# enchanters clearly ahead of raw-power builds.
+	if dur_field == "spellpower" or dur_field == "spellpower_turns" or dur_field == null:
 		var enchantment_level: int = 0
 		if "character_data" in caster:
 			enchantment_level = caster.character_data.get("skills", {}).get("enchantment", 0)
-		# Enchantment: +1 turn per 2 skill levels (Enc 2=+1 … Enc 10=+5)
+		# Enchantment: +1 turn per 2 skill levels (Enc 2=+1 … Enc 14=+7)
 		var enc_contribution: int = int(enchantment_level / 2)
-		return maxi(1, 2 + sp_contribution + enc_contribution)
+		# Spellpower: +1 turn per 15 points (secondary — typical SP 10–30 adds +0 to +2)
+		var sp_contribution: int = int(bonus / 15)
+		return maxi(1, 2 + enc_contribution + sp_contribution)
 
-	# Special strings ("permanent", "combat", "until_save", "fixed", "until_destroyed"):
+	# Other special strings ("permanent", "until_save", "until_destroyed"):
 	# the status definition's duration_type field handles the real logic; return safe fallback
 	return 3
 
@@ -2764,6 +3115,18 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 			var resistance = target.get_resistance(element)
 			total_damage = int(total_damage * (1.0 - resistance / 100.0))
 			total_damage = maxi(1, total_damage)
+
+			# Magic_Shield / Golden_Defense: 25% spell damage reduction
+			if _unit_has_effect(target, "spell_damage_reduction"):
+				total_damage = int(total_damage * 0.75)
+
+			# Dampening_Aura: any ally of the target within 2 tiles reduces incoming spell damage by 25%
+			if total_damage > 0 and combat_grid:
+				var allies_nearby = _get_allies_within_range(target, 2)
+				for ally in allies_nearby:
+					if _unit_has_effect(ally, "aura_reduces_enemy_spell_damage"):
+						total_damage = int(total_damage * 0.75)
+						break
 
 			# Lord of Death DY: empowered summons deal 30% bonus spell damage
 			if "lord_of_death_empowered" in caster and caster.lord_of_death_empowered:
@@ -3363,6 +3726,26 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 			unit.show_resisted_text()
 		return
 
+	# --- Status-based debuff immunity (Cleansed: blocks all incoming debuffs) ---
+	if def.get("type", "") == "debuff" and _unit_has_effect(unit, "debuff_immunity"):
+		if unit.has_method("show_resisted_text"):
+			unit.show_resisted_text()
+		return
+
+	# --- Mental_Immunity: blocks charm, fear, and confusion effects ---
+	if status in ["Charmed", "Dominated"] and _unit_has_effect(unit, "immune_to_charm"):
+		if unit.has_method("show_resisted_text"):
+			unit.show_resisted_text()
+		return
+	if status in ["Feared"] and _unit_has_effect(unit, "immune_to_fear"):
+		if unit.has_method("show_resisted_text"):
+			unit.show_resisted_text()
+		return
+	if status in ["Confused", "Chaotic"] and _unit_has_effect(unit, "immune_to_confusion"):
+		if unit.has_method("show_resisted_text"):
+			unit.show_resisted_text()
+		return
+
 	# Kindled (Fire 1): Burning effects applied by the caster last 1 extra turn
 	if status == "Burning" and source != null and "character_data" in source:
 		if PerkSystem.has_perk(source.character_data, "kindled"):
@@ -3405,6 +3788,12 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	if status in ["Stun", "Stunned", "Fear", "Feared", "Charm", "Charmed", "Confused", "Berserk",
 			"Frozen", "Petrified", "Held", "Paralyzed", "Immobilized", "Dominated", "Chaotic"]:
 		_interrupt_mantras(unit, "%s's concentration is broken by %s!" % [unit.unit_name, status])
+
+	# Cleansed: remove_all_debuffs fires immediately on application
+	if "remove_all_debuffs" in def.get("effects", []):
+		var removed_count = _cleanse_status_effects(unit, 99)
+		if removed_count > 0:
+			combat_log.emit("%s is cleansed of all debuffs!" % unit.unit_name)
 
 	# Invisible status grants stealth automatically
 	if status == "Invisible" and "is_stealthed" in unit:
@@ -3500,6 +3889,11 @@ func _process_status_effects(unit: Node) -> bool:
 				damage += extra
 				effect["_escalation_ticks"] = effect.get("_escalation_ticks", 0) + 1
 			var element = effect_def.get("element", "physical")
+			# Fan_the_Flames: source with increase_burning_damage_dealt adds 50% to fire DoT
+			if element == "fire" and effect.has("source"):
+				var dot_source = effect["source"]
+				if is_instance_valid(dot_source) and _unit_has_effect(dot_source, "increase_burning_damage_dealt"):
+					damage = int(damage * 1.5)
 			apply_damage(unit, damage, element)
 			status_effect_triggered.emit(unit, status_name, damage, "damage")
 
@@ -3881,6 +4275,16 @@ func _process_terrain_effects(unit: Node) -> void:
 		if effect != CombatGrid.TerrainEffect.BLESSED:
 			return
 
+	# Status-based terrain immunity (Levitating, Flying statuses even without movement mode set)
+	if _unit_has_effect(unit, "immune_to_ground_effects") or _unit_has_effect(unit, "immune_to_terrain_hazards"):
+		if effect != CombatGrid.TerrainEffect.BLESSED:
+			return
+
+	# Water_Walking: immune to water/wet terrain effects
+	if _unit_has_effect(unit, "immune_to_water_terrain"):
+		if effect in [CombatGrid.TerrainEffect.WET, CombatGrid.TerrainEffect.ICE]:
+			return
+
 	# Apply effect based on type — terrain now also applies matching status effects
 	match effect:
 		CombatGrid.TerrainEffect.FIRE:
@@ -4006,6 +4410,34 @@ func can_unit_cast(unit: Node) -> bool:
 			return false
 
 	return true
+
+
+## Returns true if a unit has any active status whose effects[] array contains effect_name.
+func _unit_has_effect(unit: Node, effect_name: String) -> bool:
+	if not "status_effects" in unit:
+		return false
+	for se in unit.status_effects:
+		var sname = se.get("status", "")
+		var sdef = _status_effects.get(sname, {})
+		if effect_name in sdef.get("effects", []):
+			return true
+	return false
+
+
+## Returns all living units on the same team as 'center' within Chebyshev distance 'radius', excluding center itself.
+func _get_allies_within_range(center: Node, radius: int) -> Array:
+	var result: Array = []
+	if not "grid_position" in center:
+		return result
+	var center_team = center.team if "team" in center else -1
+	for unit in all_units:
+		if unit == center or unit.is_dead:
+			continue
+		if "team" in unit and unit.team == center_team:
+			var diff = unit.grid_position - center.grid_position
+			if absi(diff.x) <= radius and absi(diff.y) <= radius:
+				result.append(unit)
+	return result
 
 
 ## Check if unit can make weapon attacks (not Forgetful/Pacified)
@@ -4142,7 +4574,7 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 				if dist <= spell_range:
 					valid_positions.append(unit.grid_position)
 
-		"aoe_circle", "chain":
+		"aoe", "chain":
 			# Any position in range (for AoE center selection)
 			if combat_grid:
 				for x in range(combat_grid.grid_size.x):
@@ -4225,6 +4657,23 @@ func use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dicti
 			result = _use_bomb(user, item, target_pos)
 		"oil":
 			result = _apply_oil(user, item)
+		"medicine", "herb":
+			result = _apply_potion_effect(user, item)
+			# Field Surgeon (Medicine 6): on success, attempt to treat one wound mid-combat
+			if result.get("success", false) and WoundSystem and PerkSystem.has_perk(user.character_data, "field_surgeon"):
+				var wounds := WoundSystem.get_wounds(user.character_data)
+				if not wounds.is_empty():
+					var med_level := CharacterSystem.get_effective_skill_level(user.character_data, "medicine")
+					var roll := randi_range(1, 20) + med_level
+					if roll >= 14:
+						var wound_id: String = wounds[0].get("id", "")
+						var wdef: Dictionary = WoundSystem.WOUND_TYPES.get(wound_id, {})
+						WoundSystem.cure_wound(user.character_data, wound_id)
+						combat_log.emit("%s's field surgeon training — %s treated mid-combat!" % [
+							user.unit_name, wdef.get("display_name", wound_id)
+						])
+					else:
+						combat_log.emit("%s attempts field surgery — conditions too chaotic. (Rolled %d, need 14)" % [user.unit_name, roll])
 		_:
 			return {"success": false, "reason": "Unknown consumable type: " + item_type}
 
@@ -4859,6 +5308,9 @@ func _run_stealth_detection(unit: Node) -> bool:
 			dc += 4
 		if is_invisible:
 			dc += 10
+		# Chameleon / Shadow_Cloaked: supernatural camouflage makes detection much harder
+		if _unit_has_effect(unit, "stealth_bonus"):
+			dc += 6
 
 		var awareness: int = 8
 		if "attributes" in enemy:
@@ -6437,15 +6889,55 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 		if on_crit_status != "":
 			_apply_status_effect(defender, on_crit_status, 1)
 			result["on_crit_status"] = on_crit_status
+		# 20% chance a crit inflicts a persistent wound on player characters.
+		# Ranged weapons (skill_tag: "ranged") draw from the ranged wound pool.
+		if WoundSystem and defender.team == Team.PLAYER and randf() < 0.20:
+			var char_data = defender.character_data
+			var is_ranged: bool = weapon.get("skill_tag", "") == "ranged"
+			var wound_id: String
+			if is_ranged:
+				wound_id = WoundSystem.apply_random_ranged_crit_wound(char_data)
+			else:
+				wound_id = WoundSystem.apply_random_crit_wound(char_data)
+			if wound_id != "":
+				combat_log.emit("%s received a %s!" % [
+					defender.unit_name,
+					WoundSystem.WOUND_TYPES.get(wound_id, {}).get("display_name", wound_id)
+				])
+				result["persistent_wound"] = wound_id
+
+	# 15% chance hits from undead/diseased enemies inflict a disease on player characters.
+	# 15% chance hits from poison-tagged enemies inflict poisoned blood.
+	if WoundSystem and attacker.team == Team.ENEMY and defender.team == Team.PLAYER:
+		var attacker_tags: Array = attacker.character_data.get("tags", [])
+		if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15:
+			var tag_source = "undead" if "undead" in attacker_tags else "diseased"
+			var char_data = defender.character_data
+			var disease_id = WoundSystem.apply_random_disease(char_data, tag_source)
+			if disease_id != "":
+				combat_log.emit("%s has been afflicted with %s!" % [
+					defender.unit_name,
+					WoundSystem.WOUND_TYPES.get(disease_id, {}).get("display_name", disease_id)
+				])
+				result["persistent_disease"] = disease_id
+		elif "poison" in attacker_tags and randf() < 0.15:
+			var char_data = defender.character_data
+			var disease_id = WoundSystem.apply_random_poison_disease(char_data)
+			if disease_id != "":
+				combat_log.emit("%s has been afflicted with %s!" % [
+					defender.unit_name,
+					WoundSystem.WOUND_TYPES.get(disease_id, {}).get("display_name", disease_id)
+				])
+				result["persistent_disease"] = disease_id
 
 	# Chakram pass_through: hit the next unit in the attack line beyond the defender
 	var pass_count = weapon.get("pass_through", 0)
 	if pass_count > 0 and "grid_position" in attacker and "grid_position" in defender:
 		var dir = (defender.grid_position - attacker.grid_position)
-		var step_x = 0 if dir.x == 0 else (1 if dir.x > 0 else -1)
-		var step_y = 0 if dir.y == 0 else (1 if dir.y > 0 else -1)
+		var step_x: int = 0 if dir.x == 0 else (1 if dir.x > 0 else -1)
+		var step_y: int = 0 if dir.y == 0 else (1 if dir.y > 0 else -1)
 		var step := Vector2i(step_x, step_y)
-		var check_pos := defender.grid_position + step
+		var check_pos: Vector2i = defender.grid_position + step
 		var passed := 0
 		for _i in range(10):  # sanity cap — walk forward through the grid
 			if passed >= pass_count:
@@ -6807,6 +7299,11 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 	# Anatomy Knowledge: +10% damage vs biological enemies — applied in calculate_physical_damage
 	# Shadow Strike: stealth attacks auto-hit + crit (implemented in attack_unit)
 	# Blood in the Wind: +movement when enemies bleeding (checked in stat getter)
+
+	# Electrified_Weapon: stun_chance_on_hit — 25% chance to Stun defender for 1 turn on any hit
+	if _unit_has_effect(attacker, "stun_chance_on_hit") and randf() < 0.25:
+		_apply_status_effect(defender, "Stunned", 1, 0, attacker)
+		result["electrified_stun"] = true
 
 	# Pressure Points (Medicine 7): melee hits vs biological → 15% chance for random debuff
 	var att_char_pp = attacker.character_data if "character_data" in attacker else {}

@@ -407,7 +407,7 @@ func is_occupied(grid_pos: Vector2i) -> bool:
 
 ## Get all tiles reachable within movement range
 ## movement_mode: MovementMode enum - affects height traversal and cost
-func get_reachable_tiles(start: Vector2i, movement: int, movement_mode: int = MovementMode.NORMAL) -> Array[Vector2i]:
+func get_reachable_tiles(start: Vector2i, movement: int, movement_mode: int = MovementMode.NORMAL, pass_through_units: bool = false) -> Array[Vector2i]:
 	var reachable: Array[Vector2i] = []
 	var visited: Dictionary = {}
 	var frontier: Array = [[start, 0]]  # [position, cost]
@@ -420,7 +420,7 @@ func get_reachable_tiles(start: Vector2i, movement: int, movement_mode: int = Mo
 		var cost: int = current[1]
 
 		if cost <= movement and pos != start:
-			# Don't include tiles with enemies or obstacles (can't move through)
+			# Don't include tiles with obstacles; units block destination even with pass_through_units
 			var unit_at = get_unit_at(pos)
 			var tile_data = tiles.get(pos)
 			var has_blocking_obstacle = tile_data != null and tile_data.obstacle != ObstacleType.NONE and tile_data.obstacle != ObstacleType.BARRICADE
@@ -461,8 +461,8 @@ func get_reachable_tiles(start: Vector2i, movement: int, movement_mode: int = Mo
 				# Flying pays +1 even going down (maintaining altitude control)
 				new_cost += absi(height_diff)
 
-			# All units block movement — formations matter
-			if get_unit_at(neighbor) != null:
+			# Units block traversal unless pass_through_units is set (Smoke_Form, Phase_Wind)
+			if not pass_through_units and get_unit_at(neighbor) != null:
 				continue
 
 			if not visited.has(neighbor) or visited[neighbor] > new_cost:
@@ -692,31 +692,28 @@ func highlight_tile(grid_pos: Vector2i, color: Color = COLOR_HOVER) -> void:
 	highlight_layer.add_child(highlight)
 
 
-## Show AoE preview circle around a position
-func show_aoe_preview(center: Vector2i, radius: int) -> void:
-	# Remove existing AoE preview
+## Show AoE preview for any shape defined by an aoe dictionary.
+## caster_pos — the casting unit's grid position (affects directional shapes)
+## target_pos — the tile being aimed at (the AoE center or direction reference)
+func show_aoe_shape_preview(aoe: Dictionary, caster_pos: Vector2i, target_pos: Vector2i) -> void:
 	clear_aoe_preview()
+	var tiles = AoEResolver.get_tiles(aoe, caster_pos, target_pos, grid_size)
+	for pos in tiles:
+		if not is_valid_position(pos):
+			continue
+		var highlight = ColorRect.new()
+		highlight.size = Vector2(tile_size - 2, tile_size - 2)
+		highlight.position = grid_to_world(pos) + Vector2(1, 1)
+		highlight.color = COLOR_AOE_PREVIEW
+		highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		highlight.set_meta("aoe_preview", true)
+		highlight_layer.add_child(highlight)
 
-	if not is_valid_position(center):
-		return
 
-	# Highlight all tiles within radius (Manhattan distance = diamond)
-	for x in range(-radius, radius + 1):
-		for y in range(-radius, radius + 1):
-			var pos = center + Vector2i(x, y)
-			if not is_valid_position(pos):
-				continue
-
-			# Manhattan distance (diamond shape)
-			var dist = absi(x) + absi(y)
-			if dist <= radius:
-				var highlight = ColorRect.new()
-				highlight.size = Vector2(tile_size - 2, tile_size - 2)
-				highlight.position = grid_to_world(pos) + Vector2(1, 1)
-				highlight.color = COLOR_AOE_PREVIEW
-				highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
-				highlight.set_meta("aoe_preview", true)
-				highlight_layer.add_child(highlight)
+## Show a simple circle AoE preview. Legacy wrapper — use show_aoe_shape_preview() for
+## non-circle shapes or when you have the full aoe definition available.
+func show_aoe_preview(center: Vector2i, radius: int) -> void:
+	show_aoe_shape_preview({"type": "circle", "size": radius, "origin": "target"}, center, center)
 
 
 ## Clear AoE preview highlights

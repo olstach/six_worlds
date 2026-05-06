@@ -8529,7 +8529,7 @@
         "delayed_death"
       ],
       "mana_cost": 135,
-      "duration": "fixed",
+      "duration": 3,
       "statuses_caused": [
         "Doomed"
       ],
@@ -10180,7 +10180,7 @@
         "domain_spell"
       ],
       "mana_cost": 40,
-      "duration": "spellpower_turns",
+      "duration": "spellpower",
       "statuses_removed": [
         "mental_negative"
       ],
@@ -10192,7 +10192,7 @@
         "eligible": "ally",
         "upgrade_scaling": "single → aoe → all_allies"
       },
-      "description": "Clear all mental debuffs from target. Grant immunity to mental debuffs for spellpower turns (typically 2–4). Note: distinct from Clarity (Fire/White), which instead provides an Awareness buff."
+      "description": "Clear all mental debuffs from target. Grant immunity to mental debuffs for 2–6 turns (scales with Enchantment skill and spellpower). Note: distinct from Clarity (Fire/White), which instead provides an Awareness buff."
     },
     "divine_eye": {
       "name": "Divine Eye",

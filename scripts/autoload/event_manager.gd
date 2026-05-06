@@ -296,9 +296,13 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 					first_attr_name = attr_name
 					first_attr_value = required_value
 				
-				# Check each party member
+				# Check each party member — use effective attribute (base + quirk modifiers)
 				for party_member in CharacterSystem.get_party():
-					if party_member.attributes[attr_name] >= required_value:
+					var base_val: int = party_member.attributes.get(attr_name, 0)
+					var quirk_bonus: int = 0
+					if QuirkSystem:
+						quirk_bonus = QuirkSystem.get_attribute_bonus(party_member).get(attr_name, 0)
+					if base_val + quirk_bonus >= required_value:
 						meets_req = true
 						passing_char = party_member
 						break
@@ -341,7 +345,24 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 				return result
 			else:
 				result.passing_character = passing_char
-	
+
+		# Check quirk requirement — any party member with the quirk enables the option
+		if "quirk" in reqs:
+			var required_quirk: String = reqs["quirk"]
+			var meets_req := false
+			var passing_char = null
+			for party_member in CharacterSystem.get_party():
+				if required_quirk in party_member.get("quirks", []):
+					meets_req = true
+					passing_char = party_member
+					break
+			if not meets_req:
+				result.available = false
+				result.reason = "Requires: " + QuirkSystem.get_quirk_name(required_quirk)
+				return result
+			else:
+				result.passing_character = passing_char
+
 	return result
 
 ## Execute a choice (with roll if needed)
@@ -587,6 +608,69 @@ func apply_outcome(outcome: Dictionary) -> void:
 						continue
 					PsychologySystem.apply_pressure(party_member, element, amount)
 
+		# Wound/disease outcome — e.g. {"id": "deep_cut", "target": "random"} or {"id": "rot_sickness", "target": "all"}
+		# target: "all" applies to every party member, "random" picks one.
+		if "wound" in rewards:
+			var wound_entry = rewards.wound
+			var wound_id: String = str(wound_entry.get("id", ""))
+			var wound_target: String = str(wound_entry.get("target", "random"))
+			var body_loc: String = str(wound_entry.get("body_location", ""))
+			if wound_id != "" and WoundSystem:
+				var party = CharacterSystem.get_party()
+				var targets: Array = []
+				if wound_target == "all":
+					targets = party
+				elif not party.is_empty():
+					targets = [party[randi() % party.size()]]
+				for char in targets:
+					WoundSystem.apply_wound(char, wound_id, body_loc, "event")
+					print("EventManager: Applied wound '%s' to %s" % [wound_id, char.get("name", "?")])
+
+		# Sever a body part — e.g. {"target": "random", "part": "arm_l"}
+		# "part" may be omitted to sever a random non-vital part (arm/leg/foot).
+		if "sever_part" in rewards:
+			var sever = rewards.sever_part
+			var part_id: String = str(sever.get("part", ""))
+			var sever_target: String = str(sever.get("target", "random"))
+			if BodySystem:
+				var party = CharacterSystem.get_party()
+				var targets: Array = []
+				if sever_target == "all":
+					targets = party
+				elif not party.is_empty():
+					targets = [party[randi() % party.size()]]
+				for char in targets:
+					var actual_part := part_id
+					if actual_part == "":
+						var plan := BodySystem.get_body_plan_def(char)
+						var missing: Array = char.get("body_plan", {}).get("missing_parts", [])
+						var severable: Array[String] = []
+						for p in plan.parts:
+							if p.get("category") in ["arm", "leg", "foot"] and not p.id in missing:
+								severable.append(p.id)
+						if not severable.is_empty():
+							actual_part = severable[randi() % severable.size()]
+					if actual_part != "":
+						var severed: Array[String] = BodySystem.sever_part(char, actual_part)
+						var part_name: String = actual_part.replace("_", " ").capitalize()
+						print("EventManager: %s lost %s%s" % [
+							char.get("name", "?"), part_name,
+							(" (and %d child parts)" % (severed.size() - 1)) if severed.size() > 1 else ""
+						])
+
+		# Supply rewards — e.g. {"food": 2, "herbs": 1}
+		if "supplies" in rewards:
+			var supply_rewards = rewards.supplies
+			for supply_type in supply_rewards:
+				var amount: int = int(supply_rewards[supply_type])
+				if amount > 0:
+					GameState.add_supply(supply_type, amount)
+
+		# Flag rewards — e.g. {"found_bone_raft_name": true}
+		if "flags" in rewards:
+			for flag_key in rewards.flags:
+				GameState.set_flag(flag_key, rewards.flags[flag_key])
+
 		# gold_returned: the NPC refuses the money and gives it back (e.g. dark cave yogini)
 		if "gold_returned" in rewards and rewards.gold_returned:
 			# Cost was deducted when the choice cost was applied; refund the gold cost here.
@@ -684,7 +768,18 @@ func apply_outcome(outcome: Dictionary) -> void:
 			if companion_id == "random":
 				var party_names: Array = CharacterSystem.get_party().map(func(c): return c.get("name", ""))
 				var pool: Array = outcome.get("companion_pool", [])
-				var all_ids: Array = pool if not pool.is_empty() else CompanionSystem.get_all_definitions().keys()
+				var all_ids: Array
+				if not pool.is_empty():
+					all_ids = pool
+				else:
+					# Filter by current realm so realm-specific companions stay in their realm.
+					# Companions with realm "any" appear everywhere.
+					var current_realm: String = GameState.current_world
+					all_ids = CompanionSystem.get_all_definitions().keys().filter(func(cid):
+						var def: Dictionary = CompanionSystem.get_definition(cid)
+						var def_realm: String = def.get("realm", "any")
+						return def_realm == "any" or def_realm == current_realm
+					)
 				var available: Array = all_ids.filter(func(cid):
 					var def = CompanionSystem.get_definition(cid)
 					return not def.get("name", cid) in party_names
@@ -757,6 +852,22 @@ func get_random_event_for_realm(realm: String) -> String:
 		return ""
 
 	return realm_events[randi() % realm_events.size()]
+
+
+## Returns a random camp-trigger event ID for the given realm, or "" if none available.
+## Camp events have "trigger": "camp" and realm matching "any" or the current realm.
+func get_random_camp_event(realm: String) -> String:
+	var camp_events: Array[String] = []
+	for event_id in event_database:
+		var ev: Dictionary = event_database[event_id]
+		if ev.get("trigger", "") != "camp":
+			continue
+		var ev_realm: String = ev.get("realm", "any")
+		if ev_realm == "any" or ev_realm == realm:
+			camp_events.append(event_id)
+	if camp_events.is_empty():
+		return ""
+	return camp_events[randi() % camp_events.size()]
 
 
 ## Teach a random spell to every party member who doesn't already know it.

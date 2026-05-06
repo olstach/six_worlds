@@ -66,7 +66,8 @@ func show_item(item: Dictionary, global_pos: Vector2) -> void:
 	var rarity: String = item.get("rarity", "common").capitalize()
 	item_type_label.text += " — " + rarity
 
-	# Description
+	# Description — force minimum width so the label wraps correctly when floating on a CanvasLayer
+	description_label.custom_minimum_size.x = 260
 	description_label.text = item.get("description", "")
 
 	# Clear old stats
@@ -132,6 +133,7 @@ func show_item(item: Dictionary, global_pos: Vector2) -> void:
 		set_label.text = "Set: Vajra & Bell — +3 Spellpower, +3 Mana, +2 Initiative when paired"
 		set_label.add_theme_font_size_override("font_size", 11)
 		set_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
+		set_label.custom_minimum_size.x = 240
 		set_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		set_row.add_child(set_label)
 
@@ -154,6 +156,7 @@ func show_item(item: Dictionary, global_pos: Vector2) -> void:
 		eff_label.text = ", ".join(parts)
 		eff_label.add_theme_font_size_override("font_size", 12)
 		eff_label.add_theme_color_override("font_color", Color(0.4, 0.8, 1.0))
+		eff_label.custom_minimum_size.x = 240
 		eff_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		eff_row.add_child(eff_label)
 

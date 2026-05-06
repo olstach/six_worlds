@@ -1281,6 +1281,7 @@ func _process_mobs(delta: float) -> void:
 					_process_roaming_mob(mob, delta)
 
 			# Aggressive mobs check for pursuit regardless of movement mode
+			# (pursuit is intentionally allowed to override a freshly-queued patrol step)
 			if mob.attitude == MobAttitude.AGGRESSIVE:
 				_process_aggressive_mob(mob, delta)
 
@@ -1533,6 +1534,22 @@ func pause_mobs() -> void:
 ## Resume mob movement
 func resume_mobs() -> void:
 	pass
+
+
+## Advance all mobs by one patrol/roam step — called by the overworld Wait action.
+## Unlike _process_mobs(), this is step-based (not frame-based) and has no delta.
+func tick_mobs() -> void:
+	for mob in mobs:
+		if mob.is_moving:
+			continue  # Already mid-move, skip this tick
+		match mob.get("mode", MobMode.STATIONARY):
+			MobMode.PATROL:
+				_process_patrol_mob(mob, 0.0)
+			MobMode.ROAMING:
+				_process_roaming_mob(mob, 100.0)  # large delta forces timer to expire
+		# Aggressive mobs check for pursuit regardless of movement mode
+		if mob.attitude == MobAttitude.AGGRESSIVE:
+			_process_aggressive_mob(mob, 0.0)
 
 
 # ============================================
