@@ -554,6 +554,62 @@
           "one_time": true,
           "weight": 0.3,
           "tag": "domain_guild"
+        },
+        {
+          "event_id": "hell_angulimala_pursuit",
+          "name": "The Garland",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_water_lily",
+          "name": "Still Water",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_sineater_encounter",
+          "name": "The Thirteenth Name",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1
+        },
+        {
+          "event_id": "hell_dvijihva_chase",
+          "name": "Two Invoices",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_coolhead_aftermath",
+          "name": "Post-Clarity",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_princess_spiderface",
+          "name": "First Impression",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_samvibrahmi_fortress",
+          "name": "Security Theater",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
         }
       ],
       "pickups": [
@@ -1456,6 +1512,46 @@
           "one_time": true,
           "weight": 0.3,
           "tag": "domain_guild"
+        },
+        {
+          "event_id": "hell_tejasimha_fire",
+          "name": "The Best Seat",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_serji_watching",
+          "name": "Old Habit",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_angulimala_pursuit",
+          "name": "The Garland",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_dvijihva_chase",
+          "name": "Two Invoices",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_coolhead_aftermath",
+          "name": "Post-Clarity",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
         }
       ],
       "pickups": [
