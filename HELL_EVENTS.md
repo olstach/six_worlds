@@ -1000,8 +1000,230 @@ You feel strangely drawn towards a clearing, where among the bleakness a figure 
 
 ---
 
+## Companion Recruitment Events
+
+Events that can result in recruiting a specific hell companion. All one-time.
+
+---
+
+### LOST WANDERER (Karnak)
+*Not blocking | One-time | Icon: npc | Weight: 3 | Fixed landmark near start*
+
+Sheltering in a hollow near the road, a lone figure sits apart from the cold. They do not look up as you approach. "Cast out," they say at last. "Showed mercy once when the Guard said not to. Paid for it." A short, bitter laugh. "Been wandering since. No patrol, no master. Just nowhere to be."
+
+**[Default] "Nowhere to be sounds like a reason to travel with us."**
+→ Recruit: karnak (free) | Karma: human+3, god+2
+
+**[Default] "Hell rewards the strong. Find your own way."**
+→ Text — They nod, unsurprised. You leave them to the cold.
+→ Karma: hell+2
+
+---
+
+### A FAMILIAR FACE (Karnak)
+*Not blocking | One-time | Icon: npc | Weight: 3 | Realm: any*
+
+A red devil sits by the road, stripped of his armor. "I'm done with the Guard," he says simply. "Done with all of it. I just need somewhere to be."
+
+**[Default] Not your problem. Walk on.**
+→ Text — You leave him by the road. Some distances can't be closed.
+
+**[Yoga 3] You know what showing mercy in hell costs. Acknowledge it.**
+→ Recruit: karnak (free) | Karma: human+3, god+2
+
+**[Leadership 4] Offer him something worth serving — not just somewhere to be.**
+→ Recruit: karnak (free) | Karma: human+2
+
+**[Roll: Charm DC 12] Be someone worth following — just ask him.**
+→ Success: Recruit: karnak (free) | Karma: human+2
+→ Failure: Text — "No offense. I just need a sign it is worth it this time. Come back if things get interesting."
+
+---
+
+### THE GARLAND (Angulimāla)
+*Not blocking | One-time | Icon: npc | Weight: 2 | Both zones*
+
+The road ahead is clear except for one figure, standing still. Behind him: several bodies. He watches you approach with the calm attention of someone who has made his peace with violence. Angulimāla. He does not move to block you. He just watches — to see what you will do.
+
+**[Default] Give him a wide berth. Not every problem needs to be yours.**
+→ Text — He watches you go. You feel the weight of his attention until the road curves out of sight.
+
+**[Yoga 5] Walk toward him — not around him. Calmly.**
+→ Recruit: angulimala (free) | Karma: god+3, human+2
+
+**[Martial Arts 4] Acknowledge the skill — not what he used it for, but the skill itself.**
+→ Recruit: angulimala (free) | Karma: human+2
+
+**[Roll: Awareness DC 15] His stillness isn't threat — read what it actually is, and act on it.**
+→ Success: Recruit: angulimala (free) | Karma: human+3, god+2
+→ Failure: Combat: demon_elite (hard) — he moves before you finish the thought | Karma: hell+3
+
+---
+
+### STILL WATER (Water Lily)
+*Not blocking | One-time | Icon: npc | Weight: 2 | Cold hell only*
+
+At the edge of a frozen river in the cold hell wastes, a blue-skinned woman stands alone. She is looking down at the ice. The water beneath it is visible, dark and still. She does not move when you approach. She has been here a while.
+
+**[Default] Leave her to her silence. Not every stillness wants company.**
+→ Text — You walk on. The frozen river does not change. Neither does she.
+
+**[Water Magic 4] Place your hand on the ice. Commune through it.**
+→ Recruit: water_lily (free) | Karma: human+3, god+2
+
+**[Yoga 5] Sit beside her. Say nothing. Wait.**
+→ Recruit: water_lily (free) | Karma: god+3, human+2
+
+**[Roll: Charm DC 14] Say something to her — something real, not reassurance.**
+→ Success: Recruit: water_lily (free) | Karma: human+3
+→ Failure: Text — She looks briefly, then back at the ice. The words weren't wrong — they just weren't right.
+
+---
+
+### OLD HABIT (Serji)
+*Not blocking | One-time | Icon: npc | Weight: 2 | Fire hell only*
+
+A red devil stands apart from a pit fight, watching. The biggest person in the vicinity by a significant margin, and the only one not involved. Arms crossed. Expression unreadable. He stopped caring about the outcome some time ago but cannot quite bring himself to walk away.
+
+**[Default] Walk past. Some people need to find their own door.**
+→ Text — He doesn't look at you. The fight continues below.
+
+**[Unarmed 4] Stand beside him and watch. Let him see you understand what you're looking at.**
+→ Recruit: serji (free) | Karma: human+2
+
+**[Leadership 5] Tell him what you're doing. Make it worth leaving this for.**
+→ Recruit: serji (free) | Karma: human+3, god+1
+
+**[Roll: Charm DC 14] Ask him why he still watches, if he's done with it.**
+→ Success: Recruit: serji (free) | Karma: human+3
+→ Failure: Text — He looks at you once, the way you look at a bad technique. Then back to the fight.
+
+---
+
+### THE BEST SEAT (Tejasimha)
+*Not blocking | One-time | Icon: npc | Weight: 2 | Fire hell only*
+
+A building is burning. Magnificently, fully on fire. A red devil is standing inside it — laughing. Not the laughter of someone losing their mind, but hearty, appreciative. He is watching it the way you watch a great performance.
+
+**[Default] Back away from the lunatic in the burning building.**
+→ Text — The laughter follows you down the road. The building eventually collapses.
+
+**[Fire Magic 4] Step into the fire. Stand beside him. See what he's seeing.**
+→ Recruit: tejasimha (free) | Karma: hell+1, human+2
+
+**[Comedy 4] Call something genuinely funny into the burning building.**
+→ Recruit: tejasimha (free) | Karma: human+3
+
+**[Roll: Focus DC 14] Hold your ground in the heat until he notices. Don't flinch.**
+→ Success: Recruit: tejasimha (free) | Karma: human+2
+→ Failure: Text — The heat wins. You step back, eyes watering. He didn't see you — or if he did, it wasn't enough.
+
+---
+
+### THE THIRTEENTH NAME (Sineater Thirteen)
+*Not blocking | One-time | Icon: npc | Weight: 1 | Cold hell only*
+
+Something is wrong with the stretch of road ahead. The landmarks are where they should be, but the space between them feels occupied. The sensation of being read passes over you like cold water. Something vast and hungry has noticed you. It has twelve names already. It is considering a thirteenth.
+
+**[Default] Back away. Slowly. Distance is the only thing they respect.**
+→ Text — The presence recedes as you put ground between you. You take a different route.
+
+**[Black Magic 5] Greet it correctly — by speaking to what it is, not what it looks like.**
+→ Recruit: sineater_thirteen (free) | Karma: god+2, human+2
+
+**[Space Magic 4] Offer it something other than a soul — a perspective from outside the hunger.**
+→ Recruit: sineater_thirteen (free) | Karma: god+3
+
+**[Roll: Focus DC 16] Let it read you — and don't come apart while it does.**
+→ Success: Recruit: sineater_thirteen (free) | Karma: god+3, human+2
+→ Failure: Text — The scrutiny is too complete. You stumble back. The road ahead feels different for a while.
+→ XP: -20 | Karma: hell+2
+
+---
+
+### TWO INVOICES (Dvijihva)
+*Not blocking | One-time | Icon: npc | Weight: 2 | Both zones*
+
+A blue devil moves through the junction ahead with practiced urgency. He checks both approaches at every turn, tracking two separate routes simultaneously, with an air of irritated professionalism. You can hear the reason from both directions. Two sets of footsteps. Two sets of clients who have recently compared notes.
+
+**[Default] Not your problem. Clear the junction before the clients arrive.**
+→ Text — You get out of the way. A few junctions later, a brief commotion. Then silence.
+
+**[Guile 4] Help him play both clients — you take one side, he takes the other.**
+→ Recruit: dvijihva (free) | Karma: hungry_ghost+2, human+1
+
+**[Sorcery 4] Cast something that stops both pursuers in their tracks — show him what real craft looks like.**
+→ Recruit: dvijihva (free) | Karma: human+2
+
+**[Roll: Awareness DC 13] Spot which client is closer and warn him with enough precision to be useful.**
+→ Success: Recruit: dvijihva (free) | Karma: human+2
+→ Failure: Text — You call the wrong direction. He nearly walks into one of his pursuers. He is not inclined to stop and chat.
+
+---
+
+### POST-CLARITY (Coolhead Hotblood)
+*Not blocking | One-time | Icon: npc | Weight: 2 | Both zones*
+
+A black devil sits in the wreckage of what was recently a building. He is writing in a notebook. Scorched walls. A crater of impressive diameter behind him. He looks up as you approach — expression neutral, remarkably calm. The particular calm of someone who has been through the seal-breaking and come out the other side.
+
+**[Default] Keep moving. Whatever happened here is between him and the building.**
+→ Text — He watches you go, then returns to his notes.
+
+**[Learning 4] Look at what he's writing. Recognize what he's actually documenting.**
+→ Recruit: coolhead_hotblood (free) | Karma: human+3
+
+**[Yoga 3] Offer a different kind of stillness — not suppression, but actual peace.**
+→ Recruit: coolhead_hotblood (free) | Karma: god+2, human+3
+
+**[Roll: Charm DC 13] Ask how it felt. Without judgment — genuinely curious.**
+→ Success: Recruit: coolhead_hotblood (free) | Karma: human+3
+→ Failure: Text — He answers briefly and returns to his notes. The conversation does not develop.
+
+---
+
+### FIRST IMPRESSION (Princess Spiderface)
+*Not blocking | One-time | Icon: npc | Weight: 2 | Cold hell only*
+
+A black devil stands in the middle of a street. Ash around her has footprints leading away — running, by the depth and spacing. She is watching after the person who left. She is not upset. She has the look of someone who is simply used to it. Her face is the reason. She knows this.
+
+**[Default] Take a different route. You don't need to add to her morning.**
+→ Text — You go around. She doesn't see you do it. This, at least, you spare her.
+
+**[White Magic 3] Approach with a healer's attention — look past the surface to what's actually there.**
+→ Recruit: princess_spiderface (free) | Karma: human+4, god+2
+
+**[Space Magic 3] Greet her the way you'd greet a spirit — speak to what's behind the surface.**
+→ Recruit: princess_spiderface (free) | Karma: god+3, human+2
+
+**[Roll: Charm DC 15] Hold her gaze and say something true to the person behind the face.**
+→ Success: Recruit: princess_spiderface (free) | Karma: human+4
+→ Failure: Text — She can tell you're working at it. She smiles the practiced smile of someone given effort instead of ease. "Thank you for trying. That's more than most."
+→ Karma: human+1
+
+---
+
+### SECURITY THEATER (Samvibrahmi)
+*Not blocking | One-time | Icon: npc | Weight: 2 | Cold hell only*
+
+A roadside ruin has been transformed. Tripwires — visible only if you know what to look for. Sight-lines from every approach accounted for. A small figure inside crouches over a very precise map, muttering assessments of approach vectors. He looks up when he realizes you've reached the interior of his perimeter without triggering a single countermeasure. His expression cycles through surprise, calculation, and professional offense.
+
+**[Default] Announce yourself calmly and give him time to collect himself.**
+→ Text — He accepts this with dignity and documents your entry vector in significant detail. You exchange pleasantries and move on.
+
+**[Comedy 4] Walk him through exactly how you got past every single one of his defenses.**
+→ Recruit: samvibrahmi (free) | Karma: human+3
+
+**[Guile 5] Identify the one gap in his defenses he hasn't thought of yet.**
+→ Recruit: samvibrahmi (free) | Karma: human+2
+
+**[Roll: Charm DC 14] Invite him to redirect all this preparation into something that actually makes sense.**
+→ Success: Recruit: samvibrahmi (free) | Karma: human+2
+→ Failure: Text — He shakes his head. "The threats out there are speculative. The threat models in here are documented." He will join you when he finishes mapping all approaches to this ruin. There are approximately forty.
+
+---
+
 ## Ideas — Next Batch
 
 *(add new ideas here)*
 
-*Last updated: 2026-02-27*
+*Last updated: 2026-05-06*
