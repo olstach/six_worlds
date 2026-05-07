@@ -491,6 +491,40 @@
               "animal": 2
             }
           }
+        },
+        {
+          "id": "patient_presence",
+          "type": "roll",
+          "text": "Sit with them without rushing — wait until the shock recedes enough for words",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Eventually they look up. Something surfaces from beneath the shock — a fragment of who they were. They press something into your hands as you leave: a small carved token from before. 'I won't need it here,' they say. It turns out to be worth something.",
+            "rewards": {
+              "xp": 10,
+              "items": [
+                "carved_token"
+              ]
+            },
+            "karma": {
+              "human": 4
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "They are too far gone in shock for words yet. But they grip your hand for a long time. When you finally rise to leave, a little warmth has returned to their face. Perhaps that's enough.",
+            "rewards": {
+              "xp": 5
+            },
+            "karma": {
+              "human": 3
+            }
+          }
         }
       ]
     },
@@ -1023,6 +1057,35 @@
           "outcome": {
             "type": "text",
             "text": "You nod respectfully and continue on your way.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "old_inscription",
+          "type": "roll",
+          "text": "Focus on the oldest inscription — worn deep enough to survive centuries of snow",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "The characters resolve slowly into a specific protective glyph — not decorative but functional, a ward against a category of hell demon you've encountered before. You trace it carefully into memory.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "human": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The dialect is older than anything you recognize. The inscription might be a prayer, a warning, or a traveler's name. You can't tell. The incense smoke curls upward unconcerned.",
+            "rewards": {
+              "xp": 3
+            },
             "karma": {}
           }
         }
@@ -2407,6 +2470,36 @@
               "god": 1
             }
           }
+        },
+        {
+          "id": "riddle_exchange",
+          "type": "roll",
+          "text": "Pose it a riddle in return — meet its strangeness with your own",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "The oracle is silent for long enough you think you've failed. Then, with something that sounds like appreciation: 'That one I have not heard.' It answers your original question fully and adds something you hadn't thought to ask.",
+            "rewards": {
+              "xp": 15
+            },
+            "karma": {
+              "human": 3,
+              "asura": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "'I knew this one before your realm existed,' the oracle says without cruelty, and falls silent again. There is nothing further to be gotten from it today.",
+            "rewards": {
+              "xp": 4
+            },
+            "karma": {}
+          }
         }
       ]
     },
@@ -2640,6 +2733,42 @@
             "karma": {
               "animal": -5,
               "hell": 3
+            }
+          }
+        },
+        {
+          "id": "study_rhythm",
+          "type": "roll",
+          "text": "Study its movements carefully — enormous things have patterns",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "There is a rhythm. Surface, breathe, submerge — every fourteen seconds, always returning to the same channel. You watch long enough to see something you hadn't expected: shapes on its back, almost like writing. Whoever or whatever this creature was before hell, it was marked.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "animal": 3,
+              "human": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You are still reading its movement when it surfaces directly in front of you — wave of heat, displaced lava, the ground lurching. You scramble back, singed and startled.",
+            "rewards": {
+              "xp": 3
+            },
+            "karma": {
+              "animal": 1
+            },
+            "damage": {
+              "type": "fire",
+              "amount": "small"
             }
           }
         }
@@ -2959,6 +3088,42 @@
             "text": "You step aside to let them pass. Their prayers continue without acknowledgment of your presence or your departure. This journey belongs entirely to them.",
             "karma": {}
           }
+        },
+        {
+          "id": "walk_the_path",
+          "type": "roll",
+          "text": "Lower yourself to your knees and walk the fire path alongside them for a while",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "The fire hurts, but you find the pilgrim's rhythm and hold it. When you eventually rise, they turn for the first time and look at you — really look. They press their hands together and bow. No words. You understand anyway.",
+            "rewards": {
+              "xp": 15
+            },
+            "karma": {
+              "human": 5,
+              "god": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You manage a few meters before your knees give and you have to stand. The pilgrim doesn't look back, but their murmured prayer seems to include something new in it. Perhaps you contributed something after all.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 2
+            },
+            "damage": {
+              "type": "fire",
+              "amount": "tiny"
+            }
+          }
         }
       ]
     },
@@ -3203,6 +3368,42 @@
           "outcome": {
             "type": "text",
             "text": "Their eyes close again.",
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "touch_the_ice",
+          "type": "roll",
+          "text": "Press forward and place your hand on the ice encasing them",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "difficult"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "The cold is immense. But through it — something transmits directly, bypassing language: the sage's full experiential understanding of suffering as ground rather than obstacle. Your hand burns. The teaching lands intact. You will be finding its edges for a long time.",
+            "rewards": {
+              "xp": 20
+            },
+            "karma": {
+              "human": 6,
+              "god": 4
+            },
+            "damage": {
+              "type": "cold",
+              "amount": "medium"
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The cold defeats you. Your hand numbs within seconds and you pull back before contact. The sage's eyes follow you — not disappointed, just patient. They have centuries to wait.",
+            "rewards": {
+              "xp": 5
+            },
             "karma": {
               "human": 1
             }
@@ -3882,6 +4083,37 @@
               "human": 3
             }
           }
+        },
+        {
+          "id": "friendly_haggle",
+          "type": "roll",
+          "text": "Strike up conversation with vendors — gather market intelligence through friendly haggling",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Vendors talk more than they mean to when someone seems genuinely interested. By the time you've moved through half the market, you know which stalls are fronts, which goods are mislabeled, and where the real bargains are buried.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "human": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "One vendor takes your interest as an insult to their pride and raises their prices to spite you. The word spreads faster than you'd like. You pay more for the same goods and leave resolving to be less obvious next time.",
+            "rewards": {
+              "xp": 3
+            },
+            "karma": {
+              "hell": 1
+            }
+          }
         }
       ]
     },
@@ -4135,6 +4367,38 @@
               "human": 2
             }
           }
+        },
+        {
+          "id": "tell_story",
+          "type": "roll",
+          "text": "Join them at the fire and tell a story — one that might make the suffering mean something",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "They listen. Really listen — something rare here. By the end, someone is laughing in a way that sounds almost clean. Several of them clap you on the back as you leave.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "human": 4,
+              "god": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "'That's a nice story,' says one of them, not unkindly. 'We've heard nicer. But sit down — you look like you've been walking for years.' You're welcome at the fire anyway.",
+            "rewards": {
+              "xp": 4
+            },
+            "karma": {
+              "human": 2
+            }
+          }
         }
       ]
     },
@@ -4350,6 +4614,35 @@
               "human": 2
             }
           }
+        },
+        {
+          "id": "read_scene",
+          "type": "roll",
+          "text": "Look for signs of who placed this — tracks, timing, intent written in the ash",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "The ash around the rock is undisturbed except for one set of prints — small, deliberate, placed and then retreated. No ambush position. No disturbance in the lava flow. Whoever left this came alone and didn't wait to watch. The invitation might be genuine.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "human": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "A new lava flow has already covered whatever marks were here. The ash tells you nothing. You're left exactly as uncertain as before.",
+            "rewards": {
+              "xp": 3
+            },
+            "karma": {}
+          }
         }
       ]
     },
@@ -4441,6 +4734,39 @@
               "hungry_ghost": 5
             }
           }
+        },
+        {
+          "id": "specific_teaching",
+          "type": "roll",
+          "text": "Open yourself precisely — ask without words for what your situation most needs",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "The Bodhisattva's attention focuses on you directly, gently, like sunlight through a small window. Nothing is said — but something specific passes, fitted exactly to the shape of what you carry. You know what it is without being able to say it.",
+            "rewards": {
+              "xp": 15
+            },
+            "karma": {
+              "human": 5,
+              "god": 4
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The peace reaches you — warmth and light after long cold. But the specific teaching you reached for remains just out of grasp. You receive the general blessing, which is not nothing.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 3,
+              "god": 1
+            }
+          }
         }
       ]
     },
@@ -4466,6 +4792,56 @@
           "outcome": {
             "type": "text",
             "text": "You leave him by the road. Some distances can't be closed."
+          }
+        },
+        {
+          "id": "probe_intel",
+          "type": "requirement",
+          "text": "Extract information about the Guard's patrol routes and weak points",
+          "requirements": {
+            "skills": {
+              "guile": 1
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "He's grateful for someone who actually wants to listen. Between complaints, useful details slip out — patrol timings, which commanders take bribes, where the soft spots in the ring are. You leave better informed.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "human": 2,
+              "asura": 1
+            }
+          }
+        },
+        {
+          "id": "read_intent",
+          "type": "roll",
+          "text": "Study him carefully — look past the performance to what's underneath",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "He's genuine. Exhausted, frightened, and done. The despair in him isn't put on — no devil performs suffering this quietly. You feel something shift in your understanding of this place.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 3,
+              "hell": 1
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "Hellfire makes everyone's eyes the same — flat and red and unreadable. You can't tell. He might be desperate. He might be a trap. You move on uncertain.",
+            "karma": {
+              "hell": 1
+            }
           }
         }
       ]
@@ -4644,6 +5020,54 @@
             "type": "text",
             "text": "You set something at the base of the pole and move on. The ribbons flutter."
           }
+        },
+        {
+          "id": "recognize_symbol",
+          "type": "requirement",
+          "text": "Draw on your knowledge — you've seen this symbol before, or something like it",
+          "requirements": {
+            "skills": {
+              "learning": 1
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You recognize the horned emblem as a Garuda boundary marker — a sign this place is protected from the worst hell denizens. The worshippers confirm it quietly, impressed you knew. They share a fragment of lore about the great birds who sometimes pass through even here.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "asura": 2,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "sense_residue",
+          "type": "roll",
+          "text": "Open your senses to whatever power remains in this place",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Something vast has perched here recently. You feel the echo of huge wings, a smell of lightning and high altitude. For a moment you see the hell realm from above — tiny, contained, impermanent. Then it is gone.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "asura": 3,
+              "god": 1
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The offerings are old. Whatever came here has moved on. You sense nothing but ash and the cold prayers of the worshippers.",
+            "karma": {}
+          }
         }
       ]
     },
@@ -4670,6 +5094,59 @@
             "type": "text",
             "text": "You walk past without knocking. The syllables in the rock seem to pulse as you go."
           }
+        },
+        {
+          "id": "inner_request",
+          "type": "requirement",
+          "text": "Center yourself and send an inner request — the way the tradition demands",
+          "requirements": {
+            "skills": {
+              "yoga": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Before you can knock, the door opens. A monk with ancient eyes looks at you for a long moment. 'You know the language. Come in.' The interior is impossibly quiet — the hell realm's noise cut off as if by thick stone. You sit, breathe, and receive something wordless that nevertheless settles into your bones.",
+            "rewards": {
+              "xp": 15
+            },
+            "karma": {
+              "human": 5,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "ask_teaching",
+          "type": "roll",
+          "text": "Appeal to the monks — you have come a long way, and you are learning",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "One of the monks regards you with genuine warmth. 'You ask well,' he says. 'That is already something.' He gives you a brief teaching on the nature of suffering as a teacher rather than an enemy. You leave quieter than you arrived.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "human": 4,
+              "god": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The monk at the door considers you kindly. 'The teaching comes when conditions ripen. Sit outside if you like — the quiet here reaches further than the walls.' You sit for a while. It does.",
+            "rewards": {
+              "xp": 4
+            },
+            "karma": {
+              "human": 2
+            }
+          }
         }
       ]
     },
@@ -4694,6 +5171,59 @@
           "outcome": {
             "type": "text",
             "text": "You step back. The images on the water follow you for a moment, then dissolve."
+          }
+        },
+        {
+          "id": "clear_sight",
+          "type": "requirement",
+          "text": "Clear your mind completely and look without craving — see what is actually there",
+          "requirements": {
+            "skills": {
+              "yoga": 1
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The lake's mirages still flicker, but you see through them — not with effort but with stillness. Beneath the illusions the surface is perfectly clear, reflecting something real: a glimpse of a path you had not considered. The Goddess's followers notice your clarity and nod.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "human": 3,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "pierce_illusion",
+          "type": "roll",
+          "text": "Stare into the surface and attempt to see through to what is real",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "The mirages dissolve. For a moment the lake shows something true — a vision specific to you, something you needed to see. You don't fully understand it yet. But it stays with you.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "human": 3,
+              "god": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The mirages pull you in rather than yielding. For a disorienting moment you are standing somewhere else entirely — a childhood memory, or perhaps someone else's. You surface confused, the lake placid and unhelpful.",
+            "rewards": {
+              "xp": 3
+            },
+            "karma": {
+              "hungry_ghost": 1
+            }
           }
         }
       ]
@@ -4745,6 +5275,62 @@
             "type": "text",
             "text": "You back away slowly. The air around the circle hums for a long time."
           }
+        },
+        {
+          "id": "correct_rites",
+          "type": "requirement",
+          "text": "Perform the correct entry rites — approach the circle as it demands",
+          "requirements": {
+            "skills": {
+              "ritual": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You move clockwise, make the right offerings at the right points, and step through the gap with the correct orientation. The carved faces seem to relax. The circle activates around you in spiraling light. One Yogini's form peels slightly from the stone and places something cold in your hand — a small charm of compressed power.",
+            "rewards": {
+              "xp": 15,
+              "items": [
+                "yogini_charm"
+              ]
+            },
+            "karma": {
+              "god": 4,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "circle_meditation",
+          "type": "roll",
+          "text": "Sit at the center and meditate — open yourself to whatever the circle holds",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "The sixty-four faces hold your attention without pulling it apart. Something passes through you — not comfortable, but clarifying. The energies here are immense and indifferent, but they don't consume you. You emerge with a clean, bright quality to your awareness.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "god": 3,
+              "human": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The combined power of sixty-four Yoginis is too much to hold. You lose your center within minutes and have to stumble out, disoriented, the carved faces still spinning. You sit outside until the world steadies.",
+            "rewards": {
+              "xp": 4
+            },
+            "karma": {
+              "hell": 1
+            }
+          }
         }
       ]
     },
@@ -4769,6 +5355,66 @@
           "outcome": {
             "type": "text",
             "text": "You leave without disturbing them. The scent of herbs follows you."
+          }
+        },
+        {
+          "id": "assist_earn",
+          "type": "requirement",
+          "text": "Offer your hands — help with a difficult case in exchange for a share of the harvest",
+          "requirements": {
+            "skills": {
+              "medicine": 1
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The healers hand you a patient immediately and watch without comment. You work. When you finish, one of them presses a cloth bundle into your hands — a selection of herbs, properly dried and labelled, worth more than anything in the nearest market.",
+            "rewards": {
+              "xp": 10,
+              "items": [
+                "medicinal_herbs",
+                "healing_salve"
+              ]
+            },
+            "karma": {
+              "human": 4,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "harvest_rare",
+          "type": "roll",
+          "text": "Carefully harvest some of the rarer specimens growing at the garden's edge",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Your hands are steady enough. The roots come free cleanly, the stalks cut at the right angle. You have a handful of something potent that shouldn't grow anywhere near a hell realm.",
+            "rewards": {
+              "xp": 8,
+              "items": [
+                "rare_herb",
+                "medicinal_herbs"
+              ]
+            },
+            "karma": {
+              "human": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "Your grip slips and you damage the root system of something rare. The healers watch without anger but without warmth. 'Those take twelve years to grow here,' one says quietly. You apologize and leave.",
+            "rewards": {
+              "xp": 2
+            },
+            "karma": {
+              "human": -1
+            }
           }
         }
       ]
