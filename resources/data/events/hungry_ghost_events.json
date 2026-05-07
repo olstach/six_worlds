@@ -54,7 +54,7 @@
           "text": "Teach it about the nature of craving",
           "requirements": {
             "skills": {
-              "yoga": 4
+              "yoga": 3
             }
           },
           "outcome": {
@@ -142,7 +142,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -174,7 +174,7 @@
           "requirements": {
             "roll": {
               "skill": "comedy",
-              "difficulty": 12
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -211,13 +211,16 @@
           "requirements": {
             "roll": {
               "attribute": "awareness",
-              "difficulty": 12
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "random",
-            "companion_pool": ["tsering", "drupchen"],
+            "companion_pool": [
+              "tsering",
+              "drupchen"
+            ],
             "free": true,
             "text": "You haul it clear of the earth — a confused rolang, blinking in the grey light. It looks at its hands, then at you. Something surfaces in its eyes. Not a full mind, but enough. It stays close to your heel like a dog that's found someone.",
             "karma": {
@@ -245,7 +248,10 @@
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "random",
-            "companion_pool": ["tsering", "drupchen"],
+            "companion_pool": [
+              "tsering",
+              "drupchen"
+            ],
             "free": true,
             "text": "You get both hands under the soil and heave. The earth gives. The rolang sits up, dazed and blinking. It looks at you for a long moment, then slowly nods. It will follow you.",
             "karma": {
@@ -259,7 +265,7 @@
           "text": "Perform last rites — put whatever's down there to rest",
           "requirements": {
             "skills": {
-              "ritual": 4
+              "ritual": 3
             }
           },
           "outcome": {
@@ -300,7 +306,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 15
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -381,7 +387,7 @@
           "text": "Sit and meditate together",
           "requirements": {
             "skills": {
-              "yoga": 5
+              "yoga": 3
             }
           },
           "outcome": {
@@ -435,7 +441,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -496,7 +502,7 @@
           "requirements": {
             "roll": {
               "attribute": "strength",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -594,7 +600,7 @@
           "text": "Demonstrate your dark workings",
           "requirements": {
             "skills": {
-              "black_magic": 5
+              "black_magic": 3
             }
           },
           "outcome": {
@@ -697,7 +703,7 @@
           "requirements": {
             "roll": {
               "attribute": "awareness",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -762,7 +768,7 @@
           "requirements": {
             "roll": {
               "skill": "performance",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -788,7 +794,7 @@
           "text": "Offer to help serve",
           "requirements": {
             "skills": {
-              "grace": 4
+              "grace": 3
             }
           },
           "outcome": {
@@ -891,7 +897,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -1007,7 +1013,7 @@
           "requirements": {
             "roll": {
               "attribute": "awareness",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -1050,7 +1056,7 @@
           "text": "Counter with your own riddle",
           "requirements": {
             "skills": {
-              "learning": 5
+              "learning": 3
             }
           },
           "outcome": {
@@ -1075,7 +1081,7 @@
           "requirements": {
             "roll": {
               "skill": "guile",
-              "difficulty": 17
+              "difficulty": "difficult"
             }
           },
           "outcome_success": {
@@ -1175,7 +1181,7 @@
           "text": "Call the spirit within to your side",
           "requirements": {
             "skills": {
-              "ritual": 5
+              "ritual": 3
             }
           },
           "outcome": {
@@ -1244,7 +1250,7 @@
           "requirements": {
             "roll": {
               "attribute": "constitution",
-              "difficulty": 15
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -1305,7 +1311,7 @@
           "text": "Meditate on it — find the beauty in the strange",
           "requirements": {
             "skills": {
-              "yoga": 4
+              "yoga": 3
             }
           },
           "outcome": {
@@ -1409,7 +1415,7 @@
           "text": "Offer a hymn of praise in lieu of gold",
           "requirements": {
             "skills": {
-              "performance": 4
+              "performance": 3
             }
           },
           "outcome": {
@@ -1455,7 +1461,7 @@
           "text": "Guide her gently toward understanding her condition",
           "requirements": {
             "skills": {
-              "yoga": 4
+              "yoga": 3
             }
           },
           "outcome": {
@@ -1477,7 +1483,7 @@
           "requirements": {
             "roll": {
               "attribute": "charm",
-              "difficulty": 16
+              "difficulty": "difficult"
             }
           },
           "outcome_success": {
@@ -1519,14 +1525,14 @@
           "text": "Try to wake her from the dream entirely",
           "requirements": {
             "skills": {
-              "yoga": 5
+              "yoga": 3
             }
           },
           "outcome": {
             "type": "roll",
             "roll": {
               "attribute": "charm",
-              "difficulty": 16
+              "difficulty": "difficult"
             },
             "outcome_success": {
               "type": "text",
@@ -1592,7 +1598,7 @@
           "requirements": {
             "roll": {
               "attribute": "strength",
-              "difficulty": 15
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -1639,7 +1645,7 @@
           "text": "Offer your fighting services — take a contract",
           "requirements": {
             "skills": {
-              "might": 4
+              "might": 3
             }
           },
           "outcome": {
@@ -1663,13 +1669,21 @@
           "requirements": {
             "roll": {
               "attribute": "charm",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "random",
-            "companion_pool": ["iron_oath", "the_chronicler", "nyingje", "shantipala", "peldon", "nurse_bones", "hustle_bones"],
+            "companion_pool": [
+              "iron_oath",
+              "the_chronicler",
+              "nyingje",
+              "shantipala",
+              "peldon",
+              "nurse_bones",
+              "hustle_bones"
+            ],
             "free": true,
             "text": "It takes a few minutes of material to break through the professional sullenness. Then one skeleton starts laughing. Then another. By the end, the lodge is rowdy and welcoming. One of the mercenaries pulls you aside afterward. \"That was good. I could use a change of scene. You taking on crew?\"",
             "karma": {
@@ -1697,7 +1711,7 @@
           "requirements": {
             "roll": {
               "attribute": "constitution",
-              "difficulty": 15
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -1738,7 +1752,7 @@
           "text": "Neutralize the bog with alchemy",
           "requirements": {
             "skills": {
-              "alchemy": 4
+              "alchemy": 3
             }
           },
           "outcome": {
@@ -1759,7 +1773,7 @@
           "text": "Disperse the mist with air magic",
           "requirements": {
             "skills": {
-              "air_magic": 4
+              "air_magic": 3
             }
           },
           "outcome": {
@@ -1877,7 +1891,7 @@
           "text": "Set up at the shrine and teach about impermanence",
           "requirements": {
             "skills": {
-              "yoga": 4
+              "yoga": 3
             }
           },
           "outcome_success": {
@@ -2093,7 +2107,7 @@
           "requirements": {
             "roll": {
               "skill": "guile",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -2120,7 +2134,7 @@
           "text": "Turn the whole thing into a bit",
           "requirements": {
             "skills": {
-              "comedy": 4
+              "comedy": 3
             }
           },
           "outcome": {
@@ -2152,7 +2166,7 @@
           "requirements": {
             "roll": {
               "attribute": "constitution",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -2269,7 +2283,7 @@
           "requirements": {
             "roll": {
               "attribute": "charm",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -2298,7 +2312,7 @@
           "text": "Show your trader's credentials",
           "requirements": {
             "skills": {
-              "trade": 4
+              "trade": 3
             }
           },
           "outcome": {
@@ -2322,7 +2336,7 @@
             },
             "roll": {
               "attribute": "charm",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -2472,7 +2486,7 @@
           "text": "Herd them away from the village",
           "requirements": {
             "skills": {
-              "leadership": 5
+              "leadership": 3
             }
           },
           "outcome": {
@@ -2652,7 +2666,7 @@
           "requirements": {
             "roll": {
               "attribute": "luck",
-              "difficulty": 15
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -2704,7 +2718,7 @@
           "requirements": {
             "roll": {
               "skill": "performance",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -2761,7 +2775,7 @@
           "requirements": {
             "roll": {
               "attribute": "awareness",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -2901,7 +2915,7 @@
           "requirements": {
             "roll": {
               "attribute": "strength",
-              "difficulty": 15
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -2935,7 +2949,7 @@
           "text": "Assert field command — suggest a redeployment",
           "requirements": {
             "skills": {
-              "leadership": 4
+              "leadership": 3
             }
           },
           "outcome": {
@@ -2981,7 +2995,7 @@
           "requirements": {
             "roll": {
               "attribute": "constitution",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -3177,7 +3191,7 @@
           "requirements": {
             "roll": {
               "attribute": "constitution",
-              "difficulty": 12
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -3280,7 +3294,7 @@
           "text": "Offer tactical intelligence instead of service",
           "requirements": {
             "skills": {
-              "learning": 4
+              "learning": 3
             }
           },
           "outcome": {
@@ -3300,7 +3314,7 @@
           "text": "Speak to it as a peer commander",
           "requirements": {
             "skills": {
-              "leadership": 5
+              "leadership": 3
             }
           },
           "outcome": {
@@ -3389,7 +3403,7 @@
           "requirements": {
             "roll": {
               "attribute": "focus",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -3433,11 +3447,11 @@
           "text": "Call them back — all of them at once",
           "requirements": {
             "skills": {
-              "black_magic": 6
+              "black_magic": 3
             },
             "roll": {
               "attribute": "focus",
-              "difficulty": 15
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -3485,7 +3499,7 @@
           "text": "Ask about the advanced workings",
           "requirements": {
             "skills": {
-              "black_magic": 4
+              "black_magic": 3
             }
           },
           "outcome": {
@@ -3505,7 +3519,7 @@
           "text": "Trade spell components",
           "requirements": {
             "skills": {
-              "alchemy": 4
+              "alchemy": 3
             }
           },
           "outcome": {
@@ -3659,7 +3673,7 @@
           "requirements": {
             "roll": {
               "attribute": "constitution",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -3682,7 +3696,7 @@
           "text": "Meditate beside it",
           "requirements": {
             "skills": {
-              "yoga": 4
+              "yoga": 3
             }
           },
           "outcome": {
@@ -3762,7 +3776,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 16
+              "difficulty": "difficult"
             }
           },
           "outcome_success": {
@@ -3788,7 +3802,7 @@
           "requirements": {
             "roll": {
               "skill": "guile",
-              "difficulty": 15
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -3813,7 +3827,7 @@
           "text": "Confuse them with a quick act of ventriloquism",
           "requirements": {
             "skills": {
-              "comedy": 4
+              "comedy": 3
             }
           },
           "outcome": {
@@ -3833,7 +3847,7 @@
           "text": "Pick off the hunters as they close — surgical precision",
           "requirements": {
             "skills": {
-              "daggers": 5
+              "daggers": 3
             }
           },
           "outcome": {
@@ -3853,7 +3867,7 @@
           "text": "Keep them at range — shoot them down before they close",
           "requirements": {
             "skills": {
-              "ranged": 4
+              "ranged": 3
             }
           },
           "outcome": {
@@ -3897,7 +3911,7 @@
           "requirements": {
             "roll": {
               "skill": "performance",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -3943,7 +3957,7 @@
           "text": "Offer to carry it to an audience",
           "requirements": {
             "skills": {
-              "comedy": 5
+              "comedy": 3
             }
           },
           "outcome": {
@@ -3985,7 +3999,7 @@
           "requirements": {
             "roll": {
               "attribute": "awareness",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -4014,7 +4028,7 @@
           "text": "Consecrate the site",
           "requirements": {
             "skills": {
-              "white_magic": 5
+              "white_magic": 3
             }
           },
           "outcome": {
@@ -4035,7 +4049,7 @@
           "text": "Channel the dark energy",
           "requirements": {
             "skills": {
-              "black_magic": 4
+              "black_magic": 3
             }
           },
           "outcome": {
@@ -4148,7 +4162,7 @@
           "text": "Offer a song of praise in lieu of tribute",
           "requirements": {
             "skills": {
-              "performance": 5
+              "performance": 3
             }
           },
           "outcome": {
@@ -4172,7 +4186,7 @@
           "text": "Offer a puja in his honor",
           "requirements": {
             "skills": {
-              "ritual": 5
+              "ritual": 3
             }
           },
           "outcome": {
@@ -4411,7 +4425,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 12
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -4544,7 +4558,7 @@
           "text": "Find the logical flaw in its oath",
           "requirements": {
             "skills": {
-              "learning": 4
+              "learning": 3
             }
           },
           "outcome": {
@@ -4565,7 +4579,7 @@
           "requirements": {
             "roll": {
               "skill": "persuasion",
-              "difficulty": 15
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -4617,7 +4631,7 @@
           "text": "Fight unarmed — use joint locks and throws",
           "requirements": {
             "skills": {
-              "unarmed": 4
+              "unarmed": 3
             }
           },
           "outcome": {
@@ -4643,7 +4657,7 @@
           "text": "Smash its sword arm — end the fight before it starts",
           "requirements": {
             "skills": {
-              "maces": 4
+              "maces": 3
             }
           },
           "outcome": {
@@ -4665,7 +4679,7 @@
           "text": "Fight at reach — keep it off its blade advantage",
           "requirements": {
             "skills": {
-              "spears": 4
+              "spears": 3
             }
           },
           "outcome": {
@@ -4696,7 +4710,7 @@
           "requirements": {
             "roll": {
               "attribute": "awareness",
-              "difficulty": 16
+              "difficulty": "difficult"
             }
           },
           "outcome_success": {
@@ -4836,7 +4850,7 @@
           "text": "Study the mechanics of the curse",
           "requirements": {
             "skills": {
-              "learning": 4
+              "learning": 3
             }
           },
           "outcome": {
@@ -4910,7 +4924,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 17
+              "difficulty": "difficult"
             }
           },
           "outcome_success": {
@@ -4935,7 +4949,7 @@
           "text": "Sing to the people inside it",
           "requirements": {
             "skills": {
-              "performance": 6
+              "performance": 3
             }
           },
           "outcome": {
@@ -4984,7 +4998,7 @@
           "requirements": {
             "roll": {
               "attribute": "strength",
-              "difficulty": 12
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -5033,7 +5047,7 @@
             },
             "roll": {
               "attribute": "focus",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -5058,7 +5072,7 @@
           "text": "Drop the alpha at distance — scatter the pack",
           "requirements": {
             "skills": {
-              "ranged": 4
+              "ranged": 3
             }
           },
           "outcome": {
@@ -5130,7 +5144,7 @@
             },
             "roll": {
               "attribute": "finesse",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -5257,7 +5271,7 @@
           "requirements": {
             "roll": {
               "attribute": "charm",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -5305,7 +5319,7 @@
           "requirements": {
             "roll": {
               "attribute": "charm",
-              "difficulty": 12
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -5412,11 +5426,11 @@
           "text": "Try to end the eternal repetition",
           "requirements": {
             "skills": {
-              "white_magic": 4
+              "white_magic": 3
             },
             "roll": {
               "attribute": "focus",
-              "difficulty": 16
+              "difficulty": "difficult"
             }
           },
           "outcome_success": {
@@ -5447,7 +5461,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -5587,7 +5601,7 @@
           "text": "Research a subject",
           "requirements": {
             "skills": {
-              "learning": 4
+              "learning": 3
             }
           },
           "outcome": {
@@ -5642,7 +5656,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 16
+              "difficulty": "difficult"
             }
           },
           "outcome_success": {
@@ -5804,7 +5818,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -5861,7 +5875,7 @@
           "text": "Meditate on death fully",
           "requirements": {
             "skills": {
-              "yoga": 4
+              "yoga": 3
             }
           },
           "outcome": {
@@ -5958,7 +5972,7 @@
             },
             "roll": {
               "attribute": "charm",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -5988,7 +6002,7 @@
             },
             "roll": {
               "attribute": "charm",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -6089,7 +6103,7 @@
           "text": "Dedicate all merit gained here to the beings still suffering",
           "requirements": {
             "skills": {
-              "yoga": 4
+              "yoga": 3
             }
           },
           "outcome": {
@@ -6105,7 +6119,6 @@
         }
       ]
     },
-
     "hg_mehr": {
       "id": "hg_mehr",
       "title": "The Eye in the Dark",
@@ -6119,7 +6132,9 @@
           "outcome": {
             "type": "text",
             "text": "She answers. Dry, measured, without warmth or hostility. She answers your questions the way a stone does if you press your ear to it. She is not interested in traveling. You are not sufficiently interesting.",
-            "rewards": { "xp": 5 },
+            "rewards": {
+              "xp": 5
+            },
             "karma": {}
           }
         },
@@ -6128,14 +6143,18 @@
           "type": "requirement",
           "text": "Light a ritual flame — the old greeting of the Sun priesthood",
           "requirements": {
-            "skills": { "fire_magic": 5 }
+            "skills": {
+              "fire_magic": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "mehr",
             "free": true,
             "text": "The flame catches her attention in a way nothing else would. She straightens. Her golden eye moves before the other one does. 'Where did you learn that form?' She is already wading toward you before you finish answering.",
-            "karma": { "god": 3 }
+            "karma": {
+              "god": 3
+            }
           }
         },
         {
@@ -6143,14 +6162,18 @@
           "type": "requirement",
           "text": "Ask about the prophecy — you have enough to read what she was reading",
           "requirements": {
-            "skills": { "space_magic": 4 }
+            "skills": {
+              "space_magic": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "mehr",
             "free": true,
             "text": "Her good eye narrows. The gold one does not move. 'That is the first intelligent question anyone has asked me in a very long time.' A pause. 'Come. Walk with me while I explain what it actually said.'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           }
         },
         {
@@ -6158,14 +6181,19 @@
           "type": "roll",
           "text": "Speak to her as an equal — not with reverence, not with wariness",
           "requirements": {
-            "roll": { "attribute": "charm", "difficulty": 14 }
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "normal"
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "mehr",
             "free": true,
             "text": "She studies you for a long moment. 'You have the manner of someone who has survived things,' she says. 'I find that more persuasive than credentials.' She wades toward you.",
-            "karma": { "human": 3 }
+            "karma": {
+              "human": 3
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6175,7 +6203,6 @@
         }
       ]
     },
-
     "hg_choki": {
       "id": "hg_choki",
       "title": "The Gathering",
@@ -6189,8 +6216,12 @@
           "outcome": {
             "type": "text",
             "text": "The bog is silent as you walk away. You don't hear her move.",
-            "rewards": { "xp": 3 },
-            "karma": { "animal": 1 }
+            "rewards": {
+              "xp": 3
+            },
+            "karma": {
+              "animal": 1
+            }
           }
         },
         {
@@ -6198,14 +6229,19 @@
           "type": "requirement",
           "text": "Touch the water beside her — let it speak for you",
           "requirements": {
-            "skills": { "water_magic": 4 }
+            "skills": {
+              "water_magic": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "choki",
             "free": true,
             "text": "The water stirs slightly under your hand. She watches it. 'It was like that,' she says. 'One moment there was nothing. Then—' She trails off. Then: 'You are going somewhere. Can I come?'",
-            "karma": { "water": 3, "human": 2 }
+            "karma": {
+              "water": 3,
+              "human": 2
+            }
           }
         },
         {
@@ -6213,14 +6249,18 @@
           "type": "requirement",
           "text": "Ask her what she was gathering when the flood came",
           "requirements": {
-            "skills": { "logistics": 5 }
+            "skills": {
+              "logistics": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "choki",
             "free": true,
             "text": "She finally looks up. Something in the question — the specificity of it, the acknowledgment of what she was doing when she left — gets through where comfort never would. She tells you everything she was carrying. She asks if you need a guide.",
-            "karma": { "human": 4 }
+            "karma": {
+              "human": 4
+            }
           }
         },
         {
@@ -6228,14 +6268,20 @@
           "type": "roll",
           "text": "Sit beside her without speaking — wait for her to acknowledge you",
           "requirements": {
-            "roll": { "attribute": "awareness", "difficulty": 15 }
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "normal"
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "choki",
             "free": true,
             "text": "The silence stretches to an hour. Then two. Then she says: 'You're still here.' After another long while: 'Most people leave.' She looks at you sideways. 'Where are you going?'",
-            "karma": { "human": 3, "animal": 2 }
+            "karma": {
+              "human": 3,
+              "animal": 2
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6245,7 +6291,6 @@
         }
       ]
     },
-
     "hg_nangwa": {
       "id": "hg_nangwa",
       "title": "The Unfinished Argument",
@@ -6259,7 +6304,9 @@
           "outcome": {
             "type": "text",
             "text": "He doesn't notice you leave. The argument continues.",
-            "rewards": { "xp": 4 },
+            "rewards": {
+              "xp": 4
+            },
             "karma": {}
           }
         },
@@ -6268,14 +6315,18 @@
           "type": "requirement",
           "text": "Complete his sentence — you can see where the argument is going",
           "requirements": {
-            "skills": { "learning": 5 }
+            "skills": {
+              "learning": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "nangwa",
             "free": true,
             "text": "He stops. Turns toward you with the most attention he has given anything in centuries. He seems to become slightly more present in the physical world as he focuses. 'Walk with me,' he says. 'I think better when I walk. Tell me if I have this right.'",
-            "karma": { "human": 3 }
+            "karma": {
+              "human": 3
+            }
           }
         },
         {
@@ -6283,14 +6334,18 @@
           "type": "requirement",
           "text": "Reach toward him through space — make contact with the part of him that is still here",
           "requirements": {
-            "skills": { "space_magic": 4 }
+            "skills": {
+              "space_magic": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "nangwa",
             "free": true,
             "text": "For a moment, genuine contact. He startles. Looks at his hands as if seeing them for the first time in a while. 'Oh,' he says. 'I have been quite far away.' He looks at you with new attention. 'Would you stay nearby? I find I concentrate better when someone is present.'",
-            "karma": { "space": 2 }
+            "karma": {
+              "space": 2
+            }
           }
         },
         {
@@ -6298,14 +6353,19 @@
           "type": "roll",
           "text": "Follow the argument — interrupt at the right moment",
           "requirements": {
-            "roll": { "attribute": "focus", "difficulty": 14 }
+            "roll": {
+              "attribute": "focus",
+              "difficulty": "normal"
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "nangwa",
             "free": true,
             "text": "You catch the flaw and name it. He stops mid-gesture. 'Say that again.' You do. He is silent for a full minute. Then: 'I hadn't considered that approach.' A longer silence. 'Come with me while I think it through. I need a sounding board.'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6315,7 +6375,6 @@
         }
       ]
     },
-
     "hg_prashan": {
       "id": "hg_prashan",
       "title": "The Crossroads Question",
@@ -6329,7 +6388,9 @@
           "outcome": {
             "type": "text",
             "text": "'As you like. You will be back. They always come back when they have had time to think of an answer.' It settles in to wait.",
-            "rewards": { "xp": 4 },
+            "rewards": {
+              "xp": 4
+            },
             "karma": {}
           }
         },
@@ -6338,14 +6399,19 @@
           "type": "requirement",
           "text": "Ask it a better question instead of answering",
           "requirements": {
-            "skills": { "learning": 6 }
+            "skills": {
+              "learning": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "prashan",
             "free": true,
             "text": "It goes very still. This has not happened before — or not for a very long time. 'You—' It stops. 'Where did you—' Stops again. Slowly, a smile spreads across a face not quite designed for it. 'All right. This is excellent. You will come with me. I insist.'",
-            "karma": { "air": 3, "human": 2 }
+            "karma": {
+              "air": 3,
+              "human": 2
+            }
           }
         },
         {
@@ -6353,14 +6419,18 @@
           "type": "requirement",
           "text": "Tell it a joke instead of answering",
           "requirements": {
-            "skills": { "comedy": 4 }
+            "skills": {
+              "comedy": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "prashan",
             "free": true,
             "text": "It blinks. Then, despite itself, makes a sound. Then another. 'That is — oh, that is terrible. That is genuinely terrible.' Its head is listing sideways with laughter. 'Come, I'll show you something better. I promise.'",
-            "karma": { "human": 3 }
+            "karma": {
+              "human": 3
+            }
           }
         },
         {
@@ -6368,14 +6438,19 @@
           "type": "roll",
           "text": "Answer the riddle",
           "requirements": {
-            "roll": { "attribute": "awareness", "difficulty": 15 }
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "normal"
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "prashan",
             "free": true,
             "text": "It tilts its head. Then further. Then further still, nearly upside down. 'Hmm.' A long pause. 'That is either a very good answer or a very bad one, and I cannot immediately tell which.' It straightens. 'I need to follow this further. Come with me.'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6385,7 +6460,6 @@
         }
       ]
     },
-
     "hg_nyingje": {
       "id": "hg_nyingje",
       "title": "The Round",
@@ -6399,8 +6473,13 @@
           "outcome": {
             "type": "text",
             "text": "She doesn't look up as you go. The recitation continues.",
-            "rewards": { "xp": 6 },
-            "karma": { "god": 3, "human": 2 }
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "god": 3,
+              "human": 2
+            }
           }
         },
         {
@@ -6408,14 +6487,19 @@
           "type": "requirement",
           "text": "Help her with her round — tend alongside her",
           "requirements": {
-            "skills": { "white_magic": 5 }
+            "skills": {
+              "white_magic": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "nyingje",
             "free": true,
             "text": "You work in silence for a while. She watches your technique without comment. Then: 'You have been taught properly.' A pause. 'By whom?' By the time you finish answering, you are both walking. You realize later you agreed to travel together without either of you saying so directly.",
-            "karma": { "god": 5, "human": 3 }
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
           }
         },
         {
@@ -6423,14 +6507,18 @@
           "type": "requirement",
           "text": "Sit in meditation nearby — make yourself a point of stillness in this place",
           "requirements": {
-            "skills": { "yoga": 5 }
+            "skills": {
+              "yoga": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "nyingje",
             "free": true,
             "text": "She completes her round and comes back to where you are sitting. Waits. When you open your eyes, she is very close. 'You practice,' she says. It is not a question. A pause. 'I will walk with you for a while.'",
-            "karma": { "god": 4 }
+            "karma": {
+              "god": 4
+            }
           }
         },
         {
@@ -6438,14 +6526,20 @@
           "type": "roll",
           "text": "Ask her directly: will you travel with us?",
           "requirements": {
-            "roll": { "attribute": "charm", "difficulty": 16 }
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "difficult"
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "nyingje",
             "free": true,
             "text": "She pauses in her work. Studies you with empty eye sockets that somehow convey careful attention. 'You are going further than here,' she says. 'There will be beings who need tending there too.' She finishes with her current patient, then stands. 'I will come.'",
-            "karma": { "god": 4, "human": 2 }
+            "karma": {
+              "god": 4,
+              "human": 2
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6455,7 +6549,6 @@
         }
       ]
     },
-
     "hg_khedrup": {
       "id": "hg_khedrup",
       "title": "The Auspicious Count",
@@ -6469,7 +6562,9 @@
           "outcome": {
             "type": "text",
             "text": "The counting continues. The tally marks accumulate.",
-            "rewards": { "xp": 3 },
+            "rewards": {
+              "xp": 3
+            },
             "karma": {}
           }
         },
@@ -6478,14 +6573,18 @@
           "type": "requirement",
           "text": "Point out a flaw in his formula — you can see where the multiplier breaks down",
           "requirements": {
-            "skills": { "ritual": 5 }
+            "skills": {
+              "ritual": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "khedrup",
             "free": true,
             "text": "His hand stops on the beads. He looks up for the first time. 'Show me.' You do. He studies it. Studies you. Then: 'I may need to revise my methodology. I would welcome a second opinion — going forward.'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           }
         },
         {
@@ -6493,7 +6592,9 @@
           "type": "requirement",
           "text": "Examine his preserved state — make a technical observation",
           "requirements": {
-            "skills": { "alchemy": 4 }
+            "skills": {
+              "alchemy": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
@@ -6508,14 +6609,19 @@
           "type": "roll",
           "text": "Wait for him to complete his count — do not interrupt",
           "requirements": {
-            "roll": { "attribute": "focus", "difficulty": 14 }
+            "roll": {
+              "attribute": "focus",
+              "difficulty": "normal"
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "khedrup",
             "free": true,
             "text": "Three hours. Four. He reaches the end of his calculation, opens his eyes, and finds you there. 'You waited.' A pause. 'Most don't.' He consults his tallies. 'This is inconvenient. I will need to adjust for your presence in the calculation. Sit down. What is your birth star?'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6525,7 +6631,6 @@
         }
       ]
     },
-
     "hg_rasabhava": {
       "id": "hg_rasabhava",
       "title": "The Formula",
@@ -6539,7 +6644,9 @@
           "outcome": {
             "type": "text",
             "text": "He doesn't notice you leave. He's found something to check.",
-            "rewards": { "xp": 4 },
+            "rewards": {
+              "xp": 4
+            },
             "karma": {}
           }
         },
@@ -6548,14 +6655,18 @@
           "type": "requirement",
           "text": "Identify the phase where the formula breaks down",
           "requirements": {
-            "skills": { "alchemy": 5 }
+            "skills": {
+              "alchemy": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "rasabhava",
             "free": true,
             "text": "'The stabilization phase — your catalyst ratio shifts at temperature.' He goes absolutely still. 'Say that again.' You do. He checks it three times. 'I have been wrong for forty-three years.' He closes his eyes. Opens them. 'I believe I need a different sort of problem. Will you have me?'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           }
         },
         {
@@ -6563,7 +6674,9 @@
           "type": "requirement",
           "text": "Ask what he is trying to preserve and whether it can be summoned instead",
           "requirements": {
-            "skills": { "summoning": 3 }
+            "skills": {
+              "summoning": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
@@ -6578,14 +6691,19 @@
           "type": "roll",
           "text": "Read the formula over his shoulder — try to spot what keeps going wrong",
           "requirements": {
-            "roll": { "attribute": "awareness", "difficulty": 13 }
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "easy"
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "rasabhava",
             "free": true,
             "text": "You see it — a small error in the stabilization phase, invisible in isolation but fatal in combination. 'There,' you say. He looks. Silence. 'That can't be right. I've checked it six—' He checks it again. 'Oh.' The smallest, most deflated sound. Then: 'Are you traveling? I may want to get out of this room.'",
-            "karma": { "human": 1 }
+            "karma": {
+              "human": 1
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6595,7 +6713,6 @@
         }
       ]
     },
-
     "hg_durvasa": {
       "id": "hg_durvasa",
       "title": "The Contained Curse",
@@ -6609,7 +6726,9 @@
           "outcome": {
             "type": "text",
             "text": "You feel his eyes on your back as you leave. The sigils continue to glow.",
-            "karma": { "hell": 2 }
+            "karma": {
+              "hell": 2
+            }
           }
         },
         {
@@ -6617,14 +6736,19 @@
           "type": "requirement",
           "text": "Diffuse the bound energy through the air — disperse it gradually",
           "requirements": {
-            "skills": { "air_magic": 5 }
+            "skills": {
+              "air_magic": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "durvasa",
             "free": true,
             "text": "It takes time. It takes all the steadiness you have. Gradually the sigils stop glowing. He slumps, then straightens. He looks at his hands, then at you. 'You have done this before,' he says. 'No,' you say. He considers this. 'Hm. I owe you a debt. How are you traveling?'",
-            "karma": { "air": 3, "human": 3 }
+            "karma": {
+              "air": 3,
+              "human": 3
+            }
           }
         },
         {
@@ -6632,14 +6756,18 @@
           "type": "requirement",
           "text": "Perform a proper reversal — unmake the binding through ceremony",
           "requirements": {
-            "skills": { "ritual": 6 }
+            "skills": {
+              "ritual": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "durvasa",
             "free": true,
             "text": "The curse unwrites itself, step by step. He exhales for the first time in what sounds like a very long time. 'Thorough,' he says. 'Methodical. I appreciate methodical.' He stands slowly. 'Whoever taught you that taught you well. I find myself without current employment. Are you taking work?'",
-            "karma": { "human": 3 }
+            "karma": {
+              "human": 3
+            }
           }
         },
         {
@@ -6647,14 +6775,19 @@
           "type": "roll",
           "text": "Try to read the binding — understand what you are dealing with",
           "requirements": {
-            "roll": { "attribute": "focus", "difficulty": 15 }
+            "roll": {
+              "attribute": "focus",
+              "difficulty": "normal"
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "durvasa",
             "free": true,
             "text": "A death-curse, reflected and internalized. He has been holding it in containment since it returned to him. 'How long?' you ask. He answers. You do not ask again. You sit across from him and begin talking through options. By the time the sigils fade, you are colleagues.",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           },
           "outcome_failure": {
             "type": "text",
@@ -6664,7 +6797,6 @@
         }
       ]
     },
-
     "hg_gomchen": {
       "id": "hg_gomchen",
       "title": "The Contract Web",
@@ -6678,7 +6810,9 @@
           "outcome": {
             "type": "text",
             "text": "The hall is silent except for the slow erosion of stone.",
-            "karma": { "hell": 1 }
+            "karma": {
+              "hell": 1
+            }
           }
         },
         {
@@ -6686,14 +6820,18 @@
           "type": "requirement",
           "text": "Dissolve the primary binding — force the keystone obligation apart",
           "requirements": {
-            "skills": { "sorcery": 6 }
+            "skills": {
+              "sorcery": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "gomchen",
             "free": true,
             "text": "The stone cracks. The inscription flakes. He exhales slowly. 'I felt that.' The rest of the web loosens by degrees. He opens his eyes fully. 'You have just made me more dangerous. I hope you know what you are doing.' He stands, after effort. 'I owe you a debt. I prefer to pay them personally.'",
-            "karma": { "human": 3 }
+            "karma": {
+              "human": 3
+            }
           }
         },
         {
@@ -6701,14 +6839,18 @@
           "type": "requirement",
           "text": "Read the obligations back to him — enumerate the full cost of what he is holding",
           "requirements": {
-            "skills": { "black_magic": 5 }
+            "skills": {
+              "black_magic": 3
+            }
           },
           "outcome": {
             "type": "recruit_companion",
             "companion_id": "gomchen",
             "free": true,
             "text": "You read them back slowly. Each one. He is very still. When you finish, the hall is quiet. 'I know,' he says. 'Say it again. Slower.' You do. When you finish the second time, something changes in his face. 'I have been very foolish,' he says quietly. 'Will you walk with me? I need to think outside these walls.'",
-            "karma": { "human": 4 }
+            "karma": {
+              "human": 4
+            }
           }
         },
         {
@@ -6716,14 +6858,19 @@
           "type": "roll",
           "text": "Study the contract web — try to find the obligation everything else depends on",
           "requirements": {
-            "roll": { "attribute": "awareness", "difficulty": 16 }
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "difficult"
+            }
           },
           "outcome_success": {
             "type": "recruit_companion",
             "companion_id": "gomchen",
             "free": true,
             "text": "You find it — a debt of precedence, buried under thirty layers of mutual obligation. You point to it without speaking. His eyes focus for the first time. 'You see it,' he says. 'No one has seen it.' A long pause. 'Then you are someone worth traveling with. Come.'",
-            "karma": { "human": 2 }
+            "karma": {
+              "human": 2
+            }
           },
           "outcome_failure": {
             "type": "text",

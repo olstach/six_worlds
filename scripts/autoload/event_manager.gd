@@ -375,6 +375,27 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 
 	return result
 
+# DC tier modifiers — actual DC = best_party_stat + modifier, so success when d20 >= modifier.
+# P(success) = (21 - modifier) / 20: trivial 95%, easy 80%, normal 60%, difficult 40%,
+# very_difficult 20%, almost_impossible 5% (nat-20 only).
+const DC_TIER_MODIFIERS: Dictionary = {
+	"trivial":           2,
+	"easy":              5,
+	"normal":            9,
+	"difficult":         13,
+	"very_difficult":    17,
+	"almost_impossible": 20,
+}
+
+## Resolve a roll difficulty to an absolute DC.
+## Accepts a tier string ("normal", "difficult", …) or a legacy integer DC.
+## Tier: DC = best_party_stat + modifier, keeping difficulty constant regardless of power level.
+func _resolve_roll_dc(raw_difficulty, best_value: int) -> int:
+	if raw_difficulty is String:
+		var modifier: int = DC_TIER_MODIFIERS.get(raw_difficulty, DC_TIER_MODIFIERS["normal"])
+		return best_value + modifier
+	return int(raw_difficulty)
+
 ## Execute a choice (with roll if needed).
 ## passing_character: the party member who enabled a blue/requirement choice (may be null).
 func make_choice(choice: Dictionary, passing_character = null) -> Dictionary:
@@ -385,7 +406,7 @@ func make_choice(choice: Dictionary, passing_character = null) -> Dictionary:
 	# Handle roll-based choices
 	if choice.type == "roll" and "requirements" in choice and "roll" in choice.requirements:
 		var roll_req = choice.requirements.roll
-		var difficulty = roll_req.difficulty
+		var raw_difficulty = roll_req.difficulty  # string tier or legacy int
 
 		# Determine whether this is an attribute roll or a skill roll
 		var roll_label: String  # used in roll_result for display
@@ -411,7 +432,9 @@ func make_choice(choice: Dictionary, passing_character = null) -> Dictionary:
 					best_value = attr_value
 					roller = party_member
 
-		# Roll: d20 + attribute/skill value
+		# Roll: d20 + attribute/skill value.
+		# Resolve tier string → absolute DC now that best_value is known.
+		var difficulty = _resolve_roll_dc(raw_difficulty, best_value)
 		var roll = randi() % 20 + 1
 		var total = roll + best_value
 		var success = total >= difficulty
@@ -430,6 +453,7 @@ func make_choice(choice: Dictionary, passing_character = null) -> Dictionary:
 			"attribute_value": best_value,
 			"total": total,
 			"difficulty": difficulty,
+			"difficulty_tier": raw_difficulty if raw_difficulty is String else "",
 			"success": success,
 			"roller": roller.name if roller else "Unknown"
 		}

@@ -48,7 +48,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "cost": {
@@ -266,7 +266,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -317,7 +317,7 @@
           "requirements": {
             "roll": {
               "skill": "comedy",
-              "difficulty": 11
+              "difficulty": "trivial"
             }
           },
           "outcome_success": {
@@ -541,7 +541,7 @@
           "requirements": {
             "roll": {
               "attribute": "awareness",
-              "difficulty": 15
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -660,7 +660,7 @@
           "text": "Sit before the gate and meditate on the nature of death",
           "requirements": {
             "skills": {
-              "yoga": 5
+              "yoga": 3
             }
           },
           "outcome": {
@@ -691,7 +691,7 @@
           "requirements": {
             "roll": {
               "attribute": "awareness",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -1068,7 +1068,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 12
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -1081,8 +1081,14 @@
                 "health_potion"
               ],
               "pressure": [
-                {"element": "water", "amount": -15},
-                {"element": "earth", "amount": -8}
+                {
+                  "element": "water",
+                  "amount": -15
+                },
+                {
+                  "element": "earth",
+                  "amount": -8
+                }
               ]
             },
             "karma": {
@@ -1477,7 +1483,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -1547,7 +1553,7 @@
           "requirements": {
             "roll": {
               "skill": "comedy",
-              "difficulty": 12
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -1666,8 +1672,14 @@
             "rewards": {
               "xp": 4,
               "pressure": [
-                {"element": "water", "amount": -20},
-                {"element": "space", "amount": -8}
+                {
+                  "element": "water",
+                  "amount": -20
+                },
+                {
+                  "element": "space",
+                  "amount": -8
+                }
               ]
             },
             "karma": {
@@ -1788,7 +1800,7 @@
           "text": "Strike the demon down with sorcery before he finishes boasting",
           "requirements": {
             "skills": {
-              "sorcery": 4
+              "sorcery": 3
             }
           },
           "outcome": {
@@ -1833,7 +1845,7 @@
           "requirements": {
             "roll": {
               "attribute": "constitution",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -1958,7 +1970,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -1967,8 +1979,14 @@
             "rewards": {
               "xp": 8,
               "pressure": [
-                {"element": "fire", "amount": 12},
-                {"element": "air", "amount": 10}
+                {
+                  "element": "fire",
+                  "amount": 12
+                },
+                {
+                  "element": "air",
+                  "amount": 10
+                }
               ]
             },
             "karma": {
@@ -2405,7 +2423,7 @@
           "requirements": {
             "roll": {
               "attribute": "awareness",
-              "difficulty": 12
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -2661,7 +2679,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -2735,7 +2753,7 @@
           "text": "Assert yourself as a senior practitioner — take over the session",
           "requirements": {
             "skills": {
-              "leadership": 4
+              "leadership": 3
             }
           },
           "outcome": {
@@ -3205,7 +3223,7 @@
           "requirements": {
             "roll": {
               "attribute": "awareness",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -3880,7 +3898,7 @@
           "requirements": {
             "roll": {
               "attribute": "constitution",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -4918,7 +4936,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 15
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -4950,7 +4968,7 @@
           "requirements": {
             "roll": {
               "skill": "comedy",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -5023,7 +5041,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -5139,7 +5157,7 @@
           "requirements": {
             "roll": {
               "skill": "comedy",
-              "difficulty": 10
+              "difficulty": "trivial"
             }
           },
           "outcome_success": {
@@ -5210,7 +5228,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -5245,7 +5263,7 @@
           "requirements": {
             "roll": {
               "skill": "comedy",
-              "difficulty": 10
+              "difficulty": "trivial"
             }
           },
           "outcome_success": {
@@ -5322,7 +5340,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 15
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -5373,17 +5391,32 @@
         }
       ]
     },
-
     "hell_waystation": {
       "title": "Waystation of Ash",
       "realm": "hell",
       "type": "location",
       "text": "A fortified waystation rises from the volcanic plain, its walls scorched black by centuries of eruptions. Smoke vents line the roof, and a battered sign reads 'ALL TRADES WELCOME — NO SOULS ACCEPTED AS PAYMENT.' Inside, merchants, healers, and weapon-smiths carve out a livelihood amid the suffering.",
       "services": [
-        {"tab_name": "General Goods",  "shop_id": "hell_merchant",   "icon": "🏪"},
-        {"tab_name": "Forge",          "shop_id": "infernal_forge",  "icon": "⚒"},
-        {"tab_name": "Healer",         "shop_id": "mercy_ward",      "icon": "💊"},
-        {"tab_name": "Alchemist",      "shop_id": "brimstone_lab",   "icon": "⚗"}
+        {
+          "tab_name": "General Goods",
+          "shop_id": "hell_merchant",
+          "icon": "🏪"
+        },
+        {
+          "tab_name": "Forge",
+          "shop_id": "infernal_forge",
+          "icon": "⚒"
+        },
+        {
+          "tab_name": "Healer",
+          "shop_id": "mercy_ward",
+          "icon": "💊"
+        },
+        {
+          "tab_name": "Alchemist",
+          "shop_id": "brimstone_lab",
+          "icon": "⚗"
+        }
       ]
     }
   }
