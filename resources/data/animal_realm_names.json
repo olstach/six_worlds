@@ -1,0 +1,592 @@
+{
+  "_comment": "Animal realm naming reference. Personal names and place names generated from inside each birth's worldview (perspectivism). Place names reflect what the creature notices, values, and remembers — not geography as outsiders see it. Personal names reflect what parents hope for children, or what the community observed at birth. Use these pools when writing event NPC names, companion names, and location flavor text.",
+
+  "regions": {
+
+    "ocean": {
+      "_comment": "The ocean as the naga, karka, matsya, and makara experience it — ancient, territorial, layered by depth and current. Nothing here is accidental. Every feature has been claimed or contested.",
+
+      "landscape_features": {
+        "_comment": "Shared ocean geography. These names appear in any ocean zone event text.",
+        "named_places": [
+          { "name": "The Long Current", "meaning": "The main channel — naga measure sovereignty by how much of it they hold" },
+          { "name": "The Narrow Claim", "meaning": "The coral barrier pass — karka territory" },
+          { "name": "The Bright Below", "meaning": "The bioluminescent zone in deep water — beautiful and disorienting" },
+          { "name": "The Deep Above", "meaning": "What ocean creatures call the shallows — disconcertingly lit, too exposed" },
+          { "name": "The Path Between Worlds", "meaning": "The submarine migration route from coast to deep ocean" },
+          { "name": "The Oldest Wall", "meaning": "An ancient submarine cliff claimed by makara as territorial marker" },
+          { "name": "The Upwelling", "meaning": "Where cold deep water rises — primary makara feeding ground" },
+          { "name": "Before the Reef", "meaning": "The open water approach to the coral barrier — contested, dangerous" }
+        ]
+      },
+
+      "births": {
+        "naga": {
+          "naming_philosophy": "Naga hold lineage as the deepest form of identity — a name is an inheritance, a claim, a record. Children are named for what the parent hopes they will carry into the future: a current, a memory, a way of holding still. Naga names are fluid, vowel-heavy, sinuous in the mouth. A naga who has held the same thermal current for a century may rename themselves after it. Place names are events remembered: not where something is, but what happened there and who was present.",
+          "parent_wishes": [
+            "May you hold your current",
+            "May the reef remember you",
+            "May you carry the old water",
+            "May your coils be long",
+            "May nothing slip your memory"
+          ],
+          "personal_names": [
+            { "name": "Vasuni", "meaning": "treasure-bearer; one who carries wealth of knowledge" },
+            { "name": "Sheshara", "meaning": "on the path of Shesha; one who endures at the foundation" },
+            { "name": "Nilava", "meaning": "blue-deep; one of the dark water" },
+            { "name": "Ananthi", "meaning": "endless; one without terminus" },
+            { "name": "Srotasi", "meaning": "of the current; current-born" },
+            { "name": "Varuni", "meaning": "Varuna's own; under the protection of the ocean lord" },
+            { "name": "Kumudha", "meaning": "water-lotus; one who blooms in the dark" },
+            { "name": "Velaka", "meaning": "wave-maker; one who sets things in motion" },
+            { "name": "Sagaraka", "meaning": "ocean-natured; one who holds great depth calmly" },
+            { "name": "Timidhi", "meaning": "whale-bearer; one who moves in the wake of giants" }
+          ],
+          "place_names": [
+            { "name": "The Remembering Place", "meaning": "A thermal vent where naga meet annually to recite lineage records aloud" },
+            { "name": "The First Reef", "meaning": "The ancestral territory of the oldest lineage — technically contested, practically not" },
+            { "name": "Where the Water Changed", "meaning": "Site of an ancient boundary dispute; still avoided" },
+            { "name": "Three Coils Resting", "meaning": "A particular reef formation that resembles sleeping naga — sacred, do not enter" },
+            { "name": "The Sixty-Year Claim", "meaning": "Territory held continuously by one family for sixty years — remarkable and named for it" },
+            { "name": "The Forgetting Pool", "meaning": "A disorienting current that scrambles scent trails and memory of routes — dangerous to the young" }
+          ]
+        },
+
+        "karka": {
+          "naming_philosophy": "Karka value endurance above all things — what is built, what is held, what does not crack. Names are given late, after the child's shell has begun to harden into its characteristic pattern. A name given too early is considered bad luck: you have named a thing before it has proven itself. Karka parents say: 'May nothing crack you.' Place names are functional and precise — defined by thermal output, structural integrity, depth to bedrock.",
+          "parent_wishes": [
+            "May your shell grow thick",
+            "May the vent sustain you",
+            "May nothing crack you",
+            "May what you hold outlast you",
+            "May the warmth find you"
+          ],
+          "personal_names": [
+            { "name": "Kavika", "meaning": "armored one; bearing natural fortress" },
+            { "name": "Pashanaki", "meaning": "stone-natured; one of the deep rock" },
+            { "name": "Dridava", "meaning": "firm and lasting; one who does not yield" },
+            { "name": "Kavachi", "meaning": "shell-keeper; guardian of the inner form" },
+            { "name": "Staraka", "meaning": "layer-upon-layer; one built from accumulated time" },
+            { "name": "Kholara", "meaning": "shell-voice; one whose presence resonates" },
+            { "name": "Kutaka", "meaning": "of the peak; one who holds the high point" },
+            { "name": "Durgaki", "meaning": "fortress-born; one difficult to reach" },
+            { "name": "Sthiraka", "meaning": "stable one; the unmoved" },
+            { "name": "Patharaka", "meaning": "of the bedrock; deepest foundation" }
+          ],
+          "place_names": [
+            { "name": "The Warm Arch", "meaning": "Primary thermal vent complex — most productive, most contested" },
+            { "name": "The Shell Wall", "meaning": "The coral barrier reef face — karka ancestral territory" },
+            { "name": "The Long Vigil", "meaning": "A pass they have guarded for so long that 'the Long Vigil' is also a measure of time" },
+            { "name": "The Cracking Place", "meaning": "Where a notable elder's shell finally failed — remembered with respect, not grief" },
+            { "name": "The First Warmth", "meaning": "The original thermal vent the karka settled; ancestral" },
+            { "name": "The Work Cave", "meaning": "The primary shell-wright workshop; open to all karka, by tradition" }
+          ]
+        },
+
+        "matsya": {
+          "naming_philosophy": "Matsya are the most present-tense of all births — they live in the immediate movement of the shoal, in the collective turn. Individual names are given by the shoal, not the parents, and usually describe the child's behavior in their first week. A matsya who always turns left at the decision point becomes Leftward. A matsya who sees the shadow first becomes Shadowwatch. Names are short because they need to carry fast across water.",
+          "parent_wishes": [
+            "May the shoal know your turn",
+            "May you be fast without hesitation",
+            "May the light find you in deep water",
+            "May you always be in the middle",
+            "May the shoal carry you"
+          ],
+          "personal_names": [
+            { "name": "Vela", "meaning": "wave; born in the rising water" },
+            { "name": "Tirtha", "meaning": "the crossing; one who leads through difficult passages" },
+            { "name": "Jalaki", "meaning": "water-child; fully of the element" },
+            { "name": "Tarini", "meaning": "she who crosses; navigator" },
+            { "name": "Nirupa", "meaning": "formless; moves like water itself" },
+            { "name": "Meena", "meaning": "fish; the pure kind" },
+            { "name": "Srotika", "meaning": "current-rider; always in the flow" },
+            { "name": "Tulaka", "meaning": "balance; the one who holds the center of the school" },
+            { "name": "Vegika", "meaning": "swift; first in every turn" },
+            { "name": "Hradika", "meaning": "deep-hearted; goes further than the others" }
+          ],
+          "place_names": [
+            { "name": "The Bright Wall", "meaning": "The reef face where sunlight meets depth — primary hunting ground" },
+            { "name": "The Turn", "meaning": "Their regular circuit route — spoken of as a direction, not a place" },
+            { "name": "The Deep Edge", "meaning": "The depth below which the shoal does not go; understood without discussion" },
+            { "name": "The Plenty", "meaning": "A rich feeding ground; no permanent name, moves with the season" },
+            { "name": "Below the Ship", "meaning": "The sunken wreck — avoided, but useful as a landmark" },
+            { "name": "The Open Crossing", "meaning": "The exposed water gap in migration — fear and necessity together" }
+          ]
+        },
+
+        "makara": {
+          "naming_philosophy": "Makara are so ancient and solitary that their naming traditions are barely traditions — more like geological habits. They rarely name children; often a young makara goes unnamed until they have held a territory for a season, at which point they name themselves after its most characteristic feature. Place names are simple, definitive, and never change. 'The Trench' has been the Trench for longer than anything else in the ocean has a name.",
+          "parent_wishes": [
+            "May you be unmoved",
+            "May the deep receive you",
+            "May you outlast the current",
+            "May you become the current",
+            "May you need no one"
+          ],
+          "personal_names": [
+            { "name": "Gambhira", "meaning": "profound depth; one of the serious deep" },
+            { "name": "Jaladhi", "meaning": "ocean-holder; one who contains multitudes" },
+            { "name": "Mahajala", "meaning": "great water; of the vast kind" },
+            { "name": "Arnava", "meaning": "ocean; not a creature of it but an expression of it" },
+            { "name": "Timingila", "meaning": "whale-swallower; one who exceeds what seems possible" },
+            { "name": "Abdhini", "meaning": "ocean-born; from nothing but depth" },
+            { "name": "Samudra", "meaning": "meeting of waters; where all currents converge" },
+            { "name": "Talapriya", "meaning": "beloved of the bottom; at home in the deep dark" }
+          ],
+          "place_names": [
+            { "name": "The Trench", "meaning": "The deepest point. No other name needed." },
+            { "name": "The Upwelling", "meaning": "Where the cold rises — primary feeding ground, claimed" },
+            { "name": "The Oldest Wall", "meaning": "The ancient submarine cliff — makara territorial boundary since before memory" },
+            { "name": "Before the Reef", "meaning": "The open approach water — the makara's anteroom" },
+            { "name": "The Stillness", "meaning": "A zone of no current — disliked but used for ambush" }
+          ]
+        }
+      }
+    },
+
+    "forest": {
+      "_comment": "The forest as eight overlapping territories — no creature sees the whole of it. Every tree is a claim, every stream a boundary. The forest is not a place; it is an aggregate of contested presences.",
+
+      "landscape_features": {
+        "_comment": "Shared forest geography visible across births.",
+        "named_places": [
+          { "name": "The Canopy", "meaning": "The upper world — vanara territory, shyena hunting ground, shardula observation post" },
+          { "name": "The Old Root Hall", "meaning": "Where the largest tree's roots create natural chambers — dura burrow below, vanara sleep above" },
+          { "name": "The Contested Mud", "meaning": "A wetland zone where varaha and rakshasa territories overlap uneasily" },
+          { "name": "The Scent Line", "meaning": "The invisible boundary between predator territories — every species reads it differently" },
+          { "name": "The River Ford", "meaning": "The crossing point — temporary neutral ground; all know not to hunt here" },
+          { "name": "The Mycelium Net", "meaning": "The dura name for the underground fungal network; others sense it but don't discuss it" },
+          { "name": "The Fruiting Season Place", "meaning": "The vanara name for any tree producing right now — location changes, name is permanent" }
+        ]
+      },
+
+      "births": {
+        "rakshasa": {
+          "naming_philosophy": "Rakshasa are intensely solitary and dislike compound identities. A name should be one clean word, like a strike. Parents name children late — not at birth but at the first successful hunt, which is when a rakshasa becomes someone worth naming. Before that, they are simply 'the young one.' Place names are possessives: not 'The Ridge' but 'My Ridge.' Not 'The Territory' but 'My Territory.' They use personal place names rarely, only when speaking to others.",
+          "parent_wishes": [
+            "May you be the one who is not found",
+            "May your hunger be clean",
+            "May you be solitary and sufficient",
+            "May the mark distinguish you",
+            "May you need no one and want for nothing"
+          ],
+          "personal_names": [
+            { "name": "Vikrama", "meaning": "valor; one who proves themselves by action" },
+            { "name": "Khara", "meaning": "sharp; the precision of the predator" },
+            { "name": "Kruddha", "meaning": "the fierce one; intensity as identity" },
+            { "name": "Dravaka", "meaning": "the runner; speed without hesitation" },
+            { "name": "Takshari", "meaning": "maker-of-marks; the one who shapes the world around them" },
+            { "name": "Kabandha", "meaning": "the trunk; formidable presence without explanation" },
+            { "name": "Unmatta", "meaning": "the frenzied one; unstoppable once started" },
+            { "name": "Mrigavah", "meaning": "hunter; using the prey-word for the predator, which is deliberate" },
+            { "name": "Shatru", "meaning": "the enemy; to be feared before known" }
+          ],
+          "place_names": [
+            { "name": "The Three-Day Territory", "meaning": "Their current hunting circuit — defined by travel time, not landmarks" },
+            { "name": "The Mango Kill", "meaning": "A remembered hunt site near a fruiting tree — told to other rakshasa as coordinates" },
+            { "name": "The Ridge Where They Wait", "meaning": "Their primary ambush position" },
+            { "name": "The Long Hunger", "meaning": "A stretch of poor territory between productive ones — a warning, not a name" },
+            { "name": "The Wrong Side", "meaning": "Anywhere they do not go; attributed to another's territory without acknowledgment" },
+            { "name": "The Scratch Tree", "meaning": "The territorial marker tree; the scratches are the claim" }
+          ]
+        },
+
+        "varaha": {
+          "naming_philosophy": "Varaha are deeply communal — the sounder is the unit of identity, not the individual. Names are given at birth and reflect the circumstances: the quality of the earth beneath the birth-site, what the sounder was doing, what the weather was doing. A child born during heavy rain near good tubers might become Mudblessed. A child born when the sounder was moving fast through danger becomes Runborn. Names are warm, round, earthy.",
+          "parent_wishes": [
+            "May you root deep",
+            "May your sounder be strong",
+            "May the earth tell you its secrets",
+            "May you be steadfast",
+            "May the mud welcome you"
+          ],
+          "personal_names": [
+            { "name": "Bhumika", "meaning": "earth-natured; of the ground, always" },
+            { "name": "Medaka", "meaning": "rich-earth-born; from the fat soil" },
+            { "name": "Vasuda", "meaning": "earth-giver; one who finds nourishment for others" },
+            { "name": "Ghoraka", "meaning": "deep and formidable; takes up space in the world" },
+            { "name": "Mudrika", "meaning": "of the seal; one who marks and is marked" },
+            { "name": "Phulla", "meaning": "blooming-open; expanding outward with confidence" },
+            { "name": "Mrichha", "meaning": "earth-born truly; arrived from below" },
+            { "name": "Sthana", "meaning": "the place; one who belongs where they are" },
+            { "name": "Stamba", "meaning": "the pillar; holds the sounder together" }
+          ],
+          "place_names": [
+            { "name": "The Deep Mud", "meaning": "The best wallowing site — seasonal, but returned to every year" },
+            { "name": "The Sounder's Path", "meaning": "Their regular rooting circuit — memorized by every member" },
+            { "name": "Where Mother Found the Truffle", "meaning": "A specific spot, remembered by name across generations" },
+            { "name": "The Old Roots", "meaning": "Ancient forest floor with rich tubers — the sounder's most productive ground" },
+            { "name": "The Safe Hollow", "meaning": "Where the sounder sleeps; location changes seasonally but always called this" },
+            { "name": "Where Tusk-Elder Was Born", "meaning": "Ancestral birthplace of the lineage matriarch; visited ceremonially" }
+          ]
+        },
+
+        "shardula": {
+          "naming_philosophy": "Shardula are solitary and precise. They pay close attention to light — the quality of dappled forest light is the aesthetic foundation of their world, both for hunting and for beauty. Names often refer to moments of perception: the instant before action, the quality of stillness, the particular light of a given hour. A parent says: 'May you see and not be seen.' Place names describe functional qualities of terrain: cover quality, sight-line distance, how the light falls at different hours.",
+          "parent_wishes": [
+            "May you see and not be seen",
+            "May your markings be precise",
+            "May you wait without urgency",
+            "May the spotted light find you",
+            "May the moment be yours"
+          ],
+          "personal_names": [
+            { "name": "Chitraka", "meaning": "the spotted one; identity through pattern" },
+            { "name": "Drishika", "meaning": "of the sight; defined by what they perceive" },
+            { "name": "Avadhana", "meaning": "full attention; the quality of being completely present" },
+            { "name": "Kshanaka", "meaning": "of the moment; always in the exact instant" },
+            { "name": "Sthiraka", "meaning": "the still one; patience made physical" },
+            { "name": "Mandaka", "meaning": "the slow and deliberate; not slow but deliberate" },
+            { "name": "Varika", "meaning": "the precious and chosen; quality over quantity" },
+            { "name": "Niloka", "meaning": "dark medicine; healing that works in shadow" },
+            { "name": "Rupaka", "meaning": "of the form; aware of their own presence in space" }
+          ],
+          "place_names": [
+            { "name": "The Patient Rock", "meaning": "Their primary scouting boulder — good sight-lines, excellent cover" },
+            { "name": "The Crossing", "meaning": "The deer ford they watch — reliable prey approach" },
+            { "name": "The High Branch", "meaning": "Their territory's main marker — highest reachable point" },
+            { "name": "The Spotted Light", "meaning": "The forest section where dappled light through canopy creates ideal ambush conditions" },
+            { "name": "The Long Wait", "meaning": "A territory claimed after months of patient observation — named for the effort" },
+            { "name": "The Scent Ridge", "meaning": "The territorial boundary where their markings end — and another's begin" },
+            { "name": "The Hollow Where Nothing Comes", "meaning": "Poor territory, dry and avoided; named as a warning" }
+          ]
+        },
+
+        "gana": {
+          "naming_philosophy": "Gana are both wolves and deer — two populations sharing archetypes, two ways of experiencing the same territory. Their naming traditions run in parallel. Wolf-gana name children for resonance: what the pack will hear of them. Deer-gana name children for alertness: what they will notice that others miss. Both traditions share the belief that a name should carry across a valley.",
+          "parent_wishes_wolf": [
+            "May the pack know your voice",
+            "May your howl carry the valley",
+            "May the song live in you",
+            "May the hunt find you worthy"
+          ],
+          "parent_wishes_deer": [
+            "May you hear what others miss",
+            "May the alarm sound through you",
+            "May the trail hold your memory",
+            "May you be first to know and last to be found"
+          ],
+          "personal_names": [
+            { "name": "Vrikavah", "meaning": "wolf-voice; the howl that defines the pack" },
+            { "name": "Mriga", "meaning": "the animal; pure creature-nature, neither predator nor prey" },
+            { "name": "Nadaka", "meaning": "sound-maker; one who fills the valley" },
+            { "name": "Dhvani", "meaning": "resonance; the echo after the sound" },
+            { "name": "Ghoshaka", "meaning": "the voice; announcement of presence" },
+            { "name": "Svana", "meaning": "the sound itself; presence as vibration" },
+            { "name": "Rutika", "meaning": "cry-born; arrived with a sound" },
+            { "name": "Chandraka", "meaning": "moon-child; runs at night under cold light" },
+            { "name": "Sambhrama", "meaning": "ardor; speed and intensity together" }
+          ],
+          "place_names_wolf": [
+            { "name": "The Echo Hollow", "meaning": "Where howls multiply — the pack gathers here to call across distance" },
+            { "name": "The Pack Ridge", "meaning": "Territorial high point; visible from everywhere in the range" },
+            { "name": "The Fast Run", "meaning": "The chase-down terrain — open enough for full speed" },
+            { "name": "The Singing Rock", "meaning": "Where the pack convenes for ceremony; the howl here carries farthest" }
+          ],
+          "place_names_deer": [
+            { "name": "The Safe Smell", "meaning": "An area with consistent wind direction — always know what is upwind" },
+            { "name": "The Clear Ground", "meaning": "Open meadow where predators can be seen at distance" },
+            { "name": "The Alarm Tree", "meaning": "The tree near which the warning bark always sounds; others know to listen" },
+            { "name": "The Old Trail", "meaning": "The ancestral migration path — walked so long it is part of the body" },
+            { "name": "The Three-Day Run", "meaning": "The distance covered in a good season's migration" }
+          ]
+        },
+
+        "vanara": {
+          "naming_philosophy": "Vanara naming is semi-serious — they understand names matter but cannot resist making the moment funny. A child named at birth gets a formal aspirational name. A child who does something memorable in their first year often acquires a second name that sticks better. The formal name is used in ceremony; the second name is used in everything else. Parents say: 'May you laugh last,' which sounds like a blessing but is also practical advice.",
+          "parent_wishes": [
+            "May you find the high branch",
+            "May the trick come easy",
+            "May you be too quick for consequence",
+            "May you laugh last",
+            "May the fruit be there when you arrive"
+          ],
+          "personal_names": [
+            { "name": "Chanchal", "meaning": "quick and restless; cannot be held in one place" },
+            { "name": "Chatura", "meaning": "clever; four-directional thinking" },
+            { "name": "Vrinda", "meaning": "the multitude; many things at once" },
+            { "name": "Kalika", "meaning": "bud; mischief in potential" },
+            { "name": "Taranga", "meaning": "wave-leaping; always in motion" },
+            { "name": "Kelika", "meaning": "play; defined by the game" },
+            { "name": "Laghima", "meaning": "lightness; the quality of being almost nothing, so cannot be caught" },
+            { "name": "Phullika", "meaning": "blooming and bouncing; excessive enthusiasm" },
+            { "name": "Kapisha", "meaning": "tawny-lord; the old honorific, used ironically" }
+          ],
+          "place_names": [
+            { "name": "The Long Bridge", "meaning": "A canopy route between two fruiting areas — vanara maintain it by keeping branches connected" },
+            { "name": "Where the Trick Was Done", "meaning": "Site of a famous escape or prank; coordinates used in storytelling" },
+            { "name": "The High Place", "meaning": "Simply: the highest accessible point in their territory" },
+            { "name": "The Good Fruit Tree", "meaning": "Self-explanatory. Location shifts seasonally but the name stays." },
+            { "name": "The Falling Place", "meaning": "Where a notable fall happened — told with varying degrees of sympathy depending on the audience" },
+            { "name": "The Old Alliance", "meaning": "Where this troop meets with another; neutral ground, old agreement" }
+          ]
+        }
+      }
+    },
+
+    "meadow": {
+      "_comment": "The meadow as five very different births experience it — open sky, exposed ground, no cover. Existence here is negotiated differently than in the forest: everything can see everything. Territory is marked with more desperation and defended with more commitment.",
+
+      "landscape_features": {
+        "_comment": "Shared meadow geography.",
+        "named_places": [
+          { "name": "The Great Watering Hole", "meaning": "The universal truce-point — every species drinks here, the truce is older than any current inhabitant" },
+          { "name": "The Migration Road", "meaning": "The path worn by thousands of years of seasonal movement; visible from above" },
+          { "name": "The Termite Cathedral", "meaning": "The great mound; not a landmark but a place of gathering for practitioners" },
+          { "name": "The Open Ground", "meaning": "Meadow beyond meadow — featureless to outsiders, rich in meaning to those who live here" },
+          { "name": "The Kopje", "meaning": "A rocky outcrop rising from the plain — khadga dust-wallow below, yaksha marker above, shyena hunting perch above that" },
+          { "name": "The Seasonal Flood Line", "meaning": "The furthest reach of the wet-season water; everything within is temporarily different" }
+        ]
+      },
+
+      "births": {
+        "yaksha": {
+          "naming_philosophy": "Yaksha are guardians by nature — they define themselves by what they hold, not what they pursue. Names are formal, often compound, and describe a function as much as a person. A yaksha child is named at the moment they first demonstrate awareness of a boundary — when they stand at the edge of something and know, without being told, that they must not let it be crossed. Place names are ancient, maintained across generations, and often coincide with actual boundary markers.",
+          "parent_wishes": [
+            "May you guard what matters",
+            "May the boundary hold",
+            "May nothing cross that you did not allow",
+            "May you be remembered at the contract",
+            "May your word bind as well as stone"
+          ],
+          "personal_names": [
+            { "name": "Shailaka", "meaning": "of the mountain-stone; permanent as the earth itself" },
+            { "name": "Vanaraksha", "meaning": "forest-guardian; the protector at the boundary of wildness" },
+            { "name": "Kshetraka", "meaning": "of the sacred field; one who knows what is cultivated and what is not" },
+            { "name": "Rakshaka", "meaning": "protector; the function as the name" },
+            { "name": "Dharanaka", "meaning": "the holding one; maintenance as identity" },
+            { "name": "Maryadaka", "meaning": "boundary-keeper; the one who knows the line" },
+            { "name": "Palaka", "meaning": "guardian; brief and final" },
+            { "name": "Samraksha", "meaning": "complete protection; total in their vigilance" },
+            { "name": "Sthapanaka", "meaning": "the establisher; one who sets things in place" }
+          ],
+          "place_names": [
+            { "name": "The Sacred Boundary", "meaning": "The line they hold; any Yaksha territory's primary name is this" },
+            { "name": "The Old Contract", "meaning": "Where an ancient territorial agreement was struck; the terms are still in force" },
+            { "name": "The Offering Ground", "meaning": "Where tribute is left by those passing through; accepted without thanks, which is the etiquette" },
+            { "name": "The Judgment Place", "meaning": "Where disputes between territories are resolved; both sides must approach from downwind" },
+            { "name": "The Eastern Post", "meaning": "Directional boundary markers; each direction has its Post, visited in rotation" },
+            { "name": "The Guardian Tree", "meaning": "The single tree at the center of the territory; often ancient, always marked" }
+          ]
+        },
+
+        "dura": {
+          "naming_philosophy": "Dura measure everything in depth and duration. A name should describe what endures — what goes below, what is made carefully, what roots support. Children are named at the moment they first help dig: they take a stone from the tunnel, they carry earth up and out, and in that moment the sounder watches to see how they work. The name comes from the quality of that first effort. A deliberate child becomes Careful-Layer. A strong child becomes Deep-Strike.",
+          "parent_wishes": [
+            "May the earth receive you",
+            "May your tunnels be true",
+            "May what you make outlast you",
+            "May the roots guide you",
+            "May you know what is below"
+          ],
+          "personal_names": [
+            { "name": "Khanaka", "meaning": "the digger; one who makes the way" },
+            { "name": "Staraka", "meaning": "layer-by-layer; built from accumulated careful work" },
+            { "name": "Garbhika", "meaning": "of the interior; most at home in the deep" },
+            { "name": "Mulaka", "meaning": "root-seeker; follows what holds things together" },
+            { "name": "Prithvika", "meaning": "of the broad earth; sees the whole stratum" },
+            { "name": "Khataka", "meaning": "excavated; shaped by the work of digging" },
+            { "name": "Nilara", "meaning": "blue-dark earth; the richest soil, deep down" },
+            { "name": "Adhaka", "meaning": "the below one; always headed further down" },
+            { "name": "Mritika", "meaning": "of the good soil; knows quality earth by feel" }
+          ],
+          "place_names": [
+            { "name": "The Deep Warren", "meaning": "The main tunnel complex — named for depth, not breadth" },
+            { "name": "The Root Hall", "meaning": "Where the largest tree's root system creates natural chambers; coolest and quietest" },
+            { "name": "The Seven Exits", "meaning": "A complex junction designed for escape — the number is the guarantee" },
+            { "name": "The Dry Level", "meaning": "Upper tunnels used in wet season — less comfortable, safer from flooding" },
+            { "name": "The First Dig", "meaning": "The ancestral burrow site; always maintained even when no longer primary" },
+            { "name": "The Breathing Hole", "meaning": "Emergency ventilation shaft; everyone knows its location, no one mentions it to outsiders" }
+          ]
+        },
+
+        "khadga": {
+          "naming_philosophy": "Khadga are in no hurry — they name children slowly, watching first. A newborn khadga may go unnamed for an entire season while the parent observes. When the name comes, it is final and heavy, like a footfall. Khadga do not give children aspirational names; they name what they see. A calm child: Stillness. A heavy child: The Great Weight. A child who charges the wall of their enclosure repeatedly: Perhaps the Wall Matters.",
+          "parent_wishes": [
+            "May you be unmovable",
+            "May the mud cool you",
+            "May your horn be long",
+            "May nothing require urgency",
+            "May the plain be sufficient"
+          ],
+          "personal_names": [
+            { "name": "Baladhara", "meaning": "strength-bearer; the one who holds force without deploying it" },
+            { "name": "Ghanaka", "meaning": "the dense and heavy; occupying space completely" },
+            { "name": "Dhritaka", "meaning": "steadiness itself; will not be moved by argument or urgency" },
+            { "name": "Tushara", "meaning": "tough and fibrous; does not break, ever" },
+            { "name": "Sthulaka", "meaning": "the massive one; presence as statement" },
+            { "name": "Vajraka", "meaning": "diamond-born; impenetrable" },
+            { "name": "Sthirava", "meaning": "stability; the ground beneath the ground" },
+            { "name": "Maheshaka", "meaning": "of the great; one who does not need to prove it" }
+          ],
+          "place_names": [
+            { "name": "The Good Mud", "meaning": "The best wallow — visited in seasonal rotation, remembered across years" },
+            { "name": "The Claim", "meaning": "Their current territory; not named further, the claim is enough" },
+            { "name": "The Thorn Wall", "meaning": "Natural thornscrub boundary — they did not build it but they maintain it by not breaking through" },
+            { "name": "The Long Shade", "meaning": "A particular stand of trees that provides afternoon relief — crucial in dry season" },
+            { "name": "Where the Horn Broke", "meaning": "Site of an old territorial battle — remembered as landmark even by those who didn't witness it" },
+            { "name": "The Deep Drink", "meaning": "The waterhole — visited at exact same time every day, by individual habit of each khadga" }
+          ]
+        },
+
+        "bhramara": {
+          "naming_philosophy": "Bhramara individual names are ceremonial constructions given by the hive mind collectively. What the hive names you is what you are. Names describe roles compressed into sounds — a long title reduced to something that can be waggle-danced in seconds. The individual barely matters; the function matters entirely. Place names are extremely precise: defined by flower species, altitude, humidity, and time of day.",
+          "parent_wishes": [
+            "May the hive dream you",
+            "May your dance be understood",
+            "May the flower know your name",
+            "May you find the right flower",
+            "May the hive never lose you"
+          ],
+          "personal_names": [
+            { "name": "Madhuka", "meaning": "honey-carrier; the essential function" },
+            { "name": "Bhramari", "meaning": "wandering one; the scout, the finder" },
+            { "name": "Pushpaka", "meaning": "flower-keeper; maintains the relationship with the source" },
+            { "name": "Rasika", "meaning": "essence-seeker; extracts the fundamental" },
+            { "name": "Kosaka", "meaning": "comb-builder; architecture of the collective" },
+            { "name": "Nrityaka", "meaning": "dancer; communicates what cannot be spoken" },
+            { "name": "Gunaka", "meaning": "thread-holder; the quality that connects all parts" },
+            { "name": "Samajaka", "meaning": "of the assembly; defined by belonging to the whole" }
+          ],
+          "place_names": [
+            { "name": "The Flower Mountain", "meaning": "A hillside rich in the hive's preferred species — primary foraging ground" },
+            { "name": "The Dance Floor", "meaning": "The interior chamber where recruitment dances orient the foragers" },
+            { "name": "The Dry Crossing", "meaning": "Dangerous territory between flower sources — no landmarks, high exposure" },
+            { "name": "The Enemy Tree", "meaning": "A location they defend against; not feared, just contested" },
+            { "name": "The Sweet Ridge", "meaning": "Most productive foraging zone; name is also a direction communicated in dance" }
+          ]
+        },
+
+        "patanga": {
+          "naming_philosophy": "Patanga naming is aspirational to the point of ecstasy. They name children for what the child will burn toward. A name is a trajectory. To name a child 'Flame-Seeker' is not prediction; it is summoning. Patanga names are given at the moment of first strong light-response — when the infant turns instinctively toward any source of brightness. That first turn is the name.",
+          "parent_wishes": [
+            "May the light find you worthy",
+            "May you spiral without fear",
+            "May you choose the fire that illuminates",
+            "May your offering be accepted",
+            "May you burn completely"
+          ],
+          "personal_names": [
+            { "name": "Jyotika", "meaning": "light-seeker; defined by what they move toward" },
+            { "name": "Dipaka", "meaning": "lamp-born; arrived in illumination" },
+            { "name": "Tapasvi", "meaning": "the austerity-one; heat as spiritual practice" },
+            { "name": "Ulkika", "meaning": "meteor-child; a trajectory, not a destination" },
+            { "name": "Prakasha", "meaning": "illumination; not the light but the effect of light" },
+            { "name": "Tejasa", "meaning": "brilliance-born; the quality of fire before the fire" },
+            { "name": "Jvalita", "meaning": "blazing; fully committed" },
+            { "name": "Havanaka", "meaning": "offering-born; came into existence as a gift" }
+          ],
+          "place_names": [
+            { "name": "The Flame That Continues", "meaning": "The eternal fire temple — seen from outside as the only reliable light source in the meadow" },
+            { "name": "The Last Light", "meaning": "Metaphorical: the point of the journey, whatever form it takes" },
+            { "name": "The Offering Ground", "meaning": "Where past patanga have gone to the flame; remembered without sadness" },
+            { "name": "The Cold Place", "meaning": "Anywhere they do not go; an anti-name, a direction to avoid" }
+          ]
+        }
+      }
+    },
+
+    "sky_distributed": {
+      "_comment": "Sky births live across all three zones but share a vertical orientation — they measure the world in altitude, thermal quality, and wind. Their place names are mostly aerial; their ground-level place names are functional minimums.",
+
+      "landscape_features": {
+        "named_places": [
+          { "name": "The Good Thermal", "meaning": "A reliable rising air column — different birds name different thermals; same name, different location" },
+          { "name": "The Assembly Tree", "meaning": "The conference tree on the ridge between forest and meadow — visible from both territories" },
+          { "name": "The High Seat", "meaning": "Any primary nesting site — shyena use this as a proper noun; kapota use it as a category" },
+          { "name": "The Migration Flyway", "meaning": "The aerial corridor used by all migrating species; everyone knows it, no one owns it" },
+          { "name": "The Storm Approach", "meaning": "The direction from which weather comes — all bird cultures orient by this" }
+        ]
+      },
+
+      "births": {
+        "shyena": {
+          "naming_philosophy": "Shyena measure the world in height and angle. Their territory is not the ground below but the airspace above it — measured in altitude bands, thermal columns, and sight lines. A name should describe either a quality of speed or a quality of vision. Children are named at first flight: what the parent saw in the first stoop tells them the name.",
+          "parent_wishes": [
+            "May the stoop be clean",
+            "May the thermal hold you",
+            "May the sky be loyal",
+            "May you arrive first",
+            "May your eye be exact"
+          ],
+          "personal_names": [
+            { "name": "Shyeni", "meaning": "hawk-born; the pure kind" },
+            { "name": "Pratapin", "meaning": "burning swift; speed as fire" },
+            { "name": "Drishtara", "meaning": "far-seeing; the eye that reaches" },
+            { "name": "Kshepa", "meaning": "the hurler; released downward at speed" },
+            { "name": "Drutaka", "meaning": "swift one; first in every moment" },
+            { "name": "Urdhvaka", "meaning": "the upward one; always gaining altitude" },
+            { "name": "Antariksha", "meaning": "sky-space; not in the sky but of it" },
+            { "name": "Vegaka", "meaning": "velocity; the state before impact" }
+          ],
+          "place_names": [
+            { "name": "The Good Thermal", "meaning": "A reliable rising column — named per location, this is the best one in range" },
+            { "name": "The High Seat", "meaning": "Main nesting site; a cliff ledge with unobstructed approach and retreat" },
+            { "name": "The Stooping Ground", "meaning": "Hunting territory below — named from the air, looking down" },
+            { "name": "The Ridge Wind", "meaning": "A reliable updraft on a cliff face — used for gaining altitude without effort" },
+            { "name": "The First Light", "meaning": "The position where the morning hunt begins — a compass direction more than a place" },
+            { "name": "The Wrong Altitude", "meaning": "An airspace controlled by another — acknowledged without confrontation" }
+          ]
+        },
+
+        "kapota": {
+          "naming_philosophy": "Kapota name things by the history of information that passed through them. A tree is named for the most important message ever relayed from it. A waypoint is named for the journey that established it. Personal names commemorate arrivals and departures — the moment of return is considered most naming-worthy. 'The One Who Came Back' is always an honored name. In the Conference of the Birds, every pilgrim is renamed upon arrival.",
+          "parent_wishes": [
+            "May the message reach",
+            "May you know all the routes",
+            "May the flock gather at your call",
+            "May you be the one who comes back",
+            "May your news be good"
+          ],
+          "personal_names": [
+            { "name": "Kapoti", "meaning": "dove-pure; the essential form" },
+            { "name": "Dutaka", "meaning": "messenger; function as identity" },
+            { "name": "Pathaka", "meaning": "route-holder; carries the map in the body" },
+            { "name": "Agamaka", "meaning": "the arriving one; always in motion toward" },
+            { "name": "Mitraka", "meaning": "friend-born; the relational one" },
+            { "name": "Vartaka", "meaning": "news-carrier; the medium is the message" },
+            { "name": "Yatraka", "meaning": "pilgrim; the journey is the form" },
+            { "name": "Samaptika", "meaning": "the completer; the one who finishes" }
+          ],
+          "place_names": [
+            { "name": "The Assembly Tree", "meaning": "The conference location — both a specific tree and a category" },
+            { "name": "The Safe Roost", "meaning": "Reliable overnight stop on a long route; evaluated by predator pressure, not comfort" },
+            { "name": "Where the News Came From", "meaning": "Origin point of an important piece of information — used as coordinates" },
+            { "name": "The Welcome Branch", "meaning": "Where returning pilgrims are greeted; a specific branch of the Assembly Tree" },
+            { "name": "The First Waypoint", "meaning": "The start of the established route; most pilgrims begin here" },
+            { "name": "The Long Route", "meaning": "The difficult migratory path — named for its character, not its length" }
+          ]
+        },
+
+        "uluka": {
+          "naming_philosophy": "Uluka are the most deliberate namers of all births. They watch a child for a full season before naming. What is observed in that season becomes the name — not what is hoped, but what is seen. 'You cannot name what you haven't watched,' they say. Place names are named for specific events of perception: what was heard there, what was seen from there, what was understood in that location for the first time.",
+          "parent_wishes": [
+            "May you see what others miss",
+            "May the night be generous",
+            "May you carry the knowledge",
+            "May silence serve you",
+            "May you understand before you act"
+          ],
+          "personal_names": [
+            { "name": "Uluki", "meaning": "owl-pure; the complete form of the birth" },
+            { "name": "Nishaka", "meaning": "night-born; arrived in the generous dark" },
+            { "name": "Jnanaka", "meaning": "knowledge-bearer; carries it as identity" },
+            { "name": "Drishti", "meaning": "sight; vision as the whole self" },
+            { "name": "Munika", "meaning": "the silent sage; speaks rarely, nothing lost in the silence" },
+            { "name": "Ratriki", "meaning": "night-child; the dark is home" },
+            { "name": "Viveka", "meaning": "discernment; the exact quality that distinguishes the uluka" },
+            { "name": "Nishadaka", "meaning": "night-dweller; fully inhabited in darkness" }
+          ],
+          "place_names": [
+            { "name": "The Silent Rock", "meaning": "Primary perch — chosen for the quality of the surrounding silence" },
+            { "name": "The Hunting Dark", "meaning": "Night territory — not a place but a time-within-place" },
+            { "name": "The Hollow Where I Heard", "meaning": "A specific discovery site — personalised, not transferable" },
+            { "name": "The Old Tree", "meaning": "Ancestral roost; old enough that no uluka alive remembers who first claimed it" },
+            { "name": "The Dreaming Point", "meaning": "Where they wait for dawn — a specific spot, used by many generations" },
+            { "name": "The Bright Danger", "meaning": "The open daylit meadow — avoided, disorienting, remembered as warning" }
+          ]
+        }
+      }
+    }
+  }
+}

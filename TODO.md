@@ -301,10 +301,16 @@ Persistent negative status effects from combat or events that do not fully clear
 
 ### Other Realms (Content Gaps)
 - [x] Convert HG_EVENTS.md → hungry_ghost_events.json
-- [ ] Map configs for remaining realms — only hell.json and hungry_ghost.json exist
-- [ ] Enemy archetypes + encounters for animal, human, asura, god realms (hungry_ghost done: 20 archetypes, 37 encounters)
-- [ ] Event files for remaining realms (animal, human, asura, god)
+- [x] Map config for animal realm — animal.json (3 zones: ocean, forest, meadow; portal in forest top-left)
+- [x] Enemy archetypes + encounters for animal realm — animal_archetypes.json (34 archetypes), animal_encounters.json (30 encounter groups)
+- [x] Cross-realm infrastructure events for animal realm — animal_events.json (39 events: 10 guilds, teahouses, towns, training, domain guilds, simple events, fixed landmarks)
+- [ ] Map configs for remaining realms — human, asura, god still needed
+- [ ] Enemy archetypes + encounters for human, asura, god realms
+- [ ] Event files for human, asura, god realms
 - [ ] Companion definitions for remaining realms (47 companions exist across hell + HG; animal, human, asura, god still empty)
+- [ ] Animal realm zone-specific events (ocean, forest, meadow) — the actual encounters, NPC dialogues, dungeon events; see animal_events.json for list of referenced event_ids not yet implemented
+- [ ] **Animal realm domain guild shop data** — animal_events.json references these shop_ids that need entries in shops.json: `animal_naga_palace` (water/enchantment), `animal_ancient_banyan` (earth/summoning), `animal_termite_cathedral` (earth/summoning/alchemy), `animal_birds_congress` (air/space/white), `animal_bone_forest` (black/summoning). Also: universal guild shops `animal_sacred_grove` through `animal_eternal_fire`, teahouse shops, town shops, training camp shops.
+- [ ] Add HG shop entries pattern for animal realm — mirror the HG follow-up: add all animal shop_ids to shops.json once shop system is extended to animal realm
 
 ### Companions
 - [ ] Camp Followers system — UI stub exists in Party tab (`_update_followers_list()`); no backend
