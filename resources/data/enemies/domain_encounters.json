@@ -5,15 +5,39 @@
       "region": "any",
       "fixed": true,
       "enemies": [
-        {"archetype": "domain_smoking_mirror", "count": 1},
-        {"archetype": "domain_smoke_imp", "count": 2}
+        {
+          "archetype": "domain_smoking_mirror",
+          "count": 1
+        },
+        {
+          "archetype": "domain_smoke_imp",
+          "count": 2
+        }
       ]
     },
     "mudling_colony": {
       "region": "any",
       "fixed": true,
       "enemies": [
-        {"archetype": "domain_mudling", "count": 5}
+        {
+          "archetype": "domain_mudling",
+          "count": 5
+        }
+      ]
+    },
+    "cloud_naga_pack": {
+      "_comment": "Naga courtiers of the Cloud Palace — aerial-adapted warriors and sorcerers",
+      "region": "any",
+      "fixed": true,
+      "enemies": [
+        {
+          "archetype": "animal_naga_sorcerer",
+          "count": 1
+        },
+        {
+          "archetype": "animal_naga_warrior",
+          "count": 2
+        }
       ]
     }
   }

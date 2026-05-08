@@ -607,6 +607,39 @@
           "count": 1
         }
       ]
+    },
+    "skeleton_warrior_pair": {
+      "_comment": "Two skeleton warriors — basic graveyard disturbance encounter",
+      "region": "dry_graveyards",
+      "fixed": true,
+      "enemies": [
+        {
+          "archetype": "hg_skeleton_warrior",
+          "count": 2
+        }
+      ]
+    },
+    "bone_horror": {
+      "_comment": "Solo bone horror — massive animated skeleton, anchor of the undead mob",
+      "region": "dry_graveyards",
+      "fixed": true,
+      "enemies": [
+        {
+          "archetype": "hg_bone_horror",
+          "count": 1
+        }
+      ]
+    },
+    "grave_hound_pack": {
+      "_comment": "A full pack of grave hounds — fast, numerous, and vicious",
+      "region": "dry_graveyards",
+      "fixed": true,
+      "enemies": [
+        {
+          "archetype": "hg_skelepuppy",
+          "count": 5
+        }
+      ]
     }
   }
 }
