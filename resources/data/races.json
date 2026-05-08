@@ -162,9 +162,7 @@
         "infernal_scribe",
         "torturer"
       ],
-      "todo": [
-        "extra_starting_gold: begin with 50 bonus gold"
-      ],
+      "starting_gold": 50,
       "resistances": {},
       "emotional_baseline": {
         "space": 0,

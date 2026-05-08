@@ -233,6 +233,13 @@ func _check_special_requirement(character: Dictionary, special: String) -> bool:
 		var total = calculate_element_affinity(character, element)
 		return total >= required
 
+	# Attribute thresholds: "constitution_14", "finesse_16", etc.
+	const ATTRIBUTE_NAMES := ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"]
+	for attr in ATTRIBUTE_NAMES:
+		if special.begins_with(attr + "_"):
+			var threshold := int(special.substr(attr.length() + 1))
+			return character.get("attributes", {}).get(attr, 0) >= threshold
+
 	# "any_X_category_at_Y" patterns
 	# Examples: any_3_weapon_skills_at_3, any_weapon_skill_at_3, any_3_elemental_magics_at_2
 

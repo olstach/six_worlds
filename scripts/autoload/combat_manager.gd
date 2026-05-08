@@ -1704,13 +1704,16 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			if should_chain:
 				var finesse: int = char_data.get("attributes", {}).get("finesse", 10)
 				var akimbo_bonus: float = 20.0 if PerkSystem.has_perk(char_data, "akimbo") else 0.0
+				var iron_cortex: bool = PerkSystem and PerkSystem.has_perk(char_data, "iron_cortex")
 				for arm_index in range(1, arm_count):
 					var arm_number: int = arm_index + 1
+					# iron_cortex: arms 1-2 always fire (arm_number 1 is always primary, arm_number 2 is guaranteed)
+					var guaranteed: bool = iron_cortex and arm_number == 2
 					var fire_chance: float = clampf(
 						BodySystem.get_arm_attack_chance(finesse, arm_number) + akimbo_bonus,
 						0.0, 100.0
 					)
-					if randf() * 100.0 <= fire_chance:
+					if guaranteed or randf() * 100.0 <= fire_chance:
 						if defender.is_alive():
 							var extra := _execute_arm_chain_attack(attacker, defender, arm_number, fire_chance)
 							extra_arm_results.append(extra)
@@ -6914,36 +6917,41 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 			_apply_status_effect(defender, on_crit_status, 1)
 			result["on_crit_status"] = on_crit_status
 		# 20% chance a crit inflicts a persistent wound on player characters.
+		# "hardened" perk gives 50% chance to negate the wound entirely.
 		# Ranged weapons (skill_tag: "ranged") draw from the ranged wound pool.
 		if WoundSystem and defender.team == Team.PLAYER and randf() < 0.20:
 			var char_data = defender.character_data
-			var is_ranged: bool = weapon.get("skill_tag", "") == "ranged"
-			var wound_id: String
-			if is_ranged:
-				wound_id = WoundSystem.apply_random_ranged_crit_wound(char_data)
-			else:
-				wound_id = WoundSystem.apply_random_crit_wound(char_data)
-			if wound_id != "":
-				combat_log.emit("%s received a %s!" % [
-					defender.unit_name,
-					WoundSystem.WOUND_TYPES.get(wound_id, {}).get("display_name", wound_id)
-				])
-				result["persistent_wound"] = wound_id
+			var negated := PerkSystem and PerkSystem.has_perk(char_data, "hardened") and randf() < 0.5
+			if not negated:
+				var is_ranged: bool = weapon.get("skill_tag", "") == "ranged"
+				var wound_id: String
+				if is_ranged:
+					wound_id = WoundSystem.apply_random_ranged_crit_wound(char_data)
+				else:
+					wound_id = WoundSystem.apply_random_crit_wound(char_data)
+				if wound_id != "":
+					combat_log.emit("%s received a %s!" % [
+						defender.unit_name,
+						WoundSystem.WOUND_TYPES.get(wound_id, {}).get("display_name", wound_id)
+					])
+					result["persistent_wound"] = wound_id
 
 	# 15% chance hits from undead/diseased enemies inflict a disease on player characters.
+	# "undead_hunter" perk grants immunity to these disease procs.
 	# 15% chance hits from poison-tagged enemies inflict poisoned blood.
 	if WoundSystem and attacker.team == Team.ENEMY and defender.team == Team.PLAYER:
 		var attacker_tags: Array = attacker.character_data.get("tags", [])
 		if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15:
 			var tag_source = "undead" if "undead" in attacker_tags else "diseased"
 			var char_data = defender.character_data
-			var disease_id = WoundSystem.apply_random_disease(char_data, tag_source)
-			if disease_id != "":
-				combat_log.emit("%s has been afflicted with %s!" % [
-					defender.unit_name,
-					WoundSystem.WOUND_TYPES.get(disease_id, {}).get("display_name", disease_id)
-				])
-				result["persistent_disease"] = disease_id
+			if not (PerkSystem and PerkSystem.has_perk(char_data, "undead_hunter")):
+				var disease_id = WoundSystem.apply_random_disease(char_data, tag_source)
+				if disease_id != "":
+					combat_log.emit("%s has been afflicted with %s!" % [
+						defender.unit_name,
+						WoundSystem.WOUND_TYPES.get(disease_id, {}).get("display_name", disease_id)
+					])
+					result["persistent_disease"] = disease_id
 		elif "poison" in attacker_tags and randf() < 0.15:
 			var char_data = defender.character_data
 			var disease_id = WoundSystem.apply_random_poison_disease(char_data)

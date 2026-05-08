@@ -4378,6 +4378,15 @@
       "flavor": "The body learns to celebrate without pausing.",
       "is_mantra": false
     },
+    "iron_cortex": {
+      "name": "Iron Cortex",
+      "skill": "finesse",
+      "required_level": 12,
+      "requires_perks": ["akimbo"],
+      "description": "Passive. Arms 1 and 2 always fire \u2014 the probability check is removed for your first two attacks. Arms 3+ still use the normal Finesse-based chain.",
+      "flavor": "Two hands, one will.",
+      "is_mantra": false
+    },
     "kindled": {
       "name": "Kindled",
       "skill": "fire_magic",
@@ -6427,6 +6436,26 @@
       "flavor": "",
       "is_mantra": false
     },
+    "hardened": {
+      "name": "Hardened",
+      "skill": "armor",
+      "required_level": 5,
+      "requires_perks": [],
+      "special_requirement": "constitution_14",
+      "description": "Passive. When a critical hit would inflict a persistent wound, 50% chance the wound is negated entirely.",
+      "flavor": "The body remembers every blow.",
+      "is_mantra": false
+    },
+    "stubborn_body": {
+      "name": "Stubborn Body",
+      "skill": "armor",
+      "required_level": 8,
+      "requires_perks": ["hardened"],
+      "special_requirement": "constitution_15",
+      "description": "Passive. All wounds require 1 additional rest before they escalate to a worse form.",
+      "flavor": "It takes longer to break what refuses to stay broken.",
+      "is_mantra": false
+    },
     "iron_shirt_training": {
       "name": "Iron Shirt Training",
       "skill": "earth_magic",
@@ -6556,6 +6585,15 @@
       "description": "Ongoing effect (3-tile radius): Each turn, allies gain stacking +3% Armor and +3% physical damage resistance (stacks up to 5 times). The ground beneath allies becomes blessed, granting 2% max HP regeneration per turn. Deity Yoga \u2014 He Who Bears the Weight of All Worlds: All allies gain +40% Armor and immunity to all forced movement and knockdown. Enemies in contact with the ground take Earth damage (20% Spellpower) per turn. Allies cannot be reduced below 1 HP for the duration.",
       "flavor": "",
       "is_mantra": true
+    },
+    "undead_hunter": {
+      "name": "Undead Hunter",
+      "skill": "earth_magic",
+      "required_level": 3,
+      "requires_perks": [],
+      "description": "Passive. You are immune to diseases inflicted by undead or diseased enemies' attacks.",
+      "flavor": "Earth purifies what death corrupts.",
+      "is_mantra": false
     },
     "mantra_of_the_jeweled_mountain": {
       "name": "Mantra of the Jeweled Mountain",

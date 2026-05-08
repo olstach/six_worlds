@@ -384,10 +384,11 @@ func create_player_character(char_name: String, birth: String, background: Strin
 		if not personality.is_empty():
 			TraitSystem.add_trait(character, personality[0])
 
-	# Apply racial traits that have side effects beyond resistances/stats
-	if "extra_starting_gold" in character.get("traits", []):
-		if GameState:
-			GameState.add_gold(50)
+	# Apply birth-specific starting gold bonus
+	var birth_data = get_birth_data(birth)
+	var birth_gold: int = int(birth_data.get("starting_gold", 0))
+	if birth_gold > 0 and GameState:
+		GameState.add_gold(birth_gold)
 
 	# Add to party at index 0 (player always first)
 	if party.is_empty():
