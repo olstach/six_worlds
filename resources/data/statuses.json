@@ -1383,11 +1383,13 @@
 			"effects": [
                 "constitution_bonus"
 			],
+			"bonus_amount": 2,
 			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
                 "dispel"
-			]
+			],
+			"description": "+2 Constitution (+20 max HP)."
 		},
 		{
 			"name": "Damage_Debuff",

@@ -3823,6 +3823,21 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 		effect_entry["source"] = source
 	unit.get("status_effects").append(effect_entry)
 
+	# Constitution bonus/penalty: adjust max_hp immediately when applied
+	var applied_effects = def.get("effects", [])
+	if "constitution_bonus" in applied_effects and "max_hp" in unit:
+		var con_amount: int = def.get("bonus_amount", 2)
+		var hp_delta: int = con_amount * 10
+		effect_entry["hp_delta"] = hp_delta
+		unit.max_hp += hp_delta
+		unit.current_hp = mini(unit.current_hp + hp_delta, unit.max_hp)
+	elif "constitution_penalty" in applied_effects and "max_hp" in unit:
+		var con_amount: int = def.get("penalty_amount", 2)
+		var hp_delta: int = con_amount * 10
+		effect_entry["hp_delta"] = hp_delta
+		unit.max_hp = maxi(1, unit.max_hp - hp_delta)
+		unit.current_hp = mini(unit.current_hp, unit.max_hp)
+
 	# Hard CC breaks concentration on the affected unit
 	if status in ["Stun", "Stunned", "Fear", "Feared", "Charm", "Charmed", "Confused", "Berserk",
 			"Frozen", "Petrified", "Held", "Paralyzed", "Immobilized", "Dominated", "Chaotic"]:
@@ -3855,7 +3870,7 @@ func _remove_status_by_name(unit: Node, status_name: String) -> bool:
 	for i in range(unit.status_effects.size() - 1, -1, -1):
 		if unit.status_effects[i].get("status", "") == status_name:
 			var def = _status_effects.get(status_name, {})
-			_on_status_expired(unit, status_name, def)
+			_on_status_expired(unit, status_name, def, unit.status_effects[i])
 			unit.status_effects.remove_at(i)
 			status_effect_expired.emit(unit, status_name)
 			if unit.has_method("show_status_expired"):
@@ -3986,7 +4001,7 @@ func _process_status_effects(unit: Node) -> bool:
 		var status_name = expired_effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})
 		# Process expiry callbacks before removing
-		_on_status_expired(unit, status_name, effect_def)
+		_on_status_expired(unit, status_name, effect_def, expired_effect)
 		unit.status_effects.remove_at(idx)
 		# Show expired visual (grey strikethrough)
 		if unit.has_method("show_status_expired"):
@@ -4007,10 +4022,20 @@ func _process_status_effects(unit: Node) -> bool:
 
 ## Handle special effects that trigger when a status expires.
 ## E.g. Doomed kills the unit, Infected spawns a fungal creature and applies Bleeding.
-func _on_status_expired(unit: Node, status_name: String, def: Dictionary) -> void:
+func _on_status_expired(unit: Node, status_name: String, def: Dictionary, effect_instance: Dictionary = {}) -> void:
 	var effects = def.get("effects", [])
 	if effects.is_empty():
 		return
+
+	# Reverse constitution max_hp changes using the stored delta from application time
+	if "constitution_bonus" in effects and "max_hp" in unit:
+		var hp_delta: int = effect_instance.get("hp_delta", def.get("bonus_amount", 2) * 10)
+		unit.max_hp = maxi(1, unit.max_hp - hp_delta)
+		unit.current_hp = mini(unit.current_hp, unit.max_hp)
+	if "constitution_penalty" in effects and "max_hp" in unit:
+		var hp_delta: int = effect_instance.get("hp_delta", def.get("penalty_amount", 2) * 10)
+		unit.max_hp += hp_delta
+		# Don't restore current_hp — penalty may have caused damage that persists
 
 	if "death_on_expire" in effects:
 		# Doomed — instant kill
