@@ -3,7 +3,7 @@ extends Control
 
 # Left panel - top left (Name, Race, Background, XP)
 @onready var name_label: Label = $HBox/LeftPanel/TopRow/TopLeft/Margin/Content/NameLabel
-@onready var race_label: Label = $HBox/LeftPanel/TopRow/TopLeft/Margin/Content/RaceLabel
+@onready var birth_label: Label = $HBox/LeftPanel/TopRow/TopLeft/Margin/Content/BirthLabel
 @onready var background_label: Label = $HBox/LeftPanel/TopRow/TopLeft/Margin/Content/BackgroundLabel
 @onready var xp_total_label: Label = $HBox/LeftPanel/TopRow/TopLeft/Margin/Content/XPTotalLabel
 @onready var xp_free_label: Label = $HBox/LeftPanel/TopRow/TopLeft/Margin/Content/XPFreeLabel
@@ -54,7 +54,7 @@ func refresh_display() -> void:
 
 func update_header() -> void:
 	name_label.text = current_character.name
-	race_label.text = current_character.get("birth", "").capitalize()
+	birth_label.text = current_character.get("birth", "").capitalize()
 	background_label.text = current_character.background.capitalize()
 	xp_total_label.text = "XP Total: " + str(current_character.get("xp_earned", current_character.xp))
 	xp_free_label.text = "Free XP: " + str(current_character.xp)

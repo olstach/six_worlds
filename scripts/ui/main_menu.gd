@@ -13,7 +13,7 @@ signal overworld_spell_cast(spell_name: String, detail: String)
 # Use unique names (%) for nodes marked with unique_name_in_owner
 @onready var tab_container: TabContainer = $MarginContainer/VBoxContainer/TabContainer
 @onready var name_value: Label = %NameValue
-@onready var race_value: Label = %RaceValue
+@onready var birth_value: Label = %BirthValue
 @onready var background_value: Label = %BackgroundValue
 @onready var xp_value: Label = %XPValue
 @onready var add_xp_button: Button = %AddXPButton
@@ -361,9 +361,9 @@ func _update_header(character: Dictionary) -> void:
 
 	var birth_id = character.get("birth", "")
 	var birth_data = CharacterSystem.get_birth_data(birth_id)
-	race_value.text = birth_data.get("name", birth_id.capitalize().replace("_", " "))
-	race_value.mouse_filter = Control.MOUSE_FILTER_STOP
-	race_value.tooltip_text = _build_birth_tooltip(birth_id)
+	birth_value.text = birth_data.get("name", birth_id.capitalize().replace("_", " "))
+	birth_value.mouse_filter = Control.MOUSE_FILTER_STOP
+	birth_value.tooltip_text = _build_birth_tooltip(birth_id)
 
 	var bg_id = character.get("background", "")
 	var bg_data = CharacterSystem.get_background_data(bg_id)

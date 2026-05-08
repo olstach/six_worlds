@@ -74,11 +74,11 @@ text = "Character Name"
 [node name="RaceBlock" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/HeaderSection"]
 layout_mode = 2
 
-[node name="RaceLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/HeaderSection/RaceBlock"]
+[node name="BirthLabel" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/HeaderSection/RaceBlock"]
 layout_mode = 2
-text = "Race"
+text = "Birth"
 
-[node name="RaceValue" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/HeaderSection/RaceBlock"]
+[node name="BirthValue" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/HeaderSection/RaceBlock"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 20

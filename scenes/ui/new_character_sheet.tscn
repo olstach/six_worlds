@@ -61,9 +61,9 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Character Name"
 
-[node name="RaceLabel" type="Label" parent="HBox/LeftPanel/TopRow/TopLeft/Margin/Content"]
+[node name="BirthLabel" type="Label" parent="HBox/LeftPanel/TopRow/TopLeft/Margin/Content"]
 layout_mode = 2
-text = "Race"
+text = "Birth"
 
 [node name="BackgroundLabel" type="Label" parent="HBox/LeftPanel/TopRow/TopLeft/Margin/Content"]
 layout_mode = 2
