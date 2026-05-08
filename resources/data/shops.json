@@ -1776,6 +1776,985 @@
       "tabs": [
         "spells"
       ]
+    },
+    "animal_forest_teahouse": {
+      "name": "Forest Teahouse",
+      "type": "teahouse",
+      "description": "A platform structure high in the canopy, reachable by rope bridges from three directions. The vanara who run it have been doing so since before any of them can remember. The tea is brewed from forest herbs you don't recognize and tastes like rain, bark, and something that is not quite spice.",
+      "price_modifier": 1.1,
+      "buys_items": false,
+      "items": {
+        "rations": 6,
+        "herb_bundle": 4,
+        "health_potion": 2
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "available_companions": [
+        "karnak",
+        "serji",
+        "red_peony",
+        "raktamatta",
+        "jawbreaker",
+        "tejasimha",
+        "water_lily",
+        "dvijihva",
+        "yaga_mataji",
+        "niyamendra",
+        "leraya",
+        "samvibrahmi",
+        "vayuvega",
+        "angulimala",
+        "kanjus",
+        "sarpatailaka",
+        "shiny_needle",
+        "princess_spiderface",
+        "sineater_thirteen",
+        "dyutapati",
+        "coolhead_hotblood",
+        "ayurmangala",
+        "amlamarjari",
+        "vimohini"
+      ],
+      "rest": {
+        "teapot_cost": 25,
+        "teapot_restore_pct": 50,
+        "night_cost": 70,
+        "night_restore_pct": 100,
+        "teapot_food": 10,
+        "night_food": 25
+      }
+    },
+    "animal_meadow_teahouse": {
+      "name": "Meadow Teahouse",
+      "type": "teahouse",
+      "description": "A circular tent-structure at a major watering hole, serving travelers and migrants and the occasional khadga who has learned to sit still long enough to drink something warm. The yaksha proprietor brews from the seasonal grass-flowers and charges exactly what the market will bear.",
+      "price_modifier": 1.1,
+      "buys_items": false,
+      "items": {
+        "rations": 6,
+        "herb_bundle": 3,
+        "health_potion": 2,
+        "travel_provisions": 3
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "available_companions": [
+        "karnak",
+        "serji",
+        "red_peony",
+        "raktamatta",
+        "jawbreaker",
+        "tejasimha",
+        "water_lily",
+        "dvijihva",
+        "yaga_mataji",
+        "niyamendra",
+        "leraya",
+        "samvibrahmi",
+        "vayuvega",
+        "angulimala",
+        "kanjus",
+        "sarpatailaka",
+        "shiny_needle",
+        "princess_spiderface",
+        "sineater_thirteen",
+        "dyutapati",
+        "coolhead_hotblood",
+        "ayurmangala",
+        "amlamarjari",
+        "vimohini"
+      ],
+      "rest": {
+        "teapot_cost": 25,
+        "teapot_restore_pct": 50,
+        "night_cost": 70,
+        "night_restore_pct": 100,
+        "teapot_food": 10,
+        "night_food": 25
+      }
+    },
+    "animal_ocean_teahouse": {
+      "name": "Tide Shelter",
+      "type": "teahouse",
+      "description": "A structure built into a sea cliff, half-submerged at high tide and bone-dry at low. A fire burns in a sealed alcove. The keeper is a broad and unhurried makara current who settled down forty years ago and has been pouring the same tea blend since. Nobody asks the recipe.",
+      "price_modifier": 1.1,
+      "buys_items": false,
+      "items": {
+        "rations": 6,
+        "herb_bundle": 3,
+        "health_potion": 2,
+        "mana_potion": 2
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "available_companions": [
+        "karnak",
+        "serji",
+        "red_peony",
+        "raktamatta",
+        "jawbreaker",
+        "tejasimha",
+        "water_lily",
+        "dvijihva",
+        "yaga_mataji",
+        "niyamendra",
+        "leraya",
+        "samvibrahmi",
+        "vayuvega",
+        "angulimala",
+        "kanjus",
+        "sarpatailaka",
+        "shiny_needle",
+        "princess_spiderface",
+        "sineater_thirteen",
+        "dyutapati",
+        "coolhead_hotblood",
+        "ayurmangala",
+        "amlamarjari",
+        "vimohini"
+      ],
+      "rest": {
+        "teapot_cost": 25,
+        "teapot_restore_pct": 50,
+        "night_cost": 70,
+        "night_restore_pct": 100,
+        "teapot_food": 10,
+        "night_food": 25
+      }
+    },
+    "animal_forest_training_camp": {
+      "name": "Forest Training Camp",
+      "type": "veteran_camp",
+      "description": "A gana training ground deep in the canopy — worn wooden practice posts, rope courses strung between trees, the smell of exertion and leaf-litter. The instructors are scarred veterans who have survived things that don't have names yet.",
+      "price_modifier": 1.0,
+      "buys_items": false,
+      "items": {
+        "rations": 5,
+        "herb_bundle": 3
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "available_companions": [
+        "karnak",
+        "serji",
+        "red_peony",
+        "raktamatta",
+        "jawbreaker",
+        "tejasimha",
+        "water_lily",
+        "dvijihva",
+        "yaga_mataji",
+        "niyamendra",
+        "leraya",
+        "samvibrahmi",
+        "vayuvega",
+        "angulimala",
+        "kanjus",
+        "sarpatailaka",
+        "shiny_needle",
+        "princess_spiderface",
+        "sineater_thirteen",
+        "dyutapati",
+        "coolhead_hotblood",
+        "ayurmangala",
+        "amlamarjari",
+        "vimohini"
+      ]
+    },
+    "animal_meadow_training_camp": {
+      "name": "Meadow Training Camp",
+      "type": "veteran_camp",
+      "description": "An open-air training ground where the wind comes from every direction at once. The dura instructors here believe that there is no better teacher than exposure, and schedule sparring sessions during the hour before the bhramara cloud arrives.",
+      "price_modifier": 1.0,
+      "buys_items": false,
+      "items": {
+        "rations": 5,
+        "travel_provisions": 3
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "available_companions": [
+        "karnak",
+        "serji",
+        "red_peony",
+        "raktamatta",
+        "jawbreaker",
+        "tejasimha",
+        "water_lily",
+        "dvijihva",
+        "yaga_mataji",
+        "niyamendra",
+        "leraya",
+        "samvibrahmi",
+        "vayuvega",
+        "angulimala",
+        "kanjus",
+        "sarpatailaka",
+        "shiny_needle",
+        "princess_spiderface",
+        "sineater_thirteen",
+        "dyutapati",
+        "coolhead_hotblood",
+        "ayurmangala",
+        "amlamarjari",
+        "vimohini"
+      ]
+    },
+    "animal_ocean_training_camp": {
+      "name": "Reef Training Camp",
+      "type": "veteran_camp",
+      "description": "A karka war-school built into the coral. Sessions alternate between fighting in the shallows and fighting in open water, on the grounds that you will never get to choose. The instructors communicate primarily by demonstration.",
+      "price_modifier": 1.0,
+      "buys_items": false,
+      "items": {
+        "rations": 5,
+        "herb_bundle": 2
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "available_companions": [
+        "karnak",
+        "serji",
+        "red_peony",
+        "raktamatta",
+        "jawbreaker",
+        "tejasimha",
+        "water_lily",
+        "dvijihva",
+        "yaga_mataji",
+        "niyamendra",
+        "leraya",
+        "samvibrahmi",
+        "vayuvega",
+        "angulimala",
+        "kanjus",
+        "sarpatailaka",
+        "shiny_needle",
+        "princess_spiderface",
+        "sineater_thirteen",
+        "dyutapati",
+        "coolhead_hotblood",
+        "ayurmangala",
+        "amlamarjari",
+        "vimohini"
+      ]
+    },
+    "animal_mercenary_guild": {
+      "name": "Mercenary Guild",
+      "type": "mercenary_guild",
+      "description": "Animals who have figured out that their skills have cash value and have the good sense to organize. Better equipment than you might expect. The guild master keeps the contracts brief and the payment terms clear.",
+      "price_modifier": 1.0,
+      "buys_items": true,
+      "accepted_item_types": [
+        "weapon",
+        "armor",
+        "shield"
+      ],
+      "items": {
+        "iron_sword": 2,
+        "iron_khanda": 1,
+        "iron_dao": 1,
+        "iron_dagger": 3,
+        "iron_axe": 2,
+        "iron_mace": 2,
+        "iron_spear": 2,
+        "short_bow": 2,
+        "long_bow": 1,
+        "padded_armor": 3,
+        "studded_leather": 2,
+        "leather_boots": 3,
+        "leather_gloves": 3,
+        "rations": 5
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "available_companions": [
+        "karnak",
+        "serji",
+        "red_peony",
+        "raktamatta",
+        "jawbreaker",
+        "tejasimha",
+        "water_lily",
+        "dvijihva",
+        "yaga_mataji",
+        "niyamendra",
+        "leraya",
+        "samvibrahmi",
+        "vayuvega",
+        "angulimala",
+        "kanjus",
+        "sarpatailaka",
+        "shiny_needle",
+        "princess_spiderface",
+        "sineater_thirteen",
+        "dyutapati",
+        "coolhead_hotblood",
+        "ayurmangala",
+        "amlamarjari",
+        "vimohini"
+      ]
+    },
+    "animal_town_weapons": {
+      "name": "Town",
+      "type": "town",
+      "description": "A market where different territories agree, briefly, to exchange. Dura shell-wright craftsmanship, vanara jugaad improvisation, shardula-claw handles on daggers sold by gana traders who got them somewhere no one is explaining. The weapons here are practical and tell stories.",
+      "price_modifier": 1.05,
+      "buys_items": true,
+      "items": {
+        "iron_sword": 2,
+        "iron_khanda": 1,
+        "iron_dao": 1,
+        "iron_patisa": 1,
+        "iron_dagger": 3,
+        "iron_axe": 2,
+        "iron_mace": 2,
+        "iron_spear": 3,
+        "short_bow": 3,
+        "long_bow": 1,
+        "padded_armor": 2,
+        "studded_leather": 2,
+        "hide_armor": 2,
+        "leather_boots": 3,
+        "leather_gloves": 3,
+        "obsidian_blade": 1,
+        "rations": 5
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "available_companions": [
+        "karnak",
+        "serji",
+        "red_peony",
+        "raktamatta",
+        "jawbreaker",
+        "tejasimha",
+        "water_lily",
+        "dvijihva",
+        "yaga_mataji",
+        "niyamendra",
+        "leraya",
+        "samvibrahmi",
+        "vayuvega",
+        "angulimala",
+        "kanjus",
+        "sarpatailaka",
+        "shiny_needle",
+        "princess_spiderface",
+        "sineater_thirteen",
+        "dyutapati",
+        "coolhead_hotblood",
+        "ayurmangala",
+        "amlamarjari",
+        "vimohini"
+      ]
+    },
+    "animal_town_magic": {
+      "name": "Town",
+      "type": "town",
+      "description": "A settlement that has drawn its share of hedge-mages, ritual practitioners, and wandering herbalists. The apothecary smells of bark, fungal spores, and something resinous that's been burning for days.",
+      "price_modifier": 1.1,
+      "buys_items": true,
+      "items": {
+        "raw_reagents": 10,
+        "alchemists_pouch": 4,
+        "herb_bundle": 8,
+        "prayer_beads": 3,
+        "oak_staff": 1,
+        "cloth_robe": 2,
+        "cloth_hood": 2,
+        "rations": 5,
+        "earth_charm_common": 2,
+        "water_charm_common": 2,
+        "air_charm_common": 1,
+        "white_charm_common": 2,
+        "scroll_lesser_heal": 1,
+        "scroll_bless": 1
+      },
+      "spells": [
+        "lesser_heal",
+        "cure",
+        "bless",
+        "regeneration",
+        "magic_missile",
+        "water_whip",
+        "earthwall",
+        "nature_call"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "available_companions": [
+        "karnak",
+        "serji",
+        "red_peony",
+        "raktamatta",
+        "jawbreaker",
+        "tejasimha",
+        "water_lily",
+        "dvijihva",
+        "yaga_mataji",
+        "niyamendra",
+        "leraya",
+        "samvibrahmi",
+        "vayuvega",
+        "angulimala",
+        "kanjus",
+        "sarpatailaka",
+        "shiny_needle",
+        "princess_spiderface",
+        "sineater_thirteen",
+        "dyutapati",
+        "coolhead_hotblood",
+        "ayurmangala",
+        "amlamarjari",
+        "vimohini"
+      ]
+    },
+    "animal_town_supplies": {
+      "name": "Town",
+      "type": "town",
+      "description": "A clearing settlement where four game trails meet. Sounder matrons and herb-walkers tend most of the stalls. Food preserved in bark and clay, medicines extracted from things most travelers walk past without recognizing, tools for the deep wild. It is honest trade in a place that doesn't demand credentials.",
+      "price_modifier": 1.0,
+      "buys_items": true,
+      "items": {
+        "rations": 15,
+        "travel_provisions": 6,
+        "herb_bundle": 10,
+        "raw_reagents": 5,
+        "alchemists_pouch": 2,
+        "health_potion": 4,
+        "mana_potion": 3,
+        "leather_vest": 2,
+        "leather_boots": 3,
+        "leather_gloves": 3,
+        "salvage_kit": 4,
+        "medicinal_herbs": 3
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "available_companions": [
+        "karnak",
+        "serji",
+        "red_peony",
+        "raktamatta",
+        "jawbreaker",
+        "tejasimha",
+        "water_lily",
+        "dvijihva",
+        "yaga_mataji",
+        "niyamendra",
+        "leraya",
+        "samvibrahmi",
+        "vayuvega",
+        "angulimala",
+        "kanjus",
+        "sarpatailaka",
+        "shiny_needle",
+        "princess_spiderface",
+        "sineater_thirteen",
+        "dyutapati",
+        "coolhead_hotblood",
+        "ayurmangala",
+        "amlamarjari",
+        "vimohini"
+      ]
+    },
+    "animal_sacred_grove": {
+      "name": "Sacred Grove",
+      "type": "spell_guild",
+      "description": "The oldest trees in the realm gather here as if in council. Bark-sigils accumulate on the trunks over centuries — offerings pressed into the wood, prayers absorbed by the roots. The Yakshas and Yakshinis who maintain this grove are older than the realm's current configuration.",
+      "price_modifier": 1.1,
+      "buys_items": false,
+      "guild_school": "Earth",
+      "guild_max_tier": 4,
+      "items": {
+        "herb_bundle": 8,
+        "raw_reagents": 5,
+        "oak_staff": 1,
+        "rations": 5,
+        "earth_charm_common": 3,
+        "earth_charm_middling": 2,
+        "earth_charm_fine": 1,
+        "plain_gold_dorje": 3,
+        "plain_gold_drilbu": 2,
+        "blessed_gold_dorje": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_temple_of_the_naga": {
+      "name": "Temple of the Naga",
+      "type": "spell_guild",
+      "description": "An old structure where those born with naga-affinity come to train under the great serpents' direct guidance. The water here has properties that don't exist anywhere else in the realm. Offerings of saffron milk and river-flowers are accepted at the outer shrine.",
+      "price_modifier": 1.1,
+      "buys_items": false,
+      "guild_school": "Water",
+      "guild_max_tier": 4,
+      "items": {
+        "mana_potion": 4,
+        "herb_bundle": 5,
+        "cloth_robe": 2,
+        "rations": 5,
+        "water_charm_common": 3,
+        "water_charm_middling": 2,
+        "water_charm_fine": 1,
+        "earth_charm_common": 1,
+        "white_charm_common": 2
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_garuda_roost": {
+      "name": "Garuda Roost",
+      "type": "spell_guild",
+      "description": "A great landing pole rises above the canopy, hung with wind-bells and sky-prayer flags. The Garudas who use it leave residual power in the ground below. Practitioners of air and space magic come here to feel the difference between flight and fall.",
+      "price_modifier": 1.15,
+      "buys_items": false,
+      "guild_school": "Air",
+      "guild_max_tier": 4,
+      "items": {
+        "prayer_beads": 4,
+        "cloth_robe": 1,
+        "rations": 5,
+        "air_charm_common": 3,
+        "air_charm_middling": 2,
+        "air_charm_fine": 1,
+        "plain_iron_dorje": 3,
+        "plain_iron_drilbu": 2,
+        "blessed_iron_dorje": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_hidden_gompa": {
+      "name": "Hidden Gompa",
+      "type": "spell_guild",
+      "description": "A monastery that exists only insofar as the practice of its inhabitants sustains it. The walls are older than memory and the silence deeper than the forest. The practitioners here have been undisturbed for long enough that the ground itself has opinions.",
+      "price_modifier": 1.15,
+      "buys_items": false,
+      "guild_school": "Space",
+      "guild_max_tier": 4,
+      "items": {
+        "prayer_beads": 5,
+        "raw_reagents": 4,
+        "rations": 5,
+        "white_charm_common": 3,
+        "white_charm_middling": 2,
+        "space_charm_common": 2,
+        "space_charm_middling": 1,
+        "plain_bronze_dorje": 2,
+        "plain_bronze_drilbu": 2,
+        "blessed_bronze_dorje": 1,
+        "blessed_bronze_drilbu": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_mirror_lake": {
+      "name": "Mirror Lake",
+      "type": "spell_guild",
+      "description": "The surface shows things that aren't there — or rather, things that are there but not yet. Followers of the Goddess of Illusion use this as a training ground: if you can hold your mind still enough to see clearly in a place that specializes in confusion, you can do it anywhere.",
+      "price_modifier": 1.2,
+      "buys_items": false,
+      "guild_school": "Enchantment",
+      "guild_max_tier": 4,
+      "items": {
+        "prayer_beads": 4,
+        "cloth_hood": 2,
+        "rations": 5,
+        "space_charm_common": 2,
+        "space_charm_middling": 1,
+        "water_charm_common": 2,
+        "water_charm_middling": 1,
+        "plain_silver_dorje": 3,
+        "plain_silver_drilbu": 2,
+        "blessed_silver_dorje": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_yogini_circle": {
+      "name": "Yogini Circle",
+      "type": "yogini_circle",
+      "description": "Sixty-four Yoginis carved in relief on an inward-facing ring of stone, no ceiling, no door. The practitioners who gather here are a rougher assembly than the hidden gompa — interested in results more than elegance, and willing to discuss the dangerous schools.",
+      "price_modifier": 1.1,
+      "buys_items": false,
+      "items": {
+        "raw_reagents": 10,
+        "alchemists_pouch": 4,
+        "prayer_beads": 3,
+        "oak_staff": 1,
+        "cloth_robe": 2,
+        "cloth_hood": 1,
+        "scroll_bless": 1,
+        "scroll_magic_missile": 1,
+        "scroll_voidbolt": 1,
+        "rations": 5,
+        "white_charm_common": 2,
+        "white_charm_middling": 1,
+        "space_charm_common": 2,
+        "air_charm_common": 2,
+        "air_charm_middling": 1,
+        "fire_charm_common": 1,
+        "plain_copper_damaru": 3,
+        "plain_silver_damaru": 2,
+        "blessed_copper_damaru": 1
+      },
+      "spells": [
+        "lesser_heal",
+        "greater_heal",
+        "bless",
+        "regeneration",
+        "magic_missile",
+        "blink",
+        "voidbolt",
+        "gloom",
+        "curse",
+        "nature_call",
+        "water_whip"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "available_companions": [
+        "karnak",
+        "serji",
+        "red_peony",
+        "raktamatta",
+        "jawbreaker",
+        "tejasimha",
+        "water_lily",
+        "dvijihva",
+        "yaga_mataji",
+        "niyamendra",
+        "leraya",
+        "samvibrahmi",
+        "vayuvega",
+        "angulimala",
+        "kanjus",
+        "sarpatailaka",
+        "shiny_needle",
+        "princess_spiderface",
+        "sineater_thirteen",
+        "dyutapati",
+        "coolhead_hotblood",
+        "ayurmangala",
+        "amlamarjari",
+        "vimohini"
+      ]
+    },
+    "animal_medicinal_garden": {
+      "name": "Medicinal Garden",
+      "type": "spell_guild",
+      "description": "A cultivated clearing tended by practitioners who have studied the relationship between plant, body, and suffering for generations. The herbs here grow things that have no equivalent elsewhere. Knowledge is shared freely; materials cost what they cost.",
+      "price_modifier": 1.1,
+      "buys_items": false,
+      "guild_school": "White",
+      "guild_max_tier": 4,
+      "items": {
+        "herb_bundle": 10,
+        "medicinal_herbs": 5,
+        "health_potion": 4,
+        "mana_potion": 2,
+        "prayer_beads": 3,
+        "rations": 5,
+        "white_charm_common": 2,
+        "white_charm_middling": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_eternal_fire": {
+      "name": "Temple of the Eternal Fire",
+      "type": "spell_guild",
+      "description": "White-robed priests have tended this fire since before the realm's current configuration. The animals who come here for vision-seeking say the fire speaks differently than any other source of light — more direct, less patient.",
+      "price_modifier": 1.2,
+      "buys_items": false,
+      "guild_school": "Fire",
+      "guild_max_tier": 4,
+      "items": {
+        "fire_bomb": 3,
+        "flame_oil": 5,
+        "ember_core": 2,
+        "rations": 5,
+        "fire_charm_common": 3,
+        "fire_charm_middling": 2,
+        "fire_charm_fine": 1,
+        "plain_copper_dorje": 3,
+        "plain_copper_drilbu": 2,
+        "blessed_copper_dorje": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_black_lodge": {
+      "name": "Black Lodge",
+      "type": "spell_guild",
+      "description": "Half-buried, marked with a khatvanga hung with black ribbons and bone-charms. The practitioners here study predation as a spiritual technology — what it means to take life, what it transfers. The animal realm is uncommonly honest about the subject.",
+      "price_modifier": 1.25,
+      "buys_items": false,
+      "guild_school": "Black",
+      "guild_max_tier": 4,
+      "items": {
+        "poison_bomb": 3,
+        "alchemists_pouch": 4,
+        "raw_reagents": 6,
+        "rations": 5,
+        "black_charm_common": 3,
+        "black_charm_middling": 2,
+        "sorcery_charm_common": 2,
+        "fire_charm_common": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_crossroads_stupa": {
+      "name": "Crossroads Stupa",
+      "type": "spell_guild",
+      "description": "Where four major migration routes intersect, a stupa marks the conjunction. Tormas and butter lamps heap at its base, some kept burning by passing devotees, some long guttered out. The practitioners here specialize in working with beings rather than forces.",
+      "price_modifier": 1.15,
+      "buys_items": false,
+      "guild_school": "Summoning",
+      "guild_max_tier": 4,
+      "items": {
+        "raw_reagents": 8,
+        "prayer_beads": 3,
+        "rations": 5,
+        "earth_charm_common": 1,
+        "air_charm_common": 1,
+        "plain_iron_phurba": 3,
+        "plain_copper_phurba": 2,
+        "blessed_iron_phurba": 1,
+        "blessed_copper_phurba": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_ancient_banyan": {
+      "name": "The Ancient Banyan",
+      "type": "spell_guild",
+      "description": "A banyan so old it has become its own forest — hundreds of aerial roots, each descended root a new trunk, the whole organism covering ground that would take an hour to walk around. The beings who live inside its aerial forest do not remember when they arrived.",
+      "price_modifier": 1.0,
+      "buys_items": false,
+      "guild_school": "Earth",
+      "guild_max_tier": 4,
+      "items": {
+        "herb_bundle": 12,
+        "medicinal_herbs": 6,
+        "raw_reagents": 6,
+        "prayer_beads": 3,
+        "rations": 5,
+        "earth_charm_common": 3,
+        "earth_charm_middling": 2,
+        "earth_charm_fine": 1,
+        "plain_gold_dorje": 2,
+        "plain_gold_drilbu": 2,
+        "blessed_gold_dorje": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_birds_congress": {
+      "name": "Birds' Congress",
+      "type": "spell_guild",
+      "description": "A high cliff where every species of bird in the realm sends at least one representative, continuously, by some rotation that appears to involve song but which scholars cannot fully decode. What looks like a congress is also, apparently, a school.",
+      "price_modifier": 1.1,
+      "buys_items": false,
+      "guild_school": "Air",
+      "guild_max_tier": 4,
+      "items": {
+        "prayer_beads": 5,
+        "rations": 5,
+        "air_charm_common": 4,
+        "air_charm_middling": 2,
+        "air_charm_fine": 1,
+        "plain_iron_dorje": 3,
+        "plain_iron_drilbu": 2,
+        "blessed_iron_dorje": 1,
+        "blessed_iron_drilbu": 1
+      },
+      "spells": [
+        "gust",
+        "featherfall",
+        "windwall",
+        "lightning_bolt",
+        "blink",
+        "farsight",
+        "tailwind"
+      ],
+      "training": {
+        "attributes": [
+          "finesse",
+          "awareness"
+        ],
+        "skills": [
+          "air_magic",
+          "ranged",
+          "yoga"
+        ]
+      }
+    },
+    "animal_bone_forest": {
+      "name": "Bone Forest",
+      "type": "spell_guild",
+      "description": "A forest of pale calcified trees — not dead but transformed, turned to mineral over geological time. The predators who come here to meditate among the skeletal forms have access to a school of thought that treats death not as an ending but as a material.",
+      "price_modifier": 1.2,
+      "buys_items": false,
+      "guild_school": "Black",
+      "guild_max_tier": 4,
+      "items": {
+        "poison_bomb": 4,
+        "alchemists_pouch": 4,
+        "raw_reagents": 6,
+        "rations": 5,
+        "black_charm_common": 3,
+        "black_charm_middling": 2,
+        "black_charm_fine": 1,
+        "sorcery_charm_common": 2,
+        "sorcery_charm_middling": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_naga_palace": {
+      "name": "Naga Palace",
+      "type": "spell_guild",
+      "description": "The seat of a naga court that remembers when this ocean was fresh water. Trading access: the naga have long memories and are interested in what traveling parties have seen. Their price for advanced teaching is always information — specific, verifiable, and something they don't already know.",
+      "price_modifier": 1.0,
+      "buys_items": false,
+      "guild_school": "Water",
+      "guild_max_tier": 5,
+      "items": {
+        "mana_potion": 6,
+        "herb_bundle": 5,
+        "rations": 5,
+        "water_charm_common": 4,
+        "water_charm_middling": 3,
+        "water_charm_fine": 2,
+        "earth_charm_common": 2,
+        "earth_charm_middling": 1,
+        "plain_silver_dorje": 3,
+        "plain_silver_drilbu": 2,
+        "blessed_silver_dorje": 1,
+        "blessed_silver_drilbu": 1
+      },
+      "spells": [
+        "water_whip",
+        "wave_crash",
+        "tidal_surge",
+        "aqua_breath",
+        "lesser_heal",
+        "greater_heal",
+        "regeneration",
+        "charm_beast",
+        "calm_creature"
+      ],
+      "training": {
+        "attributes": [
+          "awareness",
+          "constitution"
+        ],
+        "skills": [
+          "water_magic",
+          "enchantment",
+          "yoga"
+        ]
+      }
+    },
+    "animal_termite_cathedral": {
+      "name": "Termite Cathedral",
+      "type": "spell_guild",
+      "description": "A structure ten meters high, built over centuries by beings each the size of a thumbnail, with architectural precision that confounds engineers. The collective intelligence that designed and maintains it doesn't communicate in any language known to surface beings, but it does teach — by implication and exposure.",
+      "price_modifier": 1.0,
+      "buys_items": false,
+      "guild_school": "Earth",
+      "guild_max_tier": 4,
+      "items": {
+        "raw_reagents": 8,
+        "herb_bundle": 6,
+        "rations": 5,
+        "earth_charm_common": 3,
+        "earth_charm_middling": 2,
+        "plain_gold_phurba": 2,
+        "plain_copper_phurba": 3,
+        "blessed_copper_phurba": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [
+          "constitution",
+          "strength"
+        ],
+        "skills": [
+          "earth_magic",
+          "summoning",
+          "logistics"
+        ]
+      }
     }
   },
   "shop_types": {
