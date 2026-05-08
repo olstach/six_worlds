@@ -300,8 +300,8 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 				for party_member in CharacterSystem.get_party():
 					var base_val: int = party_member.attributes.get(attr_name, 0)
 					var quirk_bonus: int = 0
-					if QuirkSystem:
-						quirk_bonus = QuirkSystem.get_attribute_bonus(party_member).get(attr_name, 0)
+					if TraitSystem:
+						quirk_bonus = TraitSystem.get_attribute_bonus(party_member).get(attr_name, 0)
 					if base_val + quirk_bonus >= required_value:
 						meets_req = true
 						passing_char = party_member
@@ -346,27 +346,59 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 			else:
 				result.passing_character = passing_char
 
-		# Check quirk requirement — any party member with the quirk enables the option
-		if "quirk" in reqs:
-			var required_quirk: String = reqs["quirk"]
+		# Check trait requirement — any party member with the trait enables the option
+		if "trait" in reqs:
+			var required_trait: String = reqs["trait"]
 			var meets_req := false
 			var passing_char = null
 			for party_member in CharacterSystem.get_party():
-				if required_quirk in party_member.get("quirks", []):
+				if required_trait in party_member.get("traits", []):
 					meets_req = true
 					passing_char = party_member
 					break
 			if not meets_req:
 				result.available = false
-				result.reason = "Requires: " + QuirkSystem.get_quirk_name(required_quirk)
+				result.reason = "Requires: " + TraitSystem.get_trait_name(required_trait)
 				return result
 			else:
 				result.passing_character = passing_char
 
+		# Check not_trait requirement — blocks the option if any party member has the trait.
+		# Useful for: "only offer blessing if not already devout", "can't lose eye twice", etc.
+		if "not_trait" in reqs:
+			var blocked_trait: String = reqs["not_trait"]
+			for party_member in CharacterSystem.get_party():
+				if blocked_trait in party_member.get("traits", []):
+					result.available = false
+					result.reason = TraitSystem.get_trait_name(blocked_trait) + " already present"
+					return result
+
 	return result
 
-## Execute a choice (with roll if needed)
-func make_choice(choice: Dictionary) -> Dictionary:
+# DC tier modifiers — actual DC = best_party_stat + modifier, so success when d20 >= modifier.
+# P(success) = (21 - modifier) / 20: trivial 95%, easy 80%, normal 60%, difficult 40%,
+# very_difficult 20%, almost_impossible 5% (nat-20 only).
+const DC_TIER_MODIFIERS: Dictionary = {
+	"trivial":           2,
+	"easy":              5,
+	"normal":            9,
+	"difficult":         13,
+	"very_difficult":    17,
+	"almost_impossible": 20,
+}
+
+## Resolve a roll difficulty to an absolute DC.
+## Accepts a tier string ("normal", "difficult", …) or a legacy integer DC.
+## Tier: DC = best_party_stat + modifier, keeping difficulty constant regardless of power level.
+func _resolve_roll_dc(raw_difficulty, best_value: int) -> int:
+	if raw_difficulty is String:
+		var modifier: int = DC_TIER_MODIFIERS.get(raw_difficulty, DC_TIER_MODIFIERS["normal"])
+		return best_value + modifier
+	return int(raw_difficulty)
+
+## Execute a choice (with roll if needed).
+## passing_character: the party member who enabled a blue/requirement choice (may be null).
+func make_choice(choice: Dictionary, passing_character = null) -> Dictionary:
 	choice_made.emit(choice)
 	
 	var outcome = {}
@@ -374,7 +406,7 @@ func make_choice(choice: Dictionary) -> Dictionary:
 	# Handle roll-based choices
 	if choice.type == "roll" and "requirements" in choice and "roll" in choice.requirements:
 		var roll_req = choice.requirements.roll
-		var difficulty = roll_req.difficulty
+		var raw_difficulty = roll_req.difficulty  # string tier or legacy int
 
 		# Determine whether this is an attribute roll or a skill roll
 		var roll_label: String  # used in roll_result for display
@@ -400,7 +432,9 @@ func make_choice(choice: Dictionary) -> Dictionary:
 					best_value = attr_value
 					roller = party_member
 
-		# Roll: d20 + attribute/skill value
+		# Roll: d20 + attribute/skill value.
+		# Resolve tier string → absolute DC now that best_value is known.
+		var difficulty = _resolve_roll_dc(raw_difficulty, best_value)
 		var roll = randi() % 20 + 1
 		var total = roll + best_value
 		var success = total >= difficulty
@@ -419,6 +453,7 @@ func make_choice(choice: Dictionary) -> Dictionary:
 			"attribute_value": best_value,
 			"total": total,
 			"difficulty": difficulty,
+			"difficulty_tier": raw_difficulty if raw_difficulty is String else "",
 			"success": success,
 			"roller": roller.name if roller else "Unknown"
 		}
@@ -426,9 +461,11 @@ func make_choice(choice: Dictionary) -> Dictionary:
 		# Non-roll choice, use standard outcome
 		outcome = choice.outcome.duplicate(true) if "outcome" in choice else {}
 	
-	# Carry the choice's cost into the outcome so apply_outcome can deduct it
+	# Carry the choice's cost and enabling character into the outcome
 	if "cost" in choice:
 		outcome["cost"] = choice.cost
+	if passing_character != null:
+		outcome["passing_character"] = passing_character
 
 	# Apply outcome
 	apply_outcome(outcome)
@@ -681,7 +718,46 @@ func apply_outcome(outcome: Dictionary) -> void:
 					GameState.add_gold(refund)
 					print("EventManager: Gold returned (%d)" % refund)
 			else:
-				print("EventManager: gold_returned set but no gold cost found to refund")
+					print("EventManager: gold_returned set but no gold cost found to refund")
+
+		# Add/remove traits.
+		# Singular:  "add_trait": "devout"  or  "add_trait": {"id": "devout", "target": "player"}
+		# Plural:    "add_traits": ["devout", "composed"]  (same target rules, applied to each)
+		# target values: "player" (default), "passing_char" (who enabled blue choice), "random", "all"
+		for key in ["add_trait", "remove_trait", "add_traits", "remove_traits"]:
+			if not key in rewards:
+				continue
+			var is_remove: bool = key.begins_with("remove")
+			var entries = rewards[key]
+			if not entries is Array:
+				entries = [entries]
+			for entry in entries:
+				var trait_id: String
+				var target_mode: String = "player"
+				if entry is String:
+					trait_id = entry
+				else:
+					trait_id = str(entry.get("id", ""))
+					target_mode = str(entry.get("target", "player"))
+				if trait_id.is_empty() or not TraitSystem:
+					continue
+				var party := CharacterSystem.get_party()
+				var targets: Array = []
+				match target_mode:
+					"all":          targets = party
+					"random":       if not party.is_empty(): targets = [party[randi() % party.size()]]
+					"passing_char":
+						var pc = outcome.get("passing_character")
+						if pc != null: targets = [pc]
+					_:
+						var player := CharacterSystem.get_player()
+						if player: targets = [player]
+				for char in targets:
+					if is_remove:
+						TraitSystem.remove_trait(char, trait_id)
+					else:
+						TraitSystem.add_trait(char, trait_id)
+					print("EventManager: %s '%s' on %s" % [key, trait_id, char.get("name", "?")])
 
 	# Write world-state flags declared by this outcome
 	if "set_flags" in outcome:

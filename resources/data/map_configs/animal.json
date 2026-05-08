@@ -1,0 +1,1946 @@
+{
+  "id": "animal",
+  "name": "Tiryakloka - The Animal Realm",
+  "description": "The realm of primal instinct and predation. The vast ocean depths hold naga courts older than memory and makara that swallow ships whole. Inland, the ancient forest is territory — contested, marked, fought over — while the open meadows are the world's great stage, where khadga charge and bhramara darken the sun. The birds live everywhere, but the high places belong to them alone.",
+  "width": 192,
+  "height": 192,
+  "base_speed": 3.0,
+  "location_names": {
+    "_comment": "Tibetan/Sanskrit compound names for animal realm settlements — dens, lairs, watering holes, coral grottos, and sacred gathering sites. Vana/Shing=forest, Jala/Tsho=water/lake, Pakshi/Bya=bird, Mriga=deer/animal, Simha=lion, Naga=serpent, Matsya/Nya=fish, Parvata/Ri=mountain, Aranya=wilderness, Vyaghra=tiger, Gaja=elephant. Suffixes: khar=fort, thang=plain, yul=land, lung=valley, pura=city, gram=village.",
+    "town": [
+      "Vanakhar",
+      "Jalathang",
+      "Simhakhar",
+      "Mrigapura",
+      "Nagalung",
+      "Vyaghrakhar",
+      "Aranyagram",
+      "Pakshiyul",
+      "Matsyathang",
+      "Tshokhar",
+      "Byathang",
+      "Nyaling",
+      "Klungri",
+      "Vanarapura",
+      "Gajayul"
+    ]
+  },
+  "zones": [
+    {
+      "_comment": "Bottom section. Entry zone — player arrives from the Hungry Ghost Realm. Vast coastal shelf and open ocean: deep water channels, coral reef flats, rocky islets, sandy shallows. The naga rule here and they remember everything.",
+      "id": "ocean",
+      "rows": [128, 191],
+      "terrain_weights": {
+        "4": 30,
+        "6": 18,
+        "10": 10,
+        "2": 15,
+        "0": 12,
+        "5": 10,
+        "11": 5
+      },
+      "road_chance": 0.03,
+      "cluster_min": 3,
+      "cluster_max": 9
+    },
+    {
+      "_comment": "Horizontal wall separating the ocean from the inland zones. A coral barrier ridge — impassable except at tidal passes where the reef breaks. The karka hold these choke-points.",
+      "id": "coastal_wall",
+      "rows": [120, 127],
+      "type": "mountain_wall",
+      "orientation": "horizontal",
+      "display_name": "Coral Barrier",
+      "pass_width": 3,
+      "pass_count": [2, 3],
+      "pass_range": [0.15, 0.85]
+    },
+    {
+      "_comment": "Upper-left section. Dense canopy — dark, layered, territorial. The forest floor is never quiet. Every fallen log is a claim, every fruiting tree a war. The portal to the Human Realm is hidden in the oldest part, near the northwestern corner.",
+      "id": "forest",
+      "rows": [0, 119],
+      "cols": [0, 95],
+      "terrain_weights": {
+        "1": 38,
+        "0": 20,
+        "3": 16,
+        "11": 12,
+        "2": 7,
+        "6": 5,
+        "4": 2
+      },
+      "road_chance": 0.04,
+      "cluster_min": 2,
+      "cluster_max": 7
+    },
+    {
+      "_comment": "Vertical wall between forest and meadow. A ridgeline of tumbled boulders, thorn scrub, and dry ravines. Hard to cross but not impossible — the passes tend to be where the old game trails are.",
+      "id": "ridge",
+      "rows": [0, 119],
+      "cols": [96, 103],
+      "type": "mountain_wall",
+      "orientation": "vertical",
+      "display_name": "Thorn Ridge",
+      "pass_width": 3,
+      "pass_count": [1, 2],
+      "pass_range": [0.3, 0.7]
+    },
+    {
+      "_comment": "Upper-right section. Open sky-brushed plains, termite cathedrals, migration routes, watering holes. Exposure is the currency here — the khadga charge, the yaksha mark territory, the bhramara darken the midday sun. More dangerous than the forest because there is nowhere to hide.",
+      "id": "meadow",
+      "rows": [0, 119],
+      "cols": [104, 191],
+      "terrain_weights": {
+        "0": 38,
+        "11": 20,
+        "2": 14,
+        "1": 12,
+        "3": 12,
+        "5": 3,
+        "4": 1
+      },
+      "road_chance": 0.06,
+      "cluster_min": 2,
+      "cluster_max": 6
+    }
+  ],
+  "fixed_landmarks": [
+    {
+      "type": "start",
+      "zone": "ocean",
+      "position": "bottom_left",
+      "clear_radius": 3
+    },
+    {
+      "type": "event",
+      "zone": "ocean",
+      "position": "near_start",
+      "min_dist": 4,
+      "max_dist": 14,
+      "data": {
+        "event_id": "animal_ocean_naga_greeting",
+        "name": "The Naga's Greeting",
+        "icon": "npc",
+        "blocking": false,
+        "one_time": true
+      }
+    },
+    {
+      "type": "pass_guardian",
+      "zone": "coastal_wall",
+      "position": "at_pass",
+      "data": {
+        "event_id": "animal_karka_reef_warden",
+        "name": "Reef Warden",
+        "icon": "enemy_elite"
+      }
+    },
+    {
+      "type": "pass_guardian",
+      "zone": "ridge",
+      "position": "at_pass",
+      "data": {
+        "event_id": "animal_ridge_predator",
+        "name": "Ridge Predator",
+        "icon": "enemy_elite"
+      }
+    },
+    {
+      "type": "boss",
+      "zone": "forest",
+      "position": "near_portal",
+      "data": {
+        "event_id": "animal_boss_simha_king",
+        "name": "The King of Beasts",
+        "icon": "boss"
+      }
+    },
+    {
+      "type": "portal",
+      "zone": "forest",
+      "position": "top_left",
+      "clear_radius": 2,
+      "data": {
+        "destination_realm": "human",
+        "destination_map": "human_01",
+        "description": "A shimmering passage rising toward the Human Realm. The oldest trees seem to lean away from it."
+      }
+    }
+  ],
+  "object_pools": {
+    "ocean": {
+      "events": [
+        {
+          "event_id": "animal_ocean_naga_patrol",
+          "name": "Naga Patrol",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 3
+        },
+        {
+          "event_id": "animal_ocean_karka_standoff",
+          "name": "Reef Guardian",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_ocean_matsya_ambush",
+          "name": "Matsya Hunters",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_ocean_makara_feeding",
+          "name": "Makara Feeding",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 1
+        },
+        {
+          "event_id": "animal_ocean_naga_court",
+          "name": "Naga Court",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_ocean_sunken_ship",
+          "name": "Sunken Ship",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_ocean_current_crossing",
+          "name": "Strong Current",
+          "icon": "event",
+          "blocking": false,
+          "one_time": true,
+          "weight": 3
+        },
+        {
+          "event_id": "animal_ocean_thermal_vents",
+          "name": "Thermal Vents",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_ocean_naga_temple",
+          "name": "Sunken Temple",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_ocean_pearl_merchant",
+          "name": "Pearl Merchant",
+          "icon": "merchant",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_ocean_makara_tribute",
+          "name": "Makara's Toll",
+          "icon": "event",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_ocean_drowned_caravan",
+          "name": "Drowned Caravan",
+          "icon": "event",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_ocean_karka_merchant",
+          "name": "Shell-Wright's Stall",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2,
+          "tag": "shop"
+        },
+        {
+          "event_id": "animal_ocean_teahouse",
+          "name": "Tide Shelter",
+          "icon": "rest",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2,
+          "tag": "rest"
+        },
+        {
+          "event_id": "animal_ocean_mercenary_guild",
+          "name": "Mercenary Guild",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "animal_ocean_training_camp",
+          "name": "Naga Training Grounds",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "training_pool": [
+            "spears",
+            "martial_arts",
+            "water_magic",
+            "sorcery",
+            "enchantment"
+          ]
+        },
+        {
+          "event_id": "animal_sacred_grove",
+          "name": "Sacred Grove",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_temple_of_the_naga",
+          "name": "Temple of the Naga",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_eternal_fire",
+          "name": "Temple of the Eternal Fire",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_garuda_roost",
+          "name": "Garuda Roost",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_hidden_gompa",
+          "name": "Hidden Gompa",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_medicinal_garden",
+          "name": "Medicinal Garden",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_black_lodge",
+          "name": "Black Lodge",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_yogini_circle",
+          "name": "Circle of the Yoginis",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_mirror_lake",
+          "name": "Mirror Lake",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_crossroads_stupa",
+          "name": "Crossroads Stupa",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_ocean_town_weapons",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "animal_ocean_town_magic",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "animal_ocean_town_supplies",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "naga_palace",
+          "name": "The Naga Palace",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "ancient_banyan",
+          "name": "The Ancient Banyan",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "termite_cathedral",
+          "name": "Termite Cathedral",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "birds_congress",
+          "name": "Conference of the Birds",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "bone_forest",
+          "name": "The Bone Forest",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        }
+      ],
+      "pickups": [
+        {
+          "name": "Pearl Bed",
+          "icon": "treasure",
+          "message": "A cluster of oysters in a quiet reef pocket. Some are worth something.",
+          "rewards": [
+            {"type": "gold", "value": [30, 60]},
+            {"type": "herbs", "value": 4}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Driftwood Cache",
+          "icon": "treasure",
+          "message": "Someone lashed a waterproof bundle to a root. Long forgotten.",
+          "rewards": [
+            {"type": "gold", "value": [20, 45]},
+            {"type": "food", "value": 8}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Tidal Pool",
+          "icon": "rest",
+          "message": "A sunlit pool left by the retreating tide. The warmth is almost human.",
+          "rewards": [
+            {"type": "heal", "value": 35},
+            {"type": "mana", "value": 20},
+            {"type": "herbs", "value": 3}
+          ],
+          "one_time": false,
+          "weight": 2,
+          "tag": "rest"
+        },
+        {
+          "name": "Coral Shrine",
+          "icon": "shrine",
+          "message": "The current makes the offerings sway. Something old is paying attention.",
+          "rewards": [
+            {"type": "buff", "value": {"stat": "awareness", "amount": 2, "combats_remaining": 1}},
+            {"type": "karma", "value": {"realm": "animal", "amount": 2}}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Whale Bone",
+          "icon": "treasure",
+          "message": "Whatever lived here was immense. Something useful is lodged in the ribs.",
+          "rewards": [
+            {"type": "item_random_scaled", "value": {
+              "tiers": {
+                "weak": ["bone_dagger", "bone_sword", "wooden_spear", "leather_vest", "leather_cap"],
+                "medium": ["bronze_mace", "bronze_spear", "obsidian_blade", "padded_armor", "bone_amulet"],
+                "strong": ["iron_khanda", "iron_dao", "bronze_shield", "padded_armor", "silver_ring", "lucky_charm"]
+              }
+            }},
+            {"type": "scrap", "value": [2, 4]}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Current Stone",
+          "icon": "shrine",
+          "message": "A river of energy runs through the rock. You can feel it in your teeth.",
+          "rewards": [
+            {"type": "mana", "value": 80}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Thermal Vent",
+          "icon": "shrine",
+          "message": "Heat pours from a crack in the seafloor. It scours and clarifies.",
+          "rewards": [
+            {"type": "buff", "value": {"stat": "strength", "amount": 2, "combats_remaining": 1}},
+            {"type": "buff", "value": {"stat": "constitution", "amount": -1, "combats_remaining": 1}}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Drowned Offering",
+          "icon": "shrine",
+          "message": "A weighted bundle dropped from above. A prayer, not a cache.",
+          "rewards": [
+            {"type": "gold", "value": [15, 30]},
+            {"type": "karma", "value": {"realm": "human", "amount": 2}},
+            {"type": "food", "value": 5}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Sunken Cache",
+          "icon": "treasure",
+          "message": "A sealed chest — too heavy to float, too good to leave.",
+          "rewards": [
+            {"type": "item_random", "value": [
+              "water_charm_common", "enchantment_charm_common", "space_charm_common",
+              "sorcery_charm_common", "black_charm_common",
+              "plain_copper_drilbu", "plain_silver_drilbu", "plain_gold_drilbu",
+              "plain_copper_kangling", "plain_bone_kangling"
+            ]}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Kelp Garden",
+          "icon": "treasure",
+          "message": "Dense, living, thriving. It is also edible if you know how.",
+          "rewards": [
+            {"type": "herbs", "value": 6},
+            {"type": "food", "value": 10}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Naga Altar",
+          "icon": "shrine",
+          "message": "Old offerings of gold and mantras pressed into clay.",
+          "rewards": [
+            {"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}},
+            {"type": "buff", "value": {"stat": "awareness", "amount": 1, "combats_remaining": 1}},
+            {"type": "karma", "value": {"realm": "animal", "amount": 1}}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Entangled Net",
+          "icon": "treasure",
+          "message": "Looks like a cache. It is not.",
+          "rewards": [
+            {"type": "damage", "value": 18}
+          ],
+          "weight": 1
+        },
+        {
+          "name": "Tide Offering Bowl",
+          "icon": "shrine",
+          "message": "Someone filled this at each low tide for a long time.",
+          "rewards": [
+            {"type": "food", "value": 10},
+            {"type": "xp", "value": [10, 20]}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Deep Water Shimmer",
+          "icon": "rest",
+          "message": "Something luminous rises from below. It passes through you and keeps going.",
+          "rewards": [
+            {"type": "mana", "value": 100}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Sea Cave",
+          "icon": "dungeon",
+          "message": "Someone used this as a dry stash point during low tide.",
+          "rewards": [
+            {"type": "item_random_scaled", "value": {
+              "tiers": {
+                "weak": ["leather_vest", "wooden_spear", "bone_dagger", "health_potion"],
+                "medium": ["bronze_spear", "bronze_mace", "padded_armor", "mana_potion", "copper_ring"],
+                "strong": ["iron_dao", "bronze_shield", "padded_armor", "silver_ring", "water_charm_middling"]
+              }
+            }},
+            {"type": "gold", "value": [20, 40]}
+          ],
+          "weight": 2
+        }
+      ],
+      "spell_schools": ["Water", "Enchantment", "Sorcery", "Black", "Space"]
+    },
+    "forest": {
+      "events": [
+        {
+          "event_id": "animal_forest_rakshasa_ambush",
+          "name": "Rakshasa Ambush",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_forest_shardula_territory",
+          "name": "Marked Territory",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_forest_gana_pack",
+          "name": "Gana Pack",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 3
+        },
+        {
+          "event_id": "animal_forest_varaha_charge",
+          "name": "Varaha Charge",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_forest_vanara_toll",
+          "name": "Vanara Toll",
+          "icon": "npc",
+          "blocking": true,
+          "one_time": true,
+          "weight": 3
+        },
+        {
+          "event_id": "animal_forest_mycelium_tender",
+          "name": "Mycelium Tender",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_forest_sounder_matron",
+          "name": "The Sounder Matron",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_forest_gana_ceremony",
+          "name": "Gana Ceremony",
+          "icon": "event",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_forest_vanara_elder",
+          "name": "Vanara Elder",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_forest_hedonist_camp",
+          "name": "Hedonist's Camp",
+          "icon": "event",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1
+        },
+        {
+          "event_id": "animal_forest_rakshasa_den",
+          "name": "Rakshasa Den",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_forest_mushroom_maze",
+          "name": "Mushroom Maze",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_forest_banyan_hollow",
+          "name": "Ancient Banyan",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "_comment": "Flying characters only — kapota waypoint in the crown of a giant strangler fig",
+          "event_id": "animal_forest_high_canopy_perch",
+          "name": "High Canopy Perch",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2,
+          "requires": "flying"
+        },
+        {
+          "_comment": "Flying characters only — shyena nesting site on a cliff-face above the canopy",
+          "event_id": "animal_forest_cliff_aerie",
+          "name": "Cliff Aerie",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 1,
+          "requires": "flying"
+        },
+        {
+          "event_id": "animal_forest_jungle_merchant",
+          "name": "Forest Merchant",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2,
+          "tag": "shop"
+        },
+        {
+          "event_id": "animal_forest_teahouse",
+          "name": "Forest Teahouse",
+          "icon": "rest",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2,
+          "tag": "rest"
+        },
+        {
+          "event_id": "animal_forest_healer_camp",
+          "name": "Healer's Camp",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_forest_mercenary_guild",
+          "name": "Mercenary Guild",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "animal_forest_training_camp",
+          "name": "Tracker's Training Ground",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "training_pool": [
+            "daggers",
+            "martial_arts",
+            "ranged",
+            "earth_magic",
+            "alchemy",
+            "guile"
+          ]
+        },
+        {
+          "event_id": "animal_sacred_grove",
+          "name": "Sacred Grove",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_temple_of_the_naga",
+          "name": "Temple of the Naga",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_eternal_fire",
+          "name": "Temple of the Eternal Fire",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_garuda_roost",
+          "name": "Garuda Roost",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_hidden_gompa",
+          "name": "Hidden Gompa",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_medicinal_garden",
+          "name": "Medicinal Garden",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_black_lodge",
+          "name": "Black Lodge",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_yogini_circle",
+          "name": "Circle of the Yoginis",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_mirror_lake",
+          "name": "Mirror Lake",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_crossroads_stupa",
+          "name": "Crossroads Stupa",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_forest_town_weapons",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "animal_forest_town_magic",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "animal_forest_town_supplies",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "naga_palace",
+          "name": "The Naga Palace",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "ancient_banyan",
+          "name": "The Ancient Banyan",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "termite_cathedral",
+          "name": "Termite Cathedral",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "birds_congress",
+          "name": "Conference of the Birds",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "bone_forest",
+          "name": "The Bone Forest",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        }
+      ],
+      "pickups": [
+        {
+          "name": "Fallen Log Cache",
+          "icon": "treasure",
+          "message": "Something was using this as a pantry. There is food left.",
+          "rewards": [
+            {"type": "food", "value": 12},
+            {"type": "gold", "value": [15, 30]}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Mushroom Ring",
+          "icon": "rest",
+          "message": "A perfect circle. The smell is medicinal if you know mushrooms.",
+          "rewards": [
+            {"type": "heal", "value": 30},
+            {"type": "herbs", "value": 5}
+          ],
+          "one_time": false,
+          "weight": 2,
+          "tag": "rest"
+        },
+        {
+          "name": "Wild Beehive",
+          "icon": "treasure",
+          "message": "Honey, comb, and propolis. The bees make their feelings known.",
+          "rewards": [
+            {"type": "herbs", "value": 4},
+            {"type": "food", "value": 8},
+            {"type": "damage", "value": 10}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Ancient Banyan Roots",
+          "icon": "shrine",
+          "message": "The roots are as wide as roads and as old as the forest itself.",
+          "rewards": [
+            {"type": "buff", "value": {"stat": "constitution", "amount": 2, "combats_remaining": 1}},
+            {"type": "karma", "value": {"realm": "animal", "amount": 1}}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "River Ford",
+          "icon": "rest",
+          "message": "Shallow, cold, and briefly peaceful.",
+          "rewards": [
+            {"type": "heal", "value": 25},
+            {"type": "mana", "value": 15},
+            {"type": "food", "value": 5}
+          ],
+          "one_time": false,
+          "weight": 2,
+          "tag": "rest"
+        },
+        {
+          "name": "Territorial Marking",
+          "icon": "shrine",
+          "message": "Claw lines cut deep into bark. You study the pattern; it tells you something.",
+          "rewards": [
+            {"type": "buff", "value": {"stat": "finesse", "amount": 2, "combats_remaining": 1}}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Vanara Stash",
+          "icon": "treasure",
+          "message": "Hidden in a tree hollow where no one without nimble fingers could reach. Until now.",
+          "rewards": [
+            {"type": "item_random", "value": [
+              "health_potion", "mana_potion", "fire_bomb", "poison_bomb",
+              "plain_copper_dorje", "plain_copper_drilbu", "plain_copper_phurba",
+              "earth_charm_common", "summoning_charm_common", "black_charm_common"
+            ]}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Mycelium Bloom",
+          "icon": "shrine",
+          "message": "The mycelium puts out a body for one day, then reabsorbs it. You got lucky.",
+          "rewards": [
+            {"type": "xp", "value": [15, 35]},
+            {"type": "herbs", "value": 7}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Jungle Spring",
+          "icon": "rest",
+          "message": "Cold and deep and inexhaustible.",
+          "rewards": [
+            {"type": "heal", "value": 40},
+            {"type": "mana", "value": 25},
+            {"type": "herbs", "value": 4},
+            {"type": "food", "value": 6}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Shardula Scratch Post",
+          "icon": "shrine",
+          "message": "A tree stripped to white wood by repeated sharpening. The confidence in those marks is unsettling.",
+          "rewards": [
+            {"type": "buff", "value": {"stat": "strength", "amount": 2, "combats_remaining": 1}}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Overgrown Offering",
+          "icon": "shrine",
+          "message": "Wrapped in vines now, but still intact. Whatever was asked for here, it was asked sincerely.",
+          "rewards": [
+            {"type": "karma", "value": {"realm": "animal", "amount": 2}},
+            {"type": "food", "value": 8},
+            {"type": "xp", "value": 10}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Deadfall Trap",
+          "icon": "dungeon",
+          "message": "Looks safe. It is a deadfall trap.",
+          "rewards": [
+            {"type": "damage", "value": 22}
+          ],
+          "weight": 1
+        },
+        {
+          "name": "Forest Cache",
+          "icon": "treasure",
+          "message": "A waterproofed bundle wedged in a root fork, deliberately hidden.",
+          "rewards": [
+            {"type": "gold", "value": [25, 50]},
+            {"type": "item_random_scaled", "value": {
+              "tiers": {
+                "weak": ["bone_dagger", "wooden_spear", "leather_vest", "health_potion"],
+                "medium": ["bronze_dao", "obsidian_blade", "leather_vest", "mana_potion", "copper_ring"],
+                "strong": ["iron_dao", "bronze_axe", "padded_armor", "silver_ring", "earth_charm_middling"]
+              }
+            }}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Scattered Feathers",
+          "icon": "shrine",
+          "message": "Something large came down here. The feathers say a raptor. The silence says it won.",
+          "rewards": [
+            {"type": "xp", "value": [12, 25]}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Storm-Felled Tree",
+          "icon": "treasure",
+          "message": "The fall tore open a dry rot cavity. Usable material inside.",
+          "rewards": [
+            {"type": "scrap", "value": [3, 5]},
+            {"type": "gold", "value": [10, 20]}
+          ],
+          "weight": 2
+        }
+      ],
+      "spell_schools": ["Earth", "Summoning", "Black", "Fire", "Enchantment"]
+    },
+    "meadow": {
+      "events": [
+        {
+          "event_id": "animal_meadow_yaksha_challenge",
+          "name": "Yaksha Challenge",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_meadow_dura_patrol",
+          "name": "Dura Patrol",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 3
+        },
+        {
+          "event_id": "animal_meadow_khadga_charge",
+          "name": "Khadga Charge",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_meadow_bhramara_swarm",
+          "name": "Bhramara Swarm",
+          "icon": "enemy",
+          "blocking": true,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_meadow_patanga_cloud",
+          "name": "Patanga Cloud",
+          "icon": "event",
+          "blocking": false,
+          "one_time": true,
+          "weight": 3
+        },
+        {
+          "event_id": "animal_meadow_patanga_ascetic",
+          "name": "Patanga Ascetic",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_meadow_yaksha_shaman",
+          "name": "Yaksha Shaman",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_meadow_dura_artisan",
+          "name": "Dura Artisan",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_meadow_migration",
+          "name": "The Migration",
+          "icon": "event",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_meadow_khadga_herd",
+          "name": "Khadga Herd",
+          "icon": "event",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_meadow_dura_warren",
+          "name": "Dura Warren",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_meadow_bhramara_hive",
+          "name": "Bhramara Hive",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_meadow_yaksha_standing_stones",
+          "name": "Standing Stones",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "animal_meadow_grassfire",
+          "name": "Grassfire",
+          "icon": "event",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "_comment": "Flying characters only — uluka oracle perched on an isolated cliff stack",
+          "event_id": "animal_meadow_cliff_oracle",
+          "name": "Cliff Oracle",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2,
+          "requires": "flying"
+        },
+        {
+          "_comment": "Flying characters only — high thermal column used by raptors and kapota alike",
+          "event_id": "animal_meadow_thermal_column",
+          "name": "Thermal Column",
+          "icon": "rest",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "requires": "flying",
+          "tag": "rest"
+        },
+        {
+          "event_id": "animal_meadow_merchant",
+          "name": "Plains Merchant",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2,
+          "tag": "shop"
+        },
+        {
+          "event_id": "animal_meadow_teahouse",
+          "name": "Watering Hole Teahouse",
+          "icon": "rest",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2,
+          "tag": "rest"
+        },
+        {
+          "event_id": "animal_meadow_mercenary_guild",
+          "name": "Mercenary Guild",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "animal_meadow_training_camp",
+          "name": "Open-Field Training Ground",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "training_pool": [
+            "axes",
+            "spears",
+            "swords",
+            "armor",
+            "maces",
+            "unarmed"
+          ]
+        },
+        {
+          "event_id": "animal_sacred_grove",
+          "name": "Sacred Grove",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_temple_of_the_naga",
+          "name": "Temple of the Naga",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_eternal_fire",
+          "name": "Temple of the Eternal Fire",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_garuda_roost",
+          "name": "Garuda Roost",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_hidden_gompa",
+          "name": "Hidden Gompa",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_medicinal_garden",
+          "name": "Medicinal Garden",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_black_lodge",
+          "name": "Black Lodge",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_yogini_circle",
+          "name": "Circle of the Yoginis",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_mirror_lake",
+          "name": "Mirror Lake",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_crossroads_stupa",
+          "name": "Crossroads Stupa",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "guild"
+        },
+        {
+          "event_id": "animal_meadow_town_weapons",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "animal_meadow_town_magic",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "animal_meadow_town_supplies",
+          "name": "Town",
+          "name_category": "town",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 1,
+          "tag": "shop"
+        },
+        {
+          "event_id": "naga_palace",
+          "name": "The Naga Palace",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "ancient_banyan",
+          "name": "The Ancient Banyan",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "termite_cathedral",
+          "name": "Termite Cathedral",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "birds_congress",
+          "name": "Conference of the Birds",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        },
+        {
+          "event_id": "bone_forest",
+          "name": "The Bone Forest",
+          "icon": "shrine",
+          "blocking": false,
+          "one_time": true,
+          "weight": 0.3,
+          "tag": "domain_guild"
+        }
+      ],
+      "pickups": [
+        {
+          "name": "Termite Mound",
+          "icon": "treasure",
+          "message": "Rich in resin and edible material. The builders disagree.",
+          "rewards": [
+            {"type": "herbs", "value": 5},
+            {"type": "gold", "value": [15, 30]},
+            {"type": "damage", "value": 8}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Old Game Trail Cache",
+          "icon": "treasure",
+          "message": "Buried where the trail bends, marked with a chipped stone.",
+          "rewards": [
+            {"type": "gold", "value": [25, 50]},
+            {"type": "food", "value": 10}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Watering Hole",
+          "icon": "rest",
+          "message": "Shared by everyone and fought over at dusk. Right now it is quiet.",
+          "rewards": [
+            {"type": "heal", "value": 35},
+            {"type": "food", "value": 8}
+          ],
+          "one_time": false,
+          "weight": 2,
+          "tag": "rest"
+        },
+        {
+          "name": "Yaksha Standing Stone",
+          "icon": "shrine",
+          "message": "Marked with a boundary script no living scholar recognizes. You touch it anyway.",
+          "rewards": [
+            {"type": "buff", "value": {"stat": "awareness", "amount": 2, "combats_remaining": 1}},
+            {"type": "karma", "value": {"realm": "animal", "amount": 2}}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Dura Earth Cache",
+          "icon": "treasure",
+          "message": "Packed into a ceramic vessel and buried with deliberate care.",
+          "rewards": [
+            {"type": "gold", "value": [20, 45]},
+            {"type": "item_random", "value": [
+              "plain_copper_phurba", "plain_bronze_phurba", "earth_charm_common",
+              "summoning_charm_common", "health_potion", "mana_potion"
+            ]}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Scattered Bones",
+          "icon": "treasure",
+          "message": "A khadga died here. Something useful remains.",
+          "rewards": [
+            {"type": "item_random_scaled", "value": {
+              "tiers": {
+                "weak": ["bone_dagger", "bone_sword", "leather_vest"],
+                "medium": ["bronze_mace", "bronze_axe", "padded_armor", "copper_ring"],
+                "strong": ["iron_khanda", "bronze_shield", "silver_ring", "bone_amulet"]
+              }
+            }},
+            {"type": "scrap", "value": [2, 4]}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Bhramara Comb",
+          "icon": "shrine",
+          "message": "An abandoned section of hive, thick with resin and old honey.",
+          "rewards": [
+            {"type": "herbs", "value": 8},
+            {"type": "heal", "value": 15}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Patanga Silk Cache",
+          "icon": "treasure",
+          "message": "The silk is strong and worth something to the right buyer.",
+          "rewards": [
+            {"type": "gold", "value": [30, 55]}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Wind-Carved Rock",
+          "icon": "shrine",
+          "message": "The stone has been reading the wind for a thousand years. Something of that patience transfers.",
+          "rewards": [
+            {"type": "buff", "value": {"stat": "finesse", "amount": 2, "combats_remaining": 1}}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Sacred Anthill",
+          "icon": "shrine",
+          "message": "Every pilgrim tradition in the meadow passes through here. They all leave something.",
+          "rewards": [
+            {"type": "karma", "value": {"realm": "animal", "amount": 3}},
+            {"type": "xp", "value": [15, 30]}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Khadga Wallow",
+          "icon": "rest",
+          "message": "A great mud depression, still warm. Restorative in a basic way.",
+          "rewards": [
+            {"type": "heal", "value": 30},
+            {"type": "buff", "value": {"stat": "constitution", "amount": 2, "combats_remaining": 1}}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Grassfire Remains",
+          "icon": "treasure",
+          "message": "The fire passed through fast and left useful debris behind.",
+          "rewards": [
+            {"type": "gold", "value": [20, 35]},
+            {"type": "scrap", "value": [2, 3]}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Broken Yaksha Idol",
+          "icon": "shrine",
+          "message": "Toppled, old, still radiating something. May be blessing. May be warning.",
+          "rewards": [
+            {"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}},
+            {"type": "damage", "value": 12}
+          ],
+          "weight": 2
+        },
+        {
+          "name": "Grazing Ground",
+          "icon": "treasure",
+          "message": "Rich vegetation, undisturbed. Whoever grazed here is gone for now.",
+          "rewards": [
+            {"type": "food", "value": 18}
+          ],
+          "weight": 3
+        },
+        {
+          "name": "Storm-Cleared Field",
+          "icon": "shrine",
+          "message": "A lightning strike burned a circle in the grass. The soil underneath is charged.",
+          "rewards": [
+            {"type": "xp", "value": [20, 40]},
+            {"type": "gold", "value": [15, 25]}
+          ],
+          "weight": 2
+        }
+      ],
+      "spell_schools": ["Earth", "Air", "Enchantment", "White", "Summoning"]
+    }
+  },
+  "mob_pools": {
+    "ocean": [
+      {
+        "name": "Naga Patrol",
+        "icon": "enemy",
+        "mode": 1,
+        "attitude": 1,
+        "speed": 0.4,
+        "enemy_group": "animal_naga_patrol",
+        "difficulty": "hard",
+        "weight": 2
+      },
+      {
+        "name": "Matsya Hunters",
+        "icon": "enemy_fast",
+        "mode": 2,
+        "attitude": 2,
+        "speed": 0.8,
+        "enemy_group": "animal_matsya_school",
+        "difficulty": "normal",
+        "aggression": 0.6,
+        "weight": 3
+      },
+      {
+        "name": "Karka Guardian",
+        "icon": "enemy_elite",
+        "mode": 0,
+        "attitude": 1,
+        "speed": 0.0,
+        "enemy_group": "animal_karka_pair",
+        "difficulty": "hard",
+        "weight": 2
+      },
+      {
+        "name": "Makara",
+        "icon": "enemy_elite",
+        "mode": 2,
+        "attitude": 2,
+        "speed": 0.5,
+        "enemy_group": "animal_makara_titan",
+        "difficulty": "hard",
+        "aggression": 0.8,
+        "weight": 1
+      },
+      {
+        "name": "Naga Sorcerer",
+        "icon": "enemy",
+        "mode": 1,
+        "attitude": 1,
+        "speed": 0.3,
+        "enemy_group": "animal_naga_sorcerer",
+        "difficulty": "hard",
+        "weight": 1
+      },
+      {
+        "name": "Pearl Merchant",
+        "icon": "merchant",
+        "mode": 2,
+        "attitude": 0,
+        "speed": 0.3,
+        "event_id": "animal_ocean_pearl_merchant",
+        "weight": 2,
+        "tag": "shop"
+      },
+      {
+        "name": "Wandering Naga",
+        "icon": "npc",
+        "mode": 2,
+        "attitude": 0,
+        "speed": 0.2,
+        "event_id": "animal_ocean_naga_court",
+        "weight": 3
+      }
+    ],
+    "forest": [
+      {
+        "name": "Rakshasa",
+        "icon": "enemy_fast",
+        "mode": 2,
+        "attitude": 2,
+        "speed": 0.9,
+        "enemy_group": "animal_rakshasa_lone",
+        "difficulty": "hard",
+        "aggression": 0.9,
+        "weight": 1
+      },
+      {
+        "name": "Shardula",
+        "icon": "enemy",
+        "mode": 0,
+        "attitude": 2,
+        "speed": 0.0,
+        "enemy_group": "animal_shardula_ambush",
+        "difficulty": "hard",
+        "aggression": 0.7,
+        "weight": 2
+      },
+      {
+        "name": "Varaha Sounder",
+        "icon": "enemy",
+        "mode": 2,
+        "attitude": 1,
+        "speed": 0.7,
+        "enemy_group": "animal_varaha_sounder",
+        "difficulty": "hard",
+        "weight": 2
+      },
+      {
+        "name": "Gana Pack",
+        "icon": "enemy",
+        "mode": 2,
+        "attitude": 1,
+        "speed": 0.6,
+        "enemy_group": "animal_gana_wolves",
+        "difficulty": "normal",
+        "weight": 3
+      },
+      {
+        "name": "Vanara Troop",
+        "icon": "enemy",
+        "mode": 2,
+        "attitude": 1,
+        "speed": 0.5,
+        "enemy_group": "animal_vanara_troop",
+        "difficulty": "normal",
+        "weight": 4
+      },
+      {
+        "name": "Shyena Pair",
+        "icon": "enemy_fast",
+        "mode": 2,
+        "attitude": 2,
+        "speed": 0.9,
+        "enemy_group": "animal_shyena_dive",
+        "difficulty": "hard",
+        "aggression": 0.8,
+        "weight": 1,
+        "tags": ["flying"]
+      },
+      {
+        "name": "Kapota Flock",
+        "icon": "npc",
+        "mode": 2,
+        "attitude": 0,
+        "speed": 0.6,
+        "event_id": "animal_forest_high_canopy_perch",
+        "weight": 3
+      },
+      {
+        "name": "Forest Healer",
+        "icon": "npc",
+        "mode": 2,
+        "attitude": 0,
+        "speed": 0.3,
+        "event_id": "animal_forest_sounder_matron",
+        "weight": 2
+      },
+      {
+        "name": "Forest Merchant",
+        "icon": "merchant",
+        "mode": 2,
+        "attitude": 0,
+        "speed": 0.4,
+        "event_id": "animal_forest_jungle_merchant",
+        "weight": 2,
+        "tag": "shop"
+      }
+    ],
+    "meadow": [
+      {
+        "name": "Yaksha Guardian",
+        "icon": "enemy_elite",
+        "mode": 0,
+        "attitude": 1,
+        "speed": 0.0,
+        "enemy_group": "animal_yaksha_patrol",
+        "difficulty": "hard",
+        "weight": 2
+      },
+      {
+        "name": "Dura Patrol",
+        "icon": "enemy",
+        "mode": 1,
+        "attitude": 1,
+        "speed": 0.4,
+        "enemy_group": "animal_dura_soldiers",
+        "difficulty": "normal",
+        "weight": 3
+      },
+      {
+        "name": "Khadga",
+        "icon": "enemy_elite",
+        "mode": 2,
+        "attitude": 2,
+        "speed": 0.8,
+        "enemy_group": "animal_khadga_lone",
+        "difficulty": "hard",
+        "aggression": 0.7,
+        "weight": 1
+      },
+      {
+        "name": "Bhramara Swarm",
+        "icon": "enemy",
+        "mode": 2,
+        "attitude": 1,
+        "speed": 0.7,
+        "enemy_group": "animal_bhramara_cloud",
+        "difficulty": "normal",
+        "weight": 3,
+        "tags": ["flying"]
+      },
+      {
+        "name": "Patanga Cloud",
+        "icon": "enemy",
+        "mode": 2,
+        "attitude": 1,
+        "speed": 0.5,
+        "enemy_group": "animal_patanga_flock",
+        "difficulty": "normal",
+        "weight": 2,
+        "tags": ["flying"]
+      },
+      {
+        "name": "Shyena Lord",
+        "icon": "enemy_elite",
+        "mode": 0,
+        "attitude": 2,
+        "speed": 0.0,
+        "enemy_group": "animal_shyena_lord",
+        "difficulty": "hard",
+        "aggression": 0.5,
+        "weight": 1,
+        "tags": ["flying"]
+      },
+      {
+        "name": "Uluka Omen",
+        "icon": "enemy",
+        "mode": 2,
+        "attitude": 1,
+        "speed": 0.4,
+        "enemy_group": "animal_uluka_watch",
+        "difficulty": "hard",
+        "weight": 1,
+        "tags": ["flying"]
+      },
+      {
+        "name": "Kapota Messenger",
+        "icon": "npc",
+        "mode": 2,
+        "attitude": 0,
+        "speed": 0.7,
+        "event_id": "animal_meadow_patanga_ascetic",
+        "weight": 3
+      },
+      {
+        "name": "Plains Merchant",
+        "icon": "merchant",
+        "mode": 2,
+        "attitude": 0,
+        "speed": 0.4,
+        "event_id": "animal_meadow_merchant",
+        "weight": 2,
+        "tag": "shop"
+      }
+    ]
+  },
+  "density": {
+    "events_per_zone": [40, 64],
+    "pickups_per_zone": [220, 360],
+    "mobs_per_zone": [120, 180],
+    "guaranteed_shops": [1, 2],
+    "guaranteed_rest": [1, 2],
+    "guaranteed_guilds": [1, 1],
+    "guaranteed_simples": [
+      {"tier": 1, "count": 2},
+      {"tier": 2, "count": 1}
+    ],
+    "min_spacing": 3
+  }
+}

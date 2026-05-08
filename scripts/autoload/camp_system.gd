@@ -25,7 +25,7 @@ const ACTIVITIES: Array = [
 		"min_tier": 3,
 		"costs": {},
 		"description": "Karma purification practice — auto-picks best available ritual tier",
-		"effect_desc": "~20–100 karma purified; Yoga 5+ gets quirk purge chance",
+		"effect_desc": "~20–100 karma purified; Yoga 5+ gets trait purge chance",
 	},
 	{
 		"id": "mantra_recitation",
@@ -422,29 +422,29 @@ func _exec_sadhana(performer: Dictionary, party: Array) -> Dictionary:
 	for char in party:
 		PsychologySystem.decay_toward_baseline(char, 150.0)
 
-	# Quirk purge: Yoga 5+ tries yoga-purgeable quirks on the best yoga char.
+	# Trait purge: Yoga 5+ tries yoga-purgeable traits on the best yoga char.
 	# Mandala (tier 3) lowers purge difficulty by 2.
 	var purge_msg := ""
 	var diff_mod  := 2 if ritual_tier == 3 else 0
 	if yoga_level >= 5:
 		var target_char: Dictionary = _highest_skill_char(party, "yoga")
 		if not target_char.is_empty():
-			for quirk_id in target_char.get("quirks", []).duplicate():
-				if QuirkSystem.try_purge(target_char, quirk_id, "yoga", diff_mod):
-					var qname: String = QuirkSystem.get_quirk_name(quirk_id)
-					purge_msg = " %s has shed the '%s' trait." % [target_char.get("name", "Performer"), qname]
+			for trait_id in target_char.get("traits", []).duplicate():
+				if TraitSystem.try_purge(target_char, trait_id, "yoga", diff_mod):
+					var tname: String = TraitSystem.get_trait_name(trait_id)
+					purge_msg = " %s has shed the '%s' trait." % [target_char.get("name", "Performer"), tname]
 					break
-	# Ritual-only quirks (if no yoga purge happened): best ritual char
+	# Ritual-only traits (if no yoga purge happened): best ritual char
 	if purge_msg.is_empty() and ritual_tier >= 1:
 		var target_char: Dictionary = _highest_skill_char(party, "ritual")
 		if not target_char.is_empty():
-			for quirk_id in target_char.get("quirks", []).duplicate():
-				var q := QuirkSystem.get_quirk(quirk_id)
-				var purgeable: Array = q.get("purgeable_by", [])
+			for trait_id in target_char.get("traits", []).duplicate():
+				var t := TraitSystem.get_trait(trait_id)
+				var purgeable: Array = t.get("purgeable_by", [])
 				if "ritual" in purgeable and not "yoga" in purgeable:
-					if QuirkSystem.try_purge(target_char, quirk_id, "ritual", diff_mod):
-						var qname: String = QuirkSystem.get_quirk_name(quirk_id)
-						purge_msg = " %s shed '%s' through ritual." % [target_char.get("name", "Performer"), qname]
+					if TraitSystem.try_purge(target_char, trait_id, "ritual", diff_mod):
+						var tname: String = TraitSystem.get_trait_name(trait_id)
+						purge_msg = " %s shed '%s' through ritual." % [target_char.get("name", "Performer"), tname]
 						break
 
 	var tier_names := ["Yoga Practice", "Smoke Offering", "Torma Offering", "Mandala Offering"]

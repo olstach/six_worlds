@@ -269,10 +269,11 @@ func create_choice_button(choice: Dictionary, availability: Dictionary) -> void:
 	# Disable if requirements not met
 	button.disabled = not availability.available
 	
-	# Connect to choice handler
+	# Connect to choice handler — capture passing_character so make_choice can target them
+	var passing_char = availability.get("passing_character")
 	button.pressed.connect(func():
 		AudioManager.play("ui_click")
-		_on_choice_selected(choice))
+		_on_choice_selected(choice, passing_char))
 	
 	# Add icon based on type
 	match choice.type:
@@ -283,11 +284,9 @@ func create_choice_button(choice: Dictionary, availability: Dictionary) -> void:
 	
 	choices_container.add_child(button)
 
-func _on_choice_selected(choice: Dictionary) -> void:
+func _on_choice_selected(choice: Dictionary, passing_character = null) -> void:
 	print("Player selected: ", choice.text)
-	
-	# Execute the choice
-	current_outcome = EventManager.make_choice(choice)
+	current_outcome = EventManager.make_choice(choice, passing_character)
 
 func _on_event_completed(outcome: Dictionary) -> void:
 	display_outcome(outcome)

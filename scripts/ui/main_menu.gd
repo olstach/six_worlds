@@ -13,7 +13,7 @@ signal overworld_spell_cast(spell_name: String, detail: String)
 # Use unique names (%) for nodes marked with unique_name_in_owner
 @onready var tab_container: TabContainer = $MarginContainer/VBoxContainer/TabContainer
 @onready var name_value: Label = %NameValue
-@onready var race_value: Label = %RaceValue
+@onready var birth_value: Label = %BirthValue
 @onready var background_value: Label = %BackgroundValue
 @onready var xp_value: Label = %XPValue
 @onready var add_xp_button: Button = %AddXPButton
@@ -359,11 +359,11 @@ func _update_header(character: Dictionary) -> void:
 		else:
 			emotion_label.visible = false
 
-	var race_id = character.get("race", "")
-	var race_data = CharacterSystem.get_race_data(race_id)
-	race_value.text = race_data.get("name", race_id.capitalize().replace("_", " "))
-	race_value.mouse_filter = Control.MOUSE_FILTER_STOP
-	race_value.tooltip_text = _build_race_tooltip(race_id)
+	var birth_id = character.get("birth", "")
+	var birth_data = CharacterSystem.get_birth_data(birth_id)
+	birth_value.text = birth_data.get("name", birth_id.capitalize().replace("_", " "))
+	birth_value.mouse_filter = Control.MOUSE_FILTER_STOP
+	birth_value.tooltip_text = _build_birth_tooltip(birth_id)
 
 	var bg_id = character.get("background", "")
 	var bg_data = CharacterSystem.get_background_data(bg_id)
@@ -379,8 +379,8 @@ func _update_header(character: Dictionary) -> void:
 		xp_value.text = str(character.get("xp", 0))
 
 
-func _build_race_tooltip(race_id: String) -> String:
-	var data = CharacterSystem.get_race_data(race_id)
+func _build_birth_tooltip(birth_id: String) -> String:
+	var data = CharacterSystem.get_birth_data(birth_id)
 	if data.is_empty():
 		return ""
 	var lines: Array[String] = []
@@ -839,47 +839,36 @@ func _update_quirks(character: Dictionary) -> void:
 	for child in quirks_container.get_children():
 		child.queue_free()
 
-	var char_quirks: Array = character.get("quirks", [])
-	if char_quirks.is_empty():
+	var char_traits: Array = character.get("traits", [])
+	if char_traits.is_empty():
 		var empty_label := Label.new()
-		empty_label.text = "No quirks."
+		empty_label.text = "No traits."
 		empty_label.add_theme_font_size_override("font_size", 12)
 		empty_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
 		quirks_container.add_child(empty_label)
 		return
 
-	# Category display order and colours
-	var category_colors := {
-		"physical":    Color(0.85, 0.75, 0.55),
-		"personality": Color(0.7,  0.85, 1.0),
-		"behavioral":  Color(0.65, 0.9,  0.65),
-		"acquired":    Color(0.9,  0.6,  0.6),
-	}
-
-	for quirk_id in char_quirks:
-		var q := QuirkSystem.get_quirk(quirk_id)
-		if q.is_empty():
+	for trait_id in char_traits:
+		var t := TraitSystem.get_trait(trait_id)
+		if t.is_empty():
 			continue
 
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 6)
 
-		# Coloured name label
 		var name_label := Label.new()
-		name_label.text = q.get("name", quirk_id)
+		name_label.text = t.get("name", trait_id)
 		name_label.add_theme_font_size_override("font_size", 13)
-		var cat: String = q.get("category", "acquired")
-		name_label.add_theme_color_override("font_color", category_colors.get(cat, Color.WHITE))
 		name_label.custom_minimum_size.x = 140
 		row.add_child(name_label)
 
 		# Short mechanical summary (stat changes, pressure offsets)
 		var effects: Array[String] = []
-		for attr in q.get("stat_modifiers", {}):
-			var val: int = int(q["stat_modifiers"][attr])
+		for attr in t.get("stat_modifiers", {}):
+			var val: int = int(t["stat_modifiers"][attr])
 			effects.append(("%+d " % val) + attr.capitalize())
-		for skill in q.get("skill_modifiers", {}):
-			var val: int = int(q["skill_modifiers"][skill])
+		for skill in t.get("skill_modifiers", {}):
+			var val: int = int(t["skill_modifiers"][skill])
 			effects.append(("%+d " % val) + skill.replace("_", " ").capitalize())
 		var effect_label := Label.new()
 		effect_label.text = "  ".join(effects) if not effects.is_empty() else ""
@@ -890,13 +879,13 @@ func _update_quirks(character: Dictionary) -> void:
 
 		# Tooltip with full description and purge info
 		var purge_info := ""
-		var purgeable_by: Array = q.get("purgeable_by", [])
+		var purgeable_by: Array = t.get("purgeable_by", [])
 		if not purgeable_by.is_empty():
 			var skill_names := []
 			for s in purgeable_by:
-				skill_names.append(s.capitalize() + " " + str(q.get("purge_difficulty", 1)))
+				skill_names.append(s.capitalize() + " " + str(t.get("purge_difficulty", 1)))
 			purge_info = "\nCan be shed through: " + " / ".join(skill_names)
-		row.tooltip_text = q.get("description", "") + purge_info
+		row.tooltip_text = t.get("description", "") + purge_info
 		row.mouse_filter = Control.MOUSE_FILTER_STOP
 
 		quirks_container.add_child(row)

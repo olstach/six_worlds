@@ -367,21 +367,21 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	# then biological devils, then elementals (no biology).
 	var tags = archetype.get("tags", [])
 	var is_boss = "boss" in archetype.get("roles", [])
-	var race: String
+	var enemy_type: String
 	if "imp" in tags:
-		race = "imp"
+		enemy_type = "imp"
 	elif "undead" in tags and "incorporeal" in tags:
-		race = "shade"
+		enemy_type = "shade"
 	elif "biological" in tags or "devil" in tags:
-		race = "devil"
+		enemy_type = "devil"
 	else:
-		race = "elemental"
+		enemy_type = "elemental"
 
 	var enemy_name: String
 	if is_boss or name_parts.is_empty():
 		enemy_name = archetype.get("name", "Enemy")
 	else:
-		enemy_name = generate_enemy_name(realm, tags, region, race)
+		enemy_name = generate_enemy_name(realm, tags, region, enemy_type)
 
 	# For bare-handed enemies, name the claws after the enemy.
 	# Generated weapons already have proper names (e.g. "Fine Obsidian Sword") — keep them.
@@ -530,16 +530,20 @@ func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dic
 				continue
 			derived["accuracy"] += bonus.get("attack", 0)
 			derived["damage"]   += bonus.get("damage", 0)
+			derived["damage"]   += bonus.get("strength_weapon_damage", 0)
 			derived["crit_chance"] += bonus.get("crit_chance", 0.0)
-			derived["armor"]       += bonus.get("armor_bonus", 0)
+			derived["armor"]       += bonus.get("armor", 0)
 			derived["armor_pierce"] += bonus.get("armor_penetration", 0)
+			derived["max_hp"] += int(bonus.get("max_hp", 0))
+			derived["current_hp"] += int(bonus.get("max_hp", 0))
 			if bonus.has("spellpower"):
 				derived["spellpower"] += int(bonus.get("spellpower", 0))
-			if bonus.has("dodge_bonus"):
-				derived["dodge"] += int(bonus.get("dodge_bonus", 0))
-			if bonus.has("max_stamina"):
-				derived["max_stamina"]   += int(bonus.get("max_stamina", 0))
-				derived["current_stamina"] += int(bonus.get("max_stamina", 0))
+			derived["mana_cost_reduction"] = derived.get("mana_cost_reduction", 0) + int(bonus.get("mana_cost", 0))
+			derived["dodge"] += int(bonus.get("dodge", 0))
+			var stamina_bonus := int(bonus.get("stamina", 0))
+			derived["max_stamina"]   += stamina_bonus
+			derived["current_stamina"] += stamina_bonus
+			derived["initiative"] += int(bonus.get("initiative", 0))
 			if bonus.has("initiative_bonus"):
 				derived["initiative"] += int(bonus.get("initiative_bonus", 0))
 

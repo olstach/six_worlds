@@ -19,8 +19,8 @@ signal perk_selection_requested(character_data: Dictionary, perks: Array)
 var party: Array[Dictionary] = []
 var max_party_size: int = 8
 
-# Race and background data loaded from JSON
-var _race_data: Dictionary = {}
+# Birth and background data loaded from JSON
+var _birth_data: Dictionary = {}
 var _background_data: Dictionary = {}
 
 # Spell database for random starting spell selection
@@ -73,7 +73,7 @@ const NEGATIVE_SKILL_PENALTIES: Dictionary = {
 # Base character template
 const BASE_CHARACTER: Dictionary = {
 	"name": "Unnamed",
-	"race": "human",
+	"birth": "human",
 	"background": "wanderer",
 	"xp": 50,  # Starting XP — enough to pick up two skills at level 2 or dabble in several
 	"xp_earned": 50,  # Lifetime total XP earned (never decreases)
@@ -128,9 +128,8 @@ const BASE_CHARACTER: Dictionary = {
 	# Format: {"physical": 50, "fire": 25, ...}  values are percentages
 	"base_resistances": {},
 
-	# Named racial traits (e.g. "Skeletal", "Incorporeal"). Purely informational after
-	# apply_race_modifiers() has translated them into base_resistances and other fields.
-	"racial_traits": [],
+	# Character traits — list of trait IDs (racial, habitat, acquired, etc.)
+	"traits": [],
 	
 	# Elemental affinities (built up through skill usage)
 	"elements": {
@@ -175,9 +174,11 @@ const BASE_CHARACTER: Dictionary = {
 	# Known spells (spell IDs the character has learned)
 	"known_spells": [],
 
-	# Equipment slots (12-slot system with weapon sets)
+	# Equipment slots (14-slot system with weapon sets; face/back universal from body system)
 	"equipment": {
 		"head": "",
+		"face": "",
+		"back": "",
 		"chest": "",
 		"hand_l": "",
 		"hand_r": "",
@@ -195,10 +196,10 @@ const BASE_CHARACTER: Dictionary = {
 	# Active weapon set (1 or 2)
 	"active_weapon_set": 1,
 
-	# Character quirks — list of quirk IDs (see quirks.json / QuirkSystem)
-	# Inborn quirks are set at character creation or in companion definitions.
-	# Acquired quirks are added/removed during the run via QuirkSystem.add_quirk/remove_quirk.
-	"quirks": [],
+	# Character traits — list of trait IDs (see traits.json / TraitSystem)
+	# Racial traits are applied automatically from race starting_traits at creation.
+	# Acquired traits are added/removed during the run via TraitSystem.add_trait/remove_trait.
+	"traits": [],
 
 	# Persistent wounds and diseases (survive between combats; healed by Medicine or facilities)
 	# Each entry: {id, body_location, rests_untreated, source}
@@ -218,14 +219,14 @@ const BASE_CHARACTER: Dictionary = {
 }
 
 func _ready() -> void:
-	_load_race_data()
+	_load_birth_data()
 	_load_spell_database()
-	print("CharacterSystem initialized with ", _race_data.size(), " races, ",
+	print("CharacterSystem initialized with ", _birth_data.size(), " births, ",
 		_background_data.size(), " backgrounds, ", _spell_database.size(), " spells")
 
 
-## Load race and background definitions from JSON
-func _load_race_data() -> void:
+## Load birth and background definitions from JSON
+func _load_birth_data() -> void:
 	var file_path = "res://resources/data/races.json"
 	if not FileAccess.file_exists(file_path):
 		push_warning("CharacterSystem: races.json not found")
@@ -245,7 +246,7 @@ func _load_race_data() -> void:
 		return
 
 	var data = json.get_data()
-	_race_data = data.get("races", {})
+	_birth_data = data.get("races", {})
 	_background_data = data.get("backgrounds", {})
 
 
@@ -275,6 +276,8 @@ func _pick_random_spell(schools: Array, level: int, already_known: Array) -> Str
 		if spell_id in already_known:
 			continue
 		var spell = _spell_database[spell_id]
+		if spell.get("enemy_only", false):
+			continue
 		if int(spell.get("level", 0)) != level:
 			continue
 		var spell_schools = spell.get("schools", [])
@@ -316,6 +319,8 @@ func pick_random_spell_for_party(school: String, level: int) -> String:
 		if spell_id in known_by_all:
 			continue
 		var spell = _spell_database[spell_id]
+		if spell.get("enemy_only", false):
+			continue
 		if int(spell.get("level", 0)) != level:
 			continue
 		# Domain spells are only available through domain-specific trainers
@@ -339,9 +344,9 @@ func pick_random_spell_for_party(school: String, level: int) -> String:
 	return candidates[0]
 
 
-## Get race data dictionary for a given race ID
-func get_race_data(race_id: String) -> Dictionary:
-	return _race_data.get(race_id, {})
+## Get birth data dictionary for a given birth ID
+func get_birth_data(birth_id: String) -> Dictionary:
+	return _birth_data.get(birth_id, {})
 
 
 ## Get background data dictionary for a given background ID
@@ -349,14 +354,14 @@ func get_background_data(background_id: String) -> Dictionary:
 	return _background_data.get(background_id, {})
 
 ## Create the player character
-func create_player_character(char_name: String, race: String, background: String) -> void:
+func create_player_character(char_name: String, birth: String, background: String) -> void:
 	var character = BASE_CHARACTER.duplicate(true)
 	character.name = char_name
-	character.race = race
+	character.birth = birth
 	character.background = background
-	
-	# Apply race modifiers (will expand with race data)
-	apply_race_modifiers(character, race)
+
+	# Apply birth modifiers
+	apply_birth_modifiers(character, birth)
 	
 	# Apply background starting skills (will expand with background data)
 	apply_background_skills(character, background)
@@ -367,20 +372,20 @@ func create_player_character(char_name: String, race: String, background: String
 	# Calculate derived stats (equipment bonuses are now included)
 	update_derived_stats(character)
 
-	# Assign 1 random inborn physical quirk + 1 random inborn personality quirk.
-	# add_quirk() applies pressure baseline offsets and re-derives stats internally.
-	if QuirkSystem:
-		var physical: Array[String] = QuirkSystem.get_inborn_quirks("physical")
-		var personality: Array[String] = QuirkSystem.get_inborn_quirks("personality")
+	# Assign 1 random inborn physical trait + 1 random inborn personality trait.
+	# add_trait() applies pressure baseline offsets and re-derives stats internally.
+	if TraitSystem:
+		var physical: Array[String] = TraitSystem.get_inborn_traits("physical")
+		var personality: Array[String] = TraitSystem.get_inborn_traits("personality")
 		physical.shuffle()
 		personality.shuffle()
 		if not physical.is_empty():
-			QuirkSystem.add_quirk(character, physical[0])
+			TraitSystem.add_trait(character, physical[0])
 		if not personality.is_empty():
-			QuirkSystem.add_quirk(character, personality[0])
+			TraitSystem.add_trait(character, personality[0])
 
 	# Apply racial traits that have side effects beyond resistances/stats
-	if "extra_starting_gold" in character.get("racial_traits", []):
+	if "extra_starting_gold" in character.get("traits", []):
 		if GameState:
 			GameState.add_gold(50)
 
@@ -396,7 +401,7 @@ func create_player_character(char_name: String, race: String, background: String
 ## Start a new life after reincarnation.
 ## Preserves persistent data (affinities, upgrades) from the old character.
 ## Clears party, inventory, gold and creates a fresh character.
-func start_new_life(char_name: String, race: String, background: String) -> void:
+func start_new_life(char_name: String, birth: String, background: String) -> void:
 	# Save persistent data from old player before wiping
 	var old_player = get_player()
 	var old_affinities: Array = []
@@ -410,7 +415,7 @@ func start_new_life(char_name: String, race: String, background: String) -> void
 	ItemSystem.clear_inventory()
 
 	# Create the new character
-	create_player_character(char_name, race, background)
+	create_player_character(char_name, birth, background)
 
 	# Restore persistent progression
 	var new_player = get_player()
@@ -419,9 +424,9 @@ func start_new_life(char_name: String, race: String, background: String) -> void
 
 
 
-## Apply racial attribute modifiers from races.json data
-func apply_race_modifiers(character: Dictionary, race: String) -> void:
-	var data = get_race_data(race)
+## Apply birth attribute modifiers from races.json data
+func apply_birth_modifiers(character: Dictionary, birth: String) -> void:
+	var data = get_birth_data(birth)
 	if data.is_empty():
 		return
 
@@ -476,10 +481,16 @@ func apply_race_modifiers(character: Dictionary, race: String) -> void:
 			if spell_id != "":
 				learn_spell(character, spell_id)
 
-	# Store racial trait names on the character (for UI display and trait-specific hooks)
-	var traits: Array = data.get("racial_traits", [])
-	if not traits.is_empty():
-		character["racial_traits"] = traits.duplicate()
+	# Set body plan species from birth data (overrides BASE_CHARACTER "human" default)
+	var body_species: String = data.get("body_plan_species", "")
+	if body_species != "":
+		character["body_plan"]["species"] = body_species
+
+	# Apply starting traits from race (racial identity traits, habitat, etc.)
+	var race_traits: Array = data.get("starting_traits", [])
+	for trait_id in race_traits:
+		if TraitSystem:
+			TraitSystem.add_trait(character, trait_id)
 
 	# Copy emotional baseline from race data
 	if "emotional_baseline" in data:
@@ -543,7 +554,7 @@ func apply_background_equipment(character: Dictionary, background: String) -> vo
 	# better_starting_weapon racial trait guarantees the upgrade if one is defined.
 	var main_weapon: String = equip_data.get("base_weapon", "")
 	var upgrade_id: String = equip_data.get("weapon_upgrade", "")
-	var has_better_weapon_trait: bool = "better_starting_weapon" in character.get("racial_traits", [])
+	var has_better_weapon_trait: bool = "better_starting_weapon" in character.get("traits", [])
 	var upgrade_chance: float = 1.0 if has_better_weapon_trait else float(equip_data.get("weapon_upgrade_chance", 0.0))
 	if upgrade_id != "" and randf() < upgrade_chance:
 		main_weapon = upgrade_id
@@ -617,6 +628,10 @@ func _find_slot_for_item(character: Dictionary, item_id: String) -> String:
 			if eq.get("trinket1", "") == "": return "trinket1"
 			if eq.get("trinket2", "") == "": return "trinket2"
 			return ""
+		"cape", "cloak", "mantle", "backpack":
+			return "back" if eq.get("back", "") == "" else ""
+		"eyewear", "face_cloth", "mask", "veil":
+			return "face" if eq.get("face", "") == "" else ""
 	return ""
 
 
@@ -792,29 +807,29 @@ func update_derived_stats(character: Dictionary) -> void:
 	if PerkSystem:
 		affinity_bonus = PerkSystem.get_affinity_bonuses(character)
 
-	# Collect quirk attribute bonuses
-	var quirk_attr_bonus: Dictionary = {}
-	if QuirkSystem:
-		quirk_attr_bonus = QuirkSystem.get_attribute_bonus(character)
+	# Collect trait attribute bonuses
+	var trait_attr_bonus: Dictionary = {}
+	if TraitSystem:
+		trait_attr_bonus = TraitSystem.get_attribute_bonus(character)
 
-	# Apply equipment + quirk attribute bonuses to get effective attributes
+	# Apply equipment + trait attribute bonuses to get effective attributes
 	var effective_attrs = {}
 	for attr_key in attrs:
-		effective_attrs[attr_key] = attrs[attr_key] + equip_bonus.get(attr_key, 0) + quirk_attr_bonus.get(attr_key, 0)
+		effective_attrs[attr_key] = attrs[attr_key] + equip_bonus.get(attr_key, 0) + trait_attr_bonus.get(attr_key, 0)
 
-	# Refresh quirk skill bonuses (clear old pass first, then re-add from current quirks)
+	# Refresh trait skill bonuses (clear old pass first, then re-add from current traits)
 	if not "skill_bonuses" in character:
 		character["skill_bonuses"] = {}
 	for skill_id in character["skill_bonuses"]:
-		character["skill_bonuses"][skill_id].erase("quirks")
-	if QuirkSystem:
-		for quirk_id in character.get("quirks", []):
-			var q := QuirkSystem.get_quirk(quirk_id)
-			for skill_id in q.get("skill_modifiers", {}):
+		character["skill_bonuses"][skill_id].erase("traits")
+	if TraitSystem:
+		for trait_id in character.get("traits", []):
+			var t := TraitSystem.get_trait(trait_id)
+			for skill_id in t.get("skill_modifiers", {}):
 				if not skill_id in character["skill_bonuses"]:
 					character["skill_bonuses"][skill_id] = {}
-				var prev: int = character["skill_bonuses"][skill_id].get("quirks", 0)
-				character["skill_bonuses"][skill_id]["quirks"] = prev + int(q["skill_modifiers"][skill_id])
+				var prev: int = character["skill_bonuses"][skill_id].get("traits", 0)
+				character["skill_bonuses"][skill_id]["traits"] = prev + int(t["skill_modifiers"][skill_id])
 
 	# HP from Constitution + equipment + earth affinity
 	var old_max_hp = derived.get("max_hp", 100)
@@ -850,12 +865,12 @@ func update_derived_stats(character: Dictionary) -> void:
 	# Dodge from Finesse + equipment + water affinity
 	derived.dodge = effective_attrs.finesse + equip_bonus.get("dodge", 0) + affinity_bonus.get("dodge", 0)
 
-	# Extra leg pairs: each pair beyond the first gives +1 movement, +5 dodge, +20 weight_limit
+	# Extra leg pairs: each pair beyond the first gives +2 movement, +10 dodge, +20 weight_limit
 	if BodySystem:
 		var extra_pairs: int = BodySystem.get_extra_leg_pairs(character)
 		if extra_pairs > 0:
-			derived.movement += extra_pairs
-			derived.dodge += extra_pairs * 5
+			derived.movement += extra_pairs * 2
+			derived.dodge += extra_pairs * 10
 			derived.weight_limit += extra_pairs * 20
 
 	# Spellpower from Focus + equipment + space affinity
@@ -864,8 +879,8 @@ func update_derived_stats(character: Dictionary) -> void:
 	# Crit chance from Awareness + Finesse + Luck + equipment + fire affinity
 	derived.crit_chance = 5 + int((effective_attrs.awareness + effective_attrs.finesse + effective_attrs.luck) / 6) + equip_bonus.get("crit_chance", 0) + affinity_bonus.get("crit_chance", 0)
 
-	# Weight limit from Strength
-	derived.weight_limit = 100 + (effective_attrs.strength - 10) * 10
+	# Weight limit from Strength + equipment (e.g. backpack)
+	derived.weight_limit = 100 + (effective_attrs.strength - 10) * 10 + equip_bonus.get("weight_limit", 0)
 
 	# Combat stats from equipment + earth affinity
 	derived.damage = equip_bonus.get("damage", 0)
@@ -894,22 +909,23 @@ func update_derived_stats(character: Dictionary) -> void:
 			# Combat skill bonuses
 			derived["accuracy"] = derived.get("accuracy", 0) + bonus.get("attack", 0)
 			derived["damage"] = derived.get("damage", 0) + bonus.get("damage", 0)
+			derived["damage"] = derived.get("damage", 0) + bonus.get("strength_weapon_damage", 0)
 			derived["crit_chance"] = derived.get("crit_chance", 0.0) + bonus.get("crit_chance", 0.0)
-			derived["armor"] = derived.get("armor", 0) + bonus.get("armor_bonus", 0)
+			derived["armor"] = derived.get("armor", 0) + bonus.get("armor", 0)
 			derived["armor_pierce"] = derived.get("armor_pierce", 0) + bonus.get("armor_penetration", 0)
-			# Armor skill: damage reduction
+			# Armor skill: HP and damage reduction
+			derived["max_hp"] = derived.get("max_hp", 100) + int(bonus.get("max_hp", 0))
 			if bonus.has("damage_reduction_pct"):
 				derived["damage_reduction_pct"] = derived.get("damage_reduction_pct", 0.0) + bonus.get("damage_reduction_pct", 0.0)
 			# Magic school bonuses
 			if bonus.has("spellpower"):
 				derived["spellpower"] = derived.get("spellpower", 0) + int(bonus.get("spellpower", 0))
-			# General skill bonuses that directly affect derived stats
-			if bonus.has("dodge_bonus"):
-				derived["dodge"] = derived.get("dodge", 0) + int(bonus.get("dodge_bonus", 0))
-			if bonus.has("max_stamina"):
-				derived["max_stamina"] = derived.get("max_stamina", 50) + int(bonus.get("max_stamina", 0))
-			if bonus.has("initiative_bonus"):
-				derived["initiative"] = derived.get("initiative", 0) + int(bonus.get("initiative_bonus", 0))
+			# Mana cost reduction (negative values in data = cost reduction per cast)
+			derived["mana_cost_reduction"] = derived.get("mana_cost_reduction", 0) + int(bonus.get("mana_cost", 0))
+			# General skill bonuses — key names match data exactly
+			derived["dodge"] = derived.get("dodge", 0) + int(bonus.get("dodge", 0))
+			derived["max_stamina"] = derived.get("max_stamina", 50) + int(bonus.get("stamina", 0))
+			derived["initiative"] = derived.get("initiative", 0) + int(bonus.get("initiative", 0))
 
 	# Apply penalties for negative skill levels (quirks/debuffs pushing skills below 0).
 	for skill_id in NEGATIVE_SKILL_PENALTIES:

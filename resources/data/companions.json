@@ -3,7 +3,7 @@
     "karnak": {
       "id": "karnak",
       "name": "Brother Karnak",
-      "race": "red_devil",
+      "birth": "red_devil",
       "background": "guard",
       "flavor_text": "A red devil cast out of the Infernal Guard for showing mercy to a damned soul. He carries the contradiction quietly.",
       "portrait": "",
@@ -30,19 +30,14 @@
       },
       "fixed_items": [
         "health_potion"
-      ],
-      "quirks": [
-        "devout",
-        "brave"
-      ],
-      "realm": "hell"
+      ]
     },
     "serji": {
       "id": "serji",
       "name": "Serji",
-      "race": "red_devil",
+      "birth": "red_devil",
       "background": "former_soldier",
-      "flavor_text": "The biggest man in the hot hell gym \u2014 and the one who walked out. Not because he won, but because winning there stopped meaning anything.",
+      "flavor_text": "The biggest man in the hot hell gym — and the one who walked out. Not because he won, but because winning there stopped meaning anything.",
       "portrait": "",
       "recruitment_cost": 650,
       "build_weights": {
@@ -65,17 +60,12 @@
       "starting_equipment": {
         "chest": "leather_vest"
       },
-      "fixed_items": [],
-      "quirks": [
-        "war_hardened",
-        "composed"
-      ],
-      "realm": "hell"
+      "fixed_items": []
     },
     "red_peony": {
       "id": "red_peony",
       "name": "Red Peony",
-      "race": "red_devil",
+      "birth": "red_devil",
       "background": "former_soldier",
       "flavor_text": "She carries a two-handed club the size of a small tree and moves like she knows exactly how much space she takes up. A lot.",
       "portrait": "",
@@ -103,17 +93,12 @@
         },
         "chest": "chainmail"
       },
-      "fixed_items": [],
-      "quirks": [
-        "strong",
-        "hot_tempered"
-      ],
-      "realm": "hell"
+      "fixed_items": []
     },
     "raktamatta": {
       "id": "raktamatta",
       "name": "Raktamatta",
-      "race": "red_devil",
+      "birth": "red_devil",
       "background": "farmer",
       "flavor_text": "A law-abiding butcher who followed every regulation, filed every permit, and enjoyed his work with a thoroughness that made inspectors nervous.",
       "portrait": "",
@@ -141,17 +126,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": [],
-      "quirks": [
-        "fastidious",
-        "stubborn"
-      ],
-      "realm": "hell"
+      "fixed_items": []
     },
     "jawbreaker": {
       "id": "jawbreaker",
       "name": "Jawbreaker",
-      "race": "red_devil",
+      "birth": "red_devil",
       "background": "raider",
       "flavor_text": "Fast, reckless, and deeply committed to the principle that the best defence is a fractured orbital bone. Also picks pockets while they're down.",
       "portrait": "",
@@ -179,19 +159,14 @@
           "off": ""
         }
       },
-      "fixed_items": [],
-      "quirks": [
-        "quick",
-        "gambler"
-      ],
-      "realm": "hell"
+      "fixed_items": []
     },
     "tejasimha": {
       "id": "tejasimha",
       "name": "Tejasimha",
-      "race": "red_devil",
+      "birth": "red_devil",
       "background": "raider",
-      "flavor_text": "First matches, then houses, then whole districts. He died laughing in a fire he started \u2014 hearty, genuine laughter, right to the end.",
+      "flavor_text": "First matches, then houses, then whole districts. He died laughing in a fire he started — hearty, genuine laughter, right to the end.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
@@ -222,17 +197,12 @@
       "fixed_items": [
         "fire_charm_middling",
         "plain_copper_dorje"
-      ],
-      "quirks": [
-        "curious",
-        "vain"
-      ],
-      "realm": "hell"
+      ]
     },
     "water_lily": {
       "id": "water_lily",
       "name": "Water Lily",
-      "race": "blue_devil",
+      "birth": "blue_devil",
       "background": "farmer",
       "flavor_text": "A village girl drowned as punishment for being found in bed with another girl. She has been very quiet ever since, but her stillness is not grief.",
       "portrait": "",
@@ -265,17 +235,12 @@
       },
       "fixed_items": [
         "water_charm_middling"
-      ],
-      "quirks": [
-        "composed",
-        "brave"
-      ],
-      "realm": "hell"
+      ]
     },
     "dvijihva": {
       "id": "dvijihva",
       "name": "Dvijihva",
-      "race": "blue_devil",
+      "birth": "blue_devil",
       "background": "scholar",
       "flavor_text": "A sorcerer for hire who worked for two rival clients simultaneously, studying both thoroughly. He was killed when they compared notes. He considers this an occupational hazard.",
       "portrait": "",
@@ -306,17 +271,12 @@
       },
       "fixed_items": [
         "enchantment_charm_common"
-      ],
-      "quirks": [
-        "greedy",
-        "stubborn"
-      ],
-      "realm": "hell"
+      ]
     },
     "yaga_mataji": {
       "id": "yaga_mataji",
       "name": "Yaga Mataji",
-      "race": "blue_devil",
+      "birth": "blue_devil",
       "background": "merchant",
       "flavor_text": "An old innkeeper who poisoned guests she found sinful. Her criteria were specific, her dosing was precise, and she kept excellent records.",
       "portrait": "",
@@ -348,19 +308,14 @@
       "fixed_items": [
         "health_potion",
         "black_charm_common"
-      ],
-      "quirks": [
-        "fastidious",
-        "suspicious"
-      ],
-      "realm": "hell"
+      ]
     },
     "niyamendra": {
       "id": "niyamendra",
       "name": "Niyamendra",
-      "race": "blue_devil",
+      "birth": "blue_devil",
       "background": "noble",
-      "flavor_text": "Court bureaucrat of a petty king, who found his true calling in the invention of regulations. He can freeze any ordinary process in place \u2014 paperwork is eternal.",
+      "flavor_text": "Court bureaucrat of a petty king, who found his true calling in the invention of regulations. He can freeze any ordinary process in place — paperwork is eternal.",
       "portrait": "",
       "recruitment_cost": 600,
       "build_weights": {
@@ -389,17 +344,12 @@
       },
       "fixed_items": [
         "water_charm_common"
-      ],
-      "quirks": [
-        "fastidious",
-        "patient"
-      ],
-      "realm": "hell"
+      ]
     },
     "leraya": {
       "id": "leraya",
       "name": "Leraya",
-      "race": "green_devil",
+      "birth": "green_devil",
       "background": "hunter",
       "flavor_text": "A huntsman who grew bored with animals and started tracking people instead. The challenge was the point. He is still tracking.",
       "portrait": "",
@@ -428,17 +378,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": [],
-      "quirks": [
-        "curious",
-        "stubborn"
-      ],
-      "realm": "hell"
+      "fixed_items": []
     },
     "samvibrahmi": {
       "id": "samvibrahmi",
       "name": "Samvibrahmi",
-      "race": "green_devil",
+      "birth": "green_devil",
       "background": "noble",
       "flavor_text": "Driven by constant suspicion of assassination, he prepared obsessively for every conceivable threat. He was ultimately killed by a cabbage cart. He still doesn't know how they did it.",
       "portrait": "",
@@ -467,19 +412,14 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": [],
-      "quirks": [
-        "paranoid",
-        "suspicious"
-      ],
-      "realm": "hell"
+      "fixed_items": []
     },
     "vayuvega": {
       "id": "vayuvega",
-      "name": "V\u0101yuvega",
-      "race": "green_devil",
+      "name": "Vāyuvega",
+      "birth": "green_devil",
       "background": "former_soldier",
-      "flavor_text": "Battle mage for a gang in life \u2014 a firm believer in hitting hard first and letting the questions sort themselves out among the survivors.",
+      "flavor_text": "Battle mage for a gang in life — a firm believer in hitting hard first and letting the questions sort themselves out among the survivors.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
@@ -509,17 +449,12 @@
       "fixed_items": [
         "air_charm_middling",
         "plain_iron_dorje"
-      ],
-      "quirks": [
-        "hot_tempered",
-        "brave"
-      ],
-      "realm": "hell"
+      ]
     },
     "angulimala": {
       "id": "angulimala",
-      "name": "Angulim\u0101la",
-      "race": "green_devil",
+      "name": "Angulimāla",
+      "birth": "green_devil",
       "background": "executioner",
       "flavor_text": "Executioner of a crime syndicate, known for a particular professional habit involving fingers. He is fast, precise, and oddly graceful about it.",
       "portrait": "",
@@ -548,17 +483,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": [],
-      "quirks": [
-        "fastidious",
-        "sharp_memory"
-      ],
-      "realm": "hell"
+      "fixed_items": []
     },
     "kanjus": {
       "id": "kanjus",
       "name": "Kanjus",
-      "race": "yellow_devil",
+      "birth": "yellow_devil",
       "background": "merchant",
       "flavor_text": "Owner of a textile manufactory, maximiser of profit, minimiser of worker wellbeing. In hell he applies the same efficiency to whatever operation he finds himself part of.",
       "portrait": "",
@@ -587,17 +517,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": [],
-      "quirks": [
-        "greedy",
-        "stubborn"
-      ],
-      "realm": "hell"
+      "fixed_items": []
     },
     "sarpatailaka": {
       "id": "sarpatailaka",
       "name": "Sarpatailaka",
-      "race": "yellow_devil",
+      "birth": "yellow_devil",
       "background": "merchant",
       "flavor_text": "A trader in snake oil and false cures, who offered hope where real treatment was available. The daggers are for customers who want a refund.",
       "portrait": "",
@@ -628,19 +553,14 @@
       },
       "fixed_items": [
         "earth_charm_common"
-      ],
-      "quirks": [
-        "greedy",
-        "gambler"
-      ],
-      "realm": "hell"
+      ]
     },
     "shiny_needle": {
       "id": "shiny_needle",
       "name": "Shiny Needle",
-      "race": "yellow_devil",
+      "birth": "yellow_devil",
       "background": "noble",
-      "flavor_text": "She prided herself on being the prettiest. When age threatened that, she found an elegant solution \u2014 draining the lifeforce of rivals through carefully rehearsed enchantments. She called it skincare.",
+      "flavor_text": "She prided herself on being the prettiest. When age threatened that, she found an elegant solution — draining the lifeforce of rivals through carefully rehearsed enchantments. She called it skincare.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
@@ -669,17 +589,12 @@
       },
       "fixed_items": [
         "enchantment_charm_common"
-      ],
-      "quirks": [
-        "vain",
-        "addiction"
-      ],
-      "realm": "hell"
+      ]
     },
     "princess_spiderface": {
       "id": "princess_spiderface",
       "name": "Princess Spiderface",
-      "race": "black_devil",
+      "birth": "black_devil",
       "background": "noble",
       "flavor_text": "Actually rather nice, though the face doesn't help first impressions. She calls the spirits she summons by name and asks how they've been.",
       "portrait": "",
@@ -712,17 +627,12 @@
       },
       "fixed_items": [
         "space_charm_middling"
-      ],
-      "quirks": [
-        "generous",
-        "trusting"
-      ],
-      "realm": "hell"
+      ]
     },
     "sineater_thirteen": {
       "id": "sineater_thirteen",
       "name": "Sineater Thirteen",
-      "race": "black_devil",
+      "birth": "black_devil",
       "background": "penitent",
       "flavor_text": "Born from a splinter of dark energy left when a primordial Srid was shattered by a wrathful Buddha. It has absorbed twelve previous identities and is still hungry.",
       "portrait": "",
@@ -754,19 +664,14 @@
       "fixed_items": [
         "black_charm_middling",
         "plain_bone_khatvanga"
-      ],
-      "quirks": [
-        "haunted",
-        "curious"
-      ],
-      "realm": "hell"
+      ]
     },
     "dyutapati": {
       "id": "dyutapati",
-      "name": "Dy\u016btapati",
-      "race": "black_devil",
+      "name": "Dyūtapati",
+      "birth": "black_devil",
       "background": "merchant",
-      "flavor_text": "Owner of a casino in hell \u2014 cigar always lit, odds always in his favour, smile always present. The house wins. He is the house.",
+      "flavor_text": "Owner of a casino in hell — cigar always lit, odds always in his favour, smile always present. The house wins. He is the house.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
@@ -793,17 +698,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": [],
-      "quirks": [
-        "greedy",
-        "patient"
-      ],
-      "realm": "hell"
+      "fixed_items": []
     },
     "coolhead_hotblood": {
       "id": "coolhead_hotblood",
       "name": "Coolhead Hotblood",
-      "race": "black_devil",
+      "birth": "black_devil",
       "background": "infernal_scribe",
       "flavor_text": "A people-pleasing librarian who let frustration build in his innards like an alchemical retort. One day the seal broke. He found the experience clarifying.",
       "portrait": "",
@@ -830,19 +730,14 @@
       },
       "fixed_items": [
         "black_charm_common"
-      ],
-      "quirks": [
-        "hot_tempered",
-        "sharp_memory"
-      ],
-      "realm": "hell"
+      ]
     },
     "ayurmangala": {
       "id": "ayurmangala",
       "name": "Ayurmangala",
-      "race": "white_devil",
+      "birth": "white_devil",
       "background": "scholar",
-      "flavor_text": "Fascinated by humanoid anatomy the way a botanist is fascinated by plants. Can be persuaded to forego vivisection of party members \u2014 keeping them alive is, after all, a more interesting experiment.",
+      "flavor_text": "Fascinated by humanoid anatomy the way a botanist is fascinated by plants. Can be persuaded to forego vivisection of party members — keeping them alive is, after all, a more interesting experiment.",
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
@@ -872,17 +767,12 @@
       "fixed_items": [
         "health_potion",
         "health_potion"
-      ],
-      "quirks": [
-        "curious",
-        "fastidious"
-      ],
-      "realm": "hell"
+      ]
     },
     "amlamarjari": {
       "id": "amlamarjari",
       "name": "Amlamarjari",
-      "race": "white_devil",
+      "birth": "white_devil",
       "background": "reveler",
       "flavor_text": "Party girl who found ways to patch up her comrades long after they couldn't go on. Her healing is excellent. Her bedside manner is chaotic.",
       "portrait": "",
@@ -917,17 +807,12 @@
         "health_potion",
         "white_charm_middling",
         "plain_conch_dorje"
-      ],
-      "quirks": [
-        "generous",
-        "night_drinker"
-      ],
-      "realm": "hell"
+      ]
     },
     "vimohini": {
       "id": "vimohini",
       "name": "Vimohini",
-      "race": "white_devil",
+      "birth": "white_devil",
       "background": "penitent",
       "flavor_text": "In life, a mystic whose visions were so vivid that entire communities reshaped themselves around her prophecies. She wasn't lying. She genuinely saw another reality. In hell, the visions have teeth.",
       "portrait": "",
@@ -959,17 +844,12 @@
       "fixed_items": [
         "enchantment_charm_middling",
         "plain_copper_damaru"
-      ],
-      "quirks": [
-        "dreamer",
-        "haunted"
-      ],
-      "realm": "hell"
+      ]
     },
     "tsering": {
       "id": "tsering",
       "name": "Tsering",
-      "race": "rolang",
+      "birth": "rolang",
       "background": "shambler",
       "flavor_text": "Worked every day of his life with diligence and nothing to show for it. No time to rest, no time to reflect. He is still moving, still laboring. He is not entirely sure why.",
       "portrait": "",
@@ -998,17 +878,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": [],
-      "quirks": [
-        "stubborn",
-        "war_hardened"
-      ],
-      "realm": "hungry_ghost"
+      "fixed_items": []
     },
     "rasabhava": {
       "id": "rasabhava",
       "name": "Rasabhava",
-      "race": "preserved",
+      "birth": "preserved",
       "background": "charnel_yogi",
       "flavor_text": "His formula for eternal preservation was correct in every detail. He finished mixing it the night before he died. He has had some time to consider the timing.",
       "portrait": "",
@@ -1040,17 +915,12 @@
       "fixed_items": [
         "health_potion",
         "summoning_charm_common"
-      ],
-      "quirks": [
-        "curious",
-        "composed"
-      ],
-      "realm": "hungry_ghost"
+      ]
     },
     "saka": {
       "id": "saka",
       "name": "Saka",
-      "race": "preserved",
+      "birth": "preserved",
       "background": "hunter",
       "flavor_text": "Desiccated by the white salt flats of a desert that keeps its dead well. Still carrying the composite bow he carved from horn and sinew. Still knows which direction the game runs.",
       "portrait": "",
@@ -1079,17 +949,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": [],
-      "quirks": [
-        "patient",
-        "stubborn"
-      ],
-      "realm": "hungry_ghost"
+      "fixed_items": []
     },
     "mehr": {
       "id": "mehr",
       "name": "Mehr",
-      "race": "preserved",
+      "birth": "preserved",
       "background": "priest",
       "flavor_text": "Tall, one-eyed, recovered from a tar pit with most of her prophecies intact. The one that failed was accurate. The court simply did not want to hear it.",
       "portrait": "",
@@ -1122,17 +987,12 @@
       },
       "fixed_items": [
         "fire_charm_middling"
-      ],
-      "quirks": [
-        "sharp_eyed",
-        "brave"
-      ],
-      "realm": "hungry_ghost"
+      ]
     },
     "vilasa": {
       "id": "vilasa",
       "name": "Vilasa",
-      "race": "shaza",
+      "birth": "shaza",
       "background": "noble",
       "flavor_text": "Boredom is a dangerous condition in a man without constraints and an unshakeable certainty of his own superiority. He passed through every conventional pleasure and kept going. By the end, the only question was what came next.",
       "portrait": "",
@@ -1161,19 +1021,14 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": [],
-      "quirks": [
-        "vain",
-        "greedy"
-      ],
-      "realm": "hungry_ghost"
+      "fixed_items": []
     },
     "marmajna": {
       "id": "marmajna",
       "name": "Marmajna",
-      "race": "shaza",
+      "birth": "shaza",
       "background": "healer",
-      "flavor_text": "A physician of genuine skill who understood the body as a system of resources. He began with cadavers. The logic that followed was, he still insists, impeccable. Exactly where the line was \u2014 he is still working on that.",
+      "flavor_text": "A physician of genuine skill who understood the body as a system of resources. He began with cadavers. The logic that followed was, he still insists, impeccable. Exactly where the line was — he is still working on that.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
@@ -1204,17 +1059,12 @@
         "health_potion",
         "health_potion",
         "sorcery_charm_common"
-      ],
-      "quirks": [
-        "curious",
-        "stubborn"
-      ],
-      "realm": "hungry_ghost"
+      ]
     },
     "kripana": {
       "id": "kripana",
       "name": "Kripana",
-      "race": "yidag",
+      "birth": "yidag",
       "background": "merchant",
       "flavor_text": "A wealthy man who spent nothing, ate little, and wore his clothing until it dissolved. He died sitting on his gold. In the hungry ghost realm, the gold is gone. The hunger is not.",
       "portrait": "",
@@ -1241,17 +1091,12 @@
           "off": ""
         }
       },
-      "fixed_items": [],
-      "quirks": [
-        "greedy",
-        "addiction"
-      ],
-      "realm": "hungry_ghost"
+      "fixed_items": []
     },
     "nurse_bones": {
       "id": "nurse_bones",
       "name": "Nurse Bones",
-      "race": "skeleton",
+      "birth": "skeleton",
       "background": "healer",
       "flavor_text": "Non-violent by choice. She patches up whoever needs patching up, including enemies, which the party finds occasionally inconvenient.",
       "portrait": "",
@@ -1285,17 +1130,12 @@
       "fixed_items": [
         "health_potion",
         "white_charm_middling"
-      ],
-      "quirks": [
-        "generous",
-        "devout"
-      ],
-      "realm": "hungry_ghost"
+      ]
     },
     "hustle_bones": {
       "id": "hustle_bones",
       "name": "Hustle Bones",
-      "race": "skeleton",
+      "birth": "skeleton",
       "background": "merchant",
       "flavor_text": "Has traded his finger joints for better deals, his ribs for bulk discounts, and one femur for something he won't discuss. Still in profit, last he checked.",
       "portrait": "",
@@ -1326,17 +1166,12 @@
       },
       "fixed_items": [
         "earth_charm_common"
-      ],
-      "quirks": [
-        "greedy",
-        "gambler"
-      ],
-      "realm": "hungry_ghost"
+      ]
     },
     "prashan": {
       "id": "prashan",
       "name": "Prashan",
-      "race": "vetala",
+      "birth": "vetala",
       "background": "scholar",
       "flavor_text": "Spent centuries asking riddles at crossroads. When the charnel grounds ran short of interesting passersby, he went looking for them. He is still looking for the question no one can answer.",
       "portrait": "",
@@ -1367,19 +1202,14 @@
       },
       "fixed_items": [
         "plain_bronze_drilbu"
-      ],
-      "quirks": [
-        "curious",
-        "sharp_memory"
-      ],
-      "realm": "hungry_ghost"
+      ]
     },
     "temba": {
       "id": "temba",
       "name": "Temba",
-      "race": "dralha",
+      "birth": "dralha",
       "background": "warrior",
-      "flavor_text": "Outcast at twelve. Followed at twenty. United the clans at thirty-five through sheer force of demonstrated possibility \u2014 showing them what happened when people stopped fighting each other long enough to eat. He never stopped being the outcast kid trying to feed people through a bad winter.",
+      "flavor_text": "Outcast at twelve. Followed at twenty. United the clans at thirty-five through sheer force of demonstrated possibility — showing them what happened when people stopped fighting each other long enough to eat. He never stopped being the outcast kid trying to feed people through a bad winter.",
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
@@ -1406,17 +1236,12 @@
         },
         "chest": "chainmail"
       },
-      "fixed_items": [],
-      "quirks": [
-        "generous",
-        "brave"
-      ],
-      "realm": "hungry_ghost"
+      "fixed_items": []
     },
     "iron_oath": {
       "id": "iron_oath",
       "name": "Iron Oath",
-      "race": "skeleton_iron",
+      "birth": "skeleton_iron",
       "background": "former_soldier",
       "flavor_text": "His commanding officer fell in battle three hundred years ago. The order to stand down was never transmitted. He kept his post. He is not pleased about having been relieved of it.",
       "portrait": "",
@@ -1445,17 +1270,12 @@
         },
         "chest": "chainmail"
       },
-      "fixed_items": [],
-      "quirks": [
-        "stubborn",
-        "war_hardened"
-      ],
-      "realm": "hungry_ghost"
+      "fixed_items": []
     },
     "the_chronicler": {
       "id": "the_chronicler",
       "name": "The Chronicler",
-      "race": "skeleton_turquoise",
+      "birth": "skeleton_turquoise",
       "background": "bone_dancer",
       "flavor_text": "Remembers the genealogies of peoples who left no other trace anywhere in the six worlds. Recites them anyway. Someone has to.",
       "portrait": "",
@@ -1484,17 +1304,12 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": [],
-      "quirks": [
-        "sharp_memory",
-        "melancholic"
-      ],
-      "realm": "hungry_ghost"
+      "fixed_items": []
     },
     "nyingje": {
       "id": "nyingje",
       "name": "Nyingje",
-      "race": "skeleton_silver",
+      "birth": "skeleton_silver",
       "background": "monk",
       "flavor_text": "Made a vow to remain until every being in this realm found its way out. Still here. Still trying. Probably the oldest being in the charnel grounds, and the least troubled by it.",
       "portrait": "",
@@ -1526,17 +1341,12 @@
       },
       "fixed_items": [
         "health_potion"
-      ],
-      "quirks": [
-        "patient",
-        "devout"
-      ],
-      "realm": "hungry_ghost"
+      ]
     },
     "shantipala": {
       "id": "shantipala",
       "name": "Shantipala",
-      "race": "skeleton_copper",
+      "birth": "skeleton_copper",
       "background": "courtier",
       "flavor_text": "Brokered peace between enemies by naming what each side secretly needed and daring them to deny it out loud. Now performs the same service at the Skeleton King's copper mirror court, with mixed results.",
       "portrait": "",
@@ -1565,17 +1375,12 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": [],
-      "quirks": [
-        "trusting",
-        "generous"
-      ],
-      "realm": "hungry_ghost"
+      "fixed_items": []
     },
     "peldon": {
       "id": "peldon",
       "name": "Peldon",
-      "race": "skeleton_golden",
+      "birth": "skeleton_golden",
       "background": "merchant",
       "flavor_text": "Ran the village market for forty years. Knew every price, every shortage, every family's circumstances. Indispensable and invisible in equal measure. She finds she cannot stop being useful.",
       "portrait": "",
@@ -1604,19 +1409,14 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": [],
-      "quirks": [
-        "generous",
-        "patient"
-      ],
-      "realm": "hungry_ghost"
+      "fixed_items": []
     },
     "choki": {
       "id": "choki",
-      "name": "Ch\u00f6ki",
-      "race": "dre",
+      "name": "Chöki",
+      "birth": "dre",
       "background": "wanderer",
-      "flavor_text": "Left to gather in the forest. Came back to find the village gone \u2014 a flash flood, no warning, nothing left. Drowned herself in the same river three days later. Still here, still not sure what she is waiting for.",
+      "flavor_text": "Left to gather in the forest. Came back to find the village gone — a flash flood, no warning, nothing left. Drowned herself in the same river three days later. Still here, still not sure what she is waiting for.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
@@ -1646,17 +1446,12 @@
       "fixed_items": [
         "water_charm_middling",
         "plain_silver_drilbu"
-      ],
-      "quirks": [
-        "grief_struck",
-        "melancholic"
-      ],
-      "realm": "hungry_ghost"
+      ]
     },
     "nangwa": {
       "id": "nangwa",
       "name": "Nangwa",
-      "race": "dre",
+      "birth": "dre",
       "background": "scholar",
       "flavor_text": "Died mid-sentence, mid-proof, mid-thought. The argument is almost certainly sound. He just needs a moment to finish it. He has needed this moment for quite some time now.",
       "portrait": "",
@@ -1687,17 +1482,12 @@
       },
       "fixed_items": [
         "space_charm_common"
-      ],
-      "quirks": [
-        "curious",
-        "stubborn"
-      ],
-      "realm": "hungry_ghost"
+      ]
     },
     "drupchen": {
       "id": "drupchen",
       "name": "Drupchen",
-      "race": "rolang",
+      "birth": "rolang",
       "background": "monk",
       "flavor_text": "Performed every ritual, recited every text, accumulated every merit point. Believed none of it. He is in the hungry ghost realm, which he finds philosophically interesting now that he can no longer attribute it to coincidence.",
       "portrait": "",
@@ -1729,17 +1519,12 @@
       "fixed_items": [
         "white_charm_common",
         "plain_conch_dorje"
-      ],
-      "quirks": [
-        "lapsed",
-        "stubborn"
-      ],
-      "realm": "hungry_ghost"
+      ]
     },
     "khedrup": {
       "id": "khedrup",
       "name": "Khedrup",
-      "race": "preserved",
+      "birth": "preserved",
       "background": "charnel_yogi",
       "flavor_text": "Treated the dharma as a system to be optimized. Found every multiplying formula, every auspicious day, every legitimate shortcut. He preserved himself flawlessly. He is still in the hungry ghost realm. He is reviewing his calculations.",
       "portrait": "",
@@ -1771,17 +1556,12 @@
       "fixed_items": [
         "black_charm_common",
         "plain_bone_khatvanga"
-      ],
-      "quirks": [
-        "stubborn",
-        "superstitious"
-      ],
-      "realm": "hungry_ghost"
+      ]
     },
     "yasha": {
       "id": "yasha",
       "name": "Yasha",
-      "race": "yidag",
+      "birth": "yidag",
       "background": "bone_dancer",
       "flavor_text": "Always one performance away from being truly seen, truly remembered. Still performing. The halls are empty now but the hunger for recognition does not consult the audience.",
       "portrait": "",
@@ -1810,17 +1590,12 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": [],
-      "quirks": [
-        "vain",
-        "melancholic"
-      ],
-      "realm": "hungry_ghost"
+      "fixed_items": []
     },
     "durvasa": {
       "id": "durvasa",
       "name": "Durvasa",
-      "race": "gyelpo",
+      "birth": "gyelpo",
       "background": "sorcerer",
       "flavor_text": "Professional curse-caster, contract work only, reliable until his final commission. His target had a solid practice of the Devourer of Curses. The invoice was never collected.",
       "portrait": "",
@@ -1852,17 +1627,12 @@
       "fixed_items": [
         "sorcery_charm_middling",
         "plain_copper_phurba"
-      ],
-      "quirks": [
-        "blood_handed",
-        "stubborn"
-      ],
-      "realm": "hungry_ghost"
+      ]
     },
     "gomchen": {
       "id": "gomchen",
       "name": "Gomchen",
-      "race": "gyelpo",
+      "birth": "gyelpo",
       "background": "monk",
       "flavor_text": "A master of ten thousand sutras who found that political dominance within the monastery walls required a different kind of mastery. He acquired it. He was very good at it. He is here.",
       "portrait": "",
@@ -1894,12 +1664,7 @@
       "fixed_items": [
         "sorcery_charm_common",
         "plain_iron_phurba"
-      ],
-      "quirks": [
-        "lapsed",
-        "vain"
-      ],
-      "realm": "hungry_ghost"
+      ]
     }
   }
 }

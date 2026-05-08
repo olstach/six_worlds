@@ -275,16 +275,16 @@ func _update_meta(slot: int, save_data: Dictionary) -> void:
 	var chars = save_data.get("characters", {})
 	var party = chars.get("party", [])
 	var player_name = ""
-	var player_race = ""
+	var player_birth = ""
 	if not party.is_empty():
 		player_name = party[0].get("name", "Unknown")
-		player_race = party[0].get("race", "unknown")
+		player_birth = party[0].get("birth", "unknown")
 
 	meta[key] = {
 		"timestamp": save_data.get("timestamp", 0.0),
 		"play_time": save_data.get("play_time", 0.0),
 		"player_name": player_name,
-		"player_race": player_race,
+		"player_birth": player_birth,
 		"world": game.get("current_world", "hell"),
 		"run_number": game.get("current_run_number", 1),
 		"party_size": party.size(),

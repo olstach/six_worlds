@@ -294,11 +294,11 @@ func recruit(companion_id: String, free: bool = false) -> Dictionary:
 
 	# 2. Identity
 	companion.name = def.get("name", "Companion")
-	companion.race = def.get("race", "human")
+	companion.birth = def.get("birth", "human")
 	companion.background = def.get("background", "wanderer")
 
-	# 3. Race and background
-	CharacterSystem.apply_race_modifiers(companion, companion.race)
+	# 3. Birth and background
+	CharacterSystem.apply_birth_modifiers(companion, companion.birth)
 	CharacterSystem.apply_background_skills(companion, companion.background)
 
 	# 4. Companion-specific fields
@@ -345,9 +345,9 @@ func recruit(companion_id: String, free: bool = false) -> Dictionary:
 				resolved_id = gen_id
 		ItemSystem.add_to_inventory(resolved_id)
 
-	# 10.5. Starting quirks — apply pressure baseline offsets; stat modifiers handled in step 11
-	for quirk_id in def.get("quirks", []):
-		QuirkSystem.add_quirk(companion, quirk_id)
+	# 10.5. Starting traits — apply pressure baseline offsets; stat modifiers handled in step 11
+	for trait_id in def.get("traits", []):
+		TraitSystem.add_trait(companion, trait_id)
 
 	# 11. Recalculate all derived stats
 	CharacterSystem.update_derived_stats(companion)

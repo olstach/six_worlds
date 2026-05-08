@@ -864,8 +864,19 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 		"bow", "thrown":
 			return "ranged"
 		_:
-			# Natural weapons carry skill_tag directly (e.g. "unarmed" for fists/claws/bites)
-			return get_equipped_weapon().get("skill_tag", "")
+			# Natural weapons carry skill_tag (single) or skill_tags (array — pick best).
+			var weapon := get_equipped_weapon()
+			var tags: Array = weapon.get("skill_tags", [])
+			if not tags.is_empty():
+				var best_skill := tags[0]
+				var best_level := CharacterSystem.get_effective_skill_level(character_data, best_skill)
+				for tag in tags.slice(1):
+					var lvl := CharacterSystem.get_effective_skill_level(character_data, tag)
+					if lvl > best_level:
+						best_level = lvl
+						best_skill = tag
+				return best_skill
+			return weapon.get("skill_tag", "")
 
 
 ## Get armor value (includes status effect and perk bonuses)
@@ -884,8 +895,11 @@ func get_armor_pierce() -> int:
 func get_crit_chance() -> float:
 	var derived = character_data.get("derived", {})
 	var mantra_crit = float(mantra_stat_bonuses.get("crit_chance", 0))
-	var weapon_crit = float(get_equipped_weapon().get("stats", {}).get("crit_chance", 0))
-	return float(derived.get("crit_chance", 5)) + weapon_crit + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance")) + maxf(0.0, mantra_crit) + float(_get_stat_modifier_bonus("crit_chance"))
+	var equipped := get_equipped_weapon()
+	var weapon_crit = float(equipped.get("stats", {}).get("crit_chance", 0))
+	# Natural weapons can carry a crit_bonus field (e.g. mantis blades +10%)
+	var natural_crit = float(equipped.get("crit_bonus", 0))
+	return float(derived.get("crit_chance", 5)) + weapon_crit + natural_crit + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance")) + maxf(0.0, mantra_crit) + float(_get_stat_modifier_bonus("crit_chance"))
 
 
 ## Get current stamina

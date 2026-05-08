@@ -2697,6 +2697,30 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		caster.damaru_charges = 0
 		combat_log.emit("%s's Damaru rhythm peaks — spell costs 40%% less mana!" % caster.unit_name)
 
+	# Skill-level mana cost reduction: apply only when at least one spell school
+	# matches a magic skill the caster has invested in (school-specific efficiency).
+	# Reduction is flat (e.g. space_magic 5 → -75), capped at 90% of base cost.
+	var skill_mana_reduction: int = caster.character_data.get("derived", {}).get("mana_cost_reduction", 0)
+	if skill_mana_reduction < 0:
+		var spell_schools_lower: Array = spell.get("schools", []).map(func(s): return s.to_lower())
+		var caster_skills: Dictionary = caster.character_data.get("skills", {})
+		const MAGIC_SKILL_TO_SCHOOL = {
+			"space_magic": "space", "air_magic": "air", "fire_magic": "fire",
+			"water_magic": "water", "earth_magic": "earth", "sorcery": "sorcery",
+			"enchantment": "enchantment", "white_magic": "white", "black_magic": "black",
+			"summoning": "summoning", "ritual": "ritual"
+		}
+		var school_matches := false
+		for sk in caster_skills:
+			if MAGIC_SKILL_TO_SCHOOL.has(sk) and MAGIC_SKILL_TO_SCHOOL[sk] in spell_schools_lower:
+				school_matches = true
+				break
+		if school_matches:
+			var base_cost: int = spell.get("mana_cost", 0)
+			var max_reduction: int = int(base_cost * 0.90)
+			mana_cost = max(int(base_cost * 0.10), mana_cost + skill_mana_reduction)
+			mana_cost = max(mana_cost, int(spell.get("mana_cost", 0)) - max_reduction)
+
 	# Deduct mana (sync to character_data so it persists after combat)
 	caster.current_mana -= mana_cost
 	var caster_derived = caster.character_data.get("derived", {})

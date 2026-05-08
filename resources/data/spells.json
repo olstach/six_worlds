@@ -10539,6 +10539,30 @@
         "upgrade_scaling": "single → aoe → all_allies"
       },
       "description": "Lay hands on the target with focused intent. Restores moderate HP and 20% of max Stamina — useful for fighters who have spent themselves as much as those who've taken wounds."
+    },
+    "burrow": {
+      "name": "Burrow",
+      "schools": [
+        "Earth"
+      ],
+      "level": 3,
+      "theme": "earth",
+      "tags": [
+        "earth",
+        "mobility",
+        "melee"
+      ],
+      "mana_cost": 35,
+      "enemy_only": true,
+      "special": {
+        "teleport_to_adjacent_target": true,
+        "melee_attack_on_emerge": true
+      },
+      "target": {
+        "type": "single",
+        "eligible": "enemy"
+      },
+      "description": "Submerge into the earth and erupt directly adjacent to a target. Immediately make a melee attack on emergence. (Enemy-only)"
     }
   }
 }

@@ -1,5 +1,4 @@
 {
-  "comment": "Rare map events tied to special spell domains. Each opens a domain-exclusive shop on success — the only way to acquire those spells. Realm-agnostic; availability controlled by map_config.",
   "events": {
     "the_pit": {
       "id": "the_pit",
@@ -70,7 +69,7 @@
             },
             "roll": {
               "attribute": "charm",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -95,7 +94,6 @@
         }
       ]
     },
-
     "crystal_cave": {
       "id": "crystal_cave",
       "title": "Crystal Cave",
@@ -156,9 +154,21 @@
             "text": "You set down what you have brought — a little gold, a little food — and bow. The yogi does not open his eyes. But something in the cave shifts. The light settles differently on you.\n\nYou feel cleaner, somehow. Sharper. You carry the blessing forward.",
             "rewards": {
               "buffs": [
-                {"stat": "awareness", "amount": 2, "combats_remaining": 1},
-                {"stat": "focus", "amount": 2, "combats_remaining": 1},
-                {"stat": "luck", "amount": 2, "combats_remaining": 1}
+                {
+                  "stat": "awareness",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "focus",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "luck",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
               ]
             },
             "karma": {
@@ -185,7 +195,6 @@
         }
       ]
     },
-
     "glass_mountain": {
       "id": "glass_mountain",
       "title": "Glass Mountain",
@@ -201,7 +210,7 @@
           "requirements": {
             "roll": {
               "attribute": "finesse",
-              "difficulty": 16
+              "difficulty": "difficult"
             }
           },
           "outcome_success": {
@@ -218,7 +227,10 @@
             "follow_up_event": "glass_mountain",
             "text": "You slip. The glass offers nothing to hold and less to forgive — you slide and tumble, cutting yourself on the way down. The mountain stands unchanged.",
             "rewards": {
-              "hp_loss": {"amount": "moderate", "target": "random"}
+              "hp_loss": {
+                "amount": "moderate",
+                "target": "random"
+              }
             },
             "karma": {
               "human": 1
@@ -278,7 +290,11 @@
             "text": "You begin to sing — nothing composed, just what comes. The mountain answers. A harmonic rises from somewhere inside the glass, and then another, and footholds crystallise along the face as if the mountain is remembering how to be climbed. At the summit the glass spirits dance faster for a moment, producing tones you can almost hear. A faint luck settles on you like dust: the mountain was pleased.",
             "rewards": {
               "buffs": [
-                {"stat": "luck", "amount": 1, "combats_remaining": 2}
+                {
+                  "stat": "luck",
+                  "amount": 1,
+                  "combats_remaining": 2
+                }
               ]
             },
             "karma": {
@@ -324,7 +340,6 @@
         }
       ]
     },
-
     "the_smoking_mirror": {
       "id": "the_smoking_mirror",
       "title": "The Smoking Mirror",
@@ -340,7 +355,7 @@
           "requirements": {
             "roll": {
               "attribute": "focus",
-              "difficulty": 14
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -357,7 +372,10 @@
             "shop_id": "smoke_domain_shop",
             "text": "You hold its gaze too long. The smoke parts and shows you something you were not ready to see — and a piece of yourself goes with it, drawn into the depth. The knowledge of smoke rises in you regardless. The price was a piece of yourself. The mirror does not seem to care.",
             "rewards": {
-              "attribute_loss": {"which": "random", "amount": 1}
+              "attribute_loss": {
+                "which": "random",
+                "amount": 1
+              }
             },
             "karma": {
               "human": 2,
@@ -380,7 +398,11 @@
             "text": "You have seen this described in the old texts: a Tezcatlipoca-mirror, a devourer of reflections. You produce your own mirror — polished bronze, consecrated — and hold it to face the black glass.\n\nThe two mirrors lock. The smoke rushes between them in a furious loop, finds no victim, and exhausts itself. The obsidian surface is still. In the silence, the knowledge of smoke rises in you like cooling ash.",
             "rewards": {
               "buffs": [
-                {"stat": "awareness", "amount": 1, "combats_remaining": 2}
+                {
+                  "stat": "awareness",
+                  "amount": 1,
+                  "combats_remaining": 2
+                }
               ]
             },
             "karma": {
@@ -404,7 +426,11 @@
             "text": "You see the mirror without seeing what it shows. The smoke coils and finds no purchase — there is no self presented to be consumed. The mirror continues smoking. You absorb its nature without being changed by its contents.",
             "rewards": {
               "buffs": [
-                {"stat": "focus", "amount": 1, "combats_remaining": 2}
+                {
+                  "stat": "focus",
+                  "amount": 1,
+                  "combats_remaining": 2
+                }
               ]
             },
             "karma": {
@@ -444,7 +470,6 @@
         }
       ]
     },
-
     "cloud_palace": {
       "id": "cloud_palace",
       "title": "The Cloud Palace",
@@ -546,7 +571,6 @@
         }
       ]
     },
-
     "cloud_palace_inner": {
       "id": "cloud_palace_inner",
       "title": "The Cloud Palace — Inner Hall",
@@ -600,7 +624,7 @@
           "requirements": {
             "roll": {
               "attribute": "charm",
-              "difficulty": 17
+              "difficulty": "difficult"
             }
           },
           "outcome_success": {
@@ -617,7 +641,11 @@
             "text": "The naga stares at you for a long, terrible moment. Then it opens its mouth, and what comes out is not words. It is weather.\n\nWhen you come back to yourself you are standing outside, alone. The palace is gone. Your bones ache with a deep cold.",
             "rewards": {
               "buffs": [
-                {"stat": "constitution", "amount": -3, "combats_remaining": 2}
+                {
+                  "stat": "constitution",
+                  "amount": -3,
+                  "combats_remaining": 2
+                }
               ]
             },
             "karma": {}
@@ -632,7 +660,11 @@
             "text": "There is a pause that contains weather systems.\n\n\"A guesssst,\" the large naga says, very softly, \"isss invited.\"\n\nWhat comes next is not words. When you come back to yourself you are standing outside. The palace is gone. The sky above is the particular grey of something that has already decided to rain.",
             "rewards": {
               "buffs": [
-                {"stat": "constitution", "amount": -3, "combats_remaining": 2}
+                {
+                  "stat": "constitution",
+                  "amount": -3,
+                  "combats_remaining": 2
+                }
               ]
             },
             "karma": {
@@ -642,7 +674,6 @@
         }
       ]
     },
-
     "waterworks": {
       "id": "waterworks",
       "title": "The Waterworks",
@@ -685,7 +716,6 @@
         }
       ]
     },
-
     "waterworks_inner": {
       "id": "waterworks_inner",
       "title": "The Bathhouse Floor",
@@ -737,7 +767,7 @@
           "requirements": {
             "roll": {
               "skill": "thievery",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -804,7 +834,7 @@
             },
             "roll": {
               "attribute": "focus",
-              "difficulty": 13
+              "difficulty": "easy"
             }
           },
           "outcome_success": {
@@ -821,7 +851,11 @@
             "text": "The warmth flickers and goes out. The eldest yogi watches, patient and kind.\n\n'The fire is there,' he says. 'But it needs tending before it can burn steadily. The doors of this hermitage will be open to you when you return, more mature in your practice, young sadhaka.'\n\nSomething in his words leaves a warmth in you that your technique could not produce.",
             "rewards": {
               "buffs": [
-                {"stat": "focus", "amount": 2, "combats_remaining": 2}
+                {
+                  "stat": "focus",
+                  "amount": 2,
+                  "combats_remaining": 2
+                }
               ]
             },
             "karma": {
@@ -839,7 +873,7 @@
             },
             "roll": {
               "attribute": "focus",
-              "difficulty": 17
+              "difficulty": "difficult"
             }
           },
           "outcome_success": {
@@ -870,7 +904,7 @@
           "requirements": {
             "roll": {
               "attribute": "constitution",
-              "difficulty": 15
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -887,7 +921,11 @@
             "text": "The cold defeats you. You last longer than seems reasonable, but it defeats you. The youngest yogi — still shivering himself, toes still blue — gives you a small, sympathetic look as you scramble to your feet.\n\nYou carry the cold in your bones for a while after.",
             "rewards": {
               "buffs": [
-                {"stat": "constitution", "amount": -2, "combats_remaining": 2}
+                {
+                  "stat": "constitution",
+                  "amount": -2,
+                  "combats_remaining": 2
+                }
               ]
             },
             "karma": {
@@ -908,8 +946,16 @@
             "text": "You walk the circle three times, quietly, and place what you have brought at the edge of their warmth. None of them acknowledge this directly. But as you turn to leave, the youngest yogi's shivering has stopped.\n\nSomething of their steadiness travels with you.",
             "rewards": {
               "buffs": [
-                {"stat": "constitution", "amount": 2, "combats_remaining": 2},
-                {"stat": "focus", "amount": 2, "combats_remaining": 2}
+                {
+                  "stat": "constitution",
+                  "amount": 2,
+                  "combats_remaining": 2
+                },
+                {
+                  "stat": "focus",
+                  "amount": 2,
+                  "combats_remaining": 2
+                }
               ]
             },
             "karma": {
@@ -929,7 +975,6 @@
         }
       ]
     },
-
     "dark_cave": {
       "id": "dark_cave",
       "title": "Dark Cave",
@@ -999,8 +1044,16 @@
             "text": "'Thank you, child.'\n\nThe bowl on your side is already empty. On the other side, the sound of something being received with care.",
             "rewards": {
               "buffs": [
-                {"stat": "awareness", "amount": 1, "combats_remaining": 2},
-                {"stat": "luck", "amount": 1, "combats_remaining": 2}
+                {
+                  "stat": "awareness",
+                  "amount": 1,
+                  "combats_remaining": 2
+                },
+                {
+                  "stat": "luck",
+                  "amount": 1,
+                  "combats_remaining": 2
+                }
               ]
             },
             "karma": {
@@ -1032,7 +1085,6 @@
         }
       ]
     },
-
     "dark_cave_interior": {
       "id": "dark_cave_interior",
       "title": "Dark Cave",
@@ -1091,8 +1143,16 @@
             "text": "'Thank you, child.'\n\nThe bowl on your side is already empty. On the other side, the sound of something being received with care.",
             "rewards": {
               "buffs": [
-                {"stat": "awareness", "amount": 1, "combats_remaining": 2},
-                {"stat": "luck", "amount": 1, "combats_remaining": 2}
+                {
+                  "stat": "awareness",
+                  "amount": 1,
+                  "combats_remaining": 2
+                },
+                {
+                  "stat": "luck",
+                  "amount": 1,
+                  "combats_remaining": 2
+                }
               ]
             },
             "karma": {
@@ -1124,7 +1184,6 @@
         }
       ]
     },
-
     "skygazing_gompa": {
       "id": "skygazing_gompa",
       "title": "Skygazing Gompa",
@@ -1139,7 +1198,9 @@
           "text": "\"Please teach us about the Great Perfection.\"",
           "type": "requirement",
           "requirements": {
-            "skills": {"yoga": 5}
+            "skills": {
+              "yoga": 5
+            }
           },
           "outcome": {
             "type": "shop",
@@ -1170,7 +1231,9 @@
           "text": "\"What is the source of the shimmer in your eyes I can't help but notice, master?\"",
           "type": "requirement",
           "requirements": {
-            "skills": {"space_magic": 5}
+            "skills": {
+              "space_magic": 5
+            }
           },
           "outcome": {
             "type": "shop",
@@ -1214,7 +1277,6 @@
         }
       ]
     },
-
     "court_of_the_musician_prince": {
       "id": "court_of_the_musician_prince",
       "title": "The Court of the Musician Prince",
@@ -1309,7 +1371,6 @@
         }
       ]
     },
-
     "camp_night_vision": {
       "id": "camp_night_vision",
       "title": "A Dream Between Watches",
@@ -1322,12 +1383,20 @@
           "id": "remember",
           "text": "Hold onto the vision — it felt like a warning.",
           "type": "requirement",
-          "requirements": {"skills": {"yoga": 3}},
+          "requirements": {
+            "skills": {
+              "yoga": 3
+            }
+          },
           "outcome": {
             "type": "text",
             "text": "The image is clear: a path, a figure, a moment yet to come. Whether prophecy or fancy, it burns itself into memory. The dreamer rises feeling purposeful.",
-            "rewards": {"xp": 20},
-            "karma": {"hell": -5}
+            "rewards": {
+              "xp": 20
+            },
+            "karma": {
+              "hell": -5
+            }
           }
         },
         {
@@ -1341,7 +1410,6 @@
         }
       ]
     },
-
     "camp_wandering_spirit": {
       "id": "camp_wandering_spirit",
       "title": "A Visitor in the Night",
@@ -1357,21 +1425,35 @@
           "outcome": {
             "type": "text",
             "text": "In the morning, the offering is gone. The camp feels lighter somehow. Something difficult has passed through and moved on.",
-            "karma": {"hungry_ghost": -10},
-            "cost": {"food": 1}
+            "karma": {
+              "hungry_ghost": -10
+            },
+            "cost": {
+              "food": 1
+            }
           }
         },
         {
           "id": "speak_to_it",
           "text": "Speak to it — ask what it wants.",
           "type": "requirement",
-          "requirements": {"skills": {"ritual": 2}},
+          "requirements": {
+            "skills": {
+              "ritual": 2
+            }
+          },
           "outcome": {
             "type": "text",
             "text": "It does not answer with words, but it turns toward the sound of your voice and then recedes, as if the acknowledgement itself was enough. A small thing done well.",
-            "rewards": {"xp": 10},
-            "karma": {"hungry_ghost": -15},
-            "cost": {"food": 1}
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "hungry_ghost": -15
+            },
+            "cost": {
+              "food": 1
+            }
           }
         },
         {
@@ -1385,7 +1467,6 @@
         }
       ]
     },
-
     "camp_fire_omen": {
       "id": "camp_fire_omen",
       "title": "Figures in the Smoke",
@@ -1403,7 +1484,9 @@
           "outcome": {
             "type": "text",
             "text": "The smoke forms something unmistakable — a path you haven't taken, a face you'll encounter, a moment of decision that has not yet arrived. The fire dims and the vision closes.",
-            "rewards": {"xp": 25}
+            "rewards": {
+              "xp": 25
+            }
           },
           "failure_outcome": {
             "type": "text",
@@ -1421,7 +1504,6 @@
         }
       ]
     },
-
     "camp_ember_voices": {
       "id": "camp_ember_voices",
       "title": "The Fire Speaks",
@@ -1434,12 +1516,20 @@
           "id": "listen",
           "text": "Sit quietly and listen for meaning.",
           "type": "requirement",
-          "requirements": {"skills": {"yoga": 2}},
+          "requirements": {
+            "skills": {
+              "yoga": 2
+            }
+          },
           "outcome": {
             "type": "text",
             "text": "The words aren't in any language, but the meaning arrives whole: a route, a danger, a name that matters. Whether this realm is warning you or baiting you, the information feels true.",
-            "rewards": {"xp": 20},
-            "karma": {"hell": 5}
+            "rewards": {
+              "xp": 20
+            },
+            "karma": {
+              "hell": 5
+            }
           }
         },
         {
@@ -1451,8 +1541,12 @@
           "outcome": {
             "type": "text",
             "text": "The fire brightens, then settles. Something received your address. The embers arrange and rearrange in patterns that suggest approval. You feel, briefly, observed and acknowledged.",
-            "rewards": {"xp": 15},
-            "karma": {"hell": 10}
+            "rewards": {
+              "xp": 15
+            },
+            "karma": {
+              "hell": 10
+            }
           },
           "failure_outcome": {
             "type": "text",
@@ -1470,7 +1564,6 @@
         }
       ]
     },
-
     "camp_guardian_threshold": {
       "id": "camp_guardian_threshold",
       "title": "At the Edge of the Light",
@@ -1483,18 +1576,28 @@
           "id": "hear_out",
           "text": "Invite it to speak. A grievance aired is one less thing blocking the path.",
           "type": "requirement",
-          "requirements": {"skills": {"persuasion": 2}},
+          "requirements": {
+            "skills": {
+              "persuasion": 2
+            }
+          },
           "outcome": {
             "type": "text",
             "text": "It speaks, or something like speaking happens. The story is circular and old — a wrong done long before any of you were born, compounding through each retelling. You acknowledge it without agreeing. The presence recedes satisfied, or at least finished.",
-            "karma": {"hell": 15}
+            "karma": {
+              "hell": 15
+            }
           }
         },
         {
           "id": "ward_ritual",
           "text": "Perform a brief warding. Give it a boundary rather than an audience.",
           "type": "requirement",
-          "requirements": {"skills": {"ritual": 2}},
+          "requirements": {
+            "skills": {
+              "ritual": 2
+            }
+          },
           "outcome": {
             "type": "text",
             "text": "The ritual is imperfect but sincere. The presence retreats from the boundary you've established. By morning it is gone, and the camp feels marginally warmer for it."
@@ -1511,7 +1614,6 @@
         }
       ]
     },
-
     "camp_whispered_offering": {
       "id": "camp_whispered_offering",
       "title": "What Was Left Out",
@@ -1527,21 +1629,35 @@
           "outcome": {
             "type": "text",
             "text": "You set it out with care. By the next morning, the portion is gone, and whatever sorted your supplies has not returned.",
-            "karma": {"hungry_ghost": -15},
-            "cost": {"food": 2}
+            "karma": {
+              "hungry_ghost": -15
+            },
+            "cost": {
+              "food": 2
+            }
           }
         },
         {
           "id": "ritual_offering",
           "text": "Consecrate the offering properly with a brief ritual.",
           "type": "requirement",
-          "requirements": {"skills": {"ritual": 2}},
+          "requirements": {
+            "skills": {
+              "ritual": 2
+            }
+          },
           "outcome": {
             "type": "text",
             "text": "Consecrated food reaches further in this realm than it has any right to. The arrangement disappears, and for a moment you catch something at the periphery of the firelight that might have been gratitude.",
-            "rewards": {"xp": 10},
-            "karma": {"hungry_ghost": -25},
-            "cost": {"food": 1}
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "hungry_ghost": -25
+            },
+            "cost": {
+              "food": 1
+            }
           }
         },
         {
@@ -1555,7 +1671,6 @@
         }
       ]
     },
-
     "camp_creditor": {
       "id": "camp_creditor",
       "title": "The Outstanding Balance",
@@ -1568,12 +1683,20 @@
           "id": "negotiate",
           "text": "Enter into negotiation — there is always a way to restructure.",
           "type": "requirement",
-          "requirements": {"skills": {"trade": 3}},
+          "requirements": {
+            "skills": {
+              "trade": 3
+            }
+          },
           "outcome": {
             "type": "text",
             "text": "Three rounds of negotiation in the cold air. You emerge with an arrangement no one is happy with, which is the mark of a good deal. The creditor departs without incident. The ledger, as far as you can tell, now balances.",
-            "karma": {"hungry_ghost": -10},
-            "cost": {"gold": 30}
+            "karma": {
+              "hungry_ghost": -10
+            },
+            "cost": {
+              "gold": 30
+            }
           }
         },
         {
@@ -1583,8 +1706,12 @@
           "outcome": {
             "type": "text",
             "text": "It accepts payment. It looks faintly disappointed that there was nothing to argue about. It leaves. The camp feels lighter.",
-            "karma": {"hungry_ghost": -5},
-            "cost": {"gold": 50}
+            "karma": {
+              "hungry_ghost": -5
+            },
+            "cost": {
+              "gold": 50
+            }
           }
         },
         {
@@ -1598,7 +1725,6 @@
         }
       ]
     },
-
     "camp_shared_dream": {
       "id": "camp_shared_dream",
       "title": "The Same Dream",
@@ -1611,23 +1737,38 @@
           "id": "compare_notes",
           "text": "Sit together and map the differences. There's something in the overlap.",
           "type": "requirement",
-          "requirements": {"skills": {"yoga": 2}},
+          "requirements": {
+            "skills": {
+              "yoga": 2
+            }
+          },
           "outcome": {
             "type": "text",
             "text": "The point where all accounts agree is a detail no one remarked on individually — a mark, a position, a quality of attention. When you locate it, something like recognition moves through the group. A shared dream properly examined becomes a kind of preparation.",
-            "rewards": {"xp": 25},
-            "karma": {"hell": -5, "hungry_ghost": -5}
+            "rewards": {
+              "xp": 25
+            },
+            "karma": {
+              "hell": -5,
+              "hungry_ghost": -5
+            }
           }
         },
         {
           "id": "write_it_down",
           "text": "Record what you remember before it fades.",
           "type": "requirement",
-          "requirements": {"skills": {"learning": 2}},
+          "requirements": {
+            "skills": {
+              "learning": 2
+            }
+          },
           "outcome": {
             "type": "text",
             "text": "Committed to paper, the dream becomes a document. Whether it's useful or not, it's no longer just a feeling in the air between you — it's a record, and records have a way of meaning something eventually.",
-            "rewards": {"xp": 15}
+            "rewards": {
+              "xp": 15
+            }
           }
         },
         {
@@ -1641,7 +1782,6 @@
         }
       ]
     },
-
     "camp_stranger_fire": {
       "id": "camp_stranger_fire",
       "title": "Another Light",
@@ -1659,7 +1799,10 @@
           "outcome": {
             "type": "text",
             "text": "Traders, or something close to traders — three of them, neutral in disposition, willing to part with supplies at a fair price. You part on workmanlike terms.",
-            "rewards": {"gold": 20, "xp": 10}
+            "rewards": {
+              "gold": 20,
+              "xp": 10
+            }
           },
           "failure_outcome": {
             "type": "text",
@@ -1679,11 +1822,17 @@
           "id": "watch",
           "text": "Keep watch and observe without contact.",
           "type": "requirement",
-          "requirements": {"skills": {"logistics": 2}},
+          "requirements": {
+            "skills": {
+              "logistics": 2
+            }
+          },
           "outcome": {
             "type": "text",
             "text": "Their fire goes out before yours. Two of them — moving efficiently, no wasted motion. Scouts or couriers, from their routine. Nothing threatening. The knowledge costs you some sleep but not much.",
-            "rewards": {"xp": 10}
+            "rewards": {
+              "xp": 10
+            }
           }
         }
       ]

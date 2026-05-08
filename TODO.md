@@ -24,10 +24,11 @@ Five elemental pressure meters per character (−100 klesha ↔ +100 wisdom). Pr
 **Future layers (not yet started):**
 - [x] ~~**Layer 2: Personality traits & quirks**~~ — QuirkSystem autoload + quirks.json (40 quirks: 10 physical, 14 personality, 10 behavioral, 10 acquired). Stat modifiers flow into `update_derived_stats()`; skill modifiers written to `skill_bonuses["quirks"]` source; pressure offsets shift `emotional_baseline`; event_tags unlock blue choices in event_manager. UI panel in character sheet (coloured by category, mechanical summary, purge tooltip). Bugs fixed: attribute event checks now include quirk bonuses; effective skill level clamped to 0 floor; purge check uses effective not raw skill.
 
-### Quirk System — Remaining Work
-- [x] ~~**Autonomous actions**~~ — `QUIRK_CRISIS_REACTIONS` dispatch table in `psychology_system.gd` covers 18 personality/behavioral/acquired event_tags × up to 2 element+polarity combinations each. `_resolve_quirk_reactions()` fires from `_on_autonomous_event` for both bright and dark crises. Virtue quirks (brave, patient, composed, generous, devout) partially counteract their element; dark quirks (hot_tempered, timid, haunted, grief_struck, etc.) amplify the crisis or spread fallout to the party. `emotional_crisis_log` signal emitted for UI display.
-- [x] ~~**Player character starting quirks**~~ — `create_player_character()` in `character_system.gd` now assigns 1 random inborn physical + 1 random inborn personality quirk via `QuirkSystem.get_inborn_quirks(category)` + `add_quirk()`. `start_new_life()` inherits this automatically.
-- [x] ~~**Companion quirk data**~~ — all 47 companions (24 hell + 23 HG) now have `"quirks": [...]` arrays in `companions.json`. Character list with rationale at `docs/companion_quirks.md`.
+### Trait System — Remaining Work
+- [x] ~~**Autonomous actions**~~ — `QUIRK_CRISIS_REACTIONS` dispatch table in `psychology_system.gd` covers 18 personality/behavioral/acquired event_tags × up to 2 element+polarity combinations each. `_resolve_quirk_reactions()` fires from `_on_autonomous_event` for both bright and dark crises. Virtue traits (brave, patient, composed, generous, devout) partially counteract their element; dark traits (hot_tempered, timid, haunted, grief_struck, etc.) amplify the crisis or spread fallout to the party. `emotional_crisis_log` signal emitted for UI display.
+- [x] ~~**Player character starting traits**~~ — `create_player_character()` assigns 1 random inborn physical + 1 random inborn personality trait via `TraitSystem.get_inborn_traits(category)` + `add_trait()`. `start_new_life()` inherits this automatically.
+- [x] ~~**Companion trait data**~~ — all 47 companions now have `"quirks": [...]` arrays in `companions.json` (see `docs/companion_quirks.md`). TODO: migrate key from `quirks` → `traits` when companion loading is updated.
+- [ ] **Racial trait content review** — initial racial traits (hell_born, undead_nature, spirit_nature, serpentine) are intentionally lightweight stubs. Once each realm's design is finalised, revisit and flesh out: add meaningful event_tags, pressure_modifiers, and any unique mechanical hooks appropriate to that race's cosmological nature.
 - Layer 3: Intervention mechanic (social skills let one character help another)
 - Yidam integration: mantra practice raises brightness baseline per element
 - [x] ~~Rest system: `decay_toward_baseline()` called on camp/inn rest~~ — wired in overworld._do_rest() and camp_system sadhana/story activities
@@ -301,10 +302,16 @@ Persistent negative status effects from combat or events that do not fully clear
 
 ### Other Realms (Content Gaps)
 - [x] Convert HG_EVENTS.md → hungry_ghost_events.json
-- [ ] Map configs for remaining realms — only hell.json and hungry_ghost.json exist
-- [ ] Enemy archetypes + encounters for animal, human, asura, god realms (hungry_ghost done: 20 archetypes, 37 encounters)
-- [ ] Event files for remaining realms (animal, human, asura, god)
+- [x] Map config for animal realm — animal.json (3 zones: ocean, forest, meadow; portal in forest top-left)
+- [x] Enemy archetypes + encounters for animal realm — animal_archetypes.json (34 archetypes), animal_encounters.json (30 encounter groups)
+- [x] Cross-realm infrastructure events for animal realm — animal_events.json (39 events: 10 guilds, teahouses, towns, training, domain guilds, simple events, fixed landmarks)
+- [ ] Map configs for remaining realms — human, asura, god still needed
+- [ ] Enemy archetypes + encounters for human, asura, god realms
+- [ ] Event files for human, asura, god realms
 - [ ] Companion definitions for remaining realms (47 companions exist across hell + HG; animal, human, asura, god still empty)
+- [ ] Animal realm zone-specific events (ocean, forest, meadow) — the actual encounters, NPC dialogues, dungeon events; see animal_events.json for list of referenced event_ids not yet implemented
+- [ ] **Animal realm domain guild shop data** — animal_events.json references these shop_ids that need entries in shops.json: `animal_naga_palace` (water/enchantment), `animal_ancient_banyan` (earth/summoning), `animal_termite_cathedral` (earth/summoning/alchemy), `animal_birds_congress` (air/space/white), `animal_bone_forest` (black/summoning). Also: universal guild shops `animal_sacred_grove` through `animal_eternal_fire`, teahouse shops, town shops, training camp shops.
+- [ ] Add HG shop entries pattern for animal realm — mirror the HG follow-up: add all animal shop_ids to shops.json once shop system is extended to animal realm
 
 ### Companions
 - [ ] Camp Followers system — UI stub exists in Party tab (`_update_followers_list()`); no backend
@@ -362,6 +369,7 @@ Persistent negative status effects from combat or events that do not fully clear
 - [ ] Paushtikakarma spells for Earth magic school — wealth multiplication, prosperity, dowsing for buried goods/ore; gives mechanical teeth to trade/merchant builds (Hustle Bones companion, Trade+Earth magic synergy)
 
 ### UI Improvements
+- [ ] **Rename "race" → "birth" in scene nodes** — code variables `race_label` / `race_value` and the scene node names `RaceLabel` / `RaceValue` still use old terminology. Two files + their scenes: `new_character_sheet.gd` (`@onready var race_label` → `birth_label`, node path `.../RaceLabel`); `main_menu.gd` (`@onready var race_value` → `birth_value`, unique name `%RaceValue`). Both `.tscn` files need the node renamed first, then the `@onready` variable and all usages updated.
 - [ ] Tooltip system expansion — item_tooltip.gd works for items; no tooltips on status effects, terrain tiles, or turn order icons in combat
 - [ ] Upgrade selection popup (choose 1 of 4) — no scene or system exists
 - [x] ~~Party management screen~~ — DONE (session 10): Party tab in main_menu shows all members with HP/MP/ST bars, View Stats button switches to Stats tab for any member, Remove button dismisses companions
@@ -374,6 +382,12 @@ Persistent negative status effects from combat or events that do not fully clear
 - [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
 - [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
 - [x] ~~**Spell duration unification**~~ — unified formula: base 2 + floor(Enchantment/2) [main] + floor(spellpower/15) [secondary]. `clear_mind` fixed (`"spellpower_turns"` typo now `"spellpower"`). `doom` made explicit integer 3. `"combat"` → 999 turns. All 128 `"spellpower"` spells already used the formula.
+- [ ] **Complex enemy AI behavior types** — current AI is a single scoring loop. Several archetypes need distinct behavior modes not yet implemented:
+  - `erratic_movement`: random repositioning each turn before attacking (patanga_seeker); weight movement randomly in scoring rather than always advancing
+  - `priority_target`: preferentially targets lowest-HP or most-isolated party member (rakshasa_maneater); add target-selection pre-pass before action scoring
+  - `pack_bonus`: grants attack/dodge boost when N+ allies of same type are alive (gana_runner, matsya_shoal); check tag+count in derived stat calculation
+  - `burrow_emerge`: teleport-to-adjacent + guaranteed melee attack in same turn (dura_burrower); special handling in `burrow` spell resolution in combat_manager
+  - General approach: add optional `"ai_behavior"` field to archetype JSON; EnemySystem passes it into CombatUnit; CombatManager checks it during AI turn
 - [ ] Terrain affecting spell power — no terrain-based spellpower modifiers in combat_manager.gd cast_spell()
 - [ ] Environmental spell interactions — spells create terrain (done); terrain does not yet buff/debuff spells of matching element
 - [ ] **Summoning bonus from overworld terrain** — Summoning spellpower gets +25% based on the overworld tile type where combat takes place (ruins/charnel grounds, forest, mountain, river/lake each evoke different resident spirits). Requires passing the overworld terrain type into the combat context at combat start. Tradition: nagas in water, earth spirits in mountains, hungry ghosts in charnel grounds, nature spirits in forest. Design the full terrain→spirit type→bonus table before implementing.
@@ -728,6 +742,13 @@ These are all additions/changes that should happen in a dedicated tuning pass:
 - [ ] Weapon trait `disease_chance` + `disease_type`: for bone/undead-tainted weapons — add handling same location
 - [ ] Silver weapons: add `"disease_immune_on_hit"` passive — wielder is immune to disease procs from the target they just hit (purification on contact); add to on-hit proc logic
 - [ ] Review all existing weapon/armor items for any that reference arms, legs, or specific body parts — none currently do, but thematic armors (bracers for arm wounds, sabatons for foot wounds) could reduce wound chance for their body location
+
+#### Face slot — Masks (design session needed)
+- [ ] Masks are a major design space — ceremonial, deity, elemental, school-specific; defer to a dedicated pass
+- [ ] Masks should sit in the `face` slot (type `"mask"`) — already mapped in `_find_slot_for_item()`
+- [ ] Consider: deity masks give large Deity Yoga bonus (see Deity Yoga section); school masks give skill_bonuses to a single school; elemental masks give elemental resistance + minor affinity bonus
+- [ ] Possible types: wrathful (combat stats), peaceful (healing/buff bonuses), animal form (special abilities), ritual (Ritual/Yoga bonuses)
+- [ ] Cross-reference with Ritual Garb section (ritual garb masks vs. combat masks vs. deity masks — may need separate type tags)
 
 ---
 
