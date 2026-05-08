@@ -2755,6 +2755,111 @@
           "logistics"
         ]
       }
+    },
+    "smoke_domain_shop": {
+      "name": "Vision of the Smoking Mirror",
+      "type": "domain_spell_trainer",
+      "description": "The mirror teaches, in the way mirrors do — by showing rather than telling. What it shows about smoke, shadow, and the nature of reflected things cannot be found in any guild.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "smoke_veil",
+        "black_mirror",
+        "obsidian_sight",
+        "choking_cloud"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
+    "mud_domain_shop": {
+      "name": "Teachings of the Pit",
+      "type": "domain_spell_trainer",
+      "description": "The mudlings share what they know of deep earth — the patience of silt, the memory of clay, the slow power of things that have been compressed for a very long time. These arts cannot be found in any guild.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "mud_bind",
+        "earthen_form",
+        "deep_calling",
+        "mudslide"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
+    "cloud_domain_shop": {
+      "name": "Teachings of the Cloud Palace",
+      "type": "domain_spell_trainer",
+      "description": "The gandharvas and apsaras of the Cloud Palace teach the sky arts — what it means to move like weather, to see from altitude, to become the medium through which lightning travels. These arts cannot be found in any guild.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "cloud_step",
+        "thunder_clap",
+        "weather_eye",
+        "nimbus_form"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
+    "glass_domain_shop": {
+      "name": "Secrets of the Glass Mountain",
+      "type": "domain_spell_trainer",
+      "description": "The mountain teaches through its own nature — perfect transparency, perfect hardness, perfect memory of having once been scattered sand. What it knows about clarity and cutting cannot be found in any guild.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "glass_shard",
+        "reflecting_mind",
+        "transparent_veil",
+        "crystalline_voice"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
+    "crystal_domain_shop": {
+      "name": "Teachings of the Crystal Cave",
+      "type": "domain_spell_trainer",
+      "description": "The elder yogi has been here long enough to have grown into the crystals themselves — or the crystals have grown into him. Either way, what he knows about resonance, focus, and geometric mind cannot be found in any guild.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "crystal_focus",
+        "gem_sight",
+        "earth_lattice",
+        "resonant_form"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
     }
   },
   "shop_types": {
