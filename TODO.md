@@ -149,9 +149,9 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 - [x] ~~**Lunar calendar system**~~ — 28-day lunar month (4×7, always week-aligned), full moon day 14 / new moon day 28 (both Saturday). Two-line HUD label ("Sunday, 1st lunar day / Deep Night"). Full moon: White magic +20% spellpower + mana partial restore + toast; new moon: Black magic +20% + toast. Both: karma weight ×1.5. Weekday school bonus system: Sun=Fire, Mon=Water, Tue=Sorcery, Wed=Space, Thu=Air, Fri=Enchantment, Sat=Earth — each gives +20% spellpower to that school. All wired into `game_state.gd`, `combat_manager.gd`, `karma_system.gd`, `overworld.gd`, `overworld.tscn`.
 - [ ] Realm-specific rest events — "something stirs in the night" flavour event chance when resting in hell/hungry ghost
 - [x] ~~Rest perks — wire `_process_rest_perks(character, tier)`~~ — **Safe Campsite** (Logistics 3): any party member with the perk eliminates disturbances + +15% HP restore. **Lucid Rest** (Yoga 7): accumulates mantra at Yoga÷2 during any rest tier, no activity slot needed. **Well-Rested** (Medicine 8): after Full Rest, party gets Awareness +3 / Constitution +2 / Initiative +5 for 1 combat via `active_map_buffs`. **Field Surgeon** (Medicine 6): using a medicine item in combat triggers a Medicine roll (d20+Medicine vs DC 14); on success cures one wound mid-fight. All three perks added to perks.json.
-- [ ] Yoga skill boosts pressure decay rate during rest (Yoga level adds to decay_amount)
+- [x] ~~Yoga skill boosts pressure decay rate during rest~~ — already wired in `_do_rest()` (confirmed in audit)
 - [ ] Day/night visual changes on overworld map (lighting overlay, different mob behavior)
-- [ ] Block rest when hostile mob is adjacent (optional tension mechanic)
+- [x] ~~Block rest when hostile mob is adjacent~~ — `_has_adjacent_mob()` check added to `overworld._open_rest_panel()`; shows toast and returns early
 
 ---
 
@@ -382,17 +382,13 @@ Persistent negative status effects from combat or events that do not fully clear
 - [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
 - [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
 - [x] ~~**Spell duration unification**~~ — unified formula: base 2 + floor(Enchantment/2) [main] + floor(spellpower/15) [secondary]. `clear_mind` fixed (`"spellpower_turns"` typo now `"spellpower"`). `doom` made explicit integer 3. `"combat"` → 999 turns. All 128 `"spellpower"` spells already used the formula.
-- [ ] **Complex enemy AI behavior types** — current AI is a single scoring loop. Several archetypes need distinct behavior modes not yet implemented:
-  - `erratic_movement`: random repositioning each turn before attacking (patanga_seeker); weight movement randomly in scoring rather than always advancing
-  - `priority_target`: preferentially targets lowest-HP or most-isolated party member (rakshasa_maneater); add target-selection pre-pass before action scoring
-  - `pack_bonus`: grants attack/dodge boost when N+ allies of same type are alive (gana_runner, matsya_shoal); check tag+count in derived stat calculation
-  - `burrow_emerge`: teleport-to-adjacent + guaranteed melee attack in same turn (dura_burrower); special handling in `burrow` spell resolution in combat_manager
-  - General approach: add optional `"ai_behavior"` field to archetype JSON; EnemySystem passes it into CombatUnit; CombatManager checks it during AI turn
-- [ ] Terrain affecting spell power — no terrain-based spellpower modifiers in combat_manager.gd cast_spell()
+- [x] ~~**Complex enemy AI behavior types**~~ — all four modes implemented: `priority_target` (lowest-HP target selection), `burrow_emerge` (teleport-to-adjacent + `burrow_guaranteed_hit` flag), `erratic_movement` (40% random shuffle per turn), `pack_bonus` (inline `get_pack_bonus_attack/dodge()` helpers counting archetype_id matches). `"ai_behavior"` field in archetype JSON → EnemySystem → CombatUnit. Assigned to dura_burrower, patanga_seeker, rakshasa_maneater, gana_runner, matsya_shoal in animal_archetypes.json.
+- [x] ~~Terrain affecting spell power~~ — already wired in `cast_spell()` terrain bonus block (confirmed in audit)
 - [ ] Environmental spell interactions — spells create terrain (done); terrain does not yet buff/debuff spells of matching element
 - [ ] **Summoning bonus from overworld terrain** — Summoning spellpower gets +25% based on the overworld tile type where combat takes place (ruins/charnel grounds, forest, mountain, river/lake each evoke different resident spirits). Requires passing the overworld terrain type into the combat context at combat start. Tradition: nagas in water, earth spirits in mountains, hungry ghosts in charnel grounds, nature spirits in forest. Design the full terrain→spirit type→bonus table before implementing.
 - [x] ~~**AoE type systematization**~~ — DONE. `AoEResolver` static class in `scripts/autoload/aoe_resolver.gd` is now the single source of truth for all AoE shapes: `circle`, `nova`, `around_caster`, `line`, `cone`, `cone_forward`, `cross`, `band`, `vertical_line`, `field_of_view`. All spells with an `"aoe"` block now get `targeting: "aoe"` and are resolved through `AoEResolver.get_tiles()` in combat_manager, combat_grid, and combat_arena. Canonical data schema uses `size`, `width`, `origin`, `safe_center`. To add a new shape: one function + two match branches in aoe_resolver.gd.
-- [ ] Cone AoE targeting UI — `cone` and `cone_forward` shapes are now computed correctly by `AoEResolver`, but the preview highlight in combat_arena still shows the full range area during targeting (correct tiles shown on hover but not on range highlight). Also `cone_forward` direction should lock to caster's facing rather than requiring the player to aim. Needed by: `powdered_glass` (Glass domain).
+- [x] ~~`cone_forward` targeting UI~~ — `_on_spell_selected()` now sets `range_area` to actual cone tiles; `_on_tile_hovered()` preview uses caster facing; `_try_cast_spell()` overrides target to `caster.grid_position + caster.facing`. Direction is fully locked to facing, no aim required.
+- [ ] `cone` (non-forward) targeting UI — range highlight still shows full area instead of cone silhouette; only hover preview is correct. Needed by: `powdered_glass` (Glass domain).
 - [ ] **Out-of-combat spellcasting** — not implemented. Several spells are designed for overworld/camp use (e.g. `cloud_gate`: retreat to last healing location; future utility spells). Needs a spellbook interface accessible from the overworld HUD or pause menu, mana deducted from caster, and spell effect resolved outside combat. `cloud_gate` specifically needs to teleport the party on the map to the last-visited healing-location tile.
 - [x] ~~Realm-specific combat terrain themes~~ — DONE (overworld terrain generates realm-appropriate obstacles)
 
@@ -719,18 +715,18 @@ Second audit fixed: multi-arm chain gate, enemy body_plan, inventory-full-on-sev
 #### LOW — Polish / missing flavor
 - [ ] **Character sheet doesn't show wounds or missing parts**: wounds array exists on characters but no UI panel displays active wounds, their locations, or missing limbs.
 - [x] ~~**`field_medic` perk ambiguity**~~ — Resolved: `field_medic` stays as in-combat heal (Medicine 1). `wound_specialist` (Medicine 6) added to perks.json as the out-of-combat wound-cure perk; wired into `camp_system._exec_field_surgery()` and `WoundSystem.cure_wounds_field_surgery()` via `override_all` param.
-- [ ] **Multi-arm attack chain balance dial**: `result["extra_arm_results"]` not yet used by combat UI — UI should show "Arm 2: 12 dmg" etc. Currently only raw combat_log messages show this.
+- [x] ~~**Multi-arm attack chain balance dial**~~ — extra arm results already logged via `combat_log` messages in the chain (confirmed in audit)
 
 ### Design Debt: Perks, Spells & Items Needing Body/Wound Integration
 
 These are all additions/changes that should happen in a dedicated tuning pass:
 
 #### Perks to add (reference: "Design Thinking: Wounds, Rest & Calendar" section)
-- [ ] `hardened` (Constitution 14+): 50% chance any incoming crit wound is negated — add to `combat_manager._process_weapon_on_hit_procs()` crit wound block
-- [ ] `undead_hunter` (Earth magic 3+): immune to diseases from undead/diseased attacker hits — add check in same location
-- [ ] `stubborn_body` (Constitution 15+): +1 to all `escalation_rests` thresholds — implement as `character.wound_escalation_delay` checked in `WoundSystem.tick_wounds()`
+- [x] ~~`hardened`~~ (Constitution 14+, Armor L5) — added to perks.json; wired in `_process_weapon_on_hit_procs()`: 50% chance crit wound is negated
+- [x] ~~`undead_hunter`~~ (Earth magic L3) — added to perks.json; wired in `_process_weapon_on_hit_procs()`: immune to disease procs from undead/diseased attackers
+- [x] ~~`stubborn_body`~~ (Constitution 15+, Armor L8, requires hardened) — added to perks.json; wired in `WoundSystem.tick_wounds()`: `threshold += 1`
 - [x] ~~`wound_specialist`~~ — Added to perks.json (Medicine 6+); wired into camp_system._exec_field_surgery() and WoundSystem.cure_wounds_field_surgery()
-- [ ] `iron_cortex`: removes probability check for arms 1–2 (both always fire); arms 3+ still roll normally — add to multi-arm chain in `attack_unit()`
+- [x] ~~`iron_cortex`~~ (Finesse L12, requires akimbo) — added to perks.json; wired in multi-arm chain: arms 1 and 2 always fire when perk is present
 
 #### Spells to add/modify (reference same section)
 - [ ] White magic: add `"cures_wound_id"` or `"cures_wound_category"` field to healing spell definitions; `apply_spell_outcome()` in CombatManager (or overworld spell handler) should check this field and call `WoundSystem.cure_wound()`
@@ -851,8 +847,8 @@ Full sweep of unimplemented, unfinished, and unconnected systems.
 - [x] `apply_damage()`: `hp_cannot_drop_below_1` (Death_Immunity: HP floor at 1)
 
 **Status effects — still not wired:**
-- [ ] `Taunt` (`must_attack_taunter`): requires AI targeting override — affected unit must target the taunter; complex AI integration deferred
-- [ ] `constitution_bonus`/`constitution_penalty` (Constitution_Buff / Constitution_Minus_2): affects max_hp mid-combat, requires HP recalculation system not yet built
+- [x] ~~`Taunt` (`must_attack_taunter`)~~ — `_get_ai_target()` wrapper in combat_arena checks enemy's Taunt status and overrides target to the source unit; replaces all `_find_nearest_enemy` calls in `_do_enemy_turn`
+- [x] ~~`constitution_bonus`/`constitution_penalty` (Constitution_Buff / Constitution_Minus_2)~~ — `_apply_status_effect()` adjusts `max_hp` immediately (10 HP per point, stored as `hp_delta` on effect entry); `_on_status_expired()` reverses it precisely
 - [ ] Aura status effects (Soothing_Presence, Guardian_Kings, etc.): handled per-mantra, not via status effects — architecture differs
 - [ ] Karmic_Bond / `share_healing_75_percent` + `linked_to_ally`: shared HP system not built
 - [ ] Eternal_Vow (`return_on_death_next_turn` / `return_with_20_percent_hp`): resurrection not built
@@ -869,12 +865,12 @@ Full sweep of unimplemented, unfinished, and unconnected systems.
 
 **Race features not wired:**
 - [ ] `red_devil`: `better_starting_weapon` — TODO note in races.json but not implemented; red devils get the same starting weapons as everyone else
-- [ ] `yellow_devil`: `extra_starting_gold` — TODO note in races.json, not implemented
+- [x] ~~`yellow_devil`: `extra_starting_gold`~~ — `"starting_gold": 50` field added to races.json; `CharacterSystem.create_player_character()` reads `birth_data.get("starting_gold", 0)` and calls `GameState.add_gold()`
 - [ ] `skeleton`: 50% physical damage reduction defined in races.json `base_resistances`, but combat_manager ignores `base_resistances` on enemies; only CombatUnit loaded from character_dict gets them
 
 **Overworld gaps:**
 - [ ] `_process_rest_perks` now handles Lucid Rest; Yoga skill level itself should also boost `decay_amount` during rest (Yoga 1–10 adding 2–20 to decay)
-- [ ] Location-specific camp activity suppression/enhancement — `suppress_activities` and `enhance_activities` fields exist in map object design but `get_available_activities()` never reads them
+- [x] ~~Location-specific camp activity suppression/enhancement~~ — `suppress_activities` and `enhance_activities` already read in `get_available_activities()` (confirmed in audit)
 
 ### Medium Priority
 
@@ -890,7 +886,7 @@ Full sweep of unimplemented, unfinished, and unconnected systems.
 ### Low Priority / Design Phase
 
 **Combat features:**
-- [ ] Terrain spell power modifiers — tiles with fire/water/etc. terrain don't boost matching-school spells cast on them
+- [x] ~~Terrain spell power modifiers~~ — already wired in `cast_spell()` (confirmed in audit)
 - [ ] Summoning terrain bonus — summoning spellpower should get +25% based on matching overworld terrain (water = nagas, mountains = earth spirits, etc.)
 - [ ] Out-of-combat spellcasting — utility spells like `cloud_gate` are designed for overworld use but no spellbook UI exists outside combat
 
