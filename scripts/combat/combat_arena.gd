@@ -3628,7 +3628,7 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 	# Find best target based on range
 	var attack_range = unit.get_attack_range()
 	var is_ranged = attack_range > 1
-	var nearest: CombatUnit = _find_nearest_enemy(unit, player_units)
+	var nearest: CombatUnit = _get_ai_target(unit, player_units)
 
 	if nearest == null:
 		CombatManager.end_turn()
@@ -3670,7 +3670,7 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 				used_active_skill_this_turn = true
 				# Check if target died
 				if not nearest.is_alive():
-					nearest = _find_nearest_enemy(unit, player_units)
+					nearest = _get_ai_target(unit, player_units)
 					if nearest == null:
 						break
 				continue
@@ -3682,7 +3682,7 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 			var spell_cast = _ai_try_cast_spell(unit, castable_spells, player_units, nearest)
 			if spell_cast:
 				if not nearest.is_alive():
-					nearest = _find_nearest_enemy(unit, player_units)
+					nearest = _get_ai_target(unit, player_units)
 					if nearest == null:
 						break
 				continue
@@ -3693,7 +3693,7 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 				used_consumable_this_turn = true
 				# Refresh nearest after potential kills
 				if not nearest.is_alive():
-					nearest = _find_nearest_enemy(unit, player_units)
+					nearest = _get_ai_target(unit, player_units)
 					if nearest == null:
 						break
 				continue
@@ -3724,7 +3724,7 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 					_log_message("%s attacks %s - MISS!" % [unit.unit_name, nearest.unit_name])
 
 				if not nearest.is_alive():
-					nearest = _find_nearest_enemy(unit, player_units)
+					nearest = _get_ai_target(unit, player_units)
 					if nearest == null:
 						break
 		else:
@@ -4195,6 +4195,20 @@ func _find_nearest_enemy(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
 			nearest = enemy
 
 	return nearest
+
+
+## Like _find_nearest_enemy but also honours Taunt status (must_attack_taunter):
+## if the acting unit is under Taunt, forces targeting of whoever applied it.
+func _get_ai_target(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
+	var target: CombatUnit = _find_nearest_enemy(unit, enemies)
+	for se in unit.status_effects:
+		if se.get("status", "") == "Taunt":
+			var taunter = se.get("source", null)
+			if taunter != null and taunter.is_alive() and taunter.is_targetable() \
+					and taunter in enemies:
+				target = taunter
+			break
+	return target
 
 
 ## Run a free bonus turn for a summon unit outside the normal turn order.
