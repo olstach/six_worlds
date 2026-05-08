@@ -873,7 +873,11 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 			var aoe_def = selected_spell.get("aoe", {"type": "circle", "size": 2})
 			var caster = CombatManager.get_current_unit()
 			if caster:
-				combat_grid.show_aoe_shape_preview(aoe_def, caster.grid_position, grid_pos)
+				# cone_forward is locked to caster facing — always preview in that direction
+				var preview_target := grid_pos
+				if aoe_def.get("type", "") == "cone_forward":
+					preview_target = caster.grid_position + caster.facing
+				combat_grid.show_aoe_shape_preview(aoe_def, caster.grid_position, preview_target)
 			else:
 				combat_grid.clear_aoe_preview()
 		else:
@@ -1341,6 +1345,20 @@ func _on_spell_selected(spell: Dictionary) -> void:
 	var valid_targets = CombatManager.get_spell_targets(unit, spell.id)
 	var range_area = combat_grid.get_spell_range_tiles(unit.grid_position, 1, spell_range)
 
+	var aoe_type = spell_data.get("aoe", {}).get("type", "")
+
+	# cone_forward: fixed direction locked to caster facing — show the cone immediately
+	# and cast on click anywhere in it (direction is from facing, not mouse position).
+	if aoe_type == "cone_forward":
+		var aoe_def: Dictionary = spell_data.get("aoe", {})
+		var cone_tiles: Array[Vector2i] = AoEResolver.get_tiles(aoe_def, unit.grid_position,
+			unit.grid_position + unit.facing, combat_grid.grid_size)
+		range_area = cone_tiles
+		valid_targets = cone_tiles
+
+	# cone: range area stays full, but don't show a misleading blob — clear on hover
+	# and let show_aoe_shape_preview handle the directional preview instead.
+
 	# Always show range, even if no valid targets
 	current_action_mode = ActionMode.CAST_SPELL
 	combat_grid.highlight_spell_range_and_area(range_area, valid_targets)
@@ -1369,7 +1387,14 @@ func _try_cast_spell(target_pos: Vector2i) -> void:
 		_cancel_action_mode()
 		return
 
-	var result = CombatManager.cast_spell(caster, selected_spell.id, target_pos)
+	# cone_forward locks direction to caster facing — override target_pos so AoEResolver
+	# gets the correct direction regardless of which tile the player clicked.
+	var actual_target := target_pos
+	var spell_data = CombatManager.get_spell(selected_spell.id)
+	if spell_data.get("aoe", {}).get("type", "") == "cone_forward":
+		actual_target = caster.grid_position + caster.facing
+
+	var result = CombatManager.cast_spell(caster, selected_spell.id, actual_target)
 
 	if result.success:
 		# Logging is handled by _on_spell_cast signal
