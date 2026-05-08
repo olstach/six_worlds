@@ -695,6 +695,19 @@ func apply_outcome(outcome: Dictionary) -> void:
 							(" (and %d child parts)" % (severed.size() - 1)) if severed.size() > 1 else ""
 						])
 
+		# Supply rewards — e.g. {"food": 2, "herbs": 1}
+		if "supplies" in rewards:
+			var supply_rewards = rewards.supplies
+			for supply_type in supply_rewards:
+				var amount: int = int(supply_rewards[supply_type])
+				if amount > 0:
+					GameState.add_supply(supply_type, amount)
+
+		# Flag rewards — e.g. {"found_bone_raft_name": true}
+		if "flags" in rewards:
+			for flag_key in rewards.flags:
+				GameState.set_flag(flag_key, rewards.flags[flag_key])
+
 		# gold_returned: the NPC refuses the money and gives it back (e.g. dark cave yogini)
 		if "gold_returned" in rewards and rewards.gold_returned:
 			# Cost was deducted when the choice cost was applied; refund the gold cost here.
@@ -831,7 +844,18 @@ func apply_outcome(outcome: Dictionary) -> void:
 			if companion_id == "random":
 				var party_names: Array = CharacterSystem.get_party().map(func(c): return c.get("name", ""))
 				var pool: Array = outcome.get("companion_pool", [])
-				var all_ids: Array = pool if not pool.is_empty() else CompanionSystem.get_all_definitions().keys()
+				var all_ids: Array
+				if not pool.is_empty():
+					all_ids = pool
+				else:
+					# Filter by current realm so realm-specific companions stay in their realm.
+					# Companions with realm "any" appear everywhere.
+					var current_realm: String = GameState.current_world
+					all_ids = CompanionSystem.get_all_definitions().keys().filter(func(cid):
+						var def: Dictionary = CompanionSystem.get_definition(cid)
+						var def_realm: String = def.get("realm", "any")
+						return def_realm == "any" or def_realm == current_realm
+					)
 				var available: Array = all_ids.filter(func(cid):
 					var def = CompanionSystem.get_definition(cid)
 					return not def.get("name", cid) in party_names

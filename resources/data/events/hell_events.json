@@ -694,7 +694,7 @@
           "text": "Sit before the gate and meditate on the nature of death",
           "requirements": {
             "skills": {
-              "yoga": 3
+              "yoga": 5
             }
           },
           "outcome": {
@@ -1863,7 +1863,7 @@
           "text": "Strike the demon down with sorcery before he finishes boasting",
           "requirements": {
             "skills": {
-              "sorcery": 3
+              "sorcery": 4
             }
           },
           "outcome": {
@@ -2882,7 +2882,7 @@
           "text": "Assert yourself as a senior practitioner — take over the session",
           "requirements": {
             "skills": {
-              "leadership": 3
+              "leadership": 4
             }
           },
           "outcome": {
@@ -4843,6 +4843,70 @@
               "hell": 1
             }
           }
+        },
+        {
+          "id": "recognize_the_cost",
+          "type": "requirement",
+          "text": "You know what showing mercy in hell costs. Acknowledge it.",
+          "requirements": {
+            "skills": {
+              "yoga": 3
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "karnak",
+            "free": true,
+            "text": "He looks at you carefully. The recognition is mutual — you have both thought about the same thing. 'You understand it,' he says. It isn't a question. He stands and picks up his pack.",
+            "karma": {
+              "human": 3,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "offer_purpose",
+          "type": "requirement",
+          "text": "Offer him something worth serving — not just somewhere to be.",
+          "requirements": {
+            "skills": {
+              "leadership": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "karnak",
+            "free": true,
+            "text": "He listens to what you are doing and why. Something shifts behind his eyes for the first time in a while. 'That I could follow,' he says.",
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "just_ask",
+          "type": "roll",
+          "text": "Be someone worth following — just ask him.",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "karnak",
+            "free": true,
+            "text": "He looks at you for a long moment, then stands and rolls his shoulders. 'Alright. Can't be worse than this.'",
+            "karma": {
+              "human": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "He shakes his head. 'No offense. I just need a sign it is worth it this time. Come back if things get interesting.'",
+            "karma": {}
+          }
         }
       ]
     },
@@ -6062,6 +6126,758 @@
           "tab_name": "Alchemist",
           "shop_id": "brimstone_lab",
           "icon": "⚗"
+        }
+      ]
+    },
+    "hell_angulimala_pursuit": {
+      "id": "hell_angulimala_pursuit",
+      "title": "The Garland",
+      "realm": "hell",
+      "text": "The road ahead is clear except for one figure, standing still. Behind him: several bodies. He watches you approach with the calm attention of someone who has made his peace with violence.\n\nAngulimāla. You know the name even here. He does not move to block you. He just watches — to see what you will do.",
+      "choices": [
+        {
+          "id": "walk_around",
+          "type": "default",
+          "text": "Give him a wide berth. Some problems aren't yours to solve.",
+          "outcome": {
+            "type": "text",
+            "text": "He watches you go. You feel the weight of his attention until the road curves out of sight.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "walk_toward",
+          "type": "requirement",
+          "text": "Walk toward him — not around him. Calmly.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "angulimala",
+            "free": true,
+            "text": "He watches you walk toward him. The calm does not waver — you are not afraid of him, and it shows in every step. Something shifts behind his eyes. He has met this once before, in a different life, a different road, and it ended the same way it ended him.\n\n\"You're not afraid,\" he says. It is not a compliment. It is recognition.\n\nHe turns and falls into step beside you.",
+            "karma": {
+              "god": 3,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "acknowledge_the_craft",
+          "type": "requirement",
+          "text": "Acknowledge what you see — not what he's done with it, but the skill itself.",
+          "requirements": {
+            "skills": {
+              "martial_arts": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "angulimala",
+            "free": true,
+            "text": "He tilts his head slightly. Most people flinch or reach for a weapon. You are looking at the bodies the way a craftsperson looks at joinery — reading method, not grieving consequence.\n\n\"You know the difference,\" he says.\n\nYou do. So does he. That turns out to be enough.",
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "read_the_stillness",
+          "type": "roll",
+          "text": "His stillness isn't threat — read what it actually is, and act on it.",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "angulimala",
+            "free": true,
+            "text": "You see it — the absolute composure of someone who is tired. Not of violence. Of the point of it.\n\n\"You're done,\" you say. Not a question.\n\nA long silence. Then: \"I need somewhere that isn't this.\"\n\nYou offer that. He follows.",
+            "karma": {
+              "human": 3,
+              "god": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "combat",
+            "enemy_group": "demon_elite",
+            "text": "Your movement reads wrong — a reach, a hesitation. He has spent a long time watching for exactly that. He moves before you finish the thought.",
+            "difficulty": "hard",
+            "karma": {
+              "hell": 3
+            }
+          }
+        }
+      ]
+    },
+    "hell_water_lily": {
+      "id": "hell_water_lily",
+      "title": "Still Water",
+      "realm": "hell",
+      "text": "At the edge of a frozen river in the cold hell wastes, a blue-skinned woman stands alone. She is looking down at the ice. The water beneath it is visible, dark and still.\n\nShe does not move when you approach. She has been here a while.",
+      "choices": [
+        {
+          "id": "leave_her",
+          "type": "default",
+          "text": "Leave her to her silence. Not every stillness wants company.",
+          "outcome": {
+            "type": "text",
+            "text": "You walk on. The frozen river does not change. Neither does she.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "reach_through_water",
+          "type": "requirement",
+          "text": "Place your hand on the ice. Commune through it.",
+          "requirements": {
+            "skills": {
+              "water_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "water_lily",
+            "free": true,
+            "text": "The cold travels up your arm. You let it. Something underneath the surface stirs — not the water, but her attention.\n\nShe looks at your hand on the ice, then at you. \"You're not afraid of it,\" she says.\n\n\"No.\"\n\nShe steps back from the river's edge for the first time in a long while. \"Where are you going?\"",
+            "karma": {
+              "human": 3,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "sit_in_silence",
+          "type": "requirement",
+          "text": "Sit beside her. Say nothing. Wait.",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "water_lily",
+            "free": true,
+            "text": "You sit. You do not speak. The cold hell wind moves across the ice.\n\nAfter a long time — long enough that most people would have given up — she turns and looks at you properly for the first time.\n\n\"You stayed.\"\n\n\"Yes.\"\n\nShe does not ask why. She seems to already understand. When you stand to leave, she stands with you.",
+            "karma": {
+              "god": 3,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "speak_plainly",
+          "type": "roll",
+          "text": "Say something to her — something real, not reassurance.",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "water_lily",
+            "free": true,
+            "text": "What you say is simple. Honest. Not an offer to fix anything — just acknowledgment of what she is looking at and why.\n\nShe is quiet for a moment. Then: \"You didn't try to talk me out of it.\"\n\n\"No.\"\n\nShe turns from the river. \"I'll come with you.\"",
+            "karma": {
+              "human": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "She looks at you briefly, then back at the ice. The words weren't wrong, exactly — they just weren't right. She doesn't respond. The river holds her attention more completely than you do.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+    "hell_serji_watching": {
+      "id": "hell_serji_watching",
+      "title": "Old Habit",
+      "realm": "hell",
+      "text": "A red devil stands apart from a pit fight, watching. He is the biggest person in the vicinity by a significant margin and the only one not involved. Arms crossed. Expression unreadable.\n\nThe fighters below are working hard. He looks like he stopped caring about the outcome some time ago but cannot quite bring himself to walk away.",
+      "choices": [
+        {
+          "id": "walk_past",
+          "type": "default",
+          "text": "Walk past. Some people need to find their own door.",
+          "outcome": {
+            "type": "text",
+            "text": "He doesn't look at you. The fight continues below. You leave him to his watching.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "stand_beside_him",
+          "type": "requirement",
+          "text": "Stand beside him and watch. Let him see you understand what you're looking at.",
+          "requirements": {
+            "skills": {
+              "unarmed": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "serji",
+            "free": true,
+            "text": "You stand beside him. You watch the same fight. After a while, he speaks without looking at you.\n\n\"He's winning because the other one is afraid of his left hand. Doesn't know that himself yet.\"\n\n\"I see it,\" you say.\n\nHe looks at you sideways. A long pause. \"You training anyone?\"\n\n\"I could use someone who knows what they're looking at.\"",
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "offer_something_worth_following",
+          "type": "requirement",
+          "text": "Tell him what you're doing. Make it worth leaving this for.",
+          "requirements": {
+            "skills": {
+              "leadership": 5
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "serji",
+            "free": true,
+            "text": "He listens without interrupting. When you finish, the pit fight has ended below — neither of you noticed.\n\n\"The gym stopped meaning anything when I got to the top of it,\" he says. \"What you're describing hasn't got a top.\"\n\nHe uncrosses his arms. \"Alright.\"",
+            "karma": {
+              "human": 3,
+              "god": 1
+            }
+          }
+        },
+        {
+          "id": "ask_why_he_still_watches",
+          "type": "roll",
+          "text": "Ask him why he still watches, if he's done with it.",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "serji",
+            "free": true,
+            "text": "He's quiet for a long moment. Then: \"Habit. No other reason.\"\n\n\"That's the saddest thing I've heard today.\"\n\nSomething in his face shifts — surprise, maybe, that anyone would say that. Then something closer to a laugh.\n\n\"Yeah,\" he says. \"Probably is.\" He turns from the pit. \"You going somewhere?\"",
+            "karma": {
+              "human": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "He looks at you once, the way you look at a bad technique — briefly, to catalogue what's wrong. Then back to the fight. He doesn't answer.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+    "hell_tejasimha_fire": {
+      "id": "hell_tejasimha_fire",
+      "title": "The Best Seat",
+      "realm": "hell",
+      "text": "A building is burning. Not collapsing, not yet — fully, magnificently on fire, the kind that takes your breath away from ten meters off.\n\nA red devil is standing inside it. He is laughing. Not the laughter of someone losing their mind — hearty, genuine, appreciative. He is watching it the way you watch a great performance.",
+      "choices": [
+        {
+          "id": "back_away",
+          "type": "default",
+          "text": "Back away from the lunatic in the burning building.",
+          "outcome": {
+            "type": "text",
+            "text": "The laughter follows you down the road. The building eventually collapses. You're not sure what happened to him. Given everything, probably fine.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "step_into_the_fire",
+          "type": "requirement",
+          "text": "Step into the fire. Stand beside him. See what he's seeing.",
+          "requirements": {
+            "skills": {
+              "fire_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "tejasimha",
+            "free": true,
+            "text": "The heat is extraordinary. You let it move around you rather than fighting it. He notices immediately — turns to look at you with something like delight.\n\n\"You're not burning,\" he says.\n\n\"Neither are you.\"\n\nHe grins. \"I never do. Not on the inside.\" He gestures at the fire around you. \"Beautiful, isn't it?\"\n\nYou stand together in it for a while before he follows you out.",
+            "karma": {
+              "hell": 1,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "call_from_outside",
+          "type": "requirement",
+          "text": "Call something genuinely funny into the burning building.",
+          "requirements": {
+            "skills": {
+              "comedy": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "tejasimha",
+            "free": true,
+            "text": "The laugh that comes back from inside the fire is different from before — surprised, real.\n\nHis head appears at a burning window. \"Who said that?\"\n\n\"Me.\"\n\nHe stares at you through the smoke and flame for a moment. Then: \"Wait there. I'm coming out.\"",
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "hold_your_ground",
+          "type": "roll",
+          "text": "Hold your ground in the heat until he notices. Don't flinch.",
+          "requirements": {
+            "roll": {
+              "attribute": "focus",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "tejasimha",
+            "free": true,
+            "text": "You plant your feet and stay. The heat is punishing. You don't move.\n\nHis laughter slows. He turns. For the first time, he is actually looking at you — the person standing in a firestorm out of stubbornness or something he can't name yet.\n\n\"You're interesting,\" he says. \"Come here.\"",
+            "karma": {
+              "human": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The heat wins. You step back, eyes watering. The laughter inside the building doesn't pause. He didn't see you — or if he did, what he saw wasn't enough.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+    "hell_sineater_encounter": {
+      "id": "hell_sineater_encounter",
+      "title": "The Thirteenth Name",
+      "realm": "hell",
+      "text": "Something is wrong with the stretch of road ahead. Not visibly — the landmarks are where they should be. But the space between them feels occupied in a way that has nothing to do with sight.\n\nThe sensation of being read passes over you like cold water. Something vast and hungry has noticed you are here. It has twelve names already. It is considering a thirteenth.",
+      "choices": [
+        {
+          "id": "back_away_carefully",
+          "type": "default",
+          "text": "Back away. Slowly. Entities like this respect nothing, but they respect distance.",
+          "outcome": {
+            "type": "text",
+            "text": "The presence recedes as you put ground between you. Whatever it is, it does not follow — not yet. The road normalizes behind you. You take a different route.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "address_its_nature",
+          "type": "requirement",
+          "text": "Greet it correctly — by speaking to what it is, not what it looks like.",
+          "requirements": {
+            "skills": {
+              "black_magic": 5
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "sineater_thirteen",
+            "free": true,
+            "text": "You name its nature — not a name but a category, the oldest classification for entities born from shattering. The presence goes very still.\n\nThen, something shifts. The hunger is still there, but turned sideways. Curious.\n\n\"You know what I am,\" it says. The voice comes from nowhere in particular.\n\n\"Yes.\"\n\n\"No one has said that before without running afterward.\"\n\nA form coalesces at the edge of sight — something like a person, the way that lightning is something like light. \"I will walk with you for a while,\" it says. \"I want to see what you do with that knowledge.\"",
+            "karma": {
+              "god": 2,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "offer_perspective",
+          "type": "requirement",
+          "text": "Offer it something other than a soul to absorb — a perspective from outside the hunger.",
+          "requirements": {
+            "skills": {
+              "space_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "sineater_thirteen",
+            "free": true,
+            "text": "You open yourself to the emptiness rather than filling it — show it the space between things, where hunger has no object. For a moment the presence is genuinely disoriented.\n\nThen fascinated.\n\n\"That is not a thing I have encountered,\" it says slowly. \"Twelve names and none of them knew that.\"\n\nThe form that solidifies is almost gentle. \"Show me more of that.\"",
+            "karma": {
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "hold_yourself_together",
+          "type": "roll",
+          "text": "Let it read you — and don't come apart while it does.",
+          "requirements": {
+            "roll": {
+              "attribute": "focus",
+              "difficulty": "difficult"
+            }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "sineater_thirteen",
+            "free": true,
+            "text": "The scrutiny is total. Every surface of yourself is turned over and examined. Most people fragment under that kind of attention — become something easier to absorb.\n\nYou don't.\n\nA long pause. \"You stayed yourself,\" it says, almost puzzled.\n\n\"Yes.\"\n\n\"Interesting. I should like to understand how.\" The form that takes shape beside you is curious rather than hungry — for now. \"Lead on.\"",
+            "karma": {
+              "god": 3,
+              "human": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The scrutiny is too complete. For a moment you are not entirely sure which thoughts are yours. You stumble back, gasping.\n\nThe presence withdraws, satisfied with the inspection if not the meal. You are whole — mostly. The road ahead feels different for a while.",
+            "rewards": {
+              "xp": -20
+            },
+            "karma": {
+              "hell": 2
+            }
+          }
+        }
+      ]
+    },
+    "hell_dvijihva_chase": {
+      "id": "hell_dvijihva_chase",
+      "title": "Two Invoices",
+      "realm": "hell",
+      "text": "A blue devil is moving through the junction ahead with the practiced urgency of someone who has been in this exact situation before. He checks both approaches at every turn, tracks two separate routes in his head simultaneously, and is doing it with an air of irritated professionalism.\n\nYou can hear the reason why from both directions. Two sets of footsteps. Two sets of clients who have recently compared notes.",
+      "choices": [
+        {
+          "id": "not_your_problem",
+          "type": "default",
+          "text": "Not your problem. Clear the junction before the clients arrive.",
+          "outcome": {
+            "type": "text",
+            "text": "You get out of the way. A few junctions later, you hear a brief commotion behind you. Then silence. Whether that means he escaped or didn't, you genuinely can't tell.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "manage_both_pursuers",
+          "type": "requirement",
+          "text": "Help him play both clients — you take one side, he takes the other.",
+          "requirements": {
+            "skills": {
+              "guile": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "dvijihva",
+            "free": true,
+            "text": "You split without discussing it — instinct meeting instinct. Ten minutes later, both clients have been sent in wrong directions, each convinced the other one was dealt with.\n\nHe looks at you afterward with genuine appreciation. \"You understood the problem immediately.\"\n\n\"So did you, apparently. Twice.\"\n\nA dry laugh. \"Occupational hazard. You're looking for a sorcerer?\"",
+            "karma": {
+              "hungry_ghost": 2,
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "demonstrate_craft",
+          "type": "requirement",
+          "text": "Cast something that stops both pursuers in their tracks — show him what real craft looks like.",
+          "requirements": {
+            "skills": {
+              "sorcery": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "dvijihva",
+            "free": true,
+            "text": "The effect is clean and leaves no trace. Both sets of footsteps stop. He watches the working from the junction, and what crosses his face isn't gratitude — it's professional assessment.\n\n\"That's a good working,\" he says. \"Who trained you?\"\n\nThe conversation that follows lasts until the junction is well behind you. He is still talking when you realize he has simply joined your party.",
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "spot_the_closer_one",
+          "type": "roll",
+          "text": "Spot which client is closer and warn him with enough precision to be useful.",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "dvijihva",
+            "free": true,
+            "text": "\"Left side, thirty seconds. The right one turned at the last junction.\"\n\nHe pivots immediately, adjusts his route, and slips through a gap you would not have noticed yourself. Two minutes later he is beside you, walking casually.\n\n\"Good eyes,\" he says. \"I owe you one. Or would, except — \" He tilts his head. \"Actually, where are you headed?\"",
+            "karma": {
+              "human": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You call the wrong direction. He goes that way and nearly walks into one of his pursuers. The resulting scramble is chaotic and you lose sight of him in the confusion. He probably survived — he had the look of someone who has done this before — but he is not inclined to stop and chat.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+    "hell_coolhead_aftermath": {
+      "id": "hell_coolhead_aftermath",
+      "title": "Post-Clarity",
+      "realm": "hell",
+      "text": "A black devil sits in the wreckage of what was recently a building. He is writing in a notebook. The walls around him are scorched. There is a crater behind him of impressive diameter.\n\nHe looks up as you approach, expression neutral. He does not seem distressed. He seems, if anything, very calm — the particular calm of someone who has been through the seal-breaking and come out the other side of it.",
+      "choices": [
+        {
+          "id": "keep_moving",
+          "type": "default",
+          "text": "Keep moving. Whatever happened here is between him and the building.",
+          "outcome": {
+            "type": "text",
+            "text": "He watches you go, then returns to his notes. The crater will be there long after both of you have moved on.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "recognize_the_documentation",
+          "type": "requirement",
+          "text": "Look at what he's writing. Recognize what he's actually documenting.",
+          "requirements": {
+            "skills": {
+              "learning": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "coolhead_hotblood",
+            "free": true,
+            "text": "The notes are behavioral — not damage assessment but internal process, the phenomenology of the retort breaking. He is treating himself as a specimen.\n\n\"You're cataloguing it,\" you say.\n\n\"If I don't, who will?\" He glances at the crater. \"This is the third time. The interval is getting shorter. I should understand the mechanism.\"\n\nYou talk for a while about mechanisms. By the end, he is walking with you.",
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "offer_actual_calm",
+          "type": "requirement",
+          "text": "Offer a different kind of stillness — not suppression, but actual peace.",
+          "requirements": {
+            "skills": {
+              "yoga": 3
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "coolhead_hotblood",
+            "free": true,
+            "text": "You settle beside him and demonstrate what you mean — not blocking the feeling but letting it move through without accumulating. He watches with the careful attention of someone encountering an unfamiliar technique.\n\n\"I've been treating it like a pressure problem,\" he says slowly. \"Structural.\"\n\n\"It isn't.\"\n\n\"No.\" He closes the notebook. \"Show me that again, and I'll come with you.\"",
+            "karma": {
+              "god": 2,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "ask_how_it_felt",
+          "type": "roll",
+          "text": "Ask how it felt. Without judgment — you are genuinely curious.",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "coolhead_hotblood",
+            "free": true,
+            "text": "He blinks. Most people, apparently, do not ask that.\n\n\"Clarifying,\" he says, after a moment. Then, more slowly: \"Like setting down something I'd been carrying so long I'd forgotten its weight.\"\n\nHe looks at the crater again. \"The building was empty. I made sure.\"\n\n\"I didn't ask.\"\n\n\"No.\" He stands, brushing ash from his robe. \"You want a sorcerer who's done suppressing things?\"",
+            "karma": {
+              "human": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "He looks at you with the polite wariness of someone who has heard that question before and found it a prelude to a lecture. He answers briefly and returns to his notes. The conversation does not develop.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+    "hell_princess_spiderface": {
+      "id": "hell_princess_spiderface",
+      "title": "First Impression",
+      "realm": "hell",
+      "text": "A black devil stands in the middle of a street. The ash around her has footprints leading away — running, by the depth and spacing of them. She is watching after the person who left.\n\nShe is not upset. She has the look of someone who is simply used to it. Her face is the reason. She knows this.",
+      "choices": [
+        {
+          "id": "also_back_away",
+          "type": "default",
+          "text": "Take a different route. You don't need to add to her morning.",
+          "outcome": {
+            "type": "text",
+            "text": "You go around. She doesn't see you do it. This, at least, you spare her.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "healers_approach",
+          "type": "requirement",
+          "text": "Approach with a healer's attention — look past the surface to what's actually there.",
+          "requirements": {
+            "skills": {
+              "white_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "princess_spiderface",
+            "free": true,
+            "text": "You walk up to her directly. Healers learn early not to flinch — injury looks like injury, whatever form it takes.\n\nShe turns. Waits for the reaction.\n\nYou simply say: \"Are you alright?\"\n\nA long silence. \"People don't usually — \" She stops. Starts again. \"No. I mean, yes. I'm fine. I just —\"\n\n\"Do you want company?\" you ask.\n\nShe looks at you for a long time. Then: \"Yes. Actually.\"",
+            "karma": {
+              "human": 4,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "speak_to_the_spirit",
+          "type": "requirement",
+          "text": "Greet her the way you'd greet a spirit — speak to what's behind the surface.",
+          "requirements": {
+            "skills": {
+              "space_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "princess_spiderface",
+            "free": true,
+            "text": "Space magic teaches you that what you see and what is there are not always the same thing. You address the presence behind the face — the one that names spirits by name and asks how they've been.\n\nSomething brightens in her eyes. \"You can tell.\"\n\n\"Yes.\"\n\n\"Most people can't. Or won't.\" She glances at the retreating footprints. \"Their loss, honestly. The spirits I know are very good company.\" She turns. \"Are you going somewhere?\"",
+            "karma": {
+              "god": 3,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "dont_look_away",
+          "type": "roll",
+          "text": "Hold her gaze and say something true to the person behind the face.",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "princess_spiderface",
+            "free": true,
+            "text": "You don't flinch. You don't make a point of not flinching. You just look at her the way you'd look at anyone, and say something that belongs to the conversation rather than to her face.\n\nShe exhales — a small, controlled sound. \"That was nice,\" she says, quietly. \"That was really very nice.\" A pause. \"I'm Princess Spiderface. People run, usually, so I don't get to do introductions much. Where are you headed?\"",
+            "karma": {
+              "human": 4
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You hold her gaze, but something in what you say catches wrong — too careful, too deliberate. She can tell you're working at it. She smiles, but it is the practiced smile of someone who has been given effort instead of ease.\n\n\"Thank you for trying,\" she says. \"That's more than most.\" She turns back to the empty street.",
+            "karma": {
+              "human": 1
+            }
+          }
+        }
+      ]
+    },
+    "hell_samvibrahmi_fortress": {
+      "id": "hell_samvibrahmi_fortress",
+      "title": "Security Theater",
+      "realm": "hell",
+      "text": "A roadside ruin has been transformed. Tripwires — visible only if you know what to look for. Sight-lines from every approach accounted for. A small figure inside is crouched over what appears to be a very precise map, muttering assessments of approach vectors.\n\nHe looks up when he realizes you've reached the interior of his perimeter without triggering a single countermeasure. His expression cycles through surprise, calculation, and something that might be professional offense.",
+      "choices": [
+        {
+          "id": "announce_yourself",
+          "type": "default",
+          "text": "Announce yourself calmly and give him time to collect himself.",
+          "outcome": {
+            "type": "text",
+            "text": "He accepts this with dignity and proceeds to document your entry vector in significant detail. You exchange brief pleasantries and move on. He returns to his map.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "walk_him_through_it",
+          "type": "requirement",
+          "text": "Walk him through exactly how you got past every single one of his defenses.",
+          "requirements": {
+            "skills": {
+              "comedy": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "samvibrahmi",
+            "free": true,
+            "text": "You do it with affection — the way you'd point out a brilliant mistake to someone you respected. By the third countermeasure you breached without noticing, his expression has moved from offense to pained hilarity.\n\nBy the seventh, he is laughing despite himself.\n\n\"It's the cabbage cart problem,\" he says finally. \"You plan for every threat you can imagine, and then—\"\n\n\"The one you didn't imagine.\"\n\n\"Yes.\" He folds the map. \"Traveling with you would be very bad for my threat assessments. I'll do it.\"",
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "find_the_gap",
+          "type": "requirement",
+          "text": "Identify the one gap in his defenses he hasn't thought of yet.",
+          "requirements": {
+            "skills": {
+              "guile": 5
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "samvibrahmi",
+            "free": true,
+            "text": "You point to a spot on his map. \"From there. At this elevation, in rain. You've assumed flat-light approach vectors.\"\n\nHe stares at the spot. His eye twitches once.\n\n\"That's — \" He stops. \"I have been working on this for three weeks.\"\n\n\"I know.\"\n\nAnother pause. \"Do you want a job? I mean — I assume you have a job. Can I have a job? The perimeter here is clearly inadequate.\"",
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "make_it_useful",
+          "type": "roll",
+          "text": "Invite him to redirect all this preparation into something that actually makes sense.",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "recruit_companion",
+            "companion_id": "samvibrahmi",
+            "free": true,
+            "text": "\"You've put all this work into defending a ruin that no one was going to attack anyway,\" you say. \"Travel with me and I can promise you: the threats will be real.\"\n\nHe looks at you. Then at his map. Then at you again.\n\n\"The threats will be real,\" he repeats slowly, as though tasting the words.\n\n\"Genuinely dangerous. Multiple approaches. Poor visibility. Everything you've been preparing for.\"\n\nHe rolls up the map with the energy of a man who has finally been understood.",
+            "karma": {
+              "human": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "He considers your offer carefully, then shakes his head. \"The threats out there are speculative. The threat models in here are documented.\" He taps his map. \"I will join you when I have finished mapping all approaches to this ruin.\"\n\nYou look at the ruin. It has approximately forty approach vectors. You will not wait.",
+            "karma": {}
+          }
         }
       ]
     }

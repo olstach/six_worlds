@@ -2860,6 +2860,162 @@
       "tabs": [
         "spells"
       ]
+    },
+    "hg_black_lodge": {
+      "name": "Black Lodge",
+      "type": "spell_guild",
+      "description": "A mound of bones marks the entrance, a khatvanga hung with a skull and black silk. Inside, something moves that may not be fully alive. It knows what you want.",
+      "price_modifier": 1.3,
+      "buys_items": false,
+      "guild_school": "Black",
+      "guild_max_tier": 3,
+      "items": {
+        "poison_bomb": 2,
+        "alchemists_pouch": 3,
+        "raw_reagents": 5,
+        "rations": 5,
+        "black_charm_common": 2,
+        "black_charm_middling": 1,
+        "plain_bone_khatvanga": 2,
+        "plain_bone_phurba": 2,
+        "blessed_bone_khatvanga": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "hg_circle_of_yoginis": {
+      "name": "Circle of the Yoginis",
+      "type": "spell_guild",
+      "description": "Sixty-four forms carved into standing bones, forming a ring on the charnel ground. The earth inside is worn smooth by countless ritual footprints. The witches still come.",
+      "price_modifier": 1.2,
+      "buys_items": false,
+      "guild_school": "Sorcery",
+      "guild_max_tier": 3,
+      "items": {
+        "raw_reagents": 5,
+        "prayer_beads": 2,
+        "cloth_robe": 1,
+        "rations": 5,
+        "summoning_charm_common": 2,
+        "enchantment_charm_common": 2,
+        "summoning_charm_middling": 1,
+        "plain_bone_kangling": 3,
+        "plain_iron_kangling": 2,
+        "blessed_bone_kangling": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "hg_crossroads_stupa": {
+      "name": "Crossroads Stupa",
+      "type": "domain_spell_trainer",
+      "description": "At the intersection of the ancient paths, a stupa rises from layers of offerings — skulls, prayer flags, bones wrapped in cloth. The practitioners here call back what has been lost.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "zombie",
+        "skeleton",
+        "vetala",
+        "skeleton_troop"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
+    "hg_hidden_gompa": {
+      "name": "Hidden Gompa",
+      "type": "domain_spell_trainer",
+      "description": "A small monastery sits undisturbed between the burial grounds, its walls marked with painted eyes. The monks here practice for the benefit of all beings caught between lives.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "shimmer",
+        "freedom",
+        "sanctuary",
+        "invulnerability"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
+    "hg_mirror_lake": {
+      "name": "Mirror Lake",
+      "type": "domain_spell_trainer",
+      "description": "The surface of the lake reflects not the sky but something else — other realms, other moments. Practitioners sit at its edge, learning to bend what is seen.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "chameleon",
+        "blur",
+        "invisibility",
+        "magic_mirror"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
+    "hg_sacred_grove": {
+      "name": "Sacred Grove",
+      "type": "domain_spell_trainer",
+      "description": "A stand of ancient trees whose roots grow through charnel earth. Offerings of food hang from the branches — the hungry ghosts can smell them but cannot eat. Practitioners here speak to both the living and the dead.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "converse_with_the_dead",
+        "ancestral_spirit",
+        "lifelink",
+        "ancestral_guardian"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
+    },
+    "hg_temple_of_the_naga": {
+      "name": "Temple of the Naga",
+      "type": "domain_spell_trainer",
+      "description": "A low temple built around a black-water pool. The nagas who dwell in such pools are guardians of the dead. Their human followers leave milk offerings at the water's edge and learn what the serpents are willing to teach.",
+      "price_modifier": 1.5,
+      "buys_items": false,
+      "items": {},
+      "spells": [
+        "frog",
+        "naga",
+        "ice_totem",
+        "naga_host"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": []
+      },
+      "tabs": [
+        "spells"
+      ]
     }
   },
   "shop_types": {

@@ -404,7 +404,14 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 		"equipped_weapon": equipped_weapon,
 		"known_spells": spells,
 		"perks": perks,
-		"inventory": inventory
+		"inventory": inventory,
+		"body_plan": {
+			"species": archetype.get("species", "human"),
+			"missing_parts": [],
+			"prosthetics": {}
+		},
+		"wounds": [],
+		"quirks": []
 	}
 
 	# Copy duel_stop_hp_pct if the archetype has one — read by combat_manager to end

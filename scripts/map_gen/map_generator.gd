@@ -532,30 +532,33 @@ func _place_pass_guardian(landmark: Dictionary) -> void:
 
 	var data = landmark.get("data", {})
 	var zone_id = landmark.get("zone", "")
-	# Find the pass belonging to the requested zone; fall back to first pass
-	var pass_pos: Vector2i = _pass_positions[0].pos
+
+	# Collect all pass positions for this zone (there may be 1-2 passes)
+	var guard_positions: Array[Vector2i] = []
 	for entry in _pass_positions:
 		if entry.zone_id == zone_id:
-			pass_pos = entry.pos
-			break
-	_occupied[pass_pos] = true
+			guard_positions.append(entry.pos)
+	if guard_positions.is_empty():
+		guard_positions.append(_pass_positions[0].pos)
 
-	_objects.append({
-		"id": "pass_guardian",
-		"x": pass_pos.x,
-		"y": pass_pos.y,
-		"type": 0,  # EVENT
-		"name": data.get("name", "Pass Guardian"),
-		"icon": data.get("icon", "enemy_elite"),
-		"blocking": true,
-		"one_time": true,
-		"visible": true,
-		"data": {
-			"event_id": data.get("event_id", ""),
-			"region": "mountain_pass",
-			"description": "A guardian blocks the mountain pass."
-		}
-	})
+	# Place an aggressive mob at each pass — pursues the player if they try to slip through
+	for i in guard_positions.size():
+		var pass_pos = guard_positions[i]
+		_occupied[pass_pos] = true
+		_mobs.append({
+			"id": "pass_guardian_%d" % i,
+			"x": pass_pos.x,
+			"y": pass_pos.y,
+			"mode": 2,       # AGGRESSIVE
+			"attitude": 2,   # AGGRESSIVE
+			"aggression": 1.0,  # detect_range=10, leash_range=20, pursuit_patience=30s
+			"name": data.get("name", "Pass Guardian"),
+			"icon": data.get("icon", "enemy_elite"),
+			"data": {
+				"enemy_group": "lava_guardian",
+				"region": "mountain_pass"
+			}
+		})
 
 
 # ============================================

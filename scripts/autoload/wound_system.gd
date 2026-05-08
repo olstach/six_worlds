@@ -75,7 +75,7 @@ const WOUND_TYPES: Dictionary = {
 	# ── Escalated wounds ─────────────────────────────────────────────────
 	# Location is inherited from the original wound entry — not re-assigned on escalation.
 	"infected_wound": {
-		"display_name": "Infected Wound",
+		"display_name": "Seeping Wound",
 		"category": "wound",
 		"severity": "severe",
 		"forced_location": "",
@@ -124,13 +124,97 @@ const WOUND_TYPES: Dictionary = {
 		"cure_medicine_level": 6,
 		"description": "The chill has broken into a raging fever. Bones feel like glass.",
 	},
+
+	# ── New physical wounds ───────────────────────────────────────────────────
+	"barbed_wound": {
+		"display_name": "Barbed Wound",
+		"category": "wound",
+		"severity": "light",
+		"forced_location": "",
+		"escalates_to": "infected_wound",
+		"escalation_rests": 2,
+		"cure_medicine_level": 2,
+		"description": "An arrow or thorn lodged partway — worse to remove quickly than to leave.",
+	},
+	"sprain": {
+		"display_name": "Sprain",
+		"category": "wound",
+		"severity": "light",
+		"forced_location": "",
+		"escalates_to": "",
+		"escalation_rests": 0,
+		"cure_medicine_level": 1,
+		"description": "A twisted joint — painful but not dangerous. Movement is compromised.",
+	},
+	"burn": {
+		"display_name": "Burn",
+		"category": "wound",
+		"severity": "moderate",
+		"forced_location": "",
+		"escalates_to": "infected_wound",
+		"escalation_rests": 3,
+		"cure_medicine_level": 3,
+		"description": "Seared skin and scorched tissue — agonising on contact with anything, including armor.",
+	},
+
+	# ── New diseases ──────────────────────────────────────────────────────────
+	"poisoned_blood": {
+		"display_name": "Poisoned Blood",
+		"category": "disease",
+		"severity": "moderate",
+		"forced_location": "",
+		"escalates_to": "venom_shock",
+		"escalation_rests": 3,
+		"cure_medicine_level": 3,
+		"description": "A toxin is working through the bloodstream. Strength drains first, then clarity.",
+	},
+	"psychic_miasma": {
+		"display_name": "Psychic Miasma",
+		"category": "disease",
+		"severity": "moderate",
+		"forced_location": "",
+		"escalates_to": "spiritual_corruption",
+		"escalation_rests": 4,
+		"cure_medicine_level": 7,
+		"spiritual_cure": {"skill": "ritual", "level": 3},
+		"description": "Hell energies have taken root in the subtle channels. Medicine barely reaches this.",
+	},
+
+	# ── New escalated forms ───────────────────────────────────────────────────
+	"venom_shock": {
+		"display_name": "Mortification",  # placeholder — confirm display name
+		"category": "disease",
+		"severity": "severe",
+		"forced_location": "",
+		"escalates_to": "",
+		"escalation_rests": 0,
+		"cure_medicine_level": 7,
+		"description": "The poison has reached crisis — organs strain, consciousness flickers.",
+	},
+	"spiritual_corruption": {
+		"display_name": "Spiritual Corruption",
+		"category": "disease",
+		"severity": "severe",
+		"forced_location": "",
+		"escalates_to": "",
+		"escalation_rests": 0,
+		"cure_medicine_level": 8,
+		"spiritual_cure": {"skill": "ritual", "level": 5},
+		"description": "The subtle body is coming apart. Only deep practice can reverse this.",
+	},
 }
 
 # Random wound pool for combat crits (base wounds only)
 const CRIT_WOUND_POOL: Array[String] = ["deep_cut", "concussion", "broken_rib"]
 
+# Random wound pool for ranged weapon crits
+const RANGED_CRIT_WOUND_POOL: Array[String] = ["barbed_wound", "deep_cut", "concussion"]
+
 # Random disease pool for undead/diseased enemy hits
 const DISEASE_POOL: Array[String] = ["rot_sickness", "marrow_chill"]
+
+# Random disease pool for poison-type enemy hits
+const POISON_DISEASE_POOL: Array[String] = ["poisoned_blood"]
 
 
 # ── Public API ───────────────────────────────────────────────────────────────
@@ -168,10 +252,17 @@ func apply_wound(character: Dictionary, wound_id: String, body_location: String 
 	return true
 
 
-## Apply a random wound appropriate to a crit hit.
+## Apply a random wound appropriate to a melee crit hit.
 func apply_random_crit_wound(character: Dictionary) -> String:
 	var id: String = CRIT_WOUND_POOL[randi() % CRIT_WOUND_POOL.size()]
 	apply_wound(character, id, "", "combat_crit")
+	return id
+
+
+## Apply a random wound appropriate to a ranged weapon crit hit.
+func apply_random_ranged_crit_wound(character: Dictionary) -> String:
+	var id: String = RANGED_CRIT_WOUND_POOL[randi() % RANGED_CRIT_WOUND_POOL.size()]
+	apply_wound(character, id, "", "ranged_crit")
 	return id
 
 
@@ -179,6 +270,13 @@ func apply_random_crit_wound(character: Dictionary) -> String:
 func apply_random_disease(character: Dictionary, attacker_tag: String = "undead") -> String:
 	var id: String = DISEASE_POOL[randi() % DISEASE_POOL.size()]
 	apply_wound(character, id, "", attacker_tag)
+	return id
+
+
+## Apply a random disease appropriate to a poison-type attacker.
+func apply_random_poison_disease(character: Dictionary) -> String:
+	var id: String = POISON_DISEASE_POOL[randi() % POISON_DISEASE_POOL.size()]
+	apply_wound(character, id, "", "poison")
 	return id
 
 
@@ -197,7 +295,8 @@ func cure_wound(character: Dictionary, wound_id: String, _update_stats: bool = t
 
 ## Field Surgery: a Medicine-skilled character treats the whole party.
 ## Returns a dict: {"cured": [names], "messages": [strings]}
-func cure_wounds_field_surgery(performer: Dictionary, party: Array) -> Dictionary:
+## Pass override_all=true (from the wound_specialist perk) to bypass per-wound medicine level gates.
+func cure_wounds_field_surgery(performer: Dictionary, party: Array, override_all: bool = false) -> Dictionary:
 	var medicine: int = 0
 	if CharacterSystem:
 		medicine = CharacterSystem.get_effective_skill_level(performer, "medicine")
@@ -211,7 +310,7 @@ func cure_wounds_field_surgery(performer: Dictionary, party: Array) -> Dictionar
 			var wdef: Dictionary = WOUND_TYPES.get(wid, {})
 			if wdef.is_empty():
 				continue
-			if medicine >= wdef.get("cure_medicine_level", 99):
+			if override_all or medicine >= wdef.get("cure_medicine_level", 99):
 				to_remove.append(wid)
 		for wid in to_remove:
 			cure_wound(char, wid, false)  # skip per-cure stat recalc; do once below
@@ -260,7 +359,9 @@ func tick_wounds(character: Dictionary) -> Array[String]:
 
 
 ## Compute total stat penalties from all active wounds. Called by update_derived_stats.
-## Summed percentage penalties for all active wounds, keyed by stat name.
+## Penalties are ADDITIVE across wounds (two arm wounds sum their percentages before the
+## single multiplicative application). This is intentional — chained multiplication would
+## be too punishing early when wound accumulation is still rare.
 ## Each wound's penalties are derived from its body_location's part category
 ## and the wound type's severity, via BodySystem.WOUND_PENALTIES.
 ## Applied multiplicatively in update_derived_stats: derived[stat] *= (1 + pct/100).
@@ -294,6 +395,31 @@ func has_wound_category(character: Dictionary, category: String) -> bool:
 		if wdef.get("category", "") == category:
 			return true
 	return false
+
+
+## Cure wounds/diseases that require a spiritual skill (Ritual or Yoga) rather than medicine.
+## Checks each wound's "spiritual_cure" field: {skill: "ritual", level: 3}.
+## Returns {"cured": [display_names], "messages": [strings]}.
+func try_spiritual_cure(character: Dictionary, skill_used: String, skill_level: int) -> Dictionary:
+	_ensure_wounds_field(character)
+	var to_remove: Array[String] = []
+	var messages: Array[String] = []
+	for entry in character.wounds:
+		var wid: String = entry.get("id", "")
+		var wdef: Dictionary = WOUND_TYPES.get(wid, {})
+		if wdef.is_empty():
+			continue
+		var sc: Dictionary = wdef.get("spiritual_cure", {})
+		if sc.is_empty():
+			continue
+		if skill_used == sc.get("skill", "") and skill_level >= sc.get("level", 99):
+			to_remove.append(wid)
+	for wid in to_remove:
+		cure_wound(character, wid, false)
+		messages.append("%s's %s has been purified." % [character.get("name", "?"), WOUND_TYPES[wid].get("display_name", wid)])
+	if not to_remove.is_empty() and CharacterSystem:
+		CharacterSystem.update_derived_stats(character)
+	return {"cured": to_remove, "messages": messages}
 
 
 ## Heal at temple/facility: cure wounds up to the given medicine equivalent level.

@@ -476,6 +476,10 @@ func _get_status_stat_bonus(stat: String) -> int:
 					total += 10
 				if "ranged_hit_chance_halved" in effects:
 					total -= 40  # Ranged accuracy penalty (Rot Wood)
+				if "minor_all_stats_bonus" in effects:
+					total += 5  # Ancestors_Blessing: all stats up
+				if "all_stats_penalty" in effects:
+					total -= 5  # Rotting: all stats down
 			"armor":
 				if "defense_bonus" in effects:
 					total += 10
@@ -485,6 +489,12 @@ func _get_status_stat_bonus(stat: String) -> int:
 					total -= 20  # Significant armor reduction (Rust Metal)
 				if "armor_reduced" in effects:
 					total -= 10  # Moderate armor reduction (Melt Armor)
+				if "armor_bonus_minor" in effects:
+					total += 5  # Glass_Globe passive armor
+				if "minor_all_stats_bonus" in effects:
+					total += 5
+				if "all_stats_penalty" in effects:
+					total -= 5
 			"dodge":
 				if "dodge_bonus" in effects:
 					total += 15
@@ -496,6 +506,12 @@ func _get_status_stat_bonus(stat: String) -> int:
 					total -= 15  # Dodge penalty (Bone Chill, Entangled)
 				if "major_dodge_bonus" in effects:
 					total += 30  # Major evasion (Be Like Water)
+				if "finesse_bonus" in effects:
+					total += 5  # Finesse_Plus_2
+				if "minor_all_stats_bonus" in effects:
+					total += 5
+				if "all_stats_penalty" in effects:
+					total -= 5
 			"movement":
 				if "speed_bonus" in effects:
 					total += 2
@@ -512,6 +528,16 @@ func _get_status_stat_bonus(stat: String) -> int:
 					total += 5
 				if "initiative_penalty" in effects:
 					total -= 5
+				if "finesse_bonus" in effects:
+					total += 3  # Finesse_Plus_2
+				if "awareness_penalty_major" in effects:
+					total -= 8  # Mindmucked
+				if "awareness_bonus_major" in effects:
+					total += 8  # Crystal_Diadem
+				if "minor_all_stats_bonus" in effects:
+					total += 3
+				if "all_stats_penalty" in effects:
+					total -= 3
 			"damage":
 				if "melee_damage_bonus" in effects:
 					total += 5
@@ -525,6 +551,12 @@ func _get_status_stat_bonus(stat: String) -> int:
 					total += 8  # Major strength buff (Yaksha Strength)
 				if "ranged_damage_halved" in effects:
 					total -= 10  # Ranged damage penalty (Rot Wood)
+				if "damage_boost" in effects:
+					total += 15  # Blessed_Shot
+				if "minor_all_stats_bonus" in effects:
+					total += 3
+				if "all_stats_penalty" in effects:
+					total -= 5
 			"crit_chance":
 				if "critical_boost" in effects:
 					total += 10
@@ -532,14 +564,30 @@ func _get_status_stat_bonus(stat: String) -> int:
 					total += 8
 				if "luck_bonus" in effects:
 					total += 5  # Lucky (Golden Ring)
+				if "minor_all_stats_bonus" in effects:
+					total += 3
 			"spellpower":
 				if "awareness_bonus" in effects or "focus_bonus" in effects:
 					total += 3
 				if "focus_bonus_major" in effects:
-					total += 8  # Major focus buff (Inner Fire)
+					total += 8  # Major focus buff (Inner Fire / Crystal_Diadem)
+				if "focus_penalty" in effects:
+					total -= 3  # Focus_Minus_2
+				if "focus_penalty_major" in effects:
+					total -= 8  # Mindmucked
+				if "awareness_penalty_major" in effects:
+					total -= 5  # Mindmucked
+				if "awareness_bonus_major" in effects:
+					total += 5  # Crystal_Diadem
+				if "minor_all_stats_bonus" in effects:
+					total += 3
+				if "all_stats_penalty" in effects:
+					total -= 5
 			"range":
 				if "range_penalty" in effects:
 					total -= 2  # Range reduction (Rain)
+				if "range_bonus" in effects:
+					total += 2  # Precision
 	return total
 
 
@@ -965,8 +1013,8 @@ func get_resistance(damage_type: String) -> float:
 		if damage_type == "physical" or damage_type in PHYSICAL_SUBTYPES:
 			if "vulnerable_to_physical" in effects:
 				base -= 50.0  # Frozen makes you take 50% more physical
-			if "physical_immunity" in effects:
-				base = 100.0  # Petrified/Fluid Form: immune to physical
+			if "physical_immunity" in effects or "physical_immune" in effects:
+				base = 100.0  # Petrified/Fluid Form/Thin_Air: immune to physical
 			if "physical_resist_50" in effects:
 				base += 50.0
 			if "physical_damage_negation_50_percent" in effects:
@@ -989,6 +1037,9 @@ func get_resistance(damage_type: String) -> float:
 				base = 100.0  # Solar Form / Fire Immune
 			if "fire_resistance_plus_25" in effects:
 				base += 25.0  # Cooling Mist
+			if "fire_vulnerability" in effects:
+				var vuln_pct = float(def.get("vulnerability_pct", 50))
+				base -= vuln_pct  # Fire_Vulnerable_50: -50% fire resistance
 		if damage_type == "water":
 			if "water_resistance_minus_25" in effects:
 				base -= 25.0
@@ -997,8 +1048,8 @@ func get_resistance(damage_type: String) -> float:
 			if "water_damage_immunity" in effects:
 				base = 100.0  # Fluid Form
 		if damage_type == "air":
-			if "air_damage_immunity" in effects:
-				base = 100.0
+			if "air_damage_immunity" in effects or "air_immune" in effects:
+				base = 100.0  # Lightning_Form: immune to air
 
 		# grants_vulnerability field (used by Smoke_Form, Lightning_Form)
 		var vuln = def.get("grants_vulnerability", {})
@@ -1008,6 +1059,14 @@ func get_resistance(damage_type: String) -> float:
 		# General elemental resistance boost
 		if "elemental_resistance_25" in effects and damage_type not in PHYSICAL_SUBTYPES and damage_type != "physical":
 			base += 25.0
+
+		# Rainbow_Cloak: resistance_pct to all non-physical elements
+		if "all_element_resistance" in effects and damage_type not in PHYSICAL_SUBTYPES and damage_type != "physical":
+			base += float(def.get("resistance_pct", 25))
+
+		# Magic resistance bonus (Praying status: +15 vs all non-physical damage)
+		if "magic_resistance_bonus" in effects and damage_type not in PHYSICAL_SUBTYPES and damage_type != "physical":
+			base += 15.0
 
 		# Immune to all damage (Invulnerable)
 		if "immune_to_all_damage" in effects:

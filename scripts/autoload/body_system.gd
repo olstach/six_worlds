@@ -53,6 +53,16 @@ const WOUND_PENALTIES: Dictionary = {
 	},
 }
 
+# Stat penalties for missing body parts (permanent until regrown/prosthetic).
+# Values are flat reductions (not %-based) applied in update_derived_stats.
+const MISSING_PART_PENALTIES: Dictionary = {
+	"arm":   {"damage": -2, "max_stamina": -5},
+	"leg":   {"movement": -1, "dodge": -5},
+	"foot":  {"movement": -1},
+	"head":  {},   # head/torso loss = death; no partial penalty needed
+	"torso": {},
+}
+
 # Surface-area weights for random wound location assignment (per part category).
 # Multiple parts of the same category each get this weight independently.
 const LOCATION_WEIGHTS: Dictionary = {
@@ -249,6 +259,21 @@ func get_wound_penalties(part_category: String, severity: String) -> Dictionary:
 	return table.get(severity, {}).duplicate()
 
 
+## Flat stat penalties from all missing body parts. Called by update_derived_stats.
+## Returns a dict of stat → total reduction (additive, not percentage).
+func get_missing_part_penalties(character: Dictionary) -> Dictionary:
+	var plan := get_body_plan_def(character)
+	var missing: Array = character.get("body_plan", {}).get("missing_parts", [])
+	var totals: Dictionary = {}
+	for part in plan.parts:
+		if not part.id in missing:
+			continue
+		var cat: String = part.get("category", "")
+		for stat in MISSING_PART_PENALTIES.get(cat, {}):
+			totals[stat] = totals.get(stat, 0) + MISSING_PART_PENALTIES[cat][stat]
+	return totals
+
+
 ## Reverse lookup: which part owns a given equip slot.
 func get_part_for_slot(character: Dictionary, slot_id: String) -> Dictionary:
 	var plan := get_body_plan_def(character)
@@ -358,13 +383,20 @@ func sever_part(character: Dictionary, part_id: String) -> Array[String]:
 			if part.id == pid:
 				var slot: String = part.get("equip_slot", "")
 				if slot != "" and ItemSystem:
-					ItemSystem.unequip_item(character, slot)
+					# If inventory is full, unequip_item returns false and warns.
+					# Force-clear the slot anyway so the item isn't stuck in limbo.
+					if not ItemSystem.unequip_item(character, slot):
+						character.get("equipment", {})[slot] = ""
 				# Arms also unequip their corresponding weapon slot.
 				# Convention: arm_r = main hand (weapon_main), arm_l = off-hand (weapon_off).
 				if part.get("category") == "arm" and ItemSystem:
 					match pid:
-						"arm_r": ItemSystem.unequip_item(character, "weapon_main")
-						"arm_l": ItemSystem.unequip_item(character, "weapon_off")
+						"arm_r":
+							if not ItemSystem.unequip_item(character, "weapon_main"):
+								character.get("equipment", {})["weapon_main"] = ""
+						"arm_l":
+							if not ItemSystem.unequip_item(character, "weapon_off"):
+								character.get("equipment", {})["weapon_off"] = ""
 				break
 
 	if CharacterSystem:

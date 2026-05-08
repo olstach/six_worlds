@@ -47,6 +47,17 @@ func get_trait(trait_id: String) -> Dictionary:
 	return _traits.get(trait_id, {})
 
 
+## Returns all trait IDs of a given category that are marked inborn: true.
+## Used by character creation to assign random starting traits.
+func get_inborn_traits(category: String) -> Array[String]:
+	var result: Array[String] = []
+	for trait_id in _traits:
+		var t: Dictionary = _traits[trait_id]
+		if t.get("inborn", false) and t.get("category", "") == category:
+			result.append(trait_id)
+	return result
+
+
 ## Returns the display name for a trait ID.
 func get_trait_name(trait_id: String) -> String:
 	return _traits.get(trait_id, {}).get("name", trait_id.replace("_", " ").capitalize())

@@ -162,13 +162,18 @@ func _ready() -> void:
 	# Connect companion overflow signal to show mastery popup
 	CompanionSystem.companion_overflow.connect(_on_companion_overflow)
 
+	# Connect PsychologySystem signals so emotional crises surface as toasts
+	if PsychologySystem:
+		PsychologySystem.autonomous_event_triggered.connect(_on_psychology_crisis)
+		PsychologySystem.emotional_crisis_log.connect(_on_emotional_crisis_log)
+
 	# Connect char sheet button and visibility sync
 	char_sheet_button.pressed.connect(func(): _open_char_sheet_to_tab(0))
 	equipment_button.pressed.connect(func(): _open_char_sheet_to_tab(1))
 	party_button.pressed.connect(func(): _open_char_sheet_to_tab(2))
 	spellbook_button.pressed.connect(func(): _open_char_sheet_to_tab(3))
 	crafting_button.pressed.connect(func(): _open_char_sheet_to_tab(4))
-journal_button.pressed.connect(func(): _open_char_sheet_to_tab(5))
+	journal_button.pressed.connect(func(): _open_char_sheet_to_tab(5))
 	char_sheet.visibility_changed.connect(_on_char_sheet_visibility_changed)
 	char_sheet.overworld_spell_cast.connect(_on_overworld_spell_cast)
 
@@ -551,7 +556,7 @@ func _on_pickup_collected(obj: Dictionary, rewards: Array) -> void:
 			"food":
 				parts.append("+%d food" % int(rval))
 			"damage":
-				parts.append("[color=#ef4444]-%d HP (cursed!)[/color]" % int(rval))
+				parts.append("-%d HP (cursed!)" % int(rval))
 			"cleanse":
 				parts.append("Statuses cleared")
 			"spell":
@@ -648,8 +653,24 @@ func _on_portal_entered(destination: Dictionary) -> void:
 	if dest_map.is_empty():
 		_show_toast("Portal leads nowhere...")
 		return
-	MapManager.load_map(dest_map)
-	_update_hud()
+	MapManager.pause_movement()
+	# Fade to black, load the new realm while fully dark, then fade back out
+	var overlay = ColorRect.new()
+	overlay.color = Color.BLACK
+	overlay.modulate.a = 0.0
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.z_index = 200
+	add_child(overlay)
+	var tween = create_tween()
+	tween.tween_property(overlay, "modulate:a", 1.0, 0.4)
+	tween.tween_callback(func():
+		MapManager.load_map(dest_map)
+		_update_hud()
+	)
+	tween.tween_interval(0.1)  # One frame of breathing room after load
+	tween.tween_property(overlay, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(overlay.queue_free)
 
 
 # ============================================
@@ -807,9 +828,13 @@ func _get_unlocked_alchemy_items(party: Array) -> Array:
 	return unlocked
 
 
-## Hook for rest perks — called for each character after healing/decay. Empty for now.
-func _process_rest_perks(_character: Dictionary, _tier: int) -> void:
-	pass
+## Hook for rest perks — called for each character after healing/decay.
+func _process_rest_perks(character: Dictionary, _tier: int) -> void:
+	# Lucid Rest (Yoga 7): accumulate mantra at half Yoga level during any rest
+	if PerkSystem.has_perk(character, "lucid_rest"):
+		var yoga_level := CharacterSystem.get_effective_skill_level(character, "yoga")
+		var increment := maxi(1, yoga_level / 2)
+		character["mantra_count"] = int(character.get("mantra_count", 0)) + increment
 
 
 ## Restore durability on all equipped items for all party members by the given fraction.
@@ -947,14 +972,17 @@ func _open_rest_panel() -> void:
 		if can_afford:
 			tier_btn.add_theme_stylebox_override("normal", UIStyle.make_stylebox(Color(0.25, 0.5, 0.3), 1, 6, 10))
 			tier_btn.add_theme_stylebox_override("hover",  UIStyle.make_stylebox(Color(0.35, 0.65, 0.4), 1, 6, 10))
-			# Quick Rest has 0 activity slots — execute directly
 			if tier == 1:
-				tier_btn.pressed.connect(_confirm_rest.bind(
-					tier, food_costs[i], herbs_costs[i], scrap_costs[i], []))
+				# Capture loop vars by value; lambda avoids typed-array coercion issues with bind()
+				var _t := tier; var _fc := food_costs[i]; var _hc := herbs_costs[i]; var _sc := scrap_costs[i]
+				tier_btn.pressed.connect(func():
+					var acts: Array[String] = []
+					_confirm_rest(_t, _fc, _hc, _sc, acts))
 			else:
 				tier_btn.pressed.connect(_open_activity_panel.bind(
 					tier, food_costs[i], herbs_costs[i], scrap_costs[i], is_safe))
 		else:
+			tier_btn.add_theme_stylebox_override("normal", UIStyle.make_stylebox(Color(0.3, 0.3, 0.3), 1, 6, 10))
 			tier_btn.tooltip_text = "Cannot afford this rest tier"
 		vbox.add_child(tier_btn)
 
@@ -1020,7 +1048,16 @@ func _open_activity_panel(tier: int, food_cost: int, herbs_cost: int, scrap_cost
 	outer_vbox.add_child(HSeparator.new())
 
 	var party     := CharacterSystem.get_party()
-	var available := CampSystem.get_available_activities(party, tier, is_safe)
+	# Read location-specific suppress/enhance lists from the safe camp event dict
+	var _loc_event: Dictionary = {}
+	var _loc_obj := MapManager.get_object_at(MapManager.party_position)
+	if not _loc_obj.is_empty():
+		var _loc_event_id: String = _loc_obj.get("event_id", "")
+		if not _loc_event_id.is_empty():
+			_loc_event = EventManager.event_database.get(_loc_event_id, {})
+	var _suppress: Array = _loc_event.get("suppress_activities", [])
+	var _enhance: Array  = _loc_event.get("enhance_activities", [])
+	var available := CampSystem.get_available_activities(party, tier, is_safe, _suppress, _enhance)
 
 	# Track selection
 	var selected_ids: Array[String] = []
@@ -1063,11 +1100,16 @@ func _open_activity_panel(tier: int, food_cost: int, herbs_cost: int, scrap_cost
 				cost_parts.append("%s: %d" % [res.capitalize(), costs[res]])
 			cost_str = " [%s]" % " | ".join(cost_parts)
 
+		var effect_line: String = activity.get("effect_desc", "")
+		if act_id == "sadhana" and not performer.is_empty():
+			var preview := CampSystem.get_sadhana_preview(performer)
+			effect_line = preview.tier_name + " · " + effect_line
+
 		var can_afford: bool = activity.get("can_afford", true)
 		var btn := Button.new()
 		btn.text = "%s%s\n%s — by %s" % [
 			activity.get("name", act_id), cost_str,
-			activity.get("effect_desc", ""), perf_name
+			effect_line, perf_name
 		]
 		btn.custom_minimum_size = Vector2(0, 54)
 		btn.add_theme_font_size_override("font_size", 12)
@@ -1158,16 +1200,23 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 		best_smithing = maxi(best_smithing, CharacterSystem.get_effective_skill_level(char, "smithing"))
 
 	# === Disturbance check ===
-	# Scout activity or safe camp eliminates disturbance chance.
+	# Scout activity, safe camp location, or Safe Campsite perk eliminates disturbance chance.
 	var is_safe   := _check_is_safe_camp()
 	var scouted   := "scout" in selected_activities
+	var has_safe_campsite := false
+	for char in party:
+		if PerkSystem.has_perk(char, "safe_campsite"):
+			has_safe_campsite = true
+			break
 	var effective_tier := tier
-	if not is_safe and not scouted and tier >= 2:
+	var _disturbance_event_id: String = ""
+	if not is_safe and not scouted and not has_safe_campsite and tier >= 2:
 		if CampSystem.roll_disturbance(tier, GameState.current_world, GameState.hour_of_day):
 			effective_tier = maxi(1, tier - 1)
 			if selected_activities.size() > 0:
 				selected_activities = selected_activities.slice(0, selected_activities.size() - 1)
 			_show_toast("The rest was disturbed! Reduced to %s effectiveness." % ["Quick Rest", "Camp", "Full Rest"][effective_tier - 1])
+			_disturbance_event_id = EventManager.get_random_camp_event(GameState.current_world)
 
 	# === Consume resources ===
 	GameState.consume_supply("food", food_cost)
@@ -1177,13 +1226,15 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 
 	# === Healing ===
 	# herb_prep_bonus from a previous camp activity adds +15% HP restore.
-	var herb_prep := GameState.flags.get("herb_prep_bonus", false)
+	var herb_prep: bool = GameState.flags.get("herb_prep_bonus", false)
 	if herb_prep:
 		GameState.set_flag("herb_prep_bonus", false)
 
 	var tier_base_pct: float  = [0.4, 0.7, 1.0][effective_tier - 1]
 	var medicine_bonus: float = best_medicine * 0.02
-	var restore_pct: float    = tier_base_pct + medicine_bonus + (0.15 if herb_prep else 0.0)
+	var restore_pct: float    = tier_base_pct + medicine_bonus \
+		+ (0.15 if herb_prep else 0.0) \
+		+ (0.15 if has_safe_campsite else 0.0)
 
 	for char in party:
 		var derived: Dictionary = char.get("derived", {})
@@ -1199,9 +1250,26 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 		derived["current_mana"]    = mini(max_mana,    int(derived.get("current_mana",    max_mana))    + floori(max_mana    * restore_pct))
 		derived["current_stamina"] = mini(max_stamina, int(derived.get("current_stamina", max_stamina)) + floori(max_stamina * restore_pct))
 
-		var decay_amount: float = [20.0, 40.0, 100.0][effective_tier - 1]
+		# Yoga skill increases pressure decay: +2 per Yoga level on top of tier base
+		var yoga_level: int = CharacterSystem.get_effective_skill_level(char, "yoga")
+		var decay_amount: float = [20.0, 40.0, 100.0][effective_tier - 1] + yoga_level * 2.0
 		PsychologySystem.decay_toward_baseline(char, decay_amount)
 		_process_rest_perks(char, effective_tier)
+
+	# === Well-Rested perk (Medicine 8): party-wide combat buff after a full rest ===
+	if effective_tier >= 3:
+		var has_well_rested := false
+		for char in party:
+			if PerkSystem.has_perk(char, "well_rested"):
+				has_well_rested = true
+				break
+		if has_well_rested:
+			GameState.active_map_buffs.append({"stat": "awareness",    "amount": 3, "combats_remaining": 1, "source": "Well-Rested"})
+			GameState.active_map_buffs.append({"stat": "constitution", "amount": 2, "combats_remaining": 1, "source": "Well-Rested"})
+			GameState.active_map_buffs.append({"stat": "initiative",   "amount": 5, "combats_remaining": 1, "source": "Well-Rested"})
+			for char in party:
+				CharacterSystem.update_derived_stats(char)
+			_show_toast("The party is well rested. Combat buffs active until next battle.")
 
 	# === Durability restore (tier 2+) ===
 	if effective_tier >= 2:
@@ -1213,6 +1281,7 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 
 	# === Execute camp activities ===
 	var activity_messages: Array[String] = []
+	var _activity_camp_event_id: String = ""
 	if not selected_activities.is_empty():
 		for act_id in selected_activities:
 			var act_def: Dictionary = {}
@@ -1223,6 +1292,8 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 			var performer: Dictionary = CampSystem._best_performer(party, act_def)
 			var result := CampSystem.execute_activity(act_id, performer, party)
 			activity_messages.append(result.get("message", ""))
+			if _activity_camp_event_id.is_empty():
+				_activity_camp_event_id = result.get("camp_event_id", "")
 
 	# === Tick persistent wounds (after activities so Field Surgery cures first) ===
 	var wound_messages: Array[String] = []
@@ -1245,6 +1316,21 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 			toast += "\n⚠ " + msg
 	_show_toast(toast)
 	_update_time_label()
+
+	# === Post-rest camp event (disturbance or night_music) ===
+	var pending_camp_event: String = _disturbance_event_id if not _disturbance_event_id.is_empty() else _activity_camp_event_id
+	if not pending_camp_event.is_empty():
+		call_deferred("_show_camp_event", pending_camp_event)
+
+
+## Show a camp event in the event display after a rest concludes.
+## Used for disturbance encounters and night_music draws.
+func _show_camp_event(event_id: String) -> void:
+	if event_id.is_empty() or not EventManager.event_database.has(event_id):
+		return
+	MapManager.pause_movement()
+	_set_event_visible(true)
+	event_display.show_event(event_id, "", false)
 
 
 ## Show a toast when the player casts a spell from the overworld spellbook.
@@ -1270,7 +1356,24 @@ func _on_supply_changed(supply_type: String, new_amount: int, _change: int) -> v
 
 func _on_discovery_made(_pos: Vector2i, discovery: Dictionary) -> void:
 	# Reward is already applied by MapManager._check_discovery()
-	_show_toast(discovery.get("message", "You found something!"))
+	var message: String = discovery.get("message", "You found something!")
+	# Append a second line describing exactly what was found
+	var dtype: String = discovery.get("type", "")
+	var dvalue = discovery.get("value", 0)
+	match dtype:
+		"gold":
+			message += "\n+%d gold" % int(dvalue)
+		"xp":
+			message += "\n+%d XP" % int(dvalue)
+		"heal":
+			message += "\nRestored %d%% HP" % int(dvalue)
+		"item":
+			var item_name: String = dvalue
+			var item_data := ItemSystem.get_item(str(dvalue))
+			if not item_data.is_empty():
+				item_name = item_data.get("name", str(dvalue))
+			message += "\nFound: %s" % item_name
+	_show_toast(message)
 	# Update gold display in case gold was found
 	gold_label.text = "Gold: " + str(GameState.gold)
 
@@ -1300,8 +1403,27 @@ func _sample_terrain_context(center: Vector2i) -> Dictionary:
 	}
 
 
+## Called when a character's pressure crosses ±75 and triggers an autonomous emotional event.
+func _on_psychology_crisis(character: Dictionary, element: String, polarity: String) -> void:
+	var char_name: String = character.get("name", "?")
+	var label: String = PsychologySystem.get_emotional_label(character, element)
+	var msg: String
+	if polarity == "dark":
+		msg = "%s is overwhelmed — %s [%s crisis]" % [char_name, label, element.capitalize()]
+	else:
+		msg = "%s achieves clarity — %s [%s]" % [char_name, label, element.capitalize()]
+	_show_toast(msg)
+
+
+## Called when a quirk reaction fires (e.g. phobia triggered, trauma response).
+func _on_emotional_crisis_log(_character_name: String, message: String) -> void:
+	_show_toast(message)
+
+
 func _show_toast(msg: String) -> void:
 	toast_label.text = msg
+	# Two-line toasts use a smaller font so both lines fit comfortably
+	toast_label.add_theme_font_size_override("font_size", 16 if "\n" in msg else 20)
 	toast_label.visible = true
 	toast_label.modulate.a = 1.0
 	_toast_timer = TOAST_DURATION

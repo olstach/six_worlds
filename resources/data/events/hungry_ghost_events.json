@@ -6879,6 +6879,1788 @@
           }
         }
       ]
+    },
+    "hg_bog_hermit": {
+      "id": "hg_bog_hermit",
+      "title": "Bog Hermit",
+      "realm": "hungry_ghost",
+      "text": "A gaunt figure crouches in the reed beds, sorting through bundles of grey-green herbs with practiced hands. It is alive — or near enough to count. It looks up without alarm.\n\n\"You find herbs growing in the shade,\" it says by way of greeting, as if this explains everything. It holds up a sprig of something. \"Helps with the rot. Mostly.\"",
+      "choices": [
+        {
+          "id": "ask_herbs",
+          "type": "default",
+          "text": "Ask what the herbs are for",
+          "outcome": {
+            "type": "text",
+            "text": "\"Keep the living alive. Slow the dead down. Somewhere in between there's a tea that tastes almost good.\" It hands you a bundle without ceremony. You take it.",
+            "rewards": {
+              "items": [
+                "herbs"
+              ],
+              "xp": 4
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "medicine_check",
+          "type": "requirement",
+          "text": "Discuss the pharmacopoeia of the dead realm",
+          "requirements": {
+            "skills": {
+              "medicine": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You name what you recognise. The hermit corrects you once, with precision, then settles into a real conversation — the first, you suspect, it has had in some time. You leave knowing more than you arrived with.",
+            "rewards": {
+              "xp": 14
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "yoga_meditation",
+          "type": "requirement",
+          "text": "Sit with it a while — you have nowhere better to be",
+          "requirements": {
+            "skills": {
+              "yoga": 1
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You sit. The hermit works. The bog makes its sounds. After a long silence it says: \"Most people run through here.\" Another silence. \"Thank you for not running.\"",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "god": 4,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "trade",
+          "type": "default",
+          "text": "Ask if it trades",
+          "outcome": {
+            "type": "text",
+            "text": "\"I trade in knowledge, mostly. I already have everything else I need.\" It gestures at the grey sky, the toxic water, the rustling reeds. It seems to mean it. You move on.",
+            "karma": {}
+          }
+        }
+      ]
+    },
+    "hg_corpse_merchant": {
+      "id": "hg_corpse_merchant",
+      "title": "Corpse Merchant",
+      "realm": "hungry_ghost",
+      "text": "A broad figure in a waxed coat stands over a cart heaped with cloth-wrapped bundles, sealed jars, and objects you decline to examine closely. Its face is partially masked. It does not smell good, but it has clearly made peace with this.\n\n\"Everything recovered in good condition,\" it says. \"Relative condition. Relative good.\"",
+      "choices": [
+        {
+          "id": "browse",
+          "type": "default",
+          "text": "Browse the goods",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_bone_merchant",
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "ask_origin",
+          "type": "default",
+          "text": "Ask where the goods come from",
+          "outcome": {
+            "type": "text",
+            "text": "\"The dead leave things behind. I collect them. Consider it a service.\" A pause. \"To commerce. Also arguably to the dead. They weren't using it.\"",
+            "rewards": {
+              "xp": 3
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "trade_haggle",
+          "type": "requirement",
+          "text": "Haggle — this is salvage, not retail",
+          "requirements": {
+            "skills": {
+              "trade": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You explain the theory of salvage pricing. The merchant listens with professional attention and adjusts its margins. \"Fair. You know the trade.\" The discount is modest but genuine.",
+            "rewards": {
+              "xp": 6,
+              "gold": 20
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "rob",
+          "type": "roll",
+          "text": "Pocket something while it looks away",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "The merchant turns to re-tie a bundle. In the gap, your hand moves. You're three paces gone before it straightens up. It doesn't seem to notice — or doesn't care. Possibly both.",
+            "rewards": {
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 4
+            }
+          },
+          "outcome_failure": {
+            "type": "combat",
+            "enemy_group": "demon_patrol",
+            "difficulty": "normal",
+            "text": "The merchant doesn't turn around. \"I can smell the living,\" it says. \"I can smell them reaching.\" It produces a heavy implement from the cart.",
+            "karma": {
+              "hungry_ghost": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_preta_wail": {
+      "id": "hg_preta_wail",
+      "title": "The Wailing",
+      "realm": "hungry_ghost",
+      "text": "A chorus of voices rises from just beneath the waterline — hungry ghosts calling out in a language that is not quite sound. The words, if words they are, convey only need.",
+      "choices": [
+        {
+          "id": "press_on",
+          "type": "default",
+          "text": "Press on, ignoring the calls",
+          "outcome": {
+            "type": "text",
+            "text": "Nothing reaches you. The voices fade behind you.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "listen",
+          "type": "roll",
+          "text": "Listen carefully — try to understand",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "One voice becomes distinct. A name. Something that mattered, once, somewhere.",
+            "rewards": {
+              "xp": 30,
+              "buffs": [
+                {
+                  "stat": "awareness",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The need fills your mind for a moment. Hollow.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              }
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "yoga_mantra",
+          "type": "requirement",
+          "text": "Chant a mantra of compassion for them",
+          "requirements": {
+            "skills": {
+              "yoga": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The voices quiet, one by one. It doesn't solve anything. It might help anyway.",
+            "rewards": {
+              "xp": 32
+            },
+            "karma": {
+              "human": 2,
+              "hungry_ghost": -2
+            }
+          }
+        }
+      ]
+    },
+    "hg_will_o_wisp": {
+      "id": "hg_will_o_wisp",
+      "title": "Will-o'-Wisp",
+      "realm": "hungry_ghost",
+      "text": "A faint light dances ahead, moving just fast enough to stay out of reach. It has no face — just a glow, and an implied direction.",
+      "choices": [
+        {
+          "id": "let_drift",
+          "type": "default",
+          "text": "Let it drift away",
+          "outcome": {
+            "type": "text",
+            "text": "You watch it go. It doesn't look back.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "follow",
+          "type": "roll",
+          "text": "Follow it",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "It leads you to a dry patch of ground, then vanishes. Something is buried just beneath the surface.",
+            "rewards": {
+              "xp": 12,
+              "items": [
+                "water_charm_common"
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You step wrong. Bog, not ground. You pull yourself out soaked.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              }
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "recognize_spirit",
+          "type": "requirement",
+          "text": "Recognize it as a trapped spirit",
+          "requirements": {
+            "skills": {
+              "air_magic": 3,
+              "space_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You know this pattern. A soul caught between awareness and dissolution. You speak the syllable that releases it. It brightens, briefly, then goes out.",
+            "rewards": {
+              "xp": 35,
+              "buffs": [
+                {
+                  "stat": "awareness",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "human": 3,
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_swamp_spirit": {
+      "id": "hg_swamp_spirit",
+      "title": "Swamp Spirit",
+      "realm": "hungry_ghost",
+      "text": "A translucent figure stands ankle-deep in still water across a narrow channel. It watches you with the expression of someone who has forgotten where they were going.",
+      "choices": [
+        {
+          "id": "wave_continue",
+          "type": "default",
+          "text": "Wave and continue",
+          "outcome": {
+            "type": "text",
+            "text": "It raises a hand in response. You don't look back.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "speak_gently",
+          "type": "roll",
+          "text": "Speak to it gently — ask if it needs help",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "trivial"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "It doesn't answer in words, but something shifts. It presses a cold hand briefly to your forehead, then walks away into the mist.",
+            "rewards": {
+              "buffs": [
+                {
+                  "stat": "strength",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "constitution",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "finesse",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "focus",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "awareness",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "luck",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "human": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "It stares at you for a long moment, then sinks slowly into the water. You're not sure what you said wrong.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "offer_guidance",
+          "type": "requirement",
+          "text": "Offer guidance toward liberation",
+          "requirements": {
+            "skills": {
+              "yoga": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You know the practice for this. It takes most of an hour. The spirit becomes more present, then less, then gone — in the right direction.",
+            "rewards": {
+              "xp": 45
+            },
+            "karma": {
+              "human": 3,
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_bone_raft": {
+      "id": "hg_bone_raft",
+      "title": "Bone Raft",
+      "realm": "hungry_ghost",
+      "text": "A crude raft of lashed femurs floats slowly past on the current. Something wrapped in waxed cloth sits in the middle. It's addressed to someone.",
+      "choices": [
+        {
+          "id": "let_drift",
+          "type": "default",
+          "text": "Let it drift by",
+          "outcome": {
+            "type": "text",
+            "text": "Whoever it's for, it's not you.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "grab_it",
+          "type": "roll",
+          "text": "Grab it before it floats out of reach",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": "trivial"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "You snag it. The cloth is still dry inside.",
+            "rewards": {
+              "xp": 8,
+              "gold": "small",
+              "items": [
+                "health_potion"
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You lean too far. You get wet. The raft keeps going.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              }
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "read_address",
+          "type": "requirement",
+          "text": "Notice the name on the address — read it before it's gone",
+          "requirements": {
+            "attributes": {
+              "awareness": 14
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You can't retrieve it. But you read the name. It means something, even if you're not sure what yet.",
+            "rewards": {
+              "xp": 28,
+              "flags": {
+                "found_bone_raft_name": true
+              }
+            },
+            "karma": {}
+          }
+        }
+      ]
+    },
+    "hg_weeping_shrine": {
+      "id": "hg_weeping_shrine",
+      "title": "Weeping Shrine",
+      "realm": "hungry_ghost",
+      "text": "A small shrine on a mud-island, half-sunk. Water seeps continuously from the cracks in the stone — it has been weeping so long the ground beneath is stained dark.",
+      "choices": [
+        {
+          "id": "offering",
+          "type": "default",
+          "text": "Make an offering and move on",
+          "outcome": {
+            "type": "text",
+            "text": "The shrine accepts. The weeping continues.",
+            "rewards": {
+              "xp": 15
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "meditate",
+          "type": "roll",
+          "text": "Meditate on what the shrine mourns",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "The grief becomes specific. A name, a cause, an old loss. Understanding doesn't fix it, but understanding tends to be useful.",
+            "rewards": {
+              "xp": 32,
+              "buffs": [
+                {
+                  "stat": "awareness",
+                  "amount": 3,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "Grief doesn't always explain itself. You sit with it anyway.",
+            "rewards": {
+              "xp": 5
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "purify",
+          "type": "requirement",
+          "text": "Perform a proper purification ceremony",
+          "requirements": {
+            "skills": {
+              "ritual": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The weeping slows, then stops — for the first time in however long. The shrine feels lighter. So do you.",
+            "rewards": {
+              "xp": 28,
+              "restore": {
+                "hp_percent": 25
+              }
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_sacrifice_post": {
+      "id": "hg_sacrifice_post",
+      "title": "Sacrifice Post",
+      "realm": "hungry_ghost",
+      "text": "A wooden post driven into the mud, hung with trinkets, cloth strips, dried flowers. The offerings are from multiple eras — some ancient, some recent. Whatever this appeases, it is still being appeased.",
+      "choices": [
+        {
+          "id": "small_offering",
+          "type": "default",
+          "text": "Add something small to the post",
+          "cost": {
+            "gold": "tiny"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It costs you almost nothing.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "human": 1,
+              "god": 1
+            }
+          }
+        },
+        {
+          "id": "identify",
+          "type": "roll",
+          "text": "Try to identify what this protects against",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "You piece it together from the nature of the offerings. The swamp has teeth, and this is how the locals have been keeping them dull.",
+            "rewards": {
+              "xp": 22,
+              "buffs": [
+                {
+                  "stat": "dodge",
+                  "amount": 10,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "Folk magic doesn't always leave notes. You make a small offering anyway.",
+            "rewards": {
+              "xp": 4
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        },
+        {
+          "id": "take_charms",
+          "type": "requirement",
+          "text": "Take several of the more potent-looking charms",
+          "requirements": {
+            "skills": {
+              "black_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They're not yours to take, but they're functional.",
+            "rewards": {
+              "xp": 8,
+              "items": [
+                "black_charm_common",
+                "water_charm_common"
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 3,
+              "human": -2
+            }
+          }
+        }
+      ]
+    },
+    "hg_funeral_rites": {
+      "id": "hg_funeral_rites",
+      "title": "Funeral Rites",
+      "realm": "hungry_ghost",
+      "text": "A skeleton sits beside a crumbling grave, methodically arranging offerings — flowers long since turned to dust, fruit that is only the shape of fruit. It works without hurry, with complete attention.",
+      "choices": [
+        {
+          "id": "dont_disturb",
+          "type": "default",
+          "text": "Don't disturb it",
+          "outcome": {
+            "type": "text",
+            "text": "Some things should be left alone. You pass at a respectful distance.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "watch",
+          "type": "roll",
+          "text": "Watch what it is arranging — try to understand",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "You recognize the pattern. Old funeral rites, obscure but correct. Someone taught this skeleton well.",
+            "rewards": {
+              "xp": 35,
+              "buffs": [
+                {
+                  "stat": "awareness",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You shift your weight. A branch snaps. The skeleton freezes. You hold your breath. Then it continues, ignoring you entirely.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "help_rites",
+          "type": "requirement",
+          "text": "Kneel and help perform the rites correctly",
+          "requirements": {
+            "skills": {
+              "yoga": 3,
+              "ritual": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It turns to look at you when you kneel. A long pause. Then it extends a handful of dust-flowers toward you, and together you finish the ceremony.",
+            "rewards": {
+              "xp": 40,
+              "restore": {
+                "hp_percent": 20
+              }
+            },
+            "karma": {
+              "human": 3,
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_memory_echo": {
+      "id": "hg_memory_echo",
+      "title": "Memory Echo",
+      "realm": "hungry_ghost",
+      "text": "A shimmer in the graveyard air, like heat haze — but it's cold here. For a moment you see a family at a meal. Vivid, fully real. Then gone, leaving only the smell of food that isn't there.",
+      "choices": [
+        {
+          "id": "move_on",
+          "type": "default",
+          "text": "Blink and move on",
+          "outcome": {
+            "type": "text",
+            "text": "Some things are just residue of lives. You don't need to understand every one.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "hold_vision",
+          "type": "roll",
+          "text": "Hold the vision — try to understand who they were",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "A life becomes briefly comprehensible. The attachment, the warmth, and what happened to it.",
+            "rewards": {
+              "xp": 40,
+              "buffs": [
+                {
+                  "stat": "spellpower",
+                  "amount": 3,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The hunger in the image reaches you before the meaning does. You feel it in your chest for an hour.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              }
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "study_echo",
+          "type": "requirement",
+          "text": "Study the echo's magical structure",
+          "requirements": {
+            "skills": {
+              "black_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "A well-preserved echo. Whoever imprinted it was powerful in life, and thoroughly unresolved.",
+            "rewards": {
+              "xp": 20,
+              "buffs": [
+                {
+                  "stat": "focus",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "awareness",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 1
+            }
+          }
+        }
+      ]
+    },
+    "hg_skeleton_musician": {
+      "id": "hg_skeleton_musician",
+      "title": "Skeleton Musician",
+      "realm": "hungry_ghost",
+      "text": "A skeleton sits on a gravestone, playing a two-stringed instrument with surprising skill. The music is slow and strange and not entirely unpleasant. It stops when it notices you.",
+      "choices": [
+        {
+          "id": "nod_pass",
+          "type": "default",
+          "text": "Nod respectfully and pass",
+          "outcome": {
+            "type": "text",
+            "text": "It watches you go. When you're far enough away, the music resumes.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "play_along",
+          "type": "roll",
+          "text": "Play along, or try to match the melody",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "trivial"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "It tilts its head at you, then picks up the tempo. You manage to follow. For a few minutes, in a graveyard in the hungry ghost realm, something like music happens.",
+            "rewards": {
+              "xp": 22,
+              "buffs": [
+                {
+                  "stat": "charm",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "human": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "Your contribution is not musically interesting. The skeleton watches you politely until you stop.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "sing",
+          "type": "requirement",
+          "text": "Sing for the musician",
+          "requirements": {
+            "skills": {
+              "performance": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It tilts its head at you, then picks up the tempo to match your voice. For a few minutes, in a graveyard in the hungry ghost realm, something like music happens.",
+            "rewards": {
+              "xp": 22,
+              "buffs": [
+                {
+                  "stat": "charm",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "comedy",
+          "type": "requirement",
+          "text": "Tell a joke",
+          "requirements": {
+            "skills": {
+              "comedy": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It makes no sound. But the jaw moves, and the ribcage shakes, and the instrument ends up upright and the musician hunched over it in a posture that can only be described as helpless.",
+            "rewards": {
+              "xp": 18,
+              "items": [
+                "air_charm_common"
+              ]
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_dust_storm": {
+      "id": "hg_dust_storm",
+      "title": "Dust Storm",
+      "realm": "hungry_ghost",
+      "text": "A wall of bone-dry grit sweeps across the graveyard with no warning. There's nowhere to shelter. You're going to take this one.",
+      "choices": [
+        {
+          "id": "push_through",
+          "type": "default",
+          "text": "Push through",
+          "outcome": {
+            "type": "text",
+            "text": "You bow your head and walk. It gets in everywhere.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              },
+              "buffs": [
+                {
+                  "stat": "constitution",
+                  "amount": -2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "brace_or_dodge",
+          "type": "roll",
+          "text": "Brace against it — or dodge the worst of it",
+          "requirements": {
+            "roll": {
+              "attribute": "constitution",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "You turn your back, cover your face, wait it out. It passes.",
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "It's worse than you thought.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              },
+              "buffs": [
+                {
+                  "stat": "constitution",
+                  "amount": -2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "earth_windbreak",
+          "type": "requirement",
+          "text": "Raise a wind-break with earth magic",
+          "requirements": {
+            "skills": {
+              "earth_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "A low ridge of packed earth takes the worst of it. You emerge into clear air already reforming your thoughts about dry graveyards.",
+            "rewards": {
+              "xp": 10,
+              "buffs": [
+                {
+                  "stat": "constitution",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          }
+        }
+      ]
+    },
+    "hg_dancing_dead": {
+      "id": "hg_dancing_dead",
+      "title": "The Dancing Dead",
+      "realm": "hungry_ghost",
+      "text": "A ring of corpses dances in perfect silence around an empty throne. Their movements are stiff but coordinated, as if memory persists where intention does not. They do not appear to notice you.",
+      "choices": [
+        {
+          "id": "slip_past",
+          "type": "default",
+          "text": "Slip past the outer edge carefully",
+          "outcome": {
+            "type": "text",
+            "text": "Whatever they are celebrating, or mourning, continues without you.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "join_ring",
+          "type": "roll",
+          "text": "Join the ring — dance with them",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Your body finds the rhythm. For a moment you are part of something very old and very strange. When the dance ends, you are on the other side of the ring.",
+            "rewards": {
+              "xp": 18,
+              "buffs": [
+                {
+                  "stat": "finesse",
+                  "amount": 2,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "luck",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You misstep. The ring shifts. They look at you all at once. Then, somehow worse, they resume — leaving you outside it.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "complete_ritual",
+          "type": "requirement",
+          "text": "Recognize the ceremony and complete your part",
+          "requirements": {
+            "skills": {
+              "ritual": 3,
+              "performance": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "This is a specific ceremony. You've seen fragments of it. You take the empty throne, perform your part. When you rise, the dance resolves — the figures slow, then still, with something like satisfaction.",
+            "rewards": {
+              "xp": 45
+            },
+            "karma": {
+              "human": 2,
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_spirit_fire": {
+      "id": "hg_spirit_fire",
+      "title": "Spirit Fires",
+      "realm": "hungry_ghost",
+      "text": "Three fires burn without fuel at the edge of the charnel grounds. One is pale blue, one is deep green, one is a colour that doesn't have a name. None of them give off heat.",
+      "choices": [
+        {
+          "id": "walk_around",
+          "type": "default",
+          "text": "Walk around them",
+          "outcome": {
+            "type": "text",
+            "text": "They seem to watch you go — or seem to.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "study",
+          "type": "roll",
+          "text": "Approach and study them",
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": "easy"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Each one is a distinct consciousness, in the earliest stage of what might become a ghost or might become something else. You learn something from how they burn.",
+            "rewards": {
+              "xp": 20,
+              "buffs": [
+                {
+                  "stat": "spellpower",
+                  "amount": 3,
+                  "combats_remaining": 1
+                },
+                {
+                  "stat": "focus",
+                  "amount": 2,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The nameless-coloured one flares. The heat is not physical. You step back.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              }
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "elemental_study",
+          "type": "requirement",
+          "text": "Understand their elemental nature",
+          "requirements": {
+            "skills": {
+              "fire_magic": 3,
+              "sorcery": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Three elements, one process. You spend time with each one, and each one teaches you something.",
+            "rewards": {
+              "xp": 35,
+              "items": [
+                "fire_charm_common"
+              ]
+            },
+            "karma": {}
+          }
+        }
+      ]
+    },
+    "hg_charnel_feast": {
+      "id": "hg_charnel_feast",
+      "title": "Charnel Feast",
+      "realm": "hungry_ghost",
+      "text": "A long table laid out in the open, covered in a feast that looks perfect and smells wrong. Seated pretas reach for food endlessly — it passes through without satisfying anything. The table is infinite. The hunger is infinite. Neither notices you standing at the edge.",
+      "choices": [
+        {
+          "id": "turn_away",
+          "type": "default",
+          "text": "Turn away quickly",
+          "outcome": {
+            "type": "text",
+            "text": "The right call.",
+            "karma": {}
+          }
+        },
+        {
+          "id": "eat_anyway",
+          "type": "roll",
+          "text": "Eat anyway — you're hungry, and it looks real enough",
+          "requirements": {
+            "roll": {
+              "attribute": "constitution",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "It's real enough. Strange but real. It sits wrong for an hour, then doesn't.",
+            "rewards": {
+              "restore": {
+                "hp_percent": 30
+              },
+              "supplies": {
+                "food": 2
+              }
+            },
+            "karma": {}
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You understand, briefly and completely, what it is like to need something and have it provide nothing at all.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "moderate",
+                "target": "all"
+              },
+              "buffs": [
+                {
+                  "stat": "constitution",
+                  "amount": -3,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {}
+          }
+        },
+        {
+          "id": "yoga_observe",
+          "type": "requirement",
+          "text": "Sit with the nature of what you're seeing",
+          "requirements": {
+            "skills": {
+              "yoga": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You observe the feast without hunger. The pretas slow, one by one, and watch you — the strange creature at the edge of the table who is not reaching. Something about this interests them.",
+            "rewards": {
+              "xp": 55,
+              "buffs": [
+                {
+                  "stat": "focus",
+                  "amount": 3,
+                  "combats_remaining": 1
+                }
+              ]
+            },
+            "karma": {
+              "human": 3,
+              "hungry_ghost": -3
+            }
+          }
+        },
+        {
+          "id": "steal_candleholders",
+          "type": "requirement",
+          "text": "Pocket the gold candleholders — they look real",
+          "requirements": {
+            "skills": {
+              "thievery": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They are real. Everything solid about this table is real.",
+            "rewards": {
+              "xp": 8,
+              "gold": "moderate"
+            },
+            "karma": {
+              "hungry_ghost": 3,
+              "human": -2
+            }
+          }
+        }
+      ]
+    },
+    "hg_sigh_of_relief": {
+      "id": "hg_sigh_of_relief",
+      "title": "A Sigh of Relief",
+      "realm": "hungry_ghost",
+      "text": "A small cairn with a folded cloth on top. Written in a careful hand: \"You are not as lost as you feel.\"",
+      "choices": [
+        {
+          "id": "read_move_on",
+          "type": "default",
+          "text": "Read it. Move on.",
+          "outcome": {
+            "type": "text",
+            "text": "You are not as lost as you feel.",
+            "rewards": {
+              "xp": 8,
+              "restore": {
+                "hp_percent": 15,
+                "mana_percent": 15
+              }
+            },
+            "karma": {
+              "human": 1
+            }
+          }
+        }
+      ]
+    },
+    "hg_black_lodge": {
+      "id": "hg_black_lodge",
+      "title": "Black Lodge",
+      "realm": "hungry_ghost",
+      "text": "A mound of bones marks the entrance, a khatvanga hung with a skull and streaming black silk. As you enter, the darkness swallows sound. Something in the corner shifts — it may not be fully alive. A slow turn. A waiting smile.",
+      "choices": [
+        {
+          "text": "Ask to learn",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_black_lodge",
+            "text": "The movement stills. A bony hand gestures to a list scratched into the wall. Spells. Prices. No explanation offered."
+          }
+        },
+        {
+          "text": "Back out",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You step back into the pale light. The khatvanga watches you leave."
+          }
+        }
+      ]
+    },
+    "hg_yogini_circle": {
+      "id": "hg_yogini_circle",
+      "title": "Circle of the Yoginis",
+      "realm": "hungry_ghost",
+      "text": "Sixty-four forms carved into standing bones form a perfect ring on the charnel ground. The earth inside is worn smooth by countless ritual footprints. A low humming comes from the center — women's voices, or something passing for them.",
+      "choices": [
+        {
+          "text": "Enter the circle",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_circle_of_yoginis",
+            "text": "One of the sisters turns. No words — a gesture toward the center of the ring. What do you need?"
+          }
+        },
+        {
+          "text": "Move on",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You back away slowly. The humming follows you longer than it should."
+          }
+        }
+      ]
+    },
+    "hg_crossroads_stupa": {
+      "id": "hg_crossroads_stupa",
+      "title": "Crossroads Stupa",
+      "realm": "hungry_ghost",
+      "text": "At the intersection of the ancient paths, a stupa rises from layers of offerings — skulls, prayer flags, bones wrapped in cloth. Juniper smoke and the smell of old offerings drift on the wind. A practitioner crouches behind the stupa, neither fully alive nor fully dead.",
+      "choices": [
+        {
+          "text": "Approach the stupa",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_crossroads_stupa",
+            "text": "The figure looks up. The crossroads is the right place for calling back what is lost. The price is gold."
+          }
+        },
+        {
+          "text": "Observe from a distance",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You watch the butter lamps flicker in the wind, then walk on. Some things are better left undisturbed."
+          }
+        }
+      ]
+    },
+    "hg_hidden_gompa": {
+      "id": "hg_hidden_gompa",
+      "title": "Hidden Gompa",
+      "realm": "hungry_ghost",
+      "text": "A small monastery sits undisturbed between the burial grounds, its walls marked with painted eyes that seem to follow you. The monks here practice for the benefit of all beings caught between lives. The ground vibrates faintly with their prayers.",
+      "choices": [
+        {
+          "text": "Knock and ask to enter",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_hidden_gompa",
+            "text": "After a long pause, the door opens. A monk gestures you inside and names what can be taught here — and the price."
+          }
+        },
+        {
+          "text": "Don't disturb them",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You walk past without knocking. The painted eyes seem to close behind you."
+          }
+        }
+      ]
+    },
+    "hg_mirror_lake": {
+      "id": "hg_mirror_lake",
+      "title": "Mirror Lake",
+      "realm": "hungry_ghost",
+      "text": "The surface of the lake is perfectly still, reflecting not the sky above but something else — other realms, other moments, faces that do not look back when you stare. Practitioners sit at its edge, meditating on what the water reveals.",
+      "choices": [
+        {
+          "text": "Sit and listen",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_mirror_lake",
+            "text": "A practitioner meets your eyes in the reflection before turning around. They can teach what the lake teaches. The water makes everything a fair price."
+          }
+        },
+        {
+          "text": "Walk away from the mirage",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You step back from the water's edge. The reflection holds your shape a moment longer, then dissolves."
+          }
+        }
+      ]
+    },
+    "hg_sacred_grove": {
+      "id": "hg_sacred_grove",
+      "title": "Sacred Grove",
+      "realm": "hungry_ghost",
+      "text": "A stand of ancient trees whose roots grow through charnel earth. The branches are hung with offerings of food — the hungry ghosts who press at the edge of the grove can smell them but cannot eat. Practitioners move among the roots, speaking to both the living and the dead.",
+      "choices": [
+        {
+          "text": "Approach the practitioners",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_sacred_grove",
+            "text": "One of the practitioners turns. She names what can be taught here, and then the price. Gold is gold in every realm."
+          }
+        },
+        {
+          "text": "Leave them to it",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You walk on. The smell of offerings follows you through the trees."
+          }
+        }
+      ]
+    },
+    "hg_temple_of_the_naga": {
+      "id": "hg_temple_of_the_naga",
+      "title": "Temple of the Naga",
+      "realm": "hungry_ghost",
+      "text": "A low temple built around a black-water pool. The nagas who dwell in such pools are guardians of the dead, and their human followers leave milk offerings at the water's edge. A practitioner sits cross-legged on the stone, eyes closed, lips moving.",
+      "choices": [
+        {
+          "text": "Ask about their teachings",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_temple_of_the_naga",
+            "text": "The practitioner opens her eyes. She names the spells the nagas have permitted to be taught here, and the price. It is not cheap."
+          }
+        },
+        {
+          "text": "Move on",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the offerings undisturbed. The pool surface ripples once as you go."
+          }
+        }
+      ]
+    },
+    "hg_mercenary_guild": {
+      "id": "hg_mercenary_guild",
+      "title": "Mercenary Guild",
+      "realm": "hungry_ghost",
+      "text": "A walled compound marked with the crossed-bone sigil of the guild. Skeletal warriors and half-dead fighters linger between contracts, sharpening weapons they barely need to use anymore.",
+      "choices": [
+        {
+          "text": "Enter the guild",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_mercenary_guild",
+            "text": "The guildmaster looks you over without interest. Weapons, armor, contracts — name what you need."
+          }
+        },
+        {
+          "text": "Move on",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the compound to its dead-eyed inhabitants."
+          }
+        }
+      ]
+    },
+    "hg_peddler_graveyard": {
+      "id": "hg_peddler_graveyard",
+      "title": "Wandering Preta",
+      "realm": "hungry_ghost",
+      "text": "A preta wanders between the grave markers, its distended belly dragging, desperate hands clutching bundles of goods. It will trade anything for food — though it can never eat enough to be satisfied.",
+      "choices": [
+        {
+          "text": "Trade with the preta",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_wandering_preta",
+            "text": "The preta's needle-thin neck cranes toward you, eyes fixed on your pack. It lays its goods on a grave marker and waits."
+          }
+        },
+        {
+          "text": "Move on",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You give the preta a wide berth. It watches you go with hollow, hungry eyes."
+          }
+        }
+      ]
+    },
+    "hg_peddler_swamp": {
+      "id": "hg_peddler_swamp",
+      "title": "Wandering Preta",
+      "realm": "hungry_ghost",
+      "text": "A preta rises from the mist at the water's edge, its needle-thin neck craning as it senses your approach. Desperate hands clutch wares salvaged from the swamp floor. It will trade anything for food.",
+      "choices": [
+        {
+          "text": "Trade with the preta",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_wandering_preta",
+            "text": "The preta spreads its goods on a half-submerged log and regards you with hollow, hopeful eyes."
+          }
+        },
+        {
+          "text": "Move on",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You leave it to the mist. Its eyes follow you until the fog closes in."
+          }
+        }
+      ]
+    },
+    "hg_teahouse_charnel": {
+      "id": "hg_teahouse_charnel",
+      "title": "Charnel Teahouse",
+      "realm": "hungry_ghost",
+      "text": "A lantern glows faintly above a low doorway carved into a wall of stacked bone. Inside, a quiet figure brews tea from dried flowers that grow only on graves. The dead do not drink, but the living are welcome.",
+      "choices": [
+        {
+          "text": "Step inside",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_teahouse",
+            "text": "The figure pours without looking up. You can rest here — if you can afford it."
+          }
+        },
+        {
+          "text": "Move on",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the lantern light behind. The scent of grave-flowers follows you a while."
+          }
+        }
+      ]
+    },
+    "hg_teahouse_graveyard": {
+      "id": "hg_teahouse_graveyard",
+      "title": "Graveyard Teahouse",
+      "realm": "hungry_ghost",
+      "text": "A small dwelling built into the side of an old burial mound, its entrance marked with a hanging lantern and a painted sign no longer legible. Someone has been serving tea here for a very long time.",
+      "choices": [
+        {
+          "text": "Step inside",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_teahouse",
+            "text": "The host gestures to a low table. The tea is bitter and dark. You can rest here — if you can afford it."
+          }
+        },
+        {
+          "text": "Move on",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the mound behind. The lantern swings in a wind you can't feel."
+          }
+        }
+      ]
+    },
+    "hg_teahouse_swamp": {
+      "id": "hg_teahouse_swamp",
+      "title": "Swamp Teahouse",
+      "realm": "hungry_ghost",
+      "text": "A teahouse built on stilts above the swamp water, its light the only warmth for miles. A rope bridge leads to the door. Someone is already watching you from the window.",
+      "choices": [
+        {
+          "text": "Cross the bridge",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_teahouse",
+            "text": "The host sets a cup on the table before you sit. You can rest here — if you can afford it."
+          }
+        },
+        {
+          "text": "Move on",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the light behind. The swamp closes around you."
+          }
+        }
+      ]
+    },
+    "hg_town_magic": {
+      "id": "hg_town_magic",
+      "title": "Town",
+      "realm": "hungry_ghost",
+      "text": "A settlement where more windows glow than can be explained by candlelight. Strange smells drift from the apothecary. A practitioner argues with a vetala outside the library, and neither seems to have the better of it.",
+      "choices": [
+        {
+          "text": "Enter the town",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_town_magic",
+            "text": "You find the market square. The odd merchants eye you with professional interest."
+          }
+        },
+        {
+          "text": "Move on",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the scholars to their arguments. The strange lights fade behind you."
+          }
+        }
+      ]
+    },
+    "hg_town_supplies": {
+      "id": "hg_town_supplies",
+      "title": "Town",
+      "realm": "hungry_ghost",
+      "text": "A trading post built among the graves, supplies scavenged from the dead and traded among the half-living. The market is quiet but well-stocked — necessity makes practical merchants of everyone here.",
+      "choices": [
+        {
+          "text": "Enter the town",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_town_supplies",
+            "text": "You push through to the market. Traders call out their wares in dry, patient voices."
+          }
+        },
+        {
+          "text": "Move on",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You skirt the settlement and keep moving."
+          }
+        }
+      ]
+    },
+    "hg_town_weapons": {
+      "id": "hg_town_weapons",
+      "title": "Town",
+      "realm": "hungry_ghost",
+      "text": "A fortified compound where warriors trade blades and bones. The biggest building is an armory. Someone is always sharpening something, and the sound of whetstones never stops.",
+      "choices": [
+        {
+          "text": "Enter the town",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_town_weapons",
+            "text": "You push through the gate. The armorer looks up from their work."
+          }
+        },
+        {
+          "text": "Move on",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You skirt the compound and keep moving."
+          }
+        }
+      ]
+    },
+    "hg_veterans_camp": {
+      "id": "hg_veterans_camp",
+      "title": "Veterans' Camp",
+      "realm": "hungry_ghost",
+      "text": "A camp of battle-scarred fighters who never left the ghost realm. Their fire has been burning since they arrived — they stopped counting how long ago. They still trade in the tools of their old trade.",
+      "choices": [
+        {
+          "text": "Approach the camp",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_veterans_camp",
+            "text": "A veteran looks up from the fire. Old fighters make fair merchants — they know what things are worth."
+          }
+        },
+        {
+          "text": "Move on",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You leave the veterans to their fire. It will still be burning when you pass this way again."
+          }
+        }
+      ]
+    },
+    "hg_shadow_market": {
+      "id": "hg_shadow_market",
+      "title": "Shadow Market",
+      "realm": "hungry_ghost",
+      "text": "A market that appears only between the grave stones, visible only to those who know how to look. The stalls are draped in dark cloth and the merchants keep their faces in shadow. Everything here was obtained quietly.",
+      "choices": [
+        {
+          "text": "Browse the stalls",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_black_market",
+            "text": "A shadowed hand gestures you deeper into the market. No questions asked, no names given."
+          }
+        },
+        {
+          "text": "Move on",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You step back. The market seems to thin and vanish between blinks."
+          }
+        }
+      ]
+    },
+    "hg_shadow_peddler": {
+      "id": "hg_shadow_peddler",
+      "title": "Shadow Peddler",
+      "realm": "hungry_ghost",
+      "text": "A hunched figure steps from behind a grave marker, face obscured beneath a ragged hood. Its voice is barely a whisper but its goods are real enough — things it has acquired in ways it declines to explain.",
+      "choices": [
+        {
+          "text": "See what it has",
+          "type": "default",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_wandering_preta",
+            "text": "The figure spreads its goods on the grave stone between you. It wants food more than gold."
+          }
+        },
+        {
+          "text": "Keep moving",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You walk past without stopping. The figure watches you go, then is gone."
+          }
+        }
+      ]
     }
   }
 }

@@ -12796,6 +12796,177 @@
       "todo": [
         "blindness_immunity: grants immunity to the Blinded status effect when equipped; wire passive check in CombatUnit or ItemSystem when applying the blinded status"
       ]
+    },
+    "steel_khanda": {
+      "name": "Steel Khanda",
+      "weapon_class": "Sword",
+      "type": "sword",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "earth",
+      "weight": 10,
+      "value": 120,
+      "description": "A tempered steel khanda, beautifully balanced. The standard by which other blades are judged.",
+      "requirements": {
+        "strength": 12
+      },
+      "stats": {
+        "damage": 12,
+        "accuracy": 2
+      },
+      "abilities": [],
+      "durability": 110,
+      "max_durability": 110
+    },
+    "iron_ring": {
+      "name": "Iron Ring",
+      "type": "ring",
+      "slot": "ring1",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "weight": 0,
+      "value": 25,
+      "description": "A plain iron ring. Adds little beauty but some substance.",
+      "requirements": {},
+      "stats": {
+        "max_hp": 5,
+        "armor": 1
+      },
+      "abilities": []
+    },
+    "steel_ring": {
+      "name": "Steel Ring",
+      "type": "ring",
+      "slot": "ring1",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "earth",
+      "weight": 0,
+      "value": 45,
+      "description": "A polished steel ring. Heavier than it looks and quietly sturdy.",
+      "requirements": {},
+      "stats": {
+        "max_hp": 10,
+        "armor": 2
+      },
+      "abilities": []
+    },
+    "smelling_salts": {
+      "name": "Smelling Salts",
+      "type": "medicine",
+      "rarity": "common",
+      "weight": 1,
+      "value": 15,
+      "description": "Sharp-smelling crystals. Revives a stunned or dazed ally.",
+      "effect": {
+        "type": "cleanse",
+        "statuses_removed": [
+          "Stunned",
+          "Unconscious"
+        ],
+        "targeting": "ally"
+      },
+      "slot": "inventory"
+    },
+    "healing_herb": {
+      "name": "Healing Herb",
+      "type": "herb",
+      "rarity": "common",
+      "weight": 1,
+      "value": 10,
+      "description": "A bitter-tasting leaf with mild restorative properties.",
+      "effect": {
+        "type": "heal",
+        "value": 15,
+        "targeting": "self"
+      },
+      "slot": "inventory"
+    },
+    "ghost_pepper": {
+      "name": "Ghost Pepper",
+      "type": "bomb",
+      "rarity": "common",
+      "weight": 1,
+      "value": 20,
+      "description": "A dried spirit-world pepper. Causes searing pain on contact — thrown at enemies, not eaten.",
+      "effect": {
+        "damage": 8,
+        "damage_type": "fire",
+        "aoe_radius": 1,
+        "range": 3,
+        "statuses": [
+          {
+            "name": "Burning",
+            "duration": 1,
+            "chance": 75
+          }
+        ]
+      },
+      "slot": "inventory"
+    },
+    "spirit_salt": {
+      "name": "Spirit Salt",
+      "type": "medicine",
+      "rarity": "common",
+      "weight": 1,
+      "value": 20,
+      "description": "Coarse salt charged with purifying energy. Disrupts spirit possession and curses.",
+      "effect": {
+        "type": "cleanse",
+        "statuses_removed": [
+          "Cursed",
+          "Haunted",
+          "Possessed"
+        ],
+        "targeting": "self"
+      },
+      "slot": "inventory"
+    },
+    "bone_dust": {
+      "name": "Bone Dust",
+      "type": "bomb",
+      "rarity": "common",
+      "weight": 1,
+      "value": 18,
+      "description": "Ground bone scattered in a cloud. Chokes and blinds anyone caught in it.",
+      "effect": {
+        "damage": 5,
+        "damage_type": "physical",
+        "aoe_radius": 2,
+        "range": 3,
+        "statuses": [
+          {
+            "name": "Blinded",
+            "duration": 1,
+            "chance": 80
+          }
+        ]
+      },
+      "slot": "inventory"
+    },
+    "firebomb": {
+      "name": "Firebomb",
+      "type": "bomb",
+      "rarity": "common",
+      "weight": 1,
+      "value": 30,
+      "description": "A clay flask of alchemical oil. Shatters on impact and ignites everything nearby.",
+      "effect": {
+        "damage": 20,
+        "damage_type": "fire",
+        "aoe_radius": 1,
+        "range": 4,
+        "statuses": [
+          {
+            "name": "Burning",
+            "duration": 2,
+            "chance": 100
+          }
+        ]
+      },
+      "slot": "inventory"
     }
   },
   "item_types": {
@@ -13030,6 +13201,14 @@
         "legs",
         "feet"
       ]
+    },
+    "focus": {
+      "category": "weapon",
+      "slots": [
+        "weapon_main"
+      ],
+      "ranged": false,
+      "damage_type": "crushing"
     }
   },
   "rarities": {

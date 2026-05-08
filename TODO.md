@@ -11,27 +11,28 @@ Full plan: `docs/superpowers/plans/2026-04-07-psychology-system.md`
 
 Five elemental pressure meters per character (−100 klesha ↔ +100 wisdom). Pressure from events and combat → status effects at ±33/±50 → autonomous events at ±75.
 
-- [ ] **Task 1** — Create `scripts/autoload/psychology_system.gd` skeleton; register after KarmaSystem in `project.godot`
-- [ ] **Task 2** — Add `emotional_pressure` + `emotional_baseline` to BASE_CHARACTER in `character_system.gd`; add `emotional_baseline` field to all races in `races.json`; wire baseline copy in `_apply_race_modifiers()`
-- [ ] **Task 3** — Implement core pressure logic: `apply_pressure()`, `_intensity_multiplier()`, `get_active_statuses()`, `get_emotional_label()` (all named states for all 5 elements × 2 poles × 3 tiers)
-- [ ] **Task 4** — Implement `_check_thresholds()`: fires `autonomous_event_triggered` signal once per crossing, partial valve (+20 back toward neutral), resets on recovery. Connect signal to `_on_autonomous_event()` for inter-party fallout pressure
-- [ ] **Task 5** — Implement `decay_toward_baseline()` for rest system integration
-- [ ] **Task 6** — Wire event outcomes: add `pressure` field handler in `event_manager.gd apply_outcome()`; add `pressure` fields to 3 example hell events
-- [ ] **Task 7** — Wire combat hooks in `combat_manager.gd`: unit death → Water −15 to witnesses; victory → Fire/Air +10; defeat → Earth −10/Space −5
-- [ ] **Task 8** — Show dominant emotional label in character sheet UI (`main_menu.gd`)
-- [ ] **Task 9** — Wire Leadership + Comedy perks to `apply_pressure()` calls
+- [x] **Task 1** — Create `scripts/autoload/psychology_system.gd` skeleton; register after KarmaSystem in `project.godot`
+- [x] **Task 2** — Add `emotional_pressure` + `emotional_baseline` to BASE_CHARACTER in `character_system.gd`; add `emotional_baseline` field to all races in `races.json`; wire baseline copy in `_apply_race_modifiers()`
+- [x] **Task 3** — Implement core pressure logic: `apply_pressure()`, `_intensity_multiplier()`, `get_active_statuses()`, `get_emotional_label()` (all named states for all 5 elements × 2 poles × 3 tiers)
+- [x] **Task 4** — Implement `_check_thresholds()`: fires `autonomous_event_triggered` signal once per crossing, partial valve (+20 back toward neutral), resets on recovery. Connect signal to `_on_autonomous_event()` for inter-party fallout pressure
+- [x] **Task 5** — Implement `decay_toward_baseline()` for rest system integration
+- [x] **Task 6** — Wire event outcomes: add `pressure` field handler in `event_manager.gd apply_outcome()`; add `pressure` fields to 3 example hell events
+- [x] **Task 7** — Wire combat hooks in `combat_manager.gd`: unit death → Water −15 to witnesses; victory → Fire/Air +10; defeat → Earth −10/Space −5
+- [x] **Task 8** — Show dominant emotional label in character sheet UI (`main_menu.gd`)
+- [x] **Task 9** — Wire Leadership + Comedy perks to `apply_pressure()` calls
 
 **Future layers (not yet started):**
 - [x] ~~**Layer 2: Personality traits & quirks**~~ — QuirkSystem autoload + quirks.json (40 quirks: 10 physical, 14 personality, 10 behavioral, 10 acquired). Stat modifiers flow into `update_derived_stats()`; skill modifiers written to `skill_bonuses["quirks"]` source; pressure offsets shift `emotional_baseline`; event_tags unlock blue choices in event_manager. UI panel in character sheet (coloured by category, mechanical summary, purge tooltip). Bugs fixed: attribute event checks now include quirk bonuses; effective skill level clamped to 0 floor; purge check uses effective not raw skill.
 
 ### Trait System — Remaining Work
-- [ ] **Autonomous actions** — `event_tags` exist on traits but nothing consumes them at runtime. When `autonomous_event_triggered` fires (pressure crisis), look up the character's traits, find any with matching `event_tags`, and trigger a narrative micro-event (log message, forced choice, or stat consequence). E.g. `hot_tempered` at Fire crisis → attacks nearest ally; `timid` at Air crisis → flees from combat position. Needs a small dispatch table in event_manager or a new `_resolve_trait_autonomous()` in psychology_system.
-- [ ] **Player character starting traits** — no mechanism to assign personality/physical traits to the player at run start. Options: (a) random 1–2 inborn traits from the physical/personality pools at character creation, (b) background unlocks specific traits, (c) player picks from a short list. Pick approach and implement.
-- [ ] **Companion trait data** — add `"traits": [...]` arrays to actual companion definitions in companions.json; currently the system supports it but no companion has any traits assigned.
+- [x] ~~**Autonomous actions**~~ — `QUIRK_CRISIS_REACTIONS` dispatch table in `psychology_system.gd` covers 18 personality/behavioral/acquired event_tags × up to 2 element+polarity combinations each. `_resolve_quirk_reactions()` fires from `_on_autonomous_event` for both bright and dark crises. Virtue traits (brave, patient, composed, generous, devout) partially counteract their element; dark traits (hot_tempered, timid, haunted, grief_struck, etc.) amplify the crisis or spread fallout to the party. `emotional_crisis_log` signal emitted for UI display.
+- [x] ~~**Player character starting traits**~~ — `create_player_character()` assigns 1 random inborn physical + 1 random inborn personality trait via `TraitSystem.get_inborn_traits(category)` + `add_trait()`. `start_new_life()` inherits this automatically.
+- [x] ~~**Companion trait data**~~ — all 47 companions now have `"quirks": [...]` arrays in `companions.json` (see `docs/companion_quirks.md`). TODO: migrate key from `quirks` → `traits` when companion loading is updated.
 - [ ] **Racial trait content review** — initial racial traits (hell_born, undead_nature, spirit_nature, serpentine) are intentionally lightweight stubs. Once each realm's design is finalised, revisit and flesh out: add meaningful event_tags, pressure_modifiers, and any unique mechanical hooks appropriate to that race's cosmological nature.
 - Layer 3: Intervention mechanic (social skills let one character help another)
 - Yidam integration: mantra practice raises brightness baseline per element
-- Rest system: `decay_toward_baseline()` called on camp/inn rest
+- [x] ~~Rest system: `decay_toward_baseline()` called on camp/inn rest~~ — wired in overworld._do_rest() and camp_system sadhana/story activities
+- [x] ~~PsychologySystem signals connected in overworld + combat_arena~~ — `autonomous_event_triggered` shows toast in overworld; `emotional_crisis_log` shows toast in overworld and appends to combat log in arena
 - Chronic darkness counter: accumulates debuffs for time spent below −50
 - Character sheet psychology tab: elemental tendency bars + active statuses + traits
 
@@ -147,7 +148,7 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 **Follow-up (after core system lands):**
 - [x] ~~**Lunar calendar system**~~ — 28-day lunar month (4×7, always week-aligned), full moon day 14 / new moon day 28 (both Saturday). Two-line HUD label ("Sunday, 1st lunar day / Deep Night"). Full moon: White magic +20% spellpower + mana partial restore + toast; new moon: Black magic +20% + toast. Both: karma weight ×1.5. Weekday school bonus system: Sun=Fire, Mon=Water, Tue=Sorcery, Wed=Space, Thu=Air, Fri=Enchantment, Sat=Earth — each gives +20% spellpower to that school. All wired into `game_state.gd`, `combat_manager.gd`, `karma_system.gd`, `overworld.gd`, `overworld.tscn`.
 - [ ] Realm-specific rest events — "something stirs in the night" flavour event chance when resting in hell/hungry ghost
-- [ ] Rest perks — wire `_process_rest_perks(character, tier)`: Safe Campsite (no encounter on rest), Lucid Rest (Yoga 7, extra pressure decay), Well-Rested (Medicine 8, temp HP on full rest), Field Surgeon (Medicine 6, revive bleed-out on full rest)
+- [x] ~~Rest perks — wire `_process_rest_perks(character, tier)`~~ — **Safe Campsite** (Logistics 3): any party member with the perk eliminates disturbances + +15% HP restore. **Lucid Rest** (Yoga 7): accumulates mantra at Yoga÷2 during any rest tier, no activity slot needed. **Well-Rested** (Medicine 8): after Full Rest, party gets Awareness +3 / Constitution +2 / Initiative +5 for 1 combat via `active_map_buffs`. **Field Surgeon** (Medicine 6): using a medicine item in combat triggers a Medicine roll (d20+Medicine vs DC 14); on success cures one wound mid-fight. All three perks added to perks.json.
 - [ ] Yoga skill boosts pressure decay rate during rest (Yoga level adds to decay_amount)
 - [ ] Day/night visual changes on overworld map (lighting overlay, different mob behavior)
 - [ ] Block rest when hostile mob is adjacent (optional tension mechanic)
@@ -222,20 +223,20 @@ The current three-tier rest system handles resource costs and recovery correctly
 Needs a hands-on play session to balance, extend, and wire the remaining gaps:
 
 **Activities to add:**
-- [ ] **Night Music** (Performance 5+) — deeper morale; small chance of triggering a camp encounter (traveller, passing spirit). Needs camp event wiring from within an activity result.
-- [ ] **Guile Work** (Guile 4+) — set a false trail or trap; mechanical effect TBD (reduce next mob patrol range? chance of ambush avoidance?). Strong flavour, light mechanics.
+- [x] ~~**Night Music** (Performance 5+)~~ — 50-point party pressure decay + 20% chance to trigger a camp event via `result["camp_event_id"]`; overworld picks it up and shows it after rest.
+- [x] ~~**Guile Work** (Guile 4+)~~ — sets `GameState.flags["guile_work_done"]`; consumed by `roll_disturbance()` for −20% chance next rest. Ambush reduction noted in message but pending combat system.
 - [ ] **Set Snares** (Crafting 2+ or Thievery 2+) — overnight food/material gain; small creature encounter chance. Needs a "resolve on next move" deferred effect.
-- [ ] **Drill** (Leadership 5+) — party initiative bonus next combat. Similar to Encouraging Words but combat-only; requires Leadership 5 vs 3, so a separate slot option.
+- [x] ~~**Drill** (Leadership 5+)~~ — appends `{"stat": "initiative", "amount": 3}` to `active_map_buffs`; +3 initiative next combat.
 - [ ] **Protector Offering** (Ritual 2+) — dharmapala offering at a camp shrine; deferred until DharmapalaSystem exists.
-- [ ] **Craft Item** (Crafting 3+) — make basic tools/rope/ammo from scrap. Needs a simple crafting recipe table.
+- [x] ~~**Craft Item** (Smithing 3+)~~ — 2 scrap → 1–2 items from `CRAFT_TABLE` (rope, torch, bandage, arrowhead); 2nd item unlocked at Smithing 5+. Verify item IDs exist in items.json.
 - [ ] **Craft Charm** (Ritual 3+ + magic school 3+) — consumable charm with school-specific effect. Needs schema for camp-crafted charms.
-- [ ] **Mantra Recitation** (Yoga 2+) — currently a stub. Wire to a `mantra_count` field on the character and a threshold for future yidam relationship progress.
+- [x] ~~**Mantra Recitation** (Yoga 2+)~~ — stub removed; increments `character["mantra_count"]` by Yoga level; small pressure decay for performer. Yidam system will read the counter when built.
 
 **Wiring gaps:**
-- [ ] **Disturbance → camp event**: When `roll_disturbance()` returns true, call `EventManager.get_random_camp_event(realm)` and trigger it via the event display system. Currently disturbance only reduces rest effectiveness with a toast — no actual event fires. (Wiring requires post-rest event queue or mid-rest event hook.)
-- [ ] **More camp events**: Write 3–5 camp events per realm (hell, hungry ghost, plus any/cross-realm). Currently only 3 total exist. Target: at least 2 per realm + 3 any-realm.
+- [x] ~~**Disturbance → camp event**~~ — `_disturbance_event_id` stored on disturbance; `call_deferred("_show_camp_event", id)` fires after final toast. `_show_camp_event()` pauses movement and shows event display, same as location events.
+- [x] ~~**More camp events**~~ — 9 total now (was 3): added `camp_ember_voices`, `camp_guardian_threshold` (hell); `camp_whispered_offering`, `camp_creditor` (hungry_ghost); `camp_shared_dream`, `camp_stranger_fire` (any). Also fixed karma-in-rewards bug in two original events.
 - [ ] **Location-specific activity suppression**: TODO design said some activities unavailable at teahouses (smithing) or enhanced at gompas (sadhana). Add `"suppress_activities": [...]` and `"enhance_activities": [...]` to safe camp event dicts and wire into `get_available_activities()`.
-- [ ] **Sadhana cost preview**: Sadhana auto-picks the best ritual tier — but the player can't see which tier will fire or what it will cost before confirming. Add a preview line to the button text (e.g., "Torma Offering — Reagents: 2").
+- [x] ~~**Sadhana cost preview**~~ — `CampSystem.get_sadhana_preview(performer)` computes which tier would auto-select; button shows e.g. "Torma Offering (reagents: 2) · ~20–100 karma purified".
 
 **Balance review (needs playtesting):**
 - [ ] Forage yield (herbs + food) relative to rest costs — may be too generous or too low depending on realm.
@@ -274,7 +275,7 @@ Persistent negative status effects from combat or events that do not fully clear
 - [ ] Character sheet and combat UI: show persistent wound icons distinctly (deferred — no character sheet UI yet)
 - [ ] Temple/facility healing UI: call `WoundSystem.heal_at_facility(char, medicine_equivalent)` — stub ready, needs shop/temple scene
 - [ ] Realm-specific wound types (hungry ghost malnutrition, animal realm parasites, hell frostbite/burns) — extend WOUND_TYPES when realms are built
-- [ ] More wound/disease variety: currently 5 base types (3 wounds, 2 diseases). Target ~8–10 base types eventually; e.g. arrow wound (ranged-specific, different penalties from deep cut), poisoned wound (disease + damage hybrid), spiritual corruption (hell/hungry-ghost specific, resists medicine, needs Ritual/Yoga). See design notes in "Design Thinking: Wounds, Rest & Calendar" section.
+- [ ] More wound/disease variety: currently 5 base types (3 wounds, 2 diseases). Target ~8–10 base types eventually; e.g. arrow wound (ranged-specific, different penalties from deep cut), poisoned wound (disease + damage hybrid), spiritual corruption (hell/hungry-ghost specific, resists medicine, needs Ritual/Yoga). **Design presented for review — see companion_quirks.md (EDIT_LATER).**
 
 ---
 
@@ -688,9 +689,10 @@ Multi-armed characters are intentionally strong against lower-world beings — t
 
 ---
 
-## Body/Wound System — Audit Findings & Remaining Work
+## Body/Wound System — Audit ✓ COMPLETE (Second pass 2026-04-30)
 
-Deep audit completed. Bugs fixed in this session; remaining issues and design debt below.
+First audit fixed: sever weapon drop, O(n²) stat recalcs, natural weapon accuracy, multi-arm proc scaling, dominant natural weapon fallback, akimbo perk.
+Second audit fixed: multi-arm chain gate, enemy body_plan, inventory-full-on-sever, missing limb penalties, psychology signal connections, wound_specialist perk, wound stacking docs.
 
 ### Bugs Fixed
 - [x] **`sever_part()` didn't drop weapons**: arm_r sever now also unequips `weapon_main`; arm_l unequips `weapon_off`. Convention: arm_r = main hand, arm_l = off-hand.
@@ -703,21 +705,21 @@ Deep audit completed. Bugs fixed in this session; remaining issues and design de
 ### Remaining Issues
 
 #### HIGH — Wrong mechanics
-- [ ] **Multi-arm chain fires for all characters, not just dual-wielders**: at Finesse 10 every 2-armed character (including bare-handed humans) gets a 50% free off-hand attack per turn. This was intended only for "two-weapon builds" per design notes. Consider: only fire arm 2 chain if weapon_off has an item equipped OR if a natural weapon is the main weapon (all natural weapon builds). Design call needed.
-- [ ] **Wound penalty additive stacking**: two separate arm wounds sum their percentages before a single multiplicative application (`dodge * (1 - 0.50)` instead of `dodge * 0.75 * 0.75`). Additive is more lenient; chained multiplication was the design intent but makes early wound accumulation very punishing. Document the chosen approach explicitly in `get_stat_penalties()`.
+- [x] ~~**Multi-arm chain fires for all characters, not just dual-wielders**~~ — Fixed in `combat_manager.gd`: chain now only fires when `arm_count > 2` (multi-armed species), OR off-hand slot is occupied (dual-wielder), OR primary arm has a locked natural weapon (snow_lion, avian). Bare-handed humans no longer get a free 50% off-hand roll.
+- [x] ~~**Wound penalty additive stacking**~~ — Documented explicitly in `WoundSystem.get_stat_penalties()`: additive stacking is intentional (lenient vs chained multiplication which punishes early accumulation too hard).
 
 #### MEDIUM — Incomplete integration
-- [ ] **Enemy `body_plan` missing**: enemies are created without `body_plan`; `BodySystem.get_body_plan_def()` defaults to "human". Fine now, but prevents multi-armed enemy bodies, locked natural weapons on enemies, or enemy limb-loss events. Add `"body_plan"` population to `EnemySystem._build_unit_data()` using archetype `species` field (add species to archetype JSON schema).
-- [ ] **Companion `body_plan` missing**: companions created from companions.json data don't necessarily go through BASE_CHARACTER initialization. Check `CompanionSystem` — if companions with non-human species (future naga, avian companions) don't get body_plan set, they'll always be treated as human. Add body_plan default in companion creation.
-- [ ] **Inventory full on sever**: `ItemSystem.unequip_item()` silently fails if inventory is full (push_warning only). A severed limb whose inventory is full will leave the weapon in an orphaned equipped state. Add a fallback: if inventory full, drop the item to a ground tile (future item-drop system) or force-remove from slot without adding to inventory.
-- [ ] **`sever_part` for arm_l2/arm_r2**: extra arms (four-armed species) have equip slots hand_l2/hand_r2 but no weapon slots. If arm_l2 is severed and the character was somehow using it to hold a weapon (future mechanic), no weapon is dropped. Add `weapon_main2`/`weapon_off2` slot handling when that system is built.
-- [ ] **Prosthetic items need stat entries**: item type "prosthetic" registered in items.json but no actual prosthetic items exist. Create at least one per body region (hand, leg, foot) for each material tier when the craftable items pass comes.
-- [ ] **Missing limb stat penalty**: severed limbs have no inherent stat penalty beyond losing the equipment in that slot. A character with both arms severed still has full base stats (just can't equip weapons). Consider adding a permanent `missing_part` penalty table to BodySystem similar to WOUND_PENALTIES.
+- [x] ~~**Enemy `body_plan` missing**~~ — Fixed in `EnemySystem._build_enemy()`: now sets `body_plan` (species from archetype or "human"), `wounds: []`, and `quirks: []` on every generated enemy.
+- [x] ~~**Companion `body_plan` missing**~~ — Not a bug: `CompanionSystem.recruit()` uses `CharacterSystem.BASE_CHARACTER.duplicate(true)` which already includes `body_plan`, `wounds`, `emotional_pressure`, and `quirks`.
+- [x] ~~**Inventory full on sever**~~ — Fixed in `BodySystem.sever_part()`: if `unequip_item()` returns false (inventory full), the slot is force-cleared directly on `character.equipment` so the item doesn't remain in an orphaned equipped state (item is lost rather than returned).
+- [ ] **`sever_part` for arm_l2/arm_r2**: extra arms (four-armed species) have equip slots hand_l2/hand_r2 but no weapon slots. Add `weapon_main2`/`weapon_off2` slot handling when that system is built.
+- [ ] **Prosthetic items need stat entries**: item type "prosthetic" registered but no actual prosthetic items exist. Create per body region (hand, leg, foot) when the craftable items pass comes.
+- [x] ~~**Missing limb stat penalty**~~ — Fixed: `BodySystem.MISSING_PART_PENALTIES` const + `get_missing_part_penalties()` helper added; wired into `CharacterSystem.update_derived_stats()` after wound penalties. Arm loss: -2 damage, -5 stamina. Leg loss: -1 movement, -5 dodge. Foot loss: -1 movement.
 
 #### LOW — Polish / missing flavor
-- [ ] **Character sheet doesn't show wounds or missing parts**: wounds array exists on characters but no UI panel displays active wounds, their locations, or missing limbs. Add to character sheet as a third tab or alongside the health bar.
-- [ ] **`field_medic` perk ambiguity**: `field_medic` in perks.json is an in-combat instant-heal action (25% Awareness as HP). The design notes in this TODO describe a different out-of-combat field_medic perk (cures ALL wounds regardless of medicine level). These are two different things — rename the in-combat version or create a separate `wound_specialist` perk for the out-of-combat wound-cure effect.
-- [ ] **Multi-arm attack chain balance dial**: the `result["extra_arm_results"]` array is not yet used by combat UI or log summary. UI should indicate how many arms connected ("Arm 2: 12 dmg" etc.) — currently only the raw combat_log messages show this.
+- [ ] **Character sheet doesn't show wounds or missing parts**: wounds array exists on characters but no UI panel displays active wounds, their locations, or missing limbs.
+- [x] ~~**`field_medic` perk ambiguity**~~ — Resolved: `field_medic` stays as in-combat heal (Medicine 1). `wound_specialist` (Medicine 6) added to perks.json as the out-of-combat wound-cure perk; wired into `camp_system._exec_field_surgery()` and `WoundSystem.cure_wounds_field_surgery()` via `override_all` param.
+- [ ] **Multi-arm attack chain balance dial**: `result["extra_arm_results"]` not yet used by combat UI — UI should show "Arm 2: 12 dmg" etc. Currently only raw combat_log messages show this.
 
 ### Design Debt: Perks, Spells & Items Needing Body/Wound Integration
 
@@ -727,7 +729,7 @@ These are all additions/changes that should happen in a dedicated tuning pass:
 - [ ] `hardened` (Constitution 14+): 50% chance any incoming crit wound is negated — add to `combat_manager._process_weapon_on_hit_procs()` crit wound block
 - [ ] `undead_hunter` (Earth magic 3+): immune to diseases from undead/diseased attacker hits — add check in same location
 - [ ] `stubborn_body` (Constitution 15+): +1 to all `escalation_rests` thresholds — implement as `character.wound_escalation_delay` checked in `WoundSystem.tick_wounds()`
-- [ ] `wound_specialist` / out-of-combat variant of field_medic: Medicine 6+ — Field Surgery cures all wounds regardless of `cure_medicine_level`; wire into `cure_wounds_field_surgery()`
+- [x] ~~`wound_specialist`~~ — Added to perks.json (Medicine 6+); wired into camp_system._exec_field_surgery() and WoundSystem.cure_wounds_field_surgery()
 - [ ] `iron_cortex`: removes probability check for arms 1–2 (both always fire); arms 3+ still roll normally — add to multi-arm chain in `attack_unit()`
 
 #### Spells to add/modify (reference same section)
@@ -810,3 +812,105 @@ Some Deity Yoga effects are simplified stat bonuses rather than true unit spawns
 - [ ] Design shrine objects for overworld (map_generator.gd placement)
 - [ ] Implement DharmapalSystem autoload (offering tracking, relationship meters, interventions)
 - [ ] Wire cross-lifetime persistence into KarmaSystem / reincarnation logic
+
+---
+
+## Project Audit — 2026-05-01
+
+Full sweep of unimplemented, unfinished, and unconnected systems.
+
+### High Priority — Actionable Fixes
+
+**Character Sheet UI gaps:**
+- [ ] Wounds/body display panel — `character.wounds[]` is tracked by WoundSystem but nothing renders it in the character sheet; no display of active wounds, severity, or penalties
+- [ ] Psychology panel is minimal — only shows dominant emotional label; no per-element pressure bars, no baseline vs current comparison, no active status list
+
+**Combat system gaps:**
+- [ ] Extra arm attack results not shown in combat log — `extra_arm_results` are computed and applied silently; the UI should display "Arm 2: 12 dmg" etc. in the combat log
+- [ ] Cone AoE targeting preview is wrong — combat_arena shows full-range highlight instead of cone silhouette; `cone_forward` doesn't lock to caster facing
+
+**Status effects — wired in this session:**
+- [x] `_get_status_stat_bonus()` additions: `range_bonus` (+2 range), `finesse_bonus` (+5 dodge/+3 init), `damage_boost` (+15 dmg), `focus_penalty` (−3 spellpower), `focus_penalty_major` (−8), `awareness_penalty_major` (−8 init/−5 sp), `awareness_bonus_major` (+8 init/+5 sp), `armor_bonus_minor` (+5 armor), `minor_all_stats_bonus` (+5 all), `all_stats_penalty` (−5 all)
+- [x] `get_resistance()` addition: `magic_resistance_bonus` (+15 vs non-physical, Praying)
+- [x] `_apply_status_effect()` guards: `debuff_immunity` (Cleansed blocks debuffs), Mental_Immunity (`immune_to_charm/fear/confusion`), `remove_all_debuffs` fires `_cleanse_status_effects` on apply
+- [x] `attack_unit()`: `cannot_make_weapon_attacks` (Disarmed), `next_attack_misses` (Force_Miss status consumed on next attack), `next_ranged_guaranteed_hit` (Blessed_Shot consumed on hit)
+- [x] `calculate_physical_damage()`: `crit_vulnerability` (+25% crit chance against Marked_for_Death target)
+- [x] `apply_damage()`: `damage_taken_increase` (Marked_for_Death ×1.5 incoming damage)
+- [x] Turn start: `grants_extra_action` (Extra_Action gives +1 action and is consumed)
+- [x] `_unit_has_effect(unit, effect_name)` helper added to combat_manager.gd
+
+**Status effects — wired in follow-up pass:**
+- [x] `get_resistance()`: `air_immune` (Lightning_Form alias), `physical_immune` (Thin_Air alias), `fire_vulnerability` (reads `vulnerability_pct` field), `all_element_resistance` (reads `resistance_pct` field, Rainbow_Cloak)
+- [x] `calculate_hit_chance()`: `attacks_have_miss_chance` (Blurred −20% hit chance on top of dodge_bonus)
+- [x] `attack_unit()`: `immune_to_ranged` (Storm_Lord, ranged attacks auto-fail), `ranged_damage_reduction` (Air_Shield ×0.75), Sanctuary `cannot_target_enemies` + `cannot_be_targeted` guards, `breaks_on_offensive_action` removes Sanctuary on attack
+- [x] `cast_spell()`: Sanctuary blocks offensive spells (`cannot_target_enemies`), `breaks_on_offensive_action` removes Sanctuary on offensive cast
+- [x] `_apply_spell_effects()`: `spell_damage_reduction` (Magic_Shield / Golden_Defense ×0.75 after resistance)
+- [x] `_process_on_hit_perks()`: `stun_chance_on_hit` (Electrified_Weapon 25% Stunned on any hit)
+- [x] `_process_status_effects()` DoT: `increase_burning_damage_dealt` (Fan_the_Flames: fire DoT from this source ×1.5)
+- [x] Turn start: `skip_next_action` (Prone: −1 action to stand up, status consumed)
+- [x] `apply_damage()`: `hp_cannot_drop_below_1` (Death_Immunity: HP floor at 1)
+
+**Status effects — still not wired:**
+- [ ] `Taunt` (`must_attack_taunter`): requires AI targeting override — affected unit must target the taunter; complex AI integration deferred
+- [ ] `constitution_bonus`/`constitution_penalty` (Constitution_Buff / Constitution_Minus_2): affects max_hp mid-combat, requires HP recalculation system not yet built
+- [ ] Aura status effects (Soothing_Presence, Guardian_Kings, etc.): handled per-mantra, not via status effects — architecture differs
+- [ ] Karmic_Bond / `share_healing_75_percent` + `linked_to_ally`: shared HP system not built
+- [ ] Eternal_Vow (`return_on_death_next_turn` / `return_with_20_percent_hp`): resurrection not built
+- [ ] Magic_Mirror (`spell_reflect_chance`): spell reflection not built
+- [ ] Mirror_Images (`copies_absorb_attacks` / `illusory_copies`): illusory copy system not built
+- [ ] `grants_flight` / `loses_flight` / `immune_to_melee_unless_flyer`: flight system not built
+- [ ] `controlled_by_caster` (Dominated): full AI control system deferred
+- [ ] `forced_movement_toward_target` (Lured): force movement on unit's turn deferred
+- [ ] `buffs_all_stats_considerably` (Divine_Champion) / `buffs_two_highest_stats` (Divinely_Inspired): needs values defined
+- [ ] `focus_save_on_damage` (Swarmed): reactive save on each hit deferred
+- [ ] `hp_shield` (Mantric_Armor `until_destroyed` duration): damage absorption shield with persistent value not built
+- [ ] `death_resistance` (Ancestors_Blessing): survive-one-fatal-hit system not built
+- [ ] Moderate-complexity moderate: `can_move_through_enemies`, `immune_to_ground_effects`, `immune_to_terrain_hazards`, `immune_to_water_terrain`, `cannot_deal_physical`, `damage_on_move_attempt`, `prone_chance_on_movement`, `stealth_bonus`, `attack_damage_buff_when_ally_dies`, `aura_reduces_enemy_spell_damage`
+
+**Race features not wired:**
+- [ ] `red_devil`: `better_starting_weapon` — TODO note in races.json but not implemented; red devils get the same starting weapons as everyone else
+- [ ] `yellow_devil`: `extra_starting_gold` — TODO note in races.json, not implemented
+- [ ] `skeleton`: 50% physical damage reduction defined in races.json `base_resistances`, but combat_manager ignores `base_resistances` on enemies; only CombatUnit loaded from character_dict gets them
+
+**Overworld gaps:**
+- [ ] `_process_rest_perks` now handles Lucid Rest; Yoga skill level itself should also boost `decay_amount` during rest (Yoga 1–10 adding 2–20 to decay)
+- [ ] Location-specific camp activity suppression/enhancement — `suppress_activities` and `enhance_activities` fields exist in map object design but `get_available_activities()` never reads them
+
+### Medium Priority
+
+**Prosthetic items:**
+- [ ] `item_system.gd` registers "prosthetic" as a valid type and `equip_item` has a bypass for missing parts, but zero prosthetic items exist in `items.json` — the whole limb-loss → prosthetic flow has no data to use
+
+**Race descriptions:**
+- [ ] ~8 races in `races.json` have placeholder descriptions (TODO: Fill in description)
+
+**Shambler balance:**
+- [ ] `shambler` race has -7 net attribute total with no compensating passive — design note says add fear/mind immunity or reduced XP cost for unarmed/might
+
+### Low Priority / Design Phase
+
+**Combat features:**
+- [ ] Terrain spell power modifiers — tiles with fire/water/etc. terrain don't boost matching-school spells cast on them
+- [ ] Summoning terrain bonus — summoning spellpower should get +25% based on matching overworld terrain (water = nagas, mountains = earth spirits, etc.)
+- [ ] Out-of-combat spellcasting — utility spells like `cloud_gate` are designed for overworld use but no spellbook UI exists outside combat
+
+**Psychology:**
+- [ ] Chronic darkness counter — accumulate debuffs for time spent below −50 pressure (not started)
+- [ ] Yidam integration — mantra practice raises brightness baseline per element (depends on YidamSystem)
+- [ ] Layer 3 intervention mechanic — social skills let one character help another's pressure
+
+**Camp:**
+- [ ] Protector Offering camp activity — deferred until DharmapalSystem exists
+- [ ] Craft Charm camp activity — needs charm schema design
+- [ ] Set Snares camp activity — deferred (needs "resolve on next move" system)
+
+**Items:**
+- [ ] Cursed items — type registered, no actual cursed items exist yet
+- [ ] Ritual implement special traits — conch pacification aura, bone life-drain proc, sky-iron void field (design deferred)
+
+### Confirmed Complete (previously thought missing)
+- Psychology Layer 3 (crisis/valve mechanic) — fully implemented in `psychology_system.gd`
+- Wound/disease application on crits — wired in `combat_manager.gd`
+- Background system — all fields (`attribute_modifiers`, `starting_skills`, `starting_equipment`, `starting_spells`) are fully applied; no "abilities" field exists in data, nothing is missing
+- Spell outcomes — all 6 types handled; all reward keys have code handlers
+- Summoning school — complete; no in-game tutorial but mechanics work

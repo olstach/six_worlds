@@ -2199,6 +2199,42 @@
         "night_vision"
       ],
       "body_plan_species": "avian"
+    },
+    "bee": {
+      "name": "Bee",
+      "realm": "animal",
+      "description": "TODO: Fill in description",
+      "attribute_modifiers": {
+        "strength": 0,
+        "finesse": 0,
+        "constitution": 0,
+        "focus": 0,
+        "awareness": 0,
+        "charm": 0,
+        "luck": 0
+      },
+      "attribute_caps": {
+        "strength": 28,
+        "finesse": 28,
+        "constitution": 28,
+        "focus": 28,
+        "awareness": 28,
+        "charm": 28,
+        "luck": 28
+      },
+      "elemental_affinity_bonuses": {},
+      "starting_skills": {},
+      "starting_spells": [],
+      "reincarnation_weight": 0,
+      "typical_backgrounds": [],
+      "resistances": {},
+      "emotional_baseline": {
+        "space": 0,
+        "fire": 0,
+        "water": 0,
+        "earth": 0,
+        "air": 0
+      }
     }
   },
   "backgrounds": {
@@ -4256,6 +4292,25 @@
         "gana"
       ],
       "weight": 4
+    },
+    "healer": {
+      "name": "Healer",
+      "description": "Trained in white magic and the medical arts, devoted to the restoration of body and spirit.",
+      "attribute_modifiers": {
+        "focus": 1,
+        "awareness": 2,
+        "strength": -2
+      },
+      "starting_skills": {
+        "white_magic": 2,
+        "medicine": 1
+      },
+      "starting_spells": [
+        "lesser_heal",
+        "cure"
+      ],
+      "available_races": [],
+      "weight": 3
     }
   }
 }
