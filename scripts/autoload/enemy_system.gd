@@ -419,6 +419,13 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	if archetype.has("duel_stop_hp_pct"):
 		enemy["duel_stop_hp_pct"] = archetype["duel_stop_hp_pct"]
 
+	# Copy ai_behavior and pack_bonus params — read by _do_enemy_turn in combat_arena.
+	if archetype.has("ai_behavior"):
+		enemy["ai_behavior"] = archetype["ai_behavior"]
+		for pack_key in ["pack_min_size", "pack_attack_bonus", "pack_dodge_bonus"]:
+			if archetype.has(pack_key):
+				enemy[pack_key] = archetype[pack_key]
+
 	return enemy
 
 

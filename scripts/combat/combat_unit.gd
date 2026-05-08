@@ -796,7 +796,10 @@ func get_selected_ammo() -> Dictionary:
 func get_dodge() -> int:
 	var derived = character_data.get("derived", {})
 	var mantra_dodge = mantra_stat_bonuses.get("dodge", 0)
-	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge") + maxi(0, mantra_dodge) + _get_stat_modifier_bonus("dodge")
+	var pack_dodge: int = 0
+	if character_data.get("ai_behavior", "") == "pack_bonus" and CombatManager:
+		pack_dodge = CombatManager.get_pack_bonus_dodge(self)
+	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge") + maxi(0, mantra_dodge) + _get_stat_modifier_bonus("dodge") + pack_dodge
 
 
 ## Get attack damage

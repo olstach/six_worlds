@@ -215,8 +215,12 @@
       "realm": "animal"
     },
     "animal_matsya_shoal": {
-      "_comment": "Weak individually; pack bonus applies when 3+ present in encounter",
+      "_comment": "Weak individually; pack bonus applies when 3+ matsya_shoal alive",
       "name": "Matsya Shoal",
+      "ai_behavior": "pack_bonus",
+      "pack_min_size": 3,
+      "pack_attack_bonus": 10,
+      "pack_dodge_bonus": 15,
       "tier": "imp",
       "roles": [
         "frontline"
@@ -469,8 +473,9 @@
       "realm": "animal"
     },
     "animal_dura_burrower": {
-      "_comment": "Burrow spell teleports it adjacent to a target for a melee strike; TODO: full burrow emergence animation/mechanic",
+      "_comment": "Burrow spell teleports it adjacent to a target for a melee strike",
       "name": "Dura Burrower",
+      "ai_behavior": "burrow_emerge",
       "tier": "shade",
       "roles": [
         "skirmisher"
@@ -728,8 +733,9 @@
       "realm": "animal"
     },
     "animal_patanga_seeker": {
-      "_comment": "TODO: erratic_movement AI type — high finesse/grace perks approximate unpredictability for now",
+      "_comment": "erratic_movement AI: random repositioning each turn before attacking",
       "name": "Patanga Flame Seeker",
+      "ai_behavior": "erratic_movement",
       "tier": "shade",
       "roles": [
         "frontline"
@@ -815,8 +821,9 @@
       "realm": "animal"
     },
     "animal_rakshasa_maneater": {
-      "_comment": "Boss-tier lone predator; targets lowest-HP party member; TODO: priority_target AI behavior",
+      "_comment": "Boss-tier lone predator; targets lowest-HP party member",
       "name": "Rakshasa Maneater",
+      "ai_behavior": "priority_target",
       "tier": "boss",
       "roles": [
         "frontline"
@@ -1029,8 +1036,12 @@
       "realm": "animal"
     },
     "animal_gana_runner": {
-      "_comment": "Pack hunter; grace perks give terrain_mastery; TODO: pack_bonus AI when 3+ gana present",
+      "_comment": "Pack hunter; grants attack/dodge boost when 3+ gana_runner alive",
       "name": "Gana Pack Runner",
+      "ai_behavior": "pack_bonus",
+      "pack_min_size": 3,
+      "pack_attack_bonus": 15,
+      "pack_dodge_bonus": 10,
       "tier": "shade",
       "roles": [
         "frontline"

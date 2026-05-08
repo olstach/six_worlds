@@ -3659,6 +3659,55 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 		CombatManager.end_turn()
 		return
 
+	# --- Special AI behaviors ---
+	var ai_behavior: String = unit.character_data.get("ai_behavior", "")
+
+	# priority_target: always attack lowest-HP party member instead of nearest
+	if ai_behavior == "priority_target":
+		var best_target: CombatUnit = nearest
+		var lowest_hp_pct := 1.0
+		for pu in player_units:
+			if not pu.is_alive() or not pu.is_targetable():
+				continue
+			var pct := float(pu.current_hp) / float(pu.max_hp) if pu.max_hp > 0 else 1.0
+			if pct < lowest_hp_pct:
+				lowest_hp_pct = pct
+				best_target = pu
+		nearest = best_target
+
+	# pack_bonus: bonuses are computed inline by CombatManager.get_pack_bonus_attack/dodge()
+	# each time an attack or dodge is resolved, so no per-turn flag needed here.
+
+	# burrow_emerge: teleport adjacent to nearest target for a guaranteed-hit attack.
+	# Uses one action for the teleport, then attacks normally.
+	if ai_behavior == "burrow_emerge" and CombatManager.can_act(1):
+		var best_adj: Vector2i = unit.grid_position
+		var best_dist := 999
+		for dx in [-1, 0, 1]:
+			for dy in [-1, 0, 1]:
+				if dx == 0 and dy == 0:
+					continue
+				var tile := nearest.grid_position + Vector2i(dx, dy)
+				if CombatManager.combat_grid == null:
+					break
+				if CombatManager.combat_grid.is_tile_walkable(tile) \
+						and CombatManager.combat_grid.get_unit_at(tile) == null:
+					var d := _grid_distance(unit.grid_position, tile)
+					if d < best_dist:
+						best_dist = d
+						best_adj = tile
+		if best_adj != unit.grid_position and best_dist > 1:
+			var from := unit.grid_position
+			CombatManager.combat_grid.move_unit(unit, best_adj)
+			CombatManager.unit_moved.emit(unit, from, best_adj)
+			CombatManager.use_action(1)
+			_log_message("%s burrows and erupts beside %s!" % [unit.unit_name, nearest.unit_name])
+			# Next attack this turn is guaranteed to hit
+			unit.set("burrow_guaranteed_hit", true)
+
+	# erratic_movement: 50% chance to step randomly before engaging each action cycle.
+	# Applied per-loop-iteration below.
+
 	# Track flags to avoid repeating certain actions in a turn
 	var used_consumable_this_turn = false
 	var used_active_skill_this_turn = false
@@ -3671,6 +3720,25 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 		if _safety > 20:
 			push_warning("AI safety limit hit for %s — ending turn" % unit.unit_name)
 			break
+
+		# erratic_movement: 40% chance to reposition randomly instead of acting this loop
+		if ai_behavior == "erratic_movement" and CombatManager.can_act(1) and randf() < 0.4:
+			var adj_tiles: Array[Vector2i] = []
+			for dx in [-1, 0, 1]:
+				for dy in [-1, 0, 1]:
+					if dx == 0 and dy == 0:
+						continue
+					var t := unit.grid_position + Vector2i(dx, dy)
+					if CombatManager.combat_grid != null \
+							and CombatManager.combat_grid.is_tile_walkable(t) \
+							and CombatManager.combat_grid.get_unit_at(t) == null:
+						adj_tiles.append(t)
+			if not adj_tiles.is_empty():
+				adj_tiles.shuffle()
+				CombatManager.move_unit(unit, adj_tiles[0])
+				_log_message("%s darts erratically!" % unit.unit_name)
+				continue
+
 		var dist = _grid_distance(unit.grid_position, nearest.grid_position)
 
 		# --- PRIORITY 1: Emergency consumable (health potion at low HP) ---

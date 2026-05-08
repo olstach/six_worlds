@@ -1501,6 +1501,10 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		_remove_status_by_name(attacker, "Blessed_Shot")
 		combat_log.emit("%s's shot is divinely guided — guaranteed hit!" % attacker.unit_name)
 
+	# burrow_guaranteed_hit: consumed after this attack
+	if attacker.get("burrow_guaranteed_hit", false):
+		attacker.set("burrow_guaranteed_hit", false)
+
 	# Get weapon damage type (slashing, crushing, piercing)
 	var weapon_dmg_type = attacker.get_weapon_damage_type() if attacker.has_method("get_weapon_damage_type") else "crushing"
 
@@ -1909,6 +1913,14 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 	# Blurred: defender's blurred state causes an extra 20% miss chance on all attacks
 	if _unit_has_effect(defender, "attacks_have_miss_chance"):
 		hit_chance -= 20.0
+
+	# burrow_guaranteed_hit: set by burrow_emerge AI behavior — this attack cannot miss.
+	if attacker.get("burrow_guaranteed_hit", false):
+		return 95.0  # guaranteed within clamp range
+
+	# pack_bonus: flat accuracy bonus when enough same-archetype allies are alive.
+	if "character_data" in attacker and attacker.character_data.get("ai_behavior", "") == "pack_bonus":
+		hit_chance += get_pack_bonus_attack(attacker)
 
 	# Clamp to 10-95%
 	return clampf(hit_chance, 10.0, 95.0)
@@ -5046,6 +5058,30 @@ func get_team_units(team: int) -> Array[Node]:
 		if unit.team == team:
 			result.append(unit)
 	return result
+
+
+## Pack-bonus helpers: count same-archetype allies; return bonus if pack is large enough.
+func _count_pack_allies(unit: Node) -> int:
+	var my_id: String = unit.character_data.get("archetype_id", "")
+	if my_id.is_empty():
+		return 0
+	var count := 0
+	for ally in get_team_units(unit.team if "team" in unit else 0):
+		if ally.is_alive() and ally.character_data.get("archetype_id", "") == my_id:
+			count += 1
+	return count
+
+func get_pack_bonus_attack(unit: Node) -> int:
+	var min_size: int = unit.character_data.get("pack_min_size", 3)
+	if _count_pack_allies(unit) >= min_size:
+		return unit.character_data.get("pack_attack_bonus", 0)
+	return 0
+
+func get_pack_bonus_dodge(unit: Node) -> int:
+	var min_size: int = unit.character_data.get("pack_min_size", 3)
+	if _count_pack_allies(unit) >= min_size:
+		return unit.character_data.get("pack_dodge_bonus", 0)
+	return 0
 
 
 ## Get all alive units
