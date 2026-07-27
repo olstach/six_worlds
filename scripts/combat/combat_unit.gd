@@ -790,7 +790,7 @@ func get_accuracy() -> int:
 	var derived = character_data.get("derived", {})
 	var weapon_acc = get_equipped_weapon().get("stats", {}).get("accuracy", 0)
 	var ammo_acc = get_selected_ammo().get("accuracy_bonus", 0) if is_ranged_weapon() else 0
-	return derived.get("accuracy", 0) + weapon_acc + ammo_acc + _get_status_stat_bonus("accuracy") + mantra_stat_bonuses.get("accuracy", 0) + _get_stat_modifier_bonus("accuracy")
+	return derived.get("accuracy", 0) + weapon_acc + ammo_acc + _get_status_stat_bonus("accuracy") + mantra_stat_bonuses.get("accuracy", 0) + _get_stat_modifier_bonus("accuracy") + get_pack_bonus()
 
 
 ## Return the current ammo definition dict (includes id, bonuses, special_effect).
@@ -820,7 +820,27 @@ func get_selected_ammo() -> Dictionary:
 func get_dodge() -> int:
 	var derived = character_data.get("derived", {})
 	var mantra_dodge = mantra_stat_bonuses.get("dodge", 0)
-	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge") + maxi(0, mantra_dodge) + _get_stat_modifier_bonus("dodge")
+	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge") + maxi(0, mantra_dodge) + _get_stat_modifier_bonus("dodge") + get_pack_bonus()
+
+
+## ai_behavior "pack_bonus": units of the same archetype hunt better in numbers.
+## +3 accuracy/dodge per living packmate beyond the second, capped at +12.
+## Returns 0 for any unit without the pack_bonus behavior.
+func get_pack_bonus() -> int:
+	if character_data.get("ai_behavior", "") != "pack_bonus":
+		return 0
+	var my_archetype: String = character_data.get("archetype_id", "")
+	if my_archetype == "":
+		return 0
+	var packmates := 0
+	for other in CombatManager.all_units:
+		if other == self or not is_instance_valid(other) or not other.is_alive():
+			continue
+		if other.character_data.get("archetype_id", "") == my_archetype:
+			packmates += 1
+	if packmates < 2:
+		return 0
+	return mini(12, (packmates - 1) * 3)
 
 
 ## Get attack damage

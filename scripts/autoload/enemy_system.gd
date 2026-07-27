@@ -443,6 +443,11 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	if archetype.has("duel_stop_hp_pct"):
 		enemy["duel_stop_hp_pct"] = archetype["duel_stop_hp_pct"]
 
+	# Optional AI behavior mode — read by combat_arena during the enemy turn.
+	# Supported: erratic_movement, priority_target, pack_bonus, burrow_emerge
+	if archetype.has("ai_behavior"):
+		enemy["ai_behavior"] = archetype["ai_behavior"]
+
 	return enemy
 
 

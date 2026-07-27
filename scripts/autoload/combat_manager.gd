@@ -191,6 +191,25 @@ var _status_effects: Dictionary = {}
 # Summon templates database
 var _summon_templates: Dictionary = {}
 
+# Overworld terrain this battle is taking place on (MapManager.Terrain value).
+# Set by combat_arena at combat start; drives the Summoning terrain bonus below.
+var battlefield_overworld_terrain: int = -1
+
+## Overworld terrain → the summoning school it favours, by tradition:
+## nagas in water, earth spirits in mountains, nature spirits in forest,
+## hungry ghosts in ruins and charnel grounds.
+## Values are MapManager.Terrain enum ints; see map_manager.gd.
+const SUMMON_TERRAIN_AFFINITY: Dictionary = {
+	5:  {"school": "water", "label": "the living water"},        # WATER
+	6:  {"school": "water", "label": "the standing marsh"},      # SWAMP
+	11: {"school": "water", "label": "the deep ice"},            # ICE
+	2:  {"school": "earth", "label": "the old forest"},          # FOREST
+	4:  {"school": "earth", "label": "the mountain bones"},      # MOUNTAINS
+	3:  {"school": "earth", "label": "the hills"},               # HILLS
+	13: {"school": "black", "label": "the charnel ruins"},       # RUINS
+	9:  {"school": "fire",  "label": "the burning ground"},      # LAVA
+}
+
 # Combat rewards (filled before combat_ended signal, cleared on next combat start)
 var last_combat_rewards: Dictionary = {}
 
@@ -392,6 +411,7 @@ func end_combat(victory: bool) -> void:
 	all_units.clear()
 	turn_order.clear()
 	combat_grid = null
+	battlefield_overworld_terrain = -1
 
 
 ## Apply emotional pressure to party based on combat outcome.
@@ -1396,6 +1416,24 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 ## gets 50% of the primary arm's proc rates — a glancing brush is less likely to sever).
 ## No action cost, no further arm chain, no ammo or durability deduction.
 ## Oil, sweep, and other weapon passives only apply to the primary arm.
+## Coordinated Strikes: after an arm kills its target, find another living enemy
+## within the attacker's melee reach for the remaining arms to swing at.
+func _find_chain_redirect_target(attacker: Node) -> Node:
+	var reach: int = attacker.get_attack_range() if attacker.has_method("get_attack_range") else 1
+	var best: Node = null
+	var best_dist: int = 9999
+	for unit in all_units:
+		if unit == attacker or not unit.is_alive() or not unit.is_targetable():
+			continue
+		if "team" in unit and "team" in attacker and unit.team == attacker.team:
+			continue
+		var dist := _grid_distance(attacker.grid_position, unit.grid_position)
+		if dist <= reach and dist < best_dist:
+			best_dist = dist
+			best = unit
+	return best
+
+
 func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, chain_chance: float) -> Dictionary:
 	var weapon_dmg_type: String = "crushing"
 	if attacker.has_method("get_weapon_damage_type"):
@@ -1779,6 +1817,10 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			if should_chain:
 				var finesse: int = char_data.get("attributes", {}).get("finesse", 10)
 				var akimbo_bonus: float = 20.0 if PerkSystem.has_perk(char_data, "akimbo") else 0.0
+				# Coordinated Strikes: when an arm's blow kills, the chain resets —
+				# the remaining arms redirect to a fresh target instead of stopping.
+				var has_coordinated: bool = PerkSystem.has_perk(char_data, "coordinated_strikes")
+				var chain_target: Node = defender
 				for arm_index in range(1, arm_count):
 					var arm_number: int = arm_index + 1
 					var fire_chance: float = clampf(
@@ -1786,11 +1828,18 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 						0.0, 100.0
 					)
 					if randf() * 100.0 <= fire_chance:
-						if defender.is_alive():
-							var extra := _execute_arm_chain_attack(attacker, defender, arm_number, fire_chance)
+						if chain_target != null and chain_target.is_alive():
+							var extra := _execute_arm_chain_attack(attacker, chain_target, arm_number, fire_chance)
 							extra_arm_results.append(extra)
-							if not defender.is_alive():
-								break
+							if not chain_target.is_alive():
+								if not has_coordinated:
+									break
+								# Redirect to the nearest living enemy still in reach
+								chain_target = _find_chain_redirect_target(attacker)
+								if chain_target == null:
+									break
+								combat_log.emit("%s's momentum carries on — Coordinated Strikes redirects to %s!" % [
+									attacker.unit_name, chain_target.unit_name])
 					else:
 						break  # Coordination degraded; remaining arms don't roll
 	result["extra_arm_results"] = extra_arm_results
@@ -2972,6 +3021,19 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 					combat_log.emit("%s draws power from the %s terrain! (+%d spellpower)" % [caster.unit_name, terrain_label, delta])
 				else:
 					combat_log.emit("%s is weakened by the %s terrain! (%d spellpower)" % [caster.unit_name, terrain_label, delta])
+
+	# Summoning terrain affinity: the spirits native to this ground answer more
+	# readily. +25% spellpower for Summoning spells whose element matches the
+	# overworld terrain the battle is being fought on.
+	if battlefield_overworld_terrain >= 0:
+		var schools_lower_sum: Array = spell.get("schools", []).map(func(s): return s.to_lower())
+		if "summoning" in schools_lower_sum:
+			var affinity: Dictionary = SUMMON_TERRAIN_AFFINITY.get(battlefield_overworld_terrain, {})
+			if not affinity.is_empty() and affinity.get("school", "") in schools_lower_sum:
+				var summon_delta := int(spellpower_bonus * 0.25)
+				spellpower_bonus += summon_delta
+				combat_log.emit("The spirits of %s answer %s readily! (+%d spellpower)" % [
+					affinity.get("label", "this place"), caster.unit_name, summon_delta])
 
 	# Lunar & weekday spellpower bonuses
 	var calendar_schools: Array = spell.get("schools", []).map(func(s: String): return s.to_lower())

@@ -356,6 +356,10 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 	# Generate combat terrain from overworld context (before placing units)
 	var terrain_context = GameState.combat_terrain_context
 	GameState.combat_terrain_context = {}
+	# Remember the overworld terrain — Summoning spells get an affinity bonus
+	# from the spirits native to this ground (see CombatManager.SUMMON_TERRAIN_AFFINITY)
+	CombatManager.battlefield_overworld_terrain = int(terrain_context.get("dominant", -1)) \
+			if not terrain_context.is_empty() else -1
 	if not terrain_context.is_empty():
 		var map_data = _generate_combat_terrain(terrain_context)
 		combat_grid.setup_from_map(map_data)
@@ -3652,11 +3656,28 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 	# Find best target based on range
 	var attack_range = unit.get_attack_range()
 	var is_ranged = attack_range > 1
-	var nearest: CombatUnit = _find_nearest_enemy(unit, player_units)
+	# ai_behavior "priority_target" picks the weakest/most isolated victim instead
+	# of the nearest one (rakshasa maneater and similar hunters).
+	var ai_behavior: String = unit.character_data.get("ai_behavior", "")
+	var nearest: CombatUnit = null
+	if ai_behavior == "priority_target":
+		nearest = _find_priority_target(unit, player_units)
+	if nearest == null:
+		nearest = _find_nearest_enemy(unit, player_units)
 
 	if nearest == null:
 		CombatManager.end_turn()
 		return
+
+	# burrow_emerge: tunnel to a tile adjacent to the target, then strike in the
+	# same turn (dura burrower). Only fires when starting the turn out of reach.
+	if ai_behavior == "burrow_emerge":
+		_ai_try_burrow_emerge(unit, nearest)
+
+	# erratic_movement: unpredictable repositioning before committing to an
+	# attack (patanga seeker). One random hop per turn, never into worse range.
+	if ai_behavior == "erratic_movement" and CombatManager.can_act(1):
+		_ai_erratic_hop(unit, nearest)
 
 	# Track flags to avoid repeating certain actions in a turn
 	var used_consumable_this_turn = false
@@ -4182,6 +4203,89 @@ func _ai_try_use_active_skill(unit: CombatUnit, player_units: Array[Node], neare
 			return true
 
 	return false
+
+
+## ai_behavior "priority_target": prefer the weakest and most isolated target.
+## Score = missing-HP fraction (predator instinct for the wounded) plus an
+## isolation bonus for targets with few allies nearby.
+func _find_priority_target(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
+	var best: CombatUnit = null
+	var best_score: float = -999.0
+	for enemy in enemies:
+		if not enemy.is_alive() or not enemy.is_targetable():
+			continue
+		var hp_frac: float = float(enemy.current_hp) / maxf(1.0, float(enemy.max_hp))
+		var score: float = (1.0 - hp_frac) * 100.0
+
+		# Isolation: allies within 2 tiles make a target less appealing
+		var neighbors := 0
+		for other in enemies:
+			if other == enemy or not other.is_alive():
+				continue
+			if _grid_distance(other.grid_position, enemy.grid_position) <= 2:
+				neighbors += 1
+		score += maxf(0.0, 40.0 - neighbors * 15.0)
+
+		# Mild preference for closer targets so the hunter doesn't cross the map
+		score -= float(_grid_distance(unit.grid_position, enemy.grid_position)) * 2.0
+
+		if score > best_score:
+			best_score = score
+			best = enemy
+	return best
+
+
+## ai_behavior "burrow_emerge": tunnel underground and surface next to the target.
+## Consumes one action; only fires when the unit starts its turn out of melee reach.
+func _ai_try_burrow_emerge(unit: CombatUnit, target: CombatUnit) -> bool:
+	if target == null or combat_grid == null:
+		return false
+	if _grid_distance(unit.grid_position, target.grid_position) <= unit.get_attack_range():
+		return false
+	if not CombatManager.can_act(1):
+		return false
+
+	# Find a free tile adjacent to the target
+	var candidates: Array[Vector2i] = []
+	for dx in [-1, 0, 1]:
+		for dy in [-1, 0, 1]:
+			if dx == 0 and dy == 0:
+				continue
+			var tile := target.grid_position + Vector2i(dx, dy)
+			if combat_grid.is_tile_walkable(tile) and CombatManager.get_unit_at(tile) == null:
+				candidates.append(tile)
+	if candidates.is_empty():
+		return false
+
+	var dest: Vector2i = candidates[randi() % candidates.size()]
+	var from := unit.grid_position
+	combat_grid.move_unit(unit, dest)
+	CombatManager.use_action(1)
+	CombatManager.unit_moved.emit(unit, from, dest)
+	_log_message("%s burrows through the earth and erupts beside %s!" % [unit.unit_name, target.unit_name])
+	return true
+
+
+## ai_behavior "erratic_movement": a single unpredictable hop before acting.
+## Never moves further from the target than it already is.
+func _ai_erratic_hop(unit: CombatUnit, target: CombatUnit) -> void:
+	if target == null or combat_grid == null:
+		return
+	var move_range = CombatManager.get_movement_range(unit)
+	if move_range.is_empty():
+		return
+	var current_dist := _grid_distance(unit.grid_position, target.grid_position)
+	var options: Array[Vector2i] = []
+	for tile in move_range:
+		if tile == unit.grid_position:
+			continue
+		if _grid_distance(tile, target.grid_position) <= current_dist:
+			options.append(tile)
+	if options.is_empty():
+		return
+	var dest: Vector2i = options[randi() % options.size()]
+	if CombatManager.move_unit(unit, dest):
+		_log_message("%s darts erratically to a new position." % unit.unit_name)
 
 
 func _find_nearest_enemy(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:

@@ -254,7 +254,8 @@
         "biological",
         "animal"
       ],
-      "realm": "animal"
+      "realm": "animal",
+      "ai_behavior": "pack_bonus"
     },
     "animal_makara_titan": {
       "name": "Makara Titan",
@@ -469,7 +470,7 @@
       "realm": "animal"
     },
     "animal_dura_burrower": {
-      "_comment": "Burrow spell teleports it adjacent to a target for a melee strike; TODO: full burrow emergence animation/mechanic",
+      "_comment": "Burrows underground and erupts adjacent to its target for a melee strike.",
       "name": "Dura Burrower",
       "tier": "shade",
       "roles": [
@@ -511,7 +512,8 @@
         "biological",
         "animal"
       ],
-      "realm": "animal"
+      "realm": "animal",
+      "ai_behavior": "burrow_emerge"
     },
     "animal_khadga_blade": {
       "_comment": "Natural mantis blades; very high crit chance from high finesse + unarmed crit perks",
@@ -728,7 +730,7 @@
       "realm": "animal"
     },
     "animal_patanga_seeker": {
-      "_comment": "TODO: erratic_movement AI type — high finesse/grace perks approximate unpredictability for now",
+      "_comment": "Moves unpredictably before striking — impossible to anticipate.",
       "name": "Patanga Flame Seeker",
       "tier": "shade",
       "roles": [
@@ -769,7 +771,8 @@
         "animal",
         "flying"
       ],
-      "realm": "animal"
+      "realm": "animal",
+      "ai_behavior": "erratic_movement"
     },
     "_comment_forest": "=== FOREST REGION ===",
     "animal_rakshasa_hunter": {
@@ -815,7 +818,7 @@
       "realm": "animal"
     },
     "animal_rakshasa_maneater": {
-      "_comment": "Boss-tier lone predator; targets lowest-HP party member; TODO: priority_target AI behavior",
+      "_comment": "Boss-tier lone predator; singles out the weakest and most isolated party member.",
       "name": "Rakshasa Maneater",
       "tier": "boss",
       "roles": [
@@ -856,7 +859,8 @@
         "biological",
         "animal"
       ],
-      "realm": "animal"
+      "realm": "animal",
+      "ai_behavior": "priority_target"
     },
     "animal_varaha_charger": {
       "_comment": "Tusk charge; maces perk concussive_force gives knockback on crits",
@@ -1029,7 +1033,7 @@
       "realm": "animal"
     },
     "animal_gana_runner": {
-      "_comment": "Pack hunter; grace perks give terrain_mastery; TODO: pack_bonus AI when 3+ gana present",
+      "_comment": "Pack hunter; grows sharper and harder to hit as more of the pack closes in.",
       "name": "Gana Pack Runner",
       "tier": "shade",
       "roles": [
@@ -1066,7 +1070,8 @@
         "biological",
         "animal"
       ],
-      "realm": "animal"
+      "realm": "animal",
+      "ai_behavior": "pack_bonus"
     },
     "animal_gana_howler": {
       "_comment": "Pack support; enchantment perks buff allies and weaken party members",
