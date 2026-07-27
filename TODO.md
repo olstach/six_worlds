@@ -820,8 +820,15 @@ Some Deity Yoga effects are simplified stat bonuses rather than true unit spawns
 
 **Events:** all 47 missing zone events written. The animal map referenced 84
 event markers but only 37 existed — walking into the other 47 silently did
-nothing. Now 0% dead weight (hell is also 0%; **hungry ghost is still 41% —
-34 events listed in `EDIT_LATER.md` remain unwritten**).
+nothing. Now 0% dead weight.
+
+**Hungry ghost followed:** its 34 map-placed gaps were written too (9 swamp,
+12 graveyard, 13 charnel). **All three realms with content are now at 0% dead
+map weight** — hell 73 events, hungry ghost 141, animal 86.
+
+The 60-event design note supplied for the HG pass turned out to be already
+fully implemented — all 60 present, 58 richer than the note, 2 matching it
+exactly. The 34 written were a disjoint set the note did not cover.
 
 **Companions:** 24 added, 8 per zone, covering all 17 animal births. Every
 companion in the game now carries a `realm` field and animal ones a `zone`.

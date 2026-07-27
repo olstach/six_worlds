@@ -15,7 +15,7 @@ Three of six realms have real content:
 | Realm | Map | Enemies | Events | Shops | Companions |
 |---|---|---|---|---|---|
 | **Hell** | ✓ (cold/fire + divider) | ✓ 45 archetypes | ✓ 73 events | ✓ | ✓ 24 |
-| **Hungry Ghost** | ✓ (3 zones) | ✓ 23 archetypes | ⚠ core + infra; **34 unwritten, 41% dead map weight** (`EDIT_LATER.md`) | ✓ | ✓ 23 |
+| **Hungry Ghost** | ✓ (3 zones) | ✓ 23 archetypes | ✓ 141 events (0% dead map weight) | ✓ | ✓ 23 |
 | **Animal** | ✓ (ocean/forest/meadow) | ✓ 34 archetypes | ✓ 86 events (0% dead map weight) | ✓ | ✓ 24 |
 | Human / Asura / God | ✗ | ✗ | ✗ | ✗ | ✗ |
 
@@ -76,12 +76,13 @@ skills/traits/equipment, encounters→archetypes, and code→perk ids/status nam
 Ordered roughly by how much finished work is sitting behind each gap.
 
 ### Content gaps in otherwise-done systems
-- **34 HG flavor events unwritten** — and unlike a thin realm, these are
-  *placed on the map*: 41% of hungry ghost map-object weight leads to a marker
-  that silently does nothing when walked into. This is now the single biggest
-  content hole. IDs in `EDIT_LATER.md`.
+- ~~34 HG flavor events~~ — done. All three realms with content are now at
+  **0% dead map weight** (hell 73 events, hungry ghost 141, animal 86); every
+  marker the maps place resolves to a real event.
 - ~~Animal realm companions~~ — done, 24 added covering all 17 births.
 - ~~Animal realm zone events~~ — done, all 47 written.
+- **All of the above is Claude's prose and wants Olaf's pass** — 81 new events
+  and 24 companion bios across the two content passes.
 - **Bespoke recruitment events** for HG companions (priority targets listed in
   TODO.md § Companions).
 - **Hell event chains + quest content** (soul caravan, devil deserter, …) —
@@ -136,8 +137,9 @@ compensating passive), multi-arm damage scalars.
 ## Point of departure
 
 **Recommended first session back: a hell → hungry ghost → animal playthrough.**
-The animal realm is now fully populated — 86 events, 24 companions, 0% dead
-map markers — and has never been played at all.
+All three realms are now fully populated and none of the new content has been
+played: hungry ghost gained 37 events since you last played it, and the animal
+realm (86 events, 24 companions) has never been played at all.
 Progression is now actually gated (boss seal enforced, boss events exist), the
 animal realm's enemies/shops/events load for the first time, and a large batch
 of mechanics went from data-only to live — none of it has been played. Use the
@@ -156,8 +158,9 @@ Specifically worth watching for:
   pressure systems are tuned sanely now that they're visible.
 
 Good second sessions, depending on appetite:
-- **Content mood:** the 34 HG events — the last realm with dead map markers,
-  and the same shape of job just finished for animal.
+- **Content mood:** bespoke recruitment events for HG companions, hell quest
+  chains, or PERKS.md's empty tiers — the map-placement work is finished for
+  every realm that has content.
 - **Systems mood:** prosthetic items (small, unblocks a fully-coded flow), or
   combat-UI polish (wound icons on unit frames, per-arm damage popups).
 - **Big-swing mood:** YidamSystem — the design in TODO.md is complete enough
