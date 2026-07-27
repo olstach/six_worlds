@@ -596,7 +596,9 @@
         "leather_gloves": 3,
         "obsidian_dagger": 1,
         "obsidian_blade": 1,
-        "rations": 5
+        "rations": 5,
+        "prosthetic_fitted_hand": 1,
+        "prosthetic_fitted_leg": 1
       },
       "spells": [],
       "training": {
@@ -932,7 +934,9 @@
         "herb_bundle": 8,
         "health_potion": 3,
         "prayer_beads": 3,
-        "rations": 5
+        "rations": 5,
+        "prosthetic_crude_arm": 1,
+        "prosthetic_crude_leg": 1
       },
       "spells": [],
       "training": {
@@ -1005,7 +1009,11 @@
         "leather_vest": 2,
         "health_potion": 5,
         "rations": 3,
-        "herb_bundle": 3
+        "herb_bundle": 3,
+        "prosthetic_crude_hand": 2,
+        "prosthetic_crude_arm": 2,
+        "prosthetic_crude_leg": 2,
+        "prosthetic_fitted_hand": 1
       },
       "spells": [],
       "training": {
@@ -1605,7 +1613,14 @@
         "herb_bundle": 5,
         "apothecary_pouch": 2,
         "scroll_cure": 2,
-        "rations": 5
+        "rations": 5,
+        "prosthetic_crude_hand": 2,
+        "prosthetic_crude_leg": 2,
+        "prosthetic_fitted_hand": 1,
+        "prosthetic_fitted_arm": 1,
+        "prosthetic_fitted_leg": 1,
+        "prosthetic_fitted_foot": 1,
+        "prosthetic_fine_leg": 1
       },
       "spells": [
         "lesser_heal",
@@ -2071,7 +2086,9 @@
         "chainmail": 2,
         "longbow": 1,
         "iron_trishula": 3,
-        "leather_vest": 2
+        "leather_vest": 2,
+        "prosthetic_fitted_arm": 1,
+        "prosthetic_fine_foot": 1
       },
       "spells": [],
       "training": {
@@ -2434,7 +2451,9 @@
         "prayer_beads": 3,
         "rations": 5,
         "white_charm_common": 2,
-        "white_charm_middling": 1
+        "white_charm_middling": 1,
+        "prosthetic_crude_arm": 1,
+        "prosthetic_fitted_foot": 1
       },
       "spells": [],
       "training": {
@@ -2984,7 +3003,12 @@
         "iron_mace": 2,
         "iron_dagger": 3,
         "scrap_metal": 6,
-        "salvage_kit": 3
+        "salvage_kit": 3,
+        "prosthetic_fitted_hand": 2,
+        "prosthetic_fitted_arm": 2,
+        "prosthetic_fitted_foot": 1,
+        "prosthetic_fine_hand": 1,
+        "prosthetic_fine_arm": 1
       },
       "spells": [],
       "training": {
@@ -3007,7 +3031,10 @@
         "herb_bundle": 6,
         "healing_herb": 8,
         "raw_reagents": 3,
-        "salvage_kit": 2
+        "salvage_kit": 2,
+        "prosthetic_crude_hand": 1,
+        "prosthetic_crude_foot": 1,
+        "prosthetic_fitted_leg": 1
       },
       "spells": [
         "lesser_heal",
