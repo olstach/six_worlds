@@ -239,6 +239,30 @@ for cid, comp in companions.items():
         if skill not in skills:
             err("companion->skill", f"companions.json:{cid}: skill '{skill}' unknown")
 
+# ── races and backgrounds ────────────────────────────────────────────────────
+for group in ("races", "backgrounds"):
+    for key, entry in races_data[group].items():
+        if key.startswith("_") or not isinstance(entry, dict):
+            continue
+        for skill in entry.get("starting_skills", {}):
+            if skill not in skills:
+                err(f"{group[:-1]}->skill", f"races.json:{key}: starting skill '{skill}' unknown")
+        for tid in entry.get("starting_traits", []):
+            if tid not in traits:
+                err(f"{group[:-1]}->trait", f"races.json:{key}: starting trait '{tid}' unknown")
+        equip = entry.get("starting_equipment", {})
+        for field in ("base_weapon", "weapon_upgrade", "secondary_weapon"):
+            iid = equip.get(field, "")
+            if iid and not item_ok(iid):
+                err(f"{group[:-1]}->item", f"races.json:{key}: {field} '{iid}' unknown")
+        for iid in equip.get("items", []):
+            if not item_ok(iid):
+                err(f"{group[:-1]}->item", f"races.json:{key}: starting item '{iid}' unknown")
+        for birth in entry.get("available_races", []):
+            if birth not in races:
+                err("background->birth", f"races.json:{key}: available_race '{birth}' unknown")
+
+
 # ── map configs ──────────────────────────────────────────────────────────────
 # NOTE: object_pools[zone] is a DICT keyed by "events"/"pickups"/"spell_schools",
 # not a list. Treating it as a list silently skips every reference.

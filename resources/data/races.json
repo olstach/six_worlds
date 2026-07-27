@@ -3294,7 +3294,7 @@
         "spears": 1
       },
       "starting_equipment": {
-        "base_weapon": "iron_spear",
+        "base_weapon": "iron_trishula",
         "items": [
           "lamellar_armor"
         ]
@@ -3362,8 +3362,8 @@
         "daggers": 1
       },
       "starting_equipment": {
-        "base_weapon": "iron_spear",
-        "weapon_upgrade": "steel_spear",
+        "base_weapon": "iron_trishula",
+        "weapon_upgrade": "steel_trishula",
         "weapon_upgrade_chance": 0.25,
         "secondary_weapon": "iron_dagger"
       },
@@ -3490,9 +3490,9 @@
         "constitution": 1
       },
       "starting_skills": {
-        "crafting": 2,
         "earth_magic": 1,
-        "logistics": 1
+        "logistics": 1,
+        "smithing": 2
       },
       "available_races": [
         "bhramara"
@@ -3570,11 +3570,11 @@
         "might": 1
       },
       "starting_equipment": {
-        "base_weapon": "iron_spear",
-        "weapon_upgrade": "steel_spear",
+        "base_weapon": "iron_trishula",
+        "weapon_upgrade": "steel_trishula",
         "weapon_upgrade_chance": 0.2,
         "items": [
-          "chuba"
+          "leather_vest"
         ]
       },
       "available_races": [
@@ -3593,12 +3593,12 @@
       },
       "starting_skills": {
         "earth_magic": 1,
-        "crafting": 2,
-        "might": 1
+        "might": 1,
+        "smithing": 2
       },
       "starting_equipment": {
-        "base_weapon": "bronze_gada",
-        "weapon_upgrade": "iron_gada",
+        "base_weapon": "bronze_mace",
+        "weapon_upgrade": "iron_mace",
         "weapon_upgrade_chance": 0.25
       },
       "available_races": [
@@ -4031,9 +4031,9 @@
       "description": "The camp near the river has a forge. I watched them for a season before I went in. They thought I wanted food. I wanted to understand what they were doing with fire and metal. The first tool I made was better than theirs. The seventh one they couldn't explain. I take requests now, in exchange for food and a formal agreement with their dogs.",
       "attribute_modifiers": {},
       "starting_skills": {
-        "crafting": 2,
         "guile": 1,
-        "learning": 1
+        "learning": 1,
+        "smithing": 2
       },
       "available_races": [
         "vanara"
@@ -4227,8 +4227,8 @@
       "description": "The shed carapace is not waste. It is material — harder than wood, lighter than iron, shaped already by the body that wore it. You learned to work it: to cut, to layer, to join. What you make fits the one who will wear it because you understand what it is to be armoured from birth.",
       "attribute_modifiers": {},
       "starting_skills": {
-        "crafting": 2,
-        "armor": 1
+        "armor": 1,
+        "smithing": 2
       },
       "available_races": [
         "dura"

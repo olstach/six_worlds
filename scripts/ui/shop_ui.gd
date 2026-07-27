@@ -646,6 +646,14 @@ func _populate_companions_tab() -> void:
 
 	# Remove already-recruited companions, then shuffle and cap the list
 	available = available.filter(func(id): return not id in party_companion_ids)
+	# Guard against cross-realm rosters: a companion tagged for another realm
+	# never appears here, even if a shop's list was copied from another realm.
+	# Companions with realm "any" are deliberately realm-agnostic.
+	var current_realm: String = GameState.current_world
+	available = available.filter(func(id):
+		var def_realm: String = CompanionSystem.get_definition(id).get("realm", "any")
+		return def_realm == "any" or def_realm == current_realm
+	)
 	available.shuffle()
 	if available.size() > MAX_COMPANIONS_SHOWN:
 		available = available.slice(0, MAX_COMPANIONS_SHOWN)
