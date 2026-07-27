@@ -2328,7 +2328,7 @@
         }
       }
     },
-    "crafting": {
+    "smithing": {
       "stats": [
         "crafting_quality",
         "repair_efficiency"
@@ -4360,23 +4360,29 @@
     },
     "akimbo": {
       "name": "Akimbo",
-      "skill": "finesse",
-      "required_level": 7,
+      "skill": "",
+      "required_level": 0,
       "requires_perks": [],
       "description": "Passive. All secondary arm attack chances in the multi-arm chain are increased by +20% (e.g. off-hand chance 50%→70% at Finesse 10).",
       "flavor": "Two weapons, one intent.",
-      "is_mantra": false
+      "is_mantra": false,
+      "required_attributes": {
+        "finesse": 14
+      }
     },
     "coordinated_strikes": {
       "name": "Coordinated Strikes",
-      "skill": "finesse",
-      "required_level": 10,
+      "skill": "",
+      "required_level": 0,
       "requires_perks": [
         "akimbo"
       ],
       "description": "Passive (multi-arm species only). If an arm in the attack chain kills its target, reset the chain — the next arm rolls independently rather than stopping.",
       "flavor": "The body learns to celebrate without pausing.",
-      "is_mantra": false
+      "is_mantra": false,
+      "required_attributes": {
+        "finesse": 16
+      }
     },
     "kindled": {
       "name": "Kindled",
@@ -6980,7 +6986,7 @@
     },
     "apprentice_smith": {
       "name": "Apprentice Smith",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 1,
       "requires_perks": [],
       "description": "Can craft basic weapons and armor from common materials.",
@@ -6989,7 +6995,7 @@
     },
     "journeymans_touch": {
       "name": "Journeyman's Touch",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 3,
       "requires_perks": [],
       "description": "Crafted items gain a random minor bonus (+5% to one stat).",
@@ -6998,7 +7004,7 @@
     },
     "master_craftsman": {
       "name": "Master Craftsman",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 7,
       "requires_perks": [
         "journeymans_touch"
@@ -7009,7 +7015,7 @@
     },
     "legendary_artisan": {
       "name": "Legendary Artisan",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 10,
       "requires_perks": [],
       "description": "Once per rest, craft an item of rare quality with a unique name and enhanced bonuses.",
@@ -7018,7 +7024,7 @@
     },
     "reinforce": {
       "name": "Reinforce",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 1,
       "requires_perks": [],
       "description": "Active (out of combat). Upgrade an existing piece of equipment, granting +10% to its primary stat permanently.",
@@ -7027,7 +7033,7 @@
     },
     "socket": {
       "name": "Socket",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 5,
       "requires_perks": [],
       "description": "Add a gem socket to a piece of equipment. Sockets hold gems, charms, or essences for additional bonuses.",
@@ -7036,7 +7042,7 @@
     },
     "masterwork_enhancement": {
       "name": "Masterwork Enhancement",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 9,
       "requires_perks": [
         "socket"
@@ -7047,7 +7053,7 @@
     },
     "field_repair": {
       "name": "Field Repair",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 1,
       "requires_perks": [],
       "description": "Active (1 action in combat, 3-turn cooldown). Restore 25% of an ally's Armor value, countering sunder effects.",
@@ -7056,7 +7062,7 @@
     },
     "improvised_barricade": {
       "name": "Improvised Barricade",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 3,
       "requires_perks": [],
       "description": "Active (1 action). Create a 1-tile barricade at an adjacent position. Provides half cover (+15% Armor) for anyone behind it. Lasts 3 turns.",
@@ -7065,7 +7071,7 @@
     },
     "trap_maker": {
       "name": "Trap Maker",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 5,
       "requires_perks": [],
       "description": "Active (1 action). Place a trap on an adjacent tile. The first enemy to enter takes damage equal to 30% of your Focus and is immobilized for 1 turn.",
@@ -7074,7 +7080,7 @@
     },
     "salvage": {
       "name": "Salvage",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 3,
       "requires_perks": [],
       "description": "Break down unwanted items for materials, recovering 50% of the item's material value.",
@@ -7083,7 +7089,7 @@
     },
     "efficient_salvage": {
       "name": "Efficient Salvage",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 7,
       "requires_perks": [
         "salvage"
@@ -7094,7 +7100,7 @@
     },
     "armor_specialist": {
       "name": "Armor Specialist",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 5,
       "requires_perks": [],
       "description": "Crafted armor gains +10% Armor and -10% Movement penalty.",
@@ -7103,7 +7109,7 @@
     },
     "weapon_specialist": {
       "name": "Weapon Specialist",
-      "skill": "crafting",
+      "skill": "smithing",
       "required_level": 5,
       "requires_perks": [],
       "description": "Crafted weapons gain +10% Damage and +5% accuracy.",
@@ -7144,6 +7150,262 @@
       "requires_perks": [],
       "description": "Aura. At the start of your turn, all other allies gain +1 Movement, +2 Initiative, and +5% Dodge for 1 round.",
       "flavor": "",
+      "is_mantra": false
+    },
+    "the_whole_arc": {
+      "name": "The Whole Arc",
+      "skill": "axes",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. Axe kills no longer end your momentum — momentum stacks persist through a kill and carry into the next turn. At 5+ stacks, every axe hit cleaves one adjacent enemy for full damage.",
+      "flavor": "The swing does not stop because something got in the way.",
+      "is_mantra": false
+    },
+    "thousand_cuts": {
+      "name": "Thousand Cuts",
+      "skill": "daggers",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. Every dagger hit on a target that is already Bleeding refreshes and deepens the bleed instead of reapplying it (stacking to 5). At 5 stacks the target takes double bleed damage and cannot be healed above half HP.",
+      "flavor": "No single one of them was the wound.",
+      "is_mantra": false
+    },
+    "the_mountain_answers": {
+      "name": "The Mountain Answers",
+      "skill": "maces",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Active (8 Stamina). Strike the ground rather than a target. Every enemy within 2 tiles is Knocked_Down and takes crushing damage equal to your Strength; structures and obstacles in the radius are destroyed outright.",
+      "flavor": "You do not argue with a mace. You are simply, eventually, agreed with.",
+      "is_mantra": false
+    },
+    "the_line_holds": {
+      "name": "The Line Holds",
+      "skill": "spears",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. Your threatened area extends to 3 tiles. Enemies entering it are Slowed for 1 turn, and any reaction attack you make from a braced position cannot miss.",
+      "flavor": "The spear does not need to move. That is the entire idea.",
+      "is_mantra": false
+    },
+    "one_breath_one_kill": {
+      "name": "One Breath, One Kill",
+      "skill": "ranged",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Active (once per combat, 6 Stamina). Spend your whole turn aiming. The shot ignores cover, line of sight, and Armor entirely, and critically hits if the target is below half HP.",
+      "flavor": "The arrow was released a long time before it left the string.",
+      "is_mantra": false
+    },
+    "empty_hand_full_world": {
+      "name": "Empty Hand, Full World",
+      "skill": "unarmed",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. While carrying no weapon in either hand, gain +1 action per turn, and unarmed strikes count as magical for resistance purposes.",
+      "flavor": "Nothing in the hands. Nothing needed in them.",
+      "is_mantra": false
+    },
+    "unbroken": {
+      "name": "Unbroken",
+      "skill": "armor",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. The first time each combat you would drop below 25% HP, you instead stop at 25% and all your Armor values double until end of turn. Wounds inflicted on you are downgraded one severity.",
+      "flavor": "Armour is a promise you make to the people standing behind you.",
+      "is_mantra": false
+    },
+    "the_fire_that_does_not_consume": {
+      "name": "The Fire That Does Not Consume",
+      "skill": "fire_magic",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. Your Fire spells no longer damage allies or destroy terrain you wish to preserve. Burning you apply lasts until dispelled, and enemies killed while Burning explode for half the spell's damage.",
+      "flavor": "It has learned the difference between burning and destroying. That took longer than the fire did.",
+      "is_mantra": false
+    },
+    "the_river_has_no_shape": {
+      "name": "The River Has No Shape",
+      "skill": "water_magic",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Active (once per combat, 15 Mana). For 3 turns you cannot be Immobilized, Rooted, Grappled or Knocked_Down, you move through occupied tiles freely, and every Water spell you cast costs half.",
+      "flavor": "Ask the river to hold still and see how the conversation goes.",
+      "is_mantra": false
+    },
+    "root_and_summit": {
+      "name": "Root and Summit",
+      "skill": "earth_magic",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. While standing on earth, stone or ground you have shaped, you cannot be moved against your will and gain +30% to all Resistances. Your Earth spells treat the battlefield's terrain as one tier more favourable.",
+      "flavor": "The mountain is not stubborn. It simply has nowhere it would rather be.",
+      "is_mantra": false
+    },
+    "the_door_stands_open": {
+      "name": "The Door Stands Open",
+      "skill": "space_magic",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Active (once per combat, 15 Mana). Open a gate between any two tiles you can see. It persists for 3 turns; any unit may step through, and allies who do gain +2 Initiative.",
+      "flavor": "Distance was always a courtesy, not a law.",
+      "is_mantra": false
+    },
+    "the_binding_holds": {
+      "name": "The Binding Holds",
+      "skill": "enchantment",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. Buffs you cast have no duration — they last until dispelled or the combat ends. Debuffs you cast cannot be cleansed by anything short of a dispel.",
+      "flavor": "An enchantment is a sentence the world has agreed to finish.",
+      "is_mantra": false
+    },
+    "host_of_the_faithful": {
+      "name": "Host of the Faithful",
+      "skill": "summoning",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. You may maintain twice your normal number of summons. When a summon of yours dies, the next one you call this combat arrives with full HP and an extra action.",
+      "flavor": "They come because they were asked properly, and they stay for the same reason.",
+      "is_mantra": false
+    },
+    "the_physician_of_the_dead": {
+      "name": "Physician of the Dead",
+      "skill": "medicine",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. You can treat any wound or disease regardless of its cure level, in the field, without supplies. A party member who would bleed out in combat instead stabilises at 1 HP once per combat.",
+      "flavor": "There is no condition that cannot be attended to. There are only ones that cannot be reversed.",
+      "is_mantra": false
+    },
+    "the_perfected_solution": {
+      "name": "The Perfected Solution",
+      "skill": "alchemy",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. Potions and bombs you brew are always one rarity tier higher and cost no reagents on a Logistics-conserved step. Consumables you use affect the whole party at half strength.",
+      "flavor": "Forty years of getting the proportions wrong, and then once of getting them right.",
+      "is_mantra": false
+    },
+    "the_ground_of_being": {
+      "name": "The Ground of Being",
+      "skill": "yoga",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. Emotional pressure decays toward baseline at triple rate, and you are immune to crisis states in every element. Once per rest you may extend this immunity to the whole party until the next combat ends.",
+      "flavor": "Not calm because nothing is happening. Calm because something is.",
+      "is_mantra": false
+    },
+    "the_rite_completes_itself": {
+      "name": "The Rite Completes Itself",
+      "skill": "ritual",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. Mandalas and ritual circles you create persist for the whole run rather than a single use, and any ritual you begin continues correctly even if you are interrupted, unconscious, or elsewhere.",
+      "flavor": "The ceremony does not depend on the celebrant. That is rather the point of a ceremony.",
+      "is_mantra": false
+    },
+    "nothing_is_withheld": {
+      "name": "Nothing Is Withheld",
+      "skill": "learning",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. Skill checks that use Learning may be attempted twice, taking the better result. XP costs for all skills are reduced by 15%, and you may read any text in any realm regardless of language or age.",
+      "flavor": "Everything was always going to be legible. It was only ever a question of sitting down with it.",
+      "is_mantra": false
+    },
+    "the_word_that_turns": {
+      "name": "The Word That Turns",
+      "skill": "persuasion",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. Once per event, a failed Persuasion roll may be re-rolled. Blue Persuasion choices unlock two levels below their stated requirement, and hostile NPCs will always hear one sentence before acting.",
+      "flavor": "Nobody has ever been argued out of anything. They have been given somewhere better to stand.",
+      "is_mantra": false
+    },
+    "the_company_you_keep": {
+      "name": "The Company You Keep",
+      "skill": "leadership",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. All allies gain +2 to every derived stat while you are conscious. When you fall in combat, allies immediately gain an extra action rather than losing morale.",
+      "flavor": "Eat last. Sleep where they can see you.",
+      "is_mantra": false
+    },
+    "the_last_laugh": {
+      "name": "The Last Laugh",
+      "skill": "comedy",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. Enemies that would land a critical hit on you must first save or lose the attack to a fit of something they cannot name. Once per combat, one enemy simply refuses to keep fighting you.",
+      "flavor": "The universe is not hostile. It is a very long joke with a slow delivery.",
+      "is_mantra": false
+    },
+    "the_performance_of_a_lifetime": {
+      "name": "The Performance of a Lifetime",
+      "skill": "performance",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Active (once per combat). Hold the field. All enemies who can see you must save or spend their turn watching; allies gain +25% damage and immunity to fear for 2 turns.",
+      "flavor": "They came to kill you and they stayed to find out how it ends.",
+      "is_mantra": false
+    },
+    "the_water_finds_the_crack": {
+      "name": "The Water Finds the Crack",
+      "skill": "grace",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. You cannot be flanked, surrounded, or caught in an AoE you can see — you always slip to the nearest safe tile. Movement never provokes reactions.",
+      "flavor": "You were not where the blow landed. You were not going to be.",
+      "is_mantra": false
+    },
+    "never_was_anyone": {
+      "name": "Never Was Anyone",
+      "skill": "guile",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. You may enter stealth in plain sight, once per combat, even while observed. Enemies who lose track of you forget you were present at all and revert to their pre-combat behaviour.",
+      "flavor": "The trick is not hiding. The trick is not having been there.",
+      "is_mantra": false
+    },
+    "everything_is_carried_loosely": {
+      "name": "Everything Is Carried Loosely",
+      "skill": "thievery",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. Theft and lockpicking attempts cannot critically fail. Once per location, you may take one item you could not otherwise afford or reach, and nobody notices it is gone until you are elsewhere.",
+      "flavor": "It was not nailed down. Very few things are, on inspection.",
+      "is_mantra": false
+    },
+    "the_road_provides": {
+      "name": "The Road Provides",
+      "skill": "logistics",
+      "required_level": 10,
+      "requires_perks": [],
+      "description": "Passive. The party consumes no food on overworld movement. Rest restores an additional 25%, camp activities cost one fewer resource, and you always know the shortest safe route to any discovered location.",
+      "flavor": "Anyone can carry supplies. The art is needing fewer of them.",
+      "is_mantra": false
+    },
+    "the_word_and_the_silence": {
+      "name": "The Word and the Silence",
+      "skill": "sorcery",
+      "required_level": 10,
+      "requires_perks": [
+        "one_perfect_sentence"
+      ],
+      "description": "Passive. Once per combat, a single-target Sorcery spell may be cast with no mana cost and no chance of failure. If it kills its target, you recover the mana of the most expensive spell you have cast this combat.",
+      "flavor": "Say it once. Correctly. Then stop talking.",
+      "is_mantra": false
+    },
+    "what_cannot_be_carried": {
+      "name": "What Cannot Be Carried",
+      "skill": "might",
+      "required_level": 10,
+      "requires_perks": [
+        "unmovable_object"
+      ],
+      "description": "Passive. No weight limit applies to you, and you may lift, drag, or break anything a party of four could. Enemies attempting to move, grapple, or knock you down fail automatically.",
+      "flavor": "There is a point past which strength stops being about lifting.",
       "is_mantra": false
     }
   },
@@ -7469,7 +7731,7 @@
       "requirements": {
         "alchemy": 3,
         "guile": 3,
-        "crafting": 3
+        "smithing": 3
       },
       "description": "Can create trapped objects that deal damage and apply a status effect when enemies interact with them. During events, can sabotage enemy equipment — reducing their Attack or Armor by 15% for the next encounter.",
       "flavor": "",
@@ -7636,7 +7898,7 @@
       "name": "Field Workshop",
       "category": "crafter_merchant",
       "requirements": {
-        "crafting": 5,
+        "smithing": 5,
         "logistics": 3
       },
       "description": "Can craft and repair during travel without stopping. Repair costs reduced by 50%.",
@@ -7658,7 +7920,7 @@
       "name": "Master Enchanter",
       "category": "crafter_merchant",
       "requirements": {
-        "crafting": 5,
+        "smithing": 5,
         "enchantment": 5
       },
       "description": "Can permanently enchant one piece of equipment per rest. Adds a minor elemental bonus (+5% damage or +5% resistance of a chosen element). One enchantment per item.",
