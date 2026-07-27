@@ -6245,8 +6245,8 @@
             "free": true,
             "text": "The water stirs slightly under your hand. She watches it. 'It was like that,' she says. 'One moment there was nothing. Then—' She trails off. Then: 'You are going somewhere. Can I come?'",
             "karma": {
-              "water": 3,
-              "human": 2
+              "human": 2,
+              "god": 3
             }
           }
         },
@@ -6350,7 +6350,7 @@
             "free": true,
             "text": "For a moment, genuine contact. He startles. Looks at his hands as if seeing them for the first time in a while. 'Oh,' he says. 'I have been quite far away.' He looks at you with new attention. 'Would you stay nearby? I find I concentrate better when someone is present.'",
             "karma": {
-              "space": 2
+              "god": 2
             }
           }
         },
@@ -6415,8 +6415,7 @@
             "free": true,
             "text": "It goes very still. This has not happened before — or not for a very long time. 'You—' It stops. 'Where did you—' Stops again. Slowly, a smile spreads across a face not quite designed for it. 'All right. This is excellent. You will come with me. I insist.'",
             "karma": {
-              "air": 3,
-              "human": 2
+              "human": 5
             }
           }
         },
@@ -6752,8 +6751,7 @@
             "free": true,
             "text": "It takes time. It takes all the steadiness you have. Gradually the sigils stop glowing. He slumps, then straightens. He looks at his hands, then at you. 'You have done this before,' he says. 'No,' you say. He considers this. 'Hm. I owe you a debt. How are you traveling?'",
             "karma": {
-              "air": 3,
-              "human": 3
+              "human": 6
             }
           }
         },

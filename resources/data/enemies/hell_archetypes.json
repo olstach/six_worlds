@@ -217,7 +217,7 @@
       ],
       "realm": "hell"
     },
-    "_comment_shades": "=== SHADE TIER \u2014 early-game incorporeal enemies, threat ~0.5 ===",
+    "_comment_shades": "=== SHADE TIER — early-game incorporeal enemies, threat ~0.5 ===",
     "hell_frozen_shade": {
       "name": "Frozen Shade",
       "tier": "shade",
@@ -354,7 +354,7 @@
       ],
       "realm": "hell"
     },
-    "_comment_imps": "=== IMP TIER \u2014 flying fast harassers, threat ~0.7, 50% chance bare-handed ===",
+    "_comment_imps": "=== IMP TIER — flying fast harassers, threat ~0.7, 50% chance bare-handed ===",
     "hell_frost_imp": {
       "name": "Sleet Imp",
       "tier": "imp",
@@ -903,7 +903,7 @@
       ],
       "realm": "hell"
     },
-    "_comment_blue_devils": "=== BLUE DEVIL RACE \u2014 cold_hell region, water/air affinity ===",
+    "_comment_blue_devils": "=== BLUE DEVIL RACE — cold_hell region, water/air affinity ===",
     "hell_blue_devil_guardian": {
       "name": "Blue Devil Guardian",
       "tier": "devil",
@@ -1211,7 +1211,7 @@
       ],
       "realm": "hell"
     },
-    "_comment_red_devils": "=== RED DEVIL RACE \u2014 fire_hell region, fire/strength affinity ===",
+    "_comment_red_devils": "=== RED DEVIL RACE — fire_hell region, fire/strength affinity ===",
     "hell_red_devil_berserker": {
       "name": "Red Devil Berserker",
       "tier": "devil",
@@ -1343,7 +1343,7 @@
       ],
       "realm": "hell"
     },
-    "_comment_yellow_devils": "=== YELLOW DEVIL RACE \u2014 any region, earth/luck affinity, durable merchants ===",
+    "_comment_yellow_devils": "=== YELLOW DEVIL RACE — any region, earth/luck affinity, durable merchants ===",
     "hell_yellow_devil_caravan_guard": {
       "name": "Yellow Devil Caravan Guard",
       "tier": "devil",
@@ -1483,7 +1483,7 @@
       ],
       "realm": "hell"
     },
-    "_comment_green_devils": "=== GREEN DEVIL RACE \u2014 any region, air/finesse affinity, swift hunters ===",
+    "_comment_green_devils": "=== GREEN DEVIL RACE — any region, air/finesse affinity, swift hunters ===",
     "hell_green_devil_hunter": {
       "name": "Green Devil Hunter",
       "tier": "devil",
@@ -1611,7 +1611,7 @@
       ],
       "realm": "hell"
     },
-    "_comment_black_devils": "=== BLACK DEVIL RACE \u2014 any region, space/black magic affinity ===",
+    "_comment_black_devils": "=== BLACK DEVIL RACE — any region, space/black magic affinity ===",
     "hell_black_devil_sorcerer": {
       "name": "Black Devil Sorcerer",
       "tier": "devil",
@@ -1751,7 +1751,7 @@
       ],
       "realm": "hell"
     },
-    "_comment_white_devils": "=== WHITE DEVIL RACE \u2014 any region, space/charm affinity, manipulative ===",
+    "_comment_white_devils": "=== WHITE DEVIL RACE — any region, space/charm affinity, manipulative ===",
     "hell_white_devil_tempter": {
       "name": "White Devil Tempter",
       "tier": "devil",
@@ -1774,7 +1774,7 @@
         "black_magic"
       ],
       "guaranteed_spells": [
-        "friends",
+        "charm",
         "gloom"
       ],
       "guaranteed_perks": [],
