@@ -3,8 +3,10 @@
 **Date:** 2026-07-27 (post-break code audit)
 
 A snapshot of where the project stands, what the audit fixed, what is started
-but unfinished, and where to pick up. For exhaustive task lists see `TODO.md`
-(still accurate and well-maintained); this file is the orientation layer on top.
+but unfinished, and where to pick up. For exhaustive task lists see `TODO.md`,
+rewritten 2026-07-27 as a live document — Part I is the open work grouped by
+actionability, Part II the settled-but-unbuilt designs, Part IV a condensed
+changelog. This file is the orientation layer on top.
 
 ---
 
@@ -64,6 +66,11 @@ The full list is in the two commit messages; the load-bearing ones:
    red/yellow devil racial bonuses (now real traits granted at creation).
 10. Roll choices can now carry skill/attribute gates ("gated gamble" —
     used by hg_desperate_mother's Yoga-gated Charm roll).
+11. **30 event outcomes promised gold and paid nothing** — 24 gave it as a
+    token ("small"/"moderate"/"large") against a handler doing `int()`, which is
+    0 for a non-numeric string in GDScript; 6 used a `gold_reward` key nothing
+    read, including every payout in the Bone Arena, a pit you fight in for
+    money. The validator now rejects any reward key with no handler.
 
 `tools/validate_data.py` is the reusable data validator (run it after any
 content merge; exits non-zero on a dangling reference). An earlier ad-hoc
