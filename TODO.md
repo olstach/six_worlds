@@ -149,7 +149,7 @@ Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick
 - [x] ~~**Lunar calendar system**~~ — 28-day lunar month (4×7, always week-aligned), full moon day 14 / new moon day 28 (both Saturday). Two-line HUD label ("Sunday, 1st lunar day / Deep Night"). Full moon: White magic +20% spellpower + mana partial restore + toast; new moon: Black magic +20% + toast. Both: karma weight ×1.5. Weekday school bonus system: Sun=Fire, Mon=Water, Tue=Sorcery, Wed=Space, Thu=Air, Fri=Enchantment, Sat=Earth — each gives +20% spellpower to that school. All wired into `game_state.gd`, `combat_manager.gd`, `karma_system.gd`, `overworld.gd`, `overworld.tscn`.
 - [ ] Realm-specific rest events — "something stirs in the night" flavour event chance when resting in hell/hungry ghost
 - [x] ~~Rest perks — wire `_process_rest_perks(character, tier)`~~ — **Safe Campsite** (Logistics 3): any party member with the perk eliminates disturbances + +15% HP restore. **Lucid Rest** (Yoga 7): accumulates mantra at Yoga÷2 during any rest tier, no activity slot needed. **Well-Rested** (Medicine 8): after Full Rest, party gets Awareness +3 / Constitution +2 / Initiative +5 for 1 combat via `active_map_buffs`. **Field Surgeon** (Medicine 6): using a medicine item in combat triggers a Medicine roll (d20+Medicine vs DC 14); on success cures one wound mid-fight. All three perks added to perks.json.
-- [ ] Yoga skill boosts pressure decay rate during rest (Yoga level adds to decay_amount)
+- [x] ~~Yoga skill boosts pressure decay during rest~~ — already implemented in `_do_rest()` (+2 decay per Yoga level). This entry was stale.
 - [ ] Day/night visual changes on overworld map (lighting overlay, different mob behavior)
 - [ ] Block rest when hostile mob is adjacent (optional tension mechanic)
 
@@ -225,17 +225,17 @@ Needs a hands-on play session to balance, extend, and wire the remaining gaps:
 **Activities to add:**
 - [x] ~~**Night Music** (Performance 5+)~~ — 50-point party pressure decay + 20% chance to trigger a camp event via `result["camp_event_id"]`; overworld picks it up and shows it after rest.
 - [x] ~~**Guile Work** (Guile 4+)~~ — sets `GameState.flags["guile_work_done"]`; consumed by `roll_disturbance()` for −20% chance next rest. Ambush reduction noted in message but pending combat system.
-- [ ] **Set Snares** (Crafting 2+ or Thievery 2+) — overnight food/material gain; small creature encounter chance. Needs a "resolve on next move" deferred effect.
+- [x] ~~**Set Snares** (Smithing 2+ or Thievery 2+)~~ — overnight food/herb gain; 15% chance of a camp event. Resolved at rest time rather than on next move.
 - [x] ~~**Drill** (Leadership 5+)~~ — appends `{"stat": "initiative", "amount": 3}` to `active_map_buffs`; +3 initiative next combat.
 - [ ] **Protector Offering** (Ritual 2+) — dharmapala offering at a camp shrine; deferred until DharmapalaSystem exists.
 - [x] ~~**Craft Item** (Smithing 3+)~~ — 2 scrap → 1–2 items from `CRAFT_TABLE` (rope, torch, bandage, arrowhead); 2nd item unlocked at Smithing 5+. Verify item IDs exist in items.json.
-- [ ] **Craft Charm** (Ritual 3+ + magic school 3+) — consumable charm with school-specific effect. Needs schema for camp-crafted charms.
+- [x] ~~**Craft Charm** (Ritual 3+ + magic school 3+)~~ — produces the existing school charms; tier scales with combined Ritual + school skill.
 - [x] ~~**Mantra Recitation** (Yoga 2+)~~ — stub removed; increments `character["mantra_count"]` by Yoga level; small pressure decay for performer. Yidam system will read the counter when built.
 
 **Wiring gaps:**
 - [x] ~~**Disturbance → camp event**~~ — `_disturbance_event_id` stored on disturbance; `call_deferred("_show_camp_event", id)` fires after final toast. `_show_camp_event()` pauses movement and shows event display, same as location events.
 - [x] ~~**More camp events**~~ — 9 total now (was 3): added `camp_ember_voices`, `camp_guardian_threshold` (hell); `camp_whispered_offering`, `camp_creditor` (hungry_ghost); `camp_shared_dream`, `camp_stranger_fire` (any). Also fixed karma-in-rewards bug in two original events.
-- [ ] **Location-specific activity suppression**: TODO design said some activities unavailable at teahouses (smithing) or enhanced at gompas (sadhana). Add `"suppress_activities": [...]` and `"enhance_activities": [...]` to safe camp event dicts and wire into `get_available_activities()`.
+- [x] ~~**Location-specific activity suppression**~~ — both lists added to all 9 safe-camp events and wired through `get_available_activities()` + `execute_activity(enhanced)`.
 - [x] ~~**Sadhana cost preview**~~ — `CampSystem.get_sadhana_preview(performer)` computes which tier would auto-select; button shows e.g. "Torma Offering (reagents: 2) · ~20–100 karma purified".
 
 **Balance review (needs playtesting):**
@@ -272,8 +272,8 @@ Persistent negative status effects from combat or events that do not fully clear
 - [x] Event outcomes can apply wounds: `"wound": {"id": "deep_cut", "target": "random"}` in any event outcome's `rewards` block, handled by `event_manager.apply_outcome()`.
 - [x] Combat wiring: crit hits have 25% chance to apply a random wound to player characters; hits from undead/diseased enemies have 15% chance to apply a disease — both in `combat_manager._process_weapon_on_hit_procs()`.
 - [x] Stat penalties wired in `character_system.update_derived_stats()` via `WoundSystem.get_stat_penalties()`.
-- [ ] Character sheet and combat UI: show persistent wound icons distinctly (deferred — no character sheet UI yet)
-- [ ] Temple/facility healing UI: call `WoundSystem.heal_at_facility(char, medicine_equivalent)` — stub ready, needs shop/temple scene
+- [x] ~~Character sheet wound display~~ — WOUNDS & BODY panel added (see Project Audit section). Combat-UI wound icons still deferred.
+- [x] ~~Temple/facility healing UI~~ — Healing section in the shop rest tab; 12 shops carry a `"healing": {"medicine_level": N}` block (mercy_ward 6, medicinal gardens 5, gompas 4, teahouses 2). Cost scales with each wound's cure difficulty × the shop price modifier.
 - [ ] Realm-specific wound types (hungry ghost malnutrition, animal realm parasites, hell frostbite/burns) — extend WOUND_TYPES when realms are built
 - [ ] More wound/disease variety: currently 5 base types (3 wounds, 2 diseases). Target ~8–10 base types eventually; e.g. arrow wound (ranged-specific, different penalties from deep cut), poisoned wound (disease + damage hybrid), spiritual corruption (hell/hungry-ghost specific, resists medicine, needs Ritual/Yoga). **Design presented for review — see companion_quirks.md (EDIT_LATER).**
 
@@ -382,18 +382,19 @@ Persistent negative status effects from combat or events that do not fully clear
 - [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
 - [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
 - [x] ~~**Spell duration unification**~~ — unified formula: base 2 + floor(Enchantment/2) [main] + floor(spellpower/15) [secondary]. `clear_mind` fixed (`"spellpower_turns"` typo now `"spellpower"`). `doom` made explicit integer 3. `"combat"` → 999 turns. All 128 `"spellpower"` spells already used the formula.
-- [ ] **Complex enemy AI behavior types** — current AI is a single scoring loop. Several archetypes need distinct behavior modes not yet implemented:
-  - `erratic_movement`: random repositioning each turn before attacking (patanga_seeker); weight movement randomly in scoring rather than always advancing
-  - `priority_target`: preferentially targets lowest-HP or most-isolated party member (rakshasa_maneater); add target-selection pre-pass before action scoring
-  - `pack_bonus`: grants attack/dodge boost when N+ allies of same type are alive (gana_runner, matsya_shoal); check tag+count in derived stat calculation
-  - `burrow_emerge`: teleport-to-adjacent + guaranteed melee attack in same turn (dura_burrower); special handling in `burrow` spell resolution in combat_manager
-  - General approach: add optional `"ai_behavior"` field to archetype JSON; EnemySystem passes it into CombatUnit; CombatManager checks it during AI turn
-- [ ] Terrain affecting spell power — no terrain-based spellpower modifiers in combat_manager.gd cast_spell()
-- [ ] Environmental spell interactions — spells create terrain (done); terrain does not yet buff/debuff spells of matching element
-- [ ] **Summoning bonus from overworld terrain** — Summoning spellpower gets +25% based on the overworld tile type where combat takes place (ruins/charnel grounds, forest, mountain, river/lake each evoke different resident spirits). Requires passing the overworld terrain type into the combat context at combat start. Tradition: nagas in water, earth spirits in mountains, hungry ghosts in charnel grounds, nature spirits in forest. Design the full terrain→spirit type→bonus table before implementing.
+- [x] ~~**Complex enemy AI behavior types**~~ — implemented via an optional `"ai_behavior"` field on archetypes, carried through `EnemySystem._build_enemy()` into `character_data` and read during the enemy turn:
+  - `erratic_movement` (animal_patanga_seeker) — one random hop per turn before acting, never worsening its distance to the target (`_ai_erratic_hop()`)
+  - `priority_target` (animal_rakshasa_maneater) — target-selection pre-pass scoring wounded (missing-HP fraction) and isolated (few allies within 2 tiles) party members (`_find_priority_target()`)
+  - `pack_bonus` (animal_gana_runner, animal_matsya_shoal) — +3 accuracy/dodge per living packmate of the same archetype beyond the second, capped +12 (`CombatUnit.get_pack_bonus()`)
+  - `burrow_emerge` (animal_dura_burrower) — tunnels to a tile adjacent to its target and attacks the same turn when it starts out of reach (`_ai_try_burrow_emerge()`)
+  - **Balance dials, all first-pass:** pack bonus magnitude/cap, priority-target isolation weights, whether burrowing should cost 1 action or be free.
+  - Remaining: no behavior yet for coordinated group tactics (focus fire, flanking) — a larger AI feature if wanted later.
+- [x] ~~Terrain affecting spell power~~ — already implemented in `cast_spell()`: matching elemental terrain gives +25% spellpower, opposed terrain (blessed/black, cursed/white) −15%. This entry was stale.
+- [x] ~~Environmental spell interactions~~ — same as above; the terrain→spell feedback loop is closed.
+- [x] ~~**Summoning bonus from overworld terrain**~~ — `CombatManager.SUMMON_TERRAIN_AFFINITY` maps overworld terrain to a favoured summoning element (+25% spellpower): water/swamp/ice → Water (nagas), forest/mountains/hills → Earth (yaksha, mountain spirits), ruins → Black (the hungry dead), lava → Fire. Terrain reaches combat via `battlefield_overworld_terrain`, set at combat start and cleared in `end_combat()`. **Balance dial: the flat +25% and the terrain→element table are both first-pass guesses — retune during playtesting.**
 - [x] ~~**AoE type systematization**~~ — DONE. `AoEResolver` static class in `scripts/autoload/aoe_resolver.gd` is now the single source of truth for all AoE shapes: `circle`, `nova`, `around_caster`, `line`, `cone`, `cone_forward`, `cross`, `band`, `vertical_line`, `field_of_view`. All spells with an `"aoe"` block now get `targeting: "aoe"` and are resolved through `AoEResolver.get_tiles()` in combat_manager, combat_grid, and combat_arena. Canonical data schema uses `size`, `width`, `origin`, `safe_center`. To add a new shape: one function + two match branches in aoe_resolver.gd.
-- [ ] Cone AoE targeting UI — `cone` and `cone_forward` shapes are now computed correctly by `AoEResolver`, but the preview highlight in combat_arena still shows the full range area during targeting (correct tiles shown on hover but not on range highlight). Also `cone_forward` direction should lock to caster's facing rather than requiring the player to aim. Needed by: `powdered_glass` (Glass domain).
-- [ ] **Out-of-combat spellcasting** — not implemented. Several spells are designed for overworld/camp use (e.g. `cloud_gate`: retreat to last healing location; future utility spells). Needs a spellbook interface accessible from the overworld HUD or pause menu, mana deducted from caster, and spell effect resolved outside combat. `cloud_gate` specifically needs to teleport the party on the map to the last-visited healing-location tile.
+- [x] ~~Cone AoE targeting UI~~ — `cone_forward` now locks to caster facing and the selection highlight shows the cone silhouette rather than the full range area.
+- [x] ~~**Out-of-combat spellcasting**~~ — the spellbook Cast button and `_apply_overworld_spell()` were already in place for `out_of_combat`-tagged spells; `cloud_gate` teleportation is now implemented against the new `GameState.last_healing_location` (recorded whenever the party opens a safe camp or shop location).
 - [x] ~~Realm-specific combat terrain themes~~ — DONE (overworld terrain generates realm-appropriate obstacles)
 
 ---
@@ -682,7 +683,7 @@ Multi-armed characters are intentionally strong against lower-world beings — t
 13. Equipment slot answer: yes — severing a limb removes its slot from `get_equipment_slots()` immediately; the equipped item is returned to inventory by `sever_part()`
 
 **Remaining / deferred for later:**
-- Coordinated Strikes perk: chain resets on kill for arms 3+ (perk exists in perks.json but chain logic doesn't check it yet)
+- [x] ~~Coordinated Strikes perk~~ — implemented: an arm that kills no longer ends the chain; the remaining arms redirect to another enemy within reach (`_find_chain_redirect_target()`)
 - Head natural weapons (bite, beak) not part of the arm attack chain — needs a "head special attack" action or configurable primary-slot override
 - Prosthetic stat entries in items.json (item type registered, no actual prosthetic items yet)
 - More species: centipede (many legs), bear, etc. as animal realm content is built
@@ -815,6 +816,31 @@ Some Deity Yoga effects are simplified stat bonuses rather than true unit spawns
 
 ---
 
+## UI Debt & Half-Wired Mechanics Pass — 2026-07-27 ✓ COMPLETE
+
+Everything under "Character Sheet UI gaps", "Combat system gaps", the status-effect
+backlog, the camp wiring gaps, and the AI behavior types was closed in this pass.
+See the individual entries below (all now checked) for what each one does.
+
+**Deliberately left deferred, with reasons:**
+- `Dominated` full enemy-control AI — the puppet currently just loses its turns.
+  Real control needs a player-drives-an-enemy-unit UI flow.
+- Combat-UI wound icons — wounds now render in the character sheet; showing them
+  on the combat unit frames is cosmetic and needs sprite work.
+- Prosthetic items — the limb-loss → prosthetic flow is fully coded and the new
+  wounds panel displays attached prosthetics, but items.json still has none.
+- Aura statuses (Soothing_Presence, Guardian_Kings) — handled per-mantra by design.
+
+**Needs a balance pass in play (all first-pass numbers):**
+- Summoning terrain affinity: flat +25% and the terrain→element table
+- pack_bonus: +3 per packmate, cap +12
+- Mantric_Armor default shield pool (25), Mirror_Images default copies (3)
+- Reflect 60% / Magic_Mirror 50% reflect chances
+- Enhanced camp activity multiplier (1.5×) and Set Snares yields
+- Wound healing prices: (20 + 15 × cure_medicine_level) × shop price modifier
+
+---
+
 ## Project Audit — 2026-05-01
 
 Full sweep of unimplemented, unfinished, and unconnected systems.
@@ -822,12 +848,12 @@ Full sweep of unimplemented, unfinished, and unconnected systems.
 ### High Priority — Actionable Fixes
 
 **Character Sheet UI gaps:**
-- [ ] Wounds/body display panel — `character.wounds[]` is tracked by WoundSystem but nothing renders it in the character sheet; no display of active wounds, severity, or penalties
-- [ ] Psychology panel is minimal — only shows dominant emotional label; no per-element pressure bars, no baseline vs current comparison, no active status list
+- [x] ~~Wounds/body display panel~~ — WOUNDS & BODY panel in the character sheet (Stats tab, right column): each wound with severity colour, body location, rests-until-escalation countdown, and a cure tooltip; missing limbs and attached prosthetics listed below
+- [x] ~~Psychology panel~~ — STATE OF MIND panel: per-element pressure bars (−100…+100, coloured by polarity), baseline marker, and the named emotional state per element
 
 **Combat system gaps:**
-- [ ] Extra arm attack results not shown in combat log — `extra_arm_results` are computed and applied silently; the UI should display "Arm 2: 12 dmg" etc. in the combat log
-- [ ] Cone AoE targeting preview is wrong — combat_arena shows full-range highlight instead of cone silhouette; `cone_forward` doesn't lock to caster facing
+- [x] ~~Extra arm attack results~~ — `_on_unit_attacked()` logs each chain arm's hit/miss, damage, and crit
+- [x] ~~Cone AoE targeting preview~~ — `cone_forward` locks to caster facing in cast resolution, selection highlight (cone silhouette instead of range circle), and hover preview
 
 **Status effects — wired in this session:**
 - [x] `_get_status_stat_bonus()` additions: `range_bonus` (+2 range), `finesse_bonus` (+5 dodge/+3 init), `damage_boost` (+15 dmg), `focus_penalty` (−3 spellpower), `focus_penalty_major` (−8), `awareness_penalty_major` (−8 init/−5 sp), `awareness_bonus_major` (+8 init/+5 sp), `armor_bonus_minor` (+5 armor), `minor_all_stats_bonus` (+5 all), `all_stats_penalty` (−5 all)
@@ -850,22 +876,27 @@ Full sweep of unimplemented, unfinished, and unconnected systems.
 - [x] Turn start: `skip_next_action` (Prone: −1 action to stand up, status consumed)
 - [x] `apply_damage()`: `hp_cannot_drop_below_1` (Death_Immunity: HP floor at 1)
 
-**Status effects — still not wired:**
-- [ ] `Taunt` (`must_attack_taunter`): requires AI targeting override — affected unit must target the taunter; complex AI integration deferred
-- [ ] `constitution_bonus`/`constitution_penalty` (Constitution_Buff / Constitution_Minus_2): affects max_hp mid-combat, requires HP recalculation system not yet built
-- [ ] Aura status effects (Soothing_Presence, Guardian_Kings, etc.): handled per-mantra, not via status effects — architecture differs
-- [ ] Karmic_Bond / `share_healing_75_percent` + `linked_to_ally`: shared HP system not built
-- [ ] Eternal_Vow (`return_on_death_next_turn` / `return_with_20_percent_hp`): resurrection not built
-- [ ] Magic_Mirror (`spell_reflect_chance`): spell reflection not built
-- [ ] Mirror_Images (`copies_absorb_attacks` / `illusory_copies`): illusory copy system not built
-- [ ] `grants_flight` / `loses_flight` / `immune_to_melee_unless_flyer`: flight system not built
-- [ ] `controlled_by_caster` (Dominated): full AI control system deferred
-- [ ] `forced_movement_toward_target` (Lured): force movement on unit's turn deferred
-- [ ] `buffs_all_stats_considerably` (Divine_Champion) / `buffs_two_highest_stats` (Divinely_Inspired): needs values defined
-- [ ] `focus_save_on_damage` (Swarmed): reactive save on each hit deferred
-- [ ] `hp_shield` (Mantric_Armor `until_destroyed` duration): damage absorption shield with persistent value not built
-- [ ] `death_resistance` (Ancestors_Blessing): survive-one-fatal-hit system not built
-- [ ] Moderate-complexity moderate: `can_move_through_enemies`, `immune_to_ground_effects`, `immune_to_terrain_hazards`, `immune_to_water_terrain`, `cannot_deal_physical`, `damage_on_move_attempt`, `prone_chance_on_movement`, `stealth_bonus`, `attack_damage_buff_when_ally_dies`, `aura_reduces_enemy_spell_damage`
+**Status effects — wired in the 2026-07-27 pass:**
+- [x] ~~`Taunt` (`must_attack_taunter`)~~ — `_find_nearest_enemy()` returns the taunt source when the status is active and the taunter is targetable
+- [x] ~~`constitution_bonus`/`constitution_penalty`~~ — `_reconcile_constitution_hp()` adjusts max HP by ±10 per Constitution point; runs on status apply and each turn start so expiry/dispel/cleanse are all caught
+- [x] ~~Karmic_Bond (`share_healing_75_percent`)~~ — healing one bonded unit flows to the other(s) at 75% in `_apply_spell_effects()`
+- [x] ~~Eternal_Vow (`return_on_death_next_turn`)~~ — `_kill_unit()` revives at 20% HP and consumes the vow (simplification: returns immediately, not next turn)
+- [x] ~~Magic_Mirror (`spell_reflect_chance`)~~ — 50% chance offensive spells reflect back at the caster
+- [x] ~~Mirror_Images (`copies_absorb_attacks`)~~ — charge-based; copies live in the status entry's `value` field (default 3), consumed per absorbed attack
+- [x] ~~`grants_flight` / `loses_flight` / `immune_to_melee_unless_flyer`~~ — `get_movement_mode()` is now effect-driven (covers Lightning_Form; Grounded overrides); grounded melee attackers cannot reach flying targets
+- [x] ~~`forced_movement_toward_target` (Lured)~~ — forced step toward the lure source at turn start, costs 1 action
+- [x] ~~`buffs_all_stats_considerably` / `buffs_two_highest_stats`~~ — values defined (+8 to combat stats, +5 crit)
+- [x] ~~`focus_save_on_damage` (Swarmed)~~ — Focus save (DC 12) per hit; failure costs an action next turn
+- [x] ~~`hp_shield` (Mantric_Armor)~~ — shield pool in the status `value` field (default 25) absorbs damage before HP, status breaks when spent
+- [x] ~~`death_resistance` (Ancestors_Blessing)~~ — survives one otherwise-fatal hit at 1 HP, consuming the blessing
+- [x] ~~`Riposte_Ready`~~ — riposte perk marker now consumed: +25% damage and 2 stamina refunded on the next sword attack
+- [x] ~~`Reflect` (Turquoise Mirror mantra)~~ — 60% chance an incoming weapon attack rebounds on the attacker
+- [x] ~~Moderate-complexity list~~ — verified already handled: `can_move_through_enemies`, `immune_to_ground_effects`, `immune_to_terrain_hazards`, `immune_to_water_terrain`, `cannot_deal_physical`, `damage_on_move_attempt`, `prone_chance_on_movement`, `stealth_bonus`, `aura_reduces_enemy_spell_damage`
+
+**Status effects — still deferred:**
+- [ ] `controlled_by_caster` (Dominated): currently simplified — the puppet loses its turns. Full player-control-of-an-enemy AI is a dedicated feature.
+- [ ] Aura status effects (Soothing_Presence, Guardian_Kings, etc.): handled per-mantra, not via status effects — architecture differs, no change needed
+- [ ] `attack_damage_buff_when_ally_dies`: applies the Rage status but Rage's damage bonus is generic; a bespoke stacking version is unimplemented
 
 **Race features not wired:**
 - [ ] `red_devil`: `better_starting_weapon` — TODO note in races.json but not implemented; red devils get the same starting weapons as everyone else
@@ -874,7 +905,7 @@ Full sweep of unimplemented, unfinished, and unconnected systems.
 
 **Overworld gaps:**
 - [ ] `_process_rest_perks` now handles Lucid Rest; Yoga skill level itself should also boost `decay_amount` during rest (Yoga 1–10 adding 2–20 to decay)
-- [ ] Location-specific camp activity suppression/enhancement — `suppress_activities` and `enhance_activities` fields exist in map object design but `get_available_activities()` never reads them
+- [x] ~~Location-specific camp activity suppression/enhancement~~ — all 9 safe-camp events now carry both lists (teahouses/gompas suppress smithing; gompas enhance spiritual practice, teahouses enhance social); `execute_activity()` takes an `enhanced` flag giving 1.5× effect. Also fixed the tile lookup, which read `event_id` from the wrong key and never matched.
 
 ### Medium Priority
 
@@ -892,7 +923,7 @@ Full sweep of unimplemented, unfinished, and unconnected systems.
 **Combat features:**
 - [ ] Terrain spell power modifiers — tiles with fire/water/etc. terrain don't boost matching-school spells cast on them
 - [ ] Summoning terrain bonus — summoning spellpower should get +25% based on matching overworld terrain (water = nagas, mountains = earth spirits, etc.)
-- [ ] Out-of-combat spellcasting — utility spells like `cloud_gate` are designed for overworld use but no spellbook UI exists outside combat
+- [x] ~~Out-of-combat spellcasting~~ — the spellbook Cast button already existed for `out_of_combat`-tagged spells (26 of them); `cloud_gate` is now implemented on top of it (teleports the party to `GameState.last_healing_location`, refunds mana if there is no reachable sanctuary).
 
 **Psychology:**
 - [ ] Chronic darkness counter — accumulate debuffs for time spent below −50 pressure (not started)
@@ -901,8 +932,8 @@ Full sweep of unimplemented, unfinished, and unconnected systems.
 
 **Camp:**
 - [ ] Protector Offering camp activity — deferred until DharmapalSystem exists
-- [ ] Craft Charm camp activity — needs charm schema design
-- [ ] Set Snares camp activity — deferred (needs "resolve on next move" system)
+- [x] ~~Craft Charm camp activity~~ — Ritual 3+ and a magic school 3+; produces the existing school charm items (middling at combined skill 10+), costs 2 reagents. No new schema needed.
+- [x] ~~Set Snares camp activity~~ — Smithing/Thievery 2+; overnight food (3–10 by skill), 25% chance of herbs, 15% chance of drawing a camp event.
 
 **Items:**
 - [ ] Cursed items — type registered, no actual cursed items exist yet

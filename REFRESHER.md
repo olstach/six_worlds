@@ -84,34 +84,30 @@ Ordered roughly by how much finished work is sitting behind each gap.
   (equip bypass, slot restore) but items.json has zero prosthetic items.
 - **Cursed items**: type registered, none exist.
 
-### UI debt (systems compute, nothing displays)
-- **Wounds/body panel** — `character.wounds[]` and missing limbs tracked, not
-  shown anywhere in the character sheet.
-- **Psychology tab** — only the dominant emotional label shows; no per-element
-  pressure bars, baseline comparison, or active-status list.
-- **Extra-arm attack results** — computed per arm, only raw combat_log lines.
-- **Cone AoE targeting preview** — resolves correctly, previews wrong;
-  `cone_forward` should lock to caster facing.
-- **Temple/facility wound healing** — `WoundSystem.heal_at_facility()` is
-  ready, no scene calls it.
+### ~~UI debt~~ and ~~half-wired mechanics~~ — CLOSED 2026-07-27
+Both categories were finished in the follow-up pass. Highlights: WOUNDS & BODY
+and STATE OF MIND panels in the character sheet; cone_forward AoE locked to
+facing; per-arm chain results in the combat log; paid wound healing at 12
+shops; Riposte/Reflect/Magic_Mirror/Mirror_Images/Taunt/Karmic_Bond/
+Eternal_Vow/Mantric_Armor/Ancestors_Blessing/Swarmed/Lured/Constitution
+statuses wired; four AI behavior types (`erratic_movement`, `priority_target`,
+`pack_bonus`, `burrow_emerge`); summoning terrain affinity; Coordinated
+Strikes; Cloud Gate; Set Snares and Craft Charm camp activities;
+location-specific camp suppress/enhance. Full detail in TODO.md §
+"UI Debt & Half-Wired Mechanics Pass — 2026-07-27".
 
-### Half-wired mechanics (markers exist, resolution doesn't)
-- **Riposte_Ready** status is applied by the riposte perk but never consumed
-  in `attack_unit` (should be −2 stamina / +25% damage next sword attack).
-- **Reflect** status (Turquoise Mirror mantra) — no reflect resolution.
-- **Taunt / Dominated / Lured / Karmic_Bond / Mirror_Images / flight** — the
-  long "still not wired" status list in TODO.md § Project Audit.
-- **Complex AI behavior types** (`erratic_movement`, `priority_target`,
-  `pack_bonus`, `burrow_emerge`) — designed in TODO.md, single scoring loop
-  today; animal realm archetypes (patanga, rakshasa, gana, dura) want them.
-- **Coordinated Strikes** perk exists in data; chain-reset-on-kill not coded.
-- **Terrain ↔ spell interactions** — spells create terrain (done), terrain
-  doesn't buff spells; summoning terrain bonus designed, not implemented.
-- **Out-of-combat spellcasting** (`cloud_gate` etc.) — no overworld spellbook.
-- **Camp leftovers**: Set Snares, Craft Charm, Protector Offering (blocked on
-  DharmapalaSystem), location-specific `suppress/enhance_activities`.
-- **Rest follow-ups**: Yoga boosting pressure decay, realm-specific rest
-  events, day/night visuals, rest-blocked-when-mob-adjacent.
+Two TODO entries turned out to be **stale, not missing**: elemental terrain
+spellpower modifiers and Yoga-boosted rest pressure decay were both already
+implemented.
+
+Still deferred from that pass, with reasons:
+- **Dominated** full enemy-control AI (puppet currently just loses its turns)
+- **Combat-UI wound icons** (character sheet shows them; unit frames need art)
+- **Prosthetic items** — flow is coded and the panel displays them, but
+  items.json still contains none
+- **Protector Offering** camp activity — blocked on DharmapalaSystem
+- **Rest follow-ups**: realm-specific rest events, day/night visuals,
+  rest-blocked-when-mob-adjacent
 
 ### Design-phase systems (not started, dependencies noted)
 - **Yidam + Dharmapala deity systems** — biggest designed-but-unbuilt item.
@@ -133,18 +129,27 @@ compensating passive), multi-arm damage scalars.
 ## Point of departure
 
 **Recommended first session back: a hell → hungry ghost → animal playthrough.**
-Progression is now actually gated (boss seal enforced, boss events exist) and
-the animal realm's enemies/shops/events load for the first time — none of that
-has ever been played. Use the cheat console to speed through. Expect to find:
-balance problems in the new difficulty multipliers, the three new HG events
-needing a prose pass, and whatever the animal realm's first real combat run
-shakes loose.
+Progression is now actually gated (boss seal enforced, boss events exist), the
+animal realm's enemies/shops/events load for the first time, and a large batch
+of mechanics went from data-only to live — none of it has been played. Use the
+cheat console to speed through.
+
+Specifically worth watching for:
+- The **first-pass balance numbers** listed at the top of TODO.md §
+  "UI Debt & Half-Wired Mechanics Pass" — summoning terrain +25%, pack bonus,
+  shield/mirror-image pools, reflect chances, wound-healing prices.
+- The **three new HG events** (boss + two pass guardians) need a prose pass —
+  the writing is Claude's, not yours.
+- The new **difficulty multipliers** (easy 0.75× … boss 1.6×) applied to every
+  event fight for the first time.
+- The **wounds/psychology panels** — first look at whether the wound and
+  pressure systems are tuned sanely now that they're visible.
 
 Good second sessions, depending on appetite:
 - **Content mood:** the 34 HG events, or animal realm companions (the
   recruitment machinery is all built — it's pure data + flavor).
-- **Systems mood:** the wounds/psychology character-sheet panels (two UI
-  panels that make three finished systems visible), or the AI behavior types
-  the animal archetypes are waiting on.
+- **Systems mood:** prosthetic items (small, unblocks a fully-coded flow), or
+  combat-UI polish (wound icons on unit frames, per-arm damage popups).
 - **Big-swing mood:** YidamSystem — the design in TODO.md is complete enough
-  to implement, and mantra counts are already accumulating.
+  to implement, mantra counts are already accumulating, and camp Mantra
+  Recitation feeds it with no consumer today.
