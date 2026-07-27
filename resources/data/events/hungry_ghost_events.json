@@ -12175,6 +12175,806 @@
           }
         }
       ]
+    },
+    "hg_recruit_mehr": {
+      "id": "hg_recruit_mehr",
+      "title": "A Glint in the Dark",
+      "realm": "hungry_ghost",
+      "text": "Something catches the light at the bottom of a tar seep — a single gold glint, deep down in the black.\n\nIt blinks.\n\n\"Yes,\" says a voice from under the tar, quite calmly. \"I can see you too. Only the one eye, mind. Would you mind terribly?\"",
+      "choices": [
+        {
+          "id": "haul",
+          "type": "requirement",
+          "text": "Get her out",
+          "requirements": {
+            "attributes": {
+              "strength": 14
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "mehr",
+            "free": true,
+            "text": "It takes both arms and most of an hour and she comes out of the tar in one long appalling motion, tall and black-lacquered and entirely composed. She thanks you, wipes the good eye clear, and says: \"You are going to want to hear the last prophecy. Nobody ever does. It was the accurate one.\"",
+            "rewards": {
+              "xp": 24
+            },
+            "karma": {
+              "human": 5,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "prophecy",
+          "type": "requirement",
+          "text": "Ask her for the failed prophecy first",
+          "requirements": {
+            "skills": {
+              "ritual": 3
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "mehr",
+            "free": true,
+            "text": "She recites it from under the tar, in the dark, unhurried. It is not a failed prophecy. It is a correct one that arrived at a court that had already decided, and the court's response is why she is in a tar pit.\n\nWhen you pull her out afterwards, she has already decided you are worth attaching to.",
+            "rewards": {
+              "xp": 28,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "god": 5,
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "hire",
+          "type": "default",
+          "text": "Offer to pay her out",
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "mehr",
+            "text": "\"A commercial arrangement. Very sensible.\" She takes the coin with a tar-black hand and does not mention that she would have come for nothing.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave the tar seep alone",
+          "outcome": {
+            "type": "text",
+            "text": "\"Quite all right,\" the voice says, receding. \"It is not an urgent situation. It has not been urgent for some time.\"",
+            "rewards": {
+              "xp": 3
+            },
+            "karma": {
+              "animal": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_recruit_choki": {
+      "id": "hg_recruit_choki",
+      "title": "At the Water's Edge",
+      "realm": "hungry_ghost",
+      "text": "A dré stands at the edge of a still pool with her feet in the shallows, facing the water. She has been standing there long enough that reeds have grown around her ankles.\n\n\"It came down the valley in the afternoon,\" she says, to nobody. \"There was no sound. That's the part I keep coming back to. There should have been a sound.\"",
+      "choices": [
+        {
+          "id": "listen",
+          "type": "requirement",
+          "text": "Let her finish the whole account",
+          "requirements": {
+            "skills": {
+              "yoga": 3
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "choki",
+            "free": true,
+            "text": "It takes two hours and she has clearly never got to the end of it before — she stops three times and each time you wait, and each time she starts again slightly further on. When she reaches the part where she went into the river herself, she stops for a long while.\n\nThen she says, \"That's all of it,\" with enormous surprise, and steps out of the reeds for the first time in however long.",
+            "rewards": {
+              "xp": 28
+            },
+            "karma": {
+              "god": 6,
+              "human": 5
+            }
+          }
+        },
+        {
+          "id": "water",
+          "type": "requirement",
+          "text": "Show her what the water is actually doing",
+          "requirements": {
+            "skills": {
+              "water_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "choki",
+            "free": true,
+            "text": "You put your hand in the pool and let her feel it the way you feel it: not a thing that took her village, just water, doing what water does, without intent and without memory of having done it. It is not comfort. It is accuracy, and she has been waiting for accuracy.\n\n\"Oh,\" she says. And then, after a while: \"Where are you going?\"",
+            "rewards": {
+              "xp": 26
+            },
+            "karma": {
+              "god": 5,
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "hire",
+          "type": "default",
+          "text": "Ask her to come along and offer to pay",
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "choki",
+            "text": "She looks at the coin without much interest, and then at you. \"You want me to come.\" That part seems to land. She comes.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave her to the water",
+          "outcome": {
+            "type": "text",
+            "text": "\"There should have been a sound,\" she says again, behind you.",
+            "rewards": {
+              "xp": 4,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": -12
+                }
+              ]
+            },
+            "karma": {
+              "animal": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_recruit_nangwa": {
+      "id": "hg_recruit_nangwa",
+      "title": "Mid-Sentence",
+      "realm": "hungry_ghost",
+      "text": "The library is three walls and a floor of wet scroll-pulp. In the middle of it a dré is pacing a tight circle, talking rapidly, gesturing at a diagram that is not there.\n\n\"—and therefore, if the third term holds, which it does, which I have shown, then—\" He stops. Frowns. Starts again. \"—and therefore, if the third term holds—\"",
+      "choices": [
+        {
+          "id": "finish",
+          "type": "requirement",
+          "text": "Supply the conclusion",
+          "requirements": {
+            "skills": {
+              "learning": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "nangwa",
+            "free": true,
+            "text": "You listen through two full cycles, work out where he is going, and say the next line out loud.\n\nHe stops dead. Turns around. Looks at you as though you have appeared out of nothing, which from his perspective you have. \"Yes,\" he says. \"Yes — that's it — and then the corollary—\" and he is off again, but forward this time, and he does not stop for an hour, and at the end of it he is somebody who has finished a thought and needs a new one.",
+            "rewards": {
+              "xp": 30,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "human": 6,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "space",
+          "type": "requirement",
+          "text": "Look at what is holding him in the loop",
+          "requirements": {
+            "skills": {
+              "space_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "nangwa",
+            "free": true,
+            "text": "He is not haunting the library. He is caught in about four seconds of it, running them over and over, and the loop is thin enough to see the seam. You cut it. He arrives in the present mid-gesture, extremely disoriented and — once he works out how long it has been — extremely embarrassed.\n\n\"Right,\" he says. \"Well. I shall need to see what's been published.\"",
+            "rewards": {
+              "xp": 28
+            },
+            "karma": {
+              "god": 5,
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "hire",
+          "type": "default",
+          "text": "Interrupt and make him an offer",
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "nangwa",
+            "text": "The interruption works where nothing else has. He accepts the terms distractedly, still gesturing at the diagram, and follows you out still talking.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "salvage",
+          "type": "default",
+          "text": "Salvage what survived the water",
+          "outcome": {
+            "type": "text",
+            "text": "Three scroll-cases from a high shelf, dry inside. He does not notice you take them. He does not notice you at all.",
+            "rewards": {
+              "xp": 8,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_recruit_prashan": {
+      "id": "hg_recruit_prashan",
+      "title": "The Question at the Crossroads",
+      "realm": "hungry_ghost",
+      "text": "The vetala at the crossroads does not block the road. He simply says, as you pass:\n\n\"What is it that you carry everywhere, cannot put down, did not choose, and will lose entirely at the moment you most need it?\"\n\nThen he waits, with the air of someone who has waited a very long time and expects to wait longer.",
+      "choices": [
+        {
+          "id": "answer",
+          "type": "requirement",
+          "text": "Answer it",
+          "requirements": {
+            "skills": {
+              "learning": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "prashan",
+            "free": true,
+            "text": "\"Your name,\" you say.\n\nThe silence goes on for some time. \"...That is not the answer I have,\" he says at last. \"It is better than the answer I have.\" He gets up off the milestone he has been sitting on for four centuries, dusts himself off, and falls in beside you without being invited. \"I shall need considerably more material. You appear to be going somewhere interesting.\"",
+            "rewards": {
+              "xp": 30
+            },
+            "karma": {
+              "human": 6,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "counter",
+          "type": "requirement",
+          "text": "Ask him one he cannot answer",
+          "requirements": {
+            "attributes": {
+              "awareness": 15
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "prashan",
+            "free": true,
+            "text": "\"What are you going to do,\" you ask, \"if someone answers it?\"\n\nHe opens his mouth. Closes it. You watch four hundred years of a very good defensive position collapse in about six seconds. \"I had not,\" he says slowly, \"considered that as a live possibility.\" He is, it turns out, delighted rather than wounded — which is what makes him worth having.",
+            "rewards": {
+              "xp": 28
+            },
+            "karma": {
+              "human": 5,
+              "asura": 2
+            }
+          }
+        },
+        {
+          "id": "hire",
+          "type": "default",
+          "text": "Skip the riddle; offer him employment",
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "prashan",
+            "text": "\"A commercial answer. Disappointing but valid.\" He pockets the coin and comes, and asks the riddle again three miles later in case you have improved.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "walk_on",
+          "type": "default",
+          "text": "Walk on past",
+          "outcome": {
+            "type": "text",
+            "text": "\"Take your time,\" he calls after you. \"I have some.\"",
+            "rewards": {
+              "xp": 4
+            },
+            "karma": {
+              "animal": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_recruit_nyingje": {
+      "id": "hg_recruit_nyingje",
+      "title": "The One Who Stayed",
+      "realm": "hungry_ghost",
+      "text": "A silver skeleton is working its way along a row of pretas laid out on mats, doing for each one whatever can be done — water it cannot swallow, a cloth on a forehead that feels nothing, a hand held.\n\nIt does not look up. \"There are forty-one today. Yesterday there were thirty-nine. I am not gaining.\"",
+      "choices": [
+        {
+          "id": "help",
+          "type": "requirement",
+          "text": "Take the other end of the row",
+          "requirements": {
+            "skills": {
+              "medicine": 3
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "nyingje",
+            "free": true,
+            "text": "You work the row from the far end and meet in the middle after four hours. Neither of you says anything useful in that time. At the end it straightens up, looks at the mats, and then at you.\n\n\"I vowed to remain until every being here found its way out,\" it says. \"I have been assuming that meant standing still.\" It picks up its bowl and comes with you, and does not look back at the forty-one, which costs it something.",
+            "rewards": {
+              "xp": 30
+            },
+            "karma": {
+              "god": 8,
+              "human": 5
+            }
+          }
+        },
+        {
+          "id": "vow",
+          "type": "requirement",
+          "text": "Ask what the vow actually said",
+          "requirements": {
+            "skills": {
+              "yoga": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "nyingje",
+            "free": true,
+            "text": "It recites the vow. You point out — carefully, because this is somebody's life's work — that it says *until every being finds its way out*, not *until every being here is comfortable*, and that one of those is a task that can be advanced by leaving this row of mats.\n\nThe silence is long. \"I have been reading it wrong for eight hundred years,\" it says, without any bitterness at all. \"Well. Shall we go?\"",
+            "rewards": {
+              "xp": 32
+            },
+            "karma": {
+              "god": 10,
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "hire",
+          "type": "default",
+          "text": "Offer to fund the work if it comes with you",
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "nyingje",
+            "text": "It accepts the coin on behalf of the forty-one, arranges for their care with a neighbouring dré, and comes. The arrangement is meticulous. It takes most of the afternoon.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "supplies",
+          "type": "default",
+          "text": "Leave what supplies you can spare",
+          "cost": {
+            "food": "moderate"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It accepts without fuss and immediately begins distributing. \"Forty-one,\" it says. \"That is better than it was an hour ago.\"",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "god": 6,
+              "human": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_recruit_khedrup": {
+      "id": "hg_recruit_khedrup",
+      "title": "The Auspicious Rock",
+      "realm": "hungry_ghost",
+      "text": "A preserved one sits cross-legged on a flat rock, reciting at speed, with a tally-board propped beside him and a set of tables weighted down under a stone.\n\nHe holds up one finger without breaking the recitation — *wait* — finishes a count, marks the board, and only then looks up. \"Auspicious day,\" he explains. \"Triple merit. I am not going to waste it being sociable.\"",
+      "choices": [
+        {
+          "id": "audit",
+          "type": "requirement",
+          "text": "Check his arithmetic",
+          "requirements": {
+            "skills": {
+              "learning": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "khedrup",
+            "free": true,
+            "text": "The tables are internally consistent and beautifully kept and rest on one bad assumption made four hundred years ago, which he has been compounding ever since. You show him. He recalculates. It takes eleven minutes and the colour, such as it is, goes out of him.\n\n\"So the entire ledger,\" he says.\n\n\"The entire ledger.\"\n\nHe sits with it. Then he picks up the tally-board, considers throwing it, and puts it in his bag instead. \"I should like to see how other people are doing this,\" he says.",
+            "rewards": {
+              "xp": 30
+            },
+            "karma": {
+              "god": 5,
+              "human": 5
+            }
+          }
+        },
+        {
+          "id": "practice",
+          "type": "requirement",
+          "text": "Sit down and recite with him",
+          "requirements": {
+            "skills": {
+              "ritual": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "khedrup",
+            "free": true,
+            "text": "You do not argue with the system. You just sit down and do the practice properly beside him for three hours, at the pace it is meant to be done at, which is about a fifth of his.\n\nHe speeds up for the first hour out of competitiveness. In the second he slows down. In the third he stops counting altogether, and afterwards he sits very still for a while and does not mark the board.\n\n\"That was slower,\" he says eventually. \"Why was that better?\"",
+            "rewards": {
+              "xp": 32
+            },
+            "karma": {
+              "god": 8,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "hire",
+          "type": "default",
+          "text": "Point out that travel accrues merit too, and pay him",
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "khedrup",
+            "text": "He checks the tables. Pilgrimage does in fact carry a multiplier. He accepts on those grounds and only those grounds, and brings the tally-board.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave him to the triple merit",
+          "outcome": {
+            "type": "text",
+            "text": "The recitation resumes before you are out of earshot, at the same impossible pace.",
+            "rewards": {
+              "xp": 4
+            },
+            "karma": {
+              "animal": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_recruit_rasabhava": {
+      "id": "hg_recruit_rasabhava",
+      "title": "The Preservation Lab",
+      "realm": "hungry_ghost",
+      "text": "A workshop cut into the rock: benches, glassware, a cold-vault, everything labelled in a small exact hand. On the central bench a vessel of clear liquid sits exactly where it was set down, beside a notebook open to a finished page.\n\nThe preserved one on the stool beside it inclines his head. \"Mixed it the night before. You will notice the date.\"",
+      "choices": [
+        {
+          "id": "notes",
+          "type": "requirement",
+          "text": "Read the notebook properly",
+          "requirements": {
+            "skills": {
+              "alchemy": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "rasabhava",
+            "free": true,
+            "text": "The formula is correct. You check it three times because you do not believe a formula for eternal preservation can be correct, and it is. He watches you check it, entirely composed, and you understand that he has been waiting a very long time for somebody who could tell whether it was right.\n\n\"It works,\" you say.\n\n\"It works,\" he agrees. \"By eleven hours.\" And then, after a moment: \"I should like to be somewhere else now.\"",
+            "rewards": {
+              "xp": 30,
+              "items": [
+                "item_random"
+              ],
+              "supplies": {
+                "reagents": 10
+              }
+            },
+            "karma": {
+              "human": 5,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "console",
+          "type": "requirement",
+          "text": "Say the only useful thing there is to say about the timing",
+          "requirements": {
+            "skills": {
+              "yoga": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "rasabhava",
+            "free": true,
+            "text": "\"You would have been preserved,\" you say. \"You would not have been finished.\"\n\nHe considers this for a long time — he is a careful man and does not accept propositions quickly. \"An unfalsifiable consolation,\" he says at last. \"But not, I think, a false one.\" He caps the vessel, labels it with the date and the word UNTESTED, and leaves it on the bench for whoever comes next.",
+            "rewards": {
+              "xp": 32
+            },
+            "karma": {
+              "god": 8,
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "hire",
+          "type": "default",
+          "text": "Offer him a laboratory that moves",
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "rasabhava",
+            "text": "\"A travelling practice.\" He is packing before you finish the sentence. The glassware is wrapped in eleven minutes; he has clearly rehearsed this.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "take_vessel",
+          "type": "default",
+          "text": "Ask whether you might have the vessel",
+          "outcome": {
+            "type": "text",
+            "text": "\"Take it. It is no use to me at this end.\" He watches it go with the mildest possible expression.",
+            "rewards": {
+              "xp": 10,
+              "items": [
+                "item_random"
+              ],
+              "supplies": {
+                "reagents": 8
+              }
+            },
+            "karma": {
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_recruit_durvasa": {
+      "id": "hg_recruit_durvasa",
+      "title": "The Returned Invoice",
+      "realm": "hungry_ghost",
+      "text": "The gyelpo is pinned in the air about a foot above the ground, arms out, held there by something that is visibly still working — a curse coming back the way it went, and arriving continuously.\n\n\"Contract work,\" he says, through his teeth, with considerable dignity. \"Final commission. The client's target had a *practice*. Would you consider — this is embarrassing — would you consider stabilising the field?\"",
+      "choices": [
+        {
+          "id": "stabilize_air",
+          "type": "requirement",
+          "text": "Take the pressure off the field",
+          "requirements": {
+            "skills": {
+              "air_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "durvasa",
+            "free": true,
+            "text": "The curse is not attacking him; it is *returning*, endlessly, along a channel that never closed. You cannot break it. You can widen it until the flow is survivable, which takes about twenty minutes of extremely careful work.\n\nHe comes down onto his feet, straightens his robes, and says: \"That is still happening, you understand. It will be happening in a hundred years.\" Then, with real courtesy: \"Where are we going?\"",
+            "rewards": {
+              "xp": 30
+            },
+            "karma": {
+              "human": 5,
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "stabilize_ritual",
+          "type": "requirement",
+          "text": "Close the channel properly",
+          "requirements": {
+            "skills": {
+              "ritual": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "durvasa",
+            "free": true,
+            "text": "A returned curse runs on an open contract. You do not fight it — you settle it: name the commission, name the client, mark the invoice paid, and close the instrument with the correct forms. It takes an hour and a great deal of chalk.\n\nHe lands hard, on his knees, silent for the first time. \"Nobody,\" he says eventually, \"has ever thought to *pay it off*.\"",
+            "rewards": {
+              "xp": 34,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "god": 6,
+              "human": 5
+            }
+          }
+        },
+        {
+          "id": "hire",
+          "type": "default",
+          "text": "Cut him down and put him on retainer",
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "durvasa",
+            "text": "He accepts the retainer with the professionalism of a man who has never in his life worked without one, and remains, technically, still being cursed.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "He is a professional curse-caster. Leave him hanging.",
+          "outcome": {
+            "type": "text",
+            "text": "\"Fair,\" he calls after you, entirely without rancour. \"Genuinely — that is fair.\"",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "god": 3,
+              "hell": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_recruit_gomchen": {
+      "id": "hg_recruit_gomchen",
+      "title": "Amid the Contracts",
+      "realm": "hungry_ghost",
+      "text": "A gyelpo sits in perfect meditation posture in the middle of a room knee-deep in paper. Contracts, deeds, letters of appointment — thousands of them, all bearing his seal, all still legally in force.\n\nHe opens one eye. \"I am told this is the practice now. Sitting in it.\" He does not sound convinced. He does sound like a man who has been trying for a long time.",
+      "choices": [
+        {
+          "id": "read_them",
+          "type": "requirement",
+          "text": "Read what he actually signed",
+          "requirements": {
+            "skills": {
+              "learning": 4
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "gomchen",
+            "free": true,
+            "text": "You read for two hours. The contracts are not corrupt — that is the thing. Every one is defensible, procedurally sound, and in the interest of the institution. He never once did anything indefensible. He simply did ten thousand defensible things and ended up here.\n\nYou tell him so. It is not absolution and he does not take it as any. But he stops sitting in the paper as though it were a punishment and starts going through it as though it were a problem.",
+            "rewards": {
+              "xp": 30
+            },
+            "karma": {
+              "human": 6,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "dissolve",
+          "type": "requirement",
+          "text": "Release him from the instruments",
+          "requirements": {
+            "skills": {
+              "ritual": 5
+            }
+          },
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "gomchen",
+            "free": true,
+            "text": "Every document bearing his seal is a binding he is still party to, and there are, at a rough count, eleven thousand of them. You cannot read them all. You can dissolve the seal itself, which voids the lot at once, and takes most of a day and everything you have.\n\nThe paper goes to ash in a single soft rush. He sits in the middle of it with his eyes shut. \"A master of ten thousand sutras,\" he says. \"And what got me out was somebody else's paperwork.\"",
+            "rewards": {
+              "xp": 34
+            },
+            "karma": {
+              "god": 8,
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "hire",
+          "type": "default",
+          "text": "Offer him a position with no paperwork whatsoever",
+          "outcome": {
+            "type": "recruit_companion",
+            "companion_id": "gomchen",
+            "text": "The phrase \"no paperwork whatsoever\" does more work than the coin. He is on his feet before you have finished the offer.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave him to the practice",
+          "outcome": {
+            "type": "text",
+            "text": "He closes the eye again. The paper does not move.",
+            "rewards": {
+              "xp": 4
+            },
+            "karma": {
+              "animal": 2
+            }
+          }
+        }
+      ]
     }
   }
 }
