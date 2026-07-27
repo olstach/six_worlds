@@ -270,12 +270,14 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 			result.reason = "Already done"
 			return result
 
-	# Default and roll choices are always visible
-	if choice.type == "default" or choice.type == "roll":
+	# Default choices are always visible
+	if choice.type == "default":
 		return result
-	
-	# Requirement choices need checking
-	if choice.type == "requirement":
+
+	# Requirement choices need checking. Roll choices are usually always visible,
+	# but may carry skill/attribute/trait requirements alongside "roll" — a gated
+	# gamble (e.g. Yoga 3 required to attempt, then a Charm roll decides the outcome).
+	if choice.type == "requirement" or choice.type == "roll":
 		if "requirements" not in choice:
 			return result
 		
@@ -510,6 +512,11 @@ func apply_outcome(outcome: Dictionary) -> void:
 						"spell_random_black": school = "Black"
 						_: school = ""  # any school
 					_give_random_spell_reward(school)
+					continue
+
+				# Random equipment token — generate a weapon/armor/talisman scaled to the party
+				if item_id in ["item_random", "item_random_scaled"]:
+					_give_random_item_reward()
 					continue
 
 				var resolved_id: String = item_id
@@ -793,7 +800,7 @@ func apply_outcome(outcome: Dictionary) -> void:
 		# food_percent: spend a percentage of current food stores (e.g. the_pit bribe)
 		if "food_percent" in cost:
 			var pct: float = float(cost.food_percent)
-			var current_food: int = GameState.get_supplies("food")
+			var current_food: int = GameState.get_supply("food")
 			var food_amount: int = max(1, int(current_food * pct / 100.0))
 			GameState.consume_supply("food", food_amount)
 			print("EventManager: Consumed %d food (%d%% of stores)" % [food_amount, int(pct)])
@@ -944,6 +951,25 @@ func get_random_camp_event(realm: String) -> String:
 	if camp_events.is_empty():
 		return ""
 	return camp_events[randi() % camp_events.size()]
+
+
+## Grant one randomly generated piece of equipment (weapon, armor, or talisman).
+## Backs the "item_random" reward token used by many event outcomes.
+func _give_random_item_reward() -> void:
+	var rarity: String = "uncommon" if randf() < 0.35 else "common"
+	var roll := randf()
+	var item_id: String = ""
+	if roll < 0.45:
+		item_id = ItemSystem.generate_weapon_for_party(rarity)
+	elif roll < 0.8:
+		item_id = ItemSystem.generate_armor("", rarity)
+	else:
+		item_id = ItemSystem.generate_talisman(rarity)
+	if item_id != "":
+		ItemSystem.add_to_inventory(item_id)
+		print("EventManager: item_random reward -> %s" % item_id)
+	else:
+		push_warning("EventManager: item_random reward failed to generate an item")
 
 
 ## Teach a random spell to every party member who doesn't already know it.

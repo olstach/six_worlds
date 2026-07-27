@@ -1128,10 +1128,17 @@ func _start_current_turn() -> void:
 		_remove_status_by_name(unit, "Extra_Action")
 		combat_log.emit("%s surges with extra energy — gains a bonus action!" % unit.unit_name)
 
-	# Prone (skip_next_action): costs 1 action to stand up at the start of this turn
+	# skip_next_action (Prone, Knocked_Down, …): costs 1 action to stand up at the
+	# start of this turn, then every status carrying the effect is consumed.
 	if _unit_has_effect(unit, "skip_next_action"):
 		unit.actions_remaining = maxi(0, unit.actions_remaining - 1)
-		_remove_status_by_name(unit, "Prone")
+		var stand_up_statuses: Array = []
+		for eff in unit.status_effects:
+			var sdef = _status_effects.get(eff.get("status", ""), {})
+			if "skip_next_action" in sdef.get("effects", []):
+				stand_up_statuses.append(eff.get("status", ""))
+		for sname in stand_up_statuses:
+			_remove_status_by_name(unit, sname)
 		combat_log.emit("%s struggles to their feet — loses 1 action." % unit.unit_name)
 
 	# Restore stamina each turn (base 5 + Finesse/5, so characters recover ~7-12/turn)

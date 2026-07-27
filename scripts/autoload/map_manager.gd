@@ -20,6 +20,7 @@ signal object_interacted(object: Dictionary)
 signal event_triggered(event_id: String, object: Dictionary)  # For event objects -> EventManager
 signal pickup_collected(object: Dictionary, rewards: Array)   # For pickup objects -> show message
 signal portal_entered(destination: Dictionary)                # For portal objects
+signal portal_blocked(message: String)                        # Sealed portal (boss still alive)
 signal map_loaded(map_id: String)
 signal map_paused()
 signal map_resumed()
@@ -1157,6 +1158,12 @@ func _apply_reward(reward: Dictionary) -> void:
 
 func _handle_portal_object(obj: Dictionary) -> void:
 	stop_movement()
+	# Sealed portals require the current realm's boss to be defeated first
+	if obj.data.get("requires_boss_defeated", false) and GameState:
+		var world: String = GameState.current_world
+		if world in GameState.WORLDS and not GameState.WORLDS[world].boss_defeated:
+			portal_blocked.emit("The portal is sealed. Something powerful still anchors this realm.")
+			return
 	var dest_realm = obj.data.get("destination_realm", "")
 	var dest_map = obj.data.get("destination_map", "")
 	portal_entered.emit(obj.data)
@@ -1166,8 +1173,9 @@ func _handle_portal_object(obj: Dictionary) -> void:
 		GameState.unlock_world(dest_realm)
 		GameState.travel_to_world(dest_realm)
 
-	if not dest_map.is_empty():
-		load_map(dest_map)
+	# NOTE: the actual load_map(dest_map) happens in overworld's portal_entered
+	# handler (behind its fade-to-black). Loading here too generated the realm
+	# twice with two different random layouts.
 
 
 # ============================================

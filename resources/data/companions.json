@@ -30,6 +30,10 @@
       },
       "fixed_items": [
         "health_potion"
+      ],
+      "traits": [
+        "devout",
+        "brave"
       ]
     },
     "serji": {
@@ -60,7 +64,11 @@
       "starting_equipment": {
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "war_hardened",
+        "composed"
+      ]
     },
     "red_peony": {
       "id": "red_peony",
@@ -93,7 +101,11 @@
         },
         "chest": "chainmail"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "strong",
+        "hot_tempered"
+      ]
     },
     "raktamatta": {
       "id": "raktamatta",
@@ -126,7 +138,11 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "fastidious",
+        "stubborn"
+      ]
     },
     "jawbreaker": {
       "id": "jawbreaker",
@@ -159,7 +175,11 @@
           "off": ""
         }
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "quick",
+        "gambler"
+      ]
     },
     "tejasimha": {
       "id": "tejasimha",
@@ -197,6 +217,10 @@
       "fixed_items": [
         "fire_charm_middling",
         "plain_copper_dorje"
+      ],
+      "traits": [
+        "curious",
+        "vain"
       ]
     },
     "water_lily": {
@@ -235,6 +259,10 @@
       },
       "fixed_items": [
         "water_charm_middling"
+      ],
+      "traits": [
+        "composed",
+        "brave"
       ]
     },
     "dvijihva": {
@@ -271,6 +299,10 @@
       },
       "fixed_items": [
         "enchantment_charm_common"
+      ],
+      "traits": [
+        "greedy",
+        "stubborn"
       ]
     },
     "yaga_mataji": {
@@ -308,6 +340,10 @@
       "fixed_items": [
         "health_potion",
         "black_charm_common"
+      ],
+      "traits": [
+        "fastidious",
+        "suspicious"
       ]
     },
     "niyamendra": {
@@ -344,6 +380,10 @@
       },
       "fixed_items": [
         "water_charm_common"
+      ],
+      "traits": [
+        "fastidious",
+        "patient"
       ]
     },
     "leraya": {
@@ -378,7 +418,11 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "curious",
+        "stubborn"
+      ]
     },
     "samvibrahmi": {
       "id": "samvibrahmi",
@@ -412,7 +456,11 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "paranoid",
+        "suspicious"
+      ]
     },
     "vayuvega": {
       "id": "vayuvega",
@@ -449,6 +497,10 @@
       "fixed_items": [
         "air_charm_middling",
         "plain_iron_dorje"
+      ],
+      "traits": [
+        "hot_tempered",
+        "brave"
       ]
     },
     "angulimala": {
@@ -483,7 +535,11 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "fastidious",
+        "sharp_memory"
+      ]
     },
     "kanjus": {
       "id": "kanjus",
@@ -517,7 +573,11 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "greedy",
+        "stubborn"
+      ]
     },
     "sarpatailaka": {
       "id": "sarpatailaka",
@@ -553,6 +613,10 @@
       },
       "fixed_items": [
         "earth_charm_common"
+      ],
+      "traits": [
+        "greedy",
+        "gambler"
       ]
     },
     "shiny_needle": {
@@ -589,6 +653,10 @@
       },
       "fixed_items": [
         "enchantment_charm_common"
+      ],
+      "traits": [
+        "vain",
+        "addiction"
       ]
     },
     "princess_spiderface": {
@@ -627,6 +695,10 @@
       },
       "fixed_items": [
         "space_charm_middling"
+      ],
+      "traits": [
+        "generous",
+        "trusting"
       ]
     },
     "sineater_thirteen": {
@@ -664,6 +736,10 @@
       "fixed_items": [
         "black_charm_middling",
         "plain_bone_khatvanga"
+      ],
+      "traits": [
+        "haunted",
+        "curious"
       ]
     },
     "dyutapati": {
@@ -698,7 +774,11 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "greedy",
+        "patient"
+      ]
     },
     "coolhead_hotblood": {
       "id": "coolhead_hotblood",
@@ -730,6 +810,10 @@
       },
       "fixed_items": [
         "black_charm_common"
+      ],
+      "traits": [
+        "hot_tempered",
+        "sharp_memory"
       ]
     },
     "ayurmangala": {
@@ -767,6 +851,10 @@
       "fixed_items": [
         "health_potion",
         "health_potion"
+      ],
+      "traits": [
+        "curious",
+        "fastidious"
       ]
     },
     "amlamarjari": {
@@ -807,6 +895,10 @@
         "health_potion",
         "white_charm_middling",
         "plain_conch_dorje"
+      ],
+      "traits": [
+        "generous",
+        "night_drinker"
       ]
     },
     "vimohini": {
@@ -844,6 +936,10 @@
       "fixed_items": [
         "enchantment_charm_middling",
         "plain_copper_damaru"
+      ],
+      "traits": [
+        "dreamer",
+        "haunted"
       ]
     },
     "tsering": {
@@ -878,7 +974,11 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "stubborn",
+        "war_hardened"
+      ]
     },
     "rasabhava": {
       "id": "rasabhava",
@@ -915,6 +1015,10 @@
       "fixed_items": [
         "health_potion",
         "summoning_charm_common"
+      ],
+      "traits": [
+        "curious",
+        "composed"
       ]
     },
     "saka": {
@@ -949,7 +1053,11 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "patient",
+        "stubborn"
+      ]
     },
     "mehr": {
       "id": "mehr",
@@ -987,6 +1095,10 @@
       },
       "fixed_items": [
         "fire_charm_middling"
+      ],
+      "traits": [
+        "sharp_eyed",
+        "brave"
       ]
     },
     "vilasa": {
@@ -1021,7 +1133,11 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "vain",
+        "greedy"
+      ]
     },
     "marmajna": {
       "id": "marmajna",
@@ -1059,6 +1175,10 @@
         "health_potion",
         "health_potion",
         "sorcery_charm_common"
+      ],
+      "traits": [
+        "curious",
+        "stubborn"
       ]
     },
     "kripana": {
@@ -1091,7 +1211,11 @@
           "off": ""
         }
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "greedy",
+        "addiction"
+      ]
     },
     "nurse_bones": {
       "id": "nurse_bones",
@@ -1130,6 +1254,10 @@
       "fixed_items": [
         "health_potion",
         "white_charm_middling"
+      ],
+      "traits": [
+        "generous",
+        "devout"
       ]
     },
     "hustle_bones": {
@@ -1166,6 +1294,10 @@
       },
       "fixed_items": [
         "earth_charm_common"
+      ],
+      "traits": [
+        "greedy",
+        "gambler"
       ]
     },
     "prashan": {
@@ -1202,6 +1334,10 @@
       },
       "fixed_items": [
         "plain_bronze_drilbu"
+      ],
+      "traits": [
+        "curious",
+        "sharp_memory"
       ]
     },
     "temba": {
@@ -1236,7 +1372,11 @@
         },
         "chest": "chainmail"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "generous",
+        "brave"
+      ]
     },
     "iron_oath": {
       "id": "iron_oath",
@@ -1270,7 +1410,11 @@
         },
         "chest": "chainmail"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "stubborn",
+        "war_hardened"
+      ]
     },
     "the_chronicler": {
       "id": "the_chronicler",
@@ -1304,7 +1448,11 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "sharp_memory",
+        "melancholic"
+      ]
     },
     "nyingje": {
       "id": "nyingje",
@@ -1341,6 +1489,10 @@
       },
       "fixed_items": [
         "health_potion"
+      ],
+      "traits": [
+        "patient",
+        "devout"
       ]
     },
     "shantipala": {
@@ -1375,7 +1527,11 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "trusting",
+        "generous"
+      ]
     },
     "peldon": {
       "id": "peldon",
@@ -1409,7 +1565,11 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "generous",
+        "patient"
+      ]
     },
     "choki": {
       "id": "choki",
@@ -1446,6 +1606,10 @@
       "fixed_items": [
         "water_charm_middling",
         "plain_silver_drilbu"
+      ],
+      "traits": [
+        "grief_struck",
+        "melancholic"
       ]
     },
     "nangwa": {
@@ -1482,6 +1646,10 @@
       },
       "fixed_items": [
         "space_charm_common"
+      ],
+      "traits": [
+        "curious",
+        "stubborn"
       ]
     },
     "drupchen": {
@@ -1519,6 +1687,10 @@
       "fixed_items": [
         "white_charm_common",
         "plain_conch_dorje"
+      ],
+      "traits": [
+        "lapsed",
+        "stubborn"
       ]
     },
     "khedrup": {
@@ -1556,6 +1728,10 @@
       "fixed_items": [
         "black_charm_common",
         "plain_bone_khatvanga"
+      ],
+      "traits": [
+        "stubborn",
+        "superstitious"
       ]
     },
     "yasha": {
@@ -1590,7 +1766,11 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "vain",
+        "melancholic"
+      ]
     },
     "durvasa": {
       "id": "durvasa",
@@ -1627,6 +1807,10 @@
       "fixed_items": [
         "sorcery_charm_middling",
         "plain_copper_phurba"
+      ],
+      "traits": [
+        "blood_handed",
+        "stubborn"
       ]
     },
     "gomchen": {
@@ -1664,6 +1848,10 @@
       "fixed_items": [
         "sorcery_charm_common",
         "plain_iron_phurba"
+      ],
+      "traits": [
+        "lapsed",
+        "vain"
       ]
     }
   }

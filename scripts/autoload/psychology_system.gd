@@ -366,12 +366,12 @@ func get_emotional_label(character: Dictionary, element: String) -> String:
 ## Checks the character's quirks for any reaction matching this element+polarity crisis.
 ## Applies self/party pressure effects and emits emotional_crisis_log for each reaction found.
 func _resolve_quirk_reactions(character: Dictionary, element: String, polarity: String) -> void:
-	if not QuirkSystem:
+	if not TraitSystem:
 		return
 	var key: String = element + "_" + polarity
 	var char_name: String = character.get("name", "?")
-	for quirk_id in character.get("quirks", []):
-		var q: Dictionary = QuirkSystem.get_quirk(quirk_id)
+	for quirk_id in character.get("traits", []):
+		var q: Dictionary = TraitSystem.get_trait(quirk_id)
 		var fired: bool = false
 		for tag in q.get("event_tags", []):
 			if fired:

@@ -365,9 +365,11 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 	var enemy_group = mob_inner.get("enemy_group", "demon_patrol")
 	# Region can be on the mob dict (from MapManager) or in its inner data
 	var region = mob_data.get("region", mob_inner.get("region", ""))
+	# Difficulty tier can be on the mob dict (map mobs) or inner data (event combats)
+	var difficulty = mob_data.get("difficulty", mob_inner.get("difficulty", "normal"))
 
 	# Generate scaled enemies from EnemySystem
-	var enemy_defs = EnemySystem.generate_encounter(enemy_group, region)
+	var enemy_defs = EnemySystem.generate_encounter(enemy_group, region, GameState.current_world, difficulty)
 
 	# Get party characters for deployment
 	var party = CharacterSystem.get_party()

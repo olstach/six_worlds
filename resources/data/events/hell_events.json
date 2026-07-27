@@ -508,7 +508,7 @@
             "rewards": {
               "xp": 10,
               "items": [
-                "carved_token"
+                "random_common_talisman"
               ]
             },
             "karma": {
@@ -4213,7 +4213,7 @@
           "text": "Build a fireproof carry-container from materials at hand",
           "requirements": {
             "skills": {
-              "crafting": 3
+              "smithing": 3
             }
           },
           "outcome": {
@@ -4501,7 +4501,7 @@
           "text": "Work beside her at the forge",
           "requirements": {
             "skills": {
-              "crafting": 2
+              "smithing": 2
             }
           },
           "outcome": {
@@ -5355,7 +5355,7 @@
             "rewards": {
               "xp": 15,
               "items": [
-                "yogini_charm"
+                "space_charm_common"
               ]
             },
             "karma": {
@@ -5436,8 +5436,8 @@
             "rewards": {
               "xp": 10,
               "items": [
-                "medicinal_herbs",
-                "healing_salve"
+                "herb_bundle",
+                "healing_herb"
               ]
             },
             "karma": {
@@ -5462,8 +5462,8 @@
             "rewards": {
               "xp": 8,
               "items": [
-                "rare_herb",
-                "medicinal_herbs"
+                "healing_herb",
+                "herb_bundle"
               ]
             },
             "karma": {

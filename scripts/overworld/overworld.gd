@@ -100,6 +100,10 @@ func _ready() -> void:
 			# Victory — restore event object for cleanup on Continue
 			GameState.last_defeated_mob_id = ""
 			_current_event_object = GameState.pending_event_object.duplicate(true)
+			# Realm boss defeated — unseal the portal to the next realm
+			if _current_event_object.get("id", "") == "realm_boss":
+				GameState.defeat_boss(GameState.current_world)
+				_show_toast("The realm's tyrant has fallen. The way forward is open.")
 			# If the combat outcome has an on_victory block, use it instead
 			# (e.g. smoking_mirror: defeat the mirror → shop opens with domain spells)
 			if "on_victory" in outcome:
@@ -137,6 +141,7 @@ func _ready() -> void:
 	MapManager.mob_event_triggered.connect(_on_mob_event_triggered)
 	MapManager.pickup_collected.connect(_on_pickup_collected)
 	MapManager.portal_entered.connect(_on_portal_entered)
+	MapManager.portal_blocked.connect(_show_toast)
 	MapManager.party_moved.connect(_on_party_moved)
 	MapManager.party_position_updated.connect(_on_party_position_updated)
 

@@ -1521,38 +1521,35 @@
         },
         {
           "id": "wake_up",
-          "type": "requirement",
+          "type": "roll",
           "text": "Try to wake her from the dream entirely",
           "requirements": {
             "skills": {
               "yoga": 3
-            }
-          },
-          "outcome": {
-            "type": "roll",
+            },
             "roll": {
               "attribute": "charm",
               "difficulty": "difficult"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "\"If there is no child, how can there be a mother?\" She looks at you with sudden, piercing clarity. Her eyes sharpen. Then, very slowly, the clarity passes into something like peace. Her form grows transparent. She smiles — genuinely — and fades. She is not here anymore.",
+            "rewards": {
+              "xp": 25
             },
-            "outcome_success": {
-              "type": "text",
-              "text": "\"If there is no child, how can there be a mother?\" She looks at you with sudden, piercing clarity. Her eyes sharpen. Then, very slowly, the clarity passes into something like peace. Her form grows transparent. She smiles — genuinely — and fades. She is not here anymore.",
-              "rewards": {
-                "xp": 25
-              },
-              "karma": {
-                "god": 10
-              }
+            "karma": {
+              "god": 10
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "She looks through you and resumes rocking, babbling softly to the empty rags. The dream is too strong.",
+            "rewards": {
+              "xp": 4
             },
-            "outcome_failure": {
-              "type": "text",
-              "text": "She looks through you and resumes rocking, babbling softly to the empty rags. The dream is too strong.",
-              "rewards": {
-                "xp": 4
-              },
-              "karma": {
-                "god": 2
-              }
+            "karma": {
+              "god": 2
             }
           }
         }
@@ -2236,7 +2233,7 @@
           "text": "Salvage building materials from the accessible sections",
           "requirements": {
             "skills": {
-              "crafting": 2
+              "smithing": 2
             }
           },
           "outcome": {
@@ -2404,7 +2401,7 @@
           "text": "Restore the shrine properly",
           "requirements": {
             "skills": {
-              "crafting": 2
+              "smithing": 2
             }
           },
           "outcome": {
@@ -5176,7 +5173,7 @@
           "text": "Build a proper pyre from what's available",
           "requirements": {
             "skills": {
-              "crafting": 3
+              "smithing": 3
             }
           },
           "outcome": {
@@ -6895,7 +6892,7 @@
             "text": "\"Keep the living alive. Slow the dead down. Somewhere in between there's a tea that tastes almost good.\" It hands you a bundle without ceremony. You take it.",
             "rewards": {
               "items": [
-                "herbs"
+                "herb_bundle"
               ],
               "xp": 4
             },

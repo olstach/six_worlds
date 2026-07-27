@@ -12967,6 +12967,30 @@
         ]
       },
       "slot": "inventory"
+    },
+    "fire_crystal": {
+      "name": "Fire Crystal",
+      "type": "supply",
+      "rarity": "uncommon",
+      "weight": 1,
+      "value": 25,
+      "description": "A shard of crystallized hellfire, warm to the touch even in the cold hells. Alchemists prize it as a potent reagent.",
+      "supply_type": "reagents",
+      "supply_amount": 8,
+      "slot": "inventory"
+    },
+    "demon_key": {
+      "name": "Demon Key",
+      "type": "trinket",
+      "slot": "trinket1",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "space",
+      "weight": 0,
+      "value": 45,
+      "description": "A black iron key taken from a hell warden. Its teeth seem to shift when no one is watching. Worth good coin to the right buyer — or perhaps it still opens something.",
+      "stats": {},
+      "skill_bonuses": {}
     }
   },
   "item_types": {
