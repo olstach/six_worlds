@@ -8930,6 +8930,3251 @@
           }
         }
       ]
+    },
+    "hg_zombie_horde": {
+      "id": "hg_zombie_horde",
+      "title": "Zombie Horde",
+      "realm": "hungry_ghost",
+      "text": "They come out of the reeds in ones and twos and then in dozens — bog zombies, waterlogged and patient, drawn by whatever it is the living give off that the dead can smell.\n\nThere is no line to hold. There is only the direction with fewest of them in it.",
+      "choices": [
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Cut a path through",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "zombie_pack",
+            "difficulty": "hard",
+            "karma": {
+              "asura": 3,
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "reeds",
+          "type": "roll",
+          "text": "Go low into the reeds and let them pass over you",
+          "requirements": {
+            "roll": {
+              "attribute": "constitution",
+              "difficulty": "difficult"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Face-down in black water breathing through a reed while a hundred waterlogged feet go past inches from your ribs. It takes forty minutes. Nobody coughs. That is the whole achievement and it is enormous.",
+            "rewards": {
+              "xp": 14,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": -10
+                }
+              ]
+            },
+            "karma": {
+              "animal": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "combat",
+            "enemy_group": "zombie_pack",
+            "difficulty": "hard",
+            "text": "Somebody's lungs give out. A head turns. Then all of them turn.",
+            "karma": {
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "firebreak",
+          "type": "requirement",
+          "text": "Set the marsh gas alight behind you",
+          "requirements": {
+            "skills": {
+              "fire_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "There is more methane over this bog than anyone should stand in. You touch it off from the far side and the whole flat goes up in a low blue sheet. The horde does not so much burn as simply stop, mid-step, and keep standing there while the fire takes them. You are well clear. You watch longer than you meant to.",
+            "rewards": {
+              "xp": 18
+            },
+            "karma": {
+              "asura": 3,
+              "hell": 2
+            }
+          }
+        },
+        {
+          "id": "release",
+          "type": "requirement",
+          "text": "Sever what is holding them upright",
+          "requirements": {
+            "skills": {
+              "white_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Rolang are not animate by their own will — something keeps them walking, and it is thin here. You speak the release across the whole flat at once and the horde goes down in a long ragged wave, like a field of wheat. In the silence afterwards the swamp sounds almost ordinary.",
+            "rewards": {
+              "xp": 24,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "god": 8,
+              "human": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_swamp_toll": {
+      "id": "hg_swamp_toll",
+      "title": "Zombie Toll",
+      "realm": "hungry_ghost",
+      "text": "The causeway is the only dry ground for a mile, and four bog zombies stand across it in a row. They are not shambling. They are *waiting* — arranged, deliberate, with the stillness of a posted guard.\n\nOne of them holds out a swollen hand, palm up. It has been taught to do this.",
+      "choices": [
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Break the line",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "bog_zombie",
+            "difficulty": "normal",
+            "karma": {
+              "asura": 3
+            }
+          }
+        },
+        {
+          "id": "pay",
+          "type": "default",
+          "text": "Put something in the hand",
+          "cost": {
+            "gold": "small_moderate"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The fingers close. The four of them step aside in unison and resume waiting, facing the way you came. Somewhere in this swamp is whoever trained them, and you find you would rather not meet them.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "hungry_ghost": 3
+            }
+          }
+        },
+        {
+          "id": "who_taught",
+          "type": "requirement",
+          "text": "Follow the training back to whoever set this up",
+          "requirements": {
+            "attributes": {
+              "awareness": 14
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The zombies are facing the causeway, but their heels are aligned to a stand of dead willow forty paces off. There is a rolang in it, very old, very still, running a toll booth in a swamp with four corpses and infinite patience. You negotiate directly. It turns out to be reasonable, and lonely, and it waives the fee for conversation.",
+            "rewards": {
+              "xp": 18,
+              "gold": 40
+            },
+            "karma": {
+              "human": 4,
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "counterfeit",
+          "type": "requirement",
+          "text": "Pay with something that is not money",
+          "requirements": {
+            "skills": {
+              "guile": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You press a flat river stone into the swollen palm with great ceremony. The fingers close on it. Whatever instruction these four are running does not include an assay step. They step aside. You cross the causeway feeling both clever and slightly cheap.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "hungry_ghost": 4,
+              "animal": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_rotting_bridge": {
+      "id": "hg_rotting_bridge",
+      "title": "Rotting Bridge",
+      "realm": "hungry_ghost",
+      "text": "The bridge is the only crossing for miles and it has been rotting for longer than that. Half the planks are gone; the rest are the colour of old cheese. Beneath it, the channel runs deep and black and busy.\n\nSomeone has scratched a warning into the post. The scratching is also rotten.",
+      "choices": [
+        {
+          "id": "cross",
+          "type": "roll",
+          "text": "Cross one at a time, testing every board",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": "normal"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Four crossings, four held breaths, one plank that goes into the water without you. Everyone across.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "human": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "combat",
+            "enemy_group": "swamp_vermin",
+            "difficulty": "normal",
+            "text": "The board does not creak first. One moment there is a bridge and the next there is black water and a great deal of movement in it.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "random"
+              }
+            },
+            "karma": {
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "repair",
+          "type": "requirement",
+          "text": "Rebuild the span properly before anyone sets foot on it",
+          "requirements": {
+            "skills": {
+              "smithing": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You cut and set new stringers, deck it in salvaged planks, and lash the whole thing to the surviving piles. It takes four hours and a quantity of scrap. When you finish, it is the only sound structure you have seen in this realm — and it will still be here for whoever comes next, which is a strange thing to care about in a place like this.",
+            "rewards": {
+              "xp": 20,
+              "supplies": {
+                "scrap": -6
+              }
+            },
+            "karma": {
+              "human": 6,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "ford",
+          "type": "requirement",
+          "text": "Find where the channel shallows and ford it",
+          "requirements": {
+            "skills": {
+              "logistics": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Bridges exist where the crossing is hard. Two hundred paces upstream the channel spreads over a gravel bar and is thigh-deep and boring. You get wet to the hip and nothing tries to eat anyone.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "animal": 3,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "back",
+          "type": "default",
+          "text": "Not worth it — go the long way",
+          "outcome": {
+            "type": "text",
+            "text": "Most of a day added to the journey and every member of the party privately relieved.",
+            "rewards": {
+              "xp": 3
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_lost_traveler_swamp": {
+      "id": "hg_lost_traveler_swamp",
+      "title": "Lost Traveler",
+      "realm": "hungry_ghost",
+      "text": "He is sitting on his pack in six inches of water, and he is alive — properly alive, breathing, shivering, sunburnt on one side of his face from a sun that does not shine here.\n\n\"I've been walking in a circle,\" he says, with the terrible calm of someone who worked this out some time ago. \"I keep finding my own footprints. I've stopped following them.\"",
+      "choices": [
+        {
+          "id": "guide",
+          "type": "default",
+          "text": "Take him with you as far as the next dry ground",
+          "outcome": {
+            "type": "text",
+            "text": "He talks for the first hour and then stops, and the silence afterwards is better. At the treeline he shakes everyone's hand formally, one at a time, and walks off south. You do not find out whether he makes it.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "human": 5,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "supplies",
+          "type": "default",
+          "text": "Give him food and directions",
+          "cost": {
+            "food": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "He eats too fast and apologises for it. The directions he repeats back to you three times, getting them right on the third.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "why_here",
+          "type": "requirement",
+          "text": "Ask how a living man got into the realm of the dead",
+          "requirements": {
+            "attributes": {
+              "awareness": 13
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "He does not know, and the not-knowing is the whole horror of it. But in the telling he mentions a doorway in a hillside, a smell of jasmine, and a woman who asked him to carry something. You write down everything he says. Some of it will matter later.",
+            "rewards": {
+              "xp": 16,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "human": 3,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "circle",
+          "type": "requirement",
+          "text": "Break whatever is turning him in a circle",
+          "requirements": {
+            "skills": {
+              "space_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The loop is real and it is thin — a fold in the swamp about a mile across that returns everything to its own footprints. You cut it. The change is not visible; it is simply that the horizon means something now. He starts crying, which he seems as surprised by as you are.",
+            "rewards": {
+              "xp": 22,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 20
+                }
+              ]
+            },
+            "karma": {
+              "god": 6,
+              "human": 5
+            }
+          }
+        }
+      ]
+    },
+    "hg_sunken_village": {
+      "id": "hg_sunken_village",
+      "title": "Sunken Village",
+      "realm": "hungry_ghost",
+      "text": "Roof-ridges break the water in rows. A whole village went under here and did not go anywhere else — the water simply arrived and stayed, and the village kept its shape beneath it.\n\nIn the shallows at the edge, a cooking pot sits on its stones, upright, full of black water.",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave it under the water",
+          "outcome": {
+            "type": "text",
+            "text": "The roof-ridges are still visible a long way down the road, whenever you look back."
+          }
+        },
+        {
+          "id": "salvage",
+          "type": "default",
+          "text": "Work the shallow houses",
+          "outcome": {
+            "type": "text",
+            "text": "Waist-deep through what used to be doorways. Cookware, tools, a strongbox nobody had time for.",
+            "rewards": {
+              "xp": 10,
+              "gold": 80,
+              "supplies": {
+                "scrap": 8
+              }
+            },
+            "karma": {
+              "hungry_ghost": 3
+            }
+          }
+        },
+        {
+          "id": "deep_house",
+          "type": "roll",
+          "text": "Dive the headman's house at the centre",
+          "requirements": {
+            "roll": {
+              "attribute": "constitution",
+              "difficulty": "difficult"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Three dives. The third one gets the box out of the rafters where somebody put it when the water was already at the door.",
+            "rewards": {
+              "xp": 16,
+              "gold": 180,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 3,
+              "animal": 2
+            }
+          },
+          "outcome_failure": {
+            "type": "combat",
+            "enemy_group": "bog_zombie",
+            "difficulty": "normal",
+            "text": "Something in the rafters is not a rafter, and it has been waiting in the dark of that room for a very long time.",
+            "karma": {
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "rites",
+          "type": "requirement",
+          "text": "Say the water-rites over the whole village",
+          "requirements": {
+            "skills": {
+              "ritual": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You stand in the shallows and name the village — you do not know its name, so you name it by what it was: a place where people cooked and argued and slept. The water does not change. But when you go through the houses afterwards nothing objects, and in the headman's rafters you find what was hidden there, and it comes away easily.",
+            "rewards": {
+              "xp": 22,
+              "gold": 140,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "god": 6,
+              "human": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_flooded_crypt": {
+      "id": "hg_flooded_crypt",
+      "title": "Flooded Crypt",
+      "realm": "hungry_ghost",
+      "text": "Stone steps go down into standing water. Whatever this was built to hold has been below the waterline for centuries, and the swamp has been patiently filling it the entire time.\n\nThe first two feet of the stair are slick with something that is not algae.",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Some doors stay shut",
+          "outcome": {
+            "type": "text",
+            "text": "You go back up into the grey daylight, which is not much, but is more than what is down there."
+          }
+        },
+        {
+          "id": "wade",
+          "type": "roll",
+          "text": "Wade in with torches",
+          "requirements": {
+            "roll": {
+              "attribute": "constitution",
+              "difficulty": "difficult"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Chest-deep, torch held over your head, through three chambers of grave-goods that nobody has been able to reach since the water came. Cold beyond describing. Worth it.",
+            "rewards": {
+              "xp": 18,
+              "gold": 160,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "combat",
+            "enemy_group": "rotting_sentinel",
+            "difficulty": "hard",
+            "text": "The torch goes out in the second chamber. In the dark, something that has been standing in this water for four hundred years turns to face the sound of you.",
+            "karma": {
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "drain",
+          "type": "requirement",
+          "text": "Part the water and walk in dry",
+          "requirements": {
+            "skills": {
+              "water_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You push the water back down the stair and hold it there, and walk into a crypt that has not been dry since its builders sealed it. The sentinel in the third chamber is standing exactly where it was posted. It does not attack. It looks at the dry floor for a long moment and then, apparently satisfied that its watch is finally over, sits down and stops.",
+            "rewards": {
+              "xp": 26,
+              "gold": 200,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "read_seals",
+          "type": "requirement",
+          "text": "Read the seals on the doorway before opening anything",
+          "requirements": {
+            "skills": {
+              "learning": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The seals are not protective. They are a *containment*, and the water is part of it — whoever flooded this crypt did it on purpose and did it well. You take what is in the entry chamber, which is generous, and you leave the inner door alone, which is wisdom.",
+            "rewards": {
+              "xp": 20,
+              "gold": 100,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "human": 4,
+              "god": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_cursed_well": {
+      "id": "hg_cursed_well",
+      "title": "Cursed Well",
+      "realm": "hungry_ghost",
+      "text": "A well, in a swamp — which is absurd, because there is water everywhere. Somebody dug down through all this wet ground looking for something cleaner, and found something else.\n\nThe rope is still on the winch. It is taut. Something is hanging on the other end of it.",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave the winch alone",
+          "outcome": {
+            "type": "text",
+            "text": "The rope stays taut behind you for as long as you can see the well."
+          }
+        },
+        {
+          "id": "wind",
+          "type": "default",
+          "text": "Turn the winch and see what comes up",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "swamp_wraith",
+            "difficulty": "normal",
+            "text": "It comes up easily. It comes up much too easily, in fact, for the weight that was on the rope.",
+            "karma": {
+              "hungry_ghost": 3
+            }
+          }
+        },
+        {
+          "id": "cut",
+          "type": "requirement",
+          "text": "Cut the rope and let whatever it is go back down",
+          "requirements": {
+            "skills": {
+              "black_magic": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You can feel it up the rope like a pulse — patient, attentive, entirely aware that someone has come. You cut the rope near the winch and the tension goes out of it, and something a long way down makes a sound of what is unmistakably disappointment. Then nothing. You fill the shaft with stones for an hour to be certain.",
+            "rewards": {
+              "xp": 16
+            },
+            "karma": {
+              "god": 4,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "purify",
+          "type": "requirement",
+          "text": "Purify the shaft",
+          "requirements": {
+            "skills": {
+              "white_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You work the rite down the shaft in stages, and what is on the rope comes apart quietly on the way up — not destroyed, released, the way a knot is released. What finally reaches the top is a bucket. In the bucket is clean water, the first you have seen in this realm, and it tastes of nothing at all, which is extraordinary.",
+            "rewards": {
+              "xp": 24,
+              "restore": {
+                "hp_percent": 40
+              },
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 20
+                }
+              ]
+            },
+            "karma": {
+              "god": 8
+            }
+          }
+        }
+      ]
+    },
+    "hg_preta_feast_swamp": {
+      "id": "hg_preta_feast_swamp",
+      "title": "Preta Feast",
+      "realm": "hungry_ghost",
+      "text": "They have laid a table in the marsh. A real table, on real trestles, in eight inches of standing water — and on it, a banquet: rice, fruit, roast meat, all of it steaming.\n\nThe pretas are seated around it. None of them is eating. They are all just looking at it, and have been for a long time.",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Walk on past the table",
+          "outcome": {
+            "type": "text",
+            "text": "Nobody at the table looks up as you go. The food is still steaming when you lose sight of it.",
+            "rewards": {
+              "xp": 4,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": -8
+                }
+              ]
+            },
+            "karma": {
+              "animal": 2
+            }
+          }
+        },
+        {
+          "id": "eat",
+          "type": "default",
+          "text": "Sit down and eat",
+          "outcome": {
+            "type": "text",
+            "text": "It is real, and it is good, and it is the best meal you have had in weeks. Every preta at the table watches every mouthful. Nobody stops you. Nobody says anything. You finish because stopping halfway would somehow be worse.",
+            "rewards": {
+              "xp": 8,
+              "supplies": {
+                "food": 10
+              },
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": -20
+                },
+                {
+                  "element": "fire",
+                  "amount": 10
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 6
+            }
+          }
+        },
+        {
+          "id": "feed_one",
+          "type": "requirement",
+          "text": "Take a bowl and feed the nearest one by hand",
+          "requirements": {
+            "skills": {
+              "medicine": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The throat is the width of a straw and the swallowing has to be taught — small, slow, wait, again. It takes twenty minutes to get four mouthfuls into her. She keeps them down. The others watch this happen with an attention that is difficult to be the subject of. When you leave, three of them have moved their chairs closer to hers.",
+            "rewards": {
+              "xp": 22,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 20
+                }
+              ]
+            },
+            "karma": {
+              "god": 8,
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "why_not",
+          "type": "requirement",
+          "text": "Ask why nobody is eating",
+          "requirements": {
+            "skills": {
+              "yoga": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "\"Because it will end,\" says the one at the head of the table, without looking away from the rice. \"While we do not begin, it is still whole.\" You sit with that for a while. Then you point out, gently, that the food is going cold, and that this is also an ending, and that it is happening whether or not anyone begins. There is a very long silence. Then somebody picks up a spoon.",
+            "rewards": {
+              "xp": 26,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 25
+                },
+                {
+                  "element": "space",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "god": 10,
+              "human": 4
+            }
+          }
+        }
+      ]
+    },
+    "hg_medicinal_garden": {
+      "id": "hg_medicinal_garden",
+      "title": "Medicinal Garden",
+      "realm": "hungry_ghost",
+      "text": "Something is growing here on purpose. Beds of herbs in ordered rows, staked and labelled, tended in a place where nothing should tend anything — and the labels are in a careful hand, in a language you half-recognise.\n\nA preserved one straightens up from the weeding and regards you without alarm. \"Patients or customers?\"",
+      "choices": [
+        {
+          "id": "shop",
+          "type": "default",
+          "text": "Customers",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_alchemist",
+            "text": "She lays out what is dried and ready, and prices it fairly."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Neither — apologise for the intrusion",
+          "outcome": {
+            "type": "text",
+            "text": "\"Mm,\" she says, and goes back to the weeding. \"Mind the third bed.\""
+          }
+        },
+        {
+          "id": "assist",
+          "type": "requirement",
+          "text": "Offer your hands for the afternoon",
+          "requirements": {
+            "skills": {
+              "medicine": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "She sets you thinning the third bed and does not explain why it matters until you have done it correctly, at which point she explains at length and with real pleasure. Nothing grows well in this realm; everything here grows because she made it. You leave with your kit restocked and an open invitation.",
+            "rewards": {
+              "xp": 18,
+              "supplies": {
+                "herbs": 14,
+                "reagents": 6
+              }
+            },
+            "karma": {
+              "human": 5,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "how",
+          "type": "requirement",
+          "text": "Ask how anything grows in the realm of hunger",
+          "requirements": {
+            "skills": {
+              "earth_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "\"It doesn't,\" she says. \"I feed it.\" She shows you the trench at the garden's edge, where she has been composting her own substance — a little at a time, for a very long time, into the soil. She is markedly less than she was when she started. She considers this an entirely reasonable arrangement and will not be argued with.",
+            "rewards": {
+              "xp": 24,
+              "supplies": {
+                "herbs": 8
+              },
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": 20
+                },
+                {
+                  "element": "water",
+                  "amount": -10
+                }
+              ]
+            },
+            "karma": {
+              "god": 6,
+              "human": 4
+            }
+          }
+        }
+      ]
+    },
+    "hg_graveyard_dog": {
+      "id": "hg_graveyard_dog",
+      "title": "Grave Hound",
+      "realm": "hungry_ghost",
+      "text": "It is standing on a grave mound with its head down and its green eyes fixed on you, and it has not decided yet. A grave hound alone is a guard; a grave hound in a pack is a problem. This one is alone.\n\nBehind it, the mound has been dug at. Not by the hound.",
+      "choices": [
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Put it down",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "grave_hound",
+            "difficulty": "normal",
+            "karma": {
+              "animal": 3,
+              "asura": 2
+            }
+          }
+        },
+        {
+          "id": "feed",
+          "type": "default",
+          "text": "Throw it food and go around",
+          "cost": {
+            "food": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It takes the meat back onto the mound and eats there, watching you the whole time, guarding even while it chews.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "animal": 3,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "read_dig",
+          "type": "requirement",
+          "text": "Look at what dug the mound",
+          "requirements": {
+            "attributes": {
+              "awareness": 13
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Tool marks, not claws — somebody came for this grave with a spade and left in a hurry. The hound is not guarding the grave from you; it is guarding it from whoever is coming back. You reset the turf and stack stones over it while the hound watches, and when you finish it lies down. It is still lying there when you look back.",
+            "rewards": {
+              "xp": 16
+            },
+            "karma": {
+              "human": 4,
+              "animal": 4
+            }
+          }
+        },
+        {
+          "id": "calm",
+          "type": "requirement",
+          "text": "Speak to it the way you would to a working dog",
+          "requirements": {
+            "skills": {
+              "summoning": 2
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Low voice, no eye contact, hand held out flat and still. Whatever it is now, it was a dog once, and something in the shape of the address gets through. It comes down off the mound and walks you a quarter mile to the graveyard's edge, and turns back at the boundary of what it considers its ground.",
+            "rewards": {
+              "xp": 14,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "animal": 5,
+              "human": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_skeleton_army": {
+      "id": "hg_skeleton_army",
+      "title": "Skeleton Army",
+      "realm": "hungry_ghost",
+      "text": "They are drawn up in ranks across the whole width of the dry valley, and they are not moving. Rank on rank of skeleton infantry in the armour of an army that lost — you can tell it lost, because it is all still here.\n\nThey are facing an enemy that is no longer present. They have been facing it for a very long time.",
+      "choices": [
+        {
+          "id": "skirt",
+          "type": "default",
+          "text": "Go around the flank, quietly",
+          "outcome": {
+            "type": "text",
+            "text": "Two hours of picking along the valley wall while ten thousand skulls face resolutely the other way. Not one of them turns.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "through",
+          "type": "default",
+          "text": "Walk straight through the ranks",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "skeleton_warband",
+            "difficulty": "hard",
+            "text": "You are six ranks deep when the nearest one registers that something has entered the formation, and the correction ripples outward.",
+            "karma": {
+              "asura": 3,
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "dismiss",
+          "type": "requirement",
+          "text": "Give the order to stand down",
+          "requirements": {
+            "skills": {
+              "leadership": 5
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You walk to the front, face the ranks, and dismiss them — properly, with the form and the cadence, the way it is done at the end of a campaign. It takes a moment. Then ten thousand skeletons ground their arms in one enormous rattling crash and the formation simply ceases to be a formation. Some of them sit down. Most of them come apart. What is left is a valley full of bones and a great deal of abandoned equipment.",
+            "rewards": {
+              "xp": 30,
+              "gold": 220,
+              "items": [
+                "item_random"
+              ],
+              "supplies": {
+                "scrap": 20
+              }
+            },
+            "karma": {
+              "god": 8,
+              "human": 5
+            }
+          }
+        },
+        {
+          "id": "read_battle",
+          "type": "requirement",
+          "text": "Work out what they are still facing",
+          "requirements": {
+            "skills": {
+              "learning": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The line is anchored on high ground at both ends and refused on the left — a textbook defensive deployment against cavalry that would have come from the north. There is no north army. There has not been for centuries. But there is a supply train behind the line, unlooted, because nobody has ever gotten past the ranks to it.",
+            "rewards": {
+              "xp": 20,
+              "gold": 160,
+              "supplies": {
+                "food": 12,
+                "scrap": 10
+              }
+            },
+            "karma": {
+              "human": 3,
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_ancient_crypt": {
+      "id": "hg_ancient_crypt",
+      "title": "Ancient Crypt",
+      "realm": "hungry_ghost",
+      "text": "The crypt door is stone, and it is ajar — about a hand's width, which is both an invitation and a warning depending on which side of it opened.\n\nDry air comes out. It smells of dust and cold iron and nothing organic at all.",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Pull the door to and walk away",
+          "outcome": {
+            "type": "text",
+            "text": "The stone grinds shut. It takes both hands and most of your weight, and it feels like the right thing to have done."
+          }
+        },
+        {
+          "id": "enter",
+          "type": "default",
+          "text": "Go in",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "skeleton_warrior_pair",
+            "difficulty": "normal",
+            "text": "Two of them are standing just inside the door, one to each side, in the dark. They have been standing there since the door was last closed.",
+            "on_victory": {
+              "type": "text",
+              "text": "Past the door-guards, the crypt is undisturbed and generously furnished.",
+              "rewards": {
+                "xp": 10,
+                "gold": 140,
+                "items": [
+                  "item_random"
+                ]
+              }
+            },
+            "karma": {
+              "hungry_ghost": 3
+            }
+          }
+        },
+        {
+          "id": "listen",
+          "type": "requirement",
+          "text": "Listen at the gap before you open it",
+          "requirements": {
+            "attributes": {
+              "awareness": 14
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Nothing breathes in there, but something *shifts* — twice, at an interval, the way a person shifts weight when they have been standing a long time. Two of them, flanking the door. You open it wide instead of squeezing through, and take them from outside with the light behind you, which turns a bad fight into a short one.",
+            "rewards": {
+              "xp": 18,
+              "gold": 160,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "human": 3,
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "seals",
+          "type": "requirement",
+          "text": "Read the door before touching it",
+          "requirements": {
+            "skills": {
+              "ritual": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The inscription is a service contract. The two inside are not guardians in any hostile sense — they are staff, on a term of duty that expired four hundred years ago because the family that hired them stopped existing. You go in and tell them so. There is a pause you would describe as stunned. Then they hand over the keys, formally, and lie down in the alcoves they were meant to occupy in the first place.",
+            "rewards": {
+              "xp": 26,
+              "gold": 180,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "god": 6,
+              "human": 4
+            }
+          }
+        }
+      ]
+    },
+    "hg_crumbling_mausoleum": {
+      "id": "hg_crumbling_mausoleum",
+      "title": "Crumbling Mausoleum",
+      "realm": "hungry_ghost",
+      "text": "It was grand once and it is coming apart now — the roof half in, one wall bowed outward, the whole structure held up mostly by the habit of standing. Inside, the sarcophagi are visible through the gaps.\n\nSomething moves in there when the wind does. It may only be the wind.",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "It will fall on someone. Not you.",
+          "outcome": {
+            "type": "text",
+            "text": "You give it a wide berth. Behind you, a stone comes off the parapet and lands where nobody is standing."
+          }
+        },
+        {
+          "id": "loot",
+          "type": "roll",
+          "text": "Get in, get what is reachable, get out",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": "difficult"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "In through the gap in the bowed wall, two sarcophagi levered open, out before the dust settles. The roof comes down about ten minutes later. Nobody was under it.",
+            "rewards": {
+              "xp": 16,
+              "gold": 150,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The lid you are levering is load-bearing, which is not a sentence anyone wants to discover from underneath. You get out. Most of the building does not.",
+            "rewards": {
+              "xp": 5,
+              "hp_loss": {
+                "amount": "moderate",
+                "target": "random"
+              },
+              "wound": {
+                "id": "broken_rib",
+                "target": "random"
+              }
+            },
+            "karma": {
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "shore",
+          "type": "requirement",
+          "text": "Prop the wall before anyone goes in",
+          "requirements": {
+            "skills": {
+              "smithing": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Two hours of bracing with timber cut from grave-markers, which is grim but effective. With the wall held you can work the whole interior properly instead of snatching at what is nearest, and there is a great deal more in the back than there was in the front.",
+            "rewards": {
+              "xp": 22,
+              "gold": 240,
+              "items": [
+                "item_random"
+              ],
+              "supplies": {
+                "scrap": -4
+              }
+            },
+            "karma": {
+              "human": 4,
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "family",
+          "type": "requirement",
+          "text": "Read the family names and give them their rites",
+          "requirements": {
+            "skills": {
+              "white_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Eleven names, four generations, one family line that ended here. You say each name aloud in the ruin of their house. Nothing dramatic happens. But the movement in the back of the mausoleum stops, and stays stopped, and when you leave the grave-goods are simply objects rather than the other thing they had been.",
+            "rewards": {
+              "xp": 24,
+              "gold": 120,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "god": 7,
+              "human": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_forgotten_king": {
+      "id": "hg_forgotten_king",
+      "title": "The Forgotten King",
+      "realm": "hungry_ghost",
+      "text": "The tomb is the largest thing in the graveyard and every inscription on it has been chiselled out — thoroughly, deliberately, by people who wanted this specific man erased and had the time to do it properly.\n\nInside, on a throne, he is still sitting. He turns his head as you enter. \"Do you know my name?\"",
+      "choices": [
+        {
+          "id": "no",
+          "type": "default",
+          "text": "\"No.\"",
+          "outcome": {
+            "type": "text",
+            "text": "\"No,\" he agrees. \"Nobody does. That was the sentence.\" He sits back. He does not attack, does not threaten, does not ask for anything. After a while it becomes clear the audience is simply over, and you leave him in the dark he has been sitting in for eight hundred years.",
+            "rewards": {
+              "xp": 10,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": -10
+                }
+              ]
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Whatever he was, he is a corpse on a chair now",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "skeleton_elite",
+            "difficulty": "hard",
+            "text": "He rises with the enormous unhurried dignity of a man who has been waiting a long time for something to happen.",
+            "karma": {
+              "asura": 3,
+              "hungry_ghost": 3
+            }
+          }
+        },
+        {
+          "id": "reconstruct",
+          "type": "requirement",
+          "text": "Reconstruct the name from what the chisels missed",
+          "requirements": {
+            "skills": {
+              "learning": 5
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They were thorough on the walls and careless underneath — the mason's setting-out marks are still there, cut deep and never intended to be read. You work it letter by letter and then say it out loud.\n\nThe effect is not gratitude. He goes very still, and then he begins, quietly and with great precision, to come apart, because being named was the only thing still holding the shape together. What is left on the throne is a crown and a considerable quantity of dust.",
+            "rewards": {
+              "xp": 30,
+              "gold": 200,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "god": 6,
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "sit_with",
+          "type": "requirement",
+          "text": "Sit down on the step and keep him company a while",
+          "requirements": {
+            "skills": {
+              "yoga": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You do not ask him anything and you do not tell him anything. You sit on the tomb step for a couple of hours in the company of a man whose entire punishment was to be alone with himself indefinitely. Eventually he says, \"Thank you,\" in a voice that has clearly not been used for that before. He is still there when you go. But he is sitting differently.",
+            "rewards": {
+              "xp": 26,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 20
+                },
+                {
+                  "element": "water",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "god": 9,
+              "human": 4
+            }
+          }
+        }
+      ]
+    },
+    "hg_dusty_library": {
+      "id": "hg_dusty_library",
+      "title": "Dusty Library",
+      "realm": "hungry_ghost",
+      "text": "A reading room, intact, under a collapsed roof that fell in such a way as to shelter rather than crush it. Shelves of scroll-cases, a desk, a chair pushed back as though someone stood up mid-sentence.\n\nOn the desk, a document is still weighted flat, half-copied, the ink long dry.",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave the room as you found it",
+          "outcome": {
+            "type": "text",
+            "text": "You put the weight back on the corner of the document on your way out, which is a small courtesy to nobody in particular."
+          }
+        },
+        {
+          "id": "loot",
+          "type": "default",
+          "text": "Take whatever looks valuable",
+          "outcome": {
+            "type": "text",
+            "text": "Scroll-cases of good bronze, a silver inkwell, and three documents that look important enough to sell to somebody.",
+            "rewards": {
+              "xp": 8,
+              "gold": 90,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 3
+            }
+          }
+        },
+        {
+          "id": "read",
+          "type": "requirement",
+          "text": "Read the half-copied document",
+          "requirements": {
+            "skills": {
+              "learning": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is a commentary on a sutra you know, and the copyist was arguing with it in the margins — sharp, funny, occasionally wrong, entirely alive. The hand stops mid-word. You finish the sentence yourself, in your own hand, underneath, because it is obvious how it was going to end and it seems a shame to leave it hanging.",
+            "rewards": {
+              "xp": 22,
+              "learn_spell": {
+                "school": ""
+              },
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "human": 5,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "catalogue",
+          "type": "requirement",
+          "text": "Work out what the collection was *for*",
+          "requirements": {
+            "skills": {
+              "ritual": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is not a general library. Every text is on one subject, approached from every possible angle over what must have been decades: how to die correctly. Somebody in this realm spent a lifetime studying the thing they were about to fail at. The final shelf is practical instructions, and they are good ones.",
+            "rewards": {
+              "xp": 24,
+              "items": [
+                "item_random"
+              ],
+              "skill_up": {
+                "skill": "ritual",
+                "amount": 1,
+                "cap": 8
+              }
+            },
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_bone_collector": {
+      "id": "hg_bone_collector",
+      "title": "Bone Collector",
+      "realm": "hungry_ghost",
+      "text": "He works the graveyard with a handcart and a system, and he is extremely particular: he takes only certain bones, only from certain graves, and he is keeping a tally on a wax tablet.\n\n\"Femurs,\" he says, before you can ask. \"Matched pairs. You would be amazed how hard that is.\"",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave him to it",
+          "outcome": {
+            "type": "text",
+            "text": "The handcart creaks away between the mounds. He is whistling."
+          }
+        },
+        {
+          "id": "ask",
+          "type": "default",
+          "text": "Ask what he is building",
+          "outcome": {
+            "type": "text",
+            "text": "\"A bridge,\" he says, with the patience of a man who gets asked a lot. \"Over the chasm on the north road. Been at it eleven years.\" He shows you the plans. They are competent. He is entirely serious.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "help",
+          "type": "requirement",
+          "text": "Help him find matched pairs",
+          "requirements": {
+            "skills": {
+              "medicine": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You know what he does not: matched femurs are far easier to find if you stop opening random graves and start reading the markers for age at death. Inside an hour you have found him six pairs, which is better than his last two months. He is so pleased he gives you his spare tools and a genuinely useful map of the graveyard's dry routes.",
+            "rewards": {
+              "xp": 18,
+              "items": [
+                "item_random"
+              ],
+              "supplies": {
+                "scrap": 6
+              }
+            },
+            "karma": {
+              "human": 5,
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "ethics",
+          "type": "requirement",
+          "text": "Ask whether the dead consented to being a bridge",
+          "requirements": {
+            "skills": {
+              "yoga": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "He stops the cart. It is clear nobody has ever put it to him and equally clear he has put it to himself, many times, at night. \"They're not using them,\" he says, and then, after a while: \"I ask. Every one. If it feels wrong I put it back.\" He shows you the reject pile. It is much larger than the cart.",
+            "rewards": {
+              "xp": 20,
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "god": 4,
+              "human": 4
+            }
+          }
+        }
+      ]
+    },
+    "hg_ancestor_spirit": {
+      "id": "hg_ancestor_spirit",
+      "title": "Ancestor Spirit",
+      "realm": "hungry_ghost",
+      "text": "The shrine is small and very old and somebody has been maintaining it — swept, the offering-bowl clean, fresh dust patterns raked around the base. Above it hangs a presence rather than a shape.\n\n\"You are not of my line,\" it says. It does not sound disappointed. It sounds like it is checking.",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Bow and continue",
+          "outcome": {
+            "type": "text",
+            "text": "\"Go well,\" it says, and the presence settles back into the raked dust.",
+            "rewards": {
+              "xp": 4
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "offer",
+          "type": "default",
+          "text": "Leave something in the bowl anyway",
+          "cost": {
+            "gold": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "\"Not of my line,\" it observes again, differently this time. The offering is accepted. Something eases in the air around the shrine that had been held for a long time.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "god": 4,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "who_tends",
+          "type": "requirement",
+          "text": "Ask who has been sweeping the shrine",
+          "requirements": {
+            "attributes": {
+              "awareness": 13
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Silence. Then: \"I do.\" An ancestor spirit with no descendants left, maintaining its own shrine, raking its own dust, keeping up the observances for a family that ended. It has not admitted this out loud before. You spend an hour helping with the raking and it talks the entire time, about people eight hundred years dead, and you listen.",
+            "rewards": {
+              "xp": 20,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "god": 6,
+              "human": 5
+            }
+          }
+        },
+        {
+          "id": "adopt",
+          "type": "requirement",
+          "text": "Offer to carry the line",
+          "requirements": {
+            "skills": {
+              "ritual": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "There is a rite for this — adoption across the line of death, so a family that has run out of living can be continued by someone willing to take the observance on. It is not a small thing to accept. You do it properly, with the responses, and the presence at the shrine becomes something with a stake in whether you live.\n\nIt gives you what it has: its name, its protection, and the contents of a grave nobody else knows about.",
+            "rewards": {
+              "xp": 28,
+              "gold": 180,
+              "items": [
+                "item_random"
+              ],
+              "add_trait": {
+                "id": "devout",
+                "target": "player"
+              }
+            },
+            "karma": {
+              "god": 10,
+              "human": 5
+            }
+          }
+        }
+      ]
+    },
+    "hg_bone_shrine": {
+      "id": "hg_bone_shrine",
+      "title": "Bone Shrine",
+      "realm": "hungry_ghost",
+      "text": "Skulls set into a cairn in a spiral, each one facing outward, each one with a small offering wedged into the eye socket — a coin, a bead, a folded scrap.\n\nIt is either a place of great devotion or a place of great warning, and the two are not always different.",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Pass without touching anything",
+          "outcome": {
+            "type": "text",
+            "text": "Every socket you pass is looking somewhere else. That is the intended effect and it works."
+          }
+        },
+        {
+          "id": "offer",
+          "type": "default",
+          "text": "Add your own offering to an empty socket",
+          "cost": {
+            "gold": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "There is exactly one empty socket, at the centre of the spiral, and it takes your coin as though it had been waiting for that specific denomination. The air over the cairn goes briefly warm.",
+            "rewards": {
+              "xp": 12,
+              "buffs": [
+                {
+                  "stat": "armor",
+                  "amount": 4,
+                  "combats_remaining": 2
+                }
+              ]
+            },
+            "karma": {
+              "god": 5
+            }
+          }
+        },
+        {
+          "id": "rob",
+          "type": "roll",
+          "text": "Empty the sockets",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": "difficult"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Forty-odd offerings, some of them very old and one of them gold. You are three miles away before you stop feeling watched, and you never entirely stop.",
+            "rewards": {
+              "xp": 12,
+              "gold": 190
+            },
+            "karma": {
+              "hungry_ghost": 8,
+              "hell": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "combat",
+            "enemy_group": "bone_pack",
+            "difficulty": "normal",
+            "text": "The spiral is a ward and the offerings are what holds it closed. The third socket you empty opens it.",
+            "karma": {
+              "hungry_ghost": 4
+            }
+          }
+        },
+        {
+          "id": "read_spiral",
+          "type": "requirement",
+          "text": "Read the spiral",
+          "requirements": {
+            "skills": {
+              "ritual": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is a containment, wound outward, and the offerings are the seal — each one a small debt paid on behalf of whatever is under the cairn. It has been maintained by passing strangers for centuries without any of them knowing what they were maintaining. You pay your share, tighten the two sockets that had gone loose, and leave it in better repair than you found it.",
+            "rewards": {
+              "xp": 22
+            },
+            "karma": {
+              "god": 7,
+              "human": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_grave_goods": {
+      "id": "hg_grave_goods",
+      "title": "Grave Goods",
+      "realm": "hungry_ghost",
+      "text": "A grave has opened itself — the earth has subsided rather than been dug, and the contents are simply lying there in the depression, exposed to the grey daylight.\n\nSomeone was buried well. Bronze, worked cloth, a sword still in a scabbard, all of it a hand's reach away and nobody's.",
+      "choices": [
+        {
+          "id": "take",
+          "type": "default",
+          "text": "Take it",
+          "outcome": {
+            "type": "text",
+            "text": "It is good gear and it is on the surface and there is no argument to be had with a hole in the ground. You take it and you do not linger.",
+            "rewards": {
+              "xp": 8,
+              "gold": 120,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 4
+            }
+          }
+        },
+        {
+          "id": "rebury",
+          "type": "default",
+          "text": "Push the earth back over it",
+          "outcome": {
+            "type": "text",
+            "text": "An hour with your hands and a broken marker for a spade. When you have finished you cannot tell there was ever a subsidence, which is the point.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "ask_first",
+          "type": "requirement",
+          "text": "Ask the occupant",
+          "requirements": {
+            "skills": {
+              "black_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "She is still in there and she is entirely lucid and she has been listening to people discuss her possessions for two hundred years without once being consulted. Being asked improves her mood immeasurably. She grants you the sword, declines to part with the cloth, and asks — as her condition — that you push the earth back afterwards, which you do.",
+            "rewards": {
+              "xp": 22,
+              "items": [
+                "item_random"
+              ],
+              "gold": 60
+            },
+            "karma": {
+              "human": 5,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "why_open",
+          "type": "requirement",
+          "text": "Work out why the ground gave way",
+          "requirements": {
+            "skills": {
+              "earth_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "There is a void under this whole section of the graveyard — something hollowed it out from below, recently, and this grave is simply the first to notice. You mark the extent of it, which takes an afternoon, and the map you make of where not to walk is worth more than the grave goods. You take those too, since the occupant is about to have a much worse problem.",
+            "rewards": {
+              "xp": 20,
+              "gold": 110,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "human": 3,
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_weary_pilgrim": {
+      "id": "hg_weary_pilgrim",
+      "title": "Weary Pilgrim",
+      "realm": "hungry_ghost",
+      "text": "A skeleton in a pilgrim's robe sits at the roadside with its staff across its knees, facing the direction it was going. Prayer-flags, long since bleached white, are tied to the staff head.\n\n\"Is it much further?\" it asks. It does not say to where.",
+      "choices": [
+        {
+          "id": "yes",
+          "type": "default",
+          "text": "\"Not much further.\"",
+          "outcome": {
+            "type": "text",
+            "text": "\"Good,\" it says, and gets up, and sets off in the direction it was facing at a pace that suggests it believes you. You watch it go. You have no idea whether you told it the truth.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "human": 3,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "sit",
+          "type": "default",
+          "text": "Sit down beside it for a while",
+          "outcome": {
+            "type": "text",
+            "text": "Neither of you says anything for a long time. It is restful in a way very little in this realm is. When you stand up to go it lifts the staff an inch off its knees in farewell.",
+            "rewards": {
+              "xp": 10,
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": 12
+                }
+              ]
+            },
+            "karma": {
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "where",
+          "type": "requirement",
+          "text": "Ask where the pilgrimage was going",
+          "requirements": {
+            "attributes": {
+              "charm": 13
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It cannot remember the destination, only the walking, and it is not distressed by this — it stopped needing the destination somewhere around the fourth century. \"The road was the observance,\" it says. \"I just liked to have somewhere to point it.\" It gives you its spare flags, which it has been carrying for no reason it can name.",
+            "rewards": {
+              "xp": 16,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "walk_with",
+          "type": "requirement",
+          "text": "Walk with it as far as you are going",
+          "requirements": {
+            "skills": {
+              "yoga": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Six miles of shared road, in step, in silence, with a dead pilgrim who has been walking since before your language existed. Around the fourth mile you stop being someone accompanying it and start simply being on a pilgrimage, and the difference is not subtle. At the crossroads it goes one way and you go the other and both of you are, briefly, going somewhere.",
+            "rewards": {
+              "xp": 24,
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": 20
+                },
+                {
+                  "element": "space",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "god": 8,
+              "human": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_ossuary_bargain": {
+      "id": "hg_ossuary_bargain",
+      "title": "The Ossuary",
+      "realm": "hungry_ghost",
+      "text": "Bones stacked to the vaulted ceiling, sorted by type, in a building constructed entirely for that purpose. At a counter near the door, a skeleton in a clerk's visor is doing sums in a ledger.\n\n\"Buying, selling, or storing?\" it asks. \"We do all three. Storage is where the money is.\"",
+      "choices": [
+        {
+          "id": "shop",
+          "type": "default",
+          "text": "Buying",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "hg_bone_merchant",
+            "text": "The clerk produces a second ledger and a surprisingly good selection."
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Just looking",
+          "outcome": {
+            "type": "text",
+            "text": "\"Everyone says that,\" the clerk says, and goes back to the sums."
+          }
+        },
+        {
+          "id": "audit",
+          "type": "requirement",
+          "text": "Look at the ledger",
+          "requirements": {
+            "skills": {
+              "trade": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The storage business is running at a loss and has been for eighty years — the clerk has been discounting long-term contracts against a currency that stopped existing. You show it the error. It goes very quiet, recalculates two centuries of accounts in about four minutes, and then, being fundamentally honest, insists on paying you a consultant's fee out of the correction.",
+            "rewards": {
+              "xp": 20,
+              "gold": 200
+            },
+            "karma": {
+              "human": 5
+            }
+          }
+        },
+        {
+          "id": "whose",
+          "type": "requirement",
+          "text": "Ask who is paying for all this storage",
+          "requirements": {
+            "attributes": {
+              "awareness": 14
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The contracts are prepaid, in perpetuity, by the deceased themselves — every skeleton in this building is a client who arranged its own indefinite safekeeping rather than risk being scattered. It is not a warehouse. It is a very long-term hotel, and the clerk is the concierge, and it takes the duty extremely seriously.",
+            "rewards": {
+              "xp": 18,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "human": 4,
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_vetala_court": {
+      "id": "hg_vetala_court",
+      "title": "Vetala Court",
+      "realm": "hungry_ghost",
+      "text": "They have taken over what was once a hall and turned it into something between a salon and a slaughterhouse. Perhaps thirty vetala, beautifully dressed, holding a conversation of extraordinary wit across a floor that has not been cleaned in living memory.\n\nThe talk stops. Thirty faces turn with the same expression: delight.",
+      "choices": [
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "You are not going to talk your way out of thirty",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "vetala_elder_court",
+            "difficulty": "very_hard",
+            "karma": {
+              "asura": 4,
+              "hell": 2
+            }
+          }
+        },
+        {
+          "id": "withdraw",
+          "type": "default",
+          "text": "Bow, apologise for interrupting, and back out",
+          "outcome": {
+            "type": "text",
+            "text": "The courtesy is so unexpected that it works. Somebody laughs; somebody else says \"oh, let it go\"; the conversation resumes behind you as though you had been a draught from an open door.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "join",
+          "type": "requirement",
+          "text": "Take a seat and hold your own",
+          "requirements": {
+            "attributes": {
+              "charm": 15
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The rule of the court, you work out fast, is that dullness is the only capital offence. You are interesting for two hours — genuinely, exhaustingly interesting — and at the end of it a vetala in green raises her glass and says, \"We shall not eat this one,\" and the matter is settled by acclamation. They send you off with gifts and directions and an open invitation you will never use.",
+            "rewards": {
+              "xp": 26,
+              "gold": 160,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "human": 5,
+              "hungry_ghost": 3
+            }
+          }
+        },
+        {
+          "id": "etiquette",
+          "type": "requirement",
+          "text": "Observe the forms of a vetala court exactly",
+          "requirements": {
+            "skills": {
+              "black_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "There is a protocol for a living guest and almost nobody alive has ever known it. You give the greeting, present the required token, and take the low seat without being told to. The effect is roughly that of a peasant walking into a royal audience and getting every bow right. They are charmed, scandalised, and obliged — the forms bind both ways, and now they cannot touch you.",
+            "rewards": {
+              "xp": 28,
+              "learn_spell": {
+                "school": "black_magic"
+              }
+            },
+            "karma": {
+              "hungry_ghost": 4,
+              "human": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_vetala_bargain": {
+      "id": "hg_vetala_bargain",
+      "title": "Vetala's Offer",
+      "realm": "hungry_ghost",
+      "text": "It is sitting on a wall, swinging its heels, and it has clearly been waiting for someone specifically your size.\n\n\"A trade,\" it says. \"Your body for a day and a night. I have errands. You get everything I know — and I know a great deal — and I give it back exactly as I found it. I have never once failed to give it back.\"",
+      "choices": [
+        {
+          "id": "refuse",
+          "type": "default",
+          "text": "Refuse",
+          "outcome": {
+            "type": "text",
+            "text": "\"Worth asking,\" it says, unoffended, and goes back to swinging its heels. \"Someone always says yes eventually.\"",
+            "rewards": {
+              "xp": 5
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "accept",
+          "type": "default",
+          "text": "Accept the bargain",
+          "outcome": {
+            "type": "text",
+            "text": "You wake a day and a night later exactly where you lay down, with everything where you left it and a head full of somebody else's knowledge — genuinely useful, precisely as promised. Your hands smell faintly of smoke. Nobody in the party will tell you what they saw you doing, and you decide, on balance, not to press.",
+            "rewards": {
+              "xp": 24,
+              "learn_spell": {
+                "school": "black_magic"
+              },
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": -20
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 6,
+              "hell": 2
+            }
+          }
+        },
+        {
+          "id": "terms",
+          "type": "requirement",
+          "text": "Accept — but negotiate the terms first",
+          "requirements": {
+            "skills": {
+              "persuasion": 5
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Four hours of hard bargaining. You get: a witness, a fixed return time, a prohibition on violence while wearing you, and the knowledge transferred up front. It agrees to all of it, with increasing respect, and then keeps every clause to the letter — because a vetala that breaks terms in front of a witness stops being able to make bargains, and bargains are what it eats.",
+            "rewards": {
+              "xp": 30,
+              "learn_spell": {
+                "school": "black_magic"
+              },
+              "gold": 120
+            },
+            "karma": {
+              "human": 5,
+              "hungry_ghost": 3
+            }
+          }
+        },
+        {
+          "id": "see_cost",
+          "type": "requirement",
+          "text": "Ask what happened to the ones who said yes",
+          "requirements": {
+            "attributes": {
+              "awareness": 15
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "\"Returned. Every one.\" True, and not the answer. You keep asking, and eventually get the rest: returned, yes — but a body worn by a vetala for a day and a night is a body that has been *somewhere*, and the ones who said yes have all, without exception, come back a little easier to persuade the second time. It admits this freely. It considers it a feature.",
+            "rewards": {
+              "xp": 22,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "human": 4,
+              "god": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_illusory_palace": {
+      "id": "hg_illusory_palace",
+      "title": "Illusory Palace",
+      "realm": "hungry_ghost",
+      "text": "A palace stands where there was nothing an hour ago: lit windows, music, the smell of food, a door standing open onto warm light.\n\nEverything in this realm is grey and cold and starving. This is none of those things, which tells you everything you need to know and does not make it one bit easier to walk past.",
+      "choices": [
+        {
+          "id": "pass",
+          "type": "default",
+          "text": "Walk past without looking in the windows",
+          "outcome": {
+            "type": "text",
+            "text": "It takes more out of the party than the last three fights combined. Half a mile on, the music stops abruptly, mid-phrase.",
+            "rewards": {
+              "xp": 12,
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": -10
+                }
+              ]
+            },
+            "karma": {
+              "god": 4,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "enter",
+          "type": "default",
+          "text": "Go in",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "vetala_with_minions",
+            "difficulty": "hard",
+            "text": "The warmth lasts about as long as it takes for the door to close. Then the hall is a charnel pit with a very good acoustic, and the hosts are already seated.",
+            "karma": {
+              "hungry_ghost": 4
+            }
+          }
+        },
+        {
+          "id": "dispel",
+          "type": "requirement",
+          "text": "Take the illusion apart from outside",
+          "requirements": {
+            "skills": {
+              "space_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is an excellent working — layered, self-repairing, with the smell built in, which is the part most illusionists skip. You unpick it from the outside like a knitted seam. Underneath is a pit with fourteen vetala in it looking extremely startled and, for the moment, extremely visible.",
+            "rewards": {
+              "xp": 26,
+              "gold": 140,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "human": 4,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "walk_the_line",
+          "type": "requirement",
+          "text": "Go in, take nothing, eat nothing, leave",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You walk the whole length of the hall through the music and the light and the smell of roast lamb, decline everything offered with perfect courtesy, and go out the far door. The hosts cannot touch a guest who accepts no hospitality; that is the entire rule the illusion is built to exploit, and you have simply not broken it. Behind you somebody throws a plate.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": 25
+                },
+                {
+                  "element": "space",
+                  "amount": 20
+                }
+              ]
+            },
+            "karma": {
+              "god": 10,
+              "human": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_illusory_treasure": {
+      "id": "hg_illusory_treasure",
+      "title": "Glittering Trove",
+      "realm": "hungry_ghost",
+      "text": "A hoard, unattended, in the open: coin and plate and gemwork heaped against the base of a bone-wall, glittering in a realm that does not glitter.\n\nThere are no tracks around it. There is no reason for it to be here. It is, objectively, the single most suspicious object any of you has ever seen.",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Obviously not",
+          "outcome": {
+            "type": "text",
+            "text": "You keep walking. The party discusses it for the next hour in the tone of people reassuring themselves.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "grab",
+          "type": "default",
+          "text": "Grab an armful and run",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "hungry_wraith",
+            "difficulty": "hard",
+            "text": "The moment your hands close on it the hoard is a hand's-breadth of gravel and something that has been lying underneath it for a long time is sitting up.",
+            "karma": {
+              "hungry_ghost": 5
+            }
+          }
+        },
+        {
+          "id": "test",
+          "type": "requirement",
+          "text": "Test it from a safe distance first",
+          "requirements": {
+            "attributes": {
+              "awareness": 14
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You throw a stone into it. The stone does not clink; it lands with the soft sound of gravel. Everything above the third layer is glamour over grit — but the bottom layer, interestingly, is real, and the thing guarding it is asleep. You take the real part slowly and leave the glitter for the next fool.",
+            "rewards": {
+              "xp": 20,
+              "gold": 150,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "human": 3,
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "bait",
+          "type": "requirement",
+          "text": "Use the bait against whatever set it",
+          "requirements": {
+            "skills": {
+              "guile": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You rig the hoard — a tripline, a deadfall of bone-wall masonry, and a very convincing set of fresh footprints leading up to it. Then you wait uphill. What comes to collect the next victim collects a quarter ton of wall instead. Its own hoard, it turns out, is somewhere much better hidden and now unguarded.",
+            "rewards": {
+              "xp": 26,
+              "gold": 240,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "asura": 4,
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_feasting_hall_trap": {
+      "id": "hg_feasting_hall_trap",
+      "title": "The Feasting Hall",
+      "realm": "hungry_ghost",
+      "text": "Long tables, laid for a hundred, in a hall with the roof still on. Food on every platter. Every chair occupied by something that was a guest once and has not left the table since.\n\nAt the head, one chair is empty, and a place is set at it. The setting is clean. It has been kept clean.",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Back out the way you came",
+          "outcome": {
+            "type": "text",
+            "text": "Nothing at the tables moves. The empty chair stays empty. You are extremely aware of the clean place-setting for a long time afterwards.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "sit",
+          "type": "default",
+          "text": "Sit in the empty chair",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "vetala_noble",
+            "difficulty": "hard",
+            "text": "A hundred heads turn as one. The host has been waiting a very long time for the last guest to arrive, and you have just accepted the invitation.",
+            "karma": {
+              "hungry_ghost": 5
+            }
+          }
+        },
+        {
+          "id": "read_hall",
+          "type": "requirement",
+          "text": "Work out what the seating means",
+          "requirements": {
+            "skills": {
+              "learning": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The guests are arranged by precedence and the empty chair is not the host's — it is the *guest of honour's*, and it is set for someone who never came. This entire hall has been holding a place at a party for a person who declined the invitation, for four hundred years, out of spite. You do not sit down. You do steal the silver, which is superb, and nothing at the tables has any protocol for that.",
+            "rewards": {
+              "xp": 24,
+              "gold": 200,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "human": 4,
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "release",
+          "type": "requirement",
+          "text": "Dismiss the guests",
+          "requirements": {
+            "skills": {
+              "white_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You go to the head of the table, take the clean place-setting, and clear it — which is, in the grammar of the hall, the host announcing that the last guest is not coming and the meal is over. A hundred bound guests are released from a dinner party at once. Several of them weep. Most simply come apart with an air of enormous relief.",
+            "rewards": {
+              "xp": 30,
+              "gold": 150,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 20
+                }
+              ]
+            },
+            "karma": {
+              "god": 10,
+              "human": 4
+            }
+          }
+        }
+      ]
+    },
+    "hg_body_possession": {
+      "id": "hg_body_possession",
+      "title": "Uninvited Guest",
+      "realm": "hungry_ghost",
+      "text": "One of your party stops walking. Turns around. Smiles.\n\nIt is not their smile. The face is doing something faces do not do, and when it speaks the voice is right and the cadence is entirely wrong: \"Oh, this is a *good* one. Strong legs. Do you know how long I've been on foot?\"",
+      "choices": [
+        {
+          "id": "beat_out",
+          "type": "default",
+          "text": "Beat it out",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "charnel_wraith",
+            "difficulty": "normal",
+            "text": "It abandons the body the instant real damage starts — vetala are pragmatists — and comes out fighting in its own shape, furious about the inconvenience.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "random"
+              }
+            },
+            "karma": {
+              "asura": 3
+            }
+          }
+        },
+        {
+          "id": "bargain",
+          "type": "default",
+          "text": "Negotiate for its departure",
+          "cost": {
+            "gold": "moderate"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It wants passage, not the body specifically — it is simply tired of walking. You pay it off. It leaves without argument and with genuine thanks, and your companion drops to their knees swearing in a language nobody knew they spoke.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "hungry_ghost": 3,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "exorcise",
+          "type": "requirement",
+          "text": "Put it out properly",
+          "requirements": {
+            "skills": {
+              "white_magic": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The rite is short and extremely unpleasant for everyone in the room. It comes out backwards, complaining bitterly about professional courtesy, and is gone before it hits the ground. Your companion is fine. Your companion is going to want to talk about this later.",
+            "rewards": {
+              "xp": 20,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": -10
+                }
+              ]
+            },
+            "karma": {
+              "god": 6,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "question",
+          "type": "requirement",
+          "text": "It is in there. Ask it things while it is",
+          "requirements": {
+            "skills": {
+              "black_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "A possessing spirit is, briefly, a captive audience — it cannot leave without giving up the body, and it does not want to give up the body. You spend a fascinating and deeply unethical twenty minutes interrogating it about the charnel grounds, the courts, and who exactly rules here. Then you let it out. Your companion is going to want to talk about this too, and rather more loudly.",
+            "rewards": {
+              "xp": 26,
+              "gold": 80,
+              "items": [
+                "item_random"
+              ],
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": -15
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 4,
+              "human": -2
+            }
+          }
+        }
+      ]
+    },
+    "hg_sorcerer_of_corpses": {
+      "id": "hg_sorcerer_of_corpses",
+      "title": "Corpse Sorcerer",
+      "realm": "hungry_ghost",
+      "text": "He is working on a body laid out on a stone bench, and the work is precise — thread, needle, small silver instruments, a diagram weighted at the corners.\n\n\"Don't jog the table,\" he says without looking up. \"I have been at this since the moon was somewhere else.\"",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Do not jog the table. Leave.",
+          "outcome": {
+            "type": "text",
+            "text": "The needle goes in and out. He does not notice you go."
+          }
+        },
+        {
+          "id": "attack",
+          "type": "default",
+          "text": "Whatever he is making, stop him making it",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "corpse_sorcerer",
+            "difficulty": "hard",
+            "karma": {
+              "god": 3,
+              "asura": 3
+            }
+          }
+        },
+        {
+          "id": "assist",
+          "type": "requirement",
+          "text": "Offer to hold the retractors",
+          "requirements": {
+            "skills": {
+              "medicine": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "He accepts instantly and without surprise, which tells you how long it has been since he had help. Four hours of surgery on a corpse, conducted with total professional courtesy in a place that smells the way this place smells. What he is building turns out to be a body for a friend who lost theirs. He pays you in reagents and technique.",
+            "rewards": {
+              "xp": 24,
+              "supplies": {
+                "reagents": 12
+              },
+              "items": [
+                "item_random"
+              ],
+              "skill_up": {
+                "skill": "medicine",
+                "amount": 1,
+                "cap": 8
+              }
+            },
+            "karma": {
+              "human": 4,
+              "hungry_ghost": 3
+            }
+          }
+        },
+        {
+          "id": "diagram",
+          "type": "requirement",
+          "text": "Read the diagram he is working from",
+          "requirements": {
+            "skills": {
+              "black_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is a binding, and it is beautiful work, and it is also — you check twice — inverted at the third node, which means when he finishes, the thing on the table will not be bound to him. It will be bound to nobody, and it will be very strong. You point at the node. There is a long silence while he traces it himself. Then he sits down heavily on the floor and says a word you have not heard before.",
+            "rewards": {
+              "xp": 28,
+              "learn_spell": {
+                "school": "black_magic"
+              },
+              "gold": 100
+            },
+            "karma": {
+              "god": 4,
+              "human": 4
+            }
+          }
+        }
+      ]
+    },
+    "hg_bone_tower": {
+      "id": "hg_bone_tower",
+      "title": "Bone Tower",
+      "realm": "hungry_ghost",
+      "text": "Nine storeys of fused bone, tapering, with a stair spiralling up the outside and no rail. It serves no obvious purpose. Nothing lives in it. It simply goes up.\n\nAt the base, cut into the lowest course, one word in an old script: HIGHER.",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave it standing",
+          "outcome": {
+            "type": "text",
+            "text": "It is visible from a very long way off, in every direction, for the rest of the day."
+          }
+        },
+        {
+          "id": "climb",
+          "type": "roll",
+          "text": "Climb it",
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": "difficult"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Nine storeys of no rail. At the top there is a flat platform, a stone bench, and a view of the entire charnel grounds — every fire, every court, every road — laid out like a map somebody drew for you. You sit on the bench for an hour and learn more about this realm than in all the walking that got you here.",
+            "rewards": {
+              "xp": 22,
+              "items": [
+                "item_random"
+              ],
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": 20
+                }
+              ]
+            },
+            "karma": {
+              "human": 3,
+              "god": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "Somewhere around the sixth storey the wind gets under the party and everyone's nerve goes at once. Coming down is worse than going up. Somebody is sick over the side from a great height.",
+            "rewards": {
+              "xp": 6,
+              "hp_loss": {
+                "amount": "light",
+                "target": "random"
+              },
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": -12
+                }
+              ]
+            },
+            "karma": {
+              "animal": 2
+            }
+          }
+        },
+        {
+          "id": "read_tower",
+          "type": "requirement",
+          "text": "Work out what it is for",
+          "requirements": {
+            "skills": {
+              "learning": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is a practice structure. The bench at the top faces west; the whole thing is oriented for a specific meditation done at a specific hour, and the climb without a rail is not an obstacle but the first part of the exercise. Somebody built a nine-storey teaching aid out of bones and then, presumably, used it.",
+            "rewards": {
+              "xp": 20,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "god": 4,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "practice",
+          "type": "requirement",
+          "text": "Climb it and do what it was built for",
+          "requirements": {
+            "skills": {
+              "yoga": 5
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Up without a rail, sit facing west, and do the thing the structure is asking for — which becomes obvious the moment you are seated, because the whole tower has been shaped to make one particular state of mind the easiest thing available. Whoever built this was extremely good. You come down at dusk not entirely the same.",
+            "rewards": {
+              "xp": 32,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 30
+                },
+                {
+                  "element": "air",
+                  "amount": 20
+                }
+              ]
+            },
+            "karma": {
+              "god": 10
+            }
+          }
+        }
+      ]
+    },
+    "hg_king_messenger": {
+      "id": "hg_king_messenger",
+      "title": "Royal Messenger",
+      "realm": "hungry_ghost",
+      "text": "A skeleton in the Skeleton King's copper livery reins in a bone horse beside you, unrolls a scroll, and reads without preamble:\n\n\"To the living party currently trespassing in the charnel grounds: the King of the Setting Sun requires your attendance. Or your absence. He is flexible. He requires you to choose, in writing, today.\"",
+      "choices": [
+        {
+          "id": "attend",
+          "type": "default",
+          "text": "Sign the attendance",
+          "outcome": {
+            "type": "text",
+            "text": "The messenger countersigns, stamps it, gives you the counterfoil, and departs at speed. You are now, formally, expected somewhere. It is oddly steadying to have an appointment.",
+            "rewards": {
+              "xp": 10,
+              "flags": {
+                "hg_king_summons_accepted": true
+              }
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "absent",
+          "type": "default",
+          "text": "Sign the absence",
+          "outcome": {
+            "type": "text",
+            "text": "\"Sensible,\" says the messenger, entirely off the record, and stamps it. \"Between us: the ones who attend are usually still there.\" It gives you a route that avoids the bone city and will not accept payment for the favour.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "human": 3,
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "refuse_both",
+          "type": "default",
+          "text": "Refuse to sign anything",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "skeleton_patrol",
+            "difficulty": "normal",
+            "text": "The messenger sighs, rolls the scroll, and raises one hand. The escort you had not noticed comes out of the bone-scrub on three sides.",
+            "karma": {
+              "asura": 3
+            }
+          }
+        },
+        {
+          "id": "amend",
+          "type": "requirement",
+          "text": "Amend the document before signing",
+          "requirements": {
+            "skills": {
+              "trade": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You add two clauses in the margin: attendance at a time of your choosing, and safe conduct both ways. The messenger reads them, reads them again, and gets down off the horse to do so properly. Nobody has ever amended one of these. It counter-signs — because the document does not actually forbid it — and rides off looking like a functionary who is going to have an interesting conversation with its superior.",
+            "rewards": {
+              "xp": 22,
+              "gold": 80,
+              "flags": {
+                "hg_king_safe_conduct": true
+              }
+            },
+            "karma": {
+              "human": 5,
+              "asura": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_corpse_oracle": {
+      "id": "hg_corpse_oracle",
+      "title": "Corpse Oracle",
+      "realm": "hungry_ghost",
+      "text": "A body has been arranged on a platform with its mouth propped open, and a queue of the dead is waiting patiently for their turn to lean in and listen. The corpse itself is quite ordinary and thoroughly deceased.\n\n\"It says true things,\" explains the vetala managing the queue. \"Not helpful things. True ones.\"",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Join no queues today",
+          "outcome": {
+            "type": "text",
+            "text": "The line shuffles forward by one. Somebody at the front leans in, listens, and walks away looking much worse."
+          }
+        },
+        {
+          "id": "listen",
+          "type": "default",
+          "text": "Take your turn and listen",
+          "outcome": {
+            "type": "text",
+            "text": "You lean over the open mouth. What you hear is one sentence, in your own voice, about something you did before you came to this realm. It is entirely accurate. It is not advice and there is nothing to be done about it. You give up your place in the queue.",
+            "rewards": {
+              "xp": 14,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": -15
+                },
+                {
+                  "element": "space",
+                  "amount": 10
+                }
+              ]
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "ask_well",
+          "type": "requirement",
+          "text": "Frame a question the truth can actually answer",
+          "requirements": {
+            "skills": {
+              "learning": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "An oracle that only says true things is useless if you ask it what you should do. You ask it something checkable instead — where the horizontal pass lies, what holds the bone bridge together, who the King's messenger reports to. Three answers, all verifiable, all worth having. The vetala managing the queue watches you do this and takes notes.",
+            "rewards": {
+              "xp": 24,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "human": 5
+            }
+          }
+        },
+        {
+          "id": "release_it",
+          "type": "requirement",
+          "text": "Close the mouth",
+          "requirements": {
+            "skills": {
+              "ritual": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Nobody in the queue has thought to ask whether the corpse consented to being an amenity. You perform the closing, and the truth-telling stops, and there is a small ugly moment where the queue considers being angry with you. Then the vetala at the head of it says, \"Well. It never said anything good anyway,\" and the crowd disperses, and the body is allowed to be a body.",
+            "rewards": {
+              "xp": 26,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "god": 8,
+              "human": 3
+            }
+          }
+        }
+      ]
+    },
+    "hg_charnel_hermit": {
+      "id": "hg_charnel_hermit",
+      "title": "Charnel Hermit",
+      "realm": "hungry_ghost",
+      "text": "She has built a hut against the wall of the burning ground and lives in it, alive, by choice, among the smoke and the offerings and the vetala. She is boiling something over a small fire.\n\n\"Sit,\" she says. \"You'll want to hear this before you go further in. Most don't. Then most don't come out.\"",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "You have somewhere to be",
+          "outcome": {
+            "type": "text",
+            "text": "\"Mm,\" she says, and stirs the pot. She does not seem surprised, which is worse than if she had argued.",
+            "rewards": {
+              "xp": 3
+            },
+            "karma": {
+              "animal": 2
+            }
+          }
+        },
+        {
+          "id": "listen",
+          "type": "default",
+          "text": "Sit down and hear it",
+          "outcome": {
+            "type": "text",
+            "text": "An hour of extremely practical advice about the charnel grounds: which fires to walk upwind of, what the courts consider an insult, why you never accept food, and how to tell an illusion by the smell. It is the single most useful hour of your time in this realm.",
+            "rewards": {
+              "xp": 18,
+              "supplies": {
+                "food": 6
+              }
+            },
+            "karma": {
+              "human": 5,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "why_here",
+          "type": "requirement",
+          "text": "Ask why a living woman lives in a burning ground",
+          "requirements": {
+            "attributes": {
+              "awareness": 14
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "\"Because it is the only honest place I have ever lived.\" She has been here nineteen years. She came to do the corpse-ground meditation for a season and found she had no further use for anywhere else. She is not mad, and she is not enlightened, and she is entirely at ease, which in this realm is the rarest thing you have seen.",
+            "rewards": {
+              "xp": 22,
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": 20
+                },
+                {
+                  "element": "water",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "god": 6,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "practice_with",
+          "type": "requirement",
+          "text": "Ask to sit the corpse-ground practice with her",
+          "requirements": {
+            "skills": {
+              "yoga": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "She takes you out among the bodies at the hour when the fires are low and sits you down facing one, and gives you no instruction whatsoever, because there is none. It goes on for a long time. Twice you want to leave. Around the third hour the thing the practice is for happens, briefly, and then you are just a person sitting near a corpse in the cold, which turns out to be the same thing.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 25
+                },
+                {
+                  "element": "space",
+                  "amount": 25
+                }
+              ]
+            },
+            "karma": {
+              "god": 10
+            }
+          }
+        }
+      ]
+    },
+    "hg_vetala_arena": {
+      "id": "hg_vetala_arena",
+      "title": "Vetala Arena",
+      "realm": "hungry_ghost",
+      "text": "A pit, ringed by tiered seating cut from bone, and it is full — several hundred vetala in their finery, watching two of their own tear at each other on the sand below for entertainment.\n\nThe crowd notices you at the entrance tunnel. A chant starts. It is not a friendly chant, but it is unmistakably an invitation.",
+      "choices": [
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Go down onto the sand",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "vetala_pack",
+            "difficulty": "hard",
+            "text": "The crowd noise when a living thing steps onto the sand is something you will hear in your sleep.",
+            "on_victory": {
+              "type": "text",
+              "text": "The pit falls silent, then erupts. You are showered with coin, jewellery, and at least one severed hand thrown in enthusiasm.",
+              "rewards": {
+                "xp": 20,
+                "gold": 260,
+                "items": [
+                  "item_random"
+                ]
+              }
+            },
+            "karma": {
+              "asura": 5,
+              "hungry_ghost": 3
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Back out of the tunnel",
+          "outcome": {
+            "type": "text",
+            "text": "The chant follows you up the tunnel and turns to booing, which is somehow more humiliating than being chased.",
+            "rewards": {
+              "xp": 4
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "bookmaker",
+          "type": "requirement",
+          "text": "Find the bookmaker instead of the sand",
+          "requirements": {
+            "skills": {
+              "trade": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "There is always a bookmaker. His odds are set for a crowd that bets on style rather than outcome, which means the outcome is badly mispriced, which means an afternoon's careful work at the rail is worth more than any purse from the sand. You leave rich and entirely uninjured, which nobody in this building considers a victory except you.",
+            "rewards": {
+              "xp": 22,
+              "gold": 300
+            },
+            "karma": {
+              "hungry_ghost": 4,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "stop_it",
+          "type": "requirement",
+          "text": "Get the two on the sand to stop",
+          "requirements": {
+            "skills": {
+              "persuasion": 5
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You go down and get between them, which is insane, and then talk — not to the fighters, who are past hearing, but to the crowd, about how much more interesting it would be if they *didn't*. It takes everything you have. The crowd, which above all fears being bored, decides that this is the novel thing and stops the fight itself. The two on the sand look at each other, baffled, and are led away by friends.",
+            "rewards": {
+              "xp": 32,
+              "gold": 120
+            },
+            "karma": {
+              "god": 8,
+              "human": 5
+            }
+          }
+        }
+      ]
+    },
+    "hg_preta_feast_charnel": {
+      "id": "hg_preta_feast_charnel",
+      "title": "Preta Feast",
+      "realm": "hungry_ghost",
+      "text": "The offerings left for the dead are heaped at the edge of the burning ground — rice, cakes, fruit, poured milk — and the pretas are around them in a ring, on their knees, faces inches from the food.\n\nNone of it goes in. Their throats will not pass it. They stay anyway, because being near it is the closest thing available.",
+      "choices": [
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave them their proximity",
+          "outcome": {
+            "type": "text",
+            "text": "You go quietly. It is the second-worst thing you have seen in this realm and you are aware you will not remember which was first.",
+            "rewards": {
+              "xp": 5,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": -10
+                }
+              ]
+            },
+            "karma": {
+              "animal": 2
+            }
+          }
+        },
+        {
+          "id": "burn_offering",
+          "type": "default",
+          "text": "Burn the food — smoke, they can take",
+          "outcome": {
+            "type": "text",
+            "text": "It is the oldest solution and the reason the offerings get burnt in the first place: a preta cannot swallow rice but it can take the smoke. You build the fire properly and feed everything into it. The ring closes around the smoke and breathes, and for a while the sound they make is not the sound they were making.",
+            "rewards": {
+              "xp": 20,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "god": 8,
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "rite",
+          "type": "requirement",
+          "text": "Do it as the rite prescribes, with the words",
+          "requirements": {
+            "skills": {
+              "ritual": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Burnt offering with the dedication spoken over it is a different order of thing from a bonfire — the words are what turn smoke into food. You perform the whole sequence. The ring of pretas eats, properly, for the first time in however long, and one of them thanks you in a language that died before the offerings were stacked.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 25
+                }
+              ]
+            },
+            "karma": {
+              "god": 12,
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "teach",
+          "type": "requirement",
+          "text": "Teach them to make the smoke themselves",
+          "requirements": {
+            "skills": {
+              "yoga": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Feeding them once is an afternoon's work. You spend three days instead, teaching the ring to build and dedicate the fire without you — which is harder, because they have to stop clinging to the heap long enough to learn. Two of them get it. Those two will teach the others. You leave a functioning arrangement behind rather than a full stomach, which is the difference between charity and something better.",
+            "rewards": {
+              "xp": 34,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 20
+                },
+                {
+                  "element": "space",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "god": 14,
+              "human": 5
+            }
+          }
+        }
+      ]
     }
   }
 }
