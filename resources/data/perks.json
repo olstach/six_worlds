@@ -2595,7 +2595,7 @@
     "disrupting_palm": {
       "name": "Disrupting Palm",
       "skill": "martial_arts",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Active (4 Stamina). Make an unarmed or light-weapon attack. On hit, choose one: -15% Armor, -15% Focus, or -3 Initiative for 2 turns.",
       "flavor": "",
@@ -2604,7 +2604,7 @@
     "step_between_moments": {
       "name": "Step Between Moments",
       "skill": "martial_arts",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [],
       "description": "Active (6 Stamina). Teleport up to 3 tiles. Your next attack this round has +20% crit chance and ignores Dodge. After teleporting, gain +15% Dodge until your next turn.",
       "flavor": "",
@@ -2631,7 +2631,7 @@
     "widened_space": {
       "name": "Widened Space",
       "skill": "space_magic",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Passive. Your Space-tagged spells gain +1 tile of range. Movement and displacement effects carry targets or allies 1 additional tile.",
       "flavor": "Space is not a container. It is a tendency.",
@@ -2763,7 +2763,7 @@
     "widened_grace": {
       "name": "Widened Grace",
       "skill": "white_magic",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Single-target healing spells also affect allies within 1 tile of the target at 50% effectiveness.",
       "flavor": "",
@@ -2772,7 +2772,7 @@
     "universal_refuge": {
       "name": "Universal Refuge",
       "skill": "white_magic",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [
         "widened_grace"
       ],
@@ -2792,7 +2792,7 @@
     "shared_shelter": {
       "name": "Shared Shelter",
       "skill": "white_magic",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Single-target protection or blessing spells also affect allies within 1 tile of the target at 50% effectiveness.",
       "flavor": "",
@@ -2810,7 +2810,7 @@
     "gentle_removal": {
       "name": "Gentle Removal",
       "skill": "white_magic",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Cleansing spells also heal the target for 20% of the caster's Spellpower.",
       "flavor": "",
@@ -2837,7 +2837,7 @@
     "burn_away_impurity": {
       "name": "Burn Away Impurity",
       "skill": "white_magic",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Cleansing spells also reduce the target's worst karma realm by a small amount (hidden). The impurity of the world is slightly lifted.",
       "flavor": "",
@@ -2891,7 +2891,7 @@
     "touch_of_gloom": {
       "name": "Touch of Gloom",
       "skill": "black_magic",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Debuff spells also apply -1 Movement and -3 Initiative for 2 turns.",
       "flavor": "",
@@ -2994,7 +2994,7 @@
     "mantra_of_the_great_black_one": {
       "name": "Mantra of the Great Black One",
       "skill": "black_magic",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Ongoing effect (3-tile radius): Each turn, enemies suffer stacking -5% Armor and -5% resistance, and lose 3% of max Stamina and Mana (stacks up to 5 times). Deity Yoga — Abyssal Gaze: All enemies in line of sight suffer -20% Attack, -20% Armor, -5 Initiative, and lose 8% of max Stamina and Mana each turn.",
       "flavor": "",
@@ -3003,7 +3003,7 @@
     "mantra_of_the_blood_drinkers": {
       "name": "Mantra of the Blood Drinkers",
       "skill": "black_magic",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [],
       "description": "Ongoing effect (line of sight): Enemies suffer stacking Black damage (5% Spellpower/turn, stacks up to 5 times). Damage dealt is reflected as healing to the caster and allies within 2 tiles. Deity Yoga — Wrathful Dance: - All damage dealt to enemies by any source is reflected as healing to allies in line of sight (50% of damage dealt) - Enemies suffer -20% Armor",
       "flavor": "",
@@ -3030,7 +3030,7 @@
     "first_impression": {
       "name": "First Impression",
       "skill": "persuasion",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Passive. The first dialogue check of each encounter automatically succeeds regardless of the roll. (Once per dialogue.)",
       "flavor": "How you enter the room is half the conversation.",
@@ -3081,7 +3081,7 @@
     "intimidating_stance": {
       "name": "Intimidating Stance",
       "skill": "persuasion",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Active. Stun enemies in a 2-tile radius who fail a Focus save for 1 turn. Also functions as a blue option in intimidation dialogue events.",
       "flavor": "",
@@ -3148,7 +3148,7 @@
     "soothing_presence": {
       "name": "Soothing Presence",
       "skill": "yoga",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "+10% success chance on rolls for non-violent solutions in dialogue.",
       "flavor": "",
@@ -3188,7 +3188,7 @@
     "mantra_of_the_white_saviouress": {
       "name": "Mantra of the White Saviouress",
       "skill": "yoga",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Ongoing effect (3-tile radius): Each turn, the caster and allies regain 2% max HP, 2% max Mana, and 2% max Stamina (increases by 1% each turn, up to 5%). Deity Yoga — Tranquil Flow: All allies gain immunity to mental effects and 50% chance to resist all debuffs.",
       "flavor": "",
@@ -3200,7 +3200,7 @@
     "mantra_of_the_lotus_pinnacle": {
       "name": "Mantra of the Lotus Pinnacle",
       "skill": "yoga",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [],
       "description": "Ongoing effect (3-tile radius): Each turn, raise all resistances of allies by +3% (stacks up to +15%). Deity Yoga — Immovable Spirit: Every turn, all enemies in line of sight make a Focus save. On failure: Pacified. On success: -50% Attack and Damage (non-stackable) until next turn.",
       "flavor": "",
@@ -3356,7 +3356,7 @@
     "sudden_end": {
       "name": "Sudden End",
       "skill": "daggers",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [],
       "description": "Your first attack made from stealth deals +100% crit damage and applies a severe bleed (10% max HP/turn for 3 turns).",
       "flavor": "",
@@ -3383,7 +3383,7 @@
     "aim_at_the_vitals": {
       "name": "Aim at the Vitals",
       "skill": "daggers",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Passive. Dagger attacks against enemies that are suffering any status effect gain +10% crit chance.",
       "flavor": "An open wound is an invitation.",
@@ -3645,7 +3645,7 @@
     "perfect_correspondence": {
       "name": "Perfect Correspondence",
       "skill": "ritual",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [
         [
           "attune_charm",
@@ -3659,7 +3659,7 @@
     "inscribed_circle": {
       "name": "Inscribed Circle",
       "skill": "ritual",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Active (1 action). Create a ritual circle on your tile. While standing in it, -25% mana cost on all spells.",
       "flavor": "",
@@ -3706,7 +3706,7 @@
     "observe_carefully": {
       "name": "Observe Carefully",
       "skill": "learning",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Active (free action). Examine an enemy to reveal basic stats (HP, Armor, top 2 resistances) and one weakness.",
       "flavor": "",
@@ -3715,7 +3715,7 @@
     "predictive_model": {
       "name": "Predictive Model",
       "skill": "learning",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [
         "observe_carefully"
       ],
@@ -3726,7 +3726,7 @@
     "know_the_pattern": {
       "name": "Know the Pattern",
       "skill": "learning",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [
         "observe_carefully"
       ],
@@ -3737,7 +3737,7 @@
     "nothing_surprises_me_twice": {
       "name": "Nothing Surprises Me Twice",
       "skill": "learning",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [
         "observe_carefully"
       ],
@@ -3840,7 +3840,7 @@
     "shady_dealings": {
       "name": "Shady Dealings",
       "skill": "guile",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [],
       "description": "Only melee attacks break stealth automatically. Ranged attacks, spell casting, and item use trigger an Awareness check (+5 bonus) for enemies within 2 tiles instead of automatically revealing you.",
       "flavor": "",
@@ -3858,7 +3858,7 @@
     "play_dirty": {
       "name": "Play Dirty",
       "skill": "guile",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Successful hits have a 20% chance to apply a random minor debuff for 1 turn: blind (-25% accuracy), slow (-1 Movement), pin (can't move), or bleed (5% max HP).",
       "flavor": "",
@@ -3885,7 +3885,7 @@
     "smoke_and_mirrors": {
       "name": "Smoke and Mirrors",
       "skill": "guile",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Active (5 Stamina). Create 1-3 false images around you. Images have 1 HP, high Dodge, and draw enemy attention. They move randomly but do not attack. Last 3 turns.",
       "flavor": "",
@@ -3905,7 +3905,7 @@
     "say_it_like_you_mean_it": {
       "name": "Say It Like You Mean It",
       "skill": "guile",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "+10% to social checks in dialogue involving deception, negotiation, or intimidation.",
       "flavor": "",
@@ -3914,7 +3914,7 @@
     "halftruth": {
       "name": "Half-Truth",
       "skill": "guile",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Failed dialogue checks involving lies or persuasion have 50% reduced negative consequences.",
       "flavor": "",
@@ -3977,7 +3977,7 @@
     "nobody_wants_to_be_the_straight_man": {
       "name": "Nobody Wants to Be the Straight Man",
       "skill": "comedy",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [
         "disarming_humor"
       ],
@@ -3997,7 +3997,7 @@
     "taunt": {
       "name": "Taunt",
       "skill": "comedy",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Active. Force an enemy to focus attacks on you for 2 turns (Focus save negates).",
       "flavor": "",
@@ -4006,7 +4006,7 @@
     "heckle": {
       "name": "Heckle",
       "skill": "comedy",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [
         "taunt"
       ],
@@ -4044,7 +4044,7 @@
     "cosmic_banana_peel": {
       "name": "Cosmic Banana Peel",
       "skill": "comedy",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Enemies have a 10% chance each turn to suffer a random mishap: miss next attack, stumble (-1 Movement), or self-debuff (-5% Armor for 1 turn).",
       "flavor": "",
@@ -4080,7 +4080,7 @@
     "laughing_at_the_abyss": {
       "name": "Laughing at the Abyss",
       "skill": "comedy",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [],
       "description": "Immune to fear, despair, and intimidation effects. Allies within 2 tiles gain +25% resistance to these effects.",
       "flavor": "",
@@ -4673,7 +4673,7 @@
     "blink_reflex": {
       "name": "Blink Reflex",
       "skill": "sorcery",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Instant movement spells (blink, short teleport) gain +2 tiles range.",
       "flavor": "",
@@ -4922,7 +4922,7 @@
     "unbroken_circle": {
       "name": "Unbroken Circle",
       "skill": "leadership",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [],
       "description": "As long as 2+ allies are standing, all allies gain +15% resistance to mental status effects. Each additional ally adds +3%.",
       "flavor": "",
@@ -4940,7 +4940,7 @@
     "roles_assigned": {
       "name": "Roles Assigned",
       "skill": "leadership",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [
         "call_the_shot"
       ],
@@ -4951,7 +4951,7 @@
     "tactical_synergy": {
       "name": "Tactical Synergy",
       "skill": "leadership",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [
         "roles_assigned"
       ],
@@ -5074,7 +5074,7 @@
     "cutting_remark": {
       "name": "Cutting Remark",
       "skill": "performance",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Active (1 action). Inflict -10% morale and -10% accuracy on a visible enemy for 2 turns.",
       "flavor": "",
@@ -5083,7 +5083,7 @@
     "stage_fright": {
       "name": "Stage Fright",
       "skill": "performance",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [
         "cutting_remark"
       ],
@@ -5112,7 +5112,7 @@
     "look_at_me": {
       "name": "Look at Me",
       "skill": "performance",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Active (1 action). For 2 turns, enemies within 3 tiles have +25% chance to target you.",
       "flavor": "",
@@ -5121,7 +5121,7 @@
     "misdirection": {
       "name": "Misdirection",
       "skill": "performance",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "While drawing enemy attention (Look at Me active), gain +15% Dodge and +15% resistance to ranged attacks.",
       "flavor": "",
@@ -5130,7 +5130,7 @@
     "split_attention": {
       "name": "Split Attention",
       "skill": "performance",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Distracted enemies suffer -10% accuracy against all targets, not just the performer.",
       "flavor": "",
@@ -5166,7 +5166,7 @@
     "steal_the_scene": {
       "name": "Steal the Scene",
       "skill": "performance",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Once per dialogue, convert a failed social roll into a partial success.",
       "flavor": "",
@@ -5184,7 +5184,7 @@
     "improvised_masterpiece": {
       "name": "Improvised Masterpiece",
       "skill": "performance",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [],
       "description": "Active (1 action). Choose one: Inspire (allies gain +10% all stats), Demoralize (enemies suffer -10% all stats), or Distract (enemies suffer -15% accuracy). Affects all valid targets within 3 tiles for 2 turns.",
       "flavor": "",
@@ -5193,7 +5193,7 @@
     "sustained_performance": {
       "name": "Sustained Performance",
       "skill": "performance",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [],
       "description": "Performance effects intensify by +5% for each consecutive turn the performer is uninterrupted (no damage taken). Stacks up to 3 times.",
       "flavor": "",
@@ -5211,7 +5211,7 @@
     "first_to_strike": {
       "name": "First to Strike",
       "skill": "spears",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "When an enemy enters your reach (2 tiles), make a free reaction attack (once per enemy per round).",
       "flavor": "",
@@ -5229,7 +5229,7 @@
     "set_for_charge": {
       "name": "Set for Charge",
       "skill": "spears",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Active. End your turn. If an enemy moves into your reach before your next turn, your reaction attack deals double damage.",
       "flavor": "",
@@ -5256,7 +5256,7 @@
     "point_control": {
       "name": "Point Control",
       "skill": "spears",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [
         "wall_of_points"
       ],
@@ -5267,7 +5267,7 @@
     "pinning_thrust": {
       "name": "Pinning Thrust",
       "skill": "spears",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Active (5 Stamina). Make a spear attack. On hit, target's Movement is reduced to 0 for 2 turns (Constitution save negates the pin, damage still applies).",
       "flavor": "",
@@ -5303,7 +5303,7 @@
     "impaling_strike": {
       "name": "Impaling Strike",
       "skill": "spears",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [],
       "description": "Active (6 Stamina). Attack in a line, hitting up to 2 enemies. Full damage to the first, 60% to the second.",
       "flavor": "",
@@ -5379,7 +5379,7 @@
     "spring_of_life": {
       "name": "Spring of Life",
       "skill": "water_magic",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [
         "healing_waters"
       ],
@@ -5408,7 +5408,7 @@
     "waters_memory": {
       "name": "Water's Memory",
       "skill": "water_magic",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Water spells that create terrain effects persist 1 additional turn.",
       "flavor": "",
@@ -5471,7 +5471,7 @@
     "lingering_touch": {
       "name": "Lingering Touch",
       "skill": "enchantment",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Buffs you cast last 1 additional turn.",
       "flavor": "",
@@ -5628,7 +5628,7 @@
     "tumble": {
       "name": "Tumble",
       "skill": "grace",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Active (2 Stamina). Move through enemy-occupied tiles without provoking reaction attacks this turn.",
       "flavor": "",
@@ -5646,7 +5646,7 @@
     "spring_step": {
       "name": "Spring Step",
       "skill": "grace",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Active (3 Stamina). After taking an action, immediately move up to 2 tiles (free action, does not provoke).",
       "flavor": "",
@@ -5673,7 +5673,7 @@
     "momentum_shift": {
       "name": "Momentum Shift",
       "skill": "grace",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [],
       "description": "When you dodge a melee attack, you may immediately reposition 1 tile in any direction (free action).",
       "flavor": "",
@@ -5700,7 +5700,7 @@
     "cats_landing": {
       "name": "Cat's Landing",
       "skill": "grace",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Fall damage reduced by 50%. When jumping down from height, gain +10% accuracy and +10% damage on your next attack.",
       "flavor": "",
@@ -5745,7 +5745,7 @@
     "triage": {
       "name": "Triage",
       "skill": "medicine",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [
         "field_medic"
       ],
@@ -5776,7 +5776,7 @@
     "diagnosis": {
       "name": "Diagnosis",
       "skill": "medicine",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Active (free action). Examine an ally to reveal all active status effects and their remaining durations. Examining an enemy reveals their HP and any vulnerabilities.",
       "flavor": "",
@@ -5933,7 +5933,7 @@
     "volatile_compounds": {
       "name": "Volatile Compounds",
       "skill": "alchemy",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [
         "bomb_maker"
       ],
@@ -5964,7 +5964,7 @@
     "persistent_coating": {
       "name": "Persistent Coating",
       "skill": "alchemy",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [
         "applied_toxicology"
       ],
@@ -5975,7 +5975,7 @@
     "transmuters_eye": {
       "name": "Transmuter's Eye",
       "skill": "alchemy",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Identify unknown potions and substances without risk. Salvage 50% more materials when breaking down items.",
       "flavor": "",
@@ -6002,7 +6002,7 @@
     "emergency_flask": {
       "name": "Emergency Flask",
       "skill": "alchemy",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Once per combat, use a potion as a free action (instead of costing an action).",
       "flavor": "",
@@ -6011,7 +6011,7 @@
     "splash_zone": {
       "name": "Splash Zone",
       "skill": "alchemy",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Thrown potions (healing, buff) also affect allies within 1 tile of the target at 50% effectiveness.",
       "flavor": "",
@@ -6029,7 +6029,7 @@
     "master_locksmith": {
       "name": "Master Locksmith",
       "skill": "thievery",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [
         "nimble_fingers"
       ],
@@ -6102,7 +6102,7 @@
     "quick_escape": {
       "name": "Quick Escape",
       "skill": "thievery",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Active (free action, 3-turn cooldown). Move up to 3 tiles immediately, ignoring reaction attacks and terrain penalties.",
       "flavor": "",
@@ -6111,7 +6111,7 @@
     "vanishing_act": {
       "name": "Vanishing Act",
       "skill": "thievery",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [
         "quick_escape"
       ],
@@ -6122,7 +6122,7 @@
     "appraisers_eye": {
       "name": "Appraiser's Eye",
       "skill": "thievery",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Identify the value of items at a glance. Detect hidden compartments in containers (20% chance to find bonus loot).",
       "flavor": "",
@@ -6214,7 +6214,7 @@
     "overwhelming_blow": {
       "name": "Overwhelming Blow",
       "skill": "maces",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Active (3 Stamina). Make an attack that pushes the enemy 1 tile. If they can't be pushed (wall, another unit), they take +25% damage instead.",
       "flavor": "",
@@ -6261,7 +6261,7 @@
     "relentless_advance": {
       "name": "Relentless Advance",
       "skill": "maces",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "After hitting an enemy, gain +1 Movement for 1 turn. Taking damage does not reduce your Movement.",
       "flavor": "",
@@ -6342,7 +6342,7 @@
     "deflection": {
       "name": "Deflection",
       "skill": "armor",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [
         "shield_mastery"
       ],
@@ -6353,7 +6353,7 @@
     "tower_shield": {
       "name": "Tower Shield",
       "skill": "armor",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [
         "deflection"
       ],
@@ -6364,7 +6364,7 @@
     "shield_wall": {
       "name": "Shield Wall",
       "skill": "armor",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Active. End your turn. Until next turn, gain +25% Armor and adjacent allies gain +10% Armor.",
       "flavor": "",
@@ -6373,7 +6373,7 @@
     "stalwart_guardian": {
       "name": "Stalwart Guardian",
       "skill": "armor",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [],
       "description": "Active (1 action). Choose an adjacent ally. Until your next turn, attacks targeting that ally have a 50% chance of targeting you instead. You gain +15% Armor while guarding.",
       "flavor": "",
@@ -6382,7 +6382,7 @@
     "brace_for_impact": {
       "name": "Brace for Impact",
       "skill": "armor",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Active (free action, 3-turn cooldown). Until your next turn, reduce the next incoming hit by 30%.",
       "flavor": "",
@@ -6418,7 +6418,7 @@
     "wear_it_well": {
       "name": "Wear It Well",
       "skill": "armor",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "+5% Stamina recovery rate per piece of armor worn (up to +20% with 4 pieces).",
       "flavor": "",
@@ -6519,7 +6519,7 @@
     "crushing_gravity": {
       "name": "Crushing Gravity",
       "skill": "earth_magic",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [
         "gravity_well"
       ],
@@ -6530,7 +6530,7 @@
     "shared_strength": {
       "name": "Shared Strength",
       "skill": "earth_magic",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Earth buff spells that target a single ally also grant +5% of the buff's value to adjacent allies.",
       "flavor": "",
@@ -6620,7 +6620,7 @@
     "horde_master": {
       "name": "Horde Master",
       "skill": "summoning",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [
         "strength_in_numbers"
       ],
@@ -6698,7 +6698,7 @@
     "summoners_bond": {
       "name": "Summoner's Bond",
       "skill": "summoning",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Gain +5% to all saves while you have at least one summon active.",
       "flavor": "",
@@ -6734,7 +6734,7 @@
     "forage": {
       "name": "Forage",
       "skill": "logistics",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Active (overworld). Search the current area for supplies. Yield depends on terrain: food in forests, herbs in meadows, minerals in mountains.",
       "flavor": "",
@@ -6743,7 +6743,7 @@
     "extended_march": {
       "name": "Extended March",
       "skill": "logistics",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Party can take one additional overworld action per day before fatigue penalties apply.",
       "flavor": "",
@@ -6779,7 +6779,7 @@
     "lay_of_the_land": {
       "name": "Lay of the Land",
       "skill": "logistics",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [
         "scout_ahead"
       ],
@@ -6844,7 +6844,7 @@
     "strategic_withdrawal": {
       "name": "Strategic Withdrawal",
       "skill": "logistics",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [],
       "description": "Active. Once per encounter, the party may retreat from combat without penalty (no lost items, no reputation loss). Must be used before any ally begins bleeding out.",
       "flavor": "",
@@ -6900,7 +6900,7 @@
     "appraiser": {
       "name": "Appraiser",
       "skill": "trade",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Identify magical properties of items without using scrolls or spells. Reveal hidden enchantments on equipment.",
       "flavor": "",
@@ -6909,7 +6909,7 @@
     "investment": {
       "name": "Investment",
       "skill": "trade",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Active (overworld). Invest gold in a settlement. Returns 150% of the invested amount after several in-game days.",
       "flavor": "",
@@ -6918,7 +6918,7 @@
     "diversified_portfolio": {
       "name": "Diversified Portfolio",
       "skill": "trade",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [
         "investment"
       ],
@@ -6938,7 +6938,7 @@
     "headhunter": {
       "name": "Headhunter",
       "skill": "trade",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [
         "hired_help"
       ],
@@ -7005,7 +7005,7 @@
     "master_craftsman": {
       "name": "Master Craftsman",
       "skill": "smithing",
-      "required_level": 7,
+      "required_level": 8,
       "requires_perks": [
         "journeymans_touch"
       ],
@@ -7034,7 +7034,7 @@
     "socket": {
       "name": "Socket",
       "skill": "smithing",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Add a gem socket to a piece of equipment. Sockets hold gems, charms, or essences for additional bonuses.",
       "flavor": "",
@@ -7054,7 +7054,7 @@
     "field_repair": {
       "name": "Field Repair",
       "skill": "smithing",
-      "required_level": 1,
+      "required_level": 2,
       "requires_perks": [],
       "description": "Active (1 action in combat, 3-turn cooldown). Restore 25% of an ally's Armor value, countering sunder effects.",
       "flavor": "",
@@ -7063,7 +7063,7 @@
     "improvised_barricade": {
       "name": "Improvised Barricade",
       "skill": "smithing",
-      "required_level": 3,
+      "required_level": 4,
       "requires_perks": [],
       "description": "Active (1 action). Create a 1-tile barricade at an adjacent position. Provides half cover (+15% Armor) for anyone behind it. Lasts 3 turns.",
       "flavor": "",
@@ -7072,7 +7072,7 @@
     "trap_maker": {
       "name": "Trap Maker",
       "skill": "smithing",
-      "required_level": 5,
+      "required_level": 6,
       "requires_perks": [],
       "description": "Active (1 action). Place a trap on an adjacent tile. The first enemy to enter takes damage equal to 30% of your Focus and is immobilized for 1 turn.",
       "flavor": "",
@@ -7406,6 +7406,103 @@
       ],
       "description": "Passive. No weight limit applies to you, and you may lift, drag, or break anything a party of four could. Enemies attempting to move, grapple, or knock you down fail automatically.",
       "flavor": "There is a point past which strength stops being about lifting.",
+      "is_mantra": false
+    },
+    "the_sky_leans_in": {
+      "name": "The Sky Leans In",
+      "skill": "air_magic",
+      "required_level": 9,
+      "requires_perks": [
+        "cyclone_mastery"
+      ],
+      "description": "Passive. Air spells you cast gain +1 tile of range and +1 tile of AoE size. Enemies pushed into walls, obstacles, or each other take crushing damage equal to half the tiles they were moved.",
+      "flavor": "It was already moving. You only asked it to move here.",
+      "is_mantra": false
+    },
+    "nothing_left_standing": {
+      "name": "Nothing Left Standing",
+      "skill": "axes",
+      "required_level": 9,
+      "requires_perks": [
+        "red_harvest"
+      ],
+      "description": "Passive. When an axe attack kills, immediately make a free axe attack against any other enemy within reach. This can chain up to twice per turn.",
+      "flavor": "The problem with stopping is deciding when.",
+      "is_mantra": false
+    },
+    "the_form_completes_itself": {
+      "name": "The Form Completes Itself",
+      "skill": "martial_arts",
+      "required_level": 9,
+      "requires_perks": [],
+      "description": "Passive. Whenever you spend your entire turn on martial arts attacks, the last one costs no Stamina and knocks the target back 1 tile. Missing does not interrupt the sequence.",
+      "flavor": "Halfway through, the form stops being something you are doing.",
+      "is_mantra": false
+    },
+    "the_room_agrees": {
+      "name": "The Room Agrees",
+      "skill": "persuasion",
+      "required_level": 6,
+      "requires_perks": [
+        "master_orator"
+      ],
+      "description": "Passive. When you succeed on a Persuasion check with witnesses present, every other NPC in the scene shifts one step friendlier for the rest of the encounter — including ones who were hostile.",
+      "flavor": "You never have to convince everybody. Only enough of them, loudly.",
+      "is_mantra": false
+    },
+    "terms_of_engagement": {
+      "name": "Terms of Engagement",
+      "skill": "persuasion",
+      "required_level": 8,
+      "requires_perks": [
+        "magnetism"
+      ],
+      "description": "Active (once per combat). Name terms before blood is drawn. Enemies below half HP must save or withdraw from the fight entirely; those who stay take −15% damage for 2 turns from having heard you out.",
+      "flavor": "Most fights continue because nobody thought to offer an alternative.",
+      "is_mantra": false
+    },
+    "the_second_arrow": {
+      "name": "The Second Arrow",
+      "skill": "ranged",
+      "required_level": 8,
+      "requires_perks": [
+        "one_breath_one_arrow"
+      ],
+      "description": "Passive. Each turn, the first ranged attack that hits grants an immediate second shot at −25% damage against the same target or one adjacent to it.",
+      "flavor": "The first one tells you where the wind is.",
+      "is_mantra": false
+    },
+    "the_blade_decides": {
+      "name": "The Blade Decides",
+      "skill": "swords",
+      "required_level": 9,
+      "requires_perks": [
+        "surgical"
+      ],
+      "description": "Passive. When you parry, riposte, or land a critical sword hit, gain a Measure stack (max 3). Each stack adds +10% sword damage and +5% Armor. Stacks persist until you take damage.",
+      "flavor": "There is a moment in the exchange where it stops being a contest.",
+      "is_mantra": false
+    },
+    "nothing_is_beyond_mending": {
+      "name": "Nothing Is Beyond Mending",
+      "skill": "white_magic",
+      "required_level": 9,
+      "requires_perks": [
+        "universal_refuge"
+      ],
+      "description": "Passive. Your healing spells also cure one wound or disease from the target, lowest cure level first. An ally you heal from below 10% HP additionally recovers a spent action.",
+      "flavor": "The body is very willing. It mostly needs to be told it is allowed.",
+      "is_mantra": false
+    },
+    "the_gap_in_the_guard": {
+      "name": "The Gap in the Guard",
+      "skill": "daggers",
+      "required_level": 6,
+      "requires_perks": [
+        "between_the_ribs"
+      ],
+      "description": "Passive. Dagger attacks against a target that has not yet acted this combat, or that is unaware of you, ignore Armor entirely rather than 25%.",
+      "flavor": "Armour covers what a person expects to be hit.",
       "is_mantra": false
     }
   },

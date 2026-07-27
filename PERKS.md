@@ -161,11 +161,11 @@ _Requires: Martial Arts 2_
 Active (4 Stamina). Move up to your full Speed and make a melee attack at any point during the movement.
 
 **Disrupting Palm**
-_Requires: Martial Arts 5_
+_Requires: Martial Arts 6_
 Active (4 Stamina). Make an unarmed or light-weapon attack. On hit, choose one: -15% Armor, -15% Focus, or -3 Initiative for 2 turns.
 
 **Step Between Moments**
-_Requires: Martial Arts 7_
+_Requires: Martial Arts 8_
 Active (6 Stamina). Teleport up to 3 tiles. Your next attack this round has +20% crit chance and ignores Dodge. After teleporting, gain +15% Dodge until your next turn.
 
 **Heavenly Counterflow**
@@ -529,7 +529,7 @@ _Requires: Persuasion 1_
 +10% success chance on dialogue checks.
 
 **First Impression**
-_Requires: Persuasion 1_
+_Requires: Persuasion 2_
 Passive. The first dialogue check of each encounter automatically succeeds regardless of the roll. (Once per dialogue.)
 
 _How you enter the room is half the conversation._
@@ -553,7 +553,7 @@ _Requires: Persuasion 7, Compelling Proposal_
 Active. Attempt to recruit an enemy. Target makes two Charm saves. Fail both: joins your party. Fail one: becomes Pacified for 3 turns.
 
 **Intimidating Stance**
-_Requires: Persuasion 3_
+_Requires: Persuasion 4_
 Active. Stun enemies in a 2-tile radius who fail a Focus save for 1 turn. Also functions as a blue option in intimidation dialogue events.
 
 **Crowd Influence**
@@ -603,7 +603,7 @@ Reduce the duration of all debuffs on you by 1 turn (minimum 1).
 ---
 
 **Soothing Presence**
-_Requires: Yoga 1_
+_Requires: Yoga 2_
 +10% success chance on rolls for non-violent solutions in dialogue.
 
 **Voice of Compassion**
@@ -625,7 +625,7 @@ Passive. Enemies entering a 2-tile radius around the caster, and every 3rd turn 
 ### Yoga Mantras
 
 **Mantra of the White Saviouress**
-_Requires: Yoga 3, White 3_
+_Requires: Yoga 4, White 3_
 
 Ongoing effect (3-tile radius):
 Each turn, the caster and allies regain 2% max HP, 2% max Mana, and 2% max Stamina (increases by 1% each turn, up to 5%).
@@ -636,7 +636,7 @@ All allies gain immunity to mental effects and 50% chance to resist all debuffs.
 ---
 
 **Mantra of the Lotus Pinnacle**
-_Requires: Yoga 7_
+_Requires: Yoga 8_
 
 Ongoing effect (3-tile radius):
 Each turn, raise all resistances of allies by +3% (stacks up to +15%).
@@ -757,7 +757,7 @@ _Requires: Daggers 3_
 Attacks from behind gain +20% crit chance and +50% crit damage.
 
 **Sudden End**
-_Requires: Daggers 7_
+_Requires: Daggers 8_
 Your first attack made from stealth deals +100% crit damage and applies a severe bleed (10% max HP/turn for 3 turns).
 
 **Gone Before the Body Falls**
@@ -771,7 +771,7 @@ _Requires: Daggers 1_
 Off-hand dagger attacks gain +10% accuracy and +5% crit chance.
 
 **Aim at the Vitals**
-_Requires: Daggers 1_
+_Requires: Daggers 2_
 Passive. Dagger attacks against enemies that are suffering any status effect gain +10% crit chance.
 
 _An open wound is an invitation._
@@ -959,13 +959,13 @@ _Requires: Ritual 3_
 You may have 2 charged implements prepared at once (instead of 1).
 
 **Perfect Correspondence**
-_Requires: Ritual 5, Attune Charm or Prepared Implements_
+_Requires: Ritual 6, Attune Charm or Prepared Implements_
 When using a charm aligned with the spell's element: +30% Spellpower and -25% mana cost.
 
 ---
 
 **Inscribed Circle**
-_Requires: Ritual 3_
+_Requires: Ritual 4_
 Active (1 action). Create a ritual circle on your tile. While standing in it, -25% mana cost on all spells.
 
 **Focused Diagram**
@@ -1021,19 +1021,19 @@ All spells are cast as if the caster has level 5 in the relevant skill. If they 
 ---
 
 **Observe Carefully**
-_Requires: Learning 1_
+_Requires: Learning 2_
 Active (free action). Examine an enemy to reveal basic stats (HP, Armor, top 2 resistances) and one weakness.
 
 **Predictive Model**
-_Requires: Learning 3, Observe Carefully_
+_Requires: Learning 4, Observe Carefully_
 Examination also reveals the enemy's likely next action (attack target, spell, or movement).
 
 **Know the Pattern**
-_Requires: Learning 5, Observe Carefully_
+_Requires: Learning 6, Observe Carefully_
 After examining an enemy, all allies gain +10% Attack and +10% to saves against that enemy for the rest of combat.
 
 **Nothing Surprises Me Twice**
-_Requires: Learning 7, Observe Carefully_
+_Requires: Learning 8, Observe Carefully_
 Once an enemy type has been examined, all future encounters with that type start partially revealed (basic stats visible from turn 1).
 
 **Nihil Novi**
@@ -1103,7 +1103,7 @@ _Requires: Guile 5_
 After leaving stealth, gain +15% Attack and +15% Dodge for 1 turn.
 
 **Shady Dealings**
-_Requires: Guile 7_
+_Requires: Guile 8_
 Only melee attacks break stealth automatically. Ranged attacks, spell casting, and item use trigger an Awareness check (+5 bonus) for enemies within 2 tiles instead of automatically revealing you.
 
 ---
@@ -1113,7 +1113,7 @@ _Requires: Guile 1_
 Your first attack against each enemy in a combat gains +15% crit chance.
 
 **Play Dirty**
-_Requires: Guile 3_
+_Requires: Guile 4_
 Successful hits have a 20% chance to apply a random minor debuff for 1 turn: blind (-25% accuracy), slow (-1 Movement), pin (can't move), or bleed (5% max HP).
 
 **Every Opening Is an Invitation**
@@ -1127,7 +1127,7 @@ Active (once per combat). Force an enemy's attack to miss. That enemy loses thei
 ---
 
 **Smoke and Mirrors**
-_Requires: Guile 5_
+_Requires: Guile 6_
 Active (5 Stamina). Create 1-3 false images around you. Images have 1 HP, high Dodge, and draw enemy attention. They move randomly but do not attack. Last 3 turns.
 
 **Zazouken**
@@ -1137,11 +1137,11 @@ False images now attack adjacent enemies for 30% of your damage. Still 1 HP.
 ---
 
 **Say It Like You Mean It**
-_Requires: Guile 1_
+_Requires: Guile 2_
 +10% to social checks in dialogue involving deception, negotiation, or intimidation.
 
 **Half-Truth**
-_Requires: Guile 5_
+_Requires: Guile 6_
 Failed dialogue checks involving lies or persuasion have 50% reduced negative consequences.
 
 **They Think It Was Their Idea**
@@ -1193,7 +1193,7 @@ _Requires: Comedy 5_
 Before some combat encounters, a Comedy check may cancel the fight entirely (Charm + Comedy vs encounter difficulty).
 
 **Nobody Wants to Be the Straight Man**
-_Requires: Comedy 7, Disarming Humor_
+_Requires: Comedy 8, Disarming Humor_
 A cancelled combat opens a trade screen with the option to recruit the earlier enemies at normal prices.
 
 **It Was a Joke**
@@ -1203,11 +1203,11 @@ Before engaging in combat, see all enemy stats. You may choose to avoid the figh
 ---
 
 **Taunt**
-_Requires: Comedy 1_
+_Requires: Comedy 2_
 Active. Force an enemy to focus attacks on you for 2 turns (Focus save negates).
 
 **Heckle**
-_Requires: Comedy 3, Taunt_
+_Requires: Comedy 4, Taunt_
 Taunted or confused enemies suffer -15% Attack for the duration.
 
 **Slapstick Interruption**
@@ -1225,7 +1225,7 @@ _Requires: Comedy 3_
 When a random effect benefits you (lucky loot, random buff, etc.), increase its magnitude by 25%.
 
 **Cosmic Banana Peel**
-_Requires: Comedy 5_
+_Requires: Comedy 6_
 Enemies have a 10% chance each turn to suffer a random mishap: miss next attack, stumble (-1 Movement), or self-debuff (-5% Armor for 1 turn).
 
 **Against All Expectations**
@@ -1243,7 +1243,7 @@ _Requires: Comedy 1_
 Gain +2% Luck for each unit (ally or enemy) within 3 tiles.
 
 **Laughing at the Abyss**
-_Requires: Comedy 7_
+_Requires: Comedy 8_
 Immune to fear, despair, and intimidation effects. Allies within 2 tiles gain +25% resistance to these effects.
 
 ---
@@ -1642,7 +1642,7 @@ Active (once per combat). The next spell gains +200% Spellpower and costs double
 ---
 
 **Blink Reflex**
-_Requires: Sorcery 1_
+_Requires: Sorcery 2_
 Instant movement spells (blink, short teleport) gain +2 tiles range.
 
 **Now I'm There**
@@ -1817,7 +1817,7 @@ _Requires: Leadership 5_
 Allies below 30% HP gain +20% Armor and +20% healing received. Allies who disengage or reposition do not provoke opportunity attacks.
 
 **Unbroken Circle**
-_Requires: Leadership 7_
+_Requires: Leadership 8_
 As long as 2+ allies are standing, all allies gain +15% resistance to mental status effects. Each additional ally adds +3%.
 
 ---
@@ -1827,11 +1827,11 @@ _Requires: Leadership 1_
 Active (free action, once per turn). Mark an enemy. The first ally to attack that enemy gains +15% accuracy and +15% damage.
 
 **Roles Assigned**
-_Requires: Leadership 3, Call the Shot_
+_Requires: Leadership 4, Call the Shot_
 At combat start, designate each ally as **Vanguard** (+10% Armor, +10% HP), **Striker** (+10% Damage, +5% Crit), **Support** (+10% Spellpower, +10% Healing), or **Control** (+10% Status Chance, +10% Duration).
 
 **Tactical Synergy**
-_Requires: Leadership 5, Roles Assigned_
+_Requires: Leadership 6, Roles Assigned_
 When allies of different roles interact, bonus effects trigger: Control debuff then Striker attack gains +15% damage; Support buff then Vanguard gains +10% Armor for 1 turn; etc.
 
 **Perfect Execution**
@@ -1914,11 +1914,11 @@ Each inspired ally increases the strength and duration of your Performance effec
 ---
 
 **Cutting Remark**
-_Requires: Performance 1_
+_Requires: Performance 2_
 Active (1 action). Inflict -10% morale and -10% accuracy on a visible enemy for 2 turns.
 
 **Stage Fright**
-_Requires: Performance 3, Cutting Remark_
+_Requires: Performance 4, Cutting Remark_
 Enemies affected by fear or morale loss suffer -3 Initiative and -10% reaction speed for the duration.
 
 **Heckle the Will**
@@ -1932,15 +1932,15 @@ Active (once per combat). All demoralized enemies must make a Focus save or beco
 ---
 
 **Look at Me**
-_Requires: Performance 1_
+_Requires: Performance 2_
 Active (1 action). For 2 turns, enemies within 3 tiles have +25% chance to target you.
 
 **Misdirection**
-_Requires: Performance 3_
+_Requires: Performance 4_
 While drawing enemy attention (Look at Me active), gain +15% Dodge and +15% resistance to ranged attacks.
 
 **Split Attention**
-_Requires: Performance 5_
+_Requires: Performance 6_
 Distracted enemies suffer -10% accuracy against all targets, not just the performer.
 
 **Now You See It**
@@ -1958,7 +1958,7 @@ _Requires: Performance 3_
 Failed social checks reveal partial information about what would have succeeded. Retries suffer only half the normal penalty.
 
 **Steal the Scene**
-_Requires: Performance 5_
+_Requires: Performance 6_
 Once per dialogue, convert a failed social roll into a partial success.
 
 **Command the Narrative**
@@ -1968,11 +1968,11 @@ Once per major dialogue, automatically succeed on a Performance-gated blue check
 ---
 
 **Improvised Masterpiece**
-_Requires: Performance 7_
+_Requires: Performance 8_
 Active (1 action). Choose one: Inspire (allies gain +10% all stats), Demoralize (enemies suffer -10% all stats), or Distract (enemies suffer -15% accuracy). Affects all valid targets within 3 tiles for 2 turns.
 
 **Sustained Performance**
-_Requires: Performance 7_
+_Requires: Performance 8_
 Performance effects intensify by +5% for each consecutive turn the performer is uninterrupted (no damage taken). Stacks up to 3 times.
 
 **All the World a Stage**
@@ -2007,7 +2007,7 @@ _Spears have innate 2-tile melee reach._
 ---
 
 **First to Strike**
-_Requires: Spears 1_
+_Requires: Spears 2_
 When an enemy enters your reach (2 tiles), make a free reaction attack (once per enemy per round).
 
 **Long Memory**
@@ -2015,7 +2015,7 @@ _Requires: Spears 1_
 Reaction attacks (from First to Strike, Set for Charge, etc.) gain +15% damage.
 
 **Set for Charge**
-_Requires: Spears 3_
+_Requires: Spears 4_
 Active. End your turn. If an enemy moves into your reach before your next turn, your reaction attack deals double damage.
 
 **None Shall Pass**
@@ -2029,11 +2029,11 @@ _Requires: Spears 3_
 Enemies within your reach suffer -10% accuracy on their attacks.
 
 **Point Control**
-_Requires: Spears 5, Wall of Points_
+_Requires: Spears 6, Wall of Points_
 Enemies within your reach also suffer -1 Movement and -10% Dodge.
 
 **Pinning Thrust**
-_Requires: Spears 5_
+_Requires: Spears 6_
 Active (5 Stamina). Make a spear attack. On hit, target's Movement is reduced to 0 for 2 turns (Constitution save negates the pin, damage still applies).
 
 ---
@@ -2053,7 +2053,7 @@ _Requires: Spears 3_
 Active (4 Stamina). Attack all enemies within reach in a 180-degree arc at 75% damage.
 
 **Impaling Strike**
-_Requires: Spears 7_
+_Requires: Spears 8_
 Active (6 Stamina). Attack in a line, hitting up to 2 enemies. Full damage to the first, 60% to the second.
 
 **Water Finds the Gap**
@@ -2187,7 +2187,7 @@ All incoming damage to the caster and allies within 3 tiles is reflected back at
 ---
 
 **Lingering Touch**
-_Requires: Enchantment 1_
+_Requires: Enchantment 2_
 Buffs you cast last 1 additional turn.
 
 **Deep Roots**
@@ -2301,7 +2301,7 @@ _Requires: Grace 1_
 Ignore difficult terrain movement penalties.
 
 **Tumble**
-_Requires: Grace 1_
+_Requires: Grace 2_
 Active (2 Stamina). Move through enemy-occupied tiles without provoking reaction attacks this turn.
 
 **Flowing Evasion**
@@ -2309,7 +2309,7 @@ _Requires: Grace 3_
 After successfully dodging an attack, gain +10% Dodge until end of turn (stacks up to 3 times).
 
 **Spring Step**
-_Requires: Grace 3_
+_Requires: Grace 4_
 Active (3 Stamina). After taking an action, immediately move up to 2 tiles (free action, does not provoke).
 
 ---
@@ -2323,7 +2323,7 @@ _Requires: Grace 7_
 For each enemy adjacent to you beyond the first, gain +5% Dodge (up to +20% with 5 adjacent enemies).
 
 **Momentum Shift**
-_Requires: Grace 7_
+_Requires: Grace 8_
 When you dodge a melee attack, you may immediately reposition 1 tile in any direction (free action).
 
 **Perfect Balance**
@@ -2337,7 +2337,7 @@ Active (once per combat, 6 Stamina). For 1 turn, all attacks against you suffer 
 ---
 
 **Cat's Landing**
-_Requires: Grace 5_
+_Requires: Grace 6_
 Fall damage reduced by 50%. When jumping down from height, gain +10% accuracy and +10% damage on your next attack.
 
 **Terrain Mastery**
@@ -2377,7 +2377,7 @@ _Requires: Medicine 1_
 Active (1 action). Heal an adjacent ally for 25% of your Awareness as HP.
 
 **Triage**
-_Requires: Medicine 3, Field Medic_
+_Requires: Medicine 4, Field Medic_
 Field Medic heals for 40% of Awareness and also removes 1 negative status effect.
 
 **Combat Surgeon**
@@ -2387,7 +2387,7 @@ Field Medic becomes a free action once per turn (additional uses still cost an a
 ---
 
 **Diagnosis**
-_Requires: Medicine 1_
+_Requires: Medicine 2_
 Active (free action). Examine an ally to reveal all active status effects and their remaining durations. Examining an enemy reveals their HP and any vulnerabilities.
 
 **Know the Symptoms**
@@ -2477,7 +2477,7 @@ _Requires: Alchemy 1_
 Can craft basic grenades (fire, acid, smoke) from common materials.
 
 **Volatile Compounds**
-_Requires: Alchemy 5, Bomb Maker_
+_Requires: Alchemy 6, Bomb Maker_
 Grenades gain +1 tile radius and +25% damage.
 
 **Chain Reaction**
@@ -2491,13 +2491,13 @@ _Requires: Alchemy 3_
 Can craft weapon coatings: poison (DoT), paralysis (chance to stun), weakening (-10% Attack). Coatings last for 3 hits.
 
 **Persistent Coating**
-_Requires: Alchemy 7, Applied Toxicology_
+_Requires: Alchemy 8, Applied Toxicology_
 Weapon coatings last for 5 hits and their effects are 25% stronger.
 
 ---
 
 **Transmuter's Eye**
-_Requires: Alchemy 1_
+_Requires: Alchemy 2_
 Identify unknown potions and substances without risk. Salvage 50% more materials when breaking down items.
 
 **Philosopher's Approach**
@@ -2511,11 +2511,11 @@ Active (once per encounter). Destroy one magical barrier, lock, or environmental
 ---
 
 **Emergency Flask**
-_Requires: Alchemy 3_
+_Requires: Alchemy 4_
 Once per combat, use a potion as a free action (instead of costing an action).
 
 **Splash Zone**
-_Requires: Alchemy 5_
+_Requires: Alchemy 6_
 Thrown potions (healing, buff) also affect allies within 1 tile of the target at 50% effectiveness.
 
 ---
@@ -2543,7 +2543,7 @@ _Requires: Thievery 1_
 Can attempt to pick locks. Success based on Finesse + Thievery vs lock difficulty.
 
 **Master Locksmith**
-_Requires: Thievery 5, Nimble Fingers_
+_Requires: Thievery 6, Nimble Fingers_
 +25% lockpicking success. Can attempt locks one tier above your normal skill level.
 
 **Nothing Is Locked**
@@ -2577,17 +2577,17 @@ Disarmed traps can be re-armed facing the enemy. Enemies trigger your reposition
 ---
 
 **Quick Escape**
-_Requires: Thievery 3_
+_Requires: Thievery 4_
 Active (free action, 3-turn cooldown). Move up to 3 tiles immediately, ignoring reaction attacks and terrain penalties.
 
 **Vanishing Act**
-_Requires: Thievery 7, Quick Escape_
+_Requires: Thievery 8, Quick Escape_
 Quick Escape also grants stealth and removes all enemy targeting on you.
 
 ---
 
 **Appraiser's Eye**
-_Requires: Thievery 1_
+_Requires: Thievery 2_
 Identify the value of items at a glance. Detect hidden compartments in containers (20% chance to find bonus loot).
 
 **Black Market Contacts**
@@ -2655,7 +2655,7 @@ _Requires: Maces 3_
 Mace attacks reduce target's Armor by 10% per hit (stacks, lasts 3 turns).
 
 **Overwhelming Blow**
-_Requires: Maces 1_
+_Requires: Maces 2_
 Active (3 Stamina). Make an attack that pushes the enemy 1 tile. If they can't be pushed (wall, another unit), they take +25% damage instead.
 
 **Follow Through**
@@ -2679,7 +2679,7 @@ Active (10 Stamina, once per combat). Devastating overhead strike dealing 200% d
 ---
 
 **Relentless Advance**
-_Requires: Maces 5_
+_Requires: Maces 6_
 After hitting an enemy, gain +1 Movement for 1 turn. Taking damage does not reduce your Movement.
 
 **Juggernaut**
@@ -2737,25 +2737,25 @@ _Requires: Armor 3_
 Active (3 Stamina). Requires shield. Push an enemy 1 tile and apply -10% accuracy for 1 turn.
 
 **Deflection**
-_Requires: Armor 3, Shield Mastery_
+_Requires: Armor 4, Shield Mastery_
 15% chance to completely block an incoming attack (reduce damage to 0). Requires a shield.
 
 **Tower Shield**
-_Requires: Armor 5, Deflection_
+_Requires: Armor 6, Deflection_
 Block chance increases to 25%. Blocked ranged attacks are reflected back at the attacker for 30% damage.
 
 **Shield Wall**
-_Requires: Armor 5_
+_Requires: Armor 6_
 Active. End your turn. Until next turn, gain +25% Armor and adjacent allies gain +10% Armor.
 
 ---
 
 **Stalwart Guardian**
-_Requires: Armor 7_
+_Requires: Armor 8_
 Active (1 action). Choose an adjacent ally. Until your next turn, attacks targeting that ally have a 50% chance of targeting you instead. You gain +15% Armor while guarding.
 
 **Brace for Impact**
-_Requires: Armor 3_
+_Requires: Armor 4_
 Active (free action, 3-turn cooldown). Until your next turn, reduce the next incoming hit by 30%.
 
 **Damage Control**
@@ -2773,7 +2773,7 @@ While at or below 25% HP, gain +50% Armor and +25% to all saves. Cannot be kille
 ---
 
 **Wear It Well**
-_Requires: Armor 1_
+_Requires: Armor 2_
 +5% Stamina recovery rate per piece of armor worn (up to +20% with 4 pieces).
 
 **Armor of Faith**
@@ -2927,7 +2927,7 @@ _Requires: Summoning 6_
 You may maintain 1 additional summon active simultaneously.
 
 **Horde Master**
-_Requires: Summoning 7, Strength in Numbers_
+_Requires: Summoning 8, Strength in Numbers_
 You may maintain 2 additional summons. Summoning spells cost 15% less mana.
 
 **Alpha and Omega**
@@ -2963,7 +2963,7 @@ _Requires: Summoning 6_
 When casting a summoning spell, choose an element. The summon gains +20% damage of that element and +15% resistance to that element.
 
 **Summoner's Bond**
-_Requires: Summoning 1_
+_Requires: Summoning 2_
 Gain +5% to all saves while you have at least one summon active.
 
 ---
@@ -3015,11 +3015,11 @@ _Requires: Logistics 1_
 Party weight capacity increased by 20%.
 
 **Forage**
-_Requires: Logistics 1_
+_Requires: Logistics 2_
 Active (overworld). Search the current area for supplies. Yield depends on terrain: food in forests, herbs in meadows, minerals in mountains.
 
 **Extended March**
-_Requires: Logistics 3_
+_Requires: Logistics 4_
 Party can take one additional overworld action per day before fatigue penalties apply.
 
 **Safe Campsite**
@@ -3037,7 +3037,7 @@ _Requires: Logistics 1_
 Active (overworld). Reveal nearby points of interest and dangers within a moderate radius.
 
 **Lay of the Land**
-_Requires: Logistics 5, Scout Ahead_
+_Requires: Logistics 6, Scout Ahead_
 Scouting also reveals terrain types, enemy compositions, and optimal routes. Entering a scouted encounter grants +3 Initiative to the party for the first round.
 
 **Tactical Assessment**
@@ -3069,7 +3069,7 @@ _Requires: Logistics 7_
 At the start of combat, all allies begin with +5% Stamina and +5% Mana (from proper pre-battle preparation).
 
 **Strategic Withdrawal**
-_Requires: Logistics 7_
+_Requires: Logistics 8_
 Active. Once per encounter, the party may retreat from combat without penalty (no lost items, no reputation loss). Must be used before any ally begins bleeding out.
 
 ---
@@ -3115,15 +3115,15 @@ Passive income: gain gold at the end of each in-game day equal to 3% of your cur
 ---
 
 **Appraiser**
-_Requires: Trade 1_
+_Requires: Trade 2_
 Identify magical properties of items without using scrolls or spells. Reveal hidden enchantments on equipment.
 
 **Investment**
-_Requires: Trade 3_
+_Requires: Trade 4_
 Active (overworld). Invest gold in a settlement. Returns 150% of the invested amount after several in-game days.
 
 **Diversified Portfolio**
-_Requires: Trade 7, Investment_
+_Requires: Trade 8, Investment_
 Maintain up to 3 investments simultaneously. Returns increased to 200%.
 
 ---
@@ -3133,7 +3133,7 @@ _Requires: Trade 1_
 Mercenary companions cost 15% less to recruit.
 
 **Headhunter**
-_Requires: Trade 5, Hired Help_
+_Requires: Trade 6, Hired Help_
 Access to higher-quality mercenaries. Recruited companions start with 10% more XP.
 
 **Golden Tongue**
@@ -3185,7 +3185,7 @@ _Requires: Crafting 3_
 Crafted items gain a random minor bonus (+5% to one stat).
 
 **Master Craftsman**
-_Requires: Crafting 7, Journeyman's Touch_
+_Requires: Crafting 8, Journeyman's Touch_
 Choose the bonus on crafted items instead of random. Crafted items have +15% better stats overall.
 
 **Legendary Artisan**
@@ -3199,7 +3199,7 @@ _Requires: Crafting 1_
 Active (out of combat). Upgrade an existing piece of equipment, granting +10% to its primary stat permanently.
 
 **Socket**
-_Requires: Crafting 5_
+_Requires: Crafting 6_
 Add a gem socket to a piece of equipment. Sockets hold gems, charms, or essences for additional bonuses.
 
 **Masterwork Enhancement**
@@ -3209,15 +3209,15 @@ Socketed items gain double the benefit from their gems and essences. Can add a s
 ---
 
 **Field Repair**
-_Requires: Crafting 1_
+_Requires: Crafting 2_
 Active (1 action in combat, 3-turn cooldown). Restore 25% of an ally's Armor value, countering sunder effects.
 
 **Improvised Barricade**
-_Requires: Crafting 3_
+_Requires: Crafting 4_
 Active (1 action). Create a 1-tile barricade at an adjacent position. Provides half cover (+15% Armor) for anyone behind it. Lasts 3 turns.
 
 **Trap Maker**
-_Requires: Crafting 5_
+_Requires: Crafting 6_
 Active (1 action). Place a trap on an adjacent tile. The first enemy to enter takes damage equal to 30% of your Focus and is immobilized for 1 turn.
 
 ---
@@ -3532,3 +3532,387 @@ All healing effects +15% (given and received). +20% resistance to water and ice 
 **Stone Adept**
 _Requires: Earth affinity 25+_
 +10% max HP. +10% Armor. Crafted items are one quality tier higher. Immune to knockback and forced movement.
+
+
+---
+
+# Added in Implementation Passes
+
+> These perks were written alongside the code that uses them and were never
+> back-filled into the sections above. Mechanics are live in `perks.json`.
+
+
+## Air Magic
+
+**Avatar of the Storm**
+_Requires: Air Magic 5_
+Aura. All allies' attacks deal +5% bonus Air damage and gain a 10% chance to Stun for 1 turn.
+
+_The sky fights beside you._
+
+**Avatar of the Wind**
+_Requires: Air Magic 5_
+Aura. At the start of your turn, all other allies gain +1 Movement, +2 Initiative, and +5% Dodge for 1 round.
+
+**The Sky Leans In**
+_Requires: Air Magic 9, Cyclone Mastery_
+Passive. Air spells you cast gain +1 tile of range and +1 tile of AoE size. Enemies pushed into walls, obstacles, or each other take crushing damage equal to half the tiles they were moved.
+
+_It was already moving. You only asked it to move here._
+
+
+## Alchemy
+
+**The Perfected Solution**
+_Requires: Alchemy 10_
+Passive. Potions and bombs you brew are always one rarity tier higher and cost no reagents on a Logistics-conserved step. Consumables you use affect the whole party at half strength.
+
+_Forty years of getting the proportions wrong, and then once of getting them right._
+
+
+## Armor
+
+**Unbroken**
+_Requires: Armor 10_
+Passive. The first time each combat you would drop below 25% HP, you instead stop at 25% and all your Armor values double until end of turn. Wounds inflicted on you are downgraded one severity.
+
+_Armour is a promise you make to the people standing behind you._
+
+
+## Axes
+
+**Nothing Left Standing**
+_Requires: Axes 9, Red Harvest_
+Passive. When an axe attack kills, immediately make a free axe attack against any other enemy within reach. This can chain up to twice per turn.
+
+_The problem with stopping is deciding when._
+
+**The Whole Arc**
+_Requires: Axes 10_
+Passive. Axe kills no longer end your momentum — momentum stacks persist through a kill and carry into the next turn. At 5+ stacks, every axe hit cleaves one adjacent enemy for full damage.
+
+_The swing does not stop because something got in the way._
+
+
+## Black Magic
+
+**Fear Is the Mindkiller**
+_Requires: Black Magic 4_
+When you land a Black debuff on an enemy already carrying 2+ debuffs, they must save or become Feared (once per enemy per combat).
+
+_The mind consumes itself long before the body fails._
+
+
+## Comedy
+
+**The Last Laugh**
+_Requires: Comedy 10_
+Passive. Enemies that would land a critical hit on you must first save or lose the attack to a fit of something they cannot name. Once per combat, one enemy simply refuses to keep fighting you.
+
+_The universe is not hostile. It is a very long joke with a slow delivery._
+
+
+## Cross-Skill
+
+**Akimbo**
+_Requires: Finesse 14_
+Passive. All secondary arm attack chances in the multi-arm chain are increased by +20% (e.g. off-hand chance 50%→70% at Finesse 10).
+
+_Two weapons, one intent._
+
+**Coordinated Strikes**
+_Requires: Finesse 16, Akimbo_
+Passive (multi-arm species only). If an arm in the attack chain kills its target, reset the chain — the next arm rolls independently rather than stopping.
+
+_The body learns to celebrate without pausing._
+
+**Sentinel**
+_Requires: Swords 5, Martial_Arts 3_
+Reaction. When an enemy leaves your melee range (1 tile), make a free attack against them (sword or unarmed).
+
+_Nothing walks away._
+
+
+## Daggers
+
+**The Gap in the Guard**
+_Requires: Daggers 6, Between the Ribs_
+Passive. Dagger attacks against a target that has not yet acted this combat, or that is unaware of you, ignore Armor entirely rather than 25%.
+
+_Armour covers what a person expects to be hit._
+
+**Thousand Cuts**
+_Requires: Daggers 10_
+Passive. Every dagger hit on a target that is already Bleeding refreshes and deepens the bleed instead of reapplying it (stacking to 5). At 5 stacks the target takes double bleed damage and cannot be healed above half HP.
+
+_No single one of them was the wound._
+
+
+## Earth Magic
+
+**Root and Summit**
+_Requires: Earth Magic 10_
+Passive. While standing on earth, stone or ground you have shaped, you cannot be moved against your will and gain +30% to all Resistances. Your Earth spells treat the battlefield's terrain as one tier more favourable.
+
+_The mountain is not stubborn. It simply has nowhere it would rather be._
+
+
+## Enchantment
+
+**The Binding Holds**
+_Requires: Enchantment 10_
+Passive. Buffs you cast have no duration — they last until dispelled or the combat ends. Debuffs you cast cannot be cleansed by anything short of a dispel.
+
+_An enchantment is a sentence the world has agreed to finish._
+
+
+## Fire Magic
+
+**The Fire That Does Not Consume**
+_Requires: Fire Magic 10_
+Passive. Your Fire spells no longer damage allies or destroy terrain you wish to preserve. Burning you apply lasts until dispelled, and enemies killed while Burning explode for half the spell's damage.
+
+_It has learned the difference between burning and destroying. That took longer than the fire did._
+
+
+## Grace
+
+**The Water Finds the Crack**
+_Requires: Grace 10_
+Passive. You cannot be flanked, surrounded, or caught in an AoE you can see — you always slip to the nearest safe tile. Movement never provokes reactions.
+
+_You were not where the blow landed. You were not going to be._
+
+
+## Guile
+
+**Never Was Anyone**
+_Requires: Guile 10_
+Passive. You may enter stealth in plain sight, once per combat, even while observed. Enemies who lose track of you forget you were present at all and revert to their pre-combat behaviour.
+
+_The trick is not hiding. The trick is not having been there._
+
+
+## Leadership
+
+**The Company You Keep**
+_Requires: Leadership 10_
+Passive. All allies gain +2 to every derived stat while you are conscious. When you fall in combat, allies immediately gain an extra action rather than losing morale.
+
+_Eat last. Sleep where they can see you._
+
+
+## Learning
+
+**Nothing Is Withheld**
+_Requires: Learning 10_
+Passive. Skill checks that use Learning may be attempted twice, taking the better result. XP costs for all skills are reduced by 15%, and you may read any text in any realm regardless of language or age.
+
+_Everything was always going to be legible. It was only ever a question of sitting down with it._
+
+
+## Logistics
+
+**The Road Provides**
+_Requires: Logistics 10_
+Passive. The party consumes no food on overworld movement. Rest restores an additional 25%, camp activities cost one fewer resource, and you always know the shortest safe route to any discovered location.
+
+_Anyone can carry supplies. The art is needing fewer of them._
+
+
+## Maces
+
+**The Mountain Answers**
+_Requires: Maces 10_
+Active (8 Stamina). Strike the ground rather than a target. Every enemy within 2 tiles is Knocked_Down and takes crushing damage equal to your Strength; structures and obstacles in the radius are destroyed outright.
+
+_You do not argue with a mace. You are simply, eventually, agreed with._
+
+
+## Martial Arts
+
+**The Form Completes Itself**
+_Requires: Martial Arts 9_
+Passive. Whenever you spend your entire turn on martial arts attacks, the last one costs no Stamina and knocks the target back 1 tile. Missing does not interrupt the sequence.
+
+_Halfway through, the form stops being something you are doing._
+
+
+## Medicine
+
+**Wound Specialist**
+_Requires: Medicine 6_
+Camp (Field Surgery): cures ALL wounds and diseases on the target regardless of their required Medicine level. Requires Field Surgery camp activity.
+
+_Some cuts need more than a bandage._
+
+**Field Surgeon**
+_Requires: Medicine 6_
+Using a medicine item in combat triggers a Medicine skill check (d20 + Medicine vs DC 14). On success, one wound on the user is treated.
+
+**Well-Rested**
+_Requires: Medicine 8_
+After a full rest, grants the party Awareness +3, Constitution +2, and Initiative +5 until the next combat ends.
+
+**Physician of the Dead**
+_Requires: Medicine 10_
+Passive. You can treat any wound or disease regardless of its cure level, in the field, without supplies. A party member who would bleed out in combat instead stabilises at 1 HP once per combat.
+
+_There is no condition that cannot be attended to. There are only ones that cannot be reversed._
+
+
+## Might
+
+**What Cannot Be Carried**
+_Requires: Might 10, Unmovable Object_
+Passive. No weight limit applies to you, and you may lift, drag, or break anything a party of four could. Enemies attempting to move, grapple, or knock you down fail automatically.
+
+_There is a point past which strength stops being about lifting._
+
+
+## Performance
+
+**The Performance of a Lifetime**
+_Requires: Performance 10_
+Active (once per combat). Hold the field. All enemies who can see you must save or spend their turn watching; allies gain +25% damage and immunity to fear for 2 turns.
+
+_They came to kill you and they stayed to find out how it ends._
+
+
+## Persuasion
+
+**The Room Agrees**
+_Requires: Persuasion 6, Master Orator_
+Passive. When you succeed on a Persuasion check with witnesses present, every other NPC in the scene shifts one step friendlier for the rest of the encounter — including ones who were hostile.
+
+_You never have to convince everybody. Only enough of them, loudly._
+
+**Terms of Engagement**
+_Requires: Persuasion 8, Magnetism_
+Active (once per combat). Name terms before blood is drawn. Enemies below half HP must save or withdraw from the fight entirely; those who stay take −15% damage for 2 turns from having heard you out.
+
+_Most fights continue because nobody thought to offer an alternative._
+
+**The Word That Turns**
+_Requires: Persuasion 10_
+Passive. Once per event, a failed Persuasion roll may be re-rolled. Blue Persuasion choices unlock two levels below their stated requirement, and hostile NPCs will always hear one sentence before acting.
+
+_Nobody has ever been argued out of anything. They have been given somewhere better to stand._
+
+
+## Ranged
+
+**The Second Arrow**
+_Requires: Ranged 8, One Breath, One Arrow_
+Passive. Each turn, the first ranged attack that hits grants an immediate second shot at −25% damage against the same target or one adjacent to it.
+
+_The first one tells you where the wind is._
+
+**One Breath, One Kill**
+_Requires: Ranged 10_
+Active (once per combat, 6 Stamina). Spend your whole turn aiming. The shot ignores cover, line of sight, and Armor entirely, and critically hits if the target is below half HP.
+
+_The arrow was released a long time before it left the string._
+
+
+## Ritual
+
+**The Rite Completes Itself**
+_Requires: Ritual 10_
+Passive. Mandalas and ritual circles you create persist for the whole run rather than a single use, and any ritual you begin continues correctly even if you are interrupted, unconscious, or elsewhere.
+
+_The ceremony does not depend on the celebrant. That is rather the point of a ceremony._
+
+
+## Sorcery
+
+**The Word and the Silence**
+_Requires: Sorcery 10, One Perfect Sentence_
+Passive. Once per combat, a single-target Sorcery spell may be cast with no mana cost and no chance of failure. If it kills its target, you recover the mana of the most expensive spell you have cast this combat.
+
+_Say it once. Correctly. Then stop talking._
+
+
+## Space Magic
+
+**The Door Stands Open**
+_Requires: Space Magic 10_
+Active (once per combat, 15 Mana). Open a gate between any two tiles you can see. It persists for 3 turns; any unit may step through, and allies who do gain +2 Initiative.
+
+_Distance was always a courtesy, not a law._
+
+
+## Spears
+
+**The Line Holds**
+_Requires: Spears 10_
+Passive. Your threatened area extends to 3 tiles. Enemies entering it are Slowed for 1 turn, and any reaction attack you make from a braced position cannot miss.
+
+_The spear does not need to move. That is the entire idea._
+
+
+## Summoning
+
+**Host of the Faithful**
+_Requires: Summoning 10_
+Passive. You may maintain twice your normal number of summons. When a summon of yours dies, the next one you call this combat arrives with full HP and an extra action.
+
+_They come because they were asked properly, and they stay for the same reason._
+
+
+## Swords
+
+**The Blade Decides**
+_Requires: Swords 9, Surgical_
+Passive. When you parry, riposte, or land a critical sword hit, gain a Measure stack (max 3). Each stack adds +10% sword damage and +5% Armor. Stacks persist until you take damage.
+
+_There is a moment in the exchange where it stops being a contest._
+
+
+## Thievery
+
+**Everything Is Carried Loosely**
+_Requires: Thievery 10_
+Passive. Theft and lockpicking attempts cannot critically fail. Once per location, you may take one item you could not otherwise afford or reach, and nobody notices it is gone until you are elsewhere.
+
+_It was not nailed down. Very few things are, on inspection._
+
+
+## Unarmed
+
+**Empty Hand, Full World**
+_Requires: Unarmed 10_
+Passive. While carrying no weapon in either hand, gain +1 action per turn, and unarmed strikes count as magical for resistance purposes.
+
+_Nothing in the hands. Nothing needed in them._
+
+
+## Water Magic
+
+**The River Has No Shape**
+_Requires: Water Magic 10_
+Active (once per combat, 15 Mana). For 3 turns you cannot be Immobilized, Rooted, Grappled or Knocked_Down, you move through occupied tiles freely, and every Water spell you cast costs half.
+
+_Ask the river to hold still and see how the conversation goes._
+
+
+## White Magic
+
+**Nothing Is Beyond Mending**
+_Requires: White Magic 9, Universal Refuge_
+Passive. Your healing spells also cure one wound or disease from the target, lowest cure level first. An ally you heal from below 10% HP additionally recovers a spent action.
+
+_The body is very willing. It mostly needs to be told it is allowed._
+
+
+## Yoga
+
+**Lucid Rest**
+_Requires: Yoga 7_
+During any rest, quietly accumulates mantra at half your Yoga level (minimum 1). Does not require a Mantra Recitation activity slot.
+
+**The Ground of Being**
+_Requires: Yoga 10_
+Passive. Emotional pressure decays toward baseline at triple rate, and you are immune to crisis states in every element. Once per rest you may extend this immunity to the whole party until the next combat ends.
+
+_Not calm because nothing is happening. Calm because something is._
