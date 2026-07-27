@@ -69,6 +69,21 @@ ATTRIBUTES = {"strength", "constitution", "finesse", "focus", "awareness", "char
 ELEMENTS = {"space", "air", "fire", "water", "earth"}
 KARMA_REALMS = {"hell", "hungry_ghost", "animal", "human", "asura", "god"}
 
+_event_src = open(os.path.join(ROOT, "scripts/autoload/event_manager.gd"), encoding="utf-8").read()
+
+# Derived from the source rather than hardcoded, so the list cannot drift out of
+# date as handlers are added: every `if "x" in rewards` plus the trait loop's
+# `for key in [...]` list.
+HANDLED_REWARD_KEYS = set(re.findall(r'"([a-z_]+)" in rewards', _event_src))
+for _list in re.findall(r"for key in \[([^\]]+)\]", _event_src):
+    HANDLED_REWARD_KEYS |= set(re.findall(r'"([a-z_]+)"', _list))
+for _list in re.findall(r"for gold_key in \[([^\]]+)\]", _event_src):
+    HANDLED_REWARD_KEYS |= set(re.findall(r'"([a-z_]+)"', _list))
+
+# The tokens _resolve_gold_reward() recognises; anything else resolves to 0.
+_m_gold = re.search(r"func _resolve_gold_reward.*?\n(?:func |\Z)", _event_src, re.S)
+GOLD_REWARD_TOKENS = set(re.findall(r'"([a-z_]+)":\s*return', _m_gold.group(0))) if _m_gold else set()
+
 _wound_src = open(os.path.join(ROOT, "scripts/autoload/wound_system.gd"), encoding="utf-8").read()
 _m = re.search(r"const WOUND_TYPES: Dictionary = \{(.*?)\n\}", _wound_src, re.S)
 WOUND_TYPES = set(re.findall(r'^\t"([a-z_]+)":', _m.group(1), re.M)) if _m else set()
@@ -146,6 +161,23 @@ def check_outcome(outcome, ctx, depth=0):
         for entry in (pressure if isinstance(pressure, list) else [pressure]):
             if entry.get("element", "") not in ELEMENTS:
                 err("event->pressure", f"{ctx}: pressure element '{entry.get('element', '')}' invalid")
+
+    # A reward key no handler reads is a silent no-op: the event promises the
+    # player something and delivers nothing. `gold_reward` sat unread in six
+    # hell outcomes this way, including the arena you fight in for money.
+    for key in rewards:
+        if key not in HANDLED_REWARD_KEYS:
+            err("event->reward_key",
+                f"{ctx}: reward key '{key}' has no handler in event_manager.apply_outcome()")
+
+    # Token-valued gold must be a token _resolve_gold_reward() recognises,
+    # otherwise it resolves to 0.
+    for key in ("gold", "gold_reward"):
+        value = rewards.get(key)
+        if isinstance(value, str) and value not in GOLD_REWARD_TOKENS:
+            err("event->gold_token",
+                f"{ctx}: gold token '{value}' unknown — pays nothing "
+                f"(known: {', '.join(sorted(GOLD_REWARD_TOKENS))})")
 
 
 def check_requirements(reqs, ctx):

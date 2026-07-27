@@ -499,8 +499,15 @@ func apply_outcome(outcome: Dictionary) -> void:
 		if "xp" in rewards:
 			CompanionSystem.apply_party_xp(int(rewards.xp))
 
+		# Gold rewards accept either a number or a descriptive token
+		# ("small"/"moderate"/"large"), same as costs do. Plain int() on a token
+		# yields 0 in GDScript, which silently paid nothing — see
+		# _resolve_gold_reward(). "gold" is the only accepted key; validate_data.py
+		# rejects any other reward key so a near-miss name cannot go unread again.
 		if "gold" in rewards:
-			GameState.add_gold(int(rewards.gold))
+			var gold_amount: int = _resolve_gold_reward(rewards.gold)
+			if gold_amount > 0:
+				GameState.add_gold(gold_amount)
 
 		if "items" in rewards:
 			for item_id in rewards.items:
@@ -908,6 +915,21 @@ func _resolve_gold_cost(amount) -> int:
 		"some":
 			return 15  # "some gold and food"
 		_:
+			return 0
+
+## Convert descriptive gold reward strings to concrete amounts.
+## Rewards are more generous than the like-named costs: these values are drawn
+## from the 60 numeric gold rewards already in the event files, whose median is
+## 100 with terciles at 80 and 130. First pass — retune with the economy.
+func _resolve_gold_reward(amount) -> int:
+	if amount is int or amount is float:
+		return int(amount)
+	match str(amount):
+		"small":    return 40
+		"moderate": return 100
+		"large":    return 180
+		_:
+			push_warning("EventManager: unrecognised gold reward '%s' — paying nothing" % str(amount))
 			return 0
 
 ## Convert descriptive food cost strings to concrete amounts.

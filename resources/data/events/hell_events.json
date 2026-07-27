@@ -1194,7 +1194,7 @@
             "text": "The trader seems amused, and after a short back-and-forth, grants you a discount. \"Fine, fine. A fair deal.\" You walk away having spent less than expected.",
             "rewards": {
               "xp": 4,
-              "gold_reward": "small"
+              "gold": "small"
             },
             "karma": {
               "human": 4
@@ -3146,7 +3146,7 @@
               "asura": 5
             },
             "rewards": {
-              "gold_reward": "moderate"
+              "gold": "moderate"
             }
           }
         },
@@ -3166,7 +3166,7 @@
             "text": "The gatekeeper nods with respect and lets you in.",
             "rewards": {
               "xp": 12,
-              "gold_reward": "moderate",
+              "gold": "moderate",
               "items": [
                 "good_iron_weapon"
               ]
@@ -3239,7 +3239,7 @@
             "text": "The crowd goes quiet as you draw blades instead of the expected weapon. Then louder.",
             "rewards": {
               "xp": 12,
-              "gold_reward": "moderate"
+              "gold": "moderate"
             },
             "karma": {
               "asura": 4,
@@ -3263,7 +3263,7 @@
             "text": "The gatekeeper grins wider than usual. The crowd loses its mind.",
             "rewards": {
               "xp": 12,
-              "gold_reward": "moderate"
+              "gold": "moderate"
             },
             "karma": {
               "asura": 5
@@ -3286,7 +3286,7 @@
             "text": "You grab a femur from the ground and weigh it in your hand. The arena crowd approves of the improvisation.",
             "rewards": {
               "xp": 10,
-              "gold_reward": "moderate"
+              "gold": "moderate"
             },
             "karma": {
               "asura": 3,
