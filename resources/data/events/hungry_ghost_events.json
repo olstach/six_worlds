@@ -8658,6 +8658,271 @@
           }
         }
       ]
+    },
+    "hg_boss_insatiable_king": {
+      "id": "hg_boss_insatiable_king",
+      "title": "The Insatiable King",
+      "realm": "hungry_ghost",
+      "text": "He sits on a throne of fused bone before the Realm Gate, a mountain of a preta — belly vast as a granary, throat thin as a needle. A thousand offering bowls lie scattered around him, every one licked clean and none of them enough.\n\n\"More,\" he says, and the word carries the weight of centuries. \"Everything that passes this gate feeds me first. Wealth. Blood. Memory. What have you brought the King of Hunger?\"",
+      "choices": [
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Give him nothing — draw your weapon",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "insatiable_king",
+            "difficulty": "boss",
+            "karma": {
+              "hell": 3,
+              "asura": 5
+            }
+          }
+        },
+        {
+          "id": "feast",
+          "type": "default",
+          "text": "Lay out a feast from your own stores before the fight",
+          "cost": {
+            "food_percent": 50
+          },
+          "outcome": {
+            "type": "combat",
+            "text": "He devours everything in moments — and for one heartbeat his eyes close, almost peaceful. When they open, the hunger is back, but slower. Heavier. He rises to fight without his court.",
+            "enemy_group": "insatiable_king_weakened",
+            "difficulty": "normal",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "human": 5,
+              "hungry_ghost": -3
+            }
+          }
+        },
+        {
+          "id": "sermon",
+          "type": "requirement",
+          "text": "Speak the sutra of the open hand — hunger ends where giving begins",
+          "requirements": {
+            "skills": {
+              "white_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "combat",
+            "text": "The words land like rain on a fire that has burned for ten thousand years. His courtiers dissolve, wailing. The King alone remains, diminished, weeping — and still he attacks, because he no longer knows how to do anything else.",
+            "enemy_group": "insatiable_king_weakened",
+            "difficulty": "normal",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "god": 5,
+              "human": 3
+            }
+          }
+        },
+        {
+          "id": "liberate",
+          "type": "requirement",
+          "text": "Sit with him. Ask what he was, before the hunger",
+          "requirements": {
+            "skills": {
+              "yoga": 6
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The question stops him like a blade. Slowly, haltingly, he remembers: a rich man who buried grain while his village starved, who died counting. You sit with the memory until he can hold it himself.\n\nWhen he finally weeps, the tears are ordinary and human. The throne of bone crumbles. Where the King sat there is only an old man's shadow, bowing once before it fades. The gate stands open.",
+            "defeat_boss": true,
+            "rewards": {
+              "xp": 30
+            },
+            "karma": {
+              "god": 10,
+              "human": 5,
+              "hungry_ghost": -10
+            }
+          }
+        }
+      ]
+    },
+    "hg_swamp_warden": {
+      "id": "hg_swamp_warden",
+      "title": "Swamp Warden",
+      "realm": "hungry_ghost",
+      "text": "The only dry crossing through the wall of thorn and mire is watched. A rolang ancient stands waist-deep in the black water, preserved by centuries of swamp tannin, carrion worms moving beneath its skin like slow thoughts.\n\nIt raises one dripping arm and points — not at you, but at the toll stone beside the path, hollowed like a begging bowl.",
+      "choices": [
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Cut it down and force the crossing",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "rotting_sentinel",
+            "difficulty": "hard",
+            "karma": {
+              "hell": 3,
+              "asura": 2
+            }
+          }
+        },
+        {
+          "id": "toll",
+          "type": "default",
+          "text": "Fill the toll stone with food and pass",
+          "cost": {
+            "food": "moderate"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The worms boil out of the warden's body to swarm the offering. While the ancient stands hollowed and swaying, you walk the causeway unopposed.",
+            "rewards": {
+              "xp": 6
+            },
+            "karma": {
+              "hungry_ghost": 3,
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "last_rites",
+          "type": "requirement",
+          "text": "Perform the rites that should have been spoken over this corpse",
+          "requirements": {
+            "skills": {
+              "ritual": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You speak the old words and the warden goes very still. The worms leave it, one by one, sliding into the water. What remains is only a dead man, finally allowed to be dead, toppling softly into the reeds. The crossing is yours.",
+            "rewards": {
+              "xp": 15
+            },
+            "karma": {
+              "god": 5,
+              "human": 3,
+              "hungry_ghost": -3
+            }
+          }
+        },
+        {
+          "id": "wade",
+          "type": "roll",
+          "text": "Wade through the deep mire, out of its reach",
+          "requirements": {
+            "roll": {
+              "attribute": "constitution",
+              "difficulty": "difficult"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "Chest-deep in rot, leeches at your ankles, you haul yourselves through the mire and up the far bank, shaking but past.",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "animal": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "combat",
+            "text": "The mud holds you fast — and the warden comes wading.",
+            "enemy_group": "rotting_sentinel",
+            "difficulty": "hard",
+            "karma": {
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hg_bone_gate_keeper": {
+      "id": "hg_bone_gate_keeper",
+      "title": "Bone Gate Keeper",
+      "realm": "hungry_ghost",
+      "text": "The pass through the ossuary wall runs beneath an arch of ten thousand fused skulls. Before it stands a skeleton formation in ancient parade order — warriors, archers, and at their center a bone horror wearing the rusted regalia of a gate captain.\n\nIts jaw grinds open: \"State. Your. Dead.\"",
+      "choices": [
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Break the formation",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "skeleton_elite",
+            "difficulty": "hard",
+            "karma": {
+              "hell": 3,
+              "asura": 3
+            }
+          }
+        },
+        {
+          "id": "name_dead",
+          "type": "default",
+          "text": "Name your dead, honestly, one by one",
+          "outcome": {
+            "type": "text",
+            "text": "You speak the names — companions lost, enemies slain, the lives that ended so you could stand here. The captain's skull tilts with each one, counting. When you finish, the formation parts with a sound like dry applause.",
+            "rewards": {
+              "xp": 10
+            },
+            "karma": {
+              "human": 3,
+              "god": 2,
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "command",
+          "type": "requirement",
+          "text": "Command them in the tongue of the dead",
+          "requirements": {
+            "skills": {
+              "black_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Your word of command cracks across the pass like a whip. The formation snaps to attention — and holds it, rigid, as you walk through their ranks. The captain's eye sockets track you the whole way.",
+            "rewards": {
+              "xp": 12
+            },
+            "karma": {
+              "hungry_ghost": 4,
+              "hell": 2
+            }
+          }
+        },
+        {
+          "id": "inspect",
+          "type": "requirement",
+          "text": "Return the salute and inspect the honor guard",
+          "requirements": {
+            "skills": {
+              "leadership": 3
+            }
+          },
+          "outcome": {
+            "type": "combat",
+            "text": "You walk the line like a visiting general. Halfway down the rank, the captain decides you are worth testing — but formation discipline binds most of its troops to their posts.",
+            "enemy_group": "bone_horror",
+            "difficulty": "normal",
+            "rewards": {
+              "xp": 8
+            },
+            "karma": {
+              "asura": 4,
+              "human": 2
+            }
+          }
+        }
+      ]
     }
   }
 }

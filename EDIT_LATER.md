@@ -1,18 +1,17 @@
 # Edit Later
 
 ### Hungry-ghost-specific content events (unwritten)
-These 37 IDs still need full narrative writing — encounters, choices, story beats.
-Shop wrappers and spell guilds have all been implemented; these are the remaining
+These 34 IDs still need full narrative writing — encounters, choices, story beats.
+Shop wrappers and spell guilds have all been implemented; the three map-critical
+events (boss, both pass guardians) were written during the 2026-07-27 audit; these are the remaining
 content events (dungeons, NPC encounters, environmental hazards, boss fights, etc.).
 
 - `hg_ancestor_spirit`
 - `hg_ancient_crypt`
 - `hg_body_possession`
 - `hg_bone_collector`
-- `hg_bone_gate_keeper`
 - `hg_bone_shrine`
 - `hg_bone_tower`
-- `hg_boss_insatiable_king`
 - `hg_charnel_hermit`
 - `hg_corpse_oracle`
 - `hg_crumbling_mausoleum`
@@ -36,7 +35,6 @@ content events (dungeons, NPC encounters, environmental hazards, boss fights, et
 - `hg_sorcerer_of_corpses`
 - `hg_sunken_village`
 - `hg_swamp_toll`
-- `hg_swamp_warden`
 - `hg_vetala_arena`
 - `hg_vetala_bargain`
 - `hg_vetala_court`

@@ -774,6 +774,12 @@ func apply_outcome(outcome: Dictionary) -> void:
 		else:
 			push_error("EventManager: 'set_flags' must be a Dictionary, got: %s" % type_string(typeof(outcome.set_flags)))
 
+	# Mark the current realm's boss as defeated (e.g. a peaceful boss resolution).
+	# Combat victories over the "realm_boss" object are handled by overworld instead.
+	if outcome.get("defeat_boss", false):
+		GameState.defeat_boss(GameState.current_world)
+		print("EventManager: Realm boss resolved — %s portal unsealed" % GameState.current_world)
+
 	# Register a new quest if the outcome defines one
 	if "register_quest" in outcome:
 		if outcome.register_quest is Dictionary:

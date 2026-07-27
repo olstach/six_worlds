@@ -1109,5 +1109,31 @@
       "food_consumption: consume 50% more food per meal and rest",
       "rest_healing: receive 50% less HP and MP from rest"
     ]
+  },
+  "better_starting_weapon": {
+    "name": "Armory Rights",
+    "description": "Red devils muster from the Infernal Guard's armories — this life begins with a superior weapon.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "extra_starting_gold": {
+    "name": "Hoarder's Instinct",
+    "description": "Yellow devils are born counting. This life begins with a heavier purse.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "greed"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
   }
 }

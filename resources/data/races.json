@@ -44,9 +44,6 @@
         "raider",
         "torturer"
       ],
-      "todo": [
-        "better_starting_weapon: start with a tier-2 melee weapon instead of tier-1"
-      ],
       "resistances": {},
       "emotional_baseline": {
         "space": 0,
@@ -56,7 +53,8 @@
         "air": 0
       },
       "starting_traits": [
-        "hell_born"
+        "hell_born",
+        "better_starting_weapon"
       ]
     },
     "blue_devil": {
@@ -162,9 +160,6 @@
         "infernal_scribe",
         "torturer"
       ],
-      "todo": [
-        "extra_starting_gold: begin with 50 bonus gold"
-      ],
       "resistances": {},
       "emotional_baseline": {
         "space": 0,
@@ -174,7 +169,8 @@
         "air": 0
       },
       "starting_traits": [
-        "hell_born"
+        "hell_born",
+        "extra_starting_gold"
       ]
     },
     "green_devil": {

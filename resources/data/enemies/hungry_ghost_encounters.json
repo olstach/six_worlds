@@ -640,6 +640,32 @@
           "count": 5
         }
       ]
+    },
+    "insatiable_king": {
+      "_comment": "Realm boss — the Insatiable King with two charnel wraith courtiers",
+      "region": "charnel_grounds",
+      "fixed": true,
+      "enemies": [
+        {
+          "archetype": "hg_insatiable_king",
+          "count": 1
+        },
+        {
+          "archetype": "hg_charnel_wraith",
+          "count": 2
+        }
+      ]
+    },
+    "insatiable_king_weakened": {
+      "_comment": "Sated variant — offered food/honesty first, fights alone with reduced power",
+      "region": "charnel_grounds",
+      "fixed": true,
+      "enemies": [
+        {
+          "archetype": "hg_insatiable_king_weakened",
+          "count": 1
+        }
+      ]
     }
   }
 }
