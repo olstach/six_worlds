@@ -43,6 +43,10 @@ The full list is in the two commit messages; the load-bearing ones:
    from pre-merge history under the `traits` key CompanionSystem reads.
 6. **Deleted QuirkSystem still referenced** in psychology_system (parse-level
    breakage → quirk crisis reactions never ran). Migrated to TraitSystem.
+6b. **All three quests were unfinishable** — the board handed them out and
+   nothing in the game ever set the flags their steps check. Fixed in a later
+   pass with six new hell events; the validator now rejects a quest whose step
+   flag no event sets.
 7. **Boss gating was fiction** — `requires_boss_defeated` on the HG portal was
    never checked, and nothing ever called `GameState.defeat_boss()`. Both now
    wired; portals also no longer double-generate the destination map.
@@ -83,13 +87,12 @@ Ordered roughly by how much finished work is sitting behind each gap.
 - ~~Animal realm zone events~~ — done, all 47 written.
 - **All of the above is Claude's prose and wants Olaf's pass** — 81 new events
   and 24 companion bios across the two content passes.
-- **Bespoke recruitment events** for HG companions (priority targets listed in
-  TODO.md § Companions).
-- **Hell event chains + quest content** (soul caravan, devil deserter, …) —
-  quest board system exists, content doesn't.
+- ~~Bespoke recruitment events for HG companions~~ — the 9 priority targets
+  are done; the rest stay shop-only by design.
+- ~~Prosthetic items~~ — 12 created, and the two missing code links wired.
+- **Hell quest content beyond the three fixed chains** — the board works now
+  but only has three quests, all hell. HG and animal have none.
 - **PERKS.md empty tiers** (levels 2/4/6/8 for many skills); perk flavor text.
-- **Prosthetic items**: the entire limb-loss → prosthetic flow is coded
-  (equip bypass, slot restore) but items.json has zero prosthetic items.
 - **Cursed items**: type registered, none exist.
 
 ### ~~UI debt~~ and ~~half-wired mechanics~~ — CLOSED 2026-07-27
@@ -111,8 +114,6 @@ implemented.
 Still deferred from that pass, with reasons:
 - **Dominated** full enemy-control AI (puppet currently just loses its turns)
 - **Combat-UI wound icons** (character sheet shows them; unit frames need art)
-- **Prosthetic items** — flow is coded and the panel displays them, but
-  items.json still contains none
 - **Protector Offering** camp activity — blocked on DharmapalaSystem
 - **Rest follow-ups**: realm-specific rest events, day/night visuals,
   rest-blocked-when-mob-adjacent
@@ -158,9 +159,8 @@ Specifically worth watching for:
   pressure systems are tuned sanely now that they're visible.
 
 Good second sessions, depending on appetite:
-- **Content mood:** bespoke recruitment events for HG companions, hell quest
-  chains, or PERKS.md's empty tiers — the map-placement work is finished for
-  every realm that has content.
+- **Content mood:** more quests (the board works now but has only three, all
+  hell), PERKS.md's empty tiers, or cursed items.
 - **Systems mood:** prosthetic items (small, unblocks a fully-coded flow), or
   combat-UI polish (wound icons on unit frames, per-arm damage popups).
 - **Big-swing mood:** YidamSystem — the design in TODO.md is complete enough

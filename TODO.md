@@ -315,7 +315,7 @@ Persistent negative status effects from combat or events that do not fully clear
 
 ### Companions
 - [ ] Camp Followers system — UI stub exists in Party tab (`_update_followers_list()`); no backend
-- [ ] Bespoke recruitment events for HG companions — organic recruitment outside shops; not every companion needs one, priority targets: Mehr (golden glint in the dark), Chöki (near still water), Nangwa (haunting a ruined library), Prashan (riddle challenge), Nyingje (found tending other undead), Khedrup (mid-recitation on an auspicious rock), Rasabhava (preservation lab, examine his notes), Durvasa (bound by reflected curse, Air magic / Ritual to stabilize), Gomchen (meditating amid binding contracts)
+- [x] ~~Bespoke recruitment events for HG companions~~ — all 9 priority targets written and placed (3 per zone), each with two gated free-recruit paths and a paid fallback. Remaining HG and hell companions are still shop-only, which is fine.
 - [ ] More companions for the hungry ghost realm — current HG roster may be thin; design and add new companion definitions to companion data file
 
 ---
@@ -714,7 +714,7 @@ Second audit fixed: multi-arm chain gate, enemy body_plan, inventory-full-on-sev
 - [x] ~~**Companion `body_plan` missing**~~ — Not a bug: `CompanionSystem.recruit()` uses `CharacterSystem.BASE_CHARACTER.duplicate(true)` which already includes `body_plan`, `wounds`, `emotional_pressure`, and `quirks`.
 - [x] ~~**Inventory full on sever**~~ — Fixed in `BodySystem.sever_part()`: if `unequip_item()` returns false (inventory full), the slot is force-cleared directly on `character.equipment` so the item doesn't remain in an orphaned equipped state (item is lost rather than returned).
 - [ ] **`sever_part` for arm_l2/arm_r2**: extra arms (four-armed species) have equip slots hand_l2/hand_r2 but no weapon slots. Add `weapon_main2`/`weapon_off2` slot handling when that system is built.
-- [ ] **Prosthetic items need stat entries**: item type "prosthetic" registered but no actual prosthetic items exist. Create per body region (hand, leg, foot) when the craftable items pass comes.
+- [x] ~~**Prosthetic items**~~ — 12 created (crude/fitted/fine × hand/arm/leg/foot) and stocked at healers, medicinal gardens, the bone merchant, two smiths and the shell-wright. Also wired the two missing links: ItemSystem now records fittings in body_plan.prosthetics, and get_missing_part_penalties() scales the penalty by prosthetic_mitigation (crude 0.5, fitted/fine 1.0).
 - [x] ~~**Missing limb stat penalty**~~ — Fixed: `BodySystem.MISSING_PART_PENALTIES` const + `get_missing_part_penalties()` helper added; wired into `CharacterSystem.update_derived_stats()` after wound penalties. Arm loss: -2 damage, -5 stamina. Leg loss: -1 movement, -5 dodge. Foot loss: -1 movement.
 
 #### LOW — Polish / missing flavor
@@ -813,6 +813,33 @@ Some Deity Yoga effects are simplified stat bonuses rather than true unit spawns
 - [ ] Design shrine objects for overworld (map_generator.gd placement)
 - [ ] Implement DharmapalSystem autoload (offering tracking, relationship meters, interventions)
 - [ ] Wire cross-lifetime persistence into KarmaSystem / reincarnation logic
+
+---
+
+## Quests, Recruitment & Prosthetics Pass — 2026-07-27 ✓ COMPLETE
+
+**Broken quests fixed.** All three quests in quests.json were unfinishable —
+the board offered them and none of their six step flags was ever set by any
+event. Six events written and placed on the hell map to close the chains
+(warden's strongroom → frozen prisoner; Blisterfang → ember merchant's books;
+scroll in the drift → hermit in the cold). Find-events stand alone; resolution
+choices are gated on the find flag via `prerequisite`.
+
+**Validator gained two checks** so this cannot recur: quest step flags must be
+settable by some event, and choice `prerequisite` flags must be reachable.
+
+**9 HG recruitment events** for the priority companions listed above.
+
+**12 prosthetics** plus the two code links that were missing — nothing wrote to
+`body_plan.prosthetics`, and the penalty maths ignored it, so a fitted limb
+restored the equip slot but left the stat loss in place.
+
+**Three assumptions made without answers** (the questions went unanswered, so
+I took my own recommended option each time — all cheap to reverse):
+- Quest fix by writing full event chains, rather than bolting flags onto
+  existing events
+- Recruitment free when earned via a check, gold as always-available fallback
+- Prosthetics in three tiers rather than one flat tier
 
 ---
 
