@@ -3041,6 +3041,139 @@
       "tabs": [
         "spells"
       ]
+    },
+    "animal_pearl_merchant": {
+      "name": "Pearl Merchant",
+      "type": "general",
+      "description": "Pearls, polished shell, sea-glass, and a few things older than her trade.",
+      "price_modifier": 1.1,
+      "buys_items": true,
+      "items": {
+        "water_charm_common": 2,
+        "water_charm_middling": 1,
+        "space_charm_common": 1,
+        "random_common_talisman": 2,
+        "health_potion": 3,
+        "mana_potion": 2,
+        "rations": 4
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_shell_wright": {
+      "name": "Shell-Wright's Stall",
+      "type": "blacksmith",
+      "description": "A karka craftsman working in moulted shell, chitin, and salvaged metal.",
+      "price_modifier": 0.95,
+      "buys_items": true,
+      "items": {
+        "chainmail": 2,
+        "lamellar_armor": 1,
+        "leather_vest": 3,
+        "leather_cap": 3,
+        "leather_boots": 3,
+        "leather_gloves": 3,
+        "iron_trishula": 2,
+        "iron_mace": 2,
+        "iron_dagger": 3,
+        "scrap_metal": 6,
+        "salvage_kit": 3
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": [
+          "smithing",
+          "armor"
+        ]
+      }
+    },
+    "animal_healer_camp": {
+      "name": "Healer's Camp",
+      "type": "healer",
+      "description": "A canvas clinic strung between four trees, run by a grey-muzzled gana who does not hurry.",
+      "price_modifier": 0.9,
+      "buys_items": true,
+      "items": {
+        "health_potion": 5,
+        "greater_health_potion": 2,
+        "herb_bundle": 6,
+        "healing_herb": 8,
+        "raw_reagents": 3,
+        "salvage_kit": 2
+      },
+      "spells": [
+        "lesser_heal",
+        "cure",
+        "herbal_remedy",
+        "cooling_mist"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": [
+          "medicine"
+        ]
+      },
+      "healing": {
+        "medicine_level": 5
+      }
+    },
+    "animal_forest_merchant": {
+      "name": "Forest Merchant",
+      "type": "general",
+      "description": "A varaha trader working a circuit he holds entirely in his head. Everything he owns is on his back.",
+      "price_modifier": 1.15,
+      "buys_items": true,
+      "items": {
+        "rations": 6,
+        "travel_provisions": 3,
+        "herb_bundle": 4,
+        "raw_reagents": 3,
+        "health_potion": 3,
+        "mana_potion": 2,
+        "scrap_metal": 4,
+        "leather_vest": 2,
+        "leather_boots": 2,
+        "iron_dagger": 2,
+        "short_bow": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_meadow_merchant": {
+      "name": "Plains Merchant",
+      "type": "general",
+      "description": "An enormous cart drawn by a harnessed khadga, worked by a yaksha who has run this route for decades.",
+      "price_modifier": 1.05,
+      "buys_items": true,
+      "items": {
+        "rations": 8,
+        "travel_provisions": 4,
+        "herb_bundle": 4,
+        "raw_reagents": 4,
+        "health_potion": 4,
+        "mana_potion": 3,
+        "scrap_metal": 6,
+        "salvage_kit": 2,
+        "chainmail": 1,
+        "leather_vest": 3,
+        "leather_boots": 3,
+        "iron_trishula": 2,
+        "iron_axe": 2,
+        "longbow": 1,
+        "random_common_talisman": 2
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
     }
   },
   "shop_types": {
