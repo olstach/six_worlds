@@ -308,10 +308,10 @@ Persistent negative status effects from combat or events that do not fully clear
 - [ ] Map configs for remaining realms — human, asura, god still needed
 - [ ] Enemy archetypes + encounters for human, asura, god realms
 - [ ] Event files for human, asura, god realms
-- [ ] Companion definitions for remaining realms (47 companions exist across hell + HG; animal, human, asura, god still empty)
-- [ ] Animal realm zone-specific events (ocean, forest, meadow) — the actual encounters, NPC dialogues, dungeon events; see animal_events.json for list of referenced event_ids not yet implemented
-- [ ] **Animal realm domain guild shop data** — animal_events.json references these shop_ids that need entries in shops.json: `animal_naga_palace` (water/enchantment), `animal_ancient_banyan` (earth/summoning), `animal_termite_cathedral` (earth/summoning/alchemy), `animal_birds_congress` (air/space/white), `animal_bone_forest` (black/summoning). Also: universal guild shops `animal_sacred_grove` through `animal_eternal_fire`, teahouse shops, town shops, training camp shops.
-- [ ] Add HG shop entries pattern for animal realm — mirror the HG follow-up: add all animal shop_ids to shops.json once shop system is extended to animal realm
+- [x] ~~Companion definitions for animal realm~~ — 24 added (8 per zone), covering all 17 animal births. Human, asura, god still empty. **Needs a prose pass.**
+- [x] ~~Animal realm zone-specific events~~ — all 47 written (13 ocean, 17 forest, 17 meadow). The animal map is at 0% dead map-object weight, matching hell. **Needs a prose pass — the writing is Claude's.**
+- [x] ~~**Animal realm domain guild shop data**~~ — all present and validated.
+- [x] ~~Animal shop entries~~ — all animal shop_ids exist, plus 5 new ones for the merchant/healer events (pearl merchant, shell-wright, forest merchant, healer's camp, plains merchant).
 
 ### Companions
 - [ ] Camp Followers system — UI stub exists in Party tab (`_update_followers_list()`); no backend
@@ -813,6 +813,34 @@ Some Deity Yoga effects are simplified stat bonuses rather than true unit spawns
 - [ ] Design shrine objects for overworld (map_generator.gd placement)
 - [ ] Implement DharmapalSystem autoload (offering tracking, relationship meters, interventions)
 - [ ] Wire cross-lifetime persistence into KarmaSystem / reincarnation logic
+
+---
+
+## Animal Realm Content Pass — 2026-07-27 ✓ COMPLETE
+
+**Events:** all 47 missing zone events written. The animal map referenced 84
+event markers but only 37 existed — walking into the other 47 silently did
+nothing. Now 0% dead weight (hell is also 0%; **hungry ghost is still 41% —
+34 events listed in `EDIT_LATER.md` remain unwritten**).
+
+**Companions:** 24 added, 8 per zone, covering all 17 animal births. Every
+companion in the game now carries a `realm` field and animal ones a `zone`.
+
+**Bugs found while doing it:**
+- The audit validator had a blind spot — `object_pools[zone]` is a dict keyed
+  by `events`/`pickups`, not a list — so *no* map event reference had ever
+  been checked in any realm. Promoted to `tools/validate_data.py` with that
+  fixed plus checks on races/backgrounds, karma realms, archetype spells,
+  shop rosters and map pickups.
+- Animal shops offered the hell devil roster verbatim (copy-paste); no
+  companion had a realm, so the random-recruit filter never filtered.
+- 4 backgrounds granted a nonexistent `crafting` skill (it is `smithing`).
+- 8 background starting items used pre-rename ids, so several animal
+  backgrounds started characters with **no weapon at all**.
+- 4 events used elements as karma realms; 2 archetypes referenced renamed
+  spells; 2 companions referenced nonexistent backgrounds.
+
+**Both new content batches need a prose pass — the writing is Claude's.**
 
 ---
 

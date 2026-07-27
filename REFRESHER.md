@@ -15,8 +15,8 @@ Three of six realms have real content:
 | Realm | Map | Enemies | Events | Shops | Companions |
 |---|---|---|---|---|---|
 | **Hell** | ✓ (cold/fire + divider) | ✓ 45 archetypes | ✓ 73 events | ✓ | ✓ 24 |
-| **Hungry Ghost** | ✓ (3 zones) | ✓ 23 archetypes | ✓ core + infra (34 flavor events still unwritten — list in `EDIT_LATER.md`) | ✓ | ✓ 23 |
-| **Animal** | ✓ (ocean/forest/meadow) | ✓ 34 archetypes | ✓ 39 infra events | ✓ | ✗ none |
+| **Hungry Ghost** | ✓ (3 zones) | ✓ 23 archetypes | ⚠ core + infra; **34 unwritten, 41% dead map weight** (`EDIT_LATER.md`) | ✓ | ✓ 23 |
+| **Animal** | ✓ (ocean/forest/meadow) | ✓ 34 archetypes | ✓ 86 events (0% dead map weight) | ✓ | ✓ 24 |
 | Human / Asura / God | ✗ | ✗ | ✗ | ✗ | ✗ |
 
 Core systems all exist and are wired: character/XP, karma/reincarnation,
@@ -61,20 +61,27 @@ The full list is in the two commit messages; the load-bearing ones:
 10. Roll choices can now carry skill/attribute gates ("gated gamble" —
     used by hg_desperate_mother's Yoga-gated Charm roll).
 
-A reusable data validator lives in the audit session; the checks it runs
-(events→encounters/shops/items/spells/traits/skills, map configs→events/mobs,
-companions→everything, code→perk ids/status names/autoload methods) are cheap
-to re-run — worth re-running after any big content merge.
+`tools/validate_data.py` is the reusable data validator (run it after any
+content merge; exits non-zero on a dangling reference). An earlier ad-hoc
+version had a blind spot that hid every map→event reference in the game —
+if you write a checker, check its negatives.
+
+It checks events→encounters/shops/items/spells/traits/skills/wounds/karma,
+map configs→events/mobs/pickups, shops→items/spells/companions,
+companions→births/backgrounds/items/spells/traits, races and backgrounds→
+skills/traits/equipment, encounters→archetypes, and code→perk ids/status names.
 
 ## Started but not finished
 
 Ordered roughly by how much finished work is sitting behind each gap.
 
 ### Content gaps in otherwise-done systems
-- **34 HG flavor events** unwritten (`EDIT_LATER.md` has the ID list) — the
-  realm plays but is thinner than hell.
-- **Animal realm companions: zero.** Hell has 24, HG has 23. Recruitment
-  events/shops for animal realm reference no one.
+- **34 HG flavor events unwritten** — and unlike a thin realm, these are
+  *placed on the map*: 41% of hungry ghost map-object weight leads to a marker
+  that silently does nothing when walked into. This is now the single biggest
+  content hole. IDs in `EDIT_LATER.md`.
+- ~~Animal realm companions~~ — done, 24 added covering all 17 births.
+- ~~Animal realm zone events~~ — done, all 47 written.
 - **Bespoke recruitment events** for HG companions (priority targets listed in
   TODO.md § Companions).
 - **Hell event chains + quest content** (soul caravan, devil deserter, …) —
@@ -129,6 +136,8 @@ compensating passive), multi-arm damage scalars.
 ## Point of departure
 
 **Recommended first session back: a hell → hungry ghost → animal playthrough.**
+The animal realm is now fully populated — 86 events, 24 companions, 0% dead
+map markers — and has never been played at all.
 Progression is now actually gated (boss seal enforced, boss events exist), the
 animal realm's enemies/shops/events load for the first time, and a large batch
 of mechanics went from data-only to live — none of it has been played. Use the
@@ -138,16 +147,17 @@ Specifically worth watching for:
 - The **first-pass balance numbers** listed at the top of TODO.md §
   "UI Debt & Half-Wired Mechanics Pass" — summoning terrain +25%, pack bonus,
   shield/mirror-image pools, reflect chances, wound-healing prices.
-- The **three new HG events** (boss + two pass guardians) need a prose pass —
-  the writing is Claude's, not yours.
+- **All the new writing is Claude's, not yours** and wants a prose pass: the
+  three HG events (boss + two pass guardians), the 47 animal zone events, and
+  the 24 animal companion bios.
 - The new **difficulty multipliers** (easy 0.75× … boss 1.6×) applied to every
   event fight for the first time.
 - The **wounds/psychology panels** — first look at whether the wound and
   pressure systems are tuned sanely now that they're visible.
 
 Good second sessions, depending on appetite:
-- **Content mood:** the 34 HG events, or animal realm companions (the
-  recruitment machinery is all built — it's pure data + flavor).
+- **Content mood:** the 34 HG events — the last realm with dead map markers,
+  and the same shape of job just finished for animal.
 - **Systems mood:** prosthetic items (small, unblocks a fully-coded flow), or
   combat-UI polish (wound icons on unit frames, per-arm damage popups).
 - **Big-swing mood:** YidamSystem — the design in TODO.md is complete enough
