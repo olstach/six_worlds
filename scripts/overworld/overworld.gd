@@ -352,8 +352,30 @@ func _set_char_sheet_visible(show: bool) -> void:
 func _on_event_triggered(event_id: String, object: Dictionary) -> void:
 	_current_event_object = object
 	MapManager.pause_movement()
+	_record_healing_location(event_id, object)
 	_set_event_visible(true)
 	event_display.show_event(event_id, object.get("id", ""), object.get("one_time", false))
+
+
+## Remember healing-flavored locations (safe camps, shops/towns/teahouses) so
+## Cloud Gate can teleport the party back to the most recent one.
+func _record_healing_location(event_id: String, object: Dictionary) -> void:
+	var ev: Dictionary = EventManager.event_database.get(event_id, {})
+	if ev.is_empty():
+		return
+	var is_healing := ev.get("safe_camp", false)
+	if not is_healing:
+		for ch in ev.get("choices", []):
+			if ch.get("outcome", {}).get("type", "") == "shop":
+				is_healing = true
+				break
+	if is_healing:
+		var pos: Vector2i = object.get("position", MapManager.party_position)
+		GameState.last_healing_location = {
+			"map_id": MapManager.current_map_id,
+			"x": pos.x, "y": pos.y,
+			"name": object.get("name", ev.get("title", "sanctuary")),
+		}
 
 
 func _on_mob_event_triggered(_mob: Dictionary) -> void:
@@ -1000,6 +1022,22 @@ func _open_rest_panel() -> void:
 
 
 ## Returns true if the current tile is a safe camp (teahouse, gompa, etc.).
+## Suppress/enhance activity lists from the current tile's location event, if any.
+## Returns {"suppress": Array, "enhance": Array}.
+func _get_location_camp_lists() -> Dictionary:
+	var obj := MapManager.get_object_at(MapManager.party_position)
+	if not obj.is_empty():
+		# Event id lives in obj.data for map objects (top-level fallback for mobs)
+		var event_id: String = obj.get("data", {}).get("event_id", obj.get("event_id", ""))
+		if not event_id.is_empty():
+			var ev: Dictionary = EventManager.event_database.get(event_id, {})
+			return {
+				"suppress": ev.get("suppress_activities", []),
+				"enhance": ev.get("enhance_activities", []),
+			}
+	return {"suppress": [], "enhance": []}
+
+
 func _check_is_safe_camp() -> bool:
 	var obj := MapManager.get_object_at(MapManager.party_position)
 	if obj.is_empty():
@@ -1054,15 +1092,9 @@ func _open_activity_panel(tier: int, food_cost: int, herbs_cost: int, scrap_cost
 
 	var party     := CharacterSystem.get_party()
 	# Read location-specific suppress/enhance lists from the safe camp event dict
-	var _loc_event: Dictionary = {}
-	var _loc_obj := MapManager.get_object_at(MapManager.party_position)
-	if not _loc_obj.is_empty():
-		var _loc_event_id: String = _loc_obj.get("event_id", "")
-		if not _loc_event_id.is_empty():
-			_loc_event = EventManager.event_database.get(_loc_event_id, {})
-	var _suppress: Array = _loc_event.get("suppress_activities", [])
-	var _enhance: Array  = _loc_event.get("enhance_activities", [])
-	var available := CampSystem.get_available_activities(party, tier, is_safe, _suppress, _enhance)
+	var _loc_lists := _get_location_camp_lists()
+	var available := CampSystem.get_available_activities(party, tier, is_safe,
+			_loc_lists.get("suppress", []), _loc_lists.get("enhance", []))
 
 	# Track selection
 	var selected_ids: Array[String] = []
@@ -1288,6 +1320,7 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 	var activity_messages: Array[String] = []
 	var _activity_camp_event_id: String = ""
 	if not selected_activities.is_empty():
+		var enhance_ids: Array = _get_location_camp_lists().get("enhance", [])
 		for act_id in selected_activities:
 			var act_def: Dictionary = {}
 			for a in CampSystem.ACTIVITIES:
@@ -1295,7 +1328,7 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 					act_def = a
 					break
 			var performer: Dictionary = CampSystem._best_performer(party, act_def)
-			var result := CampSystem.execute_activity(act_id, performer, party)
+			var result := CampSystem.execute_activity(act_id, performer, party, act_id in enhance_ids)
 			activity_messages.append(result.get("message", ""))
 			if _activity_camp_event_id.is_empty():
 				_activity_camp_event_id = result.get("camp_event_id", "")

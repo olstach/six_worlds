@@ -108,6 +108,16 @@
             "text": "You walk past quietly. The mantras continue without interruption."
           }
         }
+      ],
+      "suppress_activities": [
+        "deep_repair",
+        "weapon_work",
+        "craft_item"
+      ],
+      "enhance_activities": [
+        "sadhana",
+        "mantra_recitation",
+        "spiritual_cleansing"
       ]
     },
     "animal_medicinal_garden": {
@@ -299,6 +309,15 @@
             "text": "You keep going. The smell of salt and smoke follows you out of the cliff."
           }
         }
+      ],
+      "suppress_activities": [
+        "deep_repair",
+        "weapon_work",
+        "craft_item"
+      ],
+      "enhance_activities": [
+        "campfire_story",
+        "night_music"
       ]
     },
     "animal_forest_teahouse": {
@@ -327,6 +346,15 @@
             "text": "The smell of forest tea follows you along the rope bridge."
           }
         }
+      ],
+      "suppress_activities": [
+        "deep_repair",
+        "weapon_work",
+        "craft_item"
+      ],
+      "enhance_activities": [
+        "campfire_story",
+        "night_music"
       ]
     },
     "animal_meadow_teahouse": {
@@ -355,6 +383,15 @@
             "text": "You walk past the watering hole without stopping. The smell of water and cooking carries far on open ground."
           }
         }
+      ],
+      "suppress_activities": [
+        "deep_repair",
+        "weapon_work",
+        "craft_item"
+      ],
+      "enhance_activities": [
+        "campfire_story",
+        "night_music"
       ]
     },
     "_comment_mercenary": "=== MERCENARY GUILDS ===",

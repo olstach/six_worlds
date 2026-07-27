@@ -222,7 +222,8 @@ const REALM_ORDER: Array[String] = ["hell", "hungry_ghost", "animal", "human", "
 ## yoga_level: best Yoga skill in party. ritual_tier: 0 (none) – 3 (mandala).
 ## Returns { "success": bool, "total": int, "realms": Array[Dictionary] }
 ## where realms = [{ "realm": String, "amount": int }].
-func perform_purification(yoga_level: int, ritual_tier: int) -> Dictionary:
+## amount_multiplier: >1.0 when practicing at a consecrated site (enhanced camp activity)
+func perform_purification(yoga_level: int, ritual_tier: int, amount_multiplier: float = 1.0) -> Dictionary:
 	var base_amount := 0
 
 	# Yoga determines base amount and whether a roll is required
@@ -250,6 +251,10 @@ func perform_purification(yoga_level: int, ritual_tier: int) -> Dictionary:
 	# Full moon / new moon amplifies purification (mirrors the karma weight multiplier)
 	if GameState.is_full_moon() or GameState.is_new_moon():
 		base_amount = roundi(base_amount * 1.5)
+
+	# Consecrated site bonus (enhanced camp activity)
+	if amount_multiplier != 1.0:
+		base_amount = roundi(base_amount * amount_multiplier)
 
 	# Distribute starting from the lowest realm, carrying remainder upward
 	var remaining := base_amount

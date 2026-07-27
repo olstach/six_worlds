@@ -809,6 +809,15 @@
             }
           }
         }
+      ],
+      "suppress_activities": [
+        "deep_repair",
+        "weapon_work",
+        "craft_item"
+      ],
+      "enhance_activities": [
+        "campfire_story",
+        "night_music"
       ]
     },
     "hg_undead_caravan": {

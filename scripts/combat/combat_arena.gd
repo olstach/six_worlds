@@ -875,7 +875,11 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 			var aoe_def = selected_spell.get("aoe", {"type": "circle", "size": 2})
 			var caster = CombatManager.get_current_unit()
 			if caster:
-				combat_grid.show_aoe_shape_preview(aoe_def, caster.grid_position, grid_pos)
+				# cone_forward ignores the hover tile — direction locked to facing
+				var aim_pos := grid_pos
+				if aoe_def.get("type", "") == "cone_forward":
+					aim_pos = caster.grid_position + caster.facing
+				combat_grid.show_aoe_shape_preview(aoe_def, caster.grid_position, aim_pos)
 			else:
 				combat_grid.clear_aoe_preview()
 		else:
@@ -1341,7 +1345,15 @@ func _on_spell_selected(spell: Dictionary) -> void:
 
 	# Get valid targets and full range area
 	var valid_targets = CombatManager.get_spell_targets(unit, spell.id)
-	var range_area = combat_grid.get_spell_range_tiles(unit.grid_position, 1, spell_range)
+	var range_area: Array[Vector2i]
+	var aoe_sel: Dictionary = spell_data.get("aoe", {})
+	if spell_data.get("targeting") == "aoe" and aoe_sel.get("type", "") == "cone_forward":
+		# cone_forward is locked to the caster's facing — highlight the actual cone
+		# silhouette instead of a spell-range circle.
+		range_area = AoEResolver.get_tiles(aoe_sel, unit.grid_position,
+				unit.grid_position + unit.facing, combat_grid.grid_size)
+	else:
+		range_area = combat_grid.get_spell_range_tiles(unit.grid_position, 1, spell_range)
 
 	# Always show range, even if no valid targets
 	current_action_mode = ActionMode.CAST_SPELL
@@ -2930,6 +2942,16 @@ func _on_unit_moved(unit: Node, from: Vector2i, to: Vector2i) -> void:
 
 
 func _on_unit_attacked(attacker: Node, defender: Node, result: Dictionary) -> void:
+	# Multi-arm chain: show each extra arm's outcome in the combat log
+	for extra in result.get("extra_arm_results", []):
+		var arm_num: int = extra.get("arm_number", 0)
+		if extra.get("hit", false):
+			var crit_str: String = " CRIT!" if extra.get("crit", false) else ""
+			_log_message("  Arm %d: %d %s damage to %s%s" % [
+				arm_num, extra.get("damage", 0), extra.get("damage_type", ""),
+				defender.unit_name, crit_str])
+		else:
+			_log_message("  Arm %d: misses %s" % [arm_num, defender.unit_name])
 	_update_action_buttons()
 
 
@@ -4165,6 +4187,16 @@ func _ai_try_use_active_skill(unit: CombatUnit, player_units: Array[Node], neare
 func _find_nearest_enemy(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
 	var nearest: CombatUnit = null
 	var nearest_dist: int = 999
+
+	# Taunt status (must_attack_taunter): this unit is compelled to target
+	# whoever applied the taunt, as long as the taunter is a valid target.
+	for fx in unit.status_effects:
+		var fx_def = CombatManager.get_status_definition(fx.get("status", ""))
+		if "must_attack_taunter" in fx_def.get("effects", []):
+			var taunter = fx.get("source", null)
+			if taunter != null and is_instance_valid(taunter) and taunter.is_alive() \
+					and taunter.is_targetable() and taunter in enemies:
+				return taunter
 
 	# Aggro-aura (look_at_me): if any enemy has taunt_active, strongly prefer them
 	for enemy in enemies:

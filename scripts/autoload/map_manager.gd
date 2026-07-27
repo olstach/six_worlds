@@ -1156,6 +1156,16 @@ func _apply_reward(reward: Dictionary) -> void:
 # PORTAL OBJECTS
 # ============================================
 
+## Instantly move the party to a tile on the current map (Cloud Gate, debug).
+func teleport_party(tile: Vector2i) -> void:
+	stop_movement()
+	var old_pos = party_position
+	party_position = tile
+	party_world_position = _tile_to_world(tile)
+	party_moved.emit(old_pos, tile)
+	party_position_updated.emit(party_world_position)
+
+
 func _handle_portal_object(obj: Dictionary) -> void:
 	stop_movement()
 	# Sealed portals require the current realm's boss to be defeated first

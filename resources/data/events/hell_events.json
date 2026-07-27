@@ -4934,6 +4934,15 @@
             "text": "You keep walking. The smell of smoke follows you longer than it should."
           }
         }
+      ],
+      "suppress_activities": [
+        "deep_repair",
+        "weapon_work",
+        "craft_item"
+      ],
+      "enhance_activities": [
+        "campfire_story",
+        "night_music"
       ]
     },
     "hell_teahouse_fire": {
@@ -4960,6 +4969,15 @@
             "text": "You leave the warmth behind."
           }
         }
+      ],
+      "suppress_activities": [
+        "deep_repair",
+        "weapon_work",
+        "craft_item"
+      ],
+      "enhance_activities": [
+        "campfire_story",
+        "night_music"
       ]
     },
     "hell_mercenary_guild": {
@@ -5212,6 +5230,16 @@
             }
           }
         }
+      ],
+      "suppress_activities": [
+        "deep_repair",
+        "weapon_work",
+        "craft_item"
+      ],
+      "enhance_activities": [
+        "sadhana",
+        "mantra_recitation",
+        "spiritual_cleansing"
       ]
     },
     "hell_mirror_lake": {

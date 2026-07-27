@@ -466,6 +466,8 @@ func _get_status_stat_bonus(stat: String) -> int:
 		# Map effect strings to stat bonuses
 		match stat:
 			"accuracy":
+				if "buffs_all_stats_considerably" in effects:
+					total += 8  # Divine_Champion / Divinely_Inspired
 				if "attack_bonus" in effects:
 					total += 10
 				if "attack_penalty" in effects:
@@ -481,6 +483,8 @@ func _get_status_stat_bonus(stat: String) -> int:
 				if "all_stats_penalty" in effects:
 					total -= 5  # Rotting: all stats down
 			"armor":
+				if "buffs_all_stats_considerably" in effects:
+					total += 8  # Divine_Champion / Divinely_Inspired
 				if "defense_bonus" in effects:
 					total += 10
 				if "defense_penalty" in effects:
@@ -496,6 +500,8 @@ func _get_status_stat_bonus(stat: String) -> int:
 				if "all_stats_penalty" in effects:
 					total -= 5
 			"dodge":
+				if "buffs_all_stats_considerably" in effects:
+					total += 8  # Divine_Champion / Divinely_Inspired
 				if "dodge_bonus" in effects:
 					total += 15
 				if "minor_dodge_bonus" in effects:
@@ -524,6 +530,8 @@ func _get_status_stat_bonus(stat: String) -> int:
 				if "major_speed_boost" in effects:
 					total += 4
 			"initiative":
+				if "buffs_all_stats_considerably" in effects:
+					total += 8  # Divine_Champion / Divinely_Inspired
 				if "initiative_bonus" in effects:
 					total += 5
 				if "initiative_penalty" in effects:
@@ -539,6 +547,8 @@ func _get_status_stat_bonus(stat: String) -> int:
 				if "all_stats_penalty" in effects:
 					total -= 3
 			"damage":
+				if "buffs_all_stats_considerably" in effects or "buffs_two_highest_stats" in effects:
+					total += 8  # Divine_Champion / Divinely_Inspired
 				if "melee_damage_bonus" in effects:
 					total += 5
 				if "damage_bonus" in effects:
@@ -558,6 +568,8 @@ func _get_status_stat_bonus(stat: String) -> int:
 				if "all_stats_penalty" in effects:
 					total -= 5
 			"crit_chance":
+				if "buffs_all_stats_considerably" in effects:
+					total += 5  # Divine_Champion / Divinely_Inspired
 				if "critical_boost" in effects:
 					total += 10
 				if "critical_bonus_ranged" in effects:
@@ -567,6 +579,8 @@ func _get_status_stat_bonus(stat: String) -> int:
 				if "minor_all_stats_bonus" in effects:
 					total += 3
 			"spellpower":
+				if "buffs_all_stats_considerably" in effects or "buffs_two_highest_stats" in effects:
+					total += 8  # Divine_Champion / Divinely_Inspired
 				if "awareness_bonus" in effects or "focus_bonus" in effects:
 					total += 3
 				if "focus_bonus_major" in effects:
@@ -712,14 +726,24 @@ func consume_oil_charge() -> Dictionary:
 ## Get the unit's movement mode based on active status effects
 ## Returns CombatGrid.MovementMode enum value
 func get_movement_mode() -> int:
+	# Effect-driven: any status granting flight (Flying, Storm_Lord, Lightning_Form)
+	# enables it; a loses_flight status (Grounded) overrides and pins the unit down.
+	var flying := false
+	var grounded := false
+	var levitating := false
 	for effect in status_effects:
-		var status_name = effect.get("status", "").to_lower()
-		if status_name == "flying" or status_name == "storm_lord":
-			return CombatGrid.MovementMode.FLYING
-	for effect in status_effects:
-		var status_name = effect.get("status", "").to_lower()
-		if status_name == "levitating":
-			return CombatGrid.MovementMode.LEVITATE
+		var def = CombatManager.get_status_definition(effect.get("status", ""))
+		var fx: Array = def.get("effects", [])
+		if "grants_flight" in fx:
+			flying = true
+		if "loses_flight" in fx:
+			grounded = true
+		if effect.get("status", "").to_lower() == "levitating":
+			levitating = true
+	if flying and not grounded:
+		return CombatGrid.MovementMode.FLYING
+	if levitating:
+		return CombatGrid.MovementMode.LEVITATE
 	return CombatGrid.MovementMode.NORMAL
 
 

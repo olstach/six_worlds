@@ -149,6 +149,9 @@ func _ready() -> void:
 	# Rename the first tab to "Character" (node is named "Stats" in the scene)
 	tab_container.set_tab_title(0, "Character")
 
+	# Wounds and Psychology panels — appended to the Stats tab's right column
+	_build_extra_stat_panels()
+
 	# Journal tab — two-panel: title list on left, details on right
 	var journal_root := HSplitContainer.new()
 	journal_root.name = "Journal"
@@ -307,6 +310,8 @@ func _refresh_display() -> void:
 	_update_skills_grid(character)
 	_update_perks_list(character)
 	_update_quirks(character)
+	_update_wounds(character)
+	_update_psychology(character)
 	_update_companion_ui(character)
 
 
@@ -892,6 +897,185 @@ func _update_quirks(character: Dictionary) -> void:
 
 
 # ============================================
+# WOUNDS & PSYCHOLOGY PANELS (Stats tab, right column)
+# ============================================
+
+var wounds_container: VBoxContainer
+var psychology_container: VBoxContainer
+
+
+## Create the Wounds and Psychology panels after the Quirks panel in the
+## right-column scroll area of the Stats tab.
+func _build_extra_stat_panels() -> void:
+	# QuirksContainer → QuirksVBox → QuirksMargin → QuirksPanel → RightScrollContent
+	var right_content: Node = quirks_container.get_parent().get_parent().get_parent().get_parent()
+	wounds_container = _make_stats_panel(right_content, "WOUNDS & BODY")
+	psychology_container = _make_stats_panel(right_content, "STATE OF MIND")
+
+
+func _make_stats_panel(parent: Node, title: String) -> VBoxContainer:
+	var panel := PanelContainer.new()
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 15)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_right", 15)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	panel.add_child(margin)
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	margin.add_child(vbox)
+	var title_lbl := Label.new()
+	title_lbl.text = title
+	title_lbl.add_theme_font_size_override("font_size", 16)
+	vbox.add_child(title_lbl)
+	var container := VBoxContainer.new()
+	container.add_theme_constant_override("separation", 2)
+	vbox.add_child(container)
+	parent.add_child(panel)
+	return container
+
+
+func _update_wounds(character: Dictionary) -> void:
+	if wounds_container == null:
+		return
+	for child in wounds_container.get_children():
+		child.queue_free()
+
+	var wounds: Array = character.get("wounds", [])
+	var missing: Array = character.get("body_plan", {}).get("missing_parts", [])
+	var prosthetics: Dictionary = character.get("body_plan", {}).get("prosthetics", {})
+
+	if wounds.is_empty() and missing.is_empty():
+		var ok_lbl := Label.new()
+		ok_lbl.text = "Whole and unwounded."
+		ok_lbl.add_theme_font_size_override("font_size", 12)
+		ok_lbl.add_theme_color_override("font_color", Color(0.5, 0.65, 0.5))
+		wounds_container.add_child(ok_lbl)
+		return
+
+	const SEVERITY_COLORS := {
+		"light": Color(0.85, 0.75, 0.4),
+		"moderate": Color(0.9, 0.55, 0.3),
+		"severe": Color(0.9, 0.35, 0.3),
+	}
+	for entry in wounds:
+		var wid: String = entry.get("id", "")
+		var wdef: Dictionary = WoundSystem.WOUND_TYPES.get(wid, {})
+		if wdef.is_empty():
+			continue
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 6)
+
+		var name_lbl := Label.new()
+		name_lbl.text = wdef.get("display_name", wid)
+		name_lbl.add_theme_font_size_override("font_size", 13)
+		name_lbl.add_theme_color_override("font_color",
+				SEVERITY_COLORS.get(wdef.get("severity", "light"), Color.WHITE))
+		name_lbl.custom_minimum_size.x = 130
+		row.add_child(name_lbl)
+
+		var loc: String = entry.get("body_location", "")
+		var info_parts: Array[String] = []
+		if loc != "":
+			info_parts.append(loc.replace("_", " "))
+		var escalates: String = wdef.get("escalates_to", "")
+		if escalates != "":
+			var rests_left: int = maxi(0,
+					int(wdef.get("escalation_rests", 2)) - int(entry.get("rests_untreated", 0)))
+			info_parts.append("worsens in %d rest%s" % [rests_left, "" if rests_left == 1 else "s"])
+		var info_lbl := Label.new()
+		info_lbl.text = "  ·  ".join(info_parts)
+		info_lbl.add_theme_font_size_override("font_size", 11)
+		info_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+		info_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(info_lbl)
+
+		var cure_note: String = "Cured by Medicine %d (Field Surgery or a healer)." % int(wdef.get("cure_medicine_level", 2))
+		row.tooltip_text = wdef.get("description", "") + "\n" + cure_note
+		row.mouse_filter = Control.MOUSE_FILTER_STOP
+		wounds_container.add_child(row)
+
+	for part_id in missing:
+		var row := HBoxContainer.new()
+		var part_lbl := Label.new()
+		var part_name: String = str(part_id).replace("_", " ").capitalize()
+		if part_id in prosthetics:
+			var pros_item: Dictionary = ItemSystem.get_item(prosthetics[part_id])
+			part_lbl.text = "%s — prosthetic: %s" % [part_name, pros_item.get("name", str(prosthetics[part_id]))]
+			part_lbl.add_theme_color_override("font_color", Color(0.6, 0.7, 0.85))
+		else:
+			part_lbl.text = "%s — MISSING" % part_name
+			part_lbl.add_theme_color_override("font_color", Color(0.85, 0.3, 0.3))
+		part_lbl.add_theme_font_size_override("font_size", 13)
+		row.add_child(part_lbl)
+		wounds_container.add_child(row)
+
+
+func _update_psychology(character: Dictionary) -> void:
+	if psychology_container == null:
+		return
+	for child in psychology_container.get_children():
+		child.queue_free()
+
+	var pressure: Dictionary = character.get("emotional_pressure", {})
+	var baseline: Dictionary = character.get("emotional_baseline", {})
+	if pressure.is_empty():
+		var none_lbl := Label.new()
+		none_lbl.text = "No inner weather to report."
+		none_lbl.add_theme_font_size_override("font_size", 12)
+		none_lbl.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		psychology_container.add_child(none_lbl)
+		return
+
+	const ELEMENT_COLORS := {
+		"space": Color(0.6, 0.5, 0.85),
+		"fire":  Color(0.9, 0.45, 0.3),
+		"water": Color(0.35, 0.6, 0.9),
+		"earth": Color(0.75, 0.6, 0.35),
+		"air":   Color(0.55, 0.85, 0.8),
+	}
+	for element in PsychologySystem.ELEMENTS:
+		var p: float = pressure.get(element, 0.0)
+		var b: float = baseline.get(element, 0.0)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+
+		var el_lbl := Label.new()
+		el_lbl.text = element.capitalize()
+		el_lbl.add_theme_font_size_override("font_size", 12)
+		el_lbl.add_theme_color_override("font_color", ELEMENT_COLORS.get(element, Color.WHITE))
+		el_lbl.custom_minimum_size.x = 55
+		row.add_child(el_lbl)
+
+		# Pressure bar: −100 (klesha) … +100 (wisdom); center = neutral
+		var bar := ProgressBar.new()
+		bar.min_value = -100
+		bar.max_value = 100
+		bar.value = p
+		bar.show_percentage = false
+		bar.custom_minimum_size = Vector2(120, 12)
+		bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		var fill := StyleBoxFlat.new()
+		fill.bg_color = Color(0.85, 0.45, 0.25) if p < 0 else Color(0.45, 0.75, 0.45)
+		bar.add_theme_stylebox_override("fill", fill)
+		row.add_child(bar)
+
+		var val_lbl := Label.new()
+		var label_text: String = "%+d" % int(p)
+		if absf(b) >= 1.0:
+			label_text += "  (rests at %+d)" % int(b)
+		var state_label: String = PsychologySystem.get_emotional_label(character, element)
+		if state_label != "":
+			label_text += "  " + state_label
+		val_lbl.text = label_text
+		val_lbl.add_theme_font_size_override("font_size", 11)
+		val_lbl.add_theme_color_override("font_color",
+				Color(0.9, 0.6, 0.4) if p <= -33.0 else (Color(0.6, 0.9, 0.6) if p >= 33.0 else Color(0.7, 0.7, 0.7)))
+		row.add_child(val_lbl)
+		psychology_container.add_child(row)
+
+
+# ============================================
 # SPELLBOOK TAB
 # ============================================
 
@@ -1326,6 +1510,21 @@ func _apply_overworld_spell(spell_id: String, spell_data: Dictionary, caster: Di
 	var statuses_removed: Array = spell_data.get("statuses_removed", [])
 	var special: Dictionary     = spell_data.get("special", {})
 	var results: Array[String]  = []
+
+	# Cloud Gate: teleport the party to the last healing location visited.
+	# Mana was already deducted by the Cast button — refund it if the gate fails.
+	if special.get("teleport_target", "") == "last_healing_location":
+		var loc: Dictionary = GameState.last_healing_location
+		var mana_cost: int = int(spell_data.get("mana_cost", 0))
+		var caster_derived: Dictionary = caster.get("derived", {})
+		if loc.is_empty():
+			caster_derived["current_mana"] = caster_derived.get("current_mana", 0) + mana_cost
+			return "The clouds find no remembered sanctuary — visit a town or teahouse first"
+		if loc.get("map_id", "") != MapManager.current_map_id:
+			caster_derived["current_mana"] = caster_derived.get("current_mana", 0) + mana_cost
+			return "The gate cannot reach across realms"
+		MapManager.teleport_party(Vector2i(int(loc.get("x", 0)), int(loc.get("y", 0))))
+		return "The party steps through the clouds to %s" % loc.get("name", "sanctuary")
 
 	for target in targets:
 		var target_name: String  = target.get("name", "?")

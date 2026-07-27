@@ -342,6 +342,9 @@
         "night_restore_pct": 100,
         "teapot_food": 10,
         "night_food": 25
+      },
+      "healing": {
+        "medicine_level": 2
       }
     },
     "hell_teahouse_fire": {
@@ -391,6 +394,9 @@
         "night_restore_pct": 100,
         "teapot_food": 10,
         "night_food": 25
+      },
+      "healing": {
+        "medicine_level": 2
       }
     },
     "hell_mercenary_guild": {
@@ -837,6 +843,9 @@
       "training": {
         "attributes": [],
         "skills": []
+      },
+      "healing": {
+        "medicine_level": 4
       }
     },
     "hell_mirror_lake": {
@@ -929,6 +938,9 @@
       "training": {
         "attributes": [],
         "skills": []
+      },
+      "healing": {
+        "medicine_level": 5
       }
     },
     "hell_eternal_fire": {
@@ -1103,6 +1115,9 @@
         "night_restore_pct": 100,
         "teapot_food": 10,
         "night_food": 25
+      },
+      "healing": {
+        "medicine_level": 2
       }
     },
     "hg_town_weapons": {
@@ -1607,6 +1622,9 @@
           "medicine"
         ],
         "max_skill_level": 5
+      },
+      "healing": {
+        "medicine_level": 6
       }
     },
     "brimstone_lab": {
@@ -1826,6 +1844,9 @@
         "night_restore_pct": 100,
         "teapot_food": 10,
         "night_food": 25
+      },
+      "healing": {
+        "medicine_level": 2
       }
     },
     "animal_meadow_teahouse": {
@@ -1878,6 +1899,9 @@
         "night_restore_pct": 100,
         "teapot_food": 10,
         "night_food": 25
+      },
+      "healing": {
+        "medicine_level": 2
       }
     },
     "animal_ocean_teahouse": {
@@ -1930,6 +1954,9 @@
         "night_restore_pct": 100,
         "teapot_food": 10,
         "night_food": 25
+      },
+      "healing": {
+        "medicine_level": 2
       }
     },
     "animal_forest_training_camp": {
@@ -2386,6 +2413,9 @@
       "training": {
         "attributes": [],
         "skills": []
+      },
+      "healing": {
+        "medicine_level": 4
       }
     },
     "animal_mirror_lake": {
@@ -2506,6 +2536,9 @@
       "training": {
         "attributes": [],
         "skills": []
+      },
+      "healing": {
+        "medicine_level": 5
       }
     },
     "animal_eternal_fire": {
@@ -2941,7 +2974,10 @@
       },
       "tabs": [
         "spells"
-      ]
+      ],
+      "healing": {
+        "medicine_level": 4
+      }
     },
     "hg_mirror_lake": {
       "name": "Mirror Lake",

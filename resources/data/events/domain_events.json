@@ -1275,6 +1275,16 @@
             }
           }
         }
+      ],
+      "suppress_activities": [
+        "deep_repair",
+        "weapon_work",
+        "craft_item"
+      ],
+      "enhance_activities": [
+        "sadhana",
+        "mantra_recitation",
+        "spiritual_cleansing"
       ]
     },
     "court_of_the_musician_prince": {
