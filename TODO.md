@@ -816,6 +816,79 @@ Some Deity Yoga effects are simplified stat bonuses rather than true unit spawns
 
 ---
 
+## Per-Level Skill Bonuses With No Consumer — found 2026-07-27
+
+`perks.json` → `base_bonuses` gives every skill a per-level stat table, and
+`CharacterSystem.update_derived_stats()` applies **13 of the 40 stat keys**.
+The other 27 are read by nothing, so those skill levels grant their combat
+numbers and then silently grant nothing else. This affects every general
+skill: levelling Trade to 10 currently confers no discount, levelling Grace
+confers no movement, levelling Logistics no travel or supply benefit.
+
+Applied today: `attack`, `damage`, `strength_weapon_damage`, `crit_chance`,
+`armor`, `armor_penetration`, `max_hp`, `damage_reduction_pct`, `spellpower`,
+`mana_cost`, `dodge`, `stamina`, `initiative`.
+
+**Not applied (value at L1 / L5 / L10, all percentages):**
+
+| Stat key | Granted by | L1 / L5 / L10 |
+|---|---|---|
+| `burning_damage` | fire_magic | 5.0 / 75.0 / 130.0 |
+| `buy_discount` | trade | 5.0 / 35.0 / 60.0 |
+| `charm_effectiveness` | persuasion | 5.0 / 75.0 / 130.0 |
+| `consumable_power` | alchemy | 10.0 / 75.0 / 130.0 |
+| `crafting_quality` | smithing | 10.0 / 75.0 / 130.0 |
+| `crafting_yield` | alchemy | 10.0 / 50.0 / 75.0 |
+| `effect_duration` | enchantment | 5.0 / 45.0 / 75.0 |
+| `healing_effectiveness_(party)` | medicine | 10.0 / 75.0 / 130.0 |
+| `loot_quality` | thievery | 5.0 / 45.0 / 75.0 |
+| `luck_modifier` | comedy | 5.0 / 25.0 / 50.0 |
+| `magic_damage_resistance` | yoga | 5.0 / 50.0 / 75.0 |
+| `max_companions` | leadership | 1.0 / 5.0 / 5.0 |
+| `mental_resistance` | yoga | 5.0 / 75.0 / 125.0 |
+| `morale_effects` | leadership / performance | 5.0 / 50.0 / 100.0 |
+| `movement_speed` | grace | 10.0 / 40.0 / 65.0 |
+| `party_skill_checks` | learning | 1.0 / 5.0 / 10.0 |
+| `party_xp_gain` | learning | 3.0 / 15.0 / 42.0 |
+| `poison/disease_resistance_(party)` | medicine | 10.0 / 50.0 / 75.0 |
+| `repair_efficiency` | smithing | 10.0 / 60.0 / 85.0 |
+| `sell_markup` | trade | 5.0 / 45.0 / 70.0 |
+| `social_roll_success` | performance | 5.0 / 50.0 / 75.0 |
+| `status_effect_chance` | ritual | 5.0 / 50.0 / 75.0 |
+| `summon_hp` | summoning | 10.0 / 60.0 / 85.0 |
+| `supply_duration_(party)` | logistics | 10.0 / 60.0 / 85.0 |
+| `trading_price` | persuasion | 5.0 / 25.0 / 50.0 |
+| `trap_detection` | thievery | 10.0 / 60.0 / 85.0 |
+| `travel_speed_(party)` | logistics | 5.0 / 35.0 / 60.0 |
+
+Each needs a target system and a balance decision, which is why this is not a
+mechanical fix:
+- **Shops** (`buy_discount`, `sell_markup`, `trading_price`) — fold into
+  `ShopSystem.get_price_modifier_summary()`. Note Trade 10 currently reads 60%
+  off / 70% markup, which may be intended as a soft cap rather than literal.
+- **Overworld** (`travel_speed_(party)`, `supply_duration_(party)`) — party
+  speed and the per-step food cost in `overworld.gd`.
+- **Loot** (`loot_quality`) — `CombatManager._get_modified_rarity_weights()`
+  already takes Luck; add the Thievery term.
+- **XP / checks** (`party_xp_gain`, `party_skill_checks`) —
+  `CompanionSystem.apply_party_xp()` and `EventManager._resolve_roll_dc()`.
+- **Combat** (`summon_hp`, `burning_damage`, `status_effect_chance`,
+  `effect_duration`, `mental_resistance`, `magic_damage_resistance`) — summon
+  spawn, DoT tick, status apply chance, status duration, resistance lookup.
+- **Camp / crafting** (`crafting_quality`, `crafting_yield`,
+  `repair_efficiency`, `consumable_power`) — the camp activity handlers.
+- **Party** (`max_companions`) — no party-size cap exists yet.
+- **Social** (`charm_effectiveness`, `social_roll_success`, `morale_effects`,
+  `luck_modifier`) — event roll resolution.
+- **Medicine (party)** (`healing_effectiveness_(party)`,
+  `poison/disease_resistance_(party)`) — rest healing and wound escalation.
+
+Two keys also use display-style names (`healing_effectiveness_(party)`,
+`poison/disease_resistance_(party)`) that should be renamed to plain snake_case
+when they are wired.
+
+---
+
 ## Quests, Recruitment & Prosthetics Pass — 2026-07-27 ✓ COMPLETE
 
 **Broken quests fixed.** All three quests in quests.json were unfinishable —
