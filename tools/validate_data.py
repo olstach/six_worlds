@@ -239,6 +239,44 @@ for cid, comp in companions.items():
         if skill not in skills:
             err("companion->skill", f"companions.json:{cid}: skill '{skill}' unknown")
 
+# ── quests: every step flag must be settable by some event ───────────────────
+# A quest whose flag nothing sets can be accepted from the board and then sits
+# in the journal forever, which is how all three hell quests originally shipped.
+flag_setters = {}
+for eid, (event, src) in events.items():
+    for choice in event.get("choices", []):
+        for key in ("outcome", "outcome_success", "outcome_failure"):
+            outcome = choice.get(key)
+            if not isinstance(outcome, dict):
+                continue
+            sources = [outcome.get("set_flags"), outcome.get("rewards", {}).get("flags")]
+            victory = outcome.get("on_victory")
+            if isinstance(victory, dict):
+                sources.append(victory.get("set_flags"))
+                sources.append(victory.get("rewards", {}).get("flags"))
+            for block in sources:
+                for flag in (block or {}):
+                    flag_setters.setdefault(flag, []).append(f"{eid}:{choice.get('id', '?')}")
+
+quests = load("resources/data/quests.json")["quests"]
+for qid, quest in quests.items():
+    if qid.startswith("_"):
+        continue
+    for step in quest.get("steps", []):
+        flag = step.get("done_when", {}).get("flag", "")
+        if flag and flag not in flag_setters:
+            err("quest->flag", f"quests.json:{qid}: step flag '{flag}' is never set by any event")
+
+# Choices hidden behind a prerequisite flag nothing sets can never be shown
+for eid, (event, src) in events.items():
+    for choice in event.get("choices", []):
+        prereq = choice.get("prerequisite", {})
+        flag = prereq.get("flag", "")
+        if flag and flag not in flag_setters:
+            err("event->prerequisite",
+                f"{src}:{eid}:{choice.get('id', '?')}: prerequisite flag '{flag}' is never set")
+
+
 # ── races and backgrounds ────────────────────────────────────────────────────
 for group in ("races", "backgrounds"):
     for key, entry in races_data[group].items():

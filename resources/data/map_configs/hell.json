@@ -610,6 +610,38 @@
           "blocking": false,
           "one_time": true,
           "weight": 2
+        },
+        {
+          "event_id": "hell_warden_strongroom",
+          "name": "Blue Iron Door",
+          "icon": "dungeon",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_frozen_prisoner",
+          "name": "Frozen Prisoner",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_scroll_in_the_drift",
+          "name": "Something in the Drift",
+          "icon": "event",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_cold_hermit",
+          "name": "Hermit in the Cold",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
         }
       ],
       "pickups": [
@@ -1564,6 +1596,23 @@
           "blocking": false,
           "one_time": true,
           "weight": 2
+        },
+        {
+          "event_id": "hell_blisterfang",
+          "name": "Blisterfang",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hell_ember_merchant_debt",
+          "name": "Ember Merchant's Books",
+          "icon": "shop",
+          "blocking": false,
+          "one_time": false,
+          "weight": 2,
+          "tag": "shop"
         }
       ],
       "pickups": [

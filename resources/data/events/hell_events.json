@@ -6908,6 +6908,606 @@
           }
         }
       ]
+    },
+    "hell_warden_strongroom": {
+      "id": "hell_warden_strongroom",
+      "title": "The Warden's Strongroom",
+      "realm": "hell",
+      "text": "A door of blue iron set into the ice, and behind it a room the cold has kept exactly as it was left: a desk, a ledger, a rack of seals on hooks.\n\nOne hook is labelled and empty. The rest hold the authority to open every lock in the cold hells, and nobody has been in to count them for a very long time.",
+      "choices": [
+        {
+          "id": "take_seal",
+          "type": "default",
+          "text": "Take a warden's seal from the rack",
+          "outcome": {
+            "type": "text",
+            "text": "Cold blue iron, heavier than it looks, stamped with a sigil that makes your thumb ache where it rests. Whatever this opens, it opens with authority.",
+            "rewards": {
+              "xp": 12,
+              "flags": {
+                "cold_warden_seal_found": true
+              }
+            },
+            "karma": {
+              "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "ledger",
+          "type": "requirement",
+          "text": "Read the ledger before you touch anything",
+          "requirements": {
+            "skills": {
+              "learning": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Every seal is signed out against a prisoner's name and a sentence length. The empty hook belongs to a seal signed out four hundred years ago against a sentence of ninety days, never returned. Somebody is still in a box out there on a warrant that expired before this ice formed.\n\nYou take a seal, and you take the ledger page too, because a name will matter more than a key.",
+            "rewards": {
+              "xp": 22,
+              "gold": 60,
+              "flags": {
+                "cold_warden_seal_found": true
+              }
+            },
+            "karma": {
+              "human": 4,
+              "hell": -3
+            }
+          }
+        },
+        {
+          "id": "strip",
+          "type": "default",
+          "text": "Take everything that is not nailed down",
+          "outcome": {
+            "type": "text",
+            "text": "Seals, desk fittings, the good inkwell, and a strongbox that has clearly not been opened since the last audit.",
+            "rewards": {
+              "xp": 10,
+              "gold": 170,
+              "items": [
+                "item_random"
+              ],
+              "flags": {
+                "cold_warden_seal_found": true
+              }
+            },
+            "karma": {
+              "hungry_ghost": 5
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Take nothing from a warden",
+          "outcome": {
+            "type": "text",
+            "text": "You close the blue iron door behind you. The rack of seals stays on its hooks, and every lock in the cold hells stays shut.",
+            "rewards": {
+              "xp": 4
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        }
+      ]
+    },
+    "hell_frozen_prisoner": {
+      "id": "hell_frozen_prisoner",
+      "title": "The Frozen Prisoner",
+      "realm": "hell",
+      "text": "A pillar of clear ice with a man inside it, upright, eyes open. He is alive in the way things are alive here — aware, unable to move, and entirely unable to stop being aware.\n\nA locked iron collar shows at his throat. His lips move. It takes a while to work out that he is counting.",
+      "choices": [
+        {
+          "id": "unlock",
+          "type": "default",
+          "text": "Use the warden's seal on the collar",
+          "prerequisite": {
+            "flag": "cold_warden_seal_found",
+            "value": true
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The seal touches the collar and the ice goes out of the pillar all at once, like a held breath. He falls forward into your arms — thin, freezing, four hundred years into a ninety-day sentence — and the first thing he does, before anything else, is finish the number he was on.\n\nThen he stops counting. You get the impression that took more effort than standing up.",
+            "rewards": {
+              "xp": 40,
+              "flags": {
+                "cold_prisoner_freed": true
+              }
+            },
+            "karma": {
+              "god": 8,
+              "human": 6,
+              "hell": -8
+            }
+          }
+        },
+        {
+          "id": "break_ice",
+          "type": "roll",
+          "text": "Break the pillar open by force",
+          "requirements": {
+            "roll": {
+              "attribute": "strength",
+              "difficulty": "difficult"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "It takes an hour of hammering and the ice comes away in plates. The collar stays locked — you cannot do anything about the collar — but he can walk, and he goes, wearing it, which he seems to consider an enormous improvement.",
+            "rewards": {
+              "xp": 20,
+              "flags": {
+                "cold_prisoner_freed": true
+              }
+            },
+            "karma": {
+              "human": 5,
+              "god": 3
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The ice is not ordinary ice. You succeed only in making a great deal of noise and taking the skin off two sets of knuckles, and his eyes track every failed swing.",
+            "rewards": {
+              "xp": 5,
+              "hp_loss": {
+                "amount": "light",
+                "target": "random"
+              }
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "warmth",
+          "type": "requirement",
+          "text": "Melt him out slowly",
+          "requirements": {
+            "skills": {
+              "fire_magic": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Fast heat would kill him. You spend most of a day bringing the pillar up by degrees, and he comes out of it able to speak, which he could not have done any other way. He tells you his name and the number he had reached. Both are worth writing down.",
+            "rewards": {
+              "xp": 30,
+              "items": [
+                "item_random"
+              ],
+              "flags": {
+                "cold_prisoner_freed": true
+              }
+            },
+            "karma": {
+              "god": 6,
+              "human": 5,
+              "hell": -4
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "There is nothing you can do here",
+          "outcome": {
+            "type": "text",
+            "text": "You walk on. Behind you, at the edge of hearing, the counting continues.",
+            "rewards": {
+              "xp": 3,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": -12
+                }
+              ]
+            },
+            "karma": {
+              "hell": 3,
+              "animal": 2
+            }
+          }
+        }
+      ]
+    },
+    "hell_blisterfang": {
+      "id": "hell_blisterfang",
+      "title": "Blisterfang",
+      "realm": "hell",
+      "text": "The red devil sprawled across three chairs outside a slag-side drinking house is enormous, cheerful, and entirely unbothered by the four separate people currently glaring at him from across the yard.\n\n\"Blisterfang,\" he agrees, when you say the name. \"Everyone's looking for me this season. It's flattering, honestly.\"",
+      "choices": [
+        {
+          "id": "collect",
+          "type": "default",
+          "text": "Tell him the ember merchant wants paying",
+          "outcome": {
+            "type": "text",
+            "text": "\"He does,\" Blisterfang says. \"He absolutely does.\" He does not reach for a purse. He does, however, stop sprawling, which from a devil that size is a whole sentence.\n\nYou have found him. Getting the money out of him is going to be a separate piece of work.",
+            "rewards": {
+              "xp": 12,
+              "flags": {
+                "blisterfang_found": true
+              }
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "fight",
+          "type": "default",
+          "text": "Take the payment off him",
+          "outcome": {
+            "type": "combat",
+            "enemy_group": "red_devil_warband",
+            "difficulty": "hard",
+            "text": "\"Ah,\" he says, delighted, getting up. \"One of *those* collectors.\" The four people glaring from across the yard suddenly become extremely interested in the wall.",
+            "on_victory": {
+              "type": "text",
+              "text": "He goes down laughing and pays up from a purse that turns out to have been on his belt the entire time.",
+              "rewards": {
+                "xp": 20,
+                "gold": 160,
+                "flags": {
+                  "blisterfang_found": true,
+                  "ember_debt_paid": true
+                }
+              }
+            },
+            "karma": {
+              "asura": 4,
+              "hell": 3
+            }
+          }
+        },
+        {
+          "id": "why_owed",
+          "type": "requirement",
+          "text": "Ask what the debt was actually for",
+          "requirements": {
+            "attributes": {
+              "awareness": 14
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is not a debt. It is a settlement — the merchant's brazier burned a district and Blisterfang paid the compensation out of his own pocket at the time, and the merchant has spent forty years re-describing this as a loan to anyone who will listen.\n\nBlisterfang has never once corrected the story. \"Let him have it,\" he says. \"He needs it more than I need to be right.\" He gives you the original settlement papers to prove it, and does not ask you to use them.",
+            "rewards": {
+              "xp": 26,
+              "items": [
+                "item_random"
+              ],
+              "flags": {
+                "blisterfang_found": true,
+                "ember_debt_truth": true
+              }
+            },
+            "karma": {
+              "human": 5,
+              "god": 3
+            }
+          }
+        },
+        {
+          "id": "drink",
+          "type": "requirement",
+          "text": "Buy him a drink and get it out of him sideways",
+          "requirements": {
+            "skills": {
+              "guile": 3
+            }
+          },
+          "cost": {
+            "gold": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Three rounds in, Blisterfang is explaining his entire financial position unprompted, including where the money is and why he has not handed it over: he simply forgets, constantly, and has done for decades. He is enormously relieved to be reminded and pays on the spot, in coin, counted out twice because he loses his place.",
+            "rewards": {
+              "xp": 20,
+              "gold": 120,
+              "flags": {
+                "blisterfang_found": true,
+                "ember_debt_paid": true
+              }
+            },
+            "karma": {
+              "human": 3,
+              "asura": 2
+            }
+          }
+        }
+      ]
+    },
+    "hell_ember_merchant_debt": {
+      "id": "hell_ember_merchant_debt",
+      "title": "The Ember Merchant's Books",
+      "realm": "hell",
+      "text": "The ember merchant keeps his stall at the edge of the slag fields and his ledger under the counter, and he wants to know — before you have finished saying hello — whether you have found Blisterfang yet.",
+      "choices": [
+        {
+          "id": "pay_over",
+          "type": "default",
+          "text": "Hand over what you collected",
+          "prerequisite": {
+            "flag": "blisterfang_found",
+            "value": true
+          },
+          "outcome": {
+            "type": "text",
+            "text": "He counts it three times and his hands shake on the second count. Then he writes the entry closed, turns the ledger around, and shows you the line — forty years of a single unresolved figure, ruled off at last.\n\nHe pays your fee without being asked and gives you the good coal on top of it.",
+            "rewards": {
+              "xp": 30,
+              "gold": 100,
+              "items": [
+                "item_random"
+              ],
+              "flags": {
+                "ember_debt_paid": true
+              }
+            },
+            "karma": {
+              "human": 4,
+              "hell": 2
+            }
+          }
+        },
+        {
+          "id": "tell_truth",
+          "type": "default",
+          "text": "Show him the settlement papers",
+          "prerequisite": {
+            "flag": "ember_debt_truth",
+            "value": true
+          },
+          "outcome": {
+            "type": "text",
+            "text": "He reads them standing up and does not say anything for a long time. Then he sits down on his own stock.\n\n\"I knew,\" he says. \"I have known for forty years.\" What he wanted was not the money; it was for the debt to stay open, because a debt is a thread to a person and he has nothing else left. You stay a while. When you go, the ledger line is ruled off, and he did it himself.",
+            "rewards": {
+              "xp": 40,
+              "gold": 60,
+              "flags": {
+                "ember_debt_paid": true
+              }
+            },
+            "karma": {
+              "god": 8,
+              "human": 8,
+              "hungry_ghost": -5
+            }
+          }
+        },
+        {
+          "id": "browse",
+          "type": "default",
+          "text": "Just here to trade",
+          "outcome": {
+            "type": "shop",
+            "shop_id": "ember_merchant",
+            "text": "He is a good merchant when he is not talking about Blisterfang, which is roughly a third of the time."
+          }
+        },
+        {
+          "id": "advance",
+          "type": "requirement",
+          "text": "Negotiate your fee up front",
+          "requirements": {
+            "skills": {
+              "trade": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You point out that a forty-year-old debt has a collection value considerably below its face value, and that you are the only person who has ever offered to go and get it. He grumbles and pays an advance, which is the first money that ledger has generated in four decades.",
+            "rewards": {
+              "xp": 14,
+              "gold": 70
+            },
+            "karma": {
+              "human": 2,
+              "hungry_ghost": 2
+            }
+          }
+        }
+      ]
+    },
+    "hell_scroll_in_the_drift": {
+      "id": "hell_scroll_in_the_drift",
+      "title": "Something in the Drift",
+      "realm": "hell",
+      "text": "A corner of oiled cloth shows above the snow at the base of a wind-scoured ridge — the kind of thing that has been buried and uncovered a dozen times by the same wind and will be buried again by evening.\n\nSomething is wrapped in it.",
+      "choices": [
+        {
+          "id": "dig",
+          "type": "default",
+          "text": "Dig it out",
+          "outcome": {
+            "type": "text",
+            "text": "A scroll case, sealed, dry inside. The scroll within is a sequence of protective mantras copied in a careful old hand, and the cold has not touched a single character of it.",
+            "rewards": {
+              "xp": 14,
+              "flags": {
+                "mantra_scroll_found": true
+              }
+            },
+            "karma": {
+              "human": 2
+            }
+          }
+        },
+        {
+          "id": "read",
+          "type": "requirement",
+          "text": "Read the mantras before wrapping them back up",
+          "requirements": {
+            "skills": {
+              "ritual": 3
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They are cold-protection mantras, and they are a good set — the third one in particular is a variant you have not met, and you copy it into your own book before resealing the case. Whoever lost this lost something they will not survive the season without.",
+            "rewards": {
+              "xp": 24,
+              "flags": {
+                "mantra_scroll_found": true
+              },
+              "learn_spell": {
+                "school": "white_magic"
+              }
+            },
+            "karma": {
+              "human": 3,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "tracks",
+          "type": "requirement",
+          "text": "Read the ground — where did it come from?",
+          "requirements": {
+            "attributes": {
+              "awareness": 13
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The cloth did not blow here. It was dropped by someone moving north-east along the ridge line at a stumble, and there is a second set of prints behind the first, keeping pace and not closing. Somebody was being followed and shed weight to move faster.\n\nYou take the scroll, and you take the bearing.",
+            "rewards": {
+              "xp": 20,
+              "flags": {
+                "mantra_scroll_found": true
+              },
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave it to the drift",
+          "outcome": {
+            "type": "text",
+            "text": "By evening the wind has covered the corner of cloth again, as it has a dozen times before."
+          }
+        }
+      ]
+    },
+    "hell_cold_hermit": {
+      "id": "hell_cold_hermit",
+      "title": "The Hermit in the Cold",
+      "realm": "hell",
+      "text": "He has dug himself into the lee of a boulder and built a wall of packed snow, and he is sitting in the shelter of it doing the only thing left to do, which is recite from memory and get it wrong.\n\nHe does not look up. \"Third repetition,\" he says. \"I lose it at the third repetition. I have lost it at the third repetition for eleven days.\"",
+      "choices": [
+        {
+          "id": "return_scroll",
+          "type": "default",
+          "text": "Give him the scroll",
+          "prerequisite": {
+            "flag": "mantra_scroll_found",
+            "value": true
+          },
+          "outcome": {
+            "type": "text",
+            "text": "He takes the case without understanding what it is, and then understands, and stops.\n\nHe reads the third repetition off the page, out loud, correctly, for the first time in eleven days — and the cold goes out of the hollow. Not metaphorically: the snow wall starts dripping. He keeps reading. You leave him at the seventh repetition with his eyes shut and his shelter melting around him.",
+            "rewards": {
+              "xp": 40,
+              "flags": {
+                "mantra_returned": true
+              }
+            },
+            "karma": {
+              "god": 8,
+              "human": 6
+            }
+          }
+        },
+        {
+          "id": "recite",
+          "type": "requirement",
+          "text": "Recite the third repetition for him from memory",
+          "requirements": {
+            "skills": {
+              "yoga": 4
+            }
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You do not have his scroll but you have the shape of the thing, and mantras are not private property. You give him the third repetition. He takes it up, gets it, carries on — and by the fifth he has remembered the rest himself, the way you remember a road once someone names the first turning.",
+            "rewards": {
+              "xp": 30,
+              "flags": {
+                "mantra_returned": true
+              },
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 20
+                }
+              ]
+            },
+            "karma": {
+              "god": 10,
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "shelter",
+          "type": "default",
+          "text": "Build his wall up properly and share your fire",
+          "cost": {
+            "food": "small"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You cannot give him the words but you can give him another few days to find them. The wall goes up to head height, the fire is banked to last, and he thanks you without once breaking the recitation, which keeps going wrong in the same place.",
+            "rewards": {
+              "xp": 14
+            },
+            "karma": {
+              "human": 5,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "leave",
+          "type": "default",
+          "text": "Leave him to it",
+          "outcome": {
+            "type": "text",
+            "text": "\"Third repetition,\" he says behind you, starting again. \"Third repetition.\"",
+            "rewards": {
+              "xp": 3,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": -10
+                }
+              ]
+            },
+            "karma": {
+              "animal": 2
+            }
+          }
+        }
+      ]
     }
   }
 }
