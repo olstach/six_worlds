@@ -23,7 +23,7 @@ Core systems all exist and are wired: character/XP, karma/reincarnation,
 events (grey/blue/yellow choices, dynamic DCs), grid combat (spells, AoE,
 statuses, AI, projectiles), overworld (real-time movement, mobs, portals),
 shops/training/guilds, items (procedural weapons/armor/talismans, implements,
-charms), perks (558), psychology/pressure, traits, wounds, body plans
+charms), perks (600), psychology/pressure, traits, wounds, body plans
 (multi-arm species), camp/rest/time/lunar calendar, save/load (3 slots),
 audio, cheat console. Engine is **Godot 4.6** (CLAUDE.md said 4.3 — updated).
 
@@ -92,7 +92,14 @@ Ordered roughly by how much finished work is sitting behind each gap.
 - ~~Prosthetic items~~ — 12 created, and the two missing code links wired.
 - **Hell quest content beyond the three fixed chains** — the board works now
   but only has three quests, all hell. HG and animal have none.
-- **PERKS.md empty tiers** (levels 2/4/6/8 for many skills); perk flavor text.
+- ~~PERKS.md empty tiers~~ — done. Every skill now has at least one perk at
+  every level 1–10 (28 new capstones, 94 perks redistributed off the old
+  odd-only tiers, 9 written to fill what redistribution couldn't reach).
+- **Perk flavor text** — 500 of 600 perks have an empty `flavor` field. Better
+  written in Olaf's voice than mine.
+- **27 per-level skill bonuses have no consumer** — `base_bonuses` grants them,
+  nothing reads them. Full table and per-system wiring notes in TODO.md §
+  "Per-Level Skill Bonuses With No Consumer".
 - **Cursed items**: type registered, none exist.
 
 ### ~~UI debt~~ and ~~half-wired mechanics~~ — CLOSED 2026-07-27
