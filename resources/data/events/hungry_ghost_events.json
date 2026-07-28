@@ -82,6 +82,57 @@
           }
         },
         {
+          "id": "generous_feeds",
+          "text": "Give it something. It will not be enough and give it anyway.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "generous"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is not enough. Nothing would be — the throat is a needle and the belly is a room.\n\nBut it stops, for a moment, being a thing that is starving and becomes a thing that is being fed, and it looks at you differently for the length of that moment.",
+            "rewards": {
+              "xp": 20,
+              "supplies": {
+                "food": -3
+              },
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 12
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": -6,
+              "human": 4
+            }
+          }
+        },
+        {
+          "id": "scrimper_calculates",
+          "text": "Work out exactly how little will satisfy it.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "scrimper"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The answer is: nothing will, so the correct expenditure is the smallest amount that buys passage.\n\nYou are right. You are right in a way that sits badly on the walk afterwards, and the party does not discuss it.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": -8
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 4
+            }
+          }
+        },
+        {
           "id": "attack",
           "type": "default",
           "text": "Cut it down — put it out of its misery",
@@ -789,6 +840,27 @@
           }
         },
         {
+          "id": "tea_ritualist_last_cup",
+          "text": "There is a right way to take a last cup.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "tea_ritualist"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "There is, and you do it — the whole form, in a bone teahouse at the edge of the grey.\n\nThe skeleton proprietor watches every movement. When you finish it turns the cup over, which you understand at once to mean that the house will not be serving anyone else today.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 12
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "help_serve",
           "type": "requirement",
           "text": "Offer to help serve",
@@ -1080,6 +1152,21 @@
             },
             "karma": {
               "human": 3
+            }
+          }
+        },
+        {
+          "id": "curious_engages",
+          "text": "A riddle. Obviously you are going to try the riddle.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "curious"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You are, and the vetala can tell, and it is so pleased to have a genuine participant that it gives you the second riddle for free.\n\nYou get one of the two. It considers this a good afternoon's work for both of you.",
+            "rewards": {
+              "xp": 30
             }
           }
         },
@@ -2447,6 +2534,26 @@
           }
         },
         {
+          "id": "pilgrim_restores",
+          "text": "Half-buried is not the same as finished.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "pilgrim"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You dig it out. It takes an hour and ruins a pair of gloves and reveals that the offering bowl is not empty — it was buried full, which means somebody left in a hurry and meant to come back.",
+            "rewards": {
+              "xp": 25,
+              "gold": "small"
+            },
+            "karma": {
+              "god": 3,
+              "human": 2
+            }
+          }
+        },
+        {
           "id": "take_bowl",
           "type": "default",
           "text": "Take the offering bowl — it's well-made",
@@ -2745,6 +2852,42 @@
           }
         },
         {
+          "id": "gambler_finds_odds",
+          "text": "There is money moving in those tiers.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "gambler"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "There is, and the odds are being set by someone who has not watched the third fighter closely enough.\n\nYou have. You bet accordingly and collect with a straight face.",
+            "rewards": {
+              "gold": "moderate",
+              "xp": 15
+            }
+          }
+        },
+        {
+          "id": "duelist_steps_down",
+          "text": "You are not going to sit in the tiers.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "duelist"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You were never going to sit in the tiers. You are over the rail before the current bout has finished and the crowd's noise changes shape.\n\nIt is close. You win it, barely, and the barely is what they will remember.",
+            "rewards": {
+              "xp": 35,
+              "gold": "small",
+              "hp_loss": {
+                "amount": "light",
+                "target": "random"
+              }
+            }
+          }
+        },
+        {
           "id": "archery_contest",
           "type": "requirement",
           "text": "Propose an archery contest as an alternative spectacle",
@@ -3031,10 +3174,32 @@
             "type": "text",
             "text": "You reach into the current with dark working and the faces turn toward you, speaking in voices like water over stone. They tell you things about this realm that aren't written anywhere. The lore is old and the weight of it stays with you.",
             "rewards": {
-              "xp": 16
+              "xp": 16,
+              "add_trait": "grief_struck"
             },
             "karma": {
               "god": 4
+            }
+          }
+        },
+        {
+          "id": "melancholic_listens",
+          "text": "You have heard this note before, from the inside.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "melancholic"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The faces are not saying anything. That is what everyone gets wrong — they assume the sound is speech.\n\nIt is not. You know exactly what it is, and you sit on the bank with it for a while, and the ferryman waits without complaint, because he has seen this before too.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 8
+                }
+              ]
             }
           }
         },
@@ -3686,7 +3851,8 @@
             "type": "text",
             "text": "The water tastes like memory. Something sharpens in you.",
             "rewards": {
-              "xp": 6
+              "xp": 6,
+              "add_trait": "haunted"
             },
             "karma": {}
           },
@@ -3709,10 +3875,32 @@
             "type": "text",
             "text": "You sit with the visions rather than fighting them. The pool shows you the cycle — not as horror, but as mechanism. Something in the understanding frees a knot you didn't know was there.",
             "rewards": {
-              "xp": 20
+              "xp": 20,
+              "add_trait": "clear_eyed"
             },
             "karma": {
               "god": 7
+            }
+          }
+        },
+        {
+          "id": "vain_looks_too_long",
+          "text": "Of course you are going to look.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "vain"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You look. It shows you accurately, which is the cruelty of it — not distorted, not aged, simply seen from outside for the first time.\n\nYou are quiet for some hours afterwards and decline to say why.",
+            "rewards": {
+              "xp": 15,
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": -12
+                }
+              ]
             }
           }
         },
@@ -3815,7 +4003,8 @@
             "type": "text",
             "text": "You go down convincingly and stay down. They sniff around you, confused. Their hunger is for living flesh — and yours, for the moment, doesn't smell like it. They drift on.",
             "rewards": {
-              "xp": 8
+              "xp": 8,
+              "add_trait": "harrowed"
             },
             "karma": {}
           },
@@ -3864,6 +4053,21 @@
             },
             "karma": {
               "asura": 3
+            }
+          }
+        },
+        {
+          "id": "war_hardened_ready",
+          "text": "You heard them a while ago. You have been waiting.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "war_hardened"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You picked it up two hundred paces back — not a sound, a shape of silence in the wrong place — and you have spent the walk since arranging where everyone is standing.\n\nWhen it comes, it comes into a formation rather than a column.",
+            "rewards": {
+              "xp": 30
             }
           }
         },
@@ -3958,6 +4162,21 @@
           }
         },
         {
+          "id": "storyteller_trades",
+          "text": "It has a song. Trade it one.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "storyteller"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You give it something long with a good middle, and it listens the whole way through without humming over you, which for a skull on a cairn is close to reverence.\n\nWhat it gives back is not a song. It is directions, sung, and they are accurate.",
+            "rewards": {
+              "xp": 30
+            }
+          }
+        },
+        {
           "id": "carry_to_audience",
           "type": "requirement",
           "text": "Offer to carry it to an audience",
@@ -4041,11 +4260,36 @@
             "type": "text",
             "text": "The undertaking takes everything you have. The pulse of dark energy fights you for an hour before it yields. When it's done, the ground is quiet for the first time since the catastrophe that filled it. This will matter to someone, somewhere, even if you never know who.",
             "rewards": {
-              "xp": 30
+              "xp": 30,
+              "add_trait": "merciful"
             },
             "karma": {
               "god": 10,
               "human": 4
+            }
+          }
+        },
+        {
+          "id": "grief_struck_kneels",
+          "text": "You are already carrying one. What is a thousand more.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "grief_struck"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is not the same, and you know it is not the same, and you kneel anyway because the difference is not the point.\n\nSomething in the ground eases. Not much. The amount you would expect one person's attention to be worth.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 10
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": -6
             }
           }
         },
@@ -4065,7 +4309,8 @@
               "xp": 18,
               "items": [
                 "spell_random_black"
-              ]
+              ],
+              "add_trait": "blood_handed"
             },
             "karma": {
               "hungry_ghost": 5
@@ -4356,7 +4601,8 @@
             "type": "text",
             "text": "The teaching is brief and exact. It goes directly to something you have been carrying and shows you how you've been carrying it wrong.",
             "rewards": {
-              "xp": 22
+              "xp": 22,
+              "add_trait": "touched_by_grace"
             },
             "karma": {
               "god": 8
@@ -4504,6 +4750,31 @@
             "karma": {
               "animal": 1,
               "human": 2
+            }
+          }
+        },
+        {
+          "id": "celebrant_joins",
+          "text": "They are enjoying themselves. Join in.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "celebrant"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You are terrible at it. This turns out to be entirely beside the point — the troupe's delight is not in the standard of the dancing but in the fact of somebody dancing.\n\nYou come away with flowers in your hair and, for some hours, the inability to be gloomy about the hungry ghost realm.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": 15
+                },
+                {
+                  "element": "fire",
+                  "amount": 10
+                }
+              ]
             }
           }
         },
@@ -4680,6 +4951,27 @@
           }
         },
         {
+          "id": "duelist_cannot_walk_past",
+          "text": "A sword in the ground at a crossroads is a sentence with one ending.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "duelist"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You draw before it has finished standing up, which it takes as the courtesy it was intended to be.\n\nThe iron skeleton is better than you in three respects and worse in one, and the one is enough.",
+            "rewards": {
+              "xp": 35,
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": 10
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "keep_range",
           "type": "requirement",
           "text": "Fight at reach — keep it off its blade advantage",
@@ -4777,6 +5069,21 @@
             },
             "karma": {
               "god": 4
+            }
+          }
+        },
+        {
+          "id": "clear_eyed_asks",
+          "text": "Ask what he is polishing it for.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "clear_eyed"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Nobody asks that. Everybody asks what it shows.\n\nHe stops polishing. 'For the King,' he says, and then, after a pause that goes on rather too long, 'He has not asked for it in some time.'",
+            "rewards": {
+              "xp": 30
             }
           }
         },
@@ -5073,6 +5380,21 @@
           }
         },
         {
+          "id": "hunter_reads_pack",
+          "text": "Find the one the others keep glancing at.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "hunter"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Third from the left, smaller than the rest, standing slightly apart.\n\nEverything the pack does routes through her. You do not have to fight seven grave hounds; you have to convince one, in front of six witnesses.",
+            "rewards": {
+              "xp": 30
+            }
+          }
+        },
+        {
           "id": "drop_alpha",
           "type": "requirement",
           "text": "Drop the alpha at distance — scatter the pack",
@@ -5113,7 +5435,8 @@
             "type": "text",
             "text": "The ceremony takes time and every word must be right. When the pyre catches, the dré's keening softens and then stops. It drifts upward and is gone.",
             "rewards": {
-              "xp": 16
+              "xp": 16,
+              "add_trait": "mourner"
             },
             "karma": {
               "god": 8
@@ -5160,7 +5483,8 @@
               "gold": "small",
               "items": [
                 "item_random"
-              ]
+              ],
+              "add_trait": "covetous"
             },
             "karma": {
               "hungry_ghost": 5
@@ -5189,11 +5513,37 @@
             "type": "text",
             "text": "The existing pyre was assembled wrong — too loose, wrong timber arrangement, no heat concentration. You break it down and rebuild it properly in forty minutes, using the scavenged materials as they should be used.\n\nThe dré watches you work in silence. When you light it, the fire catches cleanly and burns hot. Not the same as the proper rites — the spirit knows the difference — but the dré settles at the fire's edge with something that is almost quiet.",
             "rewards": {
-              "xp": 12
+              "xp": 12,
+              "add_trait": "mourner"
             },
             "karma": {
               "god": 5,
               "human": 3
+            }
+          }
+        },
+        {
+          "id": "mourner_finishes",
+          "text": "Somebody started this and did not finish it. Finish it.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "mourner"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You know the order. You have done this often enough that your hands know the order, which is the part nobody warns you about.\n\nWhen the pyre takes, the thing that has been waiting at the edge of the clearing goes wherever such things go, without any fuss at all.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": -8,
+              "human": 5
             }
           }
         },
@@ -5267,6 +5617,31 @@
             },
             "karma": {
               "human": 2
+            }
+          }
+        },
+        {
+          "id": "ascetic_recognises_it",
+          "text": "You know what it is to want and not take.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "ascetic"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You sit down in front of it, which nobody does, and you do not offer it anything, which everybody does and which has never once worked.\n\nWhat you offer instead is the observation that the wanting does not have to be obeyed. It is not cured. It is, for the first time in a very long while, spoken to.",
+            "rewards": {
+              "xp": 35,
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": 15
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": -8,
+              "human": 5
             }
           }
         },
@@ -5359,6 +5734,21 @@
             "text": "You know the right words. They let you into the back room.",
             "karma": {
               "hungry_ghost": 3
+            }
+          }
+        },
+        {
+          "id": "secret_bearer_reads_marks",
+          "text": "Those scratches are not damage. They are a message.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "secret_bearer"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They are a message, in the sense that anything kept from most people is a message to the rest.\n\nYou read it: a count, a direction, and a warning about the third turning. All three prove accurate.",
+            "rewards": {
+              "xp": 30
             }
           }
         },
@@ -5571,6 +5961,27 @@
           }
         },
         {
+          "id": "warm_hearted_asks_why",
+          "text": "He is alive. Ask him how he is, before anything else.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "warm_hearted"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Nobody has asked him that. He gets asked what he is doing here, and how he got here, and whether he can be bought.\n\nHe leans on the spade for a while before answering, and the answer takes most of an hour and is worth the hour.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 10
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "trade",
           "type": "requirement",
           "text": "Offer to trade — he's had interesting finds",
@@ -5682,6 +6093,36 @@
             "text": "The librarian looks at you. Then at the scroll. Then at you again — not angry, just deeply, genuinely sad. You put it back.",
             "karma": {
               "god": -4
+            }
+          }
+        },
+        {
+          "id": "curious_stays",
+          "text": "You are not leaving a library. Be reasonable.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "curious"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The silver skeleton adjusts its spectacles and produces, from somewhere, a second chair.\n\nWhat you find in four hours is not what you were looking for and is considerably better: a name, an obligation, and where the obligation was last recorded.",
+            "rewards": {
+              "xp": 35
+            }
+          }
+        },
+        {
+          "id": "sharp_memory_indexes",
+          "text": "Do not read them. Index them.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "sharp_memory"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You go through the shelf-marks rather than the scrolls, which the librarian watches with mounting professional respect.\n\nBy evening you hold the shape of the whole collection, and the shape has a gap in it exactly where something was removed.",
+            "rewards": {
+              "xp": 30
             }
           }
         },
@@ -5888,7 +6329,8 @@
             "type": "text",
             "text": "You sit and let the smell and the reality and the inevitability be present without distance. It is not pleasant and it is not supposed to be. When you rise, something has been processed that had been waiting to be processed for some time.",
             "rewards": {
-              "xp": 24
+              "xp": 24,
+              "add_trait": "enlightened_insight"
             },
             "karma": {
               "god": 9
@@ -5932,6 +6374,31 @@
             },
             "karma": {
               "human": 2
+            }
+          }
+        },
+        {
+          "id": "ash_marked_belongs",
+          "text": "You have sat in places like this before.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "ash_marked"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The stone is worn smooth in the shape of people who have done exactly this, and you fit the shape.\n\nWhat comes up is not fear, because that was dealt with some time ago. What comes up is the ordinary and much harder question of what to do tomorrow.",
+            "rewards": {
+              "xp": 35,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 15
+                },
+                {
+                  "element": "water",
+                  "amount": 10
+                }
+              ]
             }
           }
         },
@@ -6025,6 +6492,22 @@
             "type": "text",
             "text": "\"Heard that one. Pay up.\"",
             "karma": {}
+          }
+        },
+        {
+          "id": "debtor_reads_the_sign",
+          "text": "Read the sign properly. Signs like this always have a clause.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "debtor"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "There is a clause. There is always a clause, and you have spent enough of your life on the wrong side of one to find it inside a minute.\n\nThe toll applies to the living. Two of your party, on a technicality that the skeletons accept with visible irritation, are not paying it.",
+            "rewards": {
+              "xp": 25,
+              "gold": "small"
+            }
           }
         },
         {
@@ -7430,6 +7913,28 @@
           }
         },
         {
+          "id": "pilgrim_stops_here_too",
+          "text": "It is half-sunk and it is still a shrine.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "pilgrim"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You wade out to it. This is unpleasant and takes some time and the party makes remarks.\n\nWhat you find on the far side, above the waterline, is a carved instruction — brief, practical, and clearly meant for whoever cared enough to get that close.",
+            "rewards": {
+              "xp": 25,
+              "items": [
+                "item_random"
+              ]
+            },
+            "karma": {
+              "god": 3,
+              "human": 2
+            }
+          }
+        },
+        {
           "id": "purify",
           "type": "requirement",
           "text": "Perform a proper purification ceremony",
@@ -7606,7 +8111,8 @@
               "xp": 40,
               "restore": {
                 "hp_percent": 20
-              }
+              },
+              "add_trait": "mourner"
             },
             "karma": {
               "human": 3,
@@ -7780,6 +8286,31 @@
           }
         },
         {
+          "id": "poet_answers_it",
+          "text": "It is playing a form. Give it words.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "poet"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You put words to what it is playing, roughly and out of metre, and it stops dead for the length of a breath before picking the line back up underneath your voice.\n\nYou get through four verses. It has not had a singer in a very long time.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": 12
+                },
+                {
+                  "element": "fire",
+                  "amount": 8
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "comedy",
           "type": "requirement",
           "text": "Tell a joke",
@@ -7949,6 +8480,30 @@
           }
         },
         {
+          "id": "celebrant_watches_kindly",
+          "text": "Let them have it. Watch properly.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "celebrant"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They are dancing around an absence and they are doing it in total silence and they have clearly been doing it a long time.\n\nYou watch it through rather than past, which nobody has done, and at the end one of them bows to you specifically.",
+            "rewards": {
+              "xp": 20,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 10
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": -4
+            }
+          }
+        },
+        {
           "id": "complete_ritual",
           "type": "requirement",
           "text": "Recognize the ceremony and complete your part",
@@ -8089,7 +8644,8 @@
               },
               "supplies": {
                 "food": 2
-              }
+              },
+              "add_trait": "haunted"
             },
             "karma": {}
           },
@@ -8132,11 +8688,57 @@
                   "amount": 3,
                   "combats_remaining": 1
                 }
-              ]
+              ],
+              "add_trait": "clear_eyed"
             },
             "karma": {
               "human": 3,
               "hungry_ghost": -3
+            }
+          }
+        },
+        {
+          "id": "ascetic_unmoved",
+          "text": "You have been hungrier than this on purpose.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "ascetic"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You look at the table the way you look at any table, which is to say briefly.\n\nWhatever laid it was counting on the wanting, and there is not enough of that in you to work with. The hall loses interest and the food stops being convincing halfway down the table.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": 15
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "gourmand_tempted",
+          "text": "You can tell from here that the lamb is done properly.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "gourmand"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You can. That is the trouble — it is not a general temptation, it is a specific and extremely well-observed one, and something went to the effort of knowing what you would want.\n\nYou eat one mouthful before the party gets you away from the table. One is enough to be unwell for a day.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "random"
+              },
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": -12
+                }
+              ]
             }
           }
         },
@@ -8182,7 +8784,8 @@
               "restore": {
                 "hp_percent": 15,
                 "mana_percent": 15
-              }
+              },
+              "add_trait": "touched_by_grace"
             },
             "karma": {
               "human": 1
@@ -8204,6 +8807,21 @@
             "type": "shop",
             "shop_id": "hg_black_lodge",
             "text": "The movement stills. A bony hand gestures to a list scratched into the wall. Spells. Prices. No explanation offered."
+          }
+        },
+        {
+          "id": "secret_bearer_admitted",
+          "text": "Say nothing at the door. That is the password.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "secret_bearer"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is. You are inside before you have decided whether you wanted to be, and what is discussed there is not written down anywhere, including here.",
+            "rewards": {
+              "xp": 30
+            }
           }
         },
         {
@@ -9097,6 +9715,21 @@
           }
         },
         {
+          "id": "scrimper_wont",
+          "text": "Four zombies and a causeway. Do the arithmetic out loud.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "scrimper"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You establish, at length, that the causeway is not theirs, that no work has been done to maintain it, and that the toll has no basis of any kind.\n\nThe zombies are not equipped for this argument. Two of them wander off during it.",
+            "rewards": {
+              "xp": 20
+            }
+          }
+        },
+        {
           "id": "counterfeit",
           "type": "requirement",
           "text": "Pay with something that is not money",
@@ -9284,6 +9917,27 @@
             "karma": {
               "human": 3,
               "god": 2
+            }
+          }
+        },
+        {
+          "id": "homesick_understands",
+          "text": "He is not lost. He is somewhere he does not want to be.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "homesick"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Lost is a thing you can fix with directions. This is the other thing, and you recognise it because you are carrying a version of it yourself.\n\nYou do not give him directions. You sit in the water next to him for a while, and then you both get up.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 10
+                }
+              ]
             }
           }
         },
@@ -9677,6 +10331,31 @@
           }
         },
         {
+          "id": "sworn_vegetarian_declines",
+          "text": "Look at what is actually on the table first.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "sworn_vegetarian"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You look, and having looked you decline, and the declining is easy in a way it has not been easy for years.\n\nThe pretas cannot make you want it. They have nothing else to offer and drift off to find someone who can be worked with.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": 10
+                },
+                {
+                  "element": "earth",
+                  "amount": 8
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "why_not",
           "type": "requirement",
           "text": "Ask why nobody is eating",
@@ -9756,6 +10435,42 @@
             "karma": {
               "human": 5,
               "god": 3
+            }
+          }
+        },
+        {
+          "id": "chronic_pain_asks",
+          "text": "Ask for the thing that helps rather than the thing that cures.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "chronic_pain"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The gardener stops what she is doing. It is, apparently, a much rarer request than the other one and a considerably easier one to fulfil.\n\nWhat she gives you will not fix anything. It makes tomorrow's walking possible, which is the whole of what you asked for.",
+            "rewards": {
+              "supplies": {
+                "herbs": 5
+              },
+              "xp": 15
+            }
+          }
+        },
+        {
+          "id": "bhang_asks_hg",
+          "text": "Ask about the beds she has not mentioned.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "bhang_enjoyer"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "She has not mentioned them because most people do not ask, and most people who do ask are not asking about medicine.\n\nShe establishes which you are with one question, and appears satisfied with the answer.",
+            "rewards": {
+              "supplies": {
+                "herbs": 4
+              },
+              "xp": 10
             }
           }
         },
@@ -9851,6 +10566,30 @@
             },
             "karma": {
               "human": 4,
+              "animal": 4
+            }
+          }
+        },
+        {
+          "id": "pet_lover_approaches",
+          "text": "It is a dog. You are going to do this whatever anyone says.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "pet_lover"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is a dog in the way that a burnt-out house is a house, and you go toward it anyway with your hand out, and the party makes noises.\n\nIt lets you. It has apparently been standing on that grave for a very long time and nobody has offered it anything since.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 10
+                }
+              ]
+            },
+            "karma": {
               "animal": 4
             }
           }
@@ -10343,6 +11082,26 @@
           }
         },
         {
+          "id": "incurious_passes",
+          "text": "A collapsed roof over wet paper. Move on.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "incurious"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You move on. The roof comes down the rest of the way about an hour later, which you hear from some distance and do not go back to investigate.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": -5
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "catalogue",
           "type": "requirement",
           "text": "Work out what the collection was *for*",
@@ -10527,6 +11286,28 @@
           }
         },
         {
+          "id": "mourner_keeps_it_up",
+          "text": "Somebody has been maintaining this. Take a turn.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "mourner"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The offerings are recent and the cloth has been changed within the month, which means somebody is walking a long way to do this and will not always be able to.\n\nYou do what they have been doing, and you leave the shrine better stocked than you found it.",
+            "rewards": {
+              "xp": 20,
+              "supplies": {
+                "food": -2
+              }
+            },
+            "karma": {
+              "human": 4,
+              "hungry_ghost": -4
+            }
+          }
+        },
+        {
           "id": "adopt",
           "type": "requirement",
           "text": "Offer to carry the line",
@@ -10670,7 +11451,8 @@
               "gold": 120,
               "items": [
                 "item_random"
-              ]
+              ],
+              "add_trait": "covetous"
             },
             "karma": {
               "hungry_ghost": 4
@@ -10685,7 +11467,8 @@
             "type": "text",
             "text": "An hour with your hands and a broken marker for a spade. When you have finished you cannot tell there was ever a subsidence, which is the point.",
             "rewards": {
-              "xp": 10
+              "xp": 10,
+              "add_trait": "merciful"
             },
             "karma": {
               "god": 5,
@@ -10715,6 +11498,30 @@
             "karma": {
               "human": 5,
               "god": 3
+            }
+          }
+        },
+        {
+          "id": "greedy_takes",
+          "text": "It is in the open. That makes it nobody's.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "greedy"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You have the reasoning worked out before your hand arrives, which is the sign of a well-practised reasoning.\n\nThe goods are real, valuable, and will be missed by something that is still nearby.",
+            "rewards": {
+              "gold": "moderate",
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": -10
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": 5
             }
           }
         },
@@ -10813,6 +11620,30 @@
           }
         },
         {
+          "id": "pilgrim_sits_with",
+          "text": "You know this particular tiredness.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "pilgrim"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is not the walking. It is never the walking — it is the arithmetic of how much road is left against how much of you there is.\n\nYou sit down at the roadside with it and do not offer any encouragement, which is what it needed and what nobody else has managed.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": 10
+                }
+              ]
+            },
+            "karma": {
+              "human": 3
+            }
+          }
+        },
+        {
           "id": "walk_with",
           "type": "requirement",
           "text": "Walk with it as far as you are going",
@@ -10888,6 +11719,21 @@
             },
             "karma": {
               "human": 5
+            }
+          }
+        },
+        {
+          "id": "oath_keeper_reads_first",
+          "text": "Read all of it before agreeing to any of it.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "oath_keeper"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You read all of it. You are not agreeing to something you have not read; you have never been able to, and it has cost you opportunities.\n\nThis time it costs the ossuary keeper an hour and you the clause on the fourth page, which was going to be the expensive one.",
+            "rewards": {
+              "xp": 30
             }
           }
         },
@@ -11041,7 +11887,8 @@
                   "element": "space",
                   "amount": -20
                 }
-              ]
+              ],
+              "add_trait": "oath_breaker"
             },
             "karma": {
               "hungry_ghost": 6,
@@ -11071,6 +11918,27 @@
             "karma": {
               "human": 5,
               "hungry_ghost": 3
+            }
+          }
+        },
+        {
+          "id": "oath_breaker_knows",
+          "text": "You know what it is going to ask for, because you have given it before.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "oath_breaker"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It wants a promise. It does not much care what the promise is about — the value is in the breaking, later, when it can be collected on.\n\nYou recognise the shape because you have been on the other side of it, and you decline in terms it finds genuinely disappointing.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": 10
+                }
+              ]
             }
           }
         },
@@ -11171,6 +12039,48 @@
           }
         },
         {
+          "id": "suspicious_wont_enter",
+          "text": "A palace was not here an hour ago.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "suspicious"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "A palace was not here an hour ago, and you say so, repeatedly, until the party stops arguing about it.\n\nYou make camp at a distance and watch. At some point in the small hours the lit windows go out one row at a time, which settles the matter.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": 8
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "trusting_walks_in",
+          "text": "It is a warm building with the door open.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "trusting"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is. You are three rooms in and being handed something warm before anyone else has crossed the threshold.\n\nWhat saves you is that you are genuinely, transparently pleased to be there, and whatever runs the palace finds it has nothing to work with. It lets you go, baffled.",
+            "rewards": {
+              "xp": 20,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 8
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "walk_the_line",
           "type": "requirement",
           "text": "Go in, take nothing, eat nothing, leave",
@@ -11235,6 +12145,9 @@
             "text": "The moment your hands close on it the hoard is a hand's-breadth of gravel and something that has been lying underneath it for a long time is sitting up.",
             "karma": {
               "hungry_ghost": 5
+            },
+            "rewards": {
+              "add_trait": "covetous"
             }
           }
         },
@@ -11260,6 +12173,45 @@
             "karma": {
               "human": 3,
               "hungry_ghost": 2
+            }
+          }
+        },
+        {
+          "id": "covetous_cannot",
+          "text": "You have already started walking toward it.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "covetous"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You have. Someone catches your arm and you shake it off, and the arm-catcher lets you go because there is a limit to how much you can save a person from themselves.\n\nWhat you come back with is worthless and you carry it for two days before admitting that.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": -12
+                },
+                {
+                  "element": "earth",
+                  "amount": -8
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "clear_eyed_sees",
+          "text": "Look at the light on it. Light does not do that.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "clear_eyed"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Light does not do that. It takes about four seconds once you are looking at the right thing, and the right thing is never the treasure.\n\nYou can see where whatever laid it is waiting, too, which is more useful than the hoard would have been.",
+            "rewards": {
+              "xp": 30
             }
           }
         },
@@ -11399,7 +12351,8 @@
               "hp_loss": {
                 "amount": "light",
                 "target": "random"
-              }
+              },
+              "add_trait": "harrowed"
             },
             "karma": {
               "asura": 3
@@ -11449,6 +12402,27 @@
             "karma": {
               "god": 6,
               "human": 3
+            }
+          }
+        },
+        {
+          "id": "grudge_bearer_holds_on",
+          "text": "Whatever is in there is in one of yours. Do not let go.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "grudge_bearer"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You do not let go. This is the one circumstance in which the thing that is wrong with you is exactly the thing required.\n\nIt tries several exits. You are still holding the arm at the end of it, and the face that comes back is the right one.",
+            "rewards": {
+              "xp": 35,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": -8
+                }
+              ]
             }
           }
         },
@@ -11753,6 +12727,21 @@
           }
         },
         {
+          "id": "gossip_delays_him",
+          "text": "A messenger has been everywhere. Keep him talking.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "gossip"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "He has orders and a schedule and neither of them survive twenty minutes of being asked, with evident interest, about places he has recently been.\n\nBy the time he remembers the schedule you know the state of three roads and one court.",
+            "rewards": {
+              "xp": 25
+            }
+          }
+        },
+        {
           "id": "amend",
           "type": "requirement",
           "text": "Amend the document before signing",
@@ -11839,6 +12828,42 @@
             },
             "karma": {
               "human": 5
+            }
+          }
+        },
+        {
+          "id": "superstitious_takes_it_all",
+          "text": "It is an oracle. Write down every word.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "superstitious"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You take it down complete, including the parts that are clearly the mechanism rather than the message.\n\nOne line of it will turn out to matter enormously, and you will not know which until it does, which is precisely the arrangement you have always found bearable.",
+            "rewards": {
+              "xp": 20,
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": -5
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "clear_eyed_separates",
+          "text": "Sort the prophecy from the plumbing.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "clear_eyed"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Half of it is the propped jaw and the wind. A quarter is what any dead mouth says. The remaining quarter is specific, and specific is the only part that can be wrong, which is what makes it worth having.",
+            "rewards": {
+              "xp": 30
             }
           }
         },
@@ -11943,6 +12968,27 @@
           }
         },
         {
+          "id": "steady_practice_asks",
+          "text": "Ask to sit with her. You will not need it explained.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "steady_practice"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "She looks at you for slightly too long and then moves over on the mat.\n\nNo instruction is given. None is needed and both of you know it, and the afternoon goes by in a burning ground in complete silence and is one of the better afternoons.",
+            "rewards": {
+              "xp": 35,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 12
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "practice_with",
           "type": "requirement",
           "text": "Ask to sit the corpse-ground practice with her",
@@ -11965,7 +13011,8 @@
                   "element": "space",
                   "amount": 25
                 }
-              ]
+              ],
+              "add_trait": "ash_marked"
             },
             "karma": {
               "god": 10
