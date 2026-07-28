@@ -70,7 +70,7 @@
             "type": "text",
             "text": "They are arranged the way a nesting colony is arranged — the small ones inward, the big ones facing out, and the whole thing pointed away from something rather than toward you.\n\nYou back out along the line they are not watching, and nothing follows.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "air",
@@ -210,7 +210,7 @@
             "type": "text",
             "text": "You set it out in the correct order, which takes a while and which he watches without comment.\n\nWhen you finally do ask, he answers as though you had been introduced, rather than as though you had arrived.",
             "rewards": {
-              "xp": 25
+              "xp": 20
             },
             "karma": {
               "god": 3,
@@ -385,7 +385,8 @@
                   "element": "space",
                   "amount": -8
                 }
-              ]
+              ],
+              "xp": 22
             }
           }
         },
@@ -816,7 +817,7 @@
             "type": "text",
             "text": "They do, and it is served in the manner of a place that has been serving it to the same twelve people for three hundred years.\n\nYou are, briefly, extremely comfortable. It is not an experience this realm offers often.",
             "rewards": {
-              "xp": 10,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "water",
@@ -896,7 +897,7 @@
             "type": "text",
             "text": "A bathhouse is the most porous building ever devised. In ninety minutes you learn who is in debt to whom, which official is not returning, and one thing that is very obviously a lie and therefore worth more than the rest of it.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "gold": "small"
             }
           }
@@ -913,7 +914,7 @@
             "text": "It is not negotiable, and you negotiate it anyway, on the grounds that you will not be using the oils, the towels, or the attendant.\n\nThey take a third off to be rid of the conversation.",
             "rewards": {
               "gold": "small",
-              "xp": 10
+              "xp": 20
             }
           }
         },
@@ -1132,7 +1133,7 @@
             "type": "text",
             "text": "You sit. The cold does what cold does and you let it, and at some point the distinction between enduring it and not minding it stops being available.\n\nOne of them opens their eyes at the end and gives you a single nod, which appears to be the local currency.",
             "rewards": {
-              "xp": 35,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "fire",
@@ -1267,7 +1268,7 @@
             "type": "text",
             "text": "You wait. You do not fill the silence, which is apparently the examination.\n\nWhat comes through the wall eventually is four words long. You will be thinking about it for some time.",
             "rewards": {
-              "xp": 30,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "space",
@@ -1470,7 +1471,7 @@
             "type": "text",
             "text": "It comes out badly. It comes out, which is more than it has done in a long while.\n\nThe answer does not resolve anything. It does establish, quite gently, that the question was always allowed.",
             "rewards": {
-              "xp": 25,
+              "xp": 15,
               "pressure": [
                 {
                   "element": "space",
@@ -1608,7 +1609,7 @@
             "type": "text",
             "text": "You do not have his hands. You do have the shape of the thing, and you give him back the second half of a line he had left open — badly, in the wrong metre, and unmistakably the right line.\n\nHe stops playing. Then he starts again, from your version.",
             "rewards": {
-              "xp": 35,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "fire",
@@ -1633,7 +1634,7 @@
             "type": "text",
             "text": "The court is composed entirely of people who do this professionally, and they recognise a colleague.\n\nYou are given a seat, a drink, and a reputation you will have to spend the rest of the evening defending.",
             "rewards": {
-              "xp": 15,
+              "xp": 20,
               "gold": "small"
             }
           }
@@ -1745,7 +1746,7 @@
             "type": "text",
             "text": "You do it the way it is done at home: a place, not an offering. Somewhere to sit rather than something to take.\n\nIt sits. That appears to have been the whole request, and in the morning the fire has burned down more slowly than it should have.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "water",
@@ -2036,7 +2037,7 @@
             "type": "text",
             "text": "You know the form: never deny the debt, never accept the figure, and always counter-propose a schedule.\n\nIt works on the dead as well as it works on the living, which is either reassuring or extremely bleak.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "air",
@@ -2114,7 +2115,7 @@
             "type": "text",
             "text": "The others describe a dream. You describe the *shape* of one, which turns out to be the thing they were all failing to say.\n\nOnce it has a shape, the differences between the four accounts become the interesting part.",
             "rewards": {
-              "xp": 30,
+              "xp": 15,
               "pressure": [
                 {
                   "element": "space",

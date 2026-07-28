@@ -524,7 +524,7 @@
             "type": "text",
             "text": "Two rations, a blanket you were not using, and an hour. You total it as you go, out of habit, and find the total does not bother you as much as you expected.\n\nThe traveller lives. The accounting is, you decide, still worth having done.",
             "rewards": {
-              "xp": 15,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "earth",
@@ -545,7 +545,7 @@
             "type": "text",
             "text": "You are already moving before the question has finished being asked, and the party follows because that is what happens when someone moves first.\n\nThey live. They will tell someone about it, somewhere down the road.",
             "rewards": {
-              "xp": 20,
+              "xp": 15,
               "pressure": [
                 {
                   "element": "water",
@@ -578,7 +578,8 @@
                   "element": "earth",
                   "amount": -10
                 }
-              ]
+              ],
+              "xp": 22
             }
           }
         },
@@ -593,7 +594,7 @@
             "type": "text",
             "text": "You pick them up and keep walking and the party rearranges itself around the fact without a word being spent on it.\n\nThey are at the waystation an hour before they would otherwise have been, which is the whole difference between the two available outcomes.",
             "rewards": {
-              "xp": 25
+              "xp": 15
             },
             "karma": {
               "human": 4
@@ -949,7 +950,7 @@
             "type": "text",
             "text": "You go in first. The dark does what dark does and you keep walking through it, and the thing at the back of the cave turns out to be smaller than the sound suggested, which is usually the way.\n\nThe party comes in behind you considerably steadier than they would have.",
             "rewards": {
-              "xp": 25,
+              "xp": 12,
               "pressure": [
                 {
                   "element": "air",
@@ -975,7 +976,8 @@
                   "element": "air",
                   "amount": -15
                 }
-              ]
+              ],
+              "xp": 22
             }
           }
         },
@@ -999,7 +1001,8 @@
                   "element": "earth",
                   "amount": -8
                 }
-              ]
+              ],
+              "xp": 22
             }
           }
         },
@@ -1119,7 +1122,7 @@
             "type": "text",
             "text": "You do not offer advice, because there is none, and you do not tell them it passes, because you would be lying.\n\nWhat you do is stay until the worst of the current one is over. It is apparently not something anyone has done for them before.",
             "rewards": {
-              "xp": 25,
+              "xp": 15,
               "pressure": [
                 {
                   "element": "water",
@@ -1298,7 +1301,7 @@
             "type": "text",
             "text": "Three of them face the road. One faces away.\n\nYou do not know what that means, but you know it means something, and you arrange your own offering to match the three. Nothing happens, which is exactly what you wanted.",
             "rewards": {
-              "xp": 10,
+              "xp": 15,
               "pressure": [
                 {
                   "element": "air",
@@ -1461,7 +1464,7 @@
             "text": "It takes eleven minutes and involves a detailed excursion into the condition of his sack.\n\nHe settles well below where he started, calls you something unrepeatable, and shakes your hand.",
             "rewards": {
               "gold": "small",
-              "xp": 15
+              "xp": 20
             }
           }
         },
@@ -1581,7 +1584,7 @@
             "type": "text",
             "text": "'Ah,' he says, and something in his posture changes from courteous to interested.\n\nWhat follows is not a teaching so much as a comparison of notes between two people who have both decided that most things are optional. You come away with one instruction, and it is a good one.",
             "rewards": {
-              "xp": 35,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "fire",
@@ -1606,7 +1609,7 @@
             "type": "text",
             "text": "There is no teaching. You sit down opposite him in the snow and neither of you says anything for a considerable time.\n\nAt the end he laughs once, briefly, as though you had told a joke, and goes on his way. You will spend some weeks working out what was funny.",
             "rewards": {
-              "xp": 35,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "space",
@@ -1713,7 +1716,7 @@
             "type": "text",
             "text": "You sit. The cold is immediate and then, some considerable time later, less immediate.\n\nThe yogi does not acknowledge you at any point, which you understand by the end to have been the entire teaching.",
             "rewards": {
-              "xp": 30,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "space",
@@ -2144,7 +2147,7 @@
             "type": "text",
             "text": "You are not. Everyone in the party works this out at approximately the same moment you do, and the argument that follows is short.\n\nThe chains are hot enough to cost you. The prisoner is down and breathing before you have finished deciding whether it was wise.",
             "rewards": {
-              "xp": 25,
+              "xp": 30,
               "hp_loss": {
                 "amount": "light",
                 "target": "random"
@@ -2509,7 +2512,7 @@
             "type": "text",
             "text": "The gap is not really a gap. You are across it before it has finished being one, and the second surge arrives where you were standing rather than where you are.\n\nYou throw the rope back for everyone else.",
             "rewards": {
-              "xp": 25
+              "xp": 10
             }
           }
         },
@@ -2524,7 +2527,7 @@
             "type": "text",
             "text": "Everyone else has already agreed to go around and you have not, and the argument takes twenty minutes that could have been spent walking.\n\nYou are, in the end, correct: the crossing exists. It is also true that the twenty minutes cost more than the detour would have.",
             "rewards": {
-              "xp": 15,
+              "xp": 10,
               "pressure": [
                 {
                   "element": "earth",
@@ -2679,7 +2682,7 @@
             "text": "You put it in the niche. It is not an offering exactly — nobody is being asked for anything — it is simply somewhere to leave a thing so that it stops being yours.\n\nYou walk on lighter by an amount that has nothing to do with the weight.",
             "rewards": {
               "add_trait": "renunciate",
-              "xp": 30,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "fire",
@@ -2828,7 +2831,7 @@
             "type": "text",
             "text": "The clerk wants a name for the ledger and you supply one, fluently, along with a district and a plausible reason for travel.\n\nIt is not your name. You have had a great deal of practice at this and it shows in all the wrong ways.",
             "rewards": {
-              "xp": 15,
+              "xp": 30,
               "pressure": [
                 {
                   "element": "air",
@@ -2864,7 +2867,7 @@
             "type": "text",
             "text": "You answer every question in order, including the four that are the same question, and you do not once indicate that you have noticed.\n\nThe clerk, who is braced for a fight the way clerks always are, has nothing to push against and stamps the thing in half the usual time.",
             "rewards": {
-              "xp": 25
+              "xp": 10
             }
           }
         },
@@ -2885,7 +2888,8 @@
                   "element": "water",
                   "amount": -12
                 }
-              ]
+              ],
+              "xp": 10
             }
           }
         },
@@ -3025,7 +3029,7 @@
             "type": "text",
             "text": "She says four things. Two are true of anyone, one is unfalsifiable, and the fourth is specific, checkable, and delivered in a completely different tone from the others.\n\nYou keep the fourth. It is worth keeping.",
             "rewards": {
-              "xp": 30
+              "xp": 15
             }
           }
         },
@@ -3040,7 +3044,7 @@
             "type": "text",
             "text": "You get all of it, including the parts she probably did not mean as prophecy.\n\nFor the next several days you will be interpreting ordinary events as fulfilments, which is exhausting, and once — just once — extremely useful.",
             "rewards": {
-              "xp": 15,
+              "xp": 22,
               "pressure": [
                 {
                   "element": "air",
@@ -3221,7 +3225,7 @@
             "type": "text",
             "text": "You do not know their names or their calendar, so you use yours, and you set out what can be spared at each door rather than at the centre.\n\nIt takes all afternoon. By the end the village is not less empty, but it is differently empty.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "water",
@@ -3246,7 +3250,7 @@
             "type": "text",
             "text": "You find it because you know where a person puts a thing they do not want found: not hidden, just somewhere nobody would look twice.\n\nUnder the well's coping stone, wrapped in cloth. An account. It does not make good reading and it is worth carrying.",
             "rewards": {
-              "xp": 30,
+              "xp": 20,
               "items": [
                 "item_random"
               ]
@@ -3374,7 +3378,7 @@
             "type": "text",
             "text": "It surfaces on a count. Not a regular one — it is hunting the vents, not the surface — but a count, and once you have it you know where it will not be for about eleven seconds at a time.\n\nEleven seconds is enough.",
             "rewards": {
-              "xp": 30
+              "xp": 20
             }
           }
         },
@@ -3550,7 +3554,7 @@
             "type": "text",
             "text": "Nobody objects. Nobody helps, either — you get the form wrong for two hours and are corrected exactly once, by a demon who does not break their own rhythm to do it.\n\nThe correction is worth the two hours.",
             "rewards": {
-              "xp": 30,
+              "xp": 20,
               "skill_up": {
                 "skill": "martial_arts",
                 "amount": 1
@@ -3676,7 +3680,7 @@
             "type": "text",
             "text": "The archivist watches you work through two centuries of tax records with the expression of a man who has finally met someone worse than himself.\n\nBetween the ledgers: a requisition order, countersigned, for something that was never delivered. You copy the name.",
             "rewards": {
-              "xp": 35
+              "xp": 8
             }
           }
         },
@@ -3691,7 +3695,7 @@
             "type": "text",
             "text": "You read the index rather than the books, which is faster and, for you, sufficient. Nine hundred entries. You will be able to produce any of them on request for the rest of this life.",
             "rewards": {
-              "xp": 30,
+              "xp": 12,
               "skill_up": {
                 "skill": "learning",
                 "amount": 1
@@ -3976,8 +3980,8 @@
             "type": "text",
             "text": "The gatekeeper sees it happen — the moment the decision stops being a decision — and grins with all the rows of teeth at once.\n\n'Oh, you're one of those,' he says, delightedly, and waves you through without the fee.",
             "rewards": {
-              "xp": 25,
-              "gold": "moderate"
+              "xp": 20,
+              "gold": "small"
             }
           }
         },
@@ -3992,8 +3996,8 @@
             "type": "text",
             "text": "Very little of it is true. All of it is delivered well, and the tiers are chanting a name by the end that is only approximately yours.\n\nThe purse is larger for a crowd that has already decided how it wants the fight to go.",
             "rewards": {
-              "gold": "moderate",
-              "xp": 15
+              "gold": "small",
+              "xp": 20
             }
           }
         },
@@ -4008,8 +4012,8 @@
             "type": "text",
             "text": "You do not. You go out flat, unhurried and entirely uninterested in the tiers, and your opponent — who has been playing to them for a living — cannot find the rhythm they were expecting.\n\nIt is over rather quickly and the crowd does not enjoy it at all.",
             "rewards": {
-              "xp": 30,
-              "gold": "moderate"
+              "xp": 12,
+              "gold": "small"
             }
           }
         },
@@ -4299,7 +4303,7 @@
             "type": "text",
             "text": "You spend twenty minutes on the surrounding rocks instead of the package, and you find him — a small demon flat behind a ridge with a good view and a bad hiding place.\n\nHe runs. The package turns out to be exactly as bad as you assumed, and you do not open it.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "air",
@@ -4325,7 +4329,8 @@
                   "element": "space",
                   "amount": -5
                 }
-              ]
+              ],
+              "xp": 22
             }
           }
         },
@@ -4432,7 +4437,7 @@
             "type": "text",
             "text": "You name the terms before anyone has decided whether to be offended: one of theirs, one of yours, first to yield, no toll either way.\n\nTheirs is shorter than you and considerably wider. It takes a while. The chain comes down.",
             "rewards": {
-              "xp": 30,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "fire",
@@ -4566,7 +4571,7 @@
             "type": "text",
             "text": "Nobody has asked them that. Everyone asks the other question.\n\nThey tell you, and it is a reasonable vow made for a reasonable reason, and the stone is exactly as heavy as it was before. You walk with them for a while.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "earth",
@@ -4739,7 +4744,7 @@
             "type": "text",
             "text": "The formation tells you what happened: they were not caught marching. They were caught *forming up*, which means they saw it coming and had time to do the wrong thing about it.\n\nYou find the officer by where he is standing. What he is holding is worth taking.",
             "rewards": {
-              "xp": 30,
+              "xp": 15,
               "items": [
                 "item_random"
               ]
@@ -4871,7 +4876,7 @@
             "type": "text",
             "text": "The scars on her hands say she has done this often. Yours say something similar, and she reads them at about the same moment you read hers.\n\nIt is a good duel. It is stopped, by mutual agreement, one exchange before it would have stopped being one.",
             "rewards": {
-              "xp": 35,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "fire",
@@ -5018,7 +5023,7 @@
                 "item_random"
               ],
               "gold": "small",
-              "xp": 15
+              "xp": 20
             }
           }
         },
@@ -5033,7 +5038,7 @@
             "type": "text",
             "text": "This is a strange sensation in a place engineered to produce the opposite, and one of the vendors follows you for a while trying to work out what is wrong with you.\n\nYou leave with your purse intact and an unusual amount of goodwill from the one stallholder who understood.",
             "rewards": {
-              "xp": 20,
+              "xp": 15,
               "pressure": [
                 {
                   "element": "earth",
@@ -5064,7 +5069,8 @@
                   "element": "air",
                   "amount": -8
                 }
-              ]
+              ],
+              "xp": 22
             }
           }
         },
@@ -5231,7 +5237,8 @@
                   "element": "space",
                   "amount": -8
                 }
-              ]
+              ],
+              "xp": 22
             }
           }
         },
@@ -5400,7 +5407,7 @@
             "type": "text",
             "text": "They make room without being asked, which is the thing about the damned — they can spot it.\n\nYou are welcome here in a way that is not entirely comfortable to be welcome, and you leave with a name to drop and a headache.",
             "rewards": {
-              "xp": 10,
+              "xp": 30,
               "pressure": [
                 {
                   "element": "fire",
@@ -5435,7 +5442,8 @@
                   "element": "earth",
                   "amount": -8
                 }
-              ]
+              ],
+              "xp": 30
             }
           }
         },
@@ -5969,7 +5977,7 @@
             "type": "text",
             "text": "You do not tell him it gets easier. You tell him the specific practical things: which roads have checkpoints, what they ask, and how long before anyone stops looking.\n\nHe listens like a man taking down an address.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "earth",
@@ -5990,7 +5998,7 @@
             "type": "text",
             "text": "You tell him what you think of it. He takes it without arguing, which is worse than arguing.\n\nThen you give him the water anyway, because the two positions turn out not to be in conflict, whatever you had assumed.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "earth",
@@ -6015,7 +6023,7 @@
             "type": "text",
             "text": "It takes him a long time to get to the actual sentence, and the actual sentence is not the one he opened with.\n\nWhat he is done with is not the Guard. Once that is out, the rest of the conversation is a different conversation entirely.",
             "rewards": {
-              "xp": 25
+              "xp": 8
             }
           }
         },
@@ -6073,7 +6081,7 @@
             "type": "text",
             "text": "The proprietor looks at you for a moment longer than is comfortable, and then hands over the pot without a word, which in this establishment is an honour roughly equivalent to a title.\n\nYou make it properly. Several of the silent figures relocate closer to the fire while you do.",
             "rewards": {
-              "xp": 15,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "water",
@@ -6160,7 +6168,8 @@
                   "amount": -8
                 }
               ],
-              "add_trait": "night_drinker"
+              "add_trait": "night_drinker",
+              "xp": 30
             }
           }
         },
@@ -6182,7 +6191,8 @@
                   "element": "fire",
                   "amount": -12
                 }
-              ]
+              ],
+              "xp": 30
             }
           }
         },
@@ -6256,7 +6266,7 @@
             "type": "text",
             "text": "They do not mind. Nobody asks where you served, because the question is not interesting to anyone here — what is interesting is whether you know how to sit at a fire without talking.\n\nYou do. By morning you have been told three things about the road ahead that are not on any map.",
             "rewards": {
-              "xp": 25,
+              "xp": 15,
               "pressure": [
                 {
                   "element": "water",
@@ -6780,7 +6790,7 @@
             "type": "text",
             "text": "The healer's expression does not change, but she takes you to the far end of the garden and shows you a bed you had walked straight past.\n\n'For pain,' she says, in the tone of someone who has heard every other reason and is offering you the dignity of not giving one.'",
             "rewards": {
-              "xp": 10,
+              "xp": 20,
               "supplies": {
                 "herbs": 4
               }
@@ -6801,7 +6811,7 @@
               "supplies": {
                 "herbs": 6
               },
-              "xp": 15
+              "xp": 20
             }
           }
         },
@@ -6893,7 +6903,7 @@
             "type": "text",
             "text": "The doorkeeper asks one question. Your answer is not the right one, but the way you decline to elaborate apparently is.\n\nYou are shown further in than most, and what is discussed there stays where it was discussed.",
             "rewards": {
-              "xp": 30,
+              "xp": 20,
               "add_trait": "secret_bearer"
             }
           }
@@ -7088,7 +7098,7 @@
               "items": [
                 "item_random"
               ],
-              "xp": 15
+              "xp": 20
             }
           }
         },
@@ -7195,7 +7205,7 @@
             "type": "text",
             "text": "Skeletons, it emerges, have opinions about draw weight.\n\nAn hour of genuinely technical conversation later, one of them presses something into your hand — not a gift exactly, more a professional courtesy between people who both know what a bad string does in cold.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "items": [
                 "item_random"
               ]
@@ -7329,7 +7339,7 @@
               "restore": {
                 "hp_percent": 30
               },
-              "xp": 10
+              "xp": 20
             }
           }
         },

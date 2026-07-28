@@ -348,7 +348,7 @@
             "type": "text",
             "text": "You do the whole form on a swaying platform in the canopy, which is objectively ridiculous and which the proprietor watches with total seriousness.\n\nAt the end she brings out the other pot — the one that does not get offered — and does the form back at you.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "water",
@@ -427,7 +427,7 @@
             "type": "text",
             "text": "Everything does, and everything talks, and a watering hole in the dry season is the single most informative place on the plain.\n\nYou leave knowing which route the migration will take, which is worth more than the tea cost.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "gold": "small"
             }
           }
@@ -1025,7 +1025,7 @@
             "type": "text",
             "text": "You spend the afternoon working out the ventilation, which is the part that should not be possible, and by evening you have it: the mound breathes on a temperature differential and the whole structure is a lung.\n\nYou will be thinking about this for weeks.",
             "rewards": {
-              "xp": 30
+              "xp": 8
             }
           }
         },
@@ -1090,7 +1090,7 @@
             "type": "text",
             "text": "You can, and you do, quietly, and the naming turns out to be the credential — the congress has been addressed by a great many people who did not know a shyena from a garuda.\n\nYou are given a place at the lower branches, which is further in than visitors go.",
             "rewards": {
-              "xp": 30,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "air",
@@ -1162,7 +1162,7 @@
             "type": "text",
             "text": "Somebody decided it, and kept deciding it, for what must be generations — the arrangement is maintained, not merely made.\n\nYou find the current keeper by looking for who has been walking here recently, and they are glad to be found.",
             "rewards": {
-              "xp": 30,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "water",
@@ -1320,7 +1320,7 @@
             "type": "text",
             "text": "That is the whole point of it and almost nobody notices. The cairn faces the trails, the offerings are the kind an animal would take, and the person who built it was making an argument.\n\nYou add to it in the same spirit.",
             "rewards": {
-              "xp": 25
+              "xp": 20
             },
             "karma": {
               "animal": 5,
@@ -1555,7 +1555,7 @@
             "type": "text",
             "text": "You want to. Everything in you wants to, and the part of you that knows better is losing the argument until somebody takes your elbow.\n\nYou cross without incident and spend the rest of the day defending the impulse, badly.",
             "rewards": {
-              "xp": 10,
+              "xp": 30,
               "pressure": [
                 {
                   "element": "water",
@@ -2145,7 +2145,7 @@
             "type": "text",
             "text": "They do, and the poles record them — the makara's terms are carved on the landward side of the third post, which nobody reads because nobody thinks of a makara as an institution.\n\nIt turns out you have already overpaid by walking this far, and you say so.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "gold": "small"
             }
           }
@@ -2250,7 +2250,7 @@
             "type": "text",
             "text": "It decides quickly and it decides well, and the seat you are given has a view of the proceedings that a trade delegation would have argued for.\n\nYou are aware this has nothing to do with anything you have done. It is still the better seat.",
             "rewards": {
-              "xp": 20
+              "xp": 15
             }
           }
         },
@@ -2265,7 +2265,7 @@
             "type": "text",
             "text": "Within an hour you are on genuinely warm terms with two junior members of a delegation and one archivist, and the archivist is the one who matters.\n\nWhat you learn from her is not on the agenda and would not have been raised at it.",
             "rewards": {
-              "xp": 30
+              "xp": 20
             }
           }
         },
@@ -2356,7 +2356,7 @@
             "text": "You go through the stock stone by stone, noting the flaws out loud in a tone of mild regret.\n\nBy the end she has halved two prices to stop you doing it to the rest, which is exactly the mechanism you were relying on.",
             "rewards": {
               "gold": "small",
-              "xp": 15
+              "xp": 20
             }
           }
         },
@@ -2580,7 +2580,8 @@
               "hp_loss": {
                 "amount": "light",
                 "target": "random"
-              }
+              },
+              "xp": 18
             }
           }
         },
@@ -2680,7 +2681,7 @@
             "type": "text",
             "text": "You go down and do the circuit, which underwater takes longer and hurts more and is in every other respect identical.\n\nThe naga who find you doing it are so thoroughly disarmed that the conversation afterwards starts from a position no negotiation would have reached.",
             "rewards": {
-              "xp": 30
+              "xp": 20
             },
             "karma": {
               "god": 3,
@@ -2913,7 +2914,7 @@
             "type": "text",
             "text": "You take the upstream end and plant yourself, and the cold gets into your legs and stays there while five people cross a rope you are personally holding in place.\n\nYou go last. You are shaking by then and it does not matter.",
             "rewards": {
-              "xp": 25
+              "xp": 15
             }
           }
         },
@@ -2936,7 +2937,8 @@
                   "element": "earth",
                   "amount": -8
                 }
-              ]
+              ],
+              "xp": 22
             }
           }
         },
@@ -3136,7 +3138,7 @@
             "type": "text",
             "text": "You stopped with them, which is why the party is already off the trail and in cover when the rakshasa commits to a charge at where you were going to be.\n\nIt is very fast. It is not faster than being somewhere else.",
             "rewards": {
-              "xp": 30
+              "xp": 20
             }
           }
         },
@@ -3329,7 +3331,7 @@
             "type": "text",
             "text": "It is the shape you would use yourself, if you had six people and needed them to arrive around something at once.\n\nYou say so, out loud, with the technical terms. The gana stop what they are doing and reconsider you from the beginning.",
             "rewards": {
-              "xp": 30,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "air",
@@ -3441,7 +3443,7 @@
             "type": "text",
             "text": "Standing still in front of a charging sounder is a terrible idea that happens to be the correct one, and you are the only person present capable of doing it.\n\nThe matron breaks off four feet short. She was never going to commit; she needed to see whether you would.",
             "rewards": {
-              "xp": 30,
+              "xp": 12,
               "pressure": [
                 {
                   "element": "air",
@@ -3651,7 +3653,7 @@
             "type": "text",
             "text": "The varaha does not stop or explain. She does move over slightly, which is permission.\n\nWhat she is doing is grafting — one network into another, at a join she has prepared over what must be months. Nobody in the party had known this was a thing that could be done.",
             "rewards": {
-              "xp": 35
+              "xp": 8
             }
           }
         },
@@ -3760,7 +3762,7 @@
             "type": "text",
             "text": "You come in downwind, slowly, at an angle, and you stop at the distance she chooses rather than the one you would prefer.\n\nShe lets you stop there. For a sounder matron with young in the trees behind her, this is an extraordinary concession, and both of you know it.",
             "rewards": {
-              "xp": 30
+              "xp": 20
             },
             "karma": {
               "animal": 4
@@ -3983,7 +3985,7 @@
             "type": "text",
             "text": "Everyone calls up. That is why the shyena is at the top of the tallest tree and not talking to anyone.\n\nYou sit at the base for two hours. It comes down in its own time, which is the only time it was ever going to come down in.",
             "rewards": {
-              "xp": 30
+              "xp": 20
             },
             "karma": {
               "animal": 3
@@ -4108,7 +4110,7 @@
               "restore": {
                 "hp_percent": 20
               },
-              "xp": 25
+              "xp": 20
             },
             "karma": {
               "human": 4,
@@ -4253,7 +4255,7 @@
             "type": "text",
             "text": "You decline everything — the gourd, the cushions, the extremely good food — politely and without comment, and your host finds this so novel that he follows you to the edge of the clearing asking questions.\n\nHe is, under all of it, lonely. You had guessed that from the size of the camp.",
             "rewards": {
-              "xp": 30,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "fire",
@@ -4284,7 +4286,8 @@
                   "element": "space",
                   "amount": -8
                 }
-              ]
+              ],
+              "xp": 30
             }
           }
         },
@@ -4302,7 +4305,7 @@
               "supplies": {
                 "herbs": 5
               },
-              "xp": 15,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "water",
@@ -4426,7 +4429,7 @@
             "type": "text",
             "text": "You do not know the steps and you join the outer ring anyway, and the outer ring is precisely where people who do not know the steps are supposed to be.\n\nBy the third round you have most of it. By the fifth you are being corrected, kindly, by a gana half your height.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "air",
@@ -4688,7 +4691,8 @@
                   "element": "air",
                   "amount": -8
                 }
-              ]
+              ],
+              "xp": 22
             }
           }
         },
@@ -4703,7 +4707,7 @@
             "type": "text",
             "text": "You mark every third turning, consistently, on the same side, at the same height.\n\nIt is fussy and slow and the party complains about it right up until the point where you walk everyone back out in a fifth of the time it took to walk in.",
             "rewards": {
-              "xp": 25
+              "xp": 12
             }
           }
         },
@@ -4927,7 +4931,7 @@
             "type": "text",
             "text": "Bone, wool, a length of dyed cord that did not come from anywhere nearby, and — under all of it — the thing the cord was tied to.\n\nThe aerie's owner has been collecting from a settlement that is not on your map, and the direction it must lie in is now obvious.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "items": [
                 "item_random"
               ]
@@ -5102,7 +5106,7 @@
             "type": "text",
             "text": "There is, and there is only one thing a spear planted across a trail has ever meant, and you have been walking all morning.\n\nThe yaksha is pleased. The bout is formal, brief, and settled on a technicality that you both agree to call a win for him.",
             "rewards": {
-              "xp": 30,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "fire",
@@ -5305,7 +5309,7 @@
             "type": "text",
             "text": "You step off the line with time to spare, and having time to spare means you can watch the whole thing go past from a yard away, which almost nobody gets to do.\n\nIt is enormous. You will be describing it for weeks.",
             "rewards": {
-              "xp": 25,
+              "xp": 12,
               "pressure": [
                 {
                   "element": "air",
@@ -5335,7 +5339,8 @@
                   "element": "air",
                   "amount": -12
                 }
-              ]
+              ],
+              "xp": 22
             }
           }
         },
@@ -5445,7 +5450,7 @@
             "type": "text",
             "text": "You stop, and you make everyone else stop, which is much harder.\n\nThe chord passes over and around and does not descend, because nothing in the party is behaving like something worth descending on.",
             "rewards": {
-              "xp": 25
+              "xp": 20
             }
           }
         },
@@ -5552,7 +5557,7 @@
             "type": "text",
             "text": "Wings spread, in the open, in full sun, until sundown. It is a stupid practice and you both know it is a stupid practice and that is not an argument against it.\n\nWhen the light goes he folds his wings and says one sentence to you, and it is not about the practice.",
             "rewards": {
-              "xp": 35,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "fire",
@@ -5574,7 +5579,7 @@
             "text": "You stand past sundown, which he does not, and he comes back at moonrise to find out what you are doing.\n\nThe conversation that follows is the first one in months in which neither of you has to explain the premise.",
             "rewards": {
               "add_trait": "renunciate",
-              "xp": 35,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "fire",
@@ -5697,7 +5702,7 @@
             "type": "text",
             "text": "The bones land where she puts them. That is not a fraud — she is not pretending otherwise, and when she sees you watching her hands she nods as though a question has been settled.\n\nWhat she tells you afterwards, without the bones, is the useful part.",
             "rewards": {
-              "xp": 30
+              "xp": 15
             }
           }
         },
@@ -5812,7 +5817,7 @@
             "type": "text",
             "text": "It is very good work. It is also, you notice, made from about nine different things that do not occur within a hundred miles of here.\n\nYou say so. The artisan is delighted — nobody has ever recognised the sourcing before, only the arrangement.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "items": [
                 "item_random"
               ]
@@ -5924,7 +5929,7 @@
             "type": "text",
             "text": "There is a way of asking, and you know it, because you have always known these things without being able to say where from.\n\nThe uluka answers the question you asked rather than the one you meant, which is the risk you accepted by asking properly.",
             "rewards": {
-              "xp": 25
+              "xp": 15
             }
           }
         },
@@ -6169,7 +6174,7 @@
             "type": "text",
             "text": "Nobody asks. The hive-mind takes some time over the answer, which is itself interesting, and the answer is: some, but not much, and less than you would think, and thank you for asking.\n\nYou are given more than the traders get.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "supplies": {
                 "food": 6
               }
@@ -6298,7 +6303,7 @@
             "type": "text",
             "text": "You count them again. There are nine. You count a third time from the other direction and there are nine, and the fact that you needed to check three times is the thing worth paying attention to.\n\nYou make the offering at the one you kept losing.",
             "rewards": {
-              "xp": 20,
+              "xp": 22,
               "pressure": [
                 {
                   "element": "space",
@@ -6495,7 +6500,7 @@
             "type": "text",
             "text": "Second rank, north side, not grazing. Everything the herd will do in the next minute is already decided by her.\n\nYou plan the crossing around one animal instead of forty, and the herd never breaks.",
             "rewards": {
-              "xp": 30
+              "xp": 20
             }
           }
         },
@@ -6510,7 +6515,7 @@
             "type": "text",
             "text": "They make room. It is not tameness — nothing here is tame — it is that you are moving at a speed that reads as weather rather than as threat.\n\nThe party follows in your wake, and the crossing takes an hour instead of a day.",
             "rewards": {
-              "xp": 25,
+              "xp": 20,
               "pressure": [
                 {
                   "element": "earth",
@@ -6534,7 +6539,7 @@
             "type": "text",
             "text": "Third group from the left, lying down, wrong shoulder line.\n\nIt has been in among them for some time and the herd has accepted it, which tells you considerably more about the thing than about the herd.",
             "rewards": {
-              "xp": 25
+              "xp": 15
             }
           }
         },
@@ -6768,7 +6773,7 @@
             "type": "text",
             "text": "You stop the party from running, which is the entire job, and then you give four people four tasks in the order they need doing.\n\nIt is not courage. It is that panic is a thing you stopped being able to do some years ago, and it turns out to be worth more than courage here.",
             "rewards": {
-              "xp": 30
+              "xp": 15
             }
           }
         },
@@ -6783,7 +6788,7 @@
             "type": "text",
             "text": "There are, and you are already moving toward them, and the argument about whether this is sensible happens behind you at volume.\n\nYou get perhaps a third of them out. The third is a real number of living things and you decline to be told otherwise.",
             "rewards": {
-              "xp": 25,
+              "xp": 30,
               "hp_loss": {
                 "amount": "light",
                 "target": "random"
