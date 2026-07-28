@@ -25,7 +25,8 @@ Core systems all exist and are wired: character/XP, karma/reincarnation,
 events (grey/blue/yellow choices, dynamic DCs), grid combat (spells, AoE,
 statuses, AI, projectiles), overworld (real-time movement, mobs, portals),
 shops/training/guilds, items (procedural weapons/armor/talismans, implements,
-charms), perks (600), psychology/pressure, traits, wounds, body plans
+charms), perks (600), psychology/pressure, traits (103) and party
+relationships, wounds, body plans
 (multi-arm species), camp/rest/time/lunar calendar, save/load (3 slots),
 audio, cheat console. Engine is **Godot 4.6** (CLAUDE.md said 4.3 — updated).
 
@@ -104,6 +105,12 @@ Ordered roughly by how much finished work is sitting behind each gap.
   odd-only tiers, 9 written to fill what redistribution couldn't reach).
 - **Perk flavor text** — 500 of 600 perks have an empty `flavor` field. Better
   written in Olaf's voice than mine.
+- **The events × traits pass** — traits now sit correctly on the psychology
+  matrix, 28 behavioural and acquired ones were added, and RelationshipSystem
+  gives party pairs a rapport band. What remains is the sweep: placing
+  `trait` / `not_trait` gates on existing choices and `add_trait` outcomes where
+  an event marks someone. 8 trait events and 3 relationship events exist as
+  worked examples; their prose is Claude's.
 - **27 per-level skill bonuses have no consumer** — `base_bonuses` grants them,
   nothing reads them. Full table and per-system wiring notes in TODO.md §
   "Per-Level Skill Bonuses With No Consumer".

@@ -32,21 +32,22 @@ Companion documents:
 | Asura | ✗ | ✗ | ✗ | ✗ | ✗ | — |
 | God | ✗ | ✗ | ✗ | ✗ | ✗ | — |
 
-Plus 22 cross-realm domain events. **345 events total**, of which 336 have
-choices: 624 grey, 506 blue, 167 yellow.
+Plus 33 cross-realm domain events (13 plain, 9 camp-triggered, 8 trait-triggered,
+3 relationship-triggered). **356 events total**.
 
 Other totals: **600 perks** (546 skill + 54 cross, every skill covered at every
-level 1–10), **363 spells**, **565 items**, **75 traits** (56 gameplay + 19
+level 1–10), **363 spells**, **565 items**, **103 traits** (84 gameplay + 19
 racial), **12 prosthetics**.
 
 ### Systems
 
-Twenty autoloads, all wired: characters/XP, karma/reincarnation, events, grid
+Twenty-one autoloads, all wired: characters/XP, karma/reincarnation, events, grid
 combat (spells, AoE via `AoEResolver`, statuses, AI, projectiles), overworld
 (real-time movement, mobs, portals with boss gating), shops/training/guilds,
 procedural items, perks, psychology/pressure, traits, wounds, body plans
-(multi-arm species, limb loss, prosthetics), camp/rest/time/lunar calendar,
-save/load (3 slots), audio, cheat console. Engine: **Godot 4.6**.
+(multi-arm species, limb loss, prosthetics), party relationships,
+camp/rest/time/lunar calendar, save/load (3 slots), audio, cheat console.
+Engine: **Godot 4.6**.
 
 Validator reports **0 issues**; all scripts pass `gdparse`.
 
@@ -97,25 +98,27 @@ Each of these is an hour or less and touches one system.
 The mirror image of dead data: code paths that work and are never exercised.
 
 - [ ] **`trait` / `not_trait` event requirements** — fully implemented in
-  `event_manager.check_requirements()`, used by **zero** of the 336 events with
-  choices. The 75 traits carry `event_tags` that only PsychologySystem reads.
-  Character traits currently affect events not at all. **This is the next
-  planned pass**: go through the events and place trait gates where a
-  disposition would reasonably make a situation better or worse.
-- [ ] **12 of the 13 acquired traits are unreachable** — exactly one event in
-  the game grants a trait (`hg_ancestor_spirit` → `devout`). `blood_handed`,
-  `war_hardened`, `grief_struck`, `haunted`, `addiction`, `oath_breaker`,
-  `composed`, `enlightened_insight`, `lapsed`, and the three added in the
-  matrix pass (`merciful`, `renunciate`, `oath_keeper`) can never be acquired.
-  Acquired traits are meant to be the record of what a run did to a character.
+  `event_manager.check_requirements()` and used by **zero** of the 336 events
+  with choices, though 11 trait/relationship events now fire off traits
+  directly. **This is the next planned pass**: a systematic sweep of every
+  event, placing trait gates where a disposition would reasonably make a
+  situation better or worse, and `add_trait` / `remove_trait` outcomes where an
+  event plausibly marks or unmarks someone. `not_trait` is as useful as
+  `trait` — `incurious` should close doors that `curious` opens.
+- [ ] **Most acquired traits are still unreachable by events.** Code hooks now
+  grant nine of them (see § Trait acquisition below), but events grant exactly
+  one (`hg_ancestor_spirit` → `devout`). `blood_handed`, `war_hardened`,
+  `haunted`, `addiction`, `oath_breaker`, `composed`, `enlightened_insight`,
+  `lapsed`, `merciful`, `renunciate`, `oath_keeper`, `touched_by_grace`,
+  `harrowed` and `beauty_struck` all wait on the events pass.
 - [ ] **`wound` and `sever_part` event rewards** — both handled, both unused by
   any event. Nothing in the game maims you outside combat.
 - [ ] **Only 3 of the ~8 supported requirement keys are used** — events use
   `skills` (458), `roll` (158), `attributes` (60) and nothing else.
 - [ ] **Cursed items** — "cursed" is a status and a terrain type; zero cursed
   equipment exists, though the item type is registered.
-- [ ] **`mantra_count`** accumulates via camp Mantra Recitation with no
-  consumer (blocked on YidamSystem — see Part II).
+- [ ] **`mantra_count`** now feeds the practice traits, but the deeper consumer
+  is still YidamSystem — see Part II.
 - [ ] **`persistent_upgrades`** survives reincarnation in `character_system.gd`,
   but nothing ever grants one. No meta-progression exists.
 - [ ] **Camp Followers** — Party-tab UI stub (`_update_followers_list()`), no
@@ -394,6 +397,47 @@ families the situation touches, then whether the trait makes the character
 better or worse at it. A `not_trait` gate is as useful as a `trait` gate:
 `incurious` should close doors that `curious` opens.
 
+### Bonding vocabulary
+
+`bond_tags` on each trait is what `RelationshipSystem` scores party rapport on:
+**vice, devotion, martial, arts, scholarly, sociable, solitary, grief, order,
+beasts, hardship, wonder**. Shared tags pull a pair together (vices pull
+harder), `opposed_traits` push apart, and the pairs are symmetric — the
+validator would catch it if they were not. Bands: rival / cool / neutral /
+warm / sworn.
+
+The trait baseline is recomputed on every read rather than stored, so editing
+traits.json can never leave a stale number in a save; only the drift from
+things that actually happened is persisted.
+
+### Trait acquisition
+
+Nine acquired traits are granted by code hooks, with no event needed:
+
+| Trait | Hook |
+|---|---|
+| `scarred` | a severe wound is cured |
+| `maimed` | a limb is severed (dropped again when the last part regrows) |
+| `death_touched` | survived an otherwise-fatal blow (Ancestors_Blessing, Eternal_Vow) |
+| `steady_practice` / `mantra_worn` | `mantra_count` reaches 40 / 250 |
+| `ash_marked` | 12 sadhanas performed |
+| `bloodied` | the party kills something with the boss role |
+| `sole_survivor` | last one standing after two others fall |
+| `long_marched` | 30 rests taken |
+
+Losses: `addiction` is broken by a facility with Medicine 5+, `grief_struck`
+settles into `mourner` after 25 rests, `maimed` goes when the body is whole.
+All thresholds are first-pass.
+
+### Self-generating events
+
+Events with `"trigger": "trait"` + `"requires_trait"`, or
+`"trigger": "relationship"` + `"requires_band"`, are rolled on a rest night
+that nothing else claimed — 12% and 8% respectively. `{a}` and `{b}` in title,
+text, choice text and outcome text are substituted with the real names.
+Eight trait events and three relationship events exist; more are welcome, and
+the mechanism is the cheap part.
+
 ## Realm-specific mechanics
 
 - **Hell**: pure combat focus — done
@@ -571,6 +615,27 @@ rebased; 12 traits added to fill the thin cells; 15 traits that had no
 psychology link at all gained an obvious one. The crisis-reaction table
 followed: four entries moved to the element their trait now sits on, and the
 12 new traits brought the bright pole from 2 authored reactions to 12.
+
+**Behavioural and acquired traits.** 28 new traits: the CK-flavoured
+behavioural kind that two characters can bond over or that sets off an event by
+itself, and acquired traits that record what a run did to someone. Constant
+effects stay neutral by design — most carry no stat modifiers and work through
+`event_tags`. Bond tags and symmetric opposed pairs added across all 84
+gameplay traits.
+
+**RelationshipSystem.** One number per unordered pair: a trait-derived baseline
+recomputed on read, plus stored drift from shared danger and shared rest. Bands
+rival/cool/neutral/warm/sworn, shown in the Party tab with the reasons in the
+tooltip. Cleared on death, reincarnation and dismissal.
+
+**Nine acquisition hooks** on existing code paths, plus three losses, and
+`trigger: "trait"` / `trigger: "relationship"` events with eleven written.
+
+**Eight broken roll choices found by the new validator checks**, all in content
+written earlier the same day: three camp events and five animal events put the
+roll on the choice instead of in `requirements` and named the failure branch
+`failure_outcome`, so the roll never happened and the failure prose was
+unreachable. Five of them had no failure branch at all; those were written.
 
 **Validator** (`tools/validate_data.py`) now covers: events → encounters, shops,
 items, spells, traits, skills, wounds, karma realms; map configs → events, mobs,
