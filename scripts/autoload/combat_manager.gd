@@ -191,6 +191,25 @@ var _status_effects: Dictionary = {}
 # Summon templates database
 var _summon_templates: Dictionary = {}
 
+# Overworld terrain this battle is taking place on (MapManager.Terrain value).
+# Set by combat_arena at combat start; drives the Summoning terrain bonus below.
+var battlefield_overworld_terrain: int = -1
+
+## Overworld terrain → the summoning school it favours, by tradition:
+## nagas in water, earth spirits in mountains, nature spirits in forest,
+## hungry ghosts in ruins and charnel grounds.
+## Values are MapManager.Terrain enum ints; see map_manager.gd.
+const SUMMON_TERRAIN_AFFINITY: Dictionary = {
+	5:  {"school": "water", "label": "the living water"},        # WATER
+	6:  {"school": "water", "label": "the standing marsh"},      # SWAMP
+	11: {"school": "water", "label": "the deep ice"},            # ICE
+	2:  {"school": "earth", "label": "the old forest"},          # FOREST
+	4:  {"school": "earth", "label": "the mountain bones"},      # MOUNTAINS
+	3:  {"school": "earth", "label": "the hills"},               # HILLS
+	13: {"school": "black", "label": "the charnel ruins"},       # RUINS
+	9:  {"school": "fire",  "label": "the burning ground"},      # LAVA
+}
+
 # Combat rewards (filled before combat_ended signal, cleared on next combat start)
 var last_combat_rewards: Dictionary = {}
 
@@ -384,6 +403,10 @@ func end_combat(victory: bool) -> void:
 	# Apply post-combat emotional pressure to all player characters
 	_apply_post_combat_pressure(victory)
 
+	# Shared danger moves people toward each other, and marks the ones it marks.
+	# Must run before all_units is cleared — it reads who was still standing.
+	_apply_post_combat_bonds_and_traits(victory)
+
 	combat_active = false
 	_deployment_phase = false
 	combat_ended.emit(victory)
@@ -392,6 +415,7 @@ func end_combat(victory: bool) -> void:
 	all_units.clear()
 	turn_order.clear()
 	combat_grid = null
+	battlefield_overworld_terrain = -1
 
 
 ## Apply emotional pressure to party based on combat outcome.
@@ -405,6 +429,63 @@ func _apply_post_combat_pressure(victory: bool) -> void:
 		for member in party:
 			PsychologySystem.apply_pressure(member, "earth", -10.0)
 			PsychologySystem.apply_pressure(member, "space", -5.0)
+
+
+## Grant Death-touched to a party member who should have died and did not.
+## Called from the survive-a-fatal-blow paths; silent for enemies and summons.
+func _mark_death_touched(unit: Node) -> void:
+	if not TraitSystem or unit.team != Team.PLAYER:
+		return
+	if not "character_data" in unit or unit.character_data.is_empty():
+		return
+	TraitSystem.grant_trait(unit.character_data, "death_touched")
+
+
+## Post-combat relationship drift and combat-history traits.
+##
+## Deliberately cheap: a win nudges the whole party together a little, a loss
+## pushes them apart a little less, and two specific things get remembered
+## permanently — killing a boss, and being the only one left standing.
+func _apply_post_combat_bonds_and_traits(victory: bool) -> void:
+	var party: Array = CharacterSystem.get_party()
+	if party.is_empty():
+		return
+
+	if RelationshipSystem:
+		# Surviving something together is the main way opinions move at all.
+		RelationshipSystem.adjust_party(party, 2.0 if victory else -1.0,
+				"fought together" if victory else "lost a fight together")
+
+	if not TraitSystem or not victory:
+		return
+
+	# Bloodied — the party killed something with the boss role.
+	var killed_a_boss: bool = false
+	for unit in all_units:
+		if unit.team != Team.ENEMY or not unit.is_dead:
+			continue
+		var arch_id: String = unit.character_data.get("archetype_id", "")
+		if "boss" in EnemySystem.archetypes.get(arch_id, {}).get("roles", []):
+			killed_a_boss = true
+			break
+
+	# Sole Survivor — everyone else went down and this one did not. Only counts
+	# in a party that had someone to lose in the first place.
+	var standing: Array = []
+	var fell: int = 0
+	for unit in all_units:
+		if unit.team != Team.PLAYER or not "character_data" in unit:
+			continue
+		if unit.is_dead or unit.is_bleeding_out:
+			fell += 1
+		else:
+			standing.append(unit.character_data)
+
+	for member in party:
+		if killed_a_boss:
+			TraitSystem.grant_trait(member, "bloodied")
+	if fell >= 2 and standing.size() == 1:
+		TraitSystem.grant_trait(standing[0], "sole_survivor")
 
 
 ## Write current HP, mana, and persisting DoT statuses back to character_data
@@ -1105,6 +1186,10 @@ func _start_current_turn() -> void:
 	# Process status effects at turn start (DoT, healing, duration tick)
 	var skip_turn = _process_status_effects(unit)
 
+	# Constitution buff/penalty statuses may have been applied or removed since
+	# last turn — reconcile the unit's max HP.
+	_reconcile_constitution_hp(unit)
+
 	# Process terrain effects (standing in fire, poison, etc.)
 	_process_terrain_effects(unit)
 
@@ -1128,11 +1213,49 @@ func _start_current_turn() -> void:
 		_remove_status_by_name(unit, "Extra_Action")
 		combat_log.emit("%s surges with extra energy — gains a bonus action!" % unit.unit_name)
 
-	# Prone (skip_next_action): costs 1 action to stand up at the start of this turn
+	# skip_next_action (Prone, Knocked_Down, …): costs 1 action to stand up at the
+	# start of this turn, then every status carrying the effect is consumed.
 	if _unit_has_effect(unit, "skip_next_action"):
 		unit.actions_remaining = maxi(0, unit.actions_remaining - 1)
-		_remove_status_by_name(unit, "Prone")
+		var stand_up_statuses: Array = []
+		for eff in unit.status_effects:
+			var sdef = _status_effects.get(eff.get("status", ""), {})
+			if "skip_next_action" in sdef.get("effects", []):
+				stand_up_statuses.append(eff.get("status", ""))
+		for sname in stand_up_statuses:
+			_remove_status_by_name(unit, sname)
 		combat_log.emit("%s struggles to their feet — loses 1 action." % unit.unit_name)
+
+	# Swarmed distraction (focus_save_on_damage failed last round): −1 action
+	if unit.get_meta("swarm_distracted", false):
+		unit.actions_remaining = maxi(0, unit.actions_remaining - 1)
+		unit.set_meta("swarm_distracted", false)
+		combat_log.emit("%s swats at the swarm — loses 1 action." % unit.unit_name)
+
+	# Dominated (controlled_by_caster): simplified — the puppet stands idle.
+	# Full enemy-control AI is a dedicated feature; for now the unit loses its turn.
+	if _unit_has_effect(unit, "controlled_by_caster"):
+		combat_log.emit("%s stands slack, will bound to another." % unit.unit_name)
+		_advance_turn()
+		return
+
+	# Lured (forced_movement_toward_target): compelled to step toward the lure source
+	# before acting. Costs the unit 1 action.
+	if _unit_has_effect(unit, "forced_movement_toward_target"):
+		var lure_source = null
+		for eff_l in unit.status_effects:
+			var sdef_l = _status_effects.get(eff_l.get("status", ""), {})
+			if "forced_movement_toward_target" in sdef_l.get("effects", []):
+				lure_source = eff_l.get("source", null)
+				break
+		if lure_source != null and is_instance_valid(lure_source) and lure_source.is_alive() and combat_grid:
+			var lure_from: Vector2i = unit.grid_position
+			var step: Vector2i = lure_from + _dir_toward(lure_from, lure_source.grid_position)
+			if step != lure_from and combat_grid.is_tile_walkable(step) and get_unit_at(step) == null:
+				combat_grid.move_unit(unit, step)
+				unit_moved.emit(unit, lure_from, step)
+				unit.actions_remaining = maxi(0, unit.actions_remaining - 1)
+				combat_log.emit("%s is drawn helplessly toward %s!" % [unit.unit_name, lure_source.unit_name])
 
 	# Restore stamina each turn (base 5 + Finesse/5, so characters recover ~7-12/turn)
 	var finesse = unit.character_data.get("attributes", {}).get("finesse", 10)
@@ -1354,6 +1477,24 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 ## gets 50% of the primary arm's proc rates — a glancing brush is less likely to sever).
 ## No action cost, no further arm chain, no ammo or durability deduction.
 ## Oil, sweep, and other weapon passives only apply to the primary arm.
+## Coordinated Strikes: after an arm kills its target, find another living enemy
+## within the attacker's melee reach for the remaining arms to swing at.
+func _find_chain_redirect_target(attacker: Node) -> Node:
+	var reach: int = attacker.get_attack_range() if attacker.has_method("get_attack_range") else 1
+	var best: Node = null
+	var best_dist: int = 9999
+	for unit in all_units:
+		if unit == attacker or not unit.is_alive() or not unit.is_targetable():
+			continue
+		if "team" in unit and "team" in attacker and unit.team == attacker.team:
+			continue
+		var dist := _grid_distance(attacker.grid_position, unit.grid_position)
+		if dist <= reach and dist < best_dist:
+			best_dist = dist
+			best = unit
+	return best
+
+
 func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, chain_chance: float) -> Dictionary:
 	var weapon_dmg_type: String = "crushing"
 	if attacker.has_method("get_weapon_damage_type"):
@@ -1466,6 +1607,13 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		if not combat_grid.has_line_of_sight(attacker.grid_position, defender.grid_position):
 			return {"success": false, "reason": "No line of sight"}
 
+	# Flying defenders are out of reach of grounded melee attackers
+	if not is_ranged and _unit_has_effect(defender, "immune_to_melee_unless_flyer"):
+		var attacker_mode = attacker.get_movement_mode() if attacker.has_method("get_movement_mode") else CombatGrid.MovementMode.NORMAL
+		if attacker_mode != CombatGrid.MovementMode.FLYING:
+			combat_log.emit("%s is airborne — melee attacks cannot reach!" % defender.unit_name)
+			return {"success": false, "reason": "Target is flying — melee cannot reach"}
+
 	# Update attacker facing toward defender
 	if "facing" in attacker:
 		attacker.facing = _dir_toward(attacker.grid_position, defender.grid_position)
@@ -1501,6 +1649,22 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		_remove_status_by_name(attacker, "Blessed_Shot")
 		combat_log.emit("%s's shot is divinely guided — guaranteed hit!" % attacker.unit_name)
 
+	# Mirror Images: an illusory copy absorbs the strike instead of the real target
+	if hit and _unit_has_effect(defender, "copies_absorb_attacks"):
+		hit = false
+		_consume_mirror_image(defender)
+		combat_log.emit("%s's blow passes through an illusory copy of %s!" % [attacker.unit_name, defender.unit_name])
+
+	# Reflect (Turquoise Mirror mantra): 60% chance the strike rebounds on the attacker.
+	# The rebound uses the damage the defender would have taken.
+	if hit and attacker != defender and _unit_has_effect(defender, "attack_reflect_chance") and randf() < 0.60:
+		hit = false
+		var refl_type: String = attacker.get_weapon_damage_type() if attacker.has_method("get_weapon_damage_type") else "crushing"
+		var refl_result = calculate_physical_damage(attacker, defender, refl_type)
+		var refl_dmg: int = maxi(1, refl_result.get("damage", 1))
+		apply_damage(attacker, refl_dmg, refl_type)
+		combat_log.emit("%s's mirror turns the blow back — %s takes %d damage!" % [defender.unit_name, attacker.unit_name, refl_dmg])
+
 	# Get weapon damage type (slashing, crushing, piercing)
 	var weapon_dmg_type = attacker.get_weapon_damage_type() if attacker.has_method("get_weapon_damage_type") else "crushing"
 
@@ -1527,6 +1691,16 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		# Air_Shield: ranged attacks deal 25% less damage to the defender
 		if is_ranged and _unit_has_effect(defender, "ranged_damage_reduction"):
 			result["damage"] = int(result["damage"] * 0.75)
+
+		# Riposte_Ready (riposte perk): next sword attack +25% damage, −2 stamina, consumed
+		if _unit_has_effect(attacker, "riposte_next_sword_attack"):
+			var rip_weapon: Dictionary = attacker.get_equipped_weapon() if attacker.has_method("get_equipped_weapon") else {}
+			if rip_weapon.get("type", "") == "sword":
+				result["damage"] = int(result["damage"] * 1.25)
+				if attacker.has_method("restore_stamina"):
+					attacker.restore_stamina(2)
+				_remove_status_by_name(attacker, "Riposte_Ready")
+				combat_log.emit("%s ripostes — the counter lands harder!" % attacker.unit_name)
 
 		# Shadow Strike: stealth attack is always a crit (apply crit multiplier if not already a crit)
 		if _stealth_attack and not result.get("crit", false):
@@ -1704,6 +1878,10 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			if should_chain:
 				var finesse: int = char_data.get("attributes", {}).get("finesse", 10)
 				var akimbo_bonus: float = 20.0 if PerkSystem.has_perk(char_data, "akimbo") else 0.0
+				# Coordinated Strikes: when an arm's blow kills, the chain resets —
+				# the remaining arms redirect to a fresh target instead of stopping.
+				var has_coordinated: bool = PerkSystem.has_perk(char_data, "coordinated_strikes")
+				var chain_target: Node = defender
 				for arm_index in range(1, arm_count):
 					var arm_number: int = arm_index + 1
 					var fire_chance: float = clampf(
@@ -1711,11 +1889,18 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 						0.0, 100.0
 					)
 					if randf() * 100.0 <= fire_chance:
-						if defender.is_alive():
-							var extra := _execute_arm_chain_attack(attacker, defender, arm_number, fire_chance)
+						if chain_target != null and chain_target.is_alive():
+							var extra := _execute_arm_chain_attack(attacker, chain_target, arm_number, fire_chance)
 							extra_arm_results.append(extra)
-							if not defender.is_alive():
-								break
+							if not chain_target.is_alive():
+								if not has_coordinated:
+									break
+								# Redirect to the nearest living enemy still in reach
+								chain_target = _find_chain_redirect_target(attacker)
+								if chain_target == null:
+									break
+								combat_log.emit("%s's momentum carries on — Coordinated Strikes redirects to %s!" % [
+									attacker.unit_name, chain_target.unit_name])
 					else:
 						break  # Coordination degraded; remaining arms don't roll
 	result["extra_arm_results"] = extra_arm_results
@@ -2172,6 +2357,44 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 	if damage > 0 and _unit_has_effect(unit, "damage_taken_increase"):
 		damage = int(damage * 1.5)
 
+	# Mantric_Armor: hp_shield absorbs damage before HP. Shield pool lives in the
+	# status entry's "value" field (0/unset → default 25); status expires when spent.
+	if damage > 0:
+		for effect in unit.status_effects:
+			var sdef_shield = _status_effects.get(effect.get("status", ""), {})
+			if "hp_shield" in sdef_shield.get("effects", []):
+				var pool: int = int(effect.get("value", 0))
+				if pool <= 0:
+					pool = 25
+				var absorbed: int = mini(damage, pool)
+				damage -= absorbed
+				effect["value"] = pool - absorbed
+				combat_log.emit("%s's mantric armor absorbs %d damage." % [unit.unit_name, absorbed])
+				if effect["value"] <= 0:
+					_remove_status_by_name(unit, effect.get("status", ""))
+					combat_log.emit("%s's mantric armor is destroyed!" % unit.unit_name)
+				break
+
+	# Ancestors_Blessing: death_resistance — survive one otherwise-fatal hit at 1 HP,
+	# consuming the blessing.
+	if damage >= unit.current_hp and unit.current_hp > 0 and _unit_has_effect(unit, "death_resistance"):
+		damage = unit.current_hp - 1
+		for effect in unit.status_effects.duplicate():
+			var sdef_dr = _status_effects.get(effect.get("status", ""), {})
+			if "death_resistance" in sdef_dr.get("effects", []):
+				_remove_status_by_name(unit, effect.get("status", ""))
+				break
+		combat_log.emit("The ancestors hold %s back from the brink!" % unit.unit_name)
+		_mark_death_touched(unit)
+
+	# Swarmed: focus_save_on_damage — each hit forces a Focus save (DC 12) or the
+	# swarm's distraction costs the unit an action on its next turn.
+	if damage > 0 and _unit_has_effect(unit, "focus_save_on_damage"):
+		var focus_val: int = unit.character_data.get("attributes", {}).get("focus", 10) if "character_data" in unit else 10
+		if randi() % 20 + 1 + int(focus_val / 2.0) < 12 and not unit.get_meta("swarm_distracted", false):
+			unit.set_meta("swarm_distracted", true)
+			combat_log.emit("%s loses focus amid the swarm!" % unit.unit_name)
+
 	# Death_Immunity: hp_cannot_drop_below_1 — cap damage so unit stays at 1 HP minimum
 	if damage > 0 and _unit_has_effect(unit, "hp_cannot_drop_below_1"):
 		damage = mini(damage, unit.current_hp - 1)
@@ -2258,8 +2481,65 @@ func _start_bleed_out(unit: Node) -> void:
 	unit_bleeding_out.emit(unit, BLEED_OUT_TURNS)
 
 
+## Reconcile max-HP adjustments from constitution_bonus/penalty statuses
+## (Constitution_Buff / Constitution_Minus_2: ±10 HP per Constitution point).
+## Called on status apply and each turn start, so any removal path (expiry,
+## dispel, cleanse) is caught within a turn.
+func _reconcile_constitution_hp(unit: Node) -> void:
+	var expected := 0
+	for eff in unit.status_effects:
+		var def = _status_effects.get(eff.get("status", ""), {})
+		if "constitution_bonus" in def.get("effects", []):
+			expected += int(def.get("bonus_amount", 2)) * 10
+		if "constitution_penalty" in def.get("effects", []):
+			expected -= int(def.get("penalty_amount", 2)) * 10
+	var applied: int = unit.get_meta("con_hp_delta", 0)
+	var diff := expected - applied
+	if diff == 0:
+		return
+	unit.max_hp = maxi(10, unit.max_hp + diff)
+	if diff > 0:
+		unit.current_hp += diff
+	else:
+		unit.current_hp = clampi(unit.current_hp, 0, unit.max_hp)
+	unit.set_meta("con_hp_delta", expected)
+
+
+## Consume one Mirror_Images copy from the unit; the status expires when no copies remain.
+## The copy count lives in the status entry's "value" field (0/unset → default 3 images).
+func _consume_mirror_image(unit: Node) -> void:
+	for effect in unit.status_effects:
+		var def = _status_effects.get(effect.get("status", ""), {})
+		if "copies_absorb_attacks" in def.get("effects", []):
+			var copies: int = int(effect.get("value", 0))
+			if copies <= 0:
+				copies = 3
+			copies -= 1
+			effect["value"] = copies
+			if copies <= 0:
+				_remove_status_by_name(unit, effect.get("status", ""))
+				combat_log.emit("%s's last mirror image shatters!" % unit.unit_name)
+			return
+
+
 ## Permanently kill a unit
 func _kill_unit(unit: Node) -> void:
+	# Eternal_Vow: instead of dying, the unit is pulled back by their vow at 20% HP.
+	# The vow is consumed. (Simplification of "returns next turn" — the return is immediate.)
+	if _unit_has_effect(unit, "return_on_death_next_turn"):
+		unit.is_bleeding_out = false
+		unit.bleed_out_turns = 0
+		unit.current_hp = maxi(1, int(unit.max_hp * 0.20))
+		for eff in unit.status_effects.duplicate():
+			var sdef_ev = _status_effects.get(eff.get("status", ""), {})
+			if "return_on_death_next_turn" in sdef_ev.get("effects", []):
+				_remove_status_by_name(unit, eff.get("status", ""))
+				break
+		combat_log.emit("%s's eternal vow refuses death — they rise again!" % unit.unit_name)
+		unit_healed.emit(unit, unit.current_hp)
+		_mark_death_touched(unit)
+		return
+
 	unit.is_dead = true
 	unit.is_bleeding_out = false
 	AudioManager.play("debuff_apply")
@@ -2805,6 +3085,19 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 				else:
 					combat_log.emit("%s is weakened by the %s terrain! (%d spellpower)" % [caster.unit_name, terrain_label, delta])
 
+	# Summoning terrain affinity: the spirits native to this ground answer more
+	# readily. +25% spellpower for Summoning spells whose element matches the
+	# overworld terrain the battle is being fought on.
+	if battlefield_overworld_terrain >= 0:
+		var schools_lower_sum: Array = spell.get("schools", []).map(func(s): return s.to_lower())
+		if "summoning" in schools_lower_sum:
+			var affinity: Dictionary = SUMMON_TERRAIN_AFFINITY.get(battlefield_overworld_terrain, {})
+			if not affinity.is_empty() and affinity.get("school", "") in schools_lower_sum:
+				var summon_delta := int(spellpower_bonus * 0.25)
+				spellpower_bonus += summon_delta
+				combat_log.emit("The spirits of %s answer %s readily! (+%d spellpower)" % [
+					affinity.get("label", "this place"), caster.unit_name, summon_delta])
+
 	# Lunar & weekday spellpower bonuses
 	var calendar_schools: Array = spell.get("schools", []).map(func(s: String): return s.to_lower())
 
@@ -2984,7 +3277,11 @@ func _get_spell_targets(caster: Node, spell: Dictionary, target_pos: Vector2i) -
 			var grid_sz = Vector2i(16, 10)
 			if combat_grid:
 				grid_sz = combat_grid.grid_size
-			var aoe_tiles = AoEResolver.get_tiles(aoe_def, caster.grid_position, target_pos, grid_sz)
+			# cone_forward: direction is locked to the caster's facing, not the aim tile
+			var effective_target := target_pos
+			if aoe_def.get("type", "") == "cone_forward" and "facing" in caster:
+				effective_target = caster.grid_position + caster.facing
+			var aoe_tiles = AoEResolver.get_tiles(aoe_def, caster.grid_position, effective_target, grid_sz)
 			var is_offensive = _spell_is_offensive(spell)
 			for unit in all_units:
 				if not unit.is_alive() and not unit.is_bleeding_out:
@@ -3108,6 +3405,13 @@ func _calculate_status_duration(caster: Node, spell: Dictionary, bonus: int) -> 
 ## Apply spell effects to a target
 ## Reads directly from spells.json format: damage, damage_type, heal, statuses_caused
 func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: int) -> Dictionary:
+	# Magic_Mirror: offensive spells have a 50% chance to reflect back at the caster.
+	# target == caster afterwards, so a mirrored caster can't bounce it again.
+	if target != caster and _spell_is_offensive(spell) \
+			and _unit_has_effect(target, "spell_reflect_chance") and randf() < 0.50:
+		combat_log.emit("%s's magic mirror hurls the spell back at %s!" % [target.unit_name, caster.unit_name])
+		return _apply_spell_effects(caster, caster, spell, bonus)
+
 	var result = {
 		"target": target,
 		"effects_applied": []
@@ -3172,6 +3476,17 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 			target.heal(total_heal)
 			unit_healed.emit(target, total_heal)
 			result.effects_applied.append({"type": "heal", "amount": total_heal})
+			# Karmic_Bond: healing one bonded unit flows to the other(s) at 75%
+			if _unit_has_effect(target, "share_healing_75_percent"):
+				var shared_heal: int = int(total_heal * 0.75)
+				if shared_heal > 0:
+					for other in all_units:
+						if other == target or not other.is_alive():
+							continue
+						if _unit_has_effect(other, "share_healing_75_percent"):
+							other.heal(shared_heal)
+							unit_healed.emit(other, shared_heal)
+							combat_log.emit("The karmic bond carries %d healing to %s." % [shared_heal, other.unit_name])
 			# Lingering Warmth (White 3): healing spells also apply regeneration (15% of heal over 3 turns)
 			var is_white_heal = spell.get("schools", []).any(func(s): return s.to_lower() == "white")
 			if is_white_heal and PerkSystem.has_perk(caster_char_hw, "lingering_warmth"):
@@ -3807,6 +4122,9 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	if source != null:
 		effect_entry["source"] = source
 	unit.get("status_effects").append(effect_entry)
+
+	# Constitution buffs/penalties change max HP immediately
+	_reconcile_constitution_hp(unit)
 
 	# Hard CC breaks concentration on the affected unit
 	if status in ["Stun", "Stunned", "Fear", "Feared", "Charm", "Charmed", "Confused", "Berserk",

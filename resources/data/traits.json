@@ -14,7 +14,11 @@
       "strong"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "martial"
+    ],
+    "opposed_traits": []
   },
   "frail": {
     "name": "Frail",
@@ -30,7 +34,11 @@
       "frail"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "hardship"
+    ],
+    "opposed_traits": []
   },
   "clubfooted": {
     "name": "Clubfooted",
@@ -46,7 +54,11 @@
       "clubfooted"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "hardship"
+    ],
+    "opposed_traits": []
   },
   "quick": {
     "name": "Quick",
@@ -62,7 +74,9 @@
       "quick"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [],
+    "opposed_traits": []
   },
   "sharp_eyed": {
     "name": "Sharp-eyed",
@@ -72,13 +86,19 @@
     "stat_modifiers": {
       "awareness": 1
     },
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "air": 5
+    },
     "skill_modifiers": {},
     "event_tags": [
       "sharp_eyed"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "scholarly"
+    ],
+    "opposed_traits": []
   },
   "hard_of_hearing": {
     "name": "Hard of Hearing",
@@ -94,7 +114,11 @@
       "hard_of_hearing"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "hardship"
+    ],
+    "opposed_traits": []
   },
   "iron_stomach": {
     "name": "Iron Stomach",
@@ -109,7 +133,11 @@
       "food"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "sociable"
+    ],
+    "opposed_traits": []
   },
   "attractive": {
     "name": "Attractive",
@@ -120,14 +148,18 @@
       "charm": 1
     },
     "pressure_modifiers": {
-      "air": 5
+      "earth": -5
     },
     "skill_modifiers": {},
     "event_tags": [
       "attractive"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "sociable"
+    ],
+    "opposed_traits": []
   },
   "light_sleeper": {
     "name": "Light Sleeper",
@@ -138,14 +170,16 @@
       "awareness": 1
     },
     "pressure_modifiers": {
-      "water": 5
+      "air": -5
     },
     "skill_modifiers": {},
     "event_tags": [
       "light_sleeper"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [],
+    "opposed_traits": []
   },
   "night_owl": {
     "name": "Night Owl",
@@ -159,7 +193,11 @@
       "night_owl"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [],
+    "opposed_traits": [
+      "early_riser"
+    ]
   },
   "hot_tempered": {
     "name": "Hot-tempered",
@@ -170,7 +208,7 @@
       "charm": -1
     },
     "pressure_modifiers": {
-      "fire": 15
+      "water": -15
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -180,7 +218,11 @@
       "yoga",
       "ritual"
     ],
-    "purge_difficulty": 3
+    "purge_difficulty": 3,
+    "bond_tags": [],
+    "opposed_traits": [
+      "patient"
+    ]
   },
   "patient": {
     "name": "Patient",
@@ -189,14 +231,22 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "fire": -10
+      "water": 10,
+      "fire": 5
     },
     "skill_modifiers": {},
     "event_tags": [
       "patient"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "order"
+    ],
+    "opposed_traits": [
+      "hot_tempered",
+      "duelist"
+    ]
   },
   "brave": {
     "name": "Brave",
@@ -205,14 +255,21 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "water": -10
+      "air": 10,
+      "water": 5
     },
     "skill_modifiers": {},
     "event_tags": [
       "brave"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "martial"
+    ],
+    "opposed_traits": [
+      "timid"
+    ]
   },
   "timid": {
     "name": "Timid",
@@ -223,7 +280,7 @@
       "charm": -1
     },
     "pressure_modifiers": {
-      "water": 15
+      "air": -15
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -233,7 +290,13 @@
       "yoga",
       "ritual"
     ],
-    "purge_difficulty": 3
+    "purge_difficulty": 3,
+    "bond_tags": [
+      "solitary"
+    ],
+    "opposed_traits": [
+      "brave"
+    ]
   },
   "curious": {
     "name": "Curious",
@@ -241,7 +304,9 @@
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "space": 10
+    },
     "skill_modifiers": {
       "learning": 1
     },
@@ -249,7 +314,14 @@
       "curious"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "scholarly",
+      "wonder"
+    ],
+    "opposed_traits": [
+      "incurious"
+    ]
   },
   "stubborn": {
     "name": "Stubborn",
@@ -257,7 +329,9 @@
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "earth": -10
+    },
     "skill_modifiers": {},
     "event_tags": [
       "stubborn"
@@ -265,7 +339,11 @@
     "purgeable_by": [
       "yoga"
     ],
-    "purge_difficulty": 4
+    "purge_difficulty": 4,
+    "bond_tags": [
+      "order"
+    ],
+    "opposed_traits": []
   },
   "trusting": {
     "name": "Trusting",
@@ -276,13 +354,22 @@
       "charm": 1,
       "awareness": -1
     },
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "air": 10
+    },
     "skill_modifiers": {},
     "event_tags": [
       "trusting"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "sociable"
+    ],
+    "opposed_traits": [
+      "suspicious",
+      "paranoid"
+    ]
   },
   "suspicious": {
     "name": "Suspicious",
@@ -293,7 +380,9 @@
       "charm": -1,
       "awareness": 1
     },
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "air": -10
+    },
     "skill_modifiers": {},
     "event_tags": [
       "suspicious"
@@ -301,7 +390,13 @@
     "purgeable_by": [
       "yoga"
     ],
-    "purge_difficulty": 3
+    "purge_difficulty": 3,
+    "bond_tags": [
+      "solitary"
+    ],
+    "opposed_traits": [
+      "trusting"
+    ]
   },
   "greedy": {
     "name": "Greedy",
@@ -310,7 +405,8 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "earth": 10
+      "fire": -10,
+      "earth": -5
     },
     "skill_modifiers": {
       "trade": 1
@@ -322,7 +418,13 @@
       "yoga",
       "ritual"
     ],
-    "purge_difficulty": 3
+    "purge_difficulty": 3,
+    "bond_tags": [
+      "vice"
+    ],
+    "opposed_traits": [
+      "generous"
+    ]
   },
   "generous": {
     "name": "Generous",
@@ -333,14 +435,21 @@
       "charm": 1
     },
     "pressure_modifiers": {
-      "earth": -5
+      "earth": 10
     },
     "skill_modifiers": {},
     "event_tags": [
       "generous"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "sociable"
+    ],
+    "opposed_traits": [
+      "scrimper",
+      "greedy"
+    ]
   },
   "melancholic": {
     "name": "Melancholic",
@@ -349,7 +458,7 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "water": 10
+      "water": -10
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -359,7 +468,12 @@
       "yoga",
       "ritual"
     ],
-    "purge_difficulty": 2
+    "purge_difficulty": 2,
+    "bond_tags": [
+      "grief",
+      "solitary"
+    ],
+    "opposed_traits": []
   },
   "vain": {
     "name": "Vain",
@@ -370,7 +484,7 @@
       "charm": 1
     },
     "pressure_modifiers": {
-      "air": 10
+      "earth": -10
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -380,7 +494,13 @@
       "yoga",
       "ritual"
     ],
-    "purge_difficulty": 3
+    "purge_difficulty": 3,
+    "bond_tags": [
+      "sociable"
+    ],
+    "opposed_traits": [
+      "content"
+    ]
   },
   "forgetful": {
     "name": "Forgetful",
@@ -388,7 +508,9 @@
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "space": -5
+    },
     "skill_modifiers": {
       "learning": -1
     },
@@ -396,7 +518,11 @@
       "forgetful"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [],
+    "opposed_traits": [
+      "sharp_memory"
+    ]
   },
   "sharp_memory": {
     "name": "Sharp Memory",
@@ -404,7 +530,9 @@
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "space": 5
+    },
     "skill_modifiers": {
       "learning": 1
     },
@@ -412,7 +540,13 @@
       "sharp_memory"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "scholarly"
+    ],
+    "opposed_traits": [
+      "forgetful"
+    ]
   },
   "gourmand": {
     "name": "Gourmand",
@@ -420,14 +554,23 @@
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "fire": -5
+    },
     "skill_modifiers": {},
     "event_tags": [
       "gourmand",
       "food"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "vice",
+      "sociable"
+    ],
+    "opposed_traits": [
+      "ascetic"
+    ]
   },
   "bird_lover": {
     "name": "Bird Lover",
@@ -442,7 +585,11 @@
       "animals"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "beasts"
+    ],
+    "opposed_traits": []
   },
   "gambler": {
     "name": "Gambler",
@@ -452,7 +599,9 @@
     "stat_modifiers": {
       "luck": 1
     },
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "fire": -10
+    },
     "skill_modifiers": {},
     "event_tags": [
       "gambler"
@@ -460,7 +609,11 @@
     "purgeable_by": [
       "yoga"
     ],
-    "purge_difficulty": 3
+    "purge_difficulty": 3,
+    "bond_tags": [
+      "vice"
+    ],
+    "opposed_traits": []
   },
   "storyteller": {
     "name": "Storyteller",
@@ -468,7 +621,9 @@
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "air": 5
+    },
     "skill_modifiers": {
       "persuasion": 1
     },
@@ -476,7 +631,12 @@
       "storyteller"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "arts",
+      "sociable"
+    ],
+    "opposed_traits": []
   },
   "collector": {
     "name": "Collector",
@@ -484,13 +644,19 @@
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "fire": -5
+    },
     "skill_modifiers": {},
     "event_tags": [
       "collector"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "order"
+    ],
+    "opposed_traits": []
   },
   "superstitious": {
     "name": "Superstitious",
@@ -499,7 +665,7 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "space": 5
+      "space": -10
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -509,7 +675,13 @@
       "yoga",
       "ritual"
     ],
-    "purge_difficulty": 2
+    "purge_difficulty": 2,
+    "bond_tags": [
+      "wonder"
+    ],
+    "opposed_traits": [
+      "clear_eyed"
+    ]
   },
   "night_drinker": {
     "name": "Night Drinker",
@@ -517,7 +689,9 @@
     "category": "behavioral",
     "inborn": false,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "fire": -10
+    },
     "skill_modifiers": {},
     "event_tags": [
       "night_drinker"
@@ -525,7 +699,13 @@
     "purgeable_by": [
       "yoga"
     ],
-    "purge_difficulty": 3
+    "purge_difficulty": 3,
+    "bond_tags": [
+      "vice"
+    ],
+    "opposed_traits": [
+      "ascetic"
+    ]
   },
   "paranoid": {
     "name": "Paranoid",
@@ -537,7 +717,7 @@
       "charm": -1
     },
     "pressure_modifiers": {
-      "space": 10
+      "air": -15
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -548,7 +728,13 @@
       "yoga",
       "ritual"
     ],
-    "purge_difficulty": 4
+    "purge_difficulty": 4,
+    "bond_tags": [
+      "solitary"
+    ],
+    "opposed_traits": [
+      "trusting"
+    ]
   },
   "dreamer": {
     "name": "Dreamer",
@@ -566,7 +752,12 @@
       "dreamer"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "wonder",
+      "arts"
+    ],
+    "opposed_traits": []
   },
   "fastidious": {
     "name": "Fastidious",
@@ -574,13 +765,19 @@
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "earth": -5
+    },
     "skill_modifiers": {},
     "event_tags": [
       "fastidious"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "order"
+    ],
+    "opposed_traits": []
   },
   "haunted": {
     "name": "Haunted",
@@ -589,8 +786,8 @@
     "inborn": false,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "water": 15,
-      "space": 5
+      "water": -15,
+      "space": -5
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -600,7 +797,12 @@
       "yoga",
       "ritual"
     ],
-    "purge_difficulty": 4
+    "purge_difficulty": 4,
+    "bond_tags": [
+      "grief",
+      "hardship"
+    ],
+    "opposed_traits": []
   },
   "war_hardened": {
     "name": "War-hardened",
@@ -612,7 +814,7 @@
     },
     "pressure_modifiers": {
       "water": -10,
-      "fire": 10
+      "air": 5
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -621,7 +823,12 @@
     "purgeable_by": [
       "yoga"
     ],
-    "purge_difficulty": 4
+    "purge_difficulty": 4,
+    "bond_tags": [
+      "martial",
+      "hardship"
+    ],
+    "opposed_traits": []
   },
   "grief_struck": {
     "name": "Grief-struck",
@@ -630,7 +837,7 @@
     "inborn": false,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "water": 20
+      "water": -20
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -640,7 +847,11 @@
       "yoga",
       "ritual"
     ],
-    "purge_difficulty": 3
+    "purge_difficulty": 3,
+    "bond_tags": [
+      "grief"
+    ],
+    "opposed_traits": []
   },
   "blood_handed": {
     "name": "Blood-handed",
@@ -649,7 +860,7 @@
     "inborn": false,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "fire": 10,
+      "water": -10,
       "earth": -5
     },
     "skill_modifiers": {},
@@ -659,7 +870,14 @@
     "purgeable_by": [
       "ritual"
     ],
-    "purge_difficulty": 5
+    "purge_difficulty": 5,
+    "bond_tags": [
+      "martial",
+      "hardship"
+    ],
+    "opposed_traits": [
+      "merciful"
+    ]
   },
   "oath_breaker": {
     "name": "Oath-breaker",
@@ -679,7 +897,13 @@
     "purgeable_by": [
       "ritual"
     ],
-    "purge_difficulty": 5
+    "purge_difficulty": 5,
+    "bond_tags": [
+      "solitary"
+    ],
+    "opposed_traits": [
+      "oath_keeper"
+    ]
   },
   "devout": {
     "name": "Devout",
@@ -687,7 +911,9 @@
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "space": 10
+    },
     "skill_modifiers": {
       "yoga": 1,
       "ritual": 1
@@ -696,7 +922,13 @@
       "devout"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "devotion"
+    ],
+    "opposed_traits": [
+      "lapsed"
+    ]
   },
   "lapsed": {
     "name": "Lapsed",
@@ -704,7 +936,9 @@
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "space": -10
+    },
     "skill_modifiers": {
       "ritual": -1
     },
@@ -714,7 +948,13 @@
     "purgeable_by": [
       "ritual"
     ],
-    "purge_difficulty": 3
+    "purge_difficulty": 3,
+    "bond_tags": [
+      "solitary"
+    ],
+    "opposed_traits": [
+      "devout"
+    ]
   },
   "composed": {
     "name": "Composed",
@@ -723,15 +963,19 @@
     "inborn": false,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "fire": -5,
-      "water": -5
+      "fire": 5,
+      "water": 5
     },
     "skill_modifiers": {},
     "event_tags": [
       "composed"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "order"
+    ],
+    "opposed_traits": []
   },
   "enlightened_insight": {
     "name": "Enlightened Insight",
@@ -742,15 +986,20 @@
       "focus": 1
     },
     "pressure_modifiers": {
-      "space": -10,
-      "fire": -5
+      "space": 15,
+      "fire": 5
     },
     "skill_modifiers": {},
     "event_tags": [
       "enlightened"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "wonder",
+      "devotion"
+    ],
+    "opposed_traits": []
   },
   "addiction": {
     "name": "Addiction",
@@ -759,8 +1008,8 @@
     "inborn": false,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "earth": -10,
-      "water": 10
+      "fire": -15,
+      "earth": -5
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -770,7 +1019,12 @@
       "yoga",
       "ritual"
     ],
-    "purge_difficulty": 4
+    "purge_difficulty": 4,
+    "bond_tags": [
+      "vice",
+      "hardship"
+    ],
+    "opposed_traits": []
   },
   "_comment_racial": "--- RACIAL TRAITS — applied automatically via race starting_traits ---",
   "hell_born": {
@@ -1109,5 +1363,996 @@
       "food_consumption: consume 50% more food per meal and rest",
       "rest_healing: receive 50% less HP and MP from rest"
     ]
+  },
+  "better_starting_weapon": {
+    "name": "Armory Rights",
+    "description": "Red devils muster from the Infernal Guard's armories — this life begins with a superior weapon.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "extra_starting_gold": {
+    "name": "Hoarder's Instinct",
+    "description": "Yellow devils are born counting. This life begins with a heavier purse.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "greed"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "content": {
+    "name": "Content",
+    "description": "Wants little. What arrives is generally enough.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "earth": 10,
+      "fire": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "content"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "order"
+    ],
+    "opposed_traits": [
+      "covetous",
+      "braggart",
+      "vain"
+    ]
+  },
+  "oath_keeper": {
+    "name": "Oath-keeper",
+    "description": "Has held to a vow through the circumstances that made holding it expensive.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "earth": 15
+    },
+    "skill_modifiers": {
+      "yoga": 1
+    },
+    "event_tags": [
+      "oath_keeper"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "devotion",
+      "order"
+    ],
+    "opposed_traits": [
+      "oath_breaker"
+    ]
+  },
+  "warm_hearted": {
+    "name": "Warm-hearted",
+    "description": "Easy to like, and easy about liking other people.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {
+      "charm": 1
+    },
+    "pressure_modifiers": {
+      "fire": 10,
+      "water": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "warm_hearted"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "sociable"
+    ],
+    "opposed_traits": []
+  },
+  "renunciate": {
+    "name": "Renunciate",
+    "description": "Has put down something they wanted badly, on purpose, and did not pick it back up.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "fire": 15,
+      "earth": 5
+    },
+    "skill_modifiers": {
+      "yoga": 1
+    },
+    "event_tags": [
+      "renunciate"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "devotion"
+    ],
+    "opposed_traits": []
+  },
+  "merciful": {
+    "name": "Merciful",
+    "description": "Has spared someone who could not have stopped them.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": 15
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "merciful"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "devotion"
+    ],
+    "opposed_traits": [
+      "blood_handed"
+    ]
+  },
+  "clear_eyed": {
+    "name": "Clear-eyed",
+    "description": "Sees what is in front of them without flinching from it or dressing it up.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": 10,
+      "space": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "clear_eyed"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "scholarly"
+    ],
+    "opposed_traits": [
+      "superstitious"
+    ]
+  },
+  "present": {
+    "name": "Present",
+    "description": "Fully in the room, whichever room it is.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {
+      "awareness": 1
+    },
+    "pressure_modifiers": {
+      "space": 10
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "present"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "wonder",
+      "scholarly"
+    ],
+    "opposed_traits": []
+  },
+  "celebrant": {
+    "name": "Celebrant",
+    "description": "Takes uncomplicated pleasure in other people's luck.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "air": 10
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "celebrant"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0,
+    "bond_tags": [
+      "arts",
+      "sociable"
+    ],
+    "opposed_traits": [
+      "covetous"
+    ]
+  },
+  "covetous": {
+    "name": "Covetous",
+    "description": "Measures their life against other people's, and comes up short every time.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "air": -10,
+      "earth": -5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "covetous"
+    ],
+    "purgeable_by": [
+      "yoga"
+    ],
+    "purge_difficulty": 3,
+    "bond_tags": [],
+    "opposed_traits": [
+      "content",
+      "celebrant"
+    ]
+  },
+  "incurious": {
+    "name": "Incurious",
+    "description": "Has stopped asking. It was easier, and then it was habit.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "space": -10
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "incurious"
+    ],
+    "purgeable_by": [
+      "yoga"
+    ],
+    "purge_difficulty": 3,
+    "bond_tags": [
+      "solitary"
+    ],
+    "opposed_traits": [
+      "curious"
+    ]
+  },
+  "grudge_bearer": {
+    "name": "Grudge-bearer",
+    "description": "Forgets nothing that was done to them, and keeps the ledger current.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": -10,
+      "air": -5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "grudge_bearer"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
+    "purge_difficulty": 4,
+    "bond_tags": [
+      "solitary"
+    ],
+    "opposed_traits": []
+  },
+  "chronic_pain": {
+    "name": "Chronic Pain",
+    "description": "The body's complaint is never entirely quiet.",
+    "category": "physical",
+    "inborn": true,
+    "stat_modifiers": {
+      "constitution": -1
+    },
+    "pressure_modifiers": {
+      "water": -10,
+      "earth": -5
+    },
+    "skill_modifiers": {
+      "yoga": 1
+    },
+    "event_tags": [
+      "chronic_pain"
+    ],
+    "purgeable_by": [
+      "ritual"
+    ],
+    "purge_difficulty": 5,
+    "bond_tags": [
+      "hardship"
+    ],
+    "opposed_traits": []
+  },
+  "tea_ritualist": {
+    "name": "Tea Ritualist",
+    "description": "Takes tea seriously — the making of it at least as much as the drinking.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "tea_ritualist"
+    ],
+    "bond_tags": [
+      "sociable",
+      "order"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "poet": {
+    "name": "Poet",
+    "description": "Composes constantly in their head, and occasionally, without warning, out loud.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "poet"
+    ],
+    "bond_tags": [
+      "arts",
+      "wonder"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "duelist": {
+    "name": "Duelist",
+    "description": "Cannot let a challenge stand. Has never once been able to.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "duelist"
+    ],
+    "bond_tags": [
+      "martial"
+    ],
+    "opposed_traits": [
+      "patient"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "braggart": {
+    "name": "Braggart",
+    "description": "Improves the story a little every time it is told.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "braggart"
+    ],
+    "bond_tags": [
+      "sociable",
+      "martial"
+    ],
+    "opposed_traits": [
+      "content"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "pilgrim": {
+    "name": "Pilgrim",
+    "description": "Cannot pass a shrine without stopping, whatever the party's schedule says.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "pilgrim"
+    ],
+    "bond_tags": [
+      "devotion",
+      "wonder"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "debtor": {
+    "name": "Debtor",
+    "description": "Owes money somewhere, to someone with an unusually long memory.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "debtor"
+    ],
+    "bond_tags": [
+      "vice"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "flirt": {
+    "name": "Flirt",
+    "description": "Incurably charming, and worst of all at the least convenient moments.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "flirt"
+    ],
+    "bond_tags": [
+      "sociable"
+    ],
+    "opposed_traits": [
+      "ascetic"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "homesick": {
+    "name": "Homesick",
+    "description": "Keeps quietly comparing everywhere they are to somewhere they are not.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "homesick"
+    ],
+    "bond_tags": [
+      "solitary",
+      "grief"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "early_riser": {
+    "name": "Early Riser",
+    "description": "Awake and useful before anyone else has decided to be a person yet.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "early_riser"
+    ],
+    "bond_tags": [
+      "order"
+    ],
+    "opposed_traits": [
+      "night_owl"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "ascetic": {
+    "name": "Ascetic",
+    "description": "Eats little, sleeps hard, and wants less than the people around them.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "ascetic"
+    ],
+    "bond_tags": [
+      "devotion",
+      "order"
+    ],
+    "opposed_traits": [
+      "gourmand",
+      "night_drinker",
+      "flirt",
+      "drunk",
+      "bhang_enjoyer"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "mourner": {
+    "name": "Mourner",
+    "description": "Keeps the dead's days. Leaves food out on the right nights, wherever they are.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "mourner"
+    ],
+    "bond_tags": [
+      "grief",
+      "devotion"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "gossip": {
+    "name": "Gossip",
+    "description": "Knows everyone's business within a day of arriving anywhere.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "gossip"
+    ],
+    "bond_tags": [
+      "sociable"
+    ],
+    "opposed_traits": [
+      "secret_bearer"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "scrimper": {
+    "name": "Scrimper",
+    "description": "Cannot part with money without visibly flinching.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "scrimper"
+    ],
+    "bond_tags": [
+      "order"
+    ],
+    "opposed_traits": [
+      "generous"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "beast_tender": {
+    "name": "Beast-tender",
+    "description": "Good with animals, and they appear to know it before being told.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "beast_tender"
+    ],
+    "bond_tags": [
+      "beasts"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "sworn_vegetarian": {
+    "name": "Sworn Vegetarian",
+    "description": "Will not eat meat. Not when it is offered, not when it is the only thing there is.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "sworn_vegetarian"
+    ],
+    "bond_tags": [
+      "devotion",
+      "order"
+    ],
+    "opposed_traits": [
+      "hunter"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "secret_bearer": {
+    "name": "Secret-bearer",
+    "description": "Carrying something they have told nobody, and have no plans to.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "secret_bearer"
+    ],
+    "bond_tags": [
+      "solitary"
+    ],
+    "opposed_traits": [
+      "gossip"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "scarred": {
+    "name": "Scarred",
+    "description": "The wound closed. The face it closed on is not quite the one they had before.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "scarred"
+    ],
+    "bond_tags": [
+      "hardship"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "maimed": {
+    "name": "Maimed",
+    "description": "Something is gone that used to be there, and the body keeps reaching for it.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "earth": -10
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "maimed"
+    ],
+    "bond_tags": [
+      "hardship"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "death_touched": {
+    "name": "Death-touched",
+    "description": "Was owed to something, and was not collected. It has changed how they walk into rooms.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": 5,
+      "space": -5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "death_touched"
+    ],
+    "bond_tags": [
+      "hardship",
+      "wonder"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "steady_practice": {
+    "name": "Steady Practice",
+    "description": "Sits every night, whether or not the night deserves it.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "space": 5
+    },
+    "skill_modifiers": {
+      "yoga": 1
+    },
+    "event_tags": [
+      "steady_practice"
+    ],
+    "bond_tags": [
+      "devotion",
+      "order"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "mantra_worn": {
+    "name": "Mantra-worn",
+    "description": "Has said it enough times that it says itself now, under everything else.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "space": 10
+    },
+    "skill_modifiers": {
+      "yoga": 1,
+      "ritual": 1
+    },
+    "event_tags": [
+      "mantra_worn"
+    ],
+    "bond_tags": [
+      "devotion"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "ash_marked": {
+    "name": "Ash-marked",
+    "description": "Has done the purification rites often enough to stop finding them strange.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "earth": 5
+    },
+    "skill_modifiers": {
+      "ritual": 1
+    },
+    "event_tags": [
+      "ash_marked"
+    ],
+    "bond_tags": [
+      "devotion"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "bloodied": {
+    "name": "Bloodied",
+    "description": "Has killed something that everyone agreed could not be killed.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": -5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "bloodied"
+    ],
+    "bond_tags": [
+      "martial"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "sole_survivor": {
+    "name": "Sole Survivor",
+    "description": "Walked out of something that nobody else walked out of.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": -10,
+      "space": -5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "sole_survivor"
+    ],
+    "bond_tags": [
+      "hardship",
+      "solitary"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
+    "purge_difficulty": 5
+  },
+  "long_marched": {
+    "name": "Long-marched",
+    "description": "Has been on the road long enough that the road stopped being an event.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {
+      "logistics": 1
+    },
+    "event_tags": [
+      "long_marched"
+    ],
+    "bond_tags": [
+      "order",
+      "hardship"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "touched_by_grace": {
+    "name": "Touched by Grace",
+    "description": "Met something that had no business being kind to them, and was anyway.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "space": 10,
+      "water": 10
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "touched_by_grace"
+    ],
+    "bond_tags": [
+      "wonder",
+      "devotion"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "harrowed": {
+    "name": "Harrowed",
+    "description": "Something happened. They have not described it, and are not going to.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": -10,
+      "air": -10
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "harrowed"
+    ],
+    "bond_tags": [
+      "hardship",
+      "solitary"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
+    "purge_difficulty": 4
+  },
+  "beauty_struck": {
+    "name": "Beauty-struck",
+    "description": "Saw something that quietly reordered what they had thought the world contained.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "space": 10,
+      "fire": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "beauty_struck"
+    ],
+    "bond_tags": [
+      "wonder",
+      "arts"
+    ],
+    "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "drunk": {
+    "name": "Drunk",
+    "description": "Past enjoying it. Drinks to arrive somewhere rather than to be anywhere.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "fire": -10,
+      "earth": -5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "drunk"
+    ],
+    "bond_tags": [
+      "vice",
+      "hardship"
+    ],
+    "opposed_traits": [
+      "ascetic"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
+    "purge_difficulty": 4
+  },
+  "bhang_enjoyer": {
+    "name": "Bhang Enjoyer",
+    "description": "Takes it at the festivals, and increasingly on the days that are not festivals.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "space": -5,
+      "water": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "bhang_enjoyer"
+    ],
+    "bond_tags": [
+      "vice",
+      "wonder"
+    ],
+    "opposed_traits": [
+      "ascetic"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "hunter": {
+    "name": "Hunter",
+    "description": "Reads ground the way other people read letters. Knows what passed, how long ago, and whether it was hungry.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {
+      "ranged": 1
+    },
+    "event_tags": [
+      "hunter"
+    ],
+    "bond_tags": [
+      "beasts",
+      "solitary"
+    ],
+    "opposed_traits": [
+      "sworn_vegetarian",
+      "pet_lover"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "pet_lover": {
+    "name": "Pet-lover",
+    "description": "Has never once passed an animal without stopping, and cannot be persuaded that this is a failing.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "pet_lover"
+    ],
+    "bond_tags": [
+      "beasts",
+      "sociable"
+    ],
+    "opposed_traits": [
+      "hunter"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
   }
 }

@@ -356,6 +356,10 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 	# Generate combat terrain from overworld context (before placing units)
 	var terrain_context = GameState.combat_terrain_context
 	GameState.combat_terrain_context = {}
+	# Remember the overworld terrain — Summoning spells get an affinity bonus
+	# from the spirits native to this ground (see CombatManager.SUMMON_TERRAIN_AFFINITY)
+	CombatManager.battlefield_overworld_terrain = int(terrain_context.get("dominant", -1)) \
+			if not terrain_context.is_empty() else -1
 	if not terrain_context.is_empty():
 		var map_data = _generate_combat_terrain(terrain_context)
 		combat_grid.setup_from_map(map_data)
@@ -365,9 +369,11 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 	var enemy_group = mob_inner.get("enemy_group", "demon_patrol")
 	# Region can be on the mob dict (from MapManager) or in its inner data
 	var region = mob_data.get("region", mob_inner.get("region", ""))
+	# Difficulty tier can be on the mob dict (map mobs) or inner data (event combats)
+	var difficulty = mob_data.get("difficulty", mob_inner.get("difficulty", "normal"))
 
 	# Generate scaled enemies from EnemySystem
-	var enemy_defs = EnemySystem.generate_encounter(enemy_group, region)
+	var enemy_defs = EnemySystem.generate_encounter(enemy_group, region, GameState.current_world, difficulty)
 
 	# Get party characters for deployment
 	var party = CharacterSystem.get_party()
@@ -873,7 +879,11 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 			var aoe_def = selected_spell.get("aoe", {"type": "circle", "size": 2})
 			var caster = CombatManager.get_current_unit()
 			if caster:
-				combat_grid.show_aoe_shape_preview(aoe_def, caster.grid_position, grid_pos)
+				# cone_forward ignores the hover tile — direction locked to facing
+				var aim_pos := grid_pos
+				if aoe_def.get("type", "") == "cone_forward":
+					aim_pos = caster.grid_position + caster.facing
+				combat_grid.show_aoe_shape_preview(aoe_def, caster.grid_position, aim_pos)
 			else:
 				combat_grid.clear_aoe_preview()
 		else:
@@ -1339,7 +1349,15 @@ func _on_spell_selected(spell: Dictionary) -> void:
 
 	# Get valid targets and full range area
 	var valid_targets = CombatManager.get_spell_targets(unit, spell.id)
-	var range_area = combat_grid.get_spell_range_tiles(unit.grid_position, 1, spell_range)
+	var range_area: Array[Vector2i]
+	var aoe_sel: Dictionary = spell_data.get("aoe", {})
+	if spell_data.get("targeting") == "aoe" and aoe_sel.get("type", "") == "cone_forward":
+		# cone_forward is locked to the caster's facing — highlight the actual cone
+		# silhouette instead of a spell-range circle.
+		range_area = AoEResolver.get_tiles(aoe_sel, unit.grid_position,
+				unit.grid_position + unit.facing, combat_grid.grid_size)
+	else:
+		range_area = combat_grid.get_spell_range_tiles(unit.grid_position, 1, spell_range)
 
 	# Always show range, even if no valid targets
 	current_action_mode = ActionMode.CAST_SPELL
@@ -2928,6 +2946,16 @@ func _on_unit_moved(unit: Node, from: Vector2i, to: Vector2i) -> void:
 
 
 func _on_unit_attacked(attacker: Node, defender: Node, result: Dictionary) -> void:
+	# Multi-arm chain: show each extra arm's outcome in the combat log
+	for extra in result.get("extra_arm_results", []):
+		var arm_num: int = extra.get("arm_number", 0)
+		if extra.get("hit", false):
+			var crit_str: String = " CRIT!" if extra.get("crit", false) else ""
+			_log_message("  Arm %d: %d %s damage to %s%s" % [
+				arm_num, extra.get("damage", 0), extra.get("damage_type", ""),
+				defender.unit_name, crit_str])
+		else:
+			_log_message("  Arm %d: misses %s" % [arm_num, defender.unit_name])
 	_update_action_buttons()
 
 
@@ -3628,11 +3656,28 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 	# Find best target based on range
 	var attack_range = unit.get_attack_range()
 	var is_ranged = attack_range > 1
-	var nearest: CombatUnit = _find_nearest_enemy(unit, player_units)
+	# ai_behavior "priority_target" picks the weakest/most isolated victim instead
+	# of the nearest one (rakshasa maneater and similar hunters).
+	var ai_behavior: String = unit.character_data.get("ai_behavior", "")
+	var nearest: CombatUnit = null
+	if ai_behavior == "priority_target":
+		nearest = _find_priority_target(unit, player_units)
+	if nearest == null:
+		nearest = _find_nearest_enemy(unit, player_units)
 
 	if nearest == null:
 		CombatManager.end_turn()
 		return
+
+	# burrow_emerge: tunnel to a tile adjacent to the target, then strike in the
+	# same turn (dura burrower). Only fires when starting the turn out of reach.
+	if ai_behavior == "burrow_emerge":
+		_ai_try_burrow_emerge(unit, nearest)
+
+	# erratic_movement: unpredictable repositioning before committing to an
+	# attack (patanga seeker). One random hop per turn, never into worse range.
+	if ai_behavior == "erratic_movement" and CombatManager.can_act(1):
+		_ai_erratic_hop(unit, nearest)
 
 	# Track flags to avoid repeating certain actions in a turn
 	var used_consumable_this_turn = false
@@ -4160,9 +4205,102 @@ func _ai_try_use_active_skill(unit: CombatUnit, player_units: Array[Node], neare
 	return false
 
 
+## ai_behavior "priority_target": prefer the weakest and most isolated target.
+## Score = missing-HP fraction (predator instinct for the wounded) plus an
+## isolation bonus for targets with few allies nearby.
+func _find_priority_target(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
+	var best: CombatUnit = null
+	var best_score: float = -999.0
+	for enemy in enemies:
+		if not enemy.is_alive() or not enemy.is_targetable():
+			continue
+		var hp_frac: float = float(enemy.current_hp) / maxf(1.0, float(enemy.max_hp))
+		var score: float = (1.0 - hp_frac) * 100.0
+
+		# Isolation: allies within 2 tiles make a target less appealing
+		var neighbors := 0
+		for other in enemies:
+			if other == enemy or not other.is_alive():
+				continue
+			if _grid_distance(other.grid_position, enemy.grid_position) <= 2:
+				neighbors += 1
+		score += maxf(0.0, 40.0 - neighbors * 15.0)
+
+		# Mild preference for closer targets so the hunter doesn't cross the map
+		score -= float(_grid_distance(unit.grid_position, enemy.grid_position)) * 2.0
+
+		if score > best_score:
+			best_score = score
+			best = enemy
+	return best
+
+
+## ai_behavior "burrow_emerge": tunnel underground and surface next to the target.
+## Consumes one action; only fires when the unit starts its turn out of melee reach.
+func _ai_try_burrow_emerge(unit: CombatUnit, target: CombatUnit) -> bool:
+	if target == null or combat_grid == null:
+		return false
+	if _grid_distance(unit.grid_position, target.grid_position) <= unit.get_attack_range():
+		return false
+	if not CombatManager.can_act(1):
+		return false
+
+	# Find a free tile adjacent to the target
+	var candidates: Array[Vector2i] = []
+	for dx in [-1, 0, 1]:
+		for dy in [-1, 0, 1]:
+			if dx == 0 and dy == 0:
+				continue
+			var tile := target.grid_position + Vector2i(dx, dy)
+			if combat_grid.is_tile_walkable(tile) and CombatManager.get_unit_at(tile) == null:
+				candidates.append(tile)
+	if candidates.is_empty():
+		return false
+
+	var dest: Vector2i = candidates[randi() % candidates.size()]
+	var from := unit.grid_position
+	combat_grid.move_unit(unit, dest)
+	CombatManager.use_action(1)
+	CombatManager.unit_moved.emit(unit, from, dest)
+	_log_message("%s burrows through the earth and erupts beside %s!" % [unit.unit_name, target.unit_name])
+	return true
+
+
+## ai_behavior "erratic_movement": a single unpredictable hop before acting.
+## Never moves further from the target than it already is.
+func _ai_erratic_hop(unit: CombatUnit, target: CombatUnit) -> void:
+	if target == null or combat_grid == null:
+		return
+	var move_range = CombatManager.get_movement_range(unit)
+	if move_range.is_empty():
+		return
+	var current_dist := _grid_distance(unit.grid_position, target.grid_position)
+	var options: Array[Vector2i] = []
+	for tile in move_range:
+		if tile == unit.grid_position:
+			continue
+		if _grid_distance(tile, target.grid_position) <= current_dist:
+			options.append(tile)
+	if options.is_empty():
+		return
+	var dest: Vector2i = options[randi() % options.size()]
+	if CombatManager.move_unit(unit, dest):
+		_log_message("%s darts erratically to a new position." % unit.unit_name)
+
+
 func _find_nearest_enemy(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
 	var nearest: CombatUnit = null
 	var nearest_dist: int = 999
+
+	# Taunt status (must_attack_taunter): this unit is compelled to target
+	# whoever applied the taunt, as long as the taunter is a valid target.
+	for fx in unit.status_effects:
+		var fx_def = CombatManager.get_status_definition(fx.get("status", ""))
+		if "must_attack_taunter" in fx_def.get("effects", []):
+			var taunter = fx.get("source", null)
+			if taunter != null and is_instance_valid(taunter) and taunter.is_alive() \
+					and taunter.is_targetable() and taunter in enemies:
+				return taunter
 
 	# Aggro-aura (look_at_me): if any enemy has taunt_active, strongly prefer them
 	for enemy in enemies:

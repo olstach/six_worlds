@@ -224,6 +224,32 @@ const ACTIVITIES: Array = [
 		"description": "Shape raw scrap into useful field gear",
 		"effect_desc": "Gain 1–2 supplies (rope, torch, bandage, or arrowhead)",
 	},
+	{
+		"id": "craft_charm",
+		"name": "Craft Charm",
+		"category": "Spiritual",
+		"skill_req_any": [
+			{"ritual": 3, "fire_magic": 3}, {"ritual": 3, "water_magic": 3},
+			{"ritual": 3, "earth_magic": 3}, {"ritual": 3, "air_magic": 3},
+			{"ritual": 3, "space_magic": 3}, {"ritual": 3, "white_magic": 3},
+			{"ritual": 3, "black_magic": 3}, {"ritual": 3, "sorcery": 3},
+			{"ritual": 3, "enchantment": 3}, {"ritual": 3, "summoning": 3},
+		],
+		"min_tier": 2,
+		"costs": {"reagents": 2},
+		"description": "Weave a consumable charm attuned to your strongest magic school",
+		"effect_desc": "Gain a school charm; Ritual + school 10+ yields a finer one",
+	},
+	{
+		"id": "set_snares",
+		"name": "Set Snares",
+		"category": "Survival",
+		"skill_req_any": [{"smithing": 2}, {"thievery": 2}],
+		"min_tier": 2,
+		"costs": {},
+		"description": "Lay snares around the camp before sleeping",
+		"effect_desc": "Overnight food (and sometimes herbs); small chance of drawing a creature",
+	},
 ]
 
 
@@ -296,11 +322,13 @@ func get_sadhana_preview(performer: Dictionary) -> Dictionary:
 
 
 ## Execute a selected activity. Consumes additional resources and applies effects.
+## enhanced: true when the location's enhance_activities lists this activity —
+## spiritual/social activities get a 1.5× effect multiplier.
 ## Returns {message: String, ok: bool}.
-func execute_activity(activity_id: String, performer: Dictionary, party: Array) -> Dictionary:
+func execute_activity(activity_id: String, performer: Dictionary, party: Array, enhanced: bool = false) -> Dictionary:
 	match activity_id:
-		"sadhana":            return _exec_sadhana(performer, party)
-		"mantra_recitation":   return _exec_mantra_recitation(performer)
+		"sadhana":            return _exec_sadhana(performer, party, enhanced)
+		"mantra_recitation":   return _exec_mantra_recitation(performer, enhanced)
 		"spiritual_cleansing": return _exec_spiritual_cleansing(performer, party)
 		"herb_preparation":   return _exec_herb_preparation(performer)
 		"brew_potions":       return _exec_brew_potions(performer)
@@ -308,8 +336,10 @@ func execute_activity(activity_id: String, performer: Dictionary, party: Array) 
 		"deep_repair":        return _exec_deep_repair(party)
 		"weapon_work":        return _exec_weapon_work(party)
 		"craft_item":         return _exec_craft_item(performer)
-		"night_music":        return _exec_night_music(performer, party)
-		"campfire_story":     return _exec_campfire_story(performer, party)
+		"craft_charm":        return _exec_craft_charm(performer)
+		"set_snares":         return _exec_set_snares(performer)
+		"night_music":        return _exec_night_music(performer, party, enhanced)
+		"campfire_story":     return _exec_campfire_story(performer, party, enhanced)
 		"encouraging_words":  return _exec_encouraging_words(party)
 		"study":              return _exec_study(performer)
 		"forage":             return _exec_forage(performer, party)
@@ -395,7 +425,7 @@ func _performer_score(char: Dictionary, activity: Dictionary) -> int:
 
 # ─── Activity execution ──────────────────────────────────────────────────────
 
-func _exec_sadhana(performer: Dictionary, party: Array) -> Dictionary:
+func _exec_sadhana(performer: Dictionary, party: Array, enhanced: bool = false) -> Dictionary:
 	var yoga_level   := CharacterSystem.get_effective_skill_level(performer, "yoga")
 	var ritual_level := CharacterSystem.get_effective_skill_level(performer, "ritual")
 
@@ -415,12 +445,12 @@ func _exec_sadhana(performer: Dictionary, party: Array) -> Dictionary:
 		3: GameState.consume_supply("reagents", 3)
 
 	# Karma purification — returns {success, total, realms}
-	var purif_result: Dictionary = KarmaSystem.perform_purification(yoga_level, ritual_tier)
+	var purif_result: Dictionary = KarmaSystem.perform_purification(yoga_level, ritual_tier, 1.5 if enhanced else 1.0)
 	var purified: int = purif_result.get("total", 0)
 
-	# Pressure decay at 1.5× full-rest rate
+	# Pressure decay at 1.5× full-rest rate (deeper still on consecrated ground)
 	for char in party:
-		PsychologySystem.decay_toward_baseline(char, 150.0)
+		PsychologySystem.decay_toward_baseline(char, 225.0 if enhanced else 150.0)
 
 	# Trait purge: Yoga 5+ tries yoga-purgeable traits on the best yoga char.
 	# Mandala (tier 3) lowers purge difficulty by 2.
@@ -447,10 +477,18 @@ func _exec_sadhana(performer: Dictionary, party: Array) -> Dictionary:
 						purge_msg = " %s shed '%s' through ritual." % [target_char.get("name", "Performer"), tname]
 						break
 
+	# Repetition is the point of the rites; count them and mark the practitioner.
+	performer["sadhana_count"] = int(performer.get("sadhana_count", 0)) + 1
+	var ash_msg := ""
+	if TraitSystem and int(performer["sadhana_count"]) >= SADHANA_ASH_MARKED:
+		if TraitSystem.grant_trait(performer, "ash_marked"):
+			ash_msg = " The rites have left their mark."
+
 	var tier_names := ["Yoga Practice", "Smoke Offering", "Torma Offering", "Mandala Offering"]
 	var success_str := "~%d karma purified" % purified if purif_result.get("success", false) else "practice faltered — no karma purified"
-	var msg := "%s: %s. %s.%s" % [
-		performer.get("name", "Performer"), tier_names[ritual_tier], success_str, purge_msg
+	var site_str := " The consecrated ground deepens the practice." if enhanced else ""
+	var msg := "%s: %s. %s.%s%s%s" % [
+		performer.get("name", "Performer"), tier_names[ritual_tier], success_str, purge_msg, site_str, ash_msg
 	]
 	return {"message": msg, "ok": true}
 
@@ -532,9 +570,9 @@ func _exec_weapon_work(party: Array) -> Dictionary:
 	return {"message": "Weapons honed. Party gains +4 accuracy next combat.", "ok": true}
 
 
-func _exec_campfire_story(performer: Dictionary, party: Array) -> Dictionary:
+func _exec_campfire_story(performer: Dictionary, party: Array, enhanced: bool = false) -> Dictionary:
 	for char in party:
-		PsychologySystem.decay_toward_baseline(char, 30.0)
+		PsychologySystem.decay_toward_baseline(char, 45.0 if enhanced else 30.0)
 	return {
 		"message": "%s tells stories around the fire. Tension fades from the party." % performer.get("name", "Performer"),
 		"ok": true,
@@ -608,23 +646,44 @@ func _exec_spiritual_cleansing(performer: Dictionary, party: Array) -> Dictionar
 	}
 
 
-func _exec_mantra_recitation(performer: Dictionary) -> Dictionary:
+func _exec_mantra_recitation(performer: Dictionary, enhanced: bool = false) -> Dictionary:
 	var yoga_level := CharacterSystem.get_effective_skill_level(performer, "yoga")
 	var increment := maxi(1, yoga_level)
+	if enhanced:
+		increment = roundi(increment * 1.5)
 	performer["mantra_count"] = int(performer.get("mantra_count", 0)) + increment
 	PsychologySystem.decay_toward_baseline(performer, 20.0)
+	var earned: String = _check_practice_traits(performer)
 	return {
-		"message": "%s sits in quiet recitation. Mantra count: %d (+%d)." % [
-			performer.get("name", "Performer"), performer["mantra_count"], increment
+		"message": "%s sits in quiet recitation. Mantra count: %d (+%d).%s" % [
+			performer.get("name", "Performer"), performer["mantra_count"], increment, earned
 		],
 		"ok": true,
 	}
 
 
-func _exec_night_music(performer: Dictionary, party: Array) -> Dictionary:
+## Practice accumulates into character. Thresholds are first-pass: at Yoga 3 a
+## nightly recitation reaches Steady Practice in about a fortnight of rests and
+## Mantra-worn in a season, which is meant to feel earned rather than granted.
+const MANTRA_STEADY: int = 40
+const MANTRA_WORN: int = 250
+const SADHANA_ASH_MARKED: int = 12
+
+func _check_practice_traits(performer: Dictionary) -> String:
+	if not TraitSystem:
+		return ""
+	var count: int = int(performer.get("mantra_count", 0))
+	if count >= MANTRA_WORN and TraitSystem.grant_trait(performer, "mantra_worn"):
+		return " The mantra has begun saying itself."
+	if count >= MANTRA_STEADY and TraitSystem.grant_trait(performer, "steady_practice"):
+		return " The practice has become a habit rather than an effort."
+	return ""
+
+
+func _exec_night_music(performer: Dictionary, party: Array, enhanced: bool = false) -> Dictionary:
 	var performance := CharacterSystem.get_effective_skill_level(performer, "performance")
 	for char in party:
-		PsychologySystem.decay_toward_baseline(char, 50.0)
+		PsychologySystem.decay_toward_baseline(char, 75.0 if enhanced else 50.0)
 	var msg := "%s plays long into the night. Old tensions dissolve in the sound." % performer.get("name", "Performer")
 	if performance >= 7:
 		msg += " The performance was exceptional — something stirred at the edge of the dark."
@@ -649,6 +708,68 @@ func _exec_drill(party: Array) -> Dictionary:
 	for char in party:
 		CharacterSystem.update_derived_stats(char)
 	return {"message": "The party runs drills until the fire burns low. +3 Initiative next combat.", "ok": true}
+
+
+## Ordered by skill id: the ten magic schools a charm can be attuned to.
+const CHARM_SCHOOLS: Array[String] = [
+	"fire_magic", "water_magic", "earth_magic", "air_magic", "space_magic",
+	"white_magic", "black_magic", "sorcery", "enchantment", "summoning",
+]
+
+
+func _exec_craft_charm(performer: Dictionary) -> Dictionary:
+	if not GameState.consume_supply("reagents", 2):
+		return {"message": "Not enough reagents to craft a charm.", "ok": false}
+	var ritual := CharacterSystem.get_effective_skill_level(performer, "ritual")
+	# Find the performer's strongest magic school
+	var best_school := ""
+	var best_level := 0
+	for school in CHARM_SCHOOLS:
+		var lvl := CharacterSystem.get_effective_skill_level(performer, school)
+		if lvl > best_level:
+			best_level = lvl
+			best_school = school
+	if best_school == "" or best_level < 3 or ritual < 3:
+		GameState.add_supply("reagents", 2)  # refund — requirements not met after all
+		return {"message": "No one has the ritual knowledge to bind a charm.", "ok": false}
+	# Tier: common by default; combined Ritual + school of 10+ yields middling
+	var tier := "middling" if ritual + best_level >= 10 else "common"
+	var element := best_school.replace("_magic", "")
+	var charm_id := "%s_charm_%s" % [element, tier]
+	if not ItemSystem.item_exists(charm_id):
+		charm_id = "%s_charm_common" % element
+	ItemSystem.add_to_inventory(charm_id, 1)
+	var charm_name: String = ItemSystem.get_item(charm_id).get("name", charm_id)
+	return {
+		"message": "%s binds reagents and mantra into a %s." % [performer.get("name", "Performer"), charm_name],
+		"ok": true,
+	}
+
+
+func _exec_set_snares(performer: Dictionary) -> Dictionary:
+	var skill := maxi(
+		CharacterSystem.get_effective_skill_level(performer, "smithing"),
+		CharacterSystem.get_effective_skill_level(performer, "thievery"))
+	# Overnight yield, checked when the rest completes
+	var food_gain := clampi(3 + skill, 3, 10)
+	GameState.add_supply("food", food_gain)
+	var herb_msg := ""
+	if randf() < 0.25:
+		var herb_gain := randi_range(1, 2)
+		GameState.add_supply("herbs", herb_gain)
+		herb_msg = " and %d herbs" % herb_gain
+	var result: Dictionary = {
+		"message": "%s's snares catch well overnight: +%d food%s." % [
+			performer.get("name", "Performer"), food_gain, herb_msg],
+		"ok": true,
+	}
+	# Small chance the snares draw something bigger than dinner
+	if randf() < 0.15:
+		var event_id := EventManager.get_random_camp_event(GameState.current_world)
+		if not event_id.is_empty():
+			result["camp_event_id"] = event_id
+			result["message"] += " Something else found the snare line too."
+	return result
 
 
 const CRAFT_TABLE: Array = [

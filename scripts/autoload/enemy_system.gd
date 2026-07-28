@@ -42,10 +42,22 @@ const ARMOR_LOADOUTS: Dictionary = {
 
 
 func _ready() -> void:
-	_load_archetypes("res://resources/data/enemies/hell_archetypes.json")
-	_load_archetypes("res://resources/data/enemies/hungry_ghost_archetypes.json")
-	_load_encounters("res://resources/data/enemies/hell_encounters.json")
-	_load_encounters("res://resources/data/enemies/hungry_ghost_encounters.json")
+	# Scan the enemies directory so every realm's data loads automatically
+	# (hell, hungry_ghost, animal, domain, and any future realm files).
+	var enemies_dir = "res://resources/data/enemies/"
+	var dir = DirAccess.open(enemies_dir)
+	if dir:
+		dir.list_dir_begin()
+		var file_name = dir.get_next()
+		while file_name != "":
+			if file_name.ends_with("_archetypes.json"):
+				_load_archetypes(enemies_dir + file_name)
+			elif file_name.ends_with("_encounters.json"):
+				_load_encounters(enemies_dir + file_name)
+			file_name = dir.get_next()
+		dir.list_dir_end()
+	else:
+		push_error("EnemySystem: Could not open " + enemies_dir)
 	_load_spells()
 	_load_name_parts()
 	print("EnemySystem initialized: %d archetypes, %d encounters" % [archetypes.size(), encounters.size()])
@@ -141,17 +153,29 @@ func _load_name_parts() -> void:
 # MAIN API
 # ============================================
 
+## Power multiplier per event/mob difficulty tier. Applied on top of the
+## encounter template's own difficulty_range, so "hard" fights against the
+## same enemy_group really are harder than "normal" ones.
+const DIFFICULTY_MULTIPLIERS: Dictionary = {
+	"easy": 0.75,
+	"normal": 1.0,
+	"hard": 1.2,
+	"very_hard": 1.4,
+	"boss": 1.6,
+}
+
 ## Generate an encounter: returns Array of enemy dicts ready for CombatUnit.init_as_enemy()
 ## encounter_id: matches enemy_group from events/mobs JSON
 ## region: "cold_hell", "fire_hell", or "" for any
 ## realm: which of the six worlds this encounter is in — used for name generation
-func generate_encounter(encounter_id: String, region: String = "", realm: String = "hell") -> Array[Dictionary]:
+## difficulty: tier string from the event/mob ("easy".."boss"), scales enemy power
+func generate_encounter(encounter_id: String, region: String = "", realm: String = "hell", difficulty: String = "normal") -> Array[Dictionary]:
 	var template = encounters.get(encounter_id, {})
 	if template.is_empty():
 		push_warning("EnemySystem: Unknown encounter '%s', generating fallback" % encounter_id)
 		return _generate_fallback_encounter(realm)
 
-	var party_power = get_party_power()
+	var party_power = get_party_power() * DIFFICULTY_MULTIPLIERS.get(difficulty, 1.0)
 	var enemies: Array[Dictionary] = []
 
 	if template.get("fixed", false):
@@ -411,13 +435,18 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 			"prosthetics": {}
 		},
 		"wounds": [],
-		"quirks": []
+		"traits": []
 	}
 
 	# Copy duel_stop_hp_pct if the archetype has one — read by combat_manager to end
 	# the fight early when this enemy drops to that percentage of their maximum HP.
 	if archetype.has("duel_stop_hp_pct"):
 		enemy["duel_stop_hp_pct"] = archetype["duel_stop_hp_pct"]
+
+	# Optional AI behavior mode — read by combat_arena during the enemy turn.
+	# Supported: erratic_movement, priority_target, pack_bonus, burrow_emerge
+	if archetype.has("ai_behavior"):
+		enemy["ai_behavior"] = archetype["ai_behavior"]
 
 	return enemy
 
@@ -915,7 +944,8 @@ func _pick_archetype_for_role(role: String, region: String, tier: String = "devi
 			continue
 
 		# Filter by realm — don't mix hell demons into hungry ghost encounters, etc.
-		if arch_realm != realm:
+		# Archetypes with realm "any" (e.g. domain guardians) can appear in every realm.
+		if arch_realm != "any" and arch_realm != realm:
 			continue
 
 		candidates.append(arch_id)

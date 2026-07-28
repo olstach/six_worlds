@@ -287,7 +287,7 @@ theme_override_constants/separation = 4
 [node name="QuirksTitle" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/QuirksPanel/QuirksMargin/QuirksVBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "QUIRKS"
+text = "TRAITS"
 
 [node name="QuirksContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Stats/StatsContent/MainContent/RightColumn/RightScroll/RightScrollContent/QuirksPanel/QuirksMargin/QuirksVBox"]
 unique_name_in_owner = true

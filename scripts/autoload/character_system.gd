@@ -372,17 +372,18 @@ func create_player_character(char_name: String, birth: String, background: Strin
 	# Calculate derived stats (equipment bonuses are now included)
 	update_derived_stats(character)
 
-	# Assign 1 random inborn physical trait + 1 random inborn personality trait.
+	# Assign one inborn trait from each of the three layers a person comes with:
+	# physical (the body), personality (the temperament), behavioral (the habits).
+	# The behavioral roll matters more than it looks — most trait-gated event
+	# choices key on habits rather than on temperament, and before this roll
+	# existed nothing in the game granted a behavioral trait to anyone.
 	# add_trait() applies pressure baseline offsets and re-derives stats internally.
 	if TraitSystem:
-		var physical: Array[String] = TraitSystem.get_inborn_traits("physical")
-		var personality: Array[String] = TraitSystem.get_inborn_traits("personality")
-		physical.shuffle()
-		personality.shuffle()
-		if not physical.is_empty():
-			TraitSystem.add_trait(character, physical[0])
-		if not personality.is_empty():
-			TraitSystem.add_trait(character, personality[0])
+		for category in ["physical", "personality", "behavioral"]:
+			var pool: Array[String] = TraitSystem.get_inborn_traits(category)
+			pool.shuffle()
+			if not pool.is_empty():
+				TraitSystem.add_trait(character, pool[0])
 
 	# Apply racial traits that have side effects beyond resistances/stats
 	if "extra_starting_gold" in character.get("traits", []):
@@ -410,9 +411,12 @@ func start_new_life(char_name: String, birth: String, background: String) -> voi
 		old_affinities = old_player.get("affinities", []).duplicate()
 		old_upgrades = old_player.get("persistent_upgrades", []).duplicate()
 
-	# Clear party and inventory
+	# Clear party and inventory. Relationships do not survive the death of the
+	# body they were formed in — a new life starts owing nobody anything.
 	party.clear()
 	ItemSystem.clear_inventory()
+	if RelationshipSystem:
+		RelationshipSystem.reset()
 
 	# Create the new character
 	create_player_character(char_name, birth, background)
@@ -1019,6 +1023,10 @@ func add_companion(character: Dictionary) -> bool:
 func remove_companion(index: int) -> bool:
 	if index <= 0 or index >= party.size():
 		return false
+	# Clear how the rest of the party felt about them, so re-recruiting later
+	# starts from the trait baseline rather than an inherited grudge.
+	if RelationshipSystem:
+		RelationshipSystem.forget_character(party[index])
 	party.remove_at(index)
 	return true
 

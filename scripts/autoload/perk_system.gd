@@ -139,10 +139,11 @@ func _is_skill_perk_eligible(character: Dictionary, perk_id: String, owned: Arra
 	if perk.get("enemy_only", false):
 		return false
 
-	# Check primary skill level
+	# Check primary skill level. A perk with no skill (skill "") is gated purely
+	# on attributes — see required_attributes below.
 	var skill_id = perk.get("skill", "")
 	var required_level = perk.get("required_level", 1)
-	if skills.get(skill_id, 0) < required_level:
+	if skill_id != "" and skills.get(skill_id, 0) < required_level:
 		return false
 
 	# Check secondary skill requirements (also_requires)
@@ -150,6 +151,11 @@ func _is_skill_perk_eligible(character: Dictionary, perk_id: String, owned: Arra
 	for req_skill in also_requires:
 		if skills.get(req_skill, 0) < also_requires[req_skill]:
 			return false
+
+	# Check attribute requirements (e.g. multi-arm perks gated on Finesse).
+	# Uses effective attributes so trait bonuses count toward the gate.
+	if not _meets_attribute_requirements(character, perk):
+		return false
 
 	# Check prerequisite perks
 	if not _check_perk_prerequisites(perk, owned):
@@ -160,6 +166,24 @@ func _is_skill_perk_eligible(character: Dictionary, perk_id: String, owned: Arra
 		if not _check_special_requirement(character, perk.special_requirement):
 			return false
 
+	return true
+
+
+## True when the character meets a perk's `required_attributes` block, if any.
+## Attributes are read effectively (base + trait modifiers), so a character who
+## reaches Finesse 14 through a trait qualifies the same as one who bought it.
+func _meets_attribute_requirements(character: Dictionary, perk: Dictionary) -> bool:
+	var required: Dictionary = perk.get("required_attributes", {})
+	if required.is_empty():
+		return true
+	var attrs: Dictionary = character.get("attributes", {})
+	var trait_bonus: Dictionary = {}
+	if TraitSystem:
+		trait_bonus = TraitSystem.get_attribute_bonus(character)
+	for attr_name in required:
+		var value: int = int(attrs.get(attr_name, 0)) + int(trait_bonus.get(attr_name, 0))
+		if value < int(required[attr_name]):
+			return false
 	return true
 
 
@@ -177,6 +201,10 @@ func _is_cross_perk_eligible(character: Dictionary, perk_id: String, owned: Arra
 	for req_skill in requirements:
 		if skills.get(req_skill, 0) < requirements[req_skill]:
 			return false
+
+	# Check attribute requirements
+	if not _meets_attribute_requirements(character, perk):
+		return false
 
 	# Check OR skill requirements (e.g., Persuasion 2 OR Comedy 2)
 	var or_reqs = perk.get("or_skill_requirements", {})

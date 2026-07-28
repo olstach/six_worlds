@@ -30,7 +30,12 @@
       },
       "fixed_items": [
         "health_potion"
-      ]
+      ],
+      "traits": [
+        "devout",
+        "brave"
+      ],
+      "realm": "hell"
     },
     "serji": {
       "id": "serji",
@@ -60,7 +65,12 @@
       "starting_equipment": {
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "war_hardened",
+        "composed"
+      ],
+      "realm": "hell"
     },
     "red_peony": {
       "id": "red_peony",
@@ -93,7 +103,12 @@
         },
         "chest": "chainmail"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "strong",
+        "hot_tempered"
+      ],
+      "realm": "hell"
     },
     "raktamatta": {
       "id": "raktamatta",
@@ -126,7 +141,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "fastidious",
+        "stubborn"
+      ],
+      "realm": "hell"
     },
     "jawbreaker": {
       "id": "jawbreaker",
@@ -159,7 +179,12 @@
           "off": ""
         }
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "quick",
+        "gambler"
+      ],
+      "realm": "hell"
     },
     "tejasimha": {
       "id": "tejasimha",
@@ -197,7 +222,12 @@
       "fixed_items": [
         "fire_charm_middling",
         "plain_copper_dorje"
-      ]
+      ],
+      "traits": [
+        "curious",
+        "vain"
+      ],
+      "realm": "hell"
     },
     "water_lily": {
       "id": "water_lily",
@@ -235,7 +265,12 @@
       },
       "fixed_items": [
         "water_charm_middling"
-      ]
+      ],
+      "traits": [
+        "composed",
+        "brave"
+      ],
+      "realm": "hell"
     },
     "dvijihva": {
       "id": "dvijihva",
@@ -271,7 +306,12 @@
       },
       "fixed_items": [
         "enchantment_charm_common"
-      ]
+      ],
+      "traits": [
+        "greedy",
+        "stubborn"
+      ],
+      "realm": "hell"
     },
     "yaga_mataji": {
       "id": "yaga_mataji",
@@ -308,7 +348,12 @@
       "fixed_items": [
         "health_potion",
         "black_charm_common"
-      ]
+      ],
+      "traits": [
+        "fastidious",
+        "suspicious"
+      ],
+      "realm": "hell"
     },
     "niyamendra": {
       "id": "niyamendra",
@@ -344,7 +389,12 @@
       },
       "fixed_items": [
         "water_charm_common"
-      ]
+      ],
+      "traits": [
+        "fastidious",
+        "patient"
+      ],
+      "realm": "hell"
     },
     "leraya": {
       "id": "leraya",
@@ -378,7 +428,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "curious",
+        "stubborn"
+      ],
+      "realm": "hell"
     },
     "samvibrahmi": {
       "id": "samvibrahmi",
@@ -412,7 +467,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "paranoid",
+        "suspicious"
+      ],
+      "realm": "hell"
     },
     "vayuvega": {
       "id": "vayuvega",
@@ -449,7 +509,12 @@
       "fixed_items": [
         "air_charm_middling",
         "plain_iron_dorje"
-      ]
+      ],
+      "traits": [
+        "hot_tempered",
+        "brave"
+      ],
+      "realm": "hell"
     },
     "angulimala": {
       "id": "angulimala",
@@ -483,7 +548,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "fastidious",
+        "sharp_memory"
+      ],
+      "realm": "hell"
     },
     "kanjus": {
       "id": "kanjus",
@@ -517,7 +587,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "greedy",
+        "stubborn"
+      ],
+      "realm": "hell"
     },
     "sarpatailaka": {
       "id": "sarpatailaka",
@@ -553,7 +628,12 @@
       },
       "fixed_items": [
         "earth_charm_common"
-      ]
+      ],
+      "traits": [
+        "greedy",
+        "gambler"
+      ],
+      "realm": "hell"
     },
     "shiny_needle": {
       "id": "shiny_needle",
@@ -589,7 +669,12 @@
       },
       "fixed_items": [
         "enchantment_charm_common"
-      ]
+      ],
+      "traits": [
+        "vain",
+        "addiction"
+      ],
+      "realm": "hell"
     },
     "princess_spiderface": {
       "id": "princess_spiderface",
@@ -627,7 +712,12 @@
       },
       "fixed_items": [
         "space_charm_middling"
-      ]
+      ],
+      "traits": [
+        "generous",
+        "trusting"
+      ],
+      "realm": "hell"
     },
     "sineater_thirteen": {
       "id": "sineater_thirteen",
@@ -664,7 +754,12 @@
       "fixed_items": [
         "black_charm_middling",
         "plain_bone_khatvanga"
-      ]
+      ],
+      "traits": [
+        "haunted",
+        "curious"
+      ],
+      "realm": "hell"
     },
     "dyutapati": {
       "id": "dyutapati",
@@ -698,7 +793,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "greedy",
+        "patient"
+      ],
+      "realm": "hell"
     },
     "coolhead_hotblood": {
       "id": "coolhead_hotblood",
@@ -730,7 +830,12 @@
       },
       "fixed_items": [
         "black_charm_common"
-      ]
+      ],
+      "traits": [
+        "hot_tempered",
+        "sharp_memory"
+      ],
+      "realm": "hell"
     },
     "ayurmangala": {
       "id": "ayurmangala",
@@ -767,7 +872,12 @@
       "fixed_items": [
         "health_potion",
         "health_potion"
-      ]
+      ],
+      "traits": [
+        "curious",
+        "fastidious"
+      ],
+      "realm": "hell"
     },
     "amlamarjari": {
       "id": "amlamarjari",
@@ -807,7 +917,12 @@
         "health_potion",
         "white_charm_middling",
         "plain_conch_dorje"
-      ]
+      ],
+      "traits": [
+        "generous",
+        "night_drinker"
+      ],
+      "realm": "hell"
     },
     "vimohini": {
       "id": "vimohini",
@@ -844,7 +959,12 @@
       "fixed_items": [
         "enchantment_charm_middling",
         "plain_copper_damaru"
-      ]
+      ],
+      "traits": [
+        "dreamer",
+        "haunted"
+      ],
+      "realm": "hell"
     },
     "tsering": {
       "id": "tsering",
@@ -878,7 +998,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "stubborn",
+        "war_hardened"
+      ],
+      "realm": "hungry_ghost"
     },
     "rasabhava": {
       "id": "rasabhava",
@@ -915,7 +1040,12 @@
       "fixed_items": [
         "health_potion",
         "summoning_charm_common"
-      ]
+      ],
+      "traits": [
+        "curious",
+        "composed"
+      ],
+      "realm": "hungry_ghost"
     },
     "saka": {
       "id": "saka",
@@ -949,7 +1079,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "patient",
+        "stubborn"
+      ],
+      "realm": "hungry_ghost"
     },
     "mehr": {
       "id": "mehr",
@@ -987,7 +1122,12 @@
       },
       "fixed_items": [
         "fire_charm_middling"
-      ]
+      ],
+      "traits": [
+        "sharp_eyed",
+        "brave"
+      ],
+      "realm": "hungry_ghost"
     },
     "vilasa": {
       "id": "vilasa",
@@ -1021,7 +1161,12 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "vain",
+        "greedy"
+      ],
+      "realm": "hungry_ghost"
     },
     "marmajna": {
       "id": "marmajna",
@@ -1059,7 +1204,12 @@
         "health_potion",
         "health_potion",
         "sorcery_charm_common"
-      ]
+      ],
+      "traits": [
+        "curious",
+        "stubborn"
+      ],
+      "realm": "hungry_ghost"
     },
     "kripana": {
       "id": "kripana",
@@ -1091,7 +1241,12 @@
           "off": ""
         }
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "greedy",
+        "addiction"
+      ],
+      "realm": "hungry_ghost"
     },
     "nurse_bones": {
       "id": "nurse_bones",
@@ -1130,7 +1285,12 @@
       "fixed_items": [
         "health_potion",
         "white_charm_middling"
-      ]
+      ],
+      "traits": [
+        "generous",
+        "devout"
+      ],
+      "realm": "hungry_ghost"
     },
     "hustle_bones": {
       "id": "hustle_bones",
@@ -1166,7 +1326,12 @@
       },
       "fixed_items": [
         "earth_charm_common"
-      ]
+      ],
+      "traits": [
+        "greedy",
+        "gambler"
+      ],
+      "realm": "hungry_ghost"
     },
     "prashan": {
       "id": "prashan",
@@ -1202,7 +1367,12 @@
       },
       "fixed_items": [
         "plain_bronze_drilbu"
-      ]
+      ],
+      "traits": [
+        "curious",
+        "sharp_memory"
+      ],
+      "realm": "hungry_ghost"
     },
     "temba": {
       "id": "temba",
@@ -1236,7 +1406,12 @@
         },
         "chest": "chainmail"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "generous",
+        "brave"
+      ],
+      "realm": "hungry_ghost"
     },
     "iron_oath": {
       "id": "iron_oath",
@@ -1270,7 +1445,12 @@
         },
         "chest": "chainmail"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "stubborn",
+        "war_hardened"
+      ],
+      "realm": "hungry_ghost"
     },
     "the_chronicler": {
       "id": "the_chronicler",
@@ -1304,7 +1484,12 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "sharp_memory",
+        "melancholic"
+      ],
+      "realm": "hungry_ghost"
     },
     "nyingje": {
       "id": "nyingje",
@@ -1341,13 +1526,18 @@
       },
       "fixed_items": [
         "health_potion"
-      ]
+      ],
+      "traits": [
+        "patient",
+        "devout"
+      ],
+      "realm": "hungry_ghost"
     },
     "shantipala": {
       "id": "shantipala",
       "name": "Shantipala",
       "birth": "skeleton_copper",
-      "background": "courtier",
+      "background": "diplomat",
       "flavor_text": "Brokered peace between enemies by naming what each side secretly needed and daring them to deny it out loud. Now performs the same service at the Skeleton King's copper mirror court, with mixed results.",
       "portrait": "",
       "recruitment_cost": 750,
@@ -1375,7 +1565,12 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "trusting",
+        "generous"
+      ],
+      "realm": "hungry_ghost"
     },
     "peldon": {
       "id": "peldon",
@@ -1409,7 +1604,12 @@
         },
         "chest": "leather_vest"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "generous",
+        "patient"
+      ],
+      "realm": "hungry_ghost"
     },
     "choki": {
       "id": "choki",
@@ -1446,7 +1646,12 @@
       "fixed_items": [
         "water_charm_middling",
         "plain_silver_drilbu"
-      ]
+      ],
+      "traits": [
+        "grief_struck",
+        "melancholic"
+      ],
+      "realm": "hungry_ghost"
     },
     "nangwa": {
       "id": "nangwa",
@@ -1482,7 +1687,12 @@
       },
       "fixed_items": [
         "space_charm_common"
-      ]
+      ],
+      "traits": [
+        "curious",
+        "stubborn"
+      ],
+      "realm": "hungry_ghost"
     },
     "drupchen": {
       "id": "drupchen",
@@ -1519,7 +1729,12 @@
       "fixed_items": [
         "white_charm_common",
         "plain_conch_dorje"
-      ]
+      ],
+      "traits": [
+        "lapsed",
+        "stubborn"
+      ],
+      "realm": "hungry_ghost"
     },
     "khedrup": {
       "id": "khedrup",
@@ -1556,7 +1771,12 @@
       "fixed_items": [
         "black_charm_common",
         "plain_bone_khatvanga"
-      ]
+      ],
+      "traits": [
+        "stubborn",
+        "superstitious"
+      ],
+      "realm": "hungry_ghost"
     },
     "yasha": {
       "id": "yasha",
@@ -1590,13 +1810,18 @@
         },
         "chest": "cloth_robe"
       },
-      "fixed_items": []
+      "fixed_items": [],
+      "traits": [
+        "vain",
+        "melancholic"
+      ],
+      "realm": "hungry_ghost"
     },
     "durvasa": {
       "id": "durvasa",
       "name": "Durvasa",
       "birth": "gyelpo",
-      "background": "sorcerer",
+      "background": "plague_victim",
       "flavor_text": "Professional curse-caster, contract work only, reliable until his final commission. His target had a solid practice of the Devourer of Curses. The invoice was never collected.",
       "portrait": "",
       "recruitment_cost": 900,
@@ -1627,7 +1852,12 @@
       "fixed_items": [
         "sorcery_charm_middling",
         "plain_copper_phurba"
-      ]
+      ],
+      "traits": [
+        "blood_handed",
+        "stubborn"
+      ],
+      "realm": "hungry_ghost"
     },
     "gomchen": {
       "id": "gomchen",
@@ -1664,6 +1894,918 @@
       "fixed_items": [
         "sorcery_charm_common",
         "plain_iron_phurba"
+      ],
+      "traits": [
+        "lapsed",
+        "vain"
+      ],
+      "realm": "hungry_ghost"
+    },
+    "shesharati": {
+      "id": "shesharati",
+      "name": "Shesharati",
+      "realm": "animal",
+      "zone": "ocean",
+      "birth": "naga",
+      "background": "tide_seer",
+      "flavor_text": "Reads the tide the way other people read faces, and has stopped pretending this is a metaphor. She left the palace because the court wanted prophecies and she only had weather.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "water_magic": 5,
+        "ritual": 3,
+        "black_magic": 2,
+        "learning": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "water_magic": 3,
+          "ritual": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 2
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "leather_vest"
+      },
+      "fixed_items": [
+        "water_charm_common"
+      ],
+      "traits": [
+        "patient",
+        "curious"
+      ]
+    },
+    "anavatapta": {
+      "id": "anavatapta",
+      "name": "Anavatapta",
+      "realm": "animal",
+      "zone": "ocean",
+      "birth": "naga",
+      "background": "palace_vizier",
+      "flavor_text": "Forty years of naga court administration and not one raised voice. He can find the sentence that ends an argument, and he has never once enjoyed using it.",
+      "portrait": "",
+      "recruitment_cost": 950,
+      "build_weights": {
+        "persuasion": 5,
+        "learning": 4,
+        "water_magic": 2,
+        "leadership": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "persuasion": 2,
+          "learning": 2
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "leather_vest"
+      },
+      "fixed_items": [],
+      "traits": [
+        "patient",
+        "composed"
+      ]
+    },
+    "kambu": {
+      "id": "kambu",
+      "name": "Kambu",
+      "realm": "animal",
+      "zone": "ocean",
+      "birth": "karka",
+      "background": "coral_guard",
+      "flavor_text": "Held one gap in the reef wall for nineteen years. Nothing got past. He does not consider this an achievement — it was simply the gap, and he was the one standing in it.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "spears": 4,
+        "armor": 5,
+        "might": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "armor": 2,
+          "spears": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 0
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "chainmail",
+        "weapon_main": "iron_trishula"
+      },
+      "fixed_items": [],
+      "traits": [
+        "stubborn",
+        "brave"
+      ]
+    },
+    "vajradanti": {
+      "id": "vajradanti",
+      "name": "Vajradanti",
+      "realm": "animal",
+      "zone": "ocean",
+      "birth": "karka",
+      "background": "vent_warden",
+      "flavor_text": "Farms the boiling seams where the water comes up from under the world. Everything she knows about sorcery she worked out alone, at depth, with nobody to correct her.",
+      "portrait": "",
+      "recruitment_cost": 850,
+      "build_weights": {
+        "sorcery": 4,
+        "maces": 3,
+        "armor": 3,
+        "alchemy": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "sorcery": 2,
+          "maces": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 2
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "chainmail",
+        "weapon_main": "iron_mace"
+      },
+      "fixed_items": [
+        "fire_crystal"
+      ],
+      "traits": [
+        "hard_of_hearing",
+        "iron_stomach"
+      ]
+    },
+    "timingila": {
+      "id": "timingila",
+      "name": "Timingila",
+      "realm": "animal",
+      "zone": "ocean",
+      "birth": "makara",
+      "background": "deep_hunter",
+      "flavor_text": "Hunts alone in water where the light does not reach. Speaks rarely and with long pauses, as though surfacing between each sentence.",
+      "portrait": "",
+      "recruitment_cost": 800,
+      "build_weights": {
+        "spears": 5,
+        "daggers": 3,
+        "guile": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "spears": 2,
+          "daggers": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 0
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_main": "iron_trishula",
+        "chest": "leather_vest"
+      },
+      "fixed_items": [],
+      "traits": [
+        "quick",
+        "suspicious"
+      ]
+    },
+    "setubandha": {
+      "id": "setubandha",
+      "name": "Setubandha",
+      "realm": "animal",
+      "zone": "ocean",
+      "birth": "makara",
+      "background": "boundary_walker",
+      "flavor_text": "Walks the line between salt and fresh, deep and shallow, this realm and the next. Claims the boundaries are the only places where anything real happens.",
+      "portrait": "",
+      "recruitment_cost": 1000,
+      "build_weights": {
+        "water_magic": 4,
+        "space_magic": 4,
+        "ritual": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "water_magic": 1,
+          "space_magic": 1,
+          "ritual": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 3
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "leather_vest"
+      },
+      "fixed_items": [
+        "space_charm_common"
+      ],
+      "traits": [
+        "curious",
+        "night_owl"
+      ]
+    },
+    "minakshi": {
+      "id": "minakshi",
+      "name": "Minakshi",
+      "realm": "animal",
+      "zone": "ocean",
+      "birth": "matsya",
+      "background": "sea_dancer",
+      "flavor_text": "Dances the shoal-turns that keep a school alive — a thousand bodies changing direction as one. Out of the water she is merely extraordinary.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "grace": 5,
+        "performance": 4,
+        "guile": 3,
+        "daggers": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "performance": 2,
+          "grace": 2
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 0
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_main": "iron_dagger"
+      },
+      "fixed_items": [],
+      "traits": [
+        "attractive",
+        "quick"
+      ]
+    },
+    "phenaka": {
+      "id": "phenaka",
+      "name": "Phenaka",
+      "realm": "animal",
+      "zone": "ocean",
+      "birth": "kapota",
+      "background": "post_runner",
+      "flavor_text": "Carries messages up and down four hundred miles of coast and knows every waypoint, every teahouse, and everyone's business. Delivers all of it, whether or not it was the message.",
+      "portrait": "",
+      "recruitment_cost": 650,
+      "build_weights": {
+        "logistics": 5,
+        "grace": 3,
+        "learning": 3,
+        "comedy": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "logistics": 2,
+          "grace": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 0
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "leather_vest"
+      },
+      "fixed_items": [
+        "rations"
+      ],
+      "traits": [
+        "quick",
+        "curious"
+      ]
+    },
+    "ekadamshtra": {
+      "id": "ekadamshtra",
+      "name": "Ekadamshtra",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "varaha",
+      "background": "sounder_matron",
+      "flavor_text": "Ran a sounder of forty for thirty years and handed it on cleanly, which almost never happens. Eats last. Sleeps where everyone can see her.",
+      "portrait": "",
+      "recruitment_cost": 950,
+      "build_weights": {
+        "leadership": 5,
+        "logistics": 3,
+        "medicine": 3,
+        "martial_arts": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "leadership": 2,
+          "logistics": 1,
+          "medicine": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 0
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "chainmail"
+      },
+      "fixed_items": [],
+      "traits": [
+        "patient",
+        "generous"
+      ]
+    },
+    "kandali": {
+      "id": "kandali",
+      "name": "Kandali",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "varaha",
+      "background": "mycelium_tender",
+      "flavor_text": "Cultivates the fungal network under nine acres of forest floor and speaks about it the way other people speak about family. Do not step on the nine-year patch.",
+      "portrait": "",
+      "recruitment_cost": 800,
+      "build_weights": {
+        "alchemy": 5,
+        "earth_magic": 3,
+        "medicine": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "alchemy": 2,
+          "earth_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "herb_bundle",
+        "raw_reagents"
+      ],
+      "traits": [
+        "fastidious",
+        "patient"
+      ]
+    },
+    "chitrangada": {
+      "id": "chitrangada",
+      "name": "Chitrangada",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "shardula",
+      "background": "canopy_ambush",
+      "flavor_text": "Drops on things from above and has never once had to explain herself afterwards. Pale as limestone, silent as weather, entirely without malice.",
+      "portrait": "",
+      "recruitment_cost": 850,
+      "build_weights": {
+        "daggers": 4,
+        "martial_arts": 4,
+        "grace": 3,
+        "guile": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "daggers": 1,
+          "martial_arts": 1,
+          "grace": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 0
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_main": "iron_dagger",
+        "chest": "leather_vest"
+      },
+      "fixed_items": [],
+      "traits": [
+        "quick",
+        "brave"
+      ]
+    },
+    "nishkasita": {
+      "id": "nishkasita",
+      "name": "Nishkasita",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "rakshasa",
+      "background": "hedonist",
+      "flavor_text": "Keeps an extremely good camp in the middle of nowhere and will not discuss what he is keeping it against. A rakshasa who stopped hunting and started entertaining, and is not sure the two are different.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "performance": 4,
+        "black_magic": 3,
+        "grace": 3,
+        "comedy": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "performance": 2,
+          "grace": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 2
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "health_potion"
+      ],
+      "traits": [
+        "vain",
+        "haunted"
+      ]
+    },
+    "brihannala": {
+      "id": "brihannala",
+      "name": "Brihannala",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "vanara",
+      "background": "troop_elder",
+      "flavor_text": "Retired from leading a troop of sixty and now collects stolen objects and unlikely stories with equal enthusiasm. Will trade you either for something you don't know.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "persuasion": 4,
+        "learning": 4,
+        "thievery": 3,
+        "comedy": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "persuasion": 2,
+          "learning": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 0
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "item_random"
+      ],
+      "traits": [
+        "curious",
+        "sharp_memory"
+      ]
+    },
+    "phalguna": {
+      "id": "phalguna",
+      "name": "Phalguna",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "vanara",
+      "background": "jugaad",
+      "flavor_text": "Can build anything out of anything given an afternoon and no supervision. Every solution is temporary. Every temporary solution has now been load-bearing for six years.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "smithing": 5,
+        "guile": 3,
+        "learning": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "smithing": 2,
+          "guile": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 0
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "salvage_kit",
+        "scrap_metal"
+      ],
+      "traits": [
+        "curious",
+        "forgetful"
+      ]
+    },
+    "dirghajihva": {
+      "id": "dirghajihva",
+      "name": "Dirghajihva",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "gana",
+      "background": "elder_voice",
+      "flavor_text": "The one the pack looks at before it does anything. She has never given an order in her life; she simply yawns at the right moment and the argument ends.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "leadership": 5,
+        "persuasion": 3,
+        "logistics": 3,
+        "ranged": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "leadership": 2,
+          "persuasion": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 0
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "leather_vest",
+        "weapon_main": "short_bow"
+      },
+      "fixed_items": [],
+      "traits": [
+        "composed",
+        "brave"
+      ]
+    },
+    "saramaya": {
+      "id": "saramaya",
+      "name": "Saramaya",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "gana",
+      "background": "herb_walker",
+      "flavor_text": "Walks the ridge lines gathering what grows there and treating whatever she finds hurt. Charges nothing and accepts everything, which balances out about as badly as you would expect.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "medicine": 5,
+        "earth_magic": 3,
+        "grace": 2,
+        "logistics": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "medicine": 2,
+          "earth_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "herb_bundle",
+        "healing_herb"
+      ],
+      "traits": [
+        "generous",
+        "trusting"
+      ]
+    },
+    "sthanumati": {
+      "id": "sthanumati",
+      "name": "Sthanumati",
+      "realm": "animal",
+      "zone": "meadow",
+      "birth": "yaksha",
+      "background": "meadow_ward",
+      "flavor_text": "Maintains the standing stones nobody else remembers the purpose of. She does not know either. She maintains them anyway, on the grounds that somebody clearly meant it.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "ritual": 5,
+        "earth_magic": 4,
+        "persuasion": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "ritual": 2,
+          "earth_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 2
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "leather_vest"
+      },
+      "fixed_items": [
+        "earth_charm_common"
+      ],
+      "traits": [
+        "devout",
+        "stubborn"
+      ]
+    },
+    "balavardhana": {
+      "id": "balavardhana",
+      "name": "Balavardhana",
+      "realm": "animal",
+      "zone": "meadow",
+      "birth": "shyena",
+      "background": "sky_lord",
+      "flavor_text": "Holds a thermal over the meadow the way a landlord holds a deed. Comes down only to settle things, and settles them quickly.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "unarmed": 5,
+        "might": 4,
+        "logistics": 2,
+        "air_magic": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "unarmed": 2,
+          "might": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 0
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "leather_vest"
+      },
+      "fixed_items": [],
+      "traits": [
+        "hot_tempered",
+        "brave"
+      ]
+    },
+    "valmika": {
+      "id": "valmika",
+      "name": "Valmika",
+      "realm": "animal",
+      "zone": "meadow",
+      "birth": "dura",
+      "background": "tunneler",
+      "flavor_text": "Digs. Braces. Digs again. Has opinions about load-bearing timber that she will share whether or not you have expressed interest in load-bearing timber.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "smithing": 5,
+        "earth_magic": 3,
+        "might": 3,
+        "armor": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "smithing": 2,
+          "earth_magic": 1,
+          "might": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "weapon_main": "bronze_mace",
+        "chest": "chainmail"
+      },
+      "fixed_items": [
+        "scrap_metal"
+      ],
+      "traits": [
+        "stubborn",
+        "iron_stomach"
+      ]
+    },
+    "kshudraka": {
+      "id": "kshudraka",
+      "name": "Kshudraka",
+      "realm": "animal",
+      "zone": "meadow",
+      "birth": "uluka",
+      "background": "fortune_seeker",
+      "flavor_text": "Trades in omens, debts, and things people would rather forget they said. Nocturnal, immaculately polite, and never once has she been the one holding the loss.",
+      "portrait": "",
+      "recruitment_cost": 800,
+      "build_weights": {
+        "thievery": 4,
+        "trade": 4,
+        "guile": 3,
+        "black_magic": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "trade": 1,
+          "thievery": 1,
+          "guile": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "item_random"
+      ],
+      "traits": [
+        "greedy",
+        "night_owl"
+      ]
+    },
+    "tikshnashringa": {
+      "id": "tikshnashringa",
+      "name": "Tikshnashringa",
+      "realm": "animal",
+      "zone": "meadow",
+      "birth": "khadga",
+      "background": "blade_contemplative",
+      "flavor_text": "Charges in a straight line and meditates on why. Twenty years of practice have not made him stop charging; they have made him extremely precise about when.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "martial_arts": 5,
+        "yoga": 4,
+        "might": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "martial_arts": 2,
+          "yoga": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 0
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "chainmail"
+      },
+      "fixed_items": [],
+      "traits": [
+        "composed",
+        "stubborn"
+      ]
+    },
+    "nirvikalpa": {
+      "id": "nirvikalpa",
+      "name": "Nirvikalpa",
+      "realm": "animal",
+      "zone": "meadow",
+      "birth": "khadga",
+      "background": "jaina",
+      "flavor_text": "Will not eat anything that had a face and will not walk where she cannot see the ground, in case of insects. Weighs two thousand pounds. Has never harmed anything.",
+      "portrait": "",
+      "recruitment_cost": 950,
+      "build_weights": {
+        "yoga": 5,
+        "ritual": 3,
+        "learning": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "yoga": 2,
+          "ritual": 1,
+          "learning": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "rations"
+      ],
+      "traits": [
+        "devout",
+        "patient"
+      ]
+    },
+    "madhuvrata": {
+      "id": "madhuvrata",
+      "name": "Madhuvrata",
+      "realm": "animal",
+      "zone": "meadow",
+      "birth": "bhramara",
+      "background": "swarm_caller",
+      "flavor_text": "One voice in a hive of four thousand, seconded to the surface for reasons the hive has not explained to him either. Sings in three parts by himself.",
+      "portrait": "",
+      "recruitment_cost": 850,
+      "build_weights": {
+        "summoning": 5,
+        "air_magic": 4,
+        "performance": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "summoning": 2,
+          "air_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 3
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {
+        "chest": "leather_vest"
+      },
+      "fixed_items": [
+        "air_charm_common"
+      ],
+      "traits": [
+        "curious",
+        "night_owl"
+      ]
+    },
+    "agnishikha": {
+      "id": "agnishikha",
+      "name": "Agnishikha",
+      "realm": "animal",
+      "zone": "meadow",
+      "birth": "patanga",
+      "background": "flame_seeker",
+      "flavor_text": "Stands facing the sun with his wings spread until sundown, every day, for eleven years. Wants the fire. Does not enter it. Says that is the whole practice and there is nothing else.",
+      "portrait": "",
+      "recruitment_cost": 1000,
+      "build_weights": {
+        "fire_magic": 5,
+        "yoga": 4,
+        "space_magic": 2
+      },
+      "fixed_starter": {
+        "skills": {
+          "fire_magic": 3,
+          "yoga": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 2
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "fire_charm_common"
+      ],
+      "traits": [
+        "devout",
+        "addiction"
       ]
     }
   }

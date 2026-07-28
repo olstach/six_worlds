@@ -1,916 +1,720 @@
-# Six Worlds - TODO
+# Six Worlds — TODO
 
-Last Updated: 2026-04-07
+**Last updated:** 2026-07-27 (rewritten as a live document)
 
----
+This file was an append-only log for a long time and had grown to the point
+where finished work outweighed the remaining work three to one. It is now
+organised as: **where things stand → what is still open → designs waiting to be
+built → what got done**. The full historical checklists (every `[x]` line from
+the psychology, weapons, camp, wounds and body-plan passes) are preserved in git
+at commit `73a948c` if you ever want the detail back.
 
-## Psychology System (Layer 1)
-
-Full spec: `docs/superpowers/specs/2026-04-07-psychology-system-design.md`
-Full plan: `docs/superpowers/plans/2026-04-07-psychology-system.md`
-
-Five elemental pressure meters per character (−100 klesha ↔ +100 wisdom). Pressure from events and combat → status effects at ±33/±50 → autonomous events at ±75.
-
-- [x] **Task 1** — Create `scripts/autoload/psychology_system.gd` skeleton; register after KarmaSystem in `project.godot`
-- [x] **Task 2** — Add `emotional_pressure` + `emotional_baseline` to BASE_CHARACTER in `character_system.gd`; add `emotional_baseline` field to all races in `races.json`; wire baseline copy in `_apply_race_modifiers()`
-- [x] **Task 3** — Implement core pressure logic: `apply_pressure()`, `_intensity_multiplier()`, `get_active_statuses()`, `get_emotional_label()` (all named states for all 5 elements × 2 poles × 3 tiers)
-- [x] **Task 4** — Implement `_check_thresholds()`: fires `autonomous_event_triggered` signal once per crossing, partial valve (+20 back toward neutral), resets on recovery. Connect signal to `_on_autonomous_event()` for inter-party fallout pressure
-- [x] **Task 5** — Implement `decay_toward_baseline()` for rest system integration
-- [x] **Task 6** — Wire event outcomes: add `pressure` field handler in `event_manager.gd apply_outcome()`; add `pressure` fields to 3 example hell events
-- [x] **Task 7** — Wire combat hooks in `combat_manager.gd`: unit death → Water −15 to witnesses; victory → Fire/Air +10; defeat → Earth −10/Space −5
-- [x] **Task 8** — Show dominant emotional label in character sheet UI (`main_menu.gd`)
-- [x] **Task 9** — Wire Leadership + Comedy perks to `apply_pressure()` calls
-
-**Future layers (not yet started):**
-- [x] ~~**Layer 2: Personality traits & quirks**~~ — QuirkSystem autoload + quirks.json (40 quirks: 10 physical, 14 personality, 10 behavioral, 10 acquired). Stat modifiers flow into `update_derived_stats()`; skill modifiers written to `skill_bonuses["quirks"]` source; pressure offsets shift `emotional_baseline`; event_tags unlock blue choices in event_manager. UI panel in character sheet (coloured by category, mechanical summary, purge tooltip). Bugs fixed: attribute event checks now include quirk bonuses; effective skill level clamped to 0 floor; purge check uses effective not raw skill.
-
-### Trait System — Remaining Work
-- [x] ~~**Autonomous actions**~~ — `QUIRK_CRISIS_REACTIONS` dispatch table in `psychology_system.gd` covers 18 personality/behavioral/acquired event_tags × up to 2 element+polarity combinations each. `_resolve_quirk_reactions()` fires from `_on_autonomous_event` for both bright and dark crises. Virtue traits (brave, patient, composed, generous, devout) partially counteract their element; dark traits (hot_tempered, timid, haunted, grief_struck, etc.) amplify the crisis or spread fallout to the party. `emotional_crisis_log` signal emitted for UI display.
-- [x] ~~**Player character starting traits**~~ — `create_player_character()` assigns 1 random inborn physical + 1 random inborn personality trait via `TraitSystem.get_inborn_traits(category)` + `add_trait()`. `start_new_life()` inherits this automatically.
-- [x] ~~**Companion trait data**~~ — all 47 companions now have `"quirks": [...]` arrays in `companions.json` (see `docs/companion_quirks.md`). TODO: migrate key from `quirks` → `traits` when companion loading is updated.
-- [ ] **Racial trait content review** — initial racial traits (hell_born, undead_nature, spirit_nature, serpentine) are intentionally lightweight stubs. Once each realm's design is finalised, revisit and flesh out: add meaningful event_tags, pressure_modifiers, and any unique mechanical hooks appropriate to that race's cosmological nature.
-- Layer 3: Intervention mechanic (social skills let one character help another)
-- Yidam integration: mantra practice raises brightness baseline per element
-- [x] ~~Rest system: `decay_toward_baseline()` called on camp/inn rest~~ — wired in overworld._do_rest() and camp_system sadhana/story activities
-- [x] ~~PsychologySystem signals connected in overworld + combat_arena~~ — `autonomous_event_triggered` shows toast in overworld; `emotional_crisis_log` shows toast in overworld and appends to combat log in arena
-- Chronic darkness counter: accumulates debuffs for time spent below −50
-- Character sheet psychology tab: elemental tendency bars + active statuses + traits
+Companion documents:
+- `REFRESHER.md` — orientation after a break; read that first
+- `PERKS.md` — perk trees per skill
+- `EVENT_SYSTEM.md` — how events, choices and outcomes work
+- `EDIT_LATER.md` — prose that needs your pass
+- `tools/validate_data.py` — run after any content edit; exits non-zero on a
+  dangling reference
 
 ---
 
-## Indo-Tibetan Weapons & Armor Overhaul
-
-### Design Summary
-- Material tiers (bone, bronze, iron, obsidian, steel…) stay as-is — they are progression tiers
-- Skill IDs in code stay as-is (swords, maces, etc.) — only display names and item data change
-- Armor progression: Chuba → Chainmail → Lamellar → (future cuirass/heavy)
-- Magic foci (phurba, kila, khatvanga, kangling, ritual garb, masks) are deferred to a dedicated session
-
-### Step 1 — Tooltip format ✓ DONE
-- [x] weapon_class field added to all new/renamed weapons; item_tooltip.gd updated to display it
-- [x] skill_bonuses now displayed in tooltip (light blue, e.g. "+1 Yoga skill")
-
-### Step 2 — Sword type system ✓ DONE
-- [x] 4 types: Khanda (balanced), Talwar (fast), Dao (chopper, armor_pierce), Patisa (2H)
-- [x] Full material matrix: bone (Khanda only), bronze/iron/steel (all 4), obsidian (Dao only), damascene/sky_iron/vajra (all 4)
-- [x] Update loot tables and shop item pools — new sword types (Talwar, Dao, Patisa, Khanda) added to all weapon shops and map config loot tiers
-- [x] **`good_iron_weapon` investigated** — `resolve_random_generate()` + `generate_weapon_for_party()` are fully wired in item_system.gd and shop_system.gd; fixed template resolution bugs in map_manager.gd (`item`, `item_random`, `item_random_scaled`), event_manager.gd (event item rewards), and companion_system.gd (fixed_items)
-
-### Step 3 — Mace renames ✓ DONE
-- [x] iron_mace → Iron Gada, bone_club → Bone Gada, bronze_mace → Bronze Gada
-
-### Step 4 — Bow renames + Composite Bow ✓ DONE
-- [x] hunting_bow → Dhanush; Composite Bow added (dmg 9, acc 8, range 5)
-
-### Step 5 — New melee weapons ✓ DONE
-- [x] Katar (iron/steel) — push dagger, +crit_chance
-- [x] Bichawa (iron/steel) — parrying dagger, parry_effectiveness 75 (needs code wiring)
-- [x] Kukri (bronze/iron/steel) — curved blade, high dmg/low acc
-- [x] Trishula (iron/steel) — trident, on_crit_status pinned (needs code wiring)
-- [x] Urumi (steel) — flexible sword, sweep special_attack (needs code wiring)
-
-### Step 6 — Chakram ✓ DONE
-- [x] Iron/Steel Chakram — thrown, pass_through 1, retrievable (pass_through needs code wiring)
-
-### Step 7 — Armor ✓ DONE
-- [x] leather_vest → Chuba
-- [x] Lamellar Armor added (armor 11, dodge -6, above chainmail)
-- [x] Monk's Robe and Monk's Hood added (+1 Yoga each)
-- NOTE for later: element-specific ritual garb and ritual masks — expand in magic foci session
-
-### Step 8 — Ritual Implements (Magic Foci rework) ✓ DONE
-
-#### System Design (final)
-- **Material** = elemental affinity → school skill bonus (scales with consecration tier)
-  - Copper → Fire magic | Silver → Water magic | Gold → Earth magic | Iron → Air magic
-  - Bronze → Space magic (tiers 1–3) | Sky-iron → Space magic (tiers 4–5)
-  - Conch → White magic | Bone → Black magic
-- **Consecration tier** = quality tier (all base stats scale)
-  - Plain (1) → Blessed (2) → Empowered (3) → Perfected (4) → Legendary (5)
-- **Instrument type** = base functional profile (fixed school bonuses where appropriate)
-  - Dorje: +spellpower only (White now purely from conch material)
-  - Drilbu: +max_mana + Space skill bonus (instrument nature) + material bonus
-  - Khatvanga: +spellpower + max_mana + initiative aura (Black now purely from bone material)
-  - Damaru: +max_mana + Enchantment skill bonus + Rhythm Charge
-  - Kangling: +spellpower + Summoning skill bonus + Chöd Offering
-  - Phurba: +spellpower + Sorcery skill bonus + Throw Phurba
-- **Set bonus**: Dorje + Drilbu of any material in both weapon slots → +3 Spellpower, +3 Mana, +2 Initiative
-- 210 items total: 6 implements × 8 materials × 5 tiers (bronze tiers 1–3 / sky-iron tiers 4–5 for Space)
-- Generator: `tools/generate_implements.py` → `tools/generated_implements.json`
-
-#### What was wired earlier (still active)
-- [x] Initiative aura on khatvanga — `get_passive_perk_stat_bonus(unit, "initiative")` equipment section
-- [x] Rhythm Charge (Damaru) — `damaru_charges` on CombatUnit; discount fires in `cast_spell()`
-- [x] Chöd Offering (Kangling) — `_resolve_chod_offering()` in combat_manager.gd
-- [x] Throw Phurba — `_resolve_throw_phurba()`; Subjugated status in statuses.json
-- [x] Set bonus — `calculate_equipment_stats()` detects `set_pair: "dorje_drilbu"`; tooltip shows gold line
-
-#### Open / Deferred
-- [ ] **Ritual implement traits** — special properties (e.g. conch pacification aura, bone life-drain proc, sky-iron void field) to be designed in a dedicated session
-- [x] **Shop distribution** — Plain/Blessed implements added to 11 shops (hg_spell_shop, hg_charnel_sorcerer, hg_town_magic, hell_hidden_gompa, hell_yogini_circle, hell_circle_of_yoginis, hell_crossroads_stupa, hell_eternal_fire, hell_mirror_lake, hell_sacred_grove, hell_garuda_roost); added to zone-tier loot pools in hell + HG; 11 magic companions given school-appropriate plain implements.
-- [ ] **Spell Accuracy / Spell Projectiles** — deferred, leaving to ferment (see Design Questions)
-
-#### Other weapon mechanics wired this session
-- [x] **Trishula on_crit_status** — `on_crit_status` field checked in `_process_weapon_on_hit_procs()` after crits
-- [x] **Bichawa parry_effectiveness** — `parry_effectiveness` in off-hand stats → armor bonus in `get_passive_perk_stat_bonus(unit, "armor")`, equipment section
-- [x] **Chakram pass_through** — traces attack line beyond defender in `_process_weapon_on_hit_procs()`; runs before `passive.is_empty()` guard
-- [x] **Urumi sweep** — hits all other adjacent enemies at −15 acc for 75% dmg, in `attack_unit()` on-hit block
-
-#### Ritual Garb
-
-**Design (pending implementation session)**
-- Slots: `chest` (robes) and `head` (masks)
-- Same material×consecration system as implements: material = elemental school bonus, tier = power
-- Robes: per-element (one line per element, 5 consecration tiers each)
-- Masks: more specific, per-school (can be more exotic — see existing school list)
-- Monastic cross-school garbs: Vajrayana Robe (White+Black+Summoning), Dzogchen Mantle (Space+Air+Yoga)
-- [x] Design stat profiles per robe/mask type
-- [x] Add items to items.json (follow generate_implements.py pattern — wrote generate_garb.py)
-- [x] Wire school bonus display in item_tooltip.gd — skill_bonuses already shown, no changes needed
-
----
-
-## High Priority
-
-### Rest & Time System
-Full spec: `docs/superpowers/specs/2026-04-08-rest-time-system-design.md`
-
-Hours-based time clock (2 hrs/step, 24 hrs/day), three-tier rest mechanic (Quick/Camp/Full), food system rework (food only consumed at rest, not per step).
-
-- [x] **Task 1** — Add `hours_elapsed`, `advance_time()`, `day_changed` signal, `current_day`/`hour_of_day` computed properties, `get_time_of_day_label()` to `game_state.gd`; wire save/load
-- [x] **Task 2** — Add `MapManager.tick_mobs()` method (patrol step without player movement); add Space = Wait action in `overworld.gd` that calls it + advances time + ticks statuses
-- [x] **Task 3** — Remove per-step food drain: gut `process_food_step()`, `process_herbs_step()`, starvation damage, per-step HP heal, `steps_without_food`; update `_tick_supply_step()` accordingly
-- [x] **Task 4** — Implement `_do_rest(tier)` in `overworld.gd`: deduct resources (with Logistics discount), restore HP/mana/stamina (with Medicine continuous bonus + temp HP overflow), decay emotional pressure, restore durability (with Smithing scaling + scrap cost), advance time, emit toast
-- [x] **Task 5** — Build rest UI: button in HUD, popup panel with 3 tier options showing costs + affordability, result toast; update supplies.json starting values
-- [x] **Task 6** — Add time display to overworld HUD ("Day N — Evening"); update `_tick_supply_step` to call `advance_time` on each player move
-- [x] **Task 7** — Wire temp HP: add `temp_hp` field to character derived stats; combat_manager absorbs temp HP before real HP on damage
-
-**Follow-up (after core system lands):**
-- [x] ~~**Lunar calendar system**~~ — 28-day lunar month (4×7, always week-aligned), full moon day 14 / new moon day 28 (both Saturday). Two-line HUD label ("Sunday, 1st lunar day / Deep Night"). Full moon: White magic +20% spellpower + mana partial restore + toast; new moon: Black magic +20% + toast. Both: karma weight ×1.5. Weekday school bonus system: Sun=Fire, Mon=Water, Tue=Sorcery, Wed=Space, Thu=Air, Fri=Enchantment, Sat=Earth — each gives +20% spellpower to that school. All wired into `game_state.gd`, `combat_manager.gd`, `karma_system.gd`, `overworld.gd`, `overworld.tscn`.
-- [ ] Realm-specific rest events — "something stirs in the night" flavour event chance when resting in hell/hungry ghost
-- [x] ~~Rest perks — wire `_process_rest_perks(character, tier)`~~ — **Safe Campsite** (Logistics 3): any party member with the perk eliminates disturbances + +15% HP restore. **Lucid Rest** (Yoga 7): accumulates mantra at Yoga÷2 during any rest tier, no activity slot needed. **Well-Rested** (Medicine 8): after Full Rest, party gets Awareness +3 / Constitution +2 / Initiative +5 for 1 combat via `active_map_buffs`. **Field Surgeon** (Medicine 6): using a medicine item in combat triggers a Medicine roll (d20+Medicine vs DC 14); on success cures one wound mid-fight. All three perks added to perks.json.
-- [ ] Yoga skill boosts pressure decay rate during rest (Yoga level adds to decay_amount)
-- [ ] Day/night visual changes on overworld map (lighting overlay, different mob behavior)
-- [ ] Block rest when hostile mob is adjacent (optional tension mechanic)
-
----
-
-### Camp System (Full Overhaul of Rest UI & Activities)
-
-The current three-tier rest system handles resource costs and recovery correctly, and karma purification sadhana is implemented. This overhaul turns the Full Rest and Camp tiers into a proper two-stage decision: **pick rest tier → pick camp activities**.
-
-#### Design decisions (settled)
-- **Slots**: Quick Rest = 0 activity slots, Camp = 1, Full Rest = 2. Logistics perks can add +1 slot.
-- **Party pool**: Activities draw from a shared pool. Any character can contribute one action per slot, but each character can only perform one activity per rest.
-- **Disturbance**: Fires at the *start* of rest (before any activities). If combat is triggered, the party fights immediately. Win → rest continues but loses 1 slot and proportional recovery (e.g., 2-slot rest becomes 1-slot, recovery cut accordingly). Lose/flee → rest fails entirely.
-  - Disturbance chance scales with: location type (wilderness > road > town outskirts > inn = 0), time of day (night higher), realm (hell/HG much higher), and is negated by Logistics perk "Safe Campsite".
-- **Safe camps** (inns, teahouses, monasteries): no food cost, disturbance chance = 0, access to a `camp_actions` dict on the map tile object for location-specific activities and events. Some regular camp activities may be unavailable (no smithing in a teahouse); social ones may be enhanced (Performance in front of an audience = better effect).
-- **Crafting skills are camp-only**: passive per-step alchemy production is commented out (not deleted) pending playtesting. No new resource types needed.
-
-#### Camp activity list (to implement as camp skills)
-
-*Spiritual:*
-- **Sadhana** (Yoga 3+) — karma purification ✓ *implemented*
-- **Mantra Recitation** (Yoga 2+) — small yidam/dharmapala relationship progress; low-skill entry point for the deity systems
-- **Protector Offering** (Ritual 2+) — dharmapala offering at camp altar; deferred until DharmapalaSystem exists
-
-*Medical / Alchemical:*
-- **Herb Preparation** (Medicine 2+) — process raw herbs into more efficient healing forms; small passive HP restore bonus next rest
-- **Field Surgery** (Medicine 4+) — cure bleeding, poison, infection, and camp-only wound/disease statuses (see Diseases & Wounds section); costs herbs
-- **Brew Potions** (Alchemy 3+) — convert herbs + reagents into healing/buff potions; output count and quality scale with Alchemy level; replaces passive step-based brewing
-- **Brew Poisons & Bombs** (Alchemy 4+) — combat consumables; costs reagents
-
-*Craft / Maintenance:*
-- **Deep Repair** (Smithing 2+) — full durability restore on all party equipment beyond the passive smithing scaling already in `_do_rest`
-- **Weapon Work** (Smithing 4+) — temporary +accuracy or +damage on one weapon, lasts until next rest
-- **Craft Item** (Crafting 3+) — make tools, rope, ammunition, basic equipment from scrap/materials
-- **Craft Charm or Talisman** (Ritual 3+ + relevant magic school 3+) — create a consumable charm with a minor magical effect tied to the school used; costs reagents + herbs; values TBD in playtesting
-
-*Social / Morale:*
-- **Campfire Story** (Performance 3+ or Comedy 3+) — party-wide pressure reduction; Comedy variant tends toward Air/Fire pressure, Performance toward Water/Earth
-- **Encouraging Words** (Leadership 3+) — small stat buff for party members for next combat, or reduce one character's pressure significantly
-- **Night Music** (Performance 5+) — deeper morale effect; chance of drawing in a friendly passing-traveller event
-
-*Intelligence / Scouting:*
-- **Study Recent Events** (Learning 2+) — XP bonus for one character derived from recent encounters; scales with Learning level
-- **Scout Surroundings** (Logistics 3+) — choose: reduce disturbance chance for next camp OR reveal nearby map tiles OR identify forage opportunities
-- **Guile Work** (Guile 4+) — arrange a false trail, plant evidence, set a future trap; vague mechanical effect TBD, strong flavour
-
-*Survival / Foraging:*
-- **Forage** (Logistics 2+) — recover herbs and some food from terrain; yield varies by realm and biome
-- **Set Snares** (Crafting 2+ or Thievery 2+) — passive food and small material gain overnight; small chance of triggering a creature encounter
-
-*Combat Prep (limited presence by design):*
-- **Sharpen Weapons** (any weapon skill 3+) — temporary +accuracy for that character's attacks next combat
-- **Drill** (Leadership 5+) — party initiative bonus next fight
-- **Spar** (any weapon skill 4+) — two characters, minor XP toward that weapon skill
-
-#### Implementation tasks
-- [x] **Task 1** — Redesign rest panel UI: tier selection → activity slot panel (1–2 buttons per slot, drawn from available skills in party). Sadhana appears here naturally as one activity option rather than a separate section.
-- [x] **Task 2** — `CampSystem` autoload: `get_available_activities(party)` returns list of available camp skill dicts based on party skills; `execute_activity(activity_id, character)` runs the activity logic.
-- [x] **Task 3** — Disturbance check at rest start: roll chance by realm/time; on trigger, rest tier drops by 1 and one activity slot is lost. Full combat trigger deferred (complex). Scout activity or safe camp negates disturbance.
-- [x] **Task 4** — Passive alchemy step-production commented out in `overworld.gd` `_tick_supply_step()` with `# PLAYTEST: move to camp-only?` tag. `Brew Potions` and `Brew Bombs & Poisons` camp activities replace it.
-- [x] **Task 5** — Herb Preparation (Medicine 2+) implemented. Field Surgery stubbed (disease system coming next).
-- [x] **Task 6** — Brew Potions (Alchemy 3+) and Brew Bombs & Poisons (Alchemy 4+) implemented.
-- [x] **Task 7** — Deep Repair (Smithing 2+) and Weapon Work (Smithing 4+) implemented. Craft Item / Craft Charm deferred (needs crafting system).
-- [x] **Task 8** — Campfire Story (Performance/Comedy 3+) and Encouraging Words (Leadership 3+) implemented. Night Music deferred (needs camp event trigger from activities).
-- [x] **Task 9** — Study (Learning 2+), Forage (Logistics 2+), Scout (Logistics 3+), Sharpen (weapon 3+), Spar (weapon 4+) implemented. Set Snares and Guile Work deferred (flavour-only, no system yet). Drill deferred (same as Encouraging Words but weaker).
-- [x] **Task 10** — Safe camp integration: `"safe_camp": true` added to hell/HG teahouses, hidden gompas, and skygazing gompa events. `_check_is_safe_camp()` in overworld checks current tile's event for this flag. Safe camps: no food cost, disturbance chance 0.
-- [x] **Task 11** — `"trigger": "camp"` events added to domain_events.json: `camp_night_vision` (any realm), `camp_wandering_spirit` (any realm), `camp_fire_omen` (hell). `EventManager.get_random_camp_event(realm)` added.
-
-#### Camp System — Manual Review & Extension (post-implementation)
-
-Needs a hands-on play session to balance, extend, and wire the remaining gaps:
-
-**Activities to add:**
-- [x] ~~**Night Music** (Performance 5+)~~ — 50-point party pressure decay + 20% chance to trigger a camp event via `result["camp_event_id"]`; overworld picks it up and shows it after rest.
-- [x] ~~**Guile Work** (Guile 4+)~~ — sets `GameState.flags["guile_work_done"]`; consumed by `roll_disturbance()` for −20% chance next rest. Ambush reduction noted in message but pending combat system.
-- [ ] **Set Snares** (Crafting 2+ or Thievery 2+) — overnight food/material gain; small creature encounter chance. Needs a "resolve on next move" deferred effect.
-- [x] ~~**Drill** (Leadership 5+)~~ — appends `{"stat": "initiative", "amount": 3}` to `active_map_buffs`; +3 initiative next combat.
-- [ ] **Protector Offering** (Ritual 2+) — dharmapala offering at a camp shrine; deferred until DharmapalaSystem exists.
-- [x] ~~**Craft Item** (Smithing 3+)~~ — 2 scrap → 1–2 items from `CRAFT_TABLE` (rope, torch, bandage, arrowhead); 2nd item unlocked at Smithing 5+. Verify item IDs exist in items.json.
-- [ ] **Craft Charm** (Ritual 3+ + magic school 3+) — consumable charm with school-specific effect. Needs schema for camp-crafted charms.
-- [x] ~~**Mantra Recitation** (Yoga 2+)~~ — stub removed; increments `character["mantra_count"]` by Yoga level; small pressure decay for performer. Yidam system will read the counter when built.
-
-**Wiring gaps:**
-- [x] ~~**Disturbance → camp event**~~ — `_disturbance_event_id` stored on disturbance; `call_deferred("_show_camp_event", id)` fires after final toast. `_show_camp_event()` pauses movement and shows event display, same as location events.
-- [x] ~~**More camp events**~~ — 9 total now (was 3): added `camp_ember_voices`, `camp_guardian_threshold` (hell); `camp_whispered_offering`, `camp_creditor` (hungry_ghost); `camp_shared_dream`, `camp_stranger_fire` (any). Also fixed karma-in-rewards bug in two original events.
-- [ ] **Location-specific activity suppression**: TODO design said some activities unavailable at teahouses (smithing) or enhanced at gompas (sadhana). Add `"suppress_activities": [...]` and `"enhance_activities": [...]` to safe camp event dicts and wire into `get_available_activities()`.
-- [x] ~~**Sadhana cost preview**~~ — `CampSystem.get_sadhana_preview(performer)` computes which tier would auto-select; button shows e.g. "Torma Offering (reagents: 2) · ~20–100 karma purified".
-
-**Balance review (needs playtesting):**
-- [ ] Forage yield (herbs + food) relative to rest costs — may be too generous or too low depending on realm.
-- [ ] Brew Potions count (1–3) vs reagent cost (2) — compare to what 2 reagents buys in shops.
-- [ ] Pressure decay total with Full Rest + Sadhana = 250 (100 base + 150 sadhana). May be excessive; consider whether sadhana should replace rather than stack with rest pressure decay.
-- [ ] Activity slot count (Camp=1, Full=2) — whether Logistics perk for +1 slot should be implemented.
-
----
-
-### Diseases & Major Wounds
-
-Persistent negative status effects from combat or events that do not fully clear with normal rest — requiring camp-based Medicine to cure. Adds mechanical weight to attrition and makes Medicine more meaningful beyond passive HP bonuses.
-
-#### Types (initial set, expand per realm)
-- **Infected Wound** — slow HP drain each rest until cured; acquired from certain enemy attacks or untreated bleeds
-- **Broken Bone** — Finesse penalty (movement, dodge, initiative); camp-only cure (splint + herbs); takes 2 full rests to heal even with Medicine
-- **Fever** — Constitution penalty, increased food consumption, worsens with bad rests; cured by Medicine + herbs
-- **Frostbite** — cold-hell specific; Finesse + Strength penalty; cured by warmth (camp fire) + Medicine
-- **Corruption** — hell/hungry-ghost specific; psychological + stat penalty; resists normal medicine, needs Ritual or Yoga to treat
-
-#### Design notes
-- These statuses persist across rest tiers — Quick Rest does not remove them at all; Camp rest slows progression; Full Rest + Field Surgery cures them
-- Medicine skill level determines cure success: some wounds require Medicine 3+, severe ones Medicine 5+
-- Infection can worsen if untreated (escalation: infected wound → fever → worse)
-- Events should be able to apply these (e.g., the lava event burning a character, the cold-hell freezing someone)
-- UI: wound statuses appear in character sheet and in combat UI alongside normal status effects, visually distinct (persistent icon, no timer)
-- Future: diseases specific to each realm (hungry ghost realm malnutrition disease, animal realm parasites, etc.)
-
-#### Implementation tasks
-- [x] Define wound/disease statuses — implemented as `WoundSystem.WOUND_TYPES` const in `scripts/autoload/wound_system.gd` (5 base types + 5 escalated forms). Stored as `wounds: Array` on character dicts. No `persistent: true` flag needed in statuses.json since the wound system is separate from combat status effects.
-- [x] Wire escalation: `WoundSystem.tick_wounds(char)` called at each rest in `overworld._do_rest()` after camp activities execute (so Field Surgery cures first). Untreated wounds increment `rests_untreated`; crossing threshold escalates to next form.
-- [x] Field Surgery camp activity implemented in `camp_system._exec_field_surgery()` — calls `WoundSystem.cure_wounds_field_surgery(performer, party)`. Medicine level gates which wound severity can be treated (cure_medicine_level per wound type). Stub removed.
-- [x] Event outcomes can apply wounds: `"wound": {"id": "deep_cut", "target": "random"}` in any event outcome's `rewards` block, handled by `event_manager.apply_outcome()`.
-- [x] Combat wiring: crit hits have 25% chance to apply a random wound to player characters; hits from undead/diseased enemies have 15% chance to apply a disease — both in `combat_manager._process_weapon_on_hit_procs()`.
-- [x] Stat penalties wired in `character_system.update_derived_stats()` via `WoundSystem.get_stat_penalties()`.
-- [ ] Character sheet and combat UI: show persistent wound icons distinctly (deferred — no character sheet UI yet)
-- [ ] Temple/facility healing UI: call `WoundSystem.heal_at_facility(char, medicine_equivalent)` — stub ready, needs shop/temple scene
-- [ ] Realm-specific wound types (hungry ghost malnutrition, animal realm parasites, hell frostbite/burns) — extend WOUND_TYPES when realms are built
-- [ ] More wound/disease variety: currently 5 base types (3 wounds, 2 diseases). Target ~8–10 base types eventually; e.g. arrow wound (ranged-specific, different penalties from deep cut), poisoned wound (disease + damage hybrid), spiritual corruption (hell/hungry-ghost specific, resists medicine, needs Ritual/Yoga). **Design presented for review — see companion_quirks.md (EDIT_LATER).**
-
----
-
-### Projectile System (COMPLETE)
-- [x] Ranged attack misses deviate 1-3 tiles based on how badly the roll failed
-- [x] Deviated projectiles can hit any unit at landing tile (ally or enemy) — logs FRIENDLY FIRE
-- [x] Bomb scatter: Alchemy 0 = 50% chance to land 1 tile off; Alchemy 3+ = no scatter
-- [x] Hit% tooltip when hovering an attack target (green/yellow/red by chance)
-- [x] Line2D projectile animation for ranged attacks and bombs (sprites deferred)
-- [ ] Proper projectile sprites (arrows, bolts, firebombs) — currently line flash only
-- [ ] Spell projectiles — see Magic Foci / Spell Accuracy section above
-
-### Hell Content
-- [ ] More hell events — both zones still under density target (~15+ events each)
-- [ ] Hell event chains: soul caravan ambush, devil deserter, contraband deal, corrupted simple, chained pilgrim, rival party
-- [ ] Hell quest content — write using `register_quest` + `set_flags`; wire `quest_board` outcome into town events
-- [ ] Review all existing events (hell + HG) — audit choices per event and add missing blue/yellow options where only grey exists; aim for at least 2 meaningful skill/attribute checks per event
-
-### Hungry Ghost Events — Follow-up (from hungry_ghost_events.json)
-- [x] Add HG shop entries to shops.json: `hg_alchemist`, `hg_veterans_camp`, `hg_charnel_sorcerer`, `hg_black_market`, `hg_wandering_preta`, `hg_spell_shop` (plus existing `hg_bone_merchant`, `hg_teahouse`, `hg_mercenary_guild`, `hg_town_weapons`, `hg_town_magic`, `hg_town_supplies`)
-- [x] Add spell reward tokens to item system: `spell_random_white`, `spell_random_black`, `spell_random` — resolved like `item_random` in `resolve_random_generate()`
-- [x] OR skill requirements in event_manager.gd — `hg_veterans_camp` training choice needs swords 3 OR axes 3 OR maces 3
-- [x] `skeleton_king_duel` encounter entry — boss fight that stops at 10% HP (needs special win condition logic in combat_manager.gd)
-
-### Other Realms (Content Gaps)
-- [x] Convert HG_EVENTS.md → hungry_ghost_events.json
-- [x] Map config for animal realm — animal.json (3 zones: ocean, forest, meadow; portal in forest top-left)
-- [x] Enemy archetypes + encounters for animal realm — animal_archetypes.json (34 archetypes), animal_encounters.json (30 encounter groups)
-- [x] Cross-realm infrastructure events for animal realm — animal_events.json (39 events: 10 guilds, teahouses, towns, training, domain guilds, simple events, fixed landmarks)
-- [ ] Map configs for remaining realms — human, asura, god still needed
-- [ ] Enemy archetypes + encounters for human, asura, god realms
-- [ ] Event files for human, asura, god realms
-- [ ] Companion definitions for remaining realms (47 companions exist across hell + HG; animal, human, asura, god still empty)
-- [ ] Animal realm zone-specific events (ocean, forest, meadow) — the actual encounters, NPC dialogues, dungeon events; see animal_events.json for list of referenced event_ids not yet implemented
-- [ ] **Animal realm domain guild shop data** — animal_events.json references these shop_ids that need entries in shops.json: `animal_naga_palace` (water/enchantment), `animal_ancient_banyan` (earth/summoning), `animal_termite_cathedral` (earth/summoning/alchemy), `animal_birds_congress` (air/space/white), `animal_bone_forest` (black/summoning). Also: universal guild shops `animal_sacred_grove` through `animal_eternal_fire`, teahouse shops, town shops, training camp shops.
-- [ ] Add HG shop entries pattern for animal realm — mirror the HG follow-up: add all animal shop_ids to shops.json once shop system is extended to animal realm
-
-### Companions
-- [ ] Camp Followers system — UI stub exists in Party tab (`_update_followers_list()`); no backend
-- [ ] Bespoke recruitment events for HG companions — organic recruitment outside shops; not every companion needs one, priority targets: Mehr (golden glint in the dark), Chöki (near still water), Nangwa (haunting a ruined library), Prashan (riddle challenge), Nyingje (found tending other undead), Khedrup (mid-recitation on an auspicious rock), Rasabhava (preservation lab, examine his notes), Durvasa (bound by reflected curse, Air magic / Ritual to stabilize), Gomchen (meditating amid binding contracts)
-- [ ] More companions for the hungry ghost realm — current HG roster may be thin; design and add new companion definitions to companion data file
-
----
-
-## Medium Priority
-
-### Perks
-- [x] Base bonus tables complete for all 35 skills, levels 1–15 (11–15 = item-bonus cap, same value as 10)
-- [x] **Bug fixed**: parse_perks.py now expands `11–15` range rows into individual level keys — perk_system.gd's `str(level)` lookup was silently returning empty dict for levels 11–15
-- [ ] PERKS.md: fill empty perk tiers (levels 2, 4, 6, 8) — 1-2 perks per skill at each
-- [x] Perk rebalancing — 29 required_level changes across fire, air, space, sorcery, black, summoning, ritual, yoga, enchantment, earth, water magic. Worst offenders (fire L3:6→3, air L5:5→2, space L5:5→3, sorcery L5:5→3) fixed. Strong capstones (dabbler, burn_the_breath, forced_translation, cyclone_mastery) moved to L8. All perk-chain dependencies preserved.
-- [ ] Add flavor text to perks that lack it
-
-**Deferred perks (need new systems before wiring):**
-- `metamagic` — needs pre-cast modal dialog to modify next spell
-- `void_touched` — needs `void` tile type in combat_grid
-- `roles_assigned` / `tactical_synergy` — needs role designation UI (Vanguard/Striker/Support/Control)
-- create_terrain perks (`inscribed_circle`, `fog_of_war`, `black_ice`, `raise_wall`, `gravity_well`, `improvised_barricade`, `prepared_ground`) — needs timed terrain tile system
-- `create_images` / `smoke_and_mirrors` — needs illusion/decoy unit system
-- `imbued_attack` / `arcane_archer` — ranged attack with spell element; needs attack+spell hybrid
-- `mass_teleport`, `recruit_or_pacify`, `place_trap` / `trap_maker`, `steal_item` / `the_invisible_hand`, `guard_ally` / `stalwart_guardian`, `choose_one` / `improvised_masterpiece`, `attune_charm`
-
-**Deferred perks (need economy/social systems):**
-- `investment` / `trade_empire` — needs overworld passive income system
-- `supply_cache` / `extended_march` — needs overworld supply action system
-- `guided_practice` / `the_lineage_continues` — needs companion spell-teaching mechanic
-- `black_market_contacts` / `fence` — needs black-market merchant tier
-- `patron_of_the_arts` — needs reputation/renown system
-- `trap_sense` — needs persistent trap terrain object system
-
-### Combat
-- [ ] Tactical Assessment preset formations (Logistics 7 perk)
+## Where things stand
 
 ### Content
-- [x] ~~Magic-school charms~~ — all 10 schools × 4 tiers (common/middling/rare/unique) complete with thematic descriptions; distributed across hell + HG shops, loot tables (tier-escalated by zone), and 24 magic-focused companion starting inventories
-- [ ] More consumable items — realm-specific potions, oils, scrolls still thin
-- [ ] More equipment — 24 rare/epic items exist; no legendary tier; could use more variety
-- [ ] More upgrades/perks
-- [x] ~~Alchemy crafting system~~: Reagents supply type, 3 crafting branches (Remedies/Munitions/Applications) × 3 tiers, perk-unlocked, passive brewing toggle — DONE
-- [x] ~~Resource-gathering perks~~: Alchemical Recycling (Alchemy 3), Herbalist (Medicine 3), Scavenger (Smithing 3) — DONE
-- [x] ~~Crafting UI tab~~ — DONE (key: R; character picker, Potions/Bombs/Oils filter, craftable/locked recipe list with reagent cost)
-- [x] ~~More scroll varieties~~: 17 scrolls added (common: magic_missile, voidbolt, shocking_grasp, stone_spike, bless, cure, slow; uncommon: fireball, blizzard, chain_lightning, earthquake, haste, stone_skin, regeneration, blink, dispel, confusion). Distributed to demon_sorcerer, wandering_sage, general_store, hell_town_magic, hell_yogini_circle, mercy_ward
-- [ ] **Cursed items**: not implemented — "cursed" is currently only a status effect and a terrain type; no cursed equipment in items.json
-- [x] ~~**Equipment generation system**~~: procedural weapons, armor, and talismans — DONE
-- [x] ~~**Talisman system**~~: persistent equippable trinket-slot items with stat/skill/perk bonuses — DONE
-- [x] ~~**Equipment traits**~~: weapon/armor modifier system (sharp, reinforced, etc.) — DONE
-- [x] ~~Wire up `random_generate` template items to use the new procedural generation~~ — DONE
-- [x] ~~Integrate talisman perk effects into combat (poison_immune, regen, thorns, etc.)~~ — DONE (all combat perks wired; karma_sight is event-system only)
-- [x] ~~Add talisman/equipment generation to shop and loot systems~~ — DONE (procedural items in loot drops + auto-generated shop stock)
-- [ ] Astrological spells for Space magic school — divination/prophecy flavor; celestial mechanics (eclipses, conjunctions as triggers or effects); motivates Sun Priestess companion's Space magic skills
-- [ ] Paushtikakarma spells for Earth magic school — wealth multiplication, prosperity, dowsing for buried goods/ore; gives mechanical teeth to trade/merchant builds (Hustle Bones companion, Trade+Earth magic synergy)
 
-### UI Improvements
-- [ ] **Rename "race" → "birth" in scene nodes** — code variables `race_label` / `race_value` and the scene node names `RaceLabel` / `RaceValue` still use old terminology. Two files + their scenes: `new_character_sheet.gd` (`@onready var race_label` → `birth_label`, node path `.../RaceLabel`); `main_menu.gd` (`@onready var race_value` → `birth_value`, unique name `%RaceValue`). Both `.tscn` files need the node renamed first, then the `@onready` variable and all usages updated.
-- [ ] Tooltip system expansion — item_tooltip.gd works for items; no tooltips on status effects, terrain tiles, or turn order icons in combat
-- [ ] Upgrade selection popup (choose 1 of 4) — no scene or system exists
-- [x] ~~Party management screen~~ — DONE (session 10): Party tab in main_menu shows all members with HP/MP/ST bars, View Stats button switches to Stats tab for any member, Remove button dismisses companions
+| Realm | Map | Archetypes | Events | Companions | Quests | Dead map weight |
+|---|---|---|---|---|---|---|
+| **Hell** | ✓ cold / fire + divider | 45 | 79 | 24 | 3 | 0% |
+| **Hungry Ghost** | ✓ 3 zones | 23 | 150 | 23 | 0 | 0% |
+| **Animal** | ✓ ocean / forest / meadow | 34 | 94 | 24 | 0 | 0% |
+| Human | ✗ | ✗ | ✗ | ✗ | ✗ | — |
+| Asura | ✗ | ✗ | ✗ | ✗ | ✗ | — |
+| God | ✗ | ✗ | ✗ | ✗ | ✗ | — |
 
-### Combat Improvements
-- [x] ~~Active skills fully functional (stamina costs, targeting, effects)~~ — DONE (25+ skills with combat_data, stamina/cooldown system)
-- [x] ~~AI using consumable items (enemy potion/scroll usage)~~ — DONE (AI health/mana potions, bombs, oils)
-- [x] ~~AI using active skills~~ — DONE (scoring system, prioritized decision tree)
-- [x] ~~Enemy-specific physical resistances~~ — DONE (hell_archetypes.json: frozen_revenant +pierce/slash, -crush; lava_golem/mountain_guardian +slash/pierce; frost_guardian +pierce/slash; demons +pierce/slash)
-- [x] ~~More obstacle variety (rocks, pillars, trees, destructible objects)~~ — DONE (ObstacleType system)
-- [x] ~~Spells creating terrain effects (Fireball leaves fire terrain)~~ — DONE (AoE ground effects)
-- [x] ~~**Spell duration unification**~~ — unified formula: base 2 + floor(Enchantment/2) [main] + floor(spellpower/15) [secondary]. `clear_mind` fixed (`"spellpower_turns"` typo now `"spellpower"`). `doom` made explicit integer 3. `"combat"` → 999 turns. All 128 `"spellpower"` spells already used the formula.
-- [ ] **Complex enemy AI behavior types** — current AI is a single scoring loop. Several archetypes need distinct behavior modes not yet implemented:
-  - `erratic_movement`: random repositioning each turn before attacking (patanga_seeker); weight movement randomly in scoring rather than always advancing
-  - `priority_target`: preferentially targets lowest-HP or most-isolated party member (rakshasa_maneater); add target-selection pre-pass before action scoring
-  - `pack_bonus`: grants attack/dodge boost when N+ allies of same type are alive (gana_runner, matsya_shoal); check tag+count in derived stat calculation
-  - `burrow_emerge`: teleport-to-adjacent + guaranteed melee attack in same turn (dura_burrower); special handling in `burrow` spell resolution in combat_manager
-  - General approach: add optional `"ai_behavior"` field to archetype JSON; EnemySystem passes it into CombatUnit; CombatManager checks it during AI turn
-- [ ] Terrain affecting spell power — no terrain-based spellpower modifiers in combat_manager.gd cast_spell()
-- [ ] Environmental spell interactions — spells create terrain (done); terrain does not yet buff/debuff spells of matching element
-- [ ] **Summoning bonus from overworld terrain** — Summoning spellpower gets +25% based on the overworld tile type where combat takes place (ruins/charnel grounds, forest, mountain, river/lake each evoke different resident spirits). Requires passing the overworld terrain type into the combat context at combat start. Tradition: nagas in water, earth spirits in mountains, hungry ghosts in charnel grounds, nature spirits in forest. Design the full terrain→spirit type→bonus table before implementing.
-- [x] ~~**AoE type systematization**~~ — DONE. `AoEResolver` static class in `scripts/autoload/aoe_resolver.gd` is now the single source of truth for all AoE shapes: `circle`, `nova`, `around_caster`, `line`, `cone`, `cone_forward`, `cross`, `band`, `vertical_line`, `field_of_view`. All spells with an `"aoe"` block now get `targeting: "aoe"` and are resolved through `AoEResolver.get_tiles()` in combat_manager, combat_grid, and combat_arena. Canonical data schema uses `size`, `width`, `origin`, `safe_center`. To add a new shape: one function + two match branches in aoe_resolver.gd.
-- [ ] Cone AoE targeting UI — `cone` and `cone_forward` shapes are now computed correctly by `AoEResolver`, but the preview highlight in combat_arena still shows the full range area during targeting (correct tiles shown on hover but not on range highlight). Also `cone_forward` direction should lock to caster's facing rather than requiring the player to aim. Needed by: `powdered_glass` (Glass domain).
-- [ ] **Out-of-combat spellcasting** — not implemented. Several spells are designed for overworld/camp use (e.g. `cloud_gate`: retreat to last healing location; future utility spells). Needs a spellbook interface accessible from the overworld HUD or pause menu, mana deducted from caster, and spell effect resolved outside combat. `cloud_gate` specifically needs to teleport the party on the map to the last-visited healing-location tile.
-- [x] ~~Realm-specific combat terrain themes~~ — DONE (overworld terrain generates realm-appropriate obstacles)
+Plus 33 cross-realm domain events (13 plain, 9 camp-triggered, 8 trait-triggered,
+3 relationship-triggered). **356 events total**.
+
+Other totals: **600 perks** (546 skill + 54 cross, every skill covered at every
+level 1–10), **363 spells**, **565 items**, **103 traits** (84 gameplay + 19
+racial), **12 prosthetics**.
+
+### Systems
+
+Twenty-one autoloads, all wired: characters/XP, karma/reincarnation, events, grid
+combat (spells, AoE via `AoEResolver`, statuses, AI, projectiles), overworld
+(real-time movement, mobs, portals with boss gating), shops/training/guilds,
+procedural items, perks, psychology/pressure, traits, wounds, body plans
+(multi-arm species, limb loss, prosthetics), party relationships,
+camp/rest/time/lunar calendar, save/load (3 slots), audio, cheat console.
+Engine: **Godot 4.6**.
+
+Validator reports **0 issues**; all scripts pass `gdparse`.
+
+### What has never been played
+
+Everything added in the 2026-07-27 passes. The animal realm has never been
+played at all; hungry ghost gained 71 events; boss gating, difficulty
+multipliers, wound healing, the quest chains, and a large batch of statuses went
+from data-only to live. See `REFRESHER.md` § Point of departure.
 
 ---
 
-## Low Priority (Nice to Have)
+# Part I — Loose ends
 
-### Save/Load Improvements
-- [x] Multiple save slots (3 slots)
-- [x] Auto-save functionality
-- [ ] Meta-progression (affinities, persistent upgrades across runs) — not implemented; save_manager.gd handles per-run state only, no cross-run persistence
+Ordered by how much finished work sits behind each one.
 
-### Audio
-- [ ] Background music per realm
-- [ ] Combat music
-- [ ] Air, Water, Earth spell impact sounds (only fire + generic exist)
+## 1. Small and self-contained
+
+Each of these is an hour or less and touches one system.
+
+- [ ] **9 race descriptions are placeholders** (`TODO: Fill in description`):
+  `nomad`, `mountain_folk`, `trader`, `tsen`, `rudra`, `gandharva`, `apsara`,
+  `planetary_deity`, `bee`. All but `bee` belong to unbuilt realms, so this can
+  wait for those; **`bee` is animal-realm and reachable now.**
+- [ ] **`sever_part` doesn't handle `arm_l2`/`arm_r2`** — four-armed species have
+  equip slots `hand_l2`/`hand_r2` but no `weapon_main2`/`weapon_off2`, so
+  severing an extra arm doesn't drop its weapon.
+- [ ] **`extra_arm_results` isn't shown in the combat UI** — the multi-arm chain
+  writes per-arm hit/damage into the result dict and the combat log prints it,
+  but the unit frames don't (no "Arm 2: 12 dmg" popup).
+- [ ] **Combat-UI wound icons** — wounds render in the character sheet; unit
+  frames need sprite work.
+- [ ] **Enemy racial resistances are archetype-only** — `races.json`
+  `base_resistances` (e.g. skeleton's 50% physical reduction) reaches a
+  `CombatUnit` built from a character dict, but `EnemySystem._build_enemy()`
+  only copies the archetype's own `resistances`. An archetype-defined skeleton
+  doesn't inherit its race's resistance. Arguably by design — archetypes are
+  meant to be self-describing — but the two paths should agree deliberately.
+- [ ] **Projectile sprites** — arrows/bolts/firebombs are a `Line2D` flash.
+- [ ] **Tooltips** — `item_tooltip.gd` covers items; status effects, terrain
+  tiles and turn-order icons have none.
+- [ ] **Upgrade selection popup** (choose 1 of 4) — no scene or system exists.
+- [ ] **Spell impact sounds** for Air, Water, Earth (fire + generic exist).
+- [ ] **Background/realm music** — none.
+
+## 2. Implemented features with no content using them
+
+The mirror image of dead data: code paths that work and are never exercised.
+
+- [x] ~~**`trait` / `not_trait` event requirements**~~ — done in the four-part
+  sweep: **201 trait-gated choices** using 77 of the 84 gameplay traits, and
+  **76 `add_trait` / `remove_trait` outcomes** covering 30, across 152 of the
+  356 events. The five traits with no event presence (`bloodied`,
+  `death_touched`, `long_marched`, `maimed`, `mantra_worn`) are the ones code
+  hooks grant, which is deliberate — those are earned by playing, not chosen.
+  **All of this prose is Claude's and wants a pass.**
+- [ ] **Second pass on the sweep, if wanted** — 204 events still carry no trait
+  gate. Many genuinely do not want one; a gate on every event would make traits
+  read as a checklist. Worth revisiting once the first batch has been played.
+- [ ] **Companions have no behavioural traits** — 25 of 31 are on no companion,
+  so a behavioural gate currently fires only when the *player* rolled it
+  (~3% per trait). Creation now rolls one, which makes them reachable, but
+  seeding companions would make the party feel much more distinct. Deliberately
+  left to Olaf, since it is companion characterisation.
+- [ ] **`wound` and `sever_part` event rewards** are still unused by any event —
+  nothing in the game maims you outside combat.
+- [ ] **Cursed items** — "cursed" is a status and a terrain type; zero cursed
+  equipment exists, though the item type is registered.
+- [ ] **`mantra_count`** now feeds the practice traits, but the deeper consumer
+  is still YidamSystem — see Part II.
+- [ ] **`persistent_upgrades`** survives reincarnation in `character_system.gd`,
+  but nothing ever grants one. No meta-progression exists.
+- [ ] **Camp Followers** — Party-tab UI stub (`_update_followers_list()`), no
+  backend.
+- [ ] **`tactical_assessment` perk** (Logistics 7) exists in perks.json with no
+  code — it was meant to unlock preset formations.
+
+## 3. Data with no consumer
+
+- [ ] **27 of the 40 `base_bonuses` stat keys are read by nothing.** Full table
+  with owning skill, L1/L5/L10 values and the system each would hook into is in
+  Part III below. This is the largest single gap: most general skills currently
+  pay out only their combat numbers.
+- [ ] **10 embedded `todo` keys in the data files** promise mechanics no code
+  reads. Nothing in TODO.md ever tracked them:
+  - `traits.json` — `venom_ward`, `undead`, `incorporeal` all declare a
+    `resistances` block; TraitSystem applies only `stat_modifiers`,
+    `skill_modifiers` and `pressure_modifiers`, so those three traits are
+    cosmetic
+  - `traits.json` — `aquatic` / `flying` party-wide tile traversal,
+    `night_vision` darkness immunity, `insatiable` (+50% food, −50% rest
+    recovery)
+  - `items.json` — `smoked_lenses` blindness immunity
+  - `races.json` — `shambler` **background** (not race, as previously recorded)
+    is −7 net attributes with no compensating passive; `jaina` background wants
+    karma wiring (slower animal karma, drift toward human/god)
+- [ ] **`skeleton_king_duel`** stops at 10% HP — verify the special win
+  condition still fires after the combat refactors.
+
+## 4. Content that wants writing
+
+- [ ] **A prose pass on 81 events and 24 companion bios.** The animal realm's 47
+  zone events, hungry ghost's 34 gap-fill events, the three HG boss/pass-guardian
+  events, and all 24 animal companion bios are Claude's prose, not yours. This is
+  the single biggest content item and only you can do it.
+- [ ] **53 events are grey-only** (of 347 with choices) — no blue or yellow
+  option at all. The stated target is ≥2 meaningful checks per event. The trait
+  sweep reduced this from 63 by giving some of them their first gated choice.
+- [ ] **500 of 600 perks have empty `flavor`.** Better in your voice than mine.
+- [ ] **Quests: 3 total, all hell.** The board works and the validator now
+  guarantees every step flag is settable, but hungry ghost and animal have none.
+- [ ] **Hell event chains still unwritten** from the original list: soul caravan
+  ambush, devil deserter, contraband deal, corrupted simple, chained pilgrim,
+  rival party.
+- [ ] **Realm-specific wounds** — 5 base types exist (3 wounds, 2 diseases);
+  target ~8–10. Wanted: arrow wound, poisoned wound, spiritual corruption
+  (resists medicine, needs Ritual/Yoga), HG malnutrition, animal parasites,
+  hell frostbite/burns. Design notes in `EDIT_LATER.md`.
+- [ ] **Consumables and equipment are thin** in realm-specific flavour — 68
+  legendary-rarity items exist, so the tier itself is covered.
+- [ ] **Astrological spells (Space)** — divination, eclipse/conjunction
+  triggers; motivates the Sun Priestess companion's Space skills.
+- [ ] **Paushtikakarma spells (Earth)** — wealth multiplication, dowsing for
+  ore; gives teeth to trade/merchant builds (Hustle Bones, Trade+Earth).
+- [ ] **Ritual implement special traits** — conch pacification aura, bone
+  life-drain proc, sky-iron void field. Design deferred.
+- [ ] **Realm-specific rest events** — "something stirs in the night" flavour
+  when resting in hell / hungry ghost.
+
+## 5. Whole realms
+
+Human, asura and god need: map config, archetypes, encounters, event file,
+companions, backgrounds, shops. Human-realm zone design is sketched in Part II.
+
+## 6. Balance passes waiting on play
+
+All first-pass numbers. Nothing here is a bug; they need a playthrough.
+
+**Combat**
+- Summoning terrain affinity: flat +25% and the terrain→element table
+- `pack_bonus`: +3 accuracy/dodge per packmate, cap +12
+- `priority_target` isolation weights; whether `burrow_emerge` should cost an action
+- `Mantric_Armor` shield pool (25), `Mirror_Images` copies (3)
+- Reflect 60% / `Magic_Mirror` 50% reflect chances
+- Multi-arm damage scalars and per-extra-arm accuracy penalty
+- Difficulty multipliers (easy 0.75 … boss 1.6) — now applied to every event fight
+- Spell mana costs (15/40/75/135/225 by level)
+
+**Wounds** (`WOUND_PENALTIES` in `body_system.gd`)
+- Are percentage penalties proportionate across stat ranges? Finesse 8 vs 16
+  experiences an arm wound very differently
+- Severe head (−30% spellpower, −25% initiative, −15% max HP) vs severe torso
+  (−35% max HP, −25% stamina) — is head too punishing?
+- Feet may be too mild relative to legs; consider a persistent `prone`
+- Diseases share the physical wound table via `body_location` — should
+  `rot_sickness` at torso hit max mana or spellpower instead of HP?
+- `rests_untreated` escalation thresholds (2–3 rests) — too fast given rests
+  already cost resources?
+- Naga (serpentine, no legs) needs its own pass — it cannot take leg/foot wounds
+
+**Camp & economy**
+- Forage yield relative to rest costs, per realm
+- Brew Potions count (1–3) vs 2 reagents — compare to shop prices
+- Pressure decay: Full Rest + Sadhana totals 250 (100 + 150). Should sadhana
+  replace rest decay rather than stack?
+- Activity slots (Camp 1, Full 2) — implement a Logistics +1 slot perk?
+- Enhanced camp activity multiplier (1.5×) and Set Snares yields
+- Wound healing price: (20 + 15 × cure_medicine_level) × shop modifier
+- **Gold reward tokens: small 40 / moderate 100 / large 180** — derived from the
+  60 numeric rewards already in the event files (median 100, terciles 80/130)
+- Trade L10 reads 60% buy discount / 70% sell markup — probably intended as a
+  soft cap, not a literal multiplier. Decide before wiring (Part III)
+
+## 7. Perks deferred on missing systems
+
+Not gaps in the perk trees — these are written and waiting on machinery.
+
+**Need new mechanics:** `metamagic` (pre-cast modal), `void_touched` (void tile
+type), `roles_assigned` / `tactical_synergy` (role designation UI),
+create_terrain perks (`inscribed_circle`, `fog_of_war`, `black_ice`,
+`raise_wall`, `gravity_well`, `improvised_barricade`, `prepared_ground` — need
+timed terrain tiles), `create_images` / `smoke_and_mirrors` (illusion units),
+`imbued_attack` / `arcane_archer` (attack+spell hybrid), `mass_teleport`,
+`recruit_or_pacify`, `place_trap` / `trap_maker`, `steal_item` /
+`the_invisible_hand`, `guard_ally` / `stalwart_guardian`, `choose_one` /
+`improvised_masterpiece`, `attune_charm`, `trap_sense`.
+
+**Need economy/social systems:** `investment` / `trade_empire` (passive income),
+`supply_cache` / `extended_march` (supply action), `guided_practice` /
+`the_lineage_continues` (companion spell-teaching), `black_market_contacts` /
+`fence` (black-market tier), `patron_of_the_arts` (renown).
+
+**Wound/body perks designed, not written:** `hardened` (Con 14+, 50% chance to
+negate an incoming crit wound), `undead_hunter` (Earth magic 3+, disease
+immunity from undead hits), `stubborn_body` (Con 15+, +1 to all
+`escalation_rests`, as `character.wound_escalation_delay`), `iron_cortex` (arms
+1–2 always fire, 3+ still roll).
+
+## 8. Deferred by decision
+
+Recorded so they aren't rediscovered as bugs.
+
+- **`Dominated` full enemy control** — the puppet loses its turns; real control
+  needs a player-drives-an-enemy-unit UI flow
+- **Aura statuses** (`Soothing_Presence`, `Guardian_Kings`) — handled per-mantra
+  by design, not via status effects
+- **`attack_damage_buff_when_ally_dies`** — applies Rage, whose damage bonus is
+  generic; a bespoke stacking version is unimplemented
+- **Head natural weapons** (bite, beak) sit outside the arm attack chain — needs
+  a head special-attack action or a primary-slot override
+- **Coordinated group AI** (focus fire, flanking) — a larger AI feature
+- **Day/night visuals** on the overworld; **rest blocked when a mob is adjacent**
+- **Protector Offering** camp activity — blocked on DharmapalaSystem
+- **More species**: centipede (many legs), bear — as animal content grows
+- **Klesha / chronic-darkness counter** — debuffs for time spent below −50
+  pressure
+- **Psychology Layer 3 intervention** — social skills let one character reduce
+  another's pressure
+- **Racial trait content review** — `hell_born`, `undead_nature`,
+  `spirit_nature`, `serpentine` are deliberate stubs pending realm design
 
 ---
 
-## Testing
+# Part II — Designs waiting to be built
 
-- [ ] Playtest hell realm end-to-end (combat, shops, events, quest board, portal transition)
-- [ ] Balance pass on spell mana costs (15/40/75/135/225 by level)
-- [ ] Test all 326 spells load and cast correctly
-- [x] Item flavor text: `space_charm_common` and `rations` — tooltip code verified correct (charm effects shown at lines 139–158 item_tooltip.gd, supply info at 161–171). `space_charm_common` added to `hg_spell_shop`, `hg_charnel_sorcerer`, `hg_town_magic` so it is now reachable in-game.
+Kept in full: these are settled designs with no implementation yet.
 
----
+## Yidam System (personal deity practice)
 
-## Wound Penalty Balance Review
+- Deities are **translated** into English ("Adamantine Terrifier", not
+  "Vajrabhairava") — avoids publishing secret names while keeping the meaning
+- Roster drawn from the mantra list in `PERKS.md`; masks as optional head-slot
+  items granting a large Deity Yoga bonus
+- **Relationship stages**: Heard → Connected → Practicing → Established →
+  Realized (persists cross-lifetime from Practicing+)
+- **Primary mechanic**: mantra accumulation — `mantra_count` already
+  accumulates via camp Mantra Recitation and has no consumer today, so the hook
+  is waiting
+- Commitment to a single deity is mechanically rewarded
+- **Karma affinity** — some deities more accessible by karma profile
+- **Dedicated spell** per deity, unlocked at Practicing+
+- **Quest chain** per deity, encounter-chain style
 
-The `WOUND_PENALTIES` table in `body_system.gd` was written without playtesting. Needs a dedicated balance pass once combat is in a playable state.
+Tasks: design roster (names, karma affinities, mantras, spells, masks) ·
+implement relationship tracking (YidamSystem autoload or extend KarmaSystem) ·
+wire mask bonuses into Deity Yoga activation · define cross-lifetime persistence
+· write quest chains.
 
-**Key questions:**
-- Do percentage penalties feel proportionate across character stat ranges? (a character with Finesse 8 vs Finesse 16 will feel arm wounds very differently)
-- Severe head wound: −30% spellpower + −25% initiative + −15% max_hp — is this too punishing relative to severe torso (−35% max_hp + −25% stamina)?
-- Foot penalties (movement/initiative only) may be too mild relative to leg penalties; consider whether severed feet should apply a persistent `prone` or `immobilized` status instead
-- Disease penalties use the same table as physical wounds via `body_location` — consider whether diseases should have their own penalty profile (e.g. rot_sickness at torso should probably apply a max_mana or spellpower penalty to reflect debilitation, not just HP)
-- The `rests_untreated` escalation thresholds (2–3 rests) — are they too fast given that rests already cost resources? Playtesting will determine this.
+## Dharmapala System (protector relationships)
 
-**See also:** Naga species (serpentine body plan) will need a tailored balance pass since they have no legs and can't receive leg/foot wounds.
+- Protector deities, translated names, accessed via **shrines** on the overworld
+- Relationship is **transactional** (offerings) and **worldly** — complements
+  yidam's inner practice
+- **Offerings**: realm-specific items consumed at shrines; each dharmapala wants
+  particular things
+- **Stages**: Stranger → Known → Favorable → Under Protection → Bonded
+  (persists cross-lifetime from Favorable+; full carry at Bonded, partial at
+  Favorable)
+- **Interventions**: limited uses, refresh between shrines, each reflecting the
+  deity's nature — fate rerolls, oracle glimpses, enemy weakening
+- **Vows**: 1–2 behavioural constraints each; breaking them damages the bond
+- **Synergies**: a Hayagriva yidam + fire-aspect dharmapala is a natural build;
+  Black Sorcerer's Robe + Mahakala relationship passive
 
----
+Tasks: design roster (domains, offerings, interventions, vows) · shrine objects
+in `map_generator.gd` · DharmapalaSystem autoload · cross-lifetime persistence
+in KarmaSystem/reincarnation.
 
-## Design Thinking: Wounds, Rest & Calendar — Perks, Spells, Weapon Effects
+## Masks and the face slot
 
-These three new systems create a lot of design space. Notes to think through before the next implementation pass.
+A major design space, deferred to its own pass. `face` slot, type `"mask"`,
+already mapped in `_find_slot_for_item()`.
 
-### Perks & Wounds
+- Deity masks → large Deity Yoga bonus; school masks → skill bonus to one
+  school; elemental masks → resistance + minor affinity
+- Possible types: wrathful (combat), peaceful (healing/buff), animal form
+  (special abilities), ritual (Ritual/Yoga)
+- Cross-reference the ritual garb masks already generated — combat masks vs
+  ritual masks vs deity masks may need separate type tags
 
-- **Wound resistance perks** — e.g. "Hardened" (Constitution 14+): 50% chance any crit wound is negated; "Undead Hunter" (Earth magic 3+): immune to diseases from undead attacks
-- **Field Medic perk** (Medicine 6): Field Surgery now cures ALL wounds on the target, including escalated forms — no longer gated by medicine level per-wound
-- **Stubborn Body perk** (Constitution 15+): wounds escalate 1 rest later (escalation_rests +1 global bonus); worth implementing as a `character.wound_escalation_delay` field checked in `tick_wounds`
-- **Klesha / wound interaction**: each wound category could apply elemental pressure — physical wounds → Earth pressure, disease → Water pressure (rot/decay)
+## Wounds × spells × items (design, unbuilt)
 
-### Perks & Rest
+**Spells**
+- White magic should cure wounds out of combat — suggest `cures_wound_category`
+  / `cures_wound_id` on spell defs, checked in the spell outcome handler
+- Water magic antidotes — reduce `rests_untreated` by 1 rather than curing
+  outright (`reduce_escalation: 1`)
+- Black magic harm spells — `inflict_wound` (wound id + chance) so enemies can
+  accumulate wounds too
+- Ritual mandala at Full Rest — lower wound escalation counters party-wide
 
-- **Light Sleeper** (Awareness 12+): Quick Rest (tier 1) heals an additional 10% HP — reduces the penalty for being interrupted; currently Quick Rest only gives 40%
-- **Meditator's Repose** (Yoga 4+): Full Rest always counts as "safe camp" for the disturbance roll — even in hostile territory the character's stillness fends off spirits; interesting Yoga payoff
-- **Iron Constitution** (Constitution 14+): Medicine bonus to heal_pct doubles at Full Rest — character heals efficiently without a healer in the party
-- **Logistics perk passives**: already half-designed — rest food cost reduced, forage yield increased; wire into `_do_rest` and `_exec_forage`
+**Items**
+- Weapon traits `wound_chance` + `wound_type` — bleed weapons that inflict
+  persistent wounds, an "attrition weapon" class
+- Weapon trait `disease_chance` + `disease_type` for bone/grave-iron weapons
+- Silver weapons — `disease_immune_on_hit`, purification on contact
+- Thematic armour reducing wound chance for its body location (bracers → arms,
+  sabatons → feet)
 
-### Perks & Calendar
+**Calendar**
+- Lunar-day perk bonuses (e.g. Full Moon Practitioner: +5 spellpower on day 15)
+  via a `PerkSystem.check_lunar_bonus()` hook in `update_derived_stats`
+- `auspicious_day_bonus` on camp activities
+- `lunar_day_required` on camp events
+- Realm-time tension: hell rests cost more, HG gives no recovery without food
+- Seasons: placeholder — if ever tracked, winter → bone fever up, summer → rot
+  sickness down
 
-- **Lunar calendar perks**: certain perks could give bonuses on specific lunar days (e.g. "Full Moon Practitioner": +5 spellpower on day 15); needs a `PerkSystem.check_lunar_bonus(character)` hook called in `update_derived_stats`
-- **Auspicious Days**: certain events or activities could be gated on auspicious calendar positions — simpler to just add `"auspicious_day_bonus"` to activities, boosting XP or resource gain
+**Rest perks designed, unbuilt**
+- Light Sleeper (Awareness 12+): Quick Rest heals +10% (currently 40%)
+- Meditator's Repose (Yoga 4+): Full Rest always counts as a safe camp
+- Iron Constitution (Con 14+): Medicine heal_pct doubles at Full Rest
 
-### Spells & Wounds
+## Trait matrix — reference for the events pass
 
-- **White magic healing spells** should be able to cure wounds out of combat — currently no mechanism; suggest: add `"cures_wound_category": "wound"` or `"cures_wound_id": "deep_cut"` to spell definitions; `apply_spell_outcome` in CombatManager (or overworld spell handler) checks this
-- **Antidote / Cure Disease spells** (Water magic): natural fit for curing the disease category of wounds; could reduce `rests_untreated` by 1 rather than cure outright (weakened form for balance)
-- **Ritual mandala**: a Full Rest with Ritual activity could lower wound escalation counters across the party (represents purification) — simpler than a spell, wires into the existing Ritual activity stub
-- **Harm / Inflict Wound spells** (Black magic): should be able to apply wounds to enemies too, not just players — means enemies could accumulate wounds, which would make sense if a boss-fight-spanning wound system is ever added
+`psychology_system.gd` defines 30 named states, five elements × two poles ×
+three tiers. This is the canonical five-poison/five-wisdom scheme and every
+trait is now seated on it.
 
-### Weapon Effects & Wounds
-
-- **Undead-tagged weapons** (e.g. bone weapons, grave-iron): hits have disease_chance passive proc, same as enemy undead hits — add `"disease_chance": 15` to weapon passive and check in `_process_weapon_on_hit_procs`
-- **Wound-applying weapon traits**: a dagger with `"wound_chance": 20` and `"wound_type": "deep_cut"` — bleed-focused weapons that reliably inflict persistent wounds, not just combat bleed status; this creates a distinct class of "attrition weapons"
-- **Healing weapons** (White magic enchantment): melee hits could reduce target's `rests_untreated` by 1 — passive tick-down mechanic; probably overpowered, but interesting for a dedicated healer-fighter
-- **Silver weapons**: already a natural fit for "undead" enemies; could grant disease immunity to the wielder (touching undead with silver purifies) — simple passive flag on weapon
-
-### Calendar & System Integration
-
-- **Calendar-gated rest events**: the existing camp event system could use `lunar_day_required` field — on certain days a wandering spirit or auspicious vision appears, triggered by the existing `get_random_camp_event()` hook
-- **Realm-time tension**: some realms should feel like time matters more (Hell = every rest costs more resources; Hungry Ghost = no rest recovery without food — already partially true); the calendar/time advance makes this tangible
-- **Seasonal mechanics**: placeholder idea — if the calendar ever tracks seasons (not yet planned), certain diseases should be more likely (winter → bone fever chance up, summer → rot sickness down)
-
----
-
-## Body Parts System (Design Phase)
-
-A dedicated session deferred from the wounds implementation. The `body_location` field on wound entries is the current hook — it stores a part id as a string but nothing reads it yet.
-
-### Goal
-
-Replace the hardcoded flat equipment slot dict on `BASE_CHARACTER` with a **dynamic body plan** generated from a species definition. This unlocks:
-- Location-specific wound penalties (leg wound = movement, arm wound = combat, head = cognitive)
-- Multi-armed characters in higher worlds (deva, asura) with real extra weapon/hand slots
-- Limb loss from severe wounds — temporary or permanent
-- Prosthetics as items that slot into missing parts
-
-### Proposed Data Model
-
-Every character gets a `body_plan` key. Rather than storing all part state on the character, the *definition* (part topology) lives in a `BodySystem.BODY_PLANS` const keyed by species, and the character stores only runtime state (missing parts, prosthetics):
-
-```gdscript
-"body_plan": {
-    "species": "human",      # key into BodySystem.BODY_PLANS
-    "missing_parts": [],     # part ids that have been severed
-    "prosthetics": {},       # {part_id: item_id} for attached prosthetics
-}
-```
-
-`BodySystem.BODY_PLANS["human"]` defines the topology:
-
-```gdscript
-{
-    "parts": [
-        {"id": "head",   "category": "head",  "equip_slot": "head",   "parent": "torso",  "children": []},
-        {"id": "torso",  "category": "torso", "equip_slot": "chest",  "parent": "",       "children": ["arm_l","arm_r","leg_l","leg_r","head"]},
-        {"id": "arm_l",  "category": "arm",   "equip_slot": "hand_l", "parent": "torso",  "children": []},
-        {"id": "arm_r",  "category": "arm",   "equip_slot": "hand_r", "parent": "torso",  "children": []},
-        {"id": "leg_l",  "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["foot_l"]},
-        {"id": "leg_r",  "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["foot_r"]},
-        {"id": "foot_l", "category": "foot",  "equip_slot": "feet",   "parent": "leg_l",  "children": []},
-        {"id": "foot_r", "category": "foot",  "equip_slot": "",       "parent": "leg_r",  "children": []},
-    ]
-}
-```
-
-A four-armed deva species simply adds `arm_l2`, `arm_r2` with their own `equip_slot` values. `BodySystem.get_available_slots(character)` replaces the hardcoded slot list everywhere.
-
-### Part Category → Wound Penalty Table
-
-When a wound's `body_location` matches a part, its penalty type is determined by the part's category, not hardcoded per-wound. This lets us define wounds generically:
-
-| Part category | Default penalty type | Example |
+| Element | Klesha: minor / major / crisis | Wisdom: minor / major / crisis |
 |---|---|---|
-| head | spellpower, initiative | concussion on head part |
-| arm | dodge, damage | deep cut on arm part |
-| leg | movement, initiative | deep cut on leg part |
-| torso | max_hp, max_stamina | broken rib on torso |
-| foot | movement | twisted ankle |
+| **Space** (delusion) | Confused / Dissociated / Absent | Clear-headed / Open / Luminous |
+| **Fire** (desire) | Restless / Craving / Consumed | Warm / Magnetizing / Radiant |
+| **Water** (aversion) | Irritable / Grief-struck / Poisonous | Focused / Clear-eyed / Compassionate |
+| **Earth** (pride) | Insecure / Arrogant / Humiliated | Grounded / Equanimous / Unshakeable |
+| **Air** (envy) | Anxious / Paranoid / Envious | Alert / Inspired / Brilliant |
 
-This means `body_location` on a wound becomes mechanically meaningful, not just flavour.
+Trait coverage after the 2026-07-27 pass — 48 of 56 gameplay traits carry a
+pressure link (the eight without are plain bodily facts: `strong`, `quick`,
+`frail`, `clubfooted`, `hard_of_hearing`, `iron_stomach`, `night_owl`,
+`bird_lover`):
 
-### Limb Loss
+| | klesha | wisdom |
+|---|---|---|
+| space | 6 | 6 |
+| fire | 6 | 6 |
+| water | 8 | 6 |
+| earth | 10 | 4 |
+| air | 6 | 5 |
 
-- Wounds of `severity: "severe"` on a non-torso, non-head part have a small chance (5–10%) to sever it
-- Severing adds the part id to `missing_parts`; its children (e.g. foot when leg is severed) are also added
-- Items equipped in those slots are unequipped and returned to inventory
-- `BodySystem.get_available_slots()` skips missing parts → UI automatically loses those slot buttons
-- Recovery options: White magic regrowth spell, temple "body restoration" service (expensive), rare event
+**Sign convention:** negative pushes the baseline toward klesha, positive toward
+wisdom, matching `apply_pressure()`. Trait and race data used to be written the
+other way round — see Part IV.
 
-### Prosthetics
+**When placing trait gates in events**, the useful question is which of the five
+families the situation touches, then whether the trait makes the character
+better or worse at it. A `not_trait` gate is as useful as a `trait` gate:
+`incurious` should close doors that `curious` opens.
 
-Items with `"prosthetic_for": "arm"` (or a specific part id) can be attached to a missing part:
-- Full prosthetic (magical limb): restores slot, may give special properties (flame arm → fire damage on melee)
-- Partial prosthetic (splint, hook): restores partial function, no equipment slot
-- Stored in `body_plan.prosthetics` as `{part_id: item_id}`
+### Bonding vocabulary
 
-### Species / Body Plans to Define
+`bond_tags` on each trait is what `RelationshipSystem` scores party rapport on:
+**vice, devotion, martial, arts, scholarly, sociable, solitary, grief, order,
+beasts, hardship, wonder**. Shared tags pull a pair together (vices pull
+harder), `opposed_traits` push apart, and the pairs are symmetric — the
+validator would catch it if they were not. Bands: rival / cool / neutral /
+warm / sworn.
 
-| Species | Arms | Legs | Notes |
-|---|---|---|---|
-| human | 2 (hand slots) | 2 (foot slot) | Standard — current hardcoded slots map exactly |
-| four_armed | 4 (hand slots) | 2 | Deva/Asura realm; multi-weapon chain governs extra arms |
-| six_armed | 6 (hand slots) | 2 | High deva/wrathful deity forms |
-| serpentine | 2 | 0 (tail) | Naga / animal realm; tail = movement bonus, no foot slot |
-| avian | 2 (wing-arms?) | 2 | Garuda; wings as back slot; partial-arm option TBD |
-| centipede | 2 | 6+ | Animal realm; each extra leg pair = speed/weight bonus |
-| undead_humanoid | 2 | 2 | Same as human; `missing_parts` list can be pre-populated |
-| ethereal | 0 | 0 | Ghost-type — head + torso only; no limb equipment |
+The trait baseline is recomputed on every read rather than stored, so editing
+traits.json can never leave a stale number in a save; only the drift from
+things that actually happened is persisted.
 
-### Multi-Weapon Attack Chain (NEW COMBAT MECHANIC — DECIDED)
+### Trait acquisition
 
-The core insight: **one sensomotor cortex drives all limbs**. Extra arms are real attack opportunities, but coordination degrades. Finesse governs the probability chain.
+Nine acquired traits are granted by code hooks, with no event needed:
 
-**Attack resolution per combat turn:**
-1. Arm 1 (dominant): always attacks — 100%
-2. Arm 2 (off-hand): `50 + (Finesse - 10) * 5`% — 50% at Finesse 10, 100% at Finesse 20
-3. Arm 3: `25 + (Finesse - 10) * 4`% — 25% at Fin 10, 65% at Fin 20
-4. Arm 4: `10 + (Finesse - 10) * 3`% — 10% at Fin 10, 40% at Fin 20
-5. Arm 5: `5 + (Finesse - 10) * 2`% — 5% at Fin 10, 25% at Fin 20
-6. Arm 6: `(Finesse - 10) * 2`% — 0% at Fin 10, 20% at Fin 20 (perks needed to reliably land this)
-
-**Formula**: `chance[n] = base[n] + (Finesse - 10) * scale[n]`, capped 0–100%.
-
-Humans always land arm 2 (they just have one off-hand, the formula still applies — at Fin 10 a human with a two-weapon build has 50% off-hand attack chance, which already creates incentive to raise Finesse even for 2-armed chars).
-
-**Perk design space** (from TODO design notes):
-- *Akimbo* (Finesse 14+): +20% to all secondary arm attack chances
-- *Coordinated Strikes* (Finesse 16+, multi-arm species): chains reset on kill — if arm 3 kills an enemy, arm 4 gets a fresh roll
-- *Thunderclap* (six-armed, Finesse 18+): if all arms fire in one turn, deal bonus AoE
-- *Iron Cortex* (perk): removes the probability chain entirely for arms 1–2 (always both fire); arms 3+ still roll
-
-**Extra legs — separate mechanic**:
-Extra leg pairs don't attack. Each pair beyond 2 provides:
-- +1 movement per pair
-- +20 weight capacity per pair
-- +5% dodge per pair (more stable base, harder to trip)
-
-### Natural Weapons (DECIDED)
-
-Parts in a body plan can have a `natural_weapon` dict. Two modes:
-
-```gdscript
-# Locked: part always has this weapon, cannot equip items in this slot.
-# Used for: cat claws, mantis blades, wolf bite (jaw = head slot).
-{"id": "claw", "display_name": "Claw", "damage_dice": "1d4", "damage_type": "slashing",
- "locked": true}
-
-# Unlocked: natural weapon exists but slot can still take items (overrides natural weapon when equipped).
-# Used for: weak humanoid fists (everyone has them), minor horns, etc.
-{"id": "fist", "display_name": "Fist", "damage_dice": "1d3", "damage_type": "blunt",
- "locked": false}
-```
-
-`locked: true` → the `equip_slot` field on that part is ignored; the natural weapon is always the attack. The UI shows the natural weapon stats in that slot with a lock icon, no equip button.
-
-Natural weapon items live outside the normal item database — they're defined inline on the body plan part. Damage scales with species level/XP like any weapon (future: `natural_weapon_scaling` table per species).
-
-**Animal realm species examples:**
-- `snow_lion`: arm parts → locked claws (1d6 slashing) + locked bite on head (1d8 piercing)
-- `mantis`: arm parts → locked mantis blades (2d4 slashing, +crit chance)
-- `bear`: arm parts → locked claws (1d8 slashing); body plan has extra torso HP bonus
-- `naga`: arm parts → unlocked (can use weapons); tail → natural weapon "constrict" (special grapple attack)
-
-### Limb Loss in Combat (DECIDED)
-
-- Losing limbs mid-combat: **yes**. Triggered by severe hits targeting a specific body part (once wound-body location system is active)
-- Limb loss is **not permanent** by default — it's a serious wound state, not death
-- Recovery methods (in rough order of accessibility): White magic regeneration spell (high level), temple "bodily restoration" service (expensive gold), rare magical event ("Axolotl's Blessing", "Waters of the Living Mountain", etc.), long rest with Medicine 8+ (field regrowth — extraordinary)
-- In-combat effects of severed limb: immediate: weapon in that slot drops to ground tile, attack chain shortened. Persistent: `missing_parts` entry, all wounds on that part removed (part is gone), stat penalties from part category apply
-- Enemies can also lose limbs — a zombie losing its sword arm becomes unarmed. Implement for enemies when body system is live; defer for PC mid-combat until the system is stable
-
-### Wound Location — Random Assignment (DECIDED)
-
-When a wound arrives without an explicit `body_location`, assign one via `BodySystem.assign_random_wound_location(character, wound_category)`. Weighted by anatomical surface area:
-
-| Part category | Weight |
+| Trait | Hook |
 |---|---|
-| torso | 35% |
-| arm (each) | 15% |
-| leg (each) | 10% |
-| head | 10% |
-| foot (each) | 2.5% |
+| `scarred` | a severe wound is cured |
+| `maimed` | a limb is severed (dropped again when the last part regrows) |
+| `death_touched` | survived an otherwise-fatal blow (Ancestors_Blessing, Eternal_Vow) |
+| `steady_practice` / `mantra_worn` | `mantra_count` reaches 40 / 250 |
+| `ash_marked` | 12 sadhanas performed |
+| `bloodied` | the party kills something with the boss role |
+| `sole_survivor` | last one standing after two others fall |
+| `long_marched` | 30 rests taken |
 
-(Values for human; scaled proportionally for other species.) Extra arms/legs in multi-limb species redistribute weight evenly across all limbs. Missing parts are excluded from the pool.
+Losses: `addiction` is broken by a facility with Medicine 5+, `grief_struck`
+settles into `mourner` after 25 rests, `maimed` goes when the body is whole.
+All thresholds are first-pass.
 
-### Granularity (DECIDED)
+### Self-generating events
 
-No fingers/toes. Eyes deferred — build the base system first, extend later.
+Events with `"trigger": "trait"` + `"requires_trait"`, or
+`"trigger": "relationship"` + `"requires_band"`, are rolled on a rest night
+that nothing else claimed — 12% and 8% respectively. `{a}` and `{b}` in title,
+text, choice text and outcome text are substituted with the real names.
+Eight trait events and three relationship events exist; more are welcome, and
+the mechanism is the cheap part.
 
-### Attack Chain Balance Note
+## Realm-specific mechanics
 
-Multi-armed characters are intentionally strong against lower-world beings — that's thematically correct (a six-armed Asura facing a human should feel overwhelming). Balance levers to tune during playtesting:
-- Per-extra-arm accuracy penalty (e.g. -5% accuracy per arm beyond the first)
-- Per-extra-arm damage scalar (e.g. 85% damage on arm 3+)
-- These are additive nerfs on top of the probability chain, not replacements for it
-- Expect multi-armed races to be rare in hell/hungry-ghost realms and dominant in asura/deva — the power gap is a feature if the player earns it through reincarnation
+- **Hell**: pure combat focus — done
+- **Hungry Ghost**: resource scarcity
+- **Animal**: combat and negotiation mixed
+- **Human**: heavy dialogue/quest focus, three zones —
+  West (Oddiyana/Gandhara steppe): Scythian nomads, cavalry → Ranged, Guile,
+  Daggers · NE (Zhang-Zhung): proto-Tibetan shamanic Bön, yak herders → Ritual,
+  Yoga, Earth magic · SE (coastal trade cities): cosmopolitan mercantile →
+  Trade, Persuasion, Alchemy
+- **Asura**: competitive events, duels
+- **God**: almost no combat; diplomacy and trade
 
-### Implementation Plan (Next Session)
+## Miniboss and boss mechanics
 
-**Phase 1 — Foundation** ✓ COMPLETE:
-1. [x] `BodySystem` autoload: `BODY_PLANS` const (human, four_armed, serpentine), `get_equipment_slots()`, `get_arm_slots()`, `get_part_category()`, `get_wound_penalties()`, `assign_random_wound_location()`, `get_part_for_slot()`, `is_multi_armed()`
-2. [x] `ItemSystem.calculate_equipment_stats()` now calls `BodySystem.get_equipment_slots(character)` — four-armed characters automatically pick up hand_l2/hand_r2 item stats
-3. [x] `CharacterSystem._find_slot_for_item()` uses `BodySystem.get_arm_slots()` for gloves — finds extra hand slots on multi-armed species
-4. [x] `WoundSystem` refactored: removed `stat_penalties_pct` from wound type defs; added `severity` + `forced_location`; `get_stat_penalties()` now derives penalties from `body_location` part category + severity via `BodySystem.get_wound_penalties()`
-5. [x] `apply_wound()` auto-assigns location: forced_location → random via `BodySystem.assign_random_wound_location()` → "torso" fallback
-6. [x] `BASE_CHARACTER` gains `body_plan: {species, missing_parts, prosthetics}`; old characters without the key default to "human" gracefully
+Unique per-fight mechanics: multi-phase fights, special win/lose conditions,
+environmental interaction. Hell is standard so far. Hungry ghost candidates:
+Bone Lord (earth magic undead commander), Great Devourer (shaza), Mirror of the
+Setting Sun (copper construct), Matriarch of All Longing (yidag).
 
-**Phase 2 — Limb dynamics** ✓ DONE:
-4. [x] `sever_part()` / `regrow_part()` in BodySystem: cascades to children, unequips items, updates derived stats
-5. [x] Natural weapons on all arm parts in BODY_PLANS (`locked: false` = fist fallback); `get_natural_weapon()`, `is_slot_locked()`, `get_dominant_natural_weapon()`
-6. [x] `ItemSystem.equip_item()` — rejects equip to missing body part slot or locked natural weapon slot
-7. [x] `CombatUnit.get_equipped_weapon()` — falls back to `BodySystem.get_dominant_natural_weapon()` when no weapon equipped
-8. [x] `EventManager.apply_outcome()` — `sever_part` reward: `{"target": "random"/"all", "part": "arm_l"}` (part optional for random non-vital limb)
+## Open design questions
 
-**Phase 3 — Multi-limb mechanics** ✓ DONE:
-6. [x] Multi-arm attack chain in `CombatManager._execute_arm_chain_attack()` + `attack_unit()`: Finesse probability formula per arm; chain stops on first failed roll; `akimbo` perk adds +20%; extra arm results in `result["extra_arm_results"]`
-7. [x] `BodySystem.get_arm_attack_chance(finesse, arm_number)` — formula: arm2 = 50+5×(fin-10), arm3 = 25+4×, arm4 = 10+3×, arm5 = 5+2×, arm6 = 0+2×, all clamped 0–100%
-8. [x] `BodySystem.get_attack_arm_count()` — counts all arm-category parts including slotless wings
-9. [x] Extra leg pairs: `BodySystem.get_extra_leg_pairs()` + applied in `CharacterSystem.update_derived_stats()`: +1 movement / +5 dodge / +20 weight_limit per extra pair beyond the first
-10. [x] Prosthetics item type in `items.json`; `ItemSystem.equip_item()` bypasses missing-part check for prosthetics (prosthetics fill the gap)
-11. [x] New species: `snow_lion` (locked claws 2–6 slashing + locked bite 3–8 piercing on head), `avian` (wing rake 1–4 slashing + locked beak 1–5 piercing + locked talons 2–5 slashing)
-12. [x] Natural weapon damage: `damage_min`/`damage_max` range (no dice notation); rolled via `randi_range` in `CombatUnit.get_attack_damage()`
-13. Equipment slot answer: yes — severing a limb removes its slot from `get_equipment_slots()` immediately; the equipped item is returned to inventory by `sever_part()`
-
-**Remaining / deferred for later:**
-- Coordinated Strikes perk: chain resets on kill for arms 3+ (perk exists in perks.json but chain logic doesn't check it yet)
-- Head natural weapons (bite, beak) not part of the arm attack chain — needs a "head special attack" action or configurable primary-slot override
-- Prosthetic stat entries in items.json (item type registered, no actual prosthetic items yet)
-- More species: centipede (many legs), bear, etc. as animal realm content is built
-
----
-
-## Body/Wound System — Audit ✓ COMPLETE (Second pass 2026-04-30)
-
-First audit fixed: sever weapon drop, O(n²) stat recalcs, natural weapon accuracy, multi-arm proc scaling, dominant natural weapon fallback, akimbo perk.
-Second audit fixed: multi-arm chain gate, enemy body_plan, inventory-full-on-sever, missing limb penalties, psychology signal connections, wound_specialist perk, wound stacking docs.
-
-### Bugs Fixed
-- [x] **`sever_part()` didn't drop weapons**: arm_r sever now also unequips `weapon_main`; arm_l unequips `weapon_off`. Convention: arm_r = main hand, arm_l = off-hand.
-- [x] **O(n²) stat recalcs in field surgery / `heal_at_facility`**: `cure_wound()` now accepts `_update_stats=false`; loops defer the single recalc to after all wounds removed.
-- [x] **Natural weapon accuracy**: `_get_weapon_skill_name()` now falls back to `weapon.get("skill_tag", "")` for natural weapons (type = ""), so claws/fists/bites correctly use `unarmed` skill for accuracy bonuses.
-- [x] **Multi-arm wound/disease scaling**: chain arm wound/disease proc chances scale by `chain_chance / 100.0` — arm 2 at 50% fire chance gets 10% crit-wound chance (vs 20% primary), arm 3 at 25% gets 5%, etc. Oil, sweep, and other weapon passives still primary-only.
-- [x] **`get_dominant_natural_weapon()` missing head/tail fallback**: now falls back to locked head/tail natural weapons (bite, beak) when all arms are severed.
-- [x] **`akimbo` perk missing from perks.json**: added under Finesse skill tree (required_level 7); `coordinated_strikes` added at required_level 10, requires akimbo.
-
-### Remaining Issues
-
-#### HIGH — Wrong mechanics
-- [x] ~~**Multi-arm chain fires for all characters, not just dual-wielders**~~ — Fixed in `combat_manager.gd`: chain now only fires when `arm_count > 2` (multi-armed species), OR off-hand slot is occupied (dual-wielder), OR primary arm has a locked natural weapon (snow_lion, avian). Bare-handed humans no longer get a free 50% off-hand roll.
-- [x] ~~**Wound penalty additive stacking**~~ — Documented explicitly in `WoundSystem.get_stat_penalties()`: additive stacking is intentional (lenient vs chained multiplication which punishes early accumulation too hard).
-
-#### MEDIUM — Incomplete integration
-- [x] ~~**Enemy `body_plan` missing**~~ — Fixed in `EnemySystem._build_enemy()`: now sets `body_plan` (species from archetype or "human"), `wounds: []`, and `quirks: []` on every generated enemy.
-- [x] ~~**Companion `body_plan` missing**~~ — Not a bug: `CompanionSystem.recruit()` uses `CharacterSystem.BASE_CHARACTER.duplicate(true)` which already includes `body_plan`, `wounds`, `emotional_pressure`, and `quirks`.
-- [x] ~~**Inventory full on sever**~~ — Fixed in `BodySystem.sever_part()`: if `unequip_item()` returns false (inventory full), the slot is force-cleared directly on `character.equipment` so the item doesn't remain in an orphaned equipped state (item is lost rather than returned).
-- [ ] **`sever_part` for arm_l2/arm_r2**: extra arms (four-armed species) have equip slots hand_l2/hand_r2 but no weapon slots. Add `weapon_main2`/`weapon_off2` slot handling when that system is built.
-- [ ] **Prosthetic items need stat entries**: item type "prosthetic" registered but no actual prosthetic items exist. Create per body region (hand, leg, foot) when the craftable items pass comes.
-- [x] ~~**Missing limb stat penalty**~~ — Fixed: `BodySystem.MISSING_PART_PENALTIES` const + `get_missing_part_penalties()` helper added; wired into `CharacterSystem.update_derived_stats()` after wound penalties. Arm loss: -2 damage, -5 stamina. Leg loss: -1 movement, -5 dodge. Foot loss: -1 movement.
-
-#### LOW — Polish / missing flavor
-- [ ] **Character sheet doesn't show wounds or missing parts**: wounds array exists on characters but no UI panel displays active wounds, their locations, or missing limbs.
-- [x] ~~**`field_medic` perk ambiguity**~~ — Resolved: `field_medic` stays as in-combat heal (Medicine 1). `wound_specialist` (Medicine 6) added to perks.json as the out-of-combat wound-cure perk; wired into `camp_system._exec_field_surgery()` and `WoundSystem.cure_wounds_field_surgery()` via `override_all` param.
-- [ ] **Multi-arm attack chain balance dial**: `result["extra_arm_results"]` not yet used by combat UI — UI should show "Arm 2: 12 dmg" etc. Currently only raw combat_log messages show this.
-
-### Design Debt: Perks, Spells & Items Needing Body/Wound Integration
-
-These are all additions/changes that should happen in a dedicated tuning pass:
-
-#### Perks to add (reference: "Design Thinking: Wounds, Rest & Calendar" section)
-- [ ] `hardened` (Constitution 14+): 50% chance any incoming crit wound is negated — add to `combat_manager._process_weapon_on_hit_procs()` crit wound block
-- [ ] `undead_hunter` (Earth magic 3+): immune to diseases from undead/diseased attacker hits — add check in same location
-- [ ] `stubborn_body` (Constitution 15+): +1 to all `escalation_rests` thresholds — implement as `character.wound_escalation_delay` checked in `WoundSystem.tick_wounds()`
-- [x] ~~`wound_specialist`~~ — Added to perks.json (Medicine 6+); wired into camp_system._exec_field_surgery() and WoundSystem.cure_wounds_field_surgery()
-- [ ] `iron_cortex`: removes probability check for arms 1–2 (both always fire); arms 3+ still roll normally — add to multi-arm chain in `attack_unit()`
-
-#### Spells to add/modify (reference same section)
-- [ ] White magic: add `"cures_wound_id"` or `"cures_wound_category"` field to healing spell definitions; `apply_spell_outcome()` in CombatManager (or overworld spell handler) should check this field and call `WoundSystem.cure_wound()`
-- [ ] Water magic Antidote: reduces `rests_untreated` counter by 1 rather than curing outright — add `"reduce_escalation": 1` field to spell def; wire into spell outcome handler
-- [ ] Black magic: add `"inflict_wound"` field to dark harm spells (wound_id + chance); wire into apply_spell_outcome
-
-#### Items to add/modify
-- [ ] Weapon trait `wound_chance` + `wound_type`: e.g. `"wound_chance": 20, "wound_type": "deep_cut"` on daggers/bleed weapons — add handling in `_process_weapon_on_hit_procs()` alongside existing crit wound check
-- [ ] Weapon trait `disease_chance` + `disease_type`: for bone/undead-tainted weapons — add handling same location
-- [ ] Silver weapons: add `"disease_immune_on_hit"` passive — wielder is immune to disease procs from the target they just hit (purification on contact); add to on-hit proc logic
-- [ ] Review all existing weapon/armor items for any that reference arms, legs, or specific body parts — none currently do, but thematic armors (bracers for arm wounds, sabatons for foot wounds) could reduce wound chance for their body location
-
-#### Face slot — Masks (design session needed)
-- [ ] Masks are a major design space — ceremonial, deity, elemental, school-specific; defer to a dedicated pass
-- [ ] Masks should sit in the `face` slot (type `"mask"`) — already mapped in `_find_slot_for_item()`
-- [ ] Consider: deity masks give large Deity Yoga bonus (see Deity Yoga section); school masks give skill_bonuses to a single school; elemental masks give elemental resistance + minor affinity bonus
-- [ ] Possible types: wrathful (combat stats), peaceful (healing/buff bonuses), animal form (special abilities), ritual (Ritual/Yoga bonuses)
-- [ ] Cross-reference with Ritual Garb section (ritual garb masks vs. combat masks vs. deity masks — may need separate type tags)
+- **Karma visibility** — currently fully hidden (thematic). Should Yoga unlock a
+  karma meditation showing rough scores, or stay mysterious?
+- **Weapon element affinity** — every weapon has an `element` field doing
+  nothing. Design: high elemental affinity boosts weapons of that element. Wire
+  into affinity bonuses or `generate_weapon()` scaling.
+- **Mantra system** — some Deity Yoga effects are simplified stat bonuses rather
+  than true unit spawns. Acceptable?
+- **Spell accuracy / spell projectiles** — deliberately left to ferment.
+- **Combat grid size** and how much positioning should matter.
 
 ---
 
-## Design Questions
+# Part III — Per-level skill bonuses with no consumer
 
-### Karma Visibility
-Currently completely hidden (thematic). Should Yoga skill unlock karma meditation to see rough scores? Or keep totally mysterious?
+Found 2026-07-27. Kept in full because it is the largest actionable gap.
 
-### Miniboss & Boss Mechanics
-Unique per-fight mechanics for realm minibosses (multi-phase fights, special win/lose conditions, environmental interactions).
-- Hell: standard so far
-- Hungry Ghost candidates: Bone Lord (earth magic + undead commander), Great Devourer (shaza), Mirror of the Setting Sun (copper construct), Matriarch of All Longing (yidag)
+`perks.json` → `base_bonuses` gives every skill a per-level stat table, and
+`CharacterSystem.update_derived_stats()` applies **13 of the 40 stat keys**. The
+other 27 are read by nothing, so those skill levels grant their combat numbers
+and then silently grant nothing else. Levelling Trade to 10 currently confers no
+discount, Grace no movement, Logistics no travel or supply benefit.
 
-### Realm-Specific Mechanics
-- Hell: pure combat focus — done
-- Hungry Ghost: resource scarcity?
-- Animal: mix of combat and negotiation
-- Human: heavy dialogue/quest focus — three zones:
-  - West (Oddiyana/Gandhara steppe): Scythian nomads, cavalry → Ranged, Guile, Daggers
-  - NE (Zhang-Zhung): proto-Tibetan shamanic Bön, yak herders → Ritual, Yoga, Earth magic
-  - SE (coastal trade cities): cosmopolitan mercantile → Trade, Persuasion, Alchemy
-- Asura: competitive events, duels?
-- God: almost no combat, diplomacy/trade?
+Applied today: `attack`, `damage`, `strength_weapon_damage`, `crit_chance`,
+`armor`, `armor_penetration`, `max_hp`, `damage_reduction_pct`, `spellpower`,
+`mana_cost`, `dodge`, `stamina`, `initiative`.
 
-### Weapon Element Affinity
-Each weapon has an `element` field. Design: high elemental affinity boosts weapons of that element (e.g. Space affinity → extra crit/damage with swords/staffs). Wire into CharacterSystem affinity bonuses or `generate_weapon()` stat scaling.
+**Not applied** (value at L1 / L5 / L10, all percentages):
 
-### Mantra System
-Some Deity Yoga effects are simplified stat bonuses rather than true unit spawns — acceptable for now?
+| Stat key | Granted by | L1 / L5 / L10 |
+|---|---|---|
+| `burning_damage` | fire_magic | 5.0 / 75.0 / 130.0 |
+| `buy_discount` | trade | 5.0 / 35.0 / 60.0 |
+| `charm_effectiveness` | persuasion | 5.0 / 75.0 / 130.0 |
+| `consumable_power` | alchemy | 10.0 / 75.0 / 130.0 |
+| `crafting_quality` | smithing | 10.0 / 75.0 / 130.0 |
+| `crafting_yield` | alchemy | 10.0 / 50.0 / 75.0 |
+| `effect_duration` | enchantment | 5.0 / 45.0 / 75.0 |
+| `healing_effectiveness_(party)` | medicine | 10.0 / 75.0 / 130.0 |
+| `loot_quality` | thievery | 5.0 / 45.0 / 75.0 |
+| `luck_modifier` | comedy | 5.0 / 25.0 / 50.0 |
+| `magic_damage_resistance` | yoga | 5.0 / 50.0 / 75.0 |
+| `max_companions` | leadership | 1.0 / 5.0 / 5.0 |
+| `mental_resistance` | yoga | 5.0 / 75.0 / 125.0 |
+| `morale_effects` | leadership / performance | 5.0 / 50.0 / 100.0 |
+| `movement_speed` | grace | 10.0 / 40.0 / 65.0 |
+| `party_skill_checks` | learning | 1.0 / 5.0 / 10.0 |
+| `party_xp_gain` | learning | 3.0 / 15.0 / 42.0 |
+| `poison/disease_resistance_(party)` | medicine | 10.0 / 50.0 / 75.0 |
+| `repair_efficiency` | smithing | 10.0 / 60.0 / 85.0 |
+| `sell_markup` | trade | 5.0 / 45.0 / 70.0 |
+| `social_roll_success` | performance | 5.0 / 50.0 / 75.0 |
+| `status_effect_chance` | ritual | 5.0 / 50.0 / 75.0 |
+| `summon_hp` | summoning | 10.0 / 60.0 / 85.0 |
+| `supply_duration_(party)` | logistics | 10.0 / 60.0 / 85.0 |
+| `trading_price` | persuasion | 5.0 / 25.0 / 50.0 |
+| `trap_detection` | thievery | 10.0 / 60.0 / 85.0 |
+| `travel_speed_(party)` | logistics | 5.0 / 35.0 / 60.0 |
+
+Each needs a target system and a balance decision, which is why this is not a
+mechanical fix:
+
+- **Shops** (`buy_discount`, `sell_markup`, `trading_price`) — fold into
+  `ShopSystem.get_price_modifier_summary()`. Trade 10 currently reads 60% off /
+  70% markup, which may be intended as a soft cap rather than literal.
+- **Overworld** (`travel_speed_(party)`, `supply_duration_(party)`) — party
+  speed and per-step food cost in `overworld.gd`.
+- **Loot** (`loot_quality`) — `CombatManager._get_modified_rarity_weights()`
+  already takes Luck; add the Thievery term.
+- **XP / checks** (`party_xp_gain`, `party_skill_checks`) —
+  `CompanionSystem.apply_party_xp()` and `EventManager._resolve_roll_dc()`.
+- **Combat** (`summon_hp`, `burning_damage`, `status_effect_chance`,
+  `effect_duration`, `mental_resistance`, `magic_damage_resistance`) — summon
+  spawn, DoT tick, status apply chance, status duration, resistance lookup.
+- **Camp / crafting** (`crafting_quality`, `crafting_yield`,
+  `repair_efficiency`, `consumable_power`) — the camp activity handlers.
+- **Party** (`max_companions`) — no party-size cap exists yet.
+- **Social** (`charm_effectiveness`, `social_roll_success`, `morale_effects`,
+  `luck_modifier`) — event roll resolution.
+- **Medicine, party-wide** (`healing_effectiveness_(party)`,
+  `poison/disease_resistance_(party)`) — rest healing and wound escalation.
+
+Cheapest and most visible first: shops, overworld, loot.
+
+Two keys also use display-style names (`healing_effectiveness_(party)`,
+`poison/disease_resistance_(party)`) that should become plain snake_case when
+they are wired.
 
 ---
 
-## Deity Systems (Design Phase — Not Yet Started)
+# Part IV — What got done
 
-### Yidam System (Personal Deity Practice)
-- Deities are **translated** into English (e.g. "Adamantine Terrifier" not "Vajrabhairava") — avoids publishing secret names while communicating meaning
-- Roster built from existing mantra list in PERKS.md; masks as optional head-slot items giving massive Deity Yoga bonus
-- **Relationship stages**: Heard → Connected → Practicing → Established → Realized (persists cross-lifetime from Practicing+)
-- **Mechanics**: mantra accumulation (existing system) is the primary mechanic; high recitation counts unlock deeper stages; commitment to a single deity is mechanically rewarded
-- **Masks** give large Deity Yoga bonus — not required, but reward deity-focused builds
-- **Karma affinity** — some deities more accessible depending on karma profile (to design)
-- **Dedicated spell** per deity — unlocked at Practicing+, deity's signature
-- **Quest chain** per deity — short, encounter-chain style (to design)
-- [ ] Design deity roster (translate names, assign karma affinities, mantras, spells, masks)
-- [ ] Implement relationship tracking (YidamSystem autoload or extend KarmaSystem)
-- [ ] Wire mask bonuses into Deity Yoga activation
-- [ ] Design cross-lifetime persistence rules
-- [ ] Write quest chains per deity
+Condensed changelog. Full checklists in git at `73a948c`.
 
-### Dharmapala System (Protector Relationships)
-- Protector deities, **translated names**, accessed via **shrines** on the overworld map
-- Relationship is **transactional** (offering-based) and **worldly** — complements yidam's inner transformative practice
-- **Offerings**: realm-specific items consumed at shrines; each dharmapala wants specific items
-- **Relationship stages**: Stranger → Known → Favorable → Under Protection → Bonded (persists cross-lifetime from Favorable+)
-- **Interventions**: limited uses per dharmapala, refresh between shrines; each reflects the deity's nature (fate rerolls, oracle glimpses, enemy weakening, etc.)
-- **Vow system**: each dharmapala has 1-2 associated behavioral constraints; breaking them damages the relationship
-- Cross-lifetime persistence: at Bonded, full relationship carries; at Favorable, partial meter carries
-- **Synergy with Yidam**: e.g. a Hayagriva yidam + fire-aspect dharmapala creates a natural build
-- **Synergy with equipment**: Black Sorcerer's Robe + Mahakala relationship passive bonus
-- [ ] Design dharmapala roster (translated names, domains, offering requirements, interventions, vows)
-- [ ] Design shrine objects for overworld (map_generator.gd placement)
-- [ ] Implement DharmapalSystem autoload (offering tracking, relationship meters, interventions)
-- [ ] Wire cross-lifetime persistence into KarmaSystem / reincarnation logic
+## 2026-07-27 — post-break audit and follow-up passes
 
----
+**Audit and bug fixes.** Animal and domain enemy files were never loaded;
+combat realm was always "hell"; event `difficulty` was dead data; `item_random`
+rewards gave nothing across 49 outcomes; all 47 companions had lost their trait
+lists in a merge; the deleted QuirkSystem was still referenced (so quirk crisis
+reactions never ran); boss gating was fiction (`requires_boss_defeated` never
+checked, `defeat_boss()` never called); the HG realm boss event didn't exist
+though the map referenced it; ~130 broken data references. Roll choices can now
+carry skill/attribute gates ("gated gamble").
 
-## Project Audit — 2026-05-01
+**UI debt and half-wired mechanics.** WOUNDS & BODY and STATE OF MIND panels in
+the character sheet; `cone_forward` locked to caster facing with a cone
+silhouette preview; per-arm chain results in the combat log; paid wound healing
+at 12 shops; Riposte, Reflect, Magic_Mirror, Mirror_Images, Taunt, Karmic_Bond,
+Eternal_Vow, Mantric_Armor, Ancestors_Blessing, Swarmed, Lured and Constitution
+statuses wired; four AI behaviour types (`erratic_movement`, `priority_target`,
+`pack_bonus`, `burrow_emerge`); summoning terrain affinity; Coordinated Strikes;
+Cloud Gate; Set Snares and Craft Charm camp activities; location-specific camp
+suppression and enhancement. Two entries turned out **stale, not missing** —
+elemental terrain spellpower modifiers and Yoga-boosted rest decay were already
+implemented.
 
-Full sweep of unimplemented, unfinished, and unconnected systems.
+**Animal realm content.** All 47 missing zone events written (the map referenced
+84 markers and only 37 existed). Hungry ghost's 34 map-placed gaps written too.
+All three content realms now at 0% dead map weight. 24 animal companions added
+covering all 17 animal births; every companion gained a `realm` field. Found
+along the way: animal shops offered the hell devil roster verbatim; 4
+backgrounds granted a nonexistent `crafting` skill; 8 background starting items
+used pre-rename ids, so several animal backgrounds started you with no weapon.
 
-### High Priority — Actionable Fixes
+**Quests, recruitment, prosthetics.** All three quests were unfinishable — the
+board handed them out and no event ever set their step flags. Six hell events
+written to close the chains. 9 bespoke HG recruitment events. 12 prosthetics
+plus the two missing code links (nothing wrote `body_plan.prosthetics`, and the
+penalty maths ignored it).
 
-**Character Sheet UI gaps:**
-- [ ] Wounds/body display panel — `character.wounds[]` is tracked by WoundSystem but nothing renders it in the character sheet; no display of active wounds, severity, or penalties
-- [ ] Psychology panel is minimal — only shows dominant emotional label; no per-element pressure bars, no baseline vs current comparison, no active status list
+**Perks.** Two dead trees fixed (18 perks keyed to a nonexistent `crafting`
+skill; akimbo/coordinated_strikes keyed to a nonexistent skill, now
+attribute-gated). 28 level-10 capstones added. 94 perks redistributed off the
+old odd-only tiers plus 9 new, giving every skill a perk at every level 1–10.
+PERKS.md synced: 81 `Requires` lines rewritten, 47 undocumented perks recorded.
 
-**Combat system gaps:**
-- [ ] Extra arm attack results not shown in combat log — `extra_arm_results` are computed and applied silently; the UI should display "Arm 2: 12 dmg" etc. in the combat log
-- [ ] Cone AoE targeting preview is wrong — combat_arena shows full-range highlight instead of cone silhouette; `cone_forward` doesn't lock to caster facing
+**Gold rewards.** 30 outcomes promised gold and paid none — 24 used descriptive
+tokens against a handler doing `int()` (0 in GDScript for a non-numeric string),
+6 used a `gold_reward` key nothing read, including every Bone Arena payout.
+Fixed with `_resolve_gold_reward()` and a rename to the canonical `gold`.
 
-**Status effects — wired in this session:**
-- [x] `_get_status_stat_bonus()` additions: `range_bonus` (+2 range), `finesse_bonus` (+5 dodge/+3 init), `damage_boost` (+15 dmg), `focus_penalty` (−3 spellpower), `focus_penalty_major` (−8), `awareness_penalty_major` (−8 init/−5 sp), `awareness_bonus_major` (+8 init/+5 sp), `armor_bonus_minor` (+5 armor), `minor_all_stats_bonus` (+5 all), `all_stats_penalty` (−5 all)
-- [x] `get_resistance()` addition: `magic_resistance_bonus` (+15 vs non-physical, Praying)
-- [x] `_apply_status_effect()` guards: `debuff_immunity` (Cleansed blocks debuffs), Mental_Immunity (`immune_to_charm/fear/confusion`), `remove_all_debuffs` fires `_cleanse_status_effects` on apply
-- [x] `attack_unit()`: `cannot_make_weapon_attacks` (Disarmed), `next_attack_misses` (Force_Miss status consumed on next attack), `next_ranged_guaranteed_hit` (Blessed_Shot consumed on hit)
-- [x] `calculate_physical_damage()`: `crit_vulnerability` (+25% crit chance against Marked_for_Death target)
-- [x] `apply_damage()`: `damage_taken_increase` (Marked_for_Death ×1.5 incoming damage)
-- [x] Turn start: `grants_extra_action` (Extra_Action gives +1 action and is consumed)
-- [x] `_unit_has_effect(unit, effect_name)` helper added to combat_manager.gd
+**Trait matrix pass.** Every trait and race pressure link was re-seated on the
+psychology matrix, correcting two things at once. **Sign:** the code runs −100
+klesha to +100 wisdom and four call sites follow it, but traits.json and
+races.json were authored as "positive = more of this affliction", so the
+baseline decay pulls toward pointed at the wrong pole — `grief_struck` carried
+water +20 while "Grief-struck" is itself the water dark major label, and
+`brave` decayed toward fear. **Element:** anger was filed on fire (fire is
+craving; aversion is water) and paranoia on space ("Paranoid" is the air major
+dark label). 36 traits re-seated by hand rather than sign-flipped, since
+`oath_breaker` and `addiction`'s earth term were already right; 3 races
+rebased; 12 traits added to fill the thin cells; 15 traits that had no
+psychology link at all gained an obvious one. The crisis-reaction table
+followed: four entries moved to the element their trait now sits on, and the
+12 new traits brought the bright pole from 2 authored reactions to 12.
 
-**Status effects — wired in follow-up pass:**
-- [x] `get_resistance()`: `air_immune` (Lightning_Form alias), `physical_immune` (Thin_Air alias), `fire_vulnerability` (reads `vulnerability_pct` field), `all_element_resistance` (reads `resistance_pct` field, Rainbow_Cloak)
-- [x] `calculate_hit_chance()`: `attacks_have_miss_chance` (Blurred −20% hit chance on top of dodge_bonus)
-- [x] `attack_unit()`: `immune_to_ranged` (Storm_Lord, ranged attacks auto-fail), `ranged_damage_reduction` (Air_Shield ×0.75), Sanctuary `cannot_target_enemies` + `cannot_be_targeted` guards, `breaks_on_offensive_action` removes Sanctuary on attack
-- [x] `cast_spell()`: Sanctuary blocks offensive spells (`cannot_target_enemies`), `breaks_on_offensive_action` removes Sanctuary on offensive cast
-- [x] `_apply_spell_effects()`: `spell_damage_reduction` (Magic_Shield / Golden_Defense ×0.75 after resistance)
-- [x] `_process_on_hit_perks()`: `stun_chance_on_hit` (Electrified_Weapon 25% Stunned on any hit)
-- [x] `_process_status_effects()` DoT: `increase_burning_damage_dealt` (Fan_the_Flames: fire DoT from this source ×1.5)
-- [x] Turn start: `skip_next_action` (Prone: −1 action to stand up, status consumed)
-- [x] `apply_damage()`: `hp_cannot_drop_below_1` (Death_Immunity: HP floor at 1)
+**Events x traits sweep.** Four parts, one per realm plus a pass for the plain
+traits the first three skipped: 201 trait-gated choices over 77 of the 84
+gameplay traits, 76 acquisitions over 30, across 152 events. Physical
+hindrances are used as hindrances — clubfooted goes down on the frozen cave
+ice, hard_of_hearing catches one word in four in the demon marketplace — since
+that is the only way those traits can be felt.
 
-**Status effects — still not wired:**
-- [ ] `Taunt` (`must_attack_taunter`): requires AI targeting override — affected unit must target the taunter; complex AI integration deferred
-- [ ] `constitution_bonus`/`constitution_penalty` (Constitution_Buff / Constitution_Minus_2): affects max_hp mid-combat, requires HP recalculation system not yet built
-- [ ] Aura status effects (Soothing_Presence, Guardian_Kings, etc.): handled per-mantra, not via status effects — architecture differs
-- [ ] Karmic_Bond / `share_healing_75_percent` + `linked_to_ally`: shared HP system not built
-- [ ] Eternal_Vow (`return_on_death_next_turn` / `return_with_20_percent_hp`): resurrection not built
-- [ ] Magic_Mirror (`spell_reflect_chance`): spell reflection not built
-- [ ] Mirror_Images (`copies_absorb_attacks` / `illusory_copies`): illusory copy system not built
-- [ ] `grants_flight` / `loses_flight` / `immune_to_melee_unless_flyer`: flight system not built
-- [ ] `controlled_by_caster` (Dominated): full AI control system deferred
-- [ ] `forced_movement_toward_target` (Lured): force movement on unit's turn deferred
-- [ ] `buffs_all_stats_considerably` (Divine_Champion) / `buffs_two_highest_stats` (Divinely_Inspired): needs values defined
-- [ ] `focus_save_on_damage` (Swarmed): reactive save on each hit deferred
-- [ ] `hp_shield` (Mantric_Armor `until_destroyed` duration): damage absorption shield with persistent value not built
-- [ ] `death_resistance` (Ancestors_Blessing): survive-one-fatal-hit system not built
-- [ ] Moderate-complexity moderate: `can_move_through_enemies`, `immune_to_ground_effects`, `immune_to_terrain_hazards`, `immune_to_water_terrain`, `cannot_deal_physical`, `damage_on_move_attempt`, `prone_chance_on_movement`, `stealth_bonus`, `attack_damage_buff_when_ally_dies`, `aura_reduces_enemy_spell_damage`
+**Trait gate balance.** The sweep was written for flavour and not costed:
+gates paid a median 25 XP against 12 elsewhere while costing nothing to
+unlock, and 124 of 201 outpaid every other choice in their own event. Rescaled
+by how often a party holds the trait (8/12/15/20), with a premium for risk and
+a dominance cap for common traits only. Dominance on commonly-held traits is
+now 4 of 25, and gates contribute ~3.8% of all event XP. `tools/rebalance_trait_gates.py`
+re-runs the whole analysis.
 
-**Race features not wired:**
-- [ ] `red_devil`: `better_starting_weapon` — TODO note in races.json but not implemented; red devils get the same starting weapons as everyone else
-- [ ] `yellow_devil`: `extra_starting_gold` — TODO note in races.json, not implemented
-- [ ] `skeleton`: 50% physical damage reduction defined in races.json `base_resistances`, but combat_manager ignores `base_resistances` on enemies; only CombatUnit loaded from character_dict gets them
+**Behavioural traits were unobtainable.** Nothing granted one to anybody —
+creation rolled physical and personality only, and 25 of 31 are on no
+companion — so 110 of the 201 new gates could never fire. Creation now rolls
+one trait from each of the three layers: body, temperament, habits.
 
-**Overworld gaps:**
-- [ ] `_process_rest_perks` now handles Lucid Rest; Yoga skill level itself should also boost `decay_amount` during rest (Yoga 1–10 adding 2–20 to decay)
-- [ ] Location-specific camp activity suppression/enhancement — `suppress_activities` and `enhance_activities` fields exist in map object design but `get_available_activities()` never reads them
+**Behavioural and acquired traits.** 32 new traits: the CK-flavoured
+behavioural kind that two characters can bond over or that sets off an event by
+itself, and acquired traits that record what a run did to someone. Constant
+effects stay neutral by design — most carry no stat modifiers and work through
+`event_tags`. Bond tags and symmetric opposed pairs added across all 84
+gameplay traits.
 
-### Medium Priority
+**RelationshipSystem.** One number per unordered pair: a trait-derived baseline
+recomputed on read, plus stored drift from shared danger and shared rest. Bands
+rival/cool/neutral/warm/sworn, shown in the Party tab with the reasons in the
+tooltip. Cleared on death, reincarnation and dismissal.
 
-**Prosthetic items:**
-- [ ] `item_system.gd` registers "prosthetic" as a valid type and `equip_item` has a bypass for missing parts, but zero prosthetic items exist in `items.json` — the whole limb-loss → prosthetic flow has no data to use
+**Nine acquisition hooks** on existing code paths, plus three losses, and
+`trigger: "trait"` / `trigger: "relationship"` events with eleven written.
 
-**Race descriptions:**
-- [ ] ~8 races in `races.json` have placeholder descriptions (TODO: Fill in description)
+**Eight broken roll choices found by the new validator checks**, all in content
+written earlier the same day: three camp events and five animal events put the
+roll on the choice instead of in `requirements` and named the failure branch
+`failure_outcome`, so the roll never happened and the failure prose was
+unreachable. Five of them had no failure branch at all; those were written.
 
-**Shambler balance:**
-- [ ] `shambler` race has -7 net attribute total with no compensating passive — design note says add fear/mind immunity or reduced XP cost for unarmed/might
+**Validator** (`tools/validate_data.py`) now covers: events → encounters, shops,
+items, spells, traits, skills, wounds, karma realms; map configs → events, mobs,
+pickups; shops → items, spells, companions; companions → births, backgrounds,
+items, spells, traits; races and backgrounds → skills, traits, equipment;
+encounters → archetypes; code → perk ids and status names; quest step flags must
+be settable by some event; choice `prerequisite` flags must be reachable; reward
+keys must have a handler; gold tokens must resolve. An earlier ad-hoc version
+had a blind spot that hid **every** map→event reference in the game
+(`object_pools[zone]` is a dict keyed `events`/`pickups`, not a list) — if you
+write a checker, check its negatives.
 
-### Low Priority / Design Phase
+## Earlier work (2026-04 → 2026-05)
 
-**Combat features:**
-- [ ] Terrain spell power modifiers — tiles with fire/water/etc. terrain don't boost matching-school spells cast on them
-- [ ] Summoning terrain bonus — summoning spellpower should get +25% based on matching overworld terrain (water = nagas, mountains = earth spirits, etc.)
-- [ ] Out-of-combat spellcasting — utility spells like `cloud_gate` are designed for overworld use but no spellbook UI exists outside combat
+- **Psychology system** Layers 1–2: five elemental pressure meters, status
+  thresholds, autonomous crisis events, trait crisis reactions, rest decay,
+  character-sheet panel
+- **Trait system**: 63 traits replacing the old QuirkSystem, applied as
+  attribute/skill/pressure modifiers
+- **Indo-Tibetan weapons and armour overhaul**: sword types (Khanda, Talwar,
+  Dao, Patisa), mace/bow renames, Katar, Bichawa, Kukri, Trishula, Urumi,
+  Chakram, Chuba, Lamellar, monastic robes — with the mechanics wired
+  (`on_crit_status`, `parry_effectiveness`, `pass_through`, Urumi sweep)
+- **Ritual implements**: 210 items (6 implements × 8 materials × 5 consecration
+  tiers) generated by `tools/generate_implements.py`, with Rhythm Charge, Chöd
+  Offering, Throw Phurba, khatvanga initiative aura and the dorje+drilbu set
+  bonus; ritual garb generated the same way
+- **Rest and time**: hours-based clock, three rest tiers, food only at rest,
+  temp HP, 28-day lunar calendar with full/new moon and per-weekday school
+  bonuses
+- **Camp system**: two-stage rest (tier → activities), CampSystem autoload, ~20
+  activities, disturbance rolls, safe camps, 9 camp events
+- **Wounds and diseases**: WoundSystem with 5 base types + 5 escalated forms,
+  escalation on untreated rests, Field Surgery, combat and event application,
+  stat penalties
+- **Body plans**: BodySystem with dynamic per-species topology, limb loss with
+  cascade and unequip, natural weapons (locked and unlocked), multi-arm attack
+  chain governed by Finesse, extra leg pairs, prosthetics
+- **Combat**: AoEResolver as the single source of truth for 10 AoE shapes,
+  projectile deviation and friendly fire, spell duration unification, obstacle
+  variety, terrain effects, AI using items and active skills, enemy physical
+  resistances
+- **Items**: procedural weapons/armor/talismans, equipment traits, 40
+  magic-school charms, 17 scrolls, alchemy crafting with a UI tab
+- **Save/load**: 3 slots plus autosave
 
-**Psychology:**
-- [ ] Chronic darkness counter — accumulate debuffs for time spent below −50 pressure (not started)
-- [ ] Yidam integration — mantra practice raises brightness baseline per element (depends on YidamSystem)
-- [ ] Layer 3 intervention mechanic — social skills let one character help another's pressure
+## Confirmed complete (previously suspected missing)
 
-**Camp:**
-- [ ] Protector Offering camp activity — deferred until DharmapalSystem exists
-- [ ] Craft Charm camp activity — needs charm schema design
-- [ ] Set Snares camp activity — deferred (needs "resolve on next move" system)
-
-**Items:**
-- [ ] Cursed items — type registered, no actual cursed items exist yet
-- [ ] Ritual implement special traits — conch pacification aura, bone life-drain proc, sky-iron void field (design deferred)
-
-### Confirmed Complete (previously thought missing)
-- Psychology Layer 3 (crisis/valve mechanic) — fully implemented in `psychology_system.gd`
+- Psychology Layer 3 crisis/valve mechanic — implemented in
+  `psychology_system.gd` (the *intervention* mechanic is the open part)
 - Wound/disease application on crits — wired in `combat_manager.gd`
-- Background system — all fields (`attribute_modifiers`, `starting_skills`, `starting_equipment`, `starting_spells`) are fully applied; no "abilities" field exists in data, nothing is missing
-- Spell outcomes — all 6 types handled; all reward keys have code handlers
-- Summoning school — complete; no in-game tutorial but mechanics work
+- Background system — all fields applied; no `abilities` field exists in data
+- Spell outcomes — all 6 types handled; every reward key has a handler
+- Summoning school — mechanically complete
+- `race` → `birth` rename in scene nodes — already done; no `race_label` /
+  `RaceValue` references remain
+- Red/yellow devil racial bonuses (`better_starting_weapon`,
+  `extra_starting_gold`) — now real traits granted at creation and read by
+  `character_system.gd`
+- Legendary equipment tier — 68 legendary-rarity items exist
+- Out-of-combat spellcasting — the spellbook Cast button already existed;
+  `cloud_gate` was added on top of it

@@ -949,7 +949,7 @@
         "black_magic"
       ],
       "guaranteed_spells": [
-        "bone_spear",
+        "bone_spike",
         "curse"
       ],
       "guaranteed_perks": [],
@@ -974,6 +974,102 @@
       ],
       "realm": "hungry_ghost",
       "duel_stop_hp_pct": 10
+    },
+    "hg_insatiable_king": {
+      "name": "The Insatiable King",
+      "tier": "boss",
+      "roles": [
+        "boss"
+      ],
+      "region": "charnel_grounds",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 4,
+        "finesse": 1,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 1,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "maces",
+        "might",
+        "black_magic",
+        "sorcery"
+      ],
+      "guaranteed_spells": [
+        "life_drain",
+        "blood_hunger",
+        "mark_for_death"
+      ],
+      "guaranteed_perks": [],
+      "guaranteed_drops": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "mace",
+          "base_damage": 15,
+          "base_accuracy": 7,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "physical": 15,
+        "black": 30,
+        "water": -15
+      },
+      "threat_multiplier": 2.0,
+      "tags": [
+        "undead"
+      ],
+      "realm": "hungry_ghost"
+    },
+    "hg_insatiable_king_weakened": {
+      "name": "The Insatiable King (Sated)",
+      "tier": "boss",
+      "roles": [
+        "boss"
+      ],
+      "region": "charnel_grounds",
+      "attribute_weights": {
+        "strength": 2,
+        "constitution": 3,
+        "finesse": 1,
+        "awareness": 2,
+        "focus": 2,
+        "charm": 1,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "maces",
+        "might",
+        "black_magic"
+      ],
+      "guaranteed_spells": [
+        "life_drain",
+        "blood_hunger"
+      ],
+      "guaranteed_perks": [],
+      "guaranteed_drops": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "mace",
+          "base_damage": 12,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "heavy"
+      },
+      "resistances": {
+        "physical": 10,
+        "black": 25,
+        "water": -15
+      },
+      "threat_multiplier": 1.4,
+      "tags": [
+        "undead"
+      ],
+      "realm": "hungry_ghost"
     }
   }
 }

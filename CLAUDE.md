@@ -1,7 +1,7 @@
 # Six Worlds - Project Context for Claude
 
 ## Project Overview
-**Six Worlds** is a tactical RPG roguelike set in Tibetan Buddhist cosmology, built in Godot 4.3 using GDScript.
+**Six Worlds** is a tactical RPG roguelike set in Tibetan Buddhist cosmology, built in Godot 4.6 using GDScript.
 
 **Visual Style**: Tibetan thangka painting aesthetics combined with classic pixel art - ornate UI frames with sacred colors (deep reds, golds, indigos) surrounding pixel art characters and environments.
 
@@ -59,7 +59,7 @@ Olaf handles content creation (races, characters, events, spells) during offline
 | **Air** | Ranged, Daggers, Air magic, Ritual, Learning, Comedy, Guile |
 | **Fire** | Axes, Unarmed, Fire magic, Sorcery, Might, Leadership, Performance |
 | **Water** | Spears, Water magic, Enchantment, Grace, Medicine, Alchemy, Thievery |
-| **Earth** | Maces, Armor, Earth magic, Summoning, Logistics, Trade, Crafting |
+| **Earth** | Maces, Armor, Earth magic, Summoning, Logistics, Trade, Smithing |
 
 ### Elemental Affinities
 - Each skill point in an element-tagged skill adds to that element's affinity total
@@ -92,19 +92,23 @@ Olaf handles content creation (races, characters, events, spells) during offline
 
 ## Current Implementation Status
 
-### Working Systems
-- CharacterSystem singleton (attributes, skills, XP, party management)
-- KarmaSystem singleton (hidden karma tracking, reincarnation logic)
-- GameState singleton (world progression, run state)
-- EventManager singleton (events, three choice types, party checking, dice rolls)
-- Test launcher scene
-- Event display UI with Tibetan aesthetic
+**See `REFRESHER.md` for the current state snapshot and `TODO.md` for detailed
+task lists — both are kept up to date; this section is only a summary.**
 
-### Needs Work
-- Character sheet UI (had node path issues)
-- Combat system (not started)
-- Overworld map (not started)
-- Shop system (not started)
+### Working Systems (20 autoloads)
+- Characters, karma/reincarnation, events (dynamic DCs, gated rolls), grid
+  combat (spells/AoE/statuses/AI), overworld (real-time movement, mobs,
+  portals with boss gating), shops/guilds/training, procedural items
+  (weapons/armor/talismans/implements), 558 perks, psychology/pressure,
+  traits, wounds, body plans (multi-arm species), camp/rest/time/lunar
+  calendar, save/load (3 slots), audio, cheat console
+- Realms with content: hell, hungry_ghost, animal (human/asura/god empty)
+
+### Notable data conventions
+- Character trait/quirk lists live in `character["traits"]` (traits.json);
+  the old QuirkSystem/quirks.json are gone
+- The crafting skill is `smithing` in code/data; races use `birth`
+  terminology in UI code
 
 ## Design Decisions Already Made
 
@@ -117,7 +121,7 @@ Instead of levels, use relative XP comparison with descriptive labels ("slightly
 ### Skill Categories
 - Combat: Swords, Martial Arts, Ranged, Daggers, Axes, Unarmed, Spears, Maces, Armor
 - Magic: Space, Air, Fire, Water, Earth, Sorcery, Enchantment, Summoning, White, Black
-- General: Persuasion, Yoga, Ritual, Learning, Comedy, Guile, Might, Leadership, Performance, Grace, Medicine, Alchemy, Thievery, Logistics, Trade, Crafting
+- General: Persuasion, Yoga, Ritual, Learning, Comedy, Guile, Might, Leadership, Performance, Grace, Medicine, Alchemy, Thievery, Logistics, Trade, Smithing
 
 ### Ritual vs Yoga
 - **Ritual**: External ceremony - mandala creation, material components to enhance spells

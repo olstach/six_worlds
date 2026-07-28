@@ -261,17 +261,53 @@ func get_wound_penalties(part_category: String, severity: String) -> Dictionary:
 
 ## Flat stat penalties from all missing body parts. Called by update_derived_stats.
 ## Returns a dict of stat → total reduction (additive, not percentage).
+##
+## An attached prosthetic offsets the penalty by its `prosthetic_mitigation`
+## (0.0 = does nothing, 1.0 = fully replaces the limb). A fine prosthetic may
+## also carry ordinary `stats`, which flow through the normal equipment path.
 func get_missing_part_penalties(character: Dictionary) -> Dictionary:
 	var plan := get_body_plan_def(character)
-	var missing: Array = character.get("body_plan", {}).get("missing_parts", [])
+	var body_plan: Dictionary = character.get("body_plan", {})
+	var missing: Array = body_plan.get("missing_parts", [])
+	var prosthetics: Dictionary = body_plan.get("prosthetics", {})
 	var totals: Dictionary = {}
 	for part in plan.parts:
 		if not part.id in missing:
 			continue
+		var mitigation := 0.0
+		if part.id in prosthetics and ItemSystem:
+			var item: Dictionary = ItemSystem.get_item(prosthetics[part.id])
+			mitigation = clampf(float(item.get("prosthetic_mitigation", 1.0)), 0.0, 1.0)
+		if mitigation >= 1.0:
+			continue  # fully replaced — no penalty at all
 		var cat: String = part.get("category", "")
 		for stat in MISSING_PART_PENALTIES.get(cat, {}):
-			totals[stat] = totals.get(stat, 0) + MISSING_PART_PENALTIES[cat][stat]
+			var penalty: int = MISSING_PART_PENALTIES[cat][stat]
+			# Round away from zero so a partial prosthetic never rounds up to
+			# full mitigation — a crude peg leg still costs the −1 movement.
+			var scaled: int = int(floor(penalty * (1.0 - mitigation))) if penalty < 0 \
+					else int(ceil(penalty * (1.0 - mitigation)))
+			if scaled != 0:
+				totals[stat] = totals.get(stat, 0) + scaled
 	return totals
+
+
+## Record or clear the prosthetic attached to the body part owning `slot`.
+## Called by ItemSystem on equip/unequip so body_plan.prosthetics stays in sync
+## with what is actually worn (the character sheet and the penalty maths both
+## read that dict rather than the equipment slots).
+func set_prosthetic_for_slot(character: Dictionary, slot: String, item_id: String) -> void:
+	var part := get_part_for_slot(character, slot)
+	if part.is_empty():
+		return
+	if not "body_plan" in character:
+		return
+	var prosthetics: Dictionary = character.body_plan.get("prosthetics", {})
+	if item_id.is_empty():
+		prosthetics.erase(part.id)
+	else:
+		prosthetics[part.id] = item_id
+	character.body_plan["prosthetics"] = prosthetics
 
 
 ## Reverse lookup: which part owns a given equip slot.
@@ -399,6 +435,10 @@ func sever_part(character: Dictionary, part_id: String) -> Array[String]:
 								character.get("equipment", {})["weapon_off"] = ""
 				break
 
+	# Losing a limb is permanent enough to become part of who they are.
+	if TraitSystem and not to_sever.is_empty():
+		TraitSystem.grant_trait(character, "maimed")
+
 	if CharacterSystem:
 		CharacterSystem.update_derived_stats(character)
 	return to_sever
@@ -413,6 +453,9 @@ func regrow_part(character: Dictionary, part_id: String) -> void:
 	var to_restore: Array[String] = _collect_parts_to_sever(plan, part_id)
 	for pid in to_restore:
 		bp["missing_parts"].erase(pid)
+	# Whole again — Maimed goes with the last missing part, not the first regrown.
+	if TraitSystem and bp["missing_parts"].is_empty():
+		TraitSystem.lose_trait(character, "maimed")
 	if CharacterSystem:
 		CharacterSystem.update_derived_stats(character)
 

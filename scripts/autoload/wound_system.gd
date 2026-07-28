@@ -287,6 +287,10 @@ func cure_wound(character: Dictionary, wound_id: String, _update_stats: bool = t
 	for i in range(character.wounds.size()):
 		if character.wounds[i].get("id") == wound_id:
 			character.wounds.remove_at(i)
+			# A severe wound that closes leaves the Scarred trait behind. The
+			# wound is gone; what it did to them is not.
+			if TraitSystem and WOUND_TYPES.get(wound_id, {}).get("severity", "") == "severe":
+				TraitSystem.grant_trait(character, "scarred")
 			if _update_stats and CharacterSystem:
 				CharacterSystem.update_derived_stats(character)
 			return true
@@ -436,6 +440,11 @@ func heal_at_facility(character: Dictionary, medicine_equivalent: int) -> Dictio
 	for wid in to_remove:
 		cure_wound(character, wid, false)  # skip per-cure stat recalc; do once below
 		messages.append(WOUND_TYPES[wid].get("display_name", wid) + " healed.")
+	# A well-equipped house of healing can also break a dependency — the one
+	# acquired trait that a facility, rather than practice, is able to remove.
+	if TraitSystem and medicine_equivalent >= 5:
+		if TraitSystem.lose_trait(character, "addiction"):
+			messages.append("The dependency was treated. It will not be easy, but it is broken.")
 	if not to_remove.is_empty() and CharacterSystem:
 		CharacterSystem.update_derived_stats(character)
 	if messages.is_empty():

@@ -100,6 +100,10 @@ func _ready() -> void:
 			# Victory — restore event object for cleanup on Continue
 			GameState.last_defeated_mob_id = ""
 			_current_event_object = GameState.pending_event_object.duplicate(true)
+			# Realm boss defeated — unseal the portal to the next realm
+			if _current_event_object.get("id", "") == "realm_boss":
+				GameState.defeat_boss(GameState.current_world)
+				_show_toast("The realm's tyrant has fallen. The way forward is open.")
 			# If the combat outcome has an on_victory block, use it instead
 			# (e.g. smoking_mirror: defeat the mirror → shop opens with domain spells)
 			if "on_victory" in outcome:
@@ -137,6 +141,7 @@ func _ready() -> void:
 	MapManager.mob_event_triggered.connect(_on_mob_event_triggered)
 	MapManager.pickup_collected.connect(_on_pickup_collected)
 	MapManager.portal_entered.connect(_on_portal_entered)
+	MapManager.portal_blocked.connect(_show_toast)
 	MapManager.party_moved.connect(_on_party_moved)
 	MapManager.party_position_updated.connect(_on_party_position_updated)
 
@@ -166,6 +171,15 @@ func _ready() -> void:
 	if PsychologySystem:
 		PsychologySystem.autonomous_event_triggered.connect(_on_psychology_crisis)
 		PsychologySystem.emotional_crisis_log.connect(_on_emotional_crisis_log)
+
+	# Traits gained or lost, and relationships crossing a band, are things the
+	# player should never have to go looking in the character sheet to discover.
+	if TraitSystem:
+		TraitSystem.trait_gained.connect(_on_trait_gained)
+		TraitSystem.trait_lost.connect(_on_trait_lost)
+		TraitSystem.trait_replaced.connect(_on_trait_replaced)
+	if RelationshipSystem:
+		RelationshipSystem.relationship_changed.connect(_on_relationship_changed)
 
 	# Connect char sheet button and visibility sync
 	char_sheet_button.pressed.connect(func(): _open_char_sheet_to_tab(0))
@@ -347,8 +361,30 @@ func _set_char_sheet_visible(show: bool) -> void:
 func _on_event_triggered(event_id: String, object: Dictionary) -> void:
 	_current_event_object = object
 	MapManager.pause_movement()
+	_record_healing_location(event_id, object)
 	_set_event_visible(true)
 	event_display.show_event(event_id, object.get("id", ""), object.get("one_time", false))
+
+
+## Remember healing-flavored locations (safe camps, shops/towns/teahouses) so
+## Cloud Gate can teleport the party back to the most recent one.
+func _record_healing_location(event_id: String, object: Dictionary) -> void:
+	var ev: Dictionary = EventManager.event_database.get(event_id, {})
+	if ev.is_empty():
+		return
+	var is_healing := ev.get("safe_camp", false)
+	if not is_healing:
+		for ch in ev.get("choices", []):
+			if ch.get("outcome", {}).get("type", "") == "shop":
+				is_healing = true
+				break
+	if is_healing:
+		var pos: Vector2i = object.get("position", MapManager.party_position)
+		GameState.last_healing_location = {
+			"map_id": MapManager.current_map_id,
+			"x": pos.x, "y": pos.y,
+			"name": object.get("name", ev.get("title", "sanctuary")),
+		}
 
 
 func _on_mob_event_triggered(_mob: Dictionary) -> void:
@@ -995,6 +1031,22 @@ func _open_rest_panel() -> void:
 
 
 ## Returns true if the current tile is a safe camp (teahouse, gompa, etc.).
+## Suppress/enhance activity lists from the current tile's location event, if any.
+## Returns {"suppress": Array, "enhance": Array}.
+func _get_location_camp_lists() -> Dictionary:
+	var obj := MapManager.get_object_at(MapManager.party_position)
+	if not obj.is_empty():
+		# Event id lives in obj.data for map objects (top-level fallback for mobs)
+		var event_id: String = obj.get("data", {}).get("event_id", obj.get("event_id", ""))
+		if not event_id.is_empty():
+			var ev: Dictionary = EventManager.event_database.get(event_id, {})
+			return {
+				"suppress": ev.get("suppress_activities", []),
+				"enhance": ev.get("enhance_activities", []),
+			}
+	return {"suppress": [], "enhance": []}
+
+
 func _check_is_safe_camp() -> bool:
 	var obj := MapManager.get_object_at(MapManager.party_position)
 	if obj.is_empty():
@@ -1049,15 +1101,9 @@ func _open_activity_panel(tier: int, food_cost: int, herbs_cost: int, scrap_cost
 
 	var party     := CharacterSystem.get_party()
 	# Read location-specific suppress/enhance lists from the safe camp event dict
-	var _loc_event: Dictionary = {}
-	var _loc_obj := MapManager.get_object_at(MapManager.party_position)
-	if not _loc_obj.is_empty():
-		var _loc_event_id: String = _loc_obj.get("event_id", "")
-		if not _loc_event_id.is_empty():
-			_loc_event = EventManager.event_database.get(_loc_event_id, {})
-	var _suppress: Array = _loc_event.get("suppress_activities", [])
-	var _enhance: Array  = _loc_event.get("enhance_activities", [])
-	var available := CampSystem.get_available_activities(party, tier, is_safe, _suppress, _enhance)
+	var _loc_lists := _get_location_camp_lists()
+	var available := CampSystem.get_available_activities(party, tier, is_safe,
+			_loc_lists.get("suppress", []), _loc_lists.get("enhance", []))
 
 	# Track selection
 	var selected_ids: Array[String] = []
@@ -1283,6 +1329,7 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 	var activity_messages: Array[String] = []
 	var _activity_camp_event_id: String = ""
 	if not selected_activities.is_empty():
+		var enhance_ids: Array = _get_location_camp_lists().get("enhance", [])
 		for act_id in selected_activities:
 			var act_def: Dictionary = {}
 			for a in CampSystem.ACTIVITIES:
@@ -1290,7 +1337,7 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 					act_def = a
 					break
 			var performer: Dictionary = CampSystem._best_performer(party, act_def)
-			var result := CampSystem.execute_activity(act_id, performer, party)
+			var result := CampSystem.execute_activity(act_id, performer, party, act_id in enhance_ids)
 			activity_messages.append(result.get("message", ""))
 			if _activity_camp_event_id.is_empty():
 				_activity_camp_event_id = result.get("camp_event_id", "")
@@ -1305,10 +1352,19 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 	# === Advance time ===
 	GameState.advance_time(GameState.HOURS_PER_REST)
 
+	# === Rest-driven traits and rapport ===
+	var trait_messages: Array[String] = _tick_rest_traits(party)
+	if RelationshipSystem:
+		# A night that passed without incident is worth a little to everyone.
+		RelationshipSystem.adjust_party(party, 0.5, "rested together")
+
 	# === Toast ===
 	var day_str := "%s, %s" % [GameState.get_lunar_day_label(), GameState.get_time_of_day_label()]
 	var toast := "Party rested. %s." % day_str
 	for msg in activity_messages:
+		if not msg.is_empty():
+			toast += "\n" + msg
+	for msg in trait_messages:
 		if not msg.is_empty():
 			toast += "\n" + msg
 	for msg in wound_messages:
@@ -1321,6 +1377,78 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 	var pending_camp_event: String = _disturbance_event_id if not _disturbance_event_id.is_empty() else _activity_camp_event_id
 	if not pending_camp_event.is_empty():
 		call_deferred("_show_camp_event", pending_camp_event)
+	else:
+		# Nothing else claimed the night — the party's own dispositions may.
+		_roll_character_event(party)
+
+
+## Roll for an event the party generates by itself — one member's disposition
+## acting up, or two of them finally having it out.
+##
+## Only fires on a night nothing else claimed, so it never stacks on top of a
+## disturbance. Rates are first-pass: with both rolling, roughly one such night
+## in six, which should be an occasional punctuation rather than a routine.
+const TRAIT_EVENT_CHANCE: float = 0.12
+const RELATIONSHIP_EVENT_CHANCE: float = 0.08
+
+func _roll_character_event(party: Array) -> void:
+	if party.is_empty():
+		return
+	var realm: String = GameState.current_world
+
+	if randf() < TRAIT_EVENT_CHANCE:
+		var picked: Dictionary = EventManager.get_random_trait_event(realm, party)
+		if not picked.is_empty():
+			EventManager.event_actors = {
+				"a": picked["character"].get("name", "Someone"),
+			}
+			call_deferred("_show_camp_event", str(picked["event_id"]))
+			return
+
+	if randf() < RELATIONSHIP_EVENT_CHANCE:
+		var pair: Dictionary = EventManager.get_random_relationship_event(realm, party)
+		if not pair.is_empty():
+			EventManager.event_actors = {
+				"a": pair["a"].get("name", "Someone"),
+				"b": pair["b"].get("name", "Someone"),
+			}
+			call_deferred("_show_camp_event", str(pair["event_id"]))
+
+
+## Traits that are earned or lost by the passage of rests rather than by any
+## single event. Runs once per rest, after time has advanced.
+##
+## Rest counting lives on the character rather than in GameState so that a
+## companion recruited late does not inherit the road the others walked.
+const RESTS_FOR_LONG_MARCHED: int = 30
+const RESTS_FOR_GRIEF_TO_SETTLE: int = 25
+
+func _tick_rest_traits(party: Array) -> Array[String]:
+	var messages: Array[String] = []
+	if not TraitSystem:
+		return messages
+
+	for char in party:
+		char["rests_taken"] = int(char.get("rests_taken", 0)) + 1
+		var name: String = char.get("name", "Someone")
+
+		# Long-marched: the road stops being an event.
+		if int(char["rests_taken"]) >= RESTS_FOR_LONG_MARCHED:
+			if TraitSystem.grant_trait(char, "long_marched"):
+				messages.append("%s has been on the road a long time now." % name)
+
+		# Grief does not vanish; it settles into observance. Counted from the
+		# rest at which the grief was first carried into camp.
+		if "grief_struck" in char.get("traits", []):
+			char["grief_rests"] = int(char.get("grief_rests", 0)) + 1
+			if int(char["grief_rests"]) >= RESTS_FOR_GRIEF_TO_SETTLE:
+				if TraitSystem.replace_trait(char, "grief_struck", "mourner"):
+					char["grief_rests"] = 0
+					messages.append("%s's grief has settled into something they can carry." % name)
+		elif char.has("grief_rests"):
+			char.erase("grief_rests")
+
+	return messages
 
 
 ## Show a camp event in the event display after a rest concludes.
@@ -1418,6 +1546,30 @@ func _on_psychology_crisis(character: Dictionary, element: String, polarity: Str
 ## Called when a quirk reaction fires (e.g. phobia triggered, trauma response).
 func _on_emotional_crisis_log(_character_name: String, message: String) -> void:
 	_show_toast(message)
+
+
+func _on_trait_gained(character_name: String, trait_id: String) -> void:
+	_show_toast("%s is now %s." % [character_name, TraitSystem.get_trait_name(trait_id)])
+
+
+func _on_trait_lost(character_name: String, trait_id: String) -> void:
+	_show_toast("%s is no longer %s." % [character_name, TraitSystem.get_trait_name(trait_id)])
+
+
+func _on_trait_replaced(character_name: String, old_id: String, new_id: String) -> void:
+	_show_toast("%s: %s has become %s." % [
+		character_name, TraitSystem.get_trait_name(old_id), TraitSystem.get_trait_name(new_id)])
+
+
+func _on_relationship_changed(name_a: String, name_b: String, band: String) -> void:
+	var phrasing: Dictionary = {
+		"sworn": "%s and %s have become inseparable.",
+		"warm": "%s and %s are getting on well.",
+		"neutral": "%s and %s have settled into civility.",
+		"cool": "%s and %s have cooled toward each other.",
+		"rival": "%s and %s can barely stand each other.",
+	}
+	_show_toast(str(phrasing.get(band, "%s and %s.")) % [name_a, name_b])
 
 
 func _show_toast(msg: String) -> void:

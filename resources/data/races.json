@@ -44,19 +44,17 @@
         "raider",
         "torturer"
       ],
-      "todo": [
-        "better_starting_weapon: start with a tier-2 melee weapon instead of tier-1"
-      ],
       "resistances": {},
       "emotional_baseline": {
         "space": 0,
-        "fire": 15,
-        "water": 10,
+        "fire": -10,
+        "water": -15,
         "earth": 0,
         "air": 0
       },
       "starting_traits": [
-        "hell_born"
+        "hell_born",
+        "better_starting_weapon"
       ]
     },
     "blue_devil": {
@@ -162,9 +160,6 @@
         "infernal_scribe",
         "torturer"
       ],
-      "todo": [
-        "extra_starting_gold: begin with 50 bonus gold"
-      ],
       "resistances": {},
       "emotional_baseline": {
         "space": 0,
@@ -174,7 +169,8 @@
         "air": 0
       },
       "starting_traits": [
-        "hell_born"
+        "hell_born",
+        "extra_starting_gold"
       ]
     },
     "green_devil": {
@@ -1854,8 +1850,8 @@
       "resistances": {},
       "emotional_baseline": {
         "space": 0,
-        "fire": 10,
-        "water": 0,
+        "fire": 0,
+        "water": -10,
         "earth": 0,
         "air": 0
       },
@@ -1945,8 +1941,8 @@
       "resistances": {},
       "emotional_baseline": {
         "space": 0,
-        "fire": 5,
-        "water": 0,
+        "fire": 0,
+        "water": -5,
         "earth": 0,
         "air": 0
       },
@@ -3057,7 +3053,8 @@
         "planetary_deity",
         "blue_devil",
         "white_devil",
-        "black_devil"
+        "black_devil",
+        "skeleton_copper"
       ],
       "weight": 4
     },
@@ -3297,7 +3294,7 @@
         "spears": 1
       },
       "starting_equipment": {
-        "base_weapon": "iron_spear",
+        "base_weapon": "iron_trishula",
         "items": [
           "lamellar_armor"
         ]
@@ -3365,8 +3362,8 @@
         "daggers": 1
       },
       "starting_equipment": {
-        "base_weapon": "iron_spear",
-        "weapon_upgrade": "steel_spear",
+        "base_weapon": "iron_trishula",
+        "weapon_upgrade": "steel_trishula",
         "weapon_upgrade_chance": 0.25,
         "secondary_weapon": "iron_dagger"
       },
@@ -3493,9 +3490,9 @@
         "constitution": 1
       },
       "starting_skills": {
-        "crafting": 2,
         "earth_magic": 1,
-        "logistics": 1
+        "logistics": 1,
+        "smithing": 2
       },
       "available_races": [
         "bhramara"
@@ -3573,11 +3570,11 @@
         "might": 1
       },
       "starting_equipment": {
-        "base_weapon": "iron_spear",
-        "weapon_upgrade": "steel_spear",
+        "base_weapon": "iron_trishula",
+        "weapon_upgrade": "steel_trishula",
         "weapon_upgrade_chance": 0.2,
         "items": [
-          "chuba"
+          "leather_vest"
         ]
       },
       "available_races": [
@@ -3596,12 +3593,12 @@
       },
       "starting_skills": {
         "earth_magic": 1,
-        "crafting": 2,
-        "might": 1
+        "might": 1,
+        "smithing": 2
       },
       "starting_equipment": {
-        "base_weapon": "bronze_gada",
-        "weapon_upgrade": "iron_gada",
+        "base_weapon": "bronze_mace",
+        "weapon_upgrade": "iron_mace",
         "weapon_upgrade_chance": 0.25
       },
       "available_races": [
@@ -4034,9 +4031,9 @@
       "description": "The camp near the river has a forge. I watched them for a season before I went in. They thought I wanted food. I wanted to understand what they were doing with fire and metal. The first tool I made was better than theirs. The seventh one they couldn't explain. I take requests now, in exchange for food and a formal agreement with their dogs.",
       "attribute_modifiers": {},
       "starting_skills": {
-        "crafting": 2,
         "guile": 1,
-        "learning": 1
+        "learning": 1,
+        "smithing": 2
       },
       "available_races": [
         "vanara"
@@ -4230,8 +4227,8 @@
       "description": "The shed carapace is not waste. It is material — harder than wood, lighter than iron, shaped already by the body that wore it. You learned to work it: to cut, to layer, to join. What you make fits the one who will wear it because you understand what it is to be armoured from birth.",
       "attribute_modifiers": {},
       "starting_skills": {
-        "crafting": 2,
-        "armor": 1
+        "armor": 1,
+        "smithing": 2
       },
       "available_races": [
         "dura"

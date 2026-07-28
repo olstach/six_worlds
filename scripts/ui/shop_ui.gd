@@ -111,8 +111,12 @@ func _setup_tabs() -> void:
 		if not "companions" in tabs:
 			tabs.push_front("companions")
 
-	# Hide rest tab when the shop has no rest data
-	if current_shop.get("rest", {}).is_empty():
+	# Shops offering wound healing get the rest tab even if their type lacks it
+	if not current_shop.get("healing", {}).is_empty():
+		if not "rest" in tabs:
+			tabs.append("rest")
+	# Hide rest tab when the shop has neither rest nor healing services
+	if current_shop.get("rest", {}).is_empty() and current_shop.get("healing", {}).is_empty():
 		tabs.erase("rest")
 
 	# Show/hide tabs based on resolved list
@@ -642,6 +646,14 @@ func _populate_companions_tab() -> void:
 
 	# Remove already-recruited companions, then shuffle and cap the list
 	available = available.filter(func(id): return not id in party_companion_ids)
+	# Guard against cross-realm rosters: a companion tagged for another realm
+	# never appears here, even if a shop's list was copied from another realm.
+	# Companions with realm "any" are deliberately realm-agnostic.
+	var current_realm: String = GameState.current_world
+	available = available.filter(func(id):
+		var def_realm: String = CompanionSystem.get_definition(id).get("realm", "any")
+		return def_realm == "any" or def_realm == current_realm
+	)
 	available.shuffle()
 	if available.size() > MAX_COMPANIONS_SHOWN:
 		available = available.slice(0, MAX_COMPANIONS_SHOWN)
@@ -751,7 +763,11 @@ func _populate_rest_tab() -> void:
 		child.queue_free()
 
 	var rest_data: Dictionary = current_shop.get("rest", {})
+	var healing_data: Dictionary = current_shop.get("healing", {})
+	if rest_data.is_empty() and healing_data.is_empty():
+		return
 	if rest_data.is_empty():
+		_populate_healing_section(healing_data)
 		return
 
 	var price_mod: float = current_shop.get("price_modifier", 1.0)
@@ -790,6 +806,92 @@ func _populate_rest_tab() -> void:
 
 	_add_rest_option("Order a teapot", teapot_pct, teapot_cost, teapot_food)
 	_add_rest_option("Stay for the night", night_pct, night_cost, night_food)
+
+	if not healing_data.is_empty():
+		_populate_healing_section(healing_data)
+
+
+## Wound-healing service — shops with a "healing": {"medicine_level": N} block.
+## Each party member with wounds treatable at this facility gets a Treat button;
+## cost scales with each wound's cure difficulty.
+func _populate_healing_section(healing_data: Dictionary) -> void:
+	var med_level: int = int(healing_data.get("medicine_level", 4))
+	var price_mod: float = current_shop.get("price_modifier", 1.0)
+
+	rest_container.add_child(HSeparator.new())
+	var hdr := Label.new()
+	hdr.text = "— Healing —"
+	hdr.add_theme_font_size_override("font_size", 14)
+	hdr.add_theme_color_override("font_color", Color(0.55, 0.85, 0.6))
+	hdr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	rest_container.add_child(hdr)
+
+	var any_wounded := false
+	for character in CharacterSystem.get_party():
+		var wounds: Array = character.get("wounds", [])
+		if wounds.is_empty():
+			continue
+		any_wounded = true
+
+		var treatable_names: Array[String] = []
+		var untreatable_names: Array[String] = []
+		var cost := 0
+		for entry in wounds:
+			var wdef: Dictionary = WoundSystem.WOUND_TYPES.get(entry.get("id", ""), {})
+			var wname: String = wdef.get("display_name", entry.get("id", "?"))
+			if med_level >= wdef.get("cure_medicine_level", 99):
+				treatable_names.append(wname)
+				cost += int((20 + 15 * int(wdef.get("cure_medicine_level", 2))) * price_mod)
+			else:
+				untreatable_names.append(wname)
+
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 12)
+		rest_container.add_child(row)
+
+		var lbl := Label.new()
+		var parts: Array[String] = []
+		if not treatable_names.is_empty():
+			parts.append(", ".join(treatable_names))
+		if not untreatable_names.is_empty():
+			parts.append("(beyond this healer: %s)" % ", ".join(untreatable_names))
+		lbl.text = "%s — %s" % [character.get("name", "?"), "  ".join(parts)]
+		lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		lbl.add_theme_font_size_override("font_size", 12)
+		row.add_child(lbl)
+
+		if not treatable_names.is_empty():
+			var cost_lbl := Label.new()
+			cost_lbl.text = "%d gold" % cost
+			var can_afford: bool = GameState.can_afford(cost)
+			cost_lbl.add_theme_color_override("font_color", AFFORDABLE_COLOR if can_afford else UNAFFORDABLE_COLOR)
+			cost_lbl.custom_minimum_size.x = 70
+			row.add_child(cost_lbl)
+
+			var btn := Button.new()
+			btn.text = "Treat"
+			btn.disabled = not can_afford
+			btn.pressed.connect(func(): _on_heal_wounds_pressed(character, cost, med_level))
+			row.add_child(btn)
+
+	if not any_wounded:
+		var none_lbl := Label.new()
+		none_lbl.text = "The party carries no lasting wounds."
+		none_lbl.add_theme_font_size_override("font_size", 12)
+		none_lbl.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+		rest_container.add_child(none_lbl)
+
+
+func _on_heal_wounds_pressed(character: Dictionary, cost: int, med_level: int) -> void:
+	if not GameState.can_afford(cost):
+		return
+	GameState.spend_gold(cost)
+	var result: Dictionary = WoundSystem.heal_at_facility(character, med_level)
+	for msg in result.get("messages", []):
+		print("ShopUI healing: %s — %s" % [character.get("name", "?"), msg])
+	_update_gold_display()
+	_populate_rest_tab()
 
 
 func _add_rest_option(label: String, restore_pct: int, cost: int, food_restore: int = 0) -> void:

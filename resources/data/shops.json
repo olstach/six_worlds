@@ -261,30 +261,30 @@
       "price_modifier": 1.0,
       "buys_items": false,
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
         "amlamarjari",
-        "vimohini"
+        "angulimala",
+        "ayurmangala",
+        "coolhead_hotblood",
+        "dvijihva",
+        "dyutapati",
+        "jawbreaker",
+        "kanjus",
+        "karnak",
+        "leraya",
+        "niyamendra",
+        "princess_spiderface",
+        "raktamatta",
+        "red_peony",
+        "samvibrahmi",
+        "sarpatailaka",
+        "serji",
+        "shiny_needle",
+        "sineater_thirteen",
+        "tejasimha",
+        "vayuvega",
+        "vimohini",
+        "water_lily",
+        "yaga_mataji"
       ],
       "items": {
         "rations": 5
@@ -310,30 +310,30 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
         "amlamarjari",
-        "vimohini"
+        "angulimala",
+        "ayurmangala",
+        "coolhead_hotblood",
+        "dvijihva",
+        "dyutapati",
+        "jawbreaker",
+        "kanjus",
+        "karnak",
+        "leraya",
+        "niyamendra",
+        "princess_spiderface",
+        "raktamatta",
+        "red_peony",
+        "samvibrahmi",
+        "sarpatailaka",
+        "serji",
+        "shiny_needle",
+        "sineater_thirteen",
+        "tejasimha",
+        "vayuvega",
+        "vimohini",
+        "water_lily",
+        "yaga_mataji"
       ],
       "rest": {
         "teapot_cost": 30,
@@ -342,6 +342,9 @@
         "night_restore_pct": 100,
         "teapot_food": 10,
         "night_food": 25
+      },
+      "healing": {
+        "medicine_level": 2
       }
     },
     "hell_teahouse_fire": {
@@ -359,30 +362,30 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
         "amlamarjari",
-        "vimohini"
+        "angulimala",
+        "ayurmangala",
+        "coolhead_hotblood",
+        "dvijihva",
+        "dyutapati",
+        "jawbreaker",
+        "kanjus",
+        "karnak",
+        "leraya",
+        "niyamendra",
+        "princess_spiderface",
+        "raktamatta",
+        "red_peony",
+        "samvibrahmi",
+        "sarpatailaka",
+        "serji",
+        "shiny_needle",
+        "sineater_thirteen",
+        "tejasimha",
+        "vayuvega",
+        "vimohini",
+        "water_lily",
+        "yaga_mataji"
       ],
       "rest": {
         "teapot_cost": 30,
@@ -391,6 +394,9 @@
         "night_restore_pct": 100,
         "teapot_food": 10,
         "night_food": 25
+      },
+      "healing": {
+        "medicine_level": 2
       }
     },
     "hell_mercenary_guild": {
@@ -430,30 +436,30 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
         "amlamarjari",
-        "vimohini"
+        "angulimala",
+        "ayurmangala",
+        "coolhead_hotblood",
+        "dvijihva",
+        "dyutapati",
+        "jawbreaker",
+        "kanjus",
+        "karnak",
+        "leraya",
+        "niyamendra",
+        "princess_spiderface",
+        "raktamatta",
+        "red_peony",
+        "samvibrahmi",
+        "sarpatailaka",
+        "serji",
+        "shiny_needle",
+        "sineater_thirteen",
+        "tejasimha",
+        "vayuvega",
+        "vimohini",
+        "water_lily",
+        "yaga_mataji"
       ]
     },
     "hell_veterans_camp": {
@@ -471,30 +477,30 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
         "amlamarjari",
-        "vimohini"
+        "angulimala",
+        "ayurmangala",
+        "coolhead_hotblood",
+        "dvijihva",
+        "dyutapati",
+        "jawbreaker",
+        "kanjus",
+        "karnak",
+        "leraya",
+        "niyamendra",
+        "princess_spiderface",
+        "raktamatta",
+        "red_peony",
+        "samvibrahmi",
+        "sarpatailaka",
+        "serji",
+        "shiny_needle",
+        "sineater_thirteen",
+        "tejasimha",
+        "vayuvega",
+        "vimohini",
+        "water_lily",
+        "yaga_mataji"
       ]
     },
     "hell_yogini_circle": {
@@ -539,30 +545,30 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
         "amlamarjari",
-        "vimohini"
+        "angulimala",
+        "ayurmangala",
+        "coolhead_hotblood",
+        "dvijihva",
+        "dyutapati",
+        "jawbreaker",
+        "kanjus",
+        "karnak",
+        "leraya",
+        "niyamendra",
+        "princess_spiderface",
+        "raktamatta",
+        "red_peony",
+        "samvibrahmi",
+        "sarpatailaka",
+        "serji",
+        "shiny_needle",
+        "sineater_thirteen",
+        "tejasimha",
+        "vayuvega",
+        "vimohini",
+        "water_lily",
+        "yaga_mataji"
       ]
     },
     "hell_town_weapons": {
@@ -590,7 +596,9 @@
         "leather_gloves": 3,
         "obsidian_dagger": 1,
         "obsidian_blade": 1,
-        "rations": 5
+        "rations": 5,
+        "prosthetic_fitted_hand": 1,
+        "prosthetic_fitted_leg": 1
       },
       "spells": [],
       "training": {
@@ -598,30 +606,30 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
         "amlamarjari",
-        "vimohini"
+        "angulimala",
+        "ayurmangala",
+        "coolhead_hotblood",
+        "dvijihva",
+        "dyutapati",
+        "jawbreaker",
+        "kanjus",
+        "karnak",
+        "leraya",
+        "niyamendra",
+        "princess_spiderface",
+        "raktamatta",
+        "red_peony",
+        "samvibrahmi",
+        "sarpatailaka",
+        "serji",
+        "shiny_needle",
+        "sineater_thirteen",
+        "tejasimha",
+        "vayuvega",
+        "vimohini",
+        "water_lily",
+        "yaga_mataji"
       ]
     },
     "hell_town_magic": {
@@ -662,30 +670,30 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
         "amlamarjari",
-        "vimohini"
+        "angulimala",
+        "ayurmangala",
+        "coolhead_hotblood",
+        "dvijihva",
+        "dyutapati",
+        "jawbreaker",
+        "kanjus",
+        "karnak",
+        "leraya",
+        "niyamendra",
+        "princess_spiderface",
+        "raktamatta",
+        "red_peony",
+        "samvibrahmi",
+        "sarpatailaka",
+        "serji",
+        "shiny_needle",
+        "sineater_thirteen",
+        "tejasimha",
+        "vayuvega",
+        "vimohini",
+        "water_lily",
+        "yaga_mataji"
       ]
     },
     "hell_town_supplies": {
@@ -715,30 +723,30 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
         "amlamarjari",
-        "vimohini"
+        "angulimala",
+        "ayurmangala",
+        "coolhead_hotblood",
+        "dvijihva",
+        "dyutapati",
+        "jawbreaker",
+        "kanjus",
+        "karnak",
+        "leraya",
+        "niyamendra",
+        "princess_spiderface",
+        "raktamatta",
+        "red_peony",
+        "samvibrahmi",
+        "sarpatailaka",
+        "serji",
+        "shiny_needle",
+        "sineater_thirteen",
+        "tejasimha",
+        "vayuvega",
+        "vimohini",
+        "water_lily",
+        "yaga_mataji"
       ]
     },
     "hell_sacred_grove": {
@@ -837,6 +845,9 @@
       "training": {
         "attributes": [],
         "skills": []
+      },
+      "healing": {
+        "medicine_level": 4
       }
     },
     "hell_mirror_lake": {
@@ -923,12 +934,17 @@
         "herb_bundle": 8,
         "health_potion": 3,
         "prayer_beads": 3,
-        "rations": 5
+        "rations": 5,
+        "prosthetic_crude_arm": 1,
+        "prosthetic_crude_leg": 1
       },
       "spells": [],
       "training": {
         "attributes": [],
         "skills": []
+      },
+      "healing": {
+        "medicine_level": 5
       }
     },
     "hell_eternal_fire": {
@@ -993,7 +1009,11 @@
         "leather_vest": 2,
         "health_potion": 5,
         "rations": 3,
-        "herb_bundle": 3
+        "herb_bundle": 3,
+        "prosthetic_crude_hand": 2,
+        "prosthetic_crude_arm": 2,
+        "prosthetic_crude_leg": 2,
+        "prosthetic_fitted_hand": 1
       },
       "spells": [],
       "training": {
@@ -1072,29 +1092,29 @@
         "skills": []
       },
       "available_companions": [
-        "tsering",
-        "rasabhava",
-        "saka",
-        "mehr",
-        "vilasa",
-        "marmajna",
-        "kripana",
-        "yasha",
-        "nurse_bones",
-        "hustle_bones",
-        "iron_oath",
-        "the_chronicler",
-        "nyingje",
-        "shantipala",
-        "peldon",
-        "prashan",
-        "temba",
+        "choki",
+        "drupchen",
         "durvasa",
         "gomchen",
-        "choki",
+        "hustle_bones",
+        "iron_oath",
+        "khedrup",
+        "kripana",
+        "marmajna",
+        "mehr",
         "nangwa",
-        "drupchen",
-        "khedrup"
+        "nurse_bones",
+        "nyingje",
+        "peldon",
+        "prashan",
+        "rasabhava",
+        "saka",
+        "shantipala",
+        "temba",
+        "the_chronicler",
+        "tsering",
+        "vilasa",
+        "yasha"
       ],
       "rest": {
         "teapot_cost": 30,
@@ -1103,6 +1123,9 @@
         "night_restore_pct": 100,
         "teapot_food": 10,
         "night_food": 25
+      },
+      "healing": {
+        "medicine_level": 2
       }
     },
     "hg_town_weapons": {
@@ -1136,29 +1159,29 @@
         ]
       },
       "available_companions": [
-        "tsering",
-        "rasabhava",
-        "saka",
-        "mehr",
-        "vilasa",
-        "marmajna",
-        "kripana",
-        "yasha",
-        "nurse_bones",
-        "hustle_bones",
-        "iron_oath",
-        "the_chronicler",
-        "nyingje",
-        "shantipala",
-        "peldon",
-        "prashan",
-        "temba",
+        "choki",
+        "drupchen",
         "durvasa",
         "gomchen",
-        "choki",
+        "hustle_bones",
+        "iron_oath",
+        "khedrup",
+        "kripana",
+        "marmajna",
+        "mehr",
         "nangwa",
-        "drupchen",
-        "khedrup"
+        "nurse_bones",
+        "nyingje",
+        "peldon",
+        "prashan",
+        "rasabhava",
+        "saka",
+        "shantipala",
+        "temba",
+        "the_chronicler",
+        "tsering",
+        "vilasa",
+        "yasha"
       ]
     },
     "hg_town_magic": {
@@ -1201,29 +1224,29 @@
         ]
       },
       "available_companions": [
-        "tsering",
-        "rasabhava",
-        "saka",
-        "mehr",
-        "vilasa",
-        "marmajna",
-        "kripana",
-        "yasha",
-        "nurse_bones",
-        "hustle_bones",
-        "iron_oath",
-        "the_chronicler",
-        "nyingje",
-        "shantipala",
-        "peldon",
-        "prashan",
-        "temba",
+        "choki",
+        "drupchen",
         "durvasa",
         "gomchen",
-        "choki",
+        "hustle_bones",
+        "iron_oath",
+        "khedrup",
+        "kripana",
+        "marmajna",
+        "mehr",
         "nangwa",
-        "drupchen",
-        "khedrup"
+        "nurse_bones",
+        "nyingje",
+        "peldon",
+        "prashan",
+        "rasabhava",
+        "saka",
+        "shantipala",
+        "temba",
+        "the_chronicler",
+        "tsering",
+        "vilasa",
+        "yasha"
       ]
     },
     "hg_town_supplies": {
@@ -1248,29 +1271,29 @@
         "skills": []
       },
       "available_companions": [
-        "tsering",
-        "rasabhava",
-        "saka",
-        "mehr",
-        "vilasa",
-        "marmajna",
-        "kripana",
-        "yasha",
-        "nurse_bones",
-        "hustle_bones",
-        "iron_oath",
-        "the_chronicler",
-        "nyingje",
-        "shantipala",
-        "peldon",
-        "prashan",
-        "temba",
+        "choki",
+        "drupchen",
         "durvasa",
         "gomchen",
-        "choki",
+        "hustle_bones",
+        "iron_oath",
+        "khedrup",
+        "kripana",
+        "marmajna",
+        "mehr",
         "nangwa",
-        "drupchen",
-        "khedrup"
+        "nurse_bones",
+        "nyingje",
+        "peldon",
+        "prashan",
+        "rasabhava",
+        "saka",
+        "shantipala",
+        "temba",
+        "the_chronicler",
+        "tsering",
+        "vilasa",
+        "yasha"
       ]
     },
     "hg_mercenary_guild": {
@@ -1308,29 +1331,29 @@
         "skills": []
       },
       "available_companions": [
-        "tsering",
-        "rasabhava",
-        "saka",
-        "mehr",
-        "vilasa",
-        "marmajna",
-        "kripana",
-        "yasha",
-        "nurse_bones",
-        "hustle_bones",
-        "iron_oath",
-        "the_chronicler",
-        "nyingje",
-        "shantipala",
-        "peldon",
-        "prashan",
-        "temba",
+        "choki",
+        "drupchen",
         "durvasa",
         "gomchen",
-        "choki",
+        "hustle_bones",
+        "iron_oath",
+        "khedrup",
+        "kripana",
+        "marmajna",
+        "mehr",
         "nangwa",
-        "drupchen",
-        "khedrup"
+        "nurse_bones",
+        "nyingje",
+        "peldon",
+        "prashan",
+        "rasabhava",
+        "saka",
+        "shantipala",
+        "temba",
+        "the_chronicler",
+        "tsering",
+        "vilasa",
+        "yasha"
       ]
     },
     "hg_veterans_camp": {
@@ -1348,29 +1371,29 @@
         "skills": []
       },
       "available_companions": [
-        "tsering",
-        "rasabhava",
-        "saka",
-        "mehr",
-        "vilasa",
-        "marmajna",
-        "kripana",
-        "yasha",
-        "nurse_bones",
-        "hustle_bones",
-        "iron_oath",
-        "the_chronicler",
-        "nyingje",
-        "shantipala",
-        "peldon",
-        "prashan",
-        "temba",
+        "choki",
+        "drupchen",
         "durvasa",
         "gomchen",
-        "choki",
+        "hustle_bones",
+        "iron_oath",
+        "khedrup",
+        "kripana",
+        "marmajna",
+        "mehr",
         "nangwa",
-        "drupchen",
-        "khedrup"
+        "nurse_bones",
+        "nyingje",
+        "peldon",
+        "prashan",
+        "rasabhava",
+        "saka",
+        "shantipala",
+        "temba",
+        "the_chronicler",
+        "tsering",
+        "vilasa",
+        "yasha"
       ]
     },
     "hg_alchemist": {
@@ -1463,17 +1486,17 @@
         "blessed_conch_dorje": 1
       },
       "spells": [
-        "minor_heal",
+        "lesser_heal",
         "bless",
         "slow",
-        "weaken",
-        "bone_spear",
-        "raise_skeleton",
-        "hunger_curse",
-        "corpse_explosion",
-        "ghost_touch",
-        "soul_siphon",
-        "binding_shadows",
+        "curse",
+        "bone_spike",
+        "skeleton",
+        "blood_hunger",
+        "death_bolt",
+        "void_stare",
+        "life_drain",
+        "gloom",
         "mana_drain"
       ],
       "training": {
@@ -1590,7 +1613,14 @@
         "herb_bundle": 5,
         "apothecary_pouch": 2,
         "scroll_cure": 2,
-        "rations": 5
+        "rations": 5,
+        "prosthetic_crude_hand": 2,
+        "prosthetic_crude_leg": 2,
+        "prosthetic_fitted_hand": 1,
+        "prosthetic_fitted_arm": 1,
+        "prosthetic_fitted_leg": 1,
+        "prosthetic_fitted_foot": 1,
+        "prosthetic_fine_leg": 1
       },
       "spells": [
         "lesser_heal",
@@ -1607,6 +1637,9 @@
           "medicine"
         ],
         "max_skill_level": 5
+      },
+      "healing": {
+        "medicine_level": 6
       }
     },
     "brimstone_lab": {
@@ -1794,30 +1827,14 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
+        "brihannala",
+        "chitrangada",
+        "dirghajihva",
+        "ekadamshtra",
+        "kandali",
+        "nishkasita",
+        "phalguna",
+        "saramaya"
       ],
       "rest": {
         "teapot_cost": 25,
@@ -1826,6 +1843,9 @@
         "night_restore_pct": 100,
         "teapot_food": 10,
         "night_food": 25
+      },
+      "healing": {
+        "medicine_level": 2
       }
     },
     "animal_meadow_teahouse": {
@@ -1846,30 +1866,14 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
+        "agnishikha",
+        "balavardhana",
+        "kshudraka",
+        "madhuvrata",
+        "nirvikalpa",
+        "sthanumati",
+        "tikshnashringa",
+        "valmika"
       ],
       "rest": {
         "teapot_cost": 25,
@@ -1878,6 +1882,9 @@
         "night_restore_pct": 100,
         "teapot_food": 10,
         "night_food": 25
+      },
+      "healing": {
+        "medicine_level": 2
       }
     },
     "animal_ocean_teahouse": {
@@ -1898,30 +1905,14 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
+        "anavatapta",
+        "kambu",
+        "minakshi",
+        "phenaka",
+        "setubandha",
+        "shesharati",
+        "timingila",
+        "vajradanti"
       ],
       "rest": {
         "teapot_cost": 25,
@@ -1930,6 +1921,9 @@
         "night_restore_pct": 100,
         "teapot_food": 10,
         "night_food": 25
+      },
+      "healing": {
+        "medicine_level": 2
       }
     },
     "animal_forest_training_camp": {
@@ -1948,30 +1942,14 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
+        "brihannala",
+        "chitrangada",
+        "dirghajihva",
+        "ekadamshtra",
+        "kandali",
+        "nishkasita",
+        "phalguna",
+        "saramaya"
       ]
     },
     "animal_meadow_training_camp": {
@@ -1990,30 +1968,14 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
+        "agnishikha",
+        "balavardhana",
+        "kshudraka",
+        "madhuvrata",
+        "nirvikalpa",
+        "sthanumati",
+        "tikshnashringa",
+        "valmika"
       ]
     },
     "animal_ocean_training_camp": {
@@ -2032,30 +1994,14 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
+        "anavatapta",
+        "kambu",
+        "minakshi",
+        "phenaka",
+        "setubandha",
+        "shesharati",
+        "timingila",
+        "vajradanti"
       ]
     },
     "animal_mercenary_guild": {
@@ -2076,14 +2022,14 @@
         "iron_dagger": 3,
         "iron_axe": 2,
         "iron_mace": 2,
-        "iron_spear": 2,
         "short_bow": 2,
-        "long_bow": 1,
         "padded_armor": 3,
-        "studded_leather": 2,
         "leather_boots": 3,
         "leather_gloves": 3,
-        "rations": 5
+        "rations": 5,
+        "chainmail": 2,
+        "longbow": 1,
+        "iron_trishula": 2
       },
       "spells": [],
       "training": {
@@ -2091,30 +2037,30 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
+        "agnishikha",
+        "anavatapta",
+        "balavardhana",
+        "brihannala",
+        "chitrangada",
+        "dirghajihva",
+        "ekadamshtra",
+        "kambu",
+        "kandali",
+        "kshudraka",
+        "madhuvrata",
+        "minakshi",
+        "nirvikalpa",
+        "nishkasita",
+        "phalguna",
+        "phenaka",
+        "saramaya",
+        "setubandha",
+        "shesharati",
+        "sthanumati",
+        "tikshnashringa",
+        "timingila",
+        "vajradanti",
+        "valmika"
       ]
     },
     "animal_town_weapons": {
@@ -2131,16 +2077,18 @@
         "iron_dagger": 3,
         "iron_axe": 2,
         "iron_mace": 2,
-        "iron_spear": 3,
         "short_bow": 3,
-        "long_bow": 1,
         "padded_armor": 2,
-        "studded_leather": 2,
-        "hide_armor": 2,
         "leather_boots": 3,
         "leather_gloves": 3,
         "obsidian_blade": 1,
-        "rations": 5
+        "rations": 5,
+        "chainmail": 2,
+        "longbow": 1,
+        "iron_trishula": 3,
+        "leather_vest": 2,
+        "prosthetic_fitted_arm": 1,
+        "prosthetic_fine_foot": 1
       },
       "spells": [],
       "training": {
@@ -2148,30 +2096,30 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
+        "agnishikha",
+        "anavatapta",
+        "balavardhana",
+        "brihannala",
+        "chitrangada",
+        "dirghajihva",
+        "ekadamshtra",
+        "kambu",
+        "kandali",
+        "kshudraka",
+        "madhuvrata",
+        "minakshi",
+        "nirvikalpa",
+        "nishkasita",
+        "phalguna",
+        "phenaka",
+        "saramaya",
+        "setubandha",
+        "shesharati",
+        "sthanumati",
+        "tikshnashringa",
+        "timingila",
+        "vajradanti",
+        "valmika"
       ]
     },
     "animal_town_magic": {
@@ -2202,39 +2150,39 @@
         "bless",
         "regeneration",
         "magic_missile",
-        "water_whip",
-        "earthwall",
-        "nature_call"
+        "surge",
+        "stone_wall",
+        "boar"
       ],
       "training": {
         "attributes": [],
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
+        "agnishikha",
+        "anavatapta",
+        "balavardhana",
+        "brihannala",
+        "chitrangada",
+        "dirghajihva",
+        "ekadamshtra",
+        "kambu",
+        "kandali",
+        "kshudraka",
+        "madhuvrata",
+        "minakshi",
+        "nirvikalpa",
+        "nishkasita",
+        "phalguna",
+        "phenaka",
+        "saramaya",
+        "setubandha",
+        "shesharati",
+        "sthanumati",
+        "tikshnashringa",
+        "timingila",
+        "vajradanti",
+        "valmika"
       ]
     },
     "animal_town_supplies": {
@@ -2246,7 +2194,7 @@
       "items": {
         "rations": 15,
         "travel_provisions": 6,
-        "herb_bundle": 10,
+        "herb_bundle": 13,
         "raw_reagents": 5,
         "alchemists_pouch": 2,
         "health_potion": 4,
@@ -2254,8 +2202,7 @@
         "leather_vest": 2,
         "leather_boots": 3,
         "leather_gloves": 3,
-        "salvage_kit": 4,
-        "medicinal_herbs": 3
+        "salvage_kit": 4
       },
       "spells": [],
       "training": {
@@ -2263,30 +2210,30 @@
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
+        "agnishikha",
+        "anavatapta",
+        "balavardhana",
+        "brihannala",
+        "chitrangada",
+        "dirghajihva",
+        "ekadamshtra",
+        "kambu",
+        "kandali",
+        "kshudraka",
+        "madhuvrata",
+        "minakshi",
+        "nirvikalpa",
+        "nishkasita",
+        "phalguna",
+        "phenaka",
+        "saramaya",
+        "setubandha",
+        "shesharati",
+        "sthanumati",
+        "tikshnashringa",
+        "timingila",
+        "vajradanti",
+        "valmika"
       ]
     },
     "animal_sacred_grove": {
@@ -2303,8 +2250,7 @@
         "oak_staff": 1,
         "rations": 5,
         "earth_charm_common": 3,
-        "earth_charm_middling": 2,
-        "earth_charm_fine": 1,
+        "earth_charm_middling": 3,
         "plain_gold_dorje": 3,
         "plain_gold_drilbu": 2,
         "blessed_gold_dorje": 1
@@ -2329,8 +2275,7 @@
         "cloth_robe": 2,
         "rations": 5,
         "water_charm_common": 3,
-        "water_charm_middling": 2,
-        "water_charm_fine": 1,
+        "water_charm_middling": 3,
         "earth_charm_common": 1,
         "white_charm_common": 2
       },
@@ -2353,8 +2298,7 @@
         "cloth_robe": 1,
         "rations": 5,
         "air_charm_common": 3,
-        "air_charm_middling": 2,
-        "air_charm_fine": 1,
+        "air_charm_middling": 3,
         "plain_iron_dorje": 3,
         "plain_iron_drilbu": 2,
         "blessed_iron_dorje": 1
@@ -2390,6 +2334,9 @@
       "training": {
         "attributes": [],
         "skills": []
+      },
+      "healing": {
+        "medicine_level": 4
       }
     },
     "animal_mirror_lake": {
@@ -2455,38 +2402,38 @@
         "voidbolt",
         "gloom",
         "curse",
-        "nature_call",
-        "water_whip"
+        "yakshini",
+        "surge"
       ],
       "training": {
         "attributes": [],
         "skills": []
       },
       "available_companions": [
-        "karnak",
-        "serji",
-        "red_peony",
-        "raktamatta",
-        "jawbreaker",
-        "tejasimha",
-        "water_lily",
-        "dvijihva",
-        "yaga_mataji",
-        "niyamendra",
-        "leraya",
-        "samvibrahmi",
-        "vayuvega",
-        "angulimala",
-        "kanjus",
-        "sarpatailaka",
-        "shiny_needle",
-        "princess_spiderface",
-        "sineater_thirteen",
-        "dyutapati",
-        "coolhead_hotblood",
-        "ayurmangala",
-        "amlamarjari",
-        "vimohini"
+        "agnishikha",
+        "anavatapta",
+        "balavardhana",
+        "brihannala",
+        "chitrangada",
+        "dirghajihva",
+        "ekadamshtra",
+        "kambu",
+        "kandali",
+        "kshudraka",
+        "madhuvrata",
+        "minakshi",
+        "nirvikalpa",
+        "nishkasita",
+        "phalguna",
+        "phenaka",
+        "saramaya",
+        "setubandha",
+        "shesharati",
+        "sthanumati",
+        "tikshnashringa",
+        "timingila",
+        "vajradanti",
+        "valmika"
       ]
     },
     "animal_medicinal_garden": {
@@ -2498,19 +2445,23 @@
       "guild_school": "White",
       "guild_max_tier": 4,
       "items": {
-        "herb_bundle": 10,
-        "medicinal_herbs": 5,
+        "herb_bundle": 15,
         "health_potion": 4,
         "mana_potion": 2,
         "prayer_beads": 3,
         "rations": 5,
         "white_charm_common": 2,
-        "white_charm_middling": 1
+        "white_charm_middling": 1,
+        "prosthetic_crude_arm": 1,
+        "prosthetic_fitted_foot": 1
       },
       "spells": [],
       "training": {
         "attributes": [],
         "skills": []
+      },
+      "healing": {
+        "medicine_level": 5
       }
     },
     "animal_eternal_fire": {
@@ -2527,8 +2478,7 @@
         "ember_core": 2,
         "rations": 5,
         "fire_charm_common": 3,
-        "fire_charm_middling": 2,
-        "fire_charm_fine": 1,
+        "fire_charm_middling": 3,
         "plain_copper_dorje": 3,
         "plain_copper_drilbu": 2,
         "blessed_copper_dorje": 1
@@ -2597,14 +2547,12 @@
       "guild_school": "Earth",
       "guild_max_tier": 4,
       "items": {
-        "herb_bundle": 12,
-        "medicinal_herbs": 6,
+        "herb_bundle": 18,
         "raw_reagents": 6,
         "prayer_beads": 3,
         "rations": 5,
         "earth_charm_common": 3,
-        "earth_charm_middling": 2,
-        "earth_charm_fine": 1,
+        "earth_charm_middling": 3,
         "plain_gold_dorje": 2,
         "plain_gold_drilbu": 2,
         "blessed_gold_dorje": 1
@@ -2627,21 +2575,20 @@
         "prayer_beads": 5,
         "rations": 5,
         "air_charm_common": 4,
-        "air_charm_middling": 2,
-        "air_charm_fine": 1,
+        "air_charm_middling": 3,
         "plain_iron_dorje": 3,
         "plain_iron_drilbu": 2,
         "blessed_iron_dorje": 1,
         "blessed_iron_drilbu": 1
       },
       "spells": [
-        "gust",
-        "featherfall",
-        "windwall",
-        "lightning_bolt",
+        "gust_of_wind",
+        "levitate",
+        "eagle",
+        "lightning",
         "blink",
-        "farsight",
-        "tailwind"
+        "clarity",
+        "favorable_wind"
       ],
       "training": {
         "attributes": [
@@ -2669,8 +2616,7 @@
         "raw_reagents": 6,
         "rations": 5,
         "black_charm_common": 3,
-        "black_charm_middling": 2,
-        "black_charm_fine": 1,
+        "black_charm_middling": 3,
         "sorcery_charm_common": 2,
         "sorcery_charm_middling": 1
       },
@@ -2693,8 +2639,7 @@
         "herb_bundle": 5,
         "rations": 5,
         "water_charm_common": 4,
-        "water_charm_middling": 3,
-        "water_charm_fine": 2,
+        "water_charm_middling": 5,
         "earth_charm_common": 2,
         "earth_charm_middling": 1,
         "plain_silver_dorje": 3,
@@ -2703,15 +2648,15 @@
         "blessed_silver_drilbu": 1
       },
       "spells": [
-        "water_whip",
-        "wave_crash",
-        "tidal_surge",
-        "aqua_breath",
+        "surge",
+        "wave",
+        "naga",
+        "water_walking",
         "lesser_heal",
         "greater_heal",
         "regeneration",
-        "charm_beast",
-        "calm_creature"
+        "charm",
+        "pacify"
       ],
       "training": {
         "attributes": [
@@ -2764,10 +2709,10 @@
       "buys_items": false,
       "items": {},
       "spells": [
-        "smoke_veil",
-        "black_mirror",
-        "obsidian_sight",
-        "choking_cloud"
+        "smoke_form",
+        "smoke_imp",
+        "smoke_cloud",
+        "choking_smoke"
       ],
       "training": {
         "attributes": [],
@@ -2785,10 +2730,10 @@
       "buys_items": false,
       "items": {},
       "spells": [
-        "mud_bind",
-        "earthen_form",
-        "deep_calling",
-        "mudslide"
+        "mudling",
+        "metal_to_mud",
+        "rain_of_mud",
+        "mindmuck"
       ],
       "training": {
         "attributes": [],
@@ -2806,10 +2751,10 @@
       "buys_items": false,
       "items": {},
       "spells": [
-        "cloud_step",
-        "thunder_clap",
-        "weather_eye",
-        "nimbus_form"
+        "cloudstep",
+        "cloudform",
+        "cloud_serpent",
+        "cloud_gate"
       ],
       "training": {
         "attributes": [],
@@ -2828,9 +2773,9 @@
       "items": {},
       "spells": [
         "glass_shard",
-        "reflecting_mind",
-        "transparent_veil",
-        "crystalline_voice"
+        "powdered_glass",
+        "globe_of_glass",
+        "glass_mine"
       ],
       "training": {
         "attributes": [],
@@ -2848,10 +2793,10 @@
       "buys_items": false,
       "items": {},
       "spells": [
-        "crystal_focus",
-        "gem_sight",
-        "earth_lattice",
-        "resonant_form"
+        "scattered_light",
+        "crystal_guardian",
+        "crystal_diadem",
+        "crystal_light"
       ],
       "training": {
         "attributes": [],
@@ -2952,7 +2897,10 @@
       },
       "tabs": [
         "spells"
-      ]
+      ],
+      "healing": {
+        "medicine_level": 4
+      }
     },
     "hg_mirror_lake": {
       "name": "Mirror Lake",
@@ -3016,6 +2964,147 @@
       "tabs": [
         "spells"
       ]
+    },
+    "animal_pearl_merchant": {
+      "name": "Pearl Merchant",
+      "type": "general",
+      "description": "Pearls, polished shell, sea-glass, and a few things older than her trade.",
+      "price_modifier": 1.1,
+      "buys_items": true,
+      "items": {
+        "water_charm_common": 2,
+        "water_charm_middling": 1,
+        "space_charm_common": 1,
+        "random_common_talisman": 2,
+        "health_potion": 3,
+        "mana_potion": 2,
+        "rations": 4
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_shell_wright": {
+      "name": "Shell-Wright's Stall",
+      "type": "blacksmith",
+      "description": "A karka craftsman working in moulted shell, chitin, and salvaged metal.",
+      "price_modifier": 0.95,
+      "buys_items": true,
+      "items": {
+        "chainmail": 2,
+        "lamellar_armor": 1,
+        "leather_vest": 3,
+        "leather_cap": 3,
+        "leather_boots": 3,
+        "leather_gloves": 3,
+        "iron_trishula": 2,
+        "iron_mace": 2,
+        "iron_dagger": 3,
+        "scrap_metal": 6,
+        "salvage_kit": 3,
+        "prosthetic_fitted_hand": 2,
+        "prosthetic_fitted_arm": 2,
+        "prosthetic_fitted_foot": 1,
+        "prosthetic_fine_hand": 1,
+        "prosthetic_fine_arm": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": [
+          "smithing",
+          "armor"
+        ]
+      }
+    },
+    "animal_healer_camp": {
+      "name": "Healer's Camp",
+      "type": "healer",
+      "description": "A canvas clinic strung between four trees, run by a grey-muzzled gana who does not hurry.",
+      "price_modifier": 0.9,
+      "buys_items": true,
+      "items": {
+        "health_potion": 5,
+        "greater_health_potion": 2,
+        "herb_bundle": 6,
+        "healing_herb": 8,
+        "raw_reagents": 3,
+        "salvage_kit": 2,
+        "prosthetic_crude_hand": 1,
+        "prosthetic_crude_foot": 1,
+        "prosthetic_fitted_leg": 1
+      },
+      "spells": [
+        "lesser_heal",
+        "cure",
+        "herbal_remedy",
+        "cooling_mist"
+      ],
+      "training": {
+        "attributes": [],
+        "skills": [
+          "medicine"
+        ]
+      },
+      "healing": {
+        "medicine_level": 5
+      }
+    },
+    "animal_forest_merchant": {
+      "name": "Forest Merchant",
+      "type": "general",
+      "description": "A varaha trader working a circuit he holds entirely in his head. Everything he owns is on his back.",
+      "price_modifier": 1.15,
+      "buys_items": true,
+      "items": {
+        "rations": 6,
+        "travel_provisions": 3,
+        "herb_bundle": 4,
+        "raw_reagents": 3,
+        "health_potion": 3,
+        "mana_potion": 2,
+        "scrap_metal": 4,
+        "leather_vest": 2,
+        "leather_boots": 2,
+        "iron_dagger": 2,
+        "short_bow": 1
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
+    },
+    "animal_meadow_merchant": {
+      "name": "Plains Merchant",
+      "type": "general",
+      "description": "An enormous cart drawn by a harnessed khadga, worked by a yaksha who has run this route for decades.",
+      "price_modifier": 1.05,
+      "buys_items": true,
+      "items": {
+        "rations": 8,
+        "travel_provisions": 4,
+        "herb_bundle": 4,
+        "raw_reagents": 4,
+        "health_potion": 4,
+        "mana_potion": 3,
+        "scrap_metal": 6,
+        "salvage_kit": 2,
+        "chainmail": 1,
+        "leather_vest": 3,
+        "leather_boots": 3,
+        "iron_trishula": 2,
+        "iron_axe": 2,
+        "longbow": 1,
+        "random_common_talisman": 2
+      },
+      "spells": [],
+      "training": {
+        "attributes": [],
+        "skills": []
+      }
     }
   },
   "shop_types": {

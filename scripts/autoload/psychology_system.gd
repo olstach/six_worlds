@@ -26,16 +26,20 @@ const ELEMENTS: Array[String] = ["space", "fire", "water", "earth", "air"]
 ## Self-pressure applies to the character in crisis; party_pressure applies to all other members.
 const QUIRK_CRISIS_REACTIONS: Dictionary = {
 	"hot_tempered": {
-		"fire_dark": {
+		"water_dark": {
 			"log": "%s flies into a rage.",
 			"party_pressure": [{"element": "water", "amount": -10.0}]
 		},
-		"water_dark": {
-			"log": "%s's grief curdles into bitter anger.",
-			"self_pressure": [{"element": "fire", "amount": -15.0}]
+		"earth_dark": {
+			"log": "%s takes the slight personally, and answers it with heat.",
+			"self_pressure": [{"element": "water", "amount": -15.0}]
 		}
 	},
 	"patient": {
+		"water_dark": {
+			"log": "%s lets the anger arrive and pass without acting on it.",
+			"self_pressure": [{"element": "water", "amount": 20.0}]
+		},
 		"fire_dark": {
 			"log": "%s breathes through the surge, drawing on deep reserves of calm.",
 			"self_pressure": [{"element": "fire", "amount": 20.0}]
@@ -46,9 +50,13 @@ const QUIRK_CRISIS_REACTIONS: Dictionary = {
 		}
 	},
 	"brave": {
-		"water_dark": {
+		"air_dark": {
 			"log": "%s faces the fear head-on — courage steadies them.",
-			"self_pressure": [{"element": "water", "amount": 20.0}]
+			"self_pressure": [{"element": "air", "amount": 20.0}]
+		},
+		"water_dark": {
+			"log": "%s meets the grief without turning away from it.",
+			"self_pressure": [{"element": "water", "amount": 15.0}]
 		},
 		"earth_dark": {
 			"log": "%s stands firm, refusing to be beaten down.",
@@ -56,12 +64,12 @@ const QUIRK_CRISIS_REACTIONS: Dictionary = {
 		}
 	},
 	"timid": {
-		"water_dark": {
+		"air_dark": {
 			"log": "%s freezes, paralyzed by fear.",
 			"self_pressure": [{"element": "space", "amount": -15.0}]
 		},
-		"air_dark": {
-			"log": "%s retreats inward, consumed by dread.",
+		"water_dark": {
+			"log": "%s flinches from every raised voice and retreats inward.",
 			"self_pressure": [{"element": "space", "amount": -10.0}, {"element": "fire", "amount": -8.0}]
 		}
 	},
@@ -167,7 +175,7 @@ const QUIRK_CRISIS_REACTIONS: Dictionary = {
 			"log": "%s drowns in remorse for past actions.",
 			"self_pressure": [{"element": "space", "amount": -10.0}]
 		},
-		"fire_dark": {
+		"earth_dark": {
 			"log": "%s's past violence resurfaces in the crisis.",
 			"self_pressure": [{"element": "earth", "amount": -10.0}]
 		}
@@ -212,6 +220,127 @@ const QUIRK_CRISIS_REACTIONS: Dictionary = {
 		"space_bright": {
 			"log": "%s's insight deepens in the luminous clarity.",
 			"party_pressure": [{"element": "space", "amount": 5.0}]
+		}
+	},
+
+	# ── traits added in the 2026-07-27 matrix pass ───────────────────────────
+	# The bright pole had only two authored reactions before these; a wisdom
+	# crisis is meant to be as eventful as a dark one, so most of these fire on
+	# the bright side and spread the effect to the party.
+	"content": {
+		"earth_bright": {
+			"log": "%s wants nothing the moment does not already contain.",
+			"party_pressure": [{"element": "earth", "amount": 5.0}]
+		},
+		"fire_dark": {
+			"log": "%s notices the craving arrive, and declines it.",
+			"self_pressure": [{"element": "fire", "amount": 15.0}]
+		}
+	},
+	"oath_keeper": {
+		"earth_bright": {
+			"log": "%s's word has held this long. The party can feel it.",
+			"party_pressure": [{"element": "earth", "amount": 8.0}]
+		},
+		"earth_dark": {
+			"log": "%s holds to the vow even as everything else gives way.",
+			"self_pressure": [{"element": "earth", "amount": 20.0}]
+		}
+	},
+	"warm_hearted": {
+		"fire_bright": {
+			"log": "%s's warmth spills over onto everyone nearby.",
+			"party_pressure": [{"element": "fire", "amount": 8.0}, {"element": "water", "amount": 5.0}]
+		},
+		"water_dark": {
+			"log": "%s reaches for the others rather than turning away.",
+			"party_pressure": [{"element": "water", "amount": 5.0}]
+		}
+	},
+	"renunciate": {
+		"fire_bright": {
+			"log": "%s has already put down heavier things than this.",
+			"self_pressure": [{"element": "fire", "amount": 20.0}]
+		},
+		"fire_dark": {
+			"log": "%s recognises the old hunger and lets it go past.",
+			"self_pressure": [{"element": "fire", "amount": 25.0}]
+		}
+	},
+	"merciful": {
+		"water_bright": {
+			"log": "%s's mercy steadies the whole party.",
+			"party_pressure": [{"element": "water", "amount": 8.0}]
+		},
+		"water_dark": {
+			"log": "%s finds the grief turning outward into care.",
+			"self_pressure": [{"element": "water", "amount": 20.0}]
+		}
+	},
+	"clear_eyed": {
+		"water_bright": {
+			"log": "%s sees the situation exactly as it is, and says so.",
+			"party_pressure": [{"element": "space", "amount": 5.0}]
+		},
+		"space_dark": {
+			"log": "%s refuses the comfortable version of events.",
+			"self_pressure": [{"element": "space", "amount": 15.0}]
+		}
+	},
+	"present": {
+		"space_bright": {
+			"log": "%s is entirely here, and it is contagious.",
+			"party_pressure": [{"element": "space", "amount": 8.0}]
+		},
+		"space_dark": {
+			"log": "%s comes back to the room, one breath at a time.",
+			"self_pressure": [{"element": "space", "amount": 20.0}]
+		}
+	},
+	"celebrant": {
+		"air_bright": {
+			"log": "%s is delighted by someone else's good fortune.",
+			"party_pressure": [{"element": "air", "amount": 8.0}]
+		},
+		"air_dark": {
+			"log": "%s finds something to be glad about even now.",
+			"self_pressure": [{"element": "air", "amount": 15.0}]
+		}
+	},
+	"covetous": {
+		"air_dark": {
+			"log": "%s tallies what everyone else has been given.",
+			"party_pressure": [{"element": "air", "amount": -8.0}]
+		},
+		"air_bright": {
+			"log": "%s's envy sours even the good news.",
+			"self_pressure": [{"element": "air", "amount": -10.0}]
+		}
+	},
+	"incurious": {
+		"space_dark": {
+			"log": "%s stops trying to understand it at all.",
+			"self_pressure": [{"element": "space", "amount": -15.0}]
+		}
+	},
+	"grudge_bearer": {
+		"water_dark": {
+			"log": "%s remembers exactly who is responsible.",
+			"self_pressure": [{"element": "water", "amount": -12.0}]
+		},
+		"water_bright": {
+			"log": "%s almost lets it go, and then does not.",
+			"self_pressure": [{"element": "water", "amount": -8.0}]
+		}
+	},
+	"chronic_pain": {
+		"water_dark": {
+			"log": "%s's body picks the worst possible moment to insist.",
+			"self_pressure": [{"element": "water", "amount": -10.0}]
+		},
+		"earth_dark": {
+			"log": "%s carries it the way they carry it every day.",
+			"self_pressure": [{"element": "earth", "amount": 10.0}]
 		}
 	},
 }
@@ -366,12 +495,12 @@ func get_emotional_label(character: Dictionary, element: String) -> String:
 ## Checks the character's quirks for any reaction matching this element+polarity crisis.
 ## Applies self/party pressure effects and emits emotional_crisis_log for each reaction found.
 func _resolve_quirk_reactions(character: Dictionary, element: String, polarity: String) -> void:
-	if not QuirkSystem:
+	if not TraitSystem:
 		return
 	var key: String = element + "_" + polarity
 	var char_name: String = character.get("name", "?")
-	for quirk_id in character.get("quirks", []):
-		var q: Dictionary = QuirkSystem.get_quirk(quirk_id)
+	for quirk_id in character.get("traits", []):
+		var q: Dictionary = TraitSystem.get_trait(quirk_id)
 		var fired: bool = false
 		for tag in q.get("event_tags", []):
 			if fired:

@@ -23,6 +23,11 @@ var current_event_object_id: String = ""
 var current_event_one_time: bool = false
 var _current_choice_id: String = ""  # Recorded when make_choice is called
 
+# Names to substitute into the next event's {a}/{b} tokens. Set by the caller
+# immediately before show_event for trait and relationship events; consumed and
+# cleared by start_event so it can never leak into an unrelated event.
+var event_actors: Dictionary = {}
+
 # Event database (will load from JSON)
 var event_database: Dictionary = {}
 
@@ -231,6 +236,13 @@ func start_event(event_id: String) -> bool:
 	
 	current_event = event_database[event_id].duplicate(true)
 
+	# Trait and relationship events are about specific people, so their text
+	# carries {a} and {b} tokens. Substituted here, on the copy, so the database
+	# entry keeps its tokens for the next time it fires with different names.
+	if not event_actors.is_empty():
+		_substitute_actor_names(current_event)
+		event_actors.clear()
+
 	# Track first visits for location events — sets a flag other events can check
 	var event_type = current_event.get("type", "")
 	if event_type == "location":
@@ -270,12 +282,14 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 			result.reason = "Already done"
 			return result
 
-	# Default and roll choices are always visible
-	if choice.type == "default" or choice.type == "roll":
+	# Default choices are always visible
+	if choice.type == "default":
 		return result
-	
-	# Requirement choices need checking
-	if choice.type == "requirement":
+
+	# Requirement choices need checking. Roll choices are usually always visible,
+	# but may carry skill/attribute/trait requirements alongside "roll" — a gated
+	# gamble (e.g. Yoga 3 required to attempt, then a Charm roll decides the outcome).
+	if choice.type == "requirement" or choice.type == "roll":
 		if "requirements" not in choice:
 			return result
 		
@@ -497,8 +511,15 @@ func apply_outcome(outcome: Dictionary) -> void:
 		if "xp" in rewards:
 			CompanionSystem.apply_party_xp(int(rewards.xp))
 
+		# Gold rewards accept either a number or a descriptive token
+		# ("small"/"moderate"/"large"), same as costs do. Plain int() on a token
+		# yields 0 in GDScript, which silently paid nothing — see
+		# _resolve_gold_reward(). "gold" is the only accepted key; validate_data.py
+		# rejects any other reward key so a near-miss name cannot go unread again.
 		if "gold" in rewards:
-			GameState.add_gold(int(rewards.gold))
+			var gold_amount: int = _resolve_gold_reward(rewards.gold)
+			if gold_amount > 0:
+				GameState.add_gold(gold_amount)
 
 		if "items" in rewards:
 			for item_id in rewards.items:
@@ -512,6 +533,11 @@ func apply_outcome(outcome: Dictionary) -> void:
 					_give_random_spell_reward(school)
 					continue
 
+				# Random equipment token — generate a weapon/armor/talisman scaled to the party
+				if item_id in ["item_random", "item_random_scaled"]:
+					_give_random_item_reward()
+					continue
+
 				var resolved_id: String = item_id
 				if ItemSystem.is_template_item(item_id):
 					var gen_id := ItemSystem.resolve_random_generate(item_id)
@@ -523,7 +549,8 @@ func apply_outcome(outcome: Dictionary) -> void:
 					print("EventManager: Unknown item '%s', skipping" % item_id)
 
 		# HP loss — e.g. {"amount": "moderate", "target": "all"} to deal out-of-combat damage.
-		# amount: "light" (10%), "moderate" (25%), "heavy" (40%). target: "all" or "random".
+		# amount: "tiny" (5%), "light"/"small" (10%), "moderate"/"medium" (25%),
+		# "heavy"/"large" (40%). target: "all" or "random".
 		# HP is floored at 1 — events cannot kill party members.
 		if "hp_loss" in rewards:
 			var loss = rewards.hp_loss
@@ -531,10 +558,13 @@ func apply_outcome(outcome: Dictionary) -> void:
 			var target_mode: String = str(loss.get("target", "all"))
 			var pct: float
 			match amount_key:
-				"light":    pct = 10.0
-				"moderate": pct = 25.0
-				"heavy":    pct = 40.0
-				_:          pct = 20.0
+				"tiny":     pct = 5.0
+				"light", "small":     pct = 10.0
+				"moderate", "medium": pct = 25.0
+				"heavy", "large":     pct = 40.0
+				_:
+					push_warning("EventManager: unknown hp_loss amount '%s' — using 20%%" % amount_key)
+					pct = 20.0
 			var party = CharacterSystem.get_party()
 			var targets = []
 			if target_mode == "random" and not party.is_empty():
@@ -767,6 +797,12 @@ func apply_outcome(outcome: Dictionary) -> void:
 		else:
 			push_error("EventManager: 'set_flags' must be a Dictionary, got: %s" % type_string(typeof(outcome.set_flags)))
 
+	# Mark the current realm's boss as defeated (e.g. a peaceful boss resolution).
+	# Combat victories over the "realm_boss" object are handled by overworld instead.
+	if outcome.get("defeat_boss", false):
+		GameState.defeat_boss(GameState.current_world)
+		print("EventManager: Realm boss resolved — %s portal unsealed" % GameState.current_world)
+
 	# Register a new quest if the outcome defines one
 	if "register_quest" in outcome:
 		if outcome.register_quest is Dictionary:
@@ -793,7 +829,7 @@ func apply_outcome(outcome: Dictionary) -> void:
 		# food_percent: spend a percentage of current food stores (e.g. the_pit bribe)
 		if "food_percent" in cost:
 			var pct: float = float(cost.food_percent)
-			var current_food: int = GameState.get_supplies("food")
+			var current_food: int = GameState.get_supply("food")
 			var food_amount: int = max(1, int(current_food * pct / 100.0))
 			GameState.consume_supply("food", food_amount)
 			print("EventManager: Consumed %d food (%d%% of stores)" % [food_amount, int(pct)])
@@ -897,6 +933,21 @@ func _resolve_gold_cost(amount) -> int:
 		_:
 			return 0
 
+## Convert descriptive gold reward strings to concrete amounts.
+## Rewards are more generous than the like-named costs: these values are drawn
+## from the 60 numeric gold rewards already in the event files, whose median is
+## 100 with terciles at 80 and 130. First pass — retune with the economy.
+func _resolve_gold_reward(amount) -> int:
+	if amount is int or amount is float:
+		return int(amount)
+	match str(amount):
+		"small":    return 40
+		"moderate": return 100
+		"large":    return 180
+		_:
+			push_warning("EventManager: unrecognised gold reward '%s' — paying nothing" % str(amount))
+			return 0
+
 ## Convert descriptive food cost strings to concrete amounts.
 func _resolve_food_cost(amount) -> int:
 	if amount is int or amount is float:
@@ -944,6 +995,107 @@ func get_random_camp_event(realm: String) -> String:
 	if camp_events.is_empty():
 		return ""
 	return camp_events[randi() % camp_events.size()]
+
+
+## Replace {a} and {b} with the actor names, everywhere text is shown: the
+## event's own title and text, each choice's text, and the text on every outcome
+## branch the choice can take.
+func _substitute_actor_names(event: Dictionary) -> void:
+	for key in ["title", "text", "description"]:
+		if event.has(key):
+			event[key] = _fill_actors(str(event[key]))
+	for choice in event.get("choices", []):
+		if not choice is Dictionary:
+			continue
+		if choice.has("text"):
+			choice["text"] = _fill_actors(str(choice["text"]))
+		for branch in ["outcome", "success", "failure"]:
+			var out = choice.get(branch)
+			if out is Dictionary and out.has("text"):
+				out["text"] = _fill_actors(str(out["text"]))
+
+
+func _fill_actors(text: String) -> String:
+	for token in event_actors:
+		text = text.replace("{%s}" % token, str(event_actors[token]))
+	return text
+
+
+## Returns a random trait-trigger event the party can actually produce, or "".
+##
+## Trait events carry `"trigger": "trait"` and `"requires_trait": "<id>"`, and
+## only appear when somebody in the party has that trait — a gambler finds a
+## game, a debtor is found by a creditor. The carrier's name is passed back so
+## the caller can attribute it.
+##
+## Returns {"event_id": String, "character": Dictionary} or an empty dict.
+func get_random_trait_event(realm: String, party: Array) -> Dictionary:
+	var candidates: Array[Dictionary] = []
+	for event_id in event_database:
+		var ev: Dictionary = event_database[event_id]
+		if ev.get("trigger", "") != "trait":
+			continue
+		var ev_realm: String = ev.get("realm", "any")
+		if ev_realm != "any" and ev_realm != realm:
+			continue
+		var required: String = ev.get("requires_trait", "")
+		if required == "":
+			push_warning("EventManager: trait event '%s' has no requires_trait" % event_id)
+			continue
+		for member in party:
+			if required in member.get("traits", []):
+				candidates.append({"event_id": event_id, "character": member})
+				break
+	if candidates.is_empty():
+		return {}
+	return candidates[randi() % candidates.size()]
+
+
+## Returns a random relationship-trigger event, or "".
+##
+## These carry `"trigger": "relationship"` and `"requires_band"` (one of the
+## RelationshipSystem band ids), and fire on a specific pair of party members.
+##
+## Returns {"event_id": String, "a": Dictionary, "b": Dictionary} or empty.
+func get_random_relationship_event(realm: String, party: Array) -> Dictionary:
+	if not RelationshipSystem or party.size() < 2:
+		return {}
+	var candidates: Array[Dictionary] = []
+	for event_id in event_database:
+		var ev: Dictionary = event_database[event_id]
+		if ev.get("trigger", "") != "relationship":
+			continue
+		var ev_realm: String = ev.get("realm", "any")
+		if ev_realm != "any" and ev_realm != realm:
+			continue
+		var band: String = ev.get("requires_band", "")
+		if band == "":
+			push_warning("EventManager: relationship event '%s' has no requires_band" % event_id)
+			continue
+		for pair in RelationshipSystem.get_pairs_at_band(party, [band]):
+			candidates.append({"event_id": event_id, "a": pair["a"], "b": pair["b"]})
+	if candidates.is_empty():
+		return {}
+	return candidates[randi() % candidates.size()]
+
+
+## Grant one randomly generated piece of equipment (weapon, armor, or talisman).
+## Backs the "item_random" reward token used by many event outcomes.
+func _give_random_item_reward() -> void:
+	var rarity: String = "uncommon" if randf() < 0.35 else "common"
+	var roll := randf()
+	var item_id: String = ""
+	if roll < 0.45:
+		item_id = ItemSystem.generate_weapon_for_party(rarity)
+	elif roll < 0.8:
+		item_id = ItemSystem.generate_armor("", rarity)
+	else:
+		item_id = ItemSystem.generate_talisman(rarity)
+	if item_id != "":
+		ItemSystem.add_to_inventory(item_id)
+		print("EventManager: item_random reward -> %s" % item_id)
+	else:
+		push_warning("EventManager: item_random reward failed to generate an item")
 
 
 ## Teach a random spell to every party member who doesn't already know it.

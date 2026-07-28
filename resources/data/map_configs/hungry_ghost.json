@@ -584,6 +584,30 @@
           "one_time": true,
           "weight": 0.3,
           "tag": "domain_guild"
+        },
+        {
+          "event_id": "hg_recruit_choki",
+          "name": "At the Water's Edge",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hg_recruit_mehr",
+          "name": "A Glint in the Dark",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hg_recruit_nyingje",
+          "name": "The One Who Stayed",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
         }
       ],
       "pickups": [
@@ -1357,6 +1381,30 @@
           "one_time": true,
           "weight": 0.3,
           "tag": "domain_guild"
+        },
+        {
+          "event_id": "hg_recruit_nangwa",
+          "name": "Mid-Sentence",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hg_recruit_khedrup",
+          "name": "The Auspicious Rock",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hg_recruit_rasabhava",
+          "name": "The Preservation Lab",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
         }
       ],
       "pickups": [
@@ -1483,7 +1531,7 @@
               "value": [
                 "scroll_firebolt",
                 "scroll_lesser_heal",
-                "scroll_wind_step",
+                "scroll_blink",
                 "fire_charm_common",
                 "white_charm_common",
                 "black_charm_common",
@@ -2127,6 +2175,30 @@
           "one_time": true,
           "weight": 0.3,
           "tag": "domain_guild"
+        },
+        {
+          "event_id": "hg_recruit_prashan",
+          "name": "The Question at the Crossroads",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hg_recruit_durvasa",
+          "name": "The Returned Invoice",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
+        },
+        {
+          "event_id": "hg_recruit_gomchen",
+          "name": "Amid the Contracts",
+          "icon": "npc",
+          "blocking": false,
+          "one_time": true,
+          "weight": 2
         }
       ],
       "pickups": [

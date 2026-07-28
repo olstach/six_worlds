@@ -85,6 +85,10 @@ var guild_spell_lists: Dictionary = {}
 # Format: { "event_id": true, ... }
 var visited_locations: Dictionary = {}
 
+# Last healing-flavored location the party visited (teahouse, temple, town shop,
+# safe camp). Cloud Gate teleports here. {"map_id": String, "x": int, "y": int, "name": String}
+var last_healing_location: Dictionary = {}
+
 # Persistent world-state flags used by event chains and quests.
 # Keys are strings; values can be bool, int, or string.
 # Format: { "flag_key": value, ... }
@@ -634,6 +638,7 @@ func get_save_data() -> Dictionary:
 		"used_event_choices": used_event_choices.duplicate(true),
 		"guild_spell_lists": guild_spell_lists.duplicate(true),
 		"visited_locations": visited_locations.duplicate(true),
+		"last_healing_location": last_healing_location.duplicate(true),
 		"flags": flags.duplicate(true),
 		"active_quests": active_quests.duplicate(true),
 		"completed_quest_ids": completed_quest_ids.duplicate(),
@@ -655,6 +660,7 @@ func load_save_data(data: Dictionary) -> void:
 	used_event_choices = data.get("used_event_choices", {})
 	guild_spell_lists = data.get("guild_spell_lists", {})
 	visited_locations = data.get("visited_locations", {})
+	last_healing_location = data.get("last_healing_location", {})
 	flags = data.get("flags", {})
 	active_quests = []
 	for q in data.get("active_quests", []):

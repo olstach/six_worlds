@@ -232,6 +232,11 @@ func equip_item(character: Dictionary, item_id: String, slot: String) -> bool:
 	# Equip to character
 	_set_equipped_item(character, slot, item_id)
 
+	# Track attached prosthetics on the body plan so missing-limb penalties can
+	# be offset and the character sheet can show what is fitted where.
+	if is_prosthetic and BodySystem:
+		BodySystem.set_prosthetic_for_slot(character, slot, item_id)
+
 	# Update derived stats
 	if CharacterSystem:
 		CharacterSystem.update_derived_stats(character)
@@ -254,6 +259,10 @@ func unequip_item(character: Dictionary, slot: String) -> bool:
 
 	# Remove from slot
 	_set_equipped_item(character, slot, "")
+
+	# Detaching a prosthetic restores the full missing-limb penalty
+	if BodySystem and get_item(item_id).get("type", "") == "prosthetic":
+		BodySystem.set_prosthetic_for_slot(character, slot, "")
 
 	# Add to inventory
 	add_to_inventory(item_id, 1)
