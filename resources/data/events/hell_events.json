@@ -2761,14 +2761,14 @@
             "type": "text",
             "text": "You are still reading its movement when it surfaces directly in front of you — wave of heat, displaced lava, the ground lurching. You scramble back, singed and startled.",
             "rewards": {
-              "xp": 3
+              "xp": 3,
+              "hp_loss": {
+                "amount": "small",
+                "target": "all"
+              }
             },
             "karma": {
               "animal": 1
-            },
-            "damage": {
-              "type": "fire",
-              "amount": "small"
             }
           }
         }
@@ -3114,14 +3114,14 @@
             "type": "text",
             "text": "You manage a few meters before your knees give and you have to stand. The pilgrim doesn't look back, but their murmured prayer seems to include something new in it. Perhaps you contributed something after all.",
             "rewards": {
-              "xp": 6
+              "xp": 6,
+              "hp_loss": {
+                "amount": "tiny",
+                "target": "all"
+              }
             },
             "karma": {
               "human": 2
-            },
-            "damage": {
-              "type": "fire",
-              "amount": "tiny"
             }
           }
         }
@@ -3387,15 +3387,15 @@
             "type": "text",
             "text": "The cold is immense. But through it — something transmits directly, bypassing language: the sage's full experiential understanding of suffering as ground rather than obstacle. Your hand burns. The teaching lands intact. You will be finding its edges for a long time.",
             "rewards": {
-              "xp": 20
+              "xp": 20,
+              "hp_loss": {
+                "amount": "medium",
+                "target": "all"
+              }
             },
             "karma": {
               "human": 6,
               "god": 4
-            },
-            "damage": {
-              "type": "cold",
-              "amount": "medium"
             }
           },
           "outcome_failure": {

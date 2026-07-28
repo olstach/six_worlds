@@ -84,6 +84,10 @@ for _list in re.findall(r"for gold_key in \[([^\]]+)\]", _event_src):
 _m_gold = re.search(r"func _resolve_gold_reward.*?\n(?:func |\Z)", _event_src, re.S)
 GOLD_REWARD_TOKENS = set(re.findall(r'"([a-z_]+)":\s*return', _m_gold.group(0))) if _m_gold else set()
 
+# hp_loss tiers, parsed from the match arms so the two cannot drift apart.
+_m_hp = re.search(r'if "hp_loss" in rewards:.*?var party', _event_src, re.S)
+HP_LOSS_TIERS = set(re.findall(r'"(\w+)"(?=[,:])', _m_hp.group(0))) - {"amount", "target"} if _m_hp else set()
+
 # Event triggers the overworld actually rolls for. An event with any other
 # trigger is unreachable — nothing queries for it.
 EVENT_TRIGGERS = {"camp", "trait", "relationship"}
@@ -110,9 +114,27 @@ def item_ok(iid):
 
 
 # ── events ───────────────────────────────────────────────────────────────────
+OUTCOME_KEYS = {
+    "type", "text", "rewards", "karma", "cost", "enemy_group", "difficulty",
+    "shop_id", "shop_modifier", "companion_id", "companion_pool", "free",
+    "follow_up_event", "on_victory", "set_flags", "register_quest",
+    "defeat_boss", "roll_result", "enabled_by",
+}
+
+
 def check_outcome(outcome, ctx, depth=0):
     if not isinstance(outcome, dict) or depth > 5:
         return
+
+    # Same rule as reward keys, one level up: an outcome key nothing reads is a
+    # promise the event cannot keep. Three hell outcomes carried a `damage`
+    # block this way and dealt none.
+    for key in outcome:
+        if key not in OUTCOME_KEYS:
+            err("event->outcome_key",
+                f"{ctx}: outcome key '{key}' is not read by event_manager "
+                f"(HP damage belongs in rewards.hp_loss; fights use enemy_group)")
+
     otype = outcome.get("type", "text")
 
     if otype == "combat" and outcome.get("enemy_group", "") not in encounters:
@@ -177,6 +199,16 @@ def check_outcome(outcome, ctx, depth=0):
         if key not in HANDLED_REWARD_KEYS:
             err("event->reward_key",
                 f"{ctx}: reward key '{key}' has no handler in event_manager.apply_outcome()")
+
+    # hp_loss tiers the handler does not recognise fall through to a 20% default,
+    # which is silently not what the author asked for.
+    hp_loss = rewards.get("hp_loss")
+    if isinstance(hp_loss, dict):
+        amount = str(hp_loss.get("amount", ""))
+        if amount and amount not in HP_LOSS_TIERS:
+            err("event->hp_loss",
+                f"{ctx}: hp_loss amount '{amount}' unknown "
+                f"(known: {', '.join(sorted(HP_LOSS_TIERS))})")
 
     # Token-valued gold must be a token _resolve_gold_reward() recognises,
     # otherwise it resolves to 0.

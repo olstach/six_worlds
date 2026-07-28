@@ -549,7 +549,8 @@ func apply_outcome(outcome: Dictionary) -> void:
 					print("EventManager: Unknown item '%s', skipping" % item_id)
 
 		# HP loss — e.g. {"amount": "moderate", "target": "all"} to deal out-of-combat damage.
-		# amount: "light" (10%), "moderate" (25%), "heavy" (40%). target: "all" or "random".
+		# amount: "tiny" (5%), "light"/"small" (10%), "moderate"/"medium" (25%),
+		# "heavy"/"large" (40%). target: "all" or "random".
 		# HP is floored at 1 — events cannot kill party members.
 		if "hp_loss" in rewards:
 			var loss = rewards.hp_loss
@@ -557,10 +558,13 @@ func apply_outcome(outcome: Dictionary) -> void:
 			var target_mode: String = str(loss.get("target", "all"))
 			var pct: float
 			match amount_key:
-				"light":    pct = 10.0
-				"moderate": pct = 25.0
-				"heavy":    pct = 40.0
-				_:          pct = 20.0
+				"tiny":     pct = 5.0
+				"light", "small":     pct = 10.0
+				"moderate", "medium": pct = 25.0
+				"heavy", "large":     pct = 40.0
+				_:
+					push_warning("EventManager: unknown hp_loss amount '%s' — using 20%%" % amount_key)
+					pct = 20.0
 			var party = CharacterSystem.get_party()
 			var targets = []
 			if target_mode == "random" and not party.is_empty():

@@ -1869,7 +1869,9 @@
     "opposed_traits": [
       "gourmand",
       "night_drinker",
-      "flirt"
+      "flirt",
+      "drunk",
+      "bhang_enjoyer"
     ],
     "purgeable_by": [],
     "purge_difficulty": 0
@@ -1966,7 +1968,9 @@
       "devotion",
       "order"
     ],
-    "opposed_traits": [],
+    "opposed_traits": [
+      "hunter"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   },
@@ -2250,6 +2254,104 @@
       "arts"
     ],
     "opposed_traits": [],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "drunk": {
+    "name": "Drunk",
+    "description": "Past enjoying it. Drinks to arrive somewhere rather than to be anywhere.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "fire": -10,
+      "earth": -5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "drunk"
+    ],
+    "bond_tags": [
+      "vice",
+      "hardship"
+    ],
+    "opposed_traits": [
+      "ascetic"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
+    "purge_difficulty": 4
+  },
+  "bhang_enjoyer": {
+    "name": "Bhang Enjoyer",
+    "description": "Takes it at the festivals, and increasingly on the days that are not festivals.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "space": -5,
+      "water": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "bhang_enjoyer"
+    ],
+    "bond_tags": [
+      "vice",
+      "wonder"
+    ],
+    "opposed_traits": [
+      "ascetic"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "hunter": {
+    "name": "Hunter",
+    "description": "Reads ground the way other people read letters. Knows what passed, how long ago, and whether it was hungry.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {},
+    "skill_modifiers": {
+      "ranged": 1
+    },
+    "event_tags": [
+      "hunter"
+    ],
+    "bond_tags": [
+      "beasts",
+      "solitary"
+    ],
+    "opposed_traits": [
+      "sworn_vegetarian",
+      "pet_lover"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "pet_lover": {
+    "name": "Pet-lover",
+    "description": "Has never once passed an animal without stopping, and cannot be persuaded that this is a failing.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "pet_lover"
+    ],
+    "bond_tags": [
+      "beasts",
+      "sociable"
+    ],
+    "opposed_traits": [
+      "hunter"
+    ],
     "purgeable_by": [],
     "purge_difficulty": 0
   }

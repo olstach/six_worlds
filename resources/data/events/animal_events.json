@@ -1284,7 +1284,6 @@
           "text": "Fight your way through",
           "outcome": {
             "type": "combat",
-            "encounter": "animal_karka_vent",
             "text": "She braces. Her claws score the coral walls. Whatever comes next, she will not move from this vent.",
             "enemy_group": "animal_karka_vent",
             "difficulty": "hard"
@@ -1376,7 +1375,6 @@
           "text": "Challenge him",
           "outcome": {
             "type": "combat",
-            "encounter": "animal_shardula_lone",
             "text": "He rises from the rock in one fluid motion. His ears flatten. He has done this before.",
             "enemy_group": "animal_shardula_lone",
             "difficulty": "hard"
@@ -1448,7 +1446,6 @@
           "text": "Prove your worth in combat",
           "outcome": {
             "type": "combat",
-            "encounter": "animal_boss_simha_king",
             "text": "He rises slowly — no urgency, no anger. He has simply agreed to your terms. His voice carries one last note before the charge:\n\n'Good. I wanted to see if you could.'",
             "enemy_group": "animal_boss_simha_king",
             "difficulty": "boss"
