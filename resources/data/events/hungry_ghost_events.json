@@ -413,6 +413,45 @@
           }
         },
         {
+          "id": "frail_struggles",
+          "text": "Black water to the chest, and you are not built for this.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "frail"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You are not. You make it across and you make it across badly, and you spend the next day with something in your lungs that should not be in them.\n\nThe party slows for you, which you would rather they did not.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "random"
+              },
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": -8
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "strong_fords_it",
+          "text": "Take the rope across first. You are the one who can.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "strong"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You go in with the line and the current is exactly as bad as it looks and you stand in it anyway while everyone else comes over hand by hand.\n\nYour legs are unhappy for a day. Nobody else gets wet above the waist.",
+            "rewards": {
+              "xp": 25
+            }
+          }
+        },
+        {
           "id": "swim",
           "type": "default",
           "text": "Swim across",
@@ -662,6 +701,27 @@
             },
             "karma": {
               "human": 3
+            }
+          }
+        },
+        {
+          "id": "fastidious_appalled",
+          "text": "You cannot help it. You simply cannot help it.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "fastidious"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is not fear, which would at least be respectable. It is that everything here is *touching* everything else, and you spend the whole passage moving in a way the vetala find frankly hilarious.\n\nThey let you through specifically to see how far you will get.",
+            "rewards": {
+              "xp": 10,
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": -8
+                }
+              ]
             }
           }
         },
@@ -1167,6 +1227,26 @@
             "text": "You are, and the vetala can tell, and it is so pleased to have a genuine participant that it gives you the second riddle for free.\n\nYou get one of the two. It considers this a good afternoon's work for both of you.",
             "rewards": {
               "xp": 30
+            }
+          }
+        },
+        {
+          "id": "forgetful_loses_it",
+          "text": "It said the riddle. You heard the riddle.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "forgetful"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You heard the riddle and it has gone, entirely, in the time it took to start thinking about it.\n\nThe vetala repeats it once, with visible enjoyment, and then declines to repeat it again.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": -10
+                }
+              ]
             }
           }
         },
@@ -1879,6 +1959,21 @@
           }
         },
         {
+          "id": "iron_stomach_holds",
+          "text": "Green mist. You have kept worse down than this.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "iron_stomach"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Everyone else is retching before the halfway point and you are not, which means you are the one still capable of pulling people forward.\n\nIt is not a heroic contribution. It is the whole crossing, as it turns out.",
+            "rewards": {
+              "xp": 25
+            }
+          }
+        },
+        {
           "id": "sealed_armor",
           "type": "requirement",
           "text": "Seal your joints against the mist before crossing",
@@ -2113,6 +2208,40 @@
             },
             "karma": {
               "god": 7
+            }
+          }
+        },
+        {
+          "id": "war_hardened_reads_field",
+          "text": "You can read what happened here from where you are standing.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "war_hardened"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "A line held, then folded from the left. The reserve went in late and went in wrong. Everything after that was arithmetic.\n\nYou walk the field explaining it to nobody in particular, and the party is very quiet, and at the end of it you are more of a veteran than you were that morning.",
+            "rewards": {
+              "add_trait": "war_hardened",
+              "xp": 30
+            }
+          }
+        },
+        {
+          "id": "sharp_eyed_spots",
+          "text": "Something in that jumble is not corroded.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "sharp_eyed"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Nothing here should have survived. One thing has, under a shield that fell the right way up, and it is in the condition it was in on the day.",
+            "rewards": {
+              "items": [
+                "item_random"
+              ],
+              "xp": 20
             }
           }
         },
@@ -3278,6 +3407,21 @@
             "text": "The bound spirits stop their orbiting and turn inward.",
             "karma": {
               "asura": 4
+            }
+          }
+        },
+        {
+          "id": "attractive_noticed",
+          "text": "The court notices you before you have said anything.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "attractive"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It does, and the gyelpo — dead some centuries and still vain about his hall — decides that you improve the room.\n\nYou are seated well above where a traveller is seated, which is useful, and watched throughout, which is not.",
+            "rewards": {
+              "xp": 20
             }
           }
         },
@@ -5257,6 +5401,50 @@
           }
         },
         {
+          "id": "timid_will_not_cross",
+          "text": "It is made of people and it is over a hole that howls.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "timid"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is, and you cannot, and the party has to spend an hour finding a way that does not involve it.\n\nThe hour costs supplies. Nobody says anything about it, which somehow does not help.",
+            "rewards": {
+              "supplies": {
+                "food": -4
+              },
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": -12
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "brave_goes_across",
+          "text": "Somebody crosses first or nobody crosses.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "brave"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You go. The bridge says things while you are on it, in several voices, and you keep walking through all of them.\n\nOn the far side you find you have to sit down for a moment before waving the others over.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": 8
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "sing_lullaby",
           "type": "requirement",
           "text": "Sing to the people inside it",
@@ -5881,6 +6069,42 @@
           }
         },
         {
+          "id": "night_owl_falls_in",
+          "text": "It is the middle of the night and you are wide awake.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "night_owl"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Everyone else is asleep or nearly. You are at your best, and you fall in at the back of the procession and walk with it for a mile before it notices you.\n\nWhen it notices, it does not object. It makes room.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 10
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "light_sleeper_wakes",
+          "text": "You were awake before the light reached the camp.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "light_sleeper"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You always are. It means you see the procession from its first lantern to its last, which nobody else in the party does, and you count them.\n\nThe number matters later.",
+            "rewards": {
+              "xp": 20
+            }
+          }
+        },
+        {
           "id": "identify_enchantment",
           "type": "requirement",
           "text": "Study the enchantment — understand what drives the loop",
@@ -6350,7 +6574,8 @@
             "type": "text",
             "text": "A few minutes on the stone. The reality of the place presses in. You let it. Something small shifts.",
             "rewards": {
-              "xp": 8
+              "xp": 8,
+              "add_trait": "composed"
             },
             "karma": {
               "god": 4
@@ -7337,6 +7562,28 @@
             "text": "You read them back slowly. Each one. He is very still. When you finish, the hall is quiet. 'I know,' he says. 'Say it again. Slower.' You do. When you finish the second time, something changes in his face. 'I have been very foolish,' he says quietly. 'Will you walk with me? I need to think outside these walls.'",
             "karma": {
               "human": 4
+            }
+          }
+        },
+        {
+          "id": "oath_keeper_offers",
+          "text": "Offer to hold one of them. You are good for it.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "oath_keeper"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You take one obligation off the web — the smallest, and even the smallest is heavier than it looks — and the gomchen watches you accept it with an expression that has not been used in a long time.\n\nYou will keep it. That was never in question, which is precisely why it could be offered.",
+            "rewards": {
+              "add_trait": "oath_keeper",
+              "xp": 35,
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": 15
+                }
+              ]
             }
           }
         },
@@ -10681,6 +10928,28 @@
             "karma": {
               "god": 8,
               "human": 5
+            }
+          }
+        },
+        {
+          "id": "composed_walks_through",
+          "text": "Ranks do not attack what walks through them like it belongs.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "composed"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You walk down the middle at an even pace with your hands where they can be seen, and you do not speed up at any point, including the point at which the second rank turns its head.\n\nThey close behind you. Nothing else happens.",
+            "rewards": {
+              "add_trait": "composed",
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 10
+                }
+              ]
             }
           }
         },

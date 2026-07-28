@@ -359,6 +359,27 @@
           }
         },
         {
+          "id": "early_riser_first_pot",
+          "text": "You are up before the canopy is light. So is she.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "early_riser"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The proprietor is doing the first firing of the day when you come up the rope ladder, and there is a particular understanding between people who are awake at that hour by choice.\n\nYou get the first pot. The first pot is not the same as the others and she does not explain why.",
+            "rewards": {
+              "xp": 20,
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": 8
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "leave",
           "type": "default",
           "text": "Move on",
@@ -2219,6 +2240,36 @@
           }
         },
         {
+          "id": "attractive_seated_well",
+          "text": "The court is deciding where to put you.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "attractive"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It decides quickly and it decides well, and the seat you are given has a view of the proceedings that a trade delegation would have argued for.\n\nYou are aware this has nothing to do with anything you have done. It is still the better seat.",
+            "rewards": {
+              "xp": 20
+            }
+          }
+        },
+        {
+          "id": "flirt_at_court",
+          "text": "A court is only people, and people are your subject.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "flirt"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Within an hour you are on genuinely warm terms with two junior members of a delegation and one archivist, and the archivist is the one who matters.\n\nWhat you learn from her is not on the agenda and would not have been raised at it.",
+            "rewards": {
+              "xp": 30
+            }
+          }
+        },
+        {
           "id": "ask_memory",
           "type": "requirement",
           "text": "Ask the eldest what the naga remember of the realms above",
@@ -2852,6 +2903,44 @@
           }
         },
         {
+          "id": "strong_anchors",
+          "text": "Somebody has to be the anchor and it is obviously you.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "strong"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You take the upstream end and plant yourself, and the cold gets into your legs and stays there while five people cross a rope you are personally holding in place.\n\nYou go last. You are shaking by then and it does not matter.",
+            "rewards": {
+              "xp": 25
+            }
+          }
+        },
+        {
+          "id": "clubfooted_footing",
+          "text": "Roped or not, the bottom here is round stones.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "clubfooted"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Round stones and a fast current and a foot that has never once been reliable on either.\n\nYou go down mid-channel and the rope saves you, which is what the rope is for, and the pack you were carrying is not saved by anything.",
+            "rewards": {
+              "supplies": {
+                "food": -5
+              },
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": -8
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "read_water",
           "type": "requirement",
           "text": "Find the slack line the fish are using",
@@ -3338,6 +3427,27 @@
             },
             "karma": {
               "animal": 5
+            }
+          }
+        },
+        {
+          "id": "brave_stands",
+          "text": "Do not climb. Stand.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "brave"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Standing still in front of a charging sounder is a terrible idea that happens to be the correct one, and you are the only person present capable of doing it.\n\nThe matron breaks off four feet short. She was never going to commit; she needed to see whether you would.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": 12
+                }
+              ]
             }
           }
         },
@@ -4225,7 +4335,8 @@
                   "element": "space",
                   "amount": 15
                 }
-              ]
+              ],
+              "add_trait": "composed"
             },
             "karma": {
               "god": 6,
@@ -4558,6 +4669,41 @@
             "karma": {
               "human": 3,
               "animal": 2
+            }
+          }
+        },
+        {
+          "id": "hard_of_hearing_misses_it",
+          "text": "There is something to be heard here and you are not going to hear it.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "hard_of_hearing"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The others stop and tilt their heads and go quiet, and you watch them do it and understand only that something has been heard.\n\nBy the time it has been explained the thing that made the sound has moved, and the party's route with it.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": -8
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "fastidious_marks_route",
+          "text": "Nobody is getting lost in here on your watch.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "fastidious"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You mark every third turning, consistently, on the same side, at the same height.\n\nIt is fussy and slow and the party complains about it right up until the point where you walk everyone back out in a fifth of the time it took to walk in.",
+            "rewards": {
+              "xp": 25
             }
           }
         },
@@ -5149,6 +5295,51 @@
           }
         },
         {
+          "id": "quick_steps_off",
+          "text": "You will not need to hold until the last moment. You are faster than the last moment.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "quick"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You step off the line with time to spare, and having time to spare means you can watch the whole thing go past from a yard away, which almost nobody gets to do.\n\nIt is enormous. You will be describing it for weeks.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": 10
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "timid_scatters_early",
+          "text": "You are already running and it has not started yet.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "timid"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You are, and the running is the problem — a khadga follows movement, and you have supplied the only movement on the plain.\n\nIt follows you a long way before losing interest. The party finds you eventually.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "random"
+              },
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": -12
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "still_hunter",
           "type": "requirement",
           "text": "Do not move at all",
@@ -5361,6 +5552,28 @@
             "type": "text",
             "text": "Wings spread, in the open, in full sun, until sundown. It is a stupid practice and you both know it is a stupid practice and that is not an argument against it.\n\nWhen the light goes he folds his wings and says one sentence to you, and it is not about the practice.",
             "rewards": {
+              "xp": 35,
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": 15
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "renunciate_stands_longer",
+          "text": "You have already given up more than a day of sun.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "renunciate"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You stand past sundown, which he does not, and he comes back at moonrise to find out what you are doing.\n\nThe conversation that follows is the first one in months in which neither of you has to explain the premise.",
+            "rewards": {
+              "add_trait": "renunciate",
               "xp": 35,
               "pressure": [
                 {
@@ -6307,6 +6520,21 @@
             },
             "karma": {
               "animal": 3
+            }
+          }
+        },
+        {
+          "id": "sharp_eyed_counts",
+          "text": "Something in that herd is not a khadga.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "sharp_eyed"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Third group from the left, lying down, wrong shoulder line.\n\nIt has been in among them for some time and the herd has accepted it, which tells you considerably more about the thing than about the herd.",
+            "rewards": {
+              "xp": 25
             }
           }
         },

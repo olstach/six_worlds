@@ -563,6 +563,44 @@
           }
         },
         {
+          "id": "frail_cannot_carry",
+          "text": "You want to carry them and you cannot.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "frail"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You get about forty paces before your legs make the decision for you, and somebody else takes the weight without comment, which is worse than comment.\n\nThe traveller lives. You spend the evening being unhelpfully angry at your own arms.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": -10
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "strong_carries",
+          "text": "Pick them up. Keep walking.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "strong"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You pick them up and keep walking and the party rearranges itself around the fact without a word being spent on it.\n\nThey are at the waystation an hour before they would otherwise have been, which is the whole difference between the two available outcomes.",
+            "rewards": {
+              "xp": 25
+            },
+            "karma": {
+              "human": 4
+            }
+          }
+        },
+        {
           "id": "patient_presence",
           "type": "roll",
           "text": "Sit with them without rushing — wait until the shock recedes enough for words",
@@ -897,6 +935,71 @@
             "karma": {
               "human": 2,
               "animal": 2
+            }
+          }
+        },
+        {
+          "id": "brave_first",
+          "text": "Go in first. Somebody has to and it may as well be you.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "brave"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You go in first. The dark does what dark does and you keep walking through it, and the thing at the back of the cave turns out to be smaller than the sound suggested, which is usually the way.\n\nThe party comes in behind you considerably steadier than they would have.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": 10
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "timid_hangs_back",
+          "text": "You are not going in there. You are simply not.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "timid"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You are not, and no argument is going to move you, and the party goes in without you.\n\nYou hold the entrance for an hour listening to sounds you cannot interpret, which is very much worse than having gone in, and you know it the whole time.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": -15
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "clubfooted_slow",
+          "text": "The floor is ice at an angle and your foot is what it is.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "clubfooted"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You go down twice on the way in and the second one is bad — a knee into stone, the sound of it loud in the cave.\n\nWhatever lives here now knows the party is present. The rest of the approach has to be made at speed rather than quietly.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "tiny",
+                "target": "random"
+              },
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": -8
+                }
+              ]
             }
           }
         },
@@ -1487,6 +1590,27 @@
                 {
                   "element": "space",
                   "amount": 10
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "present_sits_down",
+          "text": "He is here. Be here.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "present"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "There is no teaching. You sit down opposite him in the snow and neither of you says anything for a considerable time.\n\nAt the end he laughs once, briefly, as though you had told a joke, and goes on his way. You will spend some weeks working out what was funny.",
+            "rewards": {
+              "xp": 35,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 15
                 }
               ]
             }
@@ -2375,6 +2499,42 @@
           }
         },
         {
+          "id": "quick_dashes",
+          "text": "You have always been faster than the situation requires.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "quick"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The gap is not really a gap. You are across it before it has finished being one, and the second surge arrives where you were standing rather than where you are.\n\nYou throw the rope back for everyone else.",
+            "rewards": {
+              "xp": 25
+            }
+          }
+        },
+        {
+          "id": "stubborn_refuses_around",
+          "text": "There is a way across. Going around is not a way across.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "stubborn"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "Everyone else has already agreed to go around and you have not, and the argument takes twenty minutes that could have been spent walking.\n\nYou are, in the end, correct: the crossing exists. It is also true that the twenty minutes cost more than the detour would have.",
+            "rewards": {
+              "xp": 15,
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": -5
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "go_around",
           "type": "default",
           "text": "Look for a way around the lava flow",
@@ -2504,6 +2664,32 @@
             "karma": {
               "human": 3,
               "god": 3
+            }
+          }
+        },
+        {
+          "id": "renunciate_leaves_it",
+          "text": "You are carrying something you have been meaning to put down.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "renunciate"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You put it in the niche. It is not an offering exactly — nobody is being asked for anything — it is simply somewhere to leave a thing so that it stops being yours.\n\nYou walk on lighter by an amount that has nothing to do with the weight.",
+            "rewards": {
+              "add_trait": "renunciate",
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": 15
+                },
+                {
+                  "element": "earth",
+                  "amount": 8
+                }
+              ]
             }
           }
         },
@@ -2664,6 +2850,42 @@
             "text": "Forty minutes later the clerk has heard about three campaigns you were not in, a title you do not hold, and a mutual acquaintance who does not exist.\n\nHe stamps the form to make it stop.",
             "rewards": {
               "xp": 20
+            }
+          }
+        },
+        {
+          "id": "patient_waits_it_out",
+          "text": "It is a clerk with a form. Let him have his form.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "patient"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You answer every question in order, including the four that are the same question, and you do not once indicate that you have noticed.\n\nThe clerk, who is braced for a fight the way clerks always are, has nothing to push against and stamps the thing in half the usual time.",
+            "rewards": {
+              "xp": 25
+            }
+          }
+        },
+        {
+          "id": "hot_tempered_snaps",
+          "text": "You have been standing at this table for a very long time.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "hot_tempered"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You are two sentences into telling him what you think of the table, the quill and the entire apparatus before anyone can get a hand on your arm.\n\nThe form is stamped eventually. It is stamped with an annotation, and the annotation will be waiting at the next checkpoint.",
+            "rewards": {
+              "gold": -15,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": -12
+                }
+              ]
             }
           }
         },
@@ -3776,6 +3998,22 @@
           }
         },
         {
+          "id": "composed_before_fight",
+          "text": "The crowd is not the fight. Do not spend anything on the crowd.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "composed"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You do not. You go out flat, unhurried and entirely uninterested in the tiers, and your opponent — who has been playing to them for a living — cannot find the rhythm they were expecting.\n\nIt is over rather quickly and the crowd does not enjoy it at all.",
+            "rewards": {
+              "xp": 30,
+              "gold": "moderate"
+            }
+          }
+        },
+        {
           "id": "bone_mace",
           "type": "requirement",
           "text": "Pick up an arena bone-club — meet them on local terms",
@@ -4766,6 +5004,71 @@
           }
         },
         {
+          "id": "flirt_works_the_stalls",
+          "text": "Every stall here is run by somebody bored.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "flirt"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They are, and boredom is the only currency you have never been short of.\n\nYou do not buy anything at a discount. You are simply given three things over the course of an afternoon, by three different people, each of whom believes they started it.",
+            "rewards": {
+              "items": [
+                "item_random"
+              ],
+              "gold": "small",
+              "xp": 15
+            }
+          }
+        },
+        {
+          "id": "content_buys_nothing",
+          "text": "You walk the whole market and want none of it.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "content"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "This is a strange sensation in a place engineered to produce the opposite, and one of the vendors follows you for a while trying to work out what is wrong with you.\n\nYou leave with your purse intact and an unusual amount of goodwill from the one stallholder who understood.",
+            "rewards": {
+              "xp": 20,
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": 10
+                },
+                {
+                  "element": "fire",
+                  "amount": 8
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "hard_of_hearing_misses",
+          "text": "The crowd noise here is total.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "hard_of_hearing"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You catch about one word in four, and the one in four does not include the part where the vendor names the real price, or the part where somebody behind you says your description out loud.\n\nYou find out about the second one later.",
+            "rewards": {
+              "gold": -20,
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": -8
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "friendly_haggle",
           "type": "roll",
           "text": "Strike up conversation with vendors — gather market intelligence through friendly haggling",
@@ -5106,6 +5409,31 @@
                 {
                   "element": "water",
                   "amount": 5
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "night_drinker_stays_late",
+          "text": "They have a fire and a bottle and no particular plans.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "night_drinker"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "So do you, now. The talk is good and the bottle is worse than the talk, and at some point in the small hours it stops being an evening and starts being a habit that has followed you into another realm.\n\nYou will feel this one for a while.",
+            "rewards": {
+              "add_trait": "addiction",
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": -15
+                },
+                {
+                  "element": "earth",
+                  "amount": -8
                 }
               ]
             }
@@ -5677,6 +6005,21 @@
           }
         },
         {
+          "id": "patient_hears_him",
+          "text": "He has not finished. Let him finish.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "patient"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It takes him a long time to get to the actual sentence, and the actual sentence is not the one he opened with.\n\nWhat he is done with is not the Guard. Once that is out, the rest of the conversation is a different conversation entirely.",
+            "rewards": {
+              "xp": 25
+            }
+          }
+        },
+        {
           "id": "just_ask",
           "type": "roll",
           "text": "Be someone worth following — just ask him.",
@@ -5818,6 +6161,28 @@
                 }
               ],
               "add_trait": "night_drinker"
+            }
+          }
+        },
+        {
+          "id": "night_drinker_again",
+          "text": "You know what is behind the counter and you know how many nights this makes.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "night_drinker"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You do know how many nights this makes. That is new — the counting is new — and you order anyway, which is the part that settles the question.\n\nNobody in the party says anything. Two of them exchange a look.",
+            "rewards": {
+              "add_trait": "drunk",
+              "gold": -25,
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": -12
+                }
+              ]
             }
           }
         },
