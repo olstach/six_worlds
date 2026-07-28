@@ -97,24 +97,18 @@ Each of these is an hour or less and touches one system.
 
 The mirror image of dead data: code paths that work and are never exercised.
 
-- [ ] **`trait` / `not_trait` event requirements** — fully implemented in
-  `event_manager.check_requirements()` and used by **zero** of the 336 events
-  with choices, though 11 trait/relationship events now fire off traits
-  directly. **This is the next planned pass**: a systematic sweep of every
-  event, placing trait gates where a disposition would reasonably make a
-  situation better or worse, and `add_trait` / `remove_trait` outcomes where an
-  event plausibly marks or unmarks someone. `not_trait` is as useful as
-  `trait` — `incurious` should close doors that `curious` opens.
-- [ ] **Most acquired traits are still unreachable by events.** Code hooks now
-  grant nine of them (see § Trait acquisition below), but events grant exactly
-  one (`hg_ancestor_spirit` → `devout`). `blood_handed`, `war_hardened`,
-  `haunted`, `addiction`, `oath_breaker`, `composed`, `enlightened_insight`,
-  `lapsed`, `merciful`, `renunciate`, `oath_keeper`, `touched_by_grace`,
-  `harrowed` and `beauty_struck` all wait on the events pass.
-- [ ] **`wound` and `sever_part` event rewards** — both handled, both unused by
-  any event. Nothing in the game maims you outside combat.
-- [ ] **Only 3 of the ~8 supported requirement keys are used** — events use
-  `skills` (458), `roll` (158), `attributes` (60) and nothing else.
+- [x] ~~**`trait` / `not_trait` event requirements**~~ — done in the four-part
+  sweep: **201 trait-gated choices** using 77 of the 84 gameplay traits, and
+  **76 `add_trait` / `remove_trait` outcomes** covering 30, across 152 of the
+  356 events. The five traits with no event presence (`bloodied`,
+  `death_touched`, `long_marched`, `maimed`, `mantra_worn`) are the ones code
+  hooks grant, which is deliberate — those are earned by playing, not chosen.
+  **All of this prose is Claude's and wants a pass.**
+- [ ] **Second pass on the sweep, if wanted** — 204 events still carry no trait
+  gate. Many genuinely do not want one; a gate on every event would make traits
+  read as a checklist. Worth revisiting once the first batch has been played.
+- [ ] **`wound` and `sever_part` event rewards** are still unused by any event —
+  nothing in the game maims you outside combat.
 - [ ] **Cursed items** — "cursed" is a status and a terrain type; zero cursed
   equipment exists, though the item type is registered.
 - [ ] **`mantra_count`** now feeds the practice traits, but the deeper consumer
@@ -154,8 +148,9 @@ The mirror image of dead data: code paths that work and are never exercised.
   zone events, hungry ghost's 34 gap-fill events, the three HG boss/pass-guardian
   events, and all 24 animal companion bios are Claude's prose, not yours. This is
   the single biggest content item and only you can do it.
-- [ ] **63 events are grey-only** (of 336 with choices) — no blue or yellow
-  option at all. The stated target is ≥2 meaningful checks per event.
+- [ ] **53 events are grey-only** (of 347 with choices) — no blue or yellow
+  option at all. The stated target is ≥2 meaningful checks per event. The trait
+  sweep reduced this from 63 by giving some of them their first gated choice.
 - [ ] **500 of 600 perks have empty `flavor`.** Better in your voice than mine.
 - [ ] **Quests: 3 total, all hell.** The board works and the validator now
   guarantees every step flag is settable, but hungry ghost and animal have none.
@@ -616,7 +611,14 @@ psychology link at all gained an obvious one. The crisis-reaction table
 followed: four entries moved to the element their trait now sits on, and the
 12 new traits brought the bright pole from 2 authored reactions to 12.
 
-**Behavioural and acquired traits.** 28 new traits: the CK-flavoured
+**Events x traits sweep.** Four parts, one per realm plus a pass for the plain
+traits the first three skipped: 201 trait-gated choices over 77 of the 84
+gameplay traits, 76 acquisitions over 30, across 152 events. Physical
+hindrances are used as hindrances — clubfooted goes down on the frozen cave
+ice, hard_of_hearing catches one word in four in the demon marketplace — since
+that is the only way those traits can be felt.
+
+**Behavioural and acquired traits.** 32 new traits: the CK-flavoured
 behavioural kind that two characters can bond over or that sets off an event by
 itself, and acquired traits that record what a run did to someone. Constant
 effects stay neutral by design — most carry no stat modifiers and work through
