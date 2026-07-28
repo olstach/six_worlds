@@ -410,9 +410,12 @@ func start_new_life(char_name: String, birth: String, background: String) -> voi
 		old_affinities = old_player.get("affinities", []).duplicate()
 		old_upgrades = old_player.get("persistent_upgrades", []).duplicate()
 
-	# Clear party and inventory
+	# Clear party and inventory. Relationships do not survive the death of the
+	# body they were formed in — a new life starts owing nobody anything.
 	party.clear()
 	ItemSystem.clear_inventory()
+	if RelationshipSystem:
+		RelationshipSystem.reset()
 
 	# Create the new character
 	create_player_character(char_name, birth, background)
@@ -1019,6 +1022,10 @@ func add_companion(character: Dictionary) -> bool:
 func remove_companion(index: int) -> bool:
 	if index <= 0 or index >= party.size():
 		return false
+	# Clear how the rest of the party felt about them, so re-recruiting later
+	# starts from the trait baseline rather than an inherited grudge.
+	if RelationshipSystem:
+		RelationshipSystem.forget_character(party[index])
 	party.remove_at(index)
 	return true
 

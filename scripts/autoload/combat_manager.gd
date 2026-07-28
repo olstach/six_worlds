@@ -403,6 +403,10 @@ func end_combat(victory: bool) -> void:
 	# Apply post-combat emotional pressure to all player characters
 	_apply_post_combat_pressure(victory)
 
+	# Shared danger moves people toward each other, and marks the ones it marks.
+	# Must run before all_units is cleared — it reads who was still standing.
+	_apply_post_combat_bonds_and_traits(victory)
+
 	combat_active = false
 	_deployment_phase = false
 	combat_ended.emit(victory)
@@ -425,6 +429,63 @@ func _apply_post_combat_pressure(victory: bool) -> void:
 		for member in party:
 			PsychologySystem.apply_pressure(member, "earth", -10.0)
 			PsychologySystem.apply_pressure(member, "space", -5.0)
+
+
+## Grant Death-touched to a party member who should have died and did not.
+## Called from the survive-a-fatal-blow paths; silent for enemies and summons.
+func _mark_death_touched(unit: Node) -> void:
+	if not TraitSystem or unit.team != Team.PLAYER:
+		return
+	if not "character_data" in unit or unit.character_data.is_empty():
+		return
+	TraitSystem.grant_trait(unit.character_data, "death_touched")
+
+
+## Post-combat relationship drift and combat-history traits.
+##
+## Deliberately cheap: a win nudges the whole party together a little, a loss
+## pushes them apart a little less, and two specific things get remembered
+## permanently — killing a boss, and being the only one left standing.
+func _apply_post_combat_bonds_and_traits(victory: bool) -> void:
+	var party: Array = CharacterSystem.get_party()
+	if party.is_empty():
+		return
+
+	if RelationshipSystem:
+		# Surviving something together is the main way opinions move at all.
+		RelationshipSystem.adjust_party(party, 2.0 if victory else -1.0,
+				"fought together" if victory else "lost a fight together")
+
+	if not TraitSystem or not victory:
+		return
+
+	# Bloodied — the party killed something with the boss role.
+	var killed_a_boss: bool = false
+	for unit in all_units:
+		if unit.team != Team.ENEMY or not unit.is_dead:
+			continue
+		var arch_id: String = unit.character_data.get("archetype_id", "")
+		if "boss" in EnemySystem.archetypes.get(arch_id, {}).get("roles", []):
+			killed_a_boss = true
+			break
+
+	# Sole Survivor — everyone else went down and this one did not. Only counts
+	# in a party that had someone to lose in the first place.
+	var standing: Array = []
+	var fell: int = 0
+	for unit in all_units:
+		if unit.team != Team.PLAYER or not "character_data" in unit:
+			continue
+		if unit.is_dead or unit.is_bleeding_out:
+			fell += 1
+		else:
+			standing.append(unit.character_data)
+
+	for member in party:
+		if killed_a_boss:
+			TraitSystem.grant_trait(member, "bloodied")
+	if fell >= 2 and standing.size() == 1:
+		TraitSystem.grant_trait(standing[0], "sole_survivor")
 
 
 ## Write current HP, mana, and persisting DoT statuses back to character_data
@@ -2324,6 +2385,7 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 				_remove_status_by_name(unit, effect.get("status", ""))
 				break
 		combat_log.emit("The ancestors hold %s back from the brink!" % unit.unit_name)
+		_mark_death_touched(unit)
 
 	# Swarmed: focus_save_on_damage — each hit forces a Focus save (DC 12) or the
 	# swarm's distraction costs the unit an action on its next turn.
@@ -2475,6 +2537,7 @@ func _kill_unit(unit: Node) -> void:
 				break
 		combat_log.emit("%s's eternal vow refuses death — they rise again!" % unit.unit_name)
 		unit_healed.emit(unit, unit.current_hp)
+		_mark_death_touched(unit)
 		return
 
 	unit.is_dead = true

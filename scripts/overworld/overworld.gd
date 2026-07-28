@@ -1343,10 +1343,19 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 	# === Advance time ===
 	GameState.advance_time(GameState.HOURS_PER_REST)
 
+	# === Rest-driven traits and rapport ===
+	var trait_messages: Array[String] = _tick_rest_traits(party)
+	if RelationshipSystem:
+		# A night that passed without incident is worth a little to everyone.
+		RelationshipSystem.adjust_party(party, 0.5, "rested together")
+
 	# === Toast ===
 	var day_str := "%s, %s" % [GameState.get_lunar_day_label(), GameState.get_time_of_day_label()]
 	var toast := "Party rested. %s." % day_str
 	for msg in activity_messages:
+		if not msg.is_empty():
+			toast += "\n" + msg
+	for msg in trait_messages:
 		if not msg.is_empty():
 			toast += "\n" + msg
 	for msg in wound_messages:
@@ -1359,6 +1368,42 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 	var pending_camp_event: String = _disturbance_event_id if not _disturbance_event_id.is_empty() else _activity_camp_event_id
 	if not pending_camp_event.is_empty():
 		call_deferred("_show_camp_event", pending_camp_event)
+
+
+## Traits that are earned or lost by the passage of rests rather than by any
+## single event. Runs once per rest, after time has advanced.
+##
+## Rest counting lives on the character rather than in GameState so that a
+## companion recruited late does not inherit the road the others walked.
+const RESTS_FOR_LONG_MARCHED: int = 30
+const RESTS_FOR_GRIEF_TO_SETTLE: int = 25
+
+func _tick_rest_traits(party: Array) -> Array[String]:
+	var messages: Array[String] = []
+	if not TraitSystem:
+		return messages
+
+	for char in party:
+		char["rests_taken"] = int(char.get("rests_taken", 0)) + 1
+		var name: String = char.get("name", "Someone")
+
+		# Long-marched: the road stops being an event.
+		if int(char["rests_taken"]) >= RESTS_FOR_LONG_MARCHED:
+			if TraitSystem.grant_trait(char, "long_marched"):
+				messages.append("%s has been on the road a long time now." % name)
+
+		# Grief does not vanish; it settles into observance. Counted from the
+		# rest at which the grief was first carried into camp.
+		if "grief_struck" in char.get("traits", []):
+			char["grief_rests"] = int(char.get("grief_rests", 0)) + 1
+			if int(char["grief_rests"]) >= RESTS_FOR_GRIEF_TO_SETTLE:
+				if TraitSystem.replace_trait(char, "grief_struck", "mourner"):
+					char["grief_rests"] = 0
+					messages.append("%s's grief has settled into something they can carry." % name)
+		elif char.has("grief_rests"):
+			char.erase("grief_rests")
+
+	return messages
 
 
 ## Show a camp event in the event display after a rest concludes.

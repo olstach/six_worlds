@@ -11,6 +11,18 @@ extends Node
 ## Pressure offsets → applied to emotional_baseline when a trait is added or removed
 ## Event tags       → referenced by event requirements: {"trait": "curious"}
 ## Purge            → use remove_trait(); purgeable_by lists which skills can remove it
+## Bond tags        → the vocabulary RelationshipSystem scores party rapport on
+## Opposed traits   → symmetric pairs that grate; also scored by RelationshipSystem
+
+## Emitted when an acquisition hook grants a trait for the first time. The
+## overworld shows a toast; the combat arena appends to the log.
+signal trait_gained(character_name: String, trait_id: String)
+
+## Emitted when a trait is dropped by a hook (a limb regrown, an addiction cured).
+signal trait_lost(character_name: String, trait_id: String)
+
+## Emitted when one trait settles into another — grief becoming observance.
+signal trait_replaced(character_name: String, old_id: String, new_id: String)
 
 var _traits: Dictionary = {}
 
@@ -108,6 +120,77 @@ func remove_trait(character: Dictionary, trait_id: String) -> void:
 	_apply_pressure_offset(character, trait_id, -1)
 	if CharacterSystem:
 		CharacterSystem.update_derived_stats(character)
+
+
+## Grant a trait once, announcing it, and report whether it was actually new.
+## This is what the acquisition hooks (wounds, limb loss, practice, combat) call:
+## they fire on events that can recur, and should stay silent after the first time.
+func grant_trait(character: Dictionary, trait_id: String) -> bool:
+	if trait_id not in _traits:
+		push_warning("TraitSystem.grant_trait: unknown trait '%s'" % trait_id)
+		return false
+	if trait_id in character.get("traits", []):
+		return false
+	add_trait(character, trait_id)
+	trait_gained.emit(character.get("name", "Someone"), trait_id)
+	return true
+
+
+## Swap one trait for another in a single step — grief settling into observance,
+## devotion lapsing. Silent if the character never had the old trait.
+func replace_trait(character: Dictionary, old_id: String, new_id: String) -> bool:
+	if old_id not in character.get("traits", []):
+		return false
+	remove_trait(character, old_id)
+	add_trait(character, new_id)
+	trait_replaced.emit(character.get("name", "Someone"), old_id, new_id)
+	return true
+
+
+## Drop a trait and say so. Mirrors grant_trait for the losing side.
+func lose_trait(character: Dictionary, trait_id: String) -> bool:
+	if trait_id not in character.get("traits", []):
+		return false
+	remove_trait(character, trait_id)
+	trait_lost.emit(character.get("name", "Someone"), trait_id)
+	return true
+
+
+## The bonding vocabulary this trait belongs to (shared tags draw characters
+## together, see RelationshipSystem).
+func get_bond_tags(trait_id: String) -> Array:
+	return get_trait(trait_id).get("bond_tags", [])
+
+
+## Traits that grate against this one. Always symmetric in the data.
+func get_opposed_traits(trait_id: String) -> Array:
+	return get_trait(trait_id).get("opposed_traits", [])
+
+
+## Every bond tag carried by a character, with duplicates — two devotion traits
+## should count for more than one.
+func get_character_bond_tags(character: Dictionary) -> Array:
+	var tags: Array = []
+	for trait_id in character.get("traits", []):
+		tags.append_array(get_bond_tags(trait_id))
+	return tags
+
+
+## Does the character have any of these traits?
+func has_any_trait(character: Dictionary, trait_ids: Array) -> bool:
+	for trait_id in trait_ids:
+		if trait_id in character.get("traits", []):
+			return true
+	return false
+
+
+## All trait ids on a character that carry the given bond tag.
+func traits_with_bond_tag(character: Dictionary, bond_tag: String) -> Array:
+	var found: Array = []
+	for trait_id in character.get("traits", []):
+		if bond_tag in get_bond_tags(trait_id):
+			found.append(trait_id)
+	return found
 
 
 ## Attempt to purge a trait via a skill-based practice (yoga, ritual).

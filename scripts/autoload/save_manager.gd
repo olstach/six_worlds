@@ -54,7 +54,8 @@ func save_game(slot: int) -> bool:
 		"characters": CharacterSystem.get_save_data(),
 		"items": ItemSystem.get_save_data(),
 		"karma": KarmaSystem.get_save_data(),
-		"map": MapManager.get_save_data()
+		"map": MapManager.get_save_data(),
+		"relationships": RelationshipSystem.get_save_data()
 	}
 
 	# Write save file
@@ -131,6 +132,9 @@ func load_game(slot: int) -> bool:
 	ItemSystem.load_save_data(save_data.get("items", {}))
 	KarmaSystem.load_save_data(save_data.get("karma", {}))
 	MapManager.load_save_data(save_data.get("map", {}))
+	# Older saves predate the relationship system; an absent key just means
+	# every pair starts from its trait baseline with no accumulated drift.
+	RelationshipSystem.load_save_data(save_data.get("relationships", {}))
 
 	current_slot = slot
 	print("SaveManager: Game loaded from slot %d" % slot)
@@ -175,6 +179,7 @@ func start_new_game(slot: int) -> void:
 		GameState.WORLDS[world_key].boss_defeated = false
 
 	# Reset party and create player character
+	RelationshipSystem.reset()
 	CharacterSystem.party.clear()
 	CharacterSystem.create_player_character("Karma Dorje", "human", "wanderer")
 

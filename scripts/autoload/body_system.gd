@@ -435,6 +435,10 @@ func sever_part(character: Dictionary, part_id: String) -> Array[String]:
 								character.get("equipment", {})["weapon_off"] = ""
 				break
 
+	# Losing a limb is permanent enough to become part of who they are.
+	if TraitSystem and not to_sever.is_empty():
+		TraitSystem.grant_trait(character, "maimed")
+
 	if CharacterSystem:
 		CharacterSystem.update_derived_stats(character)
 	return to_sever
@@ -449,6 +453,9 @@ func regrow_part(character: Dictionary, part_id: String) -> void:
 	var to_restore: Array[String] = _collect_parts_to_sever(plan, part_id)
 	for pid in to_restore:
 		bp["missing_parts"].erase(pid)
+	# Whole again — Maimed goes with the last missing part, not the first regrown.
+	if TraitSystem and bp["missing_parts"].is_empty():
+		TraitSystem.lose_trait(character, "maimed")
 	if CharacterSystem:
 		CharacterSystem.update_derived_stats(character)
 

@@ -477,11 +477,18 @@ func _exec_sadhana(performer: Dictionary, party: Array, enhanced: bool = false) 
 						purge_msg = " %s shed '%s' through ritual." % [target_char.get("name", "Performer"), tname]
 						break
 
+	# Repetition is the point of the rites; count them and mark the practitioner.
+	performer["sadhana_count"] = int(performer.get("sadhana_count", 0)) + 1
+	var ash_msg := ""
+	if TraitSystem and int(performer["sadhana_count"]) >= SADHANA_ASH_MARKED:
+		if TraitSystem.grant_trait(performer, "ash_marked"):
+			ash_msg = " The rites have left their mark."
+
 	var tier_names := ["Yoga Practice", "Smoke Offering", "Torma Offering", "Mandala Offering"]
 	var success_str := "~%d karma purified" % purified if purif_result.get("success", false) else "practice faltered — no karma purified"
 	var site_str := " The consecrated ground deepens the practice." if enhanced else ""
-	var msg := "%s: %s. %s.%s%s" % [
-		performer.get("name", "Performer"), tier_names[ritual_tier], success_str, purge_msg, site_str
+	var msg := "%s: %s. %s.%s%s%s" % [
+		performer.get("name", "Performer"), tier_names[ritual_tier], success_str, purge_msg, site_str, ash_msg
 	]
 	return {"message": msg, "ok": true}
 
@@ -646,12 +653,31 @@ func _exec_mantra_recitation(performer: Dictionary, enhanced: bool = false) -> D
 		increment = roundi(increment * 1.5)
 	performer["mantra_count"] = int(performer.get("mantra_count", 0)) + increment
 	PsychologySystem.decay_toward_baseline(performer, 20.0)
+	var earned: String = _check_practice_traits(performer)
 	return {
-		"message": "%s sits in quiet recitation. Mantra count: %d (+%d)." % [
-			performer.get("name", "Performer"), performer["mantra_count"], increment
+		"message": "%s sits in quiet recitation. Mantra count: %d (+%d).%s" % [
+			performer.get("name", "Performer"), performer["mantra_count"], increment, earned
 		],
 		"ok": true,
 	}
+
+
+## Practice accumulates into character. Thresholds are first-pass: at Yoga 3 a
+## nightly recitation reaches Steady Practice in about a fortnight of rests and
+## Mantra-worn in a season, which is meant to feel earned rather than granted.
+const MANTRA_STEADY: int = 40
+const MANTRA_WORN: int = 250
+const SADHANA_ASH_MARKED: int = 12
+
+func _check_practice_traits(performer: Dictionary) -> String:
+	if not TraitSystem:
+		return ""
+	var count: int = int(performer.get("mantra_count", 0))
+	if count >= MANTRA_WORN and TraitSystem.grant_trait(performer, "mantra_worn"):
+		return " The mantra has begun saying itself."
+	if count >= MANTRA_STEADY and TraitSystem.grant_trait(performer, "steady_practice"):
+		return " The practice has become a habit rather than an effort."
+	return ""
 
 
 func _exec_night_music(performer: Dictionary, party: Array, enhanced: bool = false) -> Dictionary:
