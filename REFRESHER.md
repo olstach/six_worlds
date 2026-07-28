@@ -10,6 +10,20 @@ changelog. This file is the orientation layer on top.
 
 ---
 
+## Reading and editing the writing
+
+`docs/review/` holds the prose as Markdown — animal companions, the trait list,
+and the events split by realm. Edit between the anchors, then:
+
+```bash
+python3 tools/import_review_docs.py            # dry run
+python3 tools/import_review_docs.py --write    # apply
+python3 tools/validate_data.py                 # always
+```
+
+`docs/review/README.md` has the full rules. Claude's unedited prose is marked
+**NEW EVENT** / **NEW** throughout.
+
 ## Where the project stands
 
 Three of six realms have real content:
