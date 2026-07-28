@@ -60,6 +60,27 @@
           }
         },
         {
+          "id": "beast_tender_reads",
+          "text": "They are not a mob. Look at how they are arranged.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "beast_tender"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They are arranged the way a nesting colony is arranged — the small ones inward, the big ones facing out, and the whole thing pointed away from something rather than toward you.\n\nYou back out along the line they are not watching, and nothing follows.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": 8
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "mud_puppet_play",
           "type": "roll",
           "text": "Stage an impromptu mud puppet play — a heroic epic specifically about the mudlings. Their ancient glories. Their terrible battles. The beauty of their mud.",
@@ -179,6 +200,25 @@
           }
         },
         {
+          "id": "pilgrim_offering",
+          "text": "Do the offering properly before asking for anything.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "pilgrim"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You set it out in the correct order, which takes a while and which he watches without comment.\n\nWhen you finally do ask, he answers as though you had been introduced, rather than as though you had arrived.",
+            "rewards": {
+              "xp": 25
+            },
+            "karma": {
+              "god": 3,
+              "human": 2
+            }
+          }
+        },
+        {
           "id": "attack",
           "type": "default",
           "text": "Attack him.",
@@ -190,6 +230,9 @@
               "asura": 5,
               "human": -5,
               "god": -5
+            },
+            "rewards": {
+              "add_trait": "blood_handed"
             }
           }
         }
@@ -320,6 +363,54 @@
             "karma": {
               "god": 6,
               "human": 3
+            },
+            "rewards": {
+              "add_trait": "beauty_struck"
+            }
+          }
+        },
+        {
+          "id": "incurious_walks_on",
+          "text": "It is a mountain made of glass. Note it and go around.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "incurious"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You go around. It takes an extra day and involves no revelation of any kind, which is precisely the outcome you were after.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": -8
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "beauty_struck_stops",
+          "text": "Stop. Do not climb it, do not speak to it. Look at it.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "beauty_struck"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You have seen something like this before — that is the trouble with having been struck once. You know what it is you are looking at.\n\nYou stay until the light moves off it. Nobody hurries you.",
+            "rewards": {
+              "xp": 20,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 12
+                },
+                {
+                  "element": "fire",
+                  "amount": 8
+                }
+              ]
             }
           }
         },
@@ -331,7 +422,8 @@
             "type": "text",
             "text": "You stand at the base of the mountain and look up. The light changes as you watch — slowly, the way a day changes, but condensed. Somewhere in the complexity of the refracted surface is something you cannot name but will not forget.",
             "rewards": {
-              "xp": 15
+              "xp": 15,
+              "add_trait": "beauty_struck"
             },
             "karma": {
               "human": 1
@@ -365,6 +457,9 @@
             "karma": {
               "human": 3,
               "god": 2
+            },
+            "rewards": {
+              "add_trait": "harrowed"
             }
           },
           "outcome_failure": {
@@ -431,7 +526,8 @@
                   "amount": 1,
                   "combats_remaining": 2
                 }
-              ]
+              ],
+              "add_trait": "clear_eyed"
             },
             "karma": {
               "god": 5,
@@ -547,6 +643,9 @@
               "hungry_ghost": 6,
               "animal": 3,
               "human": -3
+            },
+            "rewards": {
+              "add_trait": "covetous"
             }
           }
         },
@@ -593,6 +692,9 @@
             "karma": {
               "god": 6,
               "human": 3
+            },
+            "rewards": {
+              "add_trait": "beauty_struck"
             }
           }
         },
@@ -704,6 +806,31 @@
           }
         },
         {
+          "id": "tea_bath",
+          "text": "Ask whether they serve tea on the hot side. They will.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "tea_ritualist"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They do, and it is served in the manner of a place that has been serving it to the same twelve people for three hundred years.\n\nYou are, briefly, extremely comfortable. It is not an experience this realm offers often.",
+            "rewards": {
+              "xp": 10,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 12
+                },
+                {
+                  "element": "fire",
+                  "amount": 5
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "leave",
           "type": "default",
           "text": "Leave without going in",
@@ -755,6 +882,38 @@
             "text": "You begin with the time you crossed the frozen bridge over the River of Ash. By the second story, even the monks have stopped arguing. By the third, the toad in the silk robe is leaning forward with those great amber eyes half-closed in something like delight.\n\n'You've been places,' it says, when you finish. 'I've been a few places myself. A trade seems fair.'",
             "karma": {
               "human": 4
+            }
+          }
+        },
+        {
+          "id": "gossip_floor",
+          "text": "Say nothing and let the room talk over you.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "gossip"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "A bathhouse is the most porous building ever devised. In ninety minutes you learn who is in debt to whom, which official is not returning, and one thing that is very obviously a lie and therefore worth more than the rest of it.",
+            "rewards": {
+              "xp": 25,
+              "gold": "small"
+            }
+          }
+        },
+        {
+          "id": "scrimper_fee",
+          "text": "The entry fee is negotiable. It always is.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "scrimper"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It is not negotiable, and you negotiate it anyway, on the grounds that you will not be using the oils, the towels, or the attendant.\n\nThey take a third off to be rid of the conversation.",
+            "rewards": {
+              "gold": "small",
+              "xp": 10
             }
           }
         },
@@ -963,6 +1122,31 @@
           }
         },
         {
+          "id": "ascetic_sits",
+          "text": "You have sat in worse for less reason.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "ascetic"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You sit. The cold does what cold does and you let it, and at some point the distinction between enduring it and not minding it stops being available.\n\nOne of them opens their eyes at the end and gives you a single nod, which appears to be the local currency.",
+            "rewards": {
+              "xp": 35,
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": 12
+                },
+                {
+                  "element": "space",
+                  "amount": 10
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "leave",
           "type": "default",
           "text": "Leave them to their practice.",
@@ -1051,7 +1235,8 @@
                   "amount": 1,
                   "combats_remaining": 2
                 }
-              ]
+              ],
+              "add_trait": "generous"
             },
             "karma": {
               "god": 3,
@@ -1068,6 +1253,27 @@
             "text": "A pause.\n\n'I don't need this, child.'\n\nThe coins reappear in the bowl on your side, one by one.",
             "rewards": {
               "gold_returned": true
+            }
+          }
+        },
+        {
+          "id": "secret_bearer_waits",
+          "text": "She has not spoken in thirty years. You can manage an hour.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "secret_bearer"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You wait. You do not fill the silence, which is apparently the examination.\n\nWhat comes through the wall eventually is four words long. You will be thinking about it for some time.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 12
+                }
+              ]
             }
           }
         },
@@ -1202,7 +1408,10 @@
           "outcome": {
             "type": "shop",
             "shop_id": "rainbow_domain_shop",
-            "text": "Gladly, the yogi explains the workings of the mind as swirling reflections of rainbow light in a crystalline prism. The teaching opens doors you did not know were closed."
+            "text": "Gladly, the yogi explains the workings of the mind as swirling reflections of rainbow light in a crystalline prism. The teaching opens doors you did not know were closed.",
+            "rewards": {
+              "add_trait": "touched_by_grace"
+            }
           }
         },
         {
@@ -1247,6 +1456,28 @@
             "text": "\"Observing the unceasing movement of the stream of the sky, friend.\" The yogi says nothing more, but the simplicity of the answer lingers with you long after you leave.",
             "rewards": {
               "xp": 10
+            }
+          }
+        },
+        {
+          "id": "lapsed_asks",
+          "text": "Ask the question you stopped asking years ago.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "lapsed"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "It comes out badly. It comes out, which is more than it has done in a long while.\n\nThe answer does not resolve anything. It does establish, quite gently, that the question was always allowed.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 15
+                }
+              ],
+              "remove_trait": "lapsed"
             }
           }
         },
@@ -1367,6 +1598,47 @@
           }
         },
         {
+          "id": "poet_answers",
+          "text": "He is playing a form. Answer it in the form.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "poet"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You do not have his hands. You do have the shape of the thing, and you give him back the second half of a line he had left open — badly, in the wrong metre, and unmistakably the right line.\n\nHe stops playing. Then he starts again, from your version.",
+            "rewards": {
+              "xp": 35,
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": 10
+                },
+                {
+                  "element": "air",
+                  "amount": 10
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "braggart_court",
+          "text": "Tell the court who has just arrived.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "braggart"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The court is composed entirely of people who do this professionally, and they recognise a colleague.\n\nYou are given a seat, a drink, and a reputation you will have to spend the rest of the evening defending.",
+            "rewards": {
+              "xp": 15,
+              "gold": "small"
+            }
+          }
+        },
+        {
           "id": "leave",
           "type": "default",
           "text": "Leave without disturbing them.",
@@ -1459,6 +1731,31 @@
             },
             "cost": {
               "food": 1
+            }
+          }
+        },
+        {
+          "id": "mourner_receives",
+          "text": "Set out a place for it. Properly.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "mourner"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You do it the way it is done at home: a place, not an offering. Somewhere to sit rather than something to take.\n\nIt sits. That appears to have been the whole request, and in the morning the fire has burned down more slowly than it should have.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 12
+                }
+              ]
+            },
+            "karma": {
+              "hungry_ghost": -5,
+              "human": 3
             }
           }
         },
@@ -1729,6 +2026,27 @@
           }
         },
         {
+          "id": "debtor_knows_the_form",
+          "text": "You have had this conversation before, with worse.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "debtor"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "You know the form: never deny the debt, never accept the figure, and always counter-propose a schedule.\n\nIt works on the dead as well as it works on the living, which is either reassuring or extremely bleak.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": 10
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "refuse",
           "text": "Tell it you don't recognise the debt.",
           "type": "default",
@@ -1786,6 +2104,27 @@
           }
         },
         {
+          "id": "dreamer_leads",
+          "text": "You dream like this most nights. Take the lead.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "dreamer"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "The others describe a dream. You describe the *shape* of one, which turns out to be the thing they were all failing to say.\n\nOnce it has a shape, the differences between the four accounts become the interesting part.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 10
+                }
+              ]
+            }
+          }
+        },
+        {
           "id": "move_on",
           "text": "Say nothing. Dreams are not decisions.",
           "type": "default",
@@ -1834,6 +2173,22 @@
           "outcome": {
             "type": "text",
             "text": "They signal back — a single lamp moved twice. Then nothing more. Whoever they are, they're occupied or cautious. You sleep well enough anyway."
+          }
+        },
+        {
+          "id": "gossip_walks_over",
+          "text": "Of course you are going to go and find out who they are.",
+          "type": "requirement",
+          "requirements": {
+            "trait": "gossip"
+          },
+          "outcome": {
+            "type": "text",
+            "text": "They are three traders, badly lost, and delighted to see anyone at all.\n\nBy the time you go back to your own fire you have their route, their prices, and an unflattering account of a guard captain two days ahead.",
+            "rewards": {
+              "xp": 20,
+              "gold": "small"
+            }
           }
         },
         {
