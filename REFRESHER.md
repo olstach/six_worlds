@@ -16,19 +16,19 @@ Three of six realms have real content:
 
 | Realm | Map | Enemies | Events | Shops | Companions |
 |---|---|---|---|---|---|
-| **Hell** | ✓ (cold/fire + divider) | ✓ 45 archetypes | ✓ 73 events | ✓ | ✓ 24 |
-| **Hungry Ghost** | ✓ (3 zones) | ✓ 23 archetypes | ✓ 141 events (0% dead map weight) | ✓ | ✓ 23 |
-| **Animal** | ✓ (ocean/forest/meadow) | ✓ 34 archetypes | ✓ 86 events (0% dead map weight) | ✓ | ✓ 24 |
+| **Hell** | ✓ (cold/fire + divider) | ✓ 45 archetypes | ✓ 79 events | ✓ | ✓ 24 |
+| **Hungry Ghost** | ✓ (3 zones) | ✓ 23 archetypes | ✓ 150 events (0% dead map weight) | ✓ | ✓ 23 |
+| **Animal** | ✓ (ocean/forest/meadow) | ✓ 34 archetypes | ✓ 94 events (0% dead map weight) | ✓ | ✓ 24 |
 | Human / Asura / God | ✗ | ✗ | ✗ | ✗ | ✗ |
 
 Core systems all exist and are wired: character/XP, karma/reincarnation,
 events (grey/blue/yellow choices, dynamic DCs), grid combat (spells, AoE,
 statuses, AI, projectiles), overworld (real-time movement, mobs, portals),
 shops/training/guilds, items (procedural weapons/armor/talismans, implements,
-charms), perks (600), psychology/pressure, traits (103) and party
-relationships, wounds, body plans
-(multi-arm species), camp/rest/time/lunar calendar, save/load (3 slots),
-audio, cheat console. Engine is **Godot 4.6** (CLAUDE.md said 4.3 — updated).
+charms), perks (600), psychology/pressure, traits (103) and party relationships,
+wounds, body plans (multi-arm species), camp/rest/time/lunar calendar,
+save/load (3 slots), audio, cheat console. Engine is **Godot 4.6**
+(CLAUDE.md said 4.3 — updated).
 
 ## What the 2026-07-27 audit fixed (already committed)
 
@@ -89,7 +89,7 @@ Ordered roughly by how much finished work is sitting behind each gap.
 
 ### Content gaps in otherwise-done systems
 - ~~34 HG flavor events~~ — done. All three realms with content are now at
-  **0% dead map weight** (hell 73 events, hungry ghost 141, animal 86); every
+  **0% dead map weight** (hell 79 events, hungry ghost 150, animal 94); every
   marker the maps place resolves to a real event.
 - ~~Animal realm companions~~ — done, 24 added covering all 17 births.
 - ~~Animal realm zone events~~ — done, all 47 written.
