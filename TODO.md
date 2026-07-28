@@ -107,6 +107,11 @@ The mirror image of dead data: code paths that work and are never exercised.
 - [ ] **Second pass on the sweep, if wanted** — 204 events still carry no trait
   gate. Many genuinely do not want one; a gate on every event would make traits
   read as a checklist. Worth revisiting once the first batch has been played.
+- [ ] **Companions have no behavioural traits** — 25 of 31 are on no companion,
+  so a behavioural gate currently fires only when the *player* rolled it
+  (~3% per trait). Creation now rolls one, which makes them reachable, but
+  seeding companions would make the party feel much more distinct. Deliberately
+  left to Olaf, since it is companion characterisation.
 - [ ] **`wound` and `sever_part` event rewards** are still unused by any event —
   nothing in the game maims you outside combat.
 - [ ] **Cursed items** — "cursed" is a status and a terrain type; zero cursed
@@ -617,6 +622,19 @@ gameplay traits, 76 acquisitions over 30, across 152 events. Physical
 hindrances are used as hindrances — clubfooted goes down on the frozen cave
 ice, hard_of_hearing catches one word in four in the demon marketplace — since
 that is the only way those traits can be felt.
+
+**Trait gate balance.** The sweep was written for flavour and not costed:
+gates paid a median 25 XP against 12 elsewhere while costing nothing to
+unlock, and 124 of 201 outpaid every other choice in their own event. Rescaled
+by how often a party holds the trait (8/12/15/20), with a premium for risk and
+a dominance cap for common traits only. Dominance on commonly-held traits is
+now 4 of 25, and gates contribute ~3.8% of all event XP. `tools/rebalance_trait_gates.py`
+re-runs the whole analysis.
+
+**Behavioural traits were unobtainable.** Nothing granted one to anybody —
+creation rolled physical and personality only, and 25 of 31 are on no
+companion — so 110 of the 201 new gates could never fire. Creation now rolls
+one trait from each of the three layers: body, temperament, habits.
 
 **Behavioural and acquired traits.** 32 new traits: the CK-flavoured
 behavioural kind that two characters can bond over or that sets off an event by
