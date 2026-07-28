@@ -36,7 +36,8 @@ Plus 22 cross-realm domain events. **345 events total**, of which 336 have
 choices: 624 grey, 506 blue, 167 yellow.
 
 Other totals: **600 perks** (546 skill + 54 cross, every skill covered at every
-level 1–10), **363 spells**, **565 items**, **63 traits**, **12 prosthetics**.
+level 1–10), **363 spells**, **565 items**, **75 traits** (56 gameplay + 19
+racial), **12 prosthetics**.
 
 ### Systems
 
@@ -97,9 +98,16 @@ The mirror image of dead data: code paths that work and are never exercised.
 
 - [ ] **`trait` / `not_trait` event requirements** — fully implemented in
   `event_manager.check_requirements()`, used by **zero** of the 336 events with
-  choices. The 63 traits carry `event_tags` that only PsychologySystem reads.
-  Character traits currently affect events not at all. A dozen `trait`-gated
-  choices would make inborn traits feel real.
+  choices. The 75 traits carry `event_tags` that only PsychologySystem reads.
+  Character traits currently affect events not at all. **This is the next
+  planned pass**: go through the events and place trait gates where a
+  disposition would reasonably make a situation better or worse.
+- [ ] **12 of the 13 acquired traits are unreachable** — exactly one event in
+  the game grants a trait (`hg_ancestor_spirit` → `devout`). `blood_handed`,
+  `war_hardened`, `grief_struck`, `haunted`, `addiction`, `oath_breaker`,
+  `composed`, `enlightened_insight`, `lapsed`, and the three added in the
+  matrix pass (`merciful`, `renunciate`, `oath_keeper`) can never be acquired.
+  Acquired traits are meant to be the record of what a run did to a character.
 - [ ] **`wound` and `sever_part` event rewards** — both handled, both unused by
   any event. Nothing in the game maims you outside combat.
 - [ ] **Only 3 of the ~8 supported requirement keys are used** — events use
@@ -350,6 +358,42 @@ already mapped in `_find_slot_for_item()`.
 - Meditator's Repose (Yoga 4+): Full Rest always counts as a safe camp
 - Iron Constitution (Con 14+): Medicine heal_pct doubles at Full Rest
 
+## Trait matrix — reference for the events pass
+
+`psychology_system.gd` defines 30 named states, five elements × two poles ×
+three tiers. This is the canonical five-poison/five-wisdom scheme and every
+trait is now seated on it.
+
+| Element | Klesha: minor / major / crisis | Wisdom: minor / major / crisis |
+|---|---|---|
+| **Space** (delusion) | Confused / Dissociated / Absent | Clear-headed / Open / Luminous |
+| **Fire** (desire) | Restless / Craving / Consumed | Warm / Magnetizing / Radiant |
+| **Water** (aversion) | Irritable / Grief-struck / Poisonous | Focused / Clear-eyed / Compassionate |
+| **Earth** (pride) | Insecure / Arrogant / Humiliated | Grounded / Equanimous / Unshakeable |
+| **Air** (envy) | Anxious / Paranoid / Envious | Alert / Inspired / Brilliant |
+
+Trait coverage after the 2026-07-27 pass — 48 of 56 gameplay traits carry a
+pressure link (the eight without are plain bodily facts: `strong`, `quick`,
+`frail`, `clubfooted`, `hard_of_hearing`, `iron_stomach`, `night_owl`,
+`bird_lover`):
+
+| | klesha | wisdom |
+|---|---|---|
+| space | 6 | 6 |
+| fire | 6 | 6 |
+| water | 8 | 6 |
+| earth | 10 | 4 |
+| air | 6 | 5 |
+
+**Sign convention:** negative pushes the baseline toward klesha, positive toward
+wisdom, matching `apply_pressure()`. Trait and race data used to be written the
+other way round — see Part IV.
+
+**When placing trait gates in events**, the useful question is which of the five
+families the situation touches, then whether the trait makes the character
+better or worse at it. A `not_trait` gate is as useful as a `trait` gate:
+`incurious` should close doors that `curious` opens.
+
 ## Realm-specific mechanics
 
 - **Hell**: pure combat focus — done
@@ -512,6 +556,21 @@ PERKS.md synced: 81 `Requires` lines rewritten, 47 undocumented perks recorded.
 tokens against a handler doing `int()` (0 in GDScript for a non-numeric string),
 6 used a `gold_reward` key nothing read, including every Bone Arena payout.
 Fixed with `_resolve_gold_reward()` and a rename to the canonical `gold`.
+
+**Trait matrix pass.** Every trait and race pressure link was re-seated on the
+psychology matrix, correcting two things at once. **Sign:** the code runs −100
+klesha to +100 wisdom and four call sites follow it, but traits.json and
+races.json were authored as "positive = more of this affliction", so the
+baseline decay pulls toward pointed at the wrong pole — `grief_struck` carried
+water +20 while "Grief-struck" is itself the water dark major label, and
+`brave` decayed toward fear. **Element:** anger was filed on fire (fire is
+craving; aversion is water) and paranoia on space ("Paranoid" is the air major
+dark label). 36 traits re-seated by hand rather than sign-flipped, since
+`oath_breaker` and `addiction`'s earth term were already right; 3 races
+rebased; 12 traits added to fill the thin cells; 15 traits that had no
+psychology link at all gained an obvious one. The crisis-reaction table
+followed: four entries moved to the element their trait now sits on, and the
+12 new traits brought the bright pole from 2 authored reactions to 12.
 
 **Validator** (`tools/validate_data.py`) now covers: events → encounters, shops,
 items, spells, traits, skills, wounds, karma realms; map configs → events, mobs,

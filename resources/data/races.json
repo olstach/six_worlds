@@ -47,8 +47,8 @@
       "resistances": {},
       "emotional_baseline": {
         "space": 0,
-        "fire": 15,
-        "water": 10,
+        "fire": -10,
+        "water": -15,
         "earth": 0,
         "air": 0
       },
@@ -1850,8 +1850,8 @@
       "resistances": {},
       "emotional_baseline": {
         "space": 0,
-        "fire": 10,
-        "water": 0,
+        "fire": 0,
+        "water": -10,
         "earth": 0,
         "air": 0
       },
@@ -1941,8 +1941,8 @@
       "resistances": {},
       "emotional_baseline": {
         "space": 0,
-        "fire": 5,
-        "water": 0,
+        "fire": 0,
+        "water": -5,
         "earth": 0,
         "air": 0
       },

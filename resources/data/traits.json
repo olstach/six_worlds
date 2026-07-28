@@ -72,7 +72,9 @@
     "stat_modifiers": {
       "awareness": 1
     },
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "air": 5
+    },
     "skill_modifiers": {},
     "event_tags": [
       "sharp_eyed"
@@ -120,7 +122,7 @@
       "charm": 1
     },
     "pressure_modifiers": {
-      "air": 5
+      "earth": -5
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -138,7 +140,7 @@
       "awareness": 1
     },
     "pressure_modifiers": {
-      "water": 5
+      "air": -5
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -170,7 +172,7 @@
       "charm": -1
     },
     "pressure_modifiers": {
-      "fire": 15
+      "water": -15
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -189,7 +191,8 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "fire": -10
+      "water": 10,
+      "fire": 5
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -205,7 +208,8 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "water": -10
+      "air": 10,
+      "water": 5
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -223,7 +227,7 @@
       "charm": -1
     },
     "pressure_modifiers": {
-      "water": 15
+      "air": -15
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -241,7 +245,9 @@
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "space": 10
+    },
     "skill_modifiers": {
       "learning": 1
     },
@@ -257,7 +263,9 @@
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "earth": -10
+    },
     "skill_modifiers": {},
     "event_tags": [
       "stubborn"
@@ -276,7 +284,9 @@
       "charm": 1,
       "awareness": -1
     },
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "air": 10
+    },
     "skill_modifiers": {},
     "event_tags": [
       "trusting"
@@ -293,7 +303,9 @@
       "charm": -1,
       "awareness": 1
     },
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "air": -10
+    },
     "skill_modifiers": {},
     "event_tags": [
       "suspicious"
@@ -310,7 +322,8 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "earth": 10
+      "fire": -10,
+      "earth": -5
     },
     "skill_modifiers": {
       "trade": 1
@@ -333,7 +346,7 @@
       "charm": 1
     },
     "pressure_modifiers": {
-      "earth": -5
+      "earth": 10
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -349,7 +362,7 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "water": 10
+      "water": -10
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -370,7 +383,7 @@
       "charm": 1
     },
     "pressure_modifiers": {
-      "air": 10
+      "earth": -10
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -388,7 +401,9 @@
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "space": -5
+    },
     "skill_modifiers": {
       "learning": -1
     },
@@ -404,7 +419,9 @@
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "space": 5
+    },
     "skill_modifiers": {
       "learning": 1
     },
@@ -420,7 +437,9 @@
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "fire": -5
+    },
     "skill_modifiers": {},
     "event_tags": [
       "gourmand",
@@ -452,7 +471,9 @@
     "stat_modifiers": {
       "luck": 1
     },
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "fire": -10
+    },
     "skill_modifiers": {},
     "event_tags": [
       "gambler"
@@ -468,7 +489,9 @@
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "air": 5
+    },
     "skill_modifiers": {
       "persuasion": 1
     },
@@ -484,7 +507,9 @@
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "fire": -5
+    },
     "skill_modifiers": {},
     "event_tags": [
       "collector"
@@ -499,7 +524,7 @@
     "inborn": true,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "space": 5
+      "space": -10
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -517,7 +542,9 @@
     "category": "behavioral",
     "inborn": false,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "fire": -10
+    },
     "skill_modifiers": {},
     "event_tags": [
       "night_drinker"
@@ -537,7 +564,7 @@
       "charm": -1
     },
     "pressure_modifiers": {
-      "space": 10
+      "air": -15
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -574,7 +601,9 @@
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "earth": -5
+    },
     "skill_modifiers": {},
     "event_tags": [
       "fastidious"
@@ -589,8 +618,8 @@
     "inborn": false,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "water": 15,
-      "space": 5
+      "water": -15,
+      "space": -5
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -612,7 +641,7 @@
     },
     "pressure_modifiers": {
       "water": -10,
-      "fire": 10
+      "air": 5
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -630,7 +659,7 @@
     "inborn": false,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "water": 20
+      "water": -20
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -649,7 +678,7 @@
     "inborn": false,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "fire": 10,
+      "water": -10,
       "earth": -5
     },
     "skill_modifiers": {},
@@ -687,7 +716,9 @@
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "space": 10
+    },
     "skill_modifiers": {
       "yoga": 1,
       "ritual": 1
@@ -704,7 +735,9 @@
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "space": -10
+    },
     "skill_modifiers": {
       "ritual": -1
     },
@@ -723,8 +756,8 @@
     "inborn": false,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "fire": -5,
-      "water": -5
+      "fire": 5,
+      "water": 5
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -742,8 +775,8 @@
       "focus": 1
     },
     "pressure_modifiers": {
-      "space": -10,
-      "fire": -5
+      "space": 15,
+      "fire": 5
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -759,8 +792,8 @@
     "inborn": false,
     "stat_modifiers": {},
     "pressure_modifiers": {
-      "earth": -10,
-      "water": 10
+      "fire": -15,
+      "earth": -5
     },
     "skill_modifiers": {},
     "event_tags": [
@@ -1135,5 +1168,225 @@
     ],
     "purgeable_by": [],
     "purge_difficulty": 0
+  },
+  "content": {
+    "name": "Content",
+    "description": "Wants little. What arrives is generally enough.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "earth": 10,
+      "fire": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "content"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "oath_keeper": {
+    "name": "Oath-keeper",
+    "description": "Has held to a vow through the circumstances that made holding it expensive.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "earth": 15
+    },
+    "skill_modifiers": {
+      "yoga": 1
+    },
+    "event_tags": [
+      "oath_keeper"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "warm_hearted": {
+    "name": "Warm-hearted",
+    "description": "Easy to like, and easy about liking other people.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {
+      "charm": 1
+    },
+    "pressure_modifiers": {
+      "fire": 10,
+      "water": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "warm_hearted"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "renunciate": {
+    "name": "Renunciate",
+    "description": "Has put down something they wanted badly, on purpose, and did not pick it back up.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "fire": 15,
+      "earth": 5
+    },
+    "skill_modifiers": {
+      "yoga": 1
+    },
+    "event_tags": [
+      "renunciate"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "merciful": {
+    "name": "Merciful",
+    "description": "Has spared someone who could not have stopped them.",
+    "category": "acquired",
+    "inborn": false,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": 15
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "merciful"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "clear_eyed": {
+    "name": "Clear-eyed",
+    "description": "Sees what is in front of them without flinching from it or dressing it up.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": 10,
+      "space": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "clear_eyed"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "present": {
+    "name": "Present",
+    "description": "Fully in the room, whichever room it is.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {
+      "awareness": 1
+    },
+    "pressure_modifiers": {
+      "space": 10
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "present"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "celebrant": {
+    "name": "Celebrant",
+    "description": "Takes uncomplicated pleasure in other people's luck.",
+    "category": "behavioral",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "air": 10
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "celebrant"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "covetous": {
+    "name": "Covetous",
+    "description": "Measures their life against other people's, and comes up short every time.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "air": -10,
+      "earth": -5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "covetous"
+    ],
+    "purgeable_by": [
+      "yoga"
+    ],
+    "purge_difficulty": 3
+  },
+  "incurious": {
+    "name": "Incurious",
+    "description": "Has stopped asking. It was easier, and then it was habit.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "space": -10
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "incurious"
+    ],
+    "purgeable_by": [
+      "yoga"
+    ],
+    "purge_difficulty": 3
+  },
+  "grudge_bearer": {
+    "name": "Grudge-bearer",
+    "description": "Forgets nothing that was done to them, and keeps the ledger current.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "water": -10,
+      "air": -5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "grudge_bearer"
+    ],
+    "purgeable_by": [
+      "yoga",
+      "ritual"
+    ],
+    "purge_difficulty": 4
+  },
+  "chronic_pain": {
+    "name": "Chronic Pain",
+    "description": "The body's complaint is never entirely quiet.",
+    "category": "physical",
+    "inborn": true,
+    "stat_modifiers": {
+      "constitution": -1
+    },
+    "pressure_modifiers": {
+      "water": -10,
+      "earth": -5
+    },
+    "skill_modifiers": {
+      "yoga": 1
+    },
+    "event_tags": [
+      "chronic_pain"
+    ],
+    "purgeable_by": [
+      "ritual"
+    ],
+    "purge_difficulty": 5
   }
 }
