@@ -2815,6 +2815,58 @@ func _update_party_list() -> void:
 		empty_label.text = "No party members"
 		empty_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
 		party_list.add_child(empty_label)
+		return
+
+	_add_rapport_panel(party)
+
+
+## How the party members get on. Only shows pairs that have actually drifted off
+## neutral — a list of "Neutral" rows would be noise.
+func _add_rapport_panel(party: Array) -> void:
+	if not RelationshipSystem or party.size() < 2:
+		return
+
+	var rows: Array[Dictionary] = []
+	for i in range(party.size()):
+		for j in range(i + 1, party.size()):
+			var band: String = RelationshipSystem.get_band(party[i], party[j])
+			if band == "neutral":
+				continue
+			rows.append({
+				"a": party[i], "b": party[j], "band": band,
+				"opinion": RelationshipSystem.get_opinion(party[i], party[j]),
+			})
+	if rows.is_empty():
+		return
+
+	# Strongest feelings first, in either direction.
+	rows.sort_custom(func(x, y): return absi(int(x["opinion"])) > absi(int(y["opinion"])))
+
+	var header = Label.new()
+	header.text = "BETWEEN THEM"
+	header.add_theme_color_override("font_color", Color(0.75, 0.68, 0.45))
+	party_list.add_child(header)
+
+	var band_colors: Dictionary = {
+		"sworn": Color(0.45, 0.80, 0.55),
+		"warm": Color(0.60, 0.75, 0.50),
+		"cool": Color(0.75, 0.65, 0.40),
+		"rival": Color(0.85, 0.40, 0.35),
+	}
+
+	for row in rows:
+		var line = Label.new()
+		line.text = "%s & %s — %s" % [
+			row["a"].get("name", "?"), row["b"].get("name", "?"),
+			RelationshipSystem.get_band_label(row["a"], row["b"]),
+		]
+		line.add_theme_color_override("font_color",
+				band_colors.get(row["band"], Color(0.7, 0.7, 0.7)))
+		# Why, in the tooltip: shared bond tags and clashing traits.
+		var reasons: Array[String] = RelationshipSystem.explain(row["a"], row["b"])
+		if not reasons.is_empty():
+			line.tooltip_text = "\n".join(reasons)
+		party_list.add_child(line)
 
 func _create_party_card(character: Dictionary) -> PanelContainer:
 	var card = PanelContainer.new()

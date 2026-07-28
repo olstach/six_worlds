@@ -84,6 +84,14 @@ for _list in re.findall(r"for gold_key in \[([^\]]+)\]", _event_src):
 _m_gold = re.search(r"func _resolve_gold_reward.*?\n(?:func |\Z)", _event_src, re.S)
 GOLD_REWARD_TOKENS = set(re.findall(r'"([a-z_]+)":\s*return', _m_gold.group(0))) if _m_gold else set()
 
+# Event triggers the overworld actually rolls for. An event with any other
+# trigger is unreachable — nothing queries for it.
+EVENT_TRIGGERS = {"camp", "trait", "relationship"}
+
+# Relationship bands, read from the system rather than restated here.
+_rel_src = open(os.path.join(ROOT, "scripts/autoload/relationship_system.gd"), encoding="utf-8").read()
+RELATIONSHIP_BANDS = set(re.findall(r'"id":\s*"(\w+)"', _rel_src))
+
 _wound_src = open(os.path.join(ROOT, "scripts/autoload/wound_system.gd"), encoding="utf-8").read()
 _m = re.search(r"const WOUND_TYPES: Dictionary = \{(.*?)\n\}", _wound_src, re.S)
 WOUND_TYPES = set(re.findall(r'^\t"([a-z_]+)":', _m.group(1), re.M)) if _m else set()
@@ -183,6 +191,24 @@ def check_outcome(outcome, ctx, depth=0):
 def check_requirements(reqs, ctx):
     if not isinstance(reqs, dict):
         return
+    roll = reqs.get("roll")
+    if isinstance(roll, dict):
+        # event_manager reads roll_req.difficulty directly; any other spelling
+        # (dc_tier, dc, tier) crashes or silently misreads the check.
+        if "difficulty" not in roll:
+            err("event->roll_shape",
+                f"{ctx}: roll requirement has no 'difficulty' key (found {sorted(roll)})")
+        if "attribute" not in roll and "skill" not in roll:
+            err("event->roll_shape",
+                f"{ctx}: roll requirement names neither 'attribute' nor 'skill'")
+        if roll.get("attribute") and roll["attribute"] not in ATTRIBUTES:
+            err("event->roll_attr", f"{ctx}: roll attribute '{roll['attribute']}' unknown")
+        if roll.get("skill") and roll["skill"] not in skills:
+            err("event->roll_skill", f"{ctx}: roll skill '{roll['skill']}' unknown")
+    for trait_key in ("trait", "not_trait"):
+        tid = reqs.get(trait_key, "")
+        if tid and tid not in traits:
+            err("event->req_trait", f"{ctx}: {trait_key} '{tid}' unknown")
     for skill in reqs.get("skills", {}):
         if skill not in skills:
             err("event->req_skill", f"{ctx}: requirement skill '{skill}' unknown")
@@ -204,9 +230,41 @@ def check_requirements(reqs, ctx):
             err("event->roll", f"{ctx}: roll has neither attribute nor skill")
 
 
+CHOICE_KEYS = {
+    "id", "text", "type", "requirements", "outcome", "outcome_success",
+    "outcome_failure", "cost", "prerequisite", "once", "hidden_until",
+    "flavor", "note", "comment",
+}
+
 for eid, (event, src) in events.items():
+    # Trigger-gated events must name something that exists, or they can never fire.
+    trigger = event.get("trigger", "")
+    if trigger and trigger not in EVENT_TRIGGERS:
+        err("event->trigger", f"{src}:{eid}: unknown trigger '{trigger}'")
+    if trigger == "trait":
+        req = event.get("requires_trait", "")
+        if not req:
+            err("event->trigger", f"{src}:{eid}: trait event has no 'requires_trait'")
+        elif req not in traits:
+            err("event->trigger", f"{src}:{eid}: requires_trait '{req}' unknown")
+    if trigger == "relationship":
+        band = event.get("requires_band", "")
+        if not band:
+            err("event->trigger", f"{src}:{eid}: relationship event has no 'requires_band'")
+        elif band not in RELATIONSHIP_BANDS:
+            err("event->trigger",
+                f"{src}:{eid}: requires_band '{band}' is not a band "
+                f"(known: {', '.join(sorted(RELATIONSHIP_BANDS))})")
+
     for choice in event.get("choices", []):
         ctx = f"{src}:{eid}:{choice.get('id', choice.get('text', '?')[:20])}"
+        # A choice key nothing reads is silently dropped — a roll branch written
+        # as "success" instead of "outcome_success" simply never resolves.
+        for key in choice:
+            if key not in CHOICE_KEYS:
+                err("event->choice_key",
+                    f"{ctx}: choice key '{key}' is not read by event_manager "
+                    f"(roll branches are 'outcome_success'/'outcome_failure')")
         check_requirements(choice.get("requirements", {}), ctx)
         for key in ("outcome", "outcome_success", "outcome_failure"):
             if key in choice:

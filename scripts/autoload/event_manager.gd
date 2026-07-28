@@ -23,6 +23,11 @@ var current_event_object_id: String = ""
 var current_event_one_time: bool = false
 var _current_choice_id: String = ""  # Recorded when make_choice is called
 
+# Names to substitute into the next event's {a}/{b} tokens. Set by the caller
+# immediately before show_event for trait and relationship events; consumed and
+# cleared by start_event so it can never leak into an unrelated event.
+var event_actors: Dictionary = {}
+
 # Event database (will load from JSON)
 var event_database: Dictionary = {}
 
@@ -230,6 +235,13 @@ func start_event(event_id: String) -> bool:
 			return false
 	
 	current_event = event_database[event_id].duplicate(true)
+
+	# Trait and relationship events are about specific people, so their text
+	# carries {a} and {b} tokens. Substituted here, on the copy, so the database
+	# entry keeps its tokens for the next time it fires with different names.
+	if not event_actors.is_empty():
+		_substitute_actor_names(current_event)
+		event_actors.clear()
 
 	# Track first visits for location events — sets a flag other events can check
 	var event_type = current_event.get("type", "")
@@ -979,6 +991,88 @@ func get_random_camp_event(realm: String) -> String:
 	if camp_events.is_empty():
 		return ""
 	return camp_events[randi() % camp_events.size()]
+
+
+## Replace {a} and {b} with the actor names, everywhere text is shown: the
+## event's own title and text, each choice's text, and the text on every outcome
+## branch the choice can take.
+func _substitute_actor_names(event: Dictionary) -> void:
+	for key in ["title", "text", "description"]:
+		if event.has(key):
+			event[key] = _fill_actors(str(event[key]))
+	for choice in event.get("choices", []):
+		if not choice is Dictionary:
+			continue
+		if choice.has("text"):
+			choice["text"] = _fill_actors(str(choice["text"]))
+		for branch in ["outcome", "success", "failure"]:
+			var out = choice.get(branch)
+			if out is Dictionary and out.has("text"):
+				out["text"] = _fill_actors(str(out["text"]))
+
+
+func _fill_actors(text: String) -> String:
+	for token in event_actors:
+		text = text.replace("{%s}" % token, str(event_actors[token]))
+	return text
+
+
+## Returns a random trait-trigger event the party can actually produce, or "".
+##
+## Trait events carry `"trigger": "trait"` and `"requires_trait": "<id>"`, and
+## only appear when somebody in the party has that trait — a gambler finds a
+## game, a debtor is found by a creditor. The carrier's name is passed back so
+## the caller can attribute it.
+##
+## Returns {"event_id": String, "character": Dictionary} or an empty dict.
+func get_random_trait_event(realm: String, party: Array) -> Dictionary:
+	var candidates: Array[Dictionary] = []
+	for event_id in event_database:
+		var ev: Dictionary = event_database[event_id]
+		if ev.get("trigger", "") != "trait":
+			continue
+		var ev_realm: String = ev.get("realm", "any")
+		if ev_realm != "any" and ev_realm != realm:
+			continue
+		var required: String = ev.get("requires_trait", "")
+		if required == "":
+			push_warning("EventManager: trait event '%s' has no requires_trait" % event_id)
+			continue
+		for member in party:
+			if required in member.get("traits", []):
+				candidates.append({"event_id": event_id, "character": member})
+				break
+	if candidates.is_empty():
+		return {}
+	return candidates[randi() % candidates.size()]
+
+
+## Returns a random relationship-trigger event, or "".
+##
+## These carry `"trigger": "relationship"` and `"requires_band"` (one of the
+## RelationshipSystem band ids), and fire on a specific pair of party members.
+##
+## Returns {"event_id": String, "a": Dictionary, "b": Dictionary} or empty.
+func get_random_relationship_event(realm: String, party: Array) -> Dictionary:
+	if not RelationshipSystem or party.size() < 2:
+		return {}
+	var candidates: Array[Dictionary] = []
+	for event_id in event_database:
+		var ev: Dictionary = event_database[event_id]
+		if ev.get("trigger", "") != "relationship":
+			continue
+		var ev_realm: String = ev.get("realm", "any")
+		if ev_realm != "any" and ev_realm != realm:
+			continue
+		var band: String = ev.get("requires_band", "")
+		if band == "":
+			push_warning("EventManager: relationship event '%s' has no requires_band" % event_id)
+			continue
+		for pair in RelationshipSystem.get_pairs_at_band(party, [band]):
+			candidates.append({"event_id": event_id, "a": pair["a"], "b": pair["b"]})
+	if candidates.is_empty():
+		return {}
+	return candidates[randi() % candidates.size()]
 
 
 ## Grant one randomly generated piece of equipment (weapon, armor, or talisman).

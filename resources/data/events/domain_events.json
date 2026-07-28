@@ -987,7 +987,6 @@
           "id": "ask_teachings",
           "type": "default",
           "text": "Ask her for teachings.",
-          "ui_hint": "vanishing",
           "outcome": {
             "type": "follow_up",
             "follow_up_event": "dark_cave_interior",
@@ -1349,7 +1348,6 @@
           "id": "ask_for_job",
           "type": "default",
           "text": "Ask if they need any hired hands.",
-          "ui_hint": "vanishing",
           "outcome": {
             "type": "text",
             "text": "'I'm afraid my lord has very little in the way of worldly affairs to attend to anymore,' the servant says, pleasantly but with a finality that suggests the topic is closed."
@@ -1489,18 +1487,22 @@
           "id": "read_omen",
           "text": "Watch the smoke and try to read it.",
           "type": "roll",
-          "attribute": "awareness",
-          "dc": 14,
-          "outcome": {
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": 14
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The shapes shift too fast. By the time anything resolves, the fire has died back to coals. You saw something, but cannot say what."
+          },
+          "outcome_success": {
             "type": "text",
             "text": "The smoke forms something unmistakable — a path you haven't taken, a face you'll encounter, a moment of decision that has not yet arrived. The fire dims and the vision closes.",
             "rewards": {
               "xp": 25
             }
-          },
-          "failure_outcome": {
-            "type": "text",
-            "text": "The shapes shift too fast. By the time anything resolves, the fire has died back to coals. You saw something, but cannot say what."
           }
         },
         {
@@ -1546,9 +1548,17 @@
           "id": "speak_back",
           "text": "Answer it — ask what it wants.",
           "type": "roll",
-          "attribute": "awareness",
-          "dc": 12,
-          "outcome": {
+          "requirements": {
+            "roll": {
+              "attribute": "awareness",
+              "difficulty": 12
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The fire goes out. All of it, without smoke or cooling, just gone. It takes a long time to relight. No one speaks much after."
+          },
+          "outcome_success": {
             "type": "text",
             "text": "The fire brightens, then settles. Something received your address. The embers arrange and rearrange in patterns that suggest approval. You feel, briefly, observed and acknowledged.",
             "rewards": {
@@ -1557,10 +1567,6 @@
             "karma": {
               "hell": 10
             }
-          },
-          "failure_outcome": {
-            "type": "text",
-            "text": "The fire goes out. All of it, without smoke or cooling, just gone. It takes a long time to relight. No one speaks much after."
           }
         },
         {
@@ -1804,19 +1810,23 @@
           "id": "approach",
           "text": "Walk over and introduce yourself.",
           "type": "roll",
-          "attribute": "charm",
-          "dc": 11,
-          "outcome": {
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": 11
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "They receive you with flat unfriendliness. Not hostile — but by the time you've returned to your own fire, you've gained nothing and spent an awkward hour."
+          },
+          "outcome_success": {
             "type": "text",
             "text": "Traders, or something close to traders — three of them, neutral in disposition, willing to part with supplies at a fair price. You part on workmanlike terms.",
             "rewards": {
               "gold": 20,
               "xp": 10
             }
-          },
-          "failure_outcome": {
-            "type": "text",
-            "text": "They receive you with flat unfriendliness. Not hostile — but by the time you've returned to your own fire, you've gained nothing and spent an awkward hour."
           }
         },
         {
@@ -1842,6 +1852,753 @@
             "text": "Their fire goes out before yours. Two of them — moving efficiently, no wasted motion. Scouts or couriers, from their routine. Nothing threatening. The knowledge costs you some sleep but not much.",
             "rewards": {
               "xp": 10
+            }
+          }
+        }
+      ]
+    },
+    "trait_gambler_game": {
+      "id": "trait_gambler_game",
+      "title": "A Game at the Next Fire",
+      "trigger": "trait",
+      "realm": "any",
+      "rarity": "uncommon",
+      "requires_trait": "gambler",
+      "description": "There is another fire within sight of yours, and around it, the unmistakable rhythm of a game — the pause, the clatter, the noise people make when someone loses badly.\n\n{a} has been looking at it for some time now.",
+      "choices": [
+        {
+          "id": "play_it_safe",
+          "text": "Let {a} play, but set a limit before they go.",
+          "type": "requirement",
+          "outcome": {
+            "type": "text",
+            "text": "{a} agrees to the limit with the easy sincerity of someone who has agreed to limits before. This time, remarkably, they keep it — and come back with more than they left with, and with the name of a man who buys things quietly.",
+            "rewards": {
+              "gold": "small",
+              "xp": 15
+            }
+          },
+          "requirements": {
+            "skills": {
+              "persuasion": 3
+            }
+          }
+        },
+        {
+          "id": "play_deep",
+          "text": "Let it run. {a} knows what they are doing.",
+          "type": "roll",
+          "requirements": {
+            "roll": {
+              "attribute": "luck",
+              "difficulty": "moderate"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "It goes late. It goes badly, and then very well, and then the other fire goes quiet in the way fires do when the stranger is winning.\n\n{a} walks back before anyone decides to discuss it further.",
+            "rewards": {
+              "gold": "moderate",
+              "xp": 20
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The game turns. It turns the way games do when someone else at the fire has also been doing this for years.\n\n{a} comes back with empty hands and a story about the light being bad.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": -10
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "forbid",
+          "text": "Nobody is playing anything. We move at dawn.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "{a} does not argue, which is worse than arguing. They sit with their back to the other fire for the rest of the night, and are notably unrested in the morning.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": -10
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "trait_debtor_collector": {
+      "id": "trait_debtor_collector",
+      "title": "Someone Has Been Asking",
+      "trigger": "trait",
+      "realm": "any",
+      "rarity": "uncommon",
+      "requires_trait": "debtor",
+      "description": "A traveller shares your fire for an hour, and mentions, without any particular emphasis, that a man has been asking after someone matching {a}'s description in every settlement between here and the pass.\n\nHe is described as patient. That is the word the traveller uses. Patient.",
+      "choices": [
+        {
+          "id": "pay_ahead",
+          "text": "Send the money ahead with the traveller.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "It is most of what you have. The traveller takes it with the blank courtesy of a man who has carried worse.\n\nWhether it arrives is another question, but {a} sleeps properly for the first time in a while.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": 15
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "send_word",
+          "text": "Have {a} send word: terms, and a date.",
+          "type": "requirement",
+          "outcome": {
+            "type": "text",
+            "text": "The letter is careful. It admits the debt, proposes a schedule, and contains one line that a certain kind of creditor will recognise as an offer rather than a plea.\n\nThe asking stops for a while.",
+            "rewards": {
+              "xp": 20
+            }
+          },
+          "requirements": {
+            "skills": {
+              "trade": 4
+            }
+          }
+        },
+        {
+          "id": "ignore_it",
+          "text": "Let him ask. The world is large.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "The world is large. {a} spends the rest of the night working out exactly how large, and how many roads there are through it, and how few of them a patient man would need to watch.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": -12
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "trait_ascetic_fast": {
+      "id": "trait_ascetic_fast",
+      "title": "The Long Night",
+      "trigger": "trait",
+      "realm": "any",
+      "rarity": "uncommon",
+      "requires_trait": "ascetic",
+      "description": "{a} has not eaten since yesterday, and does not intend to eat today either. They have taken the far side of the fire and gone somewhere behind their own face.\n\nIt is not clear whether this is discipline or something that has stopped being discipline a while ago.",
+      "choices": [
+        {
+          "id": "sit_with_them",
+          "text": "Sit up with them. Say nothing.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You sit. The fire goes down. Around the fourth hour {a} says one sentence about their teacher, and then nothing else, and in the morning something between you has been settled without being discussed.",
+            "rewards": {
+              "xp": 15,
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": 10
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "guide_it",
+          "text": "Give the fast a shape — make it a practice, not a punishment.",
+          "type": "requirement",
+          "outcome": {
+            "type": "text",
+            "text": "You give them the frame: the hours, the posture, what to do with the part of the mind that starts bargaining around midnight.\n\nBy dawn {a} is hollow-eyed and unmistakably clearer.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": 15
+                },
+                {
+                  "element": "space",
+                  "amount": 10
+                }
+              ]
+            }
+          },
+          "requirements": {
+            "skills": {
+              "yoga": 4
+            }
+          }
+        },
+        {
+          "id": "make_them_eat",
+          "text": "Put food in their hands and stand there until it is gone.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "They eat, because you are standing there. They are steadier for it in the morning and quietly furious with you for three days.",
+            "rewards": {
+              "restore": {
+                "hp_percent": 10
+              }
+            }
+          }
+        }
+      ]
+    },
+    "trait_secret_bearer_slip": {
+      "id": "trait_secret_bearer_slip",
+      "title": "Nearly Said",
+      "trigger": "trait",
+      "realm": "any",
+      "rarity": "uncommon",
+      "requires_trait": "secret_bearer",
+      "description": "Late, with the fire low and everyone half-asleep, {a} begins a sentence.\n\nIt is four words long and it stops. Whatever the fifth word was going to be, it has been put back.",
+      "choices": [
+        {
+          "id": "let_it_go",
+          "text": "Pretend not to have heard.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You let it lie. {a} is grateful in the particular way of someone who has just been spared, and sits a little closer to the fire afterwards."
+          }
+        },
+        {
+          "id": "draw_it_out",
+          "text": "Ask gently. Some things want carrying together.",
+          "type": "roll",
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": "moderate"
+            }
+          },
+          "outcome_success": {
+            "type": "text",
+            "text": "It takes an hour and it costs them something.\n\nWhat comes out is smaller than you expected and much heavier than it looks, and {a} is a different kind of tired at the end of it — the kind that heals.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 20
+                }
+              ]
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "They talk around it for a while, pleasantly, and tell you nothing at all. By the end you are not certain there was ever a sentence.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": -5
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "press_hard",
+          "text": "Push. Whatever it is, it is walking with us.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "{a} closes like a door. Whatever was nearly said is now considerably further from being said than it was an hour ago.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": -10
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "trait_pilgrim_detour": {
+      "id": "trait_pilgrim_detour",
+      "title": "A Stone Off the Road",
+      "trigger": "trait",
+      "realm": "any",
+      "rarity": "uncommon",
+      "requires_trait": "pilgrim",
+      "description": "{a} has noticed something the rest of you walked past: a marker stone, half-swallowed, with the remains of offerings at its base.\n\nSomeone tended this within living memory. Nobody has for a while.",
+      "choices": [
+        {
+          "id": "tend_it",
+          "text": "Clear it properly. It costs an hour.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You clear the base, straighten the stone, leave what can be spared. {a} does the words from memory.\n\nThe hour is gone and something about the party's footing is better for the rest of the day.",
+            "rewards": {
+              "xp": 15,
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": 10
+                }
+              ]
+            },
+            "karma": {
+              "human": 3,
+              "god": 2
+            }
+          }
+        },
+        {
+          "id": "read_it",
+          "text": "Read what is carved there.",
+          "type": "requirement",
+          "outcome": {
+            "type": "text",
+            "text": "The script is three languages old and mostly worn, but enough survives: a name, a direction, and a warning that was specific once.\n\n{a} copies it down. It will mean something later.",
+            "rewards": {
+              "xp": 30
+            }
+          },
+          "requirements": {
+            "skills": {
+              "learning": 4
+            }
+          }
+        },
+        {
+          "id": "walk_on",
+          "text": "Note it and keep walking.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You keep walking. {a} looks back twice, and then makes a point of not looking back again.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": -8
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "trait_beast_tender_stray": {
+      "id": "trait_beast_tender_stray",
+      "title": "It Has Decided",
+      "trigger": "trait",
+      "realm": "any",
+      "rarity": "uncommon",
+      "requires_trait": "beast_tender",
+      "description": "Something has attached itself to the camp — thin, wary, and entirely certain about which member of the party it intends to belong to.\n\n{a} has already fed it, which settles the matter as far as it is concerned.",
+      "choices": [
+        {
+          "id": "keep_it",
+          "text": "It can come. It eats what we can spare.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "It comes. It is useless in every way that can be measured and the camp is measurably better for it.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 10
+                },
+                {
+                  "element": "fire",
+                  "amount": 5
+                }
+              ]
+            },
+            "karma": {
+              "animal": 4
+            }
+          }
+        },
+        {
+          "id": "send_it_off",
+          "text": "Drive it off before it starves with us.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "{a} does it themselves, which is the kindest way it can be done and does not appear to help.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": -10
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "put_it_to_work",
+          "text": "Anything that eats can earn.",
+          "type": "requirement",
+          "outcome": {
+            "type": "text",
+            "text": "Within three days it is walking point, and doing it better than anyone you would have assigned.",
+            "rewards": {
+              "xp": 25
+            },
+            "karma": {
+              "animal": 2
+            }
+          },
+          "requirements": {
+            "skills": {
+              "logistics": 3
+            }
+          }
+        }
+      ]
+    },
+    "trait_grudge_bearer_ledger": {
+      "id": "trait_grudge_bearer_ledger",
+      "title": "The Ledger",
+      "trigger": "trait",
+      "realm": "any",
+      "rarity": "uncommon",
+      "requires_trait": "grudge_bearer",
+      "description": "{a} is awake, and has been for some time, going over something in the dark with the thoroughness of a clerk.\n\nYou have seen this before. It is never nothing, and it is never recent.",
+      "choices": [
+        {
+          "id": "hear_it",
+          "text": "Ask who it is. Let them say the name.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "They say it. Then they say it again, with the details, and the details have not softened by a single degree in however many years it has been.\n\nSaying it out loud does not fix it. It does make the night shorter.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 8
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "cut_it",
+          "text": "Tell them plainly what carrying it is costing.",
+          "type": "requirement",
+          "outcome": {
+            "type": "text",
+            "text": "It lands badly and then, some hours later, it lands properly.\n\n{a} does not forgive anyone. But they put the ledger down for the night, which is not nothing.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 15
+                }
+              ]
+            }
+          },
+          "requirements": {
+            "skills": {
+              "yoga": 4
+            }
+          }
+        },
+        {
+          "id": "sharpen_it",
+          "text": "Let it sharpen. There will be a use for it.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You leave them to it. In the morning {a} is rested in the specific way of someone who has spent the night deciding something.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": -10
+                },
+                {
+                  "element": "fire",
+                  "amount": 5
+                }
+              ]
+            },
+            "karma": {
+              "hell": 3
+            }
+          }
+        }
+      ]
+    },
+    "trait_scarred_weather": {
+      "id": "trait_scarred_weather",
+      "title": "It Knows the Weather",
+      "trigger": "trait",
+      "realm": "any",
+      "rarity": "uncommon",
+      "requires_trait": "scarred",
+      "description": "The cold has got into {a}'s old wound, the way it does, and they are pretending with some effort that it has not.\n\nIt will pass by midday. It always passes by midday.",
+      "choices": [
+        {
+          "id": "treat_it",
+          "text": "Work on it properly before it stiffens.",
+          "type": "requirement",
+          "outcome": {
+            "type": "text",
+            "text": "Heat, pressure, and twenty patient minutes. {a} is functional by dawn instead of by noon, and says so in about four words.",
+            "rewards": {
+              "xp": 15,
+              "restore": {
+                "hp_percent": 15
+              }
+            }
+          },
+          "requirements": {
+            "skills": {
+              "medicine": 3
+            }
+          }
+        },
+        {
+          "id": "ask_about_it",
+          "text": "Ask how they got it.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "They tell it flatly, which is how the bad ones get told. It is shorter than you expected and there is a second story underneath it that does not get told tonight.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 5
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "say_nothing",
+          "text": "Say nothing and set an easy pace tomorrow.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "You set the pace without mentioning why. {a} notices, and does not mention that either. This is apparently how it is done.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": 8
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "rel_rivals_flashpoint": {
+      "id": "rel_rivals_flashpoint",
+      "title": "It Has Been Building",
+      "trigger": "relationship",
+      "realm": "any",
+      "rarity": "uncommon",
+      "requires_band": "rival",
+      "description": "{a} and {b} have been circling something for days, and tonight it arrives — over nothing, over a pot and whose turn it was, in the way these things always arrive over nothing.\n\nThe rest of the camp has gone very quiet.",
+      "choices": [
+        {
+          "id": "let_them",
+          "text": "Let them have it out. Words only.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "It is ugly and thorough and it takes about twenty minutes.\n\nAt the end of it they are not friends, but the thing that was under the surface is now above it, where everyone can see it, which is safer.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "fire",
+                  "amount": -5
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "mediate",
+          "text": "Get between them and make them each say the actual grievance.",
+          "type": "requirement",
+          "outcome": {
+            "type": "text",
+            "text": "You make them do it properly, one at a time, no interruptions.\n\nIt emerges that they are angry about two entirely different things, and have each spent a week being furious about the wrong one.",
+            "rewards": {
+              "xp": 30,
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": 10
+                }
+              ]
+            }
+          },
+          "requirements": {
+            "skills": {
+              "persuasion": 5
+            }
+          }
+        },
+        {
+          "id": "shut_it_down",
+          "text": "End it. Both of you, opposite sides of the fire, now.",
+          "type": "requirement",
+          "outcome": {
+            "type": "text",
+            "text": "They obey, because of how you said it.\n\nNothing is resolved. Nothing gets worse tonight either, which was the immediate problem.",
+            "rewards": {
+              "xp": 15
+            }
+          },
+          "requirements": {
+            "skills": {
+              "leadership": 4
+            }
+          }
+        }
+      ]
+    },
+    "rel_sworn_watch": {
+      "id": "rel_sworn_watch",
+      "title": "Second Watch",
+      "trigger": "relationship",
+      "realm": "any",
+      "rarity": "uncommon",
+      "requires_band": "sworn",
+      "description": "{a} takes second watch, which is {b}'s. No discussion, no announcement — they simply do not wake them.\n\nIn the morning {b} works it out from the burn-down of the fire and says nothing about it, which is its own kind of answer.",
+      "choices": [
+        {
+          "id": "leave_it",
+          "text": "Leave them to it.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "Whatever the two of them have built, it does not require your supervision. The party moves a little easier for the rest of the week.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": 10
+                },
+                {
+                  "element": "earth",
+                  "amount": 5
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "use_it",
+          "text": "Two who trust each other that far should be fighting together.",
+          "type": "requirement",
+          "outcome": {
+            "type": "text",
+            "text": "You put them on the same flank and spend an evening on what each of them is going to assume the other is doing.\n\nIt shows almost immediately.",
+            "rewards": {
+              "xp": 30,
+              "buffs": [
+                {
+                  "stat": "initiative",
+                  "amount": 3
+                }
+              ]
+            }
+          },
+          "requirements": {
+            "skills": {
+              "leadership": 4
+            }
+          }
+        }
+      ]
+    },
+    "rel_cool_thaw": {
+      "id": "rel_cool_thaw",
+      "title": "Neither of Them Will Say It",
+      "trigger": "relationship",
+      "realm": "any",
+      "rarity": "uncommon",
+      "requires_band": "cool",
+      "description": "{a} and {b} are not fighting. They are doing the other thing — the scrupulous politeness, the passing of the water skin at arm's length.\n\nIt has been four days of this and the whole camp is tired of it.",
+      "choices": [
+        {
+          "id": "force_it",
+          "text": "Give them a job that needs both of them and walk away.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "It takes them most of the morning, mostly in silence.\n\nThey come back having not discussed it at all, and having somehow discussed it entirely.",
+            "rewards": {
+              "xp": 15
+            }
+          }
+        },
+        {
+          "id": "talk_to_each",
+          "text": "Talk to each of them separately. Find out what it actually is.",
+          "type": "requirement",
+          "outcome": {
+            "type": "text",
+            "text": "It is, as it usually is, one remark made two weeks ago that one of them does not remember making and the other has not stopped hearing.",
+            "rewards": {
+              "xp": 25,
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": 8
+                }
+              ]
+            }
+          },
+          "requirements": {
+            "skills": {
+              "persuasion": 4
+            }
+          }
+        },
+        {
+          "id": "ignore",
+          "text": "They are adults. Leave it.",
+          "type": "default",
+          "outcome": {
+            "type": "text",
+            "text": "They are adults, and it does not improve. The politeness gets a little more scrupulous.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "water",
+                  "amount": -5
+                }
+              ]
             }
           }
         }

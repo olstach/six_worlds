@@ -172,6 +172,15 @@ func _ready() -> void:
 		PsychologySystem.autonomous_event_triggered.connect(_on_psychology_crisis)
 		PsychologySystem.emotional_crisis_log.connect(_on_emotional_crisis_log)
 
+	# Traits gained or lost, and relationships crossing a band, are things the
+	# player should never have to go looking in the character sheet to discover.
+	if TraitSystem:
+		TraitSystem.trait_gained.connect(_on_trait_gained)
+		TraitSystem.trait_lost.connect(_on_trait_lost)
+		TraitSystem.trait_replaced.connect(_on_trait_replaced)
+	if RelationshipSystem:
+		RelationshipSystem.relationship_changed.connect(_on_relationship_changed)
+
 	# Connect char sheet button and visibility sync
 	char_sheet_button.pressed.connect(func(): _open_char_sheet_to_tab(0))
 	equipment_button.pressed.connect(func(): _open_char_sheet_to_tab(1))
@@ -1368,6 +1377,42 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 	var pending_camp_event: String = _disturbance_event_id if not _disturbance_event_id.is_empty() else _activity_camp_event_id
 	if not pending_camp_event.is_empty():
 		call_deferred("_show_camp_event", pending_camp_event)
+	else:
+		# Nothing else claimed the night — the party's own dispositions may.
+		_roll_character_event(party)
+
+
+## Roll for an event the party generates by itself — one member's disposition
+## acting up, or two of them finally having it out.
+##
+## Only fires on a night nothing else claimed, so it never stacks on top of a
+## disturbance. Rates are first-pass: with both rolling, roughly one such night
+## in six, which should be an occasional punctuation rather than a routine.
+const TRAIT_EVENT_CHANCE: float = 0.12
+const RELATIONSHIP_EVENT_CHANCE: float = 0.08
+
+func _roll_character_event(party: Array) -> void:
+	if party.is_empty():
+		return
+	var realm: String = GameState.current_world
+
+	if randf() < TRAIT_EVENT_CHANCE:
+		var picked: Dictionary = EventManager.get_random_trait_event(realm, party)
+		if not picked.is_empty():
+			EventManager.event_actors = {
+				"a": picked["character"].get("name", "Someone"),
+			}
+			call_deferred("_show_camp_event", str(picked["event_id"]))
+			return
+
+	if randf() < RELATIONSHIP_EVENT_CHANCE:
+		var pair: Dictionary = EventManager.get_random_relationship_event(realm, party)
+		if not pair.is_empty():
+			EventManager.event_actors = {
+				"a": pair["a"].get("name", "Someone"),
+				"b": pair["b"].get("name", "Someone"),
+			}
+			call_deferred("_show_camp_event", str(pair["event_id"]))
 
 
 ## Traits that are earned or lost by the passage of rests rather than by any
@@ -1501,6 +1546,30 @@ func _on_psychology_crisis(character: Dictionary, element: String, polarity: Str
 ## Called when a quirk reaction fires (e.g. phobia triggered, trauma response).
 func _on_emotional_crisis_log(_character_name: String, message: String) -> void:
 	_show_toast(message)
+
+
+func _on_trait_gained(character_name: String, trait_id: String) -> void:
+	_show_toast("%s is now %s." % [character_name, TraitSystem.get_trait_name(trait_id)])
+
+
+func _on_trait_lost(character_name: String, trait_id: String) -> void:
+	_show_toast("%s is no longer %s." % [character_name, TraitSystem.get_trait_name(trait_id)])
+
+
+func _on_trait_replaced(character_name: String, old_id: String, new_id: String) -> void:
+	_show_toast("%s: %s has become %s." % [
+		character_name, TraitSystem.get_trait_name(old_id), TraitSystem.get_trait_name(new_id)])
+
+
+func _on_relationship_changed(name_a: String, name_b: String, band: String) -> void:
+	var phrasing: Dictionary = {
+		"sworn": "%s and %s have become inseparable.",
+		"warm": "%s and %s are getting on well.",
+		"neutral": "%s and %s have settled into civility.",
+		"cool": "%s and %s have cooled toward each other.",
+		"rival": "%s and %s can barely stand each other.",
+	}
+	_show_toast(str(phrasing.get(band, "%s and %s.")) % [name_a, name_b])
 
 
 func _show_toast(msg: String) -> void:

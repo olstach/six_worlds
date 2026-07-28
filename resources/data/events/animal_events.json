@@ -1187,15 +1187,29 @@
           "id": "stand_ground",
           "type": "roll",
           "text": "Stand your ground without speaking",
-          "roll": {
-            "stat": "constitution",
-            "dc": 12
+          "requirements": {
+            "roll": {
+              "attribute": "constitution",
+              "difficulty": 12
+            }
           },
-          "outcome": {
+          "outcome_success": {
             "type": "text",
             "text": "You hold her gaze without flinching. She is silent for a long moment.\n\n'Ah,' she says finally, and uncoils. She seems, somehow, pleased. 'The quiet ones always know where they're going.'",
             "rewards": {
               "xp": 15
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You hold it as long as you can, which is not as long as you thought.\n\nThe eyes are wrong in a way that takes a moment to locate — there is no lid, and no blink, and nothing behind them that recognises the courtesy you are attempting. When you look away she does not comment on it, which is worse.\n\n'Mm,' she says, and coils back. The audience is over, and you have been placed somewhere in her ordering of things.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": -10
+                }
+              ]
             }
           }
         },
@@ -1226,15 +1240,29 @@
           "id": "negotiate",
           "type": "roll",
           "text": "Attempt to negotiate passage",
-          "roll": {
-            "stat": "charm",
-            "dc": 14
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": 14
+            }
           },
-          "outcome": {
+          "outcome_success": {
             "type": "text",
             "text": "You speak to her in terms she respects — this is her territory, you acknowledge it; you need to pass, you explain why; you will not return unless invited.\n\nHer eyes do not change. But after a long pause, she steps aside — just enough. The passage is tight. She watches every inch of it.",
             "rewards": {
               "xp": 20
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "You make the argument. It is a decent argument, and she listens to all of it with her claws folded.\n\n'No,' she says, when you have finished. She does not explain, and it becomes clear she does not consider an explanation to be part of the transaction. The reef is hers. You are not from the reef.\n\nYou go the long way, and it costs you most of a day.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": -8
+                }
+              ]
             }
           }
         },
@@ -1300,15 +1328,33 @@
           "id": "proceed",
           "type": "roll",
           "text": "Proceed slowly, making no threatening gesture",
-          "roll": {
-            "stat": "finesse",
-            "dc": 13
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": 13
+            }
           },
-          "outcome": {
+          "outcome_success": {
             "type": "text",
             "text": "You walk forward with the deliberate calm of something that does not consider itself prey. Each step measured. Gaze steady.\n\nHe watches the whole crossing. When you reach the other side, he blinks once — slowly — and looks away. You have been assessed and found unremarkable. In predator terms, this is the best outcome.",
             "rewards": {
               "xp": 15
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "Halfway across, someone's foot finds the one loose stone on the ridge.\n\nIt is a small sound. It is enough. He is up and moving before the stone has finished falling, and the crossing becomes a run, and the run becomes a scramble down the scree on the far side with a good deal less dignity than anyone intended.\n\nHe does not follow past the ridgeline. He does not need to — he has made his point, and you are bleeding from the places the scree found.",
+            "rewards": {
+              "hp_loss": {
+                "amount": "light",
+                "target": "all"
+              },
+              "pressure": [
+                {
+                  "element": "air",
+                  "amount": -10
+                }
+              ]
             }
           }
         },
@@ -1370,15 +1416,29 @@
           "id": "tribute",
           "type": "roll",
           "text": "Offer tribute worthy of a king",
-          "roll": {
-            "stat": "charm",
-            "dc": 16
+          "requirements": {
+            "roll": {
+              "attribute": "charm",
+              "difficulty": 16
+            }
           },
-          "outcome": {
+          "outcome_success": {
             "type": "text",
             "text": "You present what you have with the ceremony the moment deserves. He examines it without touching it — not the goods, but the gesture.\n\n'Adequate,' he says. He steps aside without further ceremony. 'The realm of humans is expecting something. Try not to disappoint it.'",
             "rewards": {
               "xp": 30
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "He looks at what you have brought for a long, unhurried moment.\n\n'You have given me,' he says, 'what you could spare.' There is no anger in it. That is the difficulty — there is nothing in it at all. 'Tribute is what you cannot spare. Otherwise it is only tidying.'\n\nHe returns it. The goods are yours again and worth rather less than they were.",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "earth",
+                  "amount": -12
+                }
+              ]
             }
           }
         },
@@ -1398,15 +1458,29 @@
           "id": "circle",
           "type": "roll",
           "text": "Attempt to find another way through",
-          "roll": {
-            "stat": "finesse",
-            "dc": 18
+          "requirements": {
+            "roll": {
+              "attribute": "finesse",
+              "difficulty": 18
+            }
           },
-          "outcome": {
+          "outcome_success": {
             "type": "text",
             "text": "You study the roots, the shadows, the angles. There is a gap — not much of one, but enough.\n\nAs you slip through, his voice reaches you from the center of the clearing: 'Clever. But you'll find cleverness has limits, further on.'\n\nHe does not pursue.",
             "rewards": {
               "xp": 20
+            }
+          },
+          "outcome_failure": {
+            "type": "text",
+            "text": "The gap is there. It is exactly where you judged it to be, and it closes while you are still committed to it.\n\nHe has not moved quickly. He has simply been in the place you were going to be, for some time, waiting to see whether you had understood the ground as well as you believed.\n\n'No,' he says, almost kindly. 'Again, or not at all.'",
+            "rewards": {
+              "pressure": [
+                {
+                  "element": "space",
+                  "amount": -10
+                }
+              ]
             }
           }
         }
