@@ -52,6 +52,16 @@ python3 tools/export_review_docs.py
 **Regenerating discards anything you have written but not imported** — import
 first, then re-export.
 
+## Companion skills
+
+`ANIMAL_COMPANIONS.md` shows each companion's **Skills** as a comma list,
+strongest first. That list is `build_weights` — what the companion develops
+into as they earn XP, and what their random spell schools are drawn from.
+
+Edit the list and the importer rebuilds the weighting, 5/4/3/2 down the order.
+Leave it untouched and nothing is rewritten, so re-importing a document you
+only changed the prose in will not disturb existing weightings.
+
 ## What the markers mean
 
 - **NEW EVENT** — the whole event was written in the 2026-07-27 sessions.

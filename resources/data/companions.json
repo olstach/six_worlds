@@ -1913,9 +1913,8 @@
       "recruitment_cost": 900,
       "build_weights": {
         "water_magic": 5,
-        "ritual": 3,
-        "black_magic": 2,
-        "learning": 2
+        "sorcery": 4,
+        "enchantment": 3
       },
       "fixed_starter": {
         "skills": {
@@ -1952,9 +1951,8 @@
       "recruitment_cost": 950,
       "build_weights": {
         "persuasion": 5,
-        "learning": 4,
-        "water_magic": 2,
-        "leadership": 2
+        "water_magic": 4,
+        "grace": 3
       },
       "fixed_starter": {
         "skills": {
@@ -1984,12 +1982,12 @@
       "zone": "ocean",
       "birth": "karka",
       "background": "coral_guard",
-      "flavor_text": "Held one gap in the reef wall for nineteen years. Nothing got past. He does not consider this an achievement — it was simply the gap, and he was the one standing in it.",
+      "flavor_text": "Held one gap in the reef wall for nineteen years. Nothing got past. He does not consider this an achievement — it was simply his place in this life.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
-        "spears": 4,
         "armor": 5,
+        "spears": 4,
         "might": 3
       },
       "fixed_starter": {
@@ -2021,14 +2019,13 @@
       "zone": "ocean",
       "birth": "karka",
       "background": "vent_warden",
-      "flavor_text": "Farms the boiling seams where the water comes up from under the world. Everything she knows about sorcery she worked out alone, at depth, with nobody to correct her.",
+      "flavor_text": "Farms the boiling seams where the water comes up from under the world. Everything she knows about sorcery she worked out alone, at depth, with only the spirits to correct her.",
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
-        "sorcery": 4,
-        "maces": 3,
-        "armor": 3,
-        "alchemy": 2
+        "fire_magic": 5,
+        "water_magic": 4,
+        "sorcery": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2066,8 +2063,8 @@
       "recruitment_cost": 800,
       "build_weights": {
         "spears": 5,
-        "daggers": 3,
-        "guile": 2
+        "ranged": 4,
+        "water_magic": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2102,9 +2099,9 @@
       "portrait": "",
       "recruitment_cost": 1000,
       "build_weights": {
-        "water_magic": 4,
-        "space_magic": 4,
-        "ritual": 3
+        "water_magic": 5,
+        "black_magic": 4,
+        "space_magic": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2141,10 +2138,9 @@
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
-        "grace": 5,
-        "performance": 4,
-        "guile": 3,
-        "daggers": 2
+        "performance": 5,
+        "water_magic": 4,
+        "grace": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2178,10 +2174,9 @@
       "portrait": "",
       "recruitment_cost": 650,
       "build_weights": {
-        "logistics": 5,
-        "grace": 3,
-        "learning": 3,
-        "comedy": 2
+        "grace": 5,
+        "ranged": 4,
+        "logistics": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2217,10 +2212,9 @@
       "portrait": "",
       "recruitment_cost": 950,
       "build_weights": {
-        "leadership": 5,
-        "logistics": 3,
-        "medicine": 3,
-        "martial_arts": 2
+        "might": 5,
+        "earth_magic": 4,
+        "logistics": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2255,9 +2249,9 @@
       "portrait": "",
       "recruitment_cost": 800,
       "build_weights": {
-        "alchemy": 5,
-        "earth_magic": 3,
-        "medicine": 3
+        "medicine": 5,
+        "earth_magic": 4,
+        "alchemy": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2292,10 +2286,9 @@
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
-        "daggers": 4,
-        "martial_arts": 4,
-        "grace": 3,
-        "guile": 2
+        "unarmed": 5,
+        "guile": 4,
+        "grace": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2327,14 +2320,13 @@
       "zone": "forest",
       "birth": "rakshasa",
       "background": "hedonist",
-      "flavor_text": "Keeps an extremely good camp in the middle of nowhere and will not discuss what he is keeping it against. A rakshasa who stopped hunting and started entertaining, and is not sure the two are different.",
+      "flavor_text": "A rakshasa who stopped hunting and started entertaining. His reasons are as mysterious as his past, but some things may be gleaned from how he handles a knife when cutting an onion.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
-        "performance": 4,
-        "black_magic": 3,
-        "grace": 3,
-        "comedy": 2
+        "performance": 5,
+        "daggers": 4,
+        "grace": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2368,10 +2360,9 @@
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
-        "persuasion": 4,
-        "learning": 4,
-        "thievery": 3,
-        "comedy": 2
+        "thievery": 5,
+        "leadership": 4,
+        "trade": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2401,13 +2392,13 @@
       "zone": "forest",
       "birth": "vanara",
       "background": "jugaad",
-      "flavor_text": "Can build anything out of anything given an afternoon and no supervision. Every solution is temporary. Every temporary solution has now been load-bearing for six years.",
+      "flavor_text": "Can build anything out of anything given an afternoon and no supervision. Every solution is temporary, every temporary solution has now been load-bearing for six years.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
         "smithing": 5,
-        "guile": 3,
-        "learning": 3
+        "sorcery": 4,
+        "ranged": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2442,10 +2433,9 @@
       "portrait": "",
       "recruitment_cost": 900,
       "build_weights": {
-        "leadership": 5,
-        "persuasion": 3,
-        "logistics": 3,
-        "ranged": 2
+        "ranged": 5,
+        "persuasion": 4,
+        "leadership": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2481,9 +2471,8 @@
       "recruitment_cost": 700,
       "build_weights": {
         "medicine": 5,
-        "earth_magic": 3,
-        "grace": 2,
-        "logistics": 2
+        "white_magic": 4,
+        "earth_magic": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2518,9 +2507,9 @@
       "portrait": "",
       "recruitment_cost": 900,
       "build_weights": {
-        "ritual": 5,
-        "earth_magic": 4,
-        "persuasion": 2
+        "armor": 5,
+        "maces": 4,
+        "earth_magic": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2552,14 +2541,13 @@
       "zone": "meadow",
       "birth": "shyena",
       "background": "sky_lord",
-      "flavor_text": "Holds a thermal over the meadow the way a landlord holds a deed. Comes down only to settle things, and settles them quickly.",
+      "flavor_text": "Holds a thermal over the meadow as his personal fief. Comes down only to settle things, and settles them quickly.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
-        "unarmed": 5,
+        "grace": 5,
         "might": 4,
-        "logistics": 2,
-        "air_magic": 2
+        "swords": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2593,10 +2581,9 @@
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
-        "smithing": 5,
-        "earth_magic": 3,
-        "might": 3,
-        "armor": 2
+        "might": 5,
+        "maces": 4,
+        "enchantment": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2634,10 +2621,9 @@
       "portrait": "",
       "recruitment_cost": 800,
       "build_weights": {
-        "thievery": 4,
-        "trade": 4,
-        "guile": 3,
-        "black_magic": 2
+        "guile": 5,
+        "black_magic": 4,
+        "space_magic": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2672,9 +2658,9 @@
       "portrait": "",
       "recruitment_cost": 900,
       "build_weights": {
-        "martial_arts": 5,
-        "yoga": 4,
-        "might": 3
+        "swords": 5,
+        "might": 4,
+        "yoga": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2709,8 +2695,8 @@
       "recruitment_cost": 950,
       "build_weights": {
         "yoga": 5,
-        "ritual": 3,
-        "learning": 3
+        "white_magic": 4,
+        "persuasion": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2741,13 +2727,13 @@
       "zone": "meadow",
       "birth": "bhramara",
       "background": "swarm_caller",
-      "flavor_text": "One voice in a hive of four thousand, seconded to the surface for reasons the hive has not explained to him either. Sings in three parts by himself.",
+      "flavor_text": "One voice in a hive of four thousand, seconded to the surface for reasons the hive has not explained to them either. Sings in three parts by themselves.",
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
-        "summoning": 5,
-        "air_magic": 4,
-        "performance": 2
+        "performance": 5,
+        "summoning": 4,
+        "comedy": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2779,13 +2765,13 @@
       "zone": "meadow",
       "birth": "patanga",
       "background": "flame_seeker",
-      "flavor_text": "Stands facing the sun with his wings spread until sundown, every day, for eleven years. Wants the fire. Does not enter it. Says that is the whole practice and there is nothing else.",
+      "flavor_text": "Stands facing the sun with his wings spread until sundown, every day, for eleven years. Wants the fire. Does not enter it. That is the whole practice and there is nothing else.",
       "portrait": "",
       "recruitment_cost": 1000,
       "build_weights": {
-        "fire_magic": 5,
-        "yoga": 4,
-        "space_magic": 2
+        "yoga": 5,
+        "fire_magic": 4,
+        "ritual": 3
       },
       "fixed_starter": {
         "skills": {
