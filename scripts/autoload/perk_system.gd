@@ -392,6 +392,18 @@ func grant_perk(character: Dictionary, perk_id: String) -> bool:
 		"name": perk_data.get("name", perk_id)
 	})
 
+	# A perk whose effect is a standing condition should confer the trait that
+	# already models it rather than restating it in code: `"grants_traits":
+	# ["aquatic"]` in perks.json is enough, and the trait then carries the stat,
+	# skill, resistance and event-gating consequences for free.
+	#
+	# Only for effects that are unconditional and permanent. Diamond Body's
+	# poison immunity, for instance, applies *while unarmored*, which a trait
+	# cannot express — that stays as a combat check.
+	for trait_id in perk_data.get("grants_traits", []):
+		if TraitSystem:
+			TraitSystem.grant_trait(character, str(trait_id))
+
 	perk_granted.emit(character, perk_id, perk_data)
 	return true
 

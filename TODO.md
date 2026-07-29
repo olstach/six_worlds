@@ -131,12 +131,8 @@ The mirror image of dead data: code paths that work and are never exercised.
   with owning skill, L1/L5/L10 values and the system each would hook into is in
   Part III below. This is the largest single gap: most general skills currently
   pay out only their combat numbers.
-- [ ] **10 embedded `todo` keys in the data files** promise mechanics no code
+- [ ] **6 embedded `todo` keys in the data files** promise mechanics no code
   reads. Nothing in TODO.md ever tracked them:
-  - `traits.json` — `venom_ward`, `undead`, `incorporeal` all declare a
-    `resistances` block; TraitSystem applies only `stat_modifiers`,
-    `skill_modifiers` and `pressure_modifiers`, so those three traits are
-    cosmetic
   - `traits.json` — `aquatic` / `flying` party-wide tile traversal,
     `night_vision` darkness immunity, `insatiable` (+50% food, −50% rest
     recovery)
@@ -410,7 +406,34 @@ The trait baseline is recomputed on every read rather than stored, so editing
 traits.json can never leave a stale number in a save; only the drift from
 things that actually happened is persisted.
 
-### Trait acquisition
+### Traits as the home for standing effects
+
+Settled 2026-07-27. The line between the three systems:
+
+- **Traits** — permanent or run-long, identity-shaped, visible outside combat:
+  traversal, resistances, social access, what events offer you.
+- **Statuses** — turn-scoped combat state, with duration, stacking and dispel.
+  Unchanged; `Burning` is not a trait, but a character who *cannot burn* is.
+- **Perks** — remain the purchase. A perk whose effect is a standing condition
+  declares `"grants_traits": ["<id>"]` rather than restating it in code, and
+  the trait then carries the stat, skill, resistance and event-gating
+  consequences. Only for unconditional effects: Diamond Body's poison immunity
+  applies *while unarmored*, which a trait cannot express, so that stays a
+  combat check.
+
+Trait `resistances` are wired: `TraitSystem.get_resistances()` folds into
+`derived.resistances` beside racial and equipment values, so `CombatUnit`
+reads them with no combat-side change. Because disease is not a damage type
+but an affliction chance, `WoundSystem._resisted()` also rolls the same value
+against catching one — venom_ward both blunts poison damage and halves the
+chance of catching something from a poisoned blade.
+
+Still open for the temporary-trait idea: traits have no expiry. A
+`duration_rests` field ticked in `overworld._tick_rest_traits()` — the hook
+that already turns `grief_struck` into `mourner` — is the small piece that
+would let a spell or event grant `flying` for a while.
+
+## Trait acquisition
 
 Nine acquired traits are granted by code hooks, with no event needed:
 

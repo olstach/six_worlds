@@ -193,6 +193,22 @@ func traits_with_bond_tag(character: Dictionary, bond_tag: String) -> Array:
 	return found
 
 
+## Total resistances a character's traits confer, as {damage_type: percent}.
+## Summed across traits, so two sources of poison resistance stack the way
+## racial and equipment resistances already do.
+##
+## Read by CharacterSystem.update_derived_stats() into derived.resistances,
+## which is what CombatUnit.get_resistance() consults — so this is the only
+## place trait resistances need to exist.
+func get_resistances(character: Dictionary) -> Dictionary:
+	var total: Dictionary = {}
+	for trait_id in character.get("traits", []):
+		var t := get_trait(trait_id)
+		for damage_type in t.get("resistances", {}):
+			total[damage_type] = total.get(damage_type, 0) + int(t["resistances"][damage_type])
+	return total
+
+
 ## Plain-language lines describing everything a trait actually does.
 ##
 ## The flavour text is not meant to restate the mechanics — the tooltip shows

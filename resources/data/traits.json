@@ -1199,10 +1199,7 @@
       "venom_immune"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0,
-    "todo": [
-      "poison_resistance: apply 50% reduction when combat system handles poison damage"
-    ]
+    "purge_difficulty": 0
   },
   "nimble_mischief": {
     "name": "Nimble Mischief",
@@ -1294,11 +1291,7 @@
       "undead_nature"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0,
-    "todo": [
-      "disease_resistance: apply 50% reduction to disease damage/effects in combat system",
-      "poison_resistance: apply 25% reduction to poison damage in combat system"
-    ]
+    "purge_difficulty": 0
   },
   "incorporeal": {
     "name": "Incorporeal",
@@ -1320,10 +1313,7 @@
       "non_physical"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0,
-    "todo": [
-      "physical_resistance: apply 50% reduction to physical damage in combat system"
-    ]
+    "purge_difficulty": 0
   },
   "ancient_memory": {
     "name": "Ancient Memory",
