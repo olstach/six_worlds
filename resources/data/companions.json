@@ -2361,7 +2361,7 @@
       "recruitment_cost": 750,
       "build_weights": {
         "thievery": 5,
-        "leadership": 4,
+        "learning": 4,
         "trade": 3
       },
       "fixed_starter": {

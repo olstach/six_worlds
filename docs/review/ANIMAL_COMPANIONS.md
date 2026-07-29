@@ -18,7 +18,7 @@
 **Skills** *(strongest first)*
 
 <!--@ companions.json | brihannala | build_weights -->
-thievery, leadership, trade
+thievery, learning, trade
 <!--@end-->
 
 
