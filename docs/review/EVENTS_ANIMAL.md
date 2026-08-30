@@ -1,6 +1,6 @@
 # Animal — Events
 
-*94 events. 47 added in the 2026-07-27 sessions, marked **NEW EVENT**. Individual choices added later to an older event are marked **NEW**.*
+*94 events. No base snapshot is set, so nothing is marked as new — see the header of `export_review_docs.py` for how to turn the NEW markers back on.*
 
 *Edit the prose between the anchors. Headings, ids and the mechanical lines under each choice are generated — edits there are lost.*
 
@@ -637,7 +637,7 @@ You take a platform seat. A vanara sets down cups without ceremony.
 <!--@end-->
 
 
-#### **tea_ritualist_canopy** — *blue* — requires **trait: tea_ritualist**  **NEW**
+#### **tea_ritualist_canopy** — *blue* — requires **trait: tea_ritualist**
 
 <!--@ animal_events.json | animal_forest_teahouse | choices.tea_ritualist_canopy.text -->
 A teahouse a hundred feet up. Do this properly.
@@ -655,7 +655,7 @@ At the end she brings out the other pot — the one that does not get offered �
 <!--@end-->
 
 
-#### **early_riser_first_pot** — *blue* — requires **trait: early_riser**  **NEW**
+#### **early_riser_first_pot** — *blue* — requires **trait: early_riser**
 
 <!--@ animal_events.json | animal_forest_teahouse | choices.early_riser_first_pot.text -->
 You are up before the canopy is light. So is she.
@@ -727,7 +727,7 @@ You take a table. Nobody challenges you. This is the truce.
 <!--@end-->
 
 
-#### **gossip_watering_hole** — *blue* — requires **trait: gossip**  **NEW**
+#### **gossip_watering_hole** — *blue* — requires **trait: gossip**
 
 <!--@ animal_events.json | animal_meadow_teahouse | choices.gossip_watering_hole.text -->
 Everything that lives here comes to this water eventually.
@@ -1627,7 +1627,7 @@ You have not been insulted. In naga terms, this is an achievement.
 <!--@end-->
 
 
-#### **beauty_struck_again** — *blue* — requires **trait: beauty_struck**  **NEW**
+#### **beauty_struck_again** — *blue* — requires **trait: beauty_struck**
 
 <!--@ animal_events.json | naga_palace | choices.beauty_struck_again.text -->
 You have been ambushed by this before.
@@ -1787,7 +1787,7 @@ You set your offering at the carved archway and stand back. The hum shifts frequ
 <!--@end-->
 
 
-#### **curious_dissects** — *blue* — requires **trait: curious**  **NEW**
+#### **curious_dissects** — *blue* — requires **trait: curious**
 
 <!--@ animal_events.json | termite_cathedral | choices.curious_dissects.text -->
 Fifteen feet of engineering and nobody drew the plans.
@@ -1879,7 +1879,7 @@ But near the end, when the elder names the purpose of the journey, you understan
 <!--@end-->
 
 
-#### **bird_lover_knows_them** — *blue* — requires **trait: bird_lover**  **NEW**
+#### **bird_lover_knows_them** — *blue* — requires **trait: bird_lover**
 
 <!--@ animal_events.json | birds_congress | choices.bird_lover_knows_them.text -->
 You can name most of the delegations from here.
@@ -1973,7 +1973,7 @@ The khadga's presence, enormous even in death, seems to hold still for a moment.
 <!--@end-->
 
 
-#### **mourner_reads_arrangement** — *blue* — requires **trait: mourner**  **NEW**
+#### **mourner_reads_arrangement** — *blue* — requires **trait: mourner**
 
 <!--@ animal_events.json | bone_forest | choices.mourner_reads_arrangement.text -->
 The skulls face east. Somebody decided that.
@@ -2160,7 +2160,7 @@ You sit at the base of the cairn. At a crossroads, all directions are valid — 
 <!--@end-->
 
 
-#### **pilgrim_animal_trails** — *blue* — requires **trait: pilgrim**  **NEW**
+#### **pilgrim_animal_trails** — *blue* — requires **trait: pilgrim**
 
 <!--@ animal_events.json | animal_crossroads_shrine | choices.pilgrim_animal_trails.text -->
 Somebody built this where the animals cross, not where people do.
@@ -2492,7 +2492,7 @@ The path is yours.
 <!--@end-->
 
 
-#### **pet_lover_wrong_instinct** — *blue* — requires **trait: pet_lover**  **NEW**
+#### **pet_lover_wrong_instinct** — *blue* — requires **trait: pet_lover**
 
 <!--@ animal_events.json | animal_ridge_predator | choices.pet_lover_wrong_instinct.text -->
 He is enormous and beautiful and you want to say hello.
@@ -2659,7 +2659,7 @@ He has not moved quickly. He has simply been in the place you were going to be, 
 
 ---
 
-## animal_ocean_naga_patrol  **NEW EVENT**
+## animal_ocean_naga_patrol
 
 `realm: animal`
 
@@ -2757,7 +2757,7 @@ The lead's head turns before you have taken four steps. "They always try the tid
 
 ---
 
-## animal_ocean_karka_standoff  **NEW EVENT**
+## animal_ocean_karka_standoff
 
 `realm: animal`
 
@@ -2855,7 +2855,7 @@ A handhold gives. You land badly, directly in front of it, and the claw is alrea
 
 ---
 
-## animal_ocean_matsya_ambush  **NEW EVENT**
+## animal_ocean_matsya_ambush
 
 `realm: animal`
 
@@ -2953,7 +2953,7 @@ The young one you chose is not the weak point. He was bait.
 
 ---
 
-## animal_ocean_makara_feeding  **NEW EVENT**
+## animal_ocean_makara_feeding
 
 `realm: animal`
 
@@ -3051,7 +3051,7 @@ The arc of its back does turn your way. It has been aware of you for some time a
 
 ---
 
-## animal_ocean_makara_tribute  **NEW EVENT**
+## animal_ocean_makara_tribute
 
 `realm: animal`
 
@@ -3165,7 +3165,7 @@ The bell rings. Of course the bell rings. That is what the bell is for.
 
 ---
 
-## animal_ocean_naga_court  **NEW EVENT**
+## animal_ocean_naga_court
 
 `realm: animal`
 
@@ -3290,7 +3290,7 @@ Ask the eldest what the naga remember of the realms above
 
 ---
 
-## animal_ocean_pearl_merchant  **NEW EVENT**
+## animal_ocean_pearl_merchant
 
 `realm: animal`
 
@@ -3405,7 +3405,7 @@ The pressure turns you back twice, and the third time something large moves past
 
 ---
 
-## animal_ocean_karka_merchant  **NEW EVENT**
+## animal_ocean_karka_merchant
 
 `realm: animal`
 
@@ -3493,7 +3493,7 @@ He works on your armour for two hours without once looking at you, and hands it 
 
 ---
 
-## animal_ocean_sunken_ship  **NEW EVENT**
+## animal_ocean_sunken_ship
 
 `realm: animal`
 
@@ -3608,7 +3608,7 @@ You say the words over the water. Nothing visible happens, which is how it usual
 
 ---
 
-## animal_ocean_naga_temple  **NEW EVENT**
+## animal_ocean_naga_temple
 
 `realm: animal`
 
@@ -3714,7 +3714,7 @@ The water comes to your chest and goes away again and comes back. Somewhere in t
 
 ---
 
-## animal_ocean_thermal_vents  **NEW EVENT**
+## animal_ocean_thermal_vents
 
 `realm: animal`
 
@@ -3811,7 +3811,7 @@ A vent you had judged steady surges as you pass. The water is instantly, unsurvi
 
 ---
 
-## animal_ocean_current_crossing  **NEW EVENT**
+## animal_ocean_current_crossing
 
 `realm: animal`
 
@@ -3943,7 +3943,7 @@ There is a seam of nearly-still water behind a submerged boulder, and a queue of
 
 ---
 
-## animal_ocean_drowned_caravan  **NEW EVENT**
+## animal_ocean_drowned_caravan
 
 `realm: animal`
 
@@ -4032,7 +4032,7 @@ They have not gone. They are standing exactly where they stood, in the same arra
 
 ---
 
-## animal_forest_rakshasa_ambush  **NEW EVENT**
+## animal_forest_rakshasa_ambush
 
 `realm: animal`
 
@@ -4148,7 +4148,7 @@ You are still looking for the second one when she lands behind you.
 
 ---
 
-## animal_forest_shardula_territory  **NEW EVENT**
+## animal_forest_shardula_territory
 
 `realm: animal`
 
@@ -4237,7 +4237,7 @@ Downwind, on stone and root, never breaking a stem. You are through her range an
 
 ---
 
-## animal_forest_gana_pack  **NEW EVENT**
+## animal_forest_gana_pack
 
 `realm: animal`
 
@@ -4353,7 +4353,7 @@ Someone's nerve goes. A foot shifts. That is all it takes.
 
 ---
 
-## animal_forest_varaha_charge  **NEW EVENT**
+## animal_forest_varaha_charge
 
 `realm: animal`
 
@@ -4460,7 +4460,7 @@ You go down on one knee, put your eyes below hers, and make the low sound the ol
 
 ---
 
-## animal_forest_vanara_toll  **NEW EVENT**
+## animal_forest_vanara_toll
 
 `realm: animal`
 
@@ -4567,7 +4567,7 @@ It is not a good joke. It is a joke about a monkey, told to four monkeys, by som
 
 ---
 
-## animal_forest_mycelium_tender  **NEW EVENT**
+## animal_forest_mycelium_tender
 
 `realm: animal`
 
@@ -4673,7 +4673,7 @@ She looks up for the first time. "Everything. That is the whole point." And she 
 
 ---
 
-## animal_forest_sounder_matron  **NEW EVENT**
+## animal_forest_sounder_matron
 
 `realm: animal`
 
@@ -4797,7 +4797,7 @@ Ask her advice on leading people
 
 ---
 
-## animal_forest_vanara_elder  **NEW EVENT**
+## animal_forest_vanara_elder
 
 `realm: animal`
 
@@ -4885,7 +4885,7 @@ You palm his own tally-stick, produce it from behind a piglet's ear, and return 
 
 ---
 
-## animal_forest_high_canopy_perch  **NEW EVENT**
+## animal_forest_high_canopy_perch
 
 `realm: animal`
 
@@ -5000,7 +5000,7 @@ Ask her what the sky-people make of the ground-people
 
 ---
 
-## animal_forest_healer_camp  **NEW EVENT**
+## animal_forest_healer_camp
 
 `realm: animal`
 
@@ -5125,7 +5125,7 @@ You settle the whole line's account and leave before anyone can make it into a m
 
 ---
 
-## animal_forest_hedonist_camp  **NEW EVENT**
+## animal_forest_hedonist_camp
 
 `realm: animal`
 
@@ -5275,7 +5275,7 @@ The question lands like a dropped plate. For a moment the whole performance is v
 
 ---
 
-## animal_forest_gana_ceremony  **NEW EVENT**
+## animal_forest_gana_ceremony
 
 `realm: animal`
 
@@ -5381,7 +5381,7 @@ The rings are moving at different rates — outer fast, inner slow, the centre a
 
 ---
 
-## animal_forest_rakshasa_den  **NEW EVENT**
+## animal_forest_rakshasa_den
 
 `realm: animal`
 
@@ -5479,7 +5479,7 @@ You do not steal anything. You rearrange: the bedding, the stacks, the sand, all
 
 ---
 
-## animal_forest_mushroom_maze  **NEW EVENT**
+## animal_forest_mushroom_maze
 
 `realm: animal`
 
@@ -5613,7 +5613,7 @@ The corridors are not a maze. They are one organism's idea of a shape, and it is
 
 ---
 
-## animal_forest_banyan_hollow  **NEW EVENT**
+## animal_forest_banyan_hollow
 
 `realm: animal`
 
@@ -5702,7 +5702,7 @@ You call, and something enormous and extremely slow turns a fraction of its atte
 
 ---
 
-## animal_forest_cliff_aerie  **NEW EVENT**
+## animal_forest_cliff_aerie
 
 `realm: animal`
 
@@ -5817,7 +5817,7 @@ There is a standing column against the rock that will take a light body most of 
 
 ---
 
-## animal_forest_jungle_merchant  **NEW EVENT**
+## animal_forest_jungle_merchant
 
 `realm: animal`
 
@@ -5905,7 +5905,7 @@ Half a day of company. He talks the entire time — prices, gossip, a long invol
 
 ---
 
-## animal_meadow_yaksha_challenge  **NEW EVENT**
+## animal_meadow_yaksha_challenge
 
 `realm: animal`
 
@@ -6012,7 +6012,7 @@ First fall, no weapons, no grudge. He lights up like a festival. You lose — he
 
 ---
 
-## animal_meadow_dura_patrol  **NEW EVENT**
+## animal_meadow_dura_patrol
 
 `realm: animal`
 
@@ -6101,7 +6101,7 @@ This is a containment formation, not an attack formation — they are protecting
 
 ---
 
-## animal_meadow_khadga_charge  **NEW EVENT**
+## animal_meadow_khadga_charge
 
 `realm: animal`
 
@@ -6235,7 +6235,7 @@ A khadga charges movement. You stop being movement. It comes to a halt six feet 
 
 ---
 
-## animal_meadow_bhramara_swarm  **NEW EVENT**
+## animal_meadow_bhramara_swarm
 
 `realm: animal`
 
@@ -6342,7 +6342,7 @@ You put a shear across their line of advance. The swarm is not hurt — it is *e
 
 ---
 
-## animal_meadow_patanga_ascetic  **NEW EVENT**
+## animal_meadow_patanga_ascetic
 
 `realm: animal`
 
@@ -6466,7 +6466,7 @@ You put it to him: that standing at the edge for eleven years is not restraint b
 
 ---
 
-## animal_meadow_yaksha_shaman  **NEW EVENT**
+## animal_meadow_yaksha_shaman
 
 `realm: animal`
 
@@ -6573,7 +6573,7 @@ She looks for a long time. Then she gathers the bones up without answering and s
 
 ---
 
-## animal_meadow_dura_artisan  **NEW EVENT**
+## animal_meadow_dura_artisan
 
 `realm: animal`
 
@@ -6680,7 +6680,7 @@ The colony sealed a corridor with a work party still inside it, to stop a flood,
 
 ---
 
-## animal_meadow_cliff_oracle  **NEW EVENT**
+## animal_meadow_cliff_oracle
 
 `realm: animal`
 
@@ -6786,7 +6786,7 @@ You show her the death you have been carrying since the last realm — the shape
 
 ---
 
-## animal_meadow_dura_warren  **NEW EVENT**
+## animal_meadow_dura_warren
 
 `realm: animal`
 
@@ -6883,7 +6883,7 @@ You do it properly: stand at the threshold, state your names and your business, 
 
 ---
 
-## animal_meadow_bhramara_hive  **NEW EVENT**
+## animal_meadow_bhramara_hive
 
 `realm: animal`
 
@@ -7016,7 +7016,7 @@ The wall is not as cold as you judged, and the hum coming through it is rising.
 
 ---
 
-## animal_meadow_yaksha_standing_stones  **NEW EVENT**
+## animal_meadow_yaksha_standing_stones
 
 `realm: animal`
 
@@ -7122,7 +7122,7 @@ The stones are not aligned to the sun. They are aligned to each other, in a patt
 
 ---
 
-## animal_meadow_patanga_cloud  **NEW EVENT**
+## animal_meadow_patanga_cloud
 
 `realm: animal`
 
@@ -7203,7 +7203,7 @@ Somebody inhales. There follows a great deal of coughing, some panic, and an und
 
 ---
 
-## animal_meadow_khadga_herd  **NEW EVENT**
+## animal_meadow_khadga_herd
 
 `realm: animal`
 
@@ -7337,7 +7337,7 @@ The old cows set the herd's mood, and they are downwind and settled. You cross i
 
 ---
 
-## animal_meadow_migration  **NEW EVENT**
+## animal_meadow_migration
 
 `realm: animal`
 
@@ -7437,7 +7437,7 @@ You match the pace and join it, and for six hours you are simply part of the thi
 
 ---
 
-## animal_meadow_grassfire  **NEW EVENT**
+## animal_meadow_grassfire
 
 `realm: animal`
 
@@ -7562,7 +7562,7 @@ There is a pocket of young khadga penned against a gully and no time to do this 
 
 ---
 
-## animal_meadow_thermal_column  **NEW EVENT**
+## animal_meadow_thermal_column
 
 `realm: animal`
 
@@ -7634,7 +7634,7 @@ You put a twist in the thermal — a stutter in the rising air that reads, to an
 
 ---
 
-## animal_meadow_merchant  **NEW EVENT**
+## animal_meadow_merchant
 
 `realm: animal`
 

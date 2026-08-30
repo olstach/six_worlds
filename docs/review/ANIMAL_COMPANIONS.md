@@ -1,6 +1,6 @@
 # Animal Realm — Companions
 
-*24 companions. All written by Claude and never edited — this whole file wants a pass.*
+*24 companions.*
 
 *Edit the prose between the anchors. The stat block under each name is generated; change it in `companions.json` instead.*
 
@@ -10,7 +10,7 @@
 # Zone: forest
 
 
-## Brihannala  `brihannala`  **NEW**
+## Brihannala  `brihannala`
 
 `birth: vanara  ·  background: troop_elder  ·  traits: curious, sharp_memory  ·  cost: 750  ·  fixed_items: ['item_random']`
 
@@ -29,7 +29,7 @@ Retired from leading a troop of sixty and now collects stolen objects and unlike
 <!--@end-->
 
 
-## Chitrangada  `chitrangada`  **NEW**
+## Chitrangada  `chitrangada`
 
 `birth: shardula  ·  background: canopy_ambush  ·  traits: quick, brave  ·  cost: 850`
 
@@ -48,7 +48,7 @@ Drops on things from above and has never once had to explain herself afterwards.
 <!--@end-->
 
 
-## Dirghajihva  `dirghajihva`  **NEW**
+## Dirghajihva  `dirghajihva`
 
 `birth: gana  ·  background: elder_voice  ·  traits: composed, brave  ·  cost: 900`
 
@@ -67,7 +67,7 @@ The one the pack looks at before it does anything. She has never given an order 
 <!--@end-->
 
 
-## Ekadamshtra  `ekadamshtra`  **NEW**
+## Ekadamshtra  `ekadamshtra`
 
 `birth: varaha  ·  background: sounder_matron  ·  traits: patient, generous  ·  cost: 950`
 
@@ -86,7 +86,7 @@ Ran a sounder of forty for thirty years and handed it on cleanly, which almost n
 <!--@end-->
 
 
-## Kandali  `kandali`  **NEW**
+## Kandali  `kandali`
 
 `birth: varaha  ·  background: mycelium_tender  ·  traits: fastidious, patient  ·  cost: 800  ·  fixed_items: ['herb_bundle', 'raw_reagents']`
 
@@ -105,7 +105,7 @@ Cultivates the fungal network under nine acres of forest floor and speaks about 
 <!--@end-->
 
 
-## Nishkasita  `nishkasita`  **NEW**
+## Nishkasita  `nishkasita`
 
 `birth: rakshasa  ·  background: hedonist  ·  traits: vain, haunted  ·  cost: 700  ·  fixed_items: ['health_potion']`
 
@@ -124,7 +124,7 @@ A rakshasa who stopped hunting and started entertaining. His reasons are as myst
 <!--@end-->
 
 
-## Phalguna  `phalguna`  **NEW**
+## Phalguna  `phalguna`
 
 `birth: vanara  ·  background: jugaad  ·  traits: curious, forgetful  ·  cost: 700  ·  fixed_items: ['salvage_kit', 'scrap_metal']`
 
@@ -143,7 +143,7 @@ Can build anything out of anything given an afternoon and no supervision. Every 
 <!--@end-->
 
 
-## Saramaya  `saramaya`  **NEW**
+## Saramaya  `saramaya`
 
 `birth: gana  ·  background: herb_walker  ·  traits: generous, trusting  ·  cost: 700  ·  fixed_items: ['herb_bundle', 'healing_herb']`
 
@@ -168,7 +168,7 @@ Walks the ridge lines gathering what grows there and treating whatever she finds
 # Zone: meadow
 
 
-## Agnishikha  `agnishikha`  **NEW**
+## Agnishikha  `agnishikha`
 
 `birth: patanga  ·  background: flame_seeker  ·  traits: devout, addiction  ·  cost: 1000  ·  fixed_items: ['fire_charm_common']`
 
@@ -187,7 +187,7 @@ Stands facing the sun with his wings spread until sundown, every day, for eleven
 <!--@end-->
 
 
-## Balavardhana  `balavardhana`  **NEW**
+## Balavardhana  `balavardhana`
 
 `birth: shyena  ·  background: sky_lord  ·  traits: hot_tempered, brave  ·  cost: 750`
 
@@ -206,7 +206,7 @@ Holds a thermal over the meadow as his personal fief. Comes down only to settle 
 <!--@end-->
 
 
-## Kshudraka  `kshudraka`  **NEW**
+## Kshudraka  `kshudraka`
 
 `birth: uluka  ·  background: fortune_seeker  ·  traits: greedy, night_owl  ·  cost: 800  ·  fixed_items: ['item_random']`
 
@@ -225,7 +225,7 @@ Trades in omens, debts, and things people would rather forget they said. Nocturn
 <!--@end-->
 
 
-## Madhuvrata  `madhuvrata`  **NEW**
+## Madhuvrata  `madhuvrata`
 
 `birth: bhramara  ·  background: swarm_caller  ·  traits: curious, night_owl  ·  cost: 850  ·  fixed_items: ['air_charm_common']`
 
@@ -244,7 +244,7 @@ One voice in a hive of four thousand, seconded to the surface for reasons the hi
 <!--@end-->
 
 
-## Nirvikalpa  `nirvikalpa`  **NEW**
+## Nirvikalpa  `nirvikalpa`
 
 `birth: khadga  ·  background: jaina  ·  traits: devout, patient  ·  cost: 950  ·  fixed_items: ['rations']`
 
@@ -263,7 +263,7 @@ Will not eat anything that had a face and will not walk where she cannot see the
 <!--@end-->
 
 
-## Sthanumati  `sthanumati`  **NEW**
+## Sthanumati  `sthanumati`
 
 `birth: yaksha  ·  background: meadow_ward  ·  traits: devout, stubborn  ·  cost: 900  ·  fixed_items: ['earth_charm_common']`
 
@@ -282,7 +282,7 @@ Maintains the standing stones nobody else remembers the purpose of. She does not
 <!--@end-->
 
 
-## Tikshnashringa  `tikshnashringa`  **NEW**
+## Tikshnashringa  `tikshnashringa`
 
 `birth: khadga  ·  background: blade_contemplative  ·  traits: composed, stubborn  ·  cost: 900`
 
@@ -301,7 +301,7 @@ Charges in a straight line and meditates on why. Twenty years of practice have n
 <!--@end-->
 
 
-## Valmika  `valmika`  **NEW**
+## Valmika  `valmika`
 
 `birth: dura  ·  background: tunneler  ·  traits: stubborn, iron_stomach  ·  cost: 700  ·  fixed_items: ['scrap_metal']`
 
@@ -326,7 +326,7 @@ Digs. Braces. Digs again. Has opinions about load-bearing timber that she will s
 # Zone: ocean
 
 
-## Anavatapta  `anavatapta`  **NEW**
+## Anavatapta  `anavatapta`
 
 `birth: naga  ·  background: palace_vizier  ·  traits: patient, composed  ·  cost: 950`
 
@@ -345,7 +345,7 @@ Forty years of naga court administration and not one raised voice. He can find t
 <!--@end-->
 
 
-## Kambu  `kambu`  **NEW**
+## Kambu  `kambu`
 
 `birth: karka  ·  background: coral_guard  ·  traits: stubborn, brave  ·  cost: 700`
 
@@ -364,7 +364,7 @@ Held one gap in the reef wall for nineteen years. Nothing got past. He does not 
 <!--@end-->
 
 
-## Minakshi  `minakshi`  **NEW**
+## Minakshi  `minakshi`
 
 `birth: matsya  ·  background: sea_dancer  ·  traits: attractive, quick  ·  cost: 750`
 
@@ -383,7 +383,7 @@ Dances the shoal-turns that keep a school alive — a thousand bodies changing d
 <!--@end-->
 
 
-## Phenaka  `phenaka`  **NEW**
+## Phenaka  `phenaka`
 
 `birth: kapota  ·  background: post_runner  ·  traits: quick, curious  ·  cost: 650  ·  fixed_items: ['rations']`
 
@@ -402,7 +402,7 @@ Carries messages up and down four hundred miles of coast and knows every waypoin
 <!--@end-->
 
 
-## Setubandha  `setubandha`  **NEW**
+## Setubandha  `setubandha`
 
 `birth: makara  ·  background: boundary_walker  ·  traits: curious, night_owl  ·  cost: 1000  ·  fixed_items: ['space_charm_common']`
 
@@ -421,7 +421,7 @@ Walks the line between salt and fresh, deep and shallow, this realm and the next
 <!--@end-->
 
 
-## Shesharati  `shesharati`  **NEW**
+## Shesharati  `shesharati`
 
 `birth: naga  ·  background: tide_seer  ·  traits: patient, curious  ·  cost: 900  ·  fixed_items: ['water_charm_common']`
 
@@ -440,7 +440,7 @@ Reads the tide the way other people read faces, and has stopped pretending this 
 <!--@end-->
 
 
-## Timingila  `timingila`  **NEW**
+## Timingila  `timingila`
 
 `birth: makara  ·  background: deep_hunter  ·  traits: quick, suspicious  ·  cost: 800`
 
@@ -459,7 +459,7 @@ Hunts alone in water where the light does not reach. Speaks rarely and with long
 <!--@end-->
 
 
-## Vajradanti  `vajradanti`  **NEW**
+## Vajradanti  `vajradanti`
 
 `birth: karka  ·  background: vent_warden  ·  traits: hard_of_hearing, iron_stomach  ·  cost: 850  ·  fixed_items: ['fire_crystal']`
 

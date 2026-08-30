@@ -1,6 +1,6 @@
 # Hell — Events
 
-*79 events. 6 added in the 2026-07-27 sessions, marked **NEW EVENT**. Individual choices added later to an older event are marked **NEW**.*
+*79 events. No base snapshot is set, so nothing is marked as new — see the header of `export_review_docs.py` for how to turn the NEW markers back on.*
 
 *Edit the prose between the anchors. Headings, ids and the mechanical lines under each choice are generated — edits there are lost.*
 
@@ -403,7 +403,7 @@ They look at you for a long moment, then stand, rolling their shoulders.
 <!--@end-->
 
 
-#### **homesick_recognises** — *blue* — requires **trait: homesick**  **NEW**
+#### **homesick_recognises** — *blue* — requires **trait: homesick**
 
 <!--@ hell_events.json | hell_lost_wanderer | choices.homesick_recognises.text -->
 You know that particular way of sitting apart.
@@ -542,7 +542,7 @@ They watch you go in silence. The cold feels a little sharper afterward.
 <!--@end-->
 
 
-#### **scrimper_counts** — *blue* — requires **trait: scrimper**  **NEW**
+#### **scrimper_counts** — *blue* — requires **trait: scrimper**
 
 <!--@ hell_events.json | hell_frozen_traveler | choices.scrimper_counts.text -->
 Help, but count what it costs first.
@@ -560,7 +560,7 @@ The traveller lives. The accounting is, you decide, still worth having done.
 <!--@end-->
 
 
-#### **warm_hearted_no_question** — *blue* — requires **trait: warm_hearted**  **NEW**
+#### **warm_hearted_no_question** — *blue* — requires **trait: warm_hearted**
 
 <!--@ hell_events.json | hell_frozen_traveler | choices.warm_hearted_no_question.text -->
 There is no decision here. Get them warm.
@@ -578,7 +578,7 @@ They live. They will tell someone about it, somewhere down the road.
 <!--@end-->
 
 
-#### **frail_cannot_carry** — *blue* — requires **trait: frail**  **NEW**
+#### **frail_cannot_carry** — *blue* — requires **trait: frail**
 
 <!--@ hell_events.json | hell_frozen_traveler | choices.frail_cannot_carry.text -->
 You want to carry them and you cannot.
@@ -596,7 +596,7 @@ The traveller lives. You spend the evening being unhelpfully angry at your own a
 <!--@end-->
 
 
-#### **strong_carries** — *blue* — requires **trait: strong**  **NEW**
+#### **strong_carries** — *blue* — requires **trait: strong**
 
 <!--@ hell_events.json | hell_frozen_traveler | choices.strong_carries.text -->
 Pick them up. Keep walking.
@@ -922,7 +922,7 @@ Nimbly avoiding the obvious trap, you move through the cave with ease and soon f
 <!--@end-->
 
 
-#### **brave_first** — *blue* — requires **trait: brave**  **NEW**
+#### **brave_first** — *blue* — requires **trait: brave**
 
 <!--@ hell_events.json | hell_frozen_cave | choices.brave_first.text -->
 Go in first. Somebody has to and it may as well be you.
@@ -940,7 +940,7 @@ The party comes in behind you considerably steadier than they would have.
 <!--@end-->
 
 
-#### **timid_hangs_back** — *blue* — requires **trait: timid**  **NEW**
+#### **timid_hangs_back** — *blue* — requires **trait: timid**
 
 <!--@ hell_events.json | hell_frozen_cave | choices.timid_hangs_back.text -->
 You are not going in there. You are simply not.
@@ -958,7 +958,7 @@ You hold the entrance for an hour listening to sounds you cannot interpret, whic
 <!--@end-->
 
 
-#### **clubfooted_slow** — *blue* — requires **trait: clubfooted**  **NEW**
+#### **clubfooted_slow** — *blue* — requires **trait: clubfooted**
 
 <!--@ hell_events.json | hell_frozen_cave | choices.clubfooted_slow.text -->
 The floor is ice at an angle and your foot is what it is.
@@ -1081,7 +1081,7 @@ The weeping grows quieter, then stops. The cold deepens.
 <!--@end-->
 
 
-#### **haunted_knows** — *blue* — requires **trait: haunted**  **NEW**
+#### **haunted_knows** — *blue* — requires **trait: haunted**
 
 <!--@ hell_events.json | hell_tormented_soul | choices.haunted_knows.text -->
 You know what it is like when the memory arrives uninvited.
@@ -1223,7 +1223,7 @@ You nod respectfully and continue on your way.
 <!--@end-->
 
 
-#### **pilgrim_stop** — *blue* — requires **trait: pilgrim**  **NEW**
+#### **pilgrim_stop** — *blue* — requires **trait: pilgrim**
 
 <!--@ hell_events.json | hell_crossroads_shrine | choices.pilgrim_stop.text -->
 Stop properly. This is what the road is for.
@@ -1241,7 +1241,7 @@ The demons on the road watch with the blank incomprehension of people watching s
 <!--@end-->
 
 
-#### **superstition_read** — *blue* — requires **trait: superstitious**  **NEW**
+#### **superstition_read** — *blue* — requires **trait: superstitious**
 
 <!--@ hell_events.json | hell_crossroads_shrine | choices.superstition_read.text -->
 Check which way the offerings are facing before you do anything.
@@ -1398,7 +1398,7 @@ The trader seems amused, and after a short back-and-forth, grants you a discount
 <!--@end-->
 
 
-#### **scrimper_haggles** — *blue* — requires **trait: scrimper**  **NEW**
+#### **scrimper_haggles** — *blue* — requires **trait: scrimper**
 
 <!--@ hell_events.json | hell_wandering_peddler | choices.scrimper_haggles.text -->
 He has told you the price. Tell him the real one.
@@ -1520,7 +1520,7 @@ He laughs in surprise — a real laugh, not a polite one. The conversation that 
 <!--@end-->
 
 
-#### **ascetic_recognised** — *blue* — requires **trait: ascetic**  **NEW**
+#### **ascetic_recognised** — *blue* — requires **trait: ascetic**
 
 <!--@ hell_events.json | hell_hermit_monk | choices.ascetic_recognised.text -->
 He looks at what you are carrying, which is very little.
@@ -1538,7 +1538,7 @@ What follows is not a teaching so much as a comparison of notes between two peop
 <!--@end-->
 
 
-#### **present_sits_down** — *blue* — requires **trait: present**  **NEW**
+#### **present_sits_down** — *blue* — requires **trait: present**
 
 <!--@ hell_events.json | hell_hermit_monk | choices.present_sits_down.text -->
 He is here. Be here.
@@ -1643,7 +1643,7 @@ The cold seems to lessen when you stop fighting it.
 <!--@end-->
 
 
-#### **steady_practice_sits** — *blue* — requires **trait: steady_practice**  **NEW**
+#### **steady_practice_sits** — *blue* — requires **trait: steady_practice**
 
 <!--@ hell_events.json | hell_ice_yogi | choices.steady_practice_sits.text -->
 Sit down beside them. Do not announce it.
@@ -1756,7 +1756,7 @@ The flames flare briefly, and you feel a surge of resolve.
 <!--@end-->
 
 
-#### **lapsed_hesitates** — *blue* — requires **trait: lapsed**  **NEW**
+#### **lapsed_hesitates** — *blue* — requires **trait: lapsed**
 
 <!--@ hell_events.json | hell_fire_shrine | choices.lapsed_hesitates.text -->
 Stand at the edge. You have not done this in a long time.
@@ -2075,7 +2075,7 @@ You know exactly where to grip through the gauntlets — the cooler sections, th
 <!--@end-->
 
 
-#### **merciful_cannot_pass** — *blue* — requires **trait: merciful**  **NEW**
+#### **merciful_cannot_pass** — *blue* — requires **trait: merciful**
 
 <!--@ hell_events.json | hell_burning_prisoner | choices.merciful_cannot_pass.text -->
 You are not going to be able to walk past this.
@@ -2423,7 +2423,7 @@ You cross safely, and the bridge will last long enough for others to follow — 
 <!--@end-->
 
 
-#### **quick_dashes** — *blue* — requires **trait: quick**  **NEW**
+#### **quick_dashes** — *blue* — requires **trait: quick**
 
 <!--@ hell_events.json | hell_lava_flow | choices.quick_dashes.text -->
 You have always been faster than the situation requires.
@@ -2441,7 +2441,7 @@ You throw the rope back for everyone else.
 <!--@end-->
 
 
-#### **stubborn_refuses_around** — *blue* — requires **trait: stubborn**  **NEW**
+#### **stubborn_refuses_around** — *blue* — requires **trait: stubborn**
 
 <!--@ hell_events.json | hell_lava_flow | choices.stubborn_refuses_around.text -->
 There is a way across. Going around is not a way across.
@@ -2562,7 +2562,7 @@ Somehow kept together by their inner charge rather than outer weave, the flags c
 <!--@end-->
 
 
-#### **pilgrim_circuit** — *blue* — requires **trait: pilgrim**  **NEW**
+#### **pilgrim_circuit** — *blue* — requires **trait: pilgrim**
 
 <!--@ hell_events.json | hell_ancient_stupa | choices.pilgrim_circuit.text -->
 Walk the full circuit. Three times, the correct direction.
@@ -2580,7 +2580,7 @@ On the third circuit you notice the thing the first two missed: a niche at the b
 <!--@end-->
 
 
-#### **renunciate_leaves_it** — *blue* — requires **trait: renunciate**  **NEW**
+#### **renunciate_leaves_it** — *blue* — requires **trait: renunciate**
 
 <!--@ hell_events.json | hell_ancient_stupa | choices.renunciate_leaves_it.text -->
 You are carrying something you have been meaning to put down.
@@ -2721,7 +2721,7 @@ Stumped at first, the devil taps his quill against his chin, then nods slowly. G
 <!--@end-->
 
 
-#### **debtor_avoids** — *blue* — requires **trait: debtor**  **NEW**
+#### **debtor_avoids** — *blue* — requires **trait: debtor**
 
 <!--@ hell_events.json | hell_demon_checkpoint | choices.debtor_avoids.text -->
 Do not give your name. Do not give any name.
@@ -2739,7 +2739,7 @@ It is not your name. You have had a great deal of practice at this and it shows 
 <!--@end-->
 
 
-#### **braggart_talks_through** — *blue* — requires **trait: braggart**  **NEW**
+#### **braggart_talks_through** — *blue* — requires **trait: braggart**
 
 <!--@ hell_events.json | hell_demon_checkpoint | choices.braggart_talks_through.text -->
 Talk. Keep talking. Do not stop talking.
@@ -2757,7 +2757,7 @@ He stamps the form to make it stop.
 <!--@end-->
 
 
-#### **patient_waits_it_out** — *blue* — requires **trait: patient**  **NEW**
+#### **patient_waits_it_out** — *blue* — requires **trait: patient**
 
 <!--@ hell_events.json | hell_demon_checkpoint | choices.patient_waits_it_out.text -->
 It is a clerk with a form. Let him have his form.
@@ -2775,7 +2775,7 @@ The clerk, who is braced for a fight the way clerks always are, has nothing to p
 <!--@end-->
 
 
-#### **hot_tempered_snaps** — *blue* — requires **trait: hot_tempered**  **NEW**
+#### **hot_tempered_snaps** — *blue* — requires **trait: hot_tempered**
 
 <!--@ hell_events.json | hell_demon_checkpoint | choices.hot_tempered_snaps.text -->
 You have been standing at this table for a very long time.
@@ -2918,7 +2918,7 @@ Thank it for its time and move on
 <!--@end-->
 
 
-#### **clear_eyed_discounts** — *blue* — requires **trait: clear_eyed**  **NEW**
+#### **clear_eyed_discounts** — *blue* — requires **trait: clear_eyed**
 
 <!--@ hell_events.json | hell_ice_oracle | choices.clear_eyed_discounts.text -->
 Listen to the prophecy. Then discount it correctly.
@@ -2936,7 +2936,7 @@ You keep the fourth. It is worth keeping.
 <!--@end-->
 
 
-#### **superstitious_takes_all** — *blue* — requires **trait: superstitious**  **NEW**
+#### **superstitious_takes_all** — *blue* — requires **trait: superstitious**
 
 <!--@ hell_events.json | hell_ice_oracle | choices.superstitious_takes_all.text -->
 Every word of it matters. Write it down.
@@ -3111,7 +3111,7 @@ The village doesn't feel empty anymore — it feels, now, like somewhere that us
 <!--@end-->
 
 
-#### **mourner_keeps_days** — *blue* — requires **trait: mourner**  **NEW**
+#### **mourner_keeps_days** — *blue* — requires **trait: mourner**
 
 <!--@ hell_events.json | hell_ghost_village | choices.mourner_keeps_days.text -->
 Do what nobody has done here in a long time: keep their days.
@@ -3129,7 +3129,7 @@ It takes all afternoon. By the end the village is not less empty, but it is diff
 <!--@end-->
 
 
-#### **secret_bearer_recognises** — *blue* — requires **trait: secret_bearer**  **NEW**
+#### **secret_bearer_recognises** — *blue* — requires **trait: secret_bearer**
 
 <!--@ hell_events.json | hell_ghost_village | choices.secret_bearer_recognises.text -->
 You know what a place looks like when everyone left at once and nobody wrote it down.
@@ -3275,7 +3275,7 @@ The creature's ancient eyes shift from curious to something cold and purposeful.
 <!--@end-->
 
 
-#### **hunter_reads_it** — *blue* — requires **trait: hunter**  **NEW**
+#### **hunter_reads_it** — *blue* — requires **trait: hunter**
 
 <!--@ hell_events.json | hell_lava_swimmer | choices.hunter_reads_it.text -->
 Watch how it moves. Everything that hunts has a pattern.
@@ -3444,7 +3444,7 @@ You run the session for thirty minutes. The demons are better for it. The sensei
 <!--@end-->
 
 
-#### **ascetic_forms** — *blue* — requires **trait: ascetic**  **NEW**
+#### **ascetic_forms** — *blue* — requires **trait: ascetic**
 
 <!--@ hell_events.json | hell_demon_dojo | choices.ascetic_forms.text -->
 Ask to stand in the back row and do the forms with them.
@@ -3577,7 +3577,7 @@ The knowledge is extraordinary. You are also immediately on at least three lists
 <!--@end-->
 
 
-#### **curious_reads** — *blue* — requires **trait: curious**  **NEW**
+#### **curious_reads** — *blue* — requires **trait: curious**
 
 <!--@ hell_events.json | hell_infernal_archive | choices.curious_reads.text -->
 You will not be leaving until you have read something.
@@ -3595,7 +3595,7 @@ Between the ledgers: a requisition order, countersigned, for something that was 
 <!--@end-->
 
 
-#### **sharp_memory_holds** — *blue* — requires **trait: sharp_memory**  **NEW**
+#### **sharp_memory_holds** — *blue* — requires **trait: sharp_memory**
 
 <!--@ hell_events.json | hell_infernal_archive | choices.sharp_memory_holds.text -->
 Read it once. You will have it.
@@ -3868,7 +3868,7 @@ The gatekeeper grins wider than usual. The crowd loses its mind.
 <!--@end-->
 
 
-#### **duelist_cannot_refuse** — *blue* — requires **trait: duelist**  **NEW**
+#### **duelist_cannot_refuse** — *blue* — requires **trait: duelist**
 
 <!--@ hell_events.json | hell_bone_arena | choices.duelist_cannot_refuse.text -->
 You were always going to. Do not pretend otherwise.
@@ -3886,7 +3886,7 @@ The gatekeeper sees it happen — the moment the decision stops being a decision
 <!--@end-->
 
 
-#### **braggart_works_crowd** — *blue* — requires **trait: braggart**  **NEW**
+#### **braggart_works_crowd** — *blue* — requires **trait: braggart**
 
 <!--@ hell_events.json | hell_bone_arena | choices.braggart_works_crowd.text -->
 Tell them who they are about to watch. At length.
@@ -3904,7 +3904,7 @@ The purse is larger for a crowd that has already decided how it wants the fight 
 <!--@end-->
 
 
-#### **composed_before_fight** — *blue* — requires **trait: composed**  **NEW**
+#### **composed_before_fight** — *blue* — requires **trait: composed**
 
 <!--@ hell_events.json | hell_bone_arena | choices.composed_before_fight.text -->
 The crowd is not the fight. Do not spend anything on the crowd.
@@ -4164,7 +4164,7 @@ The trigger mechanism is amateur work — a pressure seal under the bow. You dis
 <!--@end-->
 
 
-#### **paranoid_perimeter** — *blue* — requires **trait: paranoid**  **NEW**
+#### **paranoid_perimeter** — *blue* — requires **trait: paranoid**
 
 <!--@ hell_events.json | hell_suspicious_gift | choices.paranoid_perimeter.text -->
 Do not touch it. Find who is watching it.
@@ -4182,7 +4182,7 @@ He runs. The package turns out to be exactly as bad as you assumed, and you do n
 <!--@end-->
 
 
-#### **incurious_shrug** — *blue* — requires **trait: incurious**  **NEW**
+#### **incurious_shrug** — *blue* — requires **trait: incurious**
 
 <!--@ hell_events.json | hell_suspicious_gift | choices.incurious_shrug.text -->
 It is a box. Walk past the box.
@@ -4291,7 +4291,7 @@ An argument ensues, moving from the absence of appropriate seals though three di
 <!--@end-->
 
 
-#### **scrimper_refuses** — *blue* — requires **trait: scrimper**  **NEW**
+#### **scrimper_refuses** — *blue* — requires **trait: scrimper**
 
 <!--@ hell_events.json | hell_ice_demon_toll | choices.scrimper_refuses.text -->
 Ten gold. For a chain. Explain in detail why this will not happen.
@@ -4309,7 +4309,7 @@ By the end the lead demon is arguing about the price of iron rather than collect
 <!--@end-->
 
 
-#### **duelist_answers** — *blue* — requires **trait: duelist**  **NEW**
+#### **duelist_answers** — *blue* — requires **trait: duelist**
 
 <!--@ hell_events.json | hell_ice_demon_toll | choices.duelist_answers.text -->
 There is a faster way to settle this and everyone here knows it.
@@ -4432,7 +4432,7 @@ The chain is an enchantment you can read, if not immediately undo — a layered 
 <!--@end-->
 
 
-#### **oath_keeper_understands** — *blue* — requires **trait: oath_keeper**  **NEW**
+#### **oath_keeper_understands** — *blue* — requires **trait: oath_keeper**
 
 <!--@ hell_events.json | hell_cursed_pilgrim | choices.oath_keeper_understands.text -->
 Ask what the vow was. Not why they are still keeping it.
@@ -4597,7 +4597,7 @@ The supply wagons are at the back of the column. They stopped mid-resupply. What
 <!--@end-->
 
 
-#### **war_hardened_counts** — *blue* — requires **trait: war_hardened**  **NEW**
+#### **war_hardened_counts** — *blue* — requires **trait: war_hardened**
 
 <!--@ hell_events.json | hell_frozen_army | choices.war_hardened_counts.text -->
 Look at the formation, not the faces.
@@ -4615,7 +4615,7 @@ You find the officer by where he is standing. What he is holding is worth taking
 <!--@end-->
 
 
-#### **mourner_names_them** — *blue* — requires **trait: mourner**  **NEW**
+#### **mourner_names_them** — *blue* — requires **trait: mourner**
 
 <!--@ hell_events.json | hell_frozen_army | choices.mourner_names_them.text -->
 Somebody should say something. Nobody has.
@@ -4731,7 +4731,7 @@ She steps aside without being asked. Her flames continue their orbit, but slower
 <!--@end-->
 
 
-#### **duelist_accepts** — *blue* — requires **trait: duelist**  **NEW**
+#### **duelist_accepts** — *blue* — requires **trait: duelist**
 
 <!--@ hell_events.json | hell_pyromancer_duel | choices.duelist_accepts.text -->
 She has not finished the challenge. You have already accepted.
@@ -4884,7 +4884,7 @@ She doesn't buy it. Neither would you.
 <!--@end-->
 
 
-#### **flirt_works_the_stalls** — *blue* — requires **trait: flirt**  **NEW**
+#### **flirt_works_the_stalls** — *blue* — requires **trait: flirt**
 
 <!--@ hell_events.json | hell_demon_marketplace | choices.flirt_works_the_stalls.text -->
 Every stall here is run by somebody bored.
@@ -4902,7 +4902,7 @@ You do not buy anything at a discount. You are simply given three things over th
 <!--@end-->
 
 
-#### **content_buys_nothing** — *blue* — requires **trait: content**  **NEW**
+#### **content_buys_nothing** — *blue* — requires **trait: content**
 
 <!--@ hell_events.json | hell_demon_marketplace | choices.content_buys_nothing.text -->
 You walk the whole market and want none of it.
@@ -4920,7 +4920,7 @@ You leave with your purse intact and an unusual amount of goodwill from the one 
 <!--@end-->
 
 
-#### **hard_of_hearing_misses** — *blue* — requires **trait: hard_of_hearing**  **NEW**
+#### **hard_of_hearing_misses** — *blue* — requires **trait: hard_of_hearing**
 
 <!--@ hell_events.json | hell_demon_marketplace | choices.hard_of_hearing_misses.text -->
 The crowd noise here is total.
@@ -5077,7 +5077,7 @@ You carry it in, load the best of the center shelf's contents methodically, and 
 <!--@end-->
 
 
-#### **incurious_leaves** — *blue* — requires **trait: incurious**  **NEW**
+#### **incurious_leaves** — *blue* — requires **trait: incurious**
 
 <!--@ hell_events.json | hell_burning_library | choices.incurious_leaves.text -->
 It is a burning building. Leave the burning building.
@@ -5258,7 +5258,7 @@ That is enough, somehow. For both of you.
 <!--@end-->
 
 
-#### **gambler_joins** — *blue* — requires **trait: gambler**  **NEW**
+#### **gambler_joins** — *blue* — requires **trait: gambler**
 
 <!--@ hell_events.json | hell_sinner_gang | choices.gambler_joins.text -->
 There is a game running at the edge of that fire.
@@ -5276,7 +5276,7 @@ You leave before it becomes impolite to keep winning.
 <!--@end-->
 
 
-#### **drunk_belongs** — *blue* — requires **trait: drunk**  **NEW**
+#### **drunk_belongs** — *blue* — requires **trait: drunk**
 
 <!--@ hell_events.json | hell_sinner_gang | choices.drunk_belongs.text -->
 Sit down. These are, regrettably, your people.
@@ -5294,7 +5294,7 @@ You are welcome here in a way that is not entirely comfortable to be welcome, an
 <!--@end-->
 
 
-#### **night_drinker_stays_late** — *blue* — requires **trait: night_drinker**  **NEW**
+#### **night_drinker_stays_late** — *blue* — requires **trait: night_drinker**
 
 <!--@ hell_events.json | hell_sinner_gang | choices.night_drinker_stays_late.text -->
 They have a fire and a bottle and no particular plans.
@@ -5869,7 +5869,7 @@ He listens to what you are doing and why. Something shifts behind his eyes for t
 <!--@end-->
 
 
-#### **oath_breaker_recognises** — *blue* — requires **trait: oath_breaker**  **NEW**
+#### **oath_breaker_recognises** — *blue* — requires **trait: oath_breaker**
 
 <!--@ hell_events.json | devil_deserter | choices.oath_breaker_recognises.text -->
 You know exactly what he is doing, because you did it.
@@ -5887,7 +5887,7 @@ He listens like a man taking down an address.
 <!--@end-->
 
 
-#### **oath_keeper_disapproves** — *blue* — requires **trait: oath_keeper**  **NEW**
+#### **oath_keeper_disapproves** — *blue* — requires **trait: oath_keeper**
 
 <!--@ hell_events.json | devil_deserter | choices.oath_keeper_disapproves.text -->
 A vow is a vow. Say so, plainly, and then help anyway.
@@ -5905,7 +5905,7 @@ Then you give him the water anyway, because the two positions turn out not to be
 <!--@end-->
 
 
-#### **patient_hears_him** — *blue* — requires **trait: patient**  **NEW**
+#### **patient_hears_him** — *blue* — requires **trait: patient**
 
 <!--@ hell_events.json | devil_deserter | choices.patient_hears_him.text -->
 He has not finished. Let him finish.
@@ -5970,7 +5970,7 @@ A low building crouches at the edge of the frozen waste, smoke leaking from the 
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_teahouse_cold | choices.[0].text -->
 Sit down
@@ -5986,7 +5986,7 @@ You take a seat. Nobody bothers you.
 <!--@end-->
 
 
-#### **tea_properly** — *blue* — requires **trait: tea_ritualist**  **NEW**
+#### **tea_properly** — *blue* — requires **trait: tea_ritualist**
 
 <!--@ hell_events.json | hell_teahouse_cold | choices.tea_properly.text -->
 Watch how they are making it. Ask for the pot, not the cup.
@@ -6004,7 +6004,7 @@ You make it properly. Several of the silent figures relocate closer to the fire 
 <!--@end-->
 
 
-#### **gossip_listen** — *blue* — requires **trait: gossip**  **NEW**
+#### **gossip_listen** — *blue* — requires **trait: gossip**
 
 <!--@ hell_events.json | hell_teahouse_cold | choices.gossip_listen.text -->
 Say nothing for an hour and listen to everyone else.
@@ -6022,7 +6022,7 @@ Nobody notices you listening. Nobody ever does.
 <!--@end-->
 
 
-#### **[3]** — *grey*  **NEW**
+#### **[3]** — *grey*
 
 <!--@ hell_events.json | hell_teahouse_cold | choices.[3].text -->
 Move on
@@ -6060,7 +6060,7 @@ A squat building half-buried in ash. The sign is burned off but the smell of tea
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_teahouse_fire | choices.[0].text -->
 Step inside
@@ -6076,7 +6076,7 @@ The heat inside is almost comfortable compared to outside.
 <!--@end-->
 
 
-#### **drunk_relapse** — *blue* — requires **trait: drunk**  **NEW**
+#### **drunk_relapse** — *blue* — requires **trait: drunk**
 
 <!--@ hell_events.json | hell_teahouse_fire | choices.drunk_relapse.text -->
 There is more than tea behind that counter, and you know it.
@@ -6094,7 +6094,7 @@ The evening goes somewhere. In the morning the party is short some coin and you 
 <!--@end-->
 
 
-#### **night_drinker_again** — *blue* — requires **trait: night_drinker**  **NEW**
+#### **night_drinker_again** — *blue* — requires **trait: night_drinker**
 
 <!--@ hell_events.json | hell_teahouse_fire | choices.night_drinker_again.text -->
 You know what is behind the counter and you know how many nights this makes.
@@ -6112,7 +6112,7 @@ Nobody in the party says anything. Two of them exchange a look.
 <!--@end-->
 
 
-#### **[3]** — *grey*  **NEW**
+#### **[3]** — *grey*
 
 <!--@ hell_events.json | hell_teahouse_fire | choices.[3].text -->
 Move on
@@ -6150,7 +6150,7 @@ A fortified outpost flying a plain black banner. A board outside lists rates for
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_mercenary_guild | choices.[0].text -->
 Browse their wares
@@ -6166,7 +6166,7 @@ The quartermaster unlocks a case and waits.
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hell_events.json | hell_mercenary_guild | choices.[1].text -->
 Move on
@@ -6204,7 +6204,7 @@ A sparse camp around a fire. The people here are old — old for hell, which mea
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_veterans_camp | choices.[0].text -->
 Ask about training
@@ -6220,7 +6220,7 @@ Ask about training
 <!--@end-->
 
 
-#### **war_hardened_sits** — *blue* — requires **trait: war_hardened**  **NEW**
+#### **war_hardened_sits** — *blue* — requires **trait: war_hardened**
 
 <!--@ hell_events.json | hell_veterans_camp | choices.war_hardened_sits.text -->
 Sit down without being invited. They will not mind.
@@ -6238,7 +6238,7 @@ You do. By morning you have been told three things about the road ahead that are
 <!--@end-->
 
 
-#### **sole_survivor_recognised** — *blue* — requires **trait: sole_survivor**  **NEW**
+#### **sole_survivor_recognised** — *blue* — requires **trait: sole_survivor**
 
 <!--@ hell_events.json | hell_veterans_camp | choices.sole_survivor_recognised.text -->
 One of them looks at you and knows.
@@ -6256,7 +6256,7 @@ It is not comfort. It is better than comfort, which is accuracy.
 <!--@end-->
 
 
-#### **[3]** — *grey*  **NEW**
+#### **[3]** — *grey*
 
 <!--@ hell_events.json | hell_veterans_camp | choices.[3].text -->
 Move on
@@ -6294,7 +6294,7 @@ The dappled light streaming through the dense canopy seems like living gold. The
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_sacred_grove | choices.[0].text -->
 Approach the practitioners
@@ -6310,7 +6310,7 @@ A Yakshini turns and regards you without surprise. Earth magic has a price — s
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hell_events.json | hell_sacred_grove | choices.[1].text -->
 Leave them to it
@@ -6348,7 +6348,7 @@ In every world some beings are born innately attuned to the mindstreams of the N
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_temple_of_the_naga | choices.[0].text -->
 Ask about their teachings
@@ -6364,7 +6364,7 @@ A practitioner rises smoothly and names the spells they can teach. The price is 
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hell_events.json | hell_temple_of_the_naga | choices.[1].text -->
 Move on
@@ -6402,7 +6402,7 @@ A tall pole with a horned symbol at the top rises from the ground, sacred stones
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_garuda_roost | choices.[0].text -->
 Speak to the worshippers
@@ -6418,7 +6418,7 @@ One of the worshippers looks up. They teach Air magic here — what you pay is y
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hell_events.json | hell_garuda_roost | choices.[1].text -->
 Leave an offering and go
@@ -6449,7 +6449,7 @@ You recognize the horned emblem as a Garuda boundary marker — a sign this plac
 <!--@end-->
 
 
-#### **pet_lover_greets** — *blue* — requires **trait: pet_lover**  **NEW**
+#### **pet_lover_greets** — *blue* — requires **trait: pet_lover**
 
 <!--@ hell_events.json | hell_garuda_roost | choices.pet_lover_greets.text -->
 Greet them the way you greet anything with feathers.
@@ -6514,7 +6514,7 @@ Practitioners come to this place seeking solitude and peace. The ground itself v
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_hidden_gompa | choices.[0].text -->
 Knock and ask to enter
@@ -6530,7 +6530,7 @@ After a long pause, the door opens. A monk gestures you inside. Space magic. Wha
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hell_events.json | hell_hidden_gompa | choices.[1].text -->
 Don't disturb them
@@ -6609,7 +6609,7 @@ Mirages flicker over the mercurial surface of the lake. Followers of the Goddess
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_mirror_lake | choices.[0].text -->
 Sit and listen
@@ -6625,7 +6625,7 @@ A practitioner meets your eyes in the reflection before turning around. They can
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hell_events.json | hell_mirror_lake | choices.[1].text -->
 Walk away from the mirage
@@ -6704,7 +6704,7 @@ The wind carries the smell of sacred juniper smoke and sacrificial wine far from
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_crossroads_stupa | choices.[0].text -->
 Approach the stupa
@@ -6720,7 +6720,7 @@ A practitioner emerges from behind the stupa. Summoning magic — the crossroads
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hell_events.json | hell_crossroads_stupa | choices.[1].text -->
 Observe from a distance
@@ -6758,7 +6758,7 @@ The inward-facing side of this circular stone wall is carved with the bizarre fo
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_yogini_circle | choices.[0].text -->
 Enter the circle
@@ -6774,7 +6774,7 @@ One of the earthly sisters turns and gestures. No words needed.
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hell_events.json | hell_yogini_circle | choices.[1].text -->
 Move on
@@ -6853,7 +6853,7 @@ The air is vibrant with the aroma of medicinal herbs and flowers. The healers cu
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_medicinal_garden | choices.[0].text -->
 Ask to learn
@@ -6869,7 +6869,7 @@ A healer looks up from her work and nods. She names her price without ceremony.
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hell_events.json | hell_medicinal_garden | choices.[1].text -->
 Leave them to their work
@@ -6900,7 +6900,7 @@ The healers hand you a patient immediately and watch without comment. You work. 
 <!--@end-->
 
 
-#### **bhang_ask** — *blue* — requires **trait: bhang_enjoyer**  **NEW**
+#### **bhang_ask** — *blue* — requires **trait: bhang_enjoyer**
 
 <!--@ hell_events.json | hell_medicinal_garden | choices.bhang_ask.text -->
 Ask about the preparations they do not advertise.
@@ -6918,7 +6918,7 @@ The healer's expression does not change, but she takes you to the far end of the
 <!--@end-->
 
 
-#### **hunter_trade** — *blue* — requires **trait: hunter**  **NEW**
+#### **hunter_trade** — *blue* — requires **trait: hunter**
 
 <!--@ hell_events.json | hell_medicinal_garden | choices.hunter_trade.text -->
 Offer what you carry — they will want the parts you do not use.
@@ -6984,7 +6984,7 @@ Priests clad in white robes have been guarding the sacred fire since time immemo
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_eternal_fire | choices.[0].text -->
 Approach the priests
@@ -7000,7 +7000,7 @@ A priest turns from the flame and regards you. He names the spells, and then the
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hell_events.json | hell_eternal_fire | choices.[1].text -->
 Pay your respects and leave
@@ -7038,7 +7038,7 @@ The entrance is half-buried in the earth, marked only with a crooked khatvanga t
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_black_lodge | choices.[0].text -->
 Ask to learn
@@ -7054,7 +7054,7 @@ The smile does not move. A hand gestures to a list scratched into the wall. Spel
 <!--@end-->
 
 
-#### **secret_bearer_welcome** — *blue* — requires **trait: secret_bearer**  **NEW**
+#### **secret_bearer_welcome** — *blue* — requires **trait: secret_bearer**
 
 <!--@ hell_events.json | hell_black_lodge | choices.secret_bearer_welcome.text -->
 You already know how to hold something. Say so.
@@ -7072,7 +7072,7 @@ You are shown further in than most, and what is discussed there stays where it w
 <!--@end-->
 
 
-#### **[2]** — *grey*  **NEW**
+#### **[2]** — *grey*
 
 <!--@ hell_events.json | hell_black_lodge | choices.[2].text -->
 Back out
@@ -7110,7 +7110,7 @@ A settlement built from salvaged iron and spite. The biggest building is the arm
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_town_weapons | choices.[0].text -->
 Enter the town
@@ -7126,7 +7126,7 @@ You push through the crowd.
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hell_events.json | hell_town_weapons | choices.[1].text -->
 Move on
@@ -7164,7 +7164,7 @@ A settlement where more windows glow than can be explained by candlelight. Stran
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_town_magic | choices.[0].text -->
 Enter the town
@@ -7180,7 +7180,7 @@ You find the market square.
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hell_events.json | hell_town_magic | choices.[1].text -->
 Move on
@@ -7218,7 +7218,7 @@ A trading post that survives on practicality. The sign reads: FOOD. TOOLS. NO CR
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hell_events.json | hell_town_supplies | choices.[0].text -->
 Enter the town
@@ -7234,7 +7234,7 @@ The shopkeeper nods without looking up.
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hell_events.json | hell_town_supplies | choices.[1].text -->
 Move on
@@ -7355,7 +7355,7 @@ The demon stares at you for a very long time. Then they pick up the hammer again
 <!--@end-->
 
 
-#### **collector_spots** — *blue* — requires **trait: collector**  **NEW**
+#### **collector_spots** — *blue* — requires **trait: collector**
 
 <!--@ hell_events.json | hell_infernal_forge | choices.collector_spots.text -->
 There is something in the scrap pile that does not belong there.
@@ -7486,7 +7486,7 @@ The skeletons reach for their weapons without urgency. You get the impression th
 <!--@end-->
 
 
-#### **hunter_talks_shop** — *blue* — requires **trait: hunter**  **NEW**
+#### **hunter_talks_shop** — *blue* — requires **trait: hunter**
 
 <!--@ hell_events.json | hell_bone_archer_camp | choices.hunter_talks_shop.text -->
 Talk to them about the bows. Only about the bows.
@@ -7616,7 +7616,7 @@ The medic looks at you with the eyes of someone who has been stitching wounds fo
 <!--@end-->
 
 
-#### **chronic_pain_understood** — *blue* — requires **trait: chronic_pain**  **NEW**
+#### **chronic_pain_understood** — *blue* — requires **trait: chronic_pain**
 
 <!--@ hell_events.json | hell_mercy_ward | choices.chronic_pain_understood.text -->
 You do not need to explain the pain to this one.
@@ -7634,7 +7634,7 @@ The grey-robed figure listens to about six words and then stops you.
 <!--@end-->
 
 
-#### **scarred_no_flinch** — *blue* — requires **trait: scarred**  **NEW**
+#### **scarred_no_flinch** — *blue* — requires **trait: scarred**
 
 <!--@ hell_events.json | hell_mercy_ward | choices.scarred_no_flinch.text -->
 Let them work. You have been through worse than a ward.
@@ -8966,7 +8966,7 @@ You look at the ruin. It has approximately forty approach vectors. You will not 
 
 ---
 
-## hell_warden_strongroom  **NEW EVENT**
+## hell_warden_strongroom
 
 `realm: hell`
 
@@ -9057,7 +9057,7 @@ You close the blue iron door behind you. The rack of seals stays on its hooks, a
 
 ---
 
-## hell_frozen_prisoner  **NEW EVENT**
+## hell_frozen_prisoner
 
 `realm: hell`
 
@@ -9157,7 +9157,7 @@ You walk on. Behind you, at the edge of hearing, the counting continues.
 
 ---
 
-## hell_blisterfang  **NEW EVENT**
+## hell_blisterfang
 
 `realm: hell`
 
@@ -9250,7 +9250,7 @@ Three rounds in, Blisterfang is explaining his entire financial position unpromp
 
 ---
 
-## hell_ember_merchant_debt  **NEW EVENT**
+## hell_ember_merchant_debt
 
 `realm: hell`
 
@@ -9341,7 +9341,7 @@ You point out that a forty-year-old debt has a collection value considerably bel
 
 ---
 
-## hell_scroll_in_the_drift  **NEW EVENT**
+## hell_scroll_in_the_drift
 
 `realm: hell`
 
@@ -9431,7 +9431,7 @@ By evening the wind has covered the corner of cloth again, as it has a dozen tim
 
 ---
 
-## hell_cold_hermit  **NEW EVENT**
+## hell_cold_hermit
 
 `realm: hell`
 

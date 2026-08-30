@@ -1,6 +1,6 @@
 # Cross-realm (domain, camp, trait, relationship) — Events
 
-*33 events. 11 added in the 2026-07-27 sessions, marked **NEW EVENT**. Individual choices added later to an older event are marked **NEW**.*
+*33 events. No base snapshot is set, so nothing is marked as new — see the header of `export_review_docs.py` for how to turn the NEW markers back on.*
 
 *Edit the prose between the anchors. Headings, ids and the mechanical lines under each choice are generated — edits there are lost.*
 
@@ -77,7 +77,7 @@ You call stone and soil to your hands and let the deep vibration speak. The mudl
 <!--@end-->
 
 
-#### **beast_tender_reads** — *blue* — requires **trait: beast_tender**  **NEW**
+#### **beast_tender_reads** — *blue* — requires **trait: beast_tender**
 
 <!--@ domain_events.json | the_pit | choices.beast_tender_reads.text -->
 They are not a mob. Look at how they are arranged.
@@ -199,7 +199,7 @@ You feel cleaner, somehow. Sharper. You carry the blessing forward.
 <!--@end-->
 
 
-#### **pilgrim_offering** — *blue* — requires **trait: pilgrim**  **NEW**
+#### **pilgrim_offering** — *blue* — requires **trait: pilgrim**
 
 <!--@ domain_events.json | crystal_cave | choices.pilgrim_offering.text -->
 Do the offering properly before asking for anything.
@@ -349,7 +349,7 @@ You sit. The mountain does not move. You stop expecting it to. At some point —
 <!--@end-->
 
 
-#### **incurious_walks_on** — *blue* — requires **trait: incurious**  **NEW**
+#### **incurious_walks_on** — *blue* — requires **trait: incurious**
 
 <!--@ domain_events.json | glass_mountain | choices.incurious_walks_on.text -->
 It is a mountain made of glass. Note it and go around.
@@ -365,7 +365,7 @@ You go around. It takes an extra day and involves no revelation of any kind, whi
 <!--@end-->
 
 
-#### **beauty_struck_stops** — *blue* — requires **trait: beauty_struck**  **NEW**
+#### **beauty_struck_stops** — *blue* — requires **trait: beauty_struck**
 
 <!--@ domain_events.json | glass_mountain | choices.beauty_struck_stops.text -->
 Stop. Do not climb it, do not speak to it. Look at it.
@@ -772,7 +772,7 @@ You hand over the coins, receive a worn linen towel, and are waved through. The 
 <!--@end-->
 
 
-#### **tea_bath** — *blue* — requires **trait: tea_ritualist**  **NEW**
+#### **tea_bath** — *blue* — requires **trait: tea_ritualist**
 
 <!--@ domain_events.json | waterworks | choices.tea_bath.text -->
 Ask whether they serve tea on the hot side. They will.
@@ -866,7 +866,7 @@ You begin with the time you crossed the frozen bridge over the River of Ash. By 
 <!--@end-->
 
 
-#### **gossip_floor** — *blue* — requires **trait: gossip**  **NEW**
+#### **gossip_floor** — *blue* — requires **trait: gossip**
 
 <!--@ domain_events.json | waterworks_inner | choices.gossip_floor.text -->
 Say nothing and let the room talk over you.
@@ -882,7 +882,7 @@ A bathhouse is the most porous building ever devised. In ninety minutes you lear
 <!--@end-->
 
 
-#### **scrimper_fee** — *blue* — requires **trait: scrimper**  **NEW**
+#### **scrimper_fee** — *blue* — requires **trait: scrimper**
 
 <!--@ domain_events.json | waterworks_inner | choices.scrimper_fee.text -->
 The entry fee is negotiable. It always is.
@@ -1075,7 +1075,7 @@ Something of their steadiness travels with you.
 <!--@end-->
 
 
-#### **ascetic_sits** — *blue* — requires **trait: ascetic**  **NEW**
+#### **ascetic_sits** — *blue* — requires **trait: ascetic**
 
 <!--@ domain_events.json | snowcapped_hermitage | choices.ascetic_sits.text -->
 You have sat in worse for less reason.
@@ -1229,7 +1229,7 @@ The coins reappear in the bowl on your side, one by one.
 <!--@end-->
 
 
-#### **secret_bearer_waits** — *blue* — requires **trait: secret_bearer**  **NEW**
+#### **secret_bearer_waits** — *blue* — requires **trait: secret_bearer**
 
 <!--@ domain_events.json | dark_cave | choices.secret_bearer_waits.text -->
 She has not spoken in thirty years. You can manage an hour.
@@ -1463,7 +1463,7 @@ The yogi just laughs — a clear, boundless sound — and gestures you inside. T
 <!--@end-->
 
 
-#### **lapsed_asks** — *blue* — requires **trait: lapsed**  **NEW**
+#### **lapsed_asks** — *blue* — requires **trait: lapsed**
 
 <!--@ domain_events.json | skygazing_gompa | choices.lapsed_asks.text -->
 Ask the question you stopped asking years ago.
@@ -1607,7 +1607,7 @@ The servant blinks, as if the question has surprised him from a great distance. 
 <!--@end-->
 
 
-#### **poet_answers** — *blue* — requires **trait: poet**  **NEW**
+#### **poet_answers** — *blue* — requires **trait: poet**
 
 <!--@ domain_events.json | court_of_the_musician_prince | choices.poet_answers.text -->
 He is playing a form. Answer it in the form.
@@ -1625,7 +1625,7 @@ He stops playing. Then he starts again, from your version.
 <!--@end-->
 
 
-#### **braggart_court** — *blue* — requires **trait: braggart**  **NEW**
+#### **braggart_court** — *blue* — requires **trait: braggart**
 
 <!--@ domain_events.json | court_of_the_musician_prince | choices.braggart_court.text -->
 Tell the court who has just arrived.
@@ -1767,7 +1767,7 @@ It does not answer with words, but it turns toward the sound of your voice and t
 <!--@end-->
 
 
-#### **mourner_receives** — *blue* — requires **trait: mourner**  **NEW**
+#### **mourner_receives** — *blue* — requires **trait: mourner**
 
 <!--@ domain_events.json | camp_wandering_spirit | choices.mourner_receives.text -->
 Set out a place for it. Properly.
@@ -2134,7 +2134,7 @@ It accepts payment. It looks faintly disappointed that there was nothing to argu
 <!--@end-->
 
 
-#### **debtor_knows_the_form** — *blue* — requires **trait: debtor**  **NEW**
+#### **debtor_knows_the_form** — *blue* — requires **trait: debtor**
 
 <!--@ domain_events.json | camp_creditor | choices.debtor_knows_the_form.text -->
 You have had this conversation before, with worse.
@@ -2222,7 +2222,7 @@ Committed to paper, the dream becomes a document. Whether it's useful or not, it
 <!--@end-->
 
 
-#### **dreamer_leads** — *blue* — requires **trait: dreamer**  **NEW**
+#### **dreamer_leads** — *blue* — requires **trait: dreamer**
 
 <!--@ domain_events.json | camp_shared_dream | choices.dreamer_leads.text -->
 You dream like this most nights. Take the lead.
@@ -2317,7 +2317,7 @@ They signal back — a single lamp moved twice. Then nothing more. Whoever they 
 <!--@end-->
 
 
-#### **gossip_walks_over** — *blue* — requires **trait: gossip**  **NEW**
+#### **gossip_walks_over** — *blue* — requires **trait: gossip**
 
 <!--@ domain_events.json | camp_stranger_fire | choices.gossip_walks_over.text -->
 Of course you are going to go and find out who they are.
@@ -2353,7 +2353,7 @@ Their fire goes out before yours. Two of them — moving efficiently, no wasted 
 
 ---
 
-## trait_gambler_game  **NEW EVENT**
+## trait_gambler_game
 
 `realm: any  ·  trigger: trait  ·  requires_trait: gambler  ·  rarity: uncommon`
 
@@ -2439,7 +2439,7 @@ Nobody is playing anything. We move at dawn.
 
 ---
 
-## trait_debtor_collector  **NEW EVENT**
+## trait_debtor_collector
 
 `realm: any  ·  trigger: trait  ·  requires_trait: debtor  ·  rarity: uncommon`
 
@@ -2516,7 +2516,7 @@ The world is large. {a} spends the rest of the night working out exactly how lar
 
 ---
 
-## trait_ascetic_fast  **NEW EVENT**
+## trait_ascetic_fast
 
 `realm: any  ·  trigger: trait  ·  requires_trait: ascetic  ·  rarity: uncommon`
 
@@ -2591,7 +2591,7 @@ They eat, because you are standing there. They are steadier for it in the mornin
 
 ---
 
-## trait_secret_bearer_slip  **NEW EVENT**
+## trait_secret_bearer_slip
 
 `realm: any  ·  trigger: trait  ·  requires_trait: secret_bearer  ·  rarity: uncommon`
 
@@ -2674,7 +2674,7 @@ Push. Whatever it is, it is walking with us.
 
 ---
 
-## trait_pilgrim_detour  **NEW EVENT**
+## trait_pilgrim_detour
 
 `realm: any  ·  trigger: trait  ·  requires_trait: pilgrim  ·  rarity: uncommon`
 
@@ -2751,7 +2751,7 @@ You keep walking. {a} looks back twice, and then makes a point of not looking ba
 
 ---
 
-## trait_beast_tender_stray  **NEW EVENT**
+## trait_beast_tender_stray
 
 `realm: any  ·  trigger: trait  ·  requires_trait: beast_tender  ·  rarity: uncommon`
 
@@ -2824,7 +2824,7 @@ Within three days it is walking point, and doing it better than anyone you would
 
 ---
 
-## trait_grudge_bearer_ledger  **NEW EVENT**
+## trait_grudge_bearer_ledger
 
 `realm: any  ·  trigger: trait  ·  requires_trait: grudge_bearer  ·  rarity: uncommon`
 
@@ -2901,7 +2901,7 @@ You leave them to it. In the morning {a} is rested in the specific way of someon
 
 ---
 
-## trait_scarred_weather  **NEW EVENT**
+## trait_scarred_weather
 
 `realm: any  ·  trigger: trait  ·  requires_trait: scarred  ·  rarity: uncommon`
 
@@ -2974,7 +2974,7 @@ You set the pace without mentioning why. {a} notices, and does not mention that 
 
 ---
 
-## rel_rivals_flashpoint  **NEW EVENT**
+## rel_rivals_flashpoint
 
 `realm: any  ·  trigger: relationship  ·  requires_band: rival  ·  rarity: uncommon`
 
@@ -3053,7 +3053,7 @@ Nothing is resolved. Nothing gets worse tonight either, which was the immediate 
 
 ---
 
-## rel_sworn_watch  **NEW EVENT**
+## rel_sworn_watch
 
 `realm: any  ·  trigger: relationship  ·  requires_band: sworn  ·  rarity: uncommon`
 
@@ -3112,7 +3112,7 @@ It shows almost immediately.
 
 ---
 
-## rel_cool_thaw  **NEW EVENT**
+## rel_cool_thaw
 
 `realm: any  ·  trigger: relationship  ·  requires_band: cool  ·  rarity: uncommon`
 
