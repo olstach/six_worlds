@@ -104,6 +104,24 @@ def main():
                 misses.append(f"{source}:{record_id}: cannot resolve '{field}'")
                 continue
             new = text.strip()
+
+            # build_weights round-trips as a comma list, strongest first.
+            # Rewriting it only when the list actually changed keeps existing
+            # weightings intact — re-importing an untouched document is a no-op.
+            if k == "build_weights":
+                names = [n.strip().rstrip(".").strip().lower().replace(" ", "_")
+                         for n in new.split(",") if n.strip()]
+                current = owner.get(k, {})
+                if names == [x for x, _ in sorted(current.items(), key=lambda kv: -kv[1])]:
+                    continue
+                weights = [5, 4, 3, 2]
+                rebuilt = {n: (weights[i] if i < len(weights) else 2)
+                           for i, n in enumerate(names)}
+                changes.append((rel, record_id, field, str(current), str(rebuilt)))
+                if args.write:
+                    owner[k] = rebuilt
+                continue
+
             old = str(owner.get(k, ""))
             if new != old.strip():
                 changes.append((rel, record_id, field, old, new))

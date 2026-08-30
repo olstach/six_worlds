@@ -1,6 +1,6 @@
 # Traits
 
-*107 traits. The player rolls one inborn **physical**, one **personality** and one **behavioral** at creation; **acquired** ones are earned during a run; **racial** ones come with the birth.*
+*108 traits. The player rolls one inborn **physical**, one **personality** and one **behavioral** at creation; **acquired** ones are earned during a run; **racial** ones come with the birth.*
 
 *`pressure` shifts the emotional baseline that decay pulls toward: negative is toward that element's klesha, positive toward its wisdom. `bond` tags are what RelationshipSystem scores party rapport on.*
 
@@ -9,7 +9,7 @@
 ---
 
 
-# Physical  (11)
+# Physical  (12)
 
 
 ## attractive
@@ -26,7 +26,7 @@ Attractive
 **Description**
 
 <!--@ traits.json | attractive | description -->
-A pleasing appearance that opens doors.
+A pleasing appearance opens many doors.
 <!--@end-->
 
 
@@ -44,7 +44,7 @@ Chronic Pain
 **Description**
 
 <!--@ traits.json | chronic_pain | description -->
-The body's complaint is never entirely quiet.
+Dull, throbbing, always there.
 <!--@end-->
 
 
@@ -98,7 +98,25 @@ Hard of Hearing
 **Description**
 
 <!--@ traits.json | hard_of_hearing | description -->
-Misses things others catch; struggles in the dark.
+Weary of asking others to repeat themselves, they begrudgingly accepted their condition.
+<!--@end-->
+
+
+## impaired_vision
+
+`stats: awareness-1  ·  bond: hardship  ·  opposed: sharp_eyed  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | impaired_vision | name -->
+Impaired Vision
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | impaired_vision | description -->
+Struggles in the dark, misses details and enemies.
 <!--@end-->
 
 
@@ -116,7 +134,7 @@ Iron Stomach
 **Description**
 
 <!--@ traits.json | iron_stomach | description -->
-Can stomach almost anything without complaint.
+Five second rule!
 <!--@end-->
 
 
@@ -134,7 +152,7 @@ Light Sleeper
 **Description**
 
 <!--@ traits.json | light_sleeper | description -->
-Never fully at rest; always half-alert.
+Sleep with one eye open, gripping the pillow tight.
 <!--@end-->
 
 
@@ -152,7 +170,7 @@ Night Owl
 **Description**
 
 <!--@ traits.json | night_owl | description -->
-Most alive after dark; slow to wake in the morning.
+The owl of wisdom flies after midnight.
 <!--@end-->
 
 
@@ -176,7 +194,7 @@ Naturally fast reflexes and light feet.
 
 ## sharp_eyed
 
-`stats: awareness+1  ·  pressure: air+5  ·  bond: scholarly  ·  on 1 companions`
+`stats: awareness+1  ·  pressure: air+5  ·  bond: scholarly  ·  opposed: impaired_vision  ·  on 1 companions`
 
 **Name**
 
@@ -206,7 +224,7 @@ Strong
 **Description**
 
 <!--@ traits.json | strong | description -->
-An unusually powerful build.
+Doors seem a little narrow.
 <!--@end-->
 
 
@@ -248,7 +266,7 @@ Clear-eyed
 **Description**
 
 <!--@ traits.json | clear_eyed | description -->
-Sees what is in front of them without flinching from it or dressing it up.
+Sees what is in front of them without dressing it up.
 <!--@end-->
 
 
@@ -266,7 +284,7 @@ Content
 **Description**
 
 <!--@ traits.json | content | description -->
-Wants little. What arrives is generally enough.
+When you don't have what you like, like what you have.
 <!--@end-->
 
 
@@ -410,7 +428,7 @@ Incurious
 **Description**
 
 <!--@ traits.json | incurious | description -->
-Has stopped asking. It was easier, and then it was habit.
+At first, asking questions was difficult, then it became impossible.
 <!--@end-->
 
 
@@ -446,7 +464,7 @@ Patient
 **Description**
 
 <!--@ traits.json | patient | description -->
-Rarely loses composure; can wait out almost anything.
+Once you endure the first impulse, you can wait almost indefinitely.
 <!--@end-->
 
 
@@ -614,7 +632,7 @@ Beast-tender
 **Description**
 
 <!--@ traits.json | beast_tender | description -->
-Good with animals, and they appear to know it before being told.
+Good with animals, and they appear to know it right away.
 <!--@end-->
 
 
@@ -632,7 +650,7 @@ Bhang Enjoyer
 **Description**
 
 <!--@ traits.json | bhang_enjoyer | description -->
-Takes it at the festivals, and increasingly on the days that are not festivals.
+Takes it only at the festivals - and isn't every day a festival of its own kind?
 <!--@end-->
 
 
@@ -650,7 +668,7 @@ Bird Lover
 **Description**
 
 <!--@ traits.json | bird_lover | description -->
-Has a particular fondness for birds of all kinds.
+Aren't those beady eyes just adorable?
 <!--@end-->
 
 
@@ -740,7 +758,7 @@ Dreamer
 **Description**
 
 <!--@ traits.json | dreamer | description -->
-Lives partly elsewhere; visions come more readily.
+Feels more at home among the visions than the flesh.
 <!--@end-->
 
 
@@ -758,7 +776,7 @@ Duelist
 **Description**
 
 <!--@ traits.json | duelist | description -->
-Cannot let a challenge stand. Has never once been able to.
+Prides themselves on never turning down a challenge.
 <!--@end-->
 
 
@@ -776,7 +794,7 @@ Early Riser
 **Description**
 
 <!--@ traits.json | early_riser | description -->
-Awake and useful before anyone else has decided to be a person yet.
+Early bird gets to gloat when others wake up.
 <!--@end-->
 
 
@@ -830,7 +848,7 @@ Gambler
 **Description**
 
 <!--@ traits.json | gambler | description -->
-Cannot resist a wager. The rush of chance is irresistible.
+Did you know most gamblers walk away from the table right before a big win?
 <!--@end-->
 
 
@@ -884,7 +902,7 @@ Homesick
 **Description**
 
 <!--@ traits.json | homesick | description -->
-Keeps quietly comparing everywhere they are to somewhere they are not.
+The farther away you are from your home, the easier it is to see it through rose-colored glasses.
 <!--@end-->
 
 
@@ -938,7 +956,7 @@ Night Drinker
 **Description**
 
 <!--@ traits.json | night_drinker | description -->
-Reliably reaches for a drink when the sun goes down.
+When the sun goes down, the glass goes up.
 <!--@end-->
 
 
@@ -956,7 +974,7 @@ Paranoid
 **Description**
 
 <!--@ traits.json | paranoid | description -->
-Always watching. Always expecting the worst.
+Always watching. Always expecting the worst. Wait, did you hear that?
 <!--@end-->
 
 
@@ -974,7 +992,7 @@ Pet-lover
 **Description**
 
 <!--@ traits.json | pet_lover | description -->
-Has never once passed an animal without stopping, and cannot be persuaded that this is a failing.
+Has never once passed an animal without stopping.
 <!--@end-->
 
 
@@ -992,7 +1010,7 @@ Pilgrim
 **Description**
 
 <!--@ traits.json | pilgrim | description -->
-Cannot pass a shrine without stopping, whatever the party's schedule says.
+The party schedule will wait, the shrine must be circumambulated.
 <!--@end-->
 
 
@@ -1028,7 +1046,7 @@ Present
 **Description**
 
 <!--@ traits.json | present | description -->
-Fully in the room, whichever room it is.
+Here and now.
 <!--@end-->
 
 
@@ -1046,7 +1064,7 @@ Scrimper
 **Description**
 
 <!--@ traits.json | scrimper | description -->
-Cannot part with money without visibly flinching.
+Cannot part with money without a grimace.
 <!--@end-->
 
 
@@ -1100,7 +1118,7 @@ Superstitious
 **Description**
 
 <!--@ traits.json | superstitious | description -->
-Reads omens in everything; never ignores a bad sign.
+There are no coincidences, only signs!
 <!--@end-->
 
 
@@ -1118,13 +1136,13 @@ Sworn Vegetarian
 **Description**
 
 <!--@ traits.json | sworn_vegetarian | description -->
-Will not eat meat. Not when it is offered, not when it is the only thing there is.
+Will not eat anything that had a mother.
 <!--@end-->
 
 
 ## tea_ritualist
 
-`bond: sociable, order  ·  on 0 companions`
+`pressure: water+10  ·  bond: sociable, order  ·  on 0 companions`
 
 **Name**
 
@@ -1136,7 +1154,7 @@ Tea Ritualist
 **Description**
 
 <!--@ traits.json | tea_ritualist | description -->
-Takes tea seriously — the making of it at least as much as the drinking.
+The drinking is only the last part of the pleasure.
 <!--@end-->
 
 
@@ -1196,7 +1214,7 @@ Beauty-struck
 **Description**
 
 <!--@ traits.json | beauty_struck | description -->
-Saw something that quietly reordered what they had thought the world contained.
+Saw something that quietly reordered what they had thought possible.
 <!--@end-->
 
 
@@ -1225,7 +1243,7 @@ Has taken lives that weigh on the soul.
 **Name**
 
 <!--@ traits.json | bloodied | name -->
-Bloodied
+Slayer
 <!--@end-->
 
 
@@ -1304,7 +1322,7 @@ Drunk
 **Description**
 
 <!--@ traits.json | drunk | description -->
-Past enjoying it. Drinks to arrive somewhere rather than to be anywhere.
+Past enjoying it, now it's just an everyday fact.
 <!--@end-->
 
 
@@ -1322,7 +1340,7 @@ Enlightened Insight
 **Description**
 
 <!--@ traits.json | enlightened_insight | description -->
-A rare flash of clarity that has left a permanent mark.
+A rare flash of clarity left a permanent mark.
 <!--@end-->
 
 
@@ -1412,7 +1430,7 @@ Long-marched
 **Description**
 
 <!--@ traits.json | long_marched | description -->
-Has been on the road long enough that the road stopped being an event.
+Has been on the road long enough to stop thinking of settling down.
 <!--@end-->
 
 
@@ -1430,7 +1448,7 @@ Maimed
 **Description**
 
 <!--@ traits.json | maimed | description -->
-Something is gone that used to be there, and the body keeps reaching for it.
+Something is gone that used to be there. Warmth still seems to linger in the void.
 <!--@end-->
 
 
@@ -1538,7 +1556,7 @@ Scarred
 **Description**
 
 <!--@ traits.json | scarred | description -->
-The wound closed. The face it closed on is not quite the one they had before.
+The wound closed. The body it closed on is not quite the one they had before.
 <!--@end-->
 
 
@@ -1610,7 +1628,7 @@ War-hardened
 **Description**
 
 <!--@ traits.json | war_hardened | description -->
-Violence no longer shocks. The battlefield feels like home.
+Violence no longer shocks, only excites the senses.
 <!--@end-->
 
 
@@ -1670,7 +1688,7 @@ Armored
 **Description**
 
 <!--@ traits.json | armored | description -->
-Dense natural plating — chitin, thick hide, or bone — makes this creature hard to put down. +2 Constitution, -1 Finesse.
+Dense natural plating — chitin, thick hide, or bone — makes this creature hard to put down.
 <!--@end-->
 
 
@@ -1688,7 +1706,7 @@ Armory Rights
 **Description**
 
 <!--@ traits.json | better_starting_weapon | description -->
-Red devils muster from the Infernal Guard's armories — this life begins with a superior weapon.
+Some lives grant wisdom, others grief - this one grants you a superior weapon.
 <!--@end-->
 
 
@@ -1706,7 +1724,7 @@ Bulky
 **Description**
 
 <!--@ traits.json | bulky | description -->
-A massive build that weathers punishment others could not survive. +1 Constitution.
+A massive build that weathers punishment others could not survive.
 <!--@end-->
 
 
@@ -1724,7 +1742,7 @@ Colony Mind
 **Description**
 
 <!--@ traits.json | colony_mind | description -->
-Born into a collective, this creature is never truly alone. Shared purpose dampens individual anxiety. All psychological pressures reduced by 5.
+Born into a collective, this creature is never truly alone. Shared purpose dampens individual anxiety.
 <!--@end-->
 
 
@@ -1742,7 +1760,7 @@ Hoarder's Instinct
 **Description**
 
 <!--@ traits.json | extra_starting_gold | description -->
-Yellow devils are born counting. This life begins with a heavier purse.
+Maybe they inherited it, maybe they've hoarded it by themselves - the important part is the weight of the purse.
 <!--@end-->
 
 
@@ -1760,7 +1778,7 @@ Flying
 **Description**
 
 <!--@ traits.json | flying | description -->
-Sustained winged flight. +1 Finesse from aerial agility. If the entire party shares this trait, the party may traverse air tiles and elevated terrain in combat and overworld.
+Sustained winged flight. If the entire party shares this trait, the party may traverse air tiles and elevated terrain in combat and overworld.
 <!--@end-->
 
 
@@ -1778,7 +1796,7 @@ Hell-born
 **Description**
 
 <!--@ traits.json | hell_born | description -->
-Forged in the fires and torments of hell. Instinctively at home in its violence and hierarchy.
+Forged in the fires and torments of hell. Instinctively at home in its rabid violence and hierarchy.
 <!--@end-->
 
 
@@ -1796,7 +1814,7 @@ Incorporeal
 **Description**
 
 <!--@ traits.json | incorporeal | description -->
-Barely present in the physical world — more dissolution than body. Physical violence finds little purchase. Lacking a body, material wealth and food hold no interest.
+Barely present in the physical world — more dissolution than body. Food, wealth and violence seem somehow exotic.
 <!--@end-->
 
 
@@ -1814,7 +1832,7 @@ Insatiable
 **Description**
 
 <!--@ traits.json | insatiable | description -->
-Consumed by hunger that can never be satisfied — the defining curse of the yidag birth. Consumes 50% more food; receives 50% less healing from rest.
+Mouth like a gate, throat like a needle.
 <!--@end-->
 
 
@@ -1832,7 +1850,7 @@ Night Vision
 **Description**
 
 <!--@ traits.json | night_vision | description -->
-Sees equally in darkness and light, perceiving what others miss. +1 Awareness. No penalty in darkness.
+Sees equally in darkness and light, perceiving what others miss.
 <!--@end-->
 
 
@@ -1850,7 +1868,7 @@ Nimble Mischief
 **Description**
 
 <!--@ traits.json | nimble_mischief | description -->
-Quick hands and a quicker mind. +1 Guile.
+Quick hands and a quicker mind.
 <!--@end-->
 
 
@@ -1868,7 +1886,7 @@ Predator's Grace
 **Description**
 
 <!--@ traits.json | predator_grace | description -->
-The natural speed and precision of a born hunter. +2 Finesse, -1 Constitution.
+The natural speed and precision of a born hunter.
 <!--@end-->
 
 
@@ -1886,7 +1904,7 @@ Serpentine
 **Description**
 
 <!--@ traits.json | serpentine | description -->
-A body built for water and coiling grace. Equally at home in the deep as on land.
+A body built for water and coiling grace, equally at home in the deep as on land.
 <!--@end-->
 
 
@@ -1904,7 +1922,7 @@ Swift Wing
 **Description**
 
 <!--@ traits.json | swift_wing | description -->
-Exceptional speed even among flying creatures. +1 Finesse.
+Exceptional speed even among the creatures of the sky.
 <!--@end-->
 
 
@@ -1922,7 +1940,7 @@ Taloned Strike
 **Description**
 
 <!--@ traits.json | taloned_strike | description -->
-Natural weapons of uncommon sharpness. +1 Unarmed.
+Natural weapons of uncommon sharpness.
 <!--@end-->
 
 
@@ -1958,7 +1976,7 @@ Venom Ward
 **Description**
 
 <!--@ traits.json | venom_ward | description -->
-Generations of hunting venomous prey have made this creature resistant to poisons. 50% reduction to poison damage.
+Generations of hunting venomous prey have made this creature resistant to poisons.
 <!--@end-->
 
 

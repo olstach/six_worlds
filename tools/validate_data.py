@@ -302,6 +302,14 @@ for eid, (event, src) in events.items():
             if key in choice:
                 check_outcome(choice[key], f"{ctx}:{key}")
 
+# ── perks -> traits ──────────────────────────────────────────────────────────
+_perks_raw = load("resources/data/perks.json")
+for _group in ("skill_perks", "cross_perks"):
+    for _pid, _perk in _perks_raw.get(_group, {}).items():
+        for _tid in _perk.get("grants_traits", []):
+            if _tid not in traits:
+                err("perk->trait", f"perks.json:{_pid}: grants_traits '{_tid}' unknown")
+
 # ── shops ────────────────────────────────────────────────────────────────────
 for sid, shop in shops.items():
     for iid in shop.get("items", {}):

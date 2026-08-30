@@ -892,8 +892,16 @@ func update_derived_stats(character: Dictionary) -> void:
 	derived.accuracy = equip_bonus.get("accuracy", 0)
 	derived.armor_pierce = equip_bonus.get("armor_pierce", 0)
 
-	# Build current resistances: start from permanent racial base, add equipment bonuses
+	# Build current resistances: permanent racial base, then traits, then equipment.
+	# Traits sit here rather than in combat because this is already the single
+	# place a character's standing resistances are assembled — CombatUnit reads
+	# derived.resistances, so a trait-granted resistance behaves exactly like a
+	# racial or equipment one, including for a trait gained mid-run.
 	var new_resists: Dictionary = character.get("base_resistances", {}).duplicate()
+	if TraitSystem:
+		var trait_resists: Dictionary = TraitSystem.get_resistances(character)
+		for r in trait_resists:
+			new_resists[r] = new_resists.get(r, 0) + trait_resists[r]
 	var equip_resists = equip_bonus.get("resistances", {})
 	for r in equip_resists:
 		new_resists[r] = new_resists.get(r, 0) + equip_resists[r]

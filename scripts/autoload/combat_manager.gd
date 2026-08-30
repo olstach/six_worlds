@@ -7252,7 +7252,13 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 	# 15% chance hits from poison-tagged enemies inflict poisoned blood.
 	if WoundSystem and attacker.team == Team.ENEMY and defender.team == Team.PLAYER:
 		var attacker_tags: Array = attacker.character_data.get("tags", [])
-		if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15:
+		# Perk immunities are checked here as well as for the Diseased status:
+		# Diamond Body claims immunity to disease, and catching rot sickness from
+		# an undead hit is exactly the thing it is claiming immunity to. Reusing
+		# _check_perk_status_immunity keeps its "while unarmored" condition,
+		# which a trait-granted resistance could not express.
+		if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15 \
+				and not _check_perk_status_immunity(defender, "diseased"):
 			var tag_source = "undead" if "undead" in attacker_tags else "diseased"
 			var char_data = defender.character_data
 			var disease_id = WoundSystem.apply_random_disease(char_data, tag_source)
@@ -7262,7 +7268,8 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 					WoundSystem.WOUND_TYPES.get(disease_id, {}).get("display_name", disease_id)
 				])
 				result["persistent_disease"] = disease_id
-		elif "poison" in attacker_tags and randf() < 0.15:
+		elif "poison" in attacker_tags and randf() < 0.15 \
+				and not _check_perk_status_immunity(defender, "poisoned"):
 			var char_data = defender.character_data
 			var disease_id = WoundSystem.apply_random_poison_disease(char_data)
 			if disease_id != "":

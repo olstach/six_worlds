@@ -213,10 +213,19 @@ def export_animal_companions():
                 stat.append("traits: " + ", ".join(c["traits"]))
             if c.get("recruitment_cost") is not None:
                 stat.append(f"cost: {c['recruitment_cost']}")
-            for k in ("starting_skills", "fixed_items", "known_spells"):
+            for k in ("fixed_items", "known_spells"):
                 if c.get(k):
                     stat.append(f"{k}: {c[k]}")
             lines.append("`" + "  ·  ".join(str(s) for s in stat) + "`\n")
+
+            # Skills the companion develops into, strongest first. Editable:
+            # the importer rewrites build_weights from this list, weighting
+            # 5/4/3/2 down the order, and leaves it alone if the list is unchanged.
+            bw = c.get("build_weights", {})
+            ordered = [k for k, _ in sorted(bw.items(), key=lambda kv: -kv[1])]
+            lines.append("\n**Skills** *(strongest first)*\n")
+            lines.append(anchor(["companions.json", cid, "build_weights"],
+                                ", ".join(ordered)))
             for field in ("flavor_text", "description", "recruitment_text"):
                 if field in c:
                     lines.append(f"\n**{field.replace('_', ' ').title()}**\n")
