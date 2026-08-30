@@ -368,6 +368,9 @@ func tick_wounds(character: Dictionary) -> Array[String]:
 		if threshold <= 0:
 			i += 1
 			continue
+		# stubborn_body perk: wounds take 1 extra rest to escalate
+		if PerkSystem and PerkSystem.has_perk(character, "stubborn_body"):
+			threshold += 1
 		entry["rests_untreated"] = entry.get("rests_untreated", 0) + 1
 		if entry["rests_untreated"] >= threshold:
 			var escalation_id: String = wdef.get("escalates_to", "")

@@ -914,6 +914,11 @@ func _open_rest_panel() -> void:
 	if _rest_open or _event_open or _shop_open or _quest_board_open or _main_menu_open or _char_sheet_open:
 		return
 
+	# Block rest when a hostile mob is standing adjacent (unless at a safe camp)
+	if not _check_is_safe_camp() and _has_adjacent_mob():
+		_show_toast("Cannot rest — enemies are too close!")
+		return
+
 	_rest_open = true
 	rest_button.disabled = true
 
@@ -1028,6 +1033,18 @@ func _open_rest_panel() -> void:
 	cancel_btn.custom_minimum_size = Vector2(0, 40)
 	cancel_btn.pressed.connect(_close_rest_panel)
 	vbox.add_child(cancel_btn)
+
+
+## Returns true if any mob occupies a tile adjacent (8-directional) to the party.
+func _has_adjacent_mob() -> bool:
+	var pos := MapManager.party_position
+	for dx in [-1, 0, 1]:
+		for dy in [-1, 0, 1]:
+			if dx == 0 and dy == 0:
+				continue
+			if not MapManager.get_mob_at(pos + Vector2i(dx, dy)).is_empty():
+				return true
+	return false
 
 
 ## Returns true if the current tile is a safe camp (teahouse, gompa, etc.).

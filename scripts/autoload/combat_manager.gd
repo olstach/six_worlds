@@ -1882,13 +1882,17 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 				# the remaining arms redirect to a fresh target instead of stopping.
 				var has_coordinated: bool = PerkSystem.has_perk(char_data, "coordinated_strikes")
 				var chain_target: Node = defender
+				# Iron Cortex: the second arm skips its roll entirely and always fires.
+				var iron_cortex: bool = PerkSystem.has_perk(char_data, "iron_cortex")
 				for arm_index in range(1, arm_count):
 					var arm_number: int = arm_index + 1
+					# iron_cortex: arms 1-2 always fire (arm_number 1 is always primary, arm_number 2 is guaranteed)
+					var guaranteed: bool = iron_cortex and arm_number == 2
 					var fire_chance: float = clampf(
 						BodySystem.get_arm_attack_chance(finesse, arm_number) + akimbo_bonus,
 						0.0, 100.0
 					)
-					if randf() * 100.0 <= fire_chance:
+					if guaranteed or randf() * 100.0 <= fire_chance:
 						if chain_target != null and chain_target.is_alive():
 							var extra := _execute_arm_chain_attack(attacker, chain_target, arm_number, fire_chance)
 							extra_arm_results.append(extra)
@@ -4158,7 +4162,7 @@ func _remove_status_by_name(unit: Node, status_name: String) -> bool:
 	for i in range(unit.status_effects.size() - 1, -1, -1):
 		if unit.status_effects[i].get("status", "") == status_name:
 			var def = _status_effects.get(status_name, {})
-			_on_status_expired(unit, status_name, def)
+			_on_status_expired(unit, status_name, def, unit.status_effects[i])
 			unit.status_effects.remove_at(i)
 			status_effect_expired.emit(unit, status_name)
 			if unit.has_method("show_status_expired"):
@@ -4289,7 +4293,7 @@ func _process_status_effects(unit: Node) -> bool:
 		var status_name = expired_effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})
 		# Process expiry callbacks before removing
-		_on_status_expired(unit, status_name, effect_def)
+		_on_status_expired(unit, status_name, effect_def, expired_effect)
 		unit.status_effects.remove_at(idx)
 		# Show expired visual (grey strikethrough)
 		if unit.has_method("show_status_expired"):
@@ -4310,10 +4314,20 @@ func _process_status_effects(unit: Node) -> bool:
 
 ## Handle special effects that trigger when a status expires.
 ## E.g. Doomed kills the unit, Infected spawns a fungal creature and applies Bleeding.
-func _on_status_expired(unit: Node, status_name: String, def: Dictionary) -> void:
+func _on_status_expired(unit: Node, status_name: String, def: Dictionary, effect_instance: Dictionary = {}) -> void:
 	var effects = def.get("effects", [])
 	if effects.is_empty():
 		return
+
+	# Reverse constitution max_hp changes using the stored delta from application time
+	if "constitution_bonus" in effects and "max_hp" in unit:
+		var hp_delta: int = effect_instance.get("hp_delta", def.get("bonus_amount", 2) * 10)
+		unit.max_hp = maxi(1, unit.max_hp - hp_delta)
+		unit.current_hp = mini(unit.current_hp, unit.max_hp)
+	if "constitution_penalty" in effects and "max_hp" in unit:
+		var hp_delta: int = effect_instance.get("hp_delta", def.get("penalty_amount", 2) * 10)
+		unit.max_hp += hp_delta
+		# Don't restore current_hp — penalty may have caused damage that persists
 
 	if "death_on_expire" in effects:
 		# Doomed — instant kill
@@ -6926,6 +6940,10 @@ func _check_perk_status_immunity(unit: Node, status: String) -> bool:
 		if status_lower in ["poisoned", "diseased"]:
 			return true
 
+	# Undead Hunter: immune to the diseases undead and diseased enemies carry
+	if status_lower == "diseased" and PerkSystem.has_perk(char_data, "undead_hunter"):
+		return true
+
 	# Empty Center: +20% resistance to mental effects
 	# Centered Stance: +15% resistance to mental effects while wielding a sword
 	var mental_statuses = ["feared", "charmed", "confused", "berserk", "mind_controlled"]
@@ -7232,23 +7250,27 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 			_apply_status_effect(defender, on_crit_status, 1)
 			result["on_crit_status"] = on_crit_status
 		# 20% chance a crit inflicts a persistent wound on player characters.
+		# "hardened" perk gives 50% chance to negate the wound entirely.
 		# Ranged weapons (skill_tag: "ranged") draw from the ranged wound pool.
 		if WoundSystem and defender.team == Team.PLAYER and randf() < 0.20:
 			var char_data = defender.character_data
-			var is_ranged: bool = weapon.get("skill_tag", "") == "ranged"
-			var wound_id: String
-			if is_ranged:
-				wound_id = WoundSystem.apply_random_ranged_crit_wound(char_data)
-			else:
-				wound_id = WoundSystem.apply_random_crit_wound(char_data)
-			if wound_id != "":
-				combat_log.emit("%s received a %s!" % [
-					defender.unit_name,
-					WoundSystem.WOUND_TYPES.get(wound_id, {}).get("display_name", wound_id)
-				])
-				result["persistent_wound"] = wound_id
+			var negated := PerkSystem and PerkSystem.has_perk(char_data, "hardened") and randf() < 0.5
+			if not negated:
+				var is_ranged: bool = weapon.get("skill_tag", "") == "ranged"
+				var wound_id: String
+				if is_ranged:
+					wound_id = WoundSystem.apply_random_ranged_crit_wound(char_data)
+				else:
+					wound_id = WoundSystem.apply_random_crit_wound(char_data)
+				if wound_id != "":
+					combat_log.emit("%s received a %s!" % [
+						defender.unit_name,
+						WoundSystem.WOUND_TYPES.get(wound_id, {}).get("display_name", wound_id)
+					])
+					result["persistent_wound"] = wound_id
 
 	# 15% chance hits from undead/diseased enemies inflict a disease on player characters.
+	# "undead_hunter" perk grants immunity to these disease procs.
 	# 15% chance hits from poison-tagged enemies inflict poisoned blood.
 	if WoundSystem and attacker.team == Team.ENEMY and defender.team == Team.PLAYER:
 		var attacker_tags: Array = attacker.character_data.get("tags", [])
