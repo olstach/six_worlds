@@ -21,6 +21,9 @@ var max_party_size: int = 8
 
 # Birth and background data loaded from JSON
 var _birth_data: Dictionary = {}
+
+# realm -> {weight: tier name}, built on first use from _birth_data
+var _rarity_cache: Dictionary = {}
 var _background_data: Dictionary = {}
 
 # Spell database for random starting spell selection
@@ -244,6 +247,7 @@ func _load_birth_data() -> void:
 
 	var data = json.get_data()
 	_birth_data = data.get("races", {})
+	_rarity_cache.clear()
 	_background_data = data.get("backgrounds", {})
 
 
@@ -374,6 +378,78 @@ func get_births_in_realm(realm: String) -> Array:
 		if _birth_data[birth_id].get("realm", "") == realm:
 			out.append(birth_id)
 	return out
+
+
+## Roll a birth for a realm, weighted by `reincarnation_weight`.
+##
+## This is the single place a birth gets chosen at random. The player's rebirth
+## goes through it, and enemy generation will too once enemies are built as
+## characters — birth and background first, archetype layered on top — so that
+## the odds a player is reborn as a marjara and the odds an enemy turns out to
+## be one are the same number in the same file.
+##
+## Births are visited in sorted order so a seeded run reproduces. Realms whose
+## births carry no weights fall back to an even pick and warn.
+func roll_birth_for_realm(realm: String) -> String:
+	var weighted: Dictionary = get_birth_weights_for_realm(realm)
+
+	if weighted.is_empty():
+		var unweighted: Array = get_births_in_realm(realm)
+		if unweighted.is_empty():
+			push_warning("CharacterSystem: no births defined for realm '%s'" % realm)
+			return "human"
+		push_warning("CharacterSystem: realm '%s' has no reincarnation weights - picking evenly" % realm)
+		return unweighted[randi() % unweighted.size()]
+
+	var births: Array = weighted.keys()
+	births.sort()
+
+	var total_weight: int = 0
+	for birth in births:
+		total_weight += int(weighted[birth])
+
+	var roll: int = randi() % total_weight
+	var cumulative: int = 0
+	for birth in births:
+		cumulative += int(weighted[birth])
+		if roll < cumulative:
+			return birth
+
+	return births[0]  # unreachable while total_weight > 0
+
+
+## How rare a birth is, as a word: "common", "uncommon" or "rare".
+##
+## Rarity is not stored anywhere — it is a reading of `reincarnation_weight`,
+## which is the one number that decides how often a birth comes up. Within a
+## realm the distinct weights are ranked, heaviest first, and a birth's rank is
+## its tier. Anything unweighted is "" — it cannot be rolled into at all.
+func get_birth_rarity(birth_id: String) -> String:
+	var data: Dictionary = get_birth_data(birth_id)
+	var weight: int = int(data.get("reincarnation_weight", 0))
+	if weight <= 0:
+		return ""
+
+	var realm: String = data.get("realm", "")
+	if not _rarity_cache.has(realm):
+		_rarity_cache[realm] = _build_rarity_ranks(realm)
+	return _rarity_cache[realm].get(weight, "rare")
+
+
+## Rank a realm's distinct weights into tier names, heaviest first.
+func _build_rarity_ranks(realm: String) -> Dictionary:
+	var names: Array = ["common", "uncommon", "rare"]
+	var weights: Array = []
+	for w in get_birth_weights_for_realm(realm).values():
+		if not int(w) in weights:
+			weights.append(int(w))
+	weights.sort()
+	weights.reverse()
+
+	var ranks: Dictionary = {}
+	for i in range(weights.size()):
+		ranks[weights[i]] = names[i] if i < names.size() else "rare"
+	return ranks
 
 
 ## Get background data dictionary for a given background ID

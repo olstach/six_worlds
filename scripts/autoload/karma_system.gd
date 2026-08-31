@@ -71,41 +71,16 @@ func determine_reincarnation_realm() -> String:
 
 ## Select a random birth from the reincarnation realm.
 ##
-## The pool and the odds both come from races.json — a birth's
-## `reincarnation_weight` is how likely the player is to be reborn as it, and
-## nothing else. It does not govern how many of that birth exist in the world;
-## companions carry a hand-authored `birth`, and enemies come from archetypes.
+## The pool and the odds both come from races.json, via CharacterSystem, which
+## owns the roll so that the player's rebirth and — once enemies are generated
+## as characters — enemy births come off the same weights.
 ##
-## This previously read two hardcoded tables that had drifted badly out of step
-## with the data: the animal realm offered three births out of eighteen, one of
-## which no longer exists.
+## A birth's `reincarnation_weight` is how likely someone is to be born as it.
+## It does not govern how many of that birth exist in the world: companions
+## carry a hand-authored `birth`, and enemies come from archetypes.
 func select_birth_from_realm(realm: String) -> String:
-	var weighted: Dictionary = CharacterSystem.get_birth_weights_for_realm(realm)
+	return CharacterSystem.roll_birth_for_realm(realm)
 
-	# Realms whose births carry no weights yet still have to return something.
-	if weighted.is_empty():
-		var unweighted: Array = CharacterSystem.get_births_in_realm(realm)
-		if unweighted.is_empty():
-			push_warning("KarmaSystem: no births defined for realm '%s'" % realm)
-			return "human"
-		push_warning("KarmaSystem: realm '%s' has no reincarnation weights - picking evenly" % realm)
-		return unweighted[randi() % unweighted.size()]
-
-	var births: Array = weighted.keys()
-	births.sort()  # deterministic order, so a seeded run reproduces
-
-	var total_weight: int = 0
-	for birth in births:
-		total_weight += int(weighted[birth])
-
-	var roll: int = randi() % total_weight
-	var cumulative: int = 0
-	for birth in births:
-		cumulative += int(weighted[birth])
-		if roll < cumulative:
-			return birth
-
-	return births[0]  # unreachable while total_weight > 0
 
 ## Handle full reincarnation process
 func reincarnate() -> Dictionary:
