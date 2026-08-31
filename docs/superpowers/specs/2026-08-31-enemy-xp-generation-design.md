@@ -2,7 +2,7 @@
 
 **Status:** design approved, not yet implemented
 **Scope:** enemy generation + post-battle XP reward
-**Out of scope:** persistent heroes and enemy XP-gathering — see [Follow-on](#follow-on-spec-2-persistent-heroes)
+**Out of scope:** persistent heroes, enemy XP-gathering, naming and titles — see [Follow-on work](#follow-on-work)
 
 ## Why
 
@@ -168,7 +168,9 @@ XP each takes. Shares are relative weights.
 "warband":        { "weight":  8, "tiers": [{"share":2, "count":[1,2]},
                                             {"share":1, "count":[3,5]}] },
 "foreign_mercs":  { "weight":  2, "foreign": true,
-                    "tiers": [{"share":2, "count":1}, {"share":1, "count":[2,3]}] }
+                    "tiers": [{"share":2, "count":1}, {"share":1, "count":[2,3]}] },
+"rival_party":    { "weight":  2, "all_heroes": true,
+                    "tiers": [{"share":1, "count":[2,4]}] }
 ```
 
 ```
@@ -183,12 +185,17 @@ flat split cannot express.
 `foreign_mercs` rolls its births *and* archetypes from a different realm. Meeting
 hell-born mercenaries in the animal realm should read as an event.
 
+`rival_party` is up to four heroes at equal shares — another party like the
+player's. It is the rarest and hardest encounter the system generates, and the
+one that pays best. It is also, structurally, how the design reaches upward: see
+[Extensibility](#extensibility-and-the-individual-ceiling).
+
 Exotic templates are gated by band: `warband` from uncommon upward,
-`foreign_mercs` on rare only. Composition surprise is thereby tied to the
-rarity roll rather than being a second independent dice throw. Gating removes a
-template from the pool entirely; the remaining weights are renormalised, so a
-common-band encounter draws from the five ungated templates at their relative
-weights rather than silently rerolling.
+`foreign_mercs` and `rival_party` on rare only. Composition surprise is thereby
+tied to the rarity roll rather than being a second independent dice throw.
+Gating removes a template from the pool entirely; the remaining weights are
+renormalised, so a common-band encounter draws from the five ungated templates
+at their relative weights rather than silently rerolling.
 
 ### Meeting the existing data
 
@@ -218,63 +225,137 @@ visual tell for high-band groups may be wanted later; it is not in this spec.
 
 ## Heroes
 
-A member is a hero when it holds strictly more XP than every other member of its
-party, or when it is the sole member of the party. So `hero_and_mooks`,
-`warband` and `foreign_mercs` produce one hero each, and `lone_hunter` is a hero
-by itself — a solo predator carrying the whole budget is the most hero-like
-thing the system generates. `patrol`, `pair` and `swarm` produce none, because
-their members are equals and singling one out would be arbitrary.
+A member is a hero when any of these holds:
 
-Spec #1 gives a hero a full identity but no life after the battle.
+1. It has strictly more XP than every other member of its party —
+   `hero_and_mooks`, `warband`, `foreign_mercs`.
+2. It is the sole member — `lone_hunter`. A solo predator carrying the whole
+   budget is the most hero-like thing the system generates.
+3. Its party archetype sets `all_heroes` — `rival_party`.
+
+`patrol`, `pair` and `swarm` produce no heroes: their members are equals and
+singling one out would be arbitrary.
+
+Rule 3 exists because rule 1 alone would give `rival_party` *no* heroes — four
+equal shares means nobody holds strictly more. The flag says what the template
+means rather than leaving it to be inferred from the numbers.
+
+Spec #1 gives a hero enough identity to be recognisable and referable, and no
+more:
 
 - **`is_hero: true`** on the generated character.
-- **A stable `hero_id`**, generated at spawn, so a later system can refer to it.
-- **A real name.** `animal_realm_names.json` holds 389 personal names with
-  meanings and is currently read by no script at all — heroes are what it is
-  for. Mooks keep the procedural `generate_enemy_name`. Hell and hungry ghost
-  have no equivalent lore file, so heroes there fall back to
-  `generate_enemy_name` until one exists; this gap is noted, not filled here.
-- **A title** once the hero's XP passes a threshold, giving it a recognisable
-  character.
+- **A stable `hero_id`**, generated at spawn, so later systems can refer to it.
 - **A distinct tooltip colour**, so a hero is visibly not a mook. Sprite
   recolouring is deferred until sprites exist.
 
-A hero is a fully-formed individual the moment it spawns. It simply does not yet
-survive the encounter.
+**Names and titles are deliberately not here.** They belong to the naming spec
+(see [Follow-on](#follow-on-work)), because doing them properly means authoring
+naming lore for hell's 6 births and hungry ghost's 14 to match the animal
+realm's 389 entries — a writing job, not a mechanism one. Until then heroes use
+the existing procedural `generate_enemy_name`, the same as any other enemy.
+
+A hero in Spec #1 is a distinguishable individual that does not survive the
+encounter. Both of those change later, in different specs.
+
+## Extensibility and the individual ceiling
+
+Bands, tiers and party archetypes are all data tables. Adding a rarer, harder
+tier is adding a row — no code changes, and the reward and loot formulas scale
+with it automatically because they read the party XP.
+
+But there is a hard ceiling underneath, and it is closer than it looks. An
+archetype can only spend XP on the attributes and skills it prioritises, skills
+cap at level 10, and attributes cap per birth around 27–35. Measured across
+every archetype in the game:
+
+| set | lowest archetype ceiling | median |
+|---|---|---|
+| animal | 2,580 XP | 4,470 |
+| hell | 3,180 XP | 4,470 |
+| hungry ghost | 3,210 XP | 4,500 |
+
+**A single enemy saturates at roughly 4,500 XP.** Past that, its budget has
+nowhere to go inside its own build.
+
+The design already brushes this. Animal rare band is 1800 × 2.3 = 4,140 party
+XP, and `lone_hunter` puts all of it into one member — at the median ceiling
+already. A hypothetical ×4 band would hand a lone hunter 7,200 XP with about
+3,000 of it unspendable.
+
+**So higher tiers cannot come from stronger individuals. They come from more
+heroes.** `rival_party` is the mechanism: four heroes at 4,000 XP each is a
+16,000-XP encounter with no individual anywhere near its ceiling. The upward
+ladder is therefore compositional, not numerical:
+
+```
+hero_and_mooks  →  warband  →  foreign_mercs  →  rival_party  →  larger hero bands
+```
+
+This is worth stating plainly because the instinct when adding a harder tier is
+to raise the multiplier, and that is the one direction the system cannot go.
+
+Two things a future higher-tier spec will need to decide, noted but not settled
+here: what happens to unspendable overflow (wider builds beyond the archetype's
+priorities, better equipment, perks and spells, or simply capping the member and
+adding another), and whether attribute caps should lift for heroes.
 
 ## Reward
 
+The party earns a share of what it defeated, and that share is **divided** among
+its members.
+
 ```
-per_member_xp = enemy_party_xp × REWARD_FRACTION × existing_party_size_multiplier
+party_gain    = enemy_party_xp × REWARD_FRACTION
+per_member_xp = party_gain / party_size
 ```
 
-`REWARD_FRACTION = 0.07`.
+`REWARD_FRACTION = 0.12`.
 
-The fraction is small because `CompanionSystem.apply_party_xp` grants **each**
-party member the full amount rather than splitting it — a detail worth
-restating, since assuming a split would inflate this constant roughly fourfold.
-The existing party-size multiplier (solo ×1.5, duo ×1.25) is preserved.
+### Division, not duplication
 
-At 7%, per member:
+This reverses current behaviour. `CompanionSystem.apply_party_xp` today grants
+**each** member the full amount, softened by a party-size curve
+(`get_xp_multiplier`: solo ×1.5, duo ×1.25, 3–4 ×1.0, 5–6 ×0.85, 7+ ×0.7). That
+curve already leans toward small parties, but far too weakly to be a real
+choice: a party of four still accumulates roughly four times the XP a solo
+character does.
 
-| encounter | per-member XP |
-|---|---|
-| hell, common | ~14 |
-| hungry ghost, common | ~49 |
-| animal, common | ~126 |
-| animal, rare band | ~290 |
+Under division, a solo character receives the whole party gain and each of four
+receives a quarter. That makes party size a genuine tall-versus-wide decision —
+one formidable character or four modest ones — and makes a solo run a viable
+playstyle rather than merely a harder one.
+
+`get_xp_multiplier` is removed; division supersedes it, and keeping both would
+double-count the same intent.
+
+### Scale invariance
+
+Because the fraction applies to the enemy party's XP and realm budgets are
+absolute, the growth *rate* is the same everywhere: a party gains 12% of a
+comparable party's worth per victory, so it takes a similar number of fights to
+meaningfully grow in any realm.
+
+| encounter | party gain | solo gets | each of 4 gets |
+|---|---|---|---|
+| hell, common (200) | 24 | 24 | 6 |
+| hungry ghost, common (700) | 84 | 84 | 21 |
+| animal, common (1800) | 216 | 216 | 54 |
+| animal, rare band (4140) | 497 | 497 | 124 |
 
 Harder groups pay more with no separate rule, because they cost more to build.
 
-This number is the most likely to be wrong and is expected to be tuned in
-playtesting. It is one constant in one place for that reason.
+`REWARD_FRACTION` is the number most likely to be wrong and is expected to move
+in playtesting. It is one constant in one place for that reason.
 
 Gold and loot key off `enemy_party_xp` and the band instead of the old ratio.
+Whether *loot* should also be divided is deliberately left alone here — items
+are indivisible and the party shares an inventory.
 
 ## What is removed
 
 - `EnemySystem.get_party_power()`
 - `CombatManager._calculate_unit_power()`
+- `CompanionSystem.get_xp_multiplier()` (superseded by division)
 - `DIFFICULTY_MULTIPLIERS` as a power scalar (superseded by TIER and BAND)
 - per-group `difficulty_range` in `groups` encounters (superseded by shares)
 
@@ -297,9 +378,12 @@ Additional checks:
 - No encounter produces a zero-member or zero-XP party.
 - `validate_data.py` clean; headless boot with no script errors.
 
-## Follow-on: Spec #2, persistent heroes
+## Follow-on work
 
-Not designed here. The idea, recorded so this spec does not foreclose it:
+Two further specs, neither designed here. Both are recorded so this spec does
+not foreclose them, and Spec #1 deliberately supplies the hooks each needs.
+
+### Spec #2 — persistent heroes
 
 A hero met and *survived* — one the player did not kill — persists. It wanders
 its realm and sometimes crosses into others, so the player may meet it again.
@@ -307,11 +391,30 @@ It gains XP between meetings, so it returns stronger. This is the "enemies
 gathering XP" idea, and the direction is Caves of Qud or Dwarf Fortress: a world
 that continues without the player in it.
 
-Spec #1 supplies what that needs: heroes already have a stable id, a name, a
-title and an XP total. Spec #2 adds survival, storage, wandering, and growth.
+Spec #1 supplies the hooks: heroes have `is_hero`, a stable `hero_id`, and an
+honest XP total. Spec #2 adds survival, storage, wandering and growth.
 
-Open questions for that spec: when does a hero count as having survived; where
-is the roster stored and how does it interact with save slots and with
-reincarnation; how fast do they grow; do they recruit new parties; can a
-survived hero ever become a companion; how many persist before the roster is
-pruned.
+Open questions: when does a hero count as having survived; where is the roster
+stored and how does it interact with save slots and with reincarnation; how fast
+do they grow between meetings; do they recruit new parties; can a survived hero
+ever become a companion; how many persist before the roster is pruned; does a
+persisted `rival_party` travel as a group.
+
+### Spec #3 — naming and titles
+
+The naming systems need fixing across all three finished realms, plus a title
+system for high-XP heroes.
+
+`animal_realm_names.json` holds 389 personal names with meanings, organised per
+birth — and is currently read by **no script at all**. Hell and hungry ghost
+have no equivalent file; enemies there get procedural syllables from
+`name_parts.json`. A recurring named hero that the player is meant to remember
+between encounters needs a real name, not a generated one.
+
+Open questions: what earns a title and at what XP threshold; do titles stack or
+replace; are they visible before combat as a warning; do hell and hungry ghost
+get per-birth naming philosophies in the animal realm's style, or something
+suited to their own character; does a persisted hero's title change as it grows.
+
+This spec is content-heavy and its scale is the reason it is separate: matching
+the animal realm's depth for 20 more births is a writing job.
