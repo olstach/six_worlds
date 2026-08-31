@@ -536,7 +536,7 @@ Town
 **Description**
 
 <!--@ shops.json | animal_town_weapons | description -->
-A market where different territories agree, briefly, to exchange. Dura shell-wright craftsmanship, vanara jugaad improvisation, shardula-claw handles on daggers sold by gana traders who got them somewhere no one is explaining. The weapons here are practical and tell stories.
+A market where different territories agree, briefly, to exchange. Dura shell-wright craftsmanship, vanara jugaad improvisation, marjara-claw handles on daggers sold by gana traders who got them somewhere no one is explaining. The weapons here are practical and tell stories.
 <!--@end-->
 
 

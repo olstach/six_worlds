@@ -212,7 +212,7 @@
         }
       ]
     },
-    "_comment_forest": "=== FOREST — rakshasa, varaha, shardula, gana, vanara ===",
+    "_comment_forest": "=== FOREST — rakshasa, varaha, marjara, gana, vanara ===",
     "animal_rakshasa_lone": {
       "_comment": "Solitary hunter — high threat multiplier, acts alone",
       "region": "forest",
@@ -248,16 +248,16 @@
         {"archetype": "animal_varaha_charger", "count": 2}
       ]
     },
-    "animal_shardula_ambush": {
-      "_comment": "Shardula ambush — both start hidden, ambusher flanks",
+    "animal_marjara_ambush": {
+      "_comment": "Marjara ambush — both start hidden, ambusher flanks",
       "region": "forest",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_shardula_stalker", "count": 1},
-        {"archetype": "animal_shardula_ambusher", "count": 1}
+        {"archetype": "animal_marjara_stalker", "count": 1},
+        {"archetype": "animal_marjara_ambusher", "count": 1}
       ]
     },
-    "animal_shardula_lone": {
+    "animal_marjara_lone": {
       "region": "forest",
       "tier": "devil",
       "roles": {
@@ -303,7 +303,7 @@
       ]
     },
     "animal_forest_mixed": {
-      "_comment": "Cross-zone predator encounter — rakshasa and shardula sharing territory briefly",
+      "_comment": "Cross-zone predator encounter — rakshasa and marjara sharing territory briefly",
       "region": "forest",
       "mixed": true,
       "groups": [

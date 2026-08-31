@@ -702,7 +702,7 @@
       "id": "animal_forest_town_weapons",
       "title": "Town",
       "realm": "animal",
-      "text": "A market at the forest's edge where different territories agree, briefly, to exchange. Dura shell-wright craftsmanship, vanara jugaad improvisation, shardula-claw handles on daggers sold by gana traders who got them somewhere no one is explaining. The weapons here are practical and tell stories.",
+      "text": "A market at the forest's edge where different territories agree, briefly, to exchange. Dura shell-wright craftsmanship, vanara jugaad improvisation, marjara-claw handles on daggers sold by gana traders who got them somewhere no one is explaining. The weapons here are practical and tell stories.",
       "choices": [
         {
           "id": "enter",
@@ -1479,7 +1479,7 @@
       "id": "animal_ridge_predator",
       "title": "Ridge Predator",
       "realm": "animal",
-      "text": "The pass through the thorn ridge narrows to a ledge barely wide enough to walk single file. At its midpoint, something large sits very still.\n\nA shardula — a leopard of immense size, pale as the rock, watching you from exactly the spot the path must cross. His tail moves once, slowly. He does not rise.\n\nHe is neither blocking nor permitting. He is simply here, as he has been here many times before, watching what comes through.",
+      "text": "The pass through the thorn ridge narrows to a ledge barely wide enough to walk single file. At its midpoint, something large sits very still.\n\nA marjara — a leopard of immense size, pale as the rock, watching you from exactly the spot the path must cross. His tail moves once, slowly. He does not rise.\n\nHe is neither blocking nor permitting. He is simply here, as he has been here many times before, watching what comes through.",
       "choices": [
         {
           "id": "ritual_greeting",
@@ -1576,7 +1576,7 @@
           "outcome": {
             "type": "combat",
             "text": "He rises from the rock in one fluid motion. His ears flatten. He has done this before.",
-            "enemy_group": "animal_shardula_lone",
+            "enemy_group": "animal_marjara_lone",
             "difficulty": "hard"
           }
         }
@@ -3181,8 +3181,8 @@
         }
       ]
     },
-    "animal_forest_shardula_territory": {
-      "id": "animal_forest_shardula_territory",
+    "animal_forest_marjara_territory": {
+      "id": "animal_forest_marjara_territory",
       "title": "Marked Territory",
       "realm": "animal",
       "text": "Claw-marks at head height on every fourth trunk, running as far as you can see in both directions. The marks are fresh, deliberate, and evenly spaced — this is not an animal scratching. It is a boundary, maintained.\n\nThe forest beyond the line is very quiet.",
@@ -3193,7 +3193,7 @@
           "text": "Cross the line",
           "outcome": {
             "type": "combat",
-            "enemy_group": "animal_shardula_lone",
+            "enemy_group": "animal_marjara_lone",
             "difficulty": "hard",
             "text": "You are forty paces past the marks when the pale shape detaches from a trunk that it had, until that moment, appeared to be part of.",
             "karma": {
@@ -3228,7 +3228,7 @@
           },
           "outcome": {
             "type": "text",
-            "text": "You cut your mark at the same height, the same depth, and sit down with your back to it. She comes within the hour. For a long time she just looks at the two marks side by side. Then she cuts a third — above both — and withdraws. You have been given passage and put in your place simultaneously, which is, you gather, the shardula way of being generous.",
+            "text": "You cut your mark at the same height, the same depth, and sit down with your back to it. She comes within the hour. For a long time she just looks at the two marks side by side. Then she cuts a third — above both — and withdraws. You have been given passage and put in your place simultaneously, which is, you gather, the marjara way of being generous.",
             "rewards": {
               "xp": 16
             },
@@ -4147,7 +4147,7 @@
       "id": "animal_forest_hedonist_camp",
       "title": "Hedonist's Camp",
       "realm": "animal",
-      "text": "Someone has been living extremely well out here. There is a fire, a great deal of fermented something in gourds, the remains of a genuinely impressive meal, and a shardula lying on his back in the middle of it all, utterly at peace.\n\n\"You look,\" he says, \"like people who have been walking.\"",
+      "text": "Someone has been living extremely well out here. There is a fire, a great deal of fermented something in gourds, the remains of a genuinely impressive meal, and a marjara lying on his back in the middle of it all, utterly at peace.\n\n\"You look,\" he says, \"like people who have been walking.\"",
       "choices": [
         {
           "id": "decline",
@@ -4997,7 +4997,7 @@
           },
           "outcome": {
             "type": "text",
-            "text": "You give him the state of the ridge crossings and where the shardula boundary now runs; he gives you a price no one else in this forest will ever see, and adds two items to the pile that were not for sale. Both of you leave convinced you got the better end of it, which is the mark of a good trade.",
+            "text": "You give him the state of the ridge crossings and where the marjara boundary now runs; he gives you a price no one else in this forest will ever see, and adds two items to the pile that were not for sale. Both of you leave convinced you got the better end of it, which is the mark of a good trade.",
             "rewards": {
               "xp": 16,
               "items": [
@@ -6661,7 +6661,7 @@
           },
           "outcome": {
             "type": "text",
-            "text": "You match the pace and join it, and for six hours you are simply part of the thing, walking north among a hundred thousand animals under the truce. A shardula walks beside you for a mile. Neither of you acknowledges the other. It is, on later reflection, one of the great experiences of the run.",
+            "text": "You match the pace and join it, and for six hours you are simply part of the thing, walking north among a hundred thousand animals under the truce. A marjara walks beside you for a mile. Neither of you acknowledges the other. It is, on later reflection, one of the great experiences of the run.",
             "rewards": {
               "xp": 20,
               "pressure": [

@@ -1,6 +1,6 @@
 # Traits
 
-*108 traits. The player rolls one inborn **physical**, one **personality** and one **behavioral** at creation; **acquired** ones are earned during a run; **racial** ones come with the birth.*
+*116 traits. The player rolls one inborn **physical**, one **personality** and one **behavioral** at creation; **acquired** ones are earned during a run; **racial** ones come with the birth.*
 
 *`pressure` shifts the emotional baseline that decay pulls toward: negative is toward that element's klesha, positive toward its wisdom. `bond` tags are what RelationshipSystem scores party rapport on.*
 
@@ -1635,7 +1635,7 @@ Violence no longer shocks, only excites the senses.
 ---
 
 
-# Racial  (19)
+# Racial  (27)
 
 
 ## ancient_memory
@@ -1746,6 +1746,42 @@ Born into a collective, this creature is never truly alone. Shared purpose dampe
 <!--@end-->
 
 
+## corpse_rider
+
+`stats: focus+1  ·  skills: sorcery+1  ·  pressure: water-5  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | corpse_rider | name -->
+Corpse Rider
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | corpse_rider | description -->
+Wears the dead the way others wear a coat, and has worn many. Something of each one stays behind in the way the hands move.
+<!--@end-->
+
+
+## deep_current
+
+`stats: focus+1  ·  skills: water_magic+1  ·  pressure: water+5  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | deep_current | name -->
+Deep Current
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | deep_current | description -->
+Thinks in pressures and distances no surface creature has words for. The magic that comes of it is correspondingly difficult to explain and difficult to argue with.
+<!--@end-->
+
+
 ## extra_starting_gold
 
 `on 0 companions`
@@ -1782,6 +1818,24 @@ Sustained winged flight. If the entire party shares this trait, the party may tr
 <!--@end-->
 
 
+## guardian_geas
+
+`stats: charm+1  ·  skills: ritual+1  ·  pressure: earth+5  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | guardian_geas | name -->
+Guardian's Geas
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | guardian_geas | description -->
+Bound to a place, a hoard, or a promise made before memory. The binding is not resented; it is the shape of the self. Ask what is being guarded and the answer comes back older than the question.
+<!--@end-->
+
+
 ## hell_born
 
 `pressure: fire-5  ·  on 0 companions`
@@ -1797,6 +1851,42 @@ Hell-born
 
 <!--@ traits.json | hell_born | description -->
 Forged in the fires and torments of hell. Instinctively at home in its rabid violence and hierarchy.
+<!--@end-->
+
+
+## hoard_keeper
+
+`stats: awareness+1  ·  skills: trade+1  ·  pressure: earth+5  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | hoard_keeper | name -->
+Hoard Keeper
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | hoard_keeper | description -->
+Wealth is not spent here, it is accumulated and remembered. Every piece of it has a provenance, and the provenance is the point.
+<!--@end-->
+
+
+## hunters_yoga
+
+`stats: strength+1  ·  skills: yoga+1, unarmed+1  ·  pressure: fire-5  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | hunters_yoga | name -->
+Hunter's Yoga
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | hunters_yoga | description -->
+Lifetimes of the twisted disciplines — breath held to stillness, hunger cultivated rather than sated, the body worked into a shape that only makes sense mid-leap. It is a real practice. It is simply pointed the wrong way.
 <!--@end-->
 
 
@@ -1908,6 +1998,24 @@ A body built for water and coiling grace, equally at home in the deep as on land
 <!--@end-->
 
 
+## sovereign_grudge
+
+`stats: charm+1  ·  skills: leadership+1  ·  pressure: space-5  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | sovereign_grudge | name -->
+Sovereign Grudge
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | sovereign_grudge | description -->
+Ruled something once and has not accepted the loss of it. Every room is a court held in absentia, every slight a matter of record.
+<!--@end-->
+
+
 ## swift_wing
 
 `stats: finesse+1  ·  on 0 companions`
@@ -1977,6 +2085,42 @@ Venom Ward
 
 <!--@ traits.json | venom_ward | description -->
 Generations of hunting venomous prey have made this creature resistant to poisons.
+<!--@end-->
+
+
+## void_touched
+
+`stats: focus+1  ·  skills: black_magic+1  ·  pressure: space-5  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | void_touched | name -->
+Void Touched
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | void_touched | description -->
+Stood too near the place where things stop and came back with the cold still in them. Silence follows this one into rooms.
+<!--@end-->
+
+
+## war_banner
+
+`stats: charm+1  ·  skills: leadership+1  ·  pressure: fire+5  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | war_banner | name -->
+War Banner
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | war_banner | description -->
+Where this one stands, a line forms. It is not courage exactly — closer to the certainty that the fight has already been decided and everyone else is simply catching up.
 <!--@end-->
 
 

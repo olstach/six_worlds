@@ -1047,7 +1047,7 @@ The Canopy
 *meaning:*
 
 <!--@ animal_realm_names.json | forest.landscape_features | named_places[0].meaning -->
-The upper world — vanara territory, shyena hunting ground, shardula observation post
+The upper world — vanara territory, shyena hunting ground, marjara observation post
 <!--@end-->
 
 
@@ -1562,145 +1562,145 @@ Ancestral birthplace of the lineage matriarch; visited ceremonially
 
 
 
-## Shardula  `shardula`
+## Marjara  `marjara`
 
 
 **How this birth names**
 
-<!--@ animal_realm_names.json | forest.births.shardula | naming_philosophy -->
-Shardula are solitary and precise. They pay close attention to light — the quality of dappled forest light is the aesthetic foundation of their world, both for hunting and for beauty. Names often refer to moments of perception: the instant before action, the quality of stillness, the particular light of a given hour. A parent says: 'May you see and not be seen.' Place names describe functional qualities of terrain: cover quality, sight-line distance, how the light falls at different hours.
+<!--@ animal_realm_names.json | forest.births.marjara | naming_philosophy -->
+Marjara are solitary and precise. They pay close attention to light — the quality of dappled forest light is the aesthetic foundation of their world, both for hunting and for beauty. Names often refer to moments of perception: the instant before action, the quality of stillness, the particular light of a given hour. A parent says: 'May you see and not be seen.' Place names describe functional qualities of terrain: cover quality, sight-line distance, how the light falls at different hours.
 <!--@end-->
 
 
 **Parent wishes**
 
-<!--@ animal_realm_names.json | forest.births.shardula | parent_wishes[0] -->
+<!--@ animal_realm_names.json | forest.births.marjara | parent_wishes[0] -->
 May you see and not be seen
 <!--@end-->
 
-<!--@ animal_realm_names.json | forest.births.shardula | parent_wishes[1] -->
+<!--@ animal_realm_names.json | forest.births.marjara | parent_wishes[1] -->
 May your markings be precise
 <!--@end-->
 
-<!--@ animal_realm_names.json | forest.births.shardula | parent_wishes[2] -->
+<!--@ animal_realm_names.json | forest.births.marjara | parent_wishes[2] -->
 May you wait without urgency
 <!--@end-->
 
-<!--@ animal_realm_names.json | forest.births.shardula | parent_wishes[3] -->
+<!--@ animal_realm_names.json | forest.births.marjara | parent_wishes[3] -->
 May the spotted light find you
 <!--@end-->
 
-<!--@ animal_realm_names.json | forest.births.shardula | parent_wishes[4] -->
+<!--@ animal_realm_names.json | forest.births.marjara | parent_wishes[4] -->
 May the moment be yours
 <!--@end-->
 
 
 **Personal names**
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[0].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[0].name -->
 Chitraka
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[0].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[0].meaning -->
 the spotted one; identity through pattern
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[1].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[1].name -->
 Drishika
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[1].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[1].meaning -->
 of the sight; defined by what they perceive
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[2].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[2].name -->
 Avadhana
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[2].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[2].meaning -->
 full attention; the quality of being completely present
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[3].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[3].name -->
 Kshanaka
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[3].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[3].meaning -->
 of the moment; always in the exact instant
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[4].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[4].name -->
 Sthiraka
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[4].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[4].meaning -->
 the still one; patience made physical
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[5].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[5].name -->
 Mandaka
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[5].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[5].meaning -->
 the slow and deliberate; not slow but deliberate
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[6].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[6].name -->
 Varika
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[6].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[6].meaning -->
 the precious and chosen; quality over quantity
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[7].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[7].name -->
 Niloka
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[7].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[7].meaning -->
 dark medicine; healing that works in shadow
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[8].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[8].name -->
 Rupaka
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | personal_names[8].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | personal_names[8].meaning -->
 of the form; aware of their own presence in space
 <!--@end-->
 
@@ -1708,86 +1708,86 @@ of the form; aware of their own presence in space
 
 **Place names**
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[0].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[0].name -->
 The Patient Rock
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[0].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[0].meaning -->
 Their primary scouting boulder — good sight-lines, excellent cover
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[1].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[1].name -->
 The Crossing
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[1].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[1].meaning -->
 The deer ford they watch — reliable prey approach
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[2].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[2].name -->
 The High Branch
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[2].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[2].meaning -->
 Their territory's main marker — highest reachable point
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[3].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[3].name -->
 The Spotted Light
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[3].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[3].meaning -->
 The forest section where dappled light through canopy creates ideal ambush conditions
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[4].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[4].name -->
 The Long Wait
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[4].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[4].meaning -->
 A territory claimed after months of patient observation — named for the effort
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[5].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[5].name -->
 The Scent Ridge
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[5].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[5].meaning -->
 The territorial boundary where their markings end — and another's begin
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[6].name -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[6].name -->
 The Hollow Where Nothing Comes
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.shardula | place_names[6].meaning -->
+<!--@ animal_realm_names.json | forest.births.marjara | place_names[6].meaning -->
 Poor territory, dry and avoided; named as a warning
 <!--@end-->
 

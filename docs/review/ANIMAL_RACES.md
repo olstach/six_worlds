@@ -1,62 +1,15 @@
 # Animal Realm — Births and Backgrounds
 
-*19 births. A birth is what you were reborn as; a background is what you did with it. Both descriptions are read at character creation.*
+*18 births. A birth is what you were reborn as; a background is what you did with it. Both descriptions are read at character creation.*
 
 *Edit the prose between the anchors. The stat line under each name is generated — change it in `races.json`.*
 
 ---
 
 
-## Bee  `bee`
-
-`reincarnation weight: 0`
-
-
-**Name**
-
-<!--@ races.json | bee | name -->
-Bee
-<!--@end-->
-
-
-**Description**
-
-<!--@ races.json | bee | description -->
-TODO: Fill in description
-<!--@end-->
-
-
----
-
-
-## Bhramara  `bhramara`
-
-`attributes: strength-1, finesse+1, focus+1, awareness+2, charm+1  ·  traits: colony_mind  ·  reincarnation weight: 20`
-
-
-**Name**
-
-<!--@ races.json | bhramara | name -->
-Bhramara
-<!--@end-->
-
-
-**Description**
-
-<!--@ races.json | bhramara | description -->
-Named for the bee — the Sanskrit word carries a hum in it. The Bhramara birth encompasses bees, wasps, hornets, termites, and all the hive-building, colony-organizing insects of the meadow. They are not quite individuals in the way other births are; the colony thinks through them.
-<!--@end-->
-
-
-*Backgrounds: `hive_architect`, `network_node`, `far_scout`, `honey_alchemist`, `caravan_guard`, `swarm_caller`*
-
-
----
-
-
 ## Dura  `dura`
 
-`attributes: strength+1, finesse-2, constitution+3, focus-1, awareness-1  ·  traits: armored  ·  reincarnation weight: 20`
+`common  ·  attributes: strength+2, finesse-2, constitution+4, focus-1, awareness-1 (total +2)  ·  skills: earth_magic 1, smithing 1, trade 1 (3 pts)  ·  traits: armored  ·  reincarnation weight: 45`
 
 
 **Name**
@@ -69,7 +22,7 @@ Dura
 **Description**
 
 <!--@ races.json | dura | description -->
-The Dura birth covers all the armored ground insects of the meadows: beetles of every variety, scarabs, pillbugs, cockroaches, armadillo bugs. They are patient, persistent, nearly indestructible within their weight class, and have been here longer than most things that walk.
+Patient and persistent, the Dura have been here longer than most things that walk. They have long mastered the secrets of the earth and became famous as farmers, traders and sturdy warriors.
 <!--@end-->
 
 
@@ -81,7 +34,7 @@ The Dura birth covers all the armored ground insects of the meadows: beetles of 
 
 ## Gana  `gana`
 
-`attributes: strength+1, finesse+2, awareness+1  ·  skills: daggers 1, unarmed 1  ·  traits: colony_mind  ·  reincarnation weight: 12`
+`common  ·  attributes: strength+1, finesse+2, constitution-1, awareness+1, charm-1 (total +2)  ·  skills: daggers 1, guile 1, unarmed 1 (3 pts)  ·  traits: colony_mind  ·  reincarnation weight: 45`
 
 
 **Name**
@@ -94,7 +47,7 @@ Gana
 **Description**
 
 <!--@ races.json | gana | description -->
-Named for the collective — the gana, the group that hunts as one mind (from which Ganesha takes his name: lord of the group). The Gana birth covers wolves, dholes, jackals and wild dogs. Alone a gana is a middling thing; the pack is the animal. They take prey larger than themselves by arriving around it, and they settle their own disputes by voice long before they settle them by tooth.
+Alone, a middling thing with good teeth. Together, the only creature in the forest that hunts by conversation — and among themselves the argument is always settled by voice long before it is settled by throat.
 <!--@end-->
 
 
@@ -104,34 +57,9 @@ Named for the collective — the gana, the group that hunts as one mind (from wh
 ---
 
 
-## Kapota  `kapota`
-
-`attributes: strength-2, finesse+1, constitution-1, awareness+1, charm+1, luck+2  ·  traits: flying, predator_grace, swift_wing  ·  body: avian  ·  reincarnation weight: 20`
-
-
-**Name**
-
-<!--@ races.json | kapota | name -->
-Kapota
-<!--@end-->
-
-
-**Description**
-
-<!--@ races.json | kapota | description -->
-Named for the dove — Sanskrit kapota, birds of message and return. The Kapota birth is all small fast birds: pigeons, doves, swallows, swifts, sparrows, tits, finches. They are extraordinarily fast, highly social, and navigate by senses that feel like luck but are not.
-<!--@end-->
-
-
-*Backgrounds: `post_runner`, `temple_dove`, `conference_pilgrim`, `waypoint_gossip`*
-
-
----
-
-
 ## Karka  `karka`
 
-`attributes: strength+1, finesse-2, constitution+3, focus-1, charm-1  ·  traits: aquatic, armored  ·  reincarnation weight: 20`
+`common  ·  attributes: strength+2, finesse-2, constitution+4, focus-1, charm-1 (total +2)  ·  skills: armor 2, might 1 (3 pts)  ·  traits: aquatic, armored  ·  reincarnation weight: 45`
 
 
 **Name**
@@ -144,7 +72,7 @@ Karka
 **Description**
 
 <!--@ races.json | karka | description -->
-Named for the crab but encompassing all great armored crustaceans — lobsters, barnacles, mantis shrimp, nautiloids. The Karka are slow, nearly impenetrable, and possess a patience born of spending eternity anchored to stone.
+Armoured, unhurried, and entirely uninterested in your schedule. The karka hold the reef passes the way a door holds a frame, and no one has yet argued one out of the way.
 <!--@end-->
 
 
@@ -154,59 +82,9 @@ Named for the crab but encompassing all great armored crustaceans — lobsters, 
 ---
 
 
-## Khadga  `khadga`
-
-`attributes: finesse+3, constitution-2, awareness+1, charm-1  ·  skills: martial_arts 1  ·  traits: predator_grace  ·  body: mantis  ·  reincarnation weight: 15`
-
-
-**Name**
-
-<!--@ races.json | khadga | name -->
-Khadga
-<!--@end-->
-
-
-**Description**
-
-<!--@ races.json | khadga | description -->
-Named for the sword — the Khadga birth is the mantis and all blade-limbed predatory insects of the meadow: dragonflies with their fighter-jet agility, ambush grasshoppers, water striders moving impossibly fast across the surface. They live by the first strike.
-<!--@end-->
-
-
-*Backgrounds: `caravan_guard`, `still_hunter`, `blade_contemplative`, `jaina`*
-
-
----
-
-
-## Makara  `makara`
-
-`attributes: finesse+1, focus+2, awareness+1, charm-1, luck-1  ·  traits: aquatic  ·  reincarnation weight: 15`
-
-
-**Name**
-
-<!--@ races.json | makara | name -->
-Makara
-<!--@end-->
-
-
-**Description**
-
-<!--@ races.json | makara | description -->
-The sea-monster of Hindu and Buddhist iconography — part fish, part crocodile, part something else entirely. As a birth it encompasses all liminal ocean creatures: cephalopods, amphibians, deep-sea oddities that resist easy category. They are between things, and draw power from that ambiguity.
-<!--@end-->
-
-
-*Backgrounds: `coral_guard`, `palace_vizier`, `deep_hunter`, `wreck_gleaner`, `boundary_walker`*
-
-
----
-
-
 ## Matsya  `matsya`
 
-`attributes: strength-1, finesse+2, awareness+2, luck-1  ·  traits: aquatic, predator_grace  ·  reincarnation weight: 25`
+`common  ·  attributes: strength-1, finesse+2, awareness+2, luck-1 (total +2)  ·  skills: grace 1, guile 1, water_magic 1 (3 pts)  ·  traits: aquatic, predator_grace  ·  reincarnation weight: 45`
 
 
 **Name**
@@ -219,7 +97,7 @@ Matsya
 **Description**
 
 <!--@ races.json | matsya | description -->
-Named for the sacred fish — first avatar of Vishnu, navigator of the primal flood. The Matsya birth encompasses all fish, rays, and swift-bodied ocean hunters. They live by speed and lateral awareness, darting where others lumber.
+In the ocean, the slow and unwary quickly become a meal. The matsya are the children of those who lived, and they will do their best to make their ancestors proud.
 <!--@end-->
 
 
@@ -231,7 +109,7 @@ Named for the sacred fish — first avatar of Vishnu, navigator of the primal fl
 
 ## Mriga  `mriga`
 
-`attributes: finesse+1, awareness+2, charm+1  ·  skills: persuasion 1, performance 1  ·  traits: colony_mind  ·  reincarnation weight: 13`
+`common  ·  attributes: strength-1, finesse+1, constitution-1, awareness+2, charm+1 (total +2)  ·  skills: grace 1, performance 1, persuasion 1 (3 pts)  ·  traits: colony_mind  ·  reincarnation weight: 45`
 
 
 **Name**
@@ -244,7 +122,7 @@ Mriga
 **Description**
 
 <!--@ races.json | mriga | description -->
-The other half of the gana — the herd rather than the pack. The Mriga birth covers deer, antelope, gazelle and the wild horses of the open ground. They are built to notice and to leave: a mriga knows a clearing is wrong before it can say why. What looks like timidity is a very old and very well-tested form of judgement, and among themselves they settle everything by display — the antler-argument, the held ground, the long formal contest that ends without a wound.
+They know a clearing is wrong before they can say why, and no one has ever asked them to explain. Everything among them is decided by display: the held ground, the long formal argument of antlers that ends without a wound.
 <!--@end-->
 
 
@@ -254,34 +132,9 @@ The other half of the gana — the herd rather than the pack. The Mriga birth co
 ---
 
 
-## Naga  `naga`
-
-`attributes: strength-1, finesse+1, focus+2, awareness+3, charm+2  ·  skills: water_magic 1, persuasion 1  ·  traits: serpentine  ·  body: serpentine  ·  reincarnation weight: 0`
-
-
-**Name**
-
-<!--@ races.json | naga | name -->
-Naga
-<!--@end-->
-
-
-**Description**
-
-<!--@ races.json | naga | description -->
-Serpentine beings of wisdom and power dwelling beneath the waves. The Naga birth encompasses all great water serpents — sea nagas, river nagas, lake nagas, and the lesser serpent-folk who serve their courts.
-<!--@end-->
-
-
-*Backgrounds: `coral_guard`, `palace_vizier`, `sea_dancer`, `wreck_gleaner`, `tide_seer`*
-
-
----
-
-
 ## Patanga  `patanga`
 
-`attributes: finesse+1, constitution-1, focus+2, awareness+1, charm-1  ·  reincarnation weight: 15`
+`common  ·  attributes: finesse+1, constitution-1, focus+2, awareness+1, charm-1 (total +2)  ·  skills: air_magic 1, alchemy 1, guile 1 (3 pts)  ·  reincarnation weight: 45`
 
 
 **Name**
@@ -294,7 +147,7 @@ Patanga
 **Description**
 
 <!--@ races.json | patanga | description -->
-Named for the moth — a Sanskrit word meaning any winged flying insect drawn to flame. The Patanga birth covers moths, butterflies, centipedes, millipedes, scorpions, and other creatures at the uncanny margin of the insect world. Poison, silk, iridescence, and a tendency to appear where least expected.
+Poison, silk, iridescence, and a tendency to appear where least expected, the Patanga know how to kindle fear and wonder alike.
 <!--@end-->
 
 
@@ -304,109 +157,9 @@ Named for the moth — a Sanskrit word meaning any winged flying insect drawn to
 ---
 
 
-## Rakshasa  `rakshasa`
-
-`attributes: strength+3, finesse+1, constitution+1, focus+1, charm-2  ·  skills: unarmed 1, might 1  ·  reincarnation weight: 0`
-
-
-**Name**
-
-<!--@ races.json | rakshasa | name -->
-Rakshasa
-<!--@end-->
-
-
-**Description**
-
-<!--@ races.json | rakshasa | description -->
-The great predators of the deep forest — shapeshifters, flesh-eaters, terrifying in their power. Rakshasas are the lords of the forest as Yakshas are lords of the meadow: ancient, dangerous, possessed of their own strange honour. A rare birth, not reincarnated into lightly.
-<!--@end-->
-
-
-*Backgrounds: `lord_of_the_range`, `the_hungry`, `maneater`, `hedonist`*
-
-
----
-
-
-## Shardula  `shardula`
-
-`attributes: strength+1, finesse+3, constitution-1, awareness+1, luck-1  ·  traits: predator_grace, venom_ward  ·  reincarnation weight: 15`
-
-
-**Name**
-
-<!--@ races.json | shardula | name -->
-Shardula
-<!--@end-->
-
-
-**Description**
-
-<!--@ races.json | shardula | description -->
-Named for the tiger — in Sanskrit, the best and fiercest of its kind. The Shardula birth covers all fast, deadly forest predators: wildcats, leopards, mongooses, martens, ferrets, civets. They live by speed, precision, and the element of surprise.
-<!--@end-->
-
-
-*Backgrounds: `cache_master`, `canopy_ambush`, `forest_drifter`, `hedonist`*
-
-
----
-
-
-## Shyena  `shyena`
-
-`attributes: strength+2, constitution+1, awareness+2, charm-1  ·  skills: unarmed 1  ·  traits: flying, armored, taloned_strike  ·  body: avian  ·  reincarnation weight: 15`
-
-
-**Name**
-
-<!--@ races.json | shyena | name -->
-Shyena
-<!--@end-->
-
-
-**Description**
-
-<!--@ races.json | shyena | description -->
-Named for the hawk of the Rigveda — a divine bird carrying soma from heaven. The Shyena birth covers all great raptors: eagles, vultures, ospreys, hawks. They see far, strike hard, and carry the weight of the sky in their bones.
-<!--@end-->
-
-
-*Backgrounds: `sky_lord`, `stooper`, `jessed_hawk`*
-
-
----
-
-
-## Uluka  `uluka`
-
-`attributes: strength-1, finesse+1, constitution-1, focus+2, awareness+3  ·  traits: flying, night_vision  ·  body: avian  ·  reincarnation weight: 15`
-
-
-**Name**
-
-<!--@ races.json | uluka | name -->
-Uluka
-<!--@end-->
-
-
-**Description**
-
-<!--@ races.json | uluka | description -->
-Named for the owl — Sanskrit uluka, bird of wisdom and terrible night things. The Uluka birth includes owls, parrots, ravens, lyrebirds, cockatoos, hornbills — all birds with unusual gifts: speech, mimicry, night sight, uncanny intelligence. Indra's messenger is an owl; so are many other things less comfortable.
-<!--@end-->
-
-
-*Backgrounds: `night_scholar`, `ill_omen`, `fortune_seeker`*
-
-
----
-
-
 ## Vanara  `vanara`
 
-`attributes: strength-1, finesse+2, constitution-1, focus+1, awareness+2, luck+1  ·  skills: guile 1  ·  traits: nimble_mischief  ·  reincarnation weight: 15`
+`common  ·  attributes: strength-2, finesse+2, constitution-1, focus+1, awareness+1, luck+1 (total +2)  ·  skills: comedy 1, guile 2 (3 pts)  ·  traits: nimble_mischief  ·  reincarnation weight: 45`
 
 
 **Name**
@@ -419,7 +172,7 @@ Vanara
 **Description**
 
 <!--@ races.json | vanara | description -->
-Hanuman's people — the monkey-folk. Vanaras are clever, acrobatic, intensely curious, and enormously irritating to those who lack patience. They include all monkeys, apes, lemurs, and their stranger cousins. Their hands remember things their minds have forgotten.
+Nothing in the canopy is fastened down, and anything that is merely constitutes the opening of a project. They are funny deliberately, which is the part people underestimate.
 <!--@end-->
 
 
@@ -431,7 +184,7 @@ Hanuman's people — the monkey-folk. Vanaras are clever, acrobatic, intensely c
 
 ## Varaha  `varaha`
 
-`attributes: strength+2, finesse-2, constitution+3, focus-1, awareness-1, charm-1  ·  traits: armored, bulky  ·  reincarnation weight: 20`
+`common  ·  attributes: strength+3, finesse-2, constitution+4, focus-1, awareness-1, charm-1 (total +2)  ·  skills: armor 1, might 2 (3 pts)  ·  traits: armored, bulky  ·  reincarnation weight: 45`
 
 
 **Name**
@@ -444,7 +197,7 @@ Varaha
 **Description**
 
 <!--@ races.json | varaha | description -->
-Named for Vishnu's boar avatar — the force that rescued the world from the ocean floor. The Varaha birth covers all massive, low-to-ground forest heavies: boars, bears, badgers, wolverines, wombats in wilder incarnations. They are the forest's weight, the thing that does not move when pushed.
+A low decision made at speed. Varaha neither bluff nor can be bluffed, and the forest has long since learned to concede the trail.
 <!--@end-->
 
 
@@ -454,9 +207,234 @@ Named for Vishnu's boar avatar — the force that rescued the world from the oce
 ---
 
 
+## Bhramara  `bhramara`
+
+`uncommon  ·  attributes: strength-1, finesse+1, focus+1, awareness+2, charm+1 (total +4)  ·  skills: air_magic 1, logistics 1, ritual 1, summoning 1 (4 pts)  ·  traits: colony_mind  ·  reincarnation weight: 30`
+
+
+**Name**
+
+<!--@ races.json | bhramara | name -->
+Bhramara
+<!--@end-->
+
+
+**Description**
+
+<!--@ races.json | bhramara | description -->
+The nature of the relationship between a bhramara and their hive eludes the grasp of even the most empathetic of other beings. What is obvious is their coordination and refinement.
+<!--@end-->
+
+
+*Backgrounds: `hive_architect`, `network_node`, `far_scout`, `honey_alchemist`, `caravan_guard`, `swarm_caller`*
+
+
+---
+
+
+## Kapota  `kapota`
+
+`uncommon  ·  attributes: strength-2, finesse+1, constitution-1, awareness+2, charm+2, luck+2 (total +4)  ·  skills: air_magic 1, grace 1, learning 1, persuasion 1 (4 pts)  ·  traits: flying, predator_grace, swift_wing  ·  body: avian  ·  reincarnation weight: 30`
+
+
+**Name**
+
+<!--@ races.json | kapota | name -->
+Kapota
+<!--@end-->
+
+
+**Description**
+
+<!--@ races.json | kapota | description -->
+Every message that mattered was carried by something small and grey that nobody thought to stop. The kapota remember all of them, and they remember who was lying.
+<!--@end-->
+
+
+*Backgrounds: `post_runner`, `temple_dove`, `conference_pilgrim`, `waypoint_gossip`*
+
+
+---
+
+
+## Khadga  `khadga`
+
+`uncommon  ·  attributes: finesse+4, constitution-1, awareness+2, charm-1 (total +4)  ·  skills: grace 1, martial_arts 2, yoga 1 (4 pts)  ·  traits: predator_grace  ·  body: mantis  ·  reincarnation weight: 30`
+
+
+**Name**
+
+<!--@ races.json | khadga | name -->
+Khadga
+<!--@end-->
+
+
+**Description**
+
+<!--@ races.json | khadga | description -->
+The blade-limbed mantis, the dragonfly, the ambush grasshopper. They live by the first strike, unconquered in their weight class.
+<!--@end-->
+
+
+*Backgrounds: `caravan_guard`, `still_hunter`, `blade_contemplative`, `jaina`*
+
+
+---
+
+
+## Marjara  `marjara`
+
+`uncommon  ·  attributes: strength+1, finesse+4, constitution-1, awareness+1, luck-1 (total +4)  ·  skills: daggers 2, grace 1, guile 1 (4 pts)  ·  traits: predator_grace, venom_ward  ·  reincarnation weight: 30`
+
+
+**Name**
+
+<!--@ races.json | marjara | name -->
+Marjara
+<!--@end-->
+
+
+**Description**
+
+<!--@ races.json | marjara | description -->
+Dappled light is their native country — the flicker where a shape might be, and then is not. Whatever they wanted from you, they have usually already taken it.
+<!--@end-->
+
+
+*Backgrounds: `cache_master`, `canopy_ambush`, `forest_drifter`, `hedonist`*
+
+
+---
+
+
+## Shyena  `shyena`
+
+`uncommon  ·  attributes: strength+2, constitution+1, awareness+2, charm-1 (total +4)  ·  skills: air_magic 1, ranged 2, unarmed 1 (4 pts)  ·  traits: flying, armored, taloned_strike  ·  body: avian  ·  reincarnation weight: 30`
+
+
+**Name**
+
+<!--@ races.json | shyena | name -->
+Shyena
+<!--@end-->
+
+
+**Description**
+
+<!--@ races.json | shyena | description -->
+The stoop is one decision, made at height and never revised. From up there the world sorts cleanly into things worth the dive and things that are not.
+<!--@end-->
+
+
+*Backgrounds: `sky_lord`, `stooper`, `jessed_hawk`*
+
+
+---
+
+
+## Uluka  `uluka`
+
+`uncommon  ·  attributes: strength-1, finesse+1, constitution-1, focus+2, awareness+3 (total +4)  ·  skills: air_magic 1, learning 2, ritual 1 (4 pts)  ·  traits: flying, night_vision  ·  body: avian  ·  reincarnation weight: 30`
+
+
+**Name**
+
+<!--@ races.json | uluka | name -->
+Uluka
+<!--@end-->
+
+
+**Description**
+
+<!--@ races.json | uluka | description -->
+They ask questions in the tone of someone who already has the answer and is deciding whether you deserve it. Nothing that hunts in silence is ever entirely trusted.
+<!--@end-->
+
+
+*Backgrounds: `night_scholar`, `ill_omen`, `fortune_seeker`*
+
+
+---
+
+
+## Makara  `makara`
+
+`rare  ·  attributes: strength+2, finesse+1, constitution+2, focus+4, awareness+1, charm-2, luck-2 (total +6)  ·  skills: enchantment 1, sorcery 2, water_magic 2 (5 pts)  ·  traits: aquatic, deep_current  ·  reincarnation weight: 15`
+
+
+**Name**
+
+<!--@ races.json | makara | name -->
+Makara
+<!--@end-->
+
+
+**Description**
+
+<!--@ races.json | makara | description -->
+Deep beneath the waves dwell creatures strange and old, wielding weird magic and practicing yogas that only make sense for the cephalopod body.
+<!--@end-->
+
+
+*Backgrounds: `coral_guard`, `palace_vizier`, `deep_hunter`, `wreck_gleaner`, `boundary_walker`*
+
+
+---
+
+
+## Naga  `naga`
+
+`rare  ·  attributes: strength-1, finesse+1, focus+2, awareness+3, charm+1 (total +6)  ·  skills: enchantment 1, persuasion 2, water_magic 2 (5 pts)  ·  traits: serpentine, hoard_keeper  ·  body: serpentine  ·  reincarnation weight: 15`
+
+
+**Name**
+
+<!--@ races.json | naga | name -->
+Naga
+<!--@end-->
+
+
+**Description**
+
+<!--@ races.json | naga | description -->
+Before the first apes descended from the trees, these serpentine beings raised their glimmering cities with ingenuity and wisdom.
+<!--@end-->
+
+
+*Backgrounds: `coral_guard`, `palace_vizier`, `sea_dancer`, `wreck_gleaner`, `tide_seer`*
+
+
+---
+
+
+## Rakshasa  `rakshasa`
+
+`rare  ·  attributes: strength+4, finesse+1, constitution+2, focus+1, awareness+1, charm-2, luck-1 (total +6)  ·  skills: might 2, unarmed 2, yoga 1 (5 pts)  ·  traits: hunters_yoga  ·  reincarnation weight: 15`
+
+
+**Name**
+
+<!--@ races.json | rakshasa | name -->
+Rakshasa
+<!--@end-->
+
+
+**Description**
+
+<!--@ races.json | rakshasa | description -->
+Shape-shifting lords of the jungle, presiding over the ancient cults of the hunt and atavistic power. This is what a tiger becomes across lifetimes of the twisted yogas — hunger refined into discipline, and the discipline pointed at you.
+<!--@end-->
+
+
+*Backgrounds: `lord_of_the_range`, `the_hungry`, `maneater`, `hedonist`*
+
+
+---
+
+
 ## Yaksha  `yaksha`
 
-`attributes: strength-1, finesse+2, focus+1, awareness+2, charm+2  ·  skills: persuasion 1, air_magic 1  ·  reincarnation weight: 0`
+`rare  ·  attributes: strength-1, finesse+2, focus+1, awareness+2, charm+2 (total +6)  ·  skills: air_magic 2, persuasion 2, ritual 1 (5 pts)  ·  traits: guardian_geas  ·  reincarnation weight: 15`
 
 
 **Name**
@@ -469,7 +447,7 @@ Yaksha
 **Description**
 
 <!--@ races.json | yaksha | description -->
-Nature spirits of the open meadow, Yakshas are embodiments of the land's abundance and ferocity. They are keepers of buried treasure, guardians of springs, and sources of both harvest and storm. Ancient and capricious, they deal with other beings on their own terms.
+Something is being guarded — a spring, a hoard, a promise older than the hill it was sworn on. Ask which, and the answer arrives with the weight of a matter settled long before you were born.
 <!--@end-->
 
 
@@ -544,7 +522,7 @@ You have always lived at the edge where ocean meets sky, where river meets sea. 
 
 ## Cache Master  `cache_master`
 
-`births: Shardula  ·  skills: guile 2, logistics 1`
+`births: Marjara  ·  skills: guile 2, logistics 1`
 
 
 **Name**
@@ -563,7 +541,7 @@ Three kills in the ironwood tree. Two more near the river crossing. Memory is th
 
 ## Canopy Ambush  `canopy_ambush`
 
-`births: Shardula  ·  skills: daggers 1, martial_arts 1, grace 1`
+`births: Marjara  ·  skills: daggers 1, martial_arts 1, grace 1`
 
 
 **Name**
@@ -753,7 +731,7 @@ The flame is a teacher. You have studied it your whole life. It has not yet cons
 
 ## Forest Drifter  `forest_drifter`
 
-`births: Shardula  ·  skills: guile 1, thievery 1, trade 1, comedy 1`
+`births: Marjara  ·  skills: guile 1, thievery 1, trade 1, comedy 1`
 
 
 **Name**
@@ -829,7 +807,7 @@ The hollow log three wing-lengths off the ground, just off the north pass — th
 
 ## Hedonist  `hedonist`
 
-`births: Rakshasa, Shardula  ·  skills: performance 2, black_magic 1, grace 1`
+`births: Marjara, Rakshasa  ·  skills: performance 2, black_magic 1, grace 1`
 
 
 **Name**

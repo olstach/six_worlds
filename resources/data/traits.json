@@ -2370,5 +2370,181 @@
     ],
     "purgeable_by": [],
     "purge_difficulty": 0
+  },
+  "hunters_yoga": {
+    "name": "Hunter's Yoga",
+    "description": "Lifetimes of the twisted disciplines — breath held to stillness, hunger cultivated rather than sated, the body worked into a shape that only makes sense mid-leap. It is a real practice. It is simply pointed the wrong way.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "strength": 1
+    },
+    "pressure_modifiers": {
+      "fire": -5
+    },
+    "skill_modifiers": {
+      "yoga": 1,
+      "unarmed": 1
+    },
+    "event_tags": [
+      "hunters_yoga",
+      "apex_predator",
+      "atavistic"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "guardian_geas": {
+    "name": "Guardian's Geas",
+    "description": "Bound to a place, a hoard, or a promise made before memory. The binding is not resented; it is the shape of the self. Ask what is being guarded and the answer comes back older than the question.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "charm": 1
+    },
+    "pressure_modifiers": {
+      "earth": 5
+    },
+    "skill_modifiers": {
+      "ritual": 1
+    },
+    "event_tags": [
+      "guardian_geas",
+      "oath_bound",
+      "place_bound"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "war_banner": {
+    "name": "War Banner",
+    "description": "Where this one stands, a line forms. It is not courage exactly — closer to the certainty that the fight has already been decided and everyone else is simply catching up.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "charm": 1
+    },
+    "pressure_modifiers": {
+      "fire": 5
+    },
+    "skill_modifiers": {
+      "leadership": 1
+    },
+    "event_tags": [
+      "war_banner",
+      "battle_spirit"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "corpse_rider": {
+    "name": "Corpse Rider",
+    "description": "Wears the dead the way others wear a coat, and has worn many. Something of each one stays behind in the way the hands move.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "focus": 1
+    },
+    "pressure_modifiers": {
+      "water": -5
+    },
+    "skill_modifiers": {
+      "sorcery": 1
+    },
+    "event_tags": [
+      "corpse_rider",
+      "possession",
+      "undead_kin"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "sovereign_grudge": {
+    "name": "Sovereign Grudge",
+    "description": "Ruled something once and has not accepted the loss of it. Every room is a court held in absentia, every slight a matter of record.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "charm": 1
+    },
+    "pressure_modifiers": {
+      "space": -5
+    },
+    "skill_modifiers": {
+      "leadership": 1
+    },
+    "event_tags": [
+      "sovereign_grudge",
+      "deposed",
+      "long_grudge"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "deep_current": {
+    "name": "Deep Current",
+    "description": "Thinks in pressures and distances no surface creature has words for. The magic that comes of it is correspondingly difficult to explain and difficult to argue with.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "focus": 1
+    },
+    "pressure_modifiers": {
+      "water": 5
+    },
+    "skill_modifiers": {
+      "water_magic": 1
+    },
+    "event_tags": [
+      "deep_current",
+      "abyssal",
+      "strange_magic"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "hoard_keeper": {
+    "name": "Hoard Keeper",
+    "description": "Wealth is not spent here, it is accumulated and remembered. Every piece of it has a provenance, and the provenance is the point.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "awareness": 1
+    },
+    "pressure_modifiers": {
+      "earth": 5
+    },
+    "skill_modifiers": {
+      "trade": 1
+    },
+    "event_tags": [
+      "hoard_keeper",
+      "treasure_wise",
+      "long_lived"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "void_touched": {
+    "name": "Void Touched",
+    "description": "Stood too near the place where things stop and came back with the cold still in them. Silence follows this one into rooms.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "focus": 1
+    },
+    "pressure_modifiers": {
+      "space": -5
+    },
+    "skill_modifiers": {
+      "black_magic": 1
+    },
+    "event_tags": [
+      "void_touched",
+      "entropy",
+      "feared"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
   }
 }

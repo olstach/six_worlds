@@ -329,14 +329,24 @@ def export_animal_races():
              "*Edit the prose between the anchors. The stat line under each name is "
              "generated — change it in `races.json`.*\n", "---\n"]
 
-    for rid, r in sorted(races.items()):
+    order = {"common": 0, "uncommon": 1, "rare": 2}
+    for rid, r in sorted(races.items(),
+                         key=lambda kv: (order.get(kv[1].get("rarity"), 9), kv[0])):
         lines.append(f"\n## {r.get('name', rid)}  `{rid}`\n")
         mech = []
+        if r.get("rarity"):
+            mech.append(r["rarity"])
         mods = {k: v for k, v in r.get("attribute_modifiers", {}).items() if v}
         if mods:
-            mech.append("attributes: " + ", ".join(f"{k}{v:+d}" for k, v in mods.items()))
+            # The running total is the budget this birth is meant to hit for its
+            # realm and rarity, so a mis-tuned birth is visible without arithmetic.
+            tot = sum(r.get("attribute_modifiers", {}).values())
+            mech.append("attributes: " + ", ".join(f"{k}{v:+d}" for k, v in mods.items())
+                        + f" (total {tot:+d})")
         if r.get("starting_skills"):
-            mech.append("skills: " + ", ".join(f"{k} {v}" for k, v in r["starting_skills"].items()))
+            pts = sum(r["starting_skills"].values())
+            mech.append("skills: " + ", ".join(f"{k} {v}" for k, v in r["starting_skills"].items())
+                        + f" ({pts} pts)")
         if r.get("starting_traits"):
             mech.append("traits: " + ", ".join(r["starting_traits"]))
         if r.get("resistances"):

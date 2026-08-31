@@ -350,7 +350,7 @@
         "named_places": [
           {
             "name": "The Canopy",
-            "meaning": "The upper world — vanara territory, shyena hunting ground, shardula observation post"
+            "meaning": "The upper world — vanara territory, shyena hunting ground, marjara observation post"
           },
           {
             "name": "The Old Root Hall",
@@ -527,8 +527,8 @@
             }
           ]
         },
-        "shardula": {
-          "naming_philosophy": "Shardula are solitary and precise. They pay close attention to light — the quality of dappled forest light is the aesthetic foundation of their world, both for hunting and for beauty. Names often refer to moments of perception: the instant before action, the quality of stillness, the particular light of a given hour. A parent says: 'May you see and not be seen.' Place names describe functional qualities of terrain: cover quality, sight-line distance, how the light falls at different hours.",
+        "marjara": {
+          "naming_philosophy": "Marjara are solitary and precise. They pay close attention to light — the quality of dappled forest light is the aesthetic foundation of their world, both for hunting and for beauty. Names often refer to moments of perception: the instant before action, the quality of stillness, the particular light of a given hour. A parent says: 'May you see and not be seen.' Place names describe functional qualities of terrain: cover quality, sight-line distance, how the light falls at different hours.",
           "parent_wishes": [
             "May you see and not be seen",
             "May your markings be precise",

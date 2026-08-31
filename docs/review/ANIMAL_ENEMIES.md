@@ -54,6 +54,50 @@ Pack hunter; grows sharper and harder to hit as more of the pack closes in.
 <!--@end-->
 
 
+## Marjara Ambusher  `animal_marjara_ambusher`
+
+`tier: shade  ·  roles: skirmisher  ·  skills: martial_arts, guile  ·  resists: slashing 5%  ·  threat ×1.0`
+
+
+*Named directly in: animal_marjara_ambush*
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_marjara_ambusher | name -->
+Marjara Ambusher
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_marjara_ambusher | _comment -->
+Drops from canopy; guile perks give first-strike advantage; retreats after opening hit
+<!--@end-->
+
+
+## Marjara Stalker  `animal_marjara_stalker`
+
+`tier: devil  ·  roles: skirmisher  ·  skills: daggers, grace  ·  resists: slashing 10%  ·  threat ×1.1`
+
+
+*Named directly in: animal_marjara_ambush*
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_marjara_stalker | name -->
+Marjara Stalker
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_marjara_stalker | _comment -->
+Flanking predator; grace perks give evasion while repositioning; attacks from unexpected angles
+<!--@end-->
+
+
 ## Rakshasa Hunter  `animal_rakshasa_hunter`
 
 `tier: devil  ·  roles: frontline  ·  skills: unarmed, martial_arts  ·  resists: slashing 10%, physical 5%  ·  threat ×1.2`
@@ -85,50 +129,6 @@ Rakshasa Maneater
 
 <!--@ animal_archetypes.json | animal_rakshasa_maneater | _comment -->
 Boss-tier lone predator; singles out the weakest and most isolated party member.
-<!--@end-->
-
-
-## Shardula Ambusher  `animal_shardula_ambusher`
-
-`tier: shade  ·  roles: skirmisher  ·  skills: martial_arts, guile  ·  resists: slashing 5%  ·  threat ×1.0`
-
-
-*Named directly in: animal_shardula_ambush*
-
-
-**Name**
-
-<!--@ animal_archetypes.json | animal_shardula_ambusher | name -->
-Shardula Ambusher
-<!--@end-->
-
-
-**Design note** *(not shown in game)*
-
-<!--@ animal_archetypes.json | animal_shardula_ambusher | _comment -->
-Drops from canopy; guile perks give first-strike advantage; retreats after opening hit
-<!--@end-->
-
-
-## Shardula Stalker  `animal_shardula_stalker`
-
-`tier: devil  ·  roles: skirmisher  ·  skills: daggers, grace  ·  resists: slashing 10%  ·  threat ×1.1`
-
-
-*Named directly in: animal_shardula_ambush*
-
-
-**Name**
-
-<!--@ animal_archetypes.json | animal_shardula_stalker | name -->
-Shardula Stalker
-<!--@end-->
-
-
-**Design note** *(not shown in game)*
-
-<!--@ animal_archetypes.json | animal_shardula_stalker | _comment -->
-Flanking predator; grace perks give evasion while repositioning; attacks from unexpected angles
 <!--@end-->
 
 

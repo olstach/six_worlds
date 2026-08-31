@@ -1262,7 +1262,7 @@ Town
 **Body**
 
 <!--@ animal_events.json | animal_forest_town_weapons | text -->
-A market at the forest's edge where different territories agree, briefly, to exchange. Dura shell-wright craftsmanship, vanara jugaad improvisation, shardula-claw handles on daggers sold by gana traders who got them somewhere no one is explaining. The weapons here are practical and tell stories.
+A market at the forest's edge where different territories agree, briefly, to exchange. Dura shell-wright craftsmanship, vanara jugaad improvisation, marjara-claw handles on daggers sold by gana traders who got them somewhere no one is explaining. The weapons here are practical and tell stories.
 <!--@end-->
 
 
@@ -2416,7 +2416,7 @@ Ridge Predator
 <!--@ animal_events.json | animal_ridge_predator | text -->
 The pass through the thorn ridge narrows to a ledge barely wide enough to walk single file. At its midpoint, something large sits very still.
 
-A shardula — a leopard of immense size, pale as the rock, watching you from exactly the spot the path must cross. His tail moves once, slowly. He does not rise.
+A marjara — a leopard of immense size, pale as the rock, watching you from exactly the spot the path must cross. His tail moves once, slowly. He does not rise.
 
 He is neither blocking nor permitting. He is simply here, as he has been here many times before, watching what comes through.
 <!--@end-->
@@ -2519,7 +2519,7 @@ Challenge him
 
 *Outcome*
 
-`type: combat  ·  enemy_group: animal_shardula_lone  ·  difficulty: hard`
+`type: combat  ·  enemy_group: animal_marjara_lone  ·  difficulty: hard`
 
 <!--@ animal_events.json | animal_ridge_predator | choices.fight.outcome.text -->
 He rises from the rock in one fluid motion. His ears flatten. He has done this before.
@@ -4148,20 +4148,20 @@ You are still looking for the second one when she lands behind you.
 
 ---
 
-## animal_forest_shardula_territory
+## animal_forest_marjara_territory
 
 `realm: animal`
 
 **Title**
 
-<!--@ animal_events.json | animal_forest_shardula_territory | title -->
+<!--@ animal_events.json | animal_forest_marjara_territory | title -->
 Marked Territory
 <!--@end-->
 
 
 **Body**
 
-<!--@ animal_events.json | animal_forest_shardula_territory | text -->
+<!--@ animal_events.json | animal_forest_marjara_territory | text -->
 Claw-marks at head height on every fourth trunk, running as far as you can see in both directions. The marks are fresh, deliberate, and evenly spaced — this is not an animal scratching. It is a boundary, maintained.
 
 The forest beyond the line is very quiet.
@@ -4173,23 +4173,23 @@ The forest beyond the line is very quiet.
 
 #### **cross** — *grey*
 
-<!--@ animal_events.json | animal_forest_shardula_territory | choices.cross.text -->
+<!--@ animal_events.json | animal_forest_marjara_territory | choices.cross.text -->
 Cross the line
 <!--@end-->
 
 
 *Outcome*
 
-`type: combat  ·  enemy_group: animal_shardula_lone  ·  difficulty: hard  ·  karma: animal+4, asura+3`
+`type: combat  ·  enemy_group: animal_marjara_lone  ·  difficulty: hard  ·  karma: animal+4, asura+3`
 
-<!--@ animal_events.json | animal_forest_shardula_territory | choices.cross.outcome.text -->
+<!--@ animal_events.json | animal_forest_marjara_territory | choices.cross.outcome.text -->
 You are forty paces past the marks when the pale shape detaches from a trunk that it had, until that moment, appeared to be part of.
 <!--@end-->
 
 
 #### **go_around** — *grey*
 
-<!--@ animal_events.json | animal_forest_shardula_territory | choices.go_around.text -->
+<!--@ animal_events.json | animal_forest_marjara_territory | choices.go_around.text -->
 Follow the boundary until it ends
 <!--@end-->
 
@@ -4198,14 +4198,14 @@ Follow the boundary until it ends
 
 `karma: animal+4  ·  xp: 6`
 
-<!--@ animal_events.json | animal_forest_shardula_territory | choices.go_around.outcome.text -->
+<!--@ animal_events.json | animal_forest_marjara_territory | choices.go_around.outcome.text -->
 It takes most of a day. The line ends at a river, and something pale watches you from the far bank the whole time you are fording — but the marks stop at the water, and so does she.
 <!--@end-->
 
 
 #### **mark_own** — *blue* — requires might 3
 
-<!--@ animal_events.json | animal_forest_shardula_territory | choices.mark_own.text -->
+<!--@ animal_events.json | animal_forest_marjara_territory | choices.mark_own.text -->
 Add your own mark beside hers and wait
 <!--@end-->
 
@@ -4214,14 +4214,14 @@ Add your own mark beside hers and wait
 
 `karma: animal+6, asura+2  ·  xp: 16`
 
-<!--@ animal_events.json | animal_forest_shardula_territory | choices.mark_own.outcome.text -->
-You cut your mark at the same height, the same depth, and sit down with your back to it. She comes within the hour. For a long time she just looks at the two marks side by side. Then she cuts a third — above both — and withdraws. You have been given passage and put in your place simultaneously, which is, you gather, the shardula way of being generous.
+<!--@ animal_events.json | animal_forest_marjara_territory | choices.mark_own.outcome.text -->
+You cut your mark at the same height, the same depth, and sit down with your back to it. She comes within the hour. For a long time she just looks at the two marks side by side. Then she cuts a third — above both — and withdraws. You have been given passage and put in your place simultaneously, which is, you gather, the marjara way of being generous.
 <!--@end-->
 
 
 #### **quiet_passage** — *blue* — requires guile 4
 
-<!--@ animal_events.json | animal_forest_shardula_territory | choices.quiet_passage.text -->
+<!--@ animal_events.json | animal_forest_marjara_territory | choices.quiet_passage.text -->
 Cross without leaving a trace
 <!--@end-->
 
@@ -4230,7 +4230,7 @@ Cross without leaving a trace
 
 `karma: animal+3  ·  xp: 18`
 
-<!--@ animal_events.json | animal_forest_shardula_territory | choices.quiet_passage.outcome.text -->
+<!--@ animal_events.json | animal_forest_marjara_territory | choices.quiet_passage.outcome.text -->
 Downwind, on stone and root, never breaking a stem. You are through her range and out the other side and she never knows — which is worth more than her permission would have been, and cost more to earn.
 <!--@end-->
 
@@ -5139,7 +5139,7 @@ Hedonist's Camp
 **Body**
 
 <!--@ animal_events.json | animal_forest_hedonist_camp | text -->
-Someone has been living extremely well out here. There is a fire, a great deal of fermented something in gourds, the remains of a genuinely impressive meal, and a shardula lying on his back in the middle of it all, utterly at peace.
+Someone has been living extremely well out here. There is a fire, a great deal of fermented something in gourds, the remains of a genuinely impressive meal, and a marjara lying on his back in the middle of it all, utterly at peace.
 
 "You look," he says, "like people who have been walking."
 <!--@end-->
@@ -5883,7 +5883,7 @@ Trade him route information for stock
 `karma: human+4, animal+2  ·  xp: 16  ·  gold: 50  ·  items: ['item_random']`
 
 <!--@ animal_events.json | animal_forest_jungle_merchant | choices.route_trade.outcome.text -->
-You give him the state of the ridge crossings and where the shardula boundary now runs; he gives you a price no one else in this forest will ever see, and adds two items to the pile that were not for sale. Both of you leave convinced you got the better end of it, which is the mark of a good trade.
+You give him the state of the ridge crossings and where the marjara boundary now runs; he gives you a price no one else in this forest will ever see, and adds two items to the pile that were not for sale. Both of you leave convinced you got the better end of it, which is the mark of a good trade.
 <!--@end-->
 
 
@@ -7431,7 +7431,7 @@ Walk with the migration as long as it goes your way
 `karma: animal+6, god+3  ·  xp: 20  ·  add_trait: beauty_struck  ·  pressure: earth+20, water+20`
 
 <!--@ animal_events.json | animal_meadow_migration | choices.join.outcome.text -->
-You match the pace and join it, and for six hours you are simply part of the thing, walking north among a hundred thousand animals under the truce. A shardula walks beside you for a mile. Neither of you acknowledges the other. It is, on later reflection, one of the great experiences of the run.
+You match the pace and join it, and for six hours you are simply part of the thing, walking north among a hundred thousand animals under the truce. A marjara walks beside you for a mile. Neither of you acknowledges the other. It is, on later reflection, one of the great experiences of the run.
 <!--@end-->
 
 

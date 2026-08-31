@@ -656,7 +656,7 @@
           "weight": 2
         },
         {
-          "event_id": "animal_forest_shardula_territory",
+          "event_id": "animal_forest_marjara_territory",
           "name": "Marked Territory",
           "icon": "enemy",
           "blocking": true,
@@ -1090,7 +1090,7 @@
           "weight": 3
         },
         {
-          "name": "Shardula Scratch Post",
+          "name": "Marjara Scratch Post",
           "icon": "shrine",
           "message": "A tree stripped to white wood by repeated sharpening. The confidence in those marks is unsettling.",
           "rewards": [
@@ -1751,12 +1751,12 @@
         "weight": 1
       },
       {
-        "name": "Shardula",
+        "name": "Marjara",
         "icon": "enemy",
         "mode": 0,
         "attitude": 2,
         "speed": 0.0,
-        "enemy_group": "animal_shardula_ambush",
+        "enemy_group": "animal_marjara_ambush",
         "difficulty": "hard",
         "aggression": 0.7,
         "weight": 2

@@ -31,7 +31,7 @@ Retired from leading a troop of sixty and now collects stolen objects and unlike
 
 ## Chitrangada  `chitrangada`
 
-`birth: shardula  ·  background: canopy_ambush  ·  traits: quick, brave  ·  cost: 850`
+`birth: marjara  ·  background: canopy_ambush  ·  traits: quick, brave  ·  cost: 850`
 
 
 **Skills** *(strongest first)*

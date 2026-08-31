@@ -36,7 +36,7 @@
           "count": 1
         }
       ],
-      "reincarnation_weight": 30,
+      "reincarnation_weight": 40,
       "typical_backgrounds": [
         "warrior",
         "berserker",
@@ -55,7 +55,8 @@
       "starting_traits": [
         "hell_born",
         "better_starting_weapon"
-      ]
+      ],
+      "rarity": "common"
     },
     "blue_devil": {
       "name": "Blue Devil",
@@ -97,7 +98,7 @@
           "count": 1
         }
       ],
-      "reincarnation_weight": 30,
+      "reincarnation_weight": 40,
       "typical_backgrounds": [
         "warrior",
         "hunter",
@@ -115,7 +116,8 @@
       },
       "starting_traits": [
         "hell_born"
-      ]
+      ],
+      "rarity": "common"
     },
     "yellow_devil": {
       "name": "Yellow Devil",
@@ -124,11 +126,11 @@
       "attribute_modifiers": {
         "strength": -1,
         "finesse": -1,
-        "constitution": 2,
+        "constitution": 3,
         "focus": -1,
         "awareness": -1,
         "charm": -1,
-        "luck": 3
+        "luck": 4
       },
       "attribute_caps": {
         "strength": 25,
@@ -143,6 +145,7 @@
         "earth": 5
       },
       "starting_skills": {
+        "logistics": 1,
         "trade": 1
       },
       "starting_spells": [
@@ -152,7 +155,7 @@
           "count": 1
         }
       ],
-      "reincarnation_weight": 20,
+      "reincarnation_weight": 30,
       "typical_backgrounds": [
         "merchant",
         "raider",
@@ -171,7 +174,8 @@
       "starting_traits": [
         "hell_born",
         "extra_starting_gold"
-      ]
+      ],
+      "rarity": "uncommon"
     },
     "green_devil": {
       "name": "Green Devil",
@@ -213,7 +217,7 @@
           "count": 1
         }
       ],
-      "reincarnation_weight": 20,
+      "reincarnation_weight": 40,
       "typical_backgrounds": [
         "hunter",
         "raider",
@@ -230,7 +234,8 @@
       },
       "starting_traits": [
         "hell_born"
-      ]
+      ],
+      "rarity": "common"
     },
     "black_devil": {
       "name": "Black Devil",
@@ -240,8 +245,8 @@
         "strength": 0,
         "finesse": 1,
         "constitution": -2,
-        "focus": 1,
-        "awareness": 2,
+        "focus": 3,
+        "awareness": 4,
         "charm": -1,
         "luck": -1
       },
@@ -259,6 +264,7 @@
       },
       "starting_skills": {
         "black_magic": 1,
+        "ritual": 1,
         "space_magic": 1
       },
       "starting_spells": [
@@ -281,7 +287,7 @@
           "count": 1
         }
       ],
-      "reincarnation_weight": 5,
+      "reincarnation_weight": 20,
       "typical_backgrounds": [
         "executioner",
         "torturer",
@@ -297,8 +303,10 @@
         "air": 0
       },
       "starting_traits": [
-        "hell_born"
-      ]
+        "hell_born",
+        "void_touched"
+      ],
+      "rarity": "rare"
     },
     "white_devil": {
       "name": "White Devil",
@@ -308,9 +316,9 @@
         "strength": -2,
         "finesse": 1,
         "constitution": 1,
-        "focus": -2,
+        "focus": -1,
         "awareness": -1,
-        "charm": 2,
+        "charm": 3,
         "luck": 1
       },
       "attribute_caps": {
@@ -341,7 +349,7 @@
           "count": 1
         }
       ],
-      "reincarnation_weight": 5,
+      "reincarnation_weight": 30,
       "typical_backgrounds": [
         "wanderer",
         "merchant",
@@ -359,7 +367,8 @@
       },
       "starting_traits": [
         "hell_born"
-      ]
+      ],
+      "rarity": "uncommon"
     },
     "rolang": {
       "name": "Rolang",
@@ -371,7 +380,7 @@
         "constitution": 3,
         "focus": -1,
         "awareness": -1,
-        "charm": -1,
+        "charm": -2,
         "luck": 0
       },
       "attribute_caps": {
@@ -386,9 +395,12 @@
       "elemental_affinity_bonuses": {
         "earth": 3
       },
-      "starting_skills": {},
+      "starting_skills": {
+        "might": 1,
+        "unarmed": 1
+      },
       "starting_spells": [],
-      "reincarnation_weight": 35,
+      "reincarnation_weight": 60,
       "typical_backgrounds": [
         "shambler",
         "former_soldier",
@@ -406,7 +418,8 @@
       },
       "starting_traits": [
         "undead"
-      ]
+      ],
+      "rarity": "common"
     },
     "preserved": {
       "name": "Preserved",
@@ -434,11 +447,11 @@
         "earth": 3
       },
       "starting_skills": {
-        "alchemy": 2,
+        "alchemy": 1,
         "black_magic": 1
       },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 60,
       "typical_backgrounds": [
         "preserved",
         "charnel_yogi",
@@ -455,7 +468,8 @@
       },
       "starting_traits": [
         "undead"
-      ]
+      ],
+      "rarity": "common"
     },
     "skeleton": {
       "name": "Skeleton",
@@ -464,7 +478,7 @@
       "attribute_modifiers": {
         "strength": -1,
         "finesse": 0,
-        "constitution": -1,
+        "constitution": -2,
         "focus": 1,
         "awareness": 1,
         "charm": 1,
@@ -480,9 +494,12 @@
         "luck": 31
       },
       "elemental_affinity_bonuses": {},
-      "starting_skills": {},
+      "starting_skills": {
+        "armor": 1,
+        "black_magic": 1
+      },
       "starting_spells": [],
-      "reincarnation_weight": 30,
+      "reincarnation_weight": 60,
       "typical_backgrounds": [
         "warrior",
         "guard",
@@ -502,19 +519,20 @@
       },
       "starting_traits": [
         "undead"
-      ]
+      ],
+      "rarity": "common"
     },
     "dralha": {
       "name": "Dralha",
       "realm": "hungry_ghost",
       "description": "Warrior-kings who refused to relinquish their power at death and rebuilt their dominion from beyond the grave. Dralha are former chieftains, generals, and conquerors who linger in the charnel grounds surrounded by the spirits of those who served them in life. They lead through force and presence, wielding weapons with the same authority they carried in the living world.",
       "attribute_modifiers": {
-        "strength": 2,
+        "strength": 4,
         "finesse": -2,
-        "constitution": 0,
+        "constitution": 1,
         "focus": -1,
         "awareness": -1,
-        "charm": 2,
+        "charm": 4,
         "luck": 0
       },
       "attribute_caps": {
@@ -530,11 +548,11 @@
         "fire": 5
       },
       "starting_skills": {
-        "might": 1,
-        "leadership": 1
+        "leadership": 2,
+        "might": 2
       },
       "starting_spells": [],
-      "reincarnation_weight": 7,
+      "reincarnation_weight": 20,
       "typical_backgrounds": [
         "warrior",
         "former_soldier",
@@ -550,7 +568,10 @@
         "earth": 0,
         "air": 0
       },
-      "starting_traits": []
+      "starting_traits": [
+        "war_banner"
+      ],
+      "rarity": "rare"
     },
     "gyelpo": {
       "name": "Gyelpo",
@@ -560,10 +581,10 @@
         "strength": -2,
         "finesse": 0,
         "constitution": -2,
-        "focus": 2,
-        "awareness": 2,
-        "charm": -1,
-        "luck": 1
+        "focus": 4,
+        "awareness": 4,
+        "charm": 2,
+        "luck": -1
       },
       "attribute_caps": {
         "strength": 23,
@@ -578,7 +599,8 @@
         "space": 5
       },
       "starting_skills": {
-        "black_magic": 1,
+        "black_magic": 2,
+        "leadership": 1,
         "ritual": 1
       },
       "starting_spells": [
@@ -588,7 +610,7 @@
           "count": 1
         }
       ],
-      "reincarnation_weight": 5,
+      "reincarnation_weight": 20,
       "typical_backgrounds": [
         "charnel_yogi",
         "scholar",
@@ -604,8 +626,10 @@
         "air": 0
       },
       "starting_traits": [
-        "ancient_memory"
-      ]
+        "ancient_memory",
+        "sovereign_grudge"
+      ],
+      "rarity": "rare"
     },
     "dre": {
       "name": "Dré",
@@ -614,9 +638,9 @@
       "attribute_modifiers": {
         "strength": -3,
         "finesse": 0,
-        "constitution": -3,
-        "focus": 2,
-        "awareness": 2,
+        "constitution": -2,
+        "focus": 3,
+        "awareness": 3,
         "charm": 0,
         "luck": 0
       },
@@ -632,9 +656,12 @@
       "elemental_affinity_bonuses": {
         "space": 5
       },
-      "starting_skills": {},
+      "starting_skills": {
+        "black_magic": 1,
+        "guile": 1
+      },
       "starting_spells": [],
-      "reincarnation_weight": 5,
+      "reincarnation_weight": 60,
       "typical_backgrounds": [
         "charnel_yogi",
         "penitent",
@@ -651,7 +678,8 @@
       },
       "starting_traits": [
         "incorporeal"
-      ]
+      ],
+      "rarity": "common"
     },
     "vetala": {
       "name": "Vetala",
@@ -661,10 +689,10 @@
         "strength": -2,
         "finesse": 0,
         "constitution": -1,
-        "focus": 2,
-        "awareness": 1,
-        "charm": 1,
-        "luck": -1
+        "focus": 5,
+        "awareness": 3,
+        "charm": 2,
+        "luck": -2
       },
       "attribute_caps": {
         "strength": 23,
@@ -679,8 +707,8 @@
         "space": 5
       },
       "starting_skills": {
-        "sorcery": 1,
-        "learning": 1
+        "learning": 2,
+        "sorcery": 2
       },
       "starting_spells": [
         {
@@ -689,7 +717,7 @@
           "count": 1
         }
       ],
-      "reincarnation_weight": 10,
+      "reincarnation_weight": 20,
       "typical_backgrounds": [
         "trickster",
         "charnel_yogi",
@@ -707,20 +735,22 @@
         "air": 0
       },
       "starting_traits": [
-        "ancient_memory"
-      ]
+        "ancient_memory",
+        "corpse_rider"
+      ],
+      "rarity": "rare"
     },
     "naga": {
       "name": "Naga",
       "realm": "animal",
-      "description": "Serpentine beings of wisdom and power dwelling beneath the waves. The Naga birth encompasses all great water serpents — sea nagas, river nagas, lake nagas, and the lesser serpent-folk who serve their courts.",
+      "description": "Before the first apes descended from the trees, these serpentine beings raised their glimmering cities with ingenuity and wisdom.",
       "attribute_modifiers": {
         "strength": -1,
         "finesse": 1,
         "constitution": 0,
         "focus": 2,
         "awareness": 3,
-        "charm": 2,
+        "charm": 1,
         "luck": 0
       },
       "attribute_caps": {
@@ -734,11 +764,12 @@
       },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
-        "water_magic": 1,
-        "persuasion": 1
+        "enchantment": 1,
+        "persuasion": 2,
+        "water_magic": 2
       },
       "starting_spells": [],
-      "reincarnation_weight": 0,
+      "reincarnation_weight": 15,
       "typical_backgrounds": [
         "coral_guard",
         "palace_vizier",
@@ -755,14 +786,16 @@
         "air": 0
       },
       "starting_traits": [
-        "serpentine"
+        "serpentine",
+        "hoard_keeper"
       ],
-      "body_plan_species": "serpentine"
+      "body_plan_species": "serpentine",
+      "rarity": "rare"
     },
     "yaksha": {
       "name": "Yaksha",
       "realm": "animal",
-      "description": "Nature spirits of the open meadow, Yakshas are embodiments of the land's abundance and ferocity. They are keepers of buried treasure, guardians of springs, and sources of both harvest and storm. Ancient and capricious, they deal with other beings on their own terms.",
+      "description": "Something is being guarded — a spring, a hoard, a promise older than the hill it was sworn on. Ask which, and the answer arrives with the weight of a matter settled long before you were born.",
       "attribute_modifiers": {
         "strength": -1,
         "finesse": 2,
@@ -786,11 +819,12 @@
         "earth": 3
       },
       "starting_skills": {
-        "persuasion": 1,
-        "air_magic": 1
+        "air_magic": 2,
+        "persuasion": 2,
+        "ritual": 1
       },
       "starting_spells": [],
-      "reincarnation_weight": 0,
+      "reincarnation_weight": 15,
       "typical_backgrounds": [
         "caravan_guard",
         "still_hunter",
@@ -805,7 +839,10 @@
         "earth": 0,
         "air": 0
       },
-      "starting_traits": []
+      "starting_traits": [
+        "guardian_geas"
+      ],
+      "rarity": "rare"
     },
     "human": {
       "name": "Human",
@@ -1153,7 +1190,7 @@
       "realm": "hungry_ghost",
       "description": "The predators of the underworld, the shaza aggressively seek out bodies to devour.",
       "attribute_modifiers": {
-        "strength": 2,
+        "strength": 3,
         "finesse": 2,
         "constitution": 0,
         "focus": 0,
@@ -1172,11 +1209,11 @@
       },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
-        "unarmed": 1,
-        "might": 1
+        "might": 1,
+        "unarmed": 1
       },
       "starting_spells": [],
-      "reincarnation_weight": 10,
+      "reincarnation_weight": 60,
       "typical_backgrounds": [
         "warrior",
         "guard",
@@ -1193,7 +1230,8 @@
       },
       "starting_traits": [
         "predator_grace"
-      ]
+      ],
+      "rarity": "common"
     },
     "yidag": {
       "name": "Yidag",
@@ -1201,7 +1239,7 @@
       "description": "Bellies distended with insatiable hunger, throats constricted to a hair's width — these beings are the most unfortunate embodiment of the karma that created their world.",
       "attribute_modifiers": {
         "strength": 0,
-        "finesse": 2,
+        "finesse": 3,
         "constitution": 0,
         "focus": 0,
         "awareness": 0,
@@ -1223,7 +1261,7 @@
         "thievery": 1
       },
       "starting_spells": [],
-      "reincarnation_weight": 10,
+      "reincarnation_weight": 60,
       "typical_backgrounds": [
         "thief",
         "wanderer",
@@ -1240,7 +1278,8 @@
       },
       "starting_traits": [
         "insatiable"
-      ]
+      ],
+      "rarity": "common"
     },
     "skeleton_silver": {
       "name": "Silver Skeleton",
@@ -1251,8 +1290,8 @@
         "finesse": 0,
         "constitution": -1,
         "focus": 0,
-        "awareness": 1,
-        "charm": 1,
+        "awareness": 3,
+        "charm": 2,
         "luck": 0
       },
       "attribute_caps": {
@@ -1266,11 +1305,11 @@
       },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
-        "white_magic": 1,
-        "medicine": 1
+        "medicine": 1,
+        "white_magic": 2
       },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 36,
       "typical_backgrounds": [
         "healer",
         "monk",
@@ -1287,7 +1326,8 @@
       },
       "starting_traits": [
         "undead"
-      ]
+      ],
+      "rarity": "uncommon"
     },
     "skeleton_copper": {
       "name": "Copper Skeleton",
@@ -1297,9 +1337,9 @@
         "strength": -1,
         "finesse": 0,
         "constitution": -1,
-        "focus": 1,
+        "focus": 2,
         "awareness": 0,
-        "charm": 1,
+        "charm": 3,
         "luck": 0
       },
       "attribute_caps": {
@@ -1313,11 +1353,11 @@
       },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
-        "fire_magic": 1,
+        "fire_magic": 2,
         "persuasion": 1
       },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 36,
       "typical_backgrounds": [
         "sorcerer",
         "noble",
@@ -1334,7 +1374,8 @@
       },
       "starting_traits": [
         "undead"
-      ]
+      ],
+      "rarity": "uncommon"
     },
     "skeleton_golden": {
       "name": "Golden Skeleton",
@@ -1346,8 +1387,8 @@
         "constitution": -1,
         "focus": 0,
         "awareness": 0,
-        "charm": 1,
-        "luck": 1
+        "charm": 3,
+        "luck": 2
       },
       "attribute_caps": {
         "strength": 24,
@@ -1360,11 +1401,11 @@
       },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
-        "trade": 1,
-        "leadership": 1
+        "leadership": 1,
+        "trade": 2
       },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 36,
       "typical_backgrounds": [
         "noble",
         "merchant",
@@ -1380,17 +1421,18 @@
       },
       "starting_traits": [
         "undead"
-      ]
+      ],
+      "rarity": "uncommon"
     },
     "skeleton_iron": {
       "name": "Iron Skeleton",
       "realm": "hungry_ghost",
       "description": "Born of broken weapons on endless battlefields of the multiverse, iron skeletons are hard and unyielding, the most serious and driven of their kin.",
       "attribute_modifiers": {
-        "strength": 1,
+        "strength": 3,
         "finesse": 0,
         "constitution": -1,
-        "focus": 1,
+        "focus": 2,
         "awareness": 0,
         "charm": 0,
         "luck": -1
@@ -1406,11 +1448,11 @@
       },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
-        "sorcery": 1,
-        "might": 1
+        "might": 1,
+        "sorcery": 2
       },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 36,
       "typical_backgrounds": [
         "warrior",
         "former_soldier",
@@ -1428,7 +1470,8 @@
       "starting_traits": [
         "undead",
         "armored"
-      ]
+      ],
+      "rarity": "uncommon"
     },
     "skeleton_turquoise": {
       "name": "Turquoise Skeleton",
@@ -1440,7 +1483,7 @@
         "constitution": -1,
         "focus": 0,
         "awareness": 0,
-        "charm": 1,
+        "charm": 4,
         "luck": 1
       },
       "attribute_caps": {
@@ -1455,10 +1498,10 @@
       "elemental_affinity_bonuses": {},
       "starting_skills": {
         "comedy": 1,
-        "performance": 1
+        "performance": 2
       },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 36,
       "typical_backgrounds": [
         "bone_dancer",
         "noble",
@@ -1475,12 +1518,13 @@
       },
       "starting_traits": [
         "undead"
-      ]
+      ],
+      "rarity": "uncommon"
     },
     "bhramara": {
       "name": "Bhramara",
       "realm": "animal",
-      "description": "Named for the bee — the Sanskrit word carries a hum in it. The Bhramara birth encompasses bees, wasps, hornets, termites, and all the hive-building, colony-organizing insects of the meadow. They are not quite individuals in the way other births are; the colony thinks through them.",
+      "description": "The nature of the relationship between a bhramara and their hive eludes the grasp of even the most empathetic of other beings. What is obvious is their coordination and refinement.",
       "attribute_modifiers": {
         "strength": -1,
         "finesse": 1,
@@ -1503,9 +1547,14 @@
         "air": 3,
         "earth": 2
       },
-      "starting_skills": {},
+      "starting_skills": {
+        "air_magic": 1,
+        "logistics": 1,
+        "ritual": 1,
+        "summoning": 1
+      },
       "starting_spells": [],
-      "reincarnation_weight": 20,
+      "reincarnation_weight": 30,
       "typical_backgrounds": [
         "hive_architect",
         "network_node",
@@ -1524,16 +1573,17 @@
       },
       "starting_traits": [
         "colony_mind"
-      ]
+      ],
+      "rarity": "uncommon"
     },
     "karka": {
       "name": "Karka",
       "realm": "animal",
-      "description": "Named for the crab but encompassing all great armored crustaceans — lobsters, barnacles, mantis shrimp, nautiloids. The Karka are slow, nearly impenetrable, and possess a patience born of spending eternity anchored to stone.",
+      "description": "Armoured, unhurried, and entirely uninterested in your schedule. The karka hold the reef passes the way a door holds a frame, and no one has yet argued one out of the way.",
       "attribute_modifiers": {
-        "strength": 1,
+        "strength": 2,
         "finesse": -2,
-        "constitution": 3,
+        "constitution": 4,
         "focus": -1,
         "awareness": 0,
         "charm": -1,
@@ -1551,9 +1601,12 @@
       "elemental_affinity_bonuses": {
         "earth": 3
       },
-      "starting_skills": {},
+      "starting_skills": {
+        "armor": 2,
+        "might": 1
+      },
       "starting_spells": [],
-      "reincarnation_weight": 20,
+      "reincarnation_weight": 45,
       "typical_backgrounds": [
         "coral_guard",
         "wreck_gleaner",
@@ -1572,12 +1625,13 @@
       "starting_traits": [
         "aquatic",
         "armored"
-      ]
+      ],
+      "rarity": "common"
     },
     "matsya": {
       "name": "Matsya",
       "realm": "animal",
-      "description": "Named for the sacred fish — first avatar of Vishnu, navigator of the primal flood. The Matsya birth encompasses all fish, rays, and swift-bodied ocean hunters. They live by speed and lateral awareness, darting where others lumber.",
+      "description": "In the ocean, the slow and unwary quickly become a meal. The matsya are the children of those who lived, and they will do their best to make their ancestors proud.",
       "attribute_modifiers": {
         "strength": -1,
         "finesse": 2,
@@ -1599,9 +1653,13 @@
       "elemental_affinity_bonuses": {
         "water": 3
       },
-      "starting_skills": {},
+      "starting_skills": {
+        "grace": 1,
+        "guile": 1,
+        "water_magic": 1
+      },
       "starting_spells": [],
-      "reincarnation_weight": 25,
+      "reincarnation_weight": 45,
       "typical_backgrounds": [
         "coral_guard",
         "sea_dancer",
@@ -1620,20 +1678,21 @@
       "starting_traits": [
         "aquatic",
         "predator_grace"
-      ]
+      ],
+      "rarity": "common"
     },
     "makara": {
       "name": "Makara",
       "realm": "animal",
-      "description": "The sea-monster of Hindu and Buddhist iconography — part fish, part crocodile, part something else entirely. As a birth it encompasses all liminal ocean creatures: cephalopods, amphibians, deep-sea oddities that resist easy category. They are between things, and draw power from that ambiguity.",
+      "description": "Deep beneath the waves dwell creatures strange and old, wielding weird magic and practicing yogas that only make sense for the cephalopod body.",
       "attribute_modifiers": {
-        "strength": 0,
+        "strength": 2,
         "finesse": 1,
-        "constitution": 0,
-        "focus": 2,
+        "constitution": 2,
+        "focus": 4,
         "awareness": 1,
-        "charm": -1,
-        "luck": -1
+        "charm": -2,
+        "luck": -2
       },
       "attribute_caps": {
         "strength": 27,
@@ -1648,7 +1707,11 @@
         "water": 3,
         "space": 2
       },
-      "starting_skills": {},
+      "starting_skills": {
+        "enchantment": 1,
+        "sorcery": 2,
+        "water_magic": 2
+      },
       "starting_spells": [],
       "reincarnation_weight": 15,
       "typical_backgrounds": [
@@ -1667,17 +1730,19 @@
         "air": 0
       },
       "starting_traits": [
-        "aquatic"
-      ]
+        "aquatic",
+        "deep_current"
+      ],
+      "rarity": "rare"
     },
     "dura": {
       "name": "Dura",
       "realm": "animal",
-      "description": "The Dura birth covers all the armored ground insects of the meadows: beetles of every variety, scarabs, pillbugs, cockroaches, armadillo bugs. They are patient, persistent, nearly indestructible within their weight class, and have been here longer than most things that walk.",
+      "description": "Patient and persistent, the Dura have been here longer than most things that walk. They have long mastered the secrets of the earth and became famous as farmers, traders and sturdy warriors.",
       "attribute_modifiers": {
-        "strength": 1,
+        "strength": 2,
         "finesse": -2,
-        "constitution": 3,
+        "constitution": 4,
         "focus": -1,
         "awareness": -1,
         "charm": 0,
@@ -1695,9 +1760,13 @@
       "elemental_affinity_bonuses": {
         "earth": 5
       },
-      "starting_skills": {},
+      "starting_skills": {
+        "earth_magic": 1,
+        "smithing": 1,
+        "trade": 1
+      },
       "starting_spells": [],
-      "reincarnation_weight": 20,
+      "reincarnation_weight": 45,
       "typical_backgrounds": [
         "caravan_guard",
         "tunneler",
@@ -1715,18 +1784,19 @@
       },
       "starting_traits": [
         "armored"
-      ]
+      ],
+      "rarity": "common"
     },
     "khadga": {
       "name": "Khadga",
       "realm": "animal",
-      "description": "Named for the sword — the Khadga birth is the mantis and all blade-limbed predatory insects of the meadow: dragonflies with their fighter-jet agility, ambush grasshoppers, water striders moving impossibly fast across the surface. They live by the first strike.",
+      "description": "The blade-limbed mantis, the dragonfly, the ambush grasshopper. They live by the first strike, unconquered in their weight class.",
       "attribute_modifiers": {
         "strength": 0,
-        "finesse": 3,
-        "constitution": -2,
+        "finesse": 4,
+        "constitution": -1,
         "focus": 0,
-        "awareness": 1,
+        "awareness": 2,
         "charm": -1,
         "luck": 0
       },
@@ -1743,10 +1813,12 @@
         "air": 3
       },
       "starting_skills": {
-        "martial_arts": 1
+        "grace": 1,
+        "martial_arts": 2,
+        "yoga": 1
       },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 30,
       "typical_backgrounds": [
         "caravan_guard",
         "still_hunter",
@@ -1764,12 +1836,13 @@
       "starting_traits": [
         "predator_grace"
       ],
-      "body_plan_species": "mantis"
+      "body_plan_species": "mantis",
+      "rarity": "uncommon"
     },
     "patanga": {
       "name": "Patanga",
       "realm": "animal",
-      "description": "Named for the moth — a Sanskrit word meaning any winged flying insect drawn to flame. The Patanga birth covers moths, butterflies, centipedes, millipedes, scorpions, and other creatures at the uncanny margin of the insect world. Poison, silk, iridescence, and a tendency to appear where least expected.",
+      "description": "Poison, silk, iridescence, and a tendency to appear where least expected, the Patanga know how to kindle fear and wonder alike.",
       "attribute_modifiers": {
         "strength": 0,
         "finesse": 1,
@@ -1792,9 +1865,13 @@
         "air": 2,
         "space": 3
       },
-      "starting_skills": {},
+      "starting_skills": {
+        "air_magic": 1,
+        "alchemy": 1,
+        "guile": 1
+      },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 45,
       "typical_backgrounds": [
         "far_scout",
         "flame_seeker",
@@ -1808,20 +1885,21 @@
         "earth": 0,
         "air": 0
       },
-      "starting_traits": []
+      "starting_traits": [],
+      "rarity": "common"
     },
     "rakshasa": {
       "name": "Rakshasa",
       "realm": "animal",
-      "description": "The great predators of the deep forest — shapeshifters, flesh-eaters, terrifying in their power. Rakshasas are the lords of the forest as Yakshas are lords of the meadow: ancient, dangerous, possessed of their own strange honour. A rare birth, not reincarnated into lightly.",
+      "description": "Shape-shifting lords of the jungle, presiding over the ancient cults of the hunt and atavistic power. This is what a tiger becomes across lifetimes of the twisted yogas — hunger refined into discipline, and the discipline pointed at you.",
       "attribute_modifiers": {
-        "strength": 3,
+        "strength": 4,
         "finesse": 1,
-        "constitution": 1,
+        "constitution": 2,
         "focus": 1,
-        "awareness": 0,
+        "awareness": 1,
         "charm": -2,
-        "luck": 0
+        "luck": -1
       },
       "attribute_caps": {
         "strength": 35,
@@ -1836,11 +1914,12 @@
         "fire": 5
       },
       "starting_skills": {
-        "unarmed": 1,
-        "might": 1
+        "might": 2,
+        "unarmed": 2,
+        "yoga": 1
       },
       "starting_spells": [],
-      "reincarnation_weight": 0,
+      "reincarnation_weight": 15,
       "typical_backgrounds": [
         "lord_of_the_range",
         "the_hungry",
@@ -1855,16 +1934,19 @@
         "earth": 0,
         "air": 0
       },
-      "starting_traits": []
+      "starting_traits": [
+        "hunters_yoga"
+      ],
+      "rarity": "rare"
     },
     "varaha": {
       "name": "Varaha",
       "realm": "animal",
-      "description": "Named for Vishnu's boar avatar — the force that rescued the world from the ocean floor. The Varaha birth covers all massive, low-to-ground forest heavies: boars, bears, badgers, wolverines, wombats in wilder incarnations. They are the forest's weight, the thing that does not move when pushed.",
+      "description": "A low decision made at speed. Varaha neither bluff nor can be bluffed, and the forest has long since learned to concede the trail.",
       "attribute_modifiers": {
-        "strength": 2,
+        "strength": 3,
         "finesse": -2,
-        "constitution": 3,
+        "constitution": 4,
         "focus": -1,
         "awareness": -1,
         "charm": -1,
@@ -1882,9 +1964,12 @@
       "elemental_affinity_bonuses": {
         "earth": 5
       },
-      "starting_skills": {},
+      "starting_skills": {
+        "armor": 1,
+        "might": 2
+      },
       "starting_spells": [],
-      "reincarnation_weight": 20,
+      "reincarnation_weight": 45,
       "typical_backgrounds": [
         "old_tusk",
         "sounder_guard",
@@ -1902,15 +1987,16 @@
       "starting_traits": [
         "armored",
         "bulky"
-      ]
+      ],
+      "rarity": "common"
     },
-    "shardula": {
-      "name": "Shardula",
+    "marjara": {
+      "name": "Marjara",
       "realm": "animal",
-      "description": "Named for the tiger — in Sanskrit, the best and fiercest of its kind. The Shardula birth covers all fast, deadly forest predators: wildcats, leopards, mongooses, martens, ferrets, civets. They live by speed, precision, and the element of surprise.",
+      "description": "Dappled light is their native country — the flicker where a shape might be, and then is not. Whatever they wanted from you, they have usually already taken it.",
       "attribute_modifiers": {
         "strength": 1,
-        "finesse": 3,
+        "finesse": 4,
         "constitution": -1,
         "focus": 0,
         "awareness": 1,
@@ -1929,9 +2015,13 @@
       "elemental_affinity_bonuses": {
         "fire": 3
       },
-      "starting_skills": {},
+      "starting_skills": {
+        "daggers": 2,
+        "grace": 1,
+        "guile": 1
+      },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 30,
       "typical_backgrounds": [
         "cache_master",
         "canopy_ambush",
@@ -1949,19 +2039,20 @@
       "starting_traits": [
         "predator_grace",
         "venom_ward"
-      ]
+      ],
+      "rarity": "uncommon"
     },
     "gana": {
       "name": "Gana",
       "realm": "animal",
-      "description": "Named for the collective — the gana, the group that hunts as one mind (from which Ganesha takes his name: lord of the group). The Gana birth covers wolves, dholes, jackals and wild dogs. Alone a gana is a middling thing; the pack is the animal. They take prey larger than themselves by arriving around it, and they settle their own disputes by voice long before they settle them by tooth.",
+      "description": "Alone, a middling thing with good teeth. Together, the only creature in the forest that hunts by conversation — and among themselves the argument is always settled by voice long before it is settled by throat.",
       "attribute_modifiers": {
         "strength": 1,
         "finesse": 2,
-        "constitution": 0,
+        "constitution": -1,
         "focus": 0,
         "awareness": 1,
-        "charm": 0,
+        "charm": -1,
         "luck": 0
       },
       "attribute_caps": {
@@ -1979,10 +2070,11 @@
       },
       "starting_skills": {
         "daggers": 1,
+        "guile": 1,
         "unarmed": 1
       },
       "starting_spells": [],
-      "reincarnation_weight": 12,
+      "reincarnation_weight": 45,
       "typical_backgrounds": [
         "throat_hold",
         "quiet_tooth",
@@ -2002,16 +2094,17 @@
       },
       "starting_traits": [
         "colony_mind"
-      ]
+      ],
+      "rarity": "common"
     },
     "mriga": {
       "name": "Mriga",
       "realm": "animal",
-      "description": "The other half of the gana — the herd rather than the pack. The Mriga birth covers deer, antelope, gazelle and the wild horses of the open ground. They are built to notice and to leave: a mriga knows a clearing is wrong before it can say why. What looks like timidity is a very old and very well-tested form of judgement, and among themselves they settle everything by display — the antler-argument, the held ground, the long formal contest that ends without a wound.",
+      "description": "They know a clearing is wrong before they can say why, and no one has ever asked them to explain. Everything among them is decided by display: the held ground, the long formal argument of antlers that ends without a wound.",
       "attribute_modifiers": {
-        "strength": 0,
+        "strength": -1,
         "finesse": 1,
-        "constitution": 0,
+        "constitution": -1,
         "focus": 0,
         "awareness": 2,
         "charm": 1,
@@ -2031,11 +2124,12 @@
         "air": 2
       },
       "starting_skills": {
-        "persuasion": 1,
-        "performance": 1
+        "grace": 1,
+        "performance": 1,
+        "persuasion": 1
       },
       "starting_spells": [],
-      "reincarnation_weight": 13,
+      "reincarnation_weight": 45,
       "typical_backgrounds": [
         "antler_speaker",
         "migration_singer",
@@ -2054,18 +2148,19 @@
       },
       "starting_traits": [
         "colony_mind"
-      ]
+      ],
+      "rarity": "common"
     },
     "vanara": {
       "name": "Vanara",
       "realm": "animal",
-      "description": "Hanuman's people — the monkey-folk. Vanaras are clever, acrobatic, intensely curious, and enormously irritating to those who lack patience. They include all monkeys, apes, lemurs, and their stranger cousins. Their hands remember things their minds have forgotten.",
+      "description": "Nothing in the canopy is fastened down, and anything that is merely constitutes the opening of a project. They are funny deliberately, which is the part people underestimate.",
       "attribute_modifiers": {
-        "strength": -1,
+        "strength": -2,
         "finesse": 2,
         "constitution": -1,
         "focus": 1,
-        "awareness": 2,
+        "awareness": 1,
         "charm": 0,
         "luck": 1
       },
@@ -2082,10 +2177,11 @@
         "air": 3
       },
       "starting_skills": {
-        "guile": 1
+        "comedy": 1,
+        "guile": 2
       },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 45,
       "typical_backgrounds": [
         "troop_elder",
         "shrine_keeper",
@@ -2103,12 +2199,13 @@
       },
       "starting_traits": [
         "nimble_mischief"
-      ]
+      ],
+      "rarity": "common"
     },
     "shyena": {
       "name": "Shyena",
       "realm": "animal",
-      "description": "Named for the hawk of the Rigveda — a divine bird carrying soma from heaven. The Shyena birth covers all great raptors: eagles, vultures, ospreys, hawks. They see far, strike hard, and carry the weight of the sky in their bones.",
+      "description": "The stoop is one decision, made at height and never revised. From up there the world sorts cleanly into things worth the dive and things that are not.",
       "attribute_modifiers": {
         "strength": 2,
         "finesse": 0,
@@ -2132,10 +2229,12 @@
         "fire": 2
       },
       "starting_skills": {
+        "air_magic": 1,
+        "ranged": 2,
         "unarmed": 1
       },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 30,
       "typical_backgrounds": [
         "sky_lord",
         "stooper",
@@ -2154,19 +2253,20 @@
         "armored",
         "taloned_strike"
       ],
-      "body_plan_species": "avian"
+      "body_plan_species": "avian",
+      "rarity": "uncommon"
     },
     "kapota": {
       "name": "Kapota",
       "realm": "animal",
-      "description": "Named for the dove — Sanskrit kapota, birds of message and return. The Kapota birth is all small fast birds: pigeons, doves, swallows, swifts, sparrows, tits, finches. They are extraordinarily fast, highly social, and navigate by senses that feel like luck but are not.",
+      "description": "Every message that mattered was carried by something small and grey that nobody thought to stop. The kapota remember all of them, and they remember who was lying.",
       "attribute_modifiers": {
         "strength": -2,
         "finesse": 1,
         "constitution": -1,
         "focus": 0,
-        "awareness": 1,
-        "charm": 1,
+        "awareness": 2,
+        "charm": 2,
         "luck": 2
       },
       "attribute_caps": {
@@ -2181,9 +2281,14 @@
       "elemental_affinity_bonuses": {
         "air": 5
       },
-      "starting_skills": {},
+      "starting_skills": {
+        "air_magic": 1,
+        "grace": 1,
+        "learning": 1,
+        "persuasion": 1
+      },
       "starting_spells": [],
-      "reincarnation_weight": 20,
+      "reincarnation_weight": 30,
       "typical_backgrounds": [
         "post_runner",
         "temple_dove",
@@ -2203,12 +2308,13 @@
         "predator_grace",
         "swift_wing"
       ],
-      "body_plan_species": "avian"
+      "body_plan_species": "avian",
+      "rarity": "uncommon"
     },
     "uluka": {
       "name": "Uluka",
       "realm": "animal",
-      "description": "Named for the owl — Sanskrit uluka, bird of wisdom and terrible night things. The Uluka birth includes owls, parrots, ravens, lyrebirds, cockatoos, hornbills — all birds with unusual gifts: speech, mimicry, night sight, uncanny intelligence. Indra's messenger is an owl; so are many other things less comfortable.",
+      "description": "They ask questions in the tone of someone who already has the answer and is deciding whether you deserve it. Nothing that hunts in silence is ever entirely trusted.",
       "attribute_modifiers": {
         "strength": -1,
         "finesse": 1,
@@ -2231,9 +2337,13 @@
         "space": 3,
         "air": 2
       },
-      "starting_skills": {},
+      "starting_skills": {
+        "air_magic": 1,
+        "learning": 2,
+        "ritual": 1
+      },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 30,
       "typical_backgrounds": [
         "night_scholar",
         "ill_omen",
@@ -2251,43 +2361,8 @@
         "flying",
         "night_vision"
       ],
-      "body_plan_species": "avian"
-    },
-    "bee": {
-      "name": "Bee",
-      "realm": "animal",
-      "description": "TODO: Fill in description",
-      "attribute_modifiers": {
-        "strength": 0,
-        "finesse": 0,
-        "constitution": 0,
-        "focus": 0,
-        "awareness": 0,
-        "charm": 0,
-        "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
-      "elemental_affinity_bonuses": {},
-      "starting_skills": {},
-      "starting_spells": [],
-      "reincarnation_weight": 0,
-      "typical_backgrounds": [],
-      "resistances": {},
-      "emotional_baseline": {
-        "space": 0,
-        "fire": 0,
-        "water": 0,
-        "earth": 0,
-        "air": 0
-      }
+      "body_plan_species": "avian",
+      "rarity": "uncommon"
     }
   },
   "backgrounds": {
@@ -3953,7 +4028,7 @@
         "logistics": 1
       },
       "available_races": [
-        "shardula"
+        "marjara"
       ],
       "weight": 4
     },
@@ -3967,7 +4042,7 @@
         "grace": 1
       },
       "available_races": [
-        "shardula"
+        "marjara"
       ],
       "weight": 4
     },
@@ -3982,7 +4057,7 @@
         "comedy": 1
       },
       "available_races": [
-        "shardula"
+        "marjara"
       ],
       "weight": 4
     },
@@ -3997,7 +4072,7 @@
       },
       "available_races": [
         "rakshasa",
-        "shardula"
+        "marjara"
       ],
       "weight": 3
     },

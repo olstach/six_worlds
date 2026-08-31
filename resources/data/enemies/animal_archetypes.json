@@ -948,9 +948,9 @@
       ],
       "realm": "animal"
     },
-    "animal_shardula_stalker": {
+    "animal_marjara_stalker": {
       "_comment": "Flanking predator; grace perks give evasion while repositioning; attacks from unexpected angles",
-      "name": "Shardula Stalker",
+      "name": "Marjara Stalker",
       "tier": "devil",
       "roles": [
         "skirmisher"
@@ -990,9 +990,9 @@
       ],
       "realm": "animal"
     },
-    "animal_shardula_ambusher": {
+    "animal_marjara_ambusher": {
       "_comment": "Drops from canopy; guile perks give first-strike advantage; retreats after opening hit",
-      "name": "Shardula Ambusher",
+      "name": "Marjara Ambusher",
       "tier": "shade",
       "roles": [
         "skirmisher"
