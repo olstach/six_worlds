@@ -55,8 +55,7 @@
       "starting_traits": [
         "hell_born",
         "better_starting_weapon"
-      ],
-      "rarity": "common"
+      ]
     },
     "blue_devil": {
       "name": "Blue Devil",
@@ -116,8 +115,7 @@
       },
       "starting_traits": [
         "hell_born"
-      ],
-      "rarity": "common"
+      ]
     },
     "yellow_devil": {
       "name": "Yellow Devil",
@@ -174,8 +172,7 @@
       "starting_traits": [
         "hell_born",
         "extra_starting_gold"
-      ],
-      "rarity": "uncommon"
+      ]
     },
     "green_devil": {
       "name": "Green Devil",
@@ -234,8 +231,7 @@
       },
       "starting_traits": [
         "hell_born"
-      ],
-      "rarity": "common"
+      ]
     },
     "black_devil": {
       "name": "Black Devil",
@@ -305,8 +301,7 @@
       "starting_traits": [
         "hell_born",
         "void_touched"
-      ],
-      "rarity": "rare"
+      ]
     },
     "white_devil": {
       "name": "White Devil",
@@ -367,8 +362,7 @@
       },
       "starting_traits": [
         "hell_born"
-      ],
-      "rarity": "uncommon"
+      ]
     },
     "rolang": {
       "name": "Rolang",
@@ -418,8 +412,7 @@
       },
       "starting_traits": [
         "undead"
-      ],
-      "rarity": "common"
+      ]
     },
     "preserved": {
       "name": "Preserved",
@@ -468,8 +461,7 @@
       },
       "starting_traits": [
         "undead"
-      ],
-      "rarity": "common"
+      ]
     },
     "skeleton": {
       "name": "Skeleton",
@@ -519,8 +511,7 @@
       },
       "starting_traits": [
         "undead"
-      ],
-      "rarity": "common"
+      ]
     },
     "dralha": {
       "name": "Dralha",
@@ -570,8 +561,7 @@
       },
       "starting_traits": [
         "war_banner"
-      ],
-      "rarity": "rare"
+      ]
     },
     "gyelpo": {
       "name": "Gyelpo",
@@ -628,8 +618,7 @@
       "starting_traits": [
         "ancient_memory",
         "sovereign_grudge"
-      ],
-      "rarity": "rare"
+      ]
     },
     "dre": {
       "name": "Dré",
@@ -678,8 +667,7 @@
       },
       "starting_traits": [
         "incorporeal"
-      ],
-      "rarity": "common"
+      ]
     },
     "vetala": {
       "name": "Vetala",
@@ -737,8 +725,7 @@
       "starting_traits": [
         "ancient_memory",
         "corpse_rider"
-      ],
-      "rarity": "rare"
+      ]
     },
     "naga": {
       "name": "Naga",
@@ -789,8 +776,7 @@
         "serpentine",
         "hoard_keeper"
       ],
-      "body_plan_species": "serpentine",
-      "rarity": "rare"
+      "body_plan_species": "serpentine"
     },
     "yaksha": {
       "name": "Yaksha",
@@ -841,8 +827,7 @@
       },
       "starting_traits": [
         "guardian_geas"
-      ],
-      "rarity": "rare"
+      ]
     },
     "human": {
       "name": "Human",
@@ -1230,8 +1215,7 @@
       },
       "starting_traits": [
         "predator_grace"
-      ],
-      "rarity": "common"
+      ]
     },
     "yidag": {
       "name": "Yidag",
@@ -1278,8 +1262,7 @@
       },
       "starting_traits": [
         "insatiable"
-      ],
-      "rarity": "common"
+      ]
     },
     "skeleton_silver": {
       "name": "Silver Skeleton",
@@ -1326,8 +1309,7 @@
       },
       "starting_traits": [
         "undead"
-      ],
-      "rarity": "uncommon"
+      ]
     },
     "skeleton_copper": {
       "name": "Copper Skeleton",
@@ -1374,8 +1356,7 @@
       },
       "starting_traits": [
         "undead"
-      ],
-      "rarity": "uncommon"
+      ]
     },
     "skeleton_golden": {
       "name": "Golden Skeleton",
@@ -1421,8 +1402,7 @@
       },
       "starting_traits": [
         "undead"
-      ],
-      "rarity": "uncommon"
+      ]
     },
     "skeleton_iron": {
       "name": "Iron Skeleton",
@@ -1470,8 +1450,7 @@
       "starting_traits": [
         "undead",
         "armored"
-      ],
-      "rarity": "uncommon"
+      ]
     },
     "skeleton_turquoise": {
       "name": "Turquoise Skeleton",
@@ -1518,8 +1497,7 @@
       },
       "starting_traits": [
         "undead"
-      ],
-      "rarity": "uncommon"
+      ]
     },
     "bhramara": {
       "name": "Bhramara",
@@ -1573,8 +1551,7 @@
       },
       "starting_traits": [
         "colony_mind"
-      ],
-      "rarity": "uncommon"
+      ]
     },
     "karka": {
       "name": "Karka",
@@ -1625,8 +1602,7 @@
       "starting_traits": [
         "aquatic",
         "armored"
-      ],
-      "rarity": "common"
+      ]
     },
     "matsya": {
       "name": "Matsya",
@@ -1678,8 +1654,7 @@
       "starting_traits": [
         "aquatic",
         "predator_grace"
-      ],
-      "rarity": "common"
+      ]
     },
     "makara": {
       "name": "Makara",
@@ -1732,8 +1707,7 @@
       "starting_traits": [
         "aquatic",
         "deep_current"
-      ],
-      "rarity": "rare"
+      ]
     },
     "dura": {
       "name": "Dura",
@@ -1784,8 +1758,7 @@
       },
       "starting_traits": [
         "armored"
-      ],
-      "rarity": "common"
+      ]
     },
     "khadga": {
       "name": "Khadga",
@@ -1836,8 +1809,7 @@
       "starting_traits": [
         "predator_grace"
       ],
-      "body_plan_species": "mantis",
-      "rarity": "uncommon"
+      "body_plan_species": "mantis"
     },
     "patanga": {
       "name": "Patanga",
@@ -1885,8 +1857,7 @@
         "earth": 0,
         "air": 0
       },
-      "starting_traits": [],
-      "rarity": "common"
+      "starting_traits": []
     },
     "rakshasa": {
       "name": "Rakshasa",
@@ -1936,8 +1907,7 @@
       },
       "starting_traits": [
         "hunters_yoga"
-      ],
-      "rarity": "rare"
+      ]
     },
     "varaha": {
       "name": "Varaha",
@@ -1987,8 +1957,7 @@
       "starting_traits": [
         "armored",
         "bulky"
-      ],
-      "rarity": "common"
+      ]
     },
     "marjara": {
       "name": "Marjara",
@@ -2039,8 +2008,7 @@
       "starting_traits": [
         "predator_grace",
         "venom_ward"
-      ],
-      "rarity": "uncommon"
+      ]
     },
     "gana": {
       "name": "Gana",
@@ -2094,8 +2062,7 @@
       },
       "starting_traits": [
         "colony_mind"
-      ],
-      "rarity": "common"
+      ]
     },
     "mriga": {
       "name": "Mriga",
@@ -2148,8 +2115,7 @@
       },
       "starting_traits": [
         "colony_mind"
-      ],
-      "rarity": "common"
+      ]
     },
     "vanara": {
       "name": "Vanara",
@@ -2199,8 +2165,7 @@
       },
       "starting_traits": [
         "nimble_mischief"
-      ],
-      "rarity": "common"
+      ]
     },
     "shyena": {
       "name": "Shyena",
@@ -2253,8 +2218,7 @@
         "armored",
         "taloned_strike"
       ],
-      "body_plan_species": "avian",
-      "rarity": "uncommon"
+      "body_plan_species": "avian"
     },
     "kapota": {
       "name": "Kapota",
@@ -2308,8 +2272,7 @@
         "predator_grace",
         "swift_wing"
       ],
-      "body_plan_species": "avian",
-      "rarity": "uncommon"
+      "body_plan_species": "avian"
     },
     "uluka": {
       "name": "Uluka",
@@ -2361,8 +2324,7 @@
         "flying",
         "night_vision"
       ],
-      "body_plan_species": "avian",
-      "rarity": "uncommon"
+      "body_plan_species": "avian"
     }
   },
   "backgrounds": {

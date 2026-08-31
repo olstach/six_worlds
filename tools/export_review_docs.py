@@ -318,6 +318,30 @@ def _animal_races(d):
             if _is_record(v) and v.get("realm") == "animal"}
 
 
+def rarity_tiers(races):
+    """Label births common/uncommon/rare from their reincarnation weights.
+
+    The weight is the single source of truth: it is how likely the player is to
+    be reborn as that birth, and rarity is just a reading of it. Only labelled
+    when a realm uses exactly three distinct weights — otherwise the weight is
+    shown on its own rather than invent a tier that is not there.
+    """
+    names = ["common", "uncommon", "rare"]
+    out = {}
+    by_realm = {}
+    for rid, r in races.items():
+        by_realm.setdefault(r.get("realm", ""), []).append(rid)
+    for realm, ids in by_realm.items():
+        weights = sorted({races[i].get("reincarnation_weight", 0) for i in ids},
+                         reverse=True)
+        if len(weights) != 3 or weights[-1] <= 0:
+            continue
+        rank = {w: names[i] for i, w in enumerate(weights)}
+        for i in ids:
+            out[i] = rank[races[i].get("reincarnation_weight", 0)]
+    return out
+
+
 def export_animal_races():
     d = load("resources/data/races.json")
     races = _animal_races(d)
@@ -329,13 +353,15 @@ def export_animal_races():
              "*Edit the prose between the anchors. The stat line under each name is "
              "generated — change it in `races.json`.*\n", "---\n"]
 
-    order = {"common": 0, "uncommon": 1, "rare": 2}
+    # Rarity is not stored — it is what the reincarnation weight already says.
+    # Within a realm, the distinct weights rank from commonest to rarest.
+    tier_of = rarity_tiers(races)
     for rid, r in sorted(races.items(),
-                         key=lambda kv: (order.get(kv[1].get("rarity"), 9), kv[0])):
+                         key=lambda kv: (-kv[1].get("reincarnation_weight", 0), kv[0])):
         lines.append(f"\n## {r.get('name', rid)}  `{rid}`\n")
         mech = []
-        if r.get("rarity"):
-            mech.append(r["rarity"])
+        if tier_of.get(rid):
+            mech.append(tier_of[rid])
         mods = {k: v for k, v in r.get("attribute_modifiers", {}).items() if v}
         if mods:
             # The running total is the budget this birth is meant to hit for its

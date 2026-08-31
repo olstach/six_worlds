@@ -26,61 +26,6 @@ const KARMA_THRESHOLD: int = 100
 # Cached background data from races.json (loaded on first use)
 var _background_cache: Dictionary = {}
 
-# Birth pools for each realm
-const REALM_BIRTHS: Dictionary = {
-	"hell": ["red_devil", "blue_devil", "green_devil", "yellow_devil", "white_devil", "black_devil"],
-	"hungry_ghost": ["rolang", "skeleton", "skeleton_silver", "skeleton_copper", "skeleton_golden", "skeleton_iron", "skeleton_turquoise", "dralha", "gyelpo", "dre", "vetala", "shaza", "yidag"],
-	"animal": ["naga", "bee", "yaksha"],
-	"human": ["nomad", "mountain_folk", "trader"],
-	"asura": ["tsen", "rudra"],
-	"god": ["gandharva", "apsara", "planetary_deity"]
-}
-
-# Birth rarity weights (higher = more common)
-const BIRTH_WEIGHTS: Dictionary = {
-	# Hell realm
-	"red_devil": 30,
-	"blue_devil": 30,
-	"green_devil": 15,
-	"yellow_devil": 15,
-	"white_devil": 5,
-	"black_devil": 5,
-	
-	# Hungry ghost realm
-	"rolang": 35,
-	"skeleton": 30,
-	"skeleton_silver": 15,
-	"skeleton_copper": 15,
-	"skeleton_golden": 15,
-	"skeleton_iron": 15,
-	"skeleton_turquoise": 15,
-	"dralha": 7,
-	"gyelpo": 5,
-	"dre": 5,
-	"vetala": 10,
-	"shaza": 10,
-	"yidag": 10,
-	
-	# Animal realm
-	"naga": 35,
-	"bee": 35,
-	"yaksha": 30,
-	
-	# Human realm
-	"nomad": 33,
-	"mountain_folk": 34,
-	"trader": 33,
-	
-	# Asura realm
-	"tsen": 50,
-	"rudra": 50,
-	
-	# God realm
-	"gandharva": 40,
-	"apsara": 40,
-	"planetary_deity": 20
-}
-
 func _ready() -> void:
 	for realm in REALM_ORDER:
 		assert(realm in karma_scores, "REALM_ORDER contains realm not in karma_scores: " + realm)
@@ -124,32 +69,43 @@ func determine_reincarnation_realm() -> String:
 
 	return highest_realm
 
-## Select a random birth from the reincarnation realm
+## Select a random birth from the reincarnation realm.
+##
+## The pool and the odds both come from races.json — a birth's
+## `reincarnation_weight` is how likely the player is to be reborn as it, and
+## nothing else. It does not govern how many of that birth exist in the world;
+## companions carry a hand-authored `birth`, and enemies come from archetypes.
+##
+## This previously read two hardcoded tables that had drifted badly out of step
+## with the data: the animal realm offered three births out of eighteen, one of
+## which no longer exists.
 func select_birth_from_realm(realm: String) -> String:
-	if realm not in REALM_BIRTHS:
-		return "human"
+	var weighted: Dictionary = CharacterSystem.get_birth_weights_for_realm(realm)
 
-	var available_births = REALM_BIRTHS[realm]
-	var weights: Array[int] = []
+	# Realms whose births carry no weights yet still have to return something.
+	if weighted.is_empty():
+		var unweighted: Array = CharacterSystem.get_births_in_realm(realm)
+		if unweighted.is_empty():
+			push_warning("KarmaSystem: no births defined for realm '%s'" % realm)
+			return "human"
+		push_warning("KarmaSystem: realm '%s' has no reincarnation weights - picking evenly" % realm)
+		return unweighted[randi() % unweighted.size()]
 
-	# Build weight array
-	for birth in available_births:
-		weights.append(BIRTH_WEIGHTS.get(birth, 10))
+	var births: Array = weighted.keys()
+	births.sort()  # deterministic order, so a seeded run reproduces
 
-	# Weighted random selection
-	var total_weight = 0
-	for w in weights:
-		total_weight += w
+	var total_weight: int = 0
+	for birth in births:
+		total_weight += int(weighted[birth])
 
-	var roll = randi() % total_weight
-	var cumulative = 0
-
-	for i in range(available_births.size()):
-		cumulative += weights[i]
+	var roll: int = randi() % total_weight
+	var cumulative: int = 0
+	for birth in births:
+		cumulative += int(weighted[birth])
 		if roll < cumulative:
-			return available_births[i]
+			return birth
 
-	return available_births[0]  # Fallback
+	return births[0]  # unreachable while total_weight > 0
 
 ## Handle full reincarnation process
 func reincarnate() -> Dictionary:

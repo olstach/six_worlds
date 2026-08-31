@@ -128,9 +128,6 @@ const BASE_CHARACTER: Dictionary = {
 	# Format: {"physical": 50, "fire": 25, ...}  values are percentages
 	"base_resistances": {},
 
-	# Character traits — list of trait IDs (racial, habitat, acquired, etc.)
-	"traits": [],
-	
 	# Elemental affinities (built up through skill usage)
 	"elements": {
 		"earth": 0,
@@ -347,6 +344,36 @@ func pick_random_spell_for_party(school: String, level: int) -> String:
 ## Get birth data dictionary for a given birth ID
 func get_birth_data(birth_id: String) -> Dictionary:
 	return _birth_data.get(birth_id, {})
+
+
+## Every birth belonging to a realm, mapped to its reincarnation weight.
+## The weight is how likely the player is to be reborn as that birth — it says
+## nothing about how many of them exist in the world. A weight of 0 (or missing)
+## means the birth cannot be rolled into at all.
+func get_birth_weights_for_realm(realm: String) -> Dictionary:
+	var out: Dictionary = {}
+	for birth_id in _birth_data:
+		if birth_id.begins_with("_"):
+			continue
+		var data: Dictionary = _birth_data[birth_id]
+		if data.get("realm", "") != realm:
+			continue
+		var weight: int = int(data.get("reincarnation_weight", 0))
+		if weight > 0:
+			out[birth_id] = weight
+	return out
+
+
+## Every birth belonging to a realm, weighted or not. Used as the fallback for
+## realms whose births have not been given weights yet.
+func get_births_in_realm(realm: String) -> Array:
+	var out: Array = []
+	for birth_id in _birth_data:
+		if birth_id.begins_with("_"):
+			continue
+		if _birth_data[birth_id].get("realm", "") == realm:
+			out.append(birth_id)
+	return out
 
 
 ## Get background data dictionary for a given background ID
