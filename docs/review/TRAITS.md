@@ -452,7 +452,7 @@ A deep sadness runs beneath the surface.
 
 ## patient
 
-`pressure: water+10, fire+5  ·  bond: order  ·  opposed: hot_tempered, duelist  ·  on 10 companions`
+`pressure: water+10, fire+5  ·  bond: order  ·  opposed: hot_tempered, duelist  ·  on 11 companions`
 
 **Name**
 
@@ -470,7 +470,7 @@ Once you endure the first impulse, you can wait almost indefinitely.
 
 ## sharp_memory
 
-`skills: learning+1  ·  pressure: space+5  ·  bond: scholarly  ·  opposed: forgetful  ·  on 5 companions`
+`skills: learning+1  ·  pressure: space+5  ·  bond: scholarly  ·  opposed: forgetful  ·  on 6 companions`
 
 **Name**
 
@@ -560,7 +560,7 @@ Extends goodwill freely, perhaps too freely.
 
 ## vain
 
-`stats: charm+1  ·  pressure: earth-10  ·  bond: sociable  ·  opposed: content  ·  purged by yoga, ritual 3  ·  on 6 companions`
+`stats: charm+1  ·  pressure: earth-10  ·  bond: sociable  ·  opposed: content  ·  purged by yoga, ritual 3  ·  on 7 companions`
 
 **Name**
 
@@ -764,7 +764,7 @@ Feels more at home among the visions than the flesh.
 
 ## duelist
 
-`bond: martial  ·  opposed: patient  ·  on 0 companions`
+`bond: martial  ·  opposed: patient  ·  on 1 companions`
 
 **Name**
 

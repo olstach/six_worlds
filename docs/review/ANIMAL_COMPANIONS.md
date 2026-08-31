@@ -1,6 +1,6 @@
 # Animal Realm — Companions
 
-*24 companions.*
+*26 companions.*
 
 *Edit the prose between the anchors. The stat block under each name is generated; change it in `companions.json` instead.*
 
@@ -86,6 +86,25 @@ Ran a sounder of forty for thirty years and handed it on cleanly, which almost n
 <!--@end-->
 
 
+## Enakshi  `enakshi`
+
+`birth: mriga  ·  background: antler_speaker  ·  traits: vain, duelist  ·  cost: 750`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | enakshi | build_weights -->
+performance, grace, persuasion
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | enakshi | flavor_text -->
+Has held the clearing eleven seasons running and has never once had to touch anyone to do it. Will explain the distinction at length, unprompted, to people who did not ask and are trying to leave.
+<!--@end-->
+
+
 ## Kandali  `kandali`
 
 `birth: varaha  ·  background: mycelium_tender  ·  traits: fastidious, patient  ·  cost: 800  ·  fixed_items: ['herb_bundle', 'raw_reagents']`
@@ -159,6 +178,25 @@ medicine, white_magic, earth_magic
 
 <!--@ companions.json | saramaya | flavor_text -->
 Walks the ridge lines gathering what grows there and treating whatever she finds hurt. Charges nothing and accepts everything, which balances out about as badly as you would expect.
+<!--@end-->
+
+
+## Shrutidhara  `shrutidhara`
+
+`birth: mriga  ·  background: scarred_lead  ·  traits: patient, sharp_memory  ·  cost: 900  ·  fixed_items: ['rations']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | shrutidhara | build_weights -->
+leadership, persuasion, logistics
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | shrutidhara | flavor_text -->
+Led the herd along the old trail for thirty years and got it wrong twice, which she will tell you about before she tells you anything else. Walks at the back now, where she can see everyone.
 <!--@end-->
 
 

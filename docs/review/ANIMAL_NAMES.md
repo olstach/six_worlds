@@ -1799,45 +1799,26 @@ Poor territory, dry and avoided; named as a warning
 **How this birth names**
 
 <!--@ animal_realm_names.json | forest.births.gana | naming_philosophy -->
-Gana are both wolves and deer — two populations sharing archetypes, two ways of experiencing the same territory. Their naming traditions run in parallel. Wolf-gana name children for resonance: what the pack will hear of them. Deer-gana name children for alertness: what they will notice that others miss. Both traditions share the belief that a name should carry across a valley.
+Gana name children for resonance: what the pack will hear of them. A name is meant to carry across a valley and come back changed by the distance, so the good ones are built out of sound before they are built out of meaning. A gana who has not yet been heard at range is not considered fully named.
 <!--@end-->
 
 
-**Parent wishes — wolf**
+**Parent wishes**
 
-<!--@ animal_realm_names.json | forest.births.gana | parent_wishes_wolf[0] -->
+<!--@ animal_realm_names.json | forest.births.gana | parent_wishes[0] -->
 May the pack know your voice
 <!--@end-->
 
-<!--@ animal_realm_names.json | forest.births.gana | parent_wishes_wolf[1] -->
+<!--@ animal_realm_names.json | forest.births.gana | parent_wishes[1] -->
 May your howl carry the valley
 <!--@end-->
 
-<!--@ animal_realm_names.json | forest.births.gana | parent_wishes_wolf[2] -->
+<!--@ animal_realm_names.json | forest.births.gana | parent_wishes[2] -->
 May the song live in you
 <!--@end-->
 
-<!--@ animal_realm_names.json | forest.births.gana | parent_wishes_wolf[3] -->
+<!--@ animal_realm_names.json | forest.births.gana | parent_wishes[3] -->
 May the hunt find you worthy
-<!--@end-->
-
-
-**Parent wishes — deer**
-
-<!--@ animal_realm_names.json | forest.births.gana | parent_wishes_deer[0] -->
-May you hear what others miss
-<!--@end-->
-
-<!--@ animal_realm_names.json | forest.births.gana | parent_wishes_deer[1] -->
-May the alarm sound through you
-<!--@end-->
-
-<!--@ animal_realm_names.json | forest.births.gana | parent_wishes_deer[2] -->
-May the trail hold your memory
-<!--@end-->
-
-<!--@ animal_realm_names.json | forest.births.gana | parent_wishes_deer[3] -->
-May you be first to know and last to be found
 <!--@end-->
 
 
@@ -1856,211 +1837,315 @@ wolf-voice; the howl that defines the pack
 
 
 <!--@ animal_realm_names.json | forest.births.gana | personal_names[1].name -->
-Mriga
-<!--@end-->
-
-
-*meaning:*
-
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[1].meaning -->
-the animal; pure creature-nature, neither predator nor prey
-<!--@end-->
-
-
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[2].name -->
 Nadaka
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[2].meaning -->
+<!--@ animal_realm_names.json | forest.births.gana | personal_names[1].meaning -->
 sound-maker; one who fills the valley
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[3].name -->
+<!--@ animal_realm_names.json | forest.births.gana | personal_names[2].name -->
 Dhvani
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[3].meaning -->
+<!--@ animal_realm_names.json | forest.births.gana | personal_names[2].meaning -->
 resonance; the echo after the sound
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[4].name -->
+<!--@ animal_realm_names.json | forest.births.gana | personal_names[3].name -->
 Ghoshaka
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[4].meaning -->
+<!--@ animal_realm_names.json | forest.births.gana | personal_names[3].meaning -->
 the voice; announcement of presence
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[5].name -->
+<!--@ animal_realm_names.json | forest.births.gana | personal_names[4].name -->
 Svana
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[5].meaning -->
+<!--@ animal_realm_names.json | forest.births.gana | personal_names[4].meaning -->
 the sound itself; presence as vibration
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[6].name -->
-Rutika
-<!--@end-->
-
-
-*meaning:*
-
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[6].meaning -->
-cry-born; arrived with a sound
-<!--@end-->
-
-
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[7].name -->
+<!--@ animal_realm_names.json | forest.births.gana | personal_names[5].name -->
 Chandraka
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[7].meaning -->
+<!--@ animal_realm_names.json | forest.births.gana | personal_names[5].meaning -->
 moon-child; runs at night under cold light
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[8].name -->
+<!--@ animal_realm_names.json | forest.births.gana | personal_names[6].name -->
 Sambhrama
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | personal_names[8].meaning -->
+<!--@ animal_realm_names.json | forest.births.gana | personal_names[6].meaning -->
 ardor; speed and intensity together
 <!--@end-->
 
 
 
-**Place names — wolf**
+**Place names**
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_wolf[0].name -->
+<!--@ animal_realm_names.json | forest.births.gana | place_names[0].name -->
 The Echo Hollow
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_wolf[0].meaning -->
+<!--@ animal_realm_names.json | forest.births.gana | place_names[0].meaning -->
 Where howls multiply — the pack gathers here to call across distance
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_wolf[1].name -->
+<!--@ animal_realm_names.json | forest.births.gana | place_names[1].name -->
 The Pack Ridge
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_wolf[1].meaning -->
+<!--@ animal_realm_names.json | forest.births.gana | place_names[1].meaning -->
 Territorial high point; visible from everywhere in the range
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_wolf[2].name -->
+<!--@ animal_realm_names.json | forest.births.gana | place_names[2].name -->
 The Fast Run
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_wolf[2].meaning -->
+<!--@ animal_realm_names.json | forest.births.gana | place_names[2].meaning -->
 The chase-down terrain — open enough for full speed
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_wolf[3].name -->
+<!--@ animal_realm_names.json | forest.births.gana | place_names[3].name -->
 The Singing Rock
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_wolf[3].meaning -->
+<!--@ animal_realm_names.json | forest.births.gana | place_names[3].meaning -->
 Where the pack convenes for ceremony; the howl here carries farthest
 <!--@end-->
 
 
 
-**Place names — deer**
+## Mriga  `mriga`
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_deer[0].name -->
+
+**How this birth names**
+
+<!--@ animal_realm_names.json | forest.births.mriga | naming_philosophy -->
+Mriga name children for alertness: what they will notice that others miss. The name is a claim about attention, and it is tested early — a fawn is called by it from out of sight, and how fast the head comes up settles whether it fits. Like the gana they hold that a name should carry across a valley, but for the opposite reason: theirs has to be heard by someone already running.
+<!--@end-->
+
+
+**Parent wishes**
+
+<!--@ animal_realm_names.json | forest.births.mriga | parent_wishes[0] -->
+May you hear what others miss
+<!--@end-->
+
+<!--@ animal_realm_names.json | forest.births.mriga | parent_wishes[1] -->
+May the alarm sound through you
+<!--@end-->
+
+<!--@ animal_realm_names.json | forest.births.mriga | parent_wishes[2] -->
+May the trail hold your memory
+<!--@end-->
+
+<!--@ animal_realm_names.json | forest.births.mriga | parent_wishes[3] -->
+May you be first to know and last to be found
+<!--@end-->
+
+
+**Personal names**
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[0].name -->
+Mriga
+<!--@end-->
+
+
+*meaning:*
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[0].meaning -->
+the animal; pure creature-nature, neither predator nor prey
+<!--@end-->
+
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[1].name -->
+Rutika
+<!--@end-->
+
+
+*meaning:*
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[1].meaning -->
+cry-born; arrived with a sound
+<!--@end-->
+
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[2].name -->
+Ena
+<!--@end-->
+
+
+*meaning:*
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[2].meaning -->
+antelope-born; the dark-eyed one, seen at the edge of the clearing
+<!--@end-->
+
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[3].name -->
+Sarana
+<!--@end-->
+
+
+*meaning:*
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[3].meaning -->
+the run; flight understood as a form of judgement, not fear
+<!--@end-->
+
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[4].name -->
+Chapala
+<!--@end-->
+
+
+*meaning:*
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[4].meaning -->
+quick-moving; never still long enough to be settled on
+<!--@end-->
+
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[5].name -->
+Shruti
+<!--@end-->
+
+
+*meaning:*
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[5].meaning -->
+the heard thing; alertness received as an inheritance
+<!--@end-->
+
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[6].name -->
+Trina
+<!--@end-->
+
+
+*meaning:*
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[6].meaning -->
+grass-born; sustained by what everyone else walks over
+<!--@end-->
+
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[7].name -->
+Nayana
+<!--@end-->
+
+
+*meaning:*
+
+<!--@ animal_realm_names.json | forest.births.mriga | personal_names[7].meaning -->
+the eye; the one who sees it first and says so
+<!--@end-->
+
+
+
+**Place names**
+
+<!--@ animal_realm_names.json | forest.births.mriga | place_names[0].name -->
 The Safe Smell
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_deer[0].meaning -->
+<!--@ animal_realm_names.json | forest.births.mriga | place_names[0].meaning -->
 An area with consistent wind direction — always know what is upwind
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_deer[1].name -->
+<!--@ animal_realm_names.json | forest.births.mriga | place_names[1].name -->
 The Clear Ground
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_deer[1].meaning -->
+<!--@ animal_realm_names.json | forest.births.mriga | place_names[1].meaning -->
 Open meadow where predators can be seen at distance
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_deer[2].name -->
+<!--@ animal_realm_names.json | forest.births.mriga | place_names[2].name -->
 The Alarm Tree
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_deer[2].meaning -->
+<!--@ animal_realm_names.json | forest.births.mriga | place_names[2].meaning -->
 The tree near which the warning bark always sounds; others know to listen
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_deer[3].name -->
+<!--@ animal_realm_names.json | forest.births.mriga | place_names[3].name -->
 The Old Trail
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_deer[3].meaning -->
+<!--@ animal_realm_names.json | forest.births.mriga | place_names[3].meaning -->
 The ancestral migration path — walked so long it is part of the body
 <!--@end-->
 
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_deer[4].name -->
+<!--@ animal_realm_names.json | forest.births.mriga | place_names[4].name -->
 The Three-Day Run
 <!--@end-->
 
 
 *meaning:*
 
-<!--@ animal_realm_names.json | forest.births.gana | place_names_deer[4].meaning -->
+<!--@ animal_realm_names.json | forest.births.mriga | place_names[4].meaning -->
 The distance covered in a good season's migration
 <!--@end-->
 

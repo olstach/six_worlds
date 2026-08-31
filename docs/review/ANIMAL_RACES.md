@@ -1,6 +1,6 @@
 # Animal Realm — Births and Backgrounds
 
-*18 births. A birth is what you were reborn as; a background is what you did with it. Both descriptions are read at character creation.*
+*19 births. A birth is what you were reborn as; a background is what you did with it. Both descriptions are read at character creation.*
 
 *Edit the prose between the anchors. The stat line under each name is generated — change it in `races.json`.*
 
@@ -81,7 +81,7 @@ The Dura birth covers all the armored ground insects of the meadows: beetles of 
 
 ## Gana  `gana`
 
-`attributes: finesse+1, awareness+2, charm+1  ·  traits: colony_mind  ·  reincarnation weight: 25`
+`attributes: strength+1, finesse+2, awareness+1  ·  skills: daggers 1, unarmed 1  ·  traits: colony_mind  ·  reincarnation weight: 12`
 
 
 **Name**
@@ -94,11 +94,11 @@ Gana
 **Description**
 
 <!--@ races.json | gana | description -->
-Named for the collective — the herd, the pack, the gana (from which Ganesha takes his name: lord of the group). The Gana birth covers wolves, wild dogs, dholes, jackals, and the great herd animals: deer, antelope, wild horses. They are strongest together.
+Named for the collective — the gana, the group that hunts as one mind (from which Ganesha takes his name: lord of the group). The Gana birth covers wolves, dholes, jackals and wild dogs. Alone a gana is a middling thing; the pack is the animal. They take prey larger than themselves by arriving around it, and they settle their own disputes by voice long before they settle them by tooth.
 <!--@end-->
 
 
-*Backgrounds: `range_reader`, `ceremonial_dancer`, `herb_walker`, `elder_voice`, `forest_singer`*
+*Backgrounds: `throat_hold`, `quiet_tooth`, `ceremonial_dancer`, `herb_walker`, `elder_voice`, `range_reader`, `forest_singer`*
 
 
 ---
@@ -224,6 +224,31 @@ Named for the sacred fish — first avatar of Vishnu, navigator of the primal fl
 
 
 *Backgrounds: `coral_guard`, `sea_dancer`, `deep_hunter`, `wreck_gleaner`, `current_herald`*
+
+
+---
+
+
+## Mriga  `mriga`
+
+`attributes: finesse+1, awareness+2, charm+1  ·  skills: persuasion 1, performance 1  ·  traits: colony_mind  ·  reincarnation weight: 13`
+
+
+**Name**
+
+<!--@ races.json | mriga | name -->
+Mriga
+<!--@end-->
+
+
+**Description**
+
+<!--@ races.json | mriga | description -->
+The other half of the gana — the herd rather than the pack. The Mriga birth covers deer, antelope, gazelle and the wild horses of the open ground. They are built to notice and to leave: a mriga knows a clearing is wrong before it can say why. What looks like timidity is a very old and very well-tested form of judgement, and among themselves they settle everything by display — the antler-argument, the held ground, the long formal contest that ends without a wound.
+<!--@end-->
+
+
+*Backgrounds: `antler_speaker`, `migration_singer`, `slope_herbalist`, `scarred_lead`, `range_reader`, `forest_singer`*
 
 
 ---
@@ -454,10 +479,29 @@ Nature spirits of the open meadow, Yakshas are embodiments of the land's abundan
 ---
 
 
-# Backgrounds  (57)
+# Backgrounds  (63)
 
 
 *What the character did with the birth they were given. Each appears once here, with the births that can take it.*
+
+
+## Antler Speaker  `antler_speaker`
+
+`births: Mriga  ·  attributes: charm+1  ·  skills: performance 2, grace 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | antler_speaker | name -->
+Antler Speaker
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | antler_speaker | description -->
+The clearing belongs to whoever can hold it longest — through display, through stamina, through the formal language of antlers. I know all the vocabulary. The point of the contest is that it ends before anyone is hurt, and whoever understands that best usually wins it.
+<!--@end-->
 
 
 ## Blade Contemplative  `blade_contemplative`
@@ -570,7 +614,7 @@ Ceremonial Dancer
 **Description**
 
 <!--@ backgrounds.json | ceremonial_dancer | description -->
-In the long cold the pack makes a circle and calls to the dark until something answers. I am the one who knows when to start and when the call is complete. // The clearing belongs to whoever can hold it longest — through display, through stamina, through the formal language of antlers. I know all the vocabulary.
+In the long cold the pack makes a circle and calls to the dark until something answers. I am the one who knows when to start and when the call is complete.
 <!--@end-->
 
 
@@ -665,7 +709,7 @@ Elder Voice
 **Description**
 
 <!--@ backgrounds.json | elder_voice | description -->
-The alpha doesn't lead by being fastest or most violent. The alpha leads because the pack has tested every alternative and this one keeps them fed. // The old buck's scars are a curriculum. Every predator that tried and failed left a lesson. The herd follows him toward the safe water.
+The alpha doesn't lead by being fastest or most violent. The alpha leads because the pack has tested every alternative and this one keeps them fed.
 <!--@end-->
 
 
@@ -728,7 +772,7 @@ No particular territory. No particular schedule. The road between the settlement
 
 ## Forest Singer  `forest_singer`
 
-`births: Gana  ·  skills: performance 1, comedy 1, grace 1`
+`births: Gana, Mriga  ·  skills: performance 1, comedy 1, grace 1`
 
 
 **Name**
@@ -817,7 +861,7 @@ Herb Walker
 **Description**
 
 <!--@ backgrounds.json | herb_walker | description -->
-The old female eats grass when ill, slows for the lame elk, reads the forest not for the kill but for the whole. The pack follows her medicine more than her speed. // I know the slope where the bitter herb grows that cures the wasting sickness. I know the clay that draws out poison. The herd comes to me when something goes wrong.
+The old female eats grass when ill, slows for the lame elk, reads the forest not for the kill but for the whole. The pack follows her medicine more than her speed.
 <!--@end-->
 
 
@@ -1011,6 +1055,25 @@ You are bound to a place. The meadow's health is your health. Strangers who wish
 <!--@end-->
 
 
+## Migration Singer  `migration_singer`
+
+`births: Mriga  ·  attributes: charm+1  ·  skills: performance 1, persuasion 1, logistics 1  ·  kit: rations`
+
+
+**Name**
+
+<!--@ backgrounds.json | migration_singer | name -->
+Migration Singer
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | migration_singer | description -->
+The old trail is walked so long it becomes part of the body, but it is carried in the voice. I sing the route — the water, the crossing, the season it stops being safe — and the herd behind me does not need to have walked it before. A song is the only map that outlives everyone who made it.
+<!--@end-->
+
+
 ## Mycelium Tender  `mycelium_tender`
 
 `births: Varaha  ·  skills: earth_magic 1, alchemy 2`
@@ -1144,9 +1207,28 @@ The peak where two passes cross. The lone horn of rock three days east. The grea
 <!--@end-->
 
 
+## Quiet Tooth  `quiet_tooth`
+
+`births: Gana  ·  attributes: finesse+1  ·  skills: daggers 2, guile 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | quiet_tooth | name -->
+Quiet Tooth
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | quiet_tooth | description -->
+A knife is a tooth you can put down, which makes it better than a tooth. I work the edges of things — the straggler, the unwatched cache, the sentry who has been awake too long. The pack sings. I am the reason the singing works, and I do it from somewhere behind you.
+<!--@end-->
+
+
 ## Range Reader  `range_reader`
 
-`births: Gana  ·  attributes: awareness+1  ·  skills: ranged 1, grace 1`
+`births: Gana, Mriga  ·  attributes: awareness+1  ·  skills: ranged 1, grace 1`
 
 
 **Name**
@@ -1179,6 +1261,25 @@ Root Shaper
 
 <!--@ backgrounds.json | root_shaper | description -->
 The tuber doesn't know it's being guided. The root finds the right direction because the direction is good, and you make the direction good. Enchantment is not force — it is a very patient suggestion.
+<!--@end-->
+
+
+## Scarred Lead  `scarred_lead`
+
+`births: Mriga  ·  skills: leadership 2, persuasion 1, logistics 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | scarred_lead | name -->
+Scarred Lead
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | scarred_lead | description -->
+The old buck's scars are a curriculum. Every predator that tried and failed left a lesson. The herd follows him toward the safe water. I have been wrong twice. Both times are written on my body where anyone can read them, which is the only reason they still follow me.
 <!--@end-->
 
 
@@ -1255,6 +1356,25 @@ Sky Lord
 
 <!--@ backgrounds.json | sky_lord | description -->
 Three valleys. Every road, field, and creature visible at once from the high thermal. Others look at their feet and call that seeing. You look at everything from above and call it home. The ground is not the world. The ground is what you look at when you want to know where you are.
+<!--@end-->
+
+
+## Slope Herbalist  `slope_herbalist`
+
+`births: Mriga  ·  skills: medicine 2, earth_magic 1  ·  kit: herb_bundle`
+
+
+**Name**
+
+<!--@ backgrounds.json | slope_herbalist | name -->
+Slope Herbalist
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | slope_herbalist | description -->
+I know the slope where the bitter herb grows that cures the wasting sickness. I know the clay that draws out poison. The herd comes to me when something goes wrong.
 <!--@end-->
 
 
@@ -1388,6 +1508,25 @@ The Hungry
 
 <!--@ backgrounds.json | the_hungry | description -->
 Territory has not been claimed yet. The days pass in constant movement — eating whatever can be caught, fighting what challenges, retreating from nothing. The hunger is not a problem. It is the condition of becoming.
+<!--@end-->
+
+
+## Throat Hold  `throat_hold`
+
+`births: Gana  ·  attributes: strength+1  ·  skills: unarmed 2, might 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | throat_hold | name -->
+Throat Hold
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | throat_hold | description -->
+There is one grip and it does not take strength — only the patience to wait for the angle and the willingness to take it when it comes. The pack brings the animal down. I am what happens after it is down. Nobody thanks me for that and I have stopped expecting them to.
 <!--@end-->
 
 

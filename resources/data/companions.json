@@ -2496,6 +2496,76 @@
         "trusting"
       ]
     },
+    "enakshi": {
+      "id": "enakshi",
+      "name": "Enakshi",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "mriga",
+      "background": "antler_speaker",
+      "flavor_text": "Has held the clearing eleven seasons running and has never once had to touch anyone to do it. Will explain the distinction at length, unprompted, to people who did not ask and are trying to leave.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "performance": 5,
+        "grace": 4,
+        "persuasion": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "performance": 2,
+          "grace": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [],
+      "traits": [
+        "vain",
+        "duelist"
+      ]
+    },
+    "shrutidhara": {
+      "id": "shrutidhara",
+      "name": "Shrutidhara",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "mriga",
+      "background": "scarred_lead",
+      "flavor_text": "Led the herd along the old trail for thirty years and got it wrong twice, which she will tell you about before she tells you anything else. Walks at the back now, where she can see everyone.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "leadership": 5,
+        "persuasion": 4,
+        "logistics": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "leadership": 2,
+          "persuasion": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "rations"
+      ],
+      "traits": [
+        "patient",
+        "sharp_memory"
+      ]
+    },
     "sthanumati": {
       "id": "sthanumati",
       "name": "Sthanumati",

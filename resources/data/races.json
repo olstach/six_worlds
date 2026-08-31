@@ -1954,7 +1954,60 @@
     "gana": {
       "name": "Gana",
       "realm": "animal",
-      "description": "Named for the collective — the herd, the pack, the gana (from which Ganesha takes his name: lord of the group). The Gana birth covers wolves, wild dogs, dholes, jackals, and the great herd animals: deer, antelope, wild horses. They are strongest together.",
+      "description": "Named for the collective — the gana, the group that hunts as one mind (from which Ganesha takes his name: lord of the group). The Gana birth covers wolves, dholes, jackals and wild dogs. Alone a gana is a middling thing; the pack is the animal. They take prey larger than themselves by arriving around it, and they settle their own disputes by voice long before they settle them by tooth.",
+      "attribute_modifiers": {
+        "strength": 1,
+        "finesse": 2,
+        "constitution": 0,
+        "focus": 0,
+        "awareness": 1,
+        "charm": 0,
+        "luck": 0
+      },
+      "attribute_caps": {
+        "strength": 30,
+        "finesse": 32,
+        "constitution": 29,
+        "focus": 26,
+        "awareness": 30,
+        "charm": 27,
+        "luck": 28
+      },
+      "elemental_affinity_bonuses": {
+        "air": 2,
+        "fire": 2
+      },
+      "starting_skills": {
+        "daggers": 1,
+        "unarmed": 1
+      },
+      "starting_spells": [],
+      "reincarnation_weight": 12,
+      "typical_backgrounds": [
+        "throat_hold",
+        "quiet_tooth",
+        "ceremonial_dancer",
+        "herb_walker",
+        "elder_voice",
+        "range_reader",
+        "forest_singer"
+      ],
+      "resistances": {},
+      "emotional_baseline": {
+        "space": 0,
+        "fire": 0,
+        "water": 0,
+        "earth": 0,
+        "air": 0
+      },
+      "starting_traits": [
+        "colony_mind"
+      ]
+    },
+    "mriga": {
+      "name": "Mriga",
+      "realm": "animal",
+      "description": "The other half of the gana — the herd rather than the pack. The Mriga birth covers deer, antelope, gazelle and the wild horses of the open ground. They are built to notice and to leave: a mriga knows a clearing is wrong before it can say why. What looks like timidity is a very old and very well-tested form of judgement, and among themselves they settle everything by display — the antler-argument, the held ground, the long formal contest that ends without a wound.",
       "attribute_modifiers": {
         "strength": 0,
         "finesse": 1,
@@ -1965,26 +2018,30 @@
         "luck": 0
       },
       "attribute_caps": {
-        "strength": 28,
-        "finesse": 29,
+        "strength": 27,
+        "finesse": 30,
         "constitution": 28,
         "focus": 27,
-        "awareness": 32,
-        "charm": 30,
+        "awareness": 33,
+        "charm": 32,
         "luck": 28
       },
       "elemental_affinity_bonuses": {
         "earth": 2,
         "air": 2
       },
-      "starting_skills": {},
+      "starting_skills": {
+        "persuasion": 1,
+        "performance": 1
+      },
       "starting_spells": [],
-      "reincarnation_weight": 25,
+      "reincarnation_weight": 13,
       "typical_backgrounds": [
+        "antler_speaker",
+        "migration_singer",
+        "slope_herbalist",
+        "scarred_lead",
         "range_reader",
-        "ceremonial_dancer",
-        "herb_walker",
-        "elder_voice",
         "forest_singer"
       ],
       "resistances": {},
@@ -3955,13 +4012,14 @@
         "grace": 1
       },
       "available_races": [
-        "gana"
+        "gana",
+        "mriga"
       ],
       "weight": 5
     },
     "ceremonial_dancer": {
       "name": "Ceremonial Dancer",
-      "description": "In the long cold the pack makes a circle and calls to the dark until something answers. I am the one who knows when to start and when the call is complete. // The clearing belongs to whoever can hold it longest — through display, through stamina, through the formal language of antlers. I know all the vocabulary.",
+      "description": "In the long cold the pack makes a circle and calls to the dark until something answers. I am the one who knows when to start and when the call is complete.",
       "attribute_modifiers": {},
       "starting_skills": {
         "performance": 1,
@@ -3975,7 +4033,7 @@
     },
     "herb_walker": {
       "name": "Herb Walker",
-      "description": "The old female eats grass when ill, slows for the lame elk, reads the forest not for the kill but for the whole. The pack follows her medicine more than her speed. // I know the slope where the bitter herb grows that cures the wasting sickness. I know the clay that draws out poison. The herd comes to me when something goes wrong.",
+      "description": "The old female eats grass when ill, slows for the lame elk, reads the forest not for the kill but for the whole. The pack follows her medicine more than her speed.",
       "attribute_modifiers": {},
       "starting_skills": {
         "medicine": 2,
@@ -3988,7 +4046,7 @@
     },
     "elder_voice": {
       "name": "Elder Voice",
-      "description": "The alpha doesn't lead by being fastest or most violent. The alpha leads because the pack has tested every alternative and this one keeps them fed. // The old buck's scars are a curriculum. Every predator that tried and failed left a lesson. The herd follows him toward the safe water.",
+      "description": "The alpha doesn't lead by being fastest or most violent. The alpha leads because the pack has tested every alternative and this one keeps them fed.",
       "attribute_modifiers": {},
       "starting_skills": {
         "leadership": 2,
@@ -4286,9 +4344,120 @@
         "grace": 1
       },
       "available_races": [
-        "gana"
+        "gana",
+        "mriga"
       ],
       "weight": 4
+    },
+    "antler_speaker": {
+      "name": "Antler Speaker",
+      "description": "The clearing belongs to whoever can hold it longest — through display, through stamina, through the formal language of antlers. I know all the vocabulary. The point of the contest is that it ends before anyone is hurt, and whoever understands that best usually wins it.",
+      "attribute_modifiers": {
+        "charm": 1
+      },
+      "starting_skills": {
+        "performance": 2,
+        "grace": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [
+        "mriga"
+      ],
+      "weight": 5
+    },
+    "migration_singer": {
+      "name": "Migration Singer",
+      "description": "The old trail is walked so long it becomes part of the body, but it is carried in the voice. I sing the route — the water, the crossing, the season it stops being safe — and the herd behind me does not need to have walked it before. A song is the only map that outlives everyone who made it.",
+      "attribute_modifiers": {
+        "charm": 1
+      },
+      "starting_skills": {
+        "performance": 1,
+        "persuasion": 1,
+        "logistics": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "rations"
+        ]
+      },
+      "available_races": [
+        "mriga"
+      ],
+      "weight": 5
+    },
+    "slope_herbalist": {
+      "name": "Slope Herbalist",
+      "description": "I know the slope where the bitter herb grows that cures the wasting sickness. I know the clay that draws out poison. The herd comes to me when something goes wrong.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "medicine": 2,
+        "earth_magic": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "herb_bundle"
+        ]
+      },
+      "available_races": [
+        "mriga"
+      ],
+      "weight": 5
+    },
+    "scarred_lead": {
+      "name": "Scarred Lead",
+      "description": "The old buck's scars are a curriculum. Every predator that tried and failed left a lesson. The herd follows him toward the safe water. I have been wrong twice. Both times are written on my body where anyone can read them, which is the only reason they still follow me.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "leadership": 2,
+        "persuasion": 1,
+        "logistics": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [
+        "mriga"
+      ],
+      "weight": 5
+    },
+    "throat_hold": {
+      "name": "Throat Hold",
+      "description": "There is one grip and it does not take strength — only the patience to wait for the angle and the willingness to take it when it comes. The pack brings the animal down. I am what happens after it is down. Nobody thanks me for that and I have stopped expecting them to.",
+      "attribute_modifiers": {
+        "strength": 1
+      },
+      "starting_skills": {
+        "unarmed": 2,
+        "might": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [
+        "gana"
+      ],
+      "weight": 5
+    },
+    "quiet_tooth": {
+      "name": "Quiet Tooth",
+      "description": "A knife is a tooth you can put down, which makes it better than a tooth. I work the edges of things — the straggler, the unwatched cache, the sentry who has been awake too long. The pack sings. I am the reason the singing works, and I do it from somewhere behind you.",
+      "attribute_modifiers": {
+        "finesse": 1
+      },
+      "starting_skills": {
+        "daggers": 2,
+        "guile": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [
+        "gana"
+      ],
+      "weight": 5
     },
     "healer": {
       "name": "Healer",
