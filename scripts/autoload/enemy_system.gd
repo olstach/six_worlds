@@ -715,8 +715,6 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	var inventory = _generate_enemy_inventory(archetype, effective_budget)
 	for everyday in _generate_everyday_items(skills, xp_budget):
 		inventory.append(everyday)
-	for consumable in _generate_skill_consumables(skills, equipment_budget_for_xp(xp_budget)):
-		inventory.append(consumable)
 	for item in archetype.get("starting_inventory", []):
 		inventory.append(item)
 
@@ -777,6 +775,7 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 		elif gen_id != "":
 			equipped_weapon = ItemSystem.get_item(gen_id)
 			inventory.append({"item_id": gen_id, "quantity": 1})
+			kit_budget -= int(equipped_weapon.get("value", 0))
 
 			# A second set, when a second weapon skill is genuinely trained and
 			# the character is worth enough to have afforded it. Carried rather
@@ -802,12 +801,20 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	# Generate armor items — same material-tiered system as the player.
 	# Each piece's stats contribute to derived (armor, dodge, hp, etc.) and the
 	# item goes into inventory so it can be looted on death.
+	# Armour spends what the weapon left. A character whose budget ran out on a
+	# good blade goes into the fight in fewer pieces, which is how kit works.
 	var armor_category: String = equipment.get("armor_type", "none")
 	for slot_entry in ARMOR_LOADOUTS.get(armor_category, []):
+		if kit_budget <= 0:
+			break
 		var armor_gen_id = ItemSystem.generate_armor(slot_entry[1], item_rarity, "", "", realm)
 		if armor_gen_id == "":
 			continue
 		var armor_item = ItemSystem.get_item(armor_gen_id)
+		var piece_value: int = int(armor_item.get("value", 0))
+		if piece_value > kit_budget:
+			continue  # cannot afford this piece; try the next, cheaper slot
+		kit_budget -= piece_value
 		var piece_stats = armor_item.get("stats", {})
 		derived["armor"]       += piece_stats.get("armor", 0)
 		derived["dodge"]       += piece_stats.get("dodge", 0)
@@ -816,6 +823,21 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 		derived["max_stamina"] += piece_stats.get("max_stamina", 0)
 		derived["current_stamina"] += piece_stats.get("max_stamina", 0)
 		inventory.append({"item_id": armor_gen_id, "quantity": 1})
+
+	# Anything left buys an accessory. Enemies never carried one before, so a
+	# well-funded enemy had nowhere for its surplus to go.
+	# 30 is the cheapest talisman in the game; anything above that is worth trying.
+	if kit_budget >= 30:
+		var tali_id = ItemSystem.generate_talisman(item_rarity)
+		if tali_id != "":
+			var tali = ItemSystem.get_item(tali_id)
+			if int(tali.get("value", 0)) <= kit_budget:
+				kit_budget -= int(tali.get("value", 0))
+				inventory.append({"item_id": tali_id, "quantity": 1})
+
+	# Consumables come last, out of whatever the kit did not spend on gear.
+	for consumable in _generate_skill_consumables(skills, kit_budget):
+		inventory.append(consumable)
 
 	# Generate a procedural name from realm/region/tags, unless this is a named boss.
 	# Race is inferred from archetype tags: imps first, then shades (undead+incorporeal),

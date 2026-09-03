@@ -461,6 +461,39 @@ func _check_equipment() -> void:
 	expect(large > small * 5, "kit budget does not scale with XP (%d vs %d)" % [small, large])
 	print("   kit budget: 200 XP -> %d gold, 4140 XP -> %d gold" % [small, large])
 
+	# the kit must actually be spent, and must stay inside its budget
+	var overspent := 0
+	var samples := 0
+	var carried_total := 0
+	var accessories := 0
+	var armour_pieces := 0
+	for eid in EnemySystem.encounters:
+		if eid.begins_with("_"):
+			continue
+		var realm: String = EnemySystem.encounters[eid].get("realm", "animal")
+		for e in EnemySystem.generate_encounter(eid, "", realm):
+			var budget: int = EnemySystem.equipment_budget_for_xp(int(e.get("xp_earned", 0)))
+			var spent: int = 0
+			for entry in e.get("inventory", []):
+				var item: Dictionary = ItemSystem.get_item(String(entry.get("item_id", "")))
+				var slot: String = String(item.get("slot", ""))
+				spent += int(item.get("value", 0)) * int(entry.get("quantity", 1))
+				if slot == "talisman" or slot.begins_with("trinket") or slot.begins_with("ring"):
+					accessories += 1
+				elif slot in ["chest", "head", "legs", "feet", "hand_l", "back"]:
+					armour_pieces += 1
+			samples += 1
+			carried_total += spent
+			# generous margin: consumables and archetype-guaranteed items sit
+			# outside the pool, so this only catches gross overspend
+			if spent > budget * 3 + 200:
+				overspent += 1
+	expect(overspent == 0, "%d of %d enemies carry gear far beyond their kit budget"
+		% [overspent, samples])
+	print("   %d enemies: avg kit value %d, %d armour pieces, %d accessories"
+		% [samples, int(carried_total / maxi(samples, 1)), armour_pieces, accessories])
+	expect(accessories > 0, "no enemy ever received an accessory")
+
 
 func _dump_table() -> void:
 	if not "--table" in OS.get_cmdline_user_args():
