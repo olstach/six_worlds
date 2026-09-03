@@ -248,6 +248,30 @@ Recorded so they aren't rediscovered as bugs.
 
 ### 2026-08-31 — from the enemy-XP design session
 
+- **Background assignment wants a pass across all births.** 94 backgrounds, but
+  only 3 are universal (`healer`, `reveler`, `wanderer`) and 55 are single-birth
+  — 58% of them. Average 4.8 births per background. Mriga was in none of the 22
+  broadly-available ones (`warrior` covers 18 births, `scholar` 14,
+  `merchant`/`guard`/`diplomat`/`noble`/`monk` 13) purely because it was created
+  after those lists were authored; ten were opened to it by hand. Every future
+  birth hits the same trap. After the animal-birth pass, go over all births and
+  reassign, add, or generalise backgrounds — and check gana first, which was
+  split at the same time as mriga.
+
+- **Spell learning should cost XP.** `CharacterSystem.learn_spell` currently has
+  no cost and no eligibility gate at all; it appends to `known_spells`. Making
+  spells cost XP is the coherent counterpart to buying perks, and it spreads XP
+  across more kinds of development instead of dumping it into raw attributes
+  once a build's skills cap.
+
+- **Trainers / domain-guild-style access.** Perks and spells stay discoverable
+  by default — not seeing everything in one run is the intent. But some can be
+  bought: access is earned through events, the way domain guilds already work,
+  then purchased in a shop menu for XP plus sometimes another resource. Cost
+  rises **geometrically** per purchase (n, 2n, 4n …) so a player buys two or
+  three a run and agonises, rather than working through a shopping list. Worth
+  its own spec; it interacts with the XP economy.
+
 Spec: `docs/superpowers/specs/2026-08-31-enemy-xp-generation-design.md`
 
 - **More ways to spend XP on meaningful development.** *(decided 2026-08-31:
