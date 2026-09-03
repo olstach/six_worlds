@@ -360,17 +360,6 @@ func _load_name_parts() -> void:
 # MAIN API
 # ============================================
 
-## Power multiplier per event/mob difficulty tier. Applied on top of the
-## encounter template's own difficulty_range, so "hard" fights against the
-## same enemy_group really are harder than "normal" ones.
-const DIFFICULTY_MULTIPLIERS: Dictionary = {
-	"easy": 0.75,
-	"normal": 1.0,
-	"hard": 1.2,
-	"very_hard": 1.4,
-	"boss": 1.6,
-}
-
 ## Generate an encounter: returns Array of enemy dicts ready for CombatUnit.init_as_enemy()
 ## encounter_id: matches enemy_group from events/mobs JSON
 ## region: "cold_hell", "fire_hell", or "" for any
@@ -678,77 +667,6 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 		enemy["ai_behavior"] = archetype["ai_behavior"]
 
 	return enemy
-
-
-## Distribute attribute points from budget according to weights.
-## All attributes start at 10, then budget points are spread proportionally.
-func _distribute_attributes(weights: Dictionary, budget: int) -> Dictionary:
-	var attributes = {
-		"strength": 10, "finesse": 10, "constitution": 10,
-		"focus": 10, "awareness": 10, "charm": 10, "luck": 10
-	}
-
-	# Calculate total weight
-	var total_weight: float = 0.0
-	for attr in weights:
-		total_weight += float(weights[attr])
-
-	if total_weight <= 0 or budget <= 0:
-		return attributes
-
-	# Distribute proportionally
-	var remaining = budget
-	var attr_list = weights.keys()
-	# Sort by weight descending so highest-priority attributes get remainders
-	attr_list.sort_custom(func(a, b): return weights[a] > weights[b])
-
-	for attr in attr_list:
-		if not attributes.has(attr):
-			continue
-		var weight = float(weights[attr])
-		var share = int(float(budget) * weight / total_weight)
-		share = mini(share, remaining)
-		attributes[attr] += share
-		remaining -= share
-
-	# Distribute any remainder to the highest-weight attribute
-	if remaining > 0 and not attr_list.is_empty():
-		var top_attr = attr_list[0]
-		if attributes.has(top_attr):
-			attributes[top_attr] += remaining
-
-	return attributes
-
-
-## Assign skill levels from a priority list.
-## Each "point" raises a skill by 1 level (simplified from player XP costs).
-## Skills cap at 5.
-func _assign_skills(priorities: Array, budget: int) -> Dictionary:
-	var skills: Dictionary = {}
-	if priorities.is_empty() or budget <= 0:
-		return skills
-
-	var remaining = budget
-	# Spread points across priorities, cycling through them
-	var round_index = 0
-	while remaining > 0:
-		var assigned_any = false
-		for skill_name in priorities:
-			if remaining <= 0:
-				break
-			var current = skills.get(skill_name, 0)
-			if current < 10:
-				skills[skill_name] = current + 1
-				remaining -= 1
-				assigned_any = true
-
-		if not assigned_any:
-			break  # All skills maxed
-		round_index += 1
-
-	return skills
-
-
 ## Calculate derived stats using the same formulas as CharacterSystem.
 ## This ensures enemies feel consistent with player characters.
 func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dictionary:

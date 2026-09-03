@@ -345,6 +345,15 @@ func pick_random_spell_for_party(school: String, level: int) -> String:
 	return candidates[0]
 
 
+## The party's combined lifetime XP. Used where the old EnemySystem
+## get_party_power() gauged how far along the player is — companion pricing.
+func get_party_xp_worth() -> int:
+	var total: int = 0
+	for member in get_party():
+		total += int(member.get("xp_earned", 0))
+	return total
+
+
 ## A character dict with baseline attributes and no birth or background applied.
 ## Enemy generation layers birth, then background, then archetype spending on top.
 func create_blank_character() -> Dictionary:
