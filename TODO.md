@@ -248,6 +248,17 @@ Recorded so they aren't rediscovered as bugs.
 
 ### 2026-08-31 — from the enemy-XP design session
 
+- **Map all five elements to the buddha families, and finish what each implies.**
+  The original intent, watered down over time. Fire is padmakula — desire
+  transmuted, magnetising — and its line is half-built already. The other four
+  presumably map to vajra, ratna, karma and buddha, and the same audit would
+  likely find each has a partial line nobody labelled. Worth doing all five
+  together during the spells pass rather than fire alone, so the elements end
+  up meaning something consistent rather than five unrelated damage types.
+  Elemental affinities, klesha/wisdom pressure and the ngakpa robes all already
+  key off the elements, so a coherent family scheme would tie several systems
+  together at once.
+
 - **Fire's padmakula line has holes at levels 1 and 5.** Fire is the lotus
   family — desire transmuted, magnetising rather than burning — and the ladder
   is already there in `Fire + Enchantment`: `charm` (L3), `magnetizing_aura`
