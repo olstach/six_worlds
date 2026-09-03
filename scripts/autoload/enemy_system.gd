@@ -604,11 +604,12 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 
 	# Resolve each slot to an archetype before splitting the budget, so the
 	# hero can be chosen by threat where the composition was authored.
+	var family: Array[String] = _encounter_family_tokens(encounter_id)
 	for slot in slots:
 		if not slot.has("archetype"):
 			slot["archetype"] = _pick_archetype_for_role(
 				String(slot["role"]), String(slot.get("region", effective_region)),
-				String(slot.get("tier", budget["tier"])), realm)
+				String(slot.get("tier", budget["tier"])), realm, family)
 
 	_mark_authored_hero(slots, template)
 
@@ -1306,7 +1307,29 @@ func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Arr
 ## Tier defaults to "devil" — use "shade" or "imp" for lower-power enemies.
 ## Archetypes without an explicit tier field default to "devil".
 ## Archetypes without an explicit realm field default to "hell" (backwards compatibility).
-func _pick_archetype_for_role(role: String, region: String, tier: String = "devil", realm: String = "hell") -> String:
+## Words in an encounter id that name what the encounter is about.
+##
+## An encounter called animal_mriga_herd should contain mriga. Without this it
+## drew any animal archetype matching the role, so a "mriga herd" came out as
+## varaha chargers and a gana runner.
+const ID_NOISE: Array[String] = [
+	"hell", "hungry", "ghost", "animal", "domain", "human", "asura", "god",
+	"lone", "pack", "patrol", "band", "group", "swarm", "herd", "flock",
+	"ambush", "elite", "weakened", "boss", "any", "with", "and", "the",
+]
+
+
+func _encounter_family_tokens(encounter_id: String) -> Array[String]:
+	var out: Array[String] = []
+	for part in encounter_id.split("_", false):
+		var token: String = String(part)
+		if token.length() >= 3 and not token in ID_NOISE:
+			out.append(token)
+	return out
+
+
+func _pick_archetype_for_role(role: String, region: String, tier: String = "devil",
+		realm: String = "hell", family: Array[String] = []) -> String:
 	var candidates: Array[String] = []
 
 	for arch_id in archetypes:
@@ -1345,6 +1368,19 @@ func _pick_archetype_for_role(role: String, region: String, tier: String = "devi
 
 	if candidates.is_empty():
 		return ""
+
+	# Prefer an archetype the encounter is actually named after. Falls back to
+	# the whole pool when the family cannot fill this role, so a mriga encounter
+	# needing a caster still gets one rather than nothing.
+	if not family.is_empty():
+		var preferred: Array[String] = []
+		for arch_id in candidates:
+			for token in family:
+				if token in arch_id:
+					preferred.append(arch_id)
+					break
+		if not preferred.is_empty():
+			return preferred[randi() % preferred.size()]
 
 	return candidates[randi() % candidates.size()]
 

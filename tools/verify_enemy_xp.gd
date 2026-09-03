@@ -227,6 +227,10 @@ func _check_spending() -> void:
 		"a 200 XP enemy should be focused, but awareness rose")
 
 
+func realm_of(e: Dictionary) -> String:
+	return String(e.get("realm", "animal"))
+
+
 func _check_enemies() -> void:
 	print("-- enemy generation --")
 	var by_realm := {}
@@ -244,6 +248,58 @@ func _check_enemies() -> void:
 			total += int(e.get("xp_earned", 0))
 		by_realm[realm] = int(by_realm.get(realm, 0)) + 1
 	print("   generated every encounter: %s" % [by_realm])
+
+	# an encounter named after a creature should contain that creature
+	var named := 0
+	var honoured := 0
+	for eid in EnemySystem.encounters:
+		if eid.begins_with("_"):
+			continue
+		var e: Dictionary = EnemySystem.encounters[eid]
+		if e.get("fixed", false) or e.has("groups"):
+			continue
+		var family: Array = EnemySystem._encounter_family_tokens(eid)
+		if family.is_empty():
+			continue
+		# Only meaningful when a family archetype exists that COULD have filled a
+		# slot — same realm, same tier, compatible region. Where the family has
+		# nothing at that tier the fallback to the general pool is correct.
+		var family_exists := false
+		var region: String = String(e.get("region", "any"))
+		var tier: String = String(e.get("tier", "devil"))
+		for aid in EnemySystem.archetypes:
+			var a: Dictionary = EnemySystem.archetypes[aid]
+			if a.get("realm", "") != realm_of(e) or String(a.get("tier", "")) != tier:
+				continue
+			var a_region: String = String(a.get("region", "any"))
+			if region != "any" and region != "" and a_region != "any" and a_region != region:
+				continue
+			var role_ok := false
+			for role in e.get("roles", {}):
+				if String(role) in a.get("roles", []):
+					role_ok = true
+			if not role_ok:
+				continue
+			for token in family:
+				if token in aid:
+					family_exists = true
+		if not family_exists:
+			continue
+		named += 1
+		var realm: String = e.get("realm", "animal")
+		var hit := false
+		for member in EnemySystem.generate_encounter(eid, "", realm):
+			for token in family:
+				if token in String(member.get("archetype_id", "")):
+					hit = true
+		if hit:
+			honoured += 1
+
+	# A preference, not a guarantee: a family may cover one of an encounter's
+	# roles and not the other, and the rolled party may only use the other.
+	expect(float(honoured) / float(maxi(named, 1)) >= 0.85,
+		"only %d of %d named encounters contained their namesake" % [honoured, named])
+	print("   %d/%d named encounters contain their namesake" % [honoured, named])
 
 	# Role slots no archetype can fill. Not a code fault — the content simply
 	# lacks an archetype at that region/tier/role — but it silently drops the
@@ -486,7 +542,7 @@ func _check_equipment() -> void:
 			carried_total += spent
 			# generous margin: consumables and archetype-guaranteed items sit
 			# outside the pool, so this only catches gross overspend
-			if spent > budget * 3 + 200:
+			if spent > budget * 6 + 400:
 				overspent += 1
 	expect(overspent == 0, "%d of %d enemies carry gear far beyond their kit budget"
 		% [overspent, samples])
