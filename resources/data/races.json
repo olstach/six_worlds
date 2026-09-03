@@ -14,15 +14,6 @@
         "charm": -1,
         "luck": -1
       },
-      "attribute_caps": {
-        "strength": 33,
-        "finesse": 25,
-        "constitution": 30,
-        "focus": 32,
-        "awareness": 25,
-        "charm": 25,
-        "luck": 27
-      },
       "elemental_affinity_bonuses": {
         "fire": 5
       },
@@ -69,15 +60,6 @@
         "awareness": 2,
         "charm": -1,
         "luck": -2
-      },
-      "attribute_caps": {
-        "strength": 25,
-        "finesse": 33,
-        "constitution": 27,
-        "focus": 27,
-        "awareness": 32,
-        "charm": 25,
-        "luck": 25
       },
       "elemental_affinity_bonuses": {
         "water": 5
@@ -130,15 +112,6 @@
         "charm": -1,
         "luck": 4
       },
-      "attribute_caps": {
-        "strength": 25,
-        "finesse": 25,
-        "constitution": 32,
-        "focus": 25,
-        "awareness": 25,
-        "charm": 25,
-        "luck": 33
-      },
       "elemental_affinity_bonuses": {
         "earth": 5
       },
@@ -186,15 +159,6 @@
         "awareness": 1,
         "charm": -1,
         "luck": 1
-      },
-      "attribute_caps": {
-        "strength": 25,
-        "finesse": 33,
-        "constitution": 25,
-        "focus": 25,
-        "awareness": 30,
-        "charm": 25,
-        "luck": 29
       },
       "elemental_affinity_bonuses": {
         "air": 5
@@ -245,15 +209,6 @@
         "awareness": 4,
         "charm": -1,
         "luck": -1
-      },
-      "attribute_caps": {
-        "strength": 27,
-        "finesse": 29,
-        "constitution": 25,
-        "focus": 30,
-        "awareness": 32,
-        "charm": 25,
-        "luck": 25
       },
       "elemental_affinity_bonuses": {
         "space": 5
@@ -316,15 +271,6 @@
         "charm": 3,
         "luck": 1
       },
-      "attribute_caps": {
-        "strength": 23,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 25,
-        "awareness": 25,
-        "charm": 33,
-        "luck": 29
-      },
       "elemental_affinity_bonuses": {
         "space": 5
       },
@@ -377,15 +323,6 @@
         "charm": -2,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 33,
-        "finesse": 24,
-        "constitution": 35,
-        "focus": 24,
-        "awareness": 24,
-        "charm": 22,
-        "luck": 27
-      },
       "elemental_affinity_bonuses": {
         "earth": 3
       },
@@ -427,15 +364,6 @@
         "charm": -1,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 30,
-        "finesse": 22,
-        "constitution": 32,
-        "focus": 28,
-        "awareness": 30,
-        "charm": 20,
-        "luck": 27
-      },
       "elemental_affinity_bonuses": {
         "earth": 3
       },
@@ -475,15 +403,6 @@
         "awareness": 1,
         "charm": 1,
         "luck": 1
-      },
-      "attribute_caps": {
-        "strength": 26,
-        "finesse": 29,
-        "constitution": 26,
-        "focus": 30,
-        "awareness": 30,
-        "charm": 31,
-        "luck": 31
       },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
@@ -526,15 +445,6 @@
         "charm": 4,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 32,
-        "finesse": 23,
-        "constitution": 28,
-        "focus": 25,
-        "awareness": 25,
-        "charm": 32,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {
         "fire": 5
       },
@@ -575,15 +485,6 @@
         "awareness": 4,
         "charm": 2,
         "luck": -1
-      },
-      "attribute_caps": {
-        "strength": 23,
-        "finesse": 28,
-        "constitution": 23,
-        "focus": 32,
-        "awareness": 32,
-        "charm": 25,
-        "luck": 30
       },
       "elemental_affinity_bonuses": {
         "space": 5
@@ -633,15 +534,6 @@
         "charm": 0,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 22,
-        "finesse": 28,
-        "constitution": 22,
-        "focus": 32,
-        "awareness": 32,
-        "charm": 28,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {
         "space": 5
       },
@@ -681,15 +573,6 @@
         "awareness": 3,
         "charm": 2,
         "luck": -2
-      },
-      "attribute_caps": {
-        "strength": 23,
-        "finesse": 29,
-        "constitution": 26,
-        "focus": 34,
-        "awareness": 31,
-        "charm": 31,
-        "luck": 26
       },
       "elemental_affinity_bonuses": {
         "space": 5
@@ -740,15 +623,6 @@
         "charm": 1,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 25,
-        "finesse": 29,
-        "constitution": 28,
-        "focus": 32,
-        "awareness": 35,
-        "charm": 32,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
         "enchantment": 1,
@@ -790,15 +664,6 @@
         "awareness": 2,
         "charm": 2,
         "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 25,
-        "finesse": 32,
-        "constitution": 28,
-        "focus": 30,
-        "awareness": 32,
-        "charm": 34,
-        "luck": 30
       },
       "elemental_affinity_bonuses": {
         "air": 3,
@@ -842,15 +707,6 @@
         "charm": 0,
         "luck": 1
       },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 30,
-        "awareness": 30,
-        "charm": 30,
-        "luck": 32
-      },
       "elemental_affinity_bonuses": {},
       "starting_skills": {},
       "starting_spells": [],
@@ -887,15 +743,6 @@
         "charm": 0,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {},
       "starting_skills": {},
       "starting_spells": [],
@@ -923,15 +770,6 @@
         "awareness": 0,
         "charm": 0,
         "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
       },
       "elemental_affinity_bonuses": {},
       "starting_skills": {},
@@ -961,15 +799,6 @@
         "charm": 0,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {},
       "starting_skills": {},
       "starting_spells": [],
@@ -997,15 +826,6 @@
         "awareness": 0,
         "charm": 0,
         "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
       },
       "elemental_affinity_bonuses": {},
       "starting_skills": {},
@@ -1035,15 +855,6 @@
         "charm": 0,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {},
       "starting_skills": {},
       "starting_spells": [],
@@ -1071,15 +882,6 @@
         "awareness": 0,
         "charm": 0,
         "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
       },
       "elemental_affinity_bonuses": {},
       "starting_skills": {},
@@ -1109,15 +911,6 @@
         "charm": 0,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {},
       "starting_skills": {},
       "starting_spells": [],
@@ -1146,15 +939,6 @@
         "charm": 0,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 28,
-        "finesse": 28,
-        "constitution": 28,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 28,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {},
       "starting_skills": {},
       "starting_spells": [],
@@ -1182,15 +966,6 @@
         "awareness": -2,
         "charm": -2,
         "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 30,
-        "finesse": 30,
-        "constitution": 27,
-        "focus": 27,
-        "awareness": 26,
-        "charm": 26,
-        "luck": 27
       },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
@@ -1230,15 +1005,6 @@
         "charm": -1,
         "luck": -1
       },
-      "attribute_caps": {
-        "strength": 26,
-        "finesse": 30,
-        "constitution": 26,
-        "focus": 27,
-        "awareness": 27,
-        "charm": 26,
-        "luck": 26
-      },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
         "guile": 1,
@@ -1276,15 +1042,6 @@
         "awareness": 3,
         "charm": 2,
         "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 24,
-        "finesse": 27,
-        "constitution": 24,
-        "focus": 28,
-        "awareness": 30,
-        "charm": 30,
-        "luck": 28
       },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
@@ -1324,15 +1081,6 @@
         "charm": 3,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 24,
-        "finesse": 27,
-        "constitution": 24,
-        "focus": 30,
-        "awareness": 28,
-        "charm": 30,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
         "fire_magic": 2,
@@ -1371,15 +1119,6 @@
         "charm": 3,
         "luck": 2
       },
-      "attribute_caps": {
-        "strength": 24,
-        "finesse": 27,
-        "constitution": 24,
-        "focus": 28,
-        "awareness": 28,
-        "charm": 31,
-        "luck": 30
-      },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
         "leadership": 1,
@@ -1416,15 +1155,6 @@
         "awareness": 0,
         "charm": 0,
         "luck": -1
-      },
-      "attribute_caps": {
-        "strength": 30,
-        "finesse": 27,
-        "constitution": 26,
-        "focus": 30,
-        "awareness": 27,
-        "charm": 25,
-        "luck": 24
       },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
@@ -1465,15 +1195,6 @@
         "charm": 4,
         "luck": 1
       },
-      "attribute_caps": {
-        "strength": 24,
-        "finesse": 28,
-        "constitution": 24,
-        "focus": 26,
-        "awareness": 27,
-        "charm": 31,
-        "luck": 30
-      },
       "elemental_affinity_bonuses": {},
       "starting_skills": {
         "comedy": 1,
@@ -1511,15 +1232,6 @@
         "awareness": 2,
         "charm": 1,
         "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 25,
-        "finesse": 29,
-        "constitution": 27,
-        "focus": 30,
-        "awareness": 32,
-        "charm": 30,
-        "luck": 28
       },
       "elemental_affinity_bonuses": {
         "air": 3,
@@ -1566,15 +1278,6 @@
         "charm": -1,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 30,
-        "finesse": 23,
-        "constitution": 35,
-        "focus": 25,
-        "awareness": 28,
-        "charm": 25,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {
         "earth": 3
       },
@@ -1616,15 +1319,6 @@
         "awareness": 2,
         "charm": 0,
         "luck": -1
-      },
-      "attribute_caps": {
-        "strength": 25,
-        "finesse": 32,
-        "constitution": 27,
-        "focus": 27,
-        "awareness": 32,
-        "charm": 28,
-        "luck": 26
       },
       "elemental_affinity_bonuses": {
         "water": 3
@@ -1668,15 +1362,6 @@
         "awareness": 1,
         "charm": -2,
         "luck": -2
-      },
-      "attribute_caps": {
-        "strength": 27,
-        "finesse": 29,
-        "constitution": 27,
-        "focus": 32,
-        "awareness": 30,
-        "charm": 25,
-        "luck": 26
       },
       "elemental_affinity_bonuses": {
         "water": 3,
@@ -1722,15 +1407,6 @@
         "charm": 0,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 30,
-        "finesse": 23,
-        "constitution": 35,
-        "focus": 25,
-        "awareness": 26,
-        "charm": 26,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {
         "earth": 5
       },
@@ -1772,15 +1448,6 @@
         "awareness": 2,
         "charm": -1,
         "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 27,
-        "finesse": 35,
-        "constitution": 23,
-        "focus": 27,
-        "awareness": 30,
-        "charm": 25,
-        "luck": 28
       },
       "elemental_affinity_bonuses": {
         "air": 3
@@ -1824,15 +1491,6 @@
         "charm": -1,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 26,
-        "finesse": 29,
-        "constitution": 25,
-        "focus": 32,
-        "awareness": 30,
-        "charm": 25,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {
         "air": 2,
         "space": 3
@@ -1871,15 +1529,6 @@
         "awareness": 1,
         "charm": -2,
         "luck": -1
-      },
-      "attribute_caps": {
-        "strength": 35,
-        "finesse": 30,
-        "constitution": 32,
-        "focus": 30,
-        "awareness": 28,
-        "charm": 24,
-        "luck": 28
       },
       "elemental_affinity_bonuses": {
         "fire": 5
@@ -1922,15 +1571,6 @@
         "charm": -1,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 33,
-        "finesse": 23,
-        "constitution": 36,
-        "focus": 25,
-        "awareness": 25,
-        "charm": 24,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {
         "earth": 5
       },
@@ -1971,15 +1611,6 @@
         "awareness": 1,
         "charm": 0,
         "luck": -1
-      },
-      "attribute_caps": {
-        "strength": 30,
-        "finesse": 35,
-        "constitution": 25,
-        "focus": 27,
-        "awareness": 30,
-        "charm": 27,
-        "luck": 26
       },
       "elemental_affinity_bonuses": {
         "fire": 3
@@ -2022,15 +1653,6 @@
         "awareness": 1,
         "charm": -1,
         "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 30,
-        "finesse": 32,
-        "constitution": 29,
-        "focus": 26,
-        "awareness": 30,
-        "charm": 27,
-        "luck": 28
       },
       "elemental_affinity_bonuses": {
         "air": 2,
@@ -2077,15 +1699,6 @@
         "charm": 1,
         "luck": 0
       },
-      "attribute_caps": {
-        "strength": 27,
-        "finesse": 30,
-        "constitution": 28,
-        "focus": 27,
-        "awareness": 33,
-        "charm": 32,
-        "luck": 28
-      },
       "elemental_affinity_bonuses": {
         "earth": 2,
         "air": 2
@@ -2114,7 +1727,8 @@
         "air": 0
       },
       "starting_traits": [
-        "colony_mind"
+        "colony_mind",
+        "first_to_know"
       ]
     },
     "vanara": {
@@ -2129,15 +1743,6 @@
         "awareness": 1,
         "charm": 0,
         "luck": 1
-      },
-      "attribute_caps": {
-        "strength": 25,
-        "finesse": 32,
-        "constitution": 25,
-        "focus": 30,
-        "awareness": 32,
-        "charm": 28,
-        "luck": 30
       },
       "elemental_affinity_bonuses": {
         "air": 3
@@ -2179,15 +1784,6 @@
         "awareness": 2,
         "charm": -1,
         "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 32,
-        "finesse": 28,
-        "constitution": 30,
-        "focus": 27,
-        "awareness": 33,
-        "charm": 25,
-        "luck": 28
       },
       "elemental_affinity_bonuses": {
         "air": 3,
@@ -2233,15 +1829,6 @@
         "charm": 2,
         "luck": 2
       },
-      "attribute_caps": {
-        "strength": 23,
-        "finesse": 35,
-        "constitution": 24,
-        "focus": 27,
-        "awareness": 30,
-        "charm": 30,
-        "luck": 33
-      },
       "elemental_affinity_bonuses": {
         "air": 5
       },
@@ -2286,15 +1873,6 @@
         "awareness": 3,
         "charm": 0,
         "luck": 0
-      },
-      "attribute_caps": {
-        "strength": 24,
-        "finesse": 29,
-        "constitution": 24,
-        "focus": 32,
-        "awareness": 35,
-        "charm": 28,
-        "luck": 28
       },
       "elemental_affinity_bonuses": {
         "space": 3,
@@ -2394,7 +1972,8 @@
         "blue_devil",
         "green_devil",
         "black_devil",
-        "white_devil"
+        "white_devil",
+        "mriga"
       ],
       "weight": 5
     },
@@ -2436,7 +2015,8 @@
         "red_devil",
         "blue_devil",
         "yellow_devil",
-        "white_devil"
+        "white_devil",
+        "mriga"
       ],
       "weight": 7
     },
@@ -2473,7 +2053,8 @@
         "white_devil",
         "black_devil",
         "green_devil",
-        "vetala"
+        "vetala",
+        "mriga"
       ],
       "weight": 5
     },
@@ -2519,7 +2100,8 @@
         "red_devil",
         "blue_devil",
         "yellow_devil",
-        "white_devil"
+        "white_devil",
+        "mriga"
       ],
       "weight": 4
     },
@@ -2635,7 +2217,8 @@
         "bhramara",
         "yaksha",
         "red_devil",
-        "yellow_devil"
+        "yellow_devil",
+        "mriga"
       ],
       "weight": 8
     },
@@ -2712,7 +2295,8 @@
         "red_devil",
         "blue_devil",
         "yellow_devil",
-        "skeleton"
+        "skeleton",
+        "mriga"
       ],
       "weight": 7
     },
@@ -2977,7 +2561,8 @@
         "skeleton",
         "vetala",
         "gyelpo",
-        "dre"
+        "dre",
+        "mriga"
       ],
       "weight": 3
     },
@@ -3019,7 +2604,8 @@
         "green_devil",
         "black_devil",
         "white_devil",
-        "vetala"
+        "vetala",
+        "mriga"
       ],
       "weight": 4
     },
@@ -3148,7 +2734,8 @@
         "blue_devil",
         "white_devil",
         "black_devil",
-        "skeleton_copper"
+        "skeleton_copper",
+        "mriga"
       ],
       "weight": 4
     },
@@ -3228,7 +2815,8 @@
         "apsara",
         "planetary_deity",
         "white_devil",
-        "black_devil"
+        "black_devil",
+        "mriga"
       ],
       "weight": 4
     },

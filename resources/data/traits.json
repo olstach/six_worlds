@@ -2546,5 +2546,51 @@
     ],
     "purgeable_by": [],
     "purge_difficulty": 0
+  },
+  "first_to_know": {
+    "name": "First to Know",
+    "description": "The head comes up before the sound arrives. Alertness inherited rather than learned.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "awareness": 1
+    },
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "first_to_know",
+      "alert",
+      "ambush_warning"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "craven": {
+    "name": "Craven",
+    "description": "Runs first and reasons afterwards. Whatever else is true, nothing has ever caught them.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {
+      "finesse": 1
+    },
+    "pressure_modifiers": {
+      "fire": -5,
+      "earth": -5
+    },
+    "skill_modifiers": {
+      "might": -1
+    },
+    "event_tags": [
+      "craven",
+      "coward",
+      "flees"
+    ],
+    "opposed_traits": [
+      "brave"
+    ],
+    "purgeable_by": [
+      "yoga"
+    ],
+    "purge_difficulty": 14
   }
 }
