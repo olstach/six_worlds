@@ -250,13 +250,32 @@ Recorded so they aren't rediscovered as bugs.
 
 Spec: `docs/superpowers/specs/2026-08-31-enemy-xp-generation-design.md`
 
-- **Character development past the individual XP ceiling** — an archetype
-  saturates around 4,500 XP (skills cap at 10, attributes near 30; measured
-  lowest 2,580 on `animal_dura_soldier`, median ~4,470 across all four
-  archetype sets). Higher encounter tiers therefore have to add *heroes*, not
-  raise multipliers. Ways to develop a character beyond the ceiling are wanted
-  eventually — wider builds past the archetype's priorities, perks and spells,
-  better equipment, or lifting caps for heroes.
+- **More ways to spend XP on meaningful development.** *(decided 2026-08-31:
+  the 10-level skill system stays — too much is pegged on it — but perks and
+  spells should become purchasable with XP.)*
+
+  XP currently buys two things: attributes and skills. Skills hard-cap at level
+  10, so a three-skill build absorbs at most 1,980 XP in skills and everything
+  past that becomes raw attributes, which never saturate but are the least
+  interesting kind of power.
+
+  The two obvious sinks already exist as content and are not sold:
+  - **604 perks** (550 skill + 54 cross) are acquired *free*, one choice of four
+    offered per skill-up. With skills capped, a character sees at most ~350
+    offers of a random 4-of-604 — most perks are never even seen, let alone taken.
+  - **363 spells** — `CharacterSystem.learn_spell` has no XP cost and no
+    eligibility gate at all; it appends. Access comes from guilds, events and
+    starting kits.
+
+  An earlier note here claimed an individual saturates near 4,500 XP. That was
+  wrong: it assumed `attribute_caps` bounded attributes near 30, and those caps
+  are enforced nowhere (see below). Only the skill cap is real.
+
+- **`attribute_caps` is dead data** — all 47 races carry a 7-key caps dict that
+  no script, scene or tool reads. Attributes are limited only by the rising cost
+  per point, which is the soft cap the design wants anyway. Either delete the
+  field or implement it; leaving it is actively misleading, having already
+  produced one wrong conclusion in the enemy-XP spec.
 - **Loot division** — post-battle XP now divides among party members; items do
   not, because they are indivisible and the party shares an inventory. Left
   deliberately asymmetric; revisit if party size feels wrong.

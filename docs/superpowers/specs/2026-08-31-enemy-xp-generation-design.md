@@ -188,7 +188,7 @@ hell-born mercenaries in the animal realm should read as an event.
 `rival_party` is up to four heroes at equal shares — another party like the
 player's. It is the rarest and hardest encounter the system generates, and the
 one that pays best. It is also, structurally, how the design reaches upward: see
-[Extensibility](#extensibility-and-the-individual-ceiling).
+[Extensibility](#extensibility-and-where-the-real-limit-is).
 
 Exotic templates are gated by band: `warband` from uncommon upward,
 `foreign_mercs` and `rival_party` on rare only. Composition surprise is thereby
@@ -257,47 +257,48 @@ the existing procedural `generate_enemy_name`, the same as any other enemy.
 A hero in Spec #1 is a distinguishable individual that does not survive the
 encounter. Both of those change later, in different specs.
 
-## Extensibility and the individual ceiling
+## Extensibility and where the real limit is
 
 Bands, tiers and party archetypes are all data tables. Adding a rarer, harder
 tier is adding a row — no code changes, and the reward and loot formulas scale
 with it automatically because they read the party XP.
 
-But there is a hard ceiling underneath, and it is closer than it looks. An
-archetype can only spend XP on the attributes and skills it prioritises, skills
-cap at level 10, and attributes cap per birth around 27–35. Measured across
-every archetype in the game:
+**Correction.** An earlier draft of this spec claimed an individual saturates
+around 4,500 XP, and built the extensibility argument on it. That was wrong. It
+assumed `attribute_caps` bounded attributes near 30. Those caps are enforced
+**nowhere** — no script, scene or tool reads them; they are dead data carried by
+all 47 races. Attributes are limited only by the cost of the next point.
 
-| set | lowest archetype ceiling | median |
+What is actually enforced is the **skill cap**: level 10, checked in
+`CharacterSystem.upgrade_skill`. So the limit is one-sided.
+
+| absorbs | limit |
+|---|---|
+| skills | hard — a build's prioritised skills, 660 XP each |
+| attributes | none — cost per point rises, and that is all |
+
+Skills an archetype can absorb, by set:
+
+| set | range | median |
 |---|---|---|
-| animal | 2,580 XP | 4,470 |
-| hell | 3,180 XP | 4,470 |
-| hungry ghost | 3,210 XP | 4,500 |
+| animal | 1,320 – 1,980 XP | 1,320 |
+| hell | 660 – 2,640 XP | 1,320 |
+| hungry ghost | 1,320 – 2,640 XP | 1,980 |
 
-**A single enemy saturates at roughly 4,500 XP.** Past that, its budget has
-nowhere to go inside its own build.
+A three-skill build tops out at 1,980 XP of skills. Everything past that goes
+into attributes, which never saturate — one attribute from 10 to 50 costs
+2,460 XP and can keep going.
 
-The design already brushes this. Animal rare band is 1800 × 2.3 = 4,140 party
-XP, and `lone_hunter` puts all of it into one member — at the median ceiling
-already. A hypothetical ×4 band would hand a lone hunter 7,200 XP with about
-3,000 of it unspendable.
+So higher tiers **can** come from bigger multipliers. A 10,000-XP enemy is a
+monster with maxed skills and enormous attributes, not a broken one. Adding
+heroes via `rival_party` remains the better design for variety and for the
+feeling of meeting another party, but it is not the only route upward.
 
-**So higher tiers cannot come from stronger individuals. They come from more
-heroes.** `rival_party` is the mechanism: four heroes at 4,000 XP each is a
-16,000-XP encounter with no individual anywhere near its ceiling. The upward
-ladder is therefore compositional, not numerical:
-
-```
-hero_and_mooks  →  warband  →  foreign_mercs  →  rival_party  →  larger hero bands
-```
-
-This is worth stating plainly because the instinct when adding a harder tier is
-to raise the multiplier, and that is the one direction the system cannot go.
-
-Two things a future higher-tier spec will need to decide, noted but not settled
-here: what happens to unspendable overflow (wider builds beyond the archetype's
-priorities, better equipment, perks and spells, or simply capping the member and
-adding another), and whether attribute caps should lift for heroes.
+The real consequence is elsewhere: **past its skill ceiling, extra XP can only
+become raw attributes**, which is the least interesting kind of power. A
+4,000-XP enemy and an 8,000-XP one differ mostly in numbers, not in what they
+can do. Fixing that means more things to spend XP on — see the XP sinks note in
+`TODO.md` — and it is a player-side problem before it is an enemy-side one.
 
 ## Reward
 

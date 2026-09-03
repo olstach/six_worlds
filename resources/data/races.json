@@ -2067,7 +2067,7 @@
     "mriga": {
       "name": "Mriga",
       "realm": "animal",
-      "description": "They know a clearing is wrong before they can say why, and no one has ever asked them to explain. Everything among them is decided by display: the held ground, the long formal argument of antlers that ends without a wound.",
+      "description": "The feeling of dew on your antlers, the juicy new leaves of spring, the kinship of the herd! It is a good life.",
       "attribute_modifiers": {
         "strength": -1,
         "finesse": 1,
@@ -2099,7 +2099,7 @@
       "reincarnation_weight": 45,
       "typical_backgrounds": [
         "antler_speaker",
-        "migration_singer",
+        "songline_guide",
         "slope_herbalist",
         "scarred_lead",
         "range_reader",
@@ -4388,7 +4388,7 @@
     },
     "antler_speaker": {
       "name": "Antler Speaker",
-      "description": "The clearing belongs to whoever can hold it longest — through display, through stamina, through the formal language of antlers. I know all the vocabulary. The point of the contest is that it ends before anyone is hurt, and whoever understands that best usually wins it.",
+      "description": "The young ones duel for dominance, the mature ones gather the kin with presence and speech.",
       "attribute_modifiers": {
         "charm": 1
       },
@@ -4404,9 +4404,9 @@
       ],
       "weight": 5
     },
-    "migration_singer": {
-      "name": "Migration Singer",
-      "description": "The old trail is walked so long it becomes part of the body, but it is carried in the voice. I sing the route — the water, the crossing, the season it stops being safe — and the herd behind me does not need to have walked it before. A song is the only map that outlives everyone who made it.",
+    "songline_guide": {
+      "name": "Songline Guide",
+      "description": "Listen, how the ancestors ran those paths where we run, how they drank where we drink, how they sang where I sing!",
       "attribute_modifiers": {
         "charm": 1
       },
@@ -4427,7 +4427,7 @@
     },
     "slope_herbalist": {
       "name": "Slope Herbalist",
-      "description": "I know the slope where the bitter herb grows that cures the wasting sickness. I know the clay that draws out poison. The herd comes to me when something goes wrong.",
+      "description": "I know where the bitter herb grows. I know the clay that draws out poison.",
       "attribute_modifiers": {},
       "starting_skills": {
         "medicine": 2,
@@ -4445,7 +4445,7 @@
     },
     "scarred_lead": {
       "name": "Scarred Lead",
-      "description": "The old buck's scars are a curriculum. Every predator that tried and failed left a lesson. The herd follows him toward the safe water. I have been wrong twice. Both times are written on my body where anyone can read them, which is the only reason they still follow me.",
+      "description": "Every carnivore that tried left a mark and a lesson. The crowd follows him towards the safe water.",
       "attribute_modifiers": {},
       "starting_skills": {
         "leadership": 2,
