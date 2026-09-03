@@ -1,6 +1,6 @@
 # Animal Realm — Companions
 
-*40 companions.*
+*41 companions.*
 
 *Edit the prose between the anchors. The stat block under each name is generated; change it in `companions.json` instead.*
 
@@ -235,6 +235,25 @@ guile, unarmed, grace
 
 <!--@ companions.json | khara | flavor_text -->
 The one from the stories. She is aware there are stories, and has opinions about which of them are accurate.
+<!--@end-->
+
+
+## Kruddha  `kruddha`
+
+`birth: rakshasa  ·  background: blood_drinker  ·  traits: hot_tempered, hunter  ·  cost: 1100  ·  fixed_items: ['health_potion']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | kruddha | build_weights -->
+might, guile, black_magic
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | kruddha | flavor_text -->
+Taking such delight in the hunt, in the kill, in the tearing of flesh, must have a downside. But this is for the philosophers to ponder another day.
 <!--@end-->
 
 

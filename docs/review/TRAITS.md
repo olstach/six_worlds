@@ -416,7 +416,7 @@ Forgets nothing that was done to them, and keeps the ledger current.
 
 ## hot_tempered
 
-`stats: charm-1  ·  pressure: water-15  ·  opposed: patient  ·  purged by yoga, ritual 3  ·  on 4 companions`
+`stats: charm-1  ·  pressure: water-15  ·  opposed: patient  ·  purged by yoga, ritual 3  ·  on 5 companions`
 
 **Name**
 
@@ -926,7 +926,7 @@ The farther away you are from your home, the easier it is to see it through rose
 
 ## hunter
 
-`skills: ranged+1  ·  bond: beasts, solitary  ·  opposed: sworn_vegetarian, pet_lover  ·  on 1 companions`
+`skills: ranged+1  ·  bond: beasts, solitary  ·  opposed: sworn_vegetarian, pet_lover  ·  on 2 companions`
 
 **Name**
 

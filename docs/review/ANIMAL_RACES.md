@@ -478,7 +478,7 @@ Ancestor Priest
 **Description**
 
 <!--@ backgrounds.json | ancestor_priest | description -->
-The chiefs and heroes are laid to rest with the trophies of their most glorious hunts, and offered blood mead when the moon is full.
+The chiefs and heroes are laid to rest with the trophies of their most glorious hunts and offered blood mead when the moon is full.
 <!--@end-->
 
 
@@ -535,7 +535,7 @@ Blood Drinker
 **Description**
 
 <!--@ backgrounds.json | blood_drinker | description -->
-This is not their first incarnation in this body, and probably not the last, looking at how they savour the hunt.
+This is not their first incarnation in this body, and probably not the last, looking on how they savour the hunt.
 <!--@end-->
 
 
@@ -1257,7 +1257,7 @@ Realm Walker
 **Description**
 
 <!--@ backgrounds.json | realm_walker | description -->
-He has travelled far, in this world and beyond. He learned a lot, tricked many, and ate quite a few too.
+He has traveled far, in this world and beyond. He learned a lot, tricked many and ate quite a few, too.
 <!--@end-->
 
 
@@ -1580,7 +1580,7 @@ The Sensate
 **Description**
 
 <!--@ backgrounds.json | the_sensate | description -->
-They left the forests for the delights only civilised life can offer, a lifetime ago. Now their prey hides in silks and perfume, and seems rather excited to be hunted.
+They have left the forests for the delights only civilized life can offer, a lifetime ago. Now, their prey hides in silks and perfume, and seems rather excited to be hunted.
 <!--@end-->
 
 

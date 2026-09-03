@@ -2385,6 +2385,43 @@
         "hunter"
       ]
     },
+    "kruddha": {
+      "id": "kruddha",
+      "name": "Kruddha",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "rakshasa",
+      "background": "blood_drinker",
+      "flavor_text": "Taking such delight in the hunt, in the kill, in the tearing of flesh, must have a downside. But this is for the philosophers to ponder another day.",
+      "portrait": "",
+      "recruitment_cost": 1100,
+      "build_weights": {
+        "might": 5,
+        "guile": 4,
+        "black_magic": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "might": 1,
+          "guile": 1,
+          "black_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "health_potion"
+      ],
+      "traits": [
+        "hot_tempered",
+        "hunter"
+      ]
+    },
     "kabandha": {
       "id": "kabandha",
       "name": "Kabandha",
