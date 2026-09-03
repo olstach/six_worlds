@@ -183,24 +183,44 @@ func _check_spending() -> void:
 		expect(attr_total > 70, "budget %d: attributes never rose above baseline" % budget)
 
 	# a build whose skills cap must still absorb the rest into attributes
-	var big: Dictionary = CharacterSystem.create_blank_character()
-	var big_spent: int = CharacterSystem.spend_xp_budget(
-		big, 20000, {"strength": 3}, ["unarmed"])
-	expect(big_spent >= 18000,
-		"20000 budget only absorbed %d — overflow is not reaching attributes" % big_spent)
+	var overflow_c: Dictionary = CharacterSystem.create_blank_character()
+	var overflow_spent: int = CharacterSystem.spend_xp_budget(
+		overflow_c, 20000, {"strength": 3}, ["unarmed"])
+	expect(overflow_spent >= 18000,
+		"20000 budget only absorbed %d — overflow is not reaching attributes" % overflow_spent)
 	print("   spending absorbs its budget at every scale")
 
 	# show the shape of a build at a few budgets, so a reviewer can see whether
 	# the spend produces a character or a pile of numbers
-	for budget in [200, 800, 1800, 4140]:
+	for budget in [200, 800, 1800, 4140, 12000]:
+		var br: float = EnemySystem.breadth_for_budget(budget)
 		var c: Dictionary = CharacterSystem.create_blank_character()
 		var spent: int = CharacterSystem.spend_xp_budget(
 			c, budget, {"strength": 3, "constitution": 2, "finesse": 2},
-			["unarmed", "might", "armor"])
+			["unarmed", "might", "armor"], 0.6, br)
 		var attrs := ""
 		for a in ["strength", "finesse", "constitution", "focus", "awareness", "charm", "luck"]:
 			attrs += "%s%d " % [a.substr(0, 3), int(c["attributes"][a])]
-		print("   %5d XP (spent %5d)  %s | skills %s" % [budget, spent, attrs, c["skills"]])
+		print("   %5d XP (spent %5d, breadth %.2f)  %s" % [budget, spent, br, attrs])
+		print("        skills %s" % [c["skills"]])
+		expect(spent >= int(budget * 0.9), "budget %d spent only %d with breadth" % [budget, spent])
+
+	# breadth must actually broaden: a large budget should lift the attributes
+	# the archetype ignores, and pick up skills off the priority list
+	var big: Dictionary = CharacterSystem.create_blank_character()
+	CharacterSystem.spend_xp_budget(big, 4140, {"strength": 3},
+		["unarmed"], 0.6, EnemySystem.breadth_for_budget(4140))
+	expect(int(big["attributes"]["awareness"]) > 10,
+		"breadth did not lift an unweighted attribute (awareness still 10)")
+	expect(big["skills"].size() > 1,
+		"breadth produced no skills outside the priority list")
+
+	# and a small budget must stay focused
+	var small: Dictionary = CharacterSystem.create_blank_character()
+	CharacterSystem.spend_xp_budget(small, 200, {"strength": 3},
+		["unarmed"], 0.6, EnemySystem.breadth_for_budget(200))
+	expect(int(small["attributes"]["awareness"]) == 10,
+		"a 200 XP enemy should be focused, but awareness rose")
 
 
 func _dump_table() -> void:

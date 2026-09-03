@@ -159,6 +159,20 @@ func _load_budgets() -> void:
 	budgets = json.get_data()
 
 
+## How much of a budget is spent outside the archetype's plan.
+##
+## Zero below the threshold — a small enemy is a specialist — then rising with
+## the budget to a cap, so the bigger an enemy is the rounder it becomes.
+func breadth_for_budget(budget: int) -> float:
+	var cfg: Dictionary = budgets.get("breadth", {})
+	var threshold: float = float(cfg.get("xp_threshold", 300))
+	var scale: float = float(cfg.get("scale", 10000))
+	var cap: float = float(cfg.get("max_fraction", 0.35))
+	if budget <= threshold or scale <= 0.0:
+		return 0.0
+	return clampf((float(budget) - threshold) / scale, 0.0, cap)
+
+
 ## Roll a rarity band, returning its id ("common", "uncommon", "rare").
 func roll_band() -> String:
 	var bands: Array = budgets.get("bands", [])

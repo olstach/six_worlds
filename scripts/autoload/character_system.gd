@@ -351,73 +351,122 @@ func create_blank_character() -> Dictionary:
 	return BASE_CHARACTER.duplicate(true)
 
 
+## Buy skill levels, cheapest next level first, within a budget. Returns spent.
+func _buy_skills(character: Dictionary, priorities: Array, budget: int) -> int:
+	if priorities.is_empty() or budget <= 0:
+		return 0
+	var spent: int = 0
+	var buying := true
+	while buying:
+		buying = false
+		var best_skill := ""
+		var best_cost: int = -1
+		for skill in priorities:
+			var level: int = int(character.get("skills", {}).get(skill, 0))
+			if level >= SKILL_MAX_LEVEL:
+				continue
+			var cost: int = SKILL_COSTS[level + 1]
+			if cost <= budget - spent and (best_cost < 0 or cost < best_cost):
+				best_cost = cost
+				best_skill = String(skill)
+		if best_skill != "":
+			character["skills"][best_skill] = int(character.get("skills", {}).get(best_skill, 0)) + 1
+			spent += best_cost
+			buying = true
+	return spent
+
+
+## Buy attribute points, best weight-per-XP first, within a budget. Returns spent.
+func _buy_attributes(character: Dictionary, weights: Dictionary, budget: int) -> int:
+	if budget <= 0:
+		return 0
+	var weighted: Array[String] = []
+	for attr in weights:
+		if float(weights[attr]) > 0.0:
+			weighted.append(String(attr))
+	if weighted.is_empty():
+		return 0
+	weighted.sort()
+
+	var spent: int = 0
+	var buying := true
+	while buying:
+		buying = false
+		var best_attr := ""
+		var best_ratio: float = -1.0
+		var best_cost: int = 0
+		for attr in weighted:
+			var value: int = int(character.get("attributes", {}).get(attr, 10))
+			var cost: int = calculate_attribute_cost(value, 1)
+			if cost > budget - spent:
+				continue
+			var ratio: float = float(weights[attr]) / float(maxi(cost, 1))
+			if ratio > best_ratio:
+				best_ratio = ratio
+				best_attr = attr
+				best_cost = cost
+		if best_attr != "":
+			character["attributes"][best_attr] = int(character["attributes"][best_attr]) + 1
+			spent += best_cost
+			buying = true
+	return spent
+
+
 ## Spend an XP budget on a character, directed by weights and priorities.
 ##
 ## This is how an enemy is built: through the same cost curves the player pays,
 ## so an enemy's XP total means exactly what a player's does.
 ##
-## Skills are bought first, up to their share, because they hard-cap at
-## SKILL_MAX_LEVEL. Whatever the skills cannot absorb spills into attributes,
-## which have no cap — only a rising cost per point. Returns the XP spent.
+## `breadth` is the fraction spent OUTSIDE the plan — attributes the archetype
+## does not weight, skills off its priority list. Without it a large budget
+## produces three maxed skills and one enormous attribute, with awareness and
+## luck still at 10. With it, a well-fed enemy is a rounder character who picked
+## up something its build would never have chosen.
+##
+## Anything the focused pass cannot spend (skills capped, say) falls through to
+## the breadth pass rather than being returned unspent. Returns the XP spent.
 func spend_xp_budget(character: Dictionary, budget: int, attribute_weights: Dictionary,
-		skill_priorities: Array, attr_share: float = 0.6) -> int:
+		skill_priorities: Array, attr_share: float = 0.6, breadth: float = 0.0,
+		breadth_skill_share: float = 0.5) -> int:
 	if budget <= 0:
 		return 0
+	breadth = clampf(breadth, 0.0, 0.9)
+
+	var breadth_budget: int = int(round(float(budget) * breadth))
+	var focused_budget: int = budget - breadth_budget
 	var spent: int = 0
-	var skill_budget: int = int(round(float(budget) * (1.0 - attr_share)))
 
-	# Skills: repeatedly buy the cheapest next level among the priorities.
-	if not skill_priorities.is_empty():
-		var buying := true
-		while buying:
-			buying = false
-			var best_skill := ""
-			var best_cost: int = -1
-			for skill in skill_priorities:
-				var level: int = int(character.get("skills", {}).get(skill, 0))
-				if level >= SKILL_MAX_LEVEL:
-					continue
-				var cost: int = SKILL_COSTS[level + 1]
-				if cost <= skill_budget - spent and (best_cost < 0 or cost < best_cost):
-					best_cost = cost
-					best_skill = skill
-			if best_skill != "":
-				character["skills"][best_skill] = int(character.get("skills", {}).get(best_skill, 0)) + 1
-				spent += best_cost
-				buying = true
+	# ── the archetype's own plan ──
+	var focus_skill_budget: int = int(round(float(focused_budget) * (1.0 - attr_share)))
+	spent += _buy_skills(character, skill_priorities, focus_skill_budget)
+	spent += _buy_attributes(character, attribute_weights, focused_budget - spent)
 
-	# Attributes: everything left, weighted, best value-per-XP first.
-	var attr_budget: int = budget - spent
-	var attr_spent: int = 0
-	var weighted: Array[String] = []
-	for attr in attribute_weights:
-		if int(attribute_weights[attr]) > 0:
-			weighted.append(String(attr))
-	weighted.sort()
+	# ── everything else: whatever is left, including what the plan could not use ──
+	var remaining: int = budget - spent
+	if remaining > 0:
+		var off_plan_skill_budget: int = int(round(float(remaining) * breadth_skill_share)) \
+			if breadth > 0.0 else 0
 
-	if not weighted.is_empty():
-		var buying_attrs := true
-		while buying_attrs:
-			buying_attrs = false
-			var best_attr := ""
-			var best_ratio: float = -1.0
-			var best_attr_cost: int = 0
-			for attr in weighted:
-				var value: int = int(character.get("attributes", {}).get(attr, 10))
-				var cost: int = calculate_attribute_cost(value, 1)
-				if cost > attr_budget - attr_spent:
-					continue
-				var ratio: float = float(attribute_weights[attr]) / float(maxi(cost, 1))
-				if ratio > best_ratio:
-					best_ratio = ratio
-					best_attr = attr
-					best_attr_cost = cost
-			if best_attr != "":
-				character["attributes"][best_attr] = int(character["attributes"][best_attr]) + 1
-				attr_spent += best_attr_cost
-				buying_attrs = true
+		if off_plan_skill_budget > 0 and PerkSystem:
+			# Two or three skills the build would never have picked, chosen at
+			# random so no two enemies of a type are alike.
+			var pool: Array[String] = []
+			for skill_id in PerkSystem.get_all_skill_ids():
+				if not skill_id in skill_priorities:
+					pool.append(skill_id)
+			pool.shuffle()
+			var picks: Array = pool.slice(0, 2 + (randi() % 2))
+			spent += _buy_skills(character, picks, off_plan_skill_budget)
 
-	spent += attr_spent
+		# The rest into attributes: the weighted ones plus, at breadth, the
+		# neglected ones at a lower weight so they rise without overtaking.
+		var spread: Dictionary = attribute_weights.duplicate()
+		if breadth > 0.0:
+			for attr in character.get("attributes", {}):
+				if not spread.has(attr) or float(spread.get(attr, 0)) <= 0.0:
+					spread[attr] = 0.75
+		spent += _buy_attributes(character, spread, budget - spent)
+
 	update_derived_stats(character)
 	return spent
 

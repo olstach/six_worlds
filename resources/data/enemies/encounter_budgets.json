@@ -19,10 +19,29 @@
   },
   "_comment_bands": "Rolled per encounter. Same common/uncommon/rare vocabulary births use.",
   "bands": [
-    { "id": "common",   "multiplier": 1.0, "weight": 60 },
-    { "id": "uncommon", "multiplier": 1.5, "weight": 30 },
-    { "id": "rare",     "multiplier": 2.3, "weight": 10 }
+    {
+      "id": "common",
+      "multiplier": 1.0,
+      "weight": 60
+    },
+    {
+      "id": "uncommon",
+      "multiplier": 1.5,
+      "weight": 30
+    },
+    {
+      "id": "rare",
+      "multiplier": 2.3,
+      "weight": 10
+    }
   ],
   "_comment_reward": "Fraction of the enemy party's XP the player party gains, before division by party size.",
-  "reward_fraction": 0.12
+  "reward_fraction": 0.12,
+  "_comment_breadth": "Past xp_threshold a growing share of the budget is spent OUTSIDE the archetype's plan — attributes it does not weight, skills off its priority list. Keeps a high-XP enemy from being three maxed skills and one enormous attribute, and makes it memorable: a fighter who also took a class in clay sculpture.",
+  "breadth": {
+    "xp_threshold": 300,
+    "scale": 10000,
+    "max_fraction": 0.35,
+    "skill_share": 0.5
+  }
 }
