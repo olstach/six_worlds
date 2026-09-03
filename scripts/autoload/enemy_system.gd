@@ -1078,9 +1078,13 @@ func _pick_archetype_for_role(role: String, region: String, tier: String = "devi
 		if not role in arch_roles:
 			continue
 
-		# Check region match: archetype's region must be "any" or match the requested region
-		if arch_region != "any" and arch_region != region:
-			continue
+		# Region match. A requested region of "any" or "" means the encounter did
+		# not care — do not filter. Treating "any" as a literal region to match
+		# found nothing at all in the animal realm, where every archetype is
+		# forest, meadow, ocean or sky and none is "any".
+		if region != "" and region != "any":
+			if arch_region != "any" and arch_region != region:
+				continue
 
 		# Don't pick bosses for regular role slots
 		if "boss" in arch_roles:
@@ -1104,11 +1108,27 @@ func _pick_archetype_for_role(role: String, region: String, tier: String = "devi
 
 
 ## Fallback encounter when encounter_id is unknown — 2 generic demon warriors
+## Fallback when an encounter cannot be resolved. Picks an archetype belonging
+## to the realm rather than a hell demon, which used to be hardcoded here and
+## put demons in the animal realm's forest whenever a lookup failed.
 func _generate_fallback_encounter(realm: String = "hell") -> Array[Dictionary]:
 	var base: float = float(budgets.get("realm_base", {}).get(realm, 200))
+
+	var candidates: Array[String] = []
+	for arch_id in archetypes:
+		var a = archetypes[arch_id]
+		if a.get("realm", "") == realm and not "boss" in a.get("roles", []):
+			candidates.append(String(arch_id))
+	candidates.sort()
+	if candidates.is_empty():
+		push_warning("EnemySystem: no fallback archetype for realm '%s'" % realm)
+		return []
+
+	push_warning("EnemySystem: falling back to a generic %s encounter" % realm)
 	var enemies: Array[Dictionary] = []
 	for i in range(2):
-		var enemy = _build_enemy("hell_demon_warrior", int(base * 0.4), realm)
+		var pick: String = candidates[randi() % candidates.size()]
+		var enemy = _build_enemy(pick, int(base * 0.4), realm)
 		if not enemy.is_empty():
 			enemies.append(enemy)
 	return enemies

@@ -244,6 +244,27 @@ func _check_enemies() -> void:
 		by_realm[realm] = int(by_realm.get(realm, 0)) + 1
 	print("   generated every encounter: %s" % [by_realm])
 
+	# Role slots no archetype can fill. Not a code fault — the content simply
+	# lacks an archetype at that region/tier/role — but it silently drops the
+	# encounter to a generic fallback, so it should stay visible.
+	var unfillable: Array[String] = []
+	for eid in EnemySystem.encounters:
+		if eid.begins_with("_"):
+			continue
+		var e: Dictionary = EnemySystem.encounters[eid]
+		if e.get("fixed", false) or e.has("groups"):
+			continue
+		var realm: String = e.get("realm", "")
+		var region: String = String(e.get("region", "any"))
+		var tier: String = String(e.get("tier", "devil"))
+		for role in e.get("roles", {}):
+			if EnemySystem._pick_archetype_for_role(String(role), region, tier, realm) == "":
+				unfillable.append("%s (%s/%s/%s)" % [eid, region, tier, role])
+	if not unfillable.is_empty():
+		print("   %d role slots no archetype can fill:" % unfillable.size())
+		for u in unfillable:
+			print("      %s" % u)
+
 	# authored group encounters must keep their shape: the same member count
 	# every time, and unequal shares between the groups
 	var grouped: String = ""
@@ -355,3 +376,25 @@ func _dump_table() -> void:
 	if not "--table" in OS.get_cmdline_user_args():
 		return
 	print("\n=== ENCOUNTER TABLE ===")
+	for realm in ["hell", "hungry_ghost", "animal", "domain"]:
+		print("\n## %s" % realm)
+		var ids: Array = []
+		for eid in EnemySystem.encounters:
+			if eid.begins_with("_") and true:
+				continue
+			if EnemySystem.encounters[eid].get("realm", "") == realm:
+				ids.append(eid)
+		ids.sort()
+		for eid in ids:
+			var party: Array = EnemySystem.generate_encounter(eid, "", realm)
+			if party.is_empty():
+				continue
+			var total: int = 0
+			for e in party:
+				total += int(e.get("xp_earned", 0))
+			var line := "  %-32s %d members %6d XP  " % [eid, party.size(), total]
+			for e in party:
+				line += "[%s %s %d%s] " % [
+					e.get("birth", "?"), e.get("archetype_id", "?"),
+					int(e.get("xp_earned", 0)), " HERO" if e.get("is_hero", false) else ""]
+			print(line)
