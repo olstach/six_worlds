@@ -14,6 +14,7 @@ var failures: int = 0
 func _ready() -> void:
 	_check_budgets()
 	_check_resolution()
+	_check_composition()
 	_dump_table()
 	if failures > 0:
 		printerr("VERIFY FAILED: %d problem(s)" % failures)
@@ -112,6 +113,45 @@ func _check_resolution() -> void:
 			boss_found += 1
 	expect(boss_found > 0, "no encounter derived a boss tier — derivation is not working")
 	print("   encounters resolving to boss tier: %d" % boss_found)
+
+
+func _check_composition() -> void:
+	print("-- party composition --")
+	if not _has(EnemySystem, "party_archetypes"):
+		fail("EnemySystem has no `party_archetypes` property")
+		return
+	expect(not EnemySystem.party_archetypes.is_empty(), "party_archetypes is empty")
+
+	var seen_templates := {}
+	for band in ["common", "uncommon", "rare"]:
+		for i in range(600):
+			var members: Array = EnemySystem.roll_party_composition(band)
+			expect(members.size() > 0, "band '%s' produced an empty party" % band)
+			var heroes := 0
+			var top := 0
+			for m in members:
+				expect(int(m.get("share", 0)) > 0, "member with non-positive share")
+				top = maxi(top, int(m.get("share", 0)))
+				if m.get("is_hero", false):
+					heroes += 1
+			# a hero is the strict top share, the sole member, or an all_heroes party
+			if heroes > 0 and heroes < members.size():
+				var at_top := 0
+				for m in members:
+					if int(m["share"]) == top:
+						at_top += 1
+				expect(at_top == 1 and heroes == 1,
+					"band '%s': %d heroes with %d tied for top share" % [band, heroes, at_top])
+			seen_templates[band] = int(seen_templates.get(band, 0)) + members.size()
+
+	# gated templates must never appear at common: swarm caps at 8, and the
+	# gated ones are the only way to exceed the ungated size range
+	for i in range(3000):
+		var members: Array = EnemySystem.roll_party_composition("common")
+		expect(members.size() <= 8, "common band produced %d members" % members.size())
+		for m in members:
+			expect(int(m["share"]) <= 3, "common band produced share %d" % int(m["share"]))
+	print("   composition ok across all three bands")
 
 
 func _dump_table() -> void:

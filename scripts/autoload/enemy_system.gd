@@ -18,6 +18,9 @@ var name_parts: Dictionary = {}   # prefixes, roots, suffixes for procedural nam
 ## fraction. An encounter's party XP is realm_base * tier * band.
 var budgets: Dictionary = {}
 
+## Party composition templates: member counts and relative XP shares.
+var party_archetypes: Dictionary = {}
+
 # Spell database reference (loaded from spells.json)
 var all_spells: Dictionary = {}
 
@@ -43,6 +46,103 @@ const ARMOR_LOADOUTS: Dictionary = {
 	"medium": [["chest", "armor"], ["head", "helmet"], ["legs", "pants"],   ["feet", "boots"]],
 	"heavy":  [["chest", "armor"], ["head", "helmet"], ["legs", "greaves"], ["feet", "boots"], ["hand_l", "gauntlets"]]
 }
+
+
+## Band names weakest-first, for gating templates by encounter rarity.
+const BAND_ORDER: Array[String] = ["common", "uncommon", "rare"]
+
+
+func _load_party_composition() -> void:
+	var path := "res://resources/data/enemies/party_composition.json"
+	if not FileAccess.file_exists(path):
+		push_error("EnemySystem: party_composition.json not found")
+		return
+	var f := FileAccess.open(path, FileAccess.READ)
+	var json := JSON.new()
+	if json.parse(f.get_as_text()) != OK:
+		push_error("EnemySystem: party_composition.json parse error - " + json.get_error_message())
+		return
+	f.close()
+	for key in json.get_data().get("party_archetypes", {}):
+		if key.begins_with("_"):
+			continue
+		party_archetypes[key] = json.get_data()["party_archetypes"][key]
+
+
+## Templates available at this band. A gated template is removed from the pool
+## entirely and the remaining weights renormalise, rather than being rerolled.
+func _eligible_party_archetypes(band: String) -> Array[String]:
+	var band_rank: int = BAND_ORDER.find(band)
+	var out: Array[String] = []
+	for key in party_archetypes:
+		var min_band: String = party_archetypes[key].get("min_band", "common")
+		if BAND_ORDER.find(min_band) <= band_rank:
+			out.append(key)
+	out.sort()
+	return out
+
+
+## Choose a party template and expand it into one entry per member.
+## Returns [{"share": int, "is_hero": bool}, ...]
+func roll_party_composition(band: String) -> Array[Dictionary]:
+	var eligible: Array[String] = _eligible_party_archetypes(band)
+	if eligible.is_empty():
+		return [{"share": 1, "is_hero": true}]
+
+	var total: int = 0
+	for key in eligible:
+		total += int(party_archetypes[key].get("weight", 0))
+
+	var chosen: String = eligible[0]
+	if total > 0:
+		var roll: int = randi() % total
+		var cumulative: int = 0
+		for key in eligible:
+			cumulative += int(party_archetypes[key].get("weight", 0))
+			if roll < cumulative:
+				chosen = key
+				break
+
+	var template: Dictionary = party_archetypes[chosen]
+	var members: Array[Dictionary] = []
+	for tier in template.get("tiers", []):
+		var span: Array = tier.get("count", [1, 1])
+		var lo: int = int(span[0])
+		var hi: int = int(span[1]) if span.size() > 1 else lo
+		var n: int = lo + (randi() % maxi(1, hi - lo + 1))
+		for i in range(n):
+			members.append({"share": int(tier.get("share", 1)), "is_hero": false})
+
+	if members.is_empty():
+		members.append({"share": 1, "is_hero": true})
+
+	_mark_heroes(members, template)
+	return members
+
+
+## A member is a hero when its template says all members are, when it is the
+## sole member, or when it strictly out-shares every other member. Rule three
+## alone would give a rival_party no heroes at all, since its members are equal.
+func _mark_heroes(members: Array[Dictionary], template: Dictionary) -> void:
+	if template.get("all_heroes", false):
+		for m in members:
+			m["is_hero"] = true
+		return
+	if members.size() == 1:
+		members[0]["is_hero"] = true
+		return
+
+	var top: int = 0
+	for m in members:
+		top = maxi(top, int(m["share"]))
+	var at_top: int = 0
+	for m in members:
+		if int(m["share"]) == top:
+			at_top += 1
+	if at_top == 1:
+		for m in members:
+			if int(m["share"]) == top:
+				m["is_hero"] = true
 
 
 func _load_budgets() -> void:
@@ -130,6 +230,7 @@ func resolve_party_budget(encounter_id: String, realm: String) -> Dictionary:
 
 func _ready() -> void:
 	_load_budgets()
+	_load_party_composition()
 	# Scan the enemies directory so every realm's data loads automatically
 	# (hell, hungry_ghost, animal, domain, and any future realm files).
 	var enemies_dir = "res://resources/data/enemies/"
