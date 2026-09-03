@@ -173,6 +173,73 @@ func breadth_for_budget(budget: int) -> float:
 	return clampf((float(budget) - threshold) / scale, 0.0, cap)
 
 
+## Weapon skill -> the weapon_bases type that skill actually wields.
+## Mirrors CombatUnit._get_weapon_skill_name, read the other way round.
+const SKILL_TO_WEAPON: Dictionary = {
+	"swords": ["sword"],
+	"daggers": ["dagger"],
+	"axes": ["axe"],
+	"maces": ["mace", "club"],
+	"spears": ["spear", "javelin"],
+	"ranged": ["bow", "crossbow"],
+	"martial_arts": ["staff"],
+}
+
+## Skills that imply carrying a tool of the trade rather than a weapon.
+const SKILL_TO_KIT: Dictionary = {
+	"medicine": ["healing_herb", "herb_bundle"],
+	"alchemy": ["raw_reagents"],
+	"trade": ["rations"],
+	"logistics": ["rations"],
+}
+
+
+## The weapon types this character has actually trained for, best skill first.
+## An archetype's template is the fallback, not the authority: a build that came
+## out with ranged 8 should be holding a bow whatever its template says.
+## Returns [{"type": String, "skill": String, "level": int}, ...], best first.
+## Empty when the character has trained no weapon skill at all — a caster, say,
+## who should keep whatever its archetype hands it.
+func _weapon_types_for_skills(skills: Dictionary) -> Array[Dictionary]:
+	var ranked: Array[Dictionary] = []
+	for skill in SKILL_TO_WEAPON:
+		var level: int = int(skills.get(skill, 0))
+		if level > 0:
+			var options: Array = SKILL_TO_WEAPON[skill]
+			ranked.append({
+				"type": String(options[randi() % options.size()]),
+				"skill": String(skill),
+				"level": level})
+	ranked.sort_custom(func(a, b): return int(a["level"]) > int(b["level"]))
+	return ranked
+
+
+## Everyday things a character of this budget would be carrying: food, and a
+## tool for whatever non-combat skill they are best at. Cheap, mostly
+## inconsequential, and the reason a corpse reads as someone who lived somewhere.
+func _generate_everyday_items(skills: Dictionary, xp_budget: int) -> Array:
+	var out: Array = []
+
+	# Food, in rough proportion to how established the character is.
+	var rations: int = clampi(int(round(float(xp_budget) / 600.0)), 0, 4)
+	if rations > 0:
+		out.append({"item_id": "rations", "quantity": rations})
+
+	# The best non-combat skill puts a tool of its trade in their pack.
+	var best_skill := ""
+	var best_level: int = 0
+	for skill in SKILL_TO_KIT:
+		var level: int = int(skills.get(skill, 0))
+		if level > best_level:
+			best_level = level
+			best_skill = skill
+	if best_skill != "" and best_level >= 2:
+		var options: Array = SKILL_TO_KIT[best_skill]
+		out.append({"item_id": String(options[randi() % options.size()]), "quantity": 1})
+
+	return out
+
+
 ## Roll a rarity band, returning its id ("common", "uncommon", "rare").
 func roll_band() -> String:
 	var bands: Array = budgets.get("bands", [])
@@ -533,6 +600,8 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 
 	# Generate consumable inventory, then merge any archetype-guaranteed items
 	var inventory = _generate_enemy_inventory(archetype, effective_budget)
+	for everyday in _generate_everyday_items(skills, xp_budget):
+		inventory.append(everyday)
 	for item in archetype.get("starting_inventory", []):
 		inventory.append(item)
 
@@ -563,11 +632,25 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 			"stats": {"damage": 2, "accuracy": 4, "range": 1}
 		}
 	else:
-		var weapon_type = equipment.get("weapon_type", "sword")
+		# What the character trained for wins over what the archetype template
+		# says. A build that came out with ranged 8 carries a bow.
+		var trained: Array[Dictionary] = _weapon_types_for_skills(skills)
+		var weapon_type: String = String(trained[0]["type"]) if not trained.is_empty() \
+			else String(equipment.get("weapon_type", "sword"))
+
 		var gen_id = ItemSystem.generate_weapon(weapon_type, item_rarity, "", "", realm)
 		if gen_id != "":
 			equipped_weapon = ItemSystem.get_item(gen_id)
 			inventory.append({"item_id": gen_id, "quantity": 1})
+
+			# A second set, when a second weapon skill is genuinely trained and
+			# the character is worth enough to have afforded it. Carried rather
+			# than wielded — it is a spare, and it drops.
+			if trained.size() > 1 and xp_budget >= 600 and int(trained[1]["level"]) >= 3:
+				var spare_id = ItemSystem.generate_weapon(
+					String(trained[1]["type"]), item_rarity, "", "", realm)
+				if spare_id != "":
+					inventory.append({"item_id": spare_id, "quantity": 1})
 		else:
 			# Fallback if ItemSystem unavailable
 			equipped_weapon = {

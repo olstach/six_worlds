@@ -19,6 +19,7 @@ func _ready() -> void:
 	_check_enemies()
 	_check_heroes()
 	_check_reward()
+	_check_equipment()
 	_dump_table()
 	if failures > 0:
 		printerr("VERIFY FAILED: %d problem(s)" % failures)
@@ -370,6 +371,58 @@ func _check_reward() -> void:
 		var total := int(round(float(xp) * fraction))
 		print("   %s common (%d XP): party gains %d — solo %d, each of four %d"
 			% [pair[0], xp, total, total, int(total / 4.0)])
+
+
+func _check_equipment() -> void:
+	print("-- equipment --")
+	var mismatches := 0
+	var checked := 0
+	var with_food := 0
+	var with_spare := 0
+
+	for eid in EnemySystem.encounters:
+		if eid.begins_with("_"):
+			continue
+		var realm: String = EnemySystem.encounters[eid].get("realm", "animal")
+		for e in EnemySystem.generate_encounter(eid, "", realm):
+			var w: Dictionary = e.get("equipped_weapon", {})
+			var wtype: String = String(w.get("type", ""))
+			if wtype == "" or wtype == "unarmed":
+				continue
+			checked += 1
+
+			# the wielded weapon must match a weapon skill the character has
+			var skill_for := ""
+			for skill in EnemySystem.SKILL_TO_WEAPON:
+				if wtype in EnemySystem.SKILL_TO_WEAPON[skill]:
+					skill_for = String(skill)
+			# Only a fault when the character HAS weapon skills and is still
+			# holding something else. A caster with no weapon training keeps
+			# whatever its archetype hands it, which is correct.
+			var has_any_weapon_skill := false
+			for sk in EnemySystem.SKILL_TO_WEAPON:
+				if int(e.get("skills", {}).get(sk, 0)) > 0:
+					has_any_weapon_skill = true
+			if has_any_weapon_skill and skill_for != "" \
+					and int(e.get("skills", {}).get(skill_for, 0)) == 0:
+				mismatches += 1
+
+			var weapons := 0
+			for entry in e.get("inventory", []):
+				var iid: String = String(entry.get("item_id", ""))
+				if iid == "rations":
+					with_food += 1
+				var item: Dictionary = ItemSystem.get_item(iid)
+				if String(item.get("slot", "")).begins_with("weapon"):
+					weapons += 1
+			if weapons > 1:
+				with_spare += 1
+
+	expect(checked > 0, "no armed enemies generated")
+	expect(mismatches == 0,
+		"%d of %d armed enemies carry a weapon they have no skill for" % [mismatches, checked])
+	print("   %d armed enemies: 0 skill mismatches, %d carry food, %d carry a spare weapon"
+		% [checked, with_food, with_spare])
 
 
 func _dump_table() -> void:
