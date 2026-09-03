@@ -248,6 +248,22 @@ Recorded so they aren't rediscovered as bugs.
 
 ### 2026-08-31 — from the enemy-XP design session
 
+- **Non-combat equipment kits as a broad concept.** The basis now exists: 40
+  skill tools across eight skills, five tiers each, carried in the weapon hand
+  the way a ritual focus is. Ritual clothing already exists too — the ngakpa
+  robes, five tiers across five elements — but only serves magic.
+
+  The obvious extension is craft clothing in the `chest` slot, so a
+  practitioner could carry a tool *and* wear their trade: a physician's apron,
+  a performer's coat, a smith's leathers. Roughly 40 more items.
+
+  **Not to be done quickly.** The open question is what the bonuses should
+  actually do. A flat +N to a skill is fine for one item, but a full kit —
+  tool plus clothing plus accessory — stacks into a large number, and it is not
+  obvious that a non-combat character should get a bigger total than a combat
+  one gets from weapon plus armour. Wants a deliberate pass over how
+  non-combat bonuses scale and interact before adding more of them.
+
 - **Six encounters have role slots no archetype can fill.** They drop to a
   generic fallback. `tools/verify_enemy_xp.tscn` lists them on every run:
 
