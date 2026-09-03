@@ -111,7 +111,8 @@ func roll_party_composition(band: String) -> Array[Dictionary]:
 		var hi: int = int(span[1]) if span.size() > 1 else lo
 		var n: int = lo + (randi() % maxi(1, hi - lo + 1))
 		for i in range(n):
-			members.append({"share": int(tier.get("share", 1)), "is_hero": false})
+			members.append({"share": int(tier.get("share", 1)), "is_hero": false,
+				"disposition": String(template.get("disposition", "hostile"))})
 
 	if members.is_empty():
 		members.append({"share": 1, "is_hero": true})
@@ -555,6 +556,10 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 
 	var budget: Dictionary = resolve_party_budget(encounter_id, realm)
 	var party_xp: int = int(budget["xp"])
+
+	# Whether meeting this party opens a fight or a conversation. The encounter
+	# has the final word; otherwise the party archetype decides.
+	var party_disposition: String = String(template.get("disposition", "hostile"))
 	var enc_region: String = template.get("region", "any")
 	var effective_region: String = region if region != "" else enc_region
 
@@ -588,6 +593,8 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 	else:
 		# Plain role encounter: the party archetype decides size and shares.
 		var members: Array[Dictionary] = roll_party_composition(String(budget["band"]))
+		if not members.is_empty():
+			party_disposition = String(members[0].get("disposition", party_disposition))
 		var role_pool: Array[String] = []
 		for role in template.get("roles", {}):
 			for i in range(int(template["roles"][role])):
@@ -604,6 +611,9 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 
 	# Resolve each slot to an archetype before splitting the budget, so the
 	# hero can be chosen by threat where the composition was authored.
+	if template.has("disposition"):
+		party_disposition = String(template["disposition"])
+
 	var family: Array[String] = _encounter_family_tokens(encounter_id)
 	for slot in slots:
 		if not slot.has("archetype"):
@@ -626,6 +636,7 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 		var enemy = _build_enemy(String(slot["archetype"]), member_xp, realm,
 			String(slot.get("region", effective_region)), bool(slot.get("is_hero", false)))
 		if not enemy.is_empty():
+			enemy["disposition"] = party_disposition
 			enemies.append(enemy)
 
 	if enemies.is_empty():
@@ -1408,5 +1419,6 @@ func _generate_fallback_encounter(realm: String = "hell") -> Array[Dictionary]:
 		var pick: String = candidates[randi() % candidates.size()]
 		var enemy = _build_enemy(pick, int(base * 0.4), realm)
 		if not enemy.is_empty():
+			enemy["disposition"] = "hostile"
 			enemies.append(enemy)
 	return enemies

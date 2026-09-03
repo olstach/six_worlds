@@ -301,6 +301,34 @@ func _check_enemies() -> void:
 		"only %d of %d named encounters contained their namesake" % [honoured, named])
 	print("   %d/%d named encounters contain their namesake" % [honoured, named])
 
+	# every enemy must carry a known disposition, and a party must agree with itself
+	var disp_counts := {}
+	var split_parties := 0
+	for eid in EnemySystem.encounters:
+		if eid.begins_with("_"):
+			continue
+		var realm2: String = EnemySystem.encounters[eid].get("realm", "animal")
+		var party: Array = EnemySystem.generate_encounter(eid, "", realm2)
+		var seen := {}
+		for member in party:
+			var disp: String = String(member.get("disposition", ""))
+			expect(disp in ["hostile", "wary", "neutral"],
+				"%s: member has disposition '%s'" % [eid, disp])
+			disp_counts[disp] = int(disp_counts.get(disp, 0)) + 1
+			seen[disp] = true
+		if seen.size() > 1:
+			split_parties += 1
+	expect(split_parties == 0, "%d parties disagreed with themselves about disposition" % split_parties)
+
+	# the two encounters authored as neutral must actually come out neutral
+	for eid in ["animal_mriga_herd", "animal_kapota_flock"]:
+		if EnemySystem.encounters.has(eid):
+			var party: Array = EnemySystem.generate_encounter(eid, "", "animal")
+			if not party.is_empty():
+				expect(String(party[0].get("disposition", "")) == "neutral",
+					"%s should be neutral, got '%s'" % [eid, party[0].get("disposition", "")])
+	print("   dispositions: %s" % [disp_counts])
+
 	# Role slots no archetype can fill. Not a code fault — the content simply
 	# lacks an archetype at that region/tier/role — but it silently drops the
 	# encounter to a generic fallback, so it should stay visible.
