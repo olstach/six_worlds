@@ -7,15 +7,24 @@
       "roles": {
         "frontline": 2
       },
-      "difficulty_range": [0.8, 1.0]
+      "difficulty_range": [
+        0.8,
+        1.0
+      ]
     },
     "animal_naga_sorcerer": {
       "_comment": "Lone caster — opens with water/space magic, retreats behind the warrior",
       "region": "ocean",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_naga_sorcerer", "count": 1},
-        {"archetype": "animal_naga_warrior", "count": 1}
+        {
+          "archetype": "animal_naga_sorcerer",
+          "count": 1
+        },
+        {
+          "archetype": "animal_naga_warrior",
+          "count": 1
+        }
       ]
     },
     "animal_naga_court": {
@@ -23,8 +32,14 @@
       "region": "ocean",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_naga_sorcerer", "count": 1},
-        {"archetype": "animal_naga_warrior", "count": 2}
+        {
+          "archetype": "animal_naga_sorcerer",
+          "count": 1
+        },
+        {
+          "archetype": "animal_naga_warrior",
+          "count": 2
+        }
       ]
     },
     "animal_karka_pair": {
@@ -33,15 +48,24 @@
       "roles": {
         "frontline": 2
       },
-      "difficulty_range": [0.85, 1.05]
+      "difficulty_range": [
+        0.85,
+        1.05
+      ]
     },
     "animal_karka_vent": {
       "_comment": "Karka guarding a thermal vent — one heavy frontliner, one support crusher",
       "region": "ocean",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_karka_guardian", "count": 1},
-        {"archetype": "animal_karka_crusher", "count": 1}
+        {
+          "archetype": "animal_karka_guardian",
+          "count": 1
+        },
+        {
+          "archetype": "animal_karka_crusher",
+          "count": 1
+        }
       ]
     },
     "animal_matsya_school": {
@@ -51,15 +75,24 @@
       "roles": {
         "skirmisher": 4
       },
-      "difficulty_range": [0.4, 0.6]
+      "difficulty_range": [
+        0.4,
+        0.6
+      ]
     },
     "animal_matsya_ambush": {
       "_comment": "Matsya with a current-rider laying down water suppression",
       "region": "ocean",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_matsya_hunter", "count": 2},
-        {"archetype": "animal_matsya_shoal", "count": 2}
+        {
+          "archetype": "animal_matsya_hunter",
+          "count": 2
+        },
+        {
+          "archetype": "animal_matsya_shoal",
+          "count": 2
+        }
       ]
     },
     "animal_makara_titan": {
@@ -69,15 +102,24 @@
       "roles": {
         "frontline": 1
       },
-      "difficulty_range": [1.2, 1.5]
+      "difficulty_range": [
+        1.2,
+        1.5
+      ]
     },
     "animal_makara_with_guard": {
       "_comment": "A makara escorted by matsya — the current-rider positions the attack",
       "region": "ocean",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_makara_titan", "count": 1},
-        {"archetype": "animal_makara_current", "count": 1}
+        {
+          "archetype": "animal_makara_titan",
+          "count": 1
+        },
+        {
+          "archetype": "animal_makara_current",
+          "count": 1
+        }
       ]
     },
     "animal_ocean_mixed": {
@@ -87,13 +129,24 @@
       "groups": [
         {
           "tier": "devil",
-          "roles": {"frontline": 1, "caster": 1},
-          "difficulty_range": [0.8, 1.0]
+          "roles": {
+            "frontline": 1,
+            "caster": 1
+          },
+          "difficulty_range": [
+            0.8,
+            1.0
+          ]
         },
         {
           "tier": "shade",
-          "roles": {"skirmisher": 3},
-          "difficulty_range": [0.35, 0.5]
+          "roles": {
+            "skirmisher": 3
+          },
+          "difficulty_range": [
+            0.35,
+            0.5
+          ]
         }
       ]
     },
@@ -105,15 +158,24 @@
         "frontline": 1,
         "support": 1
       },
-      "difficulty_range": [0.85, 1.1]
+      "difficulty_range": [
+        0.85,
+        1.1
+      ]
     },
     "animal_yaksha_circle": {
       "_comment": "Yaksha shaman directing a guardian — territorial challenge",
       "region": "meadow",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_yaksha_guardian", "count": 2},
-        {"archetype": "animal_yaksha_shaman", "count": 1}
+        {
+          "archetype": "animal_yaksha_guardian",
+          "count": 2
+        },
+        {
+          "archetype": "animal_yaksha_shaman",
+          "count": 1
+        }
       ]
     },
     "animal_dura_soldiers": {
@@ -123,15 +185,24 @@
         "frontline": 2,
         "skirmisher": 1
       },
-      "difficulty_range": [0.75, 0.95]
+      "difficulty_range": [
+        0.75,
+        0.95
+      ]
     },
     "animal_dura_burrower_encounter": {
       "_comment": "Hard — burrower teleports to flank while soldiers hold the line",
       "region": "meadow",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_dura_soldier", "count": 2},
-        {"archetype": "animal_dura_burrower", "count": 1}
+        {
+          "archetype": "animal_dura_soldier",
+          "count": 2
+        },
+        {
+          "archetype": "animal_dura_burrower",
+          "count": 1
+        }
       ]
     },
     "animal_khadga_lone": {
@@ -140,15 +211,24 @@
       "roles": {
         "frontline": 1
       },
-      "difficulty_range": [1.1, 1.4]
+      "difficulty_range": [
+        1.1,
+        1.4
+      ]
     },
     "animal_khadga_pair": {
       "_comment": "Two khadga — rare but devastating charge encounter",
       "region": "meadow",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_khadga_blade", "count": 1},
-        {"archetype": "animal_khadga_ambusher", "count": 1}
+        {
+          "archetype": "animal_khadga_blade",
+          "count": 1
+        },
+        {
+          "archetype": "animal_khadga_ambusher",
+          "count": 1
+        }
       ]
     },
     "animal_bhramara_cloud": {
@@ -158,7 +238,10 @@
         "skirmisher": 3,
         "support": 1
       },
-      "difficulty_range": [0.4, 0.6]
+      "difficulty_range": [
+        0.4,
+        0.6
+      ]
     },
     "animal_bhramara_with_soldier": {
       "_comment": "Soldier anchors while drones swarm",
@@ -167,13 +250,23 @@
       "groups": [
         {
           "tier": "devil",
-          "roles": {"frontline": 1},
-          "difficulty_range": [0.85, 1.0]
+          "roles": {
+            "frontline": 1
+          },
+          "difficulty_range": [
+            0.85,
+            1.0
+          ]
         },
         {
           "tier": "shade",
-          "roles": {"skirmisher": 3},
-          "difficulty_range": [0.35, 0.5]
+          "roles": {
+            "skirmisher": 3
+          },
+          "difficulty_range": [
+            0.35,
+            0.5
+          ]
         }
       ]
     },
@@ -184,15 +277,24 @@
         "skirmisher": 3,
         "caster": 1
       },
-      "difficulty_range": [0.35, 0.55]
+      "difficulty_range": [
+        0.35,
+        0.55
+      ]
     },
     "animal_patanga_ascetic_encounter": {
       "_comment": "Ascetic with a seeker escort — the ascetic may be neutral depending on approach",
       "region": "meadow",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_patanga_ascetic", "count": 1},
-        {"archetype": "animal_patanga_seeker", "count": 2}
+        {
+          "archetype": "animal_patanga_ascetic",
+          "count": 1
+        },
+        {
+          "archetype": "animal_patanga_seeker",
+          "count": 2
+        }
       ]
     },
     "animal_meadow_mixed": {
@@ -202,13 +304,24 @@
       "groups": [
         {
           "tier": "devil",
-          "roles": {"frontline": 1, "support": 1},
-          "difficulty_range": [0.8, 1.0]
+          "roles": {
+            "frontline": 1,
+            "support": 1
+          },
+          "difficulty_range": [
+            0.8,
+            1.0
+          ]
         },
         {
           "tier": "shade",
-          "roles": {"skirmisher": 2},
-          "difficulty_range": [0.35, 0.5]
+          "roles": {
+            "skirmisher": 2
+          },
+          "difficulty_range": [
+            0.35,
+            0.5
+          ]
         }
       ]
     },
@@ -220,14 +333,20 @@
       "roles": {
         "skirmisher": 1
       },
-      "difficulty_range": [1.0, 1.3]
+      "difficulty_range": [
+        1.0,
+        1.3
+      ]
     },
     "animal_rakshasa_maneater_encounter": {
       "_comment": "Boss-tier rakshasa alone — the maneater does not need help",
       "region": "forest",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_rakshasa_maneater", "count": 1}
+        {
+          "archetype": "animal_rakshasa_maneater",
+          "count": 1
+        }
       ]
     },
     "animal_varaha_sounder": {
@@ -237,15 +356,24 @@
         "frontline": 2,
         "support": 1
       },
-      "difficulty_range": [0.8, 1.0]
+      "difficulty_range": [
+        0.8,
+        1.0
+      ]
     },
     "animal_varaha_elder_encounter": {
       "_comment": "Varaha elder leads a sounder — elder uses earth magic support",
       "region": "forest",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_varaha_elder", "count": 1},
-        {"archetype": "animal_varaha_charger", "count": 2}
+        {
+          "archetype": "animal_varaha_elder",
+          "count": 1
+        },
+        {
+          "archetype": "animal_varaha_charger",
+          "count": 2
+        }
       ]
     },
     "animal_marjara_ambush": {
@@ -253,8 +381,14 @@
       "region": "forest",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_marjara_stalker", "count": 1},
-        {"archetype": "animal_marjara_ambusher", "count": 1}
+        {
+          "archetype": "animal_marjara_stalker",
+          "count": 1
+        },
+        {
+          "archetype": "animal_marjara_ambusher",
+          "count": 1
+        }
       ]
     },
     "animal_marjara_lone": {
@@ -263,7 +397,10 @@
       "roles": {
         "skirmisher": 1
       },
-      "difficulty_range": [0.95, 1.2]
+      "difficulty_range": [
+        0.95,
+        1.2
+      ]
     },
     "animal_gana_wolves": {
       "region": "forest",
@@ -273,15 +410,49 @@
         "skirmisher": 2,
         "support": 1
       },
-      "difficulty_range": [0.75, 0.95]
+      "difficulty_range": [
+        0.75,
+        0.95
+      ]
+    },
+    "animal_mriga_herd": {
+      "_comment": "Grazing herd — usually neutral, dangerous only if pressed",
+      "region": "forest",
+      "tier": "shade",
+      "roles": {
+        "frontline": 4
+      },
+      "difficulty_range": [
+        0.3,
+        0.5
+      ]
+    },
+    "animal_mriga_stags": {
+      "_comment": "Rutting bucks holding a clearing; sentinels on the edge",
+      "region": "forest",
+      "tier": "devil",
+      "roles": {
+        "frontline": 2,
+        "skirmisher": 2
+      },
+      "difficulty_range": [
+        0.75,
+        0.95
+      ]
     },
     "animal_gana_full_pack": {
       "_comment": "Runner leads, howler provides enchantment cover",
       "region": "forest",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_gana_howler", "count": 1},
-        {"archetype": "animal_gana_runner", "count": 2}
+        {
+          "archetype": "animal_gana_howler",
+          "count": 1
+        },
+        {
+          "archetype": "animal_gana_runner",
+          "count": 2
+        }
       ]
     },
     "animal_vanara_troop": {
@@ -291,15 +462,24 @@
         "skirmisher": 3,
         "support": 1
       },
-      "difficulty_range": [0.5, 0.7]
+      "difficulty_range": [
+        0.5,
+        0.7
+      ]
     },
     "animal_vanara_elder_encounter": {
       "_comment": "Elder holds back, skirmishers pressure — elder uses white/earth magic if engaged",
       "region": "forest",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_vanara_elder", "count": 1},
-        {"archetype": "animal_vanara_skirmisher", "count": 2}
+        {
+          "archetype": "animal_vanara_elder",
+          "count": 1
+        },
+        {
+          "archetype": "animal_vanara_skirmisher",
+          "count": 2
+        }
       ]
     },
     "animal_forest_mixed": {
@@ -309,13 +489,23 @@
       "groups": [
         {
           "tier": "devil",
-          "roles": {"skirmisher": 1},
-          "difficulty_range": [1.0, 1.2]
+          "roles": {
+            "skirmisher": 1
+          },
+          "difficulty_range": [
+            1.0,
+            1.2
+          ]
         },
         {
           "tier": "devil",
-          "roles": {"skirmisher": 1},
-          "difficulty_range": [0.85, 1.05]
+          "roles": {
+            "skirmisher": 1
+          },
+          "difficulty_range": [
+            0.85,
+            1.05
+          ]
         }
       ]
     },
@@ -325,7 +515,10 @@
       "region": "forest",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_shyena_stooper", "count": 2}
+        {
+          "archetype": "animal_shyena_stooper",
+          "count": 2
+        }
       ]
     },
     "animal_shyena_lord": {
@@ -335,15 +528,24 @@
       "roles": {
         "frontline": 1
       },
-      "difficulty_range": [1.05, 1.3]
+      "difficulty_range": [
+        1.05,
+        1.3
+      ]
     },
     "animal_shyena_with_stooper": {
       "_comment": "Lord and two stoopers — aerial formation, attacks in sequence",
       "region": "meadow",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_shyena_lord", "count": 1},
-        {"archetype": "animal_shyena_stooper", "count": 2}
+        {
+          "archetype": "animal_shyena_lord",
+          "count": 1
+        },
+        {
+          "archetype": "animal_shyena_stooper",
+          "count": 2
+        }
       ]
     },
     "animal_uluka_watch": {
@@ -353,14 +555,20 @@
         "caster": 1,
         "support": 1
       },
-      "difficulty_range": [0.85, 1.1]
+      "difficulty_range": [
+        0.85,
+        1.1
+      ]
     },
     "animal_uluka_omen_encounter": {
       "_comment": "Omen alone — rare, high-threat. Uses black magic and debuffs.",
       "region": "meadow",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_uluka_omen", "count": 1}
+        {
+          "archetype": "animal_uluka_omen",
+          "count": 1
+        }
       ]
     },
     "animal_kapota_flock": {
@@ -370,7 +578,10 @@
       "roles": {
         "skirmisher": 4
       },
-      "difficulty_range": [0.3, 0.5]
+      "difficulty_range": [
+        0.3,
+        0.5
+      ]
     },
     "_comment_shared": "=== SHARED — appear across zones ===",
     "animal_any_predator": {
@@ -380,7 +591,10 @@
       "roles": {
         "skirmisher": 1
       },
-      "difficulty_range": [0.9, 1.1]
+      "difficulty_range": [
+        0.9,
+        1.1
+      ]
     },
     "animal_any_swarm": {
       "_comment": "Generic swarm — shade-tier insects or small creatures",
@@ -389,7 +603,10 @@
       "roles": {
         "skirmisher": 3
       },
-      "difficulty_range": [0.35, 0.55]
+      "difficulty_range": [
+        0.35,
+        0.55
+      ]
     },
     "animal_convergence": {
       "_comment": "Rare multi-faction encounter at zone borders — predator plus prey in uneasy company",
@@ -398,13 +615,24 @@
       "groups": [
         {
           "tier": "devil",
-          "roles": {"frontline": 1, "skirmisher": 1},
-          "difficulty_range": [0.9, 1.1]
+          "roles": {
+            "frontline": 1,
+            "skirmisher": 1
+          },
+          "difficulty_range": [
+            0.9,
+            1.1
+          ]
         },
         {
           "tier": "shade",
-          "roles": {"skirmisher": 2},
-          "difficulty_range": [0.4, 0.55]
+          "roles": {
+            "skirmisher": 2
+          },
+          "difficulty_range": [
+            0.4,
+            0.55
+          ]
         }
       ]
     },
@@ -413,8 +641,14 @@
       "region": "forest",
       "fixed": true,
       "enemies": [
-        {"archetype": "animal_rakshasa_maneater", "count": 1},
-        {"archetype": "animal_varaha_elder", "count": 2}
+        {
+          "archetype": "animal_rakshasa_maneater",
+          "count": 1
+        },
+        {
+          "archetype": "animal_varaha_elder",
+          "count": 2
+        }
       ]
     }
   }
