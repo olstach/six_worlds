@@ -82,7 +82,7 @@ water_magic, medicine, daggers
 **Flavor Text**
 
 <!--@ companions.json | dhvanika | flavor_text -->
-Grey at the muzzle and slower than she was. Still the last one you want across a fire from you, and she knows it.
+She may be old, but she is far from senile — a glint in her eye, and in the knife she keeps half hidden.
 <!--@end-->
 
 
@@ -158,7 +158,7 @@ armor, swords, spears
 **Flavor Text**
 
 <!--@ companions.json | ghoshaka | flavor_text -->
-Born on a city wall a long way from any forest, and paid up as of last spring. Walking to a homeland he has only ever been told about.
+Born on a city wall a long way from any forest, and paid up as of last spring. Now he has come to the homeland of his ancestors for the first time in his life.
 <!--@end-->
 
 
@@ -215,7 +215,7 @@ comedy, space_magic, guile
 **Flavor Text**
 
 <!--@ companions.json | nadaka | flavor_text -->
-Was always a strange kid. Still is, only funnier about it, and nobody has yet got underneath the joke to see what is holding it up.
+They were always a strange kid, unnerving others unable to figure out what it is that they really think, behind all those jokes and evasion.
 <!--@end-->
 
 
@@ -348,7 +348,7 @@ fire_magic, sorcery, yoga
 **Flavor Text**
 
 <!--@ companions.json | sphotana | flavor_text -->
-Dreamed the lair burning and woke to find it was. Nobody has explained it to him either. He walks well away from the sleeping now.
+He woke from a nightmare to see his lair and his fur on fire, spreading from the dream into the world through his eyes and his breath. Now exiled, Sphotana seeks a way to contain his gifts.
 <!--@end-->
 
 
