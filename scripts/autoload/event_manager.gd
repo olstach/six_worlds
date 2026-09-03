@@ -85,6 +85,9 @@ func _load_event_file(path: String) -> void:
 
 	var count = 0
 	for event_id in data.events:
+		# Skip "_comment_*" section dividers — same convention the other data loaders use
+		if event_id.begins_with("_"):
+			continue
 		var event = data.events[event_id]
 		event["id"] = event_id  # Ensure id matches key
 		event_database[event_id] = event

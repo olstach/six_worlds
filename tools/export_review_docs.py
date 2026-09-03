@@ -613,12 +613,8 @@ def _name_block(lines, source, record, field_base, value, label):
 LABELS = {
     "naming_philosophy": "How this birth names",
     "parent_wishes": "Parent wishes",
-    "parent_wishes_wolf": "Parent wishes — wolf",
-    "parent_wishes_deer": "Parent wishes — deer",
     "personal_names": "Personal names",
     "place_names": "Place names",
-    "place_names_wolf": "Place names — wolf",
-    "place_names_deer": "Place names — deer",
     "named_places": "Named places",
 }
 

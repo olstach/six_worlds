@@ -208,8 +208,8 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 					if archetype_id == "":
 						push_warning("EnemySystem: No archetype for role '%s' tier '%s' in '%s'" % [role, group_tier, group_region])
 						continue
-					var difficulty = randf_range(diff_min, diff_max)
-					var enemy = _build_enemy(archetype_id, party_power * difficulty, realm, group_region)
+					var diff_roll = randf_range(diff_min, diff_max)
+					var enemy = _build_enemy(archetype_id, party_power * diff_roll, realm, group_region)
 					if not enemy.is_empty():
 						enemies.append(enemy)
 
@@ -234,8 +234,8 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 					continue
 
 				# Random difficulty within range
-				var difficulty = randf_range(diff_min, diff_max)
-				var enemy = _build_enemy(archetype_id, party_power * difficulty, realm, effective_region)
+				var diff_roll = randf_range(diff_min, diff_max)
+				var enemy = _build_enemy(archetype_id, party_power * diff_roll, realm, effective_region)
 				if not enemy.is_empty():
 					enemies.append(enemy)
 

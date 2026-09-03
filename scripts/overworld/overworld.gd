@@ -372,7 +372,7 @@ func _record_healing_location(event_id: String, object: Dictionary) -> void:
 	var ev: Dictionary = EventManager.event_database.get(event_id, {})
 	if ev.is_empty():
 		return
-	var is_healing := ev.get("safe_camp", false)
+	var is_healing: bool = ev.get("safe_camp", false)
 	if not is_healing:
 		for ch in ev.get("choices", []):
 			if ch.get("outcome", {}).get("type", "") == "shop":

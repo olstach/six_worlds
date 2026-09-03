@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cshop1ui2scene"]
 
 [ext_resource type="Script" path="res://scripts/ui/shop_ui.gd" id="1_shop"]
-[ext_resource type="Theme" uid="uid://cbtjc5bhbqyxo" path="res://resources/themes/tibetan_theme.tres" id="2_theme"]
+[ext_resource type="Theme" path="res://resources/themes/tibetan_theme.tres" id="2_theme"]
 
 [node name="ShopUI" type="Control"]
 layout_mode = 3

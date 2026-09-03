@@ -1,6 +1,6 @@
 # Six Worlds — TODO
 
-**Last updated:** 2026-07-27 (rewritten as a live document)
+**Last updated:** 2026-08-31
 
 This file was an append-only log for a long time and had grown to the point
 where finished work outweighed the remaining work three to one. It is now
@@ -245,6 +245,27 @@ immunity from undead hits), `stubborn_body` (Con 15+, +1 to all
 ## 8. Deferred by decision
 
 Recorded so they aren't rediscovered as bugs.
+
+### 2026-08-31 — from the enemy-XP design session
+
+Spec: `docs/superpowers/specs/2026-08-31-enemy-xp-generation-design.md`
+
+- **Character development past the individual XP ceiling** — an archetype
+  saturates around 4,500 XP (skills cap at 10, attributes near 30; measured
+  lowest 2,580 on `animal_dura_soldier`, median ~4,470 across all four
+  archetype sets). Higher encounter tiers therefore have to add *heroes*, not
+  raise multipliers. Ways to develop a character beyond the ceiling are wanted
+  eventually — wider builds past the archetype's priorities, perks and spells,
+  better equipment, or lifting caps for heroes.
+- **Loot division** — post-battle XP now divides among party members; items do
+  not, because they are indivisible and the party shares an inventory. Left
+  deliberately asymmetric; revisit if party size feels wrong.
+- **A visual tell for high-band encounters** — party archetypes let `swarm`
+  (5–8 members) and `lone_hunter` (1) occur at the same XP budget, so the
+  player can no longer read danger off the number of enemies on screen. Some
+  other signal may be wanted.
+- **Gana attribute caps** — set by hand during the predator/herbivore split to
+  match the new daggers-and-unarmed lean; never reviewed against play.
 
 - **`Dominated` full enemy control** — the puppet loses its turns; real control
   needs a player-drives-an-enemy-unit UI flow

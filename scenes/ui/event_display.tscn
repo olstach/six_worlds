@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cqhp2kv8yn5b1"]
 
 [ext_resource type="Script" path="res://scripts/ui/event_display.gd" id="1_event"]
-[ext_resource type="Theme" uid="uid://cbtjc5bhbqyxo" path="res://resources/themes/tibetan_theme.tres" id="2_theme"]
+[ext_resource type="Theme" path="res://resources/themes/tibetan_theme.tres" id="2_theme"]
 
 [node name="EventDisplay" type="Control"]
 layout_mode = 3
