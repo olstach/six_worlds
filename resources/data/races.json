@@ -636,7 +636,8 @@
         "palace_vizier",
         "sea_dancer",
         "wreck_gleaner",
-        "tide_seer"
+        "tide_seer",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -680,7 +681,8 @@
         "caravan_guard",
         "still_hunter",
         "pollen_rishi",
-        "meadow_ward"
+        "meadow_ward",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1251,7 +1253,8 @@
         "far_scout",
         "honey_alchemist",
         "caravan_guard",
-        "swarm_caller"
+        "swarm_caller",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1292,7 +1295,8 @@
         "wreck_gleaner",
         "current_herald",
         "vent_warden",
-        "keel_rider"
+        "keel_rider",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1335,7 +1339,8 @@
         "sea_dancer",
         "deep_hunter",
         "wreck_gleaner",
-        "current_herald"
+        "current_herald",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1379,7 +1384,8 @@
         "palace_vizier",
         "deep_hunter",
         "wreck_gleaner",
-        "boundary_walker"
+        "boundary_walker",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1422,7 +1428,8 @@
         "tunneler",
         "tunnel_merchant",
         "root_shaper",
-        "shell_wright"
+        "shell_wright",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1463,7 +1470,8 @@
         "caravan_guard",
         "still_hunter",
         "blade_contemplative",
-        "jaina"
+        "jaina",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1505,7 +1513,8 @@
       "typical_backgrounds": [
         "far_scout",
         "flame_seeker",
-        "pollen_rishi"
+        "pollen_rishi",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1544,7 +1553,8 @@
         "lord_of_the_range",
         "the_hungry",
         "maneater",
-        "hedonist"
+        "hedonist",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1584,7 +1594,8 @@
         "old_tusk",
         "sounder_guard",
         "mycelium_tender",
-        "sounder_matron"
+        "sounder_matron",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1626,7 +1637,8 @@
         "cache_master",
         "canopy_ambush",
         "forest_drifter",
-        "hedonist"
+        "hedonist",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1644,7 +1656,7 @@
     "gana": {
       "name": "Gana",
       "realm": "animal",
-      "description": "Alone, a middling thing with good teeth. Together, the only creature in the forest that hunts by conversation — and among themselves the argument is always settled by voice long before it is settled by throat.",
+      "description": "Alone, a middling thing with good teeth. Together, nothing in the forest outruns us.",
       "attribute_modifiers": {
         "strength": 1,
         "finesse": 2,
@@ -1666,10 +1678,10 @@
       "starting_spells": [],
       "reincarnation_weight": 45,
       "typical_backgrounds": [
-        "throat_hold",
+        "strangler",
         "quiet_tooth",
-        "ceremonial_dancer",
-        "herb_walker",
+        "bonfire_dancer",
+        "herbalist",
         "elder_voice",
         "range_reader",
         "forest_singer"
@@ -1716,7 +1728,8 @@
         "slope_herbalist",
         "scarred_lead",
         "range_reader",
-        "forest_singer"
+        "forest_singer",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1758,7 +1771,8 @@
         "shrine_keeper",
         "jugaad",
         "forest_thief",
-        "treetop_wit"
+        "treetop_wit",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1799,7 +1813,8 @@
       "typical_backgrounds": [
         "sky_lord",
         "stooper",
-        "jessed_hawk"
+        "jessed_hawk",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1844,7 +1859,8 @@
         "post_runner",
         "temple_dove",
         "conference_pilgrim",
-        "waypoint_gossip"
+        "waypoint_gossip",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1888,7 +1904,8 @@
       "typical_backgrounds": [
         "night_scholar",
         "ill_omen",
-        "fortune_seeker"
+        "fortune_seeker",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -3628,7 +3645,7 @@
     },
     "range_reader": {
       "name": "Range Reader",
-      "description": "Every clearing is a risk and a reward. I go first, I go last, reading every edge for the colour that doesn't belong, the shadow that holds still while the leaves move. The herd waits for my signal. The pack waits for my report. The skill is the same either way.",
+      "description": "When I run, I am eyes, I am ears, I am heart. I notice the colour that does not belong, the shadow that holds still while the leaves move.",
       "attribute_modifiers": {
         "awareness": 1
       },
@@ -3642,9 +3659,9 @@
       ],
       "weight": 5
     },
-    "ceremonial_dancer": {
-      "name": "Ceremonial Dancer",
-      "description": "In the long cold the pack makes a circle and calls to the dark until something answers. I am the one who knows when to start and when the call is complete.",
+    "bonfire_dancer": {
+      "name": "Bonfire Dancer",
+      "description": "These? They make a clinking sound when I move, and these here are to reflect lights and sparkle, and this one is —",
       "attribute_modifiers": {},
       "starting_skills": {
         "performance": 1,
@@ -3652,26 +3669,44 @@
         "persuasion": 1
       },
       "available_races": [
-        "gana"
+        "gana",
+        "mriga"
       ],
       "weight": 4
     },
-    "herb_walker": {
-      "name": "Herb Walker",
-      "description": "The old female eats grass when ill, slows for the lame elk, reads the forest not for the kill but for the whole. The pack follows her medicine more than her speed.",
+    "herbalist": {
+      "name": "Herbalist",
+      "description": "The forest speaks of cures and poisons, if you know how to listen. When you break a branch, you see little. They see the weather, time, soil, animals and fungi, spirits and the dead.",
       "attribute_modifiers": {},
       "starting_skills": {
         "medicine": 2,
         "earth_magic": 1
       },
       "available_races": [
-        "gana"
+        "bhramara",
+        "dura",
+        "gana",
+        "kapota",
+        "karka",
+        "khadga",
+        "makara",
+        "marjara",
+        "matsya",
+        "mriga",
+        "naga",
+        "patanga",
+        "rakshasa",
+        "shyena",
+        "uluka",
+        "vanara",
+        "varaha",
+        "yaksha"
       ],
       "weight": 4
     },
     "elder_voice": {
       "name": "Elder Voice",
-      "description": "The alpha doesn't lead by being fastest or most violent. The alpha leads because the pack has tested every alternative and this one keeps them fed.",
+      "description": "Not the fastest, not the strongest, but the one who can keep the pack alive the longest.",
       "attribute_modifiers": {},
       "starting_skills": {
         "leadership": 2,
@@ -4048,9 +4083,9 @@
       ],
       "weight": 5
     },
-    "throat_hold": {
-      "name": "Throat Hold",
-      "description": "There is one grip and it does not take strength — only the patience to wait for the angle and the willingness to take it when it comes. The pack brings the animal down. I am what happens after it is down. Nobody thanks me for that and I have stopped expecting them to.",
+    "strangler": {
+      "name": "Strangler",
+      "description": "At first it takes strength to grip so tightly. In time it becomes patience.",
       "attribute_modifiers": {
         "strength": 1
       },
@@ -4068,7 +4103,7 @@
     },
     "quiet_tooth": {
       "name": "Quiet Tooth",
-      "description": "A knife is a tooth you can put down, which makes it better than a tooth. I work the edges of things — the straggler, the unwatched cache, the sentry who has been awake too long. The pack sings. I am the reason the singing works, and I do it from somewhere behind you.",
+      "description": "A tooth is a knife that is always with you, quick and quiet when you spot a straggler, a weakling, one lost.",
       "attribute_modifiers": {
         "finesse": 1
       },

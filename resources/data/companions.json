@@ -2429,7 +2429,7 @@
       "zone": "forest",
       "birth": "gana",
       "background": "elder_voice",
-      "flavor_text": "The one the pack looks at before it does anything. She has never given an order in her life; she simply yawns at the right moment and the argument ends.",
+      "flavor_text": "She has never given an order; she yawns at the right moment and the argument ends. Now, greater challenges await her and the pack is fretful to see her go.",
       "portrait": "",
       "recruitment_cost": 900,
       "build_weights": {
@@ -2465,8 +2465,8 @@
       "realm": "animal",
       "zone": "forest",
       "birth": "gana",
-      "background": "herb_walker",
-      "flavor_text": "Walks the ridge lines gathering what grows there and treating whatever she finds hurt. Charges nothing and accepts everything, which balances out about as badly as you would expect.",
+      "background": "herbalist",
+      "flavor_text": "Gathers what grows on the ridge and treats whatever she finds hurt. Charges nothing, accepts everything, and so today again she went to sleep on an empty stomach.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {

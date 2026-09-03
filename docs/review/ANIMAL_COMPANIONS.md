@@ -1,6 +1,6 @@
 # Animal Realm — Companions
 
-*26 companions.*
+*32 companions.*
 
 *Edit the prose between the anchors. The stat block under each name is generated; change it in `companions.json` instead.*
 
@@ -26,6 +26,25 @@ thievery, learning, trade
 
 <!--@ companions.json | brihannala | flavor_text -->
 Retired from leading a troop of sixty and now collects stolen objects and unlikely stories with equal enthusiasm. Will trade you either for something you don't know.
+<!--@end-->
+
+
+## Chapala  `chapala`
+
+`birth: mriga  ·  background: spy  ·  traits: flirt, gossip  ·  cost: 800  ·  fixed_items: ['copper_ring']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | chapala | build_weights -->
+daggers, trade, performance
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | chapala | flavor_text -->
+Born between two wheels on a road nobody names. Prices everything, respects nothing, and is already somewhere else.
 <!--@end-->
 
 
@@ -63,7 +82,7 @@ ranged, persuasion, leadership
 **Flavor Text**
 
 <!--@ companions.json | dirghajihva | flavor_text -->
-The one the pack looks at before it does anything. She has never given an order in her life; she simply yawns at the right moment and the argument ends.
+She has never given an order; she yawns at the right moment and the argument ends. Now, greater challenges await her and the pack is fretful to see her go.
 <!--@end-->
 
 
@@ -101,7 +120,26 @@ performance, grace, persuasion
 **Flavor Text**
 
 <!--@ companions.json | enakshi | flavor_text -->
-Has held the clearing eleven seasons running and has never once had to touch anyone to do it. Will explain the distinction at length, unprompted, to people who did not ask and are trying to leave.
+Has held the clearing eleven seasons running and has never once had to touch anyone to do it.
+<!--@end-->
+
+
+## Himasara  `himasara`
+
+`birth: mriga  ·  background: merchant  ·  traits: scrimper, iron_stomach  ·  cost: 800  ·  fixed_items: ['healing_moss', 'healing_moss', 'rations']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | himasara | build_weights -->
+trade, medicine, spears
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | himasara | flavor_text -->
+Comes down from the snow every second season with moss, antler-glue and prices. Has never once been cold in your presence and finds your fire excessive.
 <!--@end-->
 
 
@@ -121,6 +159,25 @@ medicine, earth_magic, alchemy
 
 <!--@ companions.json | kandali | flavor_text -->
 Cultivates the fungal network under nine acres of forest floor and speaks about it the way other people speak about family. Do not step on the nine-year patch.
+<!--@end-->
+
+
+## Nayanika  `nayanika`
+
+`birth: mriga  ·  background: reveler  ·  traits: attractive, secret_bearer  ·  cost: 950  ·  fixed_items: ['silver_ring', 'travelers_amulet']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | nayanika | build_weights -->
+enchantment, performance, yoga
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | nayanika | flavor_text -->
+Taken young, sold south, came back in silk with rings on every point. Holds your eye a moment past comfortable. Answers nothing.
 <!--@end-->
 
 
@@ -164,7 +221,7 @@ Can build anything out of anything given an afternoon and no supervision. Every 
 
 ## Saramaya  `saramaya`
 
-`birth: gana  ·  background: herb_walker  ·  traits: generous, trusting  ·  cost: 700  ·  fixed_items: ['herb_bundle', 'healing_herb']`
+`birth: gana  ·  background: herbalist  ·  traits: generous, trusting  ·  cost: 700  ·  fixed_items: ['herb_bundle', 'healing_herb']`
 
 
 **Skills** *(strongest first)*
@@ -177,7 +234,26 @@ medicine, white_magic, earth_magic
 **Flavor Text**
 
 <!--@ companions.json | saramaya | flavor_text -->
-Walks the ridge lines gathering what grows there and treating whatever she finds hurt. Charges nothing and accepts everything, which balances out about as badly as you would expect.
+Gathers what grows on the ridge and treats whatever she finds hurt. Charges nothing, accepts everything, and so today again she went to sleep on an empty stomach.
+<!--@end-->
+
+
+## Sarangi  `sarangi`
+
+`birth: mriga  ·  background: scholar  ·  traits: ascetic, tea_ritualist  ·  cost: 1000  ·  fixed_items: ['prayer_beads', 'herb_bundle']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | sarangi | build_weights -->
+earth_magic, white_magic, alchemy
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | sarangi | flavor_text -->
+Comes back to the same meadow every dozen years for the tea and the grass, in that order. Remembers the meadow better than the meadow remembers itself.
 <!--@end-->
 
 
@@ -196,7 +272,45 @@ leadership, persuasion, logistics
 **Flavor Text**
 
 <!--@ companions.json | shrutidhara | flavor_text -->
-Led the herd along the old trail for thirty years and got it wrong twice, which she will tell you about before she tells you anything else. Walks at the back now, where she can see everyone.
+Wrong twice in thirty years, and she will tell you about both before she tells you her name. Walks at the back now, where she can see everyone.
+<!--@end-->
+
+
+## Trinavati  `trinavati`
+
+`birth: mriga  ·  background: slope_herbalist  ·  traits: warm_hearted, early_riser  ·  cost: 700  ·  fixed_items: ['herb_bundle', 'healing_herb']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | trinavati | build_weights -->
+medicine, earth_magic, white_magic
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | trinavati | flavor_text -->
+Knows the slope, the clay, and which of the two you need. Will not be hurried down a mountain.
+<!--@end-->
+
+
+## Vishanin  `vishanin`
+
+`birth: mriga  ·  background: antler_speaker  ·  traits: brave, braggart  ·  cost: 750  ·  fixed_items: ['lucky_charm']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | vishanin | build_weights -->
+unarmed, might, grace
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | vishanin | flavor_text -->
+Met a boar head-on once and has been dining out on it since. The scar is real. So, annoyingly, is the boar's.
 <!--@end-->
 
 

@@ -1,13 +1,13 @@
 # Animal Realm — Bestiary
 
-*34 archetypes across 42 encounter templates. The name is what the player sees over the enemy's head; the note beneath it is a design comment and never appears in game.*
+*37 archetypes across 44 encounter templates. The name is what the player sees over the enemy's head; the note beneath it is a design comment and never appears in game.*
 
 *Edit names and notes between the anchors. Everything else — tier, roles, resistances — is generated from `animal_archetypes.json`.*
 
 ---
 
 
-# Region: forest  (10)
+# Region: forest  (13)
 
 
 ## Gana Howler  `animal_gana_howler`
@@ -95,6 +95,63 @@ Marjara Stalker
 
 <!--@ animal_archetypes.json | animal_marjara_stalker | _comment -->
 Flanking predator; grace perks give evasion while repositioning; attacks from unexpected angles
+<!--@end-->
+
+
+## Mriga Herd  `animal_mriga_herd`
+
+`tier: imp  ·  roles: frontline  ·  ai: pack_bonus  ·  skills: grace  ·  threat ×0.6`
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_mriga_herd | name -->
+Mriga Herd
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_mriga_herd | _comment -->
+Individually harmless. A stampede is not a fight, it is weather.
+<!--@end-->
+
+
+## Mriga Sentinel  `animal_mriga_sentinel`
+
+`tier: shade  ·  roles: skirmisher  ·  ai: pack_bonus  ·  skills: grace, ranged  ·  threat ×0.8`
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_mriga_sentinel | name -->
+Mriga Sentinel
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_mriga_sentinel | _comment -->
+Watches the edge and calls the alarm. Hard to hit, hard to corner, and never fights alone by choice.
+<!--@end-->
+
+
+## Mriga Stag  `animal_mriga_stag`
+
+`tier: devil  ·  roles: frontline  ·  skills: unarmed, might  ·  threat ×1.0`
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_mriga_stag | name -->
+Mriga Stag
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_mriga_stag | _comment -->
+Rutting-season buck; charges anything that does not concede the ground. Antlers count as unarmed.
 <!--@end-->
 
 
