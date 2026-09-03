@@ -116,6 +116,9 @@ var resistances: Dictionary = {
 }
 
 # Character data reference (from CharacterSystem or enemy definition)
+## Gold, from the thangka palette — heroes are named in it.
+const HERO_NAME_COLOR: Color = Color(0.87, 0.72, 0.33)
+
 var character_data: Dictionary = {}
 
 # Visual components
@@ -224,12 +227,15 @@ func _create_visuals() -> void:
 	health_bar_fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(health_bar_fill)
 
-	# Name label — procedural/personal name, bright white
+	# Name label — procedural/personal name, bright white. Heroes are named in
+	# gold: a hero carries a much larger share of the party's XP than the mooks
+	# beside it, and nothing else on screen says so.
 	name_label = Label.new()
 	name_label.text = unit_name
 	name_label.position = Vector2(-UNIT_SIZE.x / 2, UNIT_SIZE.y / 2 + 2)
 	name_label.add_theme_font_size_override("font_size", 10)
-	name_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
+	name_label.add_theme_color_override("font_color",
+		HERO_NAME_COLOR if character_data.get("is_hero", false) else Color(1.0, 1.0, 1.0))
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.custom_minimum_size.x = UNIT_SIZE.x
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE

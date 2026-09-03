@@ -392,10 +392,15 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 	var slots: Array[Dictionary] = []
 
 	if template.get("fixed", false):
-		# Authored exactly: the archetype list is the composition.
+		# Authored exactly: the archetype list is the composition. Shares come
+		# from each archetype's own tier, so a boss is worth more than the
+		# honour guard standing beside it rather than an equal quarter.
 		for entry in template.get("enemies", []):
+			var aid: String = String(entry.get("archetype", ""))
+			var a_tier: String = String(archetypes.get(aid, {}).get("tier", "devil"))
+			var a_share: int = maxi(1, TIER_ORDER.find(a_tier) + 1)
 			for i in range(int(entry.get("count", 1))):
-				slots.append({"archetype": String(entry.get("archetype", "")), "share": 1})
+				slots.append({"archetype": aid, "share": a_share})
 
 	elif template.has("groups"):
 		# Authored shape: each group is a share tier, so a screen of chaff in
@@ -470,22 +475,22 @@ func _mark_authored_hero(slots: Array[Dictionary], template: Dictionary) -> void
 	var top_share: int = 0
 	for slot in slots:
 		top_share = maxi(top_share, int(slot["share"]))
-	var best: int = -1
-	var best_threat: float = -1.0
+
+	var top_index: int = -1
 	var contenders: int = 0
 	for i in range(slots.size()):
-		if int(slots[i]["share"]) != top_share:
-			continue
-		contenders += 1
-		var t: float = float(archetypes.get(String(slots[i]["archetype"]), {}).get("threat_multiplier", 1.0))
-		if t > best_threat:
-			best_threat = t
-			best = i
+		if int(slots[i]["share"]) == top_share:
+			contenders += 1
+			top_index = i
+
 	for slot in slots:
 		slot["is_hero"] = false
-	# Only crown one when the top share is not shared by the whole party.
-	if best >= 0 and contenders < slots.size():
-		slots[best]["is_hero"] = true
+	# Only one member can be the hero, and only by strictly out-sharing every
+	# other. Two equal heavies are two heavies, not a hero and a subordinate —
+	# they would be indistinguishable in play, and their XP differs only by the
+	# rounding of what each happened to spend.
+	if contenders == 1 and top_index >= 0:
+		slots[top_index]["is_hero"] = true
 
 
 ## Build one enemy as a character: roll a birth and a background, apply their

@@ -17,6 +17,7 @@ func _ready() -> void:
 	_check_composition()
 	_check_spending()
 	_check_enemies()
+	_check_heroes()
 	_dump_table()
 	if failures > 0:
 		printerr("VERIFY FAILED: %d problem(s)" % failures)
@@ -265,6 +266,66 @@ func _check_enemies() -> void:
 		expect(xps.size() > 1 and xps[0] != xps[-1],
 			"authored group encounter '%s' split its budget evenly — tiers were not honoured" % grouped)
 		print("   authored groups preserved (%s: fixed size, uneven shares %s)" % [grouped, xps])
+
+
+func _check_heroes() -> void:
+	print("-- heroes --")
+	var parties := 0
+	var with_hero := 0
+	var hero_share_ok := true
+	for eid in EnemySystem.encounters:
+		if eid.begins_with("_"):
+			continue
+		var realm: String = EnemySystem.encounters[eid].get("realm", "animal")
+		for i in range(6):
+			var party: Array = EnemySystem.generate_encounter(eid, "", realm)
+			if party.is_empty():
+				continue
+			parties += 1
+			var ids := {}
+			var hero_xp := 0
+			var mook_max := 0
+			var heroes := 0
+			for e in party:
+				if e.get("is_hero", false):
+					heroes += 1
+					expect(String(e.get("hero_id", "")) != "", "hero with empty hero_id in %s" % eid)
+					expect(not ids.has(e["hero_id"]), "duplicate hero_id in one party (%s)" % eid)
+					ids[e["hero_id"]] = true
+					hero_xp = maxi(hero_xp, int(e.get("xp_earned", 0)))
+				else:
+					mook_max = maxi(mook_max, int(e.get("xp_earned", 0)))
+			if heroes > 0:
+				with_hero += 1
+				# a lone hero must be worth more than any mook beside it
+				if heroes == 1 and party.size() > 1 and hero_xp < mook_max:
+					if hero_share_ok:
+						printerr("   first offender: %s hero_xp=%d mook_max=%d size=%d"
+							% [eid, hero_xp, mook_max, party.size()])
+						for e in party:
+							printerr("      %s xp=%d hero=%s" % [
+								e.get("archetype_id", "?"), int(e.get("xp_earned", 0)),
+								e.get("is_hero", false)])
+					hero_share_ok = false
+	expect(parties > 0, "no parties generated")
+	expect(with_hero > 0, "no party ever produced a hero")
+	expect(hero_share_ok, "a hero was worth less XP than a mook beside it")
+	print("   %d/%d parties carried a hero" % [with_hero, parties])
+
+	# a boss encounter must crown its boss, not one of the honour guard
+	if EnemySystem.encounters.has("animal_boss_simha_king"):
+		var boss_party: Array = EnemySystem.generate_encounter(
+			"animal_boss_simha_king", "forest", "animal")
+		var line := ""
+		var crowned := ""
+		for e in boss_party:
+			line += "%s(%d)%s " % [e.get("archetype_id", "?"), int(e.get("xp_earned", 0)),
+				"*" if e.get("is_hero", false) else ""]
+			if e.get("is_hero", false):
+				crowned = String(e.get("archetype_id", ""))
+		print("   simha king: %s" % line)
+		expect(crowned == "animal_rakshasa_maneater",
+			"boss encounter crowned '%s' rather than the maneater" % crowned)
 
 
 func _dump_table() -> void:
