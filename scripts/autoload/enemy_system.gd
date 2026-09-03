@@ -14,6 +14,10 @@ var archetypes: Dictionary = {}   # archetype_id -> archetype definition
 var encounters: Dictionary = {}   # encounter_id -> encounter template
 var name_parts: Dictionary = {}   # prefixes, roots, suffixes for procedural naming
 
+## Encounter budget tables: realm bases, tier multipliers, rarity bands, reward
+## fraction. An encounter's party XP is realm_base * tier * band.
+var budgets: Dictionary = {}
+
 # Spell database reference (loaded from spells.json)
 var all_spells: Dictionary = {}
 
@@ -41,7 +45,91 @@ const ARMOR_LOADOUTS: Dictionary = {
 }
 
 
+func _load_budgets() -> void:
+	var path := "res://resources/data/enemies/encounter_budgets.json"
+	if not FileAccess.file_exists(path):
+		push_error("EnemySystem: encounter_budgets.json not found")
+		return
+	var f := FileAccess.open(path, FileAccess.READ)
+	var json := JSON.new()
+	if json.parse(f.get_as_text()) != OK:
+		push_error("EnemySystem: encounter_budgets.json parse error - " + json.get_error_message())
+		return
+	f.close()
+	budgets = json.get_data()
+
+
+## Roll a rarity band, returning its id ("common", "uncommon", "rare").
+func roll_band() -> String:
+	var bands: Array = budgets.get("bands", [])
+	if bands.is_empty():
+		return "common"
+	var total: int = 0
+	for band in bands:
+		total += int(band.get("weight", 0))
+	if total <= 0:
+		return "common"
+	var roll: int = randi() % total
+	var cumulative: int = 0
+	for band in bands:
+		cumulative += int(band.get("weight", 0))
+		if roll < cumulative:
+			return String(band.get("id", "common"))
+	return String(bands[0].get("id", "common"))
+
+
+func _band_multiplier(band_id: String) -> float:
+	for band in budgets.get("bands", []):
+		if String(band.get("id", "")) == band_id:
+			return float(band.get("multiplier", 1.0))
+	return 1.0
+
+
+## Tier order, weakest first. Used to derive a tier for encounters that carry none.
+const TIER_ORDER: Array[String] = ["imp", "beast", "shade", "devil", "boss"]
+
+
+## The tier an encounter counts as.
+##
+## Only 48 of 117 encounters carry a top-level `tier`; every `fixed` and
+## `groups` one has none. Defaulting those to devil would silently flatten
+## every boss fight to ordinary difficulty, so the tier is derived from the
+## content instead — the strongest archetype or group in the encounter.
+func resolve_encounter_tier(template: Dictionary) -> String:
+	if template.has("tier"):
+		return String(template["tier"])
+
+	var best: int = -1
+	if template.get("fixed", false):
+		for entry in template.get("enemies", []):
+			var aid: String = entry.get("archetype", "")
+			var t: String = archetypes.get(aid, {}).get("tier", "devil")
+			best = maxi(best, TIER_ORDER.find(t))
+	for group in template.get("groups", []):
+		best = maxi(best, TIER_ORDER.find(String(group.get("tier", "devil"))))
+
+	if best < 0:
+		push_warning("EnemySystem: cannot derive a tier for an encounter, using devil")
+		return "devil"
+	return TIER_ORDER[best]
+
+
+## Total XP the enemy party is built from: realm_base * tier * band.
+## Absolute per realm — it does not track the player's own XP.
+func resolve_party_budget(encounter_id: String, realm: String) -> Dictionary:
+	var template: Dictionary = encounters.get(encounter_id, {})
+	var tier: String = resolve_encounter_tier(template)
+	var band: String = roll_band()
+
+	var base: float = float(budgets.get("realm_base", {}).get(realm, 200))
+	var tier_mult: float = float(budgets.get("tier_multipliers", {}).get(tier, 1.0))
+	var xp: int = maxi(1, int(round(base * tier_mult * _band_multiplier(band))))
+
+	return {"xp": xp, "band": band, "tier": tier}
+
+
 func _ready() -> void:
+	_load_budgets()
 	# Scan the enemies directory so every realm's data loads automatically
 	# (hell, hungry_ghost, animal, domain, and any future realm files).
 	var enemies_dir = "res://resources/data/enemies/"
@@ -107,10 +195,14 @@ func _load_encounters(path: String) -> void:
 
 	var data = json.get_data()
 	if data.has("encounters"):
+		# The file an encounter came from is the only record of its realm —
+		# nothing in the encounter data itself says which world it belongs to.
+		var realm_name: String = path.get_file().replace("_encounters.json", "")
 		for key in data.encounters:
 			if key.begins_with("_"):
 				continue
 			encounters[key] = data.encounters[key]
+			encounters[key]["realm"] = realm_name
 
 
 func _load_spells() -> void:

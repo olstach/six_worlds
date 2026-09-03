@@ -1,0 +1,28 @@
+{
+  "_comment": "Absolute per-realm party XP budgets. party_xp = realm_base * tier * band. Expected to move in playtesting.",
+  "realm_base": {
+    "hell": 200,
+    "hungry_ghost": 700,
+    "animal": 1800,
+    "domain": 1800,
+    "human": 3000,
+    "asura": 5000,
+    "god": 8000
+  },
+  "_comment_tier": "Encounter tier. 'beast' exists on one archetype and is treated as 'shade'.",
+  "tier_multipliers": {
+    "imp": 0.5,
+    "shade": 0.8,
+    "beast": 0.8,
+    "devil": 1.0,
+    "boss": 2.0
+  },
+  "_comment_bands": "Rolled per encounter. Same common/uncommon/rare vocabulary births use.",
+  "bands": [
+    { "id": "common",   "multiplier": 1.0, "weight": 60 },
+    { "id": "uncommon", "multiplier": 1.5, "weight": 30 },
+    { "id": "rare",     "multiplier": 2.3, "weight": 10 }
+  ],
+  "_comment_reward": "Fraction of the enemy party's XP the player party gains, before division by party size.",
+  "reward_fraction": 0.12
+}
