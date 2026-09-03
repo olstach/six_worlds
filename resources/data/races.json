@@ -1975,24 +1975,7 @@
         ],
         "bonus_chance": 0.45
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "blue_devil",
-        "green_devil",
-        "black_devil",
-        "white_devil",
-        "mriga",
-        "gana"
-      ],
+      "available_races": [],
       "weight": 5
     },
     "merchant": {
@@ -2020,22 +2003,7 @@
         ],
         "bonus_chance": 0.5
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "white_devil",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 7
     },
     "monk": {
@@ -2058,23 +2026,7 @@
         ],
         "bonus_chance": 0.6
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "white_devil",
-        "black_devil",
-        "green_devil",
-        "vetala",
-        "mriga",
-        "gana"
-      ],
+      "available_races": [],
       "weight": 5
     },
     "noble": {
@@ -2106,22 +2058,7 @@
         ],
         "bonus_chance": 0.5
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "white_devil",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 4
     },
     "reveler": {
@@ -2180,27 +2117,7 @@
         ],
         "bonus_chance": 0.35
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "trader",
-        "naga",
-        "bhramara",
-        "yaksha",
-        "tsen",
-        "rudra",
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "green_devil",
-        "black_devil",
-        "white_devil",
-        "skeleton",
-        "vetala",
-        "dralha",
-        "gana"
-      ],
+      "available_races": [],
       "weight": 10
     },
     "farmer": {
@@ -2228,18 +2145,7 @@
         "random_bonus": [],
         "bonus_chance": 0.0
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "trader",
-        "tsen",
-        "bhramara",
-        "yaksha",
-        "red_devil",
-        "yellow_devil",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 8
     },
     "berserker": {
@@ -2303,23 +2209,7 @@
         "random_bonus": [],
         "bonus_chance": 0.0
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "trader",
-        "naga",
-        "bhramara",
-        "yaksha",
-        "tsen",
-        "rudra",
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "skeleton",
-        "mriga",
-        "gana"
-      ],
+      "available_races": [],
       "weight": 7
     },
     "raider": {
@@ -2393,19 +2283,7 @@
         ],
         "bonus_chance": 0.3
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "naga",
-        "bhramara",
-        "yaksha",
-        "tsen",
-        "rudra",
-        "blue_devil",
-        "green_devil",
-        "gana"
-      ],
+      "available_races": [],
       "weight": 6
     },
     "executioner": {
@@ -2574,21 +2452,7 @@
         ],
         "bonus_chance": 0.6
       },
-      "available_races": [
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "green_devil",
-        "black_devil",
-        "white_devil",
-        "rolang",
-        "skeleton",
-        "vetala",
-        "gyelpo",
-        "dre",
-        "mriga",
-        "gana"
-      ],
+      "available_races": [],
       "weight": 3
     },
     "spy": {
@@ -2618,21 +2482,7 @@
         ],
         "bonus_chance": 0.4
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "blue_devil",
-        "green_devil",
-        "black_devil",
-        "white_devil",
-        "vetala",
-        "mriga",
-        "gana"
-      ],
+      "available_races": [],
       "weight": 4
     },
     "shambler": {
@@ -2747,22 +2597,7 @@
         ],
         "bonus_chance": 0.5
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "blue_devil",
-        "white_devil",
-        "black_devil",
-        "skeleton_copper",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 4
     },
     "guardian": {
@@ -2790,21 +2625,7 @@
         ],
         "bonus_chance": 0.4
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "naga",
-        "bhramara",
-        "yaksha",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "white_devil",
-        "blue_devil"
-      ],
+      "available_races": [],
       "weight": 5
     },
     "priest": {
@@ -2831,20 +2652,7 @@
         ],
         "bonus_chance": 0.4
       },
-      "available_races": [
-        "human",
-        "mountain_folk",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "white_devil",
-        "black_devil",
-        "mriga",
-        "gana"
-      ],
+      "available_races": [],
       "weight": 4
     },
     "preserved": {
@@ -3692,26 +3500,7 @@
         "medicine": 2,
         "earth_magic": 1
       },
-      "available_races": [
-        "bhramara",
-        "dura",
-        "gana",
-        "kapota",
-        "karka",
-        "khadga",
-        "makara",
-        "marjara",
-        "matsya",
-        "mriga",
-        "naga",
-        "patanga",
-        "rakshasa",
-        "shyena",
-        "uluka",
-        "vanara",
-        "varaha",
-        "yaksha"
-      ],
+      "available_races": [],
       "weight": 4
     },
     "elder_voice": {
