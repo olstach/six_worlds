@@ -2600,8 +2600,8 @@
       "available_races": [],
       "weight": 4
     },
-    "guardian": {
-      "name": "Guardian",
+    "temple_warden": {
+      "name": "Temple Warden",
       "description": "A protector of sacred places, combining martial readiness with spiritual discipline.",
       "attribute_modifiers": {
         "strength": 1,
@@ -3936,6 +3936,262 @@
       ],
       "available_races": [],
       "weight": 3
+    },
+    "musician": {
+      "name": "Musician",
+      "description": "Someone has to be playing when the thing happens, or nobody remembers it right.",
+      "attribute_modifiers": {
+        "charm": 1
+      },
+      "starting_skills": {
+        "performance": 2,
+        "comedy": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_lute"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "thief": {
+      "name": "Thief",
+      "description": "Locks are a conversation. Most of them are not very good at it.",
+      "attribute_modifiers": {
+        "finesse": 1
+      },
+      "starting_skills": {
+        "thievery": 2,
+        "guile": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_thieving_tools"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "apprentice": {
+      "name": "Apprentice",
+      "description": "Three years of fetching, one of watching, and a fortnight of being allowed to try.",
+      "attribute_modifiers": {
+        "focus": 1
+      },
+      "starting_skills": {
+        "sorcery": 2,
+        "learning": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "cloth_robe"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "smith": {
+      "name": "Smith",
+      "description": "Heat, then shape, then cold. Everything else is opinion.",
+      "attribute_modifiers": {
+        "strength": 1
+      },
+      "starting_skills": {
+        "smithing": 2,
+        "might": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_smiths_hammer"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "brawler": {
+      "name": "Brawler",
+      "description": "No school, no forms, no weapon. A very great deal of practice.",
+      "attribute_modifiers": {
+        "strength": 1
+      },
+      "starting_skills": {
+        "unarmed": 2,
+        "might": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "dancer": {
+      "name": "Dancer",
+      "description": "The floor is not the point. The moment before the floor is the point.",
+      "attribute_modifiers": {
+        "finesse": 1
+      },
+      "starting_skills": {
+        "grace": 2,
+        "performance": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "apothecary": {
+      "name": "Apothecary",
+      "description": "Everything is a poison. The dose is the whole of the argument.",
+      "attribute_modifiers": {
+        "focus": 1
+      },
+      "starting_skills": {
+        "alchemy": 2,
+        "medicine": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_alchemists_kit"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "quarrier": {
+      "name": "Quarrier",
+      "description": "Stone gives at one angle only. Finding it is the work. The hitting is the easy part.",
+      "attribute_modifiers": {
+        "strength": 1
+      },
+      "starting_skills": {
+        "maces": 2,
+        "might": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "conjurers_hand": {
+      "name": "Conjurer's Hand",
+      "description": "You do not call a thing you cannot send back. This is taught early, and usually twice.",
+      "attribute_modifiers": {
+        "focus": 1
+      },
+      "starting_skills": {
+        "summoning": 2,
+        "ritual": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "cloth_robe"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "charm_seller": {
+      "name": "Charm Seller",
+      "description": "Half of it is the charm. Half is knowing who needs one, and what they are afraid of.",
+      "attribute_modifiers": {
+        "charm": 1
+      },
+      "starting_skills": {
+        "enchantment": 2,
+        "persuasion": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "lucky_charm"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "storm_watcher": {
+      "name": "Storm Watcher",
+      "description": "The weather tells you first, if you are outside enough to be told.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "air_magic": 2,
+        "learning": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "firekeeper": {
+      "name": "Firekeeper",
+      "description": "It does not go out. That is the whole of the office, and it is harder than it sounds.",
+      "attribute_modifiers": {
+        "constitution": 1
+      },
+      "starting_skills": {
+        "fire_magic": 2,
+        "ritual": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "water_carrier": {
+      "name": "Water Carrier",
+      "description": "Uphill full, downhill empty, and nobody in the village has ever once said thank you.",
+      "attribute_modifiers": {
+        "constitution": 1
+      },
+      "starting_skills": {
+        "water_magic": 2,
+        "logistics": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "rations"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "grave_tender": {
+      "name": "Grave Tender",
+      "description": "Someone digs, someone speaks, someone remembers where. Out here it is all the same someone.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "black_magic": 2,
+        "medicine": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "sky_gazer": {
+      "name": "Sky Gazer",
+      "description": "Lie on your back long enough and the distances begin answering.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "space_magic": 2,
+        "yoga": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
     }
   }
 }
