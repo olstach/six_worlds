@@ -2349,6 +2349,151 @@
         "haunted"
       ]
     },
+    "khara": {
+      "id": "khara",
+      "name": "Khara",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "rakshasa",
+      "background": "maneater",
+      "flavor_text": "The one from the stories. She is aware there are stories, and has opinions about which of them are accurate.",
+      "portrait": "",
+      "recruitment_cost": 1100,
+      "build_weights": {
+        "guile": 5,
+        "unarmed": 4,
+        "grace": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "guile": 2,
+          "unarmed": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "health_potion"
+      ],
+      "traits": [
+        "patient",
+        "hunter"
+      ]
+    },
+    "kabandha": {
+      "id": "kabandha",
+      "name": "Kabandha",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "rakshasa",
+      "background": "lord_of_the_range",
+      "flavor_text": "Three valleys, every tree marked, and not one of them argued about it. Finds the party's habit of walking through places baffling.",
+      "portrait": "",
+      "recruitment_cost": 1050,
+      "build_weights": {
+        "might": 5,
+        "martial_arts": 4,
+        "armor": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "might": 2,
+          "martial_arts": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "rations"
+      ],
+      "traits": [
+        "stubborn",
+        "composed"
+      ]
+    },
+    "takshari": {
+      "id": "takshari",
+      "name": "Takshari",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "rakshasa",
+      "background": "ancestor_priest",
+      "flavor_text": "Keeps the trophies, pours the mead, remembers which hero did what and to whom. The dead are less trouble than the living and better company.",
+      "portrait": "",
+      "recruitment_cost": 1000,
+      "build_weights": {
+        "ritual": 5,
+        "white_magic": 4,
+        "black_magic": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "white_magic": 1,
+          "black_magic": 1,
+          "ritual": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "prayer_beads"
+      ],
+      "traits": [
+        "superstitious",
+        "mourner"
+      ]
+    },
+    "unmatta": {
+      "id": "unmatta",
+      "name": "Unmatta",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "rakshasa",
+      "background": "the_sensate",
+      "flavor_text": "Came down from the hills for one season of silk and wine and has not gone back in nine years. Insists he could stop. Nobody has asked him to.",
+      "portrait": "",
+      "recruitment_cost": 1150,
+      "build_weights": {
+        "persuasion": 5,
+        "fire_magic": 4,
+        "performance": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "persuasion": 2,
+          "fire_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "silver_ring"
+      ],
+      "traits": [
+        "flirt",
+        "gourmand"
+      ]
+    },
     "brihannala": {
       "id": "brihannala",
       "name": "Brihannala",

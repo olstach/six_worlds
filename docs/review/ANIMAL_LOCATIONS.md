@@ -125,7 +125,7 @@ A canvas clinic strung between four trees, run by a grey-muzzled gana who does n
 
 ## Mercenary Guild  `animal_mercenary_guild`
 
-`prices ×1.0  ·  14 items in stock  ·  recruits: agnishikha, anavatapta, balavardhana, brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kambu, kandali, kshudraka, madhuvrata, minakshi, nadaka, nayanika, nirvikalpa, nishkasita, phalguna, phenaka, saramaya, sarangi, setubandha, shesharati, shrutidhara, sphotana, sthanumati, tikshnashringa, timingila, trinavati, vajradanti, valmika, vishanin`
+`prices ×1.0  ·  14 items in stock  ·  recruits: agnishikha, anavatapta, balavardhana, brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kabandha, kambu, kandali, khara, kshudraka, madhuvrata, minakshi, nadaka, nayanika, nirvikalpa, nishkasita, phalguna, phenaka, saramaya, sarangi, setubandha, shesharati, shrutidhara, sphotana, sthanumati, takshari, tikshnashringa, timingila, trinavati, unmatta, vajradanti, valmika, vishanin`
 
 
 **Name**
@@ -422,7 +422,7 @@ A structure ten meters high, built over centuries by beings each the size of a t
 
 ## Forest Teahouse  `animal_forest_teahouse`
 
-`prices ×1.1  ·  3 items in stock  ·  recruits: brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kandali, nadaka, nayanika, nishkasita, phalguna, saramaya, sarangi, shrutidhara, sphotana, trinavati, vishanin  ·  rest available`
+`prices ×1.1  ·  3 items in stock  ·  recruits: brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kabandha, kandali, khara, nadaka, nayanika, nishkasita, phalguna, saramaya, sarangi, shrutidhara, sphotana, takshari, trinavati, unmatta, vishanin  ·  rest available`
 
 
 **Name**
@@ -485,7 +485,7 @@ A structure built into a sea cliff, half-submerged at high tide and bone-dry at 
 
 ## Town  `animal_town_magic`
 
-`prices ×1.1  ·  14 items in stock  ·  8 spells  ·  recruits: agnishikha, anavatapta, balavardhana, brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kambu, kandali, kshudraka, madhuvrata, minakshi, nadaka, nayanika, nirvikalpa, nishkasita, phalguna, phenaka, saramaya, sarangi, setubandha, shesharati, shrutidhara, sphotana, sthanumati, tikshnashringa, timingila, trinavati, vajradanti, valmika, vishanin`
+`prices ×1.1  ·  14 items in stock  ·  8 spells  ·  recruits: agnishikha, anavatapta, balavardhana, brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kabandha, kambu, kandali, khara, kshudraka, madhuvrata, minakshi, nadaka, nayanika, nirvikalpa, nishkasita, phalguna, phenaka, saramaya, sarangi, setubandha, shesharati, shrutidhara, sphotana, sthanumati, takshari, tikshnashringa, timingila, trinavati, unmatta, vajradanti, valmika, vishanin`
 
 
 **Name**
@@ -504,7 +504,7 @@ A settlement that has drawn its share of hedge-mages, ritual practitioners, and 
 
 ## Town  `animal_town_supplies`
 
-`prices ×1.0  ·  11 items in stock  ·  recruits: agnishikha, anavatapta, balavardhana, brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kambu, kandali, kshudraka, madhuvrata, minakshi, nadaka, nayanika, nirvikalpa, nishkasita, phalguna, phenaka, saramaya, sarangi, setubandha, shesharati, shrutidhara, sphotana, sthanumati, tikshnashringa, timingila, trinavati, vajradanti, valmika, vishanin`
+`prices ×1.0  ·  11 items in stock  ·  recruits: agnishikha, anavatapta, balavardhana, brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kabandha, kambu, kandali, khara, kshudraka, madhuvrata, minakshi, nadaka, nayanika, nirvikalpa, nishkasita, phalguna, phenaka, saramaya, sarangi, setubandha, shesharati, shrutidhara, sphotana, sthanumati, takshari, tikshnashringa, timingila, trinavati, unmatta, vajradanti, valmika, vishanin`
 
 
 **Name**
@@ -523,7 +523,7 @@ A clearing settlement where four game trails meet. Sounder matrons and herb-walk
 
 ## Town  `animal_town_weapons`
 
-`prices ×1.05  ·  19 items in stock  ·  recruits: agnishikha, anavatapta, balavardhana, brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kambu, kandali, kshudraka, madhuvrata, minakshi, nadaka, nayanika, nirvikalpa, nishkasita, phalguna, phenaka, saramaya, sarangi, setubandha, shesharati, shrutidhara, sphotana, sthanumati, tikshnashringa, timingila, trinavati, vajradanti, valmika, vishanin`
+`prices ×1.05  ·  19 items in stock  ·  recruits: agnishikha, anavatapta, balavardhana, brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kabandha, kambu, kandali, khara, kshudraka, madhuvrata, minakshi, nadaka, nayanika, nirvikalpa, nishkasita, phalguna, phenaka, saramaya, sarangi, setubandha, shesharati, shrutidhara, sphotana, sthanumati, takshari, tikshnashringa, timingila, trinavati, unmatta, vajradanti, valmika, vishanin`
 
 
 **Name**
@@ -548,7 +548,7 @@ A market where different territories agree, briefly, to exchange. Dura shell-wri
 
 ## Forest Training Camp  `animal_forest_training_camp`
 
-`prices ×1.0  ·  2 items in stock  ·  recruits: brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kandali, nadaka, nayanika, nishkasita, phalguna, saramaya, sarangi, shrutidhara, sphotana, trinavati, vishanin`
+`prices ×1.0  ·  2 items in stock  ·  recruits: brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kabandha, kandali, khara, nadaka, nayanika, nishkasita, phalguna, saramaya, sarangi, shrutidhara, sphotana, takshari, trinavati, unmatta, vishanin`
 
 
 **Name**
@@ -611,7 +611,7 @@ A karka war-school built into the coral. Sessions alternate between fighting in 
 
 ## Yogini Circle  `animal_yogini_circle`
 
-`prices ×1.1  ·  19 items in stock  ·  11 spells  ·  recruits: agnishikha, anavatapta, balavardhana, brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kambu, kandali, kshudraka, madhuvrata, minakshi, nadaka, nayanika, nirvikalpa, nishkasita, phalguna, phenaka, saramaya, sarangi, setubandha, shesharati, shrutidhara, sphotana, sthanumati, tikshnashringa, timingila, trinavati, vajradanti, valmika, vishanin`
+`prices ×1.1  ·  19 items in stock  ·  11 spells  ·  recruits: agnishikha, anavatapta, balavardhana, brihannala, chapala, chitrangada, dhvanika, dirghajihva, ekadamshtra, enakshi, ghoshaka, himasara, kabandha, kambu, kandali, khara, kshudraka, madhuvrata, minakshi, nadaka, nayanika, nirvikalpa, nishkasita, phalguna, phenaka, saramaya, sarangi, setubandha, shesharati, shrutidhara, sphotana, sthanumati, takshari, tikshnashringa, timingila, trinavati, unmatta, vajradanti, valmika, vishanin`
 
 
 **Name**

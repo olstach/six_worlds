@@ -470,7 +470,7 @@ A deep sadness runs beneath the surface.
 
 ## patient
 
-`pressure: water+10, fire+5  ·  bond: order  ·  opposed: hot_tempered, duelist  ·  on 12 companions`
+`pressure: water+10, fire+5  ·  bond: order  ·  opposed: hot_tempered, duelist  ·  on 13 companions`
 
 **Name**
 
@@ -506,7 +506,7 @@ Remembers everything — names, faces, slights.
 
 ## stubborn
 
-`pressure: earth-10  ·  bond: order  ·  purged by yoga 4  ·  on 17 companions`
+`pressure: earth-10  ·  bond: order  ·  purged by yoga 4  ·  on 18 companions`
 
 **Name**
 
@@ -836,7 +836,7 @@ Particular about cleanliness and order; unsettled by squalor.
 
 ## flirt
 
-`bond: sociable  ·  opposed: ascetic  ·  on 1 companions`
+`bond: sociable  ·  opposed: ascetic  ·  on 2 companions`
 
 **Name**
 
@@ -890,7 +890,7 @@ Knows everyone's business within a day of arriving anywhere.
 
 ## gourmand
 
-`pressure: fire-5  ·  bond: vice, sociable  ·  opposed: ascetic  ·  on 0 companions`
+`pressure: fire-5  ·  bond: vice, sociable  ·  opposed: ascetic  ·  on 1 companions`
 
 **Name**
 
@@ -926,7 +926,7 @@ The farther away you are from your home, the easier it is to see it through rose
 
 ## hunter
 
-`skills: ranged+1  ·  bond: beasts, solitary  ·  opposed: sworn_vegetarian, pet_lover  ·  on 0 companions`
+`skills: ranged+1  ·  bond: beasts, solitary  ·  opposed: sworn_vegetarian, pet_lover  ·  on 1 companions`
 
 **Name**
 
@@ -944,7 +944,7 @@ Reads ground the way other people read letters. Knows what passed, how long ago,
 
 ## mourner
 
-`bond: grief, devotion  ·  on 0 companions`
+`bond: grief, devotion  ·  on 1 companions`
 
 **Name**
 
@@ -1124,7 +1124,7 @@ Always has a tale ready — some true, most embellished.
 
 ## superstitious
 
-`pressure: space-10  ·  bond: wonder  ·  opposed: clear_eyed  ·  purged by yoga, ritual 2  ·  on 1 companions`
+`pressure: space-10  ·  bond: wonder  ·  opposed: clear_eyed  ·  purged by yoga, ritual 2  ·  on 2 companions`
 
 **Name**
 
@@ -1274,7 +1274,7 @@ Has killed something that everyone agreed could not be killed.
 
 ## composed
 
-`pressure: fire+5, water+5  ·  bond: order  ·  on 6 companions`
+`pressure: fire+5, water+5  ·  bond: order  ·  on 7 companions`
 
 **Name**
 

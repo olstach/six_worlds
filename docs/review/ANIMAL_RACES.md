@@ -51,7 +51,7 @@ Alone, a middling thing with good teeth. Together, nothing in the forest outruns
 <!--@end-->
 
 
-*Backgrounds: `strangler`, `quiet_tooth`, `bonfire_dancer`, `herbalist`, `elder_voice`, `range_reader`, `forest_singer`*
+*Backgrounds: `strangler`, `quiet_tooth`, `bonfire_dancer`, `herbalist`, `elder_voice`, `range_reader`, `forest_singer`, `blood_drinker`, `ancestor_priest`*
 
 
 ---
@@ -201,7 +201,7 @@ A low decision made at speed. Varaha neither bluff nor can be bluffed, and the f
 <!--@end-->
 
 
-*Backgrounds: `old_tusk`, `sounder_guard`, `mycelium_tender`, `sounder_matron`, `herbalist`*
+*Backgrounds: `old_tusk`, `sounder_guard`, `mycelium_tender`, `sounder_matron`, `herbalist`, `ancestor_priest`*
 
 
 ---
@@ -301,7 +301,7 @@ Dappled light is their native country — the flicker where a shape might be, an
 <!--@end-->
 
 
-*Backgrounds: `cache_master`, `canopy_ambush`, `forest_drifter`, `hedonist`, `herbalist`*
+*Backgrounds: `cache_master`, `canopy_ambush`, `forest_drifter`, `hedonist`, `herbalist`, `blood_drinker`*
 
 
 ---
@@ -326,7 +326,7 @@ The stoop is one decision, made at height and never revised. From up there the w
 <!--@end-->
 
 
-*Backgrounds: `sky_lord`, `stooper`, `jessed_hawk`, `herbalist`*
+*Backgrounds: `sky_lord`, `stooper`, `jessed_hawk`, `herbalist`, `blood_drinker`, `ancestor_priest`*
 
 
 ---
@@ -376,7 +376,7 @@ Deep beneath the waves dwell creatures strange and old, wielding weird magic and
 <!--@end-->
 
 
-*Backgrounds: `coral_guard`, `palace_vizier`, `deep_hunter`, `wreck_gleaner`, `boundary_walker`, `herbalist`*
+*Backgrounds: `coral_guard`, `palace_vizier`, `deep_hunter`, `wreck_gleaner`, `boundary_walker`, `herbalist`, `blood_drinker`*
 
 
 ---
@@ -451,7 +451,7 @@ Something is being guarded — a spring, a hoard, a promise older than the hill 
 <!--@end-->
 
 
-*Backgrounds: `caravan_guard`, `still_hunter`, `pollen_rishi`, `meadow_ward`, `herbalist`*
+*Backgrounds: `caravan_guard`, `still_hunter`, `pollen_rishi`, `meadow_ward`, `herbalist`, `ancestor_priest`*
 
 
 ---
@@ -465,7 +465,7 @@ Something is being guarded — a spring, a hoard, a promise older than the hill 
 
 ## Ancestor Priest  `ancestor_priest`
 
-`births: Rakshasa  ·  skills: white_magic 1, black_magic 1, ritual 1  ·  kit: prayer_beads`
+`births: Gana, Rakshasa, Shyena, Varaha, Yaksha  ·  skills: white_magic 1, black_magic 1, ritual 1  ·  kit: prayer_beads`
 
 
 **Name**
@@ -522,7 +522,7 @@ The mantis holds perfectly still before it moves. So do you. The strike is not a
 
 ## Blood Drinker  `blood_drinker`
 
-`births: Rakshasa  ·  skills: might 1, guile 1, black_magic 1`
+`births: Gana, Makara, Marjara, Rakshasa, Shyena  ·  skills: might 1, guile 1, black_magic 1`
 
 
 **Name**

@@ -1,6 +1,6 @@
 # Animal Realm — Companions
 
-*36 companions.*
+*40 companions.*
 
 *Edit the prose between the anchors. The stat block under each name is generated; change it in `companions.json` instead.*
 
@@ -181,6 +181,25 @@ Comes down from the snow every second season with moss, antler-glue and prices. 
 <!--@end-->
 
 
+## Kabandha  `kabandha`
+
+`birth: rakshasa  ·  background: lord_of_the_range  ·  traits: stubborn, composed  ·  cost: 1050  ·  fixed_items: ['rations']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | kabandha | build_weights -->
+might, martial_arts, armor
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | kabandha | flavor_text -->
+Three valleys, every tree marked, and not one of them argued about it. Finds the party's habit of walking through places baffling.
+<!--@end-->
+
+
 ## Kandali  `kandali`
 
 `birth: varaha  ·  background: mycelium_tender  ·  traits: fastidious, patient  ·  cost: 800  ·  fixed_items: ['herb_bundle', 'raw_reagents']`
@@ -197,6 +216,25 @@ medicine, earth_magic, alchemy
 
 <!--@ companions.json | kandali | flavor_text -->
 Cultivates the fungal network under nine acres of forest floor and speaks about it the way other people speak about family. Do not step on the nine-year patch.
+<!--@end-->
+
+
+## Khara  `khara`
+
+`birth: rakshasa  ·  background: maneater  ·  traits: patient, hunter  ·  cost: 1100  ·  fixed_items: ['health_potion']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | khara | build_weights -->
+guile, unarmed, grace
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | khara | flavor_text -->
+The one from the stories. She is aware there are stories, and has opinions about which of them are accurate.
 <!--@end-->
 
 
@@ -352,6 +390,25 @@ He woke from a nightmare to see his lair and his fur on fire, spreading from the
 <!--@end-->
 
 
+## Takshari  `takshari`
+
+`birth: rakshasa  ·  background: ancestor_priest  ·  traits: superstitious, mourner  ·  cost: 1000  ·  fixed_items: ['prayer_beads']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | takshari | build_weights -->
+ritual, white_magic, black_magic
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | takshari | flavor_text -->
+Keeps the trophies, pours the mead, remembers which hero did what and to whom. The dead are less trouble than the living and better company.
+<!--@end-->
+
+
 ## Trinavati  `trinavati`
 
 `birth: mriga  ·  background: slope_herbalist  ·  traits: warm_hearted, early_riser  ·  cost: 700  ·  fixed_items: ['herb_bundle', 'healing_herb']`
@@ -368,6 +425,25 @@ medicine, earth_magic, white_magic
 
 <!--@ companions.json | trinavati | flavor_text -->
 Knows the slope, the clay, and which of the two you need. Will not be hurried down a mountain.
+<!--@end-->
+
+
+## Unmatta  `unmatta`
+
+`birth: rakshasa  ·  background: the_sensate  ·  traits: flirt, gourmand  ·  cost: 1150  ·  fixed_items: ['silver_ring']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | unmatta | build_weights -->
+persuasion, fire_magic, performance
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | unmatta | flavor_text -->
+Came down from the hills for one season of silk and wine and has not gone back in nine years. Insists he could stop. Nobody has asked him to.
 <!--@end-->
 
 

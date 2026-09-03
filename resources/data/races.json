@@ -682,7 +682,8 @@
         "still_hunter",
         "pollen_rishi",
         "meadow_ward",
-        "herbalist"
+        "herbalist",
+        "ancestor_priest"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1385,7 +1386,8 @@
         "deep_hunter",
         "wreck_gleaner",
         "boundary_walker",
-        "herbalist"
+        "herbalist",
+        "blood_drinker"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1599,7 +1601,8 @@
         "sounder_guard",
         "mycelium_tender",
         "sounder_matron",
-        "herbalist"
+        "herbalist",
+        "ancestor_priest"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1642,7 +1645,8 @@
         "canopy_ambush",
         "forest_drifter",
         "hedonist",
-        "herbalist"
+        "herbalist",
+        "blood_drinker"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1688,7 +1692,9 @@
         "herbalist",
         "elder_voice",
         "range_reader",
-        "forest_singer"
+        "forest_singer",
+        "blood_drinker",
+        "ancestor_priest"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1818,7 +1824,9 @@
         "sky_lord",
         "stooper",
         "jessed_hawk",
-        "herbalist"
+        "herbalist",
+        "blood_drinker",
+        "ancestor_priest"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -3497,7 +3505,11 @@
         "items": []
       },
       "available_races": [
-        "rakshasa"
+        "rakshasa",
+        "marjara",
+        "gana",
+        "shyena",
+        "makara"
       ],
       "weight": 5
     },
@@ -3516,7 +3528,11 @@
         ]
       },
       "available_races": [
-        "rakshasa"
+        "rakshasa",
+        "gana",
+        "varaha",
+        "shyena",
+        "yaksha"
       ],
       "weight": 5
     },
