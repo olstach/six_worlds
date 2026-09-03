@@ -3538,12 +3538,13 @@
     },
     "the_sensate": {
       "name": "The Sensate",
-      "description": "They have left the forests for the delights only civilized life can offer, a lifetime ago. Now, their prey hides in silks and perfume, and seems rather excited to be hunted.",
+      "description": "They left the forests a lifetime ago, for the delights only civilized life can offer. Now they hunt by seduction, by art, by magic — and their prey hides in silks and perfume, and seems rather excited to be hunted.",
       "attribute_modifiers": {
         "charm": 1
       },
       "starting_skills": {
         "persuasion": 2,
+        "performance": 1,
         "fire_magic": 1
       },
       "starting_equipment": {

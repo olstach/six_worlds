@@ -1567,7 +1567,7 @@ The hunger is not a problem. It is the condition of becoming.
 
 ## The Sensate  `the_sensate`
 
-`births: Rakshasa  ·  attributes: charm+1  ·  skills: persuasion 2, fire_magic 1  ·  kit: silver_ring`
+`births: Rakshasa  ·  attributes: charm+1  ·  skills: persuasion 2, performance 1, fire_magic 1  ·  kit: silver_ring`
 
 
 **Name**
@@ -1580,7 +1580,7 @@ The Sensate
 **Description**
 
 <!--@ backgrounds.json | the_sensate | description -->
-They have left the forests for the delights only civilized life can offer, a lifetime ago. Now, their prey hides in silks and perfume, and seems rather excited to be hunted.
+They left the forests a lifetime ago, for the delights only civilized life can offer. Now they hunt by seduction, by art, by magic — and their prey hides in silks and perfume, and seems rather excited to be hunted.
 <!--@end-->
 
 
