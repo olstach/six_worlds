@@ -15,6 +15,7 @@ func _ready() -> void:
 	_check_budgets()
 	_check_resolution()
 	_check_composition()
+	_check_spending()
 	_dump_table()
 	if failures > 0:
 		printerr("VERIFY FAILED: %d problem(s)" % failures)
@@ -152,6 +153,54 @@ func _check_composition() -> void:
 		for m in members:
 			expect(int(m["share"]) <= 3, "common band produced share %d" % int(m["share"]))
 	print("   composition ok across all three bands")
+
+
+func _check_spending() -> void:
+	print("-- xp spending --")
+	if not CharacterSystem.has_method("spend_xp_budget"):
+		fail("CharacterSystem has no spend_xp_budget()")
+		return
+	if not CharacterSystem.has_method("create_blank_character"):
+		fail("CharacterSystem has no create_blank_character()")
+		return
+
+	for budget in [50, 200, 800, 1800, 4000, 12000]:
+		var c: Dictionary = CharacterSystem.create_blank_character()
+		var spent: int = CharacterSystem.spend_xp_budget(
+			c, budget, {"strength": 3, "finesse": 2}, ["unarmed", "might"])
+
+		expect(spent <= budget, "budget %d: spent %d, over budget" % [budget, spent])
+		expect(spent >= int(budget * 0.9),
+			"budget %d: spent only %d, should absorb nearly all of it" % [budget, spent])
+
+		for sk in c.get("skills", {}):
+			expect(int(c["skills"][sk]) <= CharacterSystem.SKILL_MAX_LEVEL,
+				"budget %d: skill %s exceeded the cap" % [budget, sk])
+
+		var attr_total: int = 0
+		for a in c.get("attributes", {}):
+			attr_total += int(c["attributes"][a])
+		expect(attr_total > 70, "budget %d: attributes never rose above baseline" % budget)
+
+	# a build whose skills cap must still absorb the rest into attributes
+	var big: Dictionary = CharacterSystem.create_blank_character()
+	var big_spent: int = CharacterSystem.spend_xp_budget(
+		big, 20000, {"strength": 3}, ["unarmed"])
+	expect(big_spent >= 18000,
+		"20000 budget only absorbed %d — overflow is not reaching attributes" % big_spent)
+	print("   spending absorbs its budget at every scale")
+
+	# show the shape of a build at a few budgets, so a reviewer can see whether
+	# the spend produces a character or a pile of numbers
+	for budget in [200, 800, 1800, 4140]:
+		var c: Dictionary = CharacterSystem.create_blank_character()
+		var spent: int = CharacterSystem.spend_xp_budget(
+			c, budget, {"strength": 3, "constitution": 2, "finesse": 2},
+			["unarmed", "might", "armor"])
+		var attrs := ""
+		for a in ["strength", "finesse", "constitution", "focus", "awareness", "charm", "luck"]:
+			attrs += "%s%d " % [a.substr(0, 3), int(c["attributes"][a])]
+		print("   %5d XP (spent %5d)  %s | skills %s" % [budget, spent, attrs, c["skills"]])
 
 
 func _dump_table() -> void:

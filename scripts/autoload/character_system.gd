@@ -345,6 +345,83 @@ func pick_random_spell_for_party(school: String, level: int) -> String:
 	return candidates[0]
 
 
+## A character dict with baseline attributes and no birth or background applied.
+## Enemy generation layers birth, then background, then archetype spending on top.
+func create_blank_character() -> Dictionary:
+	return BASE_CHARACTER.duplicate(true)
+
+
+## Spend an XP budget on a character, directed by weights and priorities.
+##
+## This is how an enemy is built: through the same cost curves the player pays,
+## so an enemy's XP total means exactly what a player's does.
+##
+## Skills are bought first, up to their share, because they hard-cap at
+## SKILL_MAX_LEVEL. Whatever the skills cannot absorb spills into attributes,
+## which have no cap — only a rising cost per point. Returns the XP spent.
+func spend_xp_budget(character: Dictionary, budget: int, attribute_weights: Dictionary,
+		skill_priorities: Array, attr_share: float = 0.6) -> int:
+	if budget <= 0:
+		return 0
+	var spent: int = 0
+	var skill_budget: int = int(round(float(budget) * (1.0 - attr_share)))
+
+	# Skills: repeatedly buy the cheapest next level among the priorities.
+	if not skill_priorities.is_empty():
+		var buying := true
+		while buying:
+			buying = false
+			var best_skill := ""
+			var best_cost: int = -1
+			for skill in skill_priorities:
+				var level: int = int(character.get("skills", {}).get(skill, 0))
+				if level >= SKILL_MAX_LEVEL:
+					continue
+				var cost: int = SKILL_COSTS[level + 1]
+				if cost <= skill_budget - spent and (best_cost < 0 or cost < best_cost):
+					best_cost = cost
+					best_skill = skill
+			if best_skill != "":
+				character["skills"][best_skill] = int(character.get("skills", {}).get(best_skill, 0)) + 1
+				spent += best_cost
+				buying = true
+
+	# Attributes: everything left, weighted, best value-per-XP first.
+	var attr_budget: int = budget - spent
+	var attr_spent: int = 0
+	var weighted: Array[String] = []
+	for attr in attribute_weights:
+		if int(attribute_weights[attr]) > 0:
+			weighted.append(String(attr))
+	weighted.sort()
+
+	if not weighted.is_empty():
+		var buying_attrs := true
+		while buying_attrs:
+			buying_attrs = false
+			var best_attr := ""
+			var best_ratio: float = -1.0
+			var best_attr_cost: int = 0
+			for attr in weighted:
+				var value: int = int(character.get("attributes", {}).get(attr, 10))
+				var cost: int = calculate_attribute_cost(value, 1)
+				if cost > attr_budget - attr_spent:
+					continue
+				var ratio: float = float(attribute_weights[attr]) / float(maxi(cost, 1))
+				if ratio > best_ratio:
+					best_ratio = ratio
+					best_attr = attr
+					best_attr_cost = cost
+			if best_attr != "":
+				character["attributes"][best_attr] = int(character["attributes"][best_attr]) + 1
+				attr_spent += best_attr_cost
+				buying_attrs = true
+
+	spent += attr_spent
+	update_derived_stats(character)
+	return spent
+
+
 ## Get birth data dictionary for a given birth ID
 func get_birth_data(birth_id: String) -> Dictionary:
 	return _birth_data.get(birth_id, {})
