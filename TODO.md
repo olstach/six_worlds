@@ -248,6 +248,21 @@ Recorded so they aren't rediscovered as bugs.
 
 ### 2026-08-31 — from the enemy-XP design session
 
+- **Instruments as performance items.** The game has ritual implements —
+  damaru, kangling, conch, drilbu, phurba — but all are `type: focus`, for
+  Ritual and spellcasting. There is no lute, flute, drum or fiddle a
+  Performance character could carry. Once XP breadth gives enemies and
+  companions skills outside their build, a bard-adjacent character has nothing
+  to hold. Wants its own item type and a few tiers.
+
+- **Equipment should follow the character, not just the archetype.**
+  `_generate_equipment` reads only `archetype.equipment_template.weapon.type`,
+  so a generated character with ranged 8 and performance 7 still carries
+  whatever its archetype hardcodes. With XP breadth now giving characters real
+  skills off their build, gear should be chosen from what they can actually
+  use — top weapon skill picks the weapon, and a high Performance or Ritual
+  should put an instrument or implement in their hands.
+
 - **Background assignment wants a pass across all births.** 94 backgrounds, but
   only 3 are universal (`healer`, `reveler`, `wanderer`) and 55 are single-birth
   — 58% of them. Average 4.8 births per background. Mriga was in none of the 22
