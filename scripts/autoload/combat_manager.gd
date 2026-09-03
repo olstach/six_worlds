@@ -522,37 +522,25 @@ func _sync_combat_state_to_characters() -> void:
 ## Calculate XP, gold, and item rewards based on enemy difficulty vs party strength.
 ## Must be called while all_units is still populated.
 func _calculate_combat_rewards() -> Dictionary:
-	# Count enemies and calculate their total power
+	# The enemy party's XP is what it cost to build, so it is the honest measure
+	# of what was just defeated. The player party earns a fraction of it, which
+	# CompanionSystem then DIVIDES among its members.
 	var enemy_count := 0
-	var enemy_power_total := 0.0
+	var enemy_party_xp := 0
 	for unit in all_units:
 		if unit.team == Team.ENEMY:
 			enemy_count += 1
-			enemy_power_total += _calculate_unit_power(unit)
-
-	# Calculate party power from CharacterSystem
-	var party_power := 0.0
-	var party_size := 0
-	for unit in all_units:
-		if unit.team == Team.PLAYER:
-			party_size += 1
-			party_power += _calculate_unit_power(unit)
-
-	# Difficulty ratio: how tough were the enemies relative to the party?
-	var ratio := 1.0
-	if party_power > 0:
-		ratio = enemy_power_total / party_power
+			enemy_party_xp += int(unit.character_data.get("xp_earned", 0))
 
 	# --- XP REWARD ---
-	# Base: 15 XP per enemy, scaled by difficulty ratio.
-	# Party-size multiplier (solo=1.5×, duo=1.25×, etc.) is applied later in CompanionSystem.apply_party_xp.
-	var base_xp := enemy_count * 15
-	var xp_reward := maxi(1, int(base_xp * clampf(ratio, 0.5, 3.0)))
+	# A harder group pays more with no separate rule, because it cost more to
+	# build. The fraction is the one tuning knob and lives in JSON.
+	var fraction: float = float(EnemySystem.budgets.get("reward_fraction", 0.12))
+	var xp_reward := maxi(1, int(round(float(enemy_party_xp) * fraction)))
 
 	# --- GOLD REWARD ---
-	# Base: 5 + 3 per enemy, scaled by difficulty
-	var base_gold := 5 + enemy_count * 3
-	var gold_reward := maxi(1, int(base_gold * clampf(ratio, 0.5, 2.0)))
+	# Gold tracks the same number rather than a second difficulty measure.
+	var gold_reward := maxi(1, int(round(float(enemy_party_xp) * fraction * 0.5)))
 
 	# Trade skill bonus: best Trade in party adds 10% per level
 	var best_trade := 0
@@ -589,7 +577,8 @@ func _calculate_combat_rewards() -> Dictionary:
 	var item_drops: Array[String] = loot_result.get("items", [])
 	gold_reward += loot_result.get("bonus_gold", 0)
 
-	var extra_drops: Array[String] = _generate_loot_drops(enemy_count, ratio, best_luck)
+	var loot_scale := clampf(float(enemy_party_xp) / 1000.0, 0.5, 3.0)
+	var extra_drops: Array[String] = _generate_loot_drops(enemy_count, loot_scale, best_luck)
 	for drop_id in extra_drops:
 		item_drops.append(drop_id)
 
@@ -598,7 +587,7 @@ func _calculate_combat_rewards() -> Dictionary:
 		"gold": gold_reward,
 		"items": item_drops,
 		"enemy_count": enemy_count,
-		"difficulty_ratio": ratio,
+		"enemy_party_xp": enemy_party_xp,
 		"jackpot_triggered": jackpot_triggered,
 		"jackpot_amount": jackpot_amount,
 		"trade_bonus": best_trade
@@ -606,24 +595,6 @@ func _calculate_combat_rewards() -> Dictionary:
 
 	return rewards
 
-
-## Calculate a unit's power level from its attributes and skills.
-## Uses the same logic for both players and enemies so the ratio is fair.
-func _calculate_unit_power(unit: Node) -> float:
-	var power := 0.0
-	var data = unit.character_data
-
-	# Attribute contribution: each point above 10
-	var attrs = data.get("attributes", {})
-	for attr_name in attrs:
-		power += float(maxi(attrs[attr_name] - 10, 0))
-
-	# Skill contribution: each skill level * 5 (weighted to matter)
-	var skills = data.get("skills", {})
-	for skill_name in skills:
-		power += float(skills[skill_name]) * 5.0
-
-	return power
 
 
 ## Generate supply, reagent, and boss guaranteed drops.

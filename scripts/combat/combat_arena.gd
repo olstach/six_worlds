@@ -3115,7 +3115,6 @@ func _show_victory_screen(rewards: Dictionary) -> void:
 	var jackpot_amount = rewards.get("jackpot_amount", 0)
 	var trade_bonus = rewards.get("trade_bonus", 0)
 	var enemy_count = rewards.get("enemy_count", 0)
-	var ratio = rewards.get("difficulty_ratio", 1.0)
 
 	# Full-screen overlay
 	var overlay = Control.new()

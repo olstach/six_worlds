@@ -18,6 +18,7 @@ func _ready() -> void:
 	_check_spending()
 	_check_enemies()
 	_check_heroes()
+	_check_reward()
 	_dump_table()
 	if failures > 0:
 		printerr("VERIFY FAILED: %d problem(s)" % failures)
@@ -326,6 +327,28 @@ func _check_heroes() -> void:
 		print("   simha king: %s" % line)
 		expect(crowned == "animal_rakshasa_maneater",
 			"boss encounter crowned '%s' rather than the maneater" % crowned)
+
+
+func _check_reward() -> void:
+	print("-- reward --")
+	var fraction: float = float(EnemySystem.budgets.get("reward_fraction", 0.0))
+	expect(fraction > 0.0 and fraction < 1.0, "reward_fraction out of range: %f" % fraction)
+
+	# division must not lose more than rounding, at any party size
+	for size in [1, 2, 3, 4, 6]:
+		var enemy_party_xp := 1800
+		var total := int(round(float(enemy_party_xp) * fraction))
+		var per_member := maxi(1, int(float(total) / float(size)))
+		expect(per_member * size <= total + size,
+			"size %d: division lost more than rounding" % size)
+		expect(per_member >= 1, "size %d: per-member XP rounded to zero" % size)
+
+	# what a real encounter actually pays, per realm
+	for pair in [["hell", 200], ["hungry_ghost", 700], ["animal", 1800]]:
+		var xp := int(pair[1])
+		var total := int(round(float(xp) * fraction))
+		print("   %s common (%d XP): party gains %d — solo %d, each of four %d"
+			% [pair[0], xp, total, total, int(total / 4.0)])
 
 
 func _dump_table() -> void:
