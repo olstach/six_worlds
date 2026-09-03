@@ -248,6 +248,27 @@ Recorded so they aren't rediscovered as bugs.
 
 ### 2026-08-31 — from the enemy-XP design session
 
+- **Mriga have no events at all.** Four events mention gana; none mention mriga,
+  so the forest has wolves in its prose and no deer. Two existing ones read as
+  either and could simply be switched — `animal_forest_healer_camp` (a
+  grey-muzzled healer, and medicine is the mriga trade) and
+  `animal_forest_town_weapons` (traders). Beyond that, sketches for
+  mriga-specific events, to fold into the general events pass:
+  - **The Alarm Tree** — the herd's warning goes up before you can see why.
+    Rewards Awareness; `first_to_know` should read it differently.
+  - **The antler contest** — two bucks holding a clearing you need to cross,
+    settling it by display. A fight you are allowed to decline, which is the
+    most mriga thing available.
+  - **The old trail** — a migration crossing your route, a `songline_guide`
+    carrying the song that is the only map of it.
+
+- **Parties should not all be hostile by default.** Traders are already neutral;
+  a grazing mriga herd or a kapota flock should be too — `animal_kapota_flock`
+  already says "usually neutral" in a comment nothing reads. Wanted without
+  introducing factions or reputation: something stateless and per-encounter
+  that decides whether contact opens combat or opens a conversation, so trade,
+  contact and quests have somewhere to attach later. See the design note below.
+
 - **Non-combat equipment kits as a broad concept.** The basis now exists: 40
   skill tools across eight skills, five tiers each, carried in the weapon hand
   the way a ritual focus is. Ritual clothing already exists too — the ngakpa

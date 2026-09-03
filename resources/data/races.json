@@ -3961,7 +3961,7 @@
     },
     "forest_singer": {
       "name": "Forest Singer",
-      "description": "The clearing competition. The howling circle at full moon. The display that says: I am here, I am this, does anyone want to respond? Some do it for territory. You do it because the doing is the point — the song carrying further than you can see, the answer coming back from somewhere unexpected.",
+      "description": "On moonlit nights, the song carries further than you can see, the answer coming back from somewhere unexpected.",
       "attribute_modifiers": {},
       "starting_skills": {
         "performance": 1,
