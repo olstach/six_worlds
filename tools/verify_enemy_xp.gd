@@ -16,6 +16,7 @@ func _ready() -> void:
 	_check_resolution()
 	_check_composition()
 	_check_spending()
+	_check_enemies()
 	_dump_table()
 	if failures > 0:
 		printerr("VERIFY FAILED: %d problem(s)" % failures)
@@ -221,6 +222,49 @@ func _check_spending() -> void:
 		["unarmed"], 0.6, EnemySystem.breadth_for_budget(200))
 	expect(int(small["attributes"]["awareness"]) == 10,
 		"a 200 XP enemy should be focused, but awareness rose")
+
+
+func _check_enemies() -> void:
+	print("-- enemy generation --")
+	var by_realm := {}
+	for eid in EnemySystem.encounters:
+		if eid.begins_with("_"):
+			continue
+		var realm: String = EnemySystem.encounters[eid].get("realm", "animal")
+		var party: Array = EnemySystem.generate_encounter(eid, "", realm)
+		expect(party.size() > 0, "%s produced no enemies" % eid)
+		var total := 0
+		for e in party:
+			expect(int(e.get("xp_earned", 0)) > 0, "%s: enemy has no xp_earned" % eid)
+			expect(String(e.get("birth", "")) != "", "%s: enemy has no birth" % eid)
+			expect(int(e.get("max_hp", 0)) > 0, "%s: enemy has no hp" % eid)
+			total += int(e.get("xp_earned", 0))
+		by_realm[realm] = int(by_realm.get(realm, 0)) + 1
+	print("   generated every encounter: %s" % [by_realm])
+
+	# authored group encounters must keep their shape: the same member count
+	# every time, and unequal shares between the groups
+	var grouped: String = ""
+	for eid in EnemySystem.encounters:
+		if not eid.begins_with("_") and EnemySystem.encounters[eid].has("groups"):
+			grouped = eid
+			break
+	if grouped != "":
+		var realm: String = EnemySystem.encounters[grouped].get("realm", "animal")
+		var sizes := {}
+		var xps := []
+		for i in range(40):
+			var party: Array = EnemySystem.generate_encounter(grouped, "", realm)
+			sizes[party.size()] = true
+			if i == 0:
+				for e in party:
+					xps.append(int(e.get("xp_earned", 0)))
+		expect(sizes.size() == 1,
+			"authored group encounter '%s' varied in size: %s" % [grouped, sizes.keys()])
+		xps.sort()
+		expect(xps.size() > 1 and xps[0] != xps[-1],
+			"authored group encounter '%s' split its budget evenly — tiers were not honoured" % grouped)
+		print("   authored groups preserved (%s: fixed size, uneven shares %s)" % [grouped, xps])
 
 
 func _dump_table() -> void:

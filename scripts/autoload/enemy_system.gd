@@ -382,131 +382,142 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 		push_warning("EnemySystem: Unknown encounter '%s', generating fallback" % encounter_id)
 		return _generate_fallback_encounter(realm)
 
-	var party_power = get_party_power() * DIFFICULTY_MULTIPLIERS.get(difficulty, 1.0)
-	var enemies: Array[Dictionary] = []
+	var budget: Dictionary = resolve_party_budget(encounter_id, realm)
+	var party_xp: int = int(budget["xp"])
+	var enc_region: String = template.get("region", "any")
+	var effective_region: String = region if region != "" else enc_region
+
+	# Slots: {archetype | role, share}. Fixed and grouped encounters keep the
+	# composition they were authored with; only plain role encounters roll one.
+	var slots: Array[Dictionary] = []
 
 	if template.get("fixed", false):
-		# Fixed encounter — use exact archetypes
+		# Authored exactly: the archetype list is the composition.
 		for entry in template.get("enemies", []):
-			var archetype_id = entry.get("archetype", "")
-			var count = entry.get("count", 1)
-			for i in range(count):
-				var enemy = _build_enemy(archetype_id, party_power, realm, region)
-				if not enemy.is_empty():
-					enemies.append(enemy)
+			for i in range(int(entry.get("count", 1))):
+				slots.append({"archetype": String(entry.get("archetype", "")), "share": 1})
 
-	elif template.get("mixed", false):
-		# Mixed encounter — groups of different tiers (e.g. 1 devil + 2 imps)
-		var enc_region = template.get("region", "any")
-		var effective_region = region if region != "" else enc_region
-
+	elif template.has("groups"):
+		# Authored shape: each group is a share tier, so a screen of chaff in
+		# front of heavies stays a screen of chaff in front of heavies. The
+		# group's tier rank is its share, which is what made the heavies heavy.
 		for group in template.get("groups", []):
-			var group_tier = group.get("tier", "devil")
-			var group_region = group.get("region", effective_region)
-			var diff_range = group.get("difficulty_range", [0.8, 1.2])
-			var diff_min = diff_range[0] if diff_range.size() > 0 else 0.8
-			var diff_max = diff_range[1] if diff_range.size() > 1 else 1.2
-
-			var group_roles = group.get("roles", {})
-			for role in group_roles:
-				var count = int(group_roles[role])
-				for i in range(count):
-					var archetype_id = _pick_archetype_for_role(role, group_region, group_tier, realm)
-					if archetype_id == "":
-						push_warning("EnemySystem: No archetype for role '%s' tier '%s' in '%s'" % [role, group_tier, group_region])
-						continue
-					var diff_roll = randf_range(diff_min, diff_max)
-					var enemy = _build_enemy(archetype_id, party_power * diff_roll, realm, group_region)
-					if not enemy.is_empty():
-						enemies.append(enemy)
+			var share: int = maxi(1, TIER_ORDER.find(String(group.get("tier", "devil"))) + 1)
+			var group_region: String = String(group.get("region", effective_region))
+			for role in group.get("roles", {}):
+				for i in range(int(group["roles"][role])):
+					slots.append({"role": String(role), "share": share,
+						"tier": String(group.get("tier", "devil")), "region": group_region})
 
 	else:
-		# Role-based encounter — pick random archetypes matching roles and tier
-		var enc_region = template.get("region", "any")
-		# Use mob's region if provided, otherwise encounter's default
-		var effective_region = region if region != "" else enc_region
-		var enc_tier = template.get("tier", "devil")
+		# Plain role encounter: the party archetype decides size and shares.
+		var members: Array[Dictionary] = roll_party_composition(String(budget["band"]))
+		var role_pool: Array[String] = []
+		for role in template.get("roles", {}):
+			for i in range(int(template["roles"][role])):
+				role_pool.append(String(role))
+		if role_pool.is_empty():
+			role_pool.append("frontline")
+		for i in range(members.size()):
+			slots.append({"role": role_pool[i % role_pool.size()],
+				"share": int(members[i]["share"]),
+				"is_hero": bool(members[i].get("is_hero", false))})
 
-		var diff_range = template.get("difficulty_range", [0.8, 1.2])
-		var diff_min = diff_range[0] if diff_range.size() > 0 else 0.8
-		var diff_max = diff_range[1] if diff_range.size() > 1 else 1.2
-
-		var roles = template.get("roles", {})
-		for role in roles:
-			var count = int(roles[role])
-			for i in range(count):
-				var archetype_id = _pick_archetype_for_role(role, effective_region, enc_tier, realm)
-				if archetype_id == "":
-					push_warning("EnemySystem: No archetype found for role '%s' tier '%s' in region '%s'" % [role, enc_tier, effective_region])
-					continue
-
-				# Random difficulty within range
-				var diff_roll = randf_range(diff_min, diff_max)
-				var enemy = _build_enemy(archetype_id, party_power * diff_roll, realm, effective_region)
-				if not enemy.is_empty():
-					enemies.append(enemy)
-
-	if enemies.is_empty():
-		push_warning("EnemySystem: Encounter '%s' produced no enemies, using fallback" % encounter_id)
+	if slots.is_empty():
 		return _generate_fallback_encounter(realm)
 
+	# Resolve each slot to an archetype before splitting the budget, so the
+	# hero can be chosen by threat where the composition was authored.
+	for slot in slots:
+		if not slot.has("archetype"):
+			slot["archetype"] = _pick_archetype_for_role(
+				String(slot["role"]), String(slot.get("region", effective_region)),
+				String(slot.get("tier", budget["tier"])), realm)
+
+	_mark_authored_hero(slots, template)
+
+	var total_shares: int = 0
+	for slot in slots:
+		total_shares += int(slot["share"])
+
+	var enemies: Array[Dictionary] = []
+	for slot in slots:
+		if String(slot["archetype"]) == "":
+			continue
+		var member_xp: int = maxi(1, int(round(
+			float(party_xp) * float(slot["share"]) / float(maxi(total_shares, 1)))))
+		var enemy = _build_enemy(String(slot["archetype"]), member_xp, realm,
+			String(slot.get("region", effective_region)), bool(slot.get("is_hero", false)))
+		if not enemy.is_empty():
+			enemies.append(enemy)
+
+	if enemies.is_empty():
+		return _generate_fallback_encounter(realm)
 	return enemies
 
 
-## Calculate party power as a single number representing party strength.
-## For each party member: sum of (attribute - 10) for all attributes + skill levels * 20
-## Returns the average across the party.
-func get_party_power() -> float:
-	var party = CharacterSystem.get_party()
-	if party.is_empty():
-		return 50.0  # Default for empty party
+## For authored compositions, the hero is the slot with the highest share, ties
+## broken by the archetype's threat_multiplier. Rolled compositions already
+## carry their own is_hero from the party template.
+func _mark_authored_hero(slots: Array[Dictionary], template: Dictionary) -> void:
+	for slot in slots:
+		if slot.has("is_hero"):
+			return  # rolled composition: already decided
+	if slots.size() == 1:
+		slots[0]["is_hero"] = true
+		return
 
-	var total_power: float = 0.0
-	for member in party:
-		var member_power: float = 0.0
+	var top_share: int = 0
+	for slot in slots:
+		top_share = maxi(top_share, int(slot["share"]))
+	var best: int = -1
+	var best_threat: float = -1.0
+	var contenders: int = 0
+	for i in range(slots.size()):
+		if int(slots[i]["share"]) != top_share:
+			continue
+		contenders += 1
+		var t: float = float(archetypes.get(String(slots[i]["archetype"]), {}).get("threat_multiplier", 1.0))
+		if t > best_threat:
+			best_threat = t
+			best = i
+	for slot in slots:
+		slot["is_hero"] = false
+	# Only crown one when the top share is not shared by the whole party.
+	if best >= 0 and contenders < slots.size():
+		slots[best]["is_hero"] = true
 
-		# Attribute contribution: each point above 10 adds to power
-		var attrs = member.get("attributes", {})
-		for attr_name in attrs:
-			member_power += float(attrs[attr_name] - 10)
 
-		# Skill contribution: each skill level × 8
-		# (Skills unlock perks/spells but don't directly add raw combat stats,
-		# so the multiplier is kept moderate to avoid over-inflating enemy attributes)
-		var skills = member.get("skills", {})
-		for skill_name in skills:
-			member_power += float(skills[skill_name]) * 8.0
-
-		total_power += member_power
-
-	return total_power / float(party.size())
-
-
-# ============================================
-# ENEMY BUILDING
-# ============================================
-
-## Build a single enemy dict from an archetype + power budget.
+## Build one enemy as a character: roll a birth and a background, apply their
+## modifiers, then spend the XP budget the way the archetype directs.
 ## realm and region are passed through for procedural name generation.
-func _build_enemy(archetype_id: String, power_budget: float, realm: String = "hell", region: String = "") -> Dictionary:
+func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
+		region: String = "", is_hero: bool = false) -> Dictionary:
 	var archetype = archetypes.get(archetype_id, {})
 	if archetype.is_empty():
 		push_warning("EnemySystem: Unknown archetype '%s'" % archetype_id)
 		return {}
 
-	# Apply threat multiplier to budget
-	var threat = archetype.get("threat_multiplier", 1.0)
-	var effective_budget = power_budget * threat
+	var effective_budget: float = float(xp_budget)
 
-	# Distribute attribute points (budget split: ~60% attributes, ~40% skills)
-	var attr_budget = int(effective_budget * 0.6)
-	var skill_budget = int(effective_budget * 0.4 / 20.0)  # Convert to skill "points"
-	# Minimum budgets so enemies always have something
-	attr_budget = maxi(attr_budget, 4)
-	skill_budget = maxi(skill_budget, 1)
+	# Birth and background first — the same two steps a player character takes.
+	var birth: String = CharacterSystem.roll_birth_for_realm(realm)
+	var background: String = KarmaSystem.select_random_background(birth)
 
-	var attributes = _distribute_attributes(archetype.get("attribute_weights", {}), attr_budget)
-	var skills = _assign_skills(archetype.get("skill_priorities", []), skill_budget)
+	var built: Dictionary = CharacterSystem.create_blank_character()
+	CharacterSystem.apply_birth_modifiers(built, birth)
+	if background != "":
+		CharacterSystem.apply_background_skills(built, background)
+
+	# Then the archetype, as a spending plan for the budget.
+	var spent: int = CharacterSystem.spend_xp_budget(
+		built, xp_budget,
+		archetype.get("attribute_weights", {}),
+		archetype.get("skill_priorities", []),
+		0.6, breadth_for_budget(xp_budget))
+
+	var attributes = built["attributes"]
+	var skills = built["skills"]
 	var derived = _calculate_derived_stats(attributes, skills)
 	var equipment = _generate_equipment(archetype.get("equipment_template", {}), effective_budget)
 	var spells = _pick_spells(skills, archetype.get("guaranteed_spells", []))
@@ -533,7 +544,8 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 
 	# Map power budget to item rarity — shared by weapon and armor generation.
 	# Realm drives the material tier (e.g. hell → bone/obsidian/bronze); rarity drives quality.
-	var power_scale = effective_budget / 80.0
+	# Item rarity scales with the XP the enemy represents.
+	var power_scale = effective_budget / 400.0
 	var item_rarity: String
 	if power_scale < 0.5:
 		item_rarity = "common"
@@ -642,7 +654,12 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 			"prosthetics": {}
 		},
 		"wounds": [],
-		"traits": []
+		"traits": built.get("traits", []),
+		"birth": birth,
+		"background": background,
+		"xp_earned": spent,
+		"is_hero": is_hero,
+		"hero_id": ("hero_%s_%d" % [archetype_id, randi()]) if is_hero else ""
 	}
 
 	# Copy duel_stop_hp_pct if the archetype has one — read by combat_manager to end
@@ -1165,12 +1182,10 @@ func _pick_archetype_for_role(role: String, region: String, tier: String = "devi
 
 ## Fallback encounter when encounter_id is unknown — 2 generic demon warriors
 func _generate_fallback_encounter(realm: String = "hell") -> Array[Dictionary]:
-	var party_power = get_party_power()
+	var base: float = float(budgets.get("realm_base", {}).get(realm, 200))
 	var enemies: Array[Dictionary] = []
-
 	for i in range(2):
-		var enemy = _build_enemy("hell_demon_warrior", party_power * 0.8, realm)
+		var enemy = _build_enemy("hell_demon_warrior", int(base * 0.4), realm)
 		if not enemy.is_empty():
 			enemies.append(enemy)
-
 	return enemies
