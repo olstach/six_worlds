@@ -248,6 +248,16 @@ Recorded so they aren't rediscovered as bugs.
 
 ### 2026-08-31 — from the enemy-XP design session
 
+- **Fire's padmakula line has holes at levels 1 and 5.** Fire is the lotus
+  family — desire transmuted, magnetising rather than burning — and the ladder
+  is already there in `Fire + Enchantment`: `charm` (L3), `magnetizing_aura`
+  (L7), `dominate` (L9), with `berserk` and `shining_mirage` alongside at L7.
+  But Fire has eight spells at L1 and twelve at L5 and not one of them is
+  mental, so the line starts at 3, jumps to 7, and a character specialising
+  into seduction and domination has nothing to learn across most of the
+  mid-game. Wants an L1 and an L5 when the spells are refreshed. The Sensate
+  background and the rakshasa's fire affinity of 5 both point at this line.
+
 - **The naming lore is barely used by anything.** `animal_realm_names.json` is
   read by no script and referenced by almost no content: 389 personal names with
   meanings, plus per-birth place names that exist only in the file. The rakshasa
