@@ -1,0 +1,136 @@
+{
+  "_comment": "How a party's XP budget is split among its members. member_xp = party_xp * share / total_shares. min_band gates exotic templates to rarer encounters. Named party_composition rather than party_archetypes because _ready() auto-loads every *_archetypes.json in this directory as an archetype file.",
+  "party_archetypes": {
+    "patrol": {
+      "weight": 30,
+      "tiers": [
+        {
+          "share": 1,
+          "count": [
+            2,
+            4
+          ]
+        }
+      ],
+      "disposition": "hostile"
+    },
+    "pair": {
+      "weight": 15,
+      "tiers": [
+        {
+          "share": 1,
+          "count": [
+            2,
+            2
+          ]
+        }
+      ],
+      "disposition": "hostile"
+    },
+    "hero_and_mooks": {
+      "weight": 20,
+      "tiers": [
+        {
+          "share": 3,
+          "count": [
+            1,
+            1
+          ]
+        },
+        {
+          "share": 1,
+          "count": [
+            2,
+            4
+          ]
+        }
+      ],
+      "disposition": "hostile"
+    },
+    "swarm": {
+      "weight": 15,
+      "tiers": [
+        {
+          "share": 1,
+          "count": [
+            5,
+            8
+          ]
+        }
+      ],
+      "disposition": "neutral"
+    },
+    "lone_hunter": {
+      "weight": 10,
+      "tiers": [
+        {
+          "share": 1,
+          "count": [
+            1,
+            1
+          ]
+        }
+      ],
+      "disposition": "hostile"
+    },
+    "warband": {
+      "weight": 8,
+      "min_band": "uncommon",
+      "tiers": [
+        {
+          "share": 2,
+          "count": [
+            1,
+            2
+          ]
+        },
+        {
+          "share": 1,
+          "count": [
+            3,
+            5
+          ]
+        }
+      ],
+      "disposition": "wary"
+    },
+    "foreign_mercs": {
+      "weight": 2,
+      "min_band": "rare",
+      "foreign": true,
+      "tiers": [
+        {
+          "share": 2,
+          "count": [
+            1,
+            1
+          ]
+        },
+        {
+          "share": 1,
+          "count": [
+            2,
+            3
+          ]
+        }
+      ],
+      "disposition": "wary"
+    },
+    "rival_party": {
+      "weight": 2,
+      "min_band": "rare",
+      "all_heroes": true,
+      "tiers": [
+        {
+          "share": 1,
+          "count": [
+            2,
+            4
+          ]
+        }
+      ],
+      "disposition": "wary"
+    }
+  },
+  "_comment_disposition": "disposition decides whether meeting this party opens combat or opens a conversation. hostile attacks on sight; wary and neutral route through an event where fighting is one choice among talking, trading and leaving. Stateless and per-encounter — no factions, no reputation, nothing remembered. An encounter can override its party archetype's value."
+}

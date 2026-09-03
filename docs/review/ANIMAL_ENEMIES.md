@@ -1,13 +1,51 @@
 # Animal Realm — Bestiary
 
-*34 archetypes across 42 encounter templates. The name is what the player sees over the enemy's head; the note beneath it is a design comment and never appears in game.*
+*43 archetypes across 44 encounter templates. The name is what the player sees over the enemy's head; the note beneath it is a design comment and never appears in game.*
 
 *Edit names and notes between the anchors. Everything else — tier, roles, resistances — is generated from `animal_archetypes.json`.*
 
 ---
 
 
-# Region: forest  (10)
+# Region: forest  (19)
+
+
+## Gana Alpha  `animal_gana_alpha`
+
+`tier: devil  ·  roles: frontline  ·  ai: pack_bonus  ·  skills: unarmed, might, leadership  ·  threat ×1.15`
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_gana_alpha | name -->
+Gana Alpha
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_gana_alpha | _comment -->
+Not the fastest and not the strongest. The one the pack has already tested every alternative to.
+<!--@end-->
+
+
+## Gana Elder  `animal_gana_elder`
+
+`tier: devil  ·  roles: support  ·  skills: enchantment, ritual, leadership  ·  threat ×1.05`
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_gana_elder | name -->
+Gana Elder
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_gana_elder | _comment -->
+Sings the hunt rather than joining it. What the pack hears from her, it does.
+<!--@end-->
 
 
 ## Gana Howler  `animal_gana_howler`
@@ -32,6 +70,25 @@ Pack support; enchantment perks buff allies and weaken party members
 <!--@end-->
 
 
+## Gana Hunter  `animal_gana_hunter`
+
+`tier: devil  ·  roles: skirmisher  ·  ai: pack_bonus  ·  skills: unarmed, daggers, might  ·  threat ×1.0`
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_gana_hunter | name -->
+Gana Hunter
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_gana_hunter | _comment -->
+A full-grown wolf that has done this many times. Closes only when the throat is already open.
+<!--@end-->
+
+
 ## Gana Pack Runner  `animal_gana_runner`
 
 `tier: shade  ·  roles: frontline  ·  ai: pack_bonus  ·  skills: martial_arts, grace  ·  threat ×0.9`
@@ -51,6 +108,44 @@ Gana Pack Runner
 
 <!--@ animal_archetypes.json | animal_gana_runner | _comment -->
 Pack hunter; grows sharper and harder to hit as more of the pack closes in.
+<!--@end-->
+
+
+## Gana Runt  `animal_gana_runt`
+
+`tier: imp  ·  roles: skirmisher  ·  ai: pack_bonus  ·  skills: daggers, guile  ·  threat ×0.6`
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_gana_runt | name -->
+Gana Runt
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_gana_runt | _comment -->
+Last of the litter and last to the kill. Harries the edges and runs from anything that turns.
+<!--@end-->
+
+
+## Gana Stalker  `animal_gana_stalker`
+
+`tier: shade  ·  roles: skirmisher  ·  ai: pack_bonus  ·  skills: daggers, guile, grace  ·  threat ×0.85`
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_gana_stalker | name -->
+Gana Stalker
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_gana_stalker | _comment -->
+Works the flanks while the pack holds the front. Goes for the straggler, never the strongest.
 <!--@end-->
 
 
@@ -98,6 +193,63 @@ Flanking predator; grace perks give evasion while repositioning; attacks from un
 <!--@end-->
 
 
+## Mriga Herd  `animal_mriga_herd`
+
+`tier: imp  ·  roles: frontline  ·  ai: pack_bonus  ·  skills: grace  ·  threat ×0.6`
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_mriga_herd | name -->
+Mriga Herd
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_mriga_herd | _comment -->
+Individually harmless. A stampede is not a fight, it is weather.
+<!--@end-->
+
+
+## Mriga Sentinel  `animal_mriga_sentinel`
+
+`tier: shade  ·  roles: skirmisher  ·  ai: pack_bonus  ·  skills: grace, ranged  ·  threat ×0.8`
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_mriga_sentinel | name -->
+Mriga Sentinel
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_mriga_sentinel | _comment -->
+Watches the edge and calls the alarm. Hard to hit, hard to corner, and never fights alone by choice.
+<!--@end-->
+
+
+## Mriga Stag  `animal_mriga_stag`
+
+`tier: devil  ·  roles: frontline  ·  skills: unarmed, might  ·  threat ×1.0`
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_mriga_stag | name -->
+Mriga Stag
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_mriga_stag | _comment -->
+Rutting-season buck; charges anything that does not concede the ground. Antlers count as unarmed.
+<!--@end-->
+
+
 ## Rakshasa Hunter  `animal_rakshasa_hunter`
 
 `tier: devil  ·  roles: frontline  ·  skills: unarmed, martial_arts  ·  resists: slashing 10%, physical 5%  ·  threat ×1.2`
@@ -129,6 +281,25 @@ Rakshasa Maneater
 
 <!--@ animal_archetypes.json | animal_rakshasa_maneater | _comment -->
 Boss-tier lone predator; singles out the weakest and most isolated party member.
+<!--@end-->
+
+
+## The Young One  `animal_rakshasa_young`
+
+`tier: shade  ·  roles: skirmisher  ·  skills: unarmed, guile, might  ·  threat ×0.95`
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_rakshasa_young | name -->
+The Young One
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_rakshasa_young | _comment -->
+Not yet named. Rakshasa are named at their first successful hunt; before that they are simply 'the young one'. Dangerous, and aware it has something to prove.
 <!--@end-->
 
 

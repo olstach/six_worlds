@@ -1,0 +1,52 @@
+{
+  "_comment": "Absolute per-realm party XP budgets. party_xp = realm_base * tier * band. Expected to move in playtesting.",
+  "realm_base": {
+    "hell": 200,
+    "hungry_ghost": 700,
+    "animal": 1800,
+    "domain": 1800,
+    "human": 3000,
+    "asura": 5000,
+    "god": 8000
+  },
+  "_comment_tier": "Encounter tier. 'beast' exists on one archetype and is treated as 'shade'.",
+  "tier_multipliers": {
+    "imp": 0.5,
+    "shade": 0.8,
+    "beast": 0.8,
+    "devil": 1.0,
+    "boss": 2.0
+  },
+  "_comment_bands": "Rolled per encounter. Same common/uncommon/rare vocabulary births use.",
+  "bands": [
+    {
+      "id": "common",
+      "multiplier": 1.0,
+      "weight": 60
+    },
+    {
+      "id": "uncommon",
+      "multiplier": 1.5,
+      "weight": 30
+    },
+    {
+      "id": "rare",
+      "multiplier": 2.3,
+      "weight": 10
+    }
+  ],
+  "_comment_reward": "Fraction of the enemy party's XP the player party gains, before division by party size.",
+  "reward_fraction": 0.12,
+  "_comment_breadth": "Past xp_threshold a growing share of the budget is spent OUTSIDE the archetype's plan — attributes it does not weight, skills off its priority list. Keeps a high-XP enemy from being three maxed skills and one enormous attribute, and makes it memorable: a fighter who also took a class in clay sculpture.",
+  "breadth": {
+    "xp_threshold": 300,
+    "scale": 10000,
+    "max_fraction": 0.35,
+    "skill_share": 0.5
+  },
+  "_comment_equipment": "Gear is not paid for out of the XP budget — the player never buys equipment with XP either — but its total value scales with it. value_per_xp turns a character's XP into a gold-equivalent kit budget, which decides rarity and how much is left for consumables.",
+  "equipment": {
+    "value_per_xp": 0.45,
+    "consumable_share": 0.25
+  }
+}

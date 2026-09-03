@@ -26,7 +26,7 @@ Patient and persistent, the Dura have been here longer than most things that wal
 <!--@end-->
 
 
-*Backgrounds: `caravan_guard`, `tunneler`, `tunnel_merchant`, `root_shaper`, `shell_wright`*
+*Backgrounds: `caravan_guard`, `tunneler`, `tunnel_merchant`, `root_shaper`, `shell_wright`, `herbalist`*
 
 
 ---
@@ -47,11 +47,11 @@ Gana
 **Description**
 
 <!--@ races.json | gana | description -->
-Alone, a middling thing with good teeth. Together, the only creature in the forest that hunts by conversation — and among themselves the argument is always settled by voice long before it is settled by throat.
+Alone, a middling thing with good teeth. Together, nothing in the forest outruns us.
 <!--@end-->
 
 
-*Backgrounds: `throat_hold`, `quiet_tooth`, `ceremonial_dancer`, `herb_walker`, `elder_voice`, `range_reader`, `forest_singer`*
+*Backgrounds: `strangler`, `quiet_tooth`, `bonfire_dancer`, `herbalist`, `elder_voice`, `range_reader`, `forest_singer`, `blood_drinker`, `ancestor_priest`*
 
 
 ---
@@ -76,7 +76,7 @@ Armoured, unhurried, and entirely uninterested in your schedule. The karka hold 
 <!--@end-->
 
 
-*Backgrounds: `coral_guard`, `wreck_gleaner`, `current_herald`, `vent_warden`, `keel_rider`*
+*Backgrounds: `coral_guard`, `wreck_gleaner`, `current_herald`, `vent_warden`, `keel_rider`, `herbalist`*
 
 
 ---
@@ -101,7 +101,7 @@ In the ocean, the slow and unwary quickly become a meal. The matsya are the chil
 <!--@end-->
 
 
-*Backgrounds: `coral_guard`, `sea_dancer`, `deep_hunter`, `wreck_gleaner`, `current_herald`*
+*Backgrounds: `coral_guard`, `sea_dancer`, `deep_hunter`, `wreck_gleaner`, `current_herald`, `herbalist`*
 
 
 ---
@@ -109,7 +109,7 @@ In the ocean, the slow and unwary quickly become a meal. The matsya are the chil
 
 ## Mriga  `mriga`
 
-`common  ·  attributes: strength-1, finesse+1, constitution-1, awareness+2, charm+1 (total +2)  ·  skills: grace 1, performance 1, persuasion 1 (3 pts)  ·  traits: colony_mind  ·  reincarnation weight: 45`
+`common  ·  attributes: strength-1, finesse+1, constitution-1, awareness+2, charm+1 (total +2)  ·  skills: grace 1, performance 1, persuasion 1 (3 pts)  ·  traits: colony_mind, first_to_know  ·  reincarnation weight: 45`
 
 
 **Name**
@@ -122,11 +122,11 @@ Mriga
 **Description**
 
 <!--@ races.json | mriga | description -->
-They know a clearing is wrong before they can say why, and no one has ever asked them to explain. Everything among them is decided by display: the held ground, the long formal argument of antlers that ends without a wound.
+The feeling of dew on your antlers, the juicy new leaves of spring, the kinship of the herd! It is a good life.
 <!--@end-->
 
 
-*Backgrounds: `antler_speaker`, `migration_singer`, `slope_herbalist`, `scarred_lead`, `range_reader`, `forest_singer`*
+*Backgrounds: `antler_speaker`, `songline_guide`, `slope_herbalist`, `scarred_lead`, `range_reader`, `forest_singer`, `herbalist`*
 
 
 ---
@@ -151,7 +151,7 @@ Poison, silk, iridescence, and a tendency to appear where least expected, the Pa
 <!--@end-->
 
 
-*Backgrounds: `far_scout`, `flame_seeker`, `pollen_rishi`*
+*Backgrounds: `far_scout`, `flame_seeker`, `pollen_rishi`, `herbalist`*
 
 
 ---
@@ -176,7 +176,7 @@ Nothing in the canopy is fastened down, and anything that is merely constitutes 
 <!--@end-->
 
 
-*Backgrounds: `troop_elder`, `shrine_keeper`, `jugaad`, `forest_thief`, `treetop_wit`*
+*Backgrounds: `troop_elder`, `shrine_keeper`, `jugaad`, `forest_thief`, `treetop_wit`, `herbalist`*
 
 
 ---
@@ -201,7 +201,7 @@ A low decision made at speed. Varaha neither bluff nor can be bluffed, and the f
 <!--@end-->
 
 
-*Backgrounds: `old_tusk`, `sounder_guard`, `mycelium_tender`, `sounder_matron`*
+*Backgrounds: `old_tusk`, `sounder_guard`, `mycelium_tender`, `sounder_matron`, `herbalist`, `ancestor_priest`*
 
 
 ---
@@ -226,7 +226,7 @@ The nature of the relationship between a bhramara and their hive eludes the gras
 <!--@end-->
 
 
-*Backgrounds: `hive_architect`, `network_node`, `far_scout`, `honey_alchemist`, `caravan_guard`, `swarm_caller`*
+*Backgrounds: `hive_architect`, `network_node`, `far_scout`, `honey_alchemist`, `caravan_guard`, `swarm_caller`, `herbalist`*
 
 
 ---
@@ -251,7 +251,7 @@ Every message that mattered was carried by something small and grey that nobody 
 <!--@end-->
 
 
-*Backgrounds: `post_runner`, `temple_dove`, `conference_pilgrim`, `waypoint_gossip`*
+*Backgrounds: `post_runner`, `temple_dove`, `conference_pilgrim`, `waypoint_gossip`, `herbalist`*
 
 
 ---
@@ -276,7 +276,7 @@ The blade-limbed mantis, the dragonfly, the ambush grasshopper. They live by the
 <!--@end-->
 
 
-*Backgrounds: `caravan_guard`, `still_hunter`, `blade_contemplative`, `jaina`*
+*Backgrounds: `caravan_guard`, `still_hunter`, `blade_contemplative`, `jaina`, `herbalist`*
 
 
 ---
@@ -301,7 +301,7 @@ Dappled light is their native country — the flicker where a shape might be, an
 <!--@end-->
 
 
-*Backgrounds: `cache_master`, `canopy_ambush`, `forest_drifter`, `hedonist`*
+*Backgrounds: `cache_master`, `canopy_ambush`, `forest_drifter`, `hedonist`, `herbalist`, `blood_drinker`*
 
 
 ---
@@ -326,7 +326,7 @@ The stoop is one decision, made at height and never revised. From up there the w
 <!--@end-->
 
 
-*Backgrounds: `sky_lord`, `stooper`, `jessed_hawk`*
+*Backgrounds: `sky_lord`, `stooper`, `jessed_hawk`, `herbalist`, `blood_drinker`, `ancestor_priest`*
 
 
 ---
@@ -351,7 +351,7 @@ They ask questions in the tone of someone who already has the answer and is deci
 <!--@end-->
 
 
-*Backgrounds: `night_scholar`, `ill_omen`, `fortune_seeker`*
+*Backgrounds: `night_scholar`, `ill_omen`, `fortune_seeker`, `herbalist`*
 
 
 ---
@@ -376,7 +376,7 @@ Deep beneath the waves dwell creatures strange and old, wielding weird magic and
 <!--@end-->
 
 
-*Backgrounds: `coral_guard`, `palace_vizier`, `deep_hunter`, `wreck_gleaner`, `boundary_walker`*
+*Backgrounds: `coral_guard`, `palace_vizier`, `deep_hunter`, `wreck_gleaner`, `boundary_walker`, `herbalist`, `blood_drinker`*
 
 
 ---
@@ -401,7 +401,7 @@ Before the first apes descended from the trees, these serpentine beings raised t
 <!--@end-->
 
 
-*Backgrounds: `coral_guard`, `palace_vizier`, `sea_dancer`, `wreck_gleaner`, `tide_seer`*
+*Backgrounds: `coral_guard`, `palace_vizier`, `sea_dancer`, `wreck_gleaner`, `tide_seer`, `herbalist`*
 
 
 ---
@@ -422,11 +422,11 @@ Rakshasa
 **Description**
 
 <!--@ races.json | rakshasa | description -->
-Shape-shifting lords of the jungle, presiding over the ancient cults of the hunt and atavistic power. This is what a tiger becomes across lifetimes of the twisted yogas — hunger refined into discipline, and the discipline pointed at you.
+Shape-shifting lords of the jungle, presiding over the ancient cults of the hunt. What a tiger becomes, given lifetimes.
 <!--@end-->
 
 
-*Backgrounds: `lord_of_the_range`, `the_hungry`, `maneater`, `hedonist`*
+*Backgrounds: `lord_of_the_range`, `the_hungry`, `maneater`, `hedonist`, `herbalist`, `realm_walker`, `blood_drinker`, `ancestor_priest`, `the_sensate`*
 
 
 ---
@@ -451,16 +451,35 @@ Something is being guarded — a spring, a hoard, a promise older than the hill 
 <!--@end-->
 
 
-*Backgrounds: `caravan_guard`, `still_hunter`, `pollen_rishi`, `meadow_ward`*
+*Backgrounds: `caravan_guard`, `still_hunter`, `pollen_rishi`, `meadow_ward`, `herbalist`, `ancestor_priest`*
 
 
 ---
 
 
-# Backgrounds  (63)
+# Backgrounds  (67)
 
 
 *What the character did with the birth they were given. Each appears once here, with the births that can take it.*
+
+
+## Ancestor Priest  `ancestor_priest`
+
+`births: Gana, Rakshasa, Shyena, Varaha, Yaksha  ·  skills: white_magic 1, black_magic 1, ritual 1  ·  kit: prayer_beads`
+
+
+**Name**
+
+<!--@ backgrounds.json | ancestor_priest | name -->
+Ancestor Priest
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | ancestor_priest | description -->
+The chiefs and heroes are laid to rest with the trophies of their most glorious hunts and offered blood mead when the moon is full.
+<!--@end-->
 
 
 ## Antler Speaker  `antler_speaker`
@@ -478,7 +497,7 @@ Antler Speaker
 **Description**
 
 <!--@ backgrounds.json | antler_speaker | description -->
-The clearing belongs to whoever can hold it longest — through display, through stamina, through the formal language of antlers. I know all the vocabulary. The point of the contest is that it ends before anyone is hurt, and whoever understands that best usually wins it.
+The young ones duel for dominance, the mature ones gather the kin with presence and speech.
 <!--@end-->
 
 
@@ -498,6 +517,44 @@ Blade Contemplative
 
 <!--@ backgrounds.json | blade_contemplative | description -->
 The mantis holds perfectly still before it moves. So do you. The strike is not an act of violence — it is the end of a very long thought.
+<!--@end-->
+
+
+## Blood Drinker  `blood_drinker`
+
+`births: Gana, Makara, Marjara, Rakshasa, Shyena  ·  skills: might 1, guile 1, black_magic 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | blood_drinker | name -->
+Blood Drinker
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | blood_drinker | description -->
+This is not their first incarnation in this body, and probably not the last, looking on how they savour the hunt.
+<!--@end-->
+
+
+## Bonfire Dancer  `bonfire_dancer`
+
+`births: Gana  ·  skills: performance 1, ritual 1, persuasion 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | bonfire_dancer | name -->
+Bonfire Dancer
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | bonfire_dancer | description -->
+These? They make a clinking sound when I move, and these here are to reflect lights and sparkle, and this one is —
 <!--@end-->
 
 
@@ -574,25 +631,6 @@ Caravan Guard
 
 <!--@ backgrounds.json | caravan_guard | description -->
 The trade roads between hive-cities need walking. You walk them heavy and slow, and nothing touches the cargo.
-<!--@end-->
-
-
-## Ceremonial Dancer  `ceremonial_dancer`
-
-`births: Gana  ·  skills: performance 1, ritual 1, persuasion 1`
-
-
-**Name**
-
-<!--@ backgrounds.json | ceremonial_dancer | name -->
-Ceremonial Dancer
-<!--@end-->
-
-
-**Description**
-
-<!--@ backgrounds.json | ceremonial_dancer | description -->
-In the long cold the pack makes a circle and calls to the dark until something answers. I am the one who knows when to start and when the call is complete.
 <!--@end-->
 
 
@@ -687,7 +725,7 @@ Elder Voice
 **Description**
 
 <!--@ backgrounds.json | elder_voice | description -->
-The alpha doesn't lead by being fastest or most violent. The alpha leads because the pack has tested every alternative and this one keeps them fed.
+Not the fastest, not the strongest, but the one who can keep the pack alive the longest.
 <!--@end-->
 
 
@@ -763,7 +801,7 @@ Forest Singer
 **Description**
 
 <!--@ backgrounds.json | forest_singer | description -->
-The clearing competition. The howling circle at full moon. The display that says: I am here, I am this, does anyone want to respond? Some do it for territory. You do it because the doing is the point — the song carrying further than you can see, the answer coming back from somewhere unexpected.
+On moonlit nights, the song carries further than you can see, the answer coming back from somewhere unexpected.
 <!--@end-->
 
 
@@ -820,26 +858,26 @@ Hedonist
 **Description**
 
 <!--@ backgrounds.json | hedonist | description -->
-Not interested in territory, dominion, or legacy. Interested in the next experience — the feast after the hunt, the fear on a stranger's face, the music from the village fire that reaches the treeline. The unpredictability is not a flaw. It is the point.
+…the feast after the hunt, the fear on a stranger's face, the music from the village fire that reaches the treeline — all this is the blood of experience, and I will have my fill!
 <!--@end-->
 
 
-## Herb Walker  `herb_walker`
+## Herbalist  `herbalist`
 
-`births: Gana  ·  skills: medicine 2, earth_magic 1`
+`births: Bhramara, Dura, Gana, Kapota, Karka, Khadga, Makara, Marjara, Matsya, Mriga, Naga, Patanga, Rakshasa, Shyena, Uluka, Vanara, Varaha, Yaksha  ·  skills: medicine 2, earth_magic 1`
 
 
 **Name**
 
-<!--@ backgrounds.json | herb_walker | name -->
-Herb Walker
+<!--@ backgrounds.json | herbalist | name -->
+Herbalist
 <!--@end-->
 
 
 **Description**
 
-<!--@ backgrounds.json | herb_walker | description -->
-The old female eats grass when ill, slows for the lame elk, reads the forest not for the kill but for the whole. The pack follows her medicine more than her speed.
+<!--@ backgrounds.json | herbalist | description -->
+The forest speaks of cures and poisons, if you know how to listen. When you break a branch, you see little. They see the weather, time, soil, animals and fungi, spirits and the dead.
 <!--@end-->
 
 
@@ -978,7 +1016,7 @@ You found that boats go places if you hold on to the underside and wait. You hav
 
 ## Lord of the Range  `lord_of_the_range`
 
-`births: Rakshasa  ·  skills: unarmed 2, martial_arts 1`
+`births: Rakshasa  ·  skills: might 2, martial_arts 1`
 
 
 **Name**
@@ -991,13 +1029,13 @@ Lord of the Range
 **Description**
 
 <!--@ backgrounds.json | lord_of_the_range | description -->
-Every tree in three valleys has been marked. The boundaries are maintained with absolute precision — a scratch here, a spray there, a half-eaten carcass arranged just so at the crossing. When lesser things feel watched in the deep forest, they are right.
+Every tree in three valleys is marked. When lesser things feel watched, they are right.
 <!--@end-->
 
 
 ## Maneater  `maneater`
 
-`births: Rakshasa  ·  attributes: finesse+1  ·  skills: unarmed 2, guile 1`
+`births: Rakshasa  ·  attributes: finesse+1  ·  skills: guile 2, unarmed 1`
 
 
 **Name**
@@ -1010,7 +1048,7 @@ Maneater
 **Description**
 
 <!--@ backgrounds.json | maneater | description -->
-They tried keeping fires at the forest's edge. It didn't help. Now there is one who comes when she will, takes what she will, leaves when she is finished. The fires don't frighten her. She has learned the settlement schedules.
+They tell bedtime stories to their children about her, unable to see her dark silhouette lurking behind the window.
 <!--@end-->
 
 
@@ -1030,25 +1068,6 @@ Meadow Ward
 
 <!--@ backgrounds.json | meadow_ward | description -->
 You are bound to a place. The meadow's health is your health. Strangers who wish safe passage learn to speak to you first.
-<!--@end-->
-
-
-## Migration Singer  `migration_singer`
-
-`births: Mriga  ·  attributes: charm+1  ·  skills: performance 1, persuasion 1, logistics 1  ·  kit: rations`
-
-
-**Name**
-
-<!--@ backgrounds.json | migration_singer | name -->
-Migration Singer
-<!--@end-->
-
-
-**Description**
-
-<!--@ backgrounds.json | migration_singer | description -->
-The old trail is walked so long it becomes part of the body, but it is carried in the voice. I sing the route — the water, the crossing, the season it stops being safe — and the herd behind me does not need to have walked it before. A song is the only map that outlives everyone who made it.
 <!--@end-->
 
 
@@ -1200,7 +1219,7 @@ Quiet Tooth
 **Description**
 
 <!--@ backgrounds.json | quiet_tooth | description -->
-A knife is a tooth you can put down, which makes it better than a tooth. I work the edges of things — the straggler, the unwatched cache, the sentry who has been awake too long. The pack sings. I am the reason the singing works, and I do it from somewhere behind you.
+A tooth is a knife that is always with you, quick and quiet when you spot a straggler, a weakling, one lost.
 <!--@end-->
 
 
@@ -1219,7 +1238,26 @@ Range Reader
 **Description**
 
 <!--@ backgrounds.json | range_reader | description -->
-Every clearing is a risk and a reward. I go first, I go last, reading every edge for the colour that doesn't belong, the shadow that holds still while the leaves move. The herd waits for my signal. The pack waits for my report. The skill is the same either way.
+When I run, I am eyes, I am ears, I am heart. I notice the colour that does not belong, the shadow that holds still while the leaves move.
+<!--@end-->
+
+
+## Realm Walker  `realm_walker`
+
+`births: Rakshasa  ·  skills: enchantment 1, might 1, logistics 1  ·  kit: rations`
+
+
+**Name**
+
+<!--@ backgrounds.json | realm_walker | name -->
+Realm Walker
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | realm_walker | description -->
+He has traveled far, in this world and beyond. He learned a lot, tricked many and ate quite a few, too.
 <!--@end-->
 
 
@@ -1257,7 +1295,7 @@ Scarred Lead
 **Description**
 
 <!--@ backgrounds.json | scarred_lead | description -->
-The old buck's scars are a curriculum. Every predator that tried and failed left a lesson. The herd follows him toward the safe water. I have been wrong twice. Both times are written on my body where anyone can read them, which is the only reason they still follow me.
+Every carnivore that tried left a mark and a lesson. The crowd follows him towards the safe water.
 <!--@end-->
 
 
@@ -1352,7 +1390,26 @@ Slope Herbalist
 **Description**
 
 <!--@ backgrounds.json | slope_herbalist | description -->
-I know the slope where the bitter herb grows that cures the wasting sickness. I know the clay that draws out poison. The herd comes to me when something goes wrong.
+I know where the bitter herb grows. I know the clay that draws out poison.
+<!--@end-->
+
+
+## Songline Guide  `songline_guide`
+
+`births: Mriga  ·  attributes: charm+1  ·  skills: performance 1, persuasion 1, logistics 1  ·  kit: rations`
+
+
+**Name**
+
+<!--@ backgrounds.json | songline_guide | name -->
+Songline Guide
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | songline_guide | description -->
+Listen, how the ancestors ran those paths where we run, how they drank where we drink, how they sang where I sing!
 <!--@end-->
 
 
@@ -1432,6 +1489,25 @@ Two hundred wing-lengths of silent fall. The wind becomes a pressure, then a scr
 <!--@end-->
 
 
+## Strangler  `strangler`
+
+`births: Gana  ·  attributes: strength+1  ·  skills: unarmed 2, might 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | strangler | name -->
+Strangler
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | strangler | description -->
+At first it takes strength to grip so tightly. In time it becomes patience.
+<!--@end-->
+
+
 ## Swarm Caller  `swarm_caller`
 
 `births: Bhramara  ·  skills: summoning 2, air_magic 1`
@@ -1485,26 +1561,26 @@ The Hungry
 **Description**
 
 <!--@ backgrounds.json | the_hungry | description -->
-Territory has not been claimed yet. The days pass in constant movement — eating whatever can be caught, fighting what challenges, retreating from nothing. The hunger is not a problem. It is the condition of becoming.
+The hunger is not a problem. It is the condition of becoming.
 <!--@end-->
 
 
-## Throat Hold  `throat_hold`
+## The Sensate  `the_sensate`
 
-`births: Gana  ·  attributes: strength+1  ·  skills: unarmed 2, might 1`
+`births: Rakshasa  ·  attributes: charm+1  ·  skills: persuasion 2, performance 1, fire_magic 1  ·  kit: silver_ring`
 
 
 **Name**
 
-<!--@ backgrounds.json | throat_hold | name -->
-Throat Hold
+<!--@ backgrounds.json | the_sensate | name -->
+The Sensate
 <!--@end-->
 
 
 **Description**
 
-<!--@ backgrounds.json | throat_hold | description -->
-There is one grip and it does not take strength — only the patience to wait for the angle and the willingness to take it when it comes. The pack brings the animal down. I am what happens after it is down. Nobody thanks me for that and I have stopped expecting them to.
+<!--@ backgrounds.json | the_sensate | description -->
+They left the forests a lifetime ago, for the delights only civilized life can offer. Now they hunt by seduction, by art, by magic — and their prey hides in silks and perfume, and seems rather excited to be hunted.
 <!--@end-->
 
 

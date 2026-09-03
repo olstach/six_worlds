@@ -425,7 +425,8 @@
       "difficulty_range": [
         0.3,
         0.5
-      ]
+      ],
+      "disposition": "neutral"
     },
     "animal_mriga_stags": {
       "_comment": "Rutting bucks holding a clearing; sentinels on the edge",
@@ -581,7 +582,8 @@
       "difficulty_range": [
         0.3,
         0.5
-      ]
+      ],
+      "disposition": "neutral"
     },
     "_comment_shared": "=== SHARED — appear across zones ===",
     "animal_any_predator": {

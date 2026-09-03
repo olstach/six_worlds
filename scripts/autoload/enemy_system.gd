@@ -14,6 +14,13 @@ var archetypes: Dictionary = {}   # archetype_id -> archetype definition
 var encounters: Dictionary = {}   # encounter_id -> encounter template
 var name_parts: Dictionary = {}   # prefixes, roots, suffixes for procedural naming
 
+## Encounter budget tables: realm bases, tier multipliers, rarity bands, reward
+## fraction. An encounter's party XP is realm_base * tier * band.
+var budgets: Dictionary = {}
+
+## Party composition templates: member counts and relative XP shares.
+var party_archetypes: Dictionary = {}
+
 # Spell database reference (loaded from spells.json)
 var all_spells: Dictionary = {}
 
@@ -41,7 +48,386 @@ const ARMOR_LOADOUTS: Dictionary = {
 }
 
 
+## Band names weakest-first, for gating templates by encounter rarity.
+const BAND_ORDER: Array[String] = ["common", "uncommon", "rare"]
+
+
+func _load_party_composition() -> void:
+	var path := "res://resources/data/enemies/party_composition.json"
+	if not FileAccess.file_exists(path):
+		push_error("EnemySystem: party_composition.json not found")
+		return
+	var f := FileAccess.open(path, FileAccess.READ)
+	var json := JSON.new()
+	if json.parse(f.get_as_text()) != OK:
+		push_error("EnemySystem: party_composition.json parse error - " + json.get_error_message())
+		return
+	f.close()
+	for key in json.get_data().get("party_archetypes", {}):
+		if key.begins_with("_"):
+			continue
+		party_archetypes[key] = json.get_data()["party_archetypes"][key]
+
+
+## Templates available at this band. A gated template is removed from the pool
+## entirely and the remaining weights renormalise, rather than being rerolled.
+func _eligible_party_archetypes(band: String) -> Array[String]:
+	var band_rank: int = BAND_ORDER.find(band)
+	var out: Array[String] = []
+	for key in party_archetypes:
+		var min_band: String = party_archetypes[key].get("min_band", "common")
+		if BAND_ORDER.find(min_band) <= band_rank:
+			out.append(key)
+	out.sort()
+	return out
+
+
+## Choose a party template and expand it into one entry per member.
+## Returns [{"share": int, "is_hero": bool}, ...]
+func roll_party_composition(band: String) -> Array[Dictionary]:
+	var eligible: Array[String] = _eligible_party_archetypes(band)
+	if eligible.is_empty():
+		return [{"share": 1, "is_hero": true}]
+
+	var total: int = 0
+	for key in eligible:
+		total += int(party_archetypes[key].get("weight", 0))
+
+	var chosen: String = eligible[0]
+	if total > 0:
+		var roll: int = randi() % total
+		var cumulative: int = 0
+		for key in eligible:
+			cumulative += int(party_archetypes[key].get("weight", 0))
+			if roll < cumulative:
+				chosen = key
+				break
+
+	var template: Dictionary = party_archetypes[chosen]
+	var members: Array[Dictionary] = []
+	for tier in template.get("tiers", []):
+		var span: Array = tier.get("count", [1, 1])
+		var lo: int = int(span[0])
+		var hi: int = int(span[1]) if span.size() > 1 else lo
+		var n: int = lo + (randi() % maxi(1, hi - lo + 1))
+		for i in range(n):
+			members.append({"share": int(tier.get("share", 1)), "is_hero": false,
+				"disposition": String(template.get("disposition", "hostile"))})
+
+	if members.is_empty():
+		members.append({"share": 1, "is_hero": true})
+
+	_mark_heroes(members, template)
+	return members
+
+
+## A member is a hero when its template says all members are, when it is the
+## sole member, or when it strictly out-shares every other member. Rule three
+## alone would give a rival_party no heroes at all, since its members are equal.
+func _mark_heroes(members: Array[Dictionary], template: Dictionary) -> void:
+	if template.get("all_heroes", false):
+		for m in members:
+			m["is_hero"] = true
+		return
+	if members.size() == 1:
+		members[0]["is_hero"] = true
+		return
+
+	var top: int = 0
+	for m in members:
+		top = maxi(top, int(m["share"]))
+	var at_top: int = 0
+	for m in members:
+		if int(m["share"]) == top:
+			at_top += 1
+	if at_top == 1:
+		for m in members:
+			if int(m["share"]) == top:
+				m["is_hero"] = true
+
+
+func _load_budgets() -> void:
+	var path := "res://resources/data/enemies/encounter_budgets.json"
+	if not FileAccess.file_exists(path):
+		push_error("EnemySystem: encounter_budgets.json not found")
+		return
+	var f := FileAccess.open(path, FileAccess.READ)
+	var json := JSON.new()
+	if json.parse(f.get_as_text()) != OK:
+		push_error("EnemySystem: encounter_budgets.json parse error - " + json.get_error_message())
+		return
+	f.close()
+	budgets = json.get_data()
+
+
+## How much of a budget is spent outside the archetype's plan.
+##
+## Zero below the threshold — a small enemy is a specialist — then rising with
+## the budget to a cap, so the bigger an enemy is the rounder it becomes.
+func breadth_for_budget(budget: int) -> float:
+	var cfg: Dictionary = budgets.get("breadth", {})
+	var threshold: float = float(cfg.get("xp_threshold", 300))
+	var scale: float = float(cfg.get("scale", 10000))
+	var cap: float = float(cfg.get("max_fraction", 0.35))
+	if budget <= threshold or scale <= 0.0:
+		return 0.0
+	return clampf((float(budget) - threshold) / scale, 0.0, cap)
+
+
+## Non-combat skill -> the tool that supports it. A character better at one of
+## these than at any weapon carries the tool in the weapon hand instead, the way
+## a ritual focus is carried: weak in a fight, strong at what it is for.
+const SKILL_TO_TOOL: Dictionary = {
+	"medicine": "medicine_bag",
+	"performance": "lute",
+	"thievery": "thieving_tools",
+	"alchemy": "alchemists_kit",
+	"trade": "merchants_scales",
+	"smithing": "smiths_hammer",
+	"logistics": "quartermasters_ledger",
+	"leadership": "war_standard",
+}
+
+## Tool tiers, cheapest first: prefix and the kit value each needs.
+const TOOL_TIERS: Array = [
+	{"prefix": "plain", "cost": 35},
+	{"prefix": "fine", "cost": 120},
+	{"prefix": "masterwork", "cost": 340},
+	{"prefix": "storied", "cost": 850},
+	{"prefix": "legendary", "cost": 2000},
+]
+
+## Skill -> consumables that skill's owner would plausibly be carrying, for
+## their own use in a fight and as loot afterwards.
+const SKILL_TO_CONSUMABLES: Dictionary = {
+	"medicine": ["healing_herb", "health_potion"],
+	"alchemy": ["raw_reagents", "health_potion"],
+	"white_magic": ["mana_potion"],
+	"black_magic": ["mana_potion"],
+	"fire_magic": ["mana_potion"],
+	"water_magic": ["mana_potion"],
+	"earth_magic": ["mana_potion"],
+	"air_magic": ["mana_potion"],
+	"space_magic": ["mana_potion"],
+	"sorcery": ["mana_potion"],
+	"trade": ["rations"],
+	"logistics": ["rations"],
+}
+
+
+## Gold-equivalent value of the kit a character of this XP should be carrying.
+## Gear is not paid for out of the XP budget, but it scales with it.
+func equipment_budget_for_xp(xp_budget: int) -> int:
+	var cfg: Dictionary = budgets.get("equipment", {})
+	return maxi(0, int(round(float(xp_budget) * float(cfg.get("value_per_xp", 0.45)))))
+
+
+## The best tool skill and its level, when the character is more a practitioner
+## than a fighter. Returns {} when a weapon suits them better.
+func _tool_for_character(skills: Dictionary) -> Dictionary:
+	var best_tool_skill := ""
+	var best_tool_level: int = 0
+	for skill in SKILL_TO_TOOL:
+		var level: int = int(skills.get(skill, 0))
+		if level > best_tool_level:
+			best_tool_level = level
+			best_tool_skill = String(skill)
+
+	var best_weapon_level: int = 0
+	for skill in SKILL_TO_WEAPON:
+		best_weapon_level = maxi(best_weapon_level, int(skills.get(skill, 0)))
+
+	# Only when the trade genuinely outweighs the weapon. A tie goes to the
+	# weapon: this is still a fight, and they know it.
+	if best_tool_skill == "" or best_tool_level <= best_weapon_level:
+		return {}
+	return {"skill": best_tool_skill, "level": best_tool_level}
+
+
+## The best tool tier this kit budget can afford.
+func _affordable_tool_id(tool_base: String, kit_budget: int) -> String:
+	var chosen := ""
+	for tier in TOOL_TIERS:
+		if kit_budget >= int(tier["cost"]):
+			chosen = "%s_%s" % [String(tier["prefix"]), tool_base]
+	return chosen
+
+
+## Weapon skill -> the weapon_bases type that skill actually wields.
+## Mirrors CombatUnit._get_weapon_skill_name, read the other way round.
+const SKILL_TO_WEAPON: Dictionary = {
+	"swords": ["sword"],
+	"daggers": ["dagger"],
+	"axes": ["axe"],
+	"maces": ["mace", "club"],
+	"spears": ["spear", "javelin"],
+	"ranged": ["bow", "crossbow"],
+	"martial_arts": ["staff"],
+}
+
+## Skills that imply carrying a tool of the trade rather than a weapon.
+const SKILL_TO_KIT: Dictionary = {
+	"medicine": ["healing_herb", "herb_bundle"],
+	"alchemy": ["raw_reagents"],
+	"trade": ["rations"],
+	"logistics": ["rations"],
+}
+
+
+## The weapon types this character has actually trained for, best skill first.
+## An archetype's template is the fallback, not the authority: a build that came
+## out with ranged 8 should be holding a bow whatever its template says.
+## Returns [{"type": String, "skill": String, "level": int}, ...], best first.
+## Empty when the character has trained no weapon skill at all — a caster, say,
+## who should keep whatever its archetype hands it.
+func _weapon_types_for_skills(skills: Dictionary) -> Array[Dictionary]:
+	var ranked: Array[Dictionary] = []
+	for skill in SKILL_TO_WEAPON:
+		var level: int = int(skills.get(skill, 0))
+		if level > 0:
+			var options: Array = SKILL_TO_WEAPON[skill]
+			ranked.append({
+				"type": String(options[randi() % options.size()]),
+				"skill": String(skill),
+				"level": level})
+	ranked.sort_custom(func(a, b): return int(a["level"]) > int(b["level"]))
+	return ranked
+
+
+## Consumables the character's own skills imply — a medic's herbs, a caster's
+## mana. Theirs to use in the fight, and the player's afterwards. Spends up to
+## the consumable share of the kit budget.
+func _generate_skill_consumables(skills: Dictionary, kit_budget: int) -> Array:
+	var cfg: Dictionary = budgets.get("equipment", {})
+	var spend: int = int(round(float(kit_budget) * float(cfg.get("consumable_share", 0.25))))
+	var out: Array = []
+	if spend <= 0:
+		return out
+
+	# Rank the skills that imply a consumable, best first.
+	var ranked: Array[Dictionary] = []
+	for skill in SKILL_TO_CONSUMABLES:
+		var level: int = int(skills.get(skill, 0))
+		if level > 0:
+			ranked.append({"skill": String(skill), "level": level})
+	if ranked.is_empty():
+		return out
+	ranked.sort_custom(func(a, b): return int(a["level"]) > int(b["level"]))
+
+	for entry in ranked:
+		var options: Array = SKILL_TO_CONSUMABLES[entry["skill"]]
+		var pick: String = String(options[randi() % options.size()])
+		var item: Dictionary = ItemSystem.get_item(pick)
+		var cost: int = maxi(1, int(item.get("value", 10)))
+		# More of it the better they are at the thing, budget permitting.
+		var want: int = clampi(int(entry["level"]) / 3, 1, 3)
+		var afford: int = mini(want, int(float(spend) / float(cost)))
+		if afford > 0:
+			out.append({"item_id": pick, "quantity": afford})
+			spend -= afford * cost
+		if spend <= 0:
+			break
+	return out
+
+
+## Everyday things a character of this budget would be carrying: food, and a
+## tool for whatever non-combat skill they are best at. Cheap, mostly
+## inconsequential, and the reason a corpse reads as someone who lived somewhere.
+func _generate_everyday_items(skills: Dictionary, xp_budget: int) -> Array:
+	var out: Array = []
+
+	# Food, in rough proportion to how established the character is.
+	var rations: int = clampi(int(round(float(xp_budget) / 600.0)), 0, 4)
+	if rations > 0:
+		out.append({"item_id": "rations", "quantity": rations})
+
+	# The best non-combat skill puts a tool of its trade in their pack.
+	var best_skill := ""
+	var best_level: int = 0
+	for skill in SKILL_TO_KIT:
+		var level: int = int(skills.get(skill, 0))
+		if level > best_level:
+			best_level = level
+			best_skill = skill
+	if best_skill != "" and best_level >= 2:
+		var options: Array = SKILL_TO_KIT[best_skill]
+		out.append({"item_id": String(options[randi() % options.size()]), "quantity": 1})
+
+	return out
+
+
+## Roll a rarity band, returning its id ("common", "uncommon", "rare").
+func roll_band() -> String:
+	var bands: Array = budgets.get("bands", [])
+	if bands.is_empty():
+		return "common"
+	var total: int = 0
+	for band in bands:
+		total += int(band.get("weight", 0))
+	if total <= 0:
+		return "common"
+	var roll: int = randi() % total
+	var cumulative: int = 0
+	for band in bands:
+		cumulative += int(band.get("weight", 0))
+		if roll < cumulative:
+			return String(band.get("id", "common"))
+	return String(bands[0].get("id", "common"))
+
+
+func _band_multiplier(band_id: String) -> float:
+	for band in budgets.get("bands", []):
+		if String(band.get("id", "")) == band_id:
+			return float(band.get("multiplier", 1.0))
+	return 1.0
+
+
+## Tier order, weakest first. Used to derive a tier for encounters that carry none.
+const TIER_ORDER: Array[String] = ["imp", "beast", "shade", "devil", "boss"]
+
+
+## The tier an encounter counts as.
+##
+## Only 48 of 117 encounters carry a top-level `tier`; every `fixed` and
+## `groups` one has none. Defaulting those to devil would silently flatten
+## every boss fight to ordinary difficulty, so the tier is derived from the
+## content instead — the strongest archetype or group in the encounter.
+func resolve_encounter_tier(template: Dictionary) -> String:
+	if template.has("tier"):
+		return String(template["tier"])
+
+	var best: int = -1
+	if template.get("fixed", false):
+		for entry in template.get("enemies", []):
+			var aid: String = entry.get("archetype", "")
+			var t: String = archetypes.get(aid, {}).get("tier", "devil")
+			best = maxi(best, TIER_ORDER.find(t))
+	for group in template.get("groups", []):
+		best = maxi(best, TIER_ORDER.find(String(group.get("tier", "devil"))))
+
+	if best < 0:
+		push_warning("EnemySystem: cannot derive a tier for an encounter, using devil")
+		return "devil"
+	return TIER_ORDER[best]
+
+
+## Total XP the enemy party is built from: realm_base * tier * band.
+## Absolute per realm — it does not track the player's own XP.
+func resolve_party_budget(encounter_id: String, realm: String) -> Dictionary:
+	var template: Dictionary = encounters.get(encounter_id, {})
+	var tier: String = resolve_encounter_tier(template)
+	var band: String = roll_band()
+
+	var base: float = float(budgets.get("realm_base", {}).get(realm, 200))
+	var tier_mult: float = float(budgets.get("tier_multipliers", {}).get(tier, 1.0))
+	var xp: int = maxi(1, int(round(base * tier_mult * _band_multiplier(band))))
+
+	return {"xp": xp, "band": band, "tier": tier}
+
+
 func _ready() -> void:
+	_load_budgets()
+	_load_party_composition()
 	# Scan the enemies directory so every realm's data loads automatically
 	# (hell, hungry_ghost, animal, domain, and any future realm files).
 	var enemies_dir = "res://resources/data/enemies/"
@@ -107,10 +493,14 @@ func _load_encounters(path: String) -> void:
 
 	var data = json.get_data()
 	if data.has("encounters"):
+		# The file an encounter came from is the only record of its realm —
+		# nothing in the encounter data itself says which world it belongs to.
+		var realm_name: String = path.get_file().replace("_encounters.json", "")
 		for key in data.encounters:
 			if key.begins_with("_"):
 				continue
 			encounters[key] = data.encounters[key]
+			encounters[key]["realm"] = realm_name
 
 
 func _load_spells() -> void:
@@ -153,17 +543,6 @@ func _load_name_parts() -> void:
 # MAIN API
 # ============================================
 
-## Power multiplier per event/mob difficulty tier. Applied on top of the
-## encounter template's own difficulty_range, so "hard" fights against the
-## same enemy_group really are harder than "normal" ones.
-const DIFFICULTY_MULTIPLIERS: Dictionary = {
-	"easy": 0.75,
-	"normal": 1.0,
-	"hard": 1.2,
-	"very_hard": 1.4,
-	"boss": 1.6,
-}
-
 ## Generate an encounter: returns Array of enemy dicts ready for CombatUnit.init_as_enemy()
 ## encounter_id: matches enemy_group from events/mobs JSON
 ## region: "cold_hell", "fire_hell", or "" for any
@@ -175,131 +554,158 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 		push_warning("EnemySystem: Unknown encounter '%s', generating fallback" % encounter_id)
 		return _generate_fallback_encounter(realm)
 
-	var party_power = get_party_power() * DIFFICULTY_MULTIPLIERS.get(difficulty, 1.0)
-	var enemies: Array[Dictionary] = []
+	var budget: Dictionary = resolve_party_budget(encounter_id, realm)
+	var party_xp: int = int(budget["xp"])
+
+	# Whether meeting this party opens a fight or a conversation. The encounter
+	# has the final word; otherwise the party archetype decides.
+	var party_disposition: String = String(template.get("disposition", "hostile"))
+	var enc_region: String = template.get("region", "any")
+	var effective_region: String = region if region != "" else enc_region
+
+	# Slots: {archetype | role, share}. Fixed and grouped encounters keep the
+	# composition they were authored with; only plain role encounters roll one.
+	var slots: Array[Dictionary] = []
 
 	if template.get("fixed", false):
-		# Fixed encounter — use exact archetypes
+		# Authored exactly: the archetype list is the composition. Shares come
+		# from each archetype's own tier, so a boss is worth more than the
+		# honour guard standing beside it rather than an equal quarter.
 		for entry in template.get("enemies", []):
-			var archetype_id = entry.get("archetype", "")
-			var count = entry.get("count", 1)
-			for i in range(count):
-				var enemy = _build_enemy(archetype_id, party_power, realm, region)
-				if not enemy.is_empty():
-					enemies.append(enemy)
+			var aid: String = String(entry.get("archetype", ""))
+			var a_tier: String = String(archetypes.get(aid, {}).get("tier", "devil"))
+			var a_share: int = maxi(1, TIER_ORDER.find(a_tier) + 1)
+			for i in range(int(entry.get("count", 1))):
+				slots.append({"archetype": aid, "share": a_share})
 
-	elif template.get("mixed", false):
-		# Mixed encounter — groups of different tiers (e.g. 1 devil + 2 imps)
-		var enc_region = template.get("region", "any")
-		var effective_region = region if region != "" else enc_region
-
+	elif template.has("groups"):
+		# Authored shape: each group is a share tier, so a screen of chaff in
+		# front of heavies stays a screen of chaff in front of heavies. The
+		# group's tier rank is its share, which is what made the heavies heavy.
 		for group in template.get("groups", []):
-			var group_tier = group.get("tier", "devil")
-			var group_region = group.get("region", effective_region)
-			var diff_range = group.get("difficulty_range", [0.8, 1.2])
-			var diff_min = diff_range[0] if diff_range.size() > 0 else 0.8
-			var diff_max = diff_range[1] if diff_range.size() > 1 else 1.2
-
-			var group_roles = group.get("roles", {})
-			for role in group_roles:
-				var count = int(group_roles[role])
-				for i in range(count):
-					var archetype_id = _pick_archetype_for_role(role, group_region, group_tier, realm)
-					if archetype_id == "":
-						push_warning("EnemySystem: No archetype for role '%s' tier '%s' in '%s'" % [role, group_tier, group_region])
-						continue
-					var diff_roll = randf_range(diff_min, diff_max)
-					var enemy = _build_enemy(archetype_id, party_power * diff_roll, realm, group_region)
-					if not enemy.is_empty():
-						enemies.append(enemy)
+			var share: int = maxi(1, TIER_ORDER.find(String(group.get("tier", "devil"))) + 1)
+			var group_region: String = String(group.get("region", effective_region))
+			for role in group.get("roles", {}):
+				for i in range(int(group["roles"][role])):
+					slots.append({"role": String(role), "share": share,
+						"tier": String(group.get("tier", "devil")), "region": group_region})
 
 	else:
-		# Role-based encounter — pick random archetypes matching roles and tier
-		var enc_region = template.get("region", "any")
-		# Use mob's region if provided, otherwise encounter's default
-		var effective_region = region if region != "" else enc_region
-		var enc_tier = template.get("tier", "devil")
+		# Plain role encounter: the party archetype decides size and shares.
+		var members: Array[Dictionary] = roll_party_composition(String(budget["band"]))
+		if not members.is_empty():
+			party_disposition = String(members[0].get("disposition", party_disposition))
+		var role_pool: Array[String] = []
+		for role in template.get("roles", {}):
+			for i in range(int(template["roles"][role])):
+				role_pool.append(String(role))
+		if role_pool.is_empty():
+			role_pool.append("frontline")
+		for i in range(members.size()):
+			slots.append({"role": role_pool[i % role_pool.size()],
+				"share": int(members[i]["share"]),
+				"is_hero": bool(members[i].get("is_hero", false))})
 
-		var diff_range = template.get("difficulty_range", [0.8, 1.2])
-		var diff_min = diff_range[0] if diff_range.size() > 0 else 0.8
-		var diff_max = diff_range[1] if diff_range.size() > 1 else 1.2
-
-		var roles = template.get("roles", {})
-		for role in roles:
-			var count = int(roles[role])
-			for i in range(count):
-				var archetype_id = _pick_archetype_for_role(role, effective_region, enc_tier, realm)
-				if archetype_id == "":
-					push_warning("EnemySystem: No archetype found for role '%s' tier '%s' in region '%s'" % [role, enc_tier, effective_region])
-					continue
-
-				# Random difficulty within range
-				var diff_roll = randf_range(diff_min, diff_max)
-				var enemy = _build_enemy(archetype_id, party_power * diff_roll, realm, effective_region)
-				if not enemy.is_empty():
-					enemies.append(enemy)
-
-	if enemies.is_empty():
-		push_warning("EnemySystem: Encounter '%s' produced no enemies, using fallback" % encounter_id)
+	if slots.is_empty():
 		return _generate_fallback_encounter(realm)
 
+	# Resolve each slot to an archetype before splitting the budget, so the
+	# hero can be chosen by threat where the composition was authored.
+	if template.has("disposition"):
+		party_disposition = String(template["disposition"])
+
+	var family: Array[String] = _encounter_family_tokens(encounter_id)
+	for slot in slots:
+		if not slot.has("archetype"):
+			slot["archetype"] = _pick_archetype_for_role(
+				String(slot["role"]), String(slot.get("region", effective_region)),
+				String(slot.get("tier", budget["tier"])), realm, family)
+
+	_mark_authored_hero(slots, template)
+
+	var total_shares: int = 0
+	for slot in slots:
+		total_shares += int(slot["share"])
+
+	var enemies: Array[Dictionary] = []
+	for slot in slots:
+		if String(slot["archetype"]) == "":
+			continue
+		var member_xp: int = maxi(1, int(round(
+			float(party_xp) * float(slot["share"]) / float(maxi(total_shares, 1)))))
+		var enemy = _build_enemy(String(slot["archetype"]), member_xp, realm,
+			String(slot.get("region", effective_region)), bool(slot.get("is_hero", false)))
+		if not enemy.is_empty():
+			enemy["disposition"] = party_disposition
+			enemies.append(enemy)
+
+	if enemies.is_empty():
+		return _generate_fallback_encounter(realm)
 	return enemies
 
 
-## Calculate party power as a single number representing party strength.
-## For each party member: sum of (attribute - 10) for all attributes + skill levels * 20
-## Returns the average across the party.
-func get_party_power() -> float:
-	var party = CharacterSystem.get_party()
-	if party.is_empty():
-		return 50.0  # Default for empty party
+## For authored compositions, the hero is the slot with the highest share, ties
+## broken by the archetype's threat_multiplier. Rolled compositions already
+## carry their own is_hero from the party template.
+func _mark_authored_hero(slots: Array[Dictionary], template: Dictionary) -> void:
+	for slot in slots:
+		if slot.has("is_hero"):
+			return  # rolled composition: already decided
+	if slots.size() == 1:
+		slots[0]["is_hero"] = true
+		return
 
-	var total_power: float = 0.0
-	for member in party:
-		var member_power: float = 0.0
+	var top_share: int = 0
+	for slot in slots:
+		top_share = maxi(top_share, int(slot["share"]))
 
-		# Attribute contribution: each point above 10 adds to power
-		var attrs = member.get("attributes", {})
-		for attr_name in attrs:
-			member_power += float(attrs[attr_name] - 10)
+	var top_index: int = -1
+	var contenders: int = 0
+	for i in range(slots.size()):
+		if int(slots[i]["share"]) == top_share:
+			contenders += 1
+			top_index = i
 
-		# Skill contribution: each skill level × 8
-		# (Skills unlock perks/spells but don't directly add raw combat stats,
-		# so the multiplier is kept moderate to avoid over-inflating enemy attributes)
-		var skills = member.get("skills", {})
-		for skill_name in skills:
-			member_power += float(skills[skill_name]) * 8.0
-
-		total_power += member_power
-
-	return total_power / float(party.size())
+	for slot in slots:
+		slot["is_hero"] = false
+	# Only one member can be the hero, and only by strictly out-sharing every
+	# other. Two equal heavies are two heavies, not a hero and a subordinate —
+	# they would be indistinguishable in play, and their XP differs only by the
+	# rounding of what each happened to spend.
+	if contenders == 1 and top_index >= 0:
+		slots[top_index]["is_hero"] = true
 
 
-# ============================================
-# ENEMY BUILDING
-# ============================================
-
-## Build a single enemy dict from an archetype + power budget.
+## Build one enemy as a character: roll a birth and a background, apply their
+## modifiers, then spend the XP budget the way the archetype directs.
 ## realm and region are passed through for procedural name generation.
-func _build_enemy(archetype_id: String, power_budget: float, realm: String = "hell", region: String = "") -> Dictionary:
+func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
+		region: String = "", is_hero: bool = false) -> Dictionary:
 	var archetype = archetypes.get(archetype_id, {})
 	if archetype.is_empty():
 		push_warning("EnemySystem: Unknown archetype '%s'" % archetype_id)
 		return {}
 
-	# Apply threat multiplier to budget
-	var threat = archetype.get("threat_multiplier", 1.0)
-	var effective_budget = power_budget * threat
+	var effective_budget: float = float(xp_budget)
 
-	# Distribute attribute points (budget split: ~60% attributes, ~40% skills)
-	var attr_budget = int(effective_budget * 0.6)
-	var skill_budget = int(effective_budget * 0.4 / 20.0)  # Convert to skill "points"
-	# Minimum budgets so enemies always have something
-	attr_budget = maxi(attr_budget, 4)
-	skill_budget = maxi(skill_budget, 1)
+	# Birth and background first — the same two steps a player character takes.
+	var birth: String = CharacterSystem.roll_birth_for_realm(realm)
+	var background: String = KarmaSystem.select_random_background(birth)
 
-	var attributes = _distribute_attributes(archetype.get("attribute_weights", {}), attr_budget)
-	var skills = _assign_skills(archetype.get("skill_priorities", []), skill_budget)
+	var built: Dictionary = CharacterSystem.create_blank_character()
+	CharacterSystem.apply_birth_modifiers(built, birth)
+	if background != "":
+		CharacterSystem.apply_background_skills(built, background)
+
+	# Then the archetype, as a spending plan for the budget.
+	var spent: int = CharacterSystem.spend_xp_budget(
+		built, xp_budget,
+		archetype.get("attribute_weights", {}),
+		archetype.get("skill_priorities", []),
+		0.6, breadth_for_budget(xp_budget))
+
+	var attributes = built["attributes"]
+	var skills = built["skills"]
 	var derived = _calculate_derived_stats(attributes, skills)
 	var equipment = _generate_equipment(archetype.get("equipment_template", {}), effective_budget)
 	var spells = _pick_spells(skills, archetype.get("guaranteed_spells", []))
@@ -321,12 +727,16 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 
 	# Generate consumable inventory, then merge any archetype-guaranteed items
 	var inventory = _generate_enemy_inventory(archetype, effective_budget)
+	for everyday in _generate_everyday_items(skills, xp_budget):
+		inventory.append(everyday)
 	for item in archetype.get("starting_inventory", []):
 		inventory.append(item)
 
 	# Map power budget to item rarity — shared by weapon and armor generation.
 	# Realm drives the material tier (e.g. hell → bone/obsidian/bronze); rarity drives quality.
-	var power_scale = effective_budget / 80.0
+	# Rarity derives from the kit budget, which is itself a function of XP.
+	var kit_budget: int = equipment_budget_for_xp(xp_budget)
+	var power_scale = float(kit_budget) / 180.0
 	var item_rarity: String
 	if power_scale < 0.5:
 		item_rarity = "common"
@@ -350,11 +760,45 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 			"stats": {"damage": 2, "accuracy": 4, "range": 1}
 		}
 	else:
-		var weapon_type = equipment.get("weapon_type", "sword")
-		var gen_id = ItemSystem.generate_weapon(weapon_type, item_rarity, "", "", realm)
-		if gen_id != "":
+		# A character better at a trade than at any weapon carries its tool
+		# instead — a doctor with a bag, not a doctor with a borrowed spear.
+		var tool: Dictionary = _tool_for_character(skills)
+		var tool_id: String = ""
+		if not tool.is_empty():
+			tool_id = _affordable_tool_id(
+				String(SKILL_TO_TOOL[tool["skill"]]), kit_budget)
+
+		# What the character trained for wins over what the archetype template
+		# says. A build that came out with ranged 8 carries a bow.
+		var trained: Array[Dictionary] = _weapon_types_for_skills(skills)
+		var weapon_type: String = String(trained[0]["type"]) if not trained.is_empty() \
+			else String(equipment.get("weapon_type", "sword"))
+
+		var gen_id: String = ""
+		var carrying_tool := false
+		if tool_id != "" and ItemSystem.get_item(tool_id).size() > 0:
+			equipped_weapon = ItemSystem.get_item(tool_id)
+			inventory.append({"item_id": tool_id, "quantity": 1})
+			kit_budget -= int(equipped_weapon.get("value", 0))
+			carrying_tool = true
+		else:
+			gen_id = ItemSystem.generate_weapon(weapon_type, item_rarity, "", "", realm)
+
+		if carrying_tool:
+			pass  # already equipped; the branches below must not overwrite it
+		elif gen_id != "":
 			equipped_weapon = ItemSystem.get_item(gen_id)
 			inventory.append({"item_id": gen_id, "quantity": 1})
+			kit_budget -= int(equipped_weapon.get("value", 0))
+
+			# A second set, when a second weapon skill is genuinely trained and
+			# the character is worth enough to have afforded it. Carried rather
+			# than wielded — it is a spare, and it drops.
+			if trained.size() > 1 and xp_budget >= 600 and int(trained[1]["level"]) >= 3:
+				var spare_id = ItemSystem.generate_weapon(
+					String(trained[1]["type"]), item_rarity, "", "", realm)
+				if spare_id != "":
+					inventory.append({"item_id": spare_id, "quantity": 1})
 		else:
 			# Fallback if ItemSystem unavailable
 			equipped_weapon = {
@@ -371,12 +815,20 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 	# Generate armor items — same material-tiered system as the player.
 	# Each piece's stats contribute to derived (armor, dodge, hp, etc.) and the
 	# item goes into inventory so it can be looted on death.
+	# Armour spends what the weapon left. A character whose budget ran out on a
+	# good blade goes into the fight in fewer pieces, which is how kit works.
 	var armor_category: String = equipment.get("armor_type", "none")
 	for slot_entry in ARMOR_LOADOUTS.get(armor_category, []):
+		if kit_budget <= 0:
+			break
 		var armor_gen_id = ItemSystem.generate_armor(slot_entry[1], item_rarity, "", "", realm)
 		if armor_gen_id == "":
 			continue
 		var armor_item = ItemSystem.get_item(armor_gen_id)
+		var piece_value: int = int(armor_item.get("value", 0))
+		if piece_value > kit_budget:
+			continue  # cannot afford this piece; try the next, cheaper slot
+		kit_budget -= piece_value
 		var piece_stats = armor_item.get("stats", {})
 		derived["armor"]       += piece_stats.get("armor", 0)
 		derived["dodge"]       += piece_stats.get("dodge", 0)
@@ -385,6 +837,21 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 		derived["max_stamina"] += piece_stats.get("max_stamina", 0)
 		derived["current_stamina"] += piece_stats.get("max_stamina", 0)
 		inventory.append({"item_id": armor_gen_id, "quantity": 1})
+
+	# Anything left buys an accessory. Enemies never carried one before, so a
+	# well-funded enemy had nowhere for its surplus to go.
+	# 30 is the cheapest talisman in the game; anything above that is worth trying.
+	if kit_budget >= 30:
+		var tali_id = ItemSystem.generate_talisman(item_rarity)
+		if tali_id != "":
+			var tali = ItemSystem.get_item(tali_id)
+			if int(tali.get("value", 0)) <= kit_budget:
+				kit_budget -= int(tali.get("value", 0))
+				inventory.append({"item_id": tali_id, "quantity": 1})
+
+	# Consumables come last, out of whatever the kit did not spend on gear.
+	for consumable in _generate_skill_consumables(skills, kit_budget):
+		inventory.append(consumable)
 
 	# Generate a procedural name from realm/region/tags, unless this is a named boss.
 	# Race is inferred from archetype tags: imps first, then shades (undead+incorporeal),
@@ -435,7 +902,12 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 			"prosthetics": {}
 		},
 		"wounds": [],
-		"traits": []
+		"traits": built.get("traits", []),
+		"birth": birth,
+		"background": background,
+		"xp_earned": spent,
+		"is_hero": is_hero,
+		"hero_id": ("hero_%s_%d" % [archetype_id, randi()]) if is_hero else ""
 	}
 
 	# Copy duel_stop_hp_pct if the archetype has one — read by combat_manager to end
@@ -449,77 +921,6 @@ func _build_enemy(archetype_id: String, power_budget: float, realm: String = "he
 		enemy["ai_behavior"] = archetype["ai_behavior"]
 
 	return enemy
-
-
-## Distribute attribute points from budget according to weights.
-## All attributes start at 10, then budget points are spread proportionally.
-func _distribute_attributes(weights: Dictionary, budget: int) -> Dictionary:
-	var attributes = {
-		"strength": 10, "finesse": 10, "constitution": 10,
-		"focus": 10, "awareness": 10, "charm": 10, "luck": 10
-	}
-
-	# Calculate total weight
-	var total_weight: float = 0.0
-	for attr in weights:
-		total_weight += float(weights[attr])
-
-	if total_weight <= 0 or budget <= 0:
-		return attributes
-
-	# Distribute proportionally
-	var remaining = budget
-	var attr_list = weights.keys()
-	# Sort by weight descending so highest-priority attributes get remainders
-	attr_list.sort_custom(func(a, b): return weights[a] > weights[b])
-
-	for attr in attr_list:
-		if not attributes.has(attr):
-			continue
-		var weight = float(weights[attr])
-		var share = int(float(budget) * weight / total_weight)
-		share = mini(share, remaining)
-		attributes[attr] += share
-		remaining -= share
-
-	# Distribute any remainder to the highest-weight attribute
-	if remaining > 0 and not attr_list.is_empty():
-		var top_attr = attr_list[0]
-		if attributes.has(top_attr):
-			attributes[top_attr] += remaining
-
-	return attributes
-
-
-## Assign skill levels from a priority list.
-## Each "point" raises a skill by 1 level (simplified from player XP costs).
-## Skills cap at 5.
-func _assign_skills(priorities: Array, budget: int) -> Dictionary:
-	var skills: Dictionary = {}
-	if priorities.is_empty() or budget <= 0:
-		return skills
-
-	var remaining = budget
-	# Spread points across priorities, cycling through them
-	var round_index = 0
-	while remaining > 0:
-		var assigned_any = false
-		for skill_name in priorities:
-			if remaining <= 0:
-				break
-			var current = skills.get(skill_name, 0)
-			if current < 10:
-				skills[skill_name] = current + 1
-				remaining -= 1
-				assigned_any = true
-
-		if not assigned_any:
-			break  # All skills maxed
-		round_index += 1
-
-	return skills
-
-
 ## Calculate derived stats using the same formulas as CharacterSystem.
 ## This ensures enemies feel consistent with player characters.
 func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dictionary:
@@ -917,7 +1318,29 @@ func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Arr
 ## Tier defaults to "devil" — use "shade" or "imp" for lower-power enemies.
 ## Archetypes without an explicit tier field default to "devil".
 ## Archetypes without an explicit realm field default to "hell" (backwards compatibility).
-func _pick_archetype_for_role(role: String, region: String, tier: String = "devil", realm: String = "hell") -> String:
+## Words in an encounter id that name what the encounter is about.
+##
+## An encounter called animal_mriga_herd should contain mriga. Without this it
+## drew any animal archetype matching the role, so a "mriga herd" came out as
+## varaha chargers and a gana runner.
+const ID_NOISE: Array[String] = [
+	"hell", "hungry", "ghost", "animal", "domain", "human", "asura", "god",
+	"lone", "pack", "patrol", "band", "group", "swarm", "herd", "flock",
+	"ambush", "elite", "weakened", "boss", "any", "with", "and", "the",
+]
+
+
+func _encounter_family_tokens(encounter_id: String) -> Array[String]:
+	var out: Array[String] = []
+	for part in encounter_id.split("_", false):
+		var token: String = String(part)
+		if token.length() >= 3 and not token in ID_NOISE:
+			out.append(token)
+	return out
+
+
+func _pick_archetype_for_role(role: String, region: String, tier: String = "devil",
+		realm: String = "hell", family: Array[String] = []) -> String:
 	var candidates: Array[String] = []
 
 	for arch_id in archetypes:
@@ -931,9 +1354,13 @@ func _pick_archetype_for_role(role: String, region: String, tier: String = "devi
 		if not role in arch_roles:
 			continue
 
-		# Check region match: archetype's region must be "any" or match the requested region
-		if arch_region != "any" and arch_region != region:
-			continue
+		# Region match. A requested region of "any" or "" means the encounter did
+		# not care — do not filter. Treating "any" as a literal region to match
+		# found nothing at all in the animal realm, where every archetype is
+		# forest, meadow, ocean or sky and none is "any".
+		if region != "" and region != "any":
+			if arch_region != "any" and arch_region != region:
+				continue
 
 		# Don't pick bosses for regular role slots
 		if "boss" in arch_roles:
@@ -953,17 +1380,45 @@ func _pick_archetype_for_role(role: String, region: String, tier: String = "devi
 	if candidates.is_empty():
 		return ""
 
+	# Prefer an archetype the encounter is actually named after. Falls back to
+	# the whole pool when the family cannot fill this role, so a mriga encounter
+	# needing a caster still gets one rather than nothing.
+	if not family.is_empty():
+		var preferred: Array[String] = []
+		for arch_id in candidates:
+			for token in family:
+				if token in arch_id:
+					preferred.append(arch_id)
+					break
+		if not preferred.is_empty():
+			return preferred[randi() % preferred.size()]
+
 	return candidates[randi() % candidates.size()]
 
 
 ## Fallback encounter when encounter_id is unknown — 2 generic demon warriors
+## Fallback when an encounter cannot be resolved. Picks an archetype belonging
+## to the realm rather than a hell demon, which used to be hardcoded here and
+## put demons in the animal realm's forest whenever a lookup failed.
 func _generate_fallback_encounter(realm: String = "hell") -> Array[Dictionary]:
-	var party_power = get_party_power()
+	var base: float = float(budgets.get("realm_base", {}).get(realm, 200))
+
+	var candidates: Array[String] = []
+	for arch_id in archetypes:
+		var a = archetypes[arch_id]
+		if a.get("realm", "") == realm and not "boss" in a.get("roles", []):
+			candidates.append(String(arch_id))
+	candidates.sort()
+	if candidates.is_empty():
+		push_warning("EnemySystem: no fallback archetype for realm '%s'" % realm)
+		return []
+
+	push_warning("EnemySystem: falling back to a generic %s encounter" % realm)
 	var enemies: Array[Dictionary] = []
-
 	for i in range(2):
-		var enemy = _build_enemy("hell_demon_warrior", party_power * 0.8, realm)
+		var pick: String = candidates[randi() % candidates.size()]
+		var enemy = _build_enemy(pick, int(base * 0.4), realm)
 		if not enemy.is_empty():
+			enemy["disposition"] = "hostile"
 			enemies.append(enemy)
-
 	return enemies

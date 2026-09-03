@@ -1,6 +1,6 @@
 # Animal Realm — Companions
 
-*26 companions.*
+*41 companions.*
 
 *Edit the prose between the anchors. The stat block under each name is generated; change it in `companions.json` instead.*
 
@@ -29,6 +29,25 @@ Retired from leading a troop of sixty and now collects stolen objects and unlike
 <!--@end-->
 
 
+## Chapala  `chapala`
+
+`birth: mriga  ·  background: spy  ·  traits: flirt, gossip  ·  cost: 800  ·  fixed_items: ['copper_ring']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | chapala | build_weights -->
+daggers, trade, performance
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | chapala | flavor_text -->
+Born between two wheels on a road nobody names. Prices everything, respects nothing, and is already somewhere else.
+<!--@end-->
+
+
 ## Chitrangada  `chitrangada`
 
 `birth: marjara  ·  background: canopy_ambush  ·  traits: quick, brave  ·  cost: 850`
@@ -48,9 +67,28 @@ Drops on things from above and has never once had to explain herself afterwards.
 <!--@end-->
 
 
+## Dhvanika  `dhvanika`
+
+`birth: gana  ·  background: herbalist  ·  traits: patient, sharp_memory  ·  cost: 850  ·  fixed_items: ['herb_bundle', 'healing_herb']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | dhvanika | build_weights -->
+water_magic, medicine, daggers
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | dhvanika | flavor_text -->
+She may be old, but she is far from senile — a glint in her eye, and in the knife she keeps half hidden.
+<!--@end-->
+
+
 ## Dirghajihva  `dirghajihva`
 
-`birth: gana  ·  background: elder_voice  ·  traits: composed, brave  ·  cost: 900`
+`birth: gana  ·  background: elder_voice  ·  traits: composed, brave  ·  cost: 900  ·  fixed_items: ['hunting_bow', 'rations']`
 
 
 **Skills** *(strongest first)*
@@ -63,7 +101,7 @@ ranged, persuasion, leadership
 **Flavor Text**
 
 <!--@ companions.json | dirghajihva | flavor_text -->
-The one the pack looks at before it does anything. She has never given an order in her life; she simply yawns at the right moment and the argument ends.
+She has never given an order; she yawns at the right moment and the argument ends. Now, greater challenges await her and the pack is fretful to see her go.
 <!--@end-->
 
 
@@ -101,7 +139,64 @@ performance, grace, persuasion
 **Flavor Text**
 
 <!--@ companions.json | enakshi | flavor_text -->
-Has held the clearing eleven seasons running and has never once had to touch anyone to do it. Will explain the distinction at length, unprompted, to people who did not ask and are trying to leave.
+Has held the clearing eleven seasons running and has never once had to touch anyone to do it.
+<!--@end-->
+
+
+## Ghoshaka  `ghoshaka`
+
+`birth: gana  ·  background: warrior  ·  traits: stubborn, pilgrim  ·  cost: 950  ·  fixed_items: ['leather_vest', 'rations']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | ghoshaka | build_weights -->
+armor, swords, spears
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | ghoshaka | flavor_text -->
+Born on a city wall a long way from any forest, and paid up as of last spring. Now he has come to the homeland of his ancestors for the first time in his life.
+<!--@end-->
+
+
+## Himasara  `himasara`
+
+`birth: mriga  ·  background: merchant  ·  traits: scrimper, iron_stomach  ·  cost: 800  ·  fixed_items: ['healing_moss', 'healing_moss', 'rations']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | himasara | build_weights -->
+trade, medicine, spears
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | himasara | flavor_text -->
+Comes down from the snow every second season with moss, antler-glue and prices. Has never once been cold in your presence and finds your fire excessive.
+<!--@end-->
+
+
+## Kabandha  `kabandha`
+
+`birth: rakshasa  ·  background: lord_of_the_range  ·  traits: stubborn, composed  ·  cost: 1050  ·  fixed_items: ['rations']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | kabandha | build_weights -->
+might, martial_arts, armor
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | kabandha | flavor_text -->
+Three valleys, every tree marked, and not one of them argued about it. Finds the party's habit of walking through places baffling.
 <!--@end-->
 
 
@@ -121,6 +216,82 @@ medicine, earth_magic, alchemy
 
 <!--@ companions.json | kandali | flavor_text -->
 Cultivates the fungal network under nine acres of forest floor and speaks about it the way other people speak about family. Do not step on the nine-year patch.
+<!--@end-->
+
+
+## Khara  `khara`
+
+`birth: rakshasa  ·  background: maneater  ·  traits: patient, hunter  ·  cost: 1100  ·  fixed_items: ['health_potion']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | khara | build_weights -->
+guile, unarmed, grace
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | khara | flavor_text -->
+The one from the stories. She is aware there are stories, and has opinions about which of them are accurate.
+<!--@end-->
+
+
+## Kruddha  `kruddha`
+
+`birth: rakshasa  ·  background: blood_drinker  ·  traits: hot_tempered, hunter  ·  cost: 1100  ·  fixed_items: ['health_potion']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | kruddha | build_weights -->
+might, guile, black_magic
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | kruddha | flavor_text -->
+Taking such delight in the hunt, in the kill, in the tearing of flesh, must have a downside. But this is for the philosophers to ponder another day.
+<!--@end-->
+
+
+## Nadaka  `nadaka`
+
+`birth: gana  ·  background: forest_singer  ·  traits: curious, secret_bearer  ·  cost: 900  ·  fixed_items: ['lucky_charm']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | nadaka | build_weights -->
+comedy, space_magic, guile
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | nadaka | flavor_text -->
+They were always a strange kid, unnerving others unable to figure out what it is that they really think, behind all those jokes and evasion.
+<!--@end-->
+
+
+## Nayanika  `nayanika`
+
+`birth: mriga  ·  background: reveler  ·  traits: attractive, secret_bearer  ·  cost: 950  ·  fixed_items: ['silver_ring', 'travelers_amulet']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | nayanika | build_weights -->
+enchantment, performance, yoga
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | nayanika | flavor_text -->
+Taken young, sold south, came back in silk with rings on every point. Holds your eye a moment past comfortable. Answers nothing.
 <!--@end-->
 
 
@@ -164,7 +335,7 @@ Can build anything out of anything given an afternoon and no supervision. Every 
 
 ## Saramaya  `saramaya`
 
-`birth: gana  ·  background: herb_walker  ·  traits: generous, trusting  ·  cost: 700  ·  fixed_items: ['herb_bundle', 'healing_herb']`
+`birth: gana  ·  background: herbalist  ·  traits: generous, trusting  ·  cost: 700  ·  fixed_items: ['herb_bundle', 'healing_herb']`
 
 
 **Skills** *(strongest first)*
@@ -177,7 +348,26 @@ medicine, white_magic, earth_magic
 **Flavor Text**
 
 <!--@ companions.json | saramaya | flavor_text -->
-Walks the ridge lines gathering what grows there and treating whatever she finds hurt. Charges nothing and accepts everything, which balances out about as badly as you would expect.
+Gathers what grows on the ridge and treats whatever she finds hurt. Charges nothing, accepts everything, and so today again she went to sleep on an empty stomach.
+<!--@end-->
+
+
+## Sarangi  `sarangi`
+
+`birth: mriga  ·  background: scholar  ·  traits: ascetic, tea_ritualist  ·  cost: 1000  ·  fixed_items: ['prayer_beads', 'herb_bundle']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | sarangi | build_weights -->
+earth_magic, white_magic, alchemy
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | sarangi | flavor_text -->
+Comes back to the same meadow every dozen years for the tea and the grass, in that order. Remembers the meadow better than the meadow remembers itself.
 <!--@end-->
 
 
@@ -196,7 +386,102 @@ leadership, persuasion, logistics
 **Flavor Text**
 
 <!--@ companions.json | shrutidhara | flavor_text -->
-Led the herd along the old trail for thirty years and got it wrong twice, which she will tell you about before she tells you anything else. Walks at the back now, where she can see everyone.
+Wrong twice in thirty years, and she will tell you about both before she tells you her name. Walks at the back now, where she can see everyone.
+<!--@end-->
+
+
+## Sphotana  `sphotana`
+
+`birth: gana  ·  background: monk  ·  traits: homesick, dreamer  ·  cost: 900  ·  fixed_items: ['fire_charm_common']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | sphotana | build_weights -->
+fire_magic, sorcery, yoga
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | sphotana | flavor_text -->
+He woke from a nightmare to see his lair and his fur on fire, spreading from the dream into the world through his eyes and his breath. Now exiled, Sphotana seeks a way to contain his gifts.
+<!--@end-->
+
+
+## Takshari  `takshari`
+
+`birth: rakshasa  ·  background: ancestor_priest  ·  traits: superstitious, mourner  ·  cost: 1000  ·  fixed_items: ['prayer_beads']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | takshari | build_weights -->
+ritual, white_magic, black_magic
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | takshari | flavor_text -->
+Keeps the trophies, pours the mead, remembers which hero did what and to whom. The dead are less trouble than the living and better company.
+<!--@end-->
+
+
+## Trinavati  `trinavati`
+
+`birth: mriga  ·  background: slope_herbalist  ·  traits: warm_hearted, early_riser  ·  cost: 700  ·  fixed_items: ['herb_bundle', 'healing_herb']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | trinavati | build_weights -->
+medicine, earth_magic, white_magic
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | trinavati | flavor_text -->
+Knows the slope, the clay, and which of the two you need. Will not be hurried down a mountain.
+<!--@end-->
+
+
+## Unmatta  `unmatta`
+
+`birth: rakshasa  ·  background: the_sensate  ·  traits: flirt, gourmand  ·  cost: 1150  ·  fixed_items: ['silver_ring']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | unmatta | build_weights -->
+persuasion, fire_magic, performance
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | unmatta | flavor_text -->
+Came down from the hills for one season of silk and wine and has not gone back in nine years. Insists he could stop. Nobody has asked him to.
+<!--@end-->
+
+
+## Vishanin  `vishanin`
+
+`birth: mriga  ·  background: antler_speaker  ·  traits: brave, braggart  ·  cost: 750  ·  fixed_items: ['lucky_charm']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | vishanin | build_weights -->
+unarmed, might, grace
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | vishanin | flavor_text -->
+Met a boar head-on once and has been dining out on it since. The scar is real. So, annoyingly, is the boar's.
 <!--@end-->
 
 

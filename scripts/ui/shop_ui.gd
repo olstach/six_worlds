@@ -675,11 +675,13 @@ func _populate_companions_tab() -> void:
 
 
 func _create_companion_panel(companion_id: String, def: Dictionary) -> void:
-	# Scale recruitment cost with party power so early-game companions are affordable.
-	# At power 20 (fresh start) costs ~25%; at power 80 (mid-game) costs 100%; scales up beyond that.
+	# Scale recruitment cost with how far the party has come, so early-game
+	# companions stay affordable. Anchored on party XP now that power is gone:
+	# a fresh party is worth little and pays ~20%, a party around the animal
+	# realm's budget pays full price.
 	var base_cost: int = def.get("recruitment_cost", 0)
-	var party_power: float = EnemySystem.get_party_power()
-	var price_mult: float = clampf(party_power / 80.0, 0.20, 2.0)
+	var party_xp: float = float(CharacterSystem.get_party_xp_worth())
+	var price_mult: float = clampf(party_xp / 1200.0, 0.20, 2.0)
 	var cost: int = maxi(10, int(base_cost * price_mult))
 	var can_afford: bool = GameState.can_afford(cost)
 	var party_full: bool = CharacterSystem.get_party().size() >= CharacterSystem.max_party_size

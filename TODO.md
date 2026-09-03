@@ -248,6 +248,127 @@ Recorded so they aren't rediscovered as bugs.
 
 ### 2026-08-31 — from the enemy-XP design session
 
+- **Map all five elements to the buddha families, and finish what each implies.**
+  The original intent, watered down over time. Fire is padmakula — desire
+  transmuted, magnetising — and its line is half-built already. The other four
+  presumably map to vajra, ratna, karma and buddha, and the same audit would
+  likely find each has a partial line nobody labelled. Worth doing all five
+  together during the spells pass rather than fire alone, so the elements end
+  up meaning something consistent rather than five unrelated damage types.
+  Elemental affinities, klesha/wisdom pressure and the ngakpa robes all already
+  key off the elements, so a coherent family scheme would tie several systems
+  together at once.
+
+- **Fire's padmakula line has holes at levels 1 and 5.** Fire is the lotus
+  family — desire transmuted, magnetising rather than burning — and the ladder
+  is already there in `Fire + Enchantment`: `charm` (L3), `magnetizing_aura`
+  (L7), `dominate` (L9), with `berserk` and `shining_mirage` alongside at L7.
+  But Fire has eight spells at L1 and twelve at L5 and not one of them is
+  mental, so the line starts at 3, jumps to 7, and a character specialising
+  into seduction and domination has nothing to learn across most of the
+  mid-game. Wants an L1 and an L5 when the spells are refreshed. The Sensate
+  background and the rakshasa's fire affinity of 5 both point at this line.
+
+- **The naming lore is barely used by anything.** `animal_realm_names.json` is
+  read by no script and referenced by almost no content: 389 personal names with
+  meanings, plus per-birth place names that exist only in the file. The rakshasa
+  set alone has **The Long Hunger** (a stretch of poor territory between
+  productive ones), **The Wrong Side** (anywhere they do not go, and there is
+  always a reason), **The Ridge Where They Wait**, **The Mango Kill**, **The
+  Scratch Tree**, **The Three-Day Territory**. Every birth has six or so like
+  these. Fold them into the events pass — an event set on The Wrong Side is
+  already half-written by its own name.
+
+- **Mriga have no events at all.** Four events mention gana; none mention mriga,
+  so the forest has wolves in its prose and no deer. Two existing ones read as
+  either and could simply be switched — `animal_forest_healer_camp` (a
+  grey-muzzled healer, and medicine is the mriga trade) and
+  `animal_forest_town_weapons` (traders). Beyond that, sketches for
+  mriga-specific events, to fold into the general events pass:
+  - **The Alarm Tree** — the herd's warning goes up before you can see why.
+    Rewards Awareness; `first_to_know` should read it differently.
+  - **The antler contest** — two bucks holding a clearing you need to cross,
+    settling it by display. A fight you are allowed to decline, which is the
+    most mriga thing available.
+  - **The old trail** — a migration crossing your route, a `songline_guide`
+    carrying the song that is the only map of it.
+
+- **Parties should not all be hostile by default.** Traders are already neutral;
+  a grazing mriga herd or a kapota flock should be too — `animal_kapota_flock`
+  already says "usually neutral" in a comment nothing reads. Wanted without
+  introducing factions or reputation: something stateless and per-encounter
+  that decides whether contact opens combat or opens a conversation, so trade,
+  contact and quests have somewhere to attach later. See the design note below.
+
+- **Non-combat equipment kits as a broad concept.** The basis now exists: 40
+  skill tools across eight skills, five tiers each, carried in the weapon hand
+  the way a ritual focus is. Ritual clothing already exists too — the ngakpa
+  robes, five tiers across five elements — but only serves magic.
+
+  The obvious extension is craft clothing in the `chest` slot, so a
+  practitioner could carry a tool *and* wear their trade: a physician's apron,
+  a performer's coat, a smith's leathers. Roughly 40 more items.
+
+  **Not to be done quickly.** The open question is what the bonuses should
+  actually do. A flat +N to a skill is fine for one item, but a full kit —
+  tool plus clothing plus accessory — stacks into a large number, and it is not
+  obvious that a non-combat character should get a bigger total than a combat
+  one gets from weapon plus armour. Wants a deliberate pass over how
+  non-combat bonuses scale and interact before adding more of them.
+
+- **Six encounters have role slots no archetype can fill.** They drop to a
+  generic fallback. `tools/verify_enemy_xp.tscn` lists them on every run:
+
+  | encounter | region / tier / role |
+  |---|---|
+  | `swamp_vermin` | fetid_swamps / shade / support |
+  | `animal_yaksha_patrol` | meadow / devil / support |
+  | `animal_dura_soldiers` | meadow / devil / skirmisher |
+  | `animal_khadga_lone` | meadow / imp / frontline |
+  | `animal_shyena_lord` | meadow / imp / frontline |
+  | `animal_uluka_watch` | forest / devil / caster |
+
+- **Equipment should be generated like the XP pool.** Currently
+  `_generate_equipment` reads only `archetype.equipment_template.weapon.type`,
+  so what a character can actually do has no bearing on what it carries.
+  Wanted:
+  - a **total equipment value that scales with the character's XP**, the same
+    proportional way the XP budget itself does
+  - **types chosen from the dominant skillsets** — a ranged build carries a bow,
+    a Performance build carries an instrument, an armour build wears armour
+  - **two weapon sets** where the gold and the skills make it reasonable
+  - beyond the vital kit, **food and other resources**, and later everyday
+    objects carrying minor bonuses — the point being roundness, the same reason
+    XP now overflows into breadth. A character with rations, a spare knife and
+    a lucky stone reads as someone who lives somewhere.
+
+- **Instruments, and skill-linked equipment generally.** The game has ritual
+  implements (damaru, kangling, conch, drilbu) but all are `type: focus` for
+  Ritual and spellcasting. There is nothing a Performance character can hold.
+  Other skills likely want their own objects too — Alchemy, Medicine, Smithing,
+  Trade all imply tools that do not exist yet.
+
+- **Birth and archetype can contradict each other.** Enemy births are rolled
+  from the realm independently of the archetype, so 33 hell encounters produce
+  things like `hell_green_devil_sniper` with a `blue_devil` birth. Either
+  constrain the roll when an archetype id names a birth, or decide devils are
+  mixed-parentage and let it stand.
+
+- **Instruments as performance items.** The game has ritual implements —
+  damaru, kangling, conch, drilbu, phurba — but all are `type: focus`, for
+  Ritual and spellcasting. There is no lute, flute, drum or fiddle a
+  Performance character could carry. Once XP breadth gives enemies and
+  companions skills outside their build, a bard-adjacent character has nothing
+  to hold. Wants its own item type and a few tiers.
+
+- **Equipment should follow the character, not just the archetype.**
+  `_generate_equipment` reads only `archetype.equipment_template.weapon.type`,
+  so a generated character with ranged 8 and performance 7 still carries
+  whatever its archetype hardcodes. With XP breadth now giving characters real
+  skills off their build, gear should be chosen from what they can actually
+  use — top weapon skill picks the weapon, and a high Performance or Ritual
+  should put an instrument or implement in their hands.
+
 - **Background assignment wants a pass across all births.** 94 backgrounds, but
   only 3 are universal (`healer`, `reveler`, `wanderer`) and 55 are single-birth
   — 58% of them. Average 4.8 births per background. Mriga was in none of the 22

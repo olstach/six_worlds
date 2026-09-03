@@ -373,6 +373,17 @@ func get_perk_selection(character: Dictionary, count: int = PERKS_OFFERED, last_
 # PERK GRANTING
 # ============================================
 
+## Every skill id known to the game, from skills.json.
+## Used when spending XP outside an archetype's priorities, so a character can
+## pick up something its build would never have chosen.
+func get_all_skill_ids() -> Array[String]:
+	var out: Array[String] = []
+	for skill_id in _skill_elements:
+		out.append(String(skill_id))
+	out.sort()
+	return out
+
+
 func grant_perk(character: Dictionary, perk_id: String) -> bool:
 	## Add a perk to the character. Returns true on success.
 	if has_perk(character, perk_id):

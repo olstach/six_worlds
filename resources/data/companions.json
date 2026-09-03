@@ -2349,6 +2349,188 @@
         "haunted"
       ]
     },
+    "khara": {
+      "id": "khara",
+      "name": "Khara",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "rakshasa",
+      "background": "maneater",
+      "flavor_text": "The one from the stories. She is aware there are stories, and has opinions about which of them are accurate.",
+      "portrait": "",
+      "recruitment_cost": 1100,
+      "build_weights": {
+        "guile": 5,
+        "unarmed": 4,
+        "grace": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "guile": 2,
+          "unarmed": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "health_potion"
+      ],
+      "traits": [
+        "patient",
+        "hunter"
+      ]
+    },
+    "kruddha": {
+      "id": "kruddha",
+      "name": "Kruddha",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "rakshasa",
+      "background": "blood_drinker",
+      "flavor_text": "Taking such delight in the hunt, in the kill, in the tearing of flesh, must have a downside. But this is for the philosophers to ponder another day.",
+      "portrait": "",
+      "recruitment_cost": 1100,
+      "build_weights": {
+        "might": 5,
+        "guile": 4,
+        "black_magic": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "might": 1,
+          "guile": 1,
+          "black_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "health_potion"
+      ],
+      "traits": [
+        "hot_tempered",
+        "hunter"
+      ]
+    },
+    "kabandha": {
+      "id": "kabandha",
+      "name": "Kabandha",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "rakshasa",
+      "background": "lord_of_the_range",
+      "flavor_text": "Three valleys, every tree marked, and not one of them argued about it. Finds the party's habit of walking through places baffling.",
+      "portrait": "",
+      "recruitment_cost": 1050,
+      "build_weights": {
+        "might": 5,
+        "martial_arts": 4,
+        "armor": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "might": 2,
+          "martial_arts": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "rations"
+      ],
+      "traits": [
+        "stubborn",
+        "composed"
+      ]
+    },
+    "takshari": {
+      "id": "takshari",
+      "name": "Takshari",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "rakshasa",
+      "background": "ancestor_priest",
+      "flavor_text": "Keeps the trophies, pours the mead, remembers which hero did what and to whom. The dead are less trouble than the living and better company.",
+      "portrait": "",
+      "recruitment_cost": 1000,
+      "build_weights": {
+        "ritual": 5,
+        "white_magic": 4,
+        "black_magic": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "white_magic": 1,
+          "black_magic": 1,
+          "ritual": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "prayer_beads"
+      ],
+      "traits": [
+        "superstitious",
+        "mourner"
+      ]
+    },
+    "unmatta": {
+      "id": "unmatta",
+      "name": "Unmatta",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "rakshasa",
+      "background": "the_sensate",
+      "flavor_text": "Came down from the hills for one season of silk and wine and has not gone back in nine years. Insists he could stop. Nobody has asked him to.",
+      "portrait": "",
+      "recruitment_cost": 1150,
+      "build_weights": {
+        "persuasion": 5,
+        "fire_magic": 4,
+        "performance": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "persuasion": 2,
+          "fire_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "silver_ring"
+      ],
+      "traits": [
+        "flirt",
+        "gourmand"
+      ]
+    },
     "brihannala": {
       "id": "brihannala",
       "name": "Brihannala",
@@ -2429,7 +2611,7 @@
       "zone": "forest",
       "birth": "gana",
       "background": "elder_voice",
-      "flavor_text": "The one the pack looks at before it does anything. She has never given an order in her life; she simply yawns at the right moment and the argument ends.",
+      "flavor_text": "She has never given an order; she yawns at the right moment and the argument ends. Now, greater challenges await her and the pack is fretful to see her go.",
       "portrait": "",
       "recruitment_cost": 900,
       "build_weights": {
@@ -2453,7 +2635,10 @@
         "chest": "leather_vest",
         "weapon_main": "short_bow"
       },
-      "fixed_items": [],
+      "fixed_items": [
+        "hunting_bow",
+        "rations"
+      ],
       "traits": [
         "composed",
         "brave"
@@ -2465,8 +2650,8 @@
       "realm": "animal",
       "zone": "forest",
       "birth": "gana",
-      "background": "herb_walker",
-      "flavor_text": "Walks the ridge lines gathering what grows there and treating whatever she finds hurt. Charges nothing and accepts everything, which balances out about as badly as you would expect.",
+      "background": "herbalist",
+      "flavor_text": "Gathers what grows on the ridge and treats whatever she finds hurt. Charges nothing, accepts everything, and so today again she went to sleep on an empty stomach.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
@@ -2494,6 +2679,158 @@
       "traits": [
         "generous",
         "trusting"
+      ]
+    },
+    "dhvanika": {
+      "id": "dhvanika",
+      "name": "Dhvanika",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "gana",
+      "background": "herbalist",
+      "flavor_text": "She may be old, but she is far from senile — a glint in her eye, and in the knife she keeps half hidden.",
+      "portrait": "",
+      "recruitment_cost": 850,
+      "build_weights": {
+        "water_magic": 5,
+        "medicine": 4,
+        "daggers": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "medicine": 2,
+          "water_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "herb_bundle",
+        "healing_herb"
+      ],
+      "traits": [
+        "patient",
+        "sharp_memory"
+      ]
+    },
+    "sphotana": {
+      "id": "sphotana",
+      "name": "Sphotana",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "gana",
+      "background": "monk",
+      "flavor_text": "He woke from a nightmare to see his lair and his fur on fire, spreading from the dream into the world through his eyes and his breath. Now exiled, Sphotana seeks a way to contain his gifts.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "fire_magic": 5,
+        "sorcery": 4,
+        "yoga": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "yoga": 2,
+          "fire_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "fire_charm_common"
+      ],
+      "traits": [
+        "homesick",
+        "dreamer"
+      ]
+    },
+    "ghoshaka": {
+      "id": "ghoshaka",
+      "name": "Ghoshaka",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "gana",
+      "background": "warrior",
+      "flavor_text": "Born on a city wall a long way from any forest, and paid up as of last spring. Now he has come to the homeland of his ancestors for the first time in his life.",
+      "portrait": "",
+      "recruitment_cost": 950,
+      "build_weights": {
+        "armor": 5,
+        "swords": 4,
+        "spears": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "swords": 1,
+          "armor": 1,
+          "might": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "leather_vest",
+        "rations"
+      ],
+      "traits": [
+        "stubborn",
+        "pilgrim"
+      ]
+    },
+    "nadaka": {
+      "id": "nadaka",
+      "name": "Nadaka",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "gana",
+      "background": "forest_singer",
+      "flavor_text": "They were always a strange kid, unnerving others unable to figure out what it is that they really think, behind all those jokes and evasion.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "comedy": 5,
+        "space_magic": 4,
+        "guile": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "performance": 1,
+          "comedy": 1,
+          "grace": 1
+        },
+        "known_spells": [
+          "blink"
+        ]
+      },
+      "fixed_spells": [
+        "blink"
+      ],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "lucky_charm"
+      ],
+      "traits": [
+        "curious",
+        "secret_bearer"
       ]
     },
     "enakshi": {

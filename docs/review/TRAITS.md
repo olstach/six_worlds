@@ -1,6 +1,6 @@
 # Traits
 
-*116 traits. The player rolls one inborn **physical**, one **personality** and one **behavioral** at creation; **acquired** ones are earned during a run; **racial** ones come with the birth.*
+*118 traits. The player rolls one inborn **physical**, one **personality** and one **behavioral** at creation; **acquired** ones are earned during a run; **racial** ones come with the birth.*
 
 *`pressure` shifts the emotional baseline that decay pulls toward: negative is toward that element's klesha, positive toward its wisdom. `bond` tags are what RelationshipSystem scores party rapport on.*
 
@@ -14,7 +14,7 @@
 
 ## attractive
 
-`stats: charm+1  ·  pressure: earth-5  ·  bond: sociable  ·  on 1 companions`
+`stats: charm+1  ·  pressure: earth-5  ·  bond: sociable  ·  on 2 companions`
 
 **Name**
 
@@ -122,7 +122,7 @@ Struggles in the dark, misses details and enemies.
 
 ## iron_stomach
 
-`bond: sociable  ·  on 2 companions`
+`bond: sociable  ·  on 3 companions`
 
 **Name**
 
@@ -231,12 +231,12 @@ Doors seem a little narrow.
 ---
 
 
-# Personality  (20)
+# Personality  (21)
 
 
 ## brave
 
-`pressure: air+10, water+5  ·  bond: martial  ·  opposed: timid  ·  on 9 companions`
+`pressure: air+10, water+5  ·  bond: martial  ·  opposed: timid  ·  on 10 companions`
 
 **Name**
 
@@ -306,9 +306,27 @@ Measures their life against other people's, and comes up short every time.
 <!--@end-->
 
 
+## craven
+
+`stats: finesse+1  ·  skills: might-1  ·  pressure: fire-5, earth-5  ·  opposed: brave  ·  purged by yoga 14  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | craven | name -->
+Craven
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | craven | description -->
+Runs first and reasons afterwards. Whatever else is true, nothing has ever caught them.
+<!--@end-->
+
+
 ## curious
 
-`skills: learning+1  ·  pressure: space+10  ·  bond: scholarly, wonder  ·  opposed: incurious  ·  on 14 companions`
+`skills: learning+1  ·  pressure: space+10  ·  bond: scholarly, wonder  ·  opposed: incurious  ·  on 15 companions`
 
 **Name**
 
@@ -398,7 +416,7 @@ Forgets nothing that was done to them, and keeps the ledger current.
 
 ## hot_tempered
 
-`stats: charm-1  ·  pressure: water-15  ·  opposed: patient  ·  purged by yoga, ritual 3  ·  on 4 companions`
+`stats: charm-1  ·  pressure: water-15  ·  opposed: patient  ·  purged by yoga, ritual 3  ·  on 5 companions`
 
 **Name**
 
@@ -452,7 +470,7 @@ A deep sadness runs beneath the surface.
 
 ## patient
 
-`pressure: water+10, fire+5  ·  bond: order  ·  opposed: hot_tempered, duelist  ·  on 11 companions`
+`pressure: water+10, fire+5  ·  bond: order  ·  opposed: hot_tempered, duelist  ·  on 13 companions`
 
 **Name**
 
@@ -470,7 +488,7 @@ Once you endure the first impulse, you can wait almost indefinitely.
 
 ## sharp_memory
 
-`skills: learning+1  ·  pressure: space+5  ·  bond: scholarly  ·  opposed: forgetful  ·  on 6 companions`
+`skills: learning+1  ·  pressure: space+5  ·  bond: scholarly  ·  opposed: forgetful  ·  on 7 companions`
 
 **Name**
 
@@ -488,7 +506,7 @@ Remembers everything — names, faces, slights.
 
 ## stubborn
 
-`pressure: earth-10  ·  bond: order  ·  purged by yoga 4  ·  on 16 companions`
+`pressure: earth-10  ·  bond: order  ·  purged by yoga 4  ·  on 18 companions`
 
 **Name**
 
@@ -578,7 +596,7 @@ Takes great pride in their appearance and reputation.
 
 ## warm_hearted
 
-`stats: charm+1  ·  pressure: fire+10, water+5  ·  bond: sociable  ·  on 0 companions`
+`stats: charm+1  ·  pressure: fire+10, water+5  ·  bond: sociable  ·  on 1 companions`
 
 **Name**
 
@@ -602,7 +620,7 @@ Easy to like, and easy about liking other people.
 
 ## ascetic
 
-`bond: devotion, order  ·  opposed: gourmand, night_drinker, flirt, drunk, bhang_enjoyer  ·  on 0 companions`
+`bond: devotion, order  ·  opposed: gourmand, night_drinker, flirt, drunk, bhang_enjoyer  ·  on 1 companions`
 
 **Name**
 
@@ -674,7 +692,7 @@ Aren't those beady eyes just adorable?
 
 ## braggart
 
-`bond: sociable, martial  ·  opposed: content  ·  on 0 companions`
+`bond: sociable, martial  ·  opposed: content  ·  on 1 companions`
 
 **Name**
 
@@ -746,7 +764,7 @@ Owes money somewhere, to someone with an unusually long memory.
 
 ## dreamer
 
-`stats: focus+1  ·  pressure: space-5  ·  bond: wonder, arts  ·  on 1 companions`
+`stats: focus+1  ·  pressure: space-5  ·  bond: wonder, arts  ·  on 2 companions`
 
 **Name**
 
@@ -782,7 +800,7 @@ Prides themselves on never turning down a challenge.
 
 ## early_riser
 
-`bond: order  ·  opposed: night_owl  ·  on 0 companions`
+`bond: order  ·  opposed: night_owl  ·  on 1 companions`
 
 **Name**
 
@@ -818,7 +836,7 @@ Particular about cleanliness and order; unsettled by squalor.
 
 ## flirt
 
-`bond: sociable  ·  opposed: ascetic  ·  on 0 companions`
+`bond: sociable  ·  opposed: ascetic  ·  on 2 companions`
 
 **Name**
 
@@ -854,7 +872,7 @@ Did you know most gamblers walk away from the table right before a big win?
 
 ## gossip
 
-`bond: sociable  ·  opposed: secret_bearer  ·  on 0 companions`
+`bond: sociable  ·  opposed: secret_bearer  ·  on 1 companions`
 
 **Name**
 
@@ -872,7 +890,7 @@ Knows everyone's business within a day of arriving anywhere.
 
 ## gourmand
 
-`pressure: fire-5  ·  bond: vice, sociable  ·  opposed: ascetic  ·  on 0 companions`
+`pressure: fire-5  ·  bond: vice, sociable  ·  opposed: ascetic  ·  on 1 companions`
 
 **Name**
 
@@ -890,7 +908,7 @@ Takes great pleasure in fine food and good company at table.
 
 ## homesick
 
-`bond: solitary, grief  ·  on 0 companions`
+`bond: solitary, grief  ·  on 1 companions`
 
 **Name**
 
@@ -908,7 +926,7 @@ The farther away you are from your home, the easier it is to see it through rose
 
 ## hunter
 
-`skills: ranged+1  ·  bond: beasts, solitary  ·  opposed: sworn_vegetarian, pet_lover  ·  on 0 companions`
+`skills: ranged+1  ·  bond: beasts, solitary  ·  opposed: sworn_vegetarian, pet_lover  ·  on 2 companions`
 
 **Name**
 
@@ -926,7 +944,7 @@ Reads ground the way other people read letters. Knows what passed, how long ago,
 
 ## mourner
 
-`bond: grief, devotion  ·  on 0 companions`
+`bond: grief, devotion  ·  on 1 companions`
 
 **Name**
 
@@ -998,7 +1016,7 @@ Has never once passed an animal without stopping.
 
 ## pilgrim
 
-`bond: devotion, wonder  ·  on 0 companions`
+`bond: devotion, wonder  ·  on 1 companions`
 
 **Name**
 
@@ -1052,7 +1070,7 @@ Here and now.
 
 ## scrimper
 
-`bond: order  ·  opposed: generous  ·  on 0 companions`
+`bond: order  ·  opposed: generous  ·  on 1 companions`
 
 **Name**
 
@@ -1070,7 +1088,7 @@ Cannot part with money without a grimace.
 
 ## secret_bearer
 
-`bond: solitary  ·  opposed: gossip  ·  on 0 companions`
+`bond: solitary  ·  opposed: gossip  ·  on 2 companions`
 
 **Name**
 
@@ -1106,7 +1124,7 @@ Always has a tale ready — some true, most embellished.
 
 ## superstitious
 
-`pressure: space-10  ·  bond: wonder  ·  opposed: clear_eyed  ·  purged by yoga, ritual 2  ·  on 1 companions`
+`pressure: space-10  ·  bond: wonder  ·  opposed: clear_eyed  ·  purged by yoga, ritual 2  ·  on 2 companions`
 
 **Name**
 
@@ -1142,7 +1160,7 @@ Will not eat anything that had a mother.
 
 ## tea_ritualist
 
-`pressure: water+10  ·  bond: sociable, order  ·  on 0 companions`
+`pressure: water+10  ·  bond: sociable, order  ·  on 1 companions`
 
 **Name**
 
@@ -1256,7 +1274,7 @@ Has killed something that everyone agreed could not be killed.
 
 ## composed
 
-`pressure: fire+5, water+5  ·  bond: order  ·  on 6 companions`
+`pressure: fire+5, water+5  ·  bond: order  ·  on 7 companions`
 
 **Name**
 
@@ -1635,7 +1653,7 @@ Violence no longer shocks, only excites the senses.
 ---
 
 
-# Racial  (27)
+# Racial  (28)
 
 
 ## ancient_memory
@@ -1797,6 +1815,24 @@ Hoarder's Instinct
 
 <!--@ traits.json | extra_starting_gold | description -->
 Maybe they inherited it, maybe they've hoarded it by themselves - the important part is the weight of the purse.
+<!--@end-->
+
+
+## first_to_know
+
+`stats: awareness+1  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | first_to_know | name -->
+First to Know
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | first_to_know | description -->
+The head comes up before the sound arrives. Alertness inherited rather than learned.
 <!--@end-->
 
 

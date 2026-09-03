@@ -636,7 +636,8 @@
         "palace_vizier",
         "sea_dancer",
         "wreck_gleaner",
-        "tide_seer"
+        "tide_seer",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -680,7 +681,9 @@
         "caravan_guard",
         "still_hunter",
         "pollen_rishi",
-        "meadow_ward"
+        "meadow_ward",
+        "herbalist",
+        "ancestor_priest"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1251,7 +1254,8 @@
         "far_scout",
         "honey_alchemist",
         "caravan_guard",
-        "swarm_caller"
+        "swarm_caller",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1292,7 +1296,8 @@
         "wreck_gleaner",
         "current_herald",
         "vent_warden",
-        "keel_rider"
+        "keel_rider",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1335,7 +1340,8 @@
         "sea_dancer",
         "deep_hunter",
         "wreck_gleaner",
-        "current_herald"
+        "current_herald",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1379,7 +1385,9 @@
         "palace_vizier",
         "deep_hunter",
         "wreck_gleaner",
-        "boundary_walker"
+        "boundary_walker",
+        "herbalist",
+        "blood_drinker"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1422,7 +1430,8 @@
         "tunneler",
         "tunnel_merchant",
         "root_shaper",
-        "shell_wright"
+        "shell_wright",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1463,7 +1472,8 @@
         "caravan_guard",
         "still_hunter",
         "blade_contemplative",
-        "jaina"
+        "jaina",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1505,7 +1515,8 @@
       "typical_backgrounds": [
         "far_scout",
         "flame_seeker",
-        "pollen_rishi"
+        "pollen_rishi",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1520,7 +1531,7 @@
     "rakshasa": {
       "name": "Rakshasa",
       "realm": "animal",
-      "description": "Shape-shifting lords of the jungle, presiding over the ancient cults of the hunt and atavistic power. This is what a tiger becomes across lifetimes of the twisted yogas — hunger refined into discipline, and the discipline pointed at you.",
+      "description": "Shape-shifting lords of the jungle, presiding over the ancient cults of the hunt. What a tiger becomes, given lifetimes.",
       "attribute_modifiers": {
         "strength": 4,
         "finesse": 1,
@@ -1544,7 +1555,12 @@
         "lord_of_the_range",
         "the_hungry",
         "maneater",
-        "hedonist"
+        "hedonist",
+        "herbalist",
+        "realm_walker",
+        "blood_drinker",
+        "ancestor_priest",
+        "the_sensate"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1584,7 +1600,9 @@
         "old_tusk",
         "sounder_guard",
         "mycelium_tender",
-        "sounder_matron"
+        "sounder_matron",
+        "herbalist",
+        "ancestor_priest"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1626,7 +1644,9 @@
         "cache_master",
         "canopy_ambush",
         "forest_drifter",
-        "hedonist"
+        "hedonist",
+        "herbalist",
+        "blood_drinker"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1644,7 +1664,7 @@
     "gana": {
       "name": "Gana",
       "realm": "animal",
-      "description": "Alone, a middling thing with good teeth. Together, the only creature in the forest that hunts by conversation — and among themselves the argument is always settled by voice long before it is settled by throat.",
+      "description": "Alone, a middling thing with good teeth. Together, nothing in the forest outruns us.",
       "attribute_modifiers": {
         "strength": 1,
         "finesse": 2,
@@ -1666,13 +1686,15 @@
       "starting_spells": [],
       "reincarnation_weight": 45,
       "typical_backgrounds": [
-        "throat_hold",
+        "strangler",
         "quiet_tooth",
-        "ceremonial_dancer",
-        "herb_walker",
+        "bonfire_dancer",
+        "herbalist",
         "elder_voice",
         "range_reader",
-        "forest_singer"
+        "forest_singer",
+        "blood_drinker",
+        "ancestor_priest"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1716,7 +1738,8 @@
         "slope_herbalist",
         "scarred_lead",
         "range_reader",
-        "forest_singer"
+        "forest_singer",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1758,7 +1781,8 @@
         "shrine_keeper",
         "jugaad",
         "forest_thief",
-        "treetop_wit"
+        "treetop_wit",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1799,7 +1823,10 @@
       "typical_backgrounds": [
         "sky_lord",
         "stooper",
-        "jessed_hawk"
+        "jessed_hawk",
+        "herbalist",
+        "blood_drinker",
+        "ancestor_priest"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1844,7 +1871,8 @@
         "post_runner",
         "temple_dove",
         "conference_pilgrim",
-        "waypoint_gossip"
+        "waypoint_gossip",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1888,7 +1916,8 @@
       "typical_backgrounds": [
         "night_scholar",
         "ill_omen",
-        "fortune_seeker"
+        "fortune_seeker",
+        "herbalist"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -1958,23 +1987,7 @@
         ],
         "bonus_chance": 0.45
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "blue_devil",
-        "green_devil",
-        "black_devil",
-        "white_devil",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 5
     },
     "merchant": {
@@ -2002,22 +2015,7 @@
         ],
         "bonus_chance": 0.5
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "white_devil",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 7
     },
     "monk": {
@@ -2040,22 +2038,7 @@
         ],
         "bonus_chance": 0.6
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "white_devil",
-        "black_devil",
-        "green_devil",
-        "vetala",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 5
     },
     "noble": {
@@ -2087,22 +2070,7 @@
         ],
         "bonus_chance": 0.5
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "white_devil",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 4
     },
     "reveler": {
@@ -2161,26 +2129,7 @@
         ],
         "bonus_chance": 0.35
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "trader",
-        "naga",
-        "bhramara",
-        "yaksha",
-        "tsen",
-        "rudra",
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "green_devil",
-        "black_devil",
-        "white_devil",
-        "skeleton",
-        "vetala",
-        "dralha"
-      ],
+      "available_races": [],
       "weight": 10
     },
     "farmer": {
@@ -2208,18 +2157,7 @@
         "random_bonus": [],
         "bonus_chance": 0.0
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "trader",
-        "tsen",
-        "bhramara",
-        "yaksha",
-        "red_devil",
-        "yellow_devil",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 8
     },
     "berserker": {
@@ -2255,7 +2193,8 @@
         "yaksha",
         "red_devil",
         "green_devil",
-        "skeleton"
+        "skeleton",
+        "gana"
       ],
       "weight": 5
     },
@@ -2282,22 +2221,7 @@
         "random_bonus": [],
         "bonus_chance": 0.0
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "trader",
-        "naga",
-        "bhramara",
-        "yaksha",
-        "tsen",
-        "rudra",
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "skeleton",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 7
     },
     "raider": {
@@ -2339,7 +2263,8 @@
         "green_devil",
         "yellow_devil",
         "skeleton",
-        "vetala"
+        "vetala",
+        "gana"
       ],
       "weight": 5
     },
@@ -2370,18 +2295,7 @@
         ],
         "bonus_chance": 0.3
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "naga",
-        "bhramara",
-        "yaksha",
-        "tsen",
-        "rudra",
-        "blue_devil",
-        "green_devil"
-      ],
+      "available_races": [],
       "weight": 6
     },
     "executioner": {
@@ -2550,20 +2464,7 @@
         ],
         "bonus_chance": 0.6
       },
-      "available_races": [
-        "red_devil",
-        "blue_devil",
-        "yellow_devil",
-        "green_devil",
-        "black_devil",
-        "white_devil",
-        "rolang",
-        "skeleton",
-        "vetala",
-        "gyelpo",
-        "dre",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 3
     },
     "spy": {
@@ -2593,20 +2494,7 @@
         ],
         "bonus_chance": 0.4
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "blue_devil",
-        "green_devil",
-        "black_devil",
-        "white_devil",
-        "vetala",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 4
     },
     "shambler": {
@@ -2721,26 +2609,11 @@
         ],
         "bonus_chance": 0.5
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "trader",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "blue_devil",
-        "white_devil",
-        "black_devil",
-        "skeleton_copper",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 4
     },
-    "guardian": {
-      "name": "Guardian",
+    "temple_warden": {
+      "name": "Temple Warden",
       "description": "A protector of sacred places, combining martial readiness with spiritual discipline.",
       "attribute_modifiers": {
         "strength": 1,
@@ -2764,21 +2637,7 @@
         ],
         "bonus_chance": 0.4
       },
-      "available_races": [
-        "human",
-        "nomad",
-        "mountain_folk",
-        "naga",
-        "bhramara",
-        "yaksha",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "white_devil",
-        "blue_devil"
-      ],
+      "available_races": [],
       "weight": 5
     },
     "priest": {
@@ -2805,19 +2664,7 @@
         ],
         "bonus_chance": 0.4
       },
-      "available_races": [
-        "human",
-        "mountain_folk",
-        "naga",
-        "tsen",
-        "rudra",
-        "gandharva",
-        "apsara",
-        "planetary_deity",
-        "white_devil",
-        "black_devil",
-        "mriga"
-      ],
+      "available_races": [],
       "weight": 4
     },
     "preserved": {
@@ -3473,10 +3320,10 @@
     },
     "lord_of_the_range": {
       "name": "Lord of the Range",
-      "description": "Every tree in three valleys has been marked. The boundaries are maintained with absolute precision — a scratch here, a spray there, a half-eaten carcass arranged just so at the crossing. When lesser things feel watched in the deep forest, they are right.",
+      "description": "Every tree in three valleys is marked. When lesser things feel watched, they are right.",
       "attribute_modifiers": {},
       "starting_skills": {
-        "unarmed": 2,
+        "might": 2,
         "martial_arts": 1
       },
       "available_races": [
@@ -3486,7 +3333,7 @@
     },
     "the_hungry": {
       "name": "The Hungry",
-      "description": "Territory has not been claimed yet. The days pass in constant movement — eating whatever can be caught, fighting what challenges, retreating from nothing. The hunger is not a problem. It is the condition of becoming.",
+      "description": "The hunger is not a problem. It is the condition of becoming.",
       "attribute_modifiers": {},
       "starting_skills": {
         "unarmed": 1,
@@ -3500,13 +3347,13 @@
     },
     "maneater": {
       "name": "Maneater",
-      "description": "They tried keeping fires at the forest's edge. It didn't help. Now there is one who comes when she will, takes what she will, leaves when she is finished. The fires don't frighten her. She has learned the settlement schedules.",
+      "description": "They tell bedtime stories to their children about her, unable to see her dark silhouette lurking behind the window.",
       "attribute_modifiers": {
         "finesse": 1
       },
       "starting_skills": {
-        "unarmed": 2,
-        "guile": 1
+        "guile": 2,
+        "unarmed": 1
       },
       "available_races": [
         "rakshasa"
@@ -3613,7 +3460,7 @@
     },
     "hedonist": {
       "name": "Hedonist",
-      "description": "Not interested in territory, dominion, or legacy. Interested in the next experience — the feast after the hunt, the fear on a stranger's face, the music from the village fire that reaches the treeline. The unpredictability is not a flaw. It is the point.",
+      "description": "…the feast after the hunt, the fear on a stranger's face, the music from the village fire that reaches the treeline — all this is the blood of experience, and I will have my fill!",
       "attribute_modifiers": {},
       "starting_skills": {
         "performance": 2,
@@ -3626,9 +3473,93 @@
       ],
       "weight": 3
     },
+    "realm_walker": {
+      "name": "Realm Walker",
+      "description": "He has traveled far, in this world and beyond. He learned a lot, tricked many and ate quite a few, too.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "enchantment": 1,
+        "might": 1,
+        "logistics": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "rations"
+        ]
+      },
+      "available_races": [
+        "rakshasa"
+      ],
+      "weight": 5
+    },
+    "blood_drinker": {
+      "name": "Blood Drinker",
+      "description": "This is not their first incarnation in this body, and probably not the last, looking on how they savour the hunt.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "might": 1,
+        "guile": 1,
+        "black_magic": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [
+        "rakshasa",
+        "marjara",
+        "gana",
+        "shyena",
+        "makara"
+      ],
+      "weight": 5
+    },
+    "ancestor_priest": {
+      "name": "Ancestor Priest",
+      "description": "The chiefs and heroes are laid to rest with the trophies of their most glorious hunts and offered blood mead when the moon is full.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "white_magic": 1,
+        "black_magic": 1,
+        "ritual": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "prayer_beads"
+        ]
+      },
+      "available_races": [
+        "rakshasa",
+        "gana",
+        "varaha",
+        "shyena",
+        "yaksha"
+      ],
+      "weight": 5
+    },
+    "the_sensate": {
+      "name": "The Sensate",
+      "description": "They left the forests a lifetime ago, for the delights only civilized life can offer. Now they hunt by seduction, by art, by magic — and their prey hides in silks and perfume, and seems rather excited to be hunted.",
+      "attribute_modifiers": {
+        "charm": 1
+      },
+      "starting_skills": {
+        "persuasion": 2,
+        "performance": 1,
+        "fire_magic": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "silver_ring"
+        ]
+      },
+      "available_races": [
+        "rakshasa"
+      ],
+      "weight": 5
+    },
     "range_reader": {
       "name": "Range Reader",
-      "description": "Every clearing is a risk and a reward. I go first, I go last, reading every edge for the colour that doesn't belong, the shadow that holds still while the leaves move. The herd waits for my signal. The pack waits for my report. The skill is the same either way.",
+      "description": "When I run, I am eyes, I am ears, I am heart. I notice the colour that does not belong, the shadow that holds still while the leaves move.",
       "attribute_modifiers": {
         "awareness": 1
       },
@@ -3642,9 +3573,9 @@
       ],
       "weight": 5
     },
-    "ceremonial_dancer": {
-      "name": "Ceremonial Dancer",
-      "description": "In the long cold the pack makes a circle and calls to the dark until something answers. I am the one who knows when to start and when the call is complete.",
+    "bonfire_dancer": {
+      "name": "Bonfire Dancer",
+      "description": "These? They make a clinking sound when I move, and these here are to reflect lights and sparkle, and this one is —",
       "attribute_modifiers": {},
       "starting_skills": {
         "performance": 1,
@@ -3652,26 +3583,25 @@
         "persuasion": 1
       },
       "available_races": [
-        "gana"
+        "gana",
+        "mriga"
       ],
       "weight": 4
     },
-    "herb_walker": {
-      "name": "Herb Walker",
-      "description": "The old female eats grass when ill, slows for the lame elk, reads the forest not for the kill but for the whole. The pack follows her medicine more than her speed.",
+    "herbalist": {
+      "name": "Herbalist",
+      "description": "The forest speaks of cures and poisons, if you know how to listen. When you break a branch, you see little. They see the weather, time, soil, animals and fungi, spirits and the dead.",
       "attribute_modifiers": {},
       "starting_skills": {
         "medicine": 2,
         "earth_magic": 1
       },
-      "available_races": [
-        "gana"
-      ],
+      "available_races": [],
       "weight": 4
     },
     "elder_voice": {
       "name": "Elder Voice",
-      "description": "The alpha doesn't lead by being fastest or most violent. The alpha leads because the pack has tested every alternative and this one keeps them fed.",
+      "description": "Not the fastest, not the strongest, but the one who can keep the pack alive the longest.",
       "attribute_modifiers": {},
       "starting_skills": {
         "leadership": 2,
@@ -3961,7 +3891,7 @@
     },
     "forest_singer": {
       "name": "Forest Singer",
-      "description": "The clearing competition. The howling circle at full moon. The display that says: I am here, I am this, does anyone want to respond? Some do it for territory. You do it because the doing is the point — the song carrying further than you can see, the answer coming back from somewhere unexpected.",
+      "description": "On moonlit nights, the song carries further than you can see, the answer coming back from somewhere unexpected.",
       "attribute_modifiers": {},
       "starting_skills": {
         "performance": 1,
@@ -4048,9 +3978,9 @@
       ],
       "weight": 5
     },
-    "throat_hold": {
-      "name": "Throat Hold",
-      "description": "There is one grip and it does not take strength — only the patience to wait for the angle and the willingness to take it when it comes. The pack brings the animal down. I am what happens after it is down. Nobody thanks me for that and I have stopped expecting them to.",
+    "strangler": {
+      "name": "Strangler",
+      "description": "At first it takes strength to grip so tightly. In time it becomes patience.",
       "attribute_modifiers": {
         "strength": 1
       },
@@ -4068,7 +3998,7 @@
     },
     "quiet_tooth": {
       "name": "Quiet Tooth",
-      "description": "A knife is a tooth you can put down, which makes it better than a tooth. I work the edges of things — the straggler, the unwatched cache, the sentry who has been awake too long. The pack sings. I am the reason the singing works, and I do it from somewhere behind you.",
+      "description": "A tooth is a knife that is always with you, quick and quiet when you spot a straggler, a weakling, one lost.",
       "attribute_modifiers": {
         "finesse": 1
       },
@@ -4102,6 +4032,262 @@
       ],
       "available_races": [],
       "weight": 3
+    },
+    "musician": {
+      "name": "Musician",
+      "description": "Someone has to be playing when the thing happens, or nobody remembers it right.",
+      "attribute_modifiers": {
+        "charm": 1
+      },
+      "starting_skills": {
+        "performance": 2,
+        "comedy": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_lute"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "thief": {
+      "name": "Thief",
+      "description": "Locks are a conversation. Most of them are not very good at it.",
+      "attribute_modifiers": {
+        "finesse": 1
+      },
+      "starting_skills": {
+        "thievery": 2,
+        "guile": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_thieving_tools"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "apprentice": {
+      "name": "Apprentice",
+      "description": "Three years of fetching, one of watching, and a fortnight of being allowed to try.",
+      "attribute_modifiers": {
+        "focus": 1
+      },
+      "starting_skills": {
+        "sorcery": 2,
+        "learning": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "cloth_robe"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "smith": {
+      "name": "Smith",
+      "description": "Heat, then shape, then cold. Everything else is opinion.",
+      "attribute_modifiers": {
+        "strength": 1
+      },
+      "starting_skills": {
+        "smithing": 2,
+        "might": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_smiths_hammer"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "brawler": {
+      "name": "Brawler",
+      "description": "No school, no forms, no weapon. A very great deal of practice.",
+      "attribute_modifiers": {
+        "strength": 1
+      },
+      "starting_skills": {
+        "unarmed": 2,
+        "might": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "dancer": {
+      "name": "Dancer",
+      "description": "The floor is not the point. The moment before the floor is the point.",
+      "attribute_modifiers": {
+        "finesse": 1
+      },
+      "starting_skills": {
+        "grace": 2,
+        "performance": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "apothecary": {
+      "name": "Apothecary",
+      "description": "Everything is a poison. The dose is the whole of the argument.",
+      "attribute_modifiers": {
+        "focus": 1
+      },
+      "starting_skills": {
+        "alchemy": 2,
+        "medicine": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_alchemists_kit"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "quarrier": {
+      "name": "Quarrier",
+      "description": "Stone gives at one angle only. Finding it is the work. The hitting is the easy part.",
+      "attribute_modifiers": {
+        "strength": 1
+      },
+      "starting_skills": {
+        "maces": 2,
+        "might": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "conjurers_hand": {
+      "name": "Conjurer's Hand",
+      "description": "You do not call a thing you cannot send back. This is taught early, and usually twice.",
+      "attribute_modifiers": {
+        "focus": 1
+      },
+      "starting_skills": {
+        "summoning": 2,
+        "ritual": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "cloth_robe"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "charm_seller": {
+      "name": "Charm Seller",
+      "description": "Half of it is the charm. Half is knowing who needs one, and what they are afraid of.",
+      "attribute_modifiers": {
+        "charm": 1
+      },
+      "starting_skills": {
+        "enchantment": 2,
+        "persuasion": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "lucky_charm"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "storm_watcher": {
+      "name": "Storm Watcher",
+      "description": "The weather tells you first, if you are outside enough to be told.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "air_magic": 2,
+        "learning": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "firekeeper": {
+      "name": "Firekeeper",
+      "description": "It does not go out. That is the whole of the office, and it is harder than it sounds.",
+      "attribute_modifiers": {
+        "constitution": 1
+      },
+      "starting_skills": {
+        "fire_magic": 2,
+        "ritual": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "water_carrier": {
+      "name": "Water Carrier",
+      "description": "Uphill full, downhill empty, and nobody in the village has ever once said thank you.",
+      "attribute_modifiers": {
+        "constitution": 1
+      },
+      "starting_skills": {
+        "water_magic": 2,
+        "logistics": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "rations"
+        ]
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "grave_tender": {
+      "name": "Grave Tender",
+      "description": "Someone digs, someone speaks, someone remembers where. Out here it is all the same someone.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "black_magic": 2,
+        "medicine": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "psychic": {
+      "name": "Psychic",
+      "description": "It began with knowing who was at the door. It did not stop there.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "space_magic": 2,
+        "yoga": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
     }
   }
 }

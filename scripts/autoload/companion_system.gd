@@ -381,16 +381,6 @@ func show_recruit_popup(companion: Dictionary) -> void:
 	popup.confirmed.connect(canvas.queue_free)
 
 
-## Returns XP multiplier based on current party size.
-func get_xp_multiplier() -> float:
-	var size := CharacterSystem.get_party().size()
-	if size <= 1: return 1.5
-	if size == 2: return 1.25
-	if size <= 4: return 1.0
-	if size <= 6: return 0.85
-	return 0.7
-
-
 ## Public wrapper: returns true if companion has maxed all build_weight stats.
 ## Use this from UI code — do not call _is_overflow_mode directly.
 func is_companion_in_overflow(companion: Dictionary) -> bool:
@@ -481,10 +471,19 @@ func record_overflow_investment(companion: Dictionary, stat_key: String) -> void
 
 ## Award XP to the entire party with the size multiplier applied.
 ## Also adds to free_xp for companions and triggers autodevelop.
+## Grant post-battle XP to the party, DIVIDED among its members.
+##
+## Party size is a real tall-versus-wide choice: a solo character receives the
+## whole amount, each of four receives a quarter. This replaces get_xp_multiplier
+## (solo x1.5, duo x1.25, 5-6 x0.85, 7+ x0.7), which leaned the same way but far
+## too weakly to be a decision — a party of four still accumulated roughly four
+## times what a solo character did.
 func apply_party_xp(base_amount: int) -> void:
-	var multiplier := get_xp_multiplier()
-	var final_amount := maxi(1, int(float(base_amount) * multiplier))
-	for member in CharacterSystem.get_party():
+	var party: Array = CharacterSystem.get_party()
+	if party.is_empty():
+		return
+	var final_amount := maxi(1, int(float(base_amount) / float(party.size())))
+	for member in party:
 		# Per-character xp_gain_pct modifier (e.g. negative from low learning skill)
 		var xp_pct: float = member.get("derived", {}).get("xp_gain_pct", 0.0)
 		var member_amount := maxi(1, int(float(final_amount) * (1.0 + xp_pct / 100.0)))
