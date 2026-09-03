@@ -1,6 +1,6 @@
 # Hungry Ghost — Events
 
-*150 events. 46 added in the 2026-07-27 sessions, marked **NEW EVENT**. Individual choices added later to an older event are marked **NEW**.*
+*150 events. No base snapshot is set, so nothing is marked as new — see the header of `export_review_docs.py` for how to turn the NEW markers back on.*
 
 *Edit the prose between the anchors. Headings, ids and the mechanical lines under each choice are generated — edits there are lost.*
 
@@ -93,7 +93,7 @@ The whisper fades behind you. You tell yourself it's not your problem. The realm
 <!--@end-->
 
 
-#### **generous_feeds** — *blue* — requires **trait: generous**  **NEW**
+#### **generous_feeds** — *blue* — requires **trait: generous**
 
 <!--@ hungry_ghost_events.json | hg_starving_preta | choices.generous_feeds.text -->
 Give it something. It will not be enough and give it anyway.
@@ -111,7 +111,7 @@ But it stops, for a moment, being a thing that is starving and becomes a thing t
 <!--@end-->
 
 
-#### **scrimper_calculates** — *blue* — requires **trait: scrimper**  **NEW**
+#### **scrimper_calculates** — *blue* — requires **trait: scrimper**
 
 <!--@ hungry_ghost_events.json | hg_starving_preta | choices.scrimper_calculates.text -->
 Work out exactly how little will satisfy it.
@@ -427,7 +427,7 @@ There — a line of flat stones barely visible below the surface, an old ford hi
 <!--@end-->
 
 
-#### **frail_struggles** — *blue* — requires **trait: frail**  **NEW**
+#### **frail_struggles** — *blue* — requires **trait: frail**
 
 <!--@ hungry_ghost_events.json | hg_swamp_crossing | choices.frail_struggles.text -->
 Black water to the chest, and you are not built for this.
@@ -445,7 +445,7 @@ The party slows for you, which you would rather they did not.
 <!--@end-->
 
 
-#### **strong_fords_it** — *blue* — requires **trait: strong**  **NEW**
+#### **strong_fords_it** — *blue* — requires **trait: strong**
 
 <!--@ hungry_ghost_events.json | hg_swamp_crossing | choices.strong_fords_it.text -->
 Take the rope across first. You are the one who can.
@@ -746,7 +746,7 @@ You show it something that makes its eyes go wide with professional appreciation
 <!--@end-->
 
 
-#### **fastidious_appalled** — *blue* — requires **trait: fastidious**  **NEW**
+#### **fastidious_appalled** — *blue* — requires **trait: fastidious**
 
 <!--@ hungry_ghost_events.json | hg_charnel_ground_entrance | choices.fastidious_appalled.text -->
 You cannot help it. You simply cannot help it.
@@ -955,7 +955,7 @@ Silence. Then an awkward clicking of bones. The teamaster sets a cup of tea gent
 <!--@end-->
 
 
-#### **tea_ritualist_last_cup** — *blue* — requires **trait: tea_ritualist**  **NEW**
+#### **tea_ritualist_last_cup** — *blue* — requires **trait: tea_ritualist**
 
 <!--@ hungry_ghost_events.json | hg_teahouse_event | choices.tea_ritualist_last_cup.text -->
 There is a right way to take a last cup.
@@ -1271,7 +1271,7 @@ You pose a riddle back at it. The vetala's grin falters. It answers wrong. You c
 <!--@end-->
 
 
-#### **curious_engages** — *blue* — requires **trait: curious**  **NEW**
+#### **curious_engages** — *blue* — requires **trait: curious**
 
 <!--@ hungry_ghost_events.json | hg_vetala_riddler | choices.curious_engages.text -->
 A riddle. Obviously you are going to try the riddle.
@@ -1289,7 +1289,7 @@ You get one of the two. It considers this a good afternoon's work for both of yo
 <!--@end-->
 
 
-#### **forgetful_loses_it** — *blue* — requires **trait: forgetful**  **NEW**
+#### **forgetful_loses_it** — *blue* — requires **trait: forgetful**
 
 <!--@ hungry_ghost_events.json | hg_vetala_riddler | choices.forgetful_loses_it.text -->
 It said the riddle. You heard the riddle.
@@ -2007,7 +2007,7 @@ You push a wind through the bog. The mist tears and scatters. A clean path opens
 <!--@end-->
 
 
-#### **iron_stomach_holds** — *blue* — requires **trait: iron_stomach**  **NEW**
+#### **iron_stomach_holds** — *blue* — requires **trait: iron_stomach**
 
 <!--@ hungry_ghost_events.json | hg_poison_bog | choices.iron_stomach_holds.text -->
 Green mist. You have kept worse down than this.
@@ -2271,7 +2271,7 @@ Meditate among the dead
 <!--@end-->
 
 
-#### **war_hardened_reads_field** — *blue* — requires **trait: war_hardened**  **NEW**
+#### **war_hardened_reads_field** — *blue* — requires **trait: war_hardened**
 
 <!--@ hungry_ghost_events.json | hg_ancient_battlefield | choices.war_hardened_reads_field.text -->
 You can read what happened here from where you are standing.
@@ -2289,7 +2289,7 @@ You walk the field explaining it to nobody in particular, and the party is very 
 <!--@end-->
 
 
-#### **sharp_eyed_spots** — *blue* — requires **trait: sharp_eyed**  **NEW**
+#### **sharp_eyed_spots** — *blue* — requires **trait: sharp_eyed**
 
 <!--@ hungry_ghost_events.json | hg_ancient_battlefield | choices.sharp_eyed_spots.text -->
 Something in that jumble is not corroded.
@@ -2727,7 +2727,7 @@ You settle into stillness and the shrine's history comes in fragments. Among the
 <!--@end-->
 
 
-#### **pilgrim_restores** — *blue* — requires **trait: pilgrim**  **NEW**
+#### **pilgrim_restores** — *blue* — requires **trait: pilgrim**
 
 <!--@ hungry_ghost_events.json | hg_forgotten_shrine | choices.pilgrim_restores.text -->
 Half-buried is not the same as finished.
@@ -3057,7 +3057,7 @@ Booing. A rib bone bounces off your head. The announcer wags a finger: "Not what
 <!--@end-->
 
 
-#### **gambler_finds_odds** — *blue* — requires **trait: gambler**  **NEW**
+#### **gambler_finds_odds** — *blue* — requires **trait: gambler**
 
 <!--@ hungry_ghost_events.json | hg_bone_arena_event | choices.gambler_finds_odds.text -->
 There is money moving in those tiers.
@@ -3075,7 +3075,7 @@ You have. You bet accordingly and collect with a straight face.
 <!--@end-->
 
 
-#### **duelist_steps_down** — *blue* — requires **trait: duelist**  **NEW**
+#### **duelist_steps_down** — *blue* — requires **trait: duelist**
 
 <!--@ hungry_ghost_events.json | hg_bone_arena_event | choices.duelist_steps_down.text -->
 You are not going to sit in the tiers.
@@ -3405,7 +3405,7 @@ You reach into the current with dark working and the faces turn toward you, spea
 <!--@end-->
 
 
-#### **melancholic_listens** — *blue* — requires **trait: melancholic**  **NEW**
+#### **melancholic_listens** — *blue* — requires **trait: melancholic**
 
 <!--@ hungry_ghost_events.json | hg_crying_river | choices.melancholic_listens.text -->
 You have heard this note before, from the inside.
@@ -3512,7 +3512,7 @@ The bound spirits stop their orbiting and turn inward.
 <!--@end-->
 
 
-#### **attractive_noticed** — *blue* — requires **trait: attractive**  **NEW**
+#### **attractive_noticed** — *blue* — requires **trait: attractive**
 
 <!--@ hungry_ghost_events.json | hg_gyelpo_court | choices.attractive_noticed.text -->
 The court notices you before you have said anything.
@@ -4142,7 +4142,7 @@ You sit with the visions rather than fighting them. The pool shows you the cycle
 <!--@end-->
 
 
-#### **vain_looks_too_long** — *blue* — requires **trait: vain**  **NEW**
+#### **vain_looks_too_long** — *blue* — requires **trait: vain**
 
 <!--@ hungry_ghost_events.json | hg_mirror_pool | choices.vain_looks_too_long.text -->
 Of course you are going to look.
@@ -4315,7 +4315,7 @@ You walk on. The survivors do not follow.
 <!--@end-->
 
 
-#### **war_hardened_ready** — *blue* — requires **trait: war_hardened**  **NEW**
+#### **war_hardened_ready** — *blue* — requires **trait: war_hardened**
 
 <!--@ hungry_ghost_events.json | hg_shaza_ambush | choices.war_hardened_ready.text -->
 You heard them a while ago. You have been waiting.
@@ -4429,7 +4429,7 @@ Ask how it died
 <!--@end-->
 
 
-#### **storyteller_trades** — *blue* — requires **trait: storyteller**  **NEW**
+#### **storyteller_trades** — *blue* — requires **trait: storyteller**
 
 <!--@ hungry_ghost_events.json | hg_singing_skull | choices.storyteller_trades.text -->
 It has a song. Trade it one.
@@ -4542,7 +4542,7 @@ The undertaking takes everything you have. The pulse of dark energy fights you f
 <!--@end-->
 
 
-#### **grief_struck_kneels** — *blue* — requires **trait: grief_struck**  **NEW**
+#### **grief_struck_kneels** — *blue* — requires **trait: grief_struck**
 
 <!--@ hungry_ghost_events.json | hg_mass_grave | choices.grief_struck_kneels.text -->
 You are already carrying one. What is a thousand more.
@@ -5005,7 +5005,7 @@ They wave goodbye with genuine warmth. The music follows you for a while.
 <!--@end-->
 
 
-#### **celebrant_joins** — *blue* — requires **trait: celebrant**  **NEW**
+#### **celebrant_joins** — *blue* — requires **trait: celebrant**
 
 <!--@ hungry_ghost_events.json | hg_turquoise_dancers | choices.celebrant_joins.text -->
 They are enjoying themselves. Join in.
@@ -5167,7 +5167,7 @@ Your first move is not a block — it's a strike at the wrist holding the sword.
 <!--@end-->
 
 
-#### **duelist_cannot_walk_past** — *blue* — requires **trait: duelist**  **NEW**
+#### **duelist_cannot_walk_past** — *blue* — requires **trait: duelist**
 
 <!--@ hungry_ghost_events.json | hg_iron_skeleton_duel | choices.duelist_cannot_walk_past.text -->
 A sword in the ground at a crossroads is a sentence with one ending.
@@ -5298,7 +5298,7 @@ You work in companionable silence. The mirror grows brighter. The skeleton nods 
 <!--@end-->
 
 
-#### **clear_eyed_asks** — *blue* — requires **trait: clear_eyed**  **NEW**
+#### **clear_eyed_asks** — *blue* — requires **trait: clear_eyed**
 
 <!--@ hungry_ghost_events.json | hg_copper_mirror | choices.clear_eyed_asks.text -->
 Ask what he is polishing it for.
@@ -5507,7 +5507,7 @@ You both go over. You catch the edge. It does not.
 <!--@end-->
 
 
-#### **timid_will_not_cross** — *blue* — requires **trait: timid**  **NEW**
+#### **timid_will_not_cross** — *blue* — requires **trait: timid**
 
 <!--@ hungry_ghost_events.json | hg_bone_bridge | choices.timid_will_not_cross.text -->
 It is made of people and it is over a hole that howls.
@@ -5525,7 +5525,7 @@ The hour costs supplies. Nobody says anything about it, which somehow does not h
 <!--@end-->
 
 
-#### **brave_goes_across** — *blue* — requires **trait: brave**  **NEW**
+#### **brave_goes_across** — *blue* — requires **trait: brave**
 
 <!--@ hungry_ghost_events.json | hg_bone_bridge | choices.brave_goes_across.text -->
 Somebody crosses first or nobody crosses.
@@ -5662,7 +5662,7 @@ The binding fails. The hound in question is offended and snaps at you. The pack 
 <!--@end-->
 
 
-#### **hunter_reads_pack** — *blue* — requires **trait: hunter**  **NEW**
+#### **hunter_reads_pack** — *blue* — requires **trait: hunter**
 
 <!--@ hungry_ghost_events.json | hg_grave_hound_pack | choices.hunter_reads_pack.text -->
 Find the one the others keep glancing at.
@@ -5796,7 +5796,7 @@ The dré watches you work in silence. When you light it, the fire catches cleanl
 <!--@end-->
 
 
-#### **mourner_finishes** — *blue* — requires **trait: mourner**  **NEW**
+#### **mourner_finishes** — *blue* — requires **trait: mourner**
 
 <!--@ hungry_ghost_events.json | hg_last_rites | choices.mourner_finishes.text -->
 Somebody started this and did not finish it. Finish it.
@@ -5903,7 +5903,7 @@ A story of accumulated small greeds, none of them spectacular. It builds a pictu
 <!--@end-->
 
 
-#### **ascetic_recognises_it** — *blue* — requires **trait: ascetic**  **NEW**
+#### **ascetic_recognises_it** — *blue* — requires **trait: ascetic**
 
 <!--@ hungry_ghost_events.json | hg_yidag_encounter | choices.ascetic_recognises_it.text -->
 You know what it is to want and not take.
@@ -6026,7 +6026,7 @@ You know the right words. They let you into the back room.
 <!--@end-->
 
 
-#### **secret_bearer_reads_marks** — *blue* — requires **trait: secret_bearer**  **NEW**
+#### **secret_bearer_reads_marks** — *blue* — requires **trait: secret_bearer**
 
 <!--@ hungry_ghost_events.json | hg_smuggler_tunnel | choices.secret_bearer_reads_marks.text -->
 Those scratches are not damage. They are a message.
@@ -6165,7 +6165,7 @@ The invisible hand does not let go. What was carrying the lantern turns its atte
 <!--@end-->
 
 
-#### **night_owl_falls_in** — *blue* — requires **trait: night_owl**  **NEW**
+#### **night_owl_falls_in** — *blue* — requires **trait: night_owl**
 
 <!--@ hungry_ghost_events.json | hg_spirit_lanterns | choices.night_owl_falls_in.text -->
 It is the middle of the night and you are wide awake.
@@ -6183,7 +6183,7 @@ When it notices, it does not object. It makes room.
 <!--@end-->
 
 
-#### **light_sleeper_wakes** — *blue* — requires **trait: light_sleeper**  **NEW**
+#### **light_sleeper_wakes** — *blue* — requires **trait: light_sleeper**
 
 <!--@ hungry_ghost_events.json | hg_spirit_lanterns | choices.light_sleeper_wakes.text -->
 You were awake before the light reached the camp.
@@ -6292,7 +6292,7 @@ He stops digging. Considers it for a long moment. "Who'd dig the graves?" He goe
 <!--@end-->
 
 
-#### **warm_hearted_asks_why** — *blue* — requires **trait: warm_hearted**  **NEW**
+#### **warm_hearted_asks_why** — *blue* — requires **trait: warm_hearted**
 
 <!--@ hungry_ghost_events.json | hg_gravedigger | choices.warm_hearted_asks_why.text -->
 He is alive. Ask him how he is, before anything else.
@@ -6424,7 +6424,7 @@ The librarian looks at you. Then at the scroll. Then at you again — not angry,
 <!--@end-->
 
 
-#### **curious_stays** — *blue* — requires **trait: curious**  **NEW**
+#### **curious_stays** — *blue* — requires **trait: curious**
 
 <!--@ hungry_ghost_events.json | hg_bone_library | choices.curious_stays.text -->
 You are not leaving a library. Be reasonable.
@@ -6442,7 +6442,7 @@ What you find in four hours is not what you were looking for and is considerably
 <!--@end-->
 
 
-#### **sharp_memory_indexes** — *blue* — requires **trait: sharp_memory**  **NEW**
+#### **sharp_memory_indexes** — *blue* — requires **trait: sharp_memory**
 
 <!--@ hungry_ghost_events.json | hg_bone_library | choices.sharp_memory_indexes.text -->
 Do not read them. Index them.
@@ -6748,7 +6748,7 @@ The collection here is unusual — varied, old, well-preserved by the dry air. Y
 <!--@end-->
 
 
-#### **ash_marked_belongs** — *blue* — requires **trait: ash_marked**  **NEW**
+#### **ash_marked_belongs** — *blue* — requires **trait: ash_marked**
 
 <!--@ hungry_ghost_events.json | hg_death_meditation | choices.ash_marked_belongs.text -->
 You have sat in places like this before.
@@ -6868,7 +6868,7 @@ You hit something genuinely funny. One skeleton laughs so hard it falls apart at
 <!--@end-->
 
 
-#### **debtor_reads_the_sign** — *blue* — requires **trait: debtor**  **NEW**
+#### **debtor_reads_the_sign** — *blue* — requires **trait: debtor**
 
 <!--@ hungry_ghost_events.json | hg_toll_bridge | choices.debtor_reads_the_sign.text -->
 Read the sign properly. Signs like this always have a clause.
@@ -7820,7 +7820,7 @@ You read them back slowly. Each one. He is very still. When you finish, the hall
 <!--@end-->
 
 
-#### **oath_keeper_offers** — *blue* — requires **trait: oath_keeper**  **NEW**
+#### **oath_keeper_offers** — *blue* — requires **trait: oath_keeper**
 
 <!--@ hungry_ghost_events.json | hg_gomchen | choices.oath_keeper_offers.text -->
 Offer to hold one of them. You are good for it.
@@ -8427,7 +8427,7 @@ Grief doesn't always explain itself. You sit with it anyway.
 <!--@end-->
 
 
-#### **pilgrim_stops_here_too** — *blue* — requires **trait: pilgrim**  **NEW**
+#### **pilgrim_stops_here_too** — *blue* — requires **trait: pilgrim**
 
 <!--@ hungry_ghost_events.json | hg_weeping_shrine | choices.pilgrim_stops_here_too.text -->
 It is half-sunk and it is still a shrine.
@@ -8776,7 +8776,7 @@ It tilts its head at you, then picks up the tempo to match your voice. For a few
 <!--@end-->
 
 
-#### **poet_answers_it** — *blue* — requires **trait: poet**  **NEW**
+#### **poet_answers_it** — *blue* — requires **trait: poet**
 
 <!--@ hungry_ghost_events.json | hg_skeleton_musician | choices.poet_answers_it.text -->
 It is playing a form. Give it words.
@@ -8951,7 +8951,7 @@ You misstep. The ring shifts. They look at you all at once. Then, somehow worse,
 <!--@end-->
 
 
-#### **celebrant_watches_kindly** — *blue* — requires **trait: celebrant**  **NEW**
+#### **celebrant_watches_kindly** — *blue* — requires **trait: celebrant**
 
 <!--@ hungry_ghost_events.json | hg_dancing_dead | choices.celebrant_watches_kindly.text -->
 Let them have it. Watch properly.
@@ -9143,7 +9143,7 @@ You observe the feast without hunger. The pretas slow, one by one, and watch you
 <!--@end-->
 
 
-#### **ascetic_unmoved** — *blue* — requires **trait: ascetic**  **NEW**
+#### **ascetic_unmoved** — *blue* — requires **trait: ascetic**
 
 <!--@ hungry_ghost_events.json | hg_charnel_feast | choices.ascetic_unmoved.text -->
 You have been hungrier than this on purpose.
@@ -9161,7 +9161,7 @@ Whatever laid it was counting on the wanting, and there is not enough of that in
 <!--@end-->
 
 
-#### **gourmand_tempted** — *blue* — requires **trait: gourmand**  **NEW**
+#### **gourmand_tempted** — *blue* — requires **trait: gourmand**
 
 <!--@ hungry_ghost_events.json | hg_charnel_feast | choices.gourmand_tempted.text -->
 You can tell from here that the lamb is done properly.
@@ -9257,7 +9257,7 @@ A mound of bones marks the entrance, a khatvanga hung with a skull and streaming
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_black_lodge | choices.[0].text -->
 Ask to learn
@@ -9273,7 +9273,7 @@ The movement stills. A bony hand gestures to a list scratched into the wall. Spe
 <!--@end-->
 
 
-#### **secret_bearer_admitted** — *blue* — requires **trait: secret_bearer**  **NEW**
+#### **secret_bearer_admitted** — *blue* — requires **trait: secret_bearer**
 
 <!--@ hungry_ghost_events.json | hg_black_lodge | choices.secret_bearer_admitted.text -->
 Say nothing at the door. That is the password.
@@ -9289,7 +9289,7 @@ It is. You are inside before you have decided whether you wanted to be, and what
 <!--@end-->
 
 
-#### **[2]** — *grey*  **NEW**
+#### **[2]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_black_lodge | choices.[2].text -->
 Back out
@@ -9327,7 +9327,7 @@ Sixty-four forms carved into standing bones form a perfect ring on the charnel g
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_yogini_circle | choices.[0].text -->
 Enter the circle
@@ -9343,7 +9343,7 @@ One of the sisters turns. No words — a gesture toward the center of the ring. 
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_yogini_circle | choices.[1].text -->
 Move on
@@ -9381,7 +9381,7 @@ At the intersection of the ancient paths, a stupa rises from layers of offerings
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_crossroads_stupa | choices.[0].text -->
 Approach the stupa
@@ -9397,7 +9397,7 @@ The figure looks up. The crossroads is the right place for calling back what is 
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_crossroads_stupa | choices.[1].text -->
 Observe from a distance
@@ -9435,7 +9435,7 @@ A small monastery sits undisturbed between the burial grounds, its walls marked 
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_hidden_gompa | choices.[0].text -->
 Knock and ask to enter
@@ -9451,7 +9451,7 @@ After a long pause, the door opens. A monk gestures you inside and names what ca
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_hidden_gompa | choices.[1].text -->
 Don't disturb them
@@ -9489,7 +9489,7 @@ The surface of the lake is perfectly still, reflecting not the sky above but som
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_mirror_lake | choices.[0].text -->
 Sit and listen
@@ -9505,7 +9505,7 @@ A practitioner meets your eyes in the reflection before turning around. They can
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_mirror_lake | choices.[1].text -->
 Walk away from the mirage
@@ -9543,7 +9543,7 @@ A stand of ancient trees whose roots grow through charnel earth. The branches ar
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_sacred_grove | choices.[0].text -->
 Approach the practitioners
@@ -9559,7 +9559,7 @@ One of the practitioners turns. She names what can be taught here, and then the 
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_sacred_grove | choices.[1].text -->
 Leave them to it
@@ -9597,7 +9597,7 @@ A low temple built around a black-water pool. The nagas who dwell in such pools 
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_temple_of_the_naga | choices.[0].text -->
 Ask about their teachings
@@ -9613,7 +9613,7 @@ The practitioner opens her eyes. She names the spells the nagas have permitted t
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_temple_of_the_naga | choices.[1].text -->
 Move on
@@ -9651,7 +9651,7 @@ A walled compound marked with the crossed-bone sigil of the guild. Skeletal warr
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_mercenary_guild | choices.[0].text -->
 Enter the guild
@@ -9667,7 +9667,7 @@ The guildmaster looks you over without interest. Weapons, armor, contracts — n
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_mercenary_guild | choices.[1].text -->
 Move on
@@ -9705,7 +9705,7 @@ A preta wanders between the grave markers, its distended belly dragging, despera
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_peddler_graveyard | choices.[0].text -->
 Trade with the preta
@@ -9721,7 +9721,7 @@ The preta's needle-thin neck cranes toward you, eyes fixed on your pack. It lays
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_peddler_graveyard | choices.[1].text -->
 Move on
@@ -9759,7 +9759,7 @@ A preta rises from the mist at the water's edge, its needle-thin neck craning as
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_peddler_swamp | choices.[0].text -->
 Trade with the preta
@@ -9775,7 +9775,7 @@ The preta spreads its goods on a half-submerged log and regards you with hollow,
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_peddler_swamp | choices.[1].text -->
 Move on
@@ -9813,7 +9813,7 @@ A lantern glows faintly above a low doorway carved into a wall of stacked bone. 
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_teahouse_charnel | choices.[0].text -->
 Step inside
@@ -9829,7 +9829,7 @@ The figure pours without looking up. You can rest here — if you can afford it.
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_teahouse_charnel | choices.[1].text -->
 Move on
@@ -9867,7 +9867,7 @@ A small dwelling built into the side of an old burial mound, its entrance marked
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_teahouse_graveyard | choices.[0].text -->
 Step inside
@@ -9883,7 +9883,7 @@ The host gestures to a low table. The tea is bitter and dark. You can rest here 
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_teahouse_graveyard | choices.[1].text -->
 Move on
@@ -9921,7 +9921,7 @@ A teahouse built on stilts above the swamp water, its light the only warmth for 
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_teahouse_swamp | choices.[0].text -->
 Cross the bridge
@@ -9937,7 +9937,7 @@ The host sets a cup on the table before you sit. You can rest here — if you ca
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_teahouse_swamp | choices.[1].text -->
 Move on
@@ -9975,7 +9975,7 @@ A settlement where more windows glow than can be explained by candlelight. Stran
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_town_magic | choices.[0].text -->
 Enter the town
@@ -9991,7 +9991,7 @@ You find the market square. The odd merchants eye you with professional interest
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_town_magic | choices.[1].text -->
 Move on
@@ -10029,7 +10029,7 @@ A trading post built among the graves, supplies scavenged from the dead and trad
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_town_supplies | choices.[0].text -->
 Enter the town
@@ -10045,7 +10045,7 @@ You push through to the market. Traders call out their wares in dry, patient voi
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_town_supplies | choices.[1].text -->
 Move on
@@ -10083,7 +10083,7 @@ A fortified compound where warriors trade blades and bones. The biggest building
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_town_weapons | choices.[0].text -->
 Enter the town
@@ -10099,7 +10099,7 @@ You push through the gate. The armorer looks up from their work.
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_town_weapons | choices.[1].text -->
 Move on
@@ -10137,7 +10137,7 @@ A camp of battle-scarred fighters who never left the ghost realm. Their fire has
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_veterans_camp | choices.[0].text -->
 Approach the camp
@@ -10153,7 +10153,7 @@ A veteran looks up from the fire. Old fighters make fair merchants — they know
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_veterans_camp | choices.[1].text -->
 Move on
@@ -10191,7 +10191,7 @@ A market that appears only between the grave stones, visible only to those who k
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_shadow_market | choices.[0].text -->
 Browse the stalls
@@ -10207,7 +10207,7 @@ A shadowed hand gestures you deeper into the market. No questions asked, no name
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_shadow_market | choices.[1].text -->
 Move on
@@ -10245,7 +10245,7 @@ A hunched figure steps from behind a grave marker, face obscured beneath a ragge
 ### Choices
 
 
-#### **[0]** — *grey*  **NEW**
+#### **[0]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_shadow_peddler | choices.[0].text -->
 See what it has
@@ -10261,7 +10261,7 @@ The figure spreads its goods on the grave stone between you. It wants food more 
 <!--@end-->
 
 
-#### **[1]** — *grey*  **NEW**
+#### **[1]** — *grey*
 
 <!--@ hungry_ghost_events.json | hg_shadow_peddler | choices.[1].text -->
 Keep moving
@@ -10278,7 +10278,7 @@ You walk past without stopping. The figure watches you go, then is gone.
 
 ---
 
-## hg_boss_insatiable_king  **NEW EVENT**
+## hg_boss_insatiable_king
 
 `realm: hungry_ghost`
 
@@ -10369,7 +10369,7 @@ When he finally weeps, the tears are ordinary and human. The throne of bone crum
 
 ---
 
-## hg_swamp_warden  **NEW EVENT**
+## hg_swamp_warden
 
 `realm: hungry_ghost`
 
@@ -10467,7 +10467,7 @@ The mud holds you fast — and the warden comes wading.
 
 ---
 
-## hg_bone_gate_keeper  **NEW EVENT**
+## hg_bone_gate_keeper
 
 `realm: hungry_ghost`
 
@@ -10556,7 +10556,7 @@ You walk the line like a visiting general. Halfway down the rank, the captain de
 
 ---
 
-## hg_zombie_horde  **NEW EVENT**
+## hg_zombie_horde
 
 `realm: hungry_ghost`
 
@@ -10654,7 +10654,7 @@ Rolang are not animate by their own will — something keeps them walking, and i
 
 ---
 
-## hg_swamp_toll  **NEW EVENT**
+## hg_swamp_toll
 
 `realm: hungry_ghost`
 
@@ -10761,7 +10761,7 @@ You press a flat river stone into the swollen palm with great ceremony. The fing
 
 ---
 
-## hg_rotting_bridge  **NEW EVENT**
+## hg_rotting_bridge
 
 `realm: hungry_ghost`
 
@@ -10859,7 +10859,7 @@ Most of a day added to the journey and every member of the party privately relie
 
 ---
 
-## hg_lost_traveler_swamp  **NEW EVENT**
+## hg_lost_traveler_swamp
 
 `realm: hungry_ghost`
 
@@ -10966,7 +10966,7 @@ The loop is real and it is thin — a fold in the swamp about a mile across that
 
 ---
 
-## hg_sunken_village  **NEW EVENT**
+## hg_sunken_village
 
 `realm: hungry_ghost`
 
@@ -11063,7 +11063,7 @@ You stand in the shallows and name the village — you do not know its name, so 
 
 ---
 
-## hg_flooded_crypt  **NEW EVENT**
+## hg_flooded_crypt
 
 `realm: hungry_ghost`
 
@@ -11160,7 +11160,7 @@ The seals are not protective. They are a *containment*, and the water is part of
 
 ---
 
-## hg_cursed_well  **NEW EVENT**
+## hg_cursed_well
 
 `realm: hungry_ghost`
 
@@ -11248,7 +11248,7 @@ You work the rite down the shaft in stages, and what is on the rope comes apart 
 
 ---
 
-## hg_preta_feast_swamp  **NEW EVENT**
+## hg_preta_feast_swamp
 
 `realm: hungry_ghost`
 
@@ -11355,7 +11355,7 @@ Ask why nobody is eating
 
 ---
 
-## hg_medicinal_garden  **NEW EVENT**
+## hg_medicinal_garden
 
 `realm: hungry_ghost`
 
@@ -11479,7 +11479,7 @@ Ask how anything grows in the realm of hunger
 
 ---
 
-## hg_graveyard_dog  **NEW EVENT**
+## hg_graveyard_dog
 
 `realm: hungry_ghost`
 
@@ -11586,7 +11586,7 @@ Low voice, no eye contact, hand held out flat and still. Whatever it is now, it 
 
 ---
 
-## hg_skeleton_army  **NEW EVENT**
+## hg_skeleton_army
 
 `realm: hungry_ghost`
 
@@ -11693,7 +11693,7 @@ The line is anchored on high ground at both ends and refused on the left — a t
 
 ---
 
-## hg_ancient_crypt  **NEW EVENT**
+## hg_ancient_crypt
 
 `realm: hungry_ghost`
 
@@ -11781,7 +11781,7 @@ The inscription is a service contract. The two inside are not guardians in any h
 
 ---
 
-## hg_crumbling_mausoleum  **NEW EVENT**
+## hg_crumbling_mausoleum
 
 `realm: hungry_ghost`
 
@@ -11878,7 +11878,7 @@ Eleven names, four generations, one family line that ended here. You say each na
 
 ---
 
-## hg_forgotten_king  **NEW EVENT**
+## hg_forgotten_king
 
 `realm: hungry_ghost`
 
@@ -11969,7 +11969,7 @@ You do not ask him anything and you do not tell him anything. You sit on the tom
 
 ---
 
-## hg_dusty_library  **NEW EVENT**
+## hg_dusty_library
 
 `realm: hungry_ghost`
 
@@ -12073,7 +12073,7 @@ It is not a general library. Every text is on one subject, approached from every
 
 ---
 
-## hg_bone_collector  **NEW EVENT**
+## hg_bone_collector
 
 `realm: hungry_ghost`
 
@@ -12161,7 +12161,7 @@ He stops the cart. It is clear nobody has ever put it to him and equally clear h
 
 ---
 
-## hg_ancestor_spirit  **NEW EVENT**
+## hg_ancestor_spirit
 
 `realm: hungry_ghost`
 
@@ -12270,7 +12270,7 @@ It gives you what it has: its name, its protection, and the contents of a grave 
 
 ---
 
-## hg_bone_shrine  **NEW EVENT**
+## hg_bone_shrine
 
 `realm: hungry_ghost`
 
@@ -12367,7 +12367,7 @@ It is a containment, wound outward, and the offerings are the seal — each one 
 
 ---
 
-## hg_grave_goods  **NEW EVENT**
+## hg_grave_goods
 
 `realm: hungry_ghost`
 
@@ -12474,7 +12474,7 @@ There is a void under this whole section of the graveyard — something hollowed
 
 ---
 
-## hg_weary_pilgrim  **NEW EVENT**
+## hg_weary_pilgrim
 
 `realm: hungry_ghost`
 
@@ -12581,7 +12581,7 @@ Six miles of shared road, in step, in silence, with a dead pilgrim who has been 
 
 ---
 
-## hg_ossuary_bargain  **NEW EVENT**
+## hg_ossuary_bargain
 
 `realm: hungry_ghost`
 
@@ -12687,7 +12687,7 @@ The contracts are prepaid, in perpetuity, by the deceased themselves — every s
 
 ---
 
-## hg_vetala_court  **NEW EVENT**
+## hg_vetala_court
 
 `realm: hungry_ghost`
 
@@ -12776,7 +12776,7 @@ There is a protocol for a living guest and almost nobody alive has ever known it
 
 ---
 
-## hg_vetala_bargain  **NEW EVENT**
+## hg_vetala_bargain
 
 `realm: hungry_ghost`
 
@@ -12883,7 +12883,7 @@ Ask what happened to the ones who said yes
 
 ---
 
-## hg_illusory_palace  **NEW EVENT**
+## hg_illusory_palace
 
 `realm: hungry_ghost`
 
@@ -13008,7 +13008,7 @@ You walk the whole length of the hall through the music and the light and the sm
 
 ---
 
-## hg_illusory_treasure  **NEW EVENT**
+## hg_illusory_treasure
 
 `realm: hungry_ghost`
 
@@ -13133,7 +13133,7 @@ You rig the hoard — a tripline, a deadfall of bone-wall masonry, and a very co
 
 ---
 
-## hg_feasting_hall_trap  **NEW EVENT**
+## hg_feasting_hall_trap
 
 `realm: hungry_ghost`
 
@@ -13222,7 +13222,7 @@ You go to the head of the table, take the clean place-setting, and clear it — 
 
 ---
 
-## hg_body_possession  **NEW EVENT**
+## hg_body_possession
 
 `realm: hungry_ghost`
 
@@ -13329,7 +13329,7 @@ A possessing spirit is, briefly, a captive audience — it cannot leave without 
 
 ---
 
-## hg_sorcerer_of_corpses  **NEW EVENT**
+## hg_sorcerer_of_corpses
 
 `realm: hungry_ghost`
 
@@ -13417,7 +13417,7 @@ It is a binding, and it is beautiful work, and it is also — you check twice �
 
 ---
 
-## hg_bone_tower  **NEW EVENT**
+## hg_bone_tower
 
 `realm: hungry_ghost`
 
@@ -13514,7 +13514,7 @@ Up without a rail, sit facing west, and do the thing the structure is asking for
 
 ---
 
-## hg_king_messenger  **NEW EVENT**
+## hg_king_messenger
 
 `realm: hungry_ghost`
 
@@ -13621,7 +13621,7 @@ You add two clauses in the margin: attendance at a time of your choosing, and sa
 
 ---
 
-## hg_corpse_oracle  **NEW EVENT**
+## hg_corpse_oracle
 
 `realm: hungry_ghost`
 
@@ -13743,7 +13743,7 @@ Nobody in the queue has thought to ask whether the corpse consented to being an 
 
 ---
 
-## hg_charnel_hermit  **NEW EVENT**
+## hg_charnel_hermit
 
 `realm: hungry_ghost`
 
@@ -13850,7 +13850,7 @@ She takes you out among the bodies at the hour when the fires are low and sits y
 
 ---
 
-## hg_vetala_arena  **NEW EVENT**
+## hg_vetala_arena
 
 `realm: hungry_ghost`
 
@@ -13939,7 +13939,7 @@ You go down and get between them, which is insane, and then talk — not to the 
 
 ---
 
-## hg_preta_feast_charnel  **NEW EVENT**
+## hg_preta_feast_charnel
 
 `realm: hungry_ghost`
 
@@ -14028,7 +14028,7 @@ Feeding them once is an afternoon's work. You spend three days instead, teaching
 
 ---
 
-## hg_recruit_mehr  **NEW EVENT**
+## hg_recruit_mehr
 
 `realm: hungry_ghost`
 
@@ -14121,7 +14121,7 @@ Leave the tar seep alone
 
 ---
 
-## hg_recruit_choki  **NEW EVENT**
+## hg_recruit_choki
 
 `realm: hungry_ghost`
 
@@ -14214,7 +14214,7 @@ Leave her to the water
 
 ---
 
-## hg_recruit_nangwa  **NEW EVENT**
+## hg_recruit_nangwa
 
 `realm: hungry_ghost`
 
@@ -14307,7 +14307,7 @@ Three scroll-cases from a high shelf, dry inside. He does not notice you take th
 
 ---
 
-## hg_recruit_prashan  **NEW EVENT**
+## hg_recruit_prashan
 
 `realm: hungry_ghost`
 
@@ -14402,7 +14402,7 @@ Walk on past
 
 ---
 
-## hg_recruit_nyingje  **NEW EVENT**
+## hg_recruit_nyingje
 
 `realm: hungry_ghost`
 
@@ -14495,7 +14495,7 @@ It accepts without fuss and immediately begins distributing. "Forty-one," it say
 
 ---
 
-## hg_recruit_khedrup  **NEW EVENT**
+## hg_recruit_khedrup
 
 `realm: hungry_ghost`
 
@@ -14594,7 +14594,7 @@ The recitation resumes before you are out of earshot, at the same impossible pac
 
 ---
 
-## hg_recruit_rasabhava  **NEW EVENT**
+## hg_recruit_rasabhava
 
 `realm: hungry_ghost`
 
@@ -14689,7 +14689,7 @@ Ask whether you might have the vessel
 
 ---
 
-## hg_recruit_durvasa  **NEW EVENT**
+## hg_recruit_durvasa
 
 `realm: hungry_ghost`
 
@@ -14782,7 +14782,7 @@ He is a professional curse-caster. Leave him hanging.
 
 ---
 
-## hg_recruit_gomchen  **NEW EVENT**
+## hg_recruit_gomchen
 
 `realm: hungry_ghost`
 

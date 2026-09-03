@@ -1,6 +1,6 @@
 # Animal Realm — Companions
 
-*24 companions. All written by Claude and never edited — this whole file wants a pass.*
+*26 companions.*
 
 *Edit the prose between the anchors. The stat block under each name is generated; change it in `companions.json` instead.*
 
@@ -10,9 +10,16 @@
 # Zone: forest
 
 
-## Brihannala  `brihannala`  **NEW**
+## Brihannala  `brihannala`
 
 `birth: vanara  ·  background: troop_elder  ·  traits: curious, sharp_memory  ·  cost: 750  ·  fixed_items: ['item_random']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | brihannala | build_weights -->
+thievery, learning, trade
+<!--@end-->
 
 
 **Flavor Text**
@@ -22,9 +29,16 @@ Retired from leading a troop of sixty and now collects stolen objects and unlike
 <!--@end-->
 
 
-## Chitrangada  `chitrangada`  **NEW**
+## Chitrangada  `chitrangada`
 
-`birth: shardula  ·  background: canopy_ambush  ·  traits: quick, brave  ·  cost: 850`
+`birth: marjara  ·  background: canopy_ambush  ·  traits: quick, brave  ·  cost: 850`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | chitrangada | build_weights -->
+unarmed, guile, grace
+<!--@end-->
 
 
 **Flavor Text**
@@ -34,9 +48,16 @@ Drops on things from above and has never once had to explain herself afterwards.
 <!--@end-->
 
 
-## Dirghajihva  `dirghajihva`  **NEW**
+## Dirghajihva  `dirghajihva`
 
 `birth: gana  ·  background: elder_voice  ·  traits: composed, brave  ·  cost: 900`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | dirghajihva | build_weights -->
+ranged, persuasion, leadership
+<!--@end-->
 
 
 **Flavor Text**
@@ -46,9 +67,16 @@ The one the pack looks at before it does anything. She has never given an order 
 <!--@end-->
 
 
-## Ekadamshtra  `ekadamshtra`  **NEW**
+## Ekadamshtra  `ekadamshtra`
 
 `birth: varaha  ·  background: sounder_matron  ·  traits: patient, generous  ·  cost: 950`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | ekadamshtra | build_weights -->
+might, earth_magic, logistics
+<!--@end-->
 
 
 **Flavor Text**
@@ -58,9 +86,35 @@ Ran a sounder of forty for thirty years and handed it on cleanly, which almost n
 <!--@end-->
 
 
-## Kandali  `kandali`  **NEW**
+## Enakshi  `enakshi`
+
+`birth: mriga  ·  background: antler_speaker  ·  traits: vain, duelist  ·  cost: 750`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | enakshi | build_weights -->
+performance, grace, persuasion
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | enakshi | flavor_text -->
+Has held the clearing eleven seasons running and has never once had to touch anyone to do it. Will explain the distinction at length, unprompted, to people who did not ask and are trying to leave.
+<!--@end-->
+
+
+## Kandali  `kandali`
 
 `birth: varaha  ·  background: mycelium_tender  ·  traits: fastidious, patient  ·  cost: 800  ·  fixed_items: ['herb_bundle', 'raw_reagents']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | kandali | build_weights -->
+medicine, earth_magic, alchemy
+<!--@end-->
 
 
 **Flavor Text**
@@ -70,33 +124,54 @@ Cultivates the fungal network under nine acres of forest floor and speaks about 
 <!--@end-->
 
 
-## Nishkasita  `nishkasita`  **NEW**
+## Nishkasita  `nishkasita`
 
 `birth: rakshasa  ·  background: hedonist  ·  traits: vain, haunted  ·  cost: 700  ·  fixed_items: ['health_potion']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | nishkasita | build_weights -->
+performance, daggers, grace
+<!--@end-->
 
 
 **Flavor Text**
 
 <!--@ companions.json | nishkasita | flavor_text -->
-Keeps an extremely good camp in the middle of nowhere and will not discuss what he is keeping it against. A rakshasa who stopped hunting and started entertaining, and is not sure the two are different.
+A rakshasa who stopped hunting and started entertaining. His reasons are as mysterious as his past, but some things may be gleaned from how he handles a knife when cutting an onion.
 <!--@end-->
 
 
-## Phalguna  `phalguna`  **NEW**
+## Phalguna  `phalguna`
 
 `birth: vanara  ·  background: jugaad  ·  traits: curious, forgetful  ·  cost: 700  ·  fixed_items: ['salvage_kit', 'scrap_metal']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | phalguna | build_weights -->
+smithing, sorcery, ranged
+<!--@end-->
 
 
 **Flavor Text**
 
 <!--@ companions.json | phalguna | flavor_text -->
-Can build anything out of anything given an afternoon and no supervision. Every solution is temporary. Every temporary solution has now been load-bearing for six years.
+Can build anything out of anything given an afternoon and no supervision. Every solution is temporary, every temporary solution has now been load-bearing for six years.
 <!--@end-->
 
 
-## Saramaya  `saramaya`  **NEW**
+## Saramaya  `saramaya`
 
 `birth: gana  ·  background: herb_walker  ·  traits: generous, trusting  ·  cost: 700  ·  fixed_items: ['herb_bundle', 'healing_herb']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | saramaya | build_weights -->
+medicine, white_magic, earth_magic
+<!--@end-->
 
 
 **Flavor Text**
@@ -106,39 +181,79 @@ Walks the ridge lines gathering what grows there and treating whatever she finds
 <!--@end-->
 
 
+## Shrutidhara  `shrutidhara`
+
+`birth: mriga  ·  background: scarred_lead  ·  traits: patient, sharp_memory  ·  cost: 900  ·  fixed_items: ['rations']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | shrutidhara | build_weights -->
+leadership, persuasion, logistics
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | shrutidhara | flavor_text -->
+Led the herd along the old trail for thirty years and got it wrong twice, which she will tell you about before she tells you anything else. Walks at the back now, where she can see everyone.
+<!--@end-->
+
+
 ---
 
 
 # Zone: meadow
 
 
-## Agnishikha  `agnishikha`  **NEW**
+## Agnishikha  `agnishikha`
 
 `birth: patanga  ·  background: flame_seeker  ·  traits: devout, addiction  ·  cost: 1000  ·  fixed_items: ['fire_charm_common']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | agnishikha | build_weights -->
+yoga, fire_magic, ritual
+<!--@end-->
 
 
 **Flavor Text**
 
 <!--@ companions.json | agnishikha | flavor_text -->
-Stands facing the sun with his wings spread until sundown, every day, for eleven years. Wants the fire. Does not enter it. Says that is the whole practice and there is nothing else.
+Stands facing the sun with his wings spread until sundown, every day, for eleven years. Wants the fire. Does not enter it. That is the whole practice and there is nothing else.
 <!--@end-->
 
 
-## Balavardhana  `balavardhana`  **NEW**
+## Balavardhana  `balavardhana`
 
 `birth: shyena  ·  background: sky_lord  ·  traits: hot_tempered, brave  ·  cost: 750`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | balavardhana | build_weights -->
+grace, might, swords
+<!--@end-->
 
 
 **Flavor Text**
 
 <!--@ companions.json | balavardhana | flavor_text -->
-Holds a thermal over the meadow the way a landlord holds a deed. Comes down only to settle things, and settles them quickly.
+Holds a thermal over the meadow as his personal fief. Comes down only to settle things, and settles them quickly.
 <!--@end-->
 
 
-## Kshudraka  `kshudraka`  **NEW**
+## Kshudraka  `kshudraka`
 
 `birth: uluka  ·  background: fortune_seeker  ·  traits: greedy, night_owl  ·  cost: 800  ·  fixed_items: ['item_random']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | kshudraka | build_weights -->
+guile, black_magic, space_magic
+<!--@end-->
 
 
 **Flavor Text**
@@ -148,21 +263,35 @@ Trades in omens, debts, and things people would rather forget they said. Nocturn
 <!--@end-->
 
 
-## Madhuvrata  `madhuvrata`  **NEW**
+## Madhuvrata  `madhuvrata`
 
 `birth: bhramara  ·  background: swarm_caller  ·  traits: curious, night_owl  ·  cost: 850  ·  fixed_items: ['air_charm_common']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | madhuvrata | build_weights -->
+performance, summoning, comedy
+<!--@end-->
 
 
 **Flavor Text**
 
 <!--@ companions.json | madhuvrata | flavor_text -->
-One voice in a hive of four thousand, seconded to the surface for reasons the hive has not explained to him either. Sings in three parts by himself.
+One voice in a hive of four thousand, seconded to the surface for reasons the hive has not explained to them either. Sings in three parts by themselves.
 <!--@end-->
 
 
-## Nirvikalpa  `nirvikalpa`  **NEW**
+## Nirvikalpa  `nirvikalpa`
 
 `birth: khadga  ·  background: jaina  ·  traits: devout, patient  ·  cost: 950  ·  fixed_items: ['rations']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | nirvikalpa | build_weights -->
+yoga, white_magic, persuasion
+<!--@end-->
 
 
 **Flavor Text**
@@ -172,9 +301,16 @@ Will not eat anything that had a face and will not walk where she cannot see the
 <!--@end-->
 
 
-## Sthanumati  `sthanumati`  **NEW**
+## Sthanumati  `sthanumati`
 
 `birth: yaksha  ·  background: meadow_ward  ·  traits: devout, stubborn  ·  cost: 900  ·  fixed_items: ['earth_charm_common']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | sthanumati | build_weights -->
+armor, maces, earth_magic
+<!--@end-->
 
 
 **Flavor Text**
@@ -184,9 +320,16 @@ Maintains the standing stones nobody else remembers the purpose of. She does not
 <!--@end-->
 
 
-## Tikshnashringa  `tikshnashringa`  **NEW**
+## Tikshnashringa  `tikshnashringa`
 
 `birth: khadga  ·  background: blade_contemplative  ·  traits: composed, stubborn  ·  cost: 900`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | tikshnashringa | build_weights -->
+swords, might, yoga
+<!--@end-->
 
 
 **Flavor Text**
@@ -196,9 +339,16 @@ Charges in a straight line and meditates on why. Twenty years of practice have n
 <!--@end-->
 
 
-## Valmika  `valmika`  **NEW**
+## Valmika  `valmika`
 
 `birth: dura  ·  background: tunneler  ·  traits: stubborn, iron_stomach  ·  cost: 700  ·  fixed_items: ['scrap_metal']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | valmika | build_weights -->
+might, maces, enchantment
+<!--@end-->
 
 
 **Flavor Text**
@@ -214,9 +364,16 @@ Digs. Braces. Digs again. Has opinions about load-bearing timber that she will s
 # Zone: ocean
 
 
-## Anavatapta  `anavatapta`  **NEW**
+## Anavatapta  `anavatapta`
 
 `birth: naga  ·  background: palace_vizier  ·  traits: patient, composed  ·  cost: 950`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | anavatapta | build_weights -->
+persuasion, water_magic, grace
+<!--@end-->
 
 
 **Flavor Text**
@@ -226,21 +383,35 @@ Forty years of naga court administration and not one raised voice. He can find t
 <!--@end-->
 
 
-## Kambu  `kambu`  **NEW**
+## Kambu  `kambu`
 
 `birth: karka  ·  background: coral_guard  ·  traits: stubborn, brave  ·  cost: 700`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | kambu | build_weights -->
+armor, spears, might
+<!--@end-->
 
 
 **Flavor Text**
 
 <!--@ companions.json | kambu | flavor_text -->
-Held one gap in the reef wall for nineteen years. Nothing got past. He does not consider this an achievement — it was simply the gap, and he was the one standing in it.
+Held one gap in the reef wall for nineteen years. Nothing got past. He does not consider this an achievement — it was simply his place in this life.
 <!--@end-->
 
 
-## Minakshi  `minakshi`  **NEW**
+## Minakshi  `minakshi`
 
 `birth: matsya  ·  background: sea_dancer  ·  traits: attractive, quick  ·  cost: 750`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | minakshi | build_weights -->
+performance, water_magic, grace
+<!--@end-->
 
 
 **Flavor Text**
@@ -250,9 +421,16 @@ Dances the shoal-turns that keep a school alive — a thousand bodies changing d
 <!--@end-->
 
 
-## Phenaka  `phenaka`  **NEW**
+## Phenaka  `phenaka`
 
 `birth: kapota  ·  background: post_runner  ·  traits: quick, curious  ·  cost: 650  ·  fixed_items: ['rations']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | phenaka | build_weights -->
+grace, ranged, logistics
+<!--@end-->
 
 
 **Flavor Text**
@@ -262,9 +440,16 @@ Carries messages up and down four hundred miles of coast and knows every waypoin
 <!--@end-->
 
 
-## Setubandha  `setubandha`  **NEW**
+## Setubandha  `setubandha`
 
 `birth: makara  ·  background: boundary_walker  ·  traits: curious, night_owl  ·  cost: 1000  ·  fixed_items: ['space_charm_common']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | setubandha | build_weights -->
+water_magic, black_magic, space_magic
+<!--@end-->
 
 
 **Flavor Text**
@@ -274,9 +459,16 @@ Walks the line between salt and fresh, deep and shallow, this realm and the next
 <!--@end-->
 
 
-## Shesharati  `shesharati`  **NEW**
+## Shesharati  `shesharati`
 
 `birth: naga  ·  background: tide_seer  ·  traits: patient, curious  ·  cost: 900  ·  fixed_items: ['water_charm_common']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | shesharati | build_weights -->
+water_magic, sorcery, enchantment
+<!--@end-->
 
 
 **Flavor Text**
@@ -286,9 +478,16 @@ Reads the tide the way other people read faces, and has stopped pretending this 
 <!--@end-->
 
 
-## Timingila  `timingila`  **NEW**
+## Timingila  `timingila`
 
 `birth: makara  ·  background: deep_hunter  ·  traits: quick, suspicious  ·  cost: 800`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | timingila | build_weights -->
+spears, ranged, water_magic
+<!--@end-->
 
 
 **Flavor Text**
@@ -298,15 +497,22 @@ Hunts alone in water where the light does not reach. Speaks rarely and with long
 <!--@end-->
 
 
-## Vajradanti  `vajradanti`  **NEW**
+## Vajradanti  `vajradanti`
 
 `birth: karka  ·  background: vent_warden  ·  traits: hard_of_hearing, iron_stomach  ·  cost: 850  ·  fixed_items: ['fire_crystal']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | vajradanti | build_weights -->
+fire_magic, water_magic, sorcery
+<!--@end-->
 
 
 **Flavor Text**
 
 <!--@ companions.json | vajradanti | flavor_text -->
-Farms the boiling seams where the water comes up from under the world. Everything she knows about sorcery she worked out alone, at depth, with nobody to correct her.
+Farms the boiling seams where the water comes up from under the world. Everything she knows about sorcery she worked out alone, at depth, with only the spirits to correct her.
 <!--@end-->
 
 

@@ -1,14 +1,26 @@
 # Review documents
 
-Generated prose for reading and editing away from the JSON. Six files:
+Generated prose for reading and editing away from the JSON. Eleven files.
+
+**The animal realm — its whole text, one document per kind of thing:**
 
 | File | Contents |
 |---|---|
-| `ANIMAL_COMPANIONS.md` | 24 animal-realm companions — all Claude's, none edited |
-| `TRAITS.md` | 107 traits by category, with their mechanics |
+| `ANIMAL_COMPANIONS.md` | 24 companions — flavour, description, recruitment, skill builds |
+| `ANIMAL_RACES.md` | 18 births and the 57 backgrounds only they can take |
+| `ANIMAL_ENEMIES.md` | 34 archetypes across 42 encounter templates, by region |
+| `ANIMAL_LOCATIONS.md` | 30 places you can walk into — teahouses, guilds, shrines, merchants |
+| `ANIMAL_WORLD.md` | The realm blurb, its 5 zones, the fixed landmarks, 15 settlement names |
+| `ANIMAL_NAMES.md` | Naming lore — how each birth names itself, 389 names and meanings |
+| `EVENTS_ANIMAL.md` | 94 events |
+
+**Everything else:**
+
+| File | Contents |
+|---|---|
+| `TRAITS.md` | 108 traits by category, with their mechanics — all realms |
 | `EVENTS_HELL.md` | 79 events |
 | `EVENTS_HUNGRY_GHOST.md` | 150 events |
-| `EVENTS_ANIMAL.md` | 94 events |
 | `EVENTS_DOMAIN.md` | 33 cross-realm: plain, camp, trait- and relationship-triggered |
 
 ## How to edit
@@ -52,12 +64,29 @@ python3 tools/export_review_docs.py
 **Regenerating discards anything you have written but not imported** — import
 first, then re-export.
 
+## Companion skills
+
+`ANIMAL_COMPANIONS.md` shows each companion's **Skills** as a comma list,
+strongest first. That list is `build_weights` — what the companion develops
+into as they earn XP, and what their random spell schools are drawn from.
+
+Edit the list and the importer rebuilds the weighting, 5/4/3/2 down the order.
+Leave it untouched and nothing is rewritten, so re-importing a document you
+only changed the prose in will not disturb existing weightings.
+
+## Design notes and `_comment` fields
+
+Some anchors are labelled *design comment, not shown in game* — zone notes, the
+archetype notes, the settlement naming note. They are editable like anything
+else and they are worth keeping accurate, because they are the description the
+map and the bestiary are generated against. They just never reach the player.
+
 ## What the markers mean
 
-- **NEW EVENT** — the whole event was written in the 2026-07-27 sessions.
-- **NEW** — an individual choice added to an event that already existed. In
-  `EVENTS_HELL.md` these are the trait-gated choices from the sweep, which are
-  the only part of hell not already edited.
+- **NEW EVENT** / **NEW** — content added since a base snapshot of the data.
+  No snapshot is configured by default, so nothing is currently marked. To turn
+  the markers back on, copy the JSON files you want to compare against into a
+  directory and export with `REVIEW_BASE_SNAPSHOT=/path/to/that/dir`.
 - Choice colour is shown as *grey* (always available), *blue* (requirement) or
   *yellow* (roll), with the requirement spelled out.
 - Choices with no `id` in the data are addressed by position, e.g. `[0]`. That

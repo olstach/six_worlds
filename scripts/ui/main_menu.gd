@@ -882,15 +882,9 @@ func _update_quirks(character: Dictionary) -> void:
 		effect_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(effect_label)
 
-		# Tooltip with full description and purge info
-		var purge_info := ""
-		var purgeable_by: Array = t.get("purgeable_by", [])
-		if not purgeable_by.is_empty():
-			var skill_names := []
-			for s in purgeable_by:
-				skill_names.append(s.capitalize() + " " + str(t.get("purge_difficulty", 1)))
-			purge_info = "\nCan be shed through: " + " / ".join(skill_names)
-		row.tooltip_text = t.get("description", "") + purge_info
+		# Effects first in plain language, then a rule, then the flavour.
+		# Built by TraitSystem so the sheet and any other tooltip agree.
+		row.tooltip_text = TraitSystem.get_tooltip(trait_id)
 		row.mouse_filter = Control.MOUSE_FILTER_STOP
 
 		quirks_container.add_child(row)

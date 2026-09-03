@@ -1913,9 +1913,8 @@
       "recruitment_cost": 900,
       "build_weights": {
         "water_magic": 5,
-        "ritual": 3,
-        "black_magic": 2,
-        "learning": 2
+        "sorcery": 4,
+        "enchantment": 3
       },
       "fixed_starter": {
         "skills": {
@@ -1952,9 +1951,8 @@
       "recruitment_cost": 950,
       "build_weights": {
         "persuasion": 5,
-        "learning": 4,
-        "water_magic": 2,
-        "leadership": 2
+        "water_magic": 4,
+        "grace": 3
       },
       "fixed_starter": {
         "skills": {
@@ -1984,12 +1982,12 @@
       "zone": "ocean",
       "birth": "karka",
       "background": "coral_guard",
-      "flavor_text": "Held one gap in the reef wall for nineteen years. Nothing got past. He does not consider this an achievement — it was simply the gap, and he was the one standing in it.",
+      "flavor_text": "Held one gap in the reef wall for nineteen years. Nothing got past. He does not consider this an achievement — it was simply his place in this life.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
-        "spears": 4,
         "armor": 5,
+        "spears": 4,
         "might": 3
       },
       "fixed_starter": {
@@ -2021,14 +2019,13 @@
       "zone": "ocean",
       "birth": "karka",
       "background": "vent_warden",
-      "flavor_text": "Farms the boiling seams where the water comes up from under the world. Everything she knows about sorcery she worked out alone, at depth, with nobody to correct her.",
+      "flavor_text": "Farms the boiling seams where the water comes up from under the world. Everything she knows about sorcery she worked out alone, at depth, with only the spirits to correct her.",
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
-        "sorcery": 4,
-        "maces": 3,
-        "armor": 3,
-        "alchemy": 2
+        "fire_magic": 5,
+        "water_magic": 4,
+        "sorcery": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2066,8 +2063,8 @@
       "recruitment_cost": 800,
       "build_weights": {
         "spears": 5,
-        "daggers": 3,
-        "guile": 2
+        "ranged": 4,
+        "water_magic": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2102,9 +2099,9 @@
       "portrait": "",
       "recruitment_cost": 1000,
       "build_weights": {
-        "water_magic": 4,
-        "space_magic": 4,
-        "ritual": 3
+        "water_magic": 5,
+        "black_magic": 4,
+        "space_magic": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2141,10 +2138,9 @@
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
-        "grace": 5,
-        "performance": 4,
-        "guile": 3,
-        "daggers": 2
+        "performance": 5,
+        "water_magic": 4,
+        "grace": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2178,10 +2174,9 @@
       "portrait": "",
       "recruitment_cost": 650,
       "build_weights": {
-        "logistics": 5,
-        "grace": 3,
-        "learning": 3,
-        "comedy": 2
+        "grace": 5,
+        "ranged": 4,
+        "logistics": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2217,10 +2212,9 @@
       "portrait": "",
       "recruitment_cost": 950,
       "build_weights": {
-        "leadership": 5,
-        "logistics": 3,
-        "medicine": 3,
-        "martial_arts": 2
+        "might": 5,
+        "earth_magic": 4,
+        "logistics": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2255,9 +2249,9 @@
       "portrait": "",
       "recruitment_cost": 800,
       "build_weights": {
-        "alchemy": 5,
-        "earth_magic": 3,
-        "medicine": 3
+        "medicine": 5,
+        "earth_magic": 4,
+        "alchemy": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2286,16 +2280,15 @@
       "name": "Chitrangada",
       "realm": "animal",
       "zone": "forest",
-      "birth": "shardula",
+      "birth": "marjara",
       "background": "canopy_ambush",
       "flavor_text": "Drops on things from above and has never once had to explain herself afterwards. Pale as limestone, silent as weather, entirely without malice.",
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
-        "daggers": 4,
-        "martial_arts": 4,
-        "grace": 3,
-        "guile": 2
+        "unarmed": 5,
+        "guile": 4,
+        "grace": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2327,14 +2320,13 @@
       "zone": "forest",
       "birth": "rakshasa",
       "background": "hedonist",
-      "flavor_text": "Keeps an extremely good camp in the middle of nowhere and will not discuss what he is keeping it against. A rakshasa who stopped hunting and started entertaining, and is not sure the two are different.",
+      "flavor_text": "A rakshasa who stopped hunting and started entertaining. His reasons are as mysterious as his past, but some things may be gleaned from how he handles a knife when cutting an onion.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
-        "performance": 4,
-        "black_magic": 3,
-        "grace": 3,
-        "comedy": 2
+        "performance": 5,
+        "daggers": 4,
+        "grace": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2368,10 +2360,9 @@
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
-        "persuasion": 4,
+        "thievery": 5,
         "learning": 4,
-        "thievery": 3,
-        "comedy": 2
+        "trade": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2401,13 +2392,13 @@
       "zone": "forest",
       "birth": "vanara",
       "background": "jugaad",
-      "flavor_text": "Can build anything out of anything given an afternoon and no supervision. Every solution is temporary. Every temporary solution has now been load-bearing for six years.",
+      "flavor_text": "Can build anything out of anything given an afternoon and no supervision. Every solution is temporary, every temporary solution has now been load-bearing for six years.",
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
         "smithing": 5,
-        "guile": 3,
-        "learning": 3
+        "sorcery": 4,
+        "ranged": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2442,10 +2433,9 @@
       "portrait": "",
       "recruitment_cost": 900,
       "build_weights": {
-        "leadership": 5,
-        "persuasion": 3,
-        "logistics": 3,
-        "ranged": 2
+        "ranged": 5,
+        "persuasion": 4,
+        "leadership": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2481,9 +2471,8 @@
       "recruitment_cost": 700,
       "build_weights": {
         "medicine": 5,
-        "earth_magic": 3,
-        "grace": 2,
-        "logistics": 2
+        "white_magic": 4,
+        "earth_magic": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2507,6 +2496,301 @@
         "trusting"
       ]
     },
+    "enakshi": {
+      "id": "enakshi",
+      "name": "Enakshi",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "mriga",
+      "background": "antler_speaker",
+      "flavor_text": "Has held the clearing eleven seasons running and has never once had to touch anyone to do it.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "performance": 5,
+        "grace": 4,
+        "persuasion": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "performance": 2,
+          "grace": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [],
+      "traits": [
+        "vain",
+        "duelist"
+      ]
+    },
+    "shrutidhara": {
+      "id": "shrutidhara",
+      "name": "Shrutidhara",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "mriga",
+      "background": "scarred_lead",
+      "flavor_text": "Wrong twice in thirty years, and she will tell you about both before she tells you her name. Walks at the back now, where she can see everyone.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "leadership": 5,
+        "persuasion": 4,
+        "logistics": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "leadership": 2,
+          "persuasion": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "rations"
+      ],
+      "traits": [
+        "patient",
+        "sharp_memory"
+      ]
+    },
+    "trinavati": {
+      "id": "trinavati",
+      "name": "Trinavati",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "mriga",
+      "background": "slope_herbalist",
+      "flavor_text": "Knows the slope, the clay, and which of the two you need. Will not be hurried down a mountain.",
+      "portrait": "",
+      "recruitment_cost": 700,
+      "build_weights": {
+        "medicine": 5,
+        "earth_magic": 4,
+        "white_magic": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "medicine": 2,
+          "earth_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "herb_bundle",
+        "healing_herb"
+      ],
+      "traits": [
+        "warm_hearted",
+        "early_riser"
+      ]
+    },
+    "nayanika": {
+      "id": "nayanika",
+      "name": "Nayanika",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "mriga",
+      "background": "reveler",
+      "flavor_text": "Taken young, sold south, came back in silk with rings on every point. Holds your eye a moment past comfortable. Answers nothing.",
+      "portrait": "",
+      "recruitment_cost": 950,
+      "build_weights": {
+        "enchantment": 5,
+        "performance": 4,
+        "yoga": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "performance": 1,
+          "persuasion": 1
+        },
+        "known_spells": [
+          "charm"
+        ]
+      },
+      "fixed_spells": [
+        "charm"
+      ],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "silver_ring",
+        "travelers_amulet"
+      ],
+      "traits": [
+        "attractive",
+        "secret_bearer"
+      ]
+    },
+    "himasara": {
+      "id": "himasara",
+      "name": "Himasara",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "mriga",
+      "background": "merchant",
+      "flavor_text": "Comes down from the snow every second season with moss, antler-glue and prices. Has never once been cold in your presence and finds your fire excessive.",
+      "portrait": "",
+      "recruitment_cost": 800,
+      "build_weights": {
+        "trade": 5,
+        "medicine": 4,
+        "spears": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "trade": 2,
+          "persuasion": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "healing_moss",
+        "healing_moss",
+        "rations"
+      ],
+      "traits": [
+        "scrimper",
+        "iron_stomach"
+      ]
+    },
+    "vishanin": {
+      "id": "vishanin",
+      "name": "Vishanin",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "mriga",
+      "background": "antler_speaker",
+      "flavor_text": "Met a boar head-on once and has been dining out on it since. The scar is real. So, annoyingly, is the boar's.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "unarmed": 5,
+        "might": 4,
+        "grace": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "performance": 2,
+          "grace": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "lucky_charm"
+      ],
+      "traits": [
+        "brave",
+        "braggart"
+      ]
+    },
+    "chapala": {
+      "id": "chapala",
+      "name": "Chapala",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "mriga",
+      "background": "spy",
+      "flavor_text": "Born between two wheels on a road nobody names. Prices everything, respects nothing, and is already somewhere else.",
+      "portrait": "",
+      "recruitment_cost": 800,
+      "build_weights": {
+        "daggers": 5,
+        "trade": 4,
+        "performance": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "daggers": 1,
+          "guile": 2
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "copper_ring"
+      ],
+      "traits": [
+        "flirt",
+        "gossip"
+      ]
+    },
+    "sarangi": {
+      "id": "sarangi",
+      "name": "Sarangi",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "mriga",
+      "background": "scholar",
+      "flavor_text": "Comes back to the same meadow every dozen years for the tea and the grass, in that order. Remembers the meadow better than the meadow remembers itself.",
+      "portrait": "",
+      "recruitment_cost": 1000,
+      "build_weights": {
+        "earth_magic": 5,
+        "white_magic": 4,
+        "alchemy": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "learning": 2,
+          "ritual": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "prayer_beads",
+        "herb_bundle"
+      ],
+      "traits": [
+        "ascetic",
+        "tea_ritualist"
+      ]
+    },
     "sthanumati": {
       "id": "sthanumati",
       "name": "Sthanumati",
@@ -2518,9 +2802,9 @@
       "portrait": "",
       "recruitment_cost": 900,
       "build_weights": {
-        "ritual": 5,
-        "earth_magic": 4,
-        "persuasion": 2
+        "armor": 5,
+        "maces": 4,
+        "earth_magic": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2552,14 +2836,13 @@
       "zone": "meadow",
       "birth": "shyena",
       "background": "sky_lord",
-      "flavor_text": "Holds a thermal over the meadow the way a landlord holds a deed. Comes down only to settle things, and settles them quickly.",
+      "flavor_text": "Holds a thermal over the meadow as his personal fief. Comes down only to settle things, and settles them quickly.",
       "portrait": "",
       "recruitment_cost": 750,
       "build_weights": {
-        "unarmed": 5,
+        "grace": 5,
         "might": 4,
-        "logistics": 2,
-        "air_magic": 2
+        "swords": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2593,10 +2876,9 @@
       "portrait": "",
       "recruitment_cost": 700,
       "build_weights": {
-        "smithing": 5,
-        "earth_magic": 3,
-        "might": 3,
-        "armor": 2
+        "might": 5,
+        "maces": 4,
+        "enchantment": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2634,10 +2916,9 @@
       "portrait": "",
       "recruitment_cost": 800,
       "build_weights": {
-        "thievery": 4,
-        "trade": 4,
-        "guile": 3,
-        "black_magic": 2
+        "guile": 5,
+        "black_magic": 4,
+        "space_magic": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2672,9 +2953,9 @@
       "portrait": "",
       "recruitment_cost": 900,
       "build_weights": {
-        "martial_arts": 5,
-        "yoga": 4,
-        "might": 3
+        "swords": 5,
+        "might": 4,
+        "yoga": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2709,8 +2990,8 @@
       "recruitment_cost": 950,
       "build_weights": {
         "yoga": 5,
-        "ritual": 3,
-        "learning": 3
+        "white_magic": 4,
+        "persuasion": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2741,13 +3022,13 @@
       "zone": "meadow",
       "birth": "bhramara",
       "background": "swarm_caller",
-      "flavor_text": "One voice in a hive of four thousand, seconded to the surface for reasons the hive has not explained to him either. Sings in three parts by himself.",
+      "flavor_text": "One voice in a hive of four thousand, seconded to the surface for reasons the hive has not explained to them either. Sings in three parts by themselves.",
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
-        "summoning": 5,
-        "air_magic": 4,
-        "performance": 2
+        "performance": 5,
+        "summoning": 4,
+        "comedy": 3
       },
       "fixed_starter": {
         "skills": {
@@ -2779,13 +3060,13 @@
       "zone": "meadow",
       "birth": "patanga",
       "background": "flame_seeker",
-      "flavor_text": "Stands facing the sun with his wings spread until sundown, every day, for eleven years. Wants the fire. Does not enter it. Says that is the whole practice and there is nothing else.",
+      "flavor_text": "Stands facing the sun with his wings spread until sundown, every day, for eleven years. Wants the fire. Does not enter it. That is the whole practice and there is nothing else.",
       "portrait": "",
       "recruitment_cost": 1000,
       "build_weights": {
-        "fire_magic": 5,
-        "yoga": 4,
-        "space_magic": 2
+        "yoga": 5,
+        "fire_magic": 4,
+        "ritual": 3
       },
       "fixed_starter": {
         "skills": {

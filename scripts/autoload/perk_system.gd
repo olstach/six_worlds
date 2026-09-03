@@ -261,6 +261,13 @@ func _check_special_requirement(character: Dictionary, special: String) -> bool:
 		var total = calculate_element_affinity(character, element)
 		return total >= required
 
+	# Attribute thresholds: "constitution_14", "finesse_16", etc.
+	const ATTRIBUTE_NAMES := ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"]
+	for attr in ATTRIBUTE_NAMES:
+		if special.begins_with(attr + "_"):
+			var threshold := int(special.substr(attr.length() + 1))
+			return character.get("attributes", {}).get(attr, 0) >= threshold
+
 	# "any_X_category_at_Y" patterns
 	# Examples: any_3_weapon_skills_at_3, any_weapon_skill_at_3, any_3_elemental_magics_at_2
 
@@ -391,6 +398,18 @@ func grant_perk(character: Dictionary, perk_id: String) -> bool:
 		"id": perk_id,
 		"name": perk_data.get("name", perk_id)
 	})
+
+	# A perk whose effect is a standing condition should confer the trait that
+	# already models it rather than restating it in code: `"grants_traits":
+	# ["aquatic"]` in perks.json is enough, and the trait then carries the stat,
+	# skill, resistance and event-gating consequences for free.
+	#
+	# Only for effects that are unconditional and permanent. Diamond Body's
+	# poison immunity, for instance, applies *while unarmored*, which a trait
+	# cannot express — that stays as a combat check.
+	for trait_id in perk_data.get("grants_traits", []):
+		if TraitSystem:
+			TraitSystem.grant_trait(character, str(trait_id))
 
 	perk_granted.emit(character, perk_id, perk_data)
 	return true

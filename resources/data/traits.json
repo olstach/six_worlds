@@ -2,7 +2,7 @@
   "_comment": "Trait definitions. category values: racial, habitat, role, unique, physical, personality, behavioral, acquired. inborn=true means present at creation (racial traits, congenital quirks). purgeable_by lists skills that can remove the trait via try_purge().",
   "strong": {
     "name": "Strong",
-    "description": "An unusually powerful build.",
+    "description": "Doors seem a little narrow.",
     "category": "physical",
     "inborn": true,
     "stat_modifiers": {
@@ -98,11 +98,13 @@
     "bond_tags": [
       "scholarly"
     ],
-    "opposed_traits": []
+    "opposed_traits": [
+      "impaired_vision"
+    ]
   },
   "hard_of_hearing": {
     "name": "Hard of Hearing",
-    "description": "Misses things others catch; struggles in the dark.",
+    "description": "Weary of asking others to repeat themselves, they begrudgingly accepted their condition.",
     "category": "physical",
     "inborn": true,
     "stat_modifiers": {
@@ -122,7 +124,7 @@
   },
   "iron_stomach": {
     "name": "Iron Stomach",
-    "description": "Can stomach almost anything without complaint.",
+    "description": "Five second rule!",
     "category": "physical",
     "inborn": true,
     "stat_modifiers": {},
@@ -141,7 +143,7 @@
   },
   "attractive": {
     "name": "Attractive",
-    "description": "A pleasing appearance that opens doors.",
+    "description": "A pleasing appearance opens many doors.",
     "category": "physical",
     "inborn": true,
     "stat_modifiers": {
@@ -163,7 +165,7 @@
   },
   "light_sleeper": {
     "name": "Light Sleeper",
-    "description": "Never fully at rest; always half-alert.",
+    "description": "Sleep with one eye open, gripping the pillow tight.",
     "category": "physical",
     "inborn": true,
     "stat_modifiers": {
@@ -183,7 +185,7 @@
   },
   "night_owl": {
     "name": "Night Owl",
-    "description": "Most alive after dark; slow to wake in the morning.",
+    "description": "The owl of wisdom flies after midnight.",
     "category": "physical",
     "inborn": true,
     "stat_modifiers": {},
@@ -226,7 +228,7 @@
   },
   "patient": {
     "name": "Patient",
-    "description": "Rarely loses composure; can wait out almost anything.",
+    "description": "Once you endure the first impulse, you can wait almost indefinitely.",
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
@@ -574,7 +576,7 @@
   },
   "bird_lover": {
     "name": "Bird Lover",
-    "description": "Has a particular fondness for birds of all kinds.",
+    "description": "Aren't those beady eyes just adorable?",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
@@ -593,7 +595,7 @@
   },
   "gambler": {
     "name": "Gambler",
-    "description": "Cannot resist a wager. The rush of chance is irresistible.",
+    "description": "Did you know most gamblers walk away from the table right before a big win?",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {
@@ -660,7 +662,7 @@
   },
   "superstitious": {
     "name": "Superstitious",
-    "description": "Reads omens in everything; never ignores a bad sign.",
+    "description": "There are no coincidences, only signs!",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
@@ -685,7 +687,7 @@
   },
   "night_drinker": {
     "name": "Night Drinker",
-    "description": "Reliably reaches for a drink when the sun goes down.",
+    "description": "When the sun goes down, the glass goes up.",
     "category": "behavioral",
     "inborn": false,
     "stat_modifiers": {},
@@ -709,7 +711,7 @@
   },
   "paranoid": {
     "name": "Paranoid",
-    "description": "Always watching. Always expecting the worst.",
+    "description": "Always watching. Always expecting the worst. Wait, did you hear that?",
     "category": "behavioral",
     "inborn": false,
     "stat_modifiers": {
@@ -738,7 +740,7 @@
   },
   "dreamer": {
     "name": "Dreamer",
-    "description": "Lives partly elsewhere; visions come more readily.",
+    "description": "Feels more at home among the visions than the flesh.",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {
@@ -806,7 +808,7 @@
   },
   "war_hardened": {
     "name": "War-hardened",
-    "description": "Violence no longer shocks. The battlefield feels like home.",
+    "description": "Violence no longer shocks, only excites the senses.",
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {
@@ -979,7 +981,7 @@
   },
   "enlightened_insight": {
     "name": "Enlightened Insight",
-    "description": "A rare flash of clarity that has left a permanent mark.",
+    "description": "A rare flash of clarity left a permanent mark.",
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {
@@ -1029,7 +1031,7 @@
   "_comment_racial": "--- RACIAL TRAITS — applied automatically via race starting_traits ---",
   "hell_born": {
     "name": "Hell-born",
-    "description": "Forged in the fires and torments of hell. Instinctively at home in its violence and hierarchy.",
+    "description": "Forged in the fires and torments of hell. Instinctively at home in its rabid violence and hierarchy.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {},
@@ -1046,7 +1048,7 @@
   },
   "serpentine": {
     "name": "Serpentine",
-    "description": "A body built for water and coiling grace. Equally at home in the deep as on land.",
+    "description": "A body built for water and coiling grace, equally at home in the deep as on land.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {},
@@ -1086,7 +1088,7 @@
   },
   "flying": {
     "name": "Flying",
-    "description": "Sustained winged flight. +1 Finesse from aerial agility. If the entire party shares this trait, the party may traverse air tiles and elevated terrain in combat and overworld.",
+    "description": "Sustained winged flight. If the entire party shares this trait, the party may traverse air tiles and elevated terrain in combat and overworld.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {
@@ -1109,7 +1111,7 @@
   },
   "armored": {
     "name": "Armored",
-    "description": "Dense natural plating — chitin, thick hide, or bone — makes this creature hard to put down. +2 Constitution, -1 Finesse.",
+    "description": "Dense natural plating — chitin, thick hide, or bone — makes this creature hard to put down.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {
@@ -1127,7 +1129,7 @@
   },
   "predator_grace": {
     "name": "Predator's Grace",
-    "description": "The natural speed and precision of a born hunter. +2 Finesse, -1 Constitution.",
+    "description": "The natural speed and precision of a born hunter.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {
@@ -1145,7 +1147,7 @@
   },
   "colony_mind": {
     "name": "Colony Mind",
-    "description": "Born into a collective, this creature is never truly alone. Shared purpose dampens individual anxiety. All psychological pressures reduced by 5.",
+    "description": "Born into a collective, this creature is never truly alone. Shared purpose dampens individual anxiety.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {},
@@ -1166,7 +1168,7 @@
   },
   "bulky": {
     "name": "Bulky",
-    "description": "A massive build that weathers punishment others could not survive. +1 Constitution.",
+    "description": "A massive build that weathers punishment others could not survive.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {
@@ -1183,7 +1185,7 @@
   },
   "venom_ward": {
     "name": "Venom Ward",
-    "description": "Generations of hunting venomous prey have made this creature resistant to poisons. 50% reduction to poison damage.",
+    "description": "Generations of hunting venomous prey have made this creature resistant to poisons.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {},
@@ -1197,14 +1199,11 @@
       "venom_immune"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0,
-    "todo": [
-      "poison_resistance: apply 50% reduction when combat system handles poison damage"
-    ]
+    "purge_difficulty": 0
   },
   "nimble_mischief": {
     "name": "Nimble Mischief",
-    "description": "Quick hands and a quicker mind. +1 Guile.",
+    "description": "Quick hands and a quicker mind.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {},
@@ -1221,7 +1220,7 @@
   },
   "taloned_strike": {
     "name": "Taloned Strike",
-    "description": "Natural weapons of uncommon sharpness. +1 Unarmed.",
+    "description": "Natural weapons of uncommon sharpness.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {},
@@ -1238,7 +1237,7 @@
   },
   "swift_wing": {
     "name": "Swift Wing",
-    "description": "Exceptional speed even among flying creatures. +1 Finesse.",
+    "description": "Exceptional speed even among the creatures of the sky.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {
@@ -1255,7 +1254,7 @@
   },
   "night_vision": {
     "name": "Night Vision",
-    "description": "Sees equally in darkness and light, perceiving what others miss. +1 Awareness. No penalty in darkness.",
+    "description": "Sees equally in darkness and light, perceiving what others miss.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {
@@ -1292,15 +1291,11 @@
       "undead_nature"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0,
-    "todo": [
-      "disease_resistance: apply 50% reduction to disease damage/effects in combat system",
-      "poison_resistance: apply 25% reduction to poison damage in combat system"
-    ]
+    "purge_difficulty": 0
   },
   "incorporeal": {
     "name": "Incorporeal",
-    "description": "Barely present in the physical world — more dissolution than body. Physical violence finds little purchase. Lacking a body, material wealth and food hold no interest.",
+    "description": "Barely present in the physical world — more dissolution than body. Food, wealth and violence seem somehow exotic.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {
@@ -1318,10 +1313,7 @@
       "non_physical"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0,
-    "todo": [
-      "physical_resistance: apply 50% reduction to physical damage in combat system"
-    ]
+    "purge_difficulty": 0
   },
   "ancient_memory": {
     "name": "Ancient Memory",
@@ -1344,7 +1336,7 @@
   },
   "insatiable": {
     "name": "Insatiable",
-    "description": "Consumed by hunger that can never be satisfied — the defining curse of the yidag birth. Consumes 50% more food; receives 50% less healing from rest.",
+    "description": "Mouth like a gate, throat like a needle.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {},
@@ -1366,7 +1358,7 @@
   },
   "better_starting_weapon": {
     "name": "Armory Rights",
-    "description": "Red devils muster from the Infernal Guard's armories — this life begins with a superior weapon.",
+    "description": "Some lives grant wisdom, others grief - this one grants you a superior weapon.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {},
@@ -1378,7 +1370,7 @@
   },
   "extra_starting_gold": {
     "name": "Hoarder's Instinct",
-    "description": "Yellow devils are born counting. This life begins with a heavier purse.",
+    "description": "Maybe they inherited it, maybe they've hoarded it by themselves - the important part is the weight of the purse.",
     "category": "racial",
     "inborn": true,
     "stat_modifiers": {},
@@ -1392,7 +1384,7 @@
   },
   "content": {
     "name": "Content",
-    "description": "Wants little. What arrives is generally enough.",
+    "description": "When you don't have what you like, like what you have.",
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
@@ -1510,7 +1502,7 @@
   },
   "clear_eyed": {
     "name": "Clear-eyed",
-    "description": "Sees what is in front of them without flinching from it or dressing it up.",
+    "description": "Sees what is in front of them without dressing it up.",
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
@@ -1533,7 +1525,7 @@
   },
   "present": {
     "name": "Present",
-    "description": "Fully in the room, whichever room it is.",
+    "description": "Here and now.",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {
@@ -1603,7 +1595,7 @@
   },
   "incurious": {
     "name": "Incurious",
-    "description": "Has stopped asking. It was easier, and then it was habit.",
+    "description": "At first, asking questions was difficult, then it became impossible.",
     "category": "personality",
     "inborn": true,
     "stat_modifiers": {},
@@ -1651,7 +1643,7 @@
   },
   "chronic_pain": {
     "name": "Chronic Pain",
-    "description": "The body's complaint is never entirely quiet.",
+    "description": "Dull, throbbing, always there.",
     "category": "physical",
     "inborn": true,
     "stat_modifiers": {
@@ -1678,11 +1670,13 @@
   },
   "tea_ritualist": {
     "name": "Tea Ritualist",
-    "description": "Takes tea seriously — the making of it at least as much as the drinking.",
+    "description": "The drinking is only the last part of the pleasure.",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
-    "pressure_modifiers": {},
+    "pressure_modifiers": {
+      "water": 10
+    },
     "skill_modifiers": {},
     "event_tags": [
       "tea_ritualist"
@@ -1716,7 +1710,7 @@
   },
   "duelist": {
     "name": "Duelist",
-    "description": "Cannot let a challenge stand. Has never once been able to.",
+    "description": "Prides themselves on never turning down a challenge.",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
@@ -1757,7 +1751,7 @@
   },
   "pilgrim": {
     "name": "Pilgrim",
-    "description": "Cannot pass a shrine without stopping, whatever the party's schedule says.",
+    "description": "The party schedule will wait, the shrine must be circumambulated.",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
@@ -1814,7 +1808,7 @@
   },
   "homesick": {
     "name": "Homesick",
-    "description": "Keeps quietly comparing everywhere they are to somewhere they are not.",
+    "description": "The farther away you are from your home, the easier it is to see it through rose-colored glasses.",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
@@ -1833,7 +1827,7 @@
   },
   "early_riser": {
     "name": "Early Riser",
-    "description": "Awake and useful before anyone else has decided to be a person yet.",
+    "description": "Early bird gets to gloat when others wake up.",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
@@ -1917,7 +1911,7 @@
   },
   "scrimper": {
     "name": "Scrimper",
-    "description": "Cannot part with money without visibly flinching.",
+    "description": "Cannot part with money without a grimace.",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
@@ -1937,7 +1931,7 @@
   },
   "beast_tender": {
     "name": "Beast-tender",
-    "description": "Good with animals, and they appear to know it before being told.",
+    "description": "Good with animals, and they appear to know it right away.",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
@@ -1955,7 +1949,7 @@
   },
   "sworn_vegetarian": {
     "name": "Sworn Vegetarian",
-    "description": "Will not eat meat. Not when it is offered, not when it is the only thing there is.",
+    "description": "Will not eat anything that had a mother.",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
@@ -1996,7 +1990,7 @@
   },
   "scarred": {
     "name": "Scarred",
-    "description": "The wound closed. The face it closed on is not quite the one they had before.",
+    "description": "The wound closed. The body it closed on is not quite the one they had before.",
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
@@ -2014,7 +2008,7 @@
   },
   "maimed": {
     "name": "Maimed",
-    "description": "Something is gone that used to be there, and the body keeps reaching for it.",
+    "description": "Something is gone that used to be there. Warmth still seems to linger in the void.",
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
@@ -2123,7 +2117,7 @@
     "purge_difficulty": 0
   },
   "bloodied": {
-    "name": "Bloodied",
+    "name": "Slayer",
     "description": "Has killed something that everyone agreed could not be killed.",
     "category": "acquired",
     "inborn": false,
@@ -2169,7 +2163,7 @@
   },
   "long_marched": {
     "name": "Long-marched",
-    "description": "Has been on the road long enough that the road stopped being an event.",
+    "description": "Has been on the road long enough to stop thinking of settling down.",
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
@@ -2237,7 +2231,7 @@
   },
   "beauty_struck": {
     "name": "Beauty-struck",
-    "description": "Saw something that quietly reordered what they had thought the world contained.",
+    "description": "Saw something that quietly reordered what they had thought possible.",
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
@@ -2259,7 +2253,7 @@
   },
   "drunk": {
     "name": "Drunk",
-    "description": "Past enjoying it. Drinks to arrive somewhere rather than to be anywhere.",
+    "description": "Past enjoying it, now it's just an everyday fact.",
     "category": "acquired",
     "inborn": false,
     "stat_modifiers": {},
@@ -2286,7 +2280,7 @@
   },
   "bhang_enjoyer": {
     "name": "Bhang Enjoyer",
-    "description": "Takes it at the festivals, and increasingly on the days that are not festivals.",
+    "description": "Takes it only at the festivals - and isn't every day a festival of its own kind?",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
@@ -2334,7 +2328,7 @@
   },
   "pet_lover": {
     "name": "Pet-lover",
-    "description": "Has never once passed an animal without stopping, and cannot be persuaded that this is a failing.",
+    "description": "Has never once passed an animal without stopping.",
     "category": "behavioral",
     "inborn": true,
     "stat_modifiers": {},
@@ -2354,5 +2348,249 @@
     ],
     "purgeable_by": [],
     "purge_difficulty": 0
+  },
+  "impaired_vision": {
+    "name": "Impaired Vision",
+    "description": "Struggles in the dark, misses details and enemies.",
+    "category": "physical",
+    "inborn": true,
+    "stat_modifiers": {
+      "awareness": -1
+    },
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "impaired_vision"
+    ],
+    "bond_tags": [
+      "hardship"
+    ],
+    "opposed_traits": [
+      "sharp_eyed"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "hunters_yoga": {
+    "name": "Hunter's Yoga",
+    "description": "Lifetimes of the twisted disciplines — breath held to stillness, hunger cultivated rather than sated, the body worked into a shape that only makes sense mid-leap. It is a real practice. It is simply pointed the wrong way.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "strength": 1
+    },
+    "pressure_modifiers": {
+      "fire": -5
+    },
+    "skill_modifiers": {
+      "yoga": 1,
+      "unarmed": 1
+    },
+    "event_tags": [
+      "hunters_yoga",
+      "apex_predator",
+      "atavistic"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "guardian_geas": {
+    "name": "Guardian's Geas",
+    "description": "Bound to a place, a hoard, or a promise made before memory. The binding is not resented; it is the shape of the self. Ask what is being guarded and the answer comes back older than the question.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "charm": 1
+    },
+    "pressure_modifiers": {
+      "earth": 5
+    },
+    "skill_modifiers": {
+      "ritual": 1
+    },
+    "event_tags": [
+      "guardian_geas",
+      "oath_bound",
+      "place_bound"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "war_banner": {
+    "name": "War Banner",
+    "description": "Where this one stands, a line forms. It is not courage exactly — closer to the certainty that the fight has already been decided and everyone else is simply catching up.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "charm": 1
+    },
+    "pressure_modifiers": {
+      "fire": 5
+    },
+    "skill_modifiers": {
+      "leadership": 1
+    },
+    "event_tags": [
+      "war_banner",
+      "battle_spirit"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "corpse_rider": {
+    "name": "Corpse Rider",
+    "description": "Wears the dead the way others wear a coat, and has worn many. Something of each one stays behind in the way the hands move.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "focus": 1
+    },
+    "pressure_modifiers": {
+      "water": -5
+    },
+    "skill_modifiers": {
+      "sorcery": 1
+    },
+    "event_tags": [
+      "corpse_rider",
+      "possession",
+      "undead_kin"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "sovereign_grudge": {
+    "name": "Sovereign Grudge",
+    "description": "Ruled something once and has not accepted the loss of it. Every room is a court held in absentia, every slight a matter of record.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "charm": 1
+    },
+    "pressure_modifiers": {
+      "space": -5
+    },
+    "skill_modifiers": {
+      "leadership": 1
+    },
+    "event_tags": [
+      "sovereign_grudge",
+      "deposed",
+      "long_grudge"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "deep_current": {
+    "name": "Deep Current",
+    "description": "Thinks in pressures and distances no surface creature has words for. The magic that comes of it is correspondingly difficult to explain and difficult to argue with.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "focus": 1
+    },
+    "pressure_modifiers": {
+      "water": 5
+    },
+    "skill_modifiers": {
+      "water_magic": 1
+    },
+    "event_tags": [
+      "deep_current",
+      "abyssal",
+      "strange_magic"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "hoard_keeper": {
+    "name": "Hoard Keeper",
+    "description": "Wealth is not spent here, it is accumulated and remembered. Every piece of it has a provenance, and the provenance is the point.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "awareness": 1
+    },
+    "pressure_modifiers": {
+      "earth": 5
+    },
+    "skill_modifiers": {
+      "trade": 1
+    },
+    "event_tags": [
+      "hoard_keeper",
+      "treasure_wise",
+      "long_lived"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "void_touched": {
+    "name": "Void Touched",
+    "description": "Stood too near the place where things stop and came back with the cold still in them. Silence follows this one into rooms.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "focus": 1
+    },
+    "pressure_modifiers": {
+      "space": -5
+    },
+    "skill_modifiers": {
+      "black_magic": 1
+    },
+    "event_tags": [
+      "void_touched",
+      "entropy",
+      "feared"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "first_to_know": {
+    "name": "First to Know",
+    "description": "The head comes up before the sound arrives. Alertness inherited rather than learned.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "awareness": 1
+    },
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "first_to_know",
+      "alert",
+      "ambush_warning"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "craven": {
+    "name": "Craven",
+    "description": "Runs first and reasons afterwards. Whatever else is true, nothing has ever caught them.",
+    "category": "personality",
+    "inborn": true,
+    "stat_modifiers": {
+      "finesse": 1
+    },
+    "pressure_modifiers": {
+      "fire": -5,
+      "earth": -5
+    },
+    "skill_modifiers": {
+      "might": -1
+    },
+    "event_tags": [
+      "craven",
+      "coward",
+      "flees"
+    ],
+    "opposed_traits": [
+      "brave"
+    ],
+    "purgeable_by": [
+      "yoga"
+    ],
+    "purge_difficulty": 14
   }
 }

@@ -21,6 +21,9 @@ var max_party_size: int = 8
 
 # Birth and background data loaded from JSON
 var _birth_data: Dictionary = {}
+
+# realm -> {weight: tier name}, built on first use from _birth_data
+var _rarity_cache: Dictionary = {}
 var _background_data: Dictionary = {}
 
 # Spell database for random starting spell selection
@@ -128,9 +131,6 @@ const BASE_CHARACTER: Dictionary = {
 	# Format: {"physical": 50, "fire": 25, ...}  values are percentages
 	"base_resistances": {},
 
-	# Character traits — list of trait IDs (racial, habitat, acquired, etc.)
-	"traits": [],
-	
 	# Elemental affinities (built up through skill usage)
 	"elements": {
 		"earth": 0,
@@ -247,6 +247,7 @@ func _load_birth_data() -> void:
 
 	var data = json.get_data()
 	_birth_data = data.get("races", {})
+	_rarity_cache.clear()
 	_background_data = data.get("backgrounds", {})
 
 
@@ -349,6 +350,108 @@ func get_birth_data(birth_id: String) -> Dictionary:
 	return _birth_data.get(birth_id, {})
 
 
+## Every birth belonging to a realm, mapped to its reincarnation weight.
+## The weight is how likely the player is to be reborn as that birth — it says
+## nothing about how many of them exist in the world. A weight of 0 (or missing)
+## means the birth cannot be rolled into at all.
+func get_birth_weights_for_realm(realm: String) -> Dictionary:
+	var out: Dictionary = {}
+	for birth_id in _birth_data:
+		if birth_id.begins_with("_"):
+			continue
+		var data: Dictionary = _birth_data[birth_id]
+		if data.get("realm", "") != realm:
+			continue
+		var weight: int = int(data.get("reincarnation_weight", 0))
+		if weight > 0:
+			out[birth_id] = weight
+	return out
+
+
+## Every birth belonging to a realm, weighted or not. Used as the fallback for
+## realms whose births have not been given weights yet.
+func get_births_in_realm(realm: String) -> Array:
+	var out: Array = []
+	for birth_id in _birth_data:
+		if birth_id.begins_with("_"):
+			continue
+		if _birth_data[birth_id].get("realm", "") == realm:
+			out.append(birth_id)
+	return out
+
+
+## Roll a birth for a realm, weighted by `reincarnation_weight`.
+##
+## This is the single place a birth gets chosen at random. The player's rebirth
+## goes through it, and enemy generation will too once enemies are built as
+## characters — birth and background first, archetype layered on top — so that
+## the odds a player is reborn as a marjara and the odds an enemy turns out to
+## be one are the same number in the same file.
+##
+## Births are visited in sorted order so a seeded run reproduces. Realms whose
+## births carry no weights fall back to an even pick and warn.
+func roll_birth_for_realm(realm: String) -> String:
+	var weighted: Dictionary = get_birth_weights_for_realm(realm)
+
+	if weighted.is_empty():
+		var unweighted: Array = get_births_in_realm(realm)
+		if unweighted.is_empty():
+			push_warning("CharacterSystem: no births defined for realm '%s'" % realm)
+			return "human"
+		push_warning("CharacterSystem: realm '%s' has no reincarnation weights - picking evenly" % realm)
+		return unweighted[randi() % unweighted.size()]
+
+	var births: Array = weighted.keys()
+	births.sort()
+
+	var total_weight: int = 0
+	for birth in births:
+		total_weight += int(weighted[birth])
+
+	var roll: int = randi() % total_weight
+	var cumulative: int = 0
+	for birth in births:
+		cumulative += int(weighted[birth])
+		if roll < cumulative:
+			return birth
+
+	return births[0]  # unreachable while total_weight > 0
+
+
+## How rare a birth is, as a word: "common", "uncommon" or "rare".
+##
+## Rarity is not stored anywhere — it is a reading of `reincarnation_weight`,
+## which is the one number that decides how often a birth comes up. Within a
+## realm the distinct weights are ranked, heaviest first, and a birth's rank is
+## its tier. Anything unweighted is "" — it cannot be rolled into at all.
+func get_birth_rarity(birth_id: String) -> String:
+	var data: Dictionary = get_birth_data(birth_id)
+	var weight: int = int(data.get("reincarnation_weight", 0))
+	if weight <= 0:
+		return ""
+
+	var realm: String = data.get("realm", "")
+	if not _rarity_cache.has(realm):
+		_rarity_cache[realm] = _build_rarity_ranks(realm)
+	return _rarity_cache[realm].get(weight, "rare")
+
+
+## Rank a realm's distinct weights into tier names, heaviest first.
+func _build_rarity_ranks(realm: String) -> Dictionary:
+	var names: Array = ["common", "uncommon", "rare"]
+	var weights: Array = []
+	for w in get_birth_weights_for_realm(realm).values():
+		if not int(w) in weights:
+			weights.append(int(w))
+	weights.sort()
+	weights.reverse()
+
+	var ranks: Dictionary = {}
+	for i in range(weights.size()):
+		ranks[weights[i]] = names[i] if i < names.size() else "rare"
+	return ranks
+
+
 ## Get background data dictionary for a given background ID
 func get_background_data(background_id: String) -> Dictionary:
 	return _background_data.get(background_id, {})
@@ -385,10 +488,11 @@ func create_player_character(char_name: String, birth: String, background: Strin
 			if not pool.is_empty():
 				TraitSystem.add_trait(character, pool[0])
 
-	# Apply racial traits that have side effects beyond resistances/stats
-	if "extra_starting_gold" in character.get("traits", []):
-		if GameState:
-			GameState.add_gold(50)
+	# Apply birth-specific starting gold bonus
+	var birth_data = get_birth_data(birth)
+	var birth_gold: int = int(birth_data.get("starting_gold", 0))
+	if birth_gold > 0 and GameState:
+		GameState.add_gold(birth_gold)
 
 	# Add to party at index 0 (player always first)
 	if party.is_empty():
@@ -892,8 +996,16 @@ func update_derived_stats(character: Dictionary) -> void:
 	derived.accuracy = equip_bonus.get("accuracy", 0)
 	derived.armor_pierce = equip_bonus.get("armor_pierce", 0)
 
-	# Build current resistances: start from permanent racial base, add equipment bonuses
+	# Build current resistances: permanent racial base, then traits, then equipment.
+	# Traits sit here rather than in combat because this is already the single
+	# place a character's standing resistances are assembled — CombatUnit reads
+	# derived.resistances, so a trait-granted resistance behaves exactly like a
+	# racial or equipment one, including for a trait gained mid-run.
 	var new_resists: Dictionary = character.get("base_resistances", {}).duplicate()
+	if TraitSystem:
+		var trait_resists: Dictionary = TraitSystem.get_resistances(character)
+		for r in trait_resists:
+			new_resists[r] = new_resists.get(r, 0) + trait_resists[r]
 	var equip_resists = equip_bonus.get("resistances", {})
 	for r in equip_resists:
 		new_resists[r] = new_resists.get(r, 0) + equip_resists[r]

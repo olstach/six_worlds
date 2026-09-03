@@ -912,7 +912,7 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 			var weapon := get_equipped_weapon()
 			var tags: Array = weapon.get("skill_tags", [])
 			if not tags.is_empty():
-				var best_skill := tags[0]
+				var best_skill: String = tags[0]
 				var best_level := CharacterSystem.get_effective_skill_level(character_data, best_skill)
 				for tag in tags.slice(1):
 					var lvl := CharacterSystem.get_effective_skill_level(character_data, tag)

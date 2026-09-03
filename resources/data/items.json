@@ -12884,6 +12884,20 @@
       },
       "slot": "inventory"
     },
+    "healing_moss": {
+      "name": "Healing Moss",
+      "type": "herb",
+      "rarity": "common",
+      "weight": 1,
+      "value": 14,
+      "description": "Grey-green, slow-growing, scraped from the north face of stones. Keeps for years.",
+      "effect": {
+        "type": "heal",
+        "value": 20,
+        "targeting": "self"
+      },
+      "slot": "inventory"
+    },
     "ghost_pepper": {
       "name": "Ghost Pepper",
       "type": "bomb",

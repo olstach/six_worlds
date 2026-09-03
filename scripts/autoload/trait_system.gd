@@ -193,6 +193,94 @@ func traits_with_bond_tag(character: Dictionary, bond_tag: String) -> Array:
 	return found
 
 
+## Total resistances a character's traits confer, as {damage_type: percent}.
+## Summed across traits, so two sources of poison resistance stack the way
+## racial and equipment resistances already do.
+##
+## Read by CharacterSystem.update_derived_stats() into derived.resistances,
+## which is what CombatUnit.get_resistance() consults — so this is the only
+## place trait resistances need to exist.
+func get_resistances(character: Dictionary) -> Dictionary:
+	var total: Dictionary = {}
+	for trait_id in character.get("traits", []):
+		var t := get_trait(trait_id)
+		for damage_type in t.get("resistances", {}):
+			total[damage_type] = total.get(damage_type, 0) + int(t["resistances"][damage_type])
+	return total
+
+
+## Plain-language lines describing everything a trait actually does.
+##
+## The flavour text is not meant to restate the mechanics — the tooltip shows
+## these first, then a rule, then the flavour — so a description that says
+## "+1 Finesse" is duplicating this and should be rewritten.
+func describe_effects(trait_id: String) -> Array[String]:
+	var t := get_trait(trait_id)
+	var lines: Array[String] = []
+	if t.is_empty():
+		return lines
+
+	for attr in t.get("stat_modifiers", {}):
+		lines.append("%+d %s" % [int(t["stat_modifiers"][attr]), attr.capitalize()])
+	for skill in t.get("skill_modifiers", {}):
+		lines.append("%+d %s" % [int(t["skill_modifiers"][skill]),
+				skill.replace("_", " ").capitalize()])
+
+	# Pressure shifts the baseline that emotional decay pulls toward, which is
+	# opaque as a bare number — name the pole it leans to instead.
+	for element in t.get("pressure_modifiers", {}):
+		var amount: float = float(t["pressure_modifiers"][element])
+		if is_zero_approx(amount):
+			continue
+		lines.append("Rests nearer %s (%s %+d)" % [
+			_pole_name(element, amount > 0.0), element.capitalize(), int(amount)])
+
+	var bonds: Array = t.get("bond_tags", [])
+	if not bonds.is_empty():
+		lines.append("Bonds over: " + ", ".join(bonds))
+
+	var opposed: Array = t.get("opposed_traits", [])
+	if not opposed.is_empty():
+		var names: Array[String] = []
+		for other in opposed:
+			names.append(get_trait_name(other))
+		lines.append("Grates against: " + ", ".join(names))
+
+	var purge: Array = t.get("purgeable_by", [])
+	if not purge.is_empty():
+		var ways: Array[String] = []
+		for skill in purge:
+			ways.append("%s %d" % [str(skill).capitalize(), int(t.get("purge_difficulty", 1))])
+		lines.append("Can be shed through " + " or ".join(ways))
+
+	return lines
+
+
+## The five poisons and their answering wisdoms, for readable pressure lines.
+func _pole_name(element: String, bright: bool) -> String:
+	match element:
+		"space": return "clarity" if bright else "delusion"
+		"fire":  return "warmth" if bright else "craving"
+		"water": return "compassion" if bright else "aversion"
+		"earth": return "equanimity" if bright else "pride"
+		"air":   return "appreciation" if bright else "envy"
+	return "balance" if bright else "affliction"
+
+
+## Full tooltip body: what it does, a rule, then what it is.
+func get_tooltip(trait_id: String) -> String:
+	var t := get_trait(trait_id)
+	if t.is_empty():
+		return ""
+	var effects := describe_effects(trait_id)
+	var flavour: String = str(t.get("description", "")).strip_edges()
+	if effects.is_empty():
+		return flavour
+	if flavour.is_empty():
+		return "\n".join(effects)
+	return "\n".join(effects) + "\n──────────\n" + flavour
+
+
 ## Attempt to purge a trait via a skill-based practice (yoga, ritual).
 ## difficulty_modifier reduces the effective required level (e.g. Mandala Offering gives -2).
 ## Returns true if the purge succeeds (character has the required skill at required level).

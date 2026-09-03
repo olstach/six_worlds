@@ -268,6 +268,8 @@ func apply_random_ranged_crit_wound(character: Dictionary) -> String:
 
 ## Apply a random disease appropriate to an undead/diseased attacker.
 func apply_random_disease(character: Dictionary, attacker_tag: String = "undead") -> String:
+	if _resisted(character, "disease"):
+		return ""
 	var id: String = DISEASE_POOL[randi() % DISEASE_POOL.size()]
 	apply_wound(character, id, "", attacker_tag)
 	return id
@@ -275,9 +277,30 @@ func apply_random_disease(character: Dictionary, attacker_tag: String = "undead"
 
 ## Apply a random disease appropriate to a poison-type attacker.
 func apply_random_poison_disease(character: Dictionary) -> String:
+	if _resisted(character, "poison"):
+		return ""
 	var id: String = POISON_DISEASE_POOL[randi() % POISON_DISEASE_POOL.size()]
 	apply_wound(character, id, "", "poison")
 	return id
+
+
+## Roll a character's resistance against being afflicted at all.
+##
+## Diseases are not damage, so a "disease: 50" resistance cannot be applied as a
+## damage reduction — it has to be a chance to shrug the affliction off. Sitting
+## here rather than at the combat call site means every source is covered:
+## enemy attacks, event outcomes, and anything added later.
+##
+## The same resistance value still reduces damage of that type through
+## derived.resistances, so venom_ward both blunts poison damage and halves the
+## chance of catching something from a poisoned blade.
+func _resisted(character: Dictionary, resist_type: String) -> bool:
+	if not TraitSystem:
+		return false
+	var pct: float = float(TraitSystem.get_resistances(character).get(resist_type, 0))
+	if pct <= 0.0:
+		return false
+	return randf() < clampf(pct / 100.0, 0.0, 0.95)
 
 
 ## Cure one wound by id. Returns true if the wound was found and removed.
@@ -345,6 +368,9 @@ func tick_wounds(character: Dictionary) -> Array[String]:
 		if threshold <= 0:
 			i += 1
 			continue
+		# stubborn_body perk: wounds take 1 extra rest to escalate
+		if PerkSystem and PerkSystem.has_perk(character, "stubborn_body"):
+			threshold += 1
 		entry["rests_untreated"] = entry.get("rests_untreated", 0) + 1
 		if entry["rests_untreated"] >= threshold:
 			var escalation_id: String = wdef.get("escalates_to", "")

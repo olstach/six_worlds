@@ -948,9 +948,9 @@
       ],
       "realm": "animal"
     },
-    "animal_shardula_stalker": {
+    "animal_marjara_stalker": {
       "_comment": "Flanking predator; grace perks give evasion while repositioning; attacks from unexpected angles",
-      "name": "Shardula Stalker",
+      "name": "Marjara Stalker",
       "tier": "devil",
       "roles": [
         "skirmisher"
@@ -990,9 +990,9 @@
       ],
       "realm": "animal"
     },
-    "animal_shardula_ambusher": {
+    "animal_marjara_ambusher": {
       "_comment": "Drops from canopy; guile perks give first-strike advantage; retreats after opening hit",
-      "name": "Shardula Ambusher",
+      "name": "Marjara Ambusher",
       "tier": "shade",
       "roles": [
         "skirmisher"
@@ -1031,6 +1031,127 @@
         "animal"
       ],
       "realm": "animal"
+    },
+    "animal_mriga_stag": {
+      "_comment": "Rutting-season buck; charges anything that does not concede the ground. Antlers count as unarmed.",
+      "name": "Mriga Stag",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 2,
+        "finesse": 2,
+        "awareness": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "unarmed",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 9,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {},
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_mriga_sentinel": {
+      "_comment": "Watches the edge and calls the alarm. Hard to hit, hard to corner, and never fights alone by choice.",
+      "name": "Mriga Sentinel",
+      "tier": "shade",
+      "roles": [
+        "skirmisher"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "finesse": 3,
+        "awareness": 3,
+        "constitution": 1,
+        "strength": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "grace",
+        "ranged"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 5,
+          "base_accuracy": 7,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {},
+      "threat_multiplier": 0.8,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal",
+      "ai_behavior": "pack_bonus"
+    },
+    "animal_mriga_herd": {
+      "_comment": "Individually harmless. A stampede is not a fight, it is weather.",
+      "name": "Mriga Herd",
+      "tier": "imp",
+      "roles": [
+        "frontline"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "constitution": 2,
+        "finesse": 2,
+        "strength": 1,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "grace"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 4,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {},
+      "threat_multiplier": 0.6,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal",
+      "ai_behavior": "pack_bonus"
     },
     "animal_gana_runner": {
       "_comment": "Pack hunter; grows sharper and harder to hit as more of the pack closes in.",

@@ -1,6 +1,6 @@
 # Six Worlds — TODO
 
-**Last updated:** 2026-07-27 (rewritten as a live document)
+**Last updated:** 2026-08-31
 
 This file was an append-only log for a long time and had grown to the point
 where finished work outweighed the remaining work three to one. It is now
@@ -131,12 +131,8 @@ The mirror image of dead data: code paths that work and are never exercised.
   with owning skill, L1/L5/L10 values and the system each would hook into is in
   Part III below. This is the largest single gap: most general skills currently
   pay out only their combat numbers.
-- [ ] **10 embedded `todo` keys in the data files** promise mechanics no code
+- [ ] **6 embedded `todo` keys in the data files** promise mechanics no code
   reads. Nothing in TODO.md ever tracked them:
-  - `traits.json` — `venom_ward`, `undead`, `incorporeal` all declare a
-    `resistances` block; TraitSystem applies only `stat_modifiers`,
-    `skill_modifiers` and `pressure_modifiers`, so those three traits are
-    cosmetic
   - `traits.json` — `aquatic` / `flying` party-wide tile traversal,
     `night_vision` darkness immunity, `insatiable` (+50% food, −50% rest
     recovery)
@@ -249,6 +245,70 @@ immunity from undead hits), `stubborn_body` (Con 15+, +1 to all
 ## 8. Deferred by decision
 
 Recorded so they aren't rediscovered as bugs.
+
+### 2026-08-31 — from the enemy-XP design session
+
+- **Background assignment wants a pass across all births.** 94 backgrounds, but
+  only 3 are universal (`healer`, `reveler`, `wanderer`) and 55 are single-birth
+  — 58% of them. Average 4.8 births per background. Mriga was in none of the 22
+  broadly-available ones (`warrior` covers 18 births, `scholar` 14,
+  `merchant`/`guard`/`diplomat`/`noble`/`monk` 13) purely because it was created
+  after those lists were authored; ten were opened to it by hand. Every future
+  birth hits the same trap. After the animal-birth pass, go over all births and
+  reassign, add, or generalise backgrounds — and check gana first, which was
+  split at the same time as mriga.
+
+- **Spell learning should cost XP.** `CharacterSystem.learn_spell` currently has
+  no cost and no eligibility gate at all; it appends to `known_spells`. Making
+  spells cost XP is the coherent counterpart to buying perks, and it spreads XP
+  across more kinds of development instead of dumping it into raw attributes
+  once a build's skills cap.
+
+- **Trainers / domain-guild-style access.** Perks and spells stay discoverable
+  by default — not seeing everything in one run is the intent. But some can be
+  bought: access is earned through events, the way domain guilds already work,
+  then purchased in a shop menu for XP plus sometimes another resource. Cost
+  rises **geometrically** per purchase (n, 2n, 4n …) so a player buys two or
+  three a run and agonises, rather than working through a shopping list. Worth
+  its own spec; it interacts with the XP economy.
+
+Spec: `docs/superpowers/specs/2026-08-31-enemy-xp-generation-design.md`
+
+- **More ways to spend XP on meaningful development.** *(decided 2026-08-31:
+  the 10-level skill system stays — too much is pegged on it — but perks and
+  spells should become purchasable with XP.)*
+
+  XP currently buys two things: attributes and skills. Skills hard-cap at level
+  10, so a three-skill build absorbs at most 1,980 XP in skills and everything
+  past that becomes raw attributes, which never saturate but are the least
+  interesting kind of power.
+
+  The two obvious sinks already exist as content and are not sold:
+  - **604 perks** (550 skill + 54 cross) are acquired *free*, one choice of four
+    offered per skill-up. With skills capped, a character sees at most ~350
+    offers of a random 4-of-604 — most perks are never even seen, let alone taken.
+  - **363 spells** — `CharacterSystem.learn_spell` has no XP cost and no
+    eligibility gate at all; it appends. Access comes from guilds, events and
+    starting kits.
+
+  An earlier note here claimed an individual saturates near 4,500 XP. That was
+  wrong: it assumed `attribute_caps` bounded attributes near 30, and those caps
+  are enforced nowhere (see below). Only the skill cap is real.
+
+- **`attribute_caps` is dead data** — all 47 races carry a 7-key caps dict that
+  no script, scene or tool reads. Attributes are limited only by the rising cost
+  per point, which is the soft cap the design wants anyway. Either delete the
+  field or implement it; leaving it is actively misleading, having already
+  produced one wrong conclusion in the enemy-XP spec.
+- **Loot division** — post-battle XP now divides among party members; items do
+  not, because they are indivisible and the party shares an inventory. Left
+  deliberately asymmetric; revisit if party size feels wrong.
+- **A visual tell for high-band encounters** — party archetypes let `swarm`
+  (5–8 members) and `lone_hunter` (1) occur at the same XP budget, so the
+  player can no longer read danger off the number of enemies on screen. Some
+  other signal may be wanted.
+- **Gana attribute caps** — set by hand during the predator/herbivore split to
+  match the new daggers-and-unarmed lean; never reviewed against play.
 
 - **`Dominated` full enemy control** — the puppet loses its turns; real control
   needs a player-drives-an-enemy-unit UI flow
@@ -410,7 +470,34 @@ The trait baseline is recomputed on every read rather than stored, so editing
 traits.json can never leave a stale number in a save; only the drift from
 things that actually happened is persisted.
 
-### Trait acquisition
+### Traits as the home for standing effects
+
+Settled 2026-07-27. The line between the three systems:
+
+- **Traits** — permanent or run-long, identity-shaped, visible outside combat:
+  traversal, resistances, social access, what events offer you.
+- **Statuses** — turn-scoped combat state, with duration, stacking and dispel.
+  Unchanged; `Burning` is not a trait, but a character who *cannot burn* is.
+- **Perks** — remain the purchase. A perk whose effect is a standing condition
+  declares `"grants_traits": ["<id>"]` rather than restating it in code, and
+  the trait then carries the stat, skill, resistance and event-gating
+  consequences. Only for unconditional effects: Diamond Body's poison immunity
+  applies *while unarmored*, which a trait cannot express, so that stays a
+  combat check.
+
+Trait `resistances` are wired: `TraitSystem.get_resistances()` folds into
+`derived.resistances` beside racial and equipment values, so `CombatUnit`
+reads them with no combat-side change. Because disease is not a damage type
+but an affliction chance, `WoundSystem._resisted()` also rolls the same value
+against catching one — venom_ward both blunts poison damage and halves the
+chance of catching something from a poisoned blade.
+
+Still open for the temporary-trait idea: traits have no expiry. A
+`duration_rests` field ticked in `overworld._tick_rest_traits()` — the hook
+that already turns `grief_struck` into `mourner` — is the small piece that
+would let a spell or event grant `flying` for a while.
+
+## Trait acquisition
 
 Nine acquired traits are granted by code hooks, with no event needed:
 
