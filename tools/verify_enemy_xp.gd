@@ -424,6 +424,43 @@ func _check_equipment() -> void:
 	print("   %d armed enemies: 0 skill mismatches, %d carry food, %d carry a spare weapon"
 		% [checked, with_food, with_spare])
 
+	# tools: a practitioner should be holding their trade, not a borrowed blade
+	var tool_holders := 0
+	var tool_mismatch := 0
+	var consumable_carriers := 0
+	var kit_scales := true
+	for eid in EnemySystem.encounters:
+		if eid.begins_with("_"):
+			continue
+		var realm: String = EnemySystem.encounters[eid].get("realm", "animal")
+		for e in EnemySystem.generate_encounter(eid, "", realm):
+			var w: Dictionary = e.get("equipped_weapon", {})
+			if String(w.get("type", "")) == "tool":
+				tool_holders += 1
+				# the tool must support a skill they are actually best at
+				var bonus_skills: Dictionary = w.get("skill_bonuses", {})
+				var ok := false
+				for sk in bonus_skills:
+					if int(e.get("skills", {}).get(sk, 0)) > 0:
+						ok = true
+				if not ok:
+					tool_mismatch += 1
+			for entry in e.get("inventory", []):
+				var iid: String = String(entry.get("item_id", ""))
+				if iid in ["health_potion", "mana_potion", "healing_herb", "raw_reagents"]:
+					consumable_carriers += 1
+					break
+	expect(tool_mismatch == 0,
+		"%d characters carry a tool for a skill they do not have" % tool_mismatch)
+	print("   %d carry a trade tool instead of a weapon, %d carry consumables"
+		% [tool_holders, consumable_carriers])
+
+	# the kit budget must rise with XP
+	var small: int = EnemySystem.equipment_budget_for_xp(200)
+	var large: int = EnemySystem.equipment_budget_for_xp(4140)
+	expect(large > small * 5, "kit budget does not scale with XP (%d vs %d)" % [small, large])
+	print("   kit budget: 200 XP -> %d gold, 4140 XP -> %d gold" % [small, large])
+
 
 func _dump_table() -> void:
 	if not "--table" in OS.get_cmdline_user_args():

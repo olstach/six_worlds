@@ -43,5 +43,10 @@
     "scale": 10000,
     "max_fraction": 0.35,
     "skill_share": 0.5
+  },
+  "_comment_equipment": "Gear is not paid for out of the XP budget — the player never buys equipment with XP either — but its total value scales with it. value_per_xp turns a character's XP into a gold-equivalent kit budget, which decides rarity and how much is left for consumables.",
+  "equipment": {
+    "value_per_xp": 0.45,
+    "consumable_share": 0.25
   }
 }

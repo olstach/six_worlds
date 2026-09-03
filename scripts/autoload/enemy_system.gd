@@ -173,6 +173,83 @@ func breadth_for_budget(budget: int) -> float:
 	return clampf((float(budget) - threshold) / scale, 0.0, cap)
 
 
+## Non-combat skill -> the tool that supports it. A character better at one of
+## these than at any weapon carries the tool in the weapon hand instead, the way
+## a ritual focus is carried: weak in a fight, strong at what it is for.
+const SKILL_TO_TOOL: Dictionary = {
+	"medicine": "medicine_bag",
+	"performance": "lute",
+	"thievery": "thieving_tools",
+	"alchemy": "alchemists_kit",
+	"trade": "merchants_scales",
+	"smithing": "smiths_hammer",
+	"logistics": "quartermasters_ledger",
+	"leadership": "war_standard",
+}
+
+## Tool tiers, cheapest first: prefix and the kit value each needs.
+const TOOL_TIERS: Array = [
+	{"prefix": "plain", "cost": 35},
+	{"prefix": "fine", "cost": 150},
+	{"prefix": "masterwork", "cost": 500},
+]
+
+## Skill -> consumables that skill's owner would plausibly be carrying, for
+## their own use in a fight and as loot afterwards.
+const SKILL_TO_CONSUMABLES: Dictionary = {
+	"medicine": ["healing_herb", "health_potion"],
+	"alchemy": ["raw_reagents", "health_potion"],
+	"white_magic": ["mana_potion"],
+	"black_magic": ["mana_potion"],
+	"fire_magic": ["mana_potion"],
+	"water_magic": ["mana_potion"],
+	"earth_magic": ["mana_potion"],
+	"air_magic": ["mana_potion"],
+	"space_magic": ["mana_potion"],
+	"sorcery": ["mana_potion"],
+	"trade": ["rations"],
+	"logistics": ["rations"],
+}
+
+
+## Gold-equivalent value of the kit a character of this XP should be carrying.
+## Gear is not paid for out of the XP budget, but it scales with it.
+func equipment_budget_for_xp(xp_budget: int) -> int:
+	var cfg: Dictionary = budgets.get("equipment", {})
+	return maxi(0, int(round(float(xp_budget) * float(cfg.get("value_per_xp", 0.45)))))
+
+
+## The best tool skill and its level, when the character is more a practitioner
+## than a fighter. Returns {} when a weapon suits them better.
+func _tool_for_character(skills: Dictionary) -> Dictionary:
+	var best_tool_skill := ""
+	var best_tool_level: int = 0
+	for skill in SKILL_TO_TOOL:
+		var level: int = int(skills.get(skill, 0))
+		if level > best_tool_level:
+			best_tool_level = level
+			best_tool_skill = String(skill)
+
+	var best_weapon_level: int = 0
+	for skill in SKILL_TO_WEAPON:
+		best_weapon_level = maxi(best_weapon_level, int(skills.get(skill, 0)))
+
+	# Only when the trade genuinely outweighs the weapon. A tie goes to the
+	# weapon: this is still a fight, and they know it.
+	if best_tool_skill == "" or best_tool_level <= best_weapon_level:
+		return {}
+	return {"skill": best_tool_skill, "level": best_tool_level}
+
+
+## The best tool tier this kit budget can afford.
+func _affordable_tool_id(tool_base: String, kit_budget: int) -> String:
+	var chosen := ""
+	for tier in TOOL_TIERS:
+		if kit_budget >= int(tier["cost"]):
+			chosen = "%s_%s" % [String(tier["prefix"]), tool_base]
+	return chosen
+
+
 ## Weapon skill -> the weapon_bases type that skill actually wields.
 ## Mirrors CombatUnit._get_weapon_skill_name, read the other way round.
 const SKILL_TO_WEAPON: Dictionary = {
@@ -212,6 +289,42 @@ func _weapon_types_for_skills(skills: Dictionary) -> Array[Dictionary]:
 				"level": level})
 	ranked.sort_custom(func(a, b): return int(a["level"]) > int(b["level"]))
 	return ranked
+
+
+## Consumables the character's own skills imply — a medic's herbs, a caster's
+## mana. Theirs to use in the fight, and the player's afterwards. Spends up to
+## the consumable share of the kit budget.
+func _generate_skill_consumables(skills: Dictionary, kit_budget: int) -> Array:
+	var cfg: Dictionary = budgets.get("equipment", {})
+	var spend: int = int(round(float(kit_budget) * float(cfg.get("consumable_share", 0.25))))
+	var out: Array = []
+	if spend <= 0:
+		return out
+
+	# Rank the skills that imply a consumable, best first.
+	var ranked: Array[Dictionary] = []
+	for skill in SKILL_TO_CONSUMABLES:
+		var level: int = int(skills.get(skill, 0))
+		if level > 0:
+			ranked.append({"skill": String(skill), "level": level})
+	if ranked.is_empty():
+		return out
+	ranked.sort_custom(func(a, b): return int(a["level"]) > int(b["level"]))
+
+	for entry in ranked:
+		var options: Array = SKILL_TO_CONSUMABLES[entry["skill"]]
+		var pick: String = String(options[randi() % options.size()])
+		var item: Dictionary = ItemSystem.get_item(pick)
+		var cost: int = maxi(1, int(item.get("value", 10)))
+		# More of it the better they are at the thing, budget permitting.
+		var want: int = clampi(int(entry["level"]) / 3, 1, 3)
+		var afford: int = mini(want, int(float(spend) / float(cost)))
+		if afford > 0:
+			out.append({"item_id": pick, "quantity": afford})
+			spend -= afford * cost
+		if spend <= 0:
+			break
+	return out
 
 
 ## Everyday things a character of this budget would be carrying: food, and a
@@ -602,13 +715,16 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	var inventory = _generate_enemy_inventory(archetype, effective_budget)
 	for everyday in _generate_everyday_items(skills, xp_budget):
 		inventory.append(everyday)
+	for consumable in _generate_skill_consumables(skills, equipment_budget_for_xp(xp_budget)):
+		inventory.append(consumable)
 	for item in archetype.get("starting_inventory", []):
 		inventory.append(item)
 
 	# Map power budget to item rarity — shared by weapon and armor generation.
 	# Realm drives the material tier (e.g. hell → bone/obsidian/bronze); rarity drives quality.
-	# Item rarity scales with the XP the enemy represents.
-	var power_scale = effective_budget / 400.0
+	# Rarity derives from the kit budget, which is itself a function of XP.
+	var kit_budget: int = equipment_budget_for_xp(xp_budget)
+	var power_scale = float(kit_budget) / 180.0
 	var item_rarity: String
 	if power_scale < 0.5:
 		item_rarity = "common"
@@ -632,14 +748,33 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 			"stats": {"damage": 2, "accuracy": 4, "range": 1}
 		}
 	else:
+		# A character better at a trade than at any weapon carries its tool
+		# instead — a doctor with a bag, not a doctor with a borrowed spear.
+		var tool: Dictionary = _tool_for_character(skills)
+		var tool_id: String = ""
+		if not tool.is_empty():
+			tool_id = _affordable_tool_id(
+				String(SKILL_TO_TOOL[tool["skill"]]), kit_budget)
+
 		# What the character trained for wins over what the archetype template
 		# says. A build that came out with ranged 8 carries a bow.
 		var trained: Array[Dictionary] = _weapon_types_for_skills(skills)
 		var weapon_type: String = String(trained[0]["type"]) if not trained.is_empty() \
 			else String(equipment.get("weapon_type", "sword"))
 
-		var gen_id = ItemSystem.generate_weapon(weapon_type, item_rarity, "", "", realm)
-		if gen_id != "":
+		var gen_id: String = ""
+		var carrying_tool := false
+		if tool_id != "" and ItemSystem.get_item(tool_id).size() > 0:
+			equipped_weapon = ItemSystem.get_item(tool_id)
+			inventory.append({"item_id": tool_id, "quantity": 1})
+			kit_budget -= int(equipped_weapon.get("value", 0))
+			carrying_tool = true
+		else:
+			gen_id = ItemSystem.generate_weapon(weapon_type, item_rarity, "", "", realm)
+
+		if carrying_tool:
+			pass  # already equipped; the branches below must not overwrite it
+		elif gen_id != "":
 			equipped_weapon = ItemSystem.get_item(gen_id)
 			inventory.append({"item_id": gen_id, "quantity": 1})
 
