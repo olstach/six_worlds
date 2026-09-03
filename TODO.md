@@ -248,6 +248,44 @@ Recorded so they aren't rediscovered as bugs.
 
 ### 2026-08-31 — from the enemy-XP design session
 
+- **Six encounters have role slots no archetype can fill.** They drop to a
+  generic fallback. `tools/verify_enemy_xp.tscn` lists them on every run:
+
+  | encounter | region / tier / role |
+  |---|---|
+  | `swamp_vermin` | fetid_swamps / shade / support |
+  | `animal_yaksha_patrol` | meadow / devil / support |
+  | `animal_dura_soldiers` | meadow / devil / skirmisher |
+  | `animal_khadga_lone` | meadow / imp / frontline |
+  | `animal_shyena_lord` | meadow / imp / frontline |
+  | `animal_uluka_watch` | forest / devil / caster |
+
+- **Equipment should be generated like the XP pool.** Currently
+  `_generate_equipment` reads only `archetype.equipment_template.weapon.type`,
+  so what a character can actually do has no bearing on what it carries.
+  Wanted:
+  - a **total equipment value that scales with the character's XP**, the same
+    proportional way the XP budget itself does
+  - **types chosen from the dominant skillsets** — a ranged build carries a bow,
+    a Performance build carries an instrument, an armour build wears armour
+  - **two weapon sets** where the gold and the skills make it reasonable
+  - beyond the vital kit, **food and other resources**, and later everyday
+    objects carrying minor bonuses — the point being roundness, the same reason
+    XP now overflows into breadth. A character with rations, a spare knife and
+    a lucky stone reads as someone who lives somewhere.
+
+- **Instruments, and skill-linked equipment generally.** The game has ritual
+  implements (damaru, kangling, conch, drilbu) but all are `type: focus` for
+  Ritual and spellcasting. There is nothing a Performance character can hold.
+  Other skills likely want their own objects too — Alchemy, Medicine, Smithing,
+  Trade all imply tools that do not exist yet.
+
+- **Birth and archetype can contradict each other.** Enemy births are rolled
+  from the realm independently of the archetype, so 33 hell encounters produce
+  things like `hell_green_devil_sniper` with a `blue_devil` birth. Either
+  constrain the roll when an archetype id names a birth, or decide devils are
+  mixed-parentage and let it stand.
+
 - **Instruments as performance items.** The game has ritual implements —
   damaru, kangling, conch, drilbu, phurba — but all are `type: focus`, for
   Ritual and spellcasting. There is no lute, flute, drum or fiddle a
