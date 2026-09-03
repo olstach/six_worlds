@@ -248,6 +248,16 @@ Recorded so they aren't rediscovered as bugs.
 
 ### 2026-08-31 — from the enemy-XP design session
 
+- **The naming lore is barely used by anything.** `animal_realm_names.json` is
+  read by no script and referenced by almost no content: 389 personal names with
+  meanings, plus per-birth place names that exist only in the file. The rakshasa
+  set alone has **The Long Hunger** (a stretch of poor territory between
+  productive ones), **The Wrong Side** (anywhere they do not go, and there is
+  always a reason), **The Ridge Where They Wait**, **The Mango Kill**, **The
+  Scratch Tree**, **The Three-Day Territory**. Every birth has six or so like
+  these. Fold them into the events pass — an event set on The Wrong Side is
+  already half-written by its own name.
+
 - **Mriga have no events at all.** Four events mention gana; none mention mriga,
   so the forest has wolves in its prose and no deer. Two existing ones read as
   either and could simply be switched — `animal_forest_healer_camp` (a

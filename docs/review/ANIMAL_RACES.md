@@ -426,7 +426,7 @@ Shape-shifting lords of the jungle, presiding over the ancient cults of the hunt
 <!--@end-->
 
 
-*Backgrounds: `lord_of_the_range`, `the_hungry`, `maneater`, `hedonist`, `herbalist`*
+*Backgrounds: `lord_of_the_range`, `the_hungry`, `maneater`, `hedonist`, `herbalist`, `realm_walker`, `blood_drinker`, `ancestor_priest`, `the_sensate`*
 
 
 ---
@@ -457,10 +457,29 @@ Something is being guarded — a spring, a hoard, a promise older than the hill 
 ---
 
 
-# Backgrounds  (63)
+# Backgrounds  (67)
 
 
 *What the character did with the birth they were given. Each appears once here, with the births that can take it.*
+
+
+## Ancestor Priest  `ancestor_priest`
+
+`births: Rakshasa  ·  skills: white_magic 1, black_magic 1, ritual 1  ·  kit: prayer_beads`
+
+
+**Name**
+
+<!--@ backgrounds.json | ancestor_priest | name -->
+Ancestor Priest
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | ancestor_priest | description -->
+The chiefs and heroes are laid to rest with the trophies of their most glorious hunts, and offered blood mead when the moon is full.
+<!--@end-->
 
 
 ## Antler Speaker  `antler_speaker`
@@ -498,6 +517,25 @@ Blade Contemplative
 
 <!--@ backgrounds.json | blade_contemplative | description -->
 The mantis holds perfectly still before it moves. So do you. The strike is not an act of violence — it is the end of a very long thought.
+<!--@end-->
+
+
+## Blood Drinker  `blood_drinker`
+
+`births: Rakshasa  ·  skills: might 1, guile 1, black_magic 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | blood_drinker | name -->
+Blood Drinker
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | blood_drinker | description -->
+This is not their first incarnation in this body, and probably not the last, looking at how they savour the hunt.
 <!--@end-->
 
 
@@ -1204,6 +1242,25 @@ When I run, I am eyes, I am ears, I am heart. I notice the colour that does not 
 <!--@end-->
 
 
+## Realm Walker  `realm_walker`
+
+`births: Rakshasa  ·  skills: enchantment 1, might 1, logistics 1  ·  kit: rations`
+
+
+**Name**
+
+<!--@ backgrounds.json | realm_walker | name -->
+Realm Walker
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | realm_walker | description -->
+He has travelled far, in this world and beyond. He learned a lot, tricked many, and ate quite a few too.
+<!--@end-->
+
+
 ## Root Shaper  `root_shaper`
 
 `births: Dura  ·  skills: enchantment 2, earth_magic 1`
@@ -1505,6 +1562,25 @@ The Hungry
 
 <!--@ backgrounds.json | the_hungry | description -->
 The hunger is not a problem. It is the condition of becoming.
+<!--@end-->
+
+
+## The Sensate  `the_sensate`
+
+`births: Rakshasa  ·  attributes: charm+1  ·  skills: persuasion 2, fire_magic 1  ·  kit: silver_ring`
+
+
+**Name**
+
+<!--@ backgrounds.json | the_sensate | name -->
+The Sensate
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | the_sensate | description -->
+They left the forests for the delights only civilised life can offer, a lifetime ago. Now their prey hides in silks and perfume, and seems rather excited to be hunted.
 <!--@end-->
 
 

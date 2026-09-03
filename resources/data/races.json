@@ -1554,7 +1554,11 @@
         "the_hungry",
         "maneater",
         "hedonist",
-        "herbalist"
+        "herbalist",
+        "realm_walker",
+        "blood_drinker",
+        "ancestor_priest",
+        "the_sensate"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -3460,6 +3464,81 @@
         "marjara"
       ],
       "weight": 3
+    },
+    "realm_walker": {
+      "name": "Realm Walker",
+      "description": "He has travelled far, in this world and beyond. He learned a lot, tricked many, and ate quite a few too.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "enchantment": 1,
+        "might": 1,
+        "logistics": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "rations"
+        ]
+      },
+      "available_races": [
+        "rakshasa"
+      ],
+      "weight": 5
+    },
+    "blood_drinker": {
+      "name": "Blood Drinker",
+      "description": "This is not their first incarnation in this body, and probably not the last, looking at how they savour the hunt.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "might": 1,
+        "guile": 1,
+        "black_magic": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [
+        "rakshasa"
+      ],
+      "weight": 5
+    },
+    "ancestor_priest": {
+      "name": "Ancestor Priest",
+      "description": "The chiefs and heroes are laid to rest with the trophies of their most glorious hunts, and offered blood mead when the moon is full.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "white_magic": 1,
+        "black_magic": 1,
+        "ritual": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "prayer_beads"
+        ]
+      },
+      "available_races": [
+        "rakshasa"
+      ],
+      "weight": 5
+    },
+    "the_sensate": {
+      "name": "The Sensate",
+      "description": "They left the forests for the delights only civilised life can offer, a lifetime ago. Now their prey hides in silks and perfume, and seems rather excited to be hunted.",
+      "attribute_modifiers": {
+        "charm": 1
+      },
+      "starting_skills": {
+        "persuasion": 2,
+        "fire_magic": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "silver_ring"
+        ]
+      },
+      "available_races": [
+        "rakshasa"
+      ],
+      "weight": 5
     },
     "range_reader": {
       "name": "Range Reader",
