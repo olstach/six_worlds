@@ -1194,6 +1194,214 @@
       "realm": "animal",
       "ai_behavior": "pack_bonus"
     },
+    "animal_gana_runt": {
+      "_comment": "Last of the litter and last to the kill. Harries the edges and runs from anything that turns.",
+      "name": "Gana Runt",
+      "tier": "imp",
+      "roles": [
+        "skirmisher"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "finesse": 3,
+        "awareness": 2,
+        "strength": 1,
+        "constitution": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 1
+      },
+      "skill_priorities": [
+        "daggers",
+        "guile"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "dagger",
+          "base_damage": 4,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {},
+      "threat_multiplier": 0.6,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal",
+      "ai_behavior": "pack_bonus"
+    },
+    "animal_gana_stalker": {
+      "_comment": "Works the flanks while the pack holds the front. Goes for the straggler, never the strongest.",
+      "name": "Gana Stalker",
+      "tier": "shade",
+      "roles": [
+        "skirmisher"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "finesse": 3,
+        "awareness": 2,
+        "strength": 2,
+        "constitution": 1,
+        "focus": 0,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "daggers",
+        "guile",
+        "grace"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "dagger",
+          "base_damage": 6,
+          "base_accuracy": 7,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {},
+      "threat_multiplier": 0.85,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal",
+      "ai_behavior": "pack_bonus"
+    },
+    "animal_gana_hunter": {
+      "_comment": "A full-grown wolf that has done this many times. Closes only when the throat is already open.",
+      "name": "Gana Hunter",
+      "tier": "devil",
+      "roles": [
+        "skirmisher"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 3,
+        "finesse": 3,
+        "constitution": 2,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "unarmed",
+        "daggers",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 10,
+          "base_accuracy": 7,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {},
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal",
+      "ai_behavior": "pack_bonus"
+    },
+    "animal_gana_alpha": {
+      "_comment": "Not the fastest and not the strongest. The one the pack has already tested every alternative to.",
+      "name": "Gana Alpha",
+      "tier": "devil",
+      "roles": [
+        "frontline"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 3,
+        "constitution": 3,
+        "finesse": 2,
+        "awareness": 2,
+        "focus": 0,
+        "charm": 1,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "unarmed",
+        "might",
+        "leadership"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 11,
+          "base_accuracy": 7,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {},
+      "threat_multiplier": 1.15,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal",
+      "ai_behavior": "pack_bonus"
+    },
+    "animal_gana_elder": {
+      "_comment": "Sings the hunt rather than joining it. What the pack hears from her, it does.",
+      "name": "Gana Elder",
+      "tier": "devil",
+      "roles": [
+        "support"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "awareness": 3,
+        "focus": 3,
+        "charm": 2,
+        "constitution": 1,
+        "strength": 0,
+        "finesse": 1,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "enchantment",
+        "ritual",
+        "leadership"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "staff",
+          "base_damage": 5,
+          "base_accuracy": 5,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {},
+      "threat_multiplier": 1.05,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
     "animal_gana_howler": {
       "_comment": "Pack support; enchantment perks buff allies and weaken party members",
       "name": "Gana Howler",

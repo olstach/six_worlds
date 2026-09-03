@@ -326,7 +326,7 @@ Runs first and reasons afterwards. Whatever else is true, nothing has ever caugh
 
 ## curious
 
-`skills: learning+1  ·  pressure: space+10  ·  bond: scholarly, wonder  ·  opposed: incurious  ·  on 14 companions`
+`skills: learning+1  ·  pressure: space+10  ·  bond: scholarly, wonder  ·  opposed: incurious  ·  on 15 companions`
 
 **Name**
 
@@ -470,7 +470,7 @@ A deep sadness runs beneath the surface.
 
 ## patient
 
-`pressure: water+10, fire+5  ·  bond: order  ·  opposed: hot_tempered, duelist  ·  on 11 companions`
+`pressure: water+10, fire+5  ·  bond: order  ·  opposed: hot_tempered, duelist  ·  on 12 companions`
 
 **Name**
 
@@ -488,7 +488,7 @@ Once you endure the first impulse, you can wait almost indefinitely.
 
 ## sharp_memory
 
-`skills: learning+1  ·  pressure: space+5  ·  bond: scholarly  ·  opposed: forgetful  ·  on 6 companions`
+`skills: learning+1  ·  pressure: space+5  ·  bond: scholarly  ·  opposed: forgetful  ·  on 7 companions`
 
 **Name**
 
@@ -506,7 +506,7 @@ Remembers everything — names, faces, slights.
 
 ## stubborn
 
-`pressure: earth-10  ·  bond: order  ·  purged by yoga 4  ·  on 16 companions`
+`pressure: earth-10  ·  bond: order  ·  purged by yoga 4  ·  on 17 companions`
 
 **Name**
 
@@ -764,7 +764,7 @@ Owes money somewhere, to someone with an unusually long memory.
 
 ## dreamer
 
-`stats: focus+1  ·  pressure: space-5  ·  bond: wonder, arts  ·  on 1 companions`
+`stats: focus+1  ·  pressure: space-5  ·  bond: wonder, arts  ·  on 2 companions`
 
 **Name**
 
@@ -908,7 +908,7 @@ Takes great pleasure in fine food and good company at table.
 
 ## homesick
 
-`bond: solitary, grief  ·  on 0 companions`
+`bond: solitary, grief  ·  on 1 companions`
 
 **Name**
 
@@ -1016,7 +1016,7 @@ Has never once passed an animal without stopping.
 
 ## pilgrim
 
-`bond: devotion, wonder  ·  on 0 companions`
+`bond: devotion, wonder  ·  on 1 companions`
 
 **Name**
 
@@ -1088,7 +1088,7 @@ Cannot part with money without a grimace.
 
 ## secret_bearer
 
-`bond: solitary  ·  opposed: gossip  ·  on 1 companions`
+`bond: solitary  ·  opposed: gossip  ·  on 2 companions`
 
 **Name**
 

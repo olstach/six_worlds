@@ -1,6 +1,6 @@
 # Animal Realm — Companions
 
-*32 companions.*
+*36 companions.*
 
 *Edit the prose between the anchors. The stat block under each name is generated; change it in `companions.json` instead.*
 
@@ -67,9 +67,28 @@ Drops on things from above and has never once had to explain herself afterwards.
 <!--@end-->
 
 
+## Dhvanika  `dhvanika`
+
+`birth: gana  ·  background: herbalist  ·  traits: patient, sharp_memory  ·  cost: 850  ·  fixed_items: ['herb_bundle', 'healing_herb']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | dhvanika | build_weights -->
+water_magic, medicine, daggers
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | dhvanika | flavor_text -->
+Grey at the muzzle and slower than she was. Still the last one you want across a fire from you, and she knows it.
+<!--@end-->
+
+
 ## Dirghajihva  `dirghajihva`
 
-`birth: gana  ·  background: elder_voice  ·  traits: composed, brave  ·  cost: 900`
+`birth: gana  ·  background: elder_voice  ·  traits: composed, brave  ·  cost: 900  ·  fixed_items: ['hunting_bow', 'rations']`
 
 
 **Skills** *(strongest first)*
@@ -124,6 +143,25 @@ Has held the clearing eleven seasons running and has never once had to touch any
 <!--@end-->
 
 
+## Ghoshaka  `ghoshaka`
+
+`birth: gana  ·  background: warrior  ·  traits: stubborn, pilgrim  ·  cost: 950  ·  fixed_items: ['leather_vest', 'rations']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | ghoshaka | build_weights -->
+armor, swords, spears
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | ghoshaka | flavor_text -->
+Born on a city wall a long way from any forest, and paid up as of last spring. Walking to a homeland he has only ever been told about.
+<!--@end-->
+
+
 ## Himasara  `himasara`
 
 `birth: mriga  ·  background: merchant  ·  traits: scrimper, iron_stomach  ·  cost: 800  ·  fixed_items: ['healing_moss', 'healing_moss', 'rations']`
@@ -159,6 +197,25 @@ medicine, earth_magic, alchemy
 
 <!--@ companions.json | kandali | flavor_text -->
 Cultivates the fungal network under nine acres of forest floor and speaks about it the way other people speak about family. Do not step on the nine-year patch.
+<!--@end-->
+
+
+## Nadaka  `nadaka`
+
+`birth: gana  ·  background: forest_singer  ·  traits: curious, secret_bearer  ·  cost: 900  ·  fixed_items: ['lucky_charm']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | nadaka | build_weights -->
+comedy, space_magic, guile
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | nadaka | flavor_text -->
+Was always a strange kid. Still is, only funnier about it, and nobody has yet got underneath the joke to see what is holding it up.
 <!--@end-->
 
 
@@ -273,6 +330,25 @@ leadership, persuasion, logistics
 
 <!--@ companions.json | shrutidhara | flavor_text -->
 Wrong twice in thirty years, and she will tell you about both before she tells you her name. Walks at the back now, where she can see everyone.
+<!--@end-->
+
+
+## Sphotana  `sphotana`
+
+`birth: gana  ·  background: monk  ·  traits: homesick, dreamer  ·  cost: 900  ·  fixed_items: ['fire_charm_common']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | sphotana | build_weights -->
+fire_magic, sorcery, yoga
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | sphotana | flavor_text -->
+Dreamed the lair burning and woke to find it was. Nobody has explained it to him either. He walks well away from the sleeping now.
 <!--@end-->
 
 

@@ -1990,7 +1990,8 @@
         "green_devil",
         "black_devil",
         "white_devil",
-        "mriga"
+        "mriga",
+        "gana"
       ],
       "weight": 5
     },
@@ -2071,7 +2072,8 @@
         "black_devil",
         "green_devil",
         "vetala",
-        "mriga"
+        "mriga",
+        "gana"
       ],
       "weight": 5
     },
@@ -2196,7 +2198,8 @@
         "white_devil",
         "skeleton",
         "vetala",
-        "dralha"
+        "dralha",
+        "gana"
       ],
       "weight": 10
     },
@@ -2272,7 +2275,8 @@
         "yaksha",
         "red_devil",
         "green_devil",
-        "skeleton"
+        "skeleton",
+        "gana"
       ],
       "weight": 5
     },
@@ -2313,7 +2317,8 @@
         "blue_devil",
         "yellow_devil",
         "skeleton",
-        "mriga"
+        "mriga",
+        "gana"
       ],
       "weight": 7
     },
@@ -2356,7 +2361,8 @@
         "green_devil",
         "yellow_devil",
         "skeleton",
-        "vetala"
+        "vetala",
+        "gana"
       ],
       "weight": 5
     },
@@ -2397,7 +2403,8 @@
         "tsen",
         "rudra",
         "blue_devil",
-        "green_devil"
+        "green_devil",
+        "gana"
       ],
       "weight": 6
     },
@@ -2579,7 +2586,8 @@
         "vetala",
         "gyelpo",
         "dre",
-        "mriga"
+        "mriga",
+        "gana"
       ],
       "weight": 3
     },
@@ -2622,7 +2630,8 @@
         "black_devil",
         "white_devil",
         "vetala",
-        "mriga"
+        "mriga",
+        "gana"
       ],
       "weight": 4
     },
@@ -2833,7 +2842,8 @@
         "planetary_deity",
         "white_devil",
         "black_devil",
-        "mriga"
+        "mriga",
+        "gana"
       ],
       "weight": 4
     },
