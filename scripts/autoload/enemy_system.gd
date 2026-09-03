@@ -190,8 +190,10 @@ const SKILL_TO_TOOL: Dictionary = {
 ## Tool tiers, cheapest first: prefix and the kit value each needs.
 const TOOL_TIERS: Array = [
 	{"prefix": "plain", "cost": 35},
-	{"prefix": "fine", "cost": 150},
-	{"prefix": "masterwork", "cost": 500},
+	{"prefix": "fine", "cost": 120},
+	{"prefix": "masterwork", "cost": 340},
+	{"prefix": "storied", "cost": 850},
+	{"prefix": "legendary", "cost": 2000},
 ]
 
 ## Skill -> consumables that skill's owner would plausibly be carrying, for

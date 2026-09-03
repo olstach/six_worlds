@@ -13215,7 +13215,7 @@
       "rarity": "common",
       "weight": 2,
       "value": 35,
-      "description": "A roll of waxed cloth holding needles, catgut, tincture bottles and a bone saw. Heavy at the shoulder. Heavier when it is needed and not there.",
+      "description": "Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.",
       "stats": {
         "damage": 1,
         "accuracy": 1
@@ -13232,10 +13232,10 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "uncommon",
+      "rarity": "common",
       "weight": 2,
-      "value": 150,
-      "description": "A roll of waxed cloth holding needles, catgut, tincture bottles and a bone saw. Heavy at the shoulder. Heavier when it is needed and not there.",
+      "value": 120,
+      "description": "Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.",
       "stats": {
         "damage": 1,
         "accuracy": 1
@@ -13252,10 +13252,10 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "rare",
+      "rarity": "uncommon",
       "weight": 2,
-      "value": 500,
-      "description": "A roll of waxed cloth holding needles, catgut, tincture bottles and a bone saw. Heavy at the shoulder. Heavier when it is needed and not there.",
+      "value": 340,
+      "description": "Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.",
       "stats": {
         "damage": 1,
         "accuracy": 1
@@ -13263,6 +13263,46 @@
       "skill_bonuses": {
         "medicine": {
           "masterwork_medicine_bag_tool": 3
+        }
+      }
+    },
+    "storied_medicine_bag": {
+      "name": "Storied Medicine Bag",
+      "weapon_class": "Physician's kit",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "rare",
+      "weight": 2,
+      "value": 850,
+      "description": "Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.",
+      "stats": {
+        "damage": 1,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "medicine": {
+          "storied_medicine_bag_tool": 4
+        }
+      }
+    },
+    "legendary_medicine_bag": {
+      "name": "Legendary Medicine Bag",
+      "weapon_class": "Physician's kit",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "epic",
+      "weight": 2,
+      "value": 2000,
+      "description": "Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.",
+      "stats": {
+        "damage": 1,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "medicine": {
+          "legendary_medicine_bag_tool": 5
         }
       }
     },
@@ -13275,7 +13315,7 @@
       "rarity": "common",
       "weight": 2,
       "value": 35,
-      "description": "Pear-bellied, gut-strung, and never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.",
+      "description": "Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.",
       "stats": {
         "damage": 2,
         "accuracy": 1
@@ -13292,10 +13332,10 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "uncommon",
+      "rarity": "common",
       "weight": 2,
-      "value": 150,
-      "description": "Pear-bellied, gut-strung, and never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.",
+      "value": 120,
+      "description": "Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.",
       "stats": {
         "damage": 2,
         "accuracy": 1
@@ -13312,10 +13352,10 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "rare",
+      "rarity": "uncommon",
       "weight": 2,
-      "value": 500,
-      "description": "Pear-bellied, gut-strung, and never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.",
+      "value": 340,
+      "description": "Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.",
       "stats": {
         "damage": 2,
         "accuracy": 1
@@ -13323,6 +13363,46 @@
       "skill_bonuses": {
         "performance": {
           "masterwork_lute_tool": 3
+        }
+      }
+    },
+    "storied_lute": {
+      "name": "Storied Lute",
+      "weapon_class": "Stringed instrument",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "rare",
+      "weight": 2,
+      "value": 850,
+      "description": "Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.",
+      "stats": {
+        "damage": 2,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "performance": {
+          "storied_lute_tool": 4
+        }
+      }
+    },
+    "legendary_lute": {
+      "name": "Legendary Lute",
+      "weapon_class": "Stringed instrument",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "epic",
+      "weight": 2,
+      "value": 2000,
+      "description": "Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.",
+      "stats": {
+        "damage": 2,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "performance": {
+          "legendary_lute_tool": 5
         }
       }
     },
@@ -13335,7 +13415,7 @@
       "rarity": "common",
       "weight": 2,
       "value": 35,
-      "description": "Picks, tension wrenches, a mirror on a wire, and a strip of shim brass. Rolls up small. Explains poorly.",
+      "description": "Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.",
       "stats": {
         "damage": 1,
         "accuracy": 1
@@ -13352,10 +13432,10 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "uncommon",
+      "rarity": "common",
       "weight": 2,
-      "value": 150,
-      "description": "Picks, tension wrenches, a mirror on a wire, and a strip of shim brass. Rolls up small. Explains poorly.",
+      "value": 120,
+      "description": "Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.",
       "stats": {
         "damage": 1,
         "accuracy": 1
@@ -13372,10 +13452,10 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "rare",
+      "rarity": "uncommon",
       "weight": 2,
-      "value": 500,
-      "description": "Picks, tension wrenches, a mirror on a wire, and a strip of shim brass. Rolls up small. Explains poorly.",
+      "value": 340,
+      "description": "Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.",
       "stats": {
         "damage": 1,
         "accuracy": 1
@@ -13383,6 +13463,46 @@
       "skill_bonuses": {
         "thievery": {
           "masterwork_thieving_tools_tool": 3
+        }
+      }
+    },
+    "storied_thieving_tools": {
+      "name": "Storied Thieving Tools",
+      "weapon_class": "Lockpicking set",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "rare",
+      "weight": 2,
+      "value": 850,
+      "description": "Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.",
+      "stats": {
+        "damage": 1,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "thievery": {
+          "storied_thieving_tools_tool": 4
+        }
+      }
+    },
+    "legendary_thieving_tools": {
+      "name": "Legendary Thieving Tools",
+      "weapon_class": "Lockpicking set",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "epic",
+      "weight": 2,
+      "value": 2000,
+      "description": "Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.",
+      "stats": {
+        "damage": 1,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "thievery": {
+          "legendary_thieving_tools_tool": 5
         }
       }
     },
@@ -13412,9 +13532,9 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "uncommon",
+      "rarity": "common",
       "weight": 2,
-      "value": 150,
+      "value": 120,
       "description": "A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.",
       "stats": {
         "damage": 1,
@@ -13432,9 +13552,9 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "rare",
+      "rarity": "uncommon",
       "weight": 2,
-      "value": 500,
+      "value": 340,
       "description": "A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.",
       "stats": {
         "damage": 1,
@@ -13443,6 +13563,46 @@
       "skill_bonuses": {
         "alchemy": {
           "masterwork_alchemists_kit_tool": 3
+        }
+      }
+    },
+    "storied_alchemists_kit": {
+      "name": "Storied Alchemist's Kit",
+      "weapon_class": "Portable laboratory",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "rare",
+      "weight": 2,
+      "value": 850,
+      "description": "A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.",
+      "stats": {
+        "damage": 1,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "alchemy": {
+          "storied_alchemists_kit_tool": 4
+        }
+      }
+    },
+    "legendary_alchemists_kit": {
+      "name": "Legendary Alchemist's Kit",
+      "weapon_class": "Portable laboratory",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "epic",
+      "weight": 2,
+      "value": 2000,
+      "description": "A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.",
+      "stats": {
+        "damage": 1,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "alchemy": {
+          "legendary_alchemists_kit_tool": 5
         }
       }
     },
@@ -13472,9 +13632,9 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "uncommon",
+      "rarity": "common",
       "weight": 2,
-      "value": 150,
+      "value": 120,
       "description": "Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.",
       "stats": {
         "damage": 1,
@@ -13492,9 +13652,9 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "rare",
+      "rarity": "uncommon",
       "weight": 2,
-      "value": 500,
+      "value": 340,
       "description": "Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.",
       "stats": {
         "damage": 1,
@@ -13503,6 +13663,46 @@
       "skill_bonuses": {
         "trade": {
           "masterwork_merchants_scales_tool": 3
+        }
+      }
+    },
+    "storied_merchants_scales": {
+      "name": "Storied Merchant's Scales",
+      "weapon_class": "Balance and weights",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "rare",
+      "weight": 2,
+      "value": 850,
+      "description": "Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.",
+      "stats": {
+        "damage": 1,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "trade": {
+          "storied_merchants_scales_tool": 4
+        }
+      }
+    },
+    "legendary_merchants_scales": {
+      "name": "Legendary Merchant's Scales",
+      "weapon_class": "Balance and weights",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "epic",
+      "weight": 2,
+      "value": 2000,
+      "description": "Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.",
+      "stats": {
+        "damage": 1,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "trade": {
+          "legendary_merchants_scales_tool": 5
         }
       }
     },
@@ -13532,9 +13732,9 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "uncommon",
+      "rarity": "common",
       "weight": 2,
-      "value": 150,
+      "value": 120,
       "description": "Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.",
       "stats": {
         "damage": 5,
@@ -13552,9 +13752,9 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "rare",
+      "rarity": "uncommon",
       "weight": 2,
-      "value": 500,
+      "value": 340,
       "description": "Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.",
       "stats": {
         "damage": 5,
@@ -13563,6 +13763,46 @@
       "skill_bonuses": {
         "smithing": {
           "masterwork_smiths_hammer_tool": 3
+        }
+      }
+    },
+    "storied_smiths_hammer": {
+      "name": "Storied Smith's Hammer",
+      "weapon_class": "Cross-peen hammer",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "rare",
+      "weight": 2,
+      "value": 850,
+      "description": "Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.",
+      "stats": {
+        "damage": 5,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "smithing": {
+          "storied_smiths_hammer_tool": 4
+        }
+      }
+    },
+    "legendary_smiths_hammer": {
+      "name": "Legendary Smith's Hammer",
+      "weapon_class": "Cross-peen hammer",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "epic",
+      "weight": 2,
+      "value": 2000,
+      "description": "Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.",
+      "stats": {
+        "damage": 5,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "smithing": {
+          "legendary_smiths_hammer_tool": 5
         }
       }
     },
@@ -13592,9 +13832,9 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "uncommon",
+      "rarity": "common",
       "weight": 2,
-      "value": 150,
+      "value": 120,
       "description": "Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.",
       "stats": {
         "damage": 1,
@@ -13612,9 +13852,9 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "rare",
+      "rarity": "uncommon",
       "weight": 2,
-      "value": 500,
+      "value": 340,
       "description": "Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.",
       "stats": {
         "damage": 1,
@@ -13623,6 +13863,46 @@
       "skill_bonuses": {
         "logistics": {
           "masterwork_quartermasters_ledger_tool": 3
+        }
+      }
+    },
+    "storied_quartermasters_ledger": {
+      "name": "Storied Quartermaster's Ledger",
+      "weapon_class": "Ledger and tallies",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "rare",
+      "weight": 2,
+      "value": 850,
+      "description": "Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.",
+      "stats": {
+        "damage": 1,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "logistics": {
+          "storied_quartermasters_ledger_tool": 4
+        }
+      }
+    },
+    "legendary_quartermasters_ledger": {
+      "name": "Legendary Quartermaster's Ledger",
+      "weapon_class": "Ledger and tallies",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "epic",
+      "weight": 2,
+      "value": 2000,
+      "description": "Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.",
+      "stats": {
+        "damage": 1,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "logistics": {
+          "legendary_quartermasters_ledger_tool": 5
         }
       }
     },
@@ -13652,9 +13932,9 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "uncommon",
+      "rarity": "common",
       "weight": 2,
-      "value": 150,
+      "value": 120,
       "description": "A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.",
       "stats": {
         "damage": 3,
@@ -13672,9 +13952,9 @@
       "type": "tool",
       "slot": "weapon_main",
       "two_handed": false,
-      "rarity": "rare",
+      "rarity": "uncommon",
       "weight": 2,
-      "value": 500,
+      "value": 340,
       "description": "A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.",
       "stats": {
         "damage": 3,
@@ -13683,6 +13963,46 @@
       "skill_bonuses": {
         "leadership": {
           "masterwork_war_standard_tool": 3
+        }
+      }
+    },
+    "storied_war_standard": {
+      "name": "Storied War Standard",
+      "weapon_class": "Banner on a haft",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "rare",
+      "weight": 2,
+      "value": 850,
+      "description": "A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.",
+      "stats": {
+        "damage": 3,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "leadership": {
+          "storied_war_standard_tool": 4
+        }
+      }
+    },
+    "legendary_war_standard": {
+      "name": "Legendary War Standard",
+      "weapon_class": "Banner on a haft",
+      "type": "tool",
+      "slot": "weapon_main",
+      "two_handed": false,
+      "rarity": "epic",
+      "weight": 2,
+      "value": 2000,
+      "description": "A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.",
+      "stats": {
+        "damage": 3,
+        "accuracy": 1
+      },
+      "skill_bonuses": {
+        "leadership": {
+          "legendary_war_standard_tool": 5
         }
       }
     }
