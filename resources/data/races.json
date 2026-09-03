@@ -4177,9 +4177,9 @@
       "available_races": [],
       "weight": 5
     },
-    "sky_gazer": {
-      "name": "Sky Gazer",
-      "description": "Lie on your back long enough and the distances begin answering.",
+    "psychic": {
+      "name": "Psychic",
+      "description": "It began with knowing who was at the door. It did not stop there.",
       "attribute_modifiers": {
         "awareness": 1
       },
