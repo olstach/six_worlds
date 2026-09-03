@@ -1,13 +1,13 @@
 # Animal Realm — Bestiary
 
-*42 archetypes across 44 encounter templates. The name is what the player sees over the enemy's head; the note beneath it is a design comment and never appears in game.*
+*43 archetypes across 44 encounter templates. The name is what the player sees over the enemy's head; the note beneath it is a design comment and never appears in game.*
 
 *Edit names and notes between the anchors. Everything else — tier, roles, resistances — is generated from `animal_archetypes.json`.*
 
 ---
 
 
-# Region: forest  (18)
+# Region: forest  (19)
 
 
 ## Gana Alpha  `animal_gana_alpha`
@@ -281,6 +281,25 @@ Rakshasa Maneater
 
 <!--@ animal_archetypes.json | animal_rakshasa_maneater | _comment -->
 Boss-tier lone predator; singles out the weakest and most isolated party member.
+<!--@end-->
+
+
+## The Young One  `animal_rakshasa_young`
+
+`tier: shade  ·  roles: skirmisher  ·  skills: unarmed, guile, might  ·  threat ×0.95`
+
+
+**Name**
+
+<!--@ animal_archetypes.json | animal_rakshasa_young | name -->
+The Young One
+<!--@end-->
+
+
+**Design note** *(not shown in game)*
+
+<!--@ animal_archetypes.json | animal_rakshasa_young | _comment -->
+Not yet named. Rakshasa are named at their first successful hunt; before that they are simply 'the young one'. Dangerous, and aware it has something to prove.
 <!--@end-->
 
 

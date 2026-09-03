@@ -422,7 +422,7 @@ Rakshasa
 **Description**
 
 <!--@ races.json | rakshasa | description -->
-Shape-shifting lords of the jungle, presiding over the ancient cults of the hunt and atavistic power. This is what a tiger becomes across lifetimes of the twisted yogas — hunger refined into discipline, and the discipline pointed at you.
+Shape-shifting lords of the jungle, presiding over the ancient cults of the hunt. What a tiger becomes, given lifetimes.
 <!--@end-->
 
 
@@ -820,7 +820,7 @@ Hedonist
 **Description**
 
 <!--@ backgrounds.json | hedonist | description -->
-Not interested in territory, dominion, or legacy. Interested in the next experience — the feast after the hunt, the fear on a stranger's face, the music from the village fire that reaches the treeline. The unpredictability is not a flaw. It is the point.
+…the feast after the hunt, the fear on a stranger's face, the music from the village fire that reaches the treeline — all this is the blood of experience, and I will have my fill!
 <!--@end-->
 
 
@@ -978,7 +978,7 @@ You found that boats go places if you hold on to the underside and wait. You hav
 
 ## Lord of the Range  `lord_of_the_range`
 
-`births: Rakshasa  ·  skills: unarmed 2, martial_arts 1`
+`births: Rakshasa  ·  skills: might 2, martial_arts 1`
 
 
 **Name**
@@ -991,13 +991,13 @@ Lord of the Range
 **Description**
 
 <!--@ backgrounds.json | lord_of_the_range | description -->
-Every tree in three valleys has been marked. The boundaries are maintained with absolute precision — a scratch here, a spray there, a half-eaten carcass arranged just so at the crossing. When lesser things feel watched in the deep forest, they are right.
+Every tree in three valleys is marked. When lesser things feel watched, they are right.
 <!--@end-->
 
 
 ## Maneater  `maneater`
 
-`births: Rakshasa  ·  attributes: finesse+1  ·  skills: unarmed 2, guile 1`
+`births: Rakshasa  ·  attributes: finesse+1  ·  skills: guile 2, unarmed 1`
 
 
 **Name**
@@ -1010,7 +1010,7 @@ Maneater
 **Description**
 
 <!--@ backgrounds.json | maneater | description -->
-They tried keeping fires at the forest's edge. It didn't help. Now there is one who comes when she will, takes what she will, leaves when she is finished. The fires don't frighten her. She has learned the settlement schedules.
+They tell bedtime stories to their children about her, unable to see her dark silhouette lurking behind the window.
 <!--@end-->
 
 
@@ -1504,7 +1504,7 @@ The Hungry
 **Description**
 
 <!--@ backgrounds.json | the_hungry | description -->
-Territory has not been claimed yet. The days pass in constant movement — eating whatever can be caught, fighting what challenges, retreating from nothing. The hunger is not a problem. It is the condition of becoming.
+The hunger is not a problem. It is the condition of becoming.
 <!--@end-->
 
 

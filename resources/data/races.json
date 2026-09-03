@@ -1529,7 +1529,7 @@
     "rakshasa": {
       "name": "Rakshasa",
       "realm": "animal",
-      "description": "Shape-shifting lords of the jungle, presiding over the ancient cults of the hunt and atavistic power. This is what a tiger becomes across lifetimes of the twisted yogas — hunger refined into discipline, and the discipline pointed at you.",
+      "description": "Shape-shifting lords of the jungle, presiding over the ancient cults of the hunt. What a tiger becomes, given lifetimes.",
       "attribute_modifiers": {
         "strength": 4,
         "finesse": 1,
@@ -3308,10 +3308,10 @@
     },
     "lord_of_the_range": {
       "name": "Lord of the Range",
-      "description": "Every tree in three valleys has been marked. The boundaries are maintained with absolute precision — a scratch here, a spray there, a half-eaten carcass arranged just so at the crossing. When lesser things feel watched in the deep forest, they are right.",
+      "description": "Every tree in three valleys is marked. When lesser things feel watched, they are right.",
       "attribute_modifiers": {},
       "starting_skills": {
-        "unarmed": 2,
+        "might": 2,
         "martial_arts": 1
       },
       "available_races": [
@@ -3321,7 +3321,7 @@
     },
     "the_hungry": {
       "name": "The Hungry",
-      "description": "Territory has not been claimed yet. The days pass in constant movement — eating whatever can be caught, fighting what challenges, retreating from nothing. The hunger is not a problem. It is the condition of becoming.",
+      "description": "The hunger is not a problem. It is the condition of becoming.",
       "attribute_modifiers": {},
       "starting_skills": {
         "unarmed": 1,
@@ -3335,13 +3335,13 @@
     },
     "maneater": {
       "name": "Maneater",
-      "description": "They tried keeping fires at the forest's edge. It didn't help. Now there is one who comes when she will, takes what she will, leaves when she is finished. The fires don't frighten her. She has learned the settlement schedules.",
+      "description": "They tell bedtime stories to their children about her, unable to see her dark silhouette lurking behind the window.",
       "attribute_modifiers": {
         "finesse": 1
       },
       "starting_skills": {
-        "unarmed": 2,
-        "guile": 1
+        "guile": 2,
+        "unarmed": 1
       },
       "available_races": [
         "rakshasa"
@@ -3448,7 +3448,7 @@
     },
     "hedonist": {
       "name": "Hedonist",
-      "description": "Not interested in territory, dominion, or legacy. Interested in the next experience — the feast after the hunt, the fear on a stranger's face, the music from the village fire that reaches the treeline. The unpredictability is not a flaw. It is the point.",
+      "description": "…the feast after the hunt, the fear on a stranger's face, the music from the village fire that reaches the treeline — all this is the blood of experience, and I will have my fill!",
       "attribute_modifiers": {},
       "starting_skills": {
         "performance": 2,

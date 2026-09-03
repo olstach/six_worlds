@@ -817,6 +817,47 @@
       ],
       "realm": "animal"
     },
+    "animal_rakshasa_young": {
+      "_comment": "Not yet named. Rakshasa are named at their first successful hunt; before that they are simply 'the young one'. Dangerous, and aware it has something to prove.",
+      "name": "The Young One",
+      "tier": "shade",
+      "roles": [
+        "skirmisher"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 3,
+        "finesse": 3,
+        "constitution": 2,
+        "awareness": 2,
+        "focus": 1,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "unarmed",
+        "guile",
+        "might"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 8,
+          "base_accuracy": 6,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {},
+      "threat_multiplier": 0.95,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
     "animal_rakshasa_maneater": {
       "_comment": "Boss-tier lone predator; singles out the weakest and most isolated party member.",
       "name": "Rakshasa Maneater",
