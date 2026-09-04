@@ -2610,12 +2610,12 @@
       "zone": "forest",
       "birth": "marjara",
       "background": "smuggler",
-      "flavor_text": "Knows three ways over the ridge the wardens do not, and will tell you about none of them until the price is agreed.",
+      "flavor_text": "This, my lord? How did I acquire it? Oh, from a middle aged person of no particular characteristics, of course!",
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
         "trade": 5,
-        "guile": 4,
+        "thievery": 4,
         "daggers": 3
       },
       "fixed_starter": {
@@ -2639,6 +2639,42 @@
         "gossip"
       ]
     },
+    "mandaka": {
+      "id": "mandaka",
+      "name": "Mandaka",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "marjara",
+      "background": "cat_burglar",
+      "flavor_text": "Third storey, no rope, and back down with the thing before the dog finished turning its head. Considers locks a personal remark.",
+      "portrait": "",
+      "recruitment_cost": 950,
+      "build_weights": {
+        "thievery": 5,
+        "guile": 4,
+        "grace": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "thievery": 2,
+          "guile": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "plain_thieving_tools"
+      ],
+      "traits": [
+        "quick",
+        "covetous"
+      ]
+    },
     "rupaka": {
       "id": "rupaka",
       "name": "Rupaka",
@@ -2646,7 +2682,7 @@
       "zone": "forest",
       "birth": "marjara",
       "background": "witch",
-      "flavor_text": "Was told what to be, declined, and found the declining itself had teeth. Answers to nobody, and that includes you.",
+      "flavor_text": "They tried to change her into a proper little lady and failed. She tried to change them into newts and succeeded.",
       "portrait": "",
       "recruitment_cost": 1000,
       "build_weights": {

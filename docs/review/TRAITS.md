@@ -176,7 +176,7 @@ The owl of wisdom flies after midnight.
 
 ## quick
 
-`stats: finesse+1  ·  on 6 companions`
+`stats: finesse+1  ·  on 7 companions`
 
 **Name**
 
@@ -290,7 +290,7 @@ When you don't have what you like, like what you have.
 
 ## covetous
 
-`pressure: air-10, earth-5  ·  opposed: content, celebrant  ·  purged by yoga 3  ·  on 0 companions`
+`pressure: air-10, earth-5  ·  opposed: content, celebrant  ·  purged by yoga 3  ·  on 1 companions`
 
 **Name**
 

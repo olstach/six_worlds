@@ -284,7 +284,7 @@ The blade-limbed mantis, the dragonfly, the ambush grasshopper. They live by the
 
 ## Marjara  `marjara`
 
-`uncommon  ·  attributes: strength+1, finesse+4, constitution-1, awareness+1, luck-1 (total +4)  ·  skills: daggers 2, grace 1, guile 1 (4 pts)  ·  traits: predator_grace, venom_ward  ·  reincarnation weight: 30`
+`uncommon  ·  attributes: strength+1, finesse+4, constitution-1, awareness+1, luck-1 (total +4)  ·  skills: daggers 2, grace 1, thievery 1 (4 pts)  ·  traits: predator_grace, venom_ward  ·  reincarnation weight: 30`
 
 
 **Name**
@@ -301,7 +301,7 @@ The patch of warm dappled light is their home, whatever they want at the moment 
 <!--@end-->
 
 
-*Backgrounds: `cache_master`, `canopy_ambush`, `forest_drifter`, `hedonist`, `herbalist`, `blood_drinker`, `smuggler`, `pleasure_dancer`, `witch`, `cutpurse`*
+*Backgrounds: `cache_master`, `canopy_ambush`, `forest_drifter`, `hedonist`, `herbalist`, `blood_drinker`, `smuggler`, `pleasure_dancer`, `witch`, `cutpurse`, `cat_burglar`*
 
 
 ---
@@ -457,7 +457,7 @@ Something is being guarded — a spring, a hoard, a promise older than the hill 
 ---
 
 
-# Backgrounds  (73)
+# Backgrounds  (74)
 
 
 *What the character did with the birth they were given. Each appears once here, with the births that can take it.*
@@ -579,7 +579,7 @@ You have always lived at the edge where ocean meets sky, where river meets sea. 
 
 ## Cache Master  `cache_master`
 
-`births: Marjara  ·  skills: guile 2, logistics 1`
+`births: Marjara  ·  skills: thievery 1, guile 1, logistics 1`
 
 
 **Name**
@@ -631,6 +631,25 @@ Caravan Guard
 
 <!--@ backgrounds.json | caravan_guard | description -->
 The trade roads between hive-cities need walking. You walk them heavy and slow, and nothing touches the cargo.
+<!--@end-->
+
+
+## Cat Burglar  `cat_burglar`
+
+`births: Marjara  ·  attributes: finesse+1  ·  skills: thievery 2, grace 1  ·  kit: plain_thieving_tools`
+
+
+**Name**
+
+<!--@ backgrounds.json | cat_burglar | name -->
+Cat Burglar
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | cat_burglar | description -->
+Up the wall, over the sill, and out again before the lamp is even lit. The name writes itself, and they have heard the joke.
 <!--@end-->
 
 
@@ -693,7 +712,7 @@ News travels fast in the deep. You are faster.
 
 ## Cutpurse  `cutpurse`
 
-`births: Marjara  ·  skills: guile 2, daggers 1`
+`births: Marjara  ·  skills: thievery 2, daggers 1`
 
 
 **Name**
@@ -788,7 +807,7 @@ The flame is a teacher. You have studied it your whole life. It has not yet cons
 
 ## Forest Drifter  `forest_drifter`
 
-`births: Marjara  ·  skills: guile 1, thievery 1, trade 1, comedy 1`
+`births: Marjara  ·  skills: thievery 1, trade 1, comedy 1`
 
 
 **Name**

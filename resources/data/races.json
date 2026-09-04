@@ -1638,7 +1638,7 @@
       "starting_skills": {
         "daggers": 2,
         "grace": 1,
-        "guile": 1
+        "thievery": 1
       },
       "starting_spells": [],
       "reincarnation_weight": 30,
@@ -1652,7 +1652,8 @@
         "smuggler",
         "pleasure_dancer",
         "witch",
-        "cutpurse"
+        "cutpurse",
+        "cat_burglar"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -3461,7 +3462,8 @@
       "description": "Wherever they go in the forest, they know a spot. A bag hidden here, food stashed in a tree stump there, a safehouse when you need it.",
       "attribute_modifiers": {},
       "starting_skills": {
-        "guile": 2,
+        "thievery": 1,
+        "guile": 1,
         "logistics": 1
       },
       "available_races": [
@@ -3488,7 +3490,6 @@
       "description": "A hunt when hungry, a trade when bored, a long sleep in a warm patch of sunlight when neither seems worth the effort.",
       "attribute_modifiers": {},
       "starting_skills": {
-        "guile": 1,
         "thievery": 1,
         "trade": 1,
         "comedy": 1
@@ -3551,11 +3552,31 @@
       "description": "Marjara stole nothing, marjara is innocent of this crime!",
       "attribute_modifiers": {},
       "starting_skills": {
-        "guile": 2,
+        "thievery": 2,
         "daggers": 1
       },
       "starting_equipment": {
         "items": []
+      },
+      "available_races": [
+        "marjara"
+      ],
+      "weight": 5
+    },
+    "cat_burglar": {
+      "name": "Cat Burglar",
+      "description": "Up the wall, over the sill, and out again before the lamp is even lit. The name writes itself, and they have heard the joke.",
+      "attribute_modifiers": {
+        "finesse": 1
+      },
+      "starting_skills": {
+        "thievery": 2,
+        "grace": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_thieving_tools"
+        ]
       },
       "available_races": [
         "marjara"

@@ -284,6 +284,13 @@ Recorded so they aren't rediscovered as bugs.
   these. Fold them into the events pass — an event set on The Wrong Side is
   already half-written by its own name.
 
+- **Marjara want events badly.** Solitary predators who do not anchor
+  encounters, but the birth carries more comic and world-building potential
+  than any other in the realm: the smuggler's patter, the pleasure dancer, the
+  cutpurse insisting marjara is innocent of this crime. Their place names are
+  ready-made settings too — The Hollow Where Nothing Comes, The Long Wait, The
+  Patient Rock. Worth a cluster of events rather than one.
+
 - **Mriga have no events at all.** Four events mention gana; none mention mriga,
   so the forest has wolves in its prose and no deer. Two existing ones read as
   either and could simply be switched — `animal_forest_healer_camp` (a

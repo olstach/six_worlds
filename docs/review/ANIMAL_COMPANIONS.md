@@ -1,6 +1,6 @@
 # Animal Realm — Companions
 
-*51 companions.*
+*52 companions.*
 
 *Edit the prose between the anchors. The stat block under each name is generated; change it in `companions.json` instead.*
 
@@ -295,6 +295,25 @@ How can you resist her eyes, her hips, her laughter? Wait — what did you say h
 <!--@end-->
 
 
+## Mandaka  `mandaka`
+
+`birth: marjara  ·  background: cat_burglar  ·  traits: quick, covetous  ·  cost: 950  ·  fixed_items: ['plain_thieving_tools']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | mandaka | build_weights -->
+thievery, guile, grace
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | mandaka | flavor_text -->
+Third storey, no rope, and back down with the thing before the dog finished turning its head. Considers locks a personal remark.
+<!--@end-->
+
+
 ## Mrichha  `mrichha`
 
 `birth: varaha  ·  background: truffle_hunter  ·  traits: patient, pilgrim  ·  cost: 1000  ·  fixed_items: ['rations', 'healing_herb']`
@@ -462,7 +481,7 @@ sorcery, black_magic, enchantment
 **Flavor Text**
 
 <!--@ companions.json | rupaka | flavor_text -->
-Was told what to be, declined, and found the declining itself had teeth. Answers to nobody, and that includes you.
+They tried to change her into a proper little lady and failed. She tried to change them into newts and succeeded.
 <!--@end-->
 
 
@@ -626,14 +645,14 @@ Came down from the hills for one season of silk and wine and has not gone back i
 **Skills** *(strongest first)*
 
 <!--@ companions.json | varika | build_weights -->
-trade, guile, daggers
+trade, thievery, daggers
 <!--@end-->
 
 
 **Flavor Text**
 
 <!--@ companions.json | varika | flavor_text -->
-Knows three ways over the ridge the wardens do not, and will tell you about none of them until the price is agreed.
+This, my lord? How did I acquire it? Oh, from a middle aged person of no particular characteristics, of course!
 <!--@end-->
 
 
