@@ -284,6 +284,28 @@ Recorded so they aren't rediscovered as bugs.
   these. Fold them into the events pass — an event set on The Wrong Side is
   already half-written by its own name.
 
+- **The realms are badly uneven in size, and the animal realm ran away.**
+  Births were planned at roughly 9-12 per realm.
+
+  | realm | births | companions |
+  |---|---|---|
+  | hell | 6 | 24 |
+  | hungry ghost | 14 | 23 |
+  | **animal** | **18** | **52** |
+  | human | 4 | 0 |
+  | asura | 2 | 0 |
+  | god | 3 | 0 |
+
+  Hell is definitely too small at six and wants expanding toward the intended
+  range. Animal multiplied well past it, and its companion count doubled again
+  during the birth-by-birth pass — 52 against hell's 24 for three times the
+  births. Not a problem while the content is good, but the realms should not
+  stay this lopsided: a player's first world is the thinnest one they will see.
+
+  When the animal pass finishes, return to hell and give it the same treatment.
+  Its six devils have **no birth-specific backgrounds at all**, which is the
+  single largest gap left in a finished realm.
+
 - **Marjara want events badly.** Solitary predators who do not anchor
   encounters, but the birth carries more comic and world-building potential
   than any other in the realm: the smuggler's patter, the pleasure dancer, the
