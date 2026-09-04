@@ -68,10 +68,11 @@ Ordered by how much finished work sits behind each one.
 
 Each of these is an hour or less and touches one system.
 
-- [ ] **9 race descriptions are placeholders** (`TODO: Fill in description`):
+- [ ] **8 race descriptions are placeholders** (`TODO: Fill in description`):
   `nomad`, `mountain_folk`, `trader`, `tsen`, `rudra`, `gandharva`, `apsara`,
-  `planetary_deity`, `bee`. All but `bee` belong to unbuilt realms, so this can
-  wait for those; **`bee` is animal-realm and reachable now.**
+  `planetary_deity`. All belong to unbuilt realms, so this waits for those.
+  (`bee` was the ninth and the only reachable one; it was deleted as a
+  duplicate of `bhramara` on 2026-08-31.)
 - [ ] **`sever_part` doesn't handle `arm_l2`/`arm_r2`** — four-armed species have
   equip slots `hand_l2`/`hand_r2` but no `weapon_main2`/`weapon_off2`, so
   severing an extra arm doesn't drop its weapon.
@@ -80,12 +81,16 @@ Each of these is an hour or less and touches one system.
   but the unit frames don't (no "Arm 2: 12 dmg" popup).
 - [ ] **Combat-UI wound icons** — wounds render in the character sheet; unit
   frames need sprite work.
-- [ ] **Enemy racial resistances are archetype-only** — `races.json`
-  `base_resistances` (e.g. skeleton's 50% physical reduction) reaches a
-  `CombatUnit` built from a character dict, but `EnemySystem._build_enemy()`
-  only copies the archetype's own `resistances`. An archetype-defined skeleton
-  doesn't inherit its race's resistance. Arguably by design — archetypes are
-  meant to be self-describing — but the two paths should agree deliberately.
+- [ ] **No race defines any resistance at all.** All 47 carry
+  `"resistances": {}`, so `base_resistances` on a character is always empty and
+  the skeleton's 50% physical reduction this item used to cite does not exist.
+  Racial resistance is a designed-in field that was never filled.
+
+  The original concern still stands underneath it: `EnemySystem._build_enemy()`
+  copies only the archetype's own `resistances`, so if races are ever given
+  some, an archetype-defined skeleton still will not inherit them. Enemies now
+  roll a real birth and apply its modifiers, which makes the inconsistency
+  easier to fix and more obviously wrong to leave.
 - [ ] **Projectile sprites** — arrows/bolts/firebombs are a `Line2D` flash.
 - [ ] **Tooltips** — `item_tooltip.gd` covers items; status effects, terrain
   tiles and turn-order icons have none.
