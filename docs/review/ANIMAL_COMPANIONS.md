@@ -1,6 +1,6 @@
 # Animal Realm — Companions
 
-*46 companions.*
+*51 companions.*
 
 *Edit the prose between the anchors. The stat block under each name is generated; change it in `companions.json` instead.*
 
@@ -50,7 +50,7 @@ Born between two wheels on a road nobody names. Prices everything, respects noth
 
 ## Chitrangada  `chitrangada`
 
-`birth: marjara  ·  background: canopy_ambush  ·  traits: quick, brave  ·  cost: 850`
+`birth: marjara  ·  background: canopy_ambush  ·  traits: quick, brave  ·  cost: 850  ·  fixed_items: ['health_potion']`
 
 
 **Skills** *(strongest first)*
@@ -63,7 +63,7 @@ unarmed, guile, grace
 **Flavor Text**
 
 <!--@ companions.json | chitrangada | flavor_text -->
-Drops on things from above and has never once had to explain herself afterwards. Pale as limestone, silent as weather, entirely without malice.
+Pale as limestone, silent as weather, entirely without malice. Killing is what a cat does, isn't it?
 <!--@end-->
 
 
@@ -276,6 +276,25 @@ Taking such delight in the hunt, in the kill, in the tearing of flesh, must have
 <!--@end-->
 
 
+## Kshanaka  `kshanaka`
+
+`birth: marjara  ·  background: pleasure_dancer  ·  traits: attractive, flirt  ·  cost: 950  ·  fixed_items: ['silver_ring']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | kshanaka | build_weights -->
+persuasion, guile, grace
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | kshanaka | flavor_text -->
+How can you resist her eyes, her hips, her laughter? Wait — what did you say happened to her last master?
+<!--@end-->
+
+
 ## Mrichha  `mrichha`
 
 `birth: varaha  ·  background: truffle_hunter  ·  traits: patient, pilgrim  ·  cost: 1000  ·  fixed_items: ['rations', 'healing_herb']`
@@ -330,6 +349,25 @@ enchantment, performance, yoga
 
 <!--@ companions.json | nayanika | flavor_text -->
 Taken young, sold south, came back in silk with rings on every point. Holds your eye a moment past comfortable. Answers nothing.
+<!--@end-->
+
+
+## Niloka  `niloka`
+
+`birth: marjara  ·  background: healer  ·  traits: secret_bearer, clear_eyed  ·  cost: 900  ·  fixed_items: ['healing_herb']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | niloka | build_weights -->
+white_magic, medicine, black_magic
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | niloka | flavor_text -->
+I'm here to patch you up, child. Why? And why do you care, pray tell?
 <!--@end-->
 
 
@@ -409,6 +447,25 @@ Exiled from the sounder for killing a brother in a fit of rage. Now they seek re
 <!--@end-->
 
 
+## Rupaka  `rupaka`
+
+`birth: marjara  ·  background: witch  ·  traits: stubborn, suspicious  ·  cost: 1000  ·  fixed_items: ['lucky_charm']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | rupaka | build_weights -->
+sorcery, black_magic, enchantment
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | rupaka | flavor_text -->
+Was told what to be, declined, and found the declining itself had teeth. Answers to nobody, and that includes you.
+<!--@end-->
+
+
 ## Saramaya  `saramaya`
 
 `birth: gana  ·  background: herbalist  ·  traits: generous, trusting  ·  cost: 700  ·  fixed_items: ['herb_bundle', 'healing_herb']`
@@ -485,6 +542,25 @@ He woke from a nightmare to see his lair and his fur on fire, spreading from the
 <!--@end-->
 
 
+## Sthiraka  `sthiraka`
+
+`birth: marjara  ·  background: monk  ·  traits: patient, ascetic  ·  cost: 900`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | sthiraka | build_weights -->
+martial_arts, yoga, grace
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | sthiraka | flavor_text -->
+The changing texture of the light is enough to keep him entertained. Better not bother him without a good reason, though.
+<!--@end-->
+
+
 ## Takshari  `takshari`
 
 `birth: rakshasa  ·  background: ancestor_priest  ·  traits: superstitious, mourner  ·  cost: 1000  ·  fixed_items: ['prayer_beads']`
@@ -539,6 +615,25 @@ persuasion, fire_magic, performance
 
 <!--@ companions.json | unmatta | flavor_text -->
 Came down from the hills for one season of silk and wine and has not gone back in nine years. Insists he could stop. Nobody has asked him to.
+<!--@end-->
+
+
+## Varika  `varika`
+
+`birth: marjara  ·  background: smuggler  ·  traits: greedy, gossip  ·  cost: 850  ·  fixed_items: ['plain_merchants_scales']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | varika | build_weights -->
+trade, guile, daggers
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | varika | flavor_text -->
+Knows three ways over the ridge the wardens do not, and will tell you about none of them until the price is agreed.
 <!--@end-->
 
 

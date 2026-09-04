@@ -2465,7 +2465,7 @@
       "zone": "forest",
       "birth": "marjara",
       "background": "canopy_ambush",
-      "flavor_text": "Drops on things from above and has never once had to explain herself afterwards. Pale as limestone, silent as weather, entirely without malice.",
+      "flavor_text": "Pale as limestone, silent as weather, entirely without malice. Killing is what a cat does, isn't it?",
       "portrait": "",
       "recruitment_cost": 850,
       "build_weights": {
@@ -2490,10 +2490,189 @@
         "weapon_main": "iron_dagger",
         "chest": "leather_vest"
       },
-      "fixed_items": [],
+      "fixed_items": [
+        "health_potion"
+      ],
       "traits": [
         "quick",
         "brave"
+      ]
+    },
+    "kshanaka": {
+      "id": "kshanaka",
+      "name": "Kshanaka",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "marjara",
+      "background": "pleasure_dancer",
+      "flavor_text": "How can you resist her eyes, her hips, her laughter? Wait — what did you say happened to her last master?",
+      "portrait": "",
+      "recruitment_cost": 950,
+      "build_weights": {
+        "persuasion": 5,
+        "guile": 4,
+        "grace": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "persuasion": 3
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "silver_ring"
+      ],
+      "traits": [
+        "attractive",
+        "flirt"
+      ]
+    },
+    "sthiraka": {
+      "id": "sthiraka",
+      "name": "Sthiraka",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "marjara",
+      "background": "monk",
+      "flavor_text": "The changing texture of the light is enough to keep him entertained. Better not bother him without a good reason, though.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "martial_arts": 5,
+        "yoga": 4,
+        "grace": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "martial_arts": 2,
+          "yoga": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [],
+      "traits": [
+        "patient",
+        "ascetic"
+      ]
+    },
+    "niloka": {
+      "id": "niloka",
+      "name": "Niloka",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "marjara",
+      "background": "healer",
+      "flavor_text": "I'm here to patch you up, child. Why? And why do you care, pray tell?",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "white_magic": 5,
+        "medicine": 4,
+        "black_magic": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "white_magic": 2,
+          "medicine": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "healing_herb"
+      ],
+      "traits": [
+        "secret_bearer",
+        "clear_eyed"
+      ]
+    },
+    "varika": {
+      "id": "varika",
+      "name": "Varika",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "marjara",
+      "background": "smuggler",
+      "flavor_text": "Knows three ways over the ridge the wardens do not, and will tell you about none of them until the price is agreed.",
+      "portrait": "",
+      "recruitment_cost": 850,
+      "build_weights": {
+        "trade": 5,
+        "guile": 4,
+        "daggers": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "trade": 2,
+          "guile": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "plain_merchants_scales"
+      ],
+      "traits": [
+        "greedy",
+        "gossip"
+      ]
+    },
+    "rupaka": {
+      "id": "rupaka",
+      "name": "Rupaka",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "marjara",
+      "background": "witch",
+      "flavor_text": "Was told what to be, declined, and found the declining itself had teeth. Answers to nobody, and that includes you.",
+      "portrait": "",
+      "recruitment_cost": 1000,
+      "build_weights": {
+        "sorcery": 5,
+        "black_magic": 4,
+        "enchantment": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "sorcery": 2,
+          "black_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "lucky_charm"
+      ],
+      "traits": [
+        "stubborn",
+        "suspicious"
       ]
     },
     "nishkasita": {

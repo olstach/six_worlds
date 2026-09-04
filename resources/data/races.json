@@ -1622,7 +1622,7 @@
     "marjara": {
       "name": "Marjara",
       "realm": "animal",
-      "description": "Dappled light is their native country — the flicker where a shape might be, and then is not. Whatever they wanted from you, they have usually already taken it.",
+      "description": "The patch of warm dappled light is their home, whatever they want at the moment their possession. Ever on the go, solitary and ungovernable, marjara can be found wandering in the least expected places.",
       "attribute_modifiers": {
         "strength": 1,
         "finesse": 4,
@@ -1648,7 +1648,11 @@
         "forest_drifter",
         "hedonist",
         "herbalist",
-        "blood_drinker"
+        "blood_drinker",
+        "smuggler",
+        "pleasure_dancer",
+        "witch",
+        "cutpurse"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -3454,7 +3458,7 @@
     },
     "cache_master": {
       "name": "Cache Master",
-      "description": "Three kills in the ironwood tree. Two more near the river crossing. Memory is the art — a leopard who forgets their caches starves in winter. I remember every one. I have never been hungry.",
+      "description": "Wherever they go in the forest, they know a spot. A bag hidden here, food stashed in a tree stump there, a safehouse when you need it.",
       "attribute_modifiers": {},
       "starting_skills": {
         "guile": 2,
@@ -3467,7 +3471,7 @@
     },
     "canopy_ambush": {
       "name": "Canopy Ambush",
-      "description": "They look for danger on the ground. They check behind rocks, test the wind for scent. They never look up. By the time they see me I am already resolved.",
+      "description": "They look for traps on the ground, listen for rustling in the leaves behind. The joke's on them, I've been watching from the treetops for hours.",
       "attribute_modifiers": {},
       "starting_skills": {
         "daggers": 1,
@@ -3481,7 +3485,7 @@
     },
     "forest_drifter": {
       "name": "Forest Drifter",
-      "description": "No particular territory. No particular schedule. The road between the settlements has interesting smells — traders with dried meat, merchants with shiny things, pilgrims with nothing worth stealing. A hunt when hungry, a trade when bored, a long sleep in a warm patch of sunlight when neither seems worth the effort.",
+      "description": "A hunt when hungry, a trade when bored, a long sleep in a warm patch of sunlight when neither seems worth the effort.",
       "attribute_modifiers": {},
       "starting_skills": {
         "guile": 1,
@@ -3493,6 +3497,70 @@
         "marjara"
       ],
       "weight": 4
+    },
+    "smuggler": {
+      "name": "Smuggler",
+      "description": "I prefer to call it free trade, friend. Care for some supplies, arms — or perhaps something more exciting for a gentleman of such discerning tastes?",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "trade": 2,
+        "guile": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_merchants_scales"
+        ]
+      },
+      "available_races": [
+        "marjara"
+      ],
+      "weight": 5
+    },
+    "pleasure_dancer": {
+      "name": "Pleasure Dancer",
+      "description": "The cat folk know many find their grace and lack of morals quite delightful, at least before they wake from the reverie and find their purse missing.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "persuasion": 2,
+        "guile": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [
+        "marjara"
+      ],
+      "weight": 5
+    },
+    "witch": {
+      "name": "Witch",
+      "description": "Some find the power to resist in the very rejection of all imposed authority.",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "sorcery": 2,
+        "black_magic": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [],
+      "weight": 5
+    },
+    "cutpurse": {
+      "name": "Cutpurse",
+      "description": "Marjara stole nothing, marjara is innocent of this crime!",
+      "attribute_modifiers": {},
+      "starting_skills": {
+        "guile": 2,
+        "daggers": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [
+        "marjara"
+      ],
+      "weight": 5
     },
     "hedonist": {
       "name": "Hedonist",

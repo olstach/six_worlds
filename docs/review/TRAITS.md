@@ -14,7 +14,7 @@
 
 ## attractive
 
-`stats: charm+1  ·  pressure: earth-5  ·  bond: sociable  ·  on 2 companions`
+`stats: charm+1  ·  pressure: earth-5  ·  bond: sociable  ·  on 3 companions`
 
 **Name**
 
@@ -254,7 +254,7 @@ Faces danger without flinching.
 
 ## clear_eyed
 
-`pressure: water+10, space+5  ·  bond: scholarly  ·  opposed: superstitious  ·  on 0 companions`
+`pressure: water+10, space+5  ·  bond: scholarly  ·  opposed: superstitious  ·  on 1 companions`
 
 **Name**
 
@@ -380,7 +380,7 @@ Gives freely, expects little in return.
 
 ## greedy
 
-`skills: trade+1  ·  pressure: fire-10, earth-5  ·  bond: vice  ·  opposed: generous  ·  purged by yoga, ritual 3  ·  on 8 companions`
+`skills: trade+1  ·  pressure: fire-10, earth-5  ·  bond: vice  ·  opposed: generous  ·  purged by yoga, ritual 3  ·  on 9 companions`
 
 **Name**
 
@@ -470,7 +470,7 @@ A deep sadness runs beneath the surface.
 
 ## patient
 
-`pressure: water+10, fire+5  ·  bond: order  ·  opposed: hot_tempered, duelist  ·  on 14 companions`
+`pressure: water+10, fire+5  ·  bond: order  ·  opposed: hot_tempered, duelist  ·  on 15 companions`
 
 **Name**
 
@@ -506,7 +506,7 @@ Remembers everything — names, faces, slights.
 
 ## stubborn
 
-`pressure: earth-10  ·  bond: order  ·  purged by yoga 4  ·  on 18 companions`
+`pressure: earth-10  ·  bond: order  ·  purged by yoga 4  ·  on 19 companions`
 
 **Name**
 
@@ -524,7 +524,7 @@ Hard to sway in any direction — for good or ill.
 
 ## suspicious
 
-`stats: charm-1, awareness+1  ·  pressure: air-10  ·  bond: solitary  ·  opposed: trusting  ·  purged by yoga 3  ·  on 3 companions`
+`stats: charm-1, awareness+1  ·  pressure: air-10  ·  bond: solitary  ·  opposed: trusting  ·  purged by yoga 3  ·  on 4 companions`
 
 **Name**
 
@@ -620,7 +620,7 @@ Easy to like, and easy about liking other people.
 
 ## ascetic
 
-`bond: devotion, order  ·  opposed: gourmand, night_drinker, flirt, drunk, bhang_enjoyer  ·  on 2 companions`
+`bond: devotion, order  ·  opposed: gourmand, night_drinker, flirt, drunk, bhang_enjoyer  ·  on 3 companions`
 
 **Name**
 
@@ -836,7 +836,7 @@ Particular about cleanliness and order; unsettled by squalor.
 
 ## flirt
 
-`bond: sociable  ·  opposed: ascetic  ·  on 2 companions`
+`bond: sociable  ·  opposed: ascetic  ·  on 3 companions`
 
 **Name**
 
@@ -872,7 +872,7 @@ Did you know most gamblers walk away from the table right before a big win?
 
 ## gossip
 
-`bond: sociable  ·  opposed: secret_bearer  ·  on 1 companions`
+`bond: sociable  ·  opposed: secret_bearer  ·  on 2 companions`
 
 **Name**
 
@@ -1088,7 +1088,7 @@ Cannot part with money without a grimace.
 
 ## secret_bearer
 
-`bond: solitary  ·  opposed: gossip  ·  on 2 companions`
+`bond: solitary  ·  opposed: gossip  ·  on 3 companions`
 
 **Name**
 

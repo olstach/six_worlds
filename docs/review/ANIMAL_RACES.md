@@ -297,11 +297,11 @@ Marjara
 **Description**
 
 <!--@ races.json | marjara | description -->
-Dappled light is their native country — the flicker where a shape might be, and then is not. Whatever they wanted from you, they have usually already taken it.
+The patch of warm dappled light is their home, whatever they want at the moment their possession. Ever on the go, solitary and ungovernable, marjara can be found wandering in the least expected places.
 <!--@end-->
 
 
-*Backgrounds: `cache_master`, `canopy_ambush`, `forest_drifter`, `hedonist`, `herbalist`, `blood_drinker`*
+*Backgrounds: `cache_master`, `canopy_ambush`, `forest_drifter`, `hedonist`, `herbalist`, `blood_drinker`, `smuggler`, `pleasure_dancer`, `witch`, `cutpurse`*
 
 
 ---
@@ -457,7 +457,7 @@ Something is being guarded — a spring, a hoard, a promise older than the hill 
 ---
 
 
-# Backgrounds  (69)
+# Backgrounds  (73)
 
 
 *What the character did with the birth they were given. Each appears once here, with the births that can take it.*
@@ -592,7 +592,7 @@ Cache Master
 **Description**
 
 <!--@ backgrounds.json | cache_master | description -->
-Three kills in the ironwood tree. Two more near the river crossing. Memory is the art — a leopard who forgets their caches starves in winter. I remember every one. I have never been hungry.
+Wherever they go in the forest, they know a spot. A bag hidden here, food stashed in a tree stump there, a safehouse when you need it.
 <!--@end-->
 
 
@@ -611,7 +611,7 @@ Canopy Ambush
 **Description**
 
 <!--@ backgrounds.json | canopy_ambush | description -->
-They look for danger on the ground. They check behind rocks, test the wind for scent. They never look up. By the time they see me I am already resolved.
+They look for traps on the ground, listen for rustling in the leaves behind. The joke's on them, I've been watching from the treetops for hours.
 <!--@end-->
 
 
@@ -688,6 +688,25 @@ Herald of the Undersea Roads
 
 <!--@ backgrounds.json | current_herald | description -->
 News travels fast in the deep. You are faster.
+<!--@end-->
+
+
+## Cutpurse  `cutpurse`
+
+`births: Marjara  ·  skills: guile 2, daggers 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | cutpurse | name -->
+Cutpurse
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | cutpurse | description -->
+Marjara stole nothing, marjara is innocent of this crime!
 <!--@end-->
 
 
@@ -782,7 +801,7 @@ Forest Drifter
 **Description**
 
 <!--@ backgrounds.json | forest_drifter | description -->
-No particular territory. No particular schedule. The road between the settlements has interesting smells — traders with dried meat, merchants with shiny things, pilgrims with nothing worth stealing. A hunt when hungry, a trade when bored, a long sleep in a warm patch of sunlight when neither seems worth the effort.
+A hunt when hungry, a trade when bored, a long sleep in a warm patch of sunlight when neither seems worth the effort.
 <!--@end-->
 
 
@@ -1166,6 +1185,25 @@ You attended the Naga King, drafted proclamations in brine-script, and read the 
 <!--@end-->
 
 
+## Pleasure Dancer  `pleasure_dancer`
+
+`births: Marjara  ·  skills: persuasion 2, guile 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | pleasure_dancer | name -->
+Pleasure Dancer
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | pleasure_dancer | description -->
+The cat folk know many find their grace and lack of morals quite delightful, at least before they wake from the reverie and find their purse missing.
+<!--@end-->
+
+
 ## Pollen Rishi  `pollen_rishi`
 
 `births: Patanga, Yaksha  ·  attributes: awareness+1  ·  skills: learning 2, space_magic 1, yoga 1`
@@ -1391,6 +1429,25 @@ Slope Herbalist
 
 <!--@ backgrounds.json | slope_herbalist | description -->
 I know where the bitter herb grows. I know the clay that draws out poison.
+<!--@end-->
+
+
+## Smuggler  `smuggler`
+
+`births: Marjara  ·  skills: trade 2, guile 1  ·  kit: plain_merchants_scales`
+
+
+**Name**
+
+<!--@ backgrounds.json | smuggler | name -->
+Smuggler
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | smuggler | description -->
+I prefer to call it free trade, friend. Care for some supplies, arms — or perhaps something more exciting for a gentleman of such discerning tastes?
 <!--@end-->
 
 
@@ -1733,6 +1790,25 @@ Waypoint Gossip
 
 <!--@ backgrounds.json | waypoint_gossip | description -->
 Messages are cargo. Stories are currency. You carry both and charge for neither, because the one who gives freely is the one everyone is glad to see at the waypoint. You know more about what is happening across three mountain ranges than any of the people it is happening to.
+<!--@end-->
+
+
+## Witch  `witch`
+
+`births: Marjara  ·  skills: sorcery 2, black_magic 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | witch | name -->
+Witch
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | witch | description -->
+Some find the power to resist in the very rejection of all imposed authority.
 <!--@end-->
 
 
