@@ -197,11 +197,11 @@ Varaha
 **Description**
 
 <!--@ races.json | varaha | description -->
-A low decision made at speed. Varaha neither bluff nor can be bluffed, and the forest has long since learned to concede the trail.
+Not looking for a fight, and not stepping off the trail either. Polite, in the way of a thing that could open you end to end and would rather not. No strength wasted, and never far from kin.
 <!--@end-->
 
 
-*Backgrounds: `old_tusk`, `sounder_guard`, `mycelium_tender`, `sounder_matron`, `herbalist`, `ancestor_priest`*
+*Backgrounds: `old_tusk`, `sounder_guard`, `mycelium_tender`, `sounder_matron`, `herbalist`, `ancestor_priest`, `young_brave`, `truffle_hunter`*
 
 
 ---
@@ -457,7 +457,7 @@ Something is being guarded — a spring, a hoard, a promise older than the hill 
 ---
 
 
-# Backgrounds  (67)
+# Backgrounds  (69)
 
 
 *What the character did with the birth they were given. Each appears once here, with the births that can take it.*
@@ -1073,7 +1073,7 @@ You are bound to a place. The meadow's health is your health. Strangers who wish
 
 ## Mycelium Tender  `mycelium_tender`
 
-`births: Varaha  ·  skills: earth_magic 1, alchemy 2`
+`births: Varaha  ·  skills: earth_magic 2, alchemy 1`
 
 
 **Name**
@@ -1086,7 +1086,7 @@ Mycelium Tender
 **Description**
 
 <!--@ backgrounds.json | mycelium_tender | description -->
-Most of the forest walks above the real richness — the fungal networks, the tuber gardens, the mycelium world that feeds everything else from below. I work underneath.
+You may find them sitting quietly in the clearing, listening to the mycelium sharing stories you couldn't even fathom.
 <!--@end-->
 
 
@@ -1143,7 +1143,7 @@ Old Tusk
 **Description**
 
 <!--@ backgrounds.json | old_tusk | description -->
-Forty seasons in these hills. I know which hollows flood in the rains and which stay dry. Where the healing clay is for the wallow. The slope where truffle runs deepest. The young ones follow me because memory outlasts tusks.
+Forty seasons in these hills. I know which hollows flood in the rains, where the healing clay is, where the truffle runs deepest.
 <!--@end-->
 
 
@@ -1415,7 +1415,7 @@ Listen, how the ancestors ran those paths where we run, how they drank where we 
 
 ## Sounder Guard  `sounder_guard`
 
-`births: Varaha  ·  attributes: constitution+1  ·  skills: martial_arts 2, armor 1`
+`births: Varaha  ·  attributes: constitution+1  ·  skills: maces 2, armor 1`
 
 
 **Name**
@@ -1428,13 +1428,13 @@ Sounder Guard
 **Description**
 
 <!--@ backgrounds.json | sounder_guard | description -->
-When something comes for the piglets it meets me first. There are boar-marks on wolves, leopards, a bear that learned better. The front of my face is a record of everything that has tested what is mine.
+The piglets run to me when they're scared, and not once have I failed them.
 <!--@end-->
 
 
 ## Sounder Matron  `sounder_matron`
 
-`births: Varaha  ·  skills: leadership 2, logistics 1, medicine 1`
+`births: Varaha  ·  skills: leadership 2, might 2`
 
 
 **Name**
@@ -1447,7 +1447,7 @@ Sounder Matron
 **Description**
 
 <!--@ backgrounds.json | sounder_matron | description -->
-She doesn't lead by being the largest or the most aggressive. She leads because she remembers the year the eastern valley flooded, and the year the wolves came in winter, and what worked both times. The sounder follows her because the sounder has tested every alternative.
+You might fight a wolf, but just try raising your voice against the mother.
 <!--@end-->
 
 
@@ -1641,6 +1641,25 @@ I know which fig ripens first and which mango is always bitter. I know who shoul
 <!--@end-->
 
 
+## Truffle Hunter  `truffle_hunter`
+
+`births: Varaha  ·  attributes: awareness+1  ·  skills: earth_magic 2`
+
+
+**Name**
+
+<!--@ backgrounds.json | truffle_hunter | name -->
+Truffle Hunter
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | truffle_hunter | description -->
+One starts seeking the morsels out by smell, then by intuition, finally by the psychic imprint of the burgeoning mycelium.
+<!--@end-->
+
+
 ## Tunnel Merchant  `tunnel_merchant`
 
 `births: Dura  ·  attributes: charm+1  ·  skills: trade 2, logistics 2`
@@ -1733,4 +1752,23 @@ Gleaner of Drowned Palaces
 
 <!--@ backgrounds.json | wreck_gleaner | description -->
 The surface-folk build ships and lose them to the deep. You have walked through more of their halls than any of them ever did.
+<!--@end-->
+
+
+## Young Brave  `young_brave`
+
+`births: Varaha  ·  attributes: strength+1, constitution+1  ·  skills: might 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | young_brave | name -->
+Young Brave
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | young_brave | description -->
+First bulk, then cut. This youngster has bulked impressively indeed.
 <!--@end-->

@@ -1,6 +1,6 @@
 # Animal Realm — Companions
 
-*41 companions.*
+*46 companions.*
 
 *Edit the prose between the anchors. The stat block under each name is generated; change it in `companions.json` instead.*
 
@@ -107,7 +107,7 @@ She has never given an order; she yawns at the right moment and the argument end
 
 ## Ekadamshtra  `ekadamshtra`
 
-`birth: varaha  ·  background: sounder_matron  ·  traits: patient, generous  ·  cost: 950`
+`birth: varaha  ·  background: sounder_matron  ·  traits: patient, generous  ·  cost: 950  ·  fixed_items: ['rations']`
 
 
 **Skills** *(strongest first)*
@@ -120,7 +120,7 @@ might, earth_magic, logistics
 **Flavor Text**
 
 <!--@ companions.json | ekadamshtra | flavor_text -->
-Ran a sounder of forty for thirty years and handed it on cleanly, which almost never happens. Eats last. Sleeps where everyone can see her.
+Ran a sounder of forty for thirty years and handed it on cleanly, a rare event indeed. She eats last, sleeps with one eye open.
 <!--@end-->
 
 
@@ -140,6 +140,25 @@ performance, grace, persuasion
 
 <!--@ companions.json | enakshi | flavor_text -->
 Has held the clearing eleven seasons running and has never once had to touch anyone to do it.
+<!--@end-->
+
+
+## Ghoraka  `ghoraka`
+
+`birth: varaha  ·  background: ancestor_priest  ·  traits: grudge_bearer, mourner  ·  cost: 1050  ·  fixed_items: ['prayer_beads']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | ghoraka | build_weights -->
+black_magic, ritual, earth_magic
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | ghoraka | flavor_text -->
+When the wolves killed his sounder, he found a source of power deep in the grief and bloodlust. Now the wolves keep their distance, seeing the oily smoke seeping from his eyes.
 <!--@end-->
 
 
@@ -257,6 +276,25 @@ Taking such delight in the hunt, in the kill, in the tearing of flesh, must have
 <!--@end-->
 
 
+## Mrichha  `mrichha`
+
+`birth: varaha  ·  background: truffle_hunter  ·  traits: patient, pilgrim  ·  cost: 1000  ·  fixed_items: ['rations', 'healing_herb']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | mrichha | build_weights -->
+earth_magic, space_magic, yoga
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | mrichha | flavor_text -->
+Disappearing from one clearing and appearing in another, bringing food and medicine. Others say they travel through the roots and hyphae.
+<!--@end-->
+
+
 ## Nadaka  `nadaka`
 
 `birth: gana  ·  background: forest_singer  ·  traits: curious, secret_bearer  ·  cost: 900  ·  fixed_items: ['lucky_charm']`
@@ -330,6 +368,44 @@ smithing, sorcery, ranged
 
 <!--@ companions.json | phalguna | flavor_text -->
 Can build anything out of anything given an afternoon and no supervision. Every solution is temporary, every temporary solution has now been load-bearing for six years.
+<!--@end-->
+
+
+## Phulla  `phulla`
+
+`birth: varaha  ·  background: mycelium_tender  ·  traits: ascetic, warm_hearted  ·  cost: 900  ·  fixed_items: ['herb_bundle', 'raw_reagents']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | phulla | build_weights -->
+white_magic, alchemy, earth_magic
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | phulla | flavor_text -->
+They started out with oyster mushrooms, then learned the way of the morel, finally graduated to the little ones that speak. Now, they work healing and miracles, insisting the power flows through, not from them.
+<!--@end-->
+
+
+## Runborn  `runborn`
+
+`birth: varaha  ·  background: young_brave  ·  traits: hot_tempered, homesick  ·  cost: 800`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | runborn | build_weights -->
+might, unarmed, yoga
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | runborn | flavor_text -->
+Exiled from the sounder for killing a brother in a fit of rage. Now they seek redemption and self-discipline.
 <!--@end-->
 
 
@@ -463,6 +539,25 @@ persuasion, fire_magic, performance
 
 <!--@ companions.json | unmatta | flavor_text -->
 Came down from the hills for one season of silk and wine and has not gone back in nine years. Insists he could stop. Nobody has asked him to.
+<!--@end-->
+
+
+## Vasuda  `vasuda`
+
+`birth: varaha  ·  background: hunter  ·  traits: quick, frail  ·  cost: 850  ·  fixed_items: ['hunting_bow']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | vasuda | build_weights -->
+ranged, armor, logistics
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | vasuda | flavor_text -->
+Born too early, she was the weakest in the sounder. She found inventive ways to pull her weight and protect her kin.
 <!--@end-->
 
 

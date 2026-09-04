@@ -1577,7 +1577,7 @@
     "varaha": {
       "name": "Varaha",
       "realm": "animal",
-      "description": "A low decision made at speed. Varaha neither bluff nor can be bluffed, and the forest has long since learned to concede the trail.",
+      "description": "Not looking for a fight, and not stepping off the trail either. Polite, in the way of a thing that could open you end to end and would rather not. No strength wasted, and never far from kin.",
       "attribute_modifiers": {
         "strength": 3,
         "finesse": -2,
@@ -1602,7 +1602,9 @@
         "mycelium_tender",
         "sounder_matron",
         "herbalist",
-        "ancestor_priest"
+        "ancestor_priest",
+        "young_brave",
+        "truffle_hunter"
       ],
       "resistances": {},
       "emotional_baseline": {
@@ -3362,7 +3364,7 @@
     },
     "old_tusk": {
       "name": "Old Tusk",
-      "description": "Forty seasons in these hills. I know which hollows flood in the rains and which stay dry. Where the healing clay is for the wallow. The slope where truffle runs deepest. The young ones follow me because memory outlasts tusks.",
+      "description": "Forty seasons in these hills. I know which hollows flood in the rains, where the healing clay is, where the truffle runs deepest.",
       "attribute_modifiers": {},
       "starting_skills": {
         "earth_magic": 2,
@@ -3376,12 +3378,12 @@
     },
     "sounder_guard": {
       "name": "Sounder Guard",
-      "description": "When something comes for the piglets it meets me first. There are boar-marks on wolves, leopards, a bear that learned better. The front of my face is a record of everything that has tested what is mine.",
+      "description": "The piglets run to me when they're scared, and not once have I failed them.",
       "attribute_modifiers": {
         "constitution": 1
       },
       "starting_skills": {
-        "martial_arts": 2,
+        "maces": 2,
         "armor": 1
       },
       "available_races": [
@@ -3391,25 +3393,59 @@
     },
     "mycelium_tender": {
       "name": "Mycelium Tender",
-      "description": "Most of the forest walks above the real richness — the fungal networks, the tuber gardens, the mycelium world that feeds everything else from below. I work underneath.",
+      "description": "You may find them sitting quietly in the clearing, listening to the mycelium sharing stories you couldn't even fathom.",
       "attribute_modifiers": {},
       "starting_skills": {
-        "earth_magic": 1,
-        "alchemy": 2
+        "earth_magic": 2,
+        "alchemy": 1
       },
       "available_races": [
         "varaha"
       ],
       "weight": 4
     },
+    "young_brave": {
+      "name": "Young Brave",
+      "description": "First bulk, then cut. This youngster has bulked impressively indeed.",
+      "attribute_modifiers": {
+        "strength": 1,
+        "constitution": 1
+      },
+      "starting_skills": {
+        "might": 1
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [
+        "varaha"
+      ],
+      "weight": 5
+    },
+    "truffle_hunter": {
+      "name": "Truffle Hunter",
+      "description": "One starts seeking the morsels out by smell, then by intuition, finally by the psychic imprint of the burgeoning mycelium.",
+      "attribute_modifiers": {
+        "awareness": 1
+      },
+      "starting_skills": {
+        "earth_magic": 2
+      },
+      "starting_equipment": {
+        "items": []
+      },
+      "available_races": [
+        "varaha"
+      ],
+      "weight": 5
+    },
     "sounder_matron": {
       "name": "Sounder Matron",
-      "description": "She doesn't lead by being the largest or the most aggressive. She leads because she remembers the year the eastern valley flooded, and the year the wolves came in winter, and what worked both times. The sounder follows her because the sounder has tested every alternative.",
+      "description": "You might fight a wolf, but just try raising your voice against the mother.",
       "attribute_modifiers": {},
       "starting_skills": {
         "leadership": 2,
-        "logistics": 1,
-        "medicine": 1
+        "might": 2
       },
       "available_races": [
         "varaha"

@@ -2208,7 +2208,7 @@
       "zone": "forest",
       "birth": "varaha",
       "background": "sounder_matron",
-      "flavor_text": "Ran a sounder of forty for thirty years and handed it on cleanly, which almost never happens. Eats last. Sleeps where everyone can see her.",
+      "flavor_text": "Ran a sounder of forty for thirty years and handed it on cleanly, a rare event indeed. She eats last, sleeps with one eye open.",
       "portrait": "",
       "recruitment_cost": 950,
       "build_weights": {
@@ -2232,7 +2232,9 @@
       "starting_equipment": {
         "chest": "chainmail"
       },
-      "fixed_items": [],
+      "fixed_items": [
+        "rations"
+      ],
       "traits": [
         "patient",
         "generous"
@@ -2273,6 +2275,187 @@
       "traits": [
         "fastidious",
         "patient"
+      ]
+    },
+    "phulla": {
+      "id": "phulla",
+      "name": "Phulla",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "varaha",
+      "background": "mycelium_tender",
+      "flavor_text": "They started out with oyster mushrooms, then learned the way of the morel, finally graduated to the little ones that speak. Now, they work healing and miracles, insisting the power flows through, not from them.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "white_magic": 5,
+        "alchemy": 4,
+        "earth_magic": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "earth_magic": 2,
+          "alchemy": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "herb_bundle",
+        "raw_reagents"
+      ],
+      "traits": [
+        "ascetic",
+        "warm_hearted"
+      ]
+    },
+    "mrichha": {
+      "id": "mrichha",
+      "name": "Mrichha",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "varaha",
+      "background": "truffle_hunter",
+      "flavor_text": "Disappearing from one clearing and appearing in another, bringing food and medicine. Others say they travel through the roots and hyphae.",
+      "portrait": "",
+      "recruitment_cost": 1000,
+      "build_weights": {
+        "earth_magic": 5,
+        "space_magic": 4,
+        "yoga": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "earth_magic": 2,
+          "yoga": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "rations",
+        "healing_herb"
+      ],
+      "traits": [
+        "patient",
+        "pilgrim"
+      ]
+    },
+    "runborn": {
+      "id": "runborn",
+      "name": "Runborn",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "varaha",
+      "background": "young_brave",
+      "flavor_text": "Exiled from the sounder for killing a brother in a fit of rage. Now they seek redemption and self-discipline.",
+      "portrait": "",
+      "recruitment_cost": 800,
+      "build_weights": {
+        "might": 5,
+        "unarmed": 4,
+        "yoga": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "might": 1,
+          "yoga": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [],
+      "traits": [
+        "hot_tempered",
+        "homesick"
+      ]
+    },
+    "ghoraka": {
+      "id": "ghoraka",
+      "name": "Ghoraka",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "varaha",
+      "background": "ancestor_priest",
+      "flavor_text": "When the wolves killed his sounder, he found a source of power deep in the grief and bloodlust. Now the wolves keep their distance, seeing the oily smoke seeping from his eyes.",
+      "portrait": "",
+      "recruitment_cost": 1050,
+      "build_weights": {
+        "black_magic": 5,
+        "ritual": 4,
+        "earth_magic": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "black_magic": 1,
+          "ritual": 1,
+          "white_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "prayer_beads"
+      ],
+      "traits": [
+        "grudge_bearer",
+        "mourner"
+      ]
+    },
+    "vasuda": {
+      "id": "vasuda",
+      "name": "Vasuda",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "varaha",
+      "background": "hunter",
+      "flavor_text": "Born too early, she was the weakest in the sounder. She found inventive ways to pull her weight and protect her kin.",
+      "portrait": "",
+      "recruitment_cost": 850,
+      "build_weights": {
+        "ranged": 5,
+        "armor": 4,
+        "logistics": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "ranged": 2,
+          "guile": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "hunting_bow"
+      ],
+      "traits": [
+        "quick",
+        "frail"
       ]
     },
     "chitrangada": {

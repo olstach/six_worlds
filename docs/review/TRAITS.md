@@ -68,7 +68,7 @@ An awkward gait that hampers quick movement.
 
 ## frail
 
-`stats: constitution-1  ·  bond: hardship  ·  on 0 companions`
+`stats: constitution-1  ·  bond: hardship  ·  on 1 companions`
 
 **Name**
 
@@ -176,7 +176,7 @@ The owl of wisdom flies after midnight.
 
 ## quick
 
-`stats: finesse+1  ·  on 5 companions`
+`stats: finesse+1  ·  on 6 companions`
 
 **Name**
 
@@ -398,7 +398,7 @@ Always calculating what they stand to gain.
 
 ## grudge_bearer
 
-`pressure: water-10, air-5  ·  bond: solitary  ·  purged by yoga, ritual 4  ·  on 0 companions`
+`pressure: water-10, air-5  ·  bond: solitary  ·  purged by yoga, ritual 4  ·  on 1 companions`
 
 **Name**
 
@@ -416,7 +416,7 @@ Forgets nothing that was done to them, and keeps the ledger current.
 
 ## hot_tempered
 
-`stats: charm-1  ·  pressure: water-15  ·  opposed: patient  ·  purged by yoga, ritual 3  ·  on 5 companions`
+`stats: charm-1  ·  pressure: water-15  ·  opposed: patient  ·  purged by yoga, ritual 3  ·  on 6 companions`
 
 **Name**
 
@@ -470,7 +470,7 @@ A deep sadness runs beneath the surface.
 
 ## patient
 
-`pressure: water+10, fire+5  ·  bond: order  ·  opposed: hot_tempered, duelist  ·  on 13 companions`
+`pressure: water+10, fire+5  ·  bond: order  ·  opposed: hot_tempered, duelist  ·  on 14 companions`
 
 **Name**
 
@@ -596,7 +596,7 @@ Takes great pride in their appearance and reputation.
 
 ## warm_hearted
 
-`stats: charm+1  ·  pressure: fire+10, water+5  ·  bond: sociable  ·  on 1 companions`
+`stats: charm+1  ·  pressure: fire+10, water+5  ·  bond: sociable  ·  on 2 companions`
 
 **Name**
 
@@ -620,7 +620,7 @@ Easy to like, and easy about liking other people.
 
 ## ascetic
 
-`bond: devotion, order  ·  opposed: gourmand, night_drinker, flirt, drunk, bhang_enjoyer  ·  on 1 companions`
+`bond: devotion, order  ·  opposed: gourmand, night_drinker, flirt, drunk, bhang_enjoyer  ·  on 2 companions`
 
 **Name**
 
@@ -908,7 +908,7 @@ Takes great pleasure in fine food and good company at table.
 
 ## homesick
 
-`bond: solitary, grief  ·  on 1 companions`
+`bond: solitary, grief  ·  on 2 companions`
 
 **Name**
 
@@ -944,7 +944,7 @@ Reads ground the way other people read letters. Knows what passed, how long ago,
 
 ## mourner
 
-`bond: grief, devotion  ·  on 1 companions`
+`bond: grief, devotion  ·  on 2 companions`
 
 **Name**
 
@@ -1016,7 +1016,7 @@ Has never once passed an animal without stopping.
 
 ## pilgrim
 
-`bond: devotion, wonder  ·  on 1 companions`
+`bond: devotion, wonder  ·  on 2 companions`
 
 **Name**
 
