@@ -417,6 +417,68 @@ Recorded so they aren't rediscovered as bugs.
   **`dralha` at 3.0%** and **`gyelpo` at 5.7%**, plus `uluka` 5.7% and
   `patanga` 6.8% in the animal realm.
 
+- **Backgrounds duplicate each other mechanically, and the skill spread is
+  lopsided.** Found by `tools/audit_backgrounds.py` (new; rerun it after any
+  background edit — it prints a report and never writes).
+
+  **Duplication.** 11 clusters of backgrounds share identical `starting_skills`
+  at identical levels, 19 share the same skills at any levels. Most are
+  harmless: a universal background and a realm re-skin of it that no single
+  birth can roll both of. Four collide in a real pool:
+
+  | cluster | births that can roll more than one |
+  |---|---|
+  | `smith` / `bellows_hand` / `ore_grafted` — all `smithing 2, might 1` | **16** |
+  | `grave_tender` / `bone_setter` — black_magic + medicine, levels swapped | **13** |
+  | `thief` / `forest_thief` / `runaway` — guile + thievery | **8** |
+  | `guard` / `coral_guard` — both `armor 2, spears 1` | 4 |
+
+  `bellows_hand` and `bone_setter` are from the 2026-09-07 births pass and are
+  the ones to fix — they were written without checking what the universal pool
+  already taught. `coral_guard` is worth a look too: at weight 8 it is the
+  second-heaviest background in the game and mechanically it is `guard`.
+
+  Only one background is **strictly dominated**: `thief` has `finesse +1` over
+  `forest_thief` with the same skills.
+
+  **`swords` is a dead skill at character creation.** No background grants it
+  above level 1 and no birth grants it at all. The only common route to it is
+  `warrior` — the heaviest background in the game at weight 10 — which gives
+  `swords 1, armor 1, might 1`. Space's weapon skill, and nobody can start as a
+  swordsman. Compare `quarrier` (maces 2), `hunter` (ranged 2), `brawler`
+  (unarmed 2), `guard` (armor 2): the other weapon skills all have a headline
+  background. A universal duellist/soldier background at `swords 2` is the
+  obvious fix.
+
+  **The universal pool is 84% of the average roll** (32 backgrounds, range
+  68–94% across births), so what it cannot teach is effectively unreachable.
+  Five of the nine combat skills have no universal background that is *about*
+  them — `swords`, `axes`, `daggers`, `spears`, `martial_arts` — and the
+  restricted ones that do are reachable by 0, 8, 3, 14 and 2 births
+  respectively. `earth_magic` is the same story: nine backgrounds use it as a
+  garnish, one (`old_tusk`, reachable by a single birth) is about it.
+
+  **Expected starting points per skill**, over every playable birth and its own
+  weighted roll — mean 0.084, and a character starts with 2.9 background skill
+  points total:
+
+  - **Heavy (1.8–2.4× mean):** `might`, `learning`, `armor`, `medicine`,
+    `persuasion`. `might`, `guile`, `logistics` and `learning` appear as a
+    *minor* skill in 17–19 backgrounds each — they are the filler that gets
+    sprinkled on everything.
+  - **Thin (under half the mean):** `daggers` 0.34×, `comedy` 0.36×,
+    `martial_arts` 0.36×, `earth_magic` 0.37×, `leadership` 0.46×.
+  - Spread from heaviest to lightest is **6.9×**.
+  - By category, **general skills get roughly twice the magic and combat
+    skills** per skill (0.108 vs 0.056 and 0.071).
+  - By element the spread is small — 0.544 (water) to 0.630 (air) — so the
+    affinity system is not skewed. That part is fine.
+
+  **Half the animal-realm backgrounds have no attribute modifiers** (33 of 66),
+  against 0% in hell, hungry ghost and cross-realm and 3% universal (only
+  `herbalist`). Those 33 give strictly less than their peers for no stated
+  reason; it looks like an oversight in the animal pass rather than a decision.
+
 - **Spell learning should cost XP.** `CharacterSystem.learn_spell` currently has
   no cost and no eligibility gate at all; it appends to `known_spells`. Making
   spells cost XP is the coherent counterpart to buying perks, and it spreads XP
