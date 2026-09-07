@@ -28,12 +28,12 @@ python3 tools/validate_data.py                 # always
 
 Three of six realms have real content:
 
-| Realm | Map | Enemies | Events | Shops | Companions |
-|---|---|---|---|---|---|
-| **Hell** | ✓ (cold/fire + divider) | ✓ 45 archetypes | ✓ 79 events | ✓ | ✓ 24 |
-| **Hungry Ghost** | ✓ (3 zones) | ✓ 23 archetypes | ✓ 150 events (0% dead map weight) | ✓ | ✓ 23 |
-| **Animal** | ✓ (ocean/forest/meadow) | ✓ 34 archetypes | ✓ 94 events (0% dead map weight) | ✓ | ✓ 24 |
-| Human / Asura / God | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Realm | Map | Births | Enemies | Events | Shops | Companions |
+|---|---|---|---|---|---|---|
+| **Hell** | ✓ (cold/fire + divider) | 13 | ✓ 45 archetypes | ✓ 79 events | ✓ | ✓ 24 |
+| **Hungry Ghost** | ✓ (3 zones) | 16 | ✓ 23 archetypes | ✓ 150 events (0% dead map weight) | ✓ | ✓ 23 |
+| **Animal** | ✓ (ocean/forest/meadow) | 18 | ✓ 34 archetypes | ✓ 94 events (0% dead map weight) | ✓ | ✓ 24 |
+| Human / Asura / God | ✗ | 9 | ✗ | ✗ | ✗ | ✗ |
 
 Core systems all exist and are wired: character/XP, karma/reincarnation,
 events (grey/blue/yellow choices, dynamic DCs), grid combat (spells, AoE,
@@ -95,7 +95,8 @@ if you write a checker, check its negatives.
 It checks events→encounters/shops/items/spells/traits/skills/wounds/karma,
 map configs→events/mobs/pickups, shops→items/spells/companions,
 companions→births/backgrounds/items/spells/traits, races and backgrounds→
-skills/traits/equipment, encounters→archetypes, and code→perk ids/status names.
+skills/traits/equipment/typical_backgrounds, encounters→archetypes, and
+code→perk ids/status names.
 
 ## Started but not finished
 
@@ -106,6 +107,16 @@ Ordered roughly by how much finished work is sitting behind each gap.
   **0% dead map weight** (hell 79 events, hungry ghost 150, animal 94); every
   marker the maps place resolves to a real event.
 - ~~Animal realm companions~~ — done, 24 added covering all 17 births.
+- ~~Hell and hungry ghost were starved of births and backgrounds~~ — done
+  2026-09-07. Hell 6→13 births (six element-coded imps and the wretch), hungry
+  ghost 14→16 (the yidag's outer and food obscurations), 24 new backgrounds,
+  four racial traits. Hell had **zero** backgrounds written for it; the share of
+  a birth's background roll that is realm-flavoured went from 7.9–12.8% to
+  18–32%, and hungry ghost's eight worst births from a flat 0% to 8.9–15.5%.
+  Births and backgrounds now export to a review document per realm
+  (`HELL_RACES.md`, `HUNGRY_GHOST_RACES.md`) instead of the animal realm only —
+  which is why those two realms had never had a prose pass.
+  **New births and backgrounds are Claude's prose; see `EDIT_LATER.md`.**
 - ~~Animal realm zone events~~ — done, all 47 written.
 - **All of the above is Claude's prose and wants Olaf's pass** — 81 new events
   and 24 companion bios across the two content passes.

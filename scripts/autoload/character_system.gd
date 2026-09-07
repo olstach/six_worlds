@@ -553,7 +553,7 @@ func roll_birth_for_realm(realm: String) -> String:
 	return births[0]  # unreachable while total_weight > 0
 
 
-## How rare a birth is, as a word: "common", "uncommon" or "rare".
+## How rare a birth is, as a word: "common", "uncommon", "rare" or "very rare".
 ##
 ## Rarity is not stored anywhere — it is a reading of `reincarnation_weight`,
 ## which is the one number that decides how often a birth comes up. Within a
@@ -568,12 +568,14 @@ func get_birth_rarity(birth_id: String) -> String:
 	var realm: String = data.get("realm", "")
 	if not _rarity_cache.has(realm):
 		_rarity_cache[realm] = _build_rarity_ranks(realm)
-	return _rarity_cache[realm].get(weight, "rare")
+	return _rarity_cache[realm].get(weight, "very rare")
 
 
 ## Rank a realm's distinct weights into tier names, heaviest first.
 func _build_rarity_ranks(realm: String) -> Dictionary:
-	var names: Array = ["common", "uncommon", "rare"]
+	# Four bands: hell needs the fourth for the wretch, which is rarer than the
+	# black devil. Weights beyond the fourth distinct value read as "very rare".
+	var names: Array = ["common", "uncommon", "rare", "very rare"]
 	var weights: Array = []
 	for w in get_birth_weights_for_realm(realm).values():
 		if not int(w) in weights:

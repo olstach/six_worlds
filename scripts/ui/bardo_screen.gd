@@ -328,7 +328,16 @@ func _on_begin_new_life() -> void:
 ## Generate a thematic name based on birth/realm
 ## These are simple placeholders — can be expanded with name lists later
 func _generate_name(birth: String, realm: String) -> String:
-	var hell_names = ["Mara", "Yama", "Rahu", "Kali", "Rudra", "Agni", "Vetala"]
+	# Hell names run from the grand to the grubby, because the realm does. The
+	# first line suits a devil; the rest are built from the Tibetan hell syllables
+	# in enemies/name_parts.json (me fire, tsa burning, gang ice, drang cold,
+	# duk poison, mun dark, nag black) with the -chung / -bu diminutives an imp
+	# or a wretch would actually be called.
+	var hell_names = [
+		"Mara", "Yama", "Rahu", "Kali", "Rudra", "Agni", "Vetala",
+		"Metsa", "Tsabu", "Gangchung", "Drangbu", "Dukchung", "Munbu",
+		"Nagchung", "Dragbu", "Mechung", "Gangnag", "Tsachung", "Drangnag",
+	]
 	# Hungry ghost names draw from Tibetan preta lore and Sanskrit sources.
 	# Sub-races covered: yidag (pretas proper), rolang (reanimated corpses),
 	# skeleton variants, vetala (possession spirits), dralha (corrupted war-spirits),

@@ -23,14 +23,14 @@ Companion documents:
 
 ### Content
 
-| Realm | Map | Archetypes | Events | Companions | Quests | Dead map weight |
-|---|---|---|---|---|---|---|
-| **Hell** | ✓ cold / fire + divider | 45 | 79 | 24 | 3 | 0% |
-| **Hungry Ghost** | ✓ 3 zones | 23 | 150 | 23 | 0 | 0% |
-| **Animal** | ✓ ocean / forest / meadow | 34 | 94 | 24 | 0 | 0% |
-| Human | ✗ | ✗ | ✗ | ✗ | ✗ | — |
-| Asura | ✗ | ✗ | ✗ | ✗ | ✗ | — |
-| God | ✗ | ✗ | ✗ | ✗ | ✗ | — |
+| Realm | Map | Births | Archetypes | Events | Companions | Quests | Dead map weight |
+|---|---|---|---|---|---|---|---|
+| **Hell** | ✓ cold / fire + divider | 13 | 45 | 79 | 24 | 3 | 0% |
+| **Hungry Ghost** | ✓ 3 zones | 16 | 23 | 150 | 23 | 0 | 0% |
+| **Animal** | ✓ ocean / forest / meadow | 18 | 34 | 94 | 24 | 0 | 0% |
+| Human | ✗ | 4 | ✗ | ✗ | ✗ | ✗ | — |
+| Asura | ✗ | 2 | ✗ | ✗ | ✗ | ✗ | — |
+| God | ✗ | 3 | ✗ | ✗ | ✗ | ✗ | — |
 
 Plus 33 cross-realm domain events (13 plain, 9 camp-triggered, 8 trait-triggered,
 3 relationship-triggered). **356 events total**.
@@ -352,7 +352,39 @@ Recorded so they aren't rediscovered as bugs.
   from the realm independently of the archetype, so 33 hell encounters produce
   things like `hell_green_devil_sniper` with a `blue_devil` birth. Either
   constrain the roll when an archetype id names a birth, or decide devils are
-  mixed-parentage and let it stand.
+  mixed-parentage and let it stand. The seven `hell_*_imp` archetypes
+  now have matching births (`flame_imp`, `frost_imp`, `gravel_imp`,
+  `static_imp`, `tinnitus_imp`, `sloth_imp`), so if the roll ever is
+  constrained, hell's imp encounters are the easiest case to wire first —
+  `hell_ash_imp` is the only one without a birth, deliberately.
+
+- **The new hell and hungry ghost births have no companions.** Hell has 24
+  companions across the six devils and none on the six imps or the wretch;
+  hungry ghost has none on `chidrib` or `zadrib`. Same hole the animal realm had
+  before its companion pass. An imp companion is an obvious character — small,
+  overlooked, carries messages, knows everybody's business — and the wretch is
+  the one birth where a companion could be recruited out of pity rather than
+  paid for, which nothing in the game currently does.
+
+- **The five elemental skeletons are colour-coded with no elemental affinity.**
+  `skeleton_copper` is explicitly "attuned to the arts of power and magnetism"
+  and has `elemental_affinity_bonuses: {}`, as do silver, golden, iron and
+  turquoise. Every other differentiated birth in the game carries 3–5 points of
+  innate affinity. Left alone in the balance pass because it changes the power
+  of five existing births rather than adding new ones, but the mapping writes
+  itself — iron/earth, copper/fire, turquoise/air or water, and it would tie
+  them into the klesha and ngakpa systems that key off elements.
+
+- **`typical_backgrounds` is not read by the game.**
+  `KarmaSystem.select_random_background()` rolls over every background whose
+  `available_races` admits the birth, weighted by `weight`; the birth's own
+  `typical_backgrounds` list has no effect on it. The field is real
+  documentation — it is what the review documents print under each birth — but
+  anything written on the assumption that it narrows the roll is wrong. Three
+  entries in it had rotted to backgrounds that no longer existed (`beggar` on
+  yidag, `sorcerer` and `courtier` on skeleton_copper) precisely because nothing
+  read them; `validate_data.py` checks the field now. Either wire it into the
+  roll as a weight multiplier or rename it to say what it is.
 
 - **Instruments as performance items.** The game has ritual implements —
   damaru, kangling, conch, drilbu, phurba — but all are `type: focus`, for
@@ -369,15 +401,21 @@ Recorded so they aren't rediscovered as bugs.
   use — top weapon skill picks the weapon, and a high Performance or Ritual
   should put an instrument or implement in their hands.
 
-- **Background assignment wants a pass across all births.** 94 backgrounds, but
-  only 3 are universal (`healer`, `reveler`, `wanderer`) and 55 are single-birth
-  — 58% of them. Average 4.8 births per background. Mriga was in none of the 22
-  broadly-available ones (`warrior` covers 18 births, `scholar` 14,
-  `merchant`/`guard`/`diplomat`/`noble`/`monk` 13) purely because it was created
-  after those lists were authored; ten were opened to it by hand. Every future
-  birth hits the same trap. After the animal-birth pass, go over all births and
-  reassign, add, or generalise backgrounds — and check gana first, which was
-  split at the same time as mriga.
+- [x] ~~**Background assignment wants a pass across all births.**~~ — done
+  2026-09-07 for hell and hungry ghost, which were the two starved realms.
+  137 backgrounds now, 32 universal. Only 4 births have no background naming
+  them specifically (down from 28) and all four are in unbuilt realms.
+  `docs/BACKGROUNDS_BY_BIRTH.md` is generated from `races.json` now
+  (`tools/export_backgrounds_by_birth.py`) rather than hand-maintained, so the
+  numbers in it cannot drift again.
+
+  The measure that matters is the **share of a birth's background roll that is
+  realm-flavoured, by weight** — the roll is weighted, so counting entries
+  overstates it. Hell was 7.9–12.8% before the pass and is 18–32% now; hungry
+  ghost's eight worst births were at a flat **0%** and are 8.9–15.5%; animal
+  runs 5.7–21.9%. Two stragglers are left and are pre-existing:
+  **`dralha` at 3.0%** and **`gyelpo` at 5.7%**, plus `uluka` 5.7% and
+  `patanga` 6.8% in the animal realm.
 
 - **Spell learning should cost XP.** `CharacterSystem.learn_spell` currently has
   no cost and no eligibility gate at all; it appends to `known_spells`. Making

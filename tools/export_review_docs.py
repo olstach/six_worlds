@@ -302,31 +302,33 @@ def export_traits():
 
 
 # ---------------------------------------------------------------------------
-# Animal realm — everything outside the companions and the events.
-#
-# These five documents cover the realm's remaining prose: the births and their
-# backgrounds, the bestiary, the places you can walk into, the map itself, and
-# the naming lore. Same anchor contract as the rest of the file.
+# Births and backgrounds, per realm, plus the animal realm's bestiary, places,
+# map and naming lore. Same anchor contract as the rest of the file.
 # ---------------------------------------------------------------------------
 
 def _is_record(v):
     return isinstance(v, dict)
 
 
-def _animal_races(d):
+def _races_in(d, realm):
     return {k: v for k, v in d["races"].items()
-            if _is_record(v) and v.get("realm") == "animal"}
+            if _is_record(v) and v.get("realm") == realm}
+
+
+def _animal_races(d):
+    return _races_in(d, "animal")
 
 
 def rarity_tiers(races):
     """Label births common/uncommon/rare from their reincarnation weights.
 
     The weight is the single source of truth: it is how likely the player is to
-    be reborn as that birth, and rarity is just a reading of it. Only labelled
-    when a realm uses exactly three distinct weights — otherwise the weight is
-    shown on its own rather than invent a tier that is not there.
+    be reborn as that birth, and rarity is just a reading of it. Mirrors
+    CharacterSystem._build_rarity_ranks — distinct weights ranked heaviest
+    first, up to four bands. Unweighted realms get no labels at all rather than
+    a tier that is not there.
     """
-    names = ["common", "uncommon", "rare"]
+    names = ["common", "uncommon", "rare", "very rare"]
     out = {}
     by_realm = {}
     for rid, r in races.items():
@@ -334,20 +336,32 @@ def rarity_tiers(races):
     for realm, ids in by_realm.items():
         weights = sorted({races[i].get("reincarnation_weight", 0) for i in ids},
                          reverse=True)
-        if len(weights) != 3 or weights[-1] <= 0:
+        if not weights or weights[-1] <= 0:
             continue
-        rank = {w: names[i] for i, w in enumerate(weights)}
+        rank = {w: (names[i] if i < len(names) else names[-1])
+                for i, w in enumerate(weights)}
         for i in ids:
             out[i] = rank[races[i].get("reincarnation_weight", 0)]
     return out
 
 
-def export_animal_races():
+def export_realm_races(realm, title, outfile, claimed):
+    """One births-and-backgrounds document for a realm.
+
+    `claimed` is the set of background ids that an earlier document in this run
+    already wrote anchors for. A background shared across realms — every
+    universal one, and cross-realm trades like `raider` — is anchored in exactly
+    one document and only listed in the others. The importer globs the review
+    directory and applies anchors in filename order against one in-memory copy,
+    so two anchors for the same field would let a stale document silently revert
+    an edit made in the other. Realms are exported in a fixed order so which
+    document owns a shared background does not move around between runs.
+    """
     d = load("resources/data/races.json")
-    races = _animal_races(d)
+    races = _races_in(d, realm)
     backgrounds = {k: v for k, v in d["backgrounds"].items() if _is_record(v)}
 
-    lines = ["# Animal Realm — Births and Backgrounds\n",
+    lines = [f"# {title} — Births and Backgrounds\n",
              f"*{len(races)} births. A birth is what you were reborn as; a background is "
              "what you did with it. Both descriptions are read at character creation.*\n",
              "*Edit the prose between the anchors. The stat line under each name is "
@@ -402,10 +416,13 @@ def export_animal_races():
             if bid in backgrounds:
                 used.setdefault(bid, []).append(r.get("name", rid))
 
-    lines.append(f"\n# Backgrounds  ({len(used)})\n")
+    mine = [bid for bid in sorted(used) if bid not in claimed]
+    elsewhere = [bid for bid in sorted(used) if bid in claimed]
+
+    lines.append(f"\n# Backgrounds  ({len(mine)})\n")
     lines.append("\n*What the character did with the birth they were given. Each appears "
                  "once here, with the births that can take it.*\n")
-    for bid in sorted(used):
+    for bid in mine:
         b = backgrounds[bid]
         lines.append(f"\n## {b.get('name', bid)}  `{bid}`\n")
         bm = ["births: " + ", ".join(used[bid])]
@@ -423,8 +440,23 @@ def export_animal_races():
         lines.append("\n**Description**\n")
         lines.append(anchor(["backgrounds.json", bid, "description"], b.get("description", "")))
 
-    write("ANIMAL_RACES.md", "\n".join(lines))
-    return len(races), len(used)
+    if elsewhere:
+        lines.append(f"\n# Backgrounds edited elsewhere  ({len(elsewhere)})\n")
+        lines.append("\n*Open to these births too, but shared with an earlier realm and "
+                     "anchored in that document — edit them there.*\n")
+        for bid in elsewhere:
+            b = backgrounds[bid]
+            lines.append(f"\n- **{b.get('name', bid)}** `{bid}` — {b.get('description', '')}")
+        lines.append("\n")
+
+    claimed.update(mine)
+    write(outfile, "\n".join(lines))
+    return len(races), len(mine)
+
+
+def export_animal_races(claimed=None):
+    return export_realm_races("animal", "Animal Realm", "ANIMAL_RACES.md",
+                              claimed if claimed is not None else set())
 
 
 def export_animal_enemies():
@@ -693,8 +725,16 @@ if __name__ == "__main__":
     print(f"     {n} animal companions")
     n = export_traits()
     print(f"     {n} traits")
-    n, b = export_animal_races()
-    print(f"     {n} animal births, {b} backgrounds")
+    # Animal is exported first so it keeps ownership of the shared and universal
+    # backgrounds it has always anchored; hell and hungry ghost list those and
+    # anchor only what is their own.
+    claimed = set()
+    for realm, title, outfile in (("animal", "Animal Realm", "ANIMAL_RACES.md"),
+                                  ("hell", "Hell", "HELL_RACES.md"),
+                                  ("hungry_ghost", "Hungry Ghost Realm",
+                                   "HUNGRY_GHOST_RACES.md")):
+        n, b = export_realm_races(realm, title, outfile, claimed)
+        print(f"     {n} {realm} births, {b} backgrounds")
     n, e = export_animal_enemies()
     print(f"     {n} animal archetypes, {e} encounters")
     n = export_animal_locations()

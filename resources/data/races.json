@@ -4,7 +4,7 @@
     "red_devil": {
       "name": "Red Devil",
       "realm": "hell",
-      "description": "Hot-headed and driven by anger and lust, red devils are the finest warriors in the Hells.",
+      "description": "Hot-headed and driven by anger and lust, red devils are the finest warriors in the Hells. They hold the armouries, the drill grounds and most of the ranks worth holding, and the arrangement suits everyone: a red devil given something to hit is a red devil not presently thinking about the other thing. The good ones are genuinely magnificent. The rest are the reason the fire hells burn.",
       "attribute_modifiers": {
         "strength": 3,
         "finesse": -1,
@@ -51,7 +51,7 @@
     "blue_devil": {
       "name": "Blue Devil",
       "realm": "hell",
-      "description": "Cold and calculating, blue devils keep grudges long after they were forgotten in the realms above.",
+      "description": "Cold and calculating, blue devils keep grudges long after they were forgotten in the realms above. The ice hells reward patience and blue devils have nothing but, so they hold the jails, the ledgers of the condemned and the long quiet posts nobody else will take. They do not raise their voices. They write it down, and they are still holding the page an age later when it finally becomes useful.",
       "attribute_modifiers": {
         "strength": -1,
         "finesse": 3,
@@ -102,7 +102,7 @@
     "yellow_devil": {
       "name": "Yellow Devil",
       "realm": "hell",
-      "description": "Greedy and proud, yellow devils tend to cluster wherever wealth changes hands.",
+      "description": "Greedy and proud, yellow devils tend to cluster wherever wealth changes hands. Every road toll, caravan escort and moneylender's back room in the Hells has one in it, and the courts run on the credit they extend. A yellow devil will not fight you if there is any other option, because fighting is expensive and there is almost always another option.",
       "attribute_modifiers": {
         "strength": -1,
         "finesse": -1,
@@ -150,7 +150,7 @@
     "green_devil": {
       "name": "Green Devil",
       "realm": "hell",
-      "description": "Quick-witted and paranoid, green devils make for excellent operatives and terrible friends.",
+      "description": "Quick-witted and paranoid, green devils make for excellent operatives and terrible friends. They do the work the other castes prefer not to have witnessed — the scouting, the quiet removals, the contents of a rival's correspondence. A green devil assumes it is being watched at all times, which is exhausting to be near and, given what green devils do for a living, entirely correct.",
       "attribute_modifiers": {
         "strength": -1,
         "finesse": 3,
@@ -200,7 +200,7 @@
     "black_devil": {
       "name": "Black Devil",
       "realm": "hell",
-      "description": "Spawned from the Outer Dark, black devils live off confusion and fear.",
+      "description": "Spawned from the Outer Dark, black devils live off confusion and fear. They are not native to the Hells so much as admitted to them, and the other castes keep a careful distance without ever quite saying why. Black devils take the sorcerous work, the interrogations that are really experiments, and the offices at the ends of corridors. They are the best-educated things in the realm and the worst company in it.",
       "attribute_modifiers": {
         "strength": 0,
         "finesse": 1,
@@ -261,7 +261,7 @@
     "white_devil": {
       "name": "White Devil",
       "realm": "hell",
-      "description": "Lazy and a bit ditzy, white devils make pleasant company as far as hell's denizens go.",
+      "description": "Lazy and a bit ditzy, white devils make pleasant company as far as hell's denizens go. This is not innocence — a white devil will hand you to the courts as readily as any of them — it is simply that being agreeable takes less effort than the alternative, and effort is the one thing they genuinely object to. They negotiate, they host, they smooth things over, and they are the only caste anybody is ever pleased to see.",
       "attribute_modifiers": {
         "strength": -2,
         "finesse": 1,
@@ -960,7 +960,7 @@
     "shaza": {
       "name": "Shaza",
       "realm": "hungry_ghost",
-      "description": "The predators of the underworld, the shaza aggressively seek out bodies to devour.",
+      "description": "The predators of the underworld, the shaza aggressively seek out bodies to devour. Where the rest of the preta starve on principle, the shaza found the loophole: it is not hunger that is cursed, only the eating of ordinary food. So they eat the dead, and lately the not-quite-dead, and they have got very fast and very quiet in the process. A shaza in a charnel ground is competition. A shaza on a road has already decided.",
       "attribute_modifiers": {
         "strength": 3,
         "finesse": 2,
@@ -998,7 +998,7 @@
     "yidag": {
       "name": "Yidag",
       "realm": "hungry_ghost",
-      "description": "Bellies distended with insatiable hunger, throats constricted to a hair's width — these beings are the most unfortunate embodiment of the karma that created their world.",
+      "description": "Bellies distended with insatiable hunger, throats constricted to a hair's width — these beings are the most unfortunate embodiment of the karma that created their world. This is the inner obscuration, and the kind everyone means when they say hungry ghost: the food is found, the food is reached, and the food will not go down. A yidag has spent its entire existence within arm's length of the one thing it needs.",
       "attribute_modifiers": {
         "strength": 0,
         "finesse": 3,
@@ -1018,7 +1018,7 @@
       "typical_backgrounds": [
         "thief",
         "wanderer",
-        "beggar",
+        "starveling",
         "penitent"
       ],
       "resistances": {},
@@ -1036,7 +1036,7 @@
     "skeleton_silver": {
       "name": "Silver Skeleton",
       "realm": "hungry_ghost",
-      "description": "Not many withstand the trials of the underworld without losing their compassion. Those who have managed that feat remain as healers and helpers, looking with hope for the future to the worlds far above.",
+      "description": "Not many withstand the trials of the underworld without losing their compassion. Those who have managed that feat remain as healers and helpers, looking with hope for the future to the worlds far above. They keep the sick-houses of the bone cities and go out to the roads where nobody else will, and they are the reason a preta with a wound sometimes lives to regret it. The other skeletons regard them with something between reverence and mild embarrassment.",
       "attribute_modifiers": {
         "strength": -1,
         "finesse": 0,
@@ -1074,7 +1074,7 @@
     "skeleton_copper": {
       "name": "Copper Skeleton",
       "realm": "hungry_ghost",
-      "description": "Skeletons born of molten copper mirrors in the court of the Skeleton King of the Setting Sun find themselves especially attuned to the arts of power and magnetism.",
+      "description": "Skeletons born of molten copper mirrors in the court of the Skeleton King of the Setting Sun find themselves especially attuned to the arts of power and magnetism. A copper skeleton walks into a room and the room reorganises itself slightly, and nobody present can say afterwards quite when they agreed to anything. They rarely hold office. They are usually standing just behind whoever does.",
       "attribute_modifiers": {
         "strength": -1,
         "finesse": 0,
@@ -1092,9 +1092,9 @@
       "starting_spells": [],
       "reincarnation_weight": 36,
       "typical_backgrounds": [
-        "sorcerer",
+        "conjurers_hand",
         "noble",
-        "courtier",
+        "diplomat",
         "bone_dancer"
       ],
       "resistances": {},
@@ -1112,7 +1112,7 @@
     "skeleton_golden": {
       "name": "Golden Skeleton",
       "realm": "hungry_ghost",
-      "description": "Gleaming in the flickering light of the crypt cities, golden skeletons are respected nobles among their people.",
+      "description": "Gleaming in the flickering light of the crypt cities, golden skeletons are respected nobles among their people. The gold is not paint and not plating; it went in at the making, and it cannot be lost, sold or acquired by anyone born without it. So the aristocracy of the bone cities is visible at a hundred paces and entirely closed, and a golden skeleton who wants out of the arrangement has nowhere in the realm to go where it is not obvious.",
       "attribute_modifiers": {
         "strength": -1,
         "finesse": 0,
@@ -1149,7 +1149,7 @@
     "skeleton_iron": {
       "name": "Iron Skeleton",
       "realm": "hungry_ghost",
-      "description": "Born of broken weapons on endless battlefields of the multiverse, iron skeletons are hard and unyielding, the most serious and driven of their kin.",
+      "description": "Born of broken weapons on endless battlefields of the multiverse, iron skeletons are hard and unyielding, the most serious and driven of their kin. They came out of the ground already knowing what they were for, which the others find enviable and iron skeletons find no comfort at all. They rust, alone among their kind, and they keep working through it without mentioning it to anybody.",
       "attribute_modifiers": {
         "strength": 3,
         "finesse": 0,
@@ -1188,7 +1188,7 @@
     "skeleton_turquoise": {
       "name": "Turquoise Skeleton",
       "realm": "hungry_ghost",
-      "description": "Prancing cheerfully in their rainbow skirts and flowery headdresses, turquoise skeletons serve as jesters, dancers and, often enough, grand viziers to the Great Bone Kings.",
+      "description": "Prancing cheerfully in their rainbow skirts and flowery headdresses, turquoise skeletons serve as jesters, dancers and, often enough, grand viziers to the Great Bone Kings. The three roles are less distinct than they sound. A turquoise skeleton is permitted to say the thing nobody else in the court may say, provided it is said while dancing, and a great many succession crises in the crypt cities have been settled by somebody in a flowered hat making a joke at exactly the right moment.",
       "attribute_modifiers": {
         "strength": -1,
         "finesse": 0,
@@ -1932,6 +1932,437 @@
         "night_vision"
       ],
       "body_plan_species": "avian"
+    },
+    "flame_imp": {
+      "name": "Flame Imp",
+      "realm": "hell",
+      "description": "Hell's smallest arsonists, hatched in the flue of something larger and never entirely put out since. A flame imp is the reason a fire that was under control stops being under control, and it will tell you so at length, from a safe distance, at speed. Not brave. Very difficult to extinguish.",
+      "attribute_modifiers": {
+        "strength": -1,
+        "finesse": 2,
+        "constitution": -2,
+        "focus": 1,
+        "awareness": -1,
+        "charm": -1,
+        "luck": 0
+      },
+      "elemental_affinity_bonuses": {
+        "fire": 4
+      },
+      "starting_skills": {
+        "fire_magic": 1
+      },
+      "starting_spells": [
+        {
+          "school": "Fire",
+          "level": 1,
+          "count": 1
+        }
+      ],
+      "reincarnation_weight": 40,
+      "typical_backgrounds": [
+        "swarm_hatched",
+        "errand_wing",
+        "pit_scavenger",
+        "familiar",
+        "crier",
+        "bone_setter",
+        "bellows_hand",
+        "torturer"
+      ],
+      "resistances": {},
+      "emotional_baseline": {
+        "space": 0,
+        "fire": -10,
+        "water": 0,
+        "earth": 0,
+        "air": 0
+      },
+      "starting_traits": [
+        "hell_born",
+        "imp_stature",
+        "flying"
+      ],
+      "body_plan_species": "winged"
+    },
+    "frost_imp": {
+      "name": "Frost Imp",
+      "realm": "hell",
+      "description": "Cold, small and patient in a way nothing else in the Hells manages. Frost imps hang in the roofs of the ice caverns waiting for something underneath them to stop moving, and they are prepared to wait a very long time for it. They rarely start anything. They are usually there at the end of it.",
+      "attribute_modifiers": {
+        "strength": -2,
+        "finesse": 1,
+        "constitution": 0,
+        "focus": 1,
+        "awareness": 1,
+        "charm": -2,
+        "luck": -1
+      },
+      "elemental_affinity_bonuses": {
+        "water": 4
+      },
+      "starting_skills": {
+        "water_magic": 1
+      },
+      "starting_spells": [
+        {
+          "school": "Water",
+          "level": 1,
+          "count": 1
+        }
+      ],
+      "reincarnation_weight": 40,
+      "typical_backgrounds": [
+        "swarm_hatched",
+        "errand_wing",
+        "pit_scavenger",
+        "familiar",
+        "crier",
+        "bone_setter",
+        "pass_warden",
+        "soul_jailer"
+      ],
+      "resistances": {},
+      "emotional_baseline": {
+        "space": 0,
+        "fire": 0,
+        "water": -10,
+        "earth": 0,
+        "air": 0
+      },
+      "starting_traits": [
+        "hell_born",
+        "imp_stature",
+        "flying"
+      ],
+      "body_plan_species": "winged"
+    },
+    "gravel_imp": {
+      "name": "Gravel Imp",
+      "realm": "hell",
+      "description": "Squat, grey and far heavier than their size accounts for, gravel imps live in the spoil heaps and tunnel walls wherever the digging is. They collect: bolts, teeth, coins, buttons, hinges, anything with an edge or a number on it. A gravel imp's nest is the nearest thing the Hells have to a museum, and it is not for sale.",
+      "attribute_modifiers": {
+        "strength": 1,
+        "finesse": 0,
+        "constitution": 1,
+        "focus": -1,
+        "awareness": -1,
+        "charm": -2,
+        "luck": 0
+      },
+      "elemental_affinity_bonuses": {
+        "earth": 4
+      },
+      "starting_skills": {
+        "smithing": 1
+      },
+      "starting_spells": [
+        {
+          "school": "Earth",
+          "level": 1,
+          "count": 1
+        }
+      ],
+      "reincarnation_weight": 40,
+      "typical_backgrounds": [
+        "swarm_hatched",
+        "errand_wing",
+        "pit_scavenger",
+        "familiar",
+        "crier",
+        "bone_setter",
+        "bellows_hand",
+        "chain_keeper"
+      ],
+      "resistances": {},
+      "emotional_baseline": {
+        "space": 0,
+        "fire": 0,
+        "water": 0,
+        "earth": -10,
+        "air": 0
+      },
+      "starting_traits": [
+        "hell_born",
+        "imp_stature",
+        "flying"
+      ],
+      "body_plan_species": "winged"
+    },
+    "static_imp": {
+      "name": "Static Imp",
+      "realm": "hell",
+      "description": "A shriek with wings on it. Static imps travel the ridge lines in loose crackling clouds, and the hair standing up on your arms is the whole of the warning you get. Nothing that happens anywhere near them stays quiet, which makes them useless as thieves and unbeatable as an alarm.",
+      "attribute_modifiers": {
+        "strength": -2,
+        "finesse": 3,
+        "constitution": -2,
+        "focus": 0,
+        "awareness": 1,
+        "charm": -1,
+        "luck": -1
+      },
+      "elemental_affinity_bonuses": {
+        "air": 4
+      },
+      "starting_skills": {
+        "air_magic": 1
+      },
+      "starting_spells": [
+        {
+          "school": "Air",
+          "level": 1,
+          "count": 1
+        }
+      ],
+      "reincarnation_weight": 40,
+      "typical_backgrounds": [
+        "swarm_hatched",
+        "errand_wing",
+        "pit_scavenger",
+        "familiar",
+        "crier",
+        "bone_setter",
+        "raider",
+        "pass_warden"
+      ],
+      "resistances": {},
+      "emotional_baseline": {
+        "space": 0,
+        "fire": 0,
+        "water": 0,
+        "earth": 0,
+        "air": -10
+      },
+      "starting_traits": [
+        "hell_born",
+        "imp_stature",
+        "flying"
+      ],
+      "body_plan_species": "winged"
+    },
+    "tinnitus_imp": {
+      "name": "Tinnitus Imp",
+      "realm": "hell",
+      "description": "The ringing that starts when the screaming stops. Tinnitus imps are barely visible and never quite absent, roosting in the dark over the courts and taking in everything said beneath them. They know a great deal. Getting any of it back out in an order that makes sense is the difficulty.",
+      "attribute_modifiers": {
+        "strength": -2,
+        "finesse": 0,
+        "constitution": -2,
+        "focus": 2,
+        "awareness": 3,
+        "charm": -2,
+        "luck": -1
+      },
+      "elemental_affinity_bonuses": {
+        "space": 4
+      },
+      "starting_skills": {
+        "black_magic": 1
+      },
+      "starting_spells": [
+        {
+          "school": "Black",
+          "level": 1,
+          "count": 1
+        }
+      ],
+      "reincarnation_weight": 40,
+      "typical_backgrounds": [
+        "swarm_hatched",
+        "errand_wing",
+        "pit_scavenger",
+        "familiar",
+        "crier",
+        "bone_setter",
+        "infernal_scribe",
+        "torturer"
+      ],
+      "resistances": {},
+      "emotional_baseline": {
+        "space": 5,
+        "fire": 0,
+        "water": 0,
+        "earth": 0,
+        "air": 0
+      },
+      "starting_traits": [
+        "hell_born",
+        "imp_stature",
+        "flying"
+      ],
+      "body_plan_species": "winged"
+    },
+    "sloth_imp": {
+      "name": "Sloth Imp",
+      "realm": "hell",
+      "description": "Soft, slow and entirely unbothered, sloth imps hang from the warm vents and decline to be anywhere else. Every other thing in the Hells is going somewhere in a hurry, and the sloth imp has watched the whole of it go past twice. They are unexpectedly good company. They are very hard to move.",
+      "attribute_modifiers": {
+        "strength": -1,
+        "finesse": -2,
+        "constitution": 2,
+        "focus": -1,
+        "awareness": -1,
+        "charm": 2,
+        "luck": -1
+      },
+      "elemental_affinity_bonuses": {
+        "space": 4
+      },
+      "starting_skills": {
+        "yoga": 1
+      },
+      "starting_spells": [
+        {
+          "school": "Space",
+          "level": 1,
+          "count": 1
+        }
+      ],
+      "reincarnation_weight": 40,
+      "typical_backgrounds": [
+        "swarm_hatched",
+        "errand_wing",
+        "pit_scavenger",
+        "familiar",
+        "crier",
+        "bone_setter",
+        "ash_farmer",
+        "infernal_scribe"
+      ],
+      "resistances": {},
+      "emotional_baseline": {
+        "space": 0,
+        "fire": 0,
+        "water": 0,
+        "earth": 0,
+        "air": 0
+      },
+      "starting_traits": [
+        "hell_born",
+        "imp_stature",
+        "flying"
+      ],
+      "body_plan_species": "winged"
+    },
+    "wretch": {
+      "name": "Wretch",
+      "realm": "hell",
+      "description": "The Hells have two populations. One of them works here. The wretches are the other — reborn as the reason the place exists rather than as its staff, and owed nothing by anyone in it. No caste, no colour, no element, no rights, and no share of the infernal fire that lets a devil find the heat comfortable. What a wretch has is that it is still walking, which is more than most of its cohort managed.",
+      "attribute_modifiers": {
+        "strength": -1,
+        "finesse": 0,
+        "constitution": 1,
+        "focus": -1,
+        "awareness": 1,
+        "charm": -3,
+        "luck": -2
+      },
+      "elemental_affinity_bonuses": {},
+      "starting_skills": {},
+      "starting_spells": [],
+      "reincarnation_weight": 8,
+      "typical_backgrounds": [
+        "the_condemned",
+        "debt_flesh",
+        "pyre_tender",
+        "runaway",
+        "pit_scavenger",
+        "bone_setter",
+        "ash_farmer"
+      ],
+      "resistances": {},
+      "emotional_baseline": {
+        "space": 0,
+        "fire": 0,
+        "water": 0,
+        "earth": 0,
+        "air": 0
+      },
+      "starting_traits": [
+        "wretched"
+      ]
+    },
+    "chidrib": {
+      "name": "Chidrib",
+      "realm": "hungry_ghost",
+      "description": "The outer obscuration, and the walkers of the preta realm. A chidrib can hear of a river a month away and set out for it, and find guards on the bank, or a dry bed, or water that turns as they kneel to it. Nothing is withheld from them exactly. It is simply never there by the time they arrive. No one in the realm has covered more ground, and none of it has come to anything.",
+      "attribute_modifiers": {
+        "strength": -1,
+        "finesse": 1,
+        "constitution": 0,
+        "focus": 0,
+        "awareness": 2,
+        "charm": -1,
+        "luck": -1
+      },
+      "elemental_affinity_bonuses": {
+        "air": 3
+      },
+      "starting_skills": {
+        "might": 1,
+        "guile": 1
+      },
+      "starting_spells": [],
+      "reincarnation_weight": 60,
+      "typical_backgrounds": [
+        "water_seeker",
+        "starveling",
+        "offering_eater",
+        "wanderer",
+        "hunter"
+      ],
+      "resistances": {},
+      "emotional_baseline": {
+        "space": 0,
+        "fire": 0,
+        "water": 0,
+        "earth": 0,
+        "air": 5
+      },
+      "starting_traits": [
+        "outer_obscuration"
+      ]
+    },
+    "zadrib": {
+      "name": "Zadrib",
+      "realm": "hungry_ghost",
+      "description": "The obscuration of food and drink: they can swallow, and they should not. Whatever a zadrib takes in catches on the way down, so they burn from the inside outward and go back to eating regardless. The flames standing off their mouths are how you see them coming in the dark, and how they find each other. Of all the preta they are the least pitiable and the most dangerous, because the fire that is killing them will answer to them first.",
+      "attribute_modifiers": {
+        "strength": 0,
+        "finesse": 0,
+        "constitution": 0,
+        "focus": 1,
+        "awareness": 0,
+        "charm": -1,
+        "luck": 1
+      },
+      "elemental_affinity_bonuses": {
+        "fire": 3
+      },
+      "starting_skills": {
+        "sorcery": 1
+      },
+      "starting_spells": [],
+      "reincarnation_weight": 60,
+      "typical_backgrounds": [
+        "starveling",
+        "offering_eater",
+        "pyre_tender",
+        "firekeeper",
+        "water_seeker"
+      ],
+      "resistances": {},
+      "emotional_baseline": {
+        "space": 0,
+        "fire": 5,
+        "water": 0,
+        "earth": 0,
+        "air": 0
+      },
+      "starting_traits": [
+        "flame_mouth"
+      ]
     }
   },
   "backgrounds": {
@@ -2264,7 +2695,13 @@
         "yellow_devil",
         "skeleton",
         "vetala",
-        "gana"
+        "gana",
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp"
       ],
       "weight": 5
     },
@@ -2367,7 +2804,13 @@
         "black_devil",
         "white_devil",
         "tsen",
-        "rudra"
+        "rudra",
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp"
       ],
       "weight": 4
     },
@@ -2401,7 +2844,13 @@
         "yellow_devil",
         "green_devil",
         "black_devil",
-        "white_devil"
+        "white_devil",
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp"
       ],
       "weight": 4
     },
@@ -2438,7 +2887,13 @@
         "black_devil",
         "white_devil",
         "tsen",
-        "rudra"
+        "rudra",
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp"
       ],
       "weight": 3
     },
@@ -4287,6 +4742,827 @@
         "items": []
       },
       "available_races": [],
+      "weight": 5
+    },
+    "swarm_hatched": {
+      "name": "Swarm-Hatched",
+      "description": "One of a clutch of forty in a vent nobody had counted. No name was issued and none was missed. You learned early that the way to last is to be somewhere else by the time anyone looks up.",
+      "attribute_modifiers": {
+        "finesse": 1,
+        "charm": -1
+      },
+      "starting_skills": {
+        "guile": 1,
+        "thievery": 1,
+        "might": 1
+      },
+      "starting_equipment": {
+        "base_weapon": "bone_dagger",
+        "items": [
+          "leather_vest"
+        ],
+        "random_bonus": [
+          "lucky_charm"
+        ],
+        "bonus_chance": 0.3
+      },
+      "available_races": [
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp"
+      ],
+      "weight": 6
+    },
+    "errand_wing": {
+      "name": "Errand Wing",
+      "description": "Sentences, ledgers, threats and invitations, carried between courts that would rather not be in the same room. You have read every one of them and delivered every one of them sealed, and the difference between those two facts is your whole career.",
+      "attribute_modifiers": {
+        "finesse": 1,
+        "awareness": 1,
+        "strength": -1
+      },
+      "starting_skills": {
+        "logistics": 2,
+        "guile": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "leather_boots",
+          "plain_quartermasters_ledger"
+        ],
+        "random_bonus": [
+          "travelers_amulet",
+          "copper_ring"
+        ],
+        "bonus_chance": 0.45
+      },
+      "available_races": [
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp",
+        "white_devil",
+        "green_devil"
+      ],
+      "weight": 5
+    },
+    "bellows_hand": {
+      "name": "Bellows Hand",
+      "description": "Kept beside a forge to keep it fed, which is steady work in a realm that never lets a fire go out. Your hands are ruined and you can judge the heat of a bar by looking at it, which in the fire hells is close to a profession.",
+      "attribute_modifiers": {
+        "strength": 1,
+        "constitution": 1,
+        "charm": -1
+      },
+      "starting_skills": {
+        "smithing": 2,
+        "might": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_smiths_hammer",
+          "leather_gloves"
+        ],
+        "random_bonus": [
+          "copper_ring"
+        ],
+        "bonus_chance": 0.35
+      },
+      "available_races": [
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp",
+        "red_devil",
+        "yellow_devil",
+        "wretch"
+      ],
+      "weight": 4
+    },
+    "familiar": {
+      "name": "Familiar",
+      "description": "Bound to a sorcerer as a fetch-and-carry spirit — hold this, watch that door, do not speak. Nobody taught you anything. You were simply in the room for a great many years while it was being said out loud.",
+      "attribute_modifiers": {
+        "focus": 1,
+        "awareness": 1,
+        "strength": -1,
+        "constitution": -1
+      },
+      "starting_skills": {
+        "black_magic": 1,
+        "ritual": 1,
+        "learning": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "cloth_robe",
+          "plain_bone_damaru"
+        ],
+        "random_bonus": [
+          "bone_amulet",
+          "prayer_beads"
+        ],
+        "bonus_chance": 0.5
+      },
+      "available_races": [
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp",
+        "black_devil"
+      ],
+      "weight": 4
+    },
+    "pit_scavenger": {
+      "name": "Pit Scavenger",
+      "description": "You work the ground after the fighting stops, and occasionally slightly before it does. Boots, teeth, buckles, anything a corpse has stopped needing. You have a very accurate sense of what a body is worth and no illusions whatever about your own.",
+      "attribute_modifiers": {
+        "finesse": 1,
+        "awareness": 1,
+        "charm": -2
+      },
+      "starting_skills": {
+        "thievery": 2,
+        "medicine": 1
+      },
+      "starting_equipment": {
+        "base_weapon": "bone_dagger",
+        "items": [
+          "leather_vest",
+          "plain_thieving_tools"
+        ],
+        "random_bonus": [
+          "copper_ring"
+        ],
+        "bonus_chance": 0.4
+      },
+      "available_races": [
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp",
+        "wretch",
+        "green_devil"
+      ],
+      "weight": 5
+    },
+    "crier": {
+      "name": "Crier",
+      "description": "You scream the judgements from the ledges above the courts until the throat gives out, then you rest a day and scream the next lot. Every sentence handed down in your district for a century has gone out in your voice, and not one soul below has ever looked up to see whose.",
+      "attribute_modifiers": {
+        "charm": 1,
+        "awareness": 1,
+        "constitution": -1
+      },
+      "starting_skills": {
+        "performance": 2,
+        "persuasion": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "cloth_robe",
+          "plain_lute"
+        ],
+        "random_bonus": [
+          "silver_ring",
+          "travelers_amulet"
+        ],
+        "bonus_chance": 0.4
+      },
+      "available_races": [
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp",
+        "white_devil",
+        "red_devil"
+      ],
+      "weight": 4
+    },
+    "the_condemned": {
+      "name": "The Condemned",
+      "description": "You arrived under a sentence and the sentence has not run out. There is no appeal, no court that would hear one, and no record of what the charge was. What you have instead of hope is a very great deal of practice at continuing.",
+      "attribute_modifiers": {
+        "constitution": 2,
+        "charm": -1,
+        "luck": -1
+      },
+      "starting_skills": {
+        "might": 2,
+        "yoga": 1
+      },
+      "starting_equipment": {
+        "base_weapon": "bone_club",
+        "items": [
+          "cloth_robe"
+        ],
+        "random_bonus": [
+          "prayer_beads"
+        ],
+        "bonus_chance": 0.25
+      },
+      "available_races": [
+        "wretch"
+      ],
+      "weight": 6
+    },
+    "debt_flesh": {
+      "name": "Debt-Flesh",
+      "description": "Somebody's account came due and you were the collateral. The yellow courts keep excellent books, and yours is still open in a ledger three provinces away, accruing. You have read enough of it over shoulders to know roughly what you cost.",
+      "attribute_modifiers": {
+        "awareness": 1,
+        "charm": -1
+      },
+      "starting_skills": {
+        "trade": 1,
+        "logistics": 1,
+        "might": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "leather_vest",
+          "plain_merchants_scales"
+        ],
+        "random_bonus": [
+          "copper_ring"
+        ],
+        "bonus_chance": 0.3
+      },
+      "available_races": [
+        "wretch",
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp"
+      ],
+      "weight": 4
+    },
+    "pyre_tender": {
+      "name": "Pyre Tender",
+      "description": "You feed the fires you will eventually be fed to, and you have made peace with the arrangement in the only way available: by becoming better at the work than anyone who could replace you. Oils, timber, wind, what burns clean and what does not.",
+      "attribute_modifiers": {
+        "constitution": 1,
+        "focus": 1,
+        "charm": -1
+      },
+      "starting_skills": {
+        "alchemy": 1,
+        "smithing": 1,
+        "might": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_alchemists_kit",
+          "leather_gloves"
+        ],
+        "random_bonus": [
+          "bone_amulet"
+        ],
+        "bonus_chance": 0.35
+      },
+      "available_races": [
+        "wretch",
+        "zadrib",
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp"
+      ],
+      "weight": 4
+    },
+    "runaway": {
+      "name": "Runaway",
+      "description": "You got out of a pit once. It was not planned, it was not clever, and it has defined everything since — because now you know the thing that the rest of your cohort does not, which is that the walls have a limit and you have found one of them.",
+      "attribute_modifiers": {
+        "finesse": 2,
+        "constitution": -1,
+        "luck": 1
+      },
+      "starting_skills": {
+        "guile": 2,
+        "thievery": 1
+      },
+      "starting_equipment": {
+        "base_weapon": "bone_dagger",
+        "items": [
+          "leather_boots"
+        ],
+        "random_bonus": [
+          "lucky_charm",
+          "travelers_amulet"
+        ],
+        "bonus_chance": 0.5
+      },
+      "available_races": [
+        "wretch",
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp"
+      ],
+      "weight": 5
+    },
+    "chain_keeper": {
+      "name": "Chain Keeper",
+      "description": "Irons, locks, the register of who is in which. It is not glamorous work and it is never questioned, which means you go everywhere and are remembered nowhere. You have keys to rooms whose owners have forgotten the rooms exist.",
+      "attribute_modifiers": {
+        "constitution": 1,
+        "awareness": 1,
+        "charm": -1
+      },
+      "starting_skills": {
+        "armor": 1,
+        "logistics": 1,
+        "smithing": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "padded_armor",
+          "plain_smiths_hammer"
+        ],
+        "random_bonus": [
+          "copper_ring"
+        ],
+        "bonus_chance": 0.35
+      },
+      "available_races": [
+        "red_devil",
+        "blue_devil",
+        "yellow_devil",
+        "green_devil",
+        "black_devil",
+        "white_devil",
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp"
+      ],
+      "weight": 5
+    },
+    "bone_setter": {
+      "name": "Bone-Setter",
+      "description": "Hell's physician. You set what was broken, close what was opened and bring the patient back to a condition in which the questioning can usefully continue. It is real medicine, practised to a high standard, for the worst purpose available.",
+      "attribute_modifiers": {
+        "focus": 1,
+        "awareness": 1,
+        "strength": -1
+      },
+      "starting_skills": {
+        "medicine": 2,
+        "black_magic": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_medicine_bag",
+          "cloth_robe"
+        ],
+        "random_bonus": [
+          "herb_bundle",
+          "bone_amulet"
+        ],
+        "bonus_chance": 0.5
+      },
+      "available_races": [
+        "red_devil",
+        "blue_devil",
+        "yellow_devil",
+        "green_devil",
+        "black_devil",
+        "white_devil",
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp",
+        "wretch"
+      ],
+      "weight": 5
+    },
+    "pass_warden": {
+      "name": "Pass Warden",
+      "description": "The mountain wall between the cold hells and the fire hells has a handful of gaps in it and you have stood in one. Everything that crosses, crosses past you. You are colder than the fire side finds reasonable and warmer than the ice side trusts.",
+      "attribute_modifiers": {
+        "constitution": 1,
+        "awareness": 1,
+        "finesse": -1
+      },
+      "starting_skills": {
+        "spears": 2,
+        "logistics": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "wooden_spear",
+          "padded_armor",
+          "leather_cap"
+        ],
+        "random_bonus": [
+          "travelers_amulet"
+        ],
+        "bonus_chance": 0.35
+      },
+      "available_races": [
+        "red_devil",
+        "blue_devil",
+        "yellow_devil",
+        "green_devil",
+        "black_devil",
+        "white_devil",
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp"
+      ],
+      "weight": 5
+    },
+    "ash_farmer": {
+      "name": "Ash Farmer",
+      "description": "The grey fields under the fire hells will grow four things, and you know all four and the order to plant them in. Nobody in the courts above has any idea where their food comes from, which suits you: the unnoticed eat first.",
+      "attribute_modifiers": {
+        "constitution": 1,
+        "luck": 1,
+        "charm": -1
+      },
+      "starting_skills": {
+        "logistics": 1,
+        "earth_magic": 1,
+        "medicine": 1
+      },
+      "starting_equipment": {
+        "base_weapon": "bone_club",
+        "items": [
+          "cloth_robe",
+          "rations"
+        ],
+        "random_bonus": [
+          "herb_bundle",
+          "lucky_charm"
+        ],
+        "bonus_chance": 0.45
+      },
+      "available_races": [
+        "red_devil",
+        "blue_devil",
+        "yellow_devil",
+        "green_devil",
+        "black_devil",
+        "white_devil",
+        "flame_imp",
+        "frost_imp",
+        "gravel_imp",
+        "static_imp",
+        "tinnitus_imp",
+        "sloth_imp",
+        "wretch"
+      ],
+      "weight": 5
+    },
+    "starveling": {
+      "name": "Starveling",
+      "description": "You have been hungry so long that the hunger is the only clock left — it is how you tell morning from evening and this year from the last. Everything else about you has been worn down to serve it, and what is left is remarkably durable.",
+      "attribute_modifiers": {
+        "constitution": 1,
+        "awareness": 1,
+        "charm": -2
+      },
+      "starting_skills": {
+        "might": 2,
+        "guile": 1
+      },
+      "starting_equipment": {
+        "base_weapon": "bone_dagger",
+        "items": [
+          "cloth_robe"
+        ],
+        "random_bonus": [
+          "bone_amulet"
+        ],
+        "bonus_chance": 0.3
+      },
+      "available_races": [
+        "yidag",
+        "chidrib",
+        "zadrib",
+        "shaza",
+        "dre"
+      ],
+      "weight": 6
+    },
+    "water_seeker": {
+      "name": "Water-Seeker",
+      "description": "You walk to every river you hear of. You have heard of a great many and reached all of them, and every single one was dry, guarded, or turned as you knelt. You keep a list. You are, by a wide margin, the best-travelled thing in the realm.",
+      "attribute_modifiers": {
+        "awareness": 2,
+        "constitution": 1,
+        "charm": -1
+      },
+      "starting_skills": {
+        "learning": 1,
+        "might": 1,
+        "guile": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "leather_boots",
+          "cloth_hood"
+        ],
+        "random_bonus": [
+          "travelers_amulet",
+          "prayer_beads"
+        ],
+        "bonus_chance": 0.5
+      },
+      "available_races": [
+        "yidag",
+        "chidrib",
+        "zadrib",
+        "dre"
+      ],
+      "weight": 5
+    },
+    "offering_eater": {
+      "name": "Offering-Eater",
+      "description": "The living still set food out for the dead in some districts, and you know every household that has not given up the habit — the dates, the doors, the ones who put out something decent. It is not enough to live on. Nothing is. But it is a routine, and a routine is very nearly a life.",
+      "attribute_modifiers": {
+        "awareness": 1,
+        "charm": 1,
+        "strength": -1
+      },
+      "starting_skills": {
+        "ritual": 2,
+        "persuasion": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "cloth_robe",
+          "prayer_beads"
+        ],
+        "random_bonus": [
+          "bone_amulet",
+          "plain_bone_drilbu"
+        ],
+        "bonus_chance": 0.45
+      },
+      "available_races": [
+        "yidag",
+        "chidrib",
+        "zadrib",
+        "dre",
+        "preserved",
+        "shaza",
+        "gyelpo",
+        "dralha"
+      ],
+      "weight": 5
+    },
+    "sky_burial_hand": {
+      "name": "Sky-Burial Hand",
+      "description": "You worked a cutting ground, before or after your own death depending on how you count it. You know exactly what a body is made of, in what order it comes apart, and how little of the person is anywhere in the parts.",
+      "attribute_modifiers": {
+        "finesse": 1,
+        "focus": 1,
+        "charm": -1
+      },
+      "starting_skills": {
+        "medicine": 2,
+        "daggers": 1
+      },
+      "starting_equipment": {
+        "base_weapon": "bone_dagger",
+        "weapon_upgrade": "bronze_dagger",
+        "weapon_upgrade_chance": 0.25,
+        "items": [
+          "plain_medicine_bag"
+        ],
+        "random_bonus": [
+          "herb_bundle"
+        ],
+        "bonus_chance": 0.4
+      },
+      "available_races": [
+        "preserved",
+        "rolang",
+        "skeleton",
+        "shaza",
+        "vetala"
+      ],
+      "weight": 5
+    },
+    "oil_kept": {
+      "name": "Oil-Kept",
+      "description": "The mantras and mineral oils that stopped your rot were expensive, and somebody paid for them expecting a return. You have been repaying it ever since, in a currency that was never itemised, to a creditor who may or may not still exist.",
+      "attribute_modifiers": {
+        "focus": 1,
+        "constitution": 1,
+        "finesse": -1
+      },
+      "starting_skills": {
+        "alchemy": 2,
+        "ritual": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_alchemists_kit",
+          "cloth_robe"
+        ],
+        "random_bonus": [
+          "prayer_beads",
+          "silver_ring"
+        ],
+        "bonus_chance": 0.5
+      },
+      "available_races": [
+        "preserved"
+      ],
+      "weight": 5
+    },
+    "reliquary_guard": {
+      "name": "Reliquary Guard",
+      "description": "You stand over the bones and grave goods of a lineage that stopped visiting some centuries back. The duty was never lifted, so it holds. You have had a great deal of time to consider whether that is loyalty or simply momentum.",
+      "attribute_modifiers": {
+        "constitution": 2,
+        "focus": 1,
+        "finesse": -1
+      },
+      "starting_skills": {
+        "armor": 2,
+        "ritual": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "lamellar_armor",
+          "wooden_spear"
+        ],
+        "random_bonus": [
+          "prayer_beads"
+        ],
+        "bonus_chance": 0.35
+      },
+      "available_races": [
+        "preserved",
+        "skeleton",
+        "skeleton_silver",
+        "skeleton_copper",
+        "skeleton_golden",
+        "skeleton_iron",
+        "skeleton_turquoise",
+        "dralha"
+      ],
+      "weight": 5
+    },
+    "crypt_citizen": {
+      "name": "Crypt Citizen",
+      "description": "Born — if that is the word — into the bone cities, where standing is read off the metal in your ribs and everyone can see yours at a glance. You grew up knowing precisely where you stood, which is a comfort and a sentence in equal measure.",
+      "attribute_modifiers": {
+        "charm": 1,
+        "awareness": 1,
+        "strength": -1
+      },
+      "starting_skills": {
+        "trade": 1,
+        "learning": 1,
+        "logistics": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "cloth_robe",
+          "plain_merchants_scales"
+        ],
+        "random_bonus": [
+          "copper_ring",
+          "silver_ring"
+        ],
+        "bonus_chance": 0.5
+      },
+      "available_races": [
+        "skeleton",
+        "skeleton_silver",
+        "skeleton_copper",
+        "skeleton_golden",
+        "skeleton_iron",
+        "skeleton_turquoise"
+      ],
+      "weight": 6
+    },
+    "ore_grafted": {
+      "name": "Ore-Grafted",
+      "description": "Metal was worked into your bone — by ritual if you were fortunate, by a smith with a quota if you were not. It holds, it aches in the cold, and it has made you a subject of professional interest to people you would rather not interest.",
+      "attribute_modifiers": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": -1
+      },
+      "starting_skills": {
+        "smithing": 2,
+        "might": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "plain_smiths_hammer",
+          "padded_armor"
+        ],
+        "random_bonus": [
+          "copper_ring"
+        ],
+        "bonus_chance": 0.35
+      },
+      "available_races": [
+        "skeleton",
+        "skeleton_silver",
+        "skeleton_copper",
+        "skeleton_golden",
+        "skeleton_iron",
+        "skeleton_turquoise",
+        "preserved"
+      ],
+      "weight": 5
+    },
+    "bone_registrar": {
+      "name": "Bone Registrar",
+      "description": "Every niche in the ossuary has an occupant, every occupant has a name, and the names are in your hand because nobody else could be bothered to keep them. It is dull work and it makes you the only one in the district who knows who everybody used to be.",
+      "attribute_modifiers": {
+        "focus": 1,
+        "awareness": 1,
+        "strength": -1
+      },
+      "starting_skills": {
+        "learning": 2,
+        "logistics": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "cloth_robe",
+          "plain_quartermasters_ledger"
+        ],
+        "random_bonus": [
+          "prayer_beads",
+          "silver_ring"
+        ],
+        "bonus_chance": 0.45
+      },
+      "available_races": [
+        "skeleton",
+        "skeleton_silver",
+        "skeleton_copper",
+        "skeleton_golden",
+        "skeleton_iron",
+        "skeleton_turquoise",
+        "preserved",
+        "gyelpo"
+      ],
+      "weight": 5
+    },
+    "body_hunter": {
+      "name": "Body-Hunter",
+      "description": "You go looking for the freshly dead, and your patience about the 'freshly' has been eroding for years. Fast, quiet, and honest about it, which is more than most of the realm manages.",
+      "attribute_modifiers": {
+        "strength": 1,
+        "finesse": 1,
+        "charm": -2
+      },
+      "starting_skills": {
+        "unarmed": 2,
+        "guile": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "leather_vest",
+          "leather_gloves"
+        ],
+        "random_bonus": [
+          "lucky_charm"
+        ],
+        "bonus_chance": 0.35
+      },
+      "available_races": [
+        "shaza",
+        "vetala",
+        "rolang"
+      ],
       "weight": 5
     }
   }

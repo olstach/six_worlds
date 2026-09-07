@@ -1,13 +1,27 @@
 # Review documents
 
-Generated prose for reading and editing away from the JSON. Eleven files.
+Generated prose for reading and editing away from the JSON. Thirteen files.
 
-**The animal realm — its whole text, one document per kind of thing:**
+**Births and backgrounds — one document per realm:**
+
+| File | Contents |
+|---|---|
+| `ANIMAL_RACES.md` | 18 births and the 67 backgrounds anchored here |
+| `HELL_RACES.md` | 13 births — six devils, six imps, the wretch — and 28 backgrounds |
+| `HUNGRY_GHOST_RACES.md` | 16 births and 20 backgrounds |
+
+A background open to births in more than one realm is anchored in exactly one
+of these documents and merely listed in the others, under **Backgrounds edited
+elsewhere**. That is deliberate: the importer reads every file in the directory
+in filename order against a single copy of `races.json`, so a second anchor for
+the same field would let an unedited document quietly revert an edit made in
+the other one. Edit a background where its anchors are.
+
+**The rest of the animal realm:**
 
 | File | Contents |
 |---|---|
 | `ANIMAL_COMPANIONS.md` | 24 companions — flavour, description, recruitment, skill builds |
-| `ANIMAL_RACES.md` | 18 births and the 57 backgrounds only they can take |
 | `ANIMAL_ENEMIES.md` | 34 archetypes across 42 encounter templates, by region |
 | `ANIMAL_LOCATIONS.md` | 30 places you can walk into — teahouses, guilds, shrines, merchants |
 | `ANIMAL_WORLD.md` | The realm blurb, its 5 zones, the fixed landmarks, 15 settlement names |

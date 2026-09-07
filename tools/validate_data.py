@@ -426,6 +426,14 @@ for group in ("races", "backgrounds"):
         for iid in equip.get("items", []):
             if not item_ok(iid):
                 err(f"{group[:-1]}->item", f"races.json:{key}: starting item '{iid}' unknown")
+        for iid in equip.get("random_bonus", []):
+            if not item_ok(iid):
+                err(f"{group[:-1]}->item", f"races.json:{key}: random_bonus '{iid}' unknown")
+        # typical_backgrounds is documentation rather than gameplay data (the roll
+        # uses available_races), so nothing crashes when one rots — check it anyway.
+        for bid in entry.get("typical_backgrounds", []):
+            if bid not in backgrounds:
+                err("birth->background", f"races.json:{key}: typical_background '{bid}' unknown")
         for birth in entry.get("available_races", []):
             if birth not in races:
                 err("background->birth", f"races.json:{key}: available_race '{birth}' unknown")

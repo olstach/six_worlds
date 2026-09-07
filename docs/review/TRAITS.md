@@ -1,6 +1,6 @@
 # Traits
 
-*118 traits. The player rolls one inborn **physical**, one **personality** and one **behavioral** at creation; **acquired** ones are earned during a run; **racial** ones come with the birth.*
+*122 traits. The player rolls one inborn **physical**, one **personality** and one **behavioral** at creation; **acquired** ones are earned during a run; **racial** ones come with the birth.*
 
 *`pressure` shifts the emotional baseline that decay pulls toward: negative is toward that element's klesha, positive toward its wisdom. `bond` tags are what RelationshipSystem scores party rapport on.*
 
@@ -1653,7 +1653,7 @@ Violence no longer shocks, only excites the senses.
 ---
 
 
-# Racial  (28)
+# Racial  (32)
 
 
 ## ancient_memory
@@ -1836,6 +1836,24 @@ The head comes up before the sound arrives. Alertness inherited rather than lear
 <!--@end-->
 
 
+## flame_mouth
+
+`stats: focus+1, constitution-1  ·  skills: fire_magic+1  ·  pressure: fire+10  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | flame_mouth | name -->
+Flame-Mouth
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | flame_mouth | description -->
+You can swallow, and you should not. What goes down catches on the way, so you burn from the inside outward and eat again anyway. The fire that answers to nobody else answers to you.
+<!--@end-->
+
+
 ## flying
 
 `stats: finesse+1  ·  pressure: air-5  ·  on 0 companions`
@@ -1926,6 +1944,24 @@ Lifetimes of the twisted disciplines — breath held to stillness, hunger cultiv
 <!--@end-->
 
 
+## imp_stature
+
+`stats: finesse+1, strength-1  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | imp_stature | name -->
+Imp's Stature
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | imp_stature | description -->
+Knee-high, hollow-boned and lighter than a sack of coal. Ledges, flues and the attention of larger things all pass over you, which is the only reason imps last as long as they do.
+<!--@end-->
+
+
 ## incorporeal
 
 `stats: constitution-1  ·  pressure: earth-5  ·  on 0 companions`
@@ -1995,6 +2031,24 @@ Nimble Mischief
 
 <!--@ traits.json | nimble_mischief | description -->
 Quick hands and a quicker mind.
+<!--@end-->
+
+
+## outer_obscuration
+
+`stats: awareness+1  ·  pressure: air+8, water+5  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | outer_obscuration | name -->
+Outer Obscuration
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | outer_obscuration | description -->
+What you are looking for is never where you are. Water is guarded, or dry, or turns as you kneel to it — never withheld exactly, simply not there by the time you arrive.
 <!--@end-->
 
 
@@ -2157,6 +2211,24 @@ War Banner
 
 <!--@ traits.json | war_banner | description -->
 Where this one stands, a line forms. It is not courage exactly — closer to the certainty that the fight has already been decided and everyone else is simply catching up.
+<!--@end-->
+
+
+## wretched
+
+`pressure: fire+8, water+8, earth+5, air+5, space+5  ·  on 0 companions`
+
+**Name**
+
+<!--@ traits.json | wretched | name -->
+Wretched
+<!--@end-->
+
+
+**Description**
+
+<!--@ traits.json | wretched | description -->
+Hell's other population: not its staff but its purpose. Nothing here is owed to you, nothing here is on your side, and every element of the place presses in without a single one of them being home.
 <!--@end-->
 
 

@@ -2592,5 +2592,91 @@
       "yoga"
     ],
     "purge_difficulty": 14
+  },
+  "imp_stature": {
+    "name": "Imp's Stature",
+    "description": "Knee-high, hollow-boned and lighter than a sack of coal. Ledges, flues and the attention of larger things all pass over you, which is the only reason imps last as long as they do.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "finesse": 1,
+      "strength": -1
+    },
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
+    "event_tags": [
+      "imp",
+      "diminutive",
+      "overlooked"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "wretched": {
+    "name": "Wretched",
+    "description": "Hell's other population: not its staff but its purpose. Nothing here is owed to you, nothing here is on your side, and every element of the place presses in without a single one of them being home.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {},
+    "pressure_modifiers": {
+      "fire": 8,
+      "water": 8,
+      "earth": 5,
+      "air": 5,
+      "space": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "wretch",
+      "damned",
+      "victim",
+      "lowborn"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "outer_obscuration": {
+    "name": "Outer Obscuration",
+    "description": "What you are looking for is never where you are. Water is guarded, or dry, or turns as you kneel to it — never withheld exactly, simply not there by the time you arrive.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "awareness": 1
+    },
+    "pressure_modifiers": {
+      "air": 8,
+      "water": 5
+    },
+    "skill_modifiers": {},
+    "event_tags": [
+      "outer_obscuration",
+      "hungry_ghost_curse",
+      "never_arrives"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
+  },
+  "flame_mouth": {
+    "name": "Flame-Mouth",
+    "description": "You can swallow, and you should not. What goes down catches on the way, so you burn from the inside outward and eat again anyway. The fire that answers to nobody else answers to you.",
+    "category": "racial",
+    "inborn": true,
+    "stat_modifiers": {
+      "focus": 1,
+      "constitution": -1
+    },
+    "pressure_modifiers": {
+      "fire": 10
+    },
+    "skill_modifiers": {
+      "fire_magic": 1
+    },
+    "event_tags": [
+      "flame_mouth",
+      "hungry_ghost_curse",
+      "burning"
+    ],
+    "purgeable_by": [],
+    "purge_difficulty": 0
   }
 }

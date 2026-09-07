@@ -103,6 +103,25 @@ const BODY_PLANS: Dictionary = {
 		]
 	},
 
+	# Imps: a human frame with bat wings on the back. The wings are a locked slot —
+	# they occupy "back", so an imp can never wear a cloak, and they wound and sever
+	# under the "wing" category the way an avian's do.
+	"winged": {
+		"parts": [
+			{"id": "head",   "category": "head",  "equip_slot": "head",   "parent": "torso",  "children": []},
+			{"id": "torso",  "category": "torso", "equip_slot": "chest",  "parent": "",       "children": ["head", "back", "arm_l", "arm_r", "leg_l", "leg_r"]},
+			{"id": "back",   "category": "wing",  "equip_slot": "back",   "parent": "torso",  "children": [], "locked": true},
+			{"id": "arm_l",  "category": "arm",   "equip_slot": "hand_l", "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": false, "name": "Claw", "damage_min": 1, "damage_max": 3, "damage_type": "slashing", "skill_tag": "unarmed"}},
+			{"id": "arm_r",  "category": "arm",   "equip_slot": "hand_r", "parent": "torso",  "children": [],
+				"natural_weapon": {"locked": false, "name": "Claw", "damage_min": 1, "damage_max": 3, "damage_type": "slashing", "skill_tag": "unarmed"}},
+			{"id": "leg_l",  "category": "leg",   "equip_slot": "legs",   "parent": "torso",  "children": ["foot_l"]},
+			{"id": "leg_r",  "category": "leg",   "equip_slot": "",       "parent": "torso",  "children": ["foot_r"]},
+			{"id": "foot_l", "category": "foot",  "equip_slot": "feet",   "parent": "leg_l",  "children": []},
+			{"id": "foot_r", "category": "foot",  "equip_slot": "",       "parent": "leg_r",  "children": []},
+		]
+	},
+
 	"four_armed": {
 		"parts": [
 			{"id": "head",    "category": "head",  "equip_slot": "head",    "parent": "torso",  "children": []},
