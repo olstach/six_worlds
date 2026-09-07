@@ -32,7 +32,7 @@ Three of six realms have real content:
 |---|---|---|---|---|---|---|
 | **Hell** | ✓ (cold/fire + divider) | 13 | ✓ 45 archetypes | ✓ 79 events | ✓ | ✓ 24 |
 | **Hungry Ghost** | ✓ (3 zones) | 16 | ✓ 23 archetypes | ✓ 150 events (0% dead map weight) | ✓ | ✓ 23 |
-| **Animal** | ✓ (ocean/forest/meadow) | 18 | ✓ 34 archetypes | ✓ 94 events (0% dead map weight) | ✓ | ✓ 24 |
+| **Animal** | ✓ (ocean/forest/meadow) | 18 | ✓ 34 archetypes | ✓ 94 events (0% dead map weight) | ✓ | ✓ 28 |
 | Human / Asura / God | ✗ | 9 | ✗ | ✗ | ✗ | ✗ |
 
 Core systems all exist and are wired: character/XP, karma/reincarnation,
@@ -106,7 +106,11 @@ Ordered roughly by how much finished work is sitting behind each gap.
 - ~~34 HG flavor events~~ — done. All three realms with content are now at
   **0% dead map weight** (hell 79 events, hungry ghost 150, animal 94); every
   marker the maps place resolves to a real event.
-- ~~Animal realm companions~~ — done, 24 added covering all 17 births.
+- ~~Animal realm companions~~ — done, 24 added covering all 17 births. Four more
+  for vanara 2026-09-07, bringing it level with gana and rakshasa at 6; every
+  vanara-exclusive background now has a companion in it. **Roster depth is very
+  uneven across the realm** — mriga 8, gana/rakshasa/vanara 6, and eleven births
+  still on one apiece.
 - ~~Hell and hungry ghost were starved of births and backgrounds~~ — done
   2026-09-07. Hell 6→13 births (six element-coded imps and the wretch), hungry
   ghost 14→16 (the yidag's outer and food obscurations), 24 new backgrounds,

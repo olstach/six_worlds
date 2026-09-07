@@ -272,7 +272,7 @@ Sees what is in front of them without dressing it up.
 
 ## content
 
-`pressure: earth+10, fire+5  ·  bond: order  ·  opposed: covetous, braggart, vain  ·  on 0 companions`
+`pressure: earth+10, fire+5  ·  bond: order  ·  opposed: covetous, braggart, vain  ·  on 1 companions`
 
 **Name**
 
@@ -290,7 +290,7 @@ When you don't have what you like, like what you have.
 
 ## covetous
 
-`pressure: air-10, earth-5  ·  opposed: content, celebrant  ·  purged by yoga 3  ·  on 0 companions`
+`pressure: air-10, earth-5  ·  opposed: content, celebrant  ·  purged by yoga 3  ·  on 1 companions`
 
 **Name**
 
@@ -710,7 +710,7 @@ Improves the story a little every time it is told.
 
 ## celebrant
 
-`pressure: air+10  ·  bond: arts, sociable  ·  opposed: covetous  ·  on 0 companions`
+`pressure: air+10  ·  bond: arts, sociable  ·  opposed: covetous  ·  on 1 companions`
 
 **Name**
 
@@ -728,7 +728,7 @@ Takes uncomplicated pleasure in other people's luck.
 
 ## collector
 
-`pressure: fire-5  ·  bond: order  ·  on 0 companions`
+`pressure: fire-5  ·  bond: order  ·  on 1 companions`
 
 **Name**
 
@@ -764,7 +764,7 @@ Owes money somewhere, to someone with an unusually long memory.
 
 ## dreamer
 
-`stats: focus+1  ·  pressure: space-5  ·  bond: wonder, arts  ·  on 2 companions`
+`stats: focus+1  ·  pressure: space-5  ·  bond: wonder, arts  ·  on 3 companions`
 
 **Name**
 
@@ -1052,7 +1052,7 @@ Composes constantly in their head, and occasionally, without warning, out loud.
 
 ## present
 
-`stats: awareness+1  ·  pressure: space+10  ·  bond: wonder, scholarly  ·  on 0 companions`
+`stats: awareness+1  ·  pressure: space+10  ·  bond: wonder, scholarly  ·  on 1 companions`
 
 **Name**
 
@@ -1106,7 +1106,7 @@ Carrying something they have told nobody, and have no plans to.
 
 ## storyteller
 
-`skills: persuasion+1  ·  pressure: air+5  ·  bond: arts, sociable  ·  on 0 companions`
+`skills: persuasion+1  ·  pressure: air+5  ·  bond: arts, sociable  ·  on 1 companions`
 
 **Name**
 
@@ -1124,7 +1124,7 @@ Always has a tale ready — some true, most embellished.
 
 ## superstitious
 
-`pressure: space-10  ·  bond: wonder  ·  opposed: clear_eyed  ·  purged by yoga, ritual 2  ·  on 2 companions`
+`pressure: space-10  ·  bond: wonder  ·  opposed: clear_eyed  ·  purged by yoga, ritual 2  ·  on 3 companions`
 
 **Name**
 

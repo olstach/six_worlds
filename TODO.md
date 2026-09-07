@@ -27,7 +27,7 @@ Companion documents:
 |---|---|---|---|---|---|---|---|
 | **Hell** | ✓ cold / fire + divider | 13 | 45 | 79 | 24 | 3 | 0% |
 | **Hungry Ghost** | ✓ 3 zones | 16 | 23 | 150 | 23 | 0 | 0% |
-| **Animal** | ✓ ocean / forest / meadow | 18 | 34 | 94 | 24 | 0 | 0% |
+| **Animal** | ✓ ocean / forest / meadow | 18 | 34 | 94 | 28 | 0 | 0% |
 | Human | ✗ | 4 | ✗ | ✗ | ✗ | ✗ | — |
 | Asura | ✗ | 2 | ✗ | ✗ | ✗ | ✗ | — |
 | God | ✗ | 3 | ✗ | ✗ | ✗ | ✗ | — |
@@ -271,7 +271,11 @@ Recorded so they aren't rediscovered as bugs.
 
 - **The naming lore is barely used by anything.** `animal_realm_names.json` is
   read by no script and referenced by almost no content: 389 personal names with
-  meanings, plus per-birth place names that exist only in the file. The rakshasa
+  meanings, plus per-birth place names that exist only in the file. *(First dent
+  made 2026-09-07: the four new vanara companions — Kapisha, Chanchal, Kelika,
+  Laghima — are named from the vanara list in that file, with their recorded
+  meanings driving the characterisation. Same trick works for every other
+  birth's roster.)* The rakshasa
   set alone has **The Long Hunger** (a stretch of poor territory between
   productive ones), **The Wrong Side** (anywhere they do not go, and there is
   always a reason), **The Ridge Where They Wait**, **The Mango Kill**, **The

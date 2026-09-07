@@ -3425,6 +3425,154 @@
         "devout",
         "addiction"
       ]
+    },
+    "kapisha": {
+      "id": "kapisha",
+      "name": "Kapisha",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "vanara",
+      "background": "shrine_keeper",
+      "flavor_text": "Tends the fig-tree shrine his mother tended, and hers, and cannot tell you what any of it is for. Says the not-knowing is the part that works.",
+      "portrait": "",
+      "recruitment_cost": 800,
+      "build_weights": {
+        "ritual": 5,
+        "earth_magic": 4,
+        "white_magic": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "ritual": 2,
+          "white_magic": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 1
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "prayer_beads",
+        "herb_bundle"
+      ],
+      "traits": [
+        "superstitious",
+        "content"
+      ]
+    },
+    "chanchal": {
+      "id": "chanchal",
+      "name": "Chanchal",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "vanara",
+      "background": "forest_thief",
+      "flavor_text": "Has taken eleven things from the river camp and given four of them back, which she considers a generous ratio. Keeps the rest arranged by how well they catch the light.",
+      "portrait": "",
+      "recruitment_cost": 750,
+      "build_weights": {
+        "thievery": 5,
+        "daggers": 4,
+        "grace": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "thievery": 2,
+          "daggers": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 0
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "lucky_charm",
+        "item_random"
+      ],
+      "traits": [
+        "collector",
+        "covetous"
+      ]
+    },
+    "kelika": {
+      "id": "kelika",
+      "name": "Kelika",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "vanara",
+      "background": "treetop_wit",
+      "flavor_text": "Works from a height, with an audience that cannot easily leave. The fall is never accidental; ask about the recovery and you will lose the afternoon.",
+      "portrait": "",
+      "recruitment_cost": 900,
+      "build_weights": {
+        "comedy": 5,
+        "performance": 4,
+        "grace": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "comedy": 2,
+          "grace": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 0
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "rations",
+        "copper_ring"
+      ],
+      "traits": [
+        "storyteller",
+        "celebrant"
+      ]
+    },
+    "laghima": {
+      "id": "laghima",
+      "name": "Laghima",
+      "realm": "animal",
+      "zone": "forest",
+      "birth": "vanara",
+      "background": "storm_watcher",
+      "flavor_text": "Sits on the high place and says what the weather will do some hours before it agrees to do it. Has never once been caught in the rain, and considers this a spiritual attainment rather than luck.",
+      "portrait": "",
+      "recruitment_cost": 1000,
+      "build_weights": {
+        "air_magic": 5,
+        "space_magic": 4,
+        "learning": 3
+      },
+      "fixed_starter": {
+        "skills": {
+          "air_magic": 2,
+          "learning": 1
+        },
+        "known_spells": []
+      },
+      "fixed_spells": [],
+      "random_spells": {
+        "count": 2
+      },
+      "fixed_equipment": {},
+      "starting_equipment": {},
+      "fixed_items": [
+        "air_charm_common",
+        "rations"
+      ],
+      "traits": [
+        "present",
+        "dreamer"
+      ]
     }
   }
 }

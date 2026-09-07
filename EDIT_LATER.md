@@ -76,3 +76,18 @@ words. They are listed here so the prose pass knows where to look first.
 specified the mechanics (`armor 2`, `earth_magic 1`); the description is mine and
 wants your pass like the rest.
 
+### Four vanara companions (2026-09-07) — Claude's prose, wants your pass
+
+`kapisha` (shrine_keeper), `chanchal` (forest_thief), `kelika` (treetop_wit),
+`laghima` (storm_watcher). They take vanara from 2 companions to 6, level with
+gana and rakshasa, and fill the three vanara-exclusive backgrounds that had
+nobody in them; Laghima is a caster, which the roster had none of.
+
+Names come from the vanara list in `animal_realm_names.json` rather than being
+invented, and each one's recorded meaning drove the character — Laghima is
+"lightness; the quality of being almost nothing, so cannot be caught", so she is
+the one who is never caught in the rain. That file is read by nothing and this is
+the first content to draw on it.
+
+Edit them in `docs/review/ANIMAL_COMPANIONS.md` and re-import as usual.
+

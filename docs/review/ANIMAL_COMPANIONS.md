@@ -1,6 +1,6 @@
 # Animal Realm — Companions
 
-*41 companions.*
+*45 companions.*
 
 *Edit the prose between the anchors. The stat block under each name is generated; change it in `companions.json` instead.*
 
@@ -26,6 +26,25 @@ thievery, learning, trade
 
 <!--@ companions.json | brihannala | flavor_text -->
 Retired from leading a troop of sixty and now collects stolen objects and unlikely stories with equal enthusiasm. Will trade you either for something you don't know.
+<!--@end-->
+
+
+## Chanchal  `chanchal`
+
+`birth: vanara  ·  background: forest_thief  ·  traits: collector, covetous  ·  cost: 750  ·  fixed_items: ['lucky_charm', 'item_random']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | chanchal | build_weights -->
+thievery, daggers, grace
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | chanchal | flavor_text -->
+Has taken eleven things from the river camp and given four of them back, which she considers a generous ratio. Keeps the rest arranged by how well they catch the light.
 <!--@end-->
 
 
@@ -219,6 +238,44 @@ Cultivates the fungal network under nine acres of forest floor and speaks about 
 <!--@end-->
 
 
+## Kapisha  `kapisha`
+
+`birth: vanara  ·  background: shrine_keeper  ·  traits: superstitious, content  ·  cost: 800  ·  fixed_items: ['prayer_beads', 'herb_bundle']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | kapisha | build_weights -->
+ritual, earth_magic, white_magic
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | kapisha | flavor_text -->
+Tends the fig-tree shrine his mother tended, and hers, and cannot tell you what any of it is for. Says the not-knowing is the part that works.
+<!--@end-->
+
+
+## Kelika  `kelika`
+
+`birth: vanara  ·  background: treetop_wit  ·  traits: storyteller, celebrant  ·  cost: 900  ·  fixed_items: ['rations', 'copper_ring']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | kelika | build_weights -->
+comedy, performance, grace
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | kelika | flavor_text -->
+Works from a height, with an audience that cannot easily leave. The fall is never accidental; ask about the recovery and you will lose the afternoon.
+<!--@end-->
+
+
 ## Khara  `khara`
 
 `birth: rakshasa  ·  background: maneater  ·  traits: patient, hunter  ·  cost: 1100  ·  fixed_items: ['health_potion']`
@@ -254,6 +311,25 @@ might, guile, black_magic
 
 <!--@ companions.json | kruddha | flavor_text -->
 Taking such delight in the hunt, in the kill, in the tearing of flesh, must have a downside. But this is for the philosophers to ponder another day.
+<!--@end-->
+
+
+## Laghima  `laghima`
+
+`birth: vanara  ·  background: storm_watcher  ·  traits: present, dreamer  ·  cost: 1000  ·  fixed_items: ['air_charm_common', 'rations']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | laghima | build_weights -->
+air_magic, space_magic, learning
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | laghima | flavor_text -->
+Sits on the high place and says what the weather will do some hours before it agrees to do it. Has never once been caught in the rain, and considers this a spiritual attainment rather than luck.
 <!--@end-->
 
 
