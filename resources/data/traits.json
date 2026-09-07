@@ -1051,7 +1051,9 @@
     "description": "A body built for water and coiling grace, equally at home in the deep as on land.",
     "category": "racial",
     "inborn": true,
-    "stat_modifiers": {},
+    "stat_modifiers": {
+      "awareness": 1
+    },
     "pressure_modifiers": {
       "water": -5
     },
@@ -1070,7 +1072,9 @@
     "description": "Born of the water. Breathes and moves freely in aquatic environments. If the entire party shares this trait, the party may traverse water tiles without penalty in both combat and overworld.",
     "category": "racial",
     "inborn": true,
-    "stat_modifiers": {},
+    "stat_modifiers": {
+      "awareness": 1
+    },
     "pressure_modifiers": {
       "water": -5
     },
@@ -1150,7 +1154,9 @@
     "description": "Born into a collective, this creature is never truly alone. Shared purpose dampens individual anxiety.",
     "category": "racial",
     "inborn": true,
-    "stat_modifiers": {},
+    "stat_modifiers": {
+      "charm": 1
+    },
     "pressure_modifiers": {
       "fire": -5,
       "water": -5,

@@ -3,7 +3,7 @@
     "_comment_any": "=== ANY REGION - can appear in cold_hell or fire_hell ===",
     "hell_demon_warrior": {
       "name": "Demon Warrior",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -46,7 +46,7 @@
     },
     "hell_demon_brute": {
       "name": "Demon Brute",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -91,7 +91,7 @@
     "hell_tormented_shade": {
       "_comment": "Reworked: now a true shade-tier enemy (was formerly a devil-tier caster)",
       "name": "Tormented Shade",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "frontline"
       ],
@@ -135,7 +135,7 @@
     },
     "hell_demon_archer": {
       "name": "Demon Archer",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "ranged"
       ],
@@ -175,7 +175,7 @@
     },
     "hell_demon_elite": {
       "name": "Demon Elite",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -220,7 +220,7 @@
     "_comment_shades": "=== SHADE TIER — early-game incorporeal enemies, threat ~0.5 ===",
     "hell_frozen_shade": {
       "name": "Frozen Shade",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "frontline"
       ],
@@ -264,7 +264,7 @@
     },
     "hell_burning_shade": {
       "name": "Burning Shade",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "frontline"
       ],
@@ -308,7 +308,7 @@
     },
     "hell_shade_whisperer": {
       "name": "Shade Whisperer",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "caster",
         "support"
@@ -357,7 +357,7 @@
     "_comment_imps": "=== IMP TIER — flying fast harassers, threat ~0.7, 50% chance bare-handed ===",
     "hell_frost_imp": {
       "name": "Sleet Imp",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "ranged",
         "caster"
@@ -405,7 +405,7 @@
     },
     "hell_flame_imp": {
       "name": "Smoke Imp",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "ranged",
         "caster"
@@ -453,7 +453,7 @@
     },
     "hell_static_imp": {
       "name": "Static Imp",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "ranged",
         "caster"
@@ -500,7 +500,7 @@
     },
     "hell_gravel_imp": {
       "name": "Gravel Imp",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "ranged",
         "caster"
@@ -547,7 +547,7 @@
     },
     "hell_tinnitus_imp": {
       "name": "Tinnitus Imp",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "ranged",
         "caster"
@@ -594,7 +594,7 @@
     },
     "hell_ash_imp": {
       "name": "Ash Imp",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "ranged",
         "caster"
@@ -641,7 +641,7 @@
     },
     "hell_sloth_imp": {
       "name": "Sloth Imp",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "support"
       ],
@@ -687,7 +687,7 @@
     "_comment_cold": "=== COLD HELL REGION ===",
     "hell_ice_mage": {
       "name": "Ice Sorcerer",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "caster"
       ],
@@ -732,7 +732,7 @@
     },
     "hell_frost_guardian": {
       "name": "Frost Guardian",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -775,7 +775,7 @@
     },
     "hell_frozen_revenant": {
       "name": "Frozen Revenant",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -817,7 +817,7 @@
     },
     "hell_ice_archer": {
       "name": "Ice Archer",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "ranged"
       ],
@@ -860,7 +860,7 @@
     },
     "hell_ice_priest": {
       "name": "Ice Priest",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "support"
       ],
@@ -906,7 +906,7 @@
     "_comment_blue_devils": "=== BLUE DEVIL RACE — cold_hell region, water/air affinity ===",
     "hell_blue_devil_guardian": {
       "name": "Blue Devil Guardian",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -949,7 +949,7 @@
     },
     "hell_blue_devil_ice_mage": {
       "name": "Blue Devil Ice Mage",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "caster"
       ],
@@ -994,7 +994,7 @@
     },
     "hell_blue_devil_ambusher": {
       "name": "Blue Devil Ambusher",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "ranged"
       ],
@@ -1037,7 +1037,7 @@
     "_comment_fire": "=== FIRE HELL REGION ===",
     "hell_lava_golem": {
       "name": "Lava Golem",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -1080,7 +1080,7 @@
     },
     "hell_fire_sorcerer": {
       "name": "Fire Sorcerer",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "caster"
       ],
@@ -1125,7 +1125,7 @@
     },
     "hell_infernal_archer": {
       "name": "Infernal Archer",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "ranged"
       ],
@@ -1168,7 +1168,7 @@
     },
     "hell_ember_priest": {
       "name": "Ember Priest",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "support"
       ],
@@ -1214,7 +1214,7 @@
     "_comment_red_devils": "=== RED DEVIL RACE — fire_hell region, fire/strength affinity ===",
     "hell_red_devil_berserker": {
       "name": "Red Devil Berserker",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -1258,7 +1258,7 @@
     },
     "hell_red_devil_warrior": {
       "name": "Red Devil Warrior",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -1300,7 +1300,7 @@
     },
     "hell_red_devil_firestarter": {
       "name": "Red Devil Firestarter",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "caster"
       ],
@@ -1346,7 +1346,7 @@
     "_comment_yellow_devils": "=== YELLOW DEVIL RACE — any region, earth/luck affinity, durable merchants ===",
     "hell_yellow_devil_caravan_guard": {
       "name": "Yellow Devil Caravan Guard",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -1388,7 +1388,7 @@
     },
     "hell_yellow_devil_extortionist": {
       "name": "Yellow Devil Extortionist",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -1439,7 +1439,7 @@
     },
     "hell_yellow_devil_transmuter": {
       "name": "Yellow Devil Transmuter",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "caster",
         "support"
@@ -1486,7 +1486,7 @@
     "_comment_green_devils": "=== GREEN DEVIL RACE — any region, air/finesse affinity, swift hunters ===",
     "hell_green_devil_hunter": {
       "name": "Green Devil Hunter",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "ranged"
       ],
@@ -1527,7 +1527,7 @@
     },
     "hell_green_devil_sniper": {
       "name": "Green Devil Sniper",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "ranged"
       ],
@@ -1569,7 +1569,7 @@
     },
     "hell_green_devil_backstabber": {
       "name": "Green Devil Backstabber",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -1614,7 +1614,7 @@
     "_comment_black_devils": "=== BLACK DEVIL RACE — any region, space/black magic affinity ===",
     "hell_black_devil_sorcerer": {
       "name": "Black Devil Sorcerer",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "caster"
       ],
@@ -1660,7 +1660,7 @@
     },
     "hell_black_devil_mindbender": {
       "name": "Black Devil Mindbender",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "caster",
         "support"
@@ -1707,7 +1707,7 @@
     },
     "hell_black_devil_lifedrinker": {
       "name": "Black Devil Lifedrinker",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -1754,7 +1754,7 @@
     "_comment_white_devils": "=== WHITE DEVIL RACE — any region, space/charm affinity, manipulative ===",
     "hell_white_devil_tempter": {
       "name": "White Devil Tempter",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "support",
         "caster"
@@ -1800,7 +1800,7 @@
     },
     "hell_white_devil_medicus": {
       "name": "White Devil Medicus",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "support"
       ],
@@ -1844,7 +1844,7 @@
     },
     "hell_white_devil_illusionist": {
       "name": "White Devil Illusionist",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "caster",
         "support"
@@ -1891,7 +1891,7 @@
     "_comment_bosses": "=== BOSS ARCHETYPES ===",
     "hell_yama_lieutenant": {
       "name": "Chitragupta, Yama's Lieutenant",
-      "tier": "boss",
+      "rank": 4,
       "roles": [
         "boss"
       ],
@@ -1941,7 +1941,7 @@
     },
     "hell_yama_lieutenant_weakened": {
       "name": "Chitragupta (Diminished)",
-      "tier": "boss",
+      "rank": 4,
       "roles": [
         "boss"
       ],
@@ -1987,7 +1987,7 @@
     },
     "hell_mountain_guardian": {
       "name": "Lava Guardian",
-      "tier": "boss",
+      "rank": 4,
       "roles": [
         "boss"
       ],

@@ -1,5 +1,5 @@
 {
-  "_comment": "Absolute per-realm party XP budgets. party_xp = realm_base * tier * band. Expected to move in playtesting.",
+  "_comment": "Absolute per-realm party XP budgets. party_xp = realm_base * strength * band, where strength is the rank_multiplier for the top of an encounter's rank_range unless the encounter overrides it. Expected to move in playtesting.",
   "realm_base": {
     "hell": 200,
     "hungry_ghost": 700,
@@ -9,13 +9,12 @@
     "asura": 5000,
     "god": 8000
   },
-  "_comment_tier": "Encounter tier. 'beast' exists on one archetype and is treated as 'shade'.",
-  "tier_multipliers": {
-    "imp": 0.5,
-    "shade": 0.8,
-    "beast": 0.8,
-    "devil": 1.0,
-    "boss": 2.0
+  "_comment_rank": "Archetype rank 1-4: what the creature is. An encounter's XP multiplier comes from the top of its rank_range unless it sets `strength`, which overrides it — that is how a weak encounter of strong creatures is written.",
+  "rank_multipliers": {
+    "1": 0.5,
+    "2": 0.8,
+    "3": 1.0,
+    "4": 2.0
   },
   "_comment_bands": "Rolled per encounter. Same common/uncommon/rare vocabulary births use.",
   "bands": [

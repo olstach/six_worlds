@@ -3,7 +3,7 @@
     "_comment_ocean": "=== OCEAN REGION ===",
     "animal_naga_warrior": {
       "name": "Naga Warrior",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -46,7 +46,7 @@
     },
     "animal_naga_sorcerer": {
       "name": "Naga Sorcerer",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "caster"
       ],
@@ -89,7 +89,7 @@
     },
     "animal_karka_guardian": {
       "name": "Karka Guardian",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -133,7 +133,7 @@
     },
     "animal_karka_crusher": {
       "name": "Karka Crusher",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "frontline"
       ],
@@ -175,7 +175,7 @@
     },
     "animal_matsya_hunter": {
       "name": "Matsya Hunter",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "skirmisher"
       ],
@@ -217,7 +217,7 @@
     "animal_matsya_shoal": {
       "_comment": "Weak individually; pack bonus applies when 3+ present in encounter",
       "name": "Matsya Shoal",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "frontline"
       ],
@@ -259,7 +259,7 @@
     },
     "animal_makara_titan": {
       "name": "Makara Titan",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -302,7 +302,7 @@
     },
     "animal_makara_current": {
       "name": "Makara Currentmaster",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "caster",
         "support"
@@ -345,7 +345,7 @@
     "_comment_meadow": "=== MEADOW REGION ===",
     "animal_yaksha_guardian": {
       "name": "Yaksha Guardian",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -388,9 +388,10 @@
     },
     "animal_yaksha_shaman": {
       "name": "Yaksha Shaman",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
-        "caster"
+        "caster",
+        "support"
       ],
       "region": "meadow",
       "attribute_weights": {
@@ -429,7 +430,7 @@
     },
     "animal_dura_soldier": {
       "name": "Dura Soldier",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "frontline"
       ],
@@ -472,7 +473,7 @@
     "animal_dura_burrower": {
       "_comment": "Burrows underground and erupts adjacent to its target for a melee strike.",
       "name": "Dura Burrower",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "skirmisher"
       ],
@@ -518,7 +519,7 @@
     "animal_khadga_blade": {
       "_comment": "Natural mantis blades; very high crit chance from high finesse + unarmed crit perks",
       "name": "Khadga Blade",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -560,7 +561,7 @@
     "animal_khadga_ambusher": {
       "_comment": "Arrives from concealment; guile perks grant blend_in/cheap_shot; first-strike opening",
       "name": "Khadga Ambusher",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "skirmisher"
       ],
@@ -601,7 +602,7 @@
     },
     "animal_bhramara_soldier": {
       "name": "Bhramara Soldier",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "frontline"
       ],
@@ -644,9 +645,10 @@
     "animal_bhramara_drone": {
       "_comment": "Support caster that calls reinforcements; weak alone but dangerous when it completes a summon",
       "name": "Bhramara Drone",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
-        "support"
+        "support",
+        "skirmisher"
       ],
       "region": "meadow",
       "attribute_weights": {
@@ -686,7 +688,7 @@
     },
     "animal_patanga_ascetic": {
       "name": "Patanga Ascetic",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "support",
         "caster"
@@ -732,9 +734,10 @@
     "animal_patanga_seeker": {
       "_comment": "Moves unpredictably before striking — impossible to anticipate.",
       "name": "Patanga Flame Seeker",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
-        "frontline"
+        "frontline",
+        "skirmisher"
       ],
       "region": "meadow",
       "attribute_weights": {
@@ -777,7 +780,7 @@
     "_comment_forest": "=== FOREST REGION ===",
     "animal_rakshasa_hunter": {
       "name": "Rakshasa Hunter",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -820,7 +823,7 @@
     "animal_rakshasa_young": {
       "_comment": "Not yet named. Rakshasa are named at their first successful hunt; before that they are simply 'the young one'. Dangerous, and aware it has something to prove.",
       "name": "The Young One",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "skirmisher"
       ],
@@ -861,7 +864,7 @@
     "animal_rakshasa_maneater": {
       "_comment": "Boss-tier lone predator; singles out the weakest and most isolated party member.",
       "name": "Rakshasa Maneater",
-      "tier": "boss",
+      "rank": 4,
       "roles": [
         "frontline"
       ],
@@ -906,7 +909,7 @@
     "animal_varaha_charger": {
       "_comment": "Tusk charge; maces perk concussive_force gives knockback on crits",
       "name": "Varaha Charger",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "frontline"
       ],
@@ -949,7 +952,7 @@
     "animal_varaha_elder": {
       "_comment": "Sounder tactician; heals allies via medicine perks; raises aggression when sounder-mates are wounded",
       "name": "Varaha Elder",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "support"
       ],
@@ -992,7 +995,7 @@
     "animal_marjara_stalker": {
       "_comment": "Flanking predator; grace perks give evasion while repositioning; attacks from unexpected angles",
       "name": "Marjara Stalker",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "skirmisher"
       ],
@@ -1034,7 +1037,7 @@
     "animal_marjara_ambusher": {
       "_comment": "Drops from canopy; guile perks give first-strike advantage; retreats after opening hit",
       "name": "Marjara Ambusher",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "skirmisher"
       ],
@@ -1076,7 +1079,7 @@
     "animal_mriga_stag": {
       "_comment": "Rutting-season buck; charges anything that does not concede the ground. Antlers count as unarmed.",
       "name": "Mriga Stag",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -1116,7 +1119,7 @@
     "animal_mriga_sentinel": {
       "_comment": "Watches the edge and calls the alarm. Hard to hit, hard to corner, and never fights alone by choice.",
       "name": "Mriga Sentinel",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "skirmisher"
       ],
@@ -1157,7 +1160,7 @@
     "animal_mriga_herd": {
       "_comment": "Individually harmless. A stampede is not a fight, it is weather.",
       "name": "Mriga Herd",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "frontline"
       ],
@@ -1197,7 +1200,7 @@
     "animal_gana_runner": {
       "_comment": "Pack hunter; grows sharper and harder to hit as more of the pack closes in.",
       "name": "Gana Pack Runner",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "frontline"
       ],
@@ -1238,7 +1241,7 @@
     "animal_gana_runt": {
       "_comment": "Last of the litter and last to the kill. Harries the edges and runs from anything that turns.",
       "name": "Gana Runt",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "skirmisher"
       ],
@@ -1279,7 +1282,7 @@
     "animal_gana_stalker": {
       "_comment": "Works the flanks while the pack holds the front. Goes for the straggler, never the strongest.",
       "name": "Gana Stalker",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "skirmisher"
       ],
@@ -1321,7 +1324,7 @@
     "animal_gana_hunter": {
       "_comment": "A full-grown wolf that has done this many times. Closes only when the throat is already open.",
       "name": "Gana Hunter",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "skirmisher"
       ],
@@ -1363,7 +1366,7 @@
     "animal_gana_alpha": {
       "_comment": "Not the fastest and not the strongest. The one the pack has already tested every alternative to.",
       "name": "Gana Alpha",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -1405,7 +1408,7 @@
     "animal_gana_elder": {
       "_comment": "Sings the hunt rather than joining it. What the pack hears from her, it does.",
       "name": "Gana Elder",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "support"
       ],
@@ -1446,7 +1449,7 @@
     "animal_gana_howler": {
       "_comment": "Pack support; enchantment perks buff allies and weaken party members",
       "name": "Gana Howler",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "support"
       ],
@@ -1486,7 +1489,7 @@
     "animal_vanara_skirmisher": {
       "_comment": "Throws rocks and alchemical bombs; taunt forces party member to attack it; TODO: confuse special attack",
       "name": "Vanara Skirmisher",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "skirmisher",
         "ranged"
@@ -1529,7 +1532,7 @@
     "animal_vanara_elder": {
       "_comment": "Troop director; leadership perks give formation bonuses to nearby vanara",
       "name": "Vanara Elder",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "support"
       ],
@@ -1571,11 +1574,11 @@
     "animal_shyena_stooper": {
       "_comment": "Aerial dive attacker; flying tag; martial_arts perks give first-strike on initial dive",
       "name": "Shyena Stooper",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "skirmisher"
       ],
-      "region": "sky",
+      "region": "any",
       "attribute_weights": {
         "strength": 2,
         "constitution": 1,
@@ -1615,11 +1618,11 @@
     "animal_shyena_lord": {
       "_comment": "Territorial boss; might perks give enrage-style bonuses when below 50% HP",
       "name": "Shyena Sky Lord",
-      "tier": "boss",
+      "rank": 4,
       "roles": [
         "frontline"
       ],
-      "region": "sky",
+      "region": "any",
       "attribute_weights": {
         "strength": 3,
         "constitution": 2,
@@ -1660,11 +1663,12 @@
     "animal_kapota_messenger": {
       "_comment": "Fast support; disrupts party formation; grace perks make it very hard to pin down",
       "name": "Kapota Messenger",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
-        "support"
+        "support",
+        "skirmisher"
       ],
-      "region": "sky",
+      "region": "any",
       "attribute_weights": {
         "strength": 0,
         "constitution": 1,
@@ -1703,11 +1707,11 @@
     "animal_kapota_flock": {
       "_comment": "Flying mob; individually weak but overwhelming in numbers; grace perks give evasion bonus",
       "name": "Kapota Flock",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "frontline"
       ],
-      "region": "sky",
+      "region": "any",
       "attribute_weights": {
         "strength": 1,
         "constitution": 1,
@@ -1746,12 +1750,13 @@
     "animal_uluka_nightwatcher": {
       "_comment": "Fires black magic from range in darkness; high awareness gives initiative advantage",
       "name": "Uluka Nightwatcher",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "ranged",
-        "caster"
+        "caster",
+        "support"
       ],
-      "region": "sky",
+      "region": "any",
       "attribute_weights": {
         "strength": 1,
         "constitution": 1,
@@ -1791,11 +1796,11 @@
     "animal_uluka_omen": {
       "_comment": "Ill omen debuffer; performance perks like heckle_the_will and stage_fright lower party morale/stats",
       "name": "Uluka Ill Omen",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "caster"
       ],
-      "region": "sky",
+      "region": "any",
       "attribute_weights": {
         "strength": 0,
         "constitution": 1,

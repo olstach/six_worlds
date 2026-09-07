@@ -59,14 +59,14 @@ func _check_budgets() -> void:
 	expect(b.get("realm_base", {}).has("animal"), "realm_base missing animal")
 	expect(float(b.get("reward_fraction", 0.0)) > 0.0, "reward_fraction not loaded")
 
-	# Every tier used by any archetype must have a multiplier, or budgets
+	# Every rank used by any archetype must have a multiplier, or budgets
 	# silently collapse to 1.0 for it.
-	var tiers: Dictionary = b.get("tier_multipliers", {})
+	var ranks: Dictionary = b.get("rank_multipliers", {})
 	for aid in EnemySystem.archetypes:
 		if aid.begins_with("_"):
 			continue
-		var t: String = EnemySystem.archetypes[aid].get("tier", "")
-		expect(tiers.has(t), "archetype '%s' has tier '%s' with no multiplier" % [aid, t])
+		var r: int = EnemySystem.archetype_rank(EnemySystem.archetypes[aid])
+		expect(ranks.has(str(r)), "archetype '%s' has rank %d with no multiplier" % [aid, r])
 
 
 func _check_resolution() -> void:
@@ -77,7 +77,7 @@ func _check_resolution() -> void:
 	for band in EnemySystem.budgets.get("bands", []):
 		band_ids.append(String(band.get("id", "")))
 
-	# every encounter must resolve to a positive budget, a known band and a tier
+	# every encounter must resolve to a positive budget, a known band and a rank range
 	var realms := {}
 	for eid in EnemySystem.encounters:
 		if eid.begins_with("_"):
@@ -88,7 +88,9 @@ func _check_resolution() -> void:
 		var r: Dictionary = EnemySystem.resolve_party_budget(eid, realm)
 		expect(int(r["xp"]) > 0, "encounter '%s' resolved to xp %s" % [eid, r["xp"]])
 		expect(band_ids.has(String(r["band"])), "encounter '%s' rolled unknown band" % eid)
-		expect(String(r["tier"]) != "", "encounter '%s' resolved an empty tier" % eid)
+		var rr: Array = r["rank_range"]
+		expect(rr.size() == 2 and int(rr[0]) >= 1 and int(rr[0]) <= int(rr[1]),
+			"encounter '%s' resolved a bad rank range %s" % [eid, str(rr)])
 	print("   encounters per realm: %s" % [realms])
 
 	# band distribution must match the configured weights
@@ -107,17 +109,17 @@ func _check_resolution() -> void:
 		expect(absf(got - want) < 0.02, "band '%s' rolled %.3f, expected %.3f" % [id, got, want])
 	print("   band distribution ok: %s" % [counts])
 
-	# the derived tier must actually rescue boss fights, which was the whole
+	# the derived range must actually rescue boss fights, which was the whole
 	# reason for deriving rather than defaulting to devil
 	var boss_found := 0
 	for eid in EnemySystem.encounters:
 		if eid.begins_with("_"):
 			continue
-		var t: String = EnemySystem.resolve_encounter_tier(EnemySystem.encounters[eid])
-		if t == "boss":
+		var t: int = int(EnemySystem.resolve_encounter_rank_range(EnemySystem.encounters[eid])[1])
+		if t >= 4:
 			boss_found += 1
-	expect(boss_found > 0, "no encounter derived a boss tier — derivation is not working")
-	print("   encounters resolving to boss tier: %d" % boss_found)
+	expect(boss_found > 0, "no encounter derived rank 4 — derivation is not working")
+	print("   encounters resolving to rank 4: %d" % boss_found)
 
 
 func _check_composition() -> void:
@@ -262,14 +264,17 @@ func _check_enemies() -> void:
 		if family.is_empty():
 			continue
 		# Only meaningful when a family archetype exists that COULD have filled a
-		# slot — same realm, same tier, compatible region. Where the family has
-		# nothing at that tier the fallback to the general pool is correct.
+		# slot — same realm, inside the rank range, compatible region. Where the
+		# family has nothing in range the fallback to the general pool is correct.
 		var family_exists := false
 		var region: String = String(e.get("region", "any"))
-		var tier: String = String(e.get("tier", "devil"))
+		var rank_range: Array = EnemySystem.resolve_encounter_rank_range(e)
 		for aid in EnemySystem.archetypes:
 			var a: Dictionary = EnemySystem.archetypes[aid]
-			if a.get("realm", "") != realm_of(e) or String(a.get("tier", "")) != tier:
+			var a_rank: int = EnemySystem.archetype_rank(a)
+			if a.get("realm", "") != realm_of(e):
+				continue
+			if a_rank < int(rank_range[0]) or a_rank > int(rank_range[1]):
 				continue
 			var a_region: String = String(a.get("region", "any"))
 			if region != "any" and region != "" and a_region != "any" and a_region != region:
@@ -330,7 +335,7 @@ func _check_enemies() -> void:
 	print("   dispositions: %s" % [disp_counts])
 
 	# Role slots no archetype can fill. Not a code fault — the content simply
-	# lacks an archetype at that region/tier/role — but it silently drops the
+	# lacks an archetype at that region/rank/role — but it silently drops the
 	# encounter to a generic fallback, so it should stay visible.
 	var unfillable: Array[String] = []
 	for eid in EnemySystem.encounters:
@@ -341,10 +346,11 @@ func _check_enemies() -> void:
 			continue
 		var realm: String = e.get("realm", "")
 		var region: String = String(e.get("region", "any"))
-		var tier: String = String(e.get("tier", "devil"))
+		var rr: Array = EnemySystem.resolve_encounter_rank_range(e)
 		for role in e.get("roles", {}):
-			if EnemySystem._pick_archetype_for_role(String(role), region, tier, realm) == "":
-				unfillable.append("%s (%s/%s/%s)" % [eid, region, tier, role])
+			if EnemySystem._pick_archetype_for_role(String(role), region, rr, realm) == "":
+				unfillable.append("%s (%s/%s/rank %d-%d)" % [eid, region, role,
+					int(rr[0]), int(rr[1])])
 	if not unfillable.is_empty():
 		print("   %d role slots no archetype can fill:" % unfillable.size())
 		for u in unfillable:
@@ -371,7 +377,7 @@ func _check_enemies() -> void:
 			"authored group encounter '%s' varied in size: %s" % [grouped, sizes.keys()])
 		xps.sort()
 		expect(xps.size() > 1 and xps[0] != xps[-1],
-			"authored group encounter '%s' split its budget evenly — tiers were not honoured" % grouped)
+			"authored group encounter '%s' split its budget evenly — ranks were not honoured" % grouped)
 		print("   authored groups preserved (%s: fixed size, uneven shares %s)" % [grouped, xps])
 
 

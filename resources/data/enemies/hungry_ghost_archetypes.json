@@ -4,7 +4,7 @@
     "_comment_rolang": "=== ROLANG FACTION === Walking dead of the swamp zones. Slow, tough, rot-focused. str/con heavy.",
     "hg_rolang_shambler": {
       "name": "Rolang Shambler",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -49,12 +49,12 @@
     },
     "hg_rolang_drowned": {
       "name": "Rolang Drowned",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline",
         "skirmisher"
       ],
-      "region": "swamp",
+      "region": "fetid_swamps",
       "attribute_weights": {
         "strength": 2,
         "constitution": 3,
@@ -97,7 +97,7 @@
     "hg_rolang_ancient": {
       "_comment": "The rare preserved rolang - alchemical or yogic arts kept the body intact. Rot caster and support.",
       "name": "Rolang Ancient",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "support",
         "caster"
@@ -148,11 +148,11 @@
     "hg_swamp_leech": {
       "_comment": "Attaches to a target and drains HP/stamina per turn until removed. Needs attach behavior in combat AI.",
       "name": "Swamp Leech",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "support"
       ],
-      "region": "swamp",
+      "region": "fetid_swamps",
       "attribute_weights": {
         "strength": 0,
         "constitution": 3,
@@ -189,7 +189,7 @@
     },
     "hg_centipede": {
       "name": "Centipede",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "skirmisher"
       ],
@@ -233,7 +233,7 @@
     "hg_carrion_worm": {
       "_comment": "Slow bloated tank. Explodes on death dealing rot/disease damage in an area. Needs explodes_on_death behavior in combat AI.",
       "name": "Carrion Worm",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "frontline"
       ],
@@ -277,7 +277,7 @@
     "_comment_skeleton": "=== SKELETON FACTION === Ancient undead of the catacombs. Balanced, caster-leaning. Long wait in the grave strips away confusion, leaves something clear-eyed.",
     "hg_skeleton_warrior": {
       "name": "Skeleton Warrior",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline"
       ],
@@ -321,7 +321,7 @@
     },
     "hg_skeleton_archer": {
       "name": "Skeleton Archer",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "ranged"
       ],
@@ -365,7 +365,7 @@
     },
     "hg_skeleton_mage": {
       "name": "Skeleton Mage",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "caster"
       ],
@@ -412,7 +412,7 @@
     "_comment_skeleton_support": "--- Skeleton support: bone constructs and flying harassers ---",
     "hg_skelepuppy": {
       "name": "Skelepuppy",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "skirmisher"
       ],
@@ -460,7 +460,7 @@
     "hg_bone_horror": {
       "_comment": "Heavy construct assembled from many skeletons. Reassembles once after death, returning at 50% HP after one turn. Needs 'reassemble' perk implementation.",
       "name": "Bone Horror",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "frontline"
       ],
@@ -507,7 +507,7 @@
     },
     "hg_harpy": {
       "name": "Harpy",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "skirmisher",
         "ranged"
@@ -552,7 +552,7 @@
     "_comment_vetala": "=== VETALA FACTION === Blood-drinking corpse sorcerers. Focus-heavy, life-draining. More magic than muscle.",
     "hg_vetala_blooddrinker": {
       "name": "Vetala Blooddrinker",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "frontline",
         "skirmisher"
@@ -600,7 +600,7 @@
     },
     "hg_vetala_sorcerer": {
       "name": "Vetala Sorcerer",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "caster"
       ],
@@ -648,7 +648,7 @@
     },
     "hg_vetala_elder": {
       "name": "Vetala Elder",
-      "tier": "devil",
+      "rank": 3,
       "roles": [
         "support",
         "caster"
@@ -700,7 +700,7 @@
     "hg_vulture": {
       "_comment": "Prioritizes low-HP or downed targets. Needs scavenger targeting behavior in combat AI.",
       "name": "Vulture",
-      "tier": "imp",
+      "rank": 1,
       "roles": [
         "skirmisher"
       ],
@@ -741,7 +741,7 @@
     },
     "hg_carrion_dog": {
       "name": "Carrion Dog",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "skirmisher"
       ],
@@ -780,7 +780,7 @@
     "hg_vampire_bat": {
       "_comment": "Life drain on hit; in mixed encounters, healing feeds the paired vetala. Needs life_steal behavior in combat AI.",
       "name": "Vampire Bat",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "skirmisher"
       ],
@@ -832,7 +832,7 @@
     "hg_lost_preta": {
       "_comment": "Dissolving consciousnesses barely present in the physical world. Analogous to hell's tormented shade. Appear in all three zones.",
       "name": "Lost Preta",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "frontline",
         "caster"
@@ -880,7 +880,7 @@
     "hg_charnel_wraith": {
       "_comment": "Stronger incorporeal from the charnel grounds — more focused and more dangerous than a lost preta.",
       "name": "Charnel Wraith",
-      "tier": "shade",
+      "rank": 2,
       "roles": [
         "caster",
         "support"
@@ -928,7 +928,7 @@
     },
     "hg_skeleton_king": {
       "name": "Skeleton King",
-      "tier": "boss",
+      "rank": 4,
       "roles": [
         "boss"
       ],
@@ -977,7 +977,7 @@
     },
     "hg_insatiable_king": {
       "name": "The Insatiable King",
-      "tier": "boss",
+      "rank": 4,
       "roles": [
         "boss"
       ],
@@ -1026,7 +1026,7 @@
     },
     "hg_insatiable_king_weakened": {
       "name": "The Insatiable King (Sated)",
-      "tier": "boss",
+      "rank": 4,
       "roles": [
         "boss"
       ],

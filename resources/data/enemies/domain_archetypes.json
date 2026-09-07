@@ -3,8 +3,11 @@
   "archetypes": {
     "domain_smoke_imp": {
       "name": "Smoke Imp",
-      "tier": "imp",
-      "roles": ["ranged", "caster"],
+      "rank": 1,
+      "roles": [
+        "ranged",
+        "caster"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 1,
@@ -15,8 +18,13 @@
         "charm": 0,
         "luck": 1
       },
-      "skill_priorities": ["fire_magic", "guile"],
-      "guaranteed_spells": ["smoke_cloud"],
+      "skill_priorities": [
+        "fire_magic",
+        "guile"
+      ],
+      "guaranteed_spells": [
+        "smoke_cloud"
+      ],
       "guaranteed_perks": [],
       "equipment_template": {
         "weapon": {
@@ -31,13 +39,19 @@
         "fire": 35
       },
       "threat_multiplier": 0.7,
-      "tags": ["demon", "smoke", "domain_smoke"],
+      "tags": [
+        "demon",
+        "smoke",
+        "domain_smoke"
+      ],
       "realm": "any"
     },
     "domain_smoking_mirror": {
       "name": "Smoking Mirror",
-      "tier": "boss",
-      "roles": ["boss"],
+      "rank": 4,
+      "roles": [
+        "boss"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 0,
@@ -73,13 +87,20 @@
         }
       },
       "threat_multiplier": 2.0,
-      "tags": ["construct", "smoke", "domain_smoke", "boss"],
+      "tags": [
+        "construct",
+        "smoke",
+        "domain_smoke",
+        "boss"
+      ],
       "realm": "any"
     },
     "domain_mudling": {
       "name": "Mudling",
-      "tier": "beast",
-      "roles": ["frontline"],
+      "rank": 2,
+      "roles": [
+        "frontline"
+      ],
       "region": "any",
       "attribute_weights": {
         "strength": 2,
@@ -90,7 +111,10 @@
         "charm": 0,
         "luck": 1
       },
-      "skill_priorities": ["maces", "armor"],
+      "skill_priorities": [
+        "maces",
+        "armor"
+      ],
       "guaranteed_spells": [],
       "guaranteed_perks": [],
       "equipment_template": {
@@ -106,10 +130,16 @@
         "physical": 40
       },
       "on_hit": {
-        "Slowed": {"chance": 50}
+        "Slowed": {
+          "chance": 50
+        }
       },
       "threat_multiplier": 0.8,
-      "tags": ["construct", "mud", "domain_mud"],
+      "tags": [
+        "construct",
+        "mud",
+        "domain_mud"
+      ],
       "realm": "any"
     }
   }

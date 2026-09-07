@@ -3,7 +3,10 @@
     "_comment_swamp": "=== FETID SWAMPS — rolang zone, start area ===",
     "bog_zombie": {
       "region": "fetid_swamps",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "frontline": 1
       },
@@ -14,7 +17,10 @@
     },
     "zombie_pack": {
       "region": "fetid_swamps",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "frontline": 3
       },
@@ -56,7 +62,10 @@
     "mud_golem": {
       "_comment": "A mass of rot and earth animated by the swamp — carrion worms packed into a shambling form",
       "region": "fetid_swamps",
-      "tier": "imp",
+      "rank_range": [
+        1,
+        1
+      ],
       "roles": {
         "frontline": 2
       },
@@ -71,23 +80,29 @@
       "mixed": true,
       "groups": [
         {
-          "tier": "devil",
           "roles": {
             "frontline": 2
           },
           "difficulty_range": [
             0.8,
             1.0
+          ],
+          "rank_range": [
+            3,
+            3
           ]
         },
         {
-          "tier": "shade",
           "roles": {
             "skirmisher": 2
           },
           "difficulty_range": [
             0.35,
             0.5
+          ],
+          "rank_range": [
+            2,
+            2
           ]
         }
       ]
@@ -129,7 +144,10 @@
     "_comment_graveyards": "=== DRY GRAVEYARDS — skeleton zone, mid area ===",
     "skeleton_warrior": {
       "region": "dry_graveyards",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "frontline": 2
       },
@@ -140,7 +158,10 @@
     },
     "bone_archer": {
       "region": "dry_graveyards",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "ranged": 2,
         "frontline": 1
@@ -153,7 +174,10 @@
     "grave_hound": {
       "_comment": "Skelepuppy packs that roam the graveyard",
       "region": "dry_graveyards",
-      "tier": "shade",
+      "rank_range": [
+        2,
+        2
+      ],
       "roles": {
         "skirmisher": 4
       },
@@ -258,7 +282,6 @@
       "mixed": true,
       "groups": [
         {
-          "tier": "devil",
           "roles": {
             "caster": 1,
             "ranged": 1
@@ -266,16 +289,23 @@
           "difficulty_range": [
             0.9,
             1.1
+          ],
+          "rank_range": [
+            3,
+            3
           ]
         },
         {
-          "tier": "shade",
           "roles": {
             "skirmisher": 3
           },
           "difficulty_range": [
             0.35,
             0.5
+          ],
+          "rank_range": [
+            2,
+            2
           ]
         }
       ]
@@ -283,7 +313,10 @@
     "_comment_charnel": "=== CHARNEL GROUNDS — vetala zone, final area ===",
     "vetala_scout": {
       "region": "charnel_grounds",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "skirmisher": 2
       },
@@ -294,7 +327,10 @@
     },
     "vetala_pack": {
       "region": "charnel_grounds",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "frontline": 2,
         "skirmisher": 1
@@ -307,7 +343,10 @@
     "charnel_wraith": {
       "_comment": "Stronger incorporeal haunt of the charnel grounds",
       "region": "charnel_grounds",
-      "tier": "shade",
+      "rank_range": [
+        2,
+        2
+      ],
       "roles": {
         "caster": 2,
         "support": 1
@@ -334,7 +373,10 @@
     "hungry_wraith": {
       "_comment": "Dense cluster of lost pretas drawn to the charnel grounds by the smell of blood",
       "region": "charnel_grounds",
-      "tier": "shade",
+      "rank_range": [
+        2,
+        2
+      ],
       "roles": {
         "frontline": 2,
         "caster": 2
@@ -415,7 +457,6 @@
       "mixed": true,
       "groups": [
         {
-          "tier": "devil",
           "roles": {
             "frontline": 1,
             "caster": 1
@@ -423,16 +464,23 @@
           "difficulty_range": [
             0.9,
             1.1
+          ],
+          "rank_range": [
+            3,
+            3
           ]
         },
         {
-          "tier": "shade",
           "roles": {
             "skirmisher": 3
           },
           "difficulty_range": [
             0.4,
             0.55
+          ],
+          "rank_range": [
+            2,
+            3
           ]
         }
       ]
@@ -441,7 +489,10 @@
     "lost_preta": {
       "_comment": "Dissolving spirits drifting through all zones — early/filler encounter",
       "region": "any",
-      "tier": "shade",
+      "rank_range": [
+        2,
+        2
+      ],
       "roles": {
         "frontline": 2,
         "caster": 1
@@ -454,7 +505,10 @@
     "_comment_cross_zone": "=== CROSS-ZONE — event and mixed encounters not tied to one region ===",
     "rolang_mob": {
       "region": "any",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "frontline": 3
       },
@@ -465,7 +519,10 @@
     },
     "skeleton_patrol": {
       "region": "any",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "frontline": 1,
         "ranged": 1,
@@ -478,7 +535,10 @@
     },
     "vetala_hunting_party": {
       "region": "any",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "frontline": 1,
         "skirmisher": 1,
@@ -492,7 +552,10 @@
     "swamp_vermin": {
       "_comment": "Early encounter — pure support-tier creatures, no faction leader",
       "region": "fetid_swamps",
-      "tier": "shade",
+      "rank_range": [
+        2,
+        2
+      ],
       "roles": {
         "skirmisher": 2,
         "support": 1
@@ -508,23 +571,29 @@
       "mixed": true,
       "groups": [
         {
-          "tier": "imp",
           "roles": {
             "frontline": 1
           },
           "difficulty_range": [
             0.7,
             0.9
+          ],
+          "rank_range": [
+            1,
+            1
           ]
         },
         {
-          "tier": "shade",
           "roles": {
             "skirmisher": 3
           },
           "difficulty_range": [
             0.35,
             0.5
+          ],
+          "rank_range": [
+            2,
+            2
           ]
         }
       ]
@@ -535,30 +604,39 @@
       "mixed": true,
       "groups": [
         {
-          "tier": "imp",
           "roles": {
             "skirmisher": 2
           },
           "difficulty_range": [
             0.55,
             0.7
+          ],
+          "rank_range": [
+            1,
+            1
           ]
         },
         {
-          "tier": "shade",
           "roles": {
             "skirmisher": 2
           },
           "difficulty_range": [
             0.4,
             0.55
+          ],
+          "rank_range": [
+            2,
+            2
           ]
         }
       ]
     },
     "bat_swarm": {
       "region": "any",
-      "tier": "shade",
+      "rank_range": [
+        2,
+        2
+      ],
       "roles": {
         "skirmisher": 4
       },
@@ -573,7 +651,6 @@
       "mixed": true,
       "groups": [
         {
-          "tier": "devil",
           "roles": {
             "frontline": 1,
             "caster": 1
@@ -581,10 +658,13 @@
           "difficulty_range": [
             0.9,
             1.1
+          ],
+          "rank_range": [
+            3,
+            3
           ]
         },
         {
-          "tier": "imp",
           "roles": {
             "frontline": 1,
             "skirmisher": 1
@@ -592,6 +672,10 @@
           "difficulty_range": [
             0.6,
             0.8
+          ],
+          "rank_range": [
+            1,
+            1
           ]
         }
       ]

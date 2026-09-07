@@ -14,8 +14,9 @@ var archetypes: Dictionary = {}   # archetype_id -> archetype definition
 var encounters: Dictionary = {}   # encounter_id -> encounter template
 var name_parts: Dictionary = {}   # prefixes, roots, suffixes for procedural naming
 
-## Encounter budget tables: realm bases, tier multipliers, rarity bands, reward
-## fraction. An encounter's party XP is realm_base * tier * band.
+## Encounter budget tables: realm bases, rank multipliers, rarity bands, reward
+## fraction. An encounter's party XP is realm_base * strength * band, where
+## strength comes from the top of its rank range unless it overrides it.
 var budgets: Dictionary = {}
 
 ## Party composition templates: member counts and relative XP shares.
@@ -105,13 +106,16 @@ func roll_party_composition(band: String) -> Array[Dictionary]:
 
 	var template: Dictionary = party_archetypes[chosen]
 	var members: Array[Dictionary] = []
-	for tier in template.get("tiers", []):
-		var span: Array = tier.get("count", [1, 1])
+	# `slots` here is the party's share structure — a hero slot worth three
+	# shares in front of four mook slots worth one. It was called `tiers`, which
+	# had nothing to do with the archetype tier and made both harder to read.
+	for slot in template.get("slots", template.get("tiers", [])):
+		var span: Array = slot.get("count", [1, 1])
 		var lo: int = int(span[0])
 		var hi: int = int(span[1]) if span.size() > 1 else lo
 		var n: int = lo + (randi() % maxi(1, hi - lo + 1))
 		for i in range(n):
-			members.append({"share": int(tier.get("share", 1)), "is_hero": false,
+			members.append({"share": int(slot.get("share", 1)), "is_hero": false,
 				"disposition": String(template.get("disposition", "hostile"))})
 
 	if members.is_empty():
@@ -382,47 +386,89 @@ func _band_multiplier(band_id: String) -> float:
 	return 1.0
 
 
-## Tier order, weakest first. Used to derive a tier for encounters that carry none.
-const TIER_ORDER: Array[String] = ["imp", "beast", "shade", "devil", "boss"]
-
-
-## The tier an encounter counts as.
+## Archetype rank: what a creature intrinsically is, 1 (vermin) to 4 (lord).
 ##
-## Only 48 of 117 encounters carry a top-level `tier`; every `fixed` and
-## `groups` one has none. Defaulting those to devil would silently flatten
-## every boss fight to ordinary difficulty, so the tier is derived from the
-## content instead — the strongest archetype or group in the encounter.
-func resolve_encounter_tier(template: Dictionary) -> String:
-	if template.has("tier"):
-		return String(template["tier"])
+## It replaced `tier`, which did three unrelated jobs at once — it set the
+## encounter's XP, it decided which archetypes the encounter could draw from,
+## and it was each member's share of the party budget. Welding those together
+## meant an encounter pinned to one tier could not use its own family's other
+## members: animal_mriga_herd asked for shade and the mriga stag is rank 3, so a
+## mriga herd was filled with boars and wolves. Rank is now only "what this
+## creature is"; the draw pool is the encounter's `rank_range`, and its strength
+## is the top of that range or an explicit `strength` override.
+##
+## Boss is not a rank. It is a role, and _pick_archetype_for_role already keeps
+## bosses out of ordinary slots.
+const RANK_MIN: int = 1
+const RANK_MAX: int = 4
 
-	var best: int = -1
+## Legacy `tier` strings, for any archetype or encounter not yet carrying a rank.
+const RANK_FROM_TIER: Dictionary = {
+	"imp": 1, "beast": 2, "shade": 2, "devil": 3, "boss": 4,
+}
+
+
+## An archetype's rank, falling back to its legacy tier and then to 3.
+func archetype_rank(arch: Dictionary) -> int:
+	if arch.has("rank"):
+		return clampi(int(arch["rank"]), RANK_MIN, RANK_MAX)
+	return int(RANK_FROM_TIER.get(String(arch.get("tier", "devil")), 3))
+
+
+## The rank range an encounter draws from, as [min, max].
+##
+## Only the plain role encounters carry a `rank_range`; every `fixed` and
+## `groups` one has none. Defaulting those to rank 3 would silently flatten every
+## boss fight to ordinary difficulty, so the range is derived from the content
+## instead — the span of the archetypes or groups actually in it.
+func resolve_encounter_rank_range(template: Dictionary) -> Array:
+	if template.has("rank_range"):
+		var rr: Array = template["rank_range"]
+		if rr.size() >= 2:
+			return [int(rr[0]), int(rr[1])]
+	if template.has("tier"):
+		var r: int = int(RANK_FROM_TIER.get(String(template["tier"]), 3))
+		return [r, r]
+
+	var lo: int = RANK_MAX + 1
+	var hi: int = 0
 	if template.get("fixed", false):
 		for entry in template.get("enemies", []):
-			var aid: String = entry.get("archetype", "")
-			var t: String = archetypes.get(aid, {}).get("tier", "devil")
-			best = maxi(best, TIER_ORDER.find(t))
+			var r2: int = archetype_rank(archetypes.get(String(entry.get("archetype", "")), {}))
+			lo = mini(lo, r2)
+			hi = maxi(hi, r2)
 	for group in template.get("groups", []):
-		best = maxi(best, TIER_ORDER.find(String(group.get("tier", "devil"))))
+		var grr: Array = resolve_encounter_rank_range(group)
+		lo = mini(lo, int(grr[0]))
+		hi = maxi(hi, int(grr[1]))
 
-	if best < 0:
-		push_warning("EnemySystem: cannot derive a tier for an encounter, using devil")
-		return "devil"
-	return TIER_ORDER[best]
+	if hi == 0:
+		push_warning("EnemySystem: cannot derive a rank range for an encounter, using 3")
+		return [3, 3]
+	return [lo, hi]
 
 
-## Total XP the enemy party is built from: realm_base * tier * band.
+## Total XP the enemy party is built from: realm_base * strength * band.
 ## Absolute per realm — it does not track the player's own XP.
+##
+## Strength defaults to the multiplier for the top of the encounter's rank range,
+## which is the old behaviour. An encounter may override it outright, which is
+## how "a weak band of strong creatures" gets written — something the single
+## tier field could not express, because the draw pool set the difficulty.
 func resolve_party_budget(encounter_id: String, realm: String) -> Dictionary:
 	var template: Dictionary = encounters.get(encounter_id, {})
-	var tier: String = resolve_encounter_tier(template)
+	var rank_range: Array = resolve_encounter_rank_range(template)
 	var band: String = roll_band()
 
-	var base: float = float(budgets.get("realm_base", {}).get(realm, 200))
-	var tier_mult: float = float(budgets.get("tier_multipliers", {}).get(tier, 1.0))
-	var xp: int = maxi(1, int(round(base * tier_mult * _band_multiplier(band))))
+	var mults: Dictionary = budgets.get("rank_multipliers", {})
+	var strength: float = float(mults.get(str(int(rank_range[1])), 1.0))
+	if template.has("strength"):
+		strength = float(template["strength"])
 
-	return {"xp": xp, "band": band, "tier": tier}
+	var base: float = float(budgets.get("realm_base", {}).get(realm, 200))
+	var xp: int = maxi(1, int(round(base * strength * _band_multiplier(band))))
+
+	return {"xp": xp, "band": band, "rank_range": rank_range, "strength": strength}
 
 
 func _ready() -> void:
@@ -547,7 +593,7 @@ func _load_name_parts() -> void:
 ## encounter_id: matches enemy_group from events/mobs JSON
 ## region: "cold_hell", "fire_hell", or "" for any
 ## realm: which of the six worlds this encounter is in — used for name generation
-## difficulty: tier string from the event/mob ("easy".."boss"), scales enemy power
+## difficulty: difficulty string from the event/mob ("easy".."boss"), scales enemy power
 func generate_encounter(encounter_id: String, region: String = "", realm: String = "hell", difficulty: String = "normal") -> Array[Dictionary]:
 	var template = encounters.get(encounter_id, {})
 	if template.is_empty():
@@ -569,26 +615,26 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 
 	if template.get("fixed", false):
 		# Authored exactly: the archetype list is the composition. Shares come
-		# from each archetype's own tier, so a boss is worth more than the
+		# from each archetype's own rank, so a boss is worth more than the
 		# honour guard standing beside it rather than an equal quarter.
 		for entry in template.get("enemies", []):
 			var aid: String = String(entry.get("archetype", ""))
-			var a_tier: String = String(archetypes.get(aid, {}).get("tier", "devil"))
-			var a_share: int = maxi(1, TIER_ORDER.find(a_tier) + 1)
+			var a_share: int = archetype_rank(archetypes.get(aid, {}))
 			for i in range(int(entry.get("count", 1))):
 				slots.append({"archetype": aid, "share": a_share})
 
 	elif template.has("groups"):
-		# Authored shape: each group is a share tier, so a screen of chaff in
-		# front of heavies stays a screen of chaff in front of heavies. The
-		# group's tier rank is its share, which is what made the heavies heavy.
+		# Authored shape: each group is a share band, so a screen of chaff in
+		# front of heavies stays a screen of chaff in front of heavies. The top
+		# of the group's rank range is its share, which is what made them heavy.
 		for group in template.get("groups", []):
-			var share: int = maxi(1, TIER_ORDER.find(String(group.get("tier", "devil"))) + 1)
+			var g_range: Array = resolve_encounter_rank_range(group)
+			var share: int = maxi(1, int(g_range[1]))
 			var group_region: String = String(group.get("region", effective_region))
 			for role in group.get("roles", {}):
 				for i in range(int(group["roles"][role])):
 					slots.append({"role": String(role), "share": share,
-						"tier": String(group.get("tier", "devil")), "region": group_region})
+						"rank_range": g_range, "region": group_region})
 
 	else:
 		# Plain role encounter: the party archetype decides size and shares.
@@ -617,9 +663,10 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 	var family: Array[String] = _encounter_family_tokens(encounter_id)
 	for slot in slots:
 		if not slot.has("archetype"):
+			var slot_range: Array = slot.get("rank_range", budget["rank_range"])
 			slot["archetype"] = _pick_archetype_for_role(
 				String(slot["role"]), String(slot.get("region", effective_region)),
-				String(slot.get("tier", budget["tier"])), realm, family)
+				slot_range, realm, family)
 
 	_mark_authored_hero(slots, template)
 
@@ -1313,10 +1360,10 @@ func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Arr
 	return inventory
 
 
-## Pick a random archetype that matches a given role, region, tier, and realm.
+## Pick a random archetype matching a role, region, rank range and realm.
 ## Region "any" archetypes can appear in any region.
-## Tier defaults to "devil" — use "shade" or "imp" for lower-power enemies.
-## Archetypes without an explicit tier field default to "devil".
+## rank_range is inclusive on both ends; [1, 4] accepts anything below boss.
+## Archetypes without an explicit rank fall back to their legacy tier, then 3.
 ## Archetypes without an explicit realm field default to "hell" (backwards compatibility).
 ## Words in an encounter id that name what the encounter is about.
 ##
@@ -1339,7 +1386,7 @@ func _encounter_family_tokens(encounter_id: String) -> Array[String]:
 	return out
 
 
-func _pick_archetype_for_role(role: String, region: String, tier: String = "devil",
+func _pick_archetype_for_role(role: String, region: String, rank_range: Array = [3, 3],
 		realm: String = "hell", family: Array[String] = []) -> String:
 	var candidates: Array[String] = []
 
@@ -1347,7 +1394,7 @@ func _pick_archetype_for_role(role: String, region: String, tier: String = "devi
 		var arch = archetypes[arch_id]
 		var arch_roles = arch.get("roles", [])
 		var arch_region = arch.get("region", "any")
-		var arch_tier = arch.get("tier", "devil")
+		var arch_rank: int = archetype_rank(arch)
 		var arch_realm = arch.get("realm", "hell")
 
 		# Check role match
@@ -1366,8 +1413,10 @@ func _pick_archetype_for_role(role: String, region: String, tier: String = "devi
 		if "boss" in arch_roles:
 			continue
 
-		# Filter by tier — shades and imps don't appear in devil encounters and vice-versa
-		if arch_tier != tier:
+		# Filter by rank. A range rather than an equality, so an encounter can
+		# field its own family across the ranks its members actually occupy —
+		# the mriga herd taking both the rank-3 stag and the rank-2 sentinel.
+		if arch_rank < int(rank_range[0]) or arch_rank > int(rank_range[1]):
 			continue
 
 		# Filter by realm — don't mix hell demons into hungry ghost encounters, etc.

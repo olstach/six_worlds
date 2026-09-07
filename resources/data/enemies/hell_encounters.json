@@ -3,7 +3,10 @@
     "_comment_event": "=== EVENT ENCOUNTERS ===",
     "demon_patrol": {
       "region": "any",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "frontline": 2,
         "ranged": 1
@@ -15,7 +18,10 @@
     },
     "ice_spirits": {
       "region": "cold_hell",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "caster": 2,
         "support": 1
@@ -62,7 +68,10 @@
     "_comment_shade_events": "=== SHADE EVENT ENCOUNTERS — early game, weak incorporeal enemies ===",
     "shade_ambush": {
       "region": "any",
-      "tier": "shade",
+      "rank_range": [
+        2,
+        2
+      ],
       "roles": {
         "frontline": 3
       },
@@ -73,7 +82,10 @@
     },
     "shade_coven": {
       "region": "any",
-      "tier": "shade",
+      "rank_range": [
+        2,
+        2
+      ],
       "roles": {
         "caster": 2,
         "support": 1
@@ -89,23 +101,29 @@
       "mixed": true,
       "groups": [
         {
-          "tier": "devil",
           "roles": {
             "frontline": 1
           },
           "difficulty_range": [
             0.8,
             1.0
+          ],
+          "rank_range": [
+            3,
+            3
           ]
         },
         {
-          "tier": "shade",
           "roles": {
             "frontline": 2
           },
           "difficulty_range": [
             0.4,
             0.55
+          ],
+          "rank_range": [
+            2,
+            2
           ]
         }
       ]
@@ -113,7 +131,10 @@
     "_comment_imp_events": "=== IMP EVENT ENCOUNTERS — flying harassers, medium difficulty ===",
     "imp_scouts": {
       "region": "any",
-      "tier": "imp",
+      "rank_range": [
+        1,
+        1
+      ],
       "roles": {
         "ranged": 2,
         "caster": 1
@@ -129,7 +150,6 @@
       "mixed": true,
       "groups": [
         {
-          "tier": "devil",
           "roles": {
             "frontline": 1,
             "support": 1
@@ -137,10 +157,13 @@
           "difficulty_range": [
             0.9,
             1.1
+          ],
+          "rank_range": [
+            3,
+            3
           ]
         },
         {
-          "tier": "imp",
           "roles": {
             "ranged": 2,
             "caster": 1
@@ -148,6 +171,10 @@
           "difficulty_range": [
             0.6,
             0.75
+          ],
+          "rank_range": [
+            1,
+            1
           ]
         }
       ]
@@ -252,7 +279,10 @@
     "_comment_mobs": "=== MAP MOB ENCOUNTERS ===",
     "ice_wraith": {
       "region": "cold_hell",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "caster": 1,
         "frontline": 1
@@ -264,7 +294,10 @@
     },
     "demon_sentinel": {
       "region": "any",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "frontline": 2
       },
@@ -275,7 +308,10 @@
     },
     "frost_imp": {
       "region": "cold_hell",
-      "tier": "imp",
+      "rank_range": [
+        1,
+        1
+      ],
       "roles": {
         "caster": 2
       },
@@ -286,7 +322,10 @@
     },
     "lost_souls": {
       "region": "any",
-      "tier": "shade",
+      "rank_range": [
+        2,
+        2
+      ],
       "roles": {
         "caster": 1,
         "support": 1
@@ -298,7 +337,10 @@
     },
     "hell_hound": {
       "region": "any",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "frontline": 2,
         "ranged": 1
@@ -324,7 +366,10 @@
     },
     "shadow_stalker": {
       "region": "any",
-      "tier": "devil",
+      "rank_range": [
+        3,
+        3
+      ],
       "roles": {
         "frontline": 1,
         "ranged": 1
@@ -337,7 +382,10 @@
     "_comment_mixed_mobs": "=== MIXED TIER MAP MOBS ===",
     "shade_wanderers": {
       "region": "any",
-      "tier": "shade",
+      "rank_range": [
+        2,
+        2
+      ],
       "roles": {
         "frontline": 2,
         "caster": 1
@@ -349,7 +397,10 @@
     },
     "imp_swarm": {
       "region": "any",
-      "tier": "imp",
+      "rank_range": [
+        1,
+        1
+      ],
       "roles": {
         "ranged": 3,
         "caster": 1
@@ -365,23 +416,29 @@
       "mixed": true,
       "groups": [
         {
-          "tier": "devil",
           "roles": {
             "frontline": 1
           },
           "difficulty_range": [
             1.0,
             1.2
+          ],
+          "rank_range": [
+            3,
+            3
           ]
         },
         {
-          "tier": "imp",
           "roles": {
             "ranged": 2
           },
           "difficulty_range": [
             0.6,
             0.8
+          ],
+          "rank_range": [
+            1,
+            1
           ]
         }
       ]
@@ -392,23 +449,29 @@
       "mixed": true,
       "groups": [
         {
-          "tier": "devil",
           "roles": {
             "caster": 1
           },
           "difficulty_range": [
             0.9,
             1.1
+          ],
+          "rank_range": [
+            3,
+            3
           ]
         },
         {
-          "tier": "shade",
           "roles": {
             "frontline": 3
           },
           "difficulty_range": [
             0.4,
             0.55
+          ],
+          "rank_range": [
+            2,
+            2
           ]
         }
       ]
@@ -419,7 +482,6 @@
       "mixed": true,
       "groups": [
         {
-          "tier": "devil",
           "roles": {
             "frontline": 2,
             "caster": 1
@@ -428,10 +490,13 @@
             0.9,
             1.1
           ],
-          "region": "fire_hell"
+          "region": "fire_hell",
+          "rank_range": [
+            3,
+            3
+          ]
         },
         {
-          "tier": "imp",
           "roles": {
             "ranged": 2
           },
@@ -439,7 +504,11 @@
             0.6,
             0.75
           ],
-          "region": "fire_hell"
+          "region": "fire_hell",
+          "rank_range": [
+            1,
+            1
+          ]
         }
       ]
     },
@@ -449,7 +518,6 @@
       "mixed": true,
       "groups": [
         {
-          "tier": "devil",
           "roles": {
             "frontline": 1,
             "ranged": 1
@@ -458,10 +526,13 @@
             0.9,
             1.1
           ],
-          "region": "cold_hell"
+          "region": "cold_hell",
+          "rank_range": [
+            3,
+            3
+          ]
         },
         {
-          "tier": "imp",
           "roles": {
             "caster": 2
           },
@@ -469,7 +540,11 @@
             0.6,
             0.75
           ],
-          "region": "cold_hell"
+          "region": "cold_hell",
+          "rank_range": [
+            1,
+            1
+          ]
         }
       ]
     },

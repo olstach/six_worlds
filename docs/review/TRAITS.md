@@ -1676,7 +1676,7 @@ Long ages of accumulated experience have sharpened recall and insight. What othe
 
 ## aquatic
 
-`pressure: water-5  ·  on 0 companions`
+`stats: awareness+1  ·  pressure: water-5  ·  on 0 companions`
 
 **Name**
 
@@ -1748,7 +1748,7 @@ A massive build that weathers punishment others could not survive.
 
 ## colony_mind
 
-`pressure: fire-5, water-5, earth-5, air-5, space-5  ·  on 0 companions`
+`stats: charm+1  ·  pressure: fire-5, water-5, earth-5, air-5, space-5  ·  on 0 companions`
 
 **Name**
 
@@ -2072,7 +2072,7 @@ The natural speed and precision of a born hunter.
 
 ## serpentine
 
-`pressure: water-5  ·  on 0 companions`
+`stats: awareness+1  ·  pressure: water-5  ·  on 0 companions`
 
 **Name**
 

@@ -103,3 +103,10 @@ across the treetops" was left exactly as written.
 the old one restated the treetop_wit background almost line for line, so it now
 describes her rather than the trade. Still Claude's, still wants your pass.
 
+**Racial traits (2026-09-07).** `nimble_mischief` now gives finesse +1 instead of
+guile +1; `serpentine` and `aquatic` give awareness +1; `colony_mind` gives
+charm +1. `hell_born` was deliberately left alone. No descriptions changed, but
+`serpentine` ("Serpentine") and `aquatic` ("Aquatic") now do something and their
+one-line descriptions were written when they did not — worth a look in the
+traits pass.
+

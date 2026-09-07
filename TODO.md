@@ -352,6 +352,33 @@ Recorded so they aren't rediscovered as bugs.
   Other skills likely want their own objects too — Alchemy, Medicine, Smithing,
   Trade all imply tools that do not exist yet.
 
+- [x] ~~**`tier` did three jobs at once.**~~ — replaced 2026-09-07 by `rank`.
+  An archetype's `rank` (1–4) is only what the creature is; an encounter's
+  `rank_range` is the pool it draws from; its strength is the multiplier for the
+  top of that range, or an explicit `strength` override — so "a weak band of
+  strong creatures" is now expressible, which one tier field could not do. Boss
+  is a role, not a rank. `party_composition.json` used `tiers` for a third,
+  unrelated thing (share structure) and now says `slots`.
+
+  **28 role slots across 22 encounters could not field their own family; now 0,
+  and no role slot anywhere is unfillable.** Ranges were widened by derivation,
+  not guesswork — an encounter's range is its old tier extended to cover its own
+  family's ranks. Three more classes of bug fell out of the audit:
+  - **`sky` was not a map zone.** The animal map is ocean / coastal_wall /
+    forest / ridge / meadow and no encounter used `sky`, so all six flying
+    archetypes were unreachable by role matching and three of them — the whole
+    kapota and uluka rosters — could never appear at all. They are `any` now,
+    which is what the picker already means by "does not care".
+  - **`swamp` was not a region either.** Two hungry ghost archetypes used it;
+    the zone and every encounter say `fetid_swamps`.
+  - **`animal_shyena_lord` was tier `imp`.** An encounter named for a rank-4
+    lord drew from rank 1, so it fielded no shyena. Now `[4, 4]`, which also
+    quadruples its XP budget — worth a look in play.
+
+- [ ] **`hell_sloth_imp` is unreachable.** Rank 1, role support, region any, and
+  no hell encounter asks for rank-1 support. It is the only archetype in the
+  game no encounter can produce. Wants an encounter, not a code change.
+
 - **Birth and archetype can contradict each other.** Enemy births are rolled
   from the realm independently of the archetype, so 33 hell encounters produce
   things like `hell_green_devil_sniper` with a `blue_devil` birth. Either
