@@ -327,7 +327,7 @@ Troop director; leadership perks give formation bonuses to nearby vanara
 
 ## Vanara Skirmisher  `animal_vanara_skirmisher`
 
-`tier: shade  ·  roles: ranged  ·  skills: ranged, alchemy  ·  perks: taunt  ·  threat ×1.0`
+`tier: shade  ·  roles: skirmisher, ranged  ·  skills: ranged, alchemy  ·  perks: taunt  ·  threat ×1.0`
 
 
 *Named directly in: animal_vanara_elder_encounter*

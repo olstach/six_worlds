@@ -1206,11 +1206,11 @@
     "description": "Quick hands and a quicker mind.",
     "category": "racial",
     "inborn": true,
-    "stat_modifiers": {},
-    "pressure_modifiers": {},
-    "skill_modifiers": {
-      "guile": 1
+    "stat_modifiers": {
+      "finesse": 1
     },
+    "pressure_modifiers": {},
+    "skill_modifiers": {},
     "event_tags": [
       "nimble_mischief",
       "trickster"

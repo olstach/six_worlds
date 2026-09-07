@@ -272,7 +272,7 @@ comedy, performance, grace
 **Flavor Text**
 
 <!--@ companions.json | kelika | flavor_text -->
-Works from a height, with an audience that cannot easily leave. The fall is never accidental; ask about the recovery and you will lose the afternoon.
+Cannot be anywhere for ten minutes without turning something in it into a game, usually the thing you were relying on. Has been thrown out of two temples and invited back to one.
 <!--@end-->
 
 
@@ -329,7 +329,7 @@ air_magic, space_magic, learning
 **Flavor Text**
 
 <!--@ companions.json | laghima | flavor_text -->
-Sits on the high place and says what the weather will do some hours before it agrees to do it. Has never once been caught in the rain, and considers this a spiritual attainment rather than luck.
+She sat on the treetop watching the horizon until she learned its moods and secrets like a lover.
 <!--@end-->
 
 

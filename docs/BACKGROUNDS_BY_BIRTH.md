@@ -119,7 +119,7 @@ prose documentation for the review documents and does not narrow the roll.
 | **Ill Omen** `ill_omen` | uluka | animal | black_magic 2, performance 1 |
 | **Jaina** `jaina` | khadga | animal | yoga 2, ritual 1, learning 1 |
 | **Jessed Hawk** `jessed_hawk` | shyena | animal | guile 2, learning 1 |
-| **Jugaad** `jugaad` | vanara | animal | guile 1, learning 1, smithing 2 |
+| **Jugaad** `jugaad` | vanara | animal | smithing 2, fire_magic 1, air_magic 1 |
 | **Keel Rider** `keel_rider` | karka | animal | learning 1, trade 1, comedy 1, grace 1 |
 | **Lord of the Range** `lord_of_the_range` | rakshasa | animal | might 2, martial_arts 1 |
 | **Maneater** `maneater` | rakshasa | animal | guile 2, unarmed 1 |

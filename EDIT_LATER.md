@@ -91,3 +91,15 @@ the first content to draw on it.
 
 Edit them in `docs/review/ANIMAL_COMPANIONS.md` and re-import as usual.
 
+### Vanara pass, round two (2026-09-07)
+
+**Your wording, in the file.** The five vanara background descriptions are now the
+lines you wrote in chat. The only thing changed was mechanical: sentence-start
+capitals, and ` - ` set as an em dash to match the house style. Every word is
+yours — revert any of it if the tidying flattened the voice. "Like *a* lightning
+across the treetops" was left exactly as written.
+
+`laghima`'s flavour text is your sentence, capitalised. `kelika`'s is rewritten:
+the old one restated the treetop_wit background almost line for line, so it now
+describes her rather than the trade. Still Claude's, still wants your pass.
+

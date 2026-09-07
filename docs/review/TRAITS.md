@@ -2018,7 +2018,7 @@ Sees equally in darkness and light, perceiving what others miss.
 
 ## nimble_mischief
 
-`skills: guile+1  ·  on 0 companions`
+`stats: finesse+1  ·  on 0 companions`
 
 **Name**
 

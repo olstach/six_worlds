@@ -4071,7 +4071,7 @@
     },
     "troop_elder": {
       "name": "Troop Elder",
-      "description": "I know which fig ripens first and which mango is always bitter. I know who should not sit next to whom at the sleeping tree, which young males are building coalitions, which females are calculating. The troop is a city in the canopy.",
+      "description": "I know which fig ripens first and which mango is always bitter, I know a good dream from a bad one.",
       "attribute_modifiers": {
         "charm": 1,
         "awareness": 1
@@ -4088,7 +4088,7 @@
     },
     "shrine_keeper": {
       "name": "Shrine Keeper",
-      "description": "The great fig tree has been sacred since before memory. I leave offerings at the roots — a smooth stone, a bright beetle, a length of vine arranged just so. I do not know why. My mother did it. And hers.",
+      "description": "I leave gifts at the roots of the sleeping tree. A bright beetle, a ribbon, a river stone with a little face!",
       "attribute_modifiers": {
         "awareness": 1
       },
@@ -4103,12 +4103,12 @@
     },
     "jugaad": {
       "name": "Jugaad",
-      "description": "The camp near the river has a forge. I watched them for a season before I went in. They thought I wanted food. I wanted to understand what they were doing with fire and metal. The first tool I made was better than theirs. The seventh one they couldn't explain. I take requests now, in exchange for food and a formal agreement with their dogs.",
+      "description": "The first tool I made was better than theirs. The seventh one they couldn't explain.",
       "attribute_modifiers": {},
       "starting_skills": {
-        "guile": 1,
-        "learning": 1,
-        "smithing": 2
+        "smithing": 2,
+        "fire_magic": 1,
+        "air_magic": 1
       },
       "available_races": [
         "vanara"
@@ -4117,7 +4117,7 @@
     },
     "forest_thief": {
       "name": "Forest Thief",
-      "description": "The settlements at the forest edge have interesting things — bright cloth, sweet foods, objects whose purpose I don't understand but which catch the light magnificently. I know which dogs bark and which don't. I know when the guards sleep.",
+      "description": "In the villages, they have sweets, smooth cloth, funny water! And I just happen to know when they're out working.",
       "attribute_modifiers": {
         "awareness": 1
       },
@@ -4329,7 +4329,7 @@
     },
     "treetop_wit": {
       "name": "Treetop Wit",
-      "description": "The line between funny and frightening is a matter of timing. You work both sides of it from a height, with an audience that can't easily leave. The fall is never accidental. The recovery is always the point.",
+      "description": "Like a lightning across the treetops, a fall and — graceful recovery!",
       "attribute_modifiers": {},
       "starting_skills": {
         "comedy": 2,

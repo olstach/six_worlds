@@ -820,7 +820,7 @@ Forest Thief
 **Description**
 
 <!--@ backgrounds.json | forest_thief | description -->
-The settlements at the forest edge have interesting things — bright cloth, sweet foods, objects whose purpose I don't understand but which catch the light magnificently. I know which dogs bark and which don't. I know when the guards sleep.
+In the villages, they have sweets, smooth cloth, funny water! And I just happen to know when they're out working.
 <!--@end-->
 
 
@@ -978,7 +978,7 @@ Trained, hooded, tethered, fed by hand. You learned the wrist and the lure, the 
 
 ## Jugaad  `jugaad`
 
-`births: Vanara  ·  skills: guile 1, learning 1, smithing 2`
+`births: Vanara  ·  skills: smithing 2, fire_magic 1, air_magic 1`
 
 
 **Name**
@@ -991,7 +991,7 @@ Jugaad
 **Description**
 
 <!--@ backgrounds.json | jugaad | description -->
-The camp near the river has a forge. I watched them for a season before I went in. They thought I wanted food. I wanted to understand what they were doing with fire and metal. The first tool I made was better than theirs. The seventh one they couldn't explain. I take requests now, in exchange for food and a formal agreement with their dogs.
+The first tool I made was better than theirs. The seventh one they couldn't explain.
 <!--@end-->
 
 
@@ -1352,7 +1352,7 @@ Shrine Keeper
 **Description**
 
 <!--@ backgrounds.json | shrine_keeper | description -->
-The great fig tree has been sacred since before memory. I leave offerings at the roots — a smooth stone, a bright beetle, a length of vine arranged just so. I do not know why. My mother did it. And hers.
+I leave gifts at the roots of the sleeping tree. A bright beetle, a ribbon, a river stone with a little face!
 <!--@end-->
 
 
@@ -1618,7 +1618,7 @@ Treetop Wit
 **Description**
 
 <!--@ backgrounds.json | treetop_wit | description -->
-The line between funny and frightening is a matter of timing. You work both sides of it from a height, with an audience that can't easily leave. The fall is never accidental. The recovery is always the point.
+Like a lightning across the treetops, a fall and — graceful recovery!
 <!--@end-->
 
 
@@ -1637,7 +1637,7 @@ Troop Elder
 **Description**
 
 <!--@ backgrounds.json | troop_elder | description -->
-I know which fig ripens first and which mango is always bitter. I know who should not sit next to whom at the sleeping tree, which young males are building coalitions, which females are calculating. The troop is a city in the canopy.
+I know which fig ripens first and which mango is always bitter, I know a good dream from a bad one.
 <!--@end-->
 
 
