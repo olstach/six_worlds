@@ -434,7 +434,7 @@ Long years of standing knee-deep in the same patch of swamp have made you territ
 
 ## Bone Dancer  `bone_dancer`
 
-`births: Skeleton, Copper Skeleton, Turquoise Skeleton  ·  attributes: charm+2, luck+1, constitution-1, strength-2  ·  skills: performance 2, comedy 1  ·  kit: leather_vest`
+`births: Skeleton, Copper Skeleton, Turquoise Skeleton  ·  attributes: charm+2, luck+1, constitution-1, strength-2  ·  skills: comedy 2, performance 1  ·  kit: leather_vest`
 
 
 **Name**
@@ -472,7 +472,7 @@ You tend the dry places. You know where every bone is, who it belonged to, and h
 
 ## Charnel Yogi  `charnel_yogi`
 
-`births: Dré, Gyelpo, Preserved, Skeleton, Iron Skeleton, Silver Skeleton, Vetala  ·  attributes: focus+2, awareness+1, constitution-2, strength-1  ·  skills: yoga 2, ritual 1  ·  kit: cloth_robe`
+`births: Dré, Gyelpo, Preserved, Skeleton, Iron Skeleton, Silver Skeleton, Vetala  ·  attributes: focus+2, awareness+1, constitution-2, strength-1  ·  skills: yoga 2, summoning 1  ·  kit: cloth_robe`
 
 
 **Name**

@@ -359,7 +359,7 @@ The grey fields under the fire hells will grow four things, and you know all fou
 
 ## Bellows Hand  `bellows_hand`
 
-`births: Flame Imp, Gravel Imp  ·  attributes: strength+1, constitution+1, charm-1  ·  skills: smithing 2, might 1  ·  kit: plain_smiths_hammer, leather_gloves`
+`births: Flame Imp, Gravel Imp  ·  attributes: strength+1, constitution+1, charm-1  ·  skills: fire_magic 2, smithing 1  ·  kit: plain_smiths_hammer, leather_gloves`
 
 
 **Name**
@@ -397,7 +397,7 @@ A warrior who fights with uncontrolled fury, trading precision for annihilating 
 
 ## Bone-Setter  `bone_setter`
 
-`births: Flame Imp, Frost Imp, Gravel Imp, Sloth Imp, Static Imp, Tinnitus Imp, Wretch  ·  attributes: focus+1, awareness+1, strength-1  ·  skills: medicine 2, black_magic 1  ·  kit: plain_medicine_bag, cloth_robe`
+`births: Flame Imp, Frost Imp, Gravel Imp, Sloth Imp, Static Imp, Tinnitus Imp, Wretch  ·  attributes: focus+1, awareness+1, strength-1  ·  skills: water_magic 2, medicine 1  ·  kit: plain_medicine_bag, cloth_robe`
 
 
 **Name**
@@ -720,7 +720,7 @@ One who takes what they want by force, quick to strike and quicker to vanish.
 
 ## Runaway  `runaway`
 
-`births: Wretch  ·  attributes: finesse+2, constitution-1, luck+1  ·  skills: guile 2, thievery 1  ·  kit: leather_boots`
+`births: Wretch  ·  attributes: finesse+2, constitution-1, luck+1  ·  skills: guile 2, grace 1  ·  kit: leather_boots`
 
 
 **Name**
@@ -739,7 +739,7 @@ You got out of a pit once. It was not planned, it was not clever, and it has def
 
 ## Soul Jailer  `soul_jailer`
 
-`births: Blue Devil, Frost Imp  ·  attributes: strength+1, constitution+1, awareness+1, charm-2  ·  skills: spears 1, armor 2, black_magic 1  ·  kit: wooden_spear, leather_vest, leather_cap, leather_boots`
+`births: Blue Devil, Frost Imp  ·  attributes: strength+1, constitution+1, awareness+1, charm-2  ·  skills: armor 2, maces 1, black_magic 1  ·  kit: wooden_spear, leather_vest, leather_cap, leather_boots`
 
 
 **Name**

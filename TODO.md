@@ -417,14 +417,24 @@ Recorded so they aren't rediscovered as bugs.
   **`dralha` at 3.0%** and **`gyelpo` at 5.7%**, plus `uluka` 5.7% and
   `patanga` 6.8% in the animal realm.
 
-- **Backgrounds duplicate each other mechanically, and the skill spread is
-  lopsided.** Found by `tools/audit_backgrounds.py` (new; rerun it after any
-  background edit — it prints a report and never writes).
+- [x] ~~**Backgrounds duplicate each other mechanically.**~~ — done 2026-09-07.
+  19 flavoured backgrounds differentiated; **0 identical clusters** remain (was
+  11, 8 of them colliding) and no background is strictly dominated. Birth-slots
+  where a character could roll two backgrounds doing the same thing: **53 → 5**.
+  No universal background was touched — they are 84% of every roll. Nine
+  same-skill clusters remain and are all level-swaps (one headlines the skill,
+  the other carries it as a minor), which reads as two takes on a trade;
+  `bone_dancer`/`musician` is deliberately among them, because Olaf wants
+  `comedy 2` on the bone dancer for the cham-dance jesters.
 
-  **Duplication.** 11 clusters of backgrounds share identical `starting_skills`
-  at identical levels, 19 share the same skills at any levels. Most are
-  harmless: a universal background and a realm re-skin of it that no single
-  birth can roll both of. Four collide in a real pool:
+- **The skill spread is still lopsided, and differentiation could not fix it.**
+  Found by `tools/audit_backgrounds.py` (rerun it after any background edit —
+  it prints a report and never writes).
+
+  **Duplication (fixed above, kept for the record).** 11 clusters shared
+  identical `starting_skills` at identical levels and 19 shared the same skills
+  at any levels. Most were harmless — a universal background and a realm re-skin
+  of it that no single birth can roll both of. Four collided in a real pool:
 
   | cluster | births that can roll more than one |
   |---|---|
@@ -433,13 +443,10 @@ Recorded so they aren't rediscovered as bugs.
   | `thief` / `forest_thief` / `runaway` — guile + thievery | **8** |
   | `guard` / `coral_guard` — both `armor 2, spears 1` | 4 |
 
-  `bellows_hand` and `bone_setter` are from the 2026-09-07 births pass and are
-  the ones to fix — they were written without checking what the universal pool
-  already taught. `coral_guard` is worth a look too: at weight 8 it is the
-  second-heaviest background in the game and mechanically it is `guard`.
-
-  Only one background is **strictly dominated**: `thief` has `finesse +1` over
-  `forest_thief` with the same skills.
+  `bellows_hand` and `bone_setter` came from the 2026-09-07 births pass and were
+  written without checking what the universal pool already taught. All four are
+  now differentiated, and the one strictly dominated pair (`thief` over
+  `forest_thief`) is gone.
 
   **`swords` is a dead skill at character creation.** No background grants it
   above level 1 and no birth grants it at all. The only common route to it is

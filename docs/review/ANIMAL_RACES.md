@@ -655,7 +655,7 @@ You made the journey. The thirty gathered at the highest waypoint — the one ab
 
 ## Coral Guard  `coral_guard`
 
-`births: Karka, Makara, Matsya, Naga  ·  attributes: constitution+1  ·  skills: armor 2, spears 1  ·  kit: lamellar_armor`
+`births: Karka, Makara, Matsya, Naga  ·  attributes: constitution+1  ·  skills: spears 2, water_magic 1  ·  kit: lamellar_armor`
 
 
 **Name**
@@ -712,7 +712,7 @@ You roam the deep water alone. What others call the hunt is to you a long medita
 
 ## Elder Voice  `elder_voice`
 
-`births: Gana  ·  skills: leadership 2, persuasion 1, logistics 1`
+`births: Gana  ·  attributes: awareness+1  ·  skills: leadership 2, logistics 1, air_magic 1`
 
 
 **Name**
@@ -807,7 +807,7 @@ On moonlit nights, the song carries further than you can see, the answer coming 
 
 ## Forest Thief  `forest_thief`
 
-`births: Vanara  ·  skills: thievery 2, guile 1`
+`births: Vanara  ·  attributes: awareness+1  ·  skills: thievery 2, comedy 1`
 
 
 **Name**
@@ -902,7 +902,7 @@ The comb is not built — it grows, cell by cell, through ten thousand coordinat
 
 ## Honey-Keeper  `honey_alchemist`
 
-`births: Bhramara  ·  attributes: awareness+1  ·  skills: alchemy 2, medicine 1`
+`births: Bhramara  ·  attributes: awareness+1  ·  skills: fire_magic 1, water_magic 1, white_magic 1`
 
 
 **Name**
@@ -1206,7 +1206,7 @@ The peak where two passes cross. The lone horn of rock three days east. The grea
 
 ## Quiet Tooth  `quiet_tooth`
 
-`births: Gana  ·  attributes: finesse+1  ·  skills: daggers 2, guile 1`
+`births: Gana  ·  attributes: finesse+1  ·  skills: daggers 2, grace 1`
 
 
 **Name**
@@ -1282,7 +1282,7 @@ The tuber doesn't know it's being guided. The root finds the right direction bec
 
 ## Scarred Lead  `scarred_lead`
 
-`births: Mriga  ·  skills: leadership 2, persuasion 1, logistics 1`
+`births: Mriga  ·  attributes: constitution+1  ·  skills: leadership 2, persuasion 1, water_magic 1`
 
 
 **Name**
@@ -1339,7 +1339,7 @@ The shed carapace is not waste. It is material — harder than wood, lighter tha
 
 ## Shrine Keeper  `shrine_keeper`
 
-`births: Vanara  ·  skills: ritual 2, yoga 1`
+`births: Vanara  ·  attributes: awareness+1  ·  skills: ritual 2, earth_magic 1`
 
 
 **Name**
@@ -1377,7 +1377,7 @@ Three valleys. Every road, field, and creature visible at once from the high the
 
 ## Slope Herbalist  `slope_herbalist`
 
-`births: Mriga  ·  skills: medicine 2, earth_magic 1  ·  kit: herb_bundle`
+`births: Mriga  ·  attributes: awareness+1  ·  skills: earth_magic 2, alchemy 1  ·  kit: herb_bundle`
 
 
 **Name**
@@ -1453,7 +1453,7 @@ She doesn't lead by being the largest or the most aggressive. She leads because 
 
 ## Still Hunter  `still_hunter`
 
-`births: Khadga, Yaksha  ·  attributes: awareness+1  ·  skills: daggers 2, guile 1`
+`births: Khadga, Yaksha  ·  attributes: awareness+1  ·  skills: daggers 2, ranged 1`
 
 
 **Name**
@@ -1491,7 +1491,7 @@ Two hundred wing-lengths of silent fall. The wind becomes a pressure, then a scr
 
 ## Strangler  `strangler`
 
-`births: Gana  ·  attributes: strength+1  ·  skills: unarmed 2, might 1`
+`births: Gana  ·  attributes: strength+1, focus+1  ·  skills: unarmed 2, grace 1`
 
 
 **Name**
@@ -1529,7 +1529,7 @@ The hive can extend beyond the hive. You learned to ask rather than just know �
 
 ## Temple Dove  `temple_dove`
 
-`births: Kapota  ·  skills: ritual 2, yoga 1`
+`births: Kapota  ·  attributes: focus+1  ·  skills: white_magic 2, air_magic 1`
 
 
 **Name**
@@ -1624,7 +1624,7 @@ The line between funny and frightening is a matter of timing. You work both side
 
 ## Troop Elder  `troop_elder`
 
-`births: Vanara  ·  skills: persuasion 2, learning 1`
+`births: Vanara  ·  attributes: charm+1, awareness+1  ·  skills: persuasion 1, leadership 1, comedy 1`
 
 
 **Name**

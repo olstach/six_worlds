@@ -2824,8 +2824,8 @@
         "charm": -2
       },
       "starting_skills": {
-        "spears": 1,
         "armor": 2,
+        "maces": 1,
         "black_magic": 1
       },
       "starting_equipment": {
@@ -3218,8 +3218,8 @@
         "strength": -2
       },
       "starting_skills": {
-        "performance": 2,
-        "comedy": 1
+        "comedy": 2,
+        "performance": 1
       },
       "starting_equipment": {
         "items": [
@@ -3247,7 +3247,7 @@
       },
       "starting_skills": {
         "yoga": 2,
-        "ritual": 1
+        "summoning": 1
       },
       "starting_equipment": {
         "items": [
@@ -3274,8 +3274,8 @@
         "constitution": 1
       },
       "starting_skills": {
-        "armor": 2,
-        "spears": 1
+        "spears": 2,
+        "water_magic": 1
       },
       "starting_equipment": {
         "base_weapon": "iron_trishula",
@@ -3534,8 +3534,9 @@
         "awareness": 1
       },
       "starting_skills": {
-        "alchemy": 2,
-        "medicine": 1
+        "fire_magic": 1,
+        "water_magic": 1,
+        "white_magic": 1
       },
       "available_races": [
         "bhramara"
@@ -3613,7 +3614,7 @@
       },
       "starting_skills": {
         "daggers": 2,
-        "guile": 1
+        "ranged": 1
       },
       "starting_equipment": {
         "base_weapon": "iron_dagger",
@@ -4057,11 +4058,13 @@
     "elder_voice": {
       "name": "Elder Voice",
       "description": "Not the fastest, not the strongest, but the one who can keep the pack alive the longest.",
-      "attribute_modifiers": {},
+      "attribute_modifiers": {
+        "awareness": 1
+      },
       "starting_skills": {
         "leadership": 2,
-        "persuasion": 1,
-        "logistics": 1
+        "logistics": 1,
+        "air_magic": 1
       },
       "available_races": [
         "gana"
@@ -4071,10 +4074,14 @@
     "troop_elder": {
       "name": "Troop Elder",
       "description": "I know which fig ripens first and which mango is always bitter. I know who should not sit next to whom at the sleeping tree, which young males are building coalitions, which females are calculating. The troop is a city in the canopy.",
-      "attribute_modifiers": {},
+      "attribute_modifiers": {
+        "charm": 1,
+        "awareness": 1
+      },
       "starting_skills": {
-        "persuasion": 2,
-        "learning": 1
+        "persuasion": 1,
+        "leadership": 1,
+        "comedy": 1
       },
       "available_races": [
         "vanara"
@@ -4084,10 +4091,12 @@
     "shrine_keeper": {
       "name": "Shrine Keeper",
       "description": "The great fig tree has been sacred since before memory. I leave offerings at the roots — a smooth stone, a bright beetle, a length of vine arranged just so. I do not know why. My mother did it. And hers.",
-      "attribute_modifiers": {},
+      "attribute_modifiers": {
+        "awareness": 1
+      },
       "starting_skills": {
         "ritual": 2,
-        "yoga": 1
+        "earth_magic": 1
       },
       "available_races": [
         "vanara"
@@ -4111,10 +4120,12 @@
     "forest_thief": {
       "name": "Forest Thief",
       "description": "The settlements at the forest edge have interesting things — bright cloth, sweet foods, objects whose purpose I don't understand but which catch the light magnificently. I know which dogs bark and which don't. I know when the guards sleep.",
-      "attribute_modifiers": {},
+      "attribute_modifiers": {
+        "awareness": 1
+      },
       "starting_skills": {
         "thievery": 2,
-        "guile": 1
+        "comedy": 1
       },
       "available_races": [
         "vanara"
@@ -4183,10 +4194,12 @@
     "temple_dove": {
       "name": "Temple Dove",
       "description": "Hatched in the temple courtyard, fed on offerings, trained to carry prayers tied to your leg between shrines. You never needed to find food. You never needed to know where you were going — the route was always already known. You are out in the wider world now, and it is strange: loud, directionless, full of things that were not in the prayers.",
-      "attribute_modifiers": {},
+      "attribute_modifiers": {
+        "focus": 1
+      },
       "starting_skills": {
-        "ritual": 2,
-        "yoga": 1
+        "white_magic": 2,
+        "air_magic": 1
       },
       "available_races": [
         "kapota"
@@ -4401,10 +4414,12 @@
     "slope_herbalist": {
       "name": "Slope Herbalist",
       "description": "I know where the bitter herb grows. I know the clay that draws out poison.",
-      "attribute_modifiers": {},
+      "attribute_modifiers": {
+        "awareness": 1
+      },
       "starting_skills": {
-        "medicine": 2,
-        "earth_magic": 1
+        "earth_magic": 2,
+        "alchemy": 1
       },
       "starting_equipment": {
         "items": [
@@ -4419,11 +4434,13 @@
     "scarred_lead": {
       "name": "Scarred Lead",
       "description": "Every carnivore that tried left a mark and a lesson. The crowd follows him towards the safe water.",
-      "attribute_modifiers": {},
+      "attribute_modifiers": {
+        "constitution": 1
+      },
       "starting_skills": {
         "leadership": 2,
         "persuasion": 1,
-        "logistics": 1
+        "water_magic": 1
       },
       "starting_equipment": {
         "items": []
@@ -4437,11 +4454,12 @@
       "name": "Strangler",
       "description": "At first it takes strength to grip so tightly. In time it becomes patience.",
       "attribute_modifiers": {
-        "strength": 1
+        "strength": 1,
+        "focus": 1
       },
       "starting_skills": {
         "unarmed": 2,
-        "might": 1
+        "grace": 1
       },
       "starting_equipment": {
         "items": []
@@ -4459,7 +4477,7 @@
       },
       "starting_skills": {
         "daggers": 2,
-        "guile": 1
+        "grace": 1
       },
       "starting_equipment": {
         "items": []
@@ -4820,8 +4838,8 @@
         "charm": -1
       },
       "starting_skills": {
-        "smithing": 2,
-        "might": 1
+        "fire_magic": 2,
+        "smithing": 1
       },
       "starting_equipment": {
         "items": [
@@ -5057,7 +5075,7 @@
       },
       "starting_skills": {
         "guile": 2,
-        "thievery": 1
+        "grace": 1
       },
       "starting_equipment": {
         "base_weapon": "bone_dagger",
@@ -5129,8 +5147,8 @@
         "strength": -1
       },
       "starting_skills": {
-        "medicine": 2,
-        "black_magic": 1
+        "water_magic": 2,
+        "medicine": 1
       },
       "starting_equipment": {
         "items": [
@@ -5477,8 +5495,8 @@
         "finesse": -1
       },
       "starting_skills": {
-        "smithing": 2,
-        "might": 1
+        "enchantment": 2,
+        "smithing": 1
       },
       "starting_equipment": {
         "items": [
