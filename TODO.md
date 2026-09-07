@@ -427,7 +427,44 @@ Recorded so they aren't rediscovered as bugs.
   `bone_dancer`/`musician` is deliberately among them, because Olaf wants
   `comedy 2` on the bone dancer for the cham-dance jesters.
 
-- **The skill spread is still lopsided, and differentiation could not fix it.**
+- [x] ~~**The skill spread is lopsided.**~~ — done 2026-09-07, in a second pass
+  over the **universal** backgrounds, which are 84% of every roll and therefore
+  the only pool that can move the bottom of the table. Nine swaps, each keeping
+  the background's skill-point budget and taking its justification from its own
+  description: `warrior` → `swords 2, armor 1`, `farmer` → `axes 2`,
+  `guard` → `spears 2, armor 1`, `temple_warden` → `martial_arts 2`,
+  `spy` → `daggers 2`, `noble` → `leadership 2`, `herbalist` → `earth_magic 2`,
+  `wanderer` → `learning 1, comedy 1`, and `former_soldier` (restricted) to
+  spears so it does not become a weaker `guard`.
+
+  **Skills under half the mean: 5 → 0. Spread heaviest-to-lightest: 6.7× → 3.9×.
+  `swords` went from a skill no background in the game was about to 1.20× on the
+  heaviest background there is.** `might` — level-1 filler on five universal
+  backgrounds and headlining none — dropped 2.28× → 1.23×.
+
+  The pattern that made the swaps obvious: the universal pool already held
+  **exactly one background per magic school** (apprentice/sorcery,
+  storm_watcher/air, firekeeper/fire, water_carrier/water, psychic/space,
+  grave_tender/black, healer/white, conjurers_hand/summoning,
+  charm_seller/enchantment) and earth was the only one missing. `herbalist` was
+  already describing earth magic in its prose while teaching medicine.
+
+- [ ] **`armor` needs a universal background of its own.** `guard` was the only
+  universal background that headlined either armor or spears and it could only
+  keep one; it went to `spears 2, armor 1`, which put both near the mean (armor
+  1.38×, spears 1.15×) but left armor headlined only by `soul_jailer` (hell) and
+  `reliquary_guard` (hungry ghost). **Olaf is writing one.** The shape it wants:
+  universal, `available_races: []`, weight around 5, `armor 2` plus one minor
+  that is not `might`, `learning`, `persuasion` or `ritual` — those are the four
+  skills still above 1.4× the mean. Run `tools/audit_backgrounds.py` after
+  adding it.
+
+- [ ] **`learning` is the last outlier at 2.26× the mean.** Everything else now
+  sits between 0.58× and 1.46×. It headlines `scholar` and appears as a level-1
+  minor on 13 more backgrounds — the same filler pattern `might` had before this
+  pass, and fixable the same way if it ever grates.
+
+- **Skill-spread notes, kept for the record.**
   Found by `tools/audit_backgrounds.py` (rerun it after any background edit —
   it prints a report and never writes).
 

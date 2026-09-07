@@ -2368,14 +2368,14 @@
   "backgrounds": {
     "_comment": "Background definitions with starting skills and small attribute tweaks. starting_skills is a dict {skill_id: level}. attribute_modifiers are small flavour adjustments on top of race modifiers. available_races is a whitelist of race IDs (omit or empty = universal). weight is relative reincarnation probability.",
     "wanderer": {
-      "name": "Wanderer",
+      "name": "Quickwit",
       "description": "A traveler who has seen many places and learned to read people and terrain alike.",
       "attribute_modifiers": {
         "awareness": 1
       },
       "starting_skills": {
         "learning": 1,
-        "might": 1
+        "comedy": 1
       },
       "starting_equipment": {
         "base_weapon": "bone_dagger",
@@ -2482,9 +2482,8 @@
         "finesse": -1
       },
       "starting_skills": {
-        "persuasion": 1,
-        "leadership": 1,
-        "swords": 1
+        "leadership": 2,
+        "persuasion": 1
       },
       "starting_equipment": {
         "base_weapon": "bone_dagger",
@@ -2542,9 +2541,8 @@
         "finesse": -1
       },
       "starting_skills": {
-        "swords": 1,
-        "armor": 1,
-        "might": 1
+        "swords": 2,
+        "armor": 1
       },
       "starting_equipment": {
         "base_weapon": "bone_dagger",
@@ -2574,8 +2572,8 @@
         "charm": -1
       },
       "starting_skills": {
-        "logistics": 1,
-        "axes": 1
+        "axes": 2,
+        "logistics": 1
       },
       "starting_equipment": {
         "base_weapon": "bone_dagger",
@@ -2638,8 +2636,8 @@
         "awareness": -1
       },
       "starting_skills": {
-        "spears": 1,
-        "armor": 2
+        "spears": 2,
+        "armor": 1
       },
       "starting_equipment": {
         "items": [
@@ -2932,8 +2930,8 @@
         "charm": -1
       },
       "starting_skills": {
-        "daggers": 1,
-        "guile": 2
+        "daggers": 2,
+        "guile": 1
       },
       "starting_equipment": {
         "base_weapon": "bone_dagger",
@@ -2987,8 +2985,9 @@
         "awareness": -1
       },
       "starting_skills": {
-        "swords": 1,
-        "armor": 1
+        "spears": 1,
+        "armor": 1,
+        "logistics": 1
       },
       "starting_equipment": {
         "base_weapon": "bone_dagger",
@@ -3076,9 +3075,8 @@
         "awareness": -1
       },
       "starting_skills": {
-        "spears": 1,
-        "white_magic": 1,
-        "armor": 1
+        "martial_arts": 2,
+        "white_magic": 1
       },
       "starting_equipment": {
         "items": [
@@ -4049,8 +4047,8 @@
       "description": "The forest speaks of cures and poisons, if you know how to listen. When you break a branch, you see little. They see the weather, time, soil, animals and fungi, spirits and the dead.",
       "attribute_modifiers": {},
       "starting_skills": {
-        "medicine": 2,
-        "earth_magic": 1
+        "earth_magic": 2,
+        "medicine": 1
       },
       "available_races": [],
       "weight": 4

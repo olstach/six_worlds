@@ -864,7 +864,7 @@ Hedonist
 
 ## Herbalist  `herbalist`
 
-`births: Bhramara, Dura, Gana, Kapota, Karka, Khadga, Makara, Marjara, Matsya, Mriga, Naga, Patanga, Rakshasa, Shyena, Uluka, Vanara, Varaha, Yaksha  ·  skills: medicine 2, earth_magic 1`
+`births: Bhramara, Dura, Gana, Kapota, Karka, Khadga, Makara, Marjara, Matsya, Mriga, Naga, Patanga, Rakshasa, Shyena, Uluka, Vanara, Varaha, Yaksha  ·  skills: earth_magic 2, medicine 1`
 
 
 **Name**

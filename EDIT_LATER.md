@@ -42,3 +42,33 @@ refuses to run if the opening no longer matches, so nothing of yours can be
 overwritten silently. If a beat is wrong, cut it; the first sentence is still
 yours.
 
+---
+
+### Backgrounds whose names and descriptions no longer match what they do (2026-09-07)
+
+Two passes changed what 28 backgrounds teach without touching a word of their
+prose, because you said the naming and description pass is coming for all
+backgrounds and births together. These are the ones where the gap is widest:
+
+- **`wanderer` is now displayed as "Quickwit"** — `learning 1, comedy 1`. The id
+  stays `wanderer`: it is the fallback background in `BASE_CHARACTER`,
+  `save_manager`, `karma_system`, `companion_system` and `bardo_screen`, and six
+  births list it. Its description still opens "A traveler who has seen many
+  places" — it holds, since the wit is the "read people" half, but it is yours to
+  re-pitch.
+- **`herbalist`** headlines `earth_magic 2` now, with medicine as the minor. Its
+  description was already about earth ("they see the weather, time, soil, animals
+  and fungi, spirits and the dead") more than about medicine.
+- **`honey_alchemist`** ("Honey-Keeper") has no alchemy left at all — it is
+  `fire_magic 1, water_magic 1, white_magic 1`, your memory-medicine-and-slow-fire
+  reading. The id is now misleading.
+- **`temple_warden`** is `martial_arts 2, white_magic 1` and carries no spear or
+  armour, though its description still says "martial readiness".
+- **`bone_setter`** teaches water magic rather than black magic;
+  **`ore_grafted`** teaches enchantment rather than smithing; **`bellows_hand`**
+  teaches fire rather than smithing; **`charnel_yogi`** picked up summoning,
+  which makes it chöd; **`temple_dove`** dropped ritual for white magic.
+
+Nothing above is a bug — each was chosen from the background's own existing
+words. They are listed here so the prose pass knows where to look first.
+

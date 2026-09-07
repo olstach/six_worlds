@@ -22,30 +22,30 @@ prose documentation for the review documents and does not narrow the roll.
 | **Conjurer's Hand** `conjurers_hand` | summoning 2, ritual 1 |
 | **Dancer** `dancer` | grace 2, performance 1 |
 | **Diplomat** `diplomat` | persuasion 2, learning 1 |
-| **Farmer** `farmer` | logistics 1, axes 1 |
+| **Farmer** `farmer` | axes 2, logistics 1 |
 | **Firekeeper** `firekeeper` | fire_magic 2, ritual 1 |
 | **Grave Tender** `grave_tender` | black_magic 2, medicine 1 |
-| **Guard** `guard` | spears 1, armor 2 |
+| **Guard** `guard` | spears 2, armor 1 |
 | **Healer** `healer` | white_magic 2, medicine 1 |
-| **Herbalist** `herbalist` | medicine 2, earth_magic 1 |
+| **Herbalist** `herbalist` | earth_magic 2, medicine 1 |
 | **Hunter** `hunter` | ranged 2, guile 1 |
 | **Merchant** `merchant` | trade 2, persuasion 1 |
 | **Monk** `monk` | yoga 2, martial_arts 1 |
 | **Musician** `musician` | performance 2, comedy 1 |
-| **Noble** `noble` | persuasion 1, leadership 1, swords 1 |
+| **Noble** `noble` | leadership 2, persuasion 1 |
 | **Penitent** `penitent` | yoga 2, medicine 1 |
 | **Priest** `priest` | white_magic 1, ritual 1 |
 | **Psychic** `psychic` | space_magic 2, yoga 1 |
 | **Quarrier** `quarrier` | maces 2, might 1 |
+| **Quickwit** `wanderer` | learning 1, comedy 1 |
 | **Reveler** `reveler` | performance 1, persuasion 1, leadership 1 |
 | **Scholar** `scholar` | learning 2, ritual 1 |
 | **Smith** `smith` | smithing 2, might 1 |
-| **Spy** `spy` | daggers 1, guile 2 |
+| **Spy** `spy` | daggers 2, guile 1 |
 | **Storm Watcher** `storm_watcher` | air_magic 2, learning 1 |
-| **Temple Warden** `temple_warden` | spears 1, white_magic 1, armor 1 |
+| **Temple Warden** `temple_warden` | martial_arts 2, white_magic 1 |
 | **Thief** `thief` | thievery 2, guile 1 |
-| **Wanderer** `wanderer` | learning 1, might 1 |
-| **Warrior** `warrior` | swords 1, armor 1, might 1 |
+| **Warrior** `warrior` | swords 2, armor 1 |
 | **Water Carrier** `water_carrier` | water_magic 2, logistics 1 |
 
 ## Restricted (105)
@@ -83,7 +83,7 @@ prose documentation for the review documents and does not narrow the roll.
 | **Caravan Guard** `caravan_guard` | dura, khadga, bhramara, yaksha | animal | armor 1, spears 1, might 1 |
 | **Charnel Yogi** `charnel_yogi` | vetala, skeleton, gyelpo, dre | hungry_ghost | yoga 2, summoning 1 |
 | **Coral Guard** `coral_guard` | naga, karka, matsya, makara | animal | spears 2, water_magic 1 |
-| **Former Soldier** `former_soldier` | rolang, skeleton, vetala, dralha | hungry_ghost | swords 1, armor 1 |
+| **Former Soldier** `former_soldier` | rolang, skeleton, vetala, dralha | hungry_ghost | spears 1, armor 1, logistics 1 |
 | **Gleaner of Drowned Palaces** `wreck_gleaner` | naga, karka, matsya, makara | animal | thievery 2, learning 1, trade 1 |
 | **Plague Victim** `plague_victim` | rolang, skeleton, vetala, gyelpo | hungry_ghost | black_magic 2 |
 | **Water-Seeker** `water_seeker` | yidag, chidrib, zadrib, dre | hungry_ghost | learning 1, might 1, guile 1 |

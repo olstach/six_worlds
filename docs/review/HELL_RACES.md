@@ -549,7 +549,7 @@ Bound to a sorcerer as a fetch-and-carry spirit — hold this, watch that door, 
 
 ## Guard  `guard`
 
-`births: Blue Devil, Red Devil, Yellow Devil  ·  attributes: constitution+2, strength+1, awareness-1  ·  skills: spears 1, armor 2  ·  kit: wooden_spear, leather_vest, leather_cap, leather_boots, wooden_shield`
+`births: Blue Devil, Red Devil, Yellow Devil  ·  attributes: constitution+2, strength+1, awareness-1  ·  skills: spears 2, armor 1  ·  kit: wooden_spear, leather_vest, leather_cap, leather_boots, wooden_shield`
 
 
 **Name**
@@ -758,7 +758,7 @@ A warden of the condemned, guarding souls sentenced to suffer. Brutal and discip
 
 ## Spy  `spy`
 
-`births: Green Devil  ·  attributes: finesse+1, awareness+1, strength-1, charm-1  ·  skills: daggers 1, guile 2  ·  kit: leather_vest, leather_boots`
+`births: Green Devil  ·  attributes: finesse+1, awareness+1, strength-1, charm-1  ·  skills: daggers 2, guile 1  ·  kit: leather_vest, leather_boots`
 
 
 **Name**
@@ -832,15 +832,15 @@ A professional in the application of suffering. Methodical, knowledgeable about 
 <!--@end-->
 
 
-## Wanderer  `wanderer`
+## Quickwit  `wanderer`
 
-`births: White Devil  ·  attributes: awareness+1  ·  skills: learning 1, might 1  ·  kit: leather_vest, leather_boots`
+`births: White Devil  ·  attributes: awareness+1  ·  skills: learning 1, comedy 1  ·  kit: leather_vest, leather_boots`
 
 
 **Name**
 
 <!--@ backgrounds.json | wanderer | name -->
-Wanderer
+Quickwit
 <!--@end-->
 
 
@@ -853,7 +853,7 @@ A traveler who has seen many places and learned to read people and terrain alike
 
 ## Warrior  `warrior`
 
-`births: Blue Devil, Red Devil  ·  attributes: strength+1, constitution+1, finesse-1  ·  skills: swords 1, armor 1, might 1  ·  kit: leather_vest, leather_cap, leather_boots`
+`births: Blue Devil, Red Devil  ·  attributes: strength+1, constitution+1, finesse-1  ·  skills: swords 2, armor 1  ·  kit: leather_vest, leather_cap, leather_boots`
 
 
 **Name**

@@ -529,7 +529,7 @@ It does not go out. That is the whole of the office, and it is harder than it so
 
 ## Former Soldier  `former_soldier`
 
-`births: Dralha, Preserved, Rolang, Shaza, Skeleton, Iron Skeleton, Vetala  ·  attributes: strength+1, constitution+1, awareness-1  ·  skills: swords 1, armor 1  ·  kit: leather_vest, leather_cap`
+`births: Dralha, Preserved, Rolang, Shaza, Skeleton, Iron Skeleton, Vetala  ·  attributes: strength+1, constitution+1, awareness-1  ·  skills: spears 1, armor 1, logistics 1  ·  kit: leather_vest, leather_cap`
 
 
 **Name**
@@ -586,7 +586,7 @@ A practitioner of spiritual disciplines, attuned to inner forces most ignore.
 
 ## Noble  `noble`
 
-`births: Dralha, Copper Skeleton, Golden Skeleton, Turquoise Skeleton  ·  attributes: charm+1, constitution+1, strength-1, finesse-1  ·  skills: persuasion 1, leadership 1, swords 1  ·  kit: leather_vest, leather_cap, leather_boots`
+`births: Dralha, Copper Skeleton, Golden Skeleton, Turquoise Skeleton  ·  attributes: charm+1, constitution+1, strength-1, finesse-1  ·  skills: leadership 2, persuasion 1  ·  kit: leather_vest, leather_cap, leather_boots`
 
 
 **Name**
@@ -815,7 +815,7 @@ You walk to every river you hear of. You have heard of a great many and reached 
 
 - **Spy** `spy` — An operative who trades in information, deception, and precisely timed violence. Trusted by no one, useful to everyone.
 
-- **Wanderer** `wanderer` — A traveler who has seen many places and learned to read people and terrain alike.
+- **Quickwit** `wanderer` — A traveler who has seen many places and learned to read people and terrain alike.
 
 - **Warrior** `warrior` — Trained in the arts of combat, body hardened by years of drill and battle.
 
