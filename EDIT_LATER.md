@@ -72,3 +72,7 @@ backgrounds and births together. These are the ones where the gap is widest:
 Nothing above is a bug — each was chosen from the background's own existing
 words. They are listed here so the prose pass knows where to look first.
 
+**New background, Claude's prose:** `shieldbearer` ("Shieldbearer") — Olaf
+specified the mechanics (`armor 2`, `earth_magic 1`); the description is mine and
+wants your pass like the rest.
+

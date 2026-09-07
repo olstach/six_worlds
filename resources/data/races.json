@@ -5580,6 +5580,33 @@
         "rolang"
       ],
       "weight": 5
+    },
+    "shieldbearer": {
+      "name": "Shieldbearer",
+      "description": "The shield is not for you. You stand where you are told to stand, the line closes behind you, and whatever was coming arrives at your face first. It is the oldest arrangement there is and nobody has improved on it.",
+      "attribute_modifiers": {
+        "constitution": 1,
+        "strength": 1,
+        "finesse": -1
+      },
+      "starting_skills": {
+        "armor": 2,
+        "earth_magic": 1
+      },
+      "starting_equipment": {
+        "items": [
+          "wooden_shield",
+          "padded_armor",
+          "leather_cap"
+        ],
+        "random_bonus": [
+          "iron_shield",
+          "copper_ring"
+        ],
+        "bonus_chance": 0.3
+      },
+      "available_races": [],
+      "weight": 5
     }
   }
 }

@@ -449,15 +449,16 @@ Recorded so they aren't rediscovered as bugs.
   charm_seller/enchantment) and earth was the only one missing. `herbalist` was
   already describing earth magic in its prose while teaching medicine.
 
-- [ ] **`armor` needs a universal background of its own.** `guard` was the only
-  universal background that headlined either armor or spears and it could only
-  keep one; it went to `spears 2, armor 1`, which put both near the mean (armor
-  1.38×, spears 1.15×) but left armor headlined only by `soul_jailer` (hell) and
-  `reliquary_guard` (hungry ghost). **Olaf is writing one.** The shape it wants:
-  universal, `available_races: []`, weight around 5, `armor 2` plus one minor
-  that is not `might`, `learning`, `persuasion` or `ritual` — those are the four
-  skills still above 1.4× the mean. Run `tools/audit_backgrounds.py` after
-  adding it.
+- [x] ~~**`armor` needs a universal background of its own.**~~ — done: Olaf's
+  **Shieldbearer** (`shieldbearer`, universal, weight 5, `armor 2` +
+  `earth_magic 1`). No new duplicate clusters, and `earth_magic` rose 0.62× →
+  0.90× as a side effect, which is the good kind.
+
+  It does put `armor` back to **1.93× the mean**, second only to `learning` —
+  the skill now appears at level 1 on `warrior`, `guard` and `former_soldier`
+  as well as headlining Shieldbearer. That is the deliberate cost of giving
+  armor a home; if it grates, the cheapest correction is dropping `armor 1`
+  from `warrior`, which would leave it a pure swordsman.
 
 - [ ] **`learning` is the last outlier at 2.26× the mean.** Everything else now
   sits between 0.58× and 1.46×. It headlines `scholar` and appears as a level-1
