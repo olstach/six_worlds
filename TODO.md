@@ -127,10 +127,13 @@ The mirror image of dead data: code paths that work and are never exercised.
 
 ## 3. Data with no consumer
 
-- [ ] **27 of the 40 `base_bonuses` stat keys are read by nothing.** Full table
-  with owning skill, L1/L5/L10 values and the system each would hook into is in
-  Part III below. This is the largest single gap: most general skills currently
-  pay out only their combat numbers.
+- [ ] **28 of the 40 `base_bonuses` stat keys are read by nothing.** (Recorded
+  as 27 before; `tools/audit_perks.py` counts it exactly now and prints the list
+  with the skills paying into each.) Full table with owning skill, L1/L5/L10
+  values and the system each would hook into is in Part III below. This is the
+  largest single gap: most general skills currently pay out only their combat
+  numbers — and it is the same blocker as perk wiring, since both need a
+  percentage stage in `update_derived_stats`.
 - [ ] **6 embedded `todo` keys in the data files** promise mechanics no code
   reads. Nothing in TODO.md ever tracked them:
   - `traits.json` — `aquatic` / `flying` party-wide tile traversal,
@@ -449,6 +452,34 @@ Recorded so they aren't rediscovered as bugs.
   - **Healthy:** no dangling `requires_perks`, no cross-perk requirement naming a
     non-skill, all 26 mantras wired, and every one of the 35 skills has at least
     one perk at every level 1–10.
+
+- [x] ~~**The three perk defects.**~~ — fixed 2026-09-07. `no_followup_needed`
+  deleted (the wired twin `no_follow_up_needed` stays), `iron_cortex` re-gated
+  from the nonexistent skill `finesse` onto `required_attributes: finesse 18`
+  beside its siblings at 14 and 16, and air magic's two capstones rewritten so
+  level 10 grants something level 5 does not. Prose on the capstones is Claude's.
+
+- [ ] **Wiring the remaining 425 perks needs a stat pipeline that does not exist
+  yet.** This is the blocker, and it is the same one as the `base_bonuses` item
+  below. Establishing it needs the engine, so it is local-Godot work.
+
+  What the 425 are, by shape: **105 actives** (each wants targeting, a cost, a
+  UI affordance and an effect), **63 passive modifiers**, **50 out-of-combat**
+  (shops, camp, travel, dialogue), 25 chance riders, and 195 that resist
+  classification and are bespoke.
+
+  The passive modifiers look like the easy half and are not, because there is no
+  canonical stat vocabulary to wire them to. `update_derived_stats` reads flat
+  keys — `movement`, `dodge`, `armor`. The bonus tables are written in
+  percentages under prose names: grace pays `movement_speed: 65.0` at level 10,
+  meaning +65%, and renaming it to `movement` would grant +65 tiles on a base of
+  about 4. **A percentage stage in `update_derived_stats` has to come first**;
+  after that, perks can carry a structured `effects` block and one resolver can
+  serve all 63 rather than 63 hand-written hooks.
+
+  Same for the affinity system: `get_affinity_bonuses` emits `damage_pct`,
+  `healing_pct` and `mental_resistance_pct`, and `update_derived_stats` reads
+  none of the three.
 
 - [ ] **`hell_sloth_imp` is unreachable.** Rank 1, role support, region any, and
   no hell encounter asks for rank-1 support. It is the only archetype in the

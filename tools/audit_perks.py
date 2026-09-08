@@ -274,6 +274,31 @@ def main():
     print(f"\n  {flagged} flagged. Party-wide effects legitimately carry smaller numbers than "
           f"personal ones,\n  so read each as a question rather than a verdict.")
 
+    # ── the base_bonuses curves behind every skill ──────────────────────────
+    # These are the flat per-level payouts every skill gives just for being
+    # trained, and they are keyed by name. character_system translates a fixed
+    # list of those names into derived stats; anything else is inert.
+    rule("Base skill bonuses — which stat names reach a derived stat")
+    CONSUMED = {"attack", "damage", "strength_weapon_damage", "crit_chance", "armor",
+                "armor_penetration", "max_hp", "damage_reduction_pct", "spellpower",
+                "mana_cost", "dodge", "stamina", "initiative"}
+    base = records(load("resources/data/perks.json")["base_bonuses"])
+    names = defaultdict(list)
+    for sk, v in base.items():
+        for st in v.get("stats", []):
+            names[st].append(sk)
+    live = sorted(n for n in names if n in CONSUMED)
+    dead = sorted(n for n in names if n not in CONSUMED)
+    print(f"\n  {len(names)} distinct stat names across {len(base)} skills")
+    print(f"    reaching a derived stat  {len(live):3d}   {', '.join(live)}")
+    print(f"    reaching nothing         {len(dead):3d}")
+    print("\n  the inert ones, and the skills paying into them:")
+    for n in dead:
+        print(f"    {n:36s} {', '.join(names[n])}")
+    print("\n  Note: these are percentages (grace pays movement_speed 65.0 at level 10),")
+    print("  so they cannot be renamed onto the flat keys the pipeline reads — +65 movement")
+    print("  on a base of about 4. They need a percentage stage in update_derived_stats.")
+
     # ── what the unwired perks are waiting on ───────────────────────────────
     rule("What the unwired perks assume exists")
     SYSTEMS = {

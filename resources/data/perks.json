@@ -3470,7 +3470,7 @@
       "requires_perks": [
         "swift_zephyr"
       ],
-      "description": "All allies gain +1 Movement, +2 Initiative, and +5% Dodge passively while you are in combat.",
+      "description": "Passive. All allies gain +2 Movement, +4 Initiative and +10% Dodge while you are in combat, and the first time each ally would be reduced below 1 HP in a fight, the wind carries them clear instead: they survive at 1 HP and are pushed 2 tiles from the attacker.",
       "flavor": "Vayu moves through the one who has learned to stop resisting.",
       "is_mantra": false
     },
@@ -3537,7 +3537,7 @@
       "requires_perks": [
         "chain_spark"
       ],
-      "description": "All allies' attacks deal an additional 5% of weapon damage as Air damage and have a 10% chance to stun for 1 turn.",
+      "description": "Passive. All allies' attacks deal an additional 15% of weapon damage as Air damage and have a 25% chance to Stun for 1 turn. Enemies stunned this way are also pushed 1 tile.",
       "flavor": "The roar of Rudra passes through the warrior's hands.",
       "is_mantra": false
     },
@@ -4386,12 +4386,17 @@
     },
     "iron_cortex": {
       "name": "Iron Cortex",
-      "skill": "finesse",
-      "required_level": 12,
-      "requires_perks": ["akimbo"],
-      "description": "Passive. Arms 1 and 2 always fire \u2014 the probability check is removed for your first two attacks. Arms 3+ still use the normal Finesse-based chain.",
+      "skill": "",
+      "required_level": 0,
+      "requires_perks": [
+        "akimbo"
+      ],
+      "description": "Passive. Arms 1 and 2 always fire — the probability check is removed for your first two attacks. Arms 3+ still use the normal Finesse-based chain.",
       "flavor": "Two hands, one will.",
-      "is_mantra": false
+      "is_mantra": false,
+      "required_attributes": {
+        "finesse": 18
+      }
     },
     "kindled": {
       "name": "Kindled",
@@ -4730,15 +4735,6 @@
       "required_level": 6,
       "requires_perks": [],
       "description": "Sorcery spells can critically hit (15% chance, +50% damage).",
-      "flavor": "",
-      "is_mantra": false
-    },
-    "no_followup_needed": {
-      "name": "No Follow-Up Needed",
-      "skill": "sorcery",
-      "required_level": 7,
-      "requires_perks": [],
-      "description": "Killing an enemy with a Sorcery spell refunds 50% of the mana cost.",
       "flavor": "",
       "is_mantra": false
     },
@@ -6456,7 +6452,9 @@
       "name": "Stubborn Body",
       "skill": "armor",
       "required_level": 8,
-      "requires_perks": ["hardened"],
+      "requires_perks": [
+        "hardened"
+      ],
       "special_requirement": "constitution_15",
       "description": "Passive. All wounds require 1 additional rest before they escalate to a worse form.",
       "flavor": "It takes longer to break what refuses to stay broken.",
