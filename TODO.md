@@ -406,6 +406,50 @@ Recorded so they aren't rediscovered as bugs.
   41 encounters, eleven of them boss fights. Worth a pass giving each encounter
   a difficulty it means, after which the bridge can go.
 
+- **The perks want a pass. `tools/audit_perks.py` (new) is the map.** 604 perks
+  (550 skill + 54 cross). Rerun it after any perk edit; it prints a report,
+  writes nothing.
+
+  - **426 of 604 (71%) are named by no script.** A perk is prose plus a gate;
+    what it *does* lives wherever something calls
+    `PerkSystem.has_perk(character, "<id>")`. Nothing calls it for those 426.
+    The split is not random: combat and magic skills run 30–64% wired, while
+    **thievery, alchemy, grace, trade, smithing and persuasion are at 0%** —
+    every perk in those six trees is decorative. 86 perks state no number *and*
+    have no code, so nothing anywhere defines what they do.
+
+  - **`iron_cortex` can never be taken.** It gates on `skill: "finesse"` at
+    level 12. Finesse is an attribute, so `skills.get("finesse", 0)` is always 0
+    and the gate never passes. Its two siblings `akimbo` and
+    `coordinated_strikes` do it correctly — `skill: ""` plus
+    `required_attributes` — and it should match them.
+
+  - **`no_followup_needed` and `no_follow_up_needed` are the same perk twice**:
+    same name, same skill, same level, same description. Only
+    `no_follow_up_needed` is wired. The other doubles that effect's odds in the
+    selection pool and lets a character take it twice.
+
+  - **Air magic's two capstones are its own level-5 perks reworded.**
+    `conduit_of_vayu` (L10) grants exactly what `avatar_of_the_wind` (L5) does —
+    +1 Movement, +2 Initiative, +5% Dodge — with "Aura" changed to "passively";
+    `conduit_of_rudra` (L10) is `avatar_of_the_storm` (L5) the same way. Reaching
+    level 10 in air magic currently buys nothing new.
+
+  - **82 same-stat balance inversions**, where a perk promises no more of a stat
+    than one gated three or more levels below it. Party-wide effects reasonably
+    carry smaller numbers than personal ones, so each is a question rather than a
+    verdict — but the air magic cluster above came out of this list.
+
+  - **10 near-duplicate pairs** by description wording, most of them deliberate
+    parallels across weapon skills (`between_the_ribs` daggers / `hard_knuckles`
+    unarmed, both "ignore 25% of Armor"; `keep_hitting` unarmed / `momentum`
+    axes). Worth deciding whether parallelism is the intent or whether these
+    want differentiating the way the backgrounds did.
+
+  - **Healthy:** no dangling `requires_perks`, no cross-perk requirement naming a
+    non-skill, all 26 mantras wired, and every one of the 35 skills has at least
+    one perk at every level 1–10.
+
 - [ ] **`hell_sloth_imp` is unreachable.** Rank 1, role support, region any, and
   no hell encounter asks for rank-1 support. It is the only archetype in the
   game no encounter can produce. Wants an encounter, not a code change.
