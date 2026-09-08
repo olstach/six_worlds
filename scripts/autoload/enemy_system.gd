@@ -1045,13 +1045,19 @@ func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dic
 	# hold percentages and were being added as flat points.
 	if CharacterSystem:
 		var mods: Dictionary = CharacterSystem.collect_skill_stat_modifiers(skills)
-		var hp_before: int = int(derived.get("max_hp", 0))
-		var stamina_before: int = int(derived.get("max_stamina", 0))
+		var before: Dictionary = {
+			"max_hp": int(derived.get("max_hp", 0)),
+			"max_mana": int(derived.get("max_mana", 0)),
+			"max_stamina": int(derived.get("max_stamina", 0)),
+		}
 		CharacterSystem.apply_stat_modifiers(derived, mods)
 		# Enemies are generated at full health, so carry any change to the pools
 		# straight over to the current values.
-		derived["current_hp"] = int(derived.get("current_hp", hp_before)) + (int(derived.get("max_hp", 0)) - hp_before)
-		derived["current_stamina"] = int(derived.get("current_stamina", stamina_before)) + (int(derived.get("max_stamina", 0)) - stamina_before)
+		for pool in ["hp", "mana", "stamina"]:
+			var max_key := "max_" + pool
+			var cur_key := "current_" + pool
+			derived[cur_key] = int(derived.get(cur_key, before[max_key])) \
+				+ (int(derived.get(max_key, 0)) - before[max_key])
 
 	return derived
 
