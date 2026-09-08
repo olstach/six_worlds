@@ -141,3 +141,31 @@ because you called it; the reason given for it was wrong.
 names 25 effect types and writes a one-line description for each. Those lines are
 the vocabulary new spell mechanics will be written against, so they are worth
 reading before the vocabulary sets.
+
+### Summon descriptions, and the stat rescale (2026-09-08)
+
+**Nine summon templates gained a `description` line.** The words came from the
+keys that were sitting on the *spell* instead of the creature — `man_bird_hybrid`,
+`powerful_ancestor`, `tentacles_and_eyes` — turned into sentences. Kinnara now
+reads "Fights defensively. Fast. Half man, half bird. Carries support abilities."
+Nothing was invented, but nothing was written by you either, so they read like
+notes rather than prose. Worth a pass when the summons get one.
+
+Two of those keys are role words, not flavour — `defensive_fighter`,
+`support_fighter`. They are sitting in the description because the summons have
+no AI role field. If summon behaviour ever becomes a thing you set rather than
+something the generic AI decides, that is where they should go.
+
+**The combat numbers moved, a lot.** Skill bonus tables were being applied as
+flat points when they are percentages. Fixing it took a mid-game character from
+117 damage to 25, and from a permanent 95% hit chance to 86%. Nothing in the
+data changed — the numbers you wrote are being read correctly for the first
+time — but the *feel* of combat will be different, and if it now feels weak the
+place to change it is the curves in `base_bonuses`, not the code.
+
+The one number that is genuinely mine: `accuracy` in `stat_keys.json` carries
+`pct_base: 20`, meaning +130% accuracy from Swords 10 becomes +26 percentage
+points of hit chance. Accuracy has no natural base to take a percentage of — it
+sits on top of a flat 80% — so that 20 is a conversion factor I picked to make
+the curve land sensibly. It is one number in one place and it is the dial to
+turn if weapon skills feel too strong or too weak.

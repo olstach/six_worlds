@@ -1918,10 +1918,14 @@
       "mana_cost": 15,
       "summon": "Ice_Sheet",
       "special": {
-        "legacy": {
-          "summon_count": 3,
-          "summon_hp": 1
-        }
+        "effects": [
+          {
+            "type": "summon_extra",
+            "template": "Ice_Sheet",
+            "count": 3,
+            "hp": 1
+          }
+        ]
       },
       "target": {
         "type": "ground"
@@ -2126,11 +2130,13 @@
           {
             "type": "push",
             "distance": 1
+          },
+          {
+            "type": "bonus_damage_vs",
+            "tag": "obstacle",
+            "amount": 10
           }
-        ],
-        "legacy": {
-          "obstacle_bonus_damage": 10
-        }
+        ]
       },
       "target": {
         "type": "single",
@@ -2190,10 +2196,17 @@
       "damage": 36,
       "damage_type": "water",
       "special": {
-        "legacy": {
-          "push_distance": "spellpower",
-          "obstacle_bonus_damage": 25
-        }
+        "effects": [
+          {
+            "type": "bonus_damage_vs",
+            "tag": "obstacle",
+            "amount": 25
+          },
+          {
+            "type": "push",
+            "distance": "spellpower"
+          }
+        ]
       },
       "target": {
         "type": "aoe",
@@ -2308,11 +2321,13 @@
             "type": "push",
             "distance": 3,
             "max_distance": 3
+          },
+          {
+            "type": "bonus_damage_vs",
+            "tag": "obstacle",
+            "amount": 30
           }
-        ],
-        "legacy": {
-          "obstacle_bonus_damage": 30
-        }
+        ]
       },
       "target": {
         "type": "aoe",
@@ -2490,10 +2505,17 @@
       "damage": 170,
       "damage_type": "water",
       "special": {
-        "legacy": {
-          "push_distance": "spellpower_far",
-          "obstacle_bonus_damage": 70
-        }
+        "effects": [
+          {
+            "type": "bonus_damage_vs",
+            "tag": "obstacle",
+            "amount": 70
+          },
+          {
+            "type": "push",
+            "distance": "spellpower_far"
+          }
+        ]
       },
       "target": {
         "type": "aoe",
@@ -6562,12 +6584,6 @@
       ],
       "mana_cost": 75,
       "summon": "Eldritch_Spawn",
-      "special": {
-        "legacy": {
-          "tentacles_and_eyes": true,
-          "from_outer_night": true
-        }
-      },
       "target": {
         "type": "ground"
       },
@@ -6590,11 +6606,6 @@
       ],
       "mana_cost": 75,
       "summon": "Mass_of_Masks",
-      "special": {
-        "legacy": {
-          "multiple_trickster_masks": true
-        }
-      },
       "target": {
         "type": "ground"
       },
@@ -6617,12 +6628,6 @@
       ],
       "mana_cost": 135,
       "summon": "Troupe_of_Puppets",
-      "special": {
-        "legacy": {
-          "multiple_puppets": true,
-          "creepy_circus_vibe": true
-        }
-      },
       "target": {
         "type": "ground"
       },
@@ -6645,12 +6650,6 @@
       ],
       "mana_cost": 135,
       "summon": "Dagger_Swarm",
-      "special": {
-        "legacy": {
-          "multiple_daggers": true,
-          "attack_enemies": true
-        }
-      },
       "target": {
         "type": "ground"
       },
@@ -6673,12 +6672,6 @@
       ],
       "mana_cost": 225,
       "summon": "Eldritch_Guardian",
-      "special": {
-        "legacy": {
-          "powerful_outer_being": true,
-          "rahula_like": true
-        }
-      },
       "target": {
         "type": "ground"
       },
@@ -6974,11 +6967,6 @@
         "type": "single",
         "eligible": "enemy",
         "upgrade_scaling": "single → aoe → all_enemies"
-      },
-      "special": {
-        "legacy": {
-          "illusion_of_fear": true
-        }
       },
       "description": "Illusion of enemy's fear, space damage + fear"
     },
@@ -7988,14 +7976,6 @@
       ],
       "mana_cost": 40,
       "summon": "Kinnara",
-      "special": {
-        "legacy": {
-          "man_bird_hybrid": true,
-          "fast": true,
-          "defensive_fighter": true,
-          "support_abilities": true
-        }
-      },
       "target": {
         "type": "ground"
       },
@@ -8443,12 +8423,6 @@
         "type": "single",
         "eligible": "corpse"
       },
-      "special": {
-        "legacy": {
-          "speak_with_dead": true,
-          "gain_information": true
-        }
-      },
       "description": "Speak with a corpse to gain information"
     },
     "ancestral_guidance": {
@@ -8498,12 +8472,6 @@
       ],
       "mana_cost": 40,
       "summon": "Ancestral_Spirit",
-      "special": {
-        "legacy": {
-          "honored_dead": true,
-          "support_fighter": true
-        }
-      },
       "target": {
         "type": "ground"
       },
@@ -8693,12 +8661,6 @@
       ],
       "mana_cost": 135,
       "summon": "Ancestral_Guardian",
-      "special": {
-        "legacy": {
-          "powerful_ancestor": true,
-          "protective": true
-        }
-      },
       "target": {
         "type": "ground"
       },
@@ -8755,12 +8717,6 @@
       ],
       "mana_cost": 225,
       "summon": "Honored_Dead",
-      "special": {
-        "legacy": {
-          "host_of_ancestors": true,
-          "buffed_spirits": true
-        }
-      },
       "target": {
         "type": "ground"
       },
@@ -10222,11 +10178,14 @@
       ],
       "mana_cost": 40,
       "special": {
-        "legacy": {
-          "teleport_range": 5,
-          "ignore_line_of_sight": true,
-          "ignore_height": true
-        }
+        "effects": [
+          {
+            "type": "teleport",
+            "who": "self",
+            "destination": "chosen",
+            "range": 5
+          }
+        ]
       },
       "target": {
         "type": "ground",
@@ -10314,10 +10273,13 @@
       ],
       "mana_cost": 135,
       "special": {
-        "legacy": {
-          "teleport_target": "last_healing_location",
-          "affects_party": true
-        }
+        "effects": [
+          {
+            "type": "teleport",
+            "who": "party",
+            "destination": "last_healing_location"
+          }
+        ]
       },
       "target": {
         "type": "self"
@@ -10493,11 +10455,39 @@
         "Rainbow_Cloak"
       ],
       "special": {
-        "legacy": {
-          "elemental_resistance_all_pct": 50,
-          "reflect_chance_pct": 10,
-          "reflect_damage_pct": 50
-        }
+        "effects": [
+          {
+            "type": "resistance",
+            "element": "fire",
+            "pct": 50
+          },
+          {
+            "type": "resistance",
+            "element": "water",
+            "pct": 50
+          },
+          {
+            "type": "resistance",
+            "element": "earth",
+            "pct": 50
+          },
+          {
+            "type": "resistance",
+            "element": "air",
+            "pct": 50
+          },
+          {
+            "type": "resistance",
+            "element": "space",
+            "pct": 50
+          },
+          {
+            "type": "reflect",
+            "what": "damage",
+            "chance": 10,
+            "pct": 50
+          }
+        ]
       },
       "target": {
         "type": "self"
@@ -10642,10 +10632,18 @@
       "mana_cost": 135,
       "duration": "spellpower",
       "special": {
-        "legacy": {
-          "fire_resist_pct": 75,
-          "water_resist_pct": 75
-        }
+        "effects": [
+          {
+            "type": "resistance",
+            "element": "fire",
+            "pct": 75
+          },
+          {
+            "type": "resistance",
+            "element": "water",
+            "pct": 75
+          }
+        ]
       },
       "statuses_caused": [
         "Focus_Plus_3",
@@ -10714,11 +10712,13 @@
         "effects": [
           {
             "type": "see_through_stealth"
+          },
+          {
+            "type": "range_modifier",
+            "pct": 50,
+            "applies_to": "both"
           }
-        ],
-        "legacy": {
-          "range_bonus_pct": 50
-        }
+        ]
       },
       "target": {
         "type": "single",

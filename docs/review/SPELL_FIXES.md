@@ -14,11 +14,11 @@ registry — the frozen list may shrink and must never grow.
 
 | Batch | Spells | What it needs |
 |---|---:|---|
-| A — mechanical | 8 | Every key routes to a type and already carries its value. No decisions. |
-| B — filed in the wrong place | 13 | The fact is fine; it belongs on the summon template, the targeting block, or nowhere. |
+| A — mechanical | 0 | Every key routes to a type and already carries its value. No decisions. |
+| B — filed in the wrong place | 0 | The fact is fine; it belongs on the summon template, the targeting block, or nowhere. |
 | C — needs a number | 94 | The key names a real mechanic and was written as bare `true`. Someone picks the number. |
 | D — needs a decision | 90 | No registry type fits. What should the spell actually do? |
-| **total** | **205** | of 362 spells |
+| **total** | **184** | of 362 spells |
 
 **Do them in that order.** A and B are mechanical and shrink the list fast; C is
 far fewer decisions than it looks because the keys repeat — answer `freeze_chance`
@@ -60,7 +60,6 @@ per-spell lists.
 | `high_damage` | 2 | delete | restates the description — delete unless it should be real |
 | `damages_all_enemies` | 2 | `note` | this is targeting, not a special — check the aoe block |
 | `bidirectional` | 2 | — | unrouted — decide what it means |
-| `creepy_circus_vibe` | 2 | delete | restates the description — delete unless it should be real |
 | `heal_per_turn` | 2 | `heal` | amount per turn |
 | `effects` | 2 | — | unrouted — decide what it means |
 | `non_physical_damage_only` | 2 | — | unrouted — decide what it means |
@@ -70,156 +69,10 @@ per-spell lists.
 
 Every key here routes onto a registry type and already carries the value that type wants. These can be migrated in one pass without asking anyone anything.
 
-### `blazing_and_dripping` — Blazing and Dripping
-
-Fire/Air/Enchantment L7 · 135 mana · +75% fire and water resistance, +3 FCS and +3 AWR for duration. The inner fire blazes from the secret chakra; the crown amrita melts and drips down into it, renewing the body
-
-- `fire_resist_pct` = `75` → `resistance`
-- `water_resist_pct` = `75` → `resistance`
-
-### `divine_eye` — Divine Eye
-
-Fire/Space/Enchantment L3 · 75 mana · Target sees through all stealth, invisibility, blur, and illusion for the rest of combat. +50% range for ranged attacks and spells. Note: distinct from Crystal Light (Earth/Space), which dispels these effects once battlefield-wide rather than granting ongoing personal vision
-
-- `range_bonus_pct` = `50` → `stat_bonus`
-
-### `rainbow_cloak` — Rainbow Cloak
-
-Space/White/Sorcery L7 · 135 mana · Wrap yourself in a mantle of prismatic light. Gain 50% resistance to all elemental damage. Each incoming hit has a 10% chance to reflect 50% of the damage back to the source
-
-- `elemental_resistance_all_pct` = `50` → `stat_bonus`
-- `reflect_chance_pct` = `10` → `stat_bonus`
-- `reflect_damage_pct` = `50` → `stat_bonus`
-
-### `ripple` — Ripple
-
-Water/Sorcery L5 · 75 mana · Push all around caster 2-3 tiles, minor damage
-
-- `obstacle_bonus_damage` = `30` → `bonus_damage_vs`
-
-### `sheets_of_ice` — Sheets of Ice
-
-Water/Summoning L1 · 15 mana · Three 1HP ice obstacles
-
-- `summon_count` = `3` → `summon_extra`
-- `summon_hp` = `1` → `summon_extra`
-
-### `surge` — Surge
-
-Water/Sorcery L1 · 15 mana · Push one enemy in melee 1 tile, minor damage
-
-- `obstacle_bonus_damage` = `10` → `bonus_damage_vs`
-
-### `tsunami` — Tsunami
-
-Water/Sorcery L9 · 225 mana · Long vertical line, pushes far based on spellpower, moderate damage on obstacle hit
-
-- `obstacle_bonus_damage` = `70` → `bonus_damage_vs`
-- `push_distance` = `"spellpower_far"` → `push`
-
-### `wave` — Wave
-
-Water/Sorcery L3 · 40 mana · 3 tiles wide, push based on spellpower, minor damage
-
-- `obstacle_bonus_damage` = `25` → `bonus_damage_vs`
-- `push_distance` = `"spellpower"` → `push`
-
 
 ## Batch B — the fact is right, the field is wrong
 
 Nothing here needs inventing. These keys describe the summoned creature (which belongs on its entry in `summon_templates.json`), or the spell's range and shape (which `target` and `aoe` already model), or they restate the description in snake_case and carry nothing the engine could act on — those just go.
-
-### `ancestral_guardian` — Ancestral Guardian
-
-White/Black L7 · 135 mana · Summon a powerful ancestral guardian
-
-- `powerful_ancestor` **summon template** — move it onto the creature in summon_templates.json
-- `protective` **summon template** — move it onto the creature in summon_templates.json
-
-### `ancestral_spirit` — Ancestral Spirit
-
-White/Black L3 · 40 mana · Summon an ancestral spirit to fight alongside you
-
-- `honored_dead` **summon template** — move it onto the creature in summon_templates.json
-- `support_fighter` **summon template** — move it onto the creature in summon_templates.json
-
-### `cloud_gate` — Cloud Gate
-
-Water/Air/Sorcery L7 · 135 mana · Open a gate through the clouds. Teleports the entire party to the last teahouse, temple, or town visited. Works in and out of combat — a last resort as much as a convenience
-
-- `affects_party` **targeting block** — the `target` / `aoe` blocks already model this
-- `teleport_target` = `"last_healing_location"` → `teleport`
-
-### `cloudstep` — Cloudstep
-
-Water/Air/Sorcery L3 · 40 mana · Step through cloud. Instantly teleport to any tile within 5 tiles, ignoring height difference and line of sight. Cannot teleport into occupied tiles
-
-- `ignore_height` **targeting block** — the `target` / `aoe` blocks already model this
-- `ignore_line_of_sight` **targeting block** — the `target` / `aoe` blocks already model this
-- `teleport_range` = `5` → `teleport`
-
-### `converse_with_the_dead` — Converse with the Dead
-
-White/Black L1 · 15 mana · Speak with a corpse to gain information
-
-- `gain_information` **delete** — restates the description — delete unless it should be real
-- `speak_with_dead` **delete** — restates the description — delete unless it should be real
-
-### `dagger_swarm` — Dagger Swarm
-
-Space/Summoning L7 · 135 mana · Summon a swarm of ritual daggers that attack enemies
-
-- `attack_enemies` **summon template** — move it onto the creature in summon_templates.json
-- `multiple_daggers` **summon template** — move it onto the creature in summon_templates.json
-
-### `eldritch_guardian` — Eldritch Guardian
-
-Space/Summoning L9 · 225 mana · Summon a powerful being from the Outer Night
-
-- `powerful_outer_being` **summon template** — move it onto the creature in summon_templates.json
-- `rahula_like` **summon template** — move it onto the creature in summon_templates.json
-
-### `eldritch_spawn` — Eldritch Spawn
-
-Space/Summoning L5 · 75 mana · Summon a mass of tentacles and eyes from the Outer Night
-
-- `from_outer_night` **summon template** — move it onto the creature in summon_templates.json
-- `tentacles_and_eyes` **summon template** — move it onto the creature in summon_templates.json
-
-### `honored_dead` — Honored Dead
-
-White/Black L9 · 225 mana · Summon a host of buffed ancestral spirits
-
-- `buffed_spirits` **summon template** — move it onto the creature in summon_templates.json
-- `host_of_ancestors` **summon template** — move it onto the creature in summon_templates.json
-
-### `kinnara` — Kinnara
-
-White/Summoning L3 · 40 mana · Summon a kinnara - man-bird hybrid, fast, defensive, support
-
-- `defensive_fighter` **summon template** — move it onto the creature in summon_templates.json
-- `fast` **summon template** — move it onto the creature in summon_templates.json
-- `man_bird_hybrid` **summon template** — move it onto the creature in summon_templates.json
-- `support_abilities` **summon template** — move it onto the creature in summon_templates.json
-
-### `mass_of_masks` — Mass of Masks
-
-Space/Summoning L5 · 75 mana · Summon several trickster masks
-
-- `multiple_trickster_masks` **summon template** — move it onto the creature in summon_templates.json
-
-### `phantasm` — Phantasm
-
-Space/Sorcery L5 · 75 mana · Illusion of enemy's fear, space damage + fear
-
-- `illusion_of_fear` **delete** — restates the description — delete unless it should be real
-
-### `troupe_of_puppets` — Troupe of Puppets
-
-Space/Summoning L7 · 135 mana · Summon a troupe of animated puppets
-
-- `creepy_circus_vibe` **delete** — restates the description — delete unless it should be real
-- `multiple_puppets` **summon template** — move it onto the creature in summon_templates.json
 
 
 ## Batch C — a real mechanic missing its number
@@ -1562,4 +1415,4 @@ Space/Sorcery L7 · 135 mana · Dagger orbits target, continuous damage, can't t
 
 ---
 
-Registry: 25 effect types, 5 implemented. Frozen legacy list: 361 keys.
+Registry: 26 effect types, 5 implemented. Frozen legacy list: 330 keys.

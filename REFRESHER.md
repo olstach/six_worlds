@@ -99,6 +99,26 @@ skills/traits/equipment/typical_backgrounds, encounters→archetypes,
 code→perk ids/status names, spells→statuses/summon templates, and spell
 `special` blocks against the effect registry.
 
+**Stats have a canonical vocabulary now.** `resources/data/stat_keys.json` names
+44 stats and the 32 legacy spellings that map onto them, and says per stat how a
+modifier combines: `scaling` percentages multiply a computed base, `rate`
+percentages are the value itself, `flat` values are added. Everything that hands
+CharacterSystem a modifier goes through `canonical_stat()` first.
+`update_derived_stats` applies percentages in one stage after the flat sources
+settle, via `collect_skill_stat_modifiers()` and `apply_stat_modifiers()` —
+public, because `enemy_system.gd` calls them too. Before this the `base_bonuses`
+tables (which are percentages) were added as flat points and 28 of their 40 keys
+resolved to nothing at all.
+
+**Perks take typed effects now.** `resources/data/perk_effects.json` declares 16
+effect types and 22 conditions; a perk carries an `effects` array. `stat`,
+`resistance`, `status_resistance`, `immunity` and `note` are implemented. Only 8
+perks are migrated, and the reason matters: of 603 perks about 26 are
+unconditional, so the condition is most of the content and the work is
+implementing conditions, not migrating perks. `docs/review/PERK_FIXES.md` is
+organised by condition for that reason. A perk that is both typed and hand-wired
+in combat code applies twice; the validator rejects that.
+
 **Spell `special` has a registry now.** `resources/data/spell_effects.json`
 defines 25 typed effect types (5 implemented) and freezes the 361 legacy keys
 still in use. Every spell's `special` is `{"effects": [...], "legacy": {...}}`.

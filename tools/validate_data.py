@@ -468,6 +468,19 @@ for spid, spell in _spell_data.items():
             if p not in entry:
                 err("spell->special", f"spells.json:{spid}: effect '{etype}' is missing "
                                       f"required param '{p}'")
+        # Names inside an effect have to point at something real, the same way
+        # the spell's own `summon` and `statuses_caused` fields do. A summon
+        # template invented inside an effect would be just as silently broken.
+        tmpl = entry.get("template", "")
+        if tmpl and tmpl not in _summon_templates:
+            err("spell->summon", f"spells.json:{spid}: effect '{etype}' names summon "
+                                 f"template '{tmpl}' which does not exist")
+        for status_key in ("status", "against"):
+            name = entry.get(status_key, "")
+            if isinstance(name, str) and name and status_key == "status" and name not in statuses:
+                if name not in CLEANSE_CATEGORIES:
+                    err("spell->status", f"spells.json:{spid}: effect '{etype}' names status "
+                                         f"'{name}' which is not in statuses.json")
     for key in special.get("legacy", {}):
         if key not in _fx_legacy:
             err("spell->special", f"spells.json:{spid}: legacy special key '{key}' is not on "

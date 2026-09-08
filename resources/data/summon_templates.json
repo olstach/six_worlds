@@ -272,7 +272,8 @@
         "space",
         "spirit",
         "white"
-      ]
+      ],
+      "description": "One of the honored dead. Fights in support rather than at the front."
     },
     "Ash_Imp": {
       "display_name": "Ash Imp",
@@ -366,7 +367,8 @@
         "air",
         "spirit",
         "celestial"
-      ]
+      ],
+      "description": "Fights defensively. Fast. Half man, half bird. Carries support abilities."
     },
     "Naga": {
       "display_name": "Naga",
@@ -671,7 +673,8 @@
         "space",
         "spirit",
         "chaos"
-      ]
+      ],
+      "description": "Comes from the Outer Night. A mass of tentacles and eyes."
     },
     "Godling": {
       "display_name": "Godling",
@@ -835,7 +838,8 @@
         "space",
         "illusion",
         "construct"
-      ]
+      ],
+      "description": "Many trickster masks at once."
     },
     "Rudra": {
       "display_name": "Rudra",
@@ -1110,7 +1114,8 @@
         "space",
         "spirit",
         "white"
-      ]
+      ],
+      "description": "A powerful ancestor. Protective in posture — shields rather than presses."
     },
     "Dagger_Swarm": {
       "display_name": "Dagger Swarm",
@@ -1134,7 +1139,8 @@
         "construct",
         "weapon",
         "swarm"
-      ]
+      ],
+      "description": "Attacks enemies of its own accord. Several daggers, not one."
     },
     "Daughter_of_Mara": {
       "display_name": "Daughter of Mara",
@@ -1426,7 +1432,8 @@
         "construct",
         "illusion",
         "host"
-      ]
+      ],
+      "description": "Several puppets, not one."
     },
     "Undead_Yogi": {
       "display_name": "Undead Yogi",
@@ -1546,7 +1553,8 @@
         "space",
         "spirit",
         "chaos"
-      ]
+      ],
+      "description": "A powerful being from outside. Rahula-like."
     },
     "Garuda": {
       "display_name": "Garuda",
@@ -1598,7 +1606,8 @@
         "undead",
         "white",
         "spirit"
-      ]
+      ],
+      "description": "The spirits come already strengthened. A host, not a single ancestor."
     },
     "Imp_Collector": {
       "display_name": "Imp Collector",
