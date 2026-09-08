@@ -407,6 +407,14 @@ const RANK_FROM_TIER: Dictionary = {
 	"imp": 1, "beast": 2, "shade": 2, "devil": 3, "boss": 4,
 }
 
+## The ladder step an encounter falls back to when nothing authored one, read
+## off what it actually contains. Chosen to land within rounding of the
+## multipliers rank used to carry (0.5 / 0.8 / 1.0 / 2.0) so that migrating to
+## the ladder did not silently retune 41 encounters, eleven of them bosses.
+const RANK_DEFAULT_DIFFICULTY: Dictionary = {
+	1: "very_easy", 2: "easy", 3: "medium", 4: "dangerous",
+}
+
 
 ## An archetype's rank, falling back to its legacy tier and then to 3.
 func archetype_rank(arch: Dictionary) -> int:
@@ -486,7 +494,12 @@ func resolve_party_budget(encounter_id: String, realm: String,
 	if step == "":
 		step = canonical_difficulty(String(template.get("difficulty", "")))
 	if step == "":
-		step = "medium"
+		# Nothing authored a difficulty, so fall back to what the encounter's own
+		# content implies. Without this the eleven boss fights — both Kings, Yama's
+		# Lieutenant, the Smoking Mirror — would each drop to medium, because rank
+		# no longer feeds the budget and only four events name a boss difficulty.
+		# A bridge, not the destination: encounters want authored difficulties.
+		step = RANK_DEFAULT_DIFFICULTY.get(int(rank_range[1]), "medium")
 
 	var strength: float = float(
 		budgets.get("difficulty_multipliers", {}).get(step, 1.0))

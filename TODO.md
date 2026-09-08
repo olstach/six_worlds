@@ -399,11 +399,12 @@ Recorded so they aren't rediscovered as bugs.
   the draw pool, the ladder sets difficulty, `slots` sets shares.
   `rank_multipliers` is gone.
 
-- [ ] **Encounters have no authored `difficulty` of their own.** All 119 resolve
-  to `medium` unless the event or mob that started the fight says otherwise, and
-  363 of those strings exist so most fights do get one. Worth a pass giving
-  encounters a sensible default each, so an `animal_makara_titan` reads as
-  dangerous even when reached by a route that names no difficulty.
+- [ ] **No encounter carries an authored `difficulty` of its own.** All 119 fall
+  back to the step their rank implies (`RANK_DEFAULT_DIFFICULTY`: 1 very_easy,
+  2 easy, 3 medium, 4 dangerous), which is a migration bridge rather than the
+  destination — it exists so that moving to the ladder did not silently retune
+  41 encounters, eleven of them boss fights. Worth a pass giving each encounter
+  a difficulty it means, after which the bridge can go.
 
 - [ ] **`hell_sloth_imp` is unreachable.** Rank 1, role support, region any, and
   no hell encounter asks for rank-1 support. It is the only archetype in the
