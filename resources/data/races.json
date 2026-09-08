@@ -630,7 +630,7 @@
         "water_magic": 2
       },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 8,
       "typical_backgrounds": [
         "coral_guard",
         "palace_vizier",
@@ -1379,7 +1379,7 @@
         "water_magic": 2
       },
       "starting_spells": [],
-      "reincarnation_weight": 15,
+      "reincarnation_weight": 8,
       "typical_backgrounds": [
         "coral_guard",
         "palace_vizier",

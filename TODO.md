@@ -375,6 +375,16 @@ Recorded so they aren't rediscovered as bugs.
     lord drew from rank 1, so it fielded no shyena. Now `[4, 4]`, which also
     quadruples its XP budget — worth a look in play.
 
+- [ ] **`generate_encounter`'s `difficulty` argument is dead again.**
+  `combat_arena.gd` reads a real difficulty off the mob or event and passes it
+  in; the function accepts it, documents it as scaling enemy power, and never
+  reads it. The 2026-07-27 audit fixed exactly this and the XP-budget rewrite
+  regressed it. Content is already speaking the language — **363 uses across
+  nine synonymous words** (`normal` 143, `hard` 103, `easy` 55, `difficult` 36,
+  `very_hard` 8, `very_difficult` 6, `trivial` 6, `boss` 4, `moderate` 2) — so
+  whatever the ladder ends up being should canonicalise those and give the
+  argument teeth.
+
 - [ ] **`hell_sloth_imp` is unreachable.** Rank 1, role support, region any, and
   no hell encounter asks for rank-1 support. It is the only archetype in the
   game no encounter can produce. Wants an encounter, not a code change.

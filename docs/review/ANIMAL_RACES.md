@@ -357,56 +357,6 @@ They ask questions in the tone of someone who already has the answer and is deci
 ---
 
 
-## Makara  `makara`
-
-`rare  ·  attributes: strength+2, finesse+1, constitution+2, focus+4, awareness+1, charm-2, luck-2 (total +6)  ·  skills: enchantment 1, sorcery 2, water_magic 2 (5 pts)  ·  traits: aquatic, deep_current  ·  reincarnation weight: 15`
-
-
-**Name**
-
-<!--@ races.json | makara | name -->
-Makara
-<!--@end-->
-
-
-**Description**
-
-<!--@ races.json | makara | description -->
-Deep beneath the waves dwell creatures strange and old, wielding weird magic and practicing yogas that only make sense for the cephalopod body.
-<!--@end-->
-
-
-*Backgrounds: `coral_guard`, `palace_vizier`, `deep_hunter`, `wreck_gleaner`, `boundary_walker`, `herbalist`, `blood_drinker`*
-
-
----
-
-
-## Naga  `naga`
-
-`rare  ·  attributes: strength-1, finesse+1, focus+2, awareness+3, charm+1 (total +6)  ·  skills: enchantment 1, persuasion 2, water_magic 2 (5 pts)  ·  traits: serpentine, hoard_keeper  ·  body: serpentine  ·  reincarnation weight: 15`
-
-
-**Name**
-
-<!--@ races.json | naga | name -->
-Naga
-<!--@end-->
-
-
-**Description**
-
-<!--@ races.json | naga | description -->
-Before the first apes descended from the trees, these serpentine beings raised their glimmering cities with ingenuity and wisdom.
-<!--@end-->
-
-
-*Backgrounds: `coral_guard`, `palace_vizier`, `sea_dancer`, `wreck_gleaner`, `tide_seer`, `herbalist`*
-
-
----
-
-
 ## Rakshasa  `rakshasa`
 
 `rare  ·  attributes: strength+4, finesse+1, constitution+2, focus+1, awareness+1, charm-2, luck-1 (total +6)  ·  skills: might 2, unarmed 2, yoga 1 (5 pts)  ·  traits: hunters_yoga  ·  reincarnation weight: 15`
@@ -452,6 +402,56 @@ Something is being guarded — a spring, a hoard, a promise older than the hill 
 
 
 *Backgrounds: `caravan_guard`, `still_hunter`, `pollen_rishi`, `meadow_ward`, `herbalist`, `ancestor_priest`*
+
+
+---
+
+
+## Makara  `makara`
+
+`very rare  ·  attributes: strength+2, finesse+1, constitution+2, focus+4, awareness+1, charm-2, luck-2 (total +6)  ·  skills: enchantment 1, sorcery 2, water_magic 2 (5 pts)  ·  traits: aquatic, deep_current  ·  reincarnation weight: 8`
+
+
+**Name**
+
+<!--@ races.json | makara | name -->
+Makara
+<!--@end-->
+
+
+**Description**
+
+<!--@ races.json | makara | description -->
+Deep beneath the waves dwell creatures strange and old, wielding weird magic and practicing yogas that only make sense for the cephalopod body.
+<!--@end-->
+
+
+*Backgrounds: `coral_guard`, `palace_vizier`, `deep_hunter`, `wreck_gleaner`, `boundary_walker`, `herbalist`, `blood_drinker`*
+
+
+---
+
+
+## Naga  `naga`
+
+`very rare  ·  attributes: strength-1, finesse+1, focus+2, awareness+3, charm+1 (total +6)  ·  skills: enchantment 1, persuasion 2, water_magic 2 (5 pts)  ·  traits: serpentine, hoard_keeper  ·  body: serpentine  ·  reincarnation weight: 8`
+
+
+**Name**
+
+<!--@ races.json | naga | name -->
+Naga
+<!--@end-->
+
+
+**Description**
+
+<!--@ races.json | naga | description -->
+Before the first apes descended from the trees, these serpentine beings raised their glimmering cities with ingenuity and wisdom.
+<!--@end-->
+
+
+*Backgrounds: `coral_guard`, `palace_vizier`, `sea_dancer`, `wreck_gleaner`, `tide_seer`, `herbalist`*
 
 
 ---
