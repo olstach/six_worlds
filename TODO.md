@@ -375,15 +375,35 @@ Recorded so they aren't rediscovered as bugs.
     lord drew from rank 1, so it fielded no shyena. Now `[4, 4]`, which also
     quadruples its XP budget — worth a look in play.
 
-- [ ] **`generate_encounter`'s `difficulty` argument is dead again.**
-  `combat_arena.gd` reads a real difficulty off the mob or event and passes it
-  in; the function accepts it, documents it as scaling enemy power, and never
-  reads it. The 2026-07-27 audit fixed exactly this and the XP-budget rewrite
-  regressed it. Content is already speaking the language — **363 uses across
-  nine synonymous words** (`normal` 143, `hard` 103, `easy` 55, `difficult` 36,
-  `very_hard` 8, `very_difficult` 6, `trivial` 6, `boss` 4, `moderate` 2) — so
-  whatever the ladder ends up being should canonicalise those and give the
-  argument teeth.
+- [x] ~~**`generate_encounter`'s `difficulty` argument is dead again.**~~ — live
+  as of 2026-09-07, and it now drives a seven-step ladder. `party_xp =
+  realm_median * difficulty * band`, where the ladder runs trivial 0.25,
+  very_easy 0.5, easy 0.75, medium 1.0, challenging 1.5, dangerous 2.25,
+  lethal 3.5. All **363 authored difficulty strings across nine synonyms**
+  resolve through `difficulty_aliases`, so none of that authoring was lost or
+  rewritten.
+
+  The realm median is a **hard anchor, not a reading of the player** — a hell
+  character who walks into the animal realm meets animal numbers and is
+  severely outmatched, deliberately. Enemies are never scaled to the party, so a
+  party outgrows a realm's ordinary encounters over a run and still hits a wall
+  at the next realm or at anything authored above its weight.
+
+  **Reward now scales with the gap.** `ratio = enemy_party_xp /
+  player_party_xp`, clamped to 0.25–4.0, multiplies the reward fraction. At
+  parity the fraction is exactly what it always was; beating something four
+  times your strength pays four times the rate, and farming trivial encounters
+  pays almost nothing. Gold follows the same number.
+
+  This also completes the separation the rank change started: `rank_range` picks
+  the draw pool, the ladder sets difficulty, `slots` sets shares.
+  `rank_multipliers` is gone.
+
+- [ ] **Encounters have no authored `difficulty` of their own.** All 119 resolve
+  to `medium` unless the event or mob that started the fight says otherwise, and
+  363 of those strings exist so most fights do get one. Worth a pass giving
+  encounters a sensible default each, so an `animal_makara_titan` reads as
+  dangerous even when reached by a route that names no difficulty.
 
 - [ ] **`hell_sloth_imp` is unreachable.** Rank 1, role support, region any, and
   no hell encounter asks for rank-1 support. It is the only archetype in the

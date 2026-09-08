@@ -1,6 +1,7 @@
 {
-  "_comment": "Absolute per-realm party XP budgets. party_xp = realm_base * strength * band, where strength is the rank_multiplier for the top of an encounter's rank_range unless the encounter overrides it. Expected to move in playtesting.",
-  "realm_base": {
+  "_comment": "Encounter XP. party_xp = realm_median * difficulty * band. The realm's median is a hard anchor, not a reading of the player: a hell character who walks into the animal realm meets animal-realm numbers and is severely outmatched, which is the intent. Enemies are never scaled to the party, so a party outgrows a realm's ordinary encounters over a run and still meets a wall at the next realm, or at anything authored above its weight.",
+  "_comment_median": "The `medium` encounter in each realm. Every other difficulty step is a multiple of it. Expected to move in playtesting.",
+  "realm_median": {
     "hell": 200,
     "hungry_ghost": 700,
     "animal": 1800,
@@ -9,12 +10,26 @@
     "asura": 5000,
     "god": 8000
   },
-  "_comment_rank": "Archetype rank 1-4: what the creature is. An encounter's XP multiplier comes from the top of its rank_range unless it sets `strength`, which overrides it — that is how a weak encounter of strong creatures is written.",
-  "rank_multipliers": {
-    "1": 0.5,
-    "2": 0.8,
-    "3": 1.0,
-    "4": 2.0
+  "_comment_difficulty": "The ladder an encounter sits on, relative to its realm's median. Comes from the event or mob that started the fight, else the encounter's own `difficulty`, else `medium`. An encounter may instead set a raw numeric `strength`, which bypasses the ladder entirely.",
+  "difficulty_multipliers": {
+    "trivial": 0.25,
+    "very_easy": 0.5,
+    "easy": 0.75,
+    "medium": 1.0,
+    "challenging": 1.5,
+    "dangerous": 2.25,
+    "lethal": 3.5
+  },
+  "_comment_aliases": "Words already written into 363 event and map entries, mapped onto the ladder so none of that authoring is lost.",
+  "difficulty_aliases": {
+    "normal": "medium",
+    "moderate": "medium",
+    "hard": "challenging",
+    "difficult": "challenging",
+    "very_hard": "dangerous",
+    "very_difficult": "dangerous",
+    "boss": "lethal",
+    "deadly": "lethal"
   },
   "_comment_bands": "Rolled per encounter. Same common/uncommon/rare vocabulary births use.",
   "bands": [
@@ -34,8 +49,10 @@
       "weight": 10
     }
   ],
-  "_comment_reward": "Fraction of the enemy party's XP the player party gains, before division by party size.",
+  "_comment_reward": "XP and gold awarded scale with how far above its weight the party was punching. ratio = enemy_party_xp / player_party_xp, clamped: beating something several times your strength pays several times the base fraction, and farming trivial encounters pays almost nothing. At ratio 1 the fraction is unchanged, so an even fight rewards what it always did.",
   "reward_fraction": 0.12,
+  "reward_ratio_min": 0.25,
+  "reward_ratio_max": 4.0,
   "_comment_breadth": "Past xp_threshold a growing share of the budget is spent OUTSIDE the archetype's plan — attributes it does not weight, skills off its priority list. Keeps a high-XP enemy from being three maxed skills and one enormous attribute, and makes it memorable: a fighter who also took a class in clay sculpture.",
   "breadth": {
     "xp_threshold": 300,

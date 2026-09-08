@@ -56,17 +56,22 @@ func _check_budgets() -> void:
 		return
 	var b: Dictionary = EnemySystem.budgets
 	expect(not b.is_empty(), "EnemySystem.budgets is empty")
-	expect(b.get("realm_base", {}).has("animal"), "realm_base missing animal")
+	expect(b.get("realm_median", {}).has("animal"), "realm_median missing animal")
 	expect(float(b.get("reward_fraction", 0.0)) > 0.0, "reward_fraction not loaded")
 
-	# Every rank used by any archetype must have a multiplier, or budgets
-	# silently collapse to 1.0 for it.
-	var ranks: Dictionary = b.get("rank_multipliers", {})
+	# Rank no longer sets difficulty — it only picks the draw pool — so what has to
+	# be complete now is the ladder, and the aliases the content already speaks in.
+	var steps: Dictionary = b.get("difficulty_multipliers", {})
+	for w in ["trivial", "very_easy", "easy", "medium", "challenging", "dangerous", "lethal"]:
+		expect(steps.has(w), "difficulty ladder missing '%s'" % w)
+	for a in b.get("difficulty_aliases", {}):
+		var target: String = String(b["difficulty_aliases"][a])
+		expect(steps.has(target), "alias '%s' points at unknown step '%s'" % [a, target])
 	for aid in EnemySystem.archetypes:
 		if aid.begins_with("_"):
 			continue
 		var r: int = EnemySystem.archetype_rank(EnemySystem.archetypes[aid])
-		expect(ranks.has(str(r)), "archetype '%s' has rank %d with no multiplier" % [aid, r])
+		expect(r >= 1 and r <= 4, "archetype '%s' has rank %d outside 1-4" % [aid, r])
 
 
 func _check_resolution() -> void:

@@ -533,14 +533,22 @@ func _calculate_combat_rewards() -> Dictionary:
 			enemy_party_xp += int(unit.character_data.get("xp_earned", 0))
 
 	# --- XP REWARD ---
-	# A harder group pays more with no separate rule, because it cost more to
-	# build. The fraction is the one tuning knob and lives in JSON.
+	# A harder group pays more twice over: it cost more to build, and the
+	# fraction itself rises with how far above its own weight the party was
+	# punching. Beating something several times your strength is worth several
+	# times the base rate; farming trivial encounters is worth almost nothing.
+	# At parity the ratio is 1 and the fraction is exactly what it always was.
 	var fraction: float = float(EnemySystem.budgets.get("reward_fraction", 0.12))
-	var xp_reward := maxi(1, int(round(float(enemy_party_xp) * fraction)))
+	var player_party_xp: int = maxi(1, CharacterSystem.get_party_xp_worth())
+	var ratio: float = float(enemy_party_xp) / float(player_party_xp)
+	ratio = clampf(ratio,
+		float(EnemySystem.budgets.get("reward_ratio_min", 0.25)),
+		float(EnemySystem.budgets.get("reward_ratio_max", 4.0)))
+	var xp_reward := maxi(1, int(round(float(enemy_party_xp) * fraction * ratio)))
 
 	# --- GOLD REWARD ---
 	# Gold tracks the same number rather than a second difficulty measure.
-	var gold_reward := maxi(1, int(round(float(enemy_party_xp) * fraction * 0.5)))
+	var gold_reward := maxi(1, int(round(float(enemy_party_xp) * fraction * ratio * 0.5)))
 
 	# Trade skill bonus: best Trade in party adds 10% per level
 	var best_trade := 0

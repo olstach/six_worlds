@@ -15,8 +15,8 @@ var encounters: Dictionary = {}   # encounter_id -> encounter template
 var name_parts: Dictionary = {}   # prefixes, roots, suffixes for procedural naming
 
 ## Encounter budget tables: realm bases, rank multipliers, rarity bands, reward
-## fraction. An encounter's party XP is realm_base * strength * band, where
-## strength comes from the top of its rank range unless it overrides it.
+## fraction. An encounter's party XP is realm_median * difficulty * band, where
+## difficulty is the ladder step the event, mob or encounter asked for.
 var budgets: Dictionary = {}
 
 ## Party composition templates: member counts and relative XP shares.
@@ -448,27 +448,57 @@ func resolve_encounter_rank_range(template: Dictionary) -> Array:
 	return [lo, hi]
 
 
-## Total XP the enemy party is built from: realm_base * strength * band.
-## Absolute per realm — it does not track the player's own XP.
+## The ladder step an encounter sits on, as a canonical word.
 ##
-## Strength defaults to the multiplier for the top of the encounter's rank range,
-## which is the old behaviour. An encounter may override it outright, which is
-## how "a weak band of strong creatures" gets written — something the single
-## tier field could not express, because the draw pool set the difficulty.
-func resolve_party_budget(encounter_id: String, realm: String) -> Dictionary:
+## Content was already written in nine synonyms across 363 event and map entries
+## — normal, moderate, hard, difficult, very_hard, very_difficult, boss — so they
+## are aliased onto the seven steps rather than rewritten.
+func canonical_difficulty(word: String) -> String:
+	if word == "":
+		return ""
+	var w: String = word.to_lower()
+	var aliases: Dictionary = budgets.get("difficulty_aliases", {})
+	if aliases.has(w):
+		w = String(aliases[w])
+	if budgets.get("difficulty_multipliers", {}).has(w):
+		return w
+	return ""
+
+
+## Total XP the enemy party is built from: realm_median * difficulty * band.
+##
+## The realm's median is a hard anchor, not a reading of the player. Enemies are
+## never scaled to the party, so a party outgrows a realm's ordinary encounters
+## across a run and still walks into a wall at the next realm — or at anything
+## authored above its weight. A hell character in the animal realm is severely
+## outmatched, and that is the point.
+##
+## Difficulty comes from the event or mob that started the fight, else the
+## encounter's own `difficulty`, else `medium`. An encounter may instead carry a
+## raw numeric `strength`, which bypasses the ladder.
+func resolve_party_budget(encounter_id: String, realm: String,
+		difficulty: String = "") -> Dictionary:
 	var template: Dictionary = encounters.get(encounter_id, {})
 	var rank_range: Array = resolve_encounter_rank_range(template)
 	var band: String = roll_band()
 
-	var mults: Dictionary = budgets.get("rank_multipliers", {})
-	var strength: float = float(mults.get(str(int(rank_range[1])), 1.0))
+	var step: String = canonical_difficulty(difficulty)
+	if step == "":
+		step = canonical_difficulty(String(template.get("difficulty", "")))
+	if step == "":
+		step = "medium"
+
+	var strength: float = float(
+		budgets.get("difficulty_multipliers", {}).get(step, 1.0))
 	if template.has("strength"):
 		strength = float(template["strength"])
 
-	var base: float = float(budgets.get("realm_base", {}).get(realm, 200))
-	var xp: int = maxi(1, int(round(base * strength * _band_multiplier(band))))
+	var median: float = float(budgets.get("realm_median",
+		budgets.get("realm_base", {})).get(realm, 200))
+	var xp: int = maxi(1, int(round(median * strength * _band_multiplier(band))))
 
-	return {"xp": xp, "band": band, "rank_range": rank_range, "strength": strength}
+	return {"xp": xp, "band": band, "rank_range": rank_range,
+		"strength": strength, "difficulty": step}
 
 
 func _ready() -> void:
@@ -593,14 +623,15 @@ func _load_name_parts() -> void:
 ## encounter_id: matches enemy_group from events/mobs JSON
 ## region: "cold_hell", "fire_hell", or "" for any
 ## realm: which of the six worlds this encounter is in — used for name generation
-## difficulty: difficulty string from the event/mob ("easy".."boss"), scales enemy power
-func generate_encounter(encounter_id: String, region: String = "", realm: String = "hell", difficulty: String = "normal") -> Array[Dictionary]:
+## difficulty: ladder step from the event or mob ("trivial".."lethal", plus the
+##   nine legacy synonyms). Empty falls through to the encounter's own, then medium.
+func generate_encounter(encounter_id: String, region: String = "", realm: String = "hell", difficulty: String = "") -> Array[Dictionary]:
 	var template = encounters.get(encounter_id, {})
 	if template.is_empty():
 		push_warning("EnemySystem: Unknown encounter '%s', generating fallback" % encounter_id)
 		return _generate_fallback_encounter(realm)
 
-	var budget: Dictionary = resolve_party_budget(encounter_id, realm)
+	var budget: Dictionary = resolve_party_budget(encounter_id, realm, difficulty)
 	var party_xp: int = int(budget["xp"])
 
 	# Whether meeting this party opens a fight or a conversation. The encounter
@@ -1450,7 +1481,8 @@ func _pick_archetype_for_role(role: String, region: String, rank_range: Array = 
 ## to the realm rather than a hell demon, which used to be hardcoded here and
 ## put demons in the animal realm's forest whenever a lookup failed.
 func _generate_fallback_encounter(realm: String = "hell") -> Array[Dictionary]:
-	var base: float = float(budgets.get("realm_base", {}).get(realm, 200))
+	var base: float = float(budgets.get("realm_median",
+		budgets.get("realm_base", {})).get(realm, 200))
 
 	var candidates: Array[String] = []
 	for arch_id in archetypes:
