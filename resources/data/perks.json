@@ -4888,7 +4888,14 @@
       ],
       "description": "Immune to all forced movement effects.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "immunity",
+          "condition": "always",
+          "against": "forced_movement"
+        }
+      ]
     },
     "hit_back_harder": {
       "name": "Hit Back Harder",
@@ -4917,14 +4924,13 @@
         {
           "type": "status_resistance",
           "condition": "always",
-          "against": "Knockdown",
+          "against": "Knocked_Down",
           "pct": 25
         },
         {
-          "type": "status_resistance",
+          "type": "note",
           "condition": "always",
-          "against": "Exhausted",
-          "pct": 25
+          "text": "The description also names Exhaustion; there is no Exhausted status in statuses.json, and the hand-written version of this perk listed one too and never matched anything."
         }
       ]
     },
@@ -5765,7 +5771,19 @@
       "requires_perks": [],
       "description": "Cannot be knocked prone, tripped, or knocked down. Immune to ice and slippery terrain effects.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "immunity",
+          "condition": "always",
+          "against": "forced_movement"
+        },
+        {
+          "type": "note",
+          "condition": "always",
+          "text": "Also immune to ice and slippery terrain effects; terrain-driven movement is not modelled."
+        }
+      ]
     },
     "dance_of_the_river": {
       "name": "Dance of the River",

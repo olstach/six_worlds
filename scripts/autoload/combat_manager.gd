@@ -6956,11 +6956,58 @@ func _unit_has_talisman_perk(unit: Node, perk_id: String) -> bool:
 	return perk_id in _get_talisman_perks(unit)
 
 
+## Unconditional `immunity` and `status_resistance` perk effects, read from data.
+## `immunity` blocks the status outright; `status_resistance` rolls its percentage
+## as a chance to shrug it off, which is how the hand-written resistances below
+## already behave. Category words let one entry cover a family of statuses.
+func _check_typed_status_immunity(char_data: Dictionary, status_lower: String) -> bool:
+	if not PerkSystem:
+		return false
+	const STATUS_CATEGORIES := {
+		"mental": ["feared", "charmed", "confused", "berserk", "mind_controlled",
+			"intimidated", "demoralized", "despair"],
+		"forced_movement": ["pushed", "pulled", "knocked_back", "knocked_down",
+			"knockdown", "prone", "rooted"],
+		"physical_cc": ["stunned", "knocked_down", "knockdown", "pushed", "pulled",
+			"rooted", "slowed"],
+	}
+	var resist_pct := 0.0
+	for entry in PerkSystem.get_perk_effects(char_data):
+		var effect: Dictionary = entry["effect"]
+		var etype := String(effect.get("type", ""))
+		if etype != "immunity" and etype != "status_resistance":
+			continue
+		if String(effect.get("condition", "always")) != "always":
+			continue
+		if String(effect.get("to", "self")) != "self":
+			continue
+		var against := String(effect.get("against", "")).to_lower()
+		if against == "":
+			continue
+		var matches := against == status_lower
+		if not matches and STATUS_CATEGORIES.has(against):
+			matches = status_lower in STATUS_CATEGORIES[against]
+		if not matches:
+			continue
+		if etype == "immunity":
+			return true
+		resist_pct += float(effect.get("pct", 0.0))
+	if resist_pct > 0.0 and randf() * 100.0 < resist_pct:
+		return true
+	return false
+
+
 ## Check if a character perk grants immunity or resistance to a status effect.
 ## Returns true if the status should be blocked.
 func _check_perk_status_immunity(unit: Node, status: String) -> bool:
 	var char_data = unit.character_data if "character_data" in unit else {}
 	var status_lower = status.to_lower()
+
+	# Data-driven pass first: unconditional `immunity` and `status_resistance`
+	# effects declared in perks.json. Everything below this is the older
+	# hand-written form, one `if` per perk; new perks should be typed instead.
+	if _check_typed_status_immunity(char_data, status_lower):
+		return true
 
 	# Diamond Body: immune to poison and disease while unarmored
 	if PerkSystem.has_perk(char_data, "diamond_body") and _unit_is_unarmored(unit):
@@ -7017,13 +7064,6 @@ func _check_perk_status_immunity(unit: Node, status: String) -> bool:
 			if "current_hp" in unit and "max_hp" in unit:
 				if unit.current_hp >= unit.max_hp * 0.5:
 					return true
-
-	# Pain Is Just Information (Might 4): +25% resistance to Stun, Knockdown, and Exhaustion
-	var pain_immune = ["stunned", "knocked_down", "exhausted"]
-	if status_lower in pain_immune:
-		if PerkSystem.has_perk(char_data, "pain_is_just_information"):
-			if randf() < 0.25:
-				return true
 
 	# Unbroken Circle (Leadership 4): +15% mental status resistance with 2+ allies standing
 	var mental_cc = ["feared", "charmed", "confused", "berserk", "mind_controlled", "intimidated", "demoralized"]
@@ -7123,10 +7163,6 @@ func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 						var attack = unit.get_accuracy() if unit.has_method("get_accuracy") else 0
 						# Improved replaces base parry bonus (not additive)
 						total += int(attack * 0.2)  # Extra 20% on top of parry's 20%
-			# Stone Adept: +10% Armor (use base derived armor to avoid recursion)
-			if PerkSystem.has_perk(char_data, "stone_adept"):
-				var derived = char_data.get("derived", {})
-				total += int(derived.get("armor", 0) * 0.1)
 			# Iron Shirt Technique: 30% of unarmed Attack added to Armor while unarmored
 			if PerkSystem.has_perk(char_data, "iron_shirt_technique"):
 				if _unit_is_unarmored(unit):
@@ -7203,11 +7239,6 @@ func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 			if PerkSystem.has_perk(char_data, "disciplined_formation"):
 				if _get_allies_in_range(unit, 1).size() > 0:
 					total += int(derived_dmg * 0.1)
-
-		"max_hp":
-			# Stone Adept: +10% max HP
-			if PerkSystem.has_perk(char_data, "stone_adept"):
-				total += int(unit.max_hp * 0.1) if "max_hp" in unit else 0
 
 		"initiative":
 			# Centered Stance: +10% Initiative while wielding a sword

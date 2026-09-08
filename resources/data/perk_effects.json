@@ -34,15 +34,15 @@
         "pct": "number, required",
         "to": "self|allies|party, default self"
       },
-      "implemented": false
+      "implemented": true
     },
     "immunity": {
-      "description": "Complete immunity to a damage type, status or effect class.",
+      "description": "Complete immunity to a damage type, status or effect class. Status names and the category words `mental`, `forced_movement` and `physical_cc` are checked by CombatManager._check_typed_status_immunity; damage-type immunity is not read yet.",
       "params": {
         "against": "element, status or category word, required",
         "to": "self|allies|party, default self"
       },
-      "implemented": false
+      "implemented": true
     },
     "apply_status": {
       "description": "Apply a status, usually on a trigger condition.",

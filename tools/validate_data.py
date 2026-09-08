@@ -597,6 +597,13 @@ perk_effect_registry = load("resources/data/perk_effects.json")
 PERK_EFFECTS = perk_effect_registry.get("effects", {})
 PERK_CONDITIONS = perk_effect_registry.get("conditions", {})
 
+# Category words accepted in place of a status name, read out of the function
+# that implements them rather than restated here.
+_cm_src = open(os.path.join(ROOT, "scripts/autoload/combat_manager.gd"), encoding="utf-8").read()
+_cat = re.search(r"const STATUS_CATEGORIES := \{(.*?)\n\t\}", _cm_src, re.S)
+PERK_STATUS_CATEGORIES = set(re.findall(r'"(\w+)":\s*\[', _cat.group(1))) if _cat else set()
+PERK_STATUS_CATEGORIES |= {"all_negative", "elemental", "forced_movement"}
+
 all_perks = {}
 all_perks.update(perks_data.get("skill_perks", {}))
 all_perks.update(perks_data.get("cross_perks", {}))
@@ -629,6 +636,47 @@ for pid, perk in all_perks.items():
             raw = effect.get("stat", "")
             if raw and not canonical_stat(raw):
                 err("perk->stat", f"{where}: stat '{raw}' is not in stat_keys.json")
+        # A status name that matches no real status silently never fires. Both
+        # halves of pain_is_just_information did exactly that — the typed effect
+        # said "Knockdown" and the hand-written one said "exhausted", and
+        # neither is a status this game has.
+        if etype in ("status_resistance", "apply_status", "remove_status", "immunity"):
+            named = effect.get("status") or effect.get("against") or ""
+            candidates = effect.get("statuses", [named]) if etype == "remove_status" else [named]
+            for name in candidates:
+                if not name or name in PERK_STATUS_CATEGORIES:
+                    continue
+                if name not in statuses:
+                    err("perk->status",
+                        f"{where}: '{name}' is not a status in statuses.json "
+                        f"nor a category word")
+
+# ── perk double-application ──────────────────────────────────────────────────
+# A perk whose effect is typed AND hand-wired in combat code applies twice.
+# Stone Adept did exactly this: +10% Armor as a typed effect and +10% Armor
+# again in CombatManager, the second taken on the already-boosted value.
+# Only implemented effect types can double — an inert one is merely a
+# declaration — so unimplemented types are reported by tools/audit_perks.py as
+# something to watch rather than failing here.
+IMPLEMENTED_EFFECTS = {t for t, d in PERK_EFFECTS.items() if d.get("implemented")}
+IMPLEMENTED_EFFECTS.discard("note")  # prose, cannot double
+
+hand_wired = set()
+for gd_path in glob.glob(os.path.join(ROOT, "scripts/**/*.gd"), recursive=True):
+    src = open(gd_path, encoding="utf-8").read()
+    for match in re.finditer(r'(?:has_perk|_unit_has_perk|party_has_perk)\([^,)]*,?\s*"([a-z_0-9]+)"', src):
+        hand_wired.add(match.group(1))
+
+for pid, perk in all_perks.items():
+    if pid not in hand_wired:
+        continue
+    for effect in perk.get("effects", []):
+        if not isinstance(effect, dict):
+            continue
+        if effect.get("type") in IMPLEMENTED_EFFECTS and effect.get("condition", "always") == "always":
+            err("perk->double",
+                f"{pid}: '{effect['type']}' effect is typed and the perk is also "
+                f"hand-wired in script — it would apply twice")
 
 # ── report ───────────────────────────────────────────────────────────────────
 print(f"TOTAL ISSUES: {len(errors)}")
