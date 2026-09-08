@@ -110,3 +110,9 @@ charm +1. `hell_born` was deliberately left alone. No descriptions changed, but
 one-line descriptions were written when they did not — worth a look in the
 traits pass.
 
+**Spell audit leftovers (2026-09-07).** The `Cloud_Serpent` summon template is new
+and its numbers are Claude's — Naga_Prince's statline traded toward the air half
+(less armour, more speed and dodge). `conduit_of_vayu` and `conduit_of_rudra`, the
+air magic capstones, were rewritten because they restated the level-5 perks; that
+prose is Claude's too.
+

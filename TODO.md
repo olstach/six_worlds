@@ -459,6 +459,56 @@ Recorded so they aren't rediscovered as bugs.
   beside its siblings at 14 and 16, and air magic's two capstones rewritten so
   level 10 grants something level 5 does not. Prose on the capstones is Claude's.
 
+- **The spells have the same shape of problem as the perks, in one field.**
+  `tools/audit_spells.py` (new) maps it. 363 spells, and unlike the perks they
+  are properly structured — school, level, mana, damage, target, statuses all
+  real fields the code reads.
+
+  - **`special` is where the mechanics went to die.** 210 spells carry a
+    `special` block using **369 distinct keys**, and
+    `CombatManager._apply_spell_special` branches on **three** of them:
+    `dispels_all_battlefield`, `see_through_stealth`, `stealth_bonus`. **88% of
+    the keys are used by exactly one spell** — `gold_on_kill`,
+    `launches_into_air`, `instant_kill_on_failed_save`, `damage_split` — so it is
+    a bag of one-off prose in dict clothing rather than a vocabulary. Even the
+    most reused keys are inert: `freeze_chance` on 8 spells, `stun_chance` on 7,
+    `push_distance` on 6.
+
+  - **16 spells have a target type nothing branches on.** `get_spell()` maps
+    `target.type` onto a targeting string and passes anything it does not
+    recognise through verbatim; combat then matches no branch. Seven of the
+    sixteen are **level-9 capstones** — `ice_age`, `sunrise`, `breath_of_heaven`,
+    `nail_the_sun`, `mudra_of_touching_the_earth`, `wilting_curse`,
+    `vision_of_reality` — all typed `global`. The rest are `party` 2,
+    `battlefield` 2, and one each of `corpse`, `multi_target`, `two_characters`,
+    `two_allies`, `special`. `fungal_zombie` is the clearest bug: it wants the
+    corpse targeting that exists, but declares it under `target.type` instead of
+    `target.eligible`, which is where the normaliser looks.
+
+  - **Cleansing ignores the names.** `_cleanse_status_effects(unit, count)` takes
+    the *length* of `statuses_removed` and strips that many dispellable debuffs,
+    whichever they are. So `cleanse`, listing `["all_negative"]`, removes exactly
+    one debuff, and a spell naming three specific statuses removes three
+    arbitrary ones.
+
+  - **One genuine mechanical duplicate**: `radiant_visage` and `shining_mirage`
+    are both Fire/Space/Enchantment L7, self-targeted, 135 mana, no damage, same
+    statuses. Their descriptions differ; nothing else does.
+
+  - **The damage curve flattens where the cost does not.** Median damage by level
+    runs 15, 25, 45, 50, 120 — L5 to L7 is almost flat — while median mana runs
+    15, 40, 75, 135, 225 and nearly doubles across the same step.
+
+  - **Healthy:** the mana curve is otherwise clean, all ten AoE shapes resolve in
+    `AoEResolver`, and every one of the ten schools has spells at every level
+    1/3/5/7/9 — 50 of 50 cells filled.
+
+- [x] ~~**Two dangling spell references.**~~ — fixed: `freedom` removed a status
+  called `Earthbound` that does not exist (now `Grounded`), and `cloud_serpent`
+  summoned a `Cloud_Serpent` template nobody had written (now added, stats are
+  Claude's and want a balance look). `validate_data.py` checks spell statuses and
+  summons now — it never had, which is why both survived.
+
 - [ ] **Wiring the remaining 425 perks needs a stat pipeline that does not exist
   yet.** This is the blocker, and it is the same one as the `base_bonuses` item
   below. Establishing it needs the engine, so it is local-Godot work.

@@ -407,6 +407,29 @@ for eid, (event, src) in events.items():
                 f"{src}:{eid}:{choice.get('id', '?')}: prerequisite flag '{flag}' is never set")
 
 
+# ── spells -> statuses / summons ─────────────────────────────────────────────
+# Nothing checked these before, and eight spells named statuses that do not exist.
+# Cleanse spells legitimately name *categories* rather than statuses, so those are
+# listed rather than treated as typos — but only the ones the UI knows about.
+CLEANSE_CATEGORIES = {"all_negative", "negative", "mental_negative", "physical_negative"}
+_spell_data = load("resources/data/spells.json")["spells"]
+_summon_templates = set(load("resources/data/summon_templates.json").get("templates", {}))
+for spid, spell in _spell_data.items():
+    if spid.startswith("_") or not isinstance(spell, dict):
+        continue
+    for field in ("statuses_caused", "statuses_removed", "statuses_caused_on_failed_save"):
+        for st in spell.get(field, []) or []:
+            if not isinstance(st, str) or st in statuses:
+                continue
+            if field == "statuses_removed" and st in CLEANSE_CATEGORIES:
+                continue
+            err("spell->status", f"spells.json:{spid}: {field} '{st}' is not a status")
+    summon = spell.get("summon")
+    for sid in ([summon] if isinstance(summon, str) else summon or []):
+        if isinstance(sid, str) and sid not in _summon_templates:
+            err("spell->summon", f"spells.json:{spid}: summon '{sid}' is not a summon template")
+
+
 # ── races and backgrounds ────────────────────────────────────────────────────
 for group in ("races", "backgrounds"):
     for key, entry in races_data[group].items():

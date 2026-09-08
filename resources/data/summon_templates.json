@@ -16,7 +16,11 @@
       "base_crit": 5,
       "base_accuracy": 0,
       "resistances": {},
-      "tags": ["air", "spirit", "utility"]
+      "tags": [
+        "air",
+        "spirit",
+        "utility"
+      ]
     },
     "Nagarajas_Attendant": {
       "display_name": "Nagaraja's Attendant",
@@ -32,8 +36,13 @@
       "base_armor": 0,
       "base_crit": 8,
       "base_accuracy": 0,
-      "resistances": {"water": 20},
-      "tags": ["water", "beast"]
+      "resistances": {
+        "water": 20
+      },
+      "tags": [
+        "water",
+        "beast"
+      ]
     },
     "Guiding_Light": {
       "display_name": "Guiding Light",
@@ -49,8 +58,14 @@
       "base_armor": 0,
       "base_crit": 5,
       "base_accuracy": 5,
-      "resistances": {"holy": 50},
-      "tags": ["white", "spirit", "support"],
+      "resistances": {
+        "holy": 50
+      },
+      "tags": [
+        "white",
+        "spirit",
+        "support"
+      ],
       "on_turn_start_heal_allies": 3
     },
     "Ice_Sheet": {
@@ -67,8 +82,16 @@
       "base_armor": 10,
       "base_crit": 0,
       "base_accuracy": 0,
-      "resistances": {"cold": 100, "water": 50, "fire": -50},
-      "tags": ["water", "construct", "obstacle"]
+      "resistances": {
+        "cold": 100,
+        "water": 50,
+        "fire": -50
+      },
+      "tags": [
+        "water",
+        "construct",
+        "obstacle"
+      ]
     },
     "Imp": {
       "display_name": "Imp",
@@ -84,8 +107,13 @@
       "base_armor": 0,
       "base_crit": 10,
       "base_accuracy": 0,
-      "resistances": {"fire": 25},
-      "tags": ["fire", "demon"]
+      "resistances": {
+        "fire": 25
+      },
+      "tags": [
+        "fire",
+        "demon"
+      ]
     },
     "Living_Hedge": {
       "display_name": "Living Hedge",
@@ -101,8 +129,15 @@
       "base_armor": 8,
       "base_crit": 0,
       "base_accuracy": 0,
-      "resistances": {"earth": 25, "fire": -25},
-      "tags": ["earth", "plant", "obstacle"]
+      "resistances": {
+        "earth": 25,
+        "fire": -25
+      },
+      "tags": [
+        "earth",
+        "plant",
+        "obstacle"
+      ]
     },
     "Trickster_Mask": {
       "display_name": "Trickster Mask",
@@ -119,7 +154,11 @@
       "base_crit": 12,
       "base_accuracy": 5,
       "resistances": {},
-      "tags": ["air", "illusion", "spirit"]
+      "tags": [
+        "air",
+        "illusion",
+        "spirit"
+      ]
     },
     "Will_o_wisp": {
       "display_name": "Will-o'-Wisp",
@@ -135,8 +174,14 @@
       "base_armor": 0,
       "base_crit": 8,
       "base_accuracy": 5,
-      "resistances": {"fire": 50, "air": 25},
-      "tags": ["fire", "spirit"]
+      "resistances": {
+        "fire": 50,
+        "air": 25
+      },
+      "tags": [
+        "fire",
+        "spirit"
+      ]
     },
     "Zombie": {
       "display_name": "Zombie",
@@ -152,8 +197,14 @@
       "base_armor": 2,
       "base_crit": 5,
       "base_accuracy": -5,
-      "resistances": {"physical": 15, "cold": 25},
-      "tags": ["black", "undead"]
+      "resistances": {
+        "physical": 15,
+        "cold": 25
+      },
+      "tags": [
+        "black",
+        "undead"
+      ]
     },
     "Dream_Boar": {
       "display_name": "Dream Boar",
@@ -170,7 +221,10 @@
       "base_crit": 8,
       "base_accuracy": 0,
       "resistances": {},
-      "tags": ["earth", "beast"]
+      "tags": [
+        "earth",
+        "beast"
+      ]
     },
     "Agnideva": {
       "display_name": "Agnideva",
@@ -186,8 +240,15 @@
       "base_armor": 5,
       "base_crit": 10,
       "base_accuracy": 5,
-      "resistances": {"fire": 50, "cold": -25},
-      "tags": ["fire", "spirit", "elemental"]
+      "resistances": {
+        "fire": 50,
+        "cold": -25
+      },
+      "tags": [
+        "fire",
+        "spirit",
+        "elemental"
+      ]
     },
     "Ancestral_Spirit": {
       "display_name": "Ancestral Spirit",
@@ -203,25 +264,39 @@
       "base_armor": 0,
       "base_crit": 8,
       "base_accuracy": 5,
-      "resistances": {"physical": 25, "space": 25},
-      "tags": ["space", "spirit", "white"]
+      "resistances": {
+        "physical": 25,
+        "space": 25
+      },
+      "tags": [
+        "space",
+        "spirit",
+        "white"
+      ]
     },
     "Ash_Imp": {
       "display_name": "Ash Imp",
-      "base_hp": 32,
-      "base_mana": 15,
-      "base_stamina": 40,
+      "base_hp": 18,
+      "base_mana": 0,
+      "base_stamina": 30,
       "actions": 2,
-      "base_damage": 9,
+      "base_damage": 8,
       "damage_type": "fire",
       "base_initiative": 15,
       "base_movement": 5,
       "base_dodge": 20,
       "base_armor": 0,
-      "base_crit": 12,
+      "base_crit": 8,
       "base_accuracy": 0,
-      "resistances": {"fire": 40},
-      "tags": ["fire", "demon"]
+      "resistances": {
+        "fire": 25
+      },
+      "tags": [
+        "fire",
+        "earth",
+        "demon",
+        "domain_smoke"
+      ]
     },
     "Eagle": {
       "display_name": "Eagle",
@@ -237,8 +312,13 @@
       "base_armor": 0,
       "base_crit": 15,
       "base_accuracy": 10,
-      "resistances": {"air": 25},
-      "tags": ["air", "beast"],
+      "resistances": {
+        "air": 25
+      },
+      "tags": [
+        "air",
+        "beast"
+      ],
       "movement_mode": "flying"
     },
     "Ice_Wall": {
@@ -255,8 +335,15 @@
       "base_armor": 15,
       "base_crit": 0,
       "base_accuracy": 0,
-      "resistances": {"cold": 100, "fire": -50},
-      "tags": ["water", "construct", "obstacle"]
+      "resistances": {
+        "cold": 100,
+        "fire": -50
+      },
+      "tags": [
+        "water",
+        "construct",
+        "obstacle"
+      ]
     },
     "Kinnara": {
       "display_name": "Kinnara",
@@ -272,8 +359,14 @@
       "base_armor": 5,
       "base_crit": 10,
       "base_accuracy": 5,
-      "resistances": {"air": 30},
-      "tags": ["air", "spirit", "celestial"]
+      "resistances": {
+        "air": 30
+      },
+      "tags": [
+        "air",
+        "spirit",
+        "celestial"
+      ]
     },
     "Naga": {
       "display_name": "Naga",
@@ -289,8 +382,15 @@
       "base_armor": 8,
       "base_crit": 8,
       "base_accuracy": 5,
-      "resistances": {"water": 30, "poison": 50},
-      "tags": ["water", "spirit", "serpent"]
+      "resistances": {
+        "water": 30,
+        "poison": 50
+      },
+      "tags": [
+        "water",
+        "spirit",
+        "serpent"
+      ]
     },
     "Nailing_Dagger": {
       "display_name": "Nailing Dagger",
@@ -306,8 +406,14 @@
       "base_armor": 0,
       "base_crit": 18,
       "base_accuracy": 5,
-      "resistances": {"air": 20},
-      "tags": ["air", "construct", "weapon"]
+      "resistances": {
+        "air": 20
+      },
+      "tags": [
+        "air",
+        "construct",
+        "weapon"
+      ]
     },
     "Puppet": {
       "display_name": "Puppet",
@@ -323,8 +429,14 @@
       "base_armor": 8,
       "base_crit": 5,
       "base_accuracy": 0,
-      "resistances": {"physical": 10},
-      "tags": ["space", "construct", "illusion"]
+      "resistances": {
+        "physical": 10
+      },
+      "tags": [
+        "space",
+        "construct",
+        "illusion"
+      ]
     },
     "Singing_Birds": {
       "display_name": "Singing Birds",
@@ -340,8 +452,14 @@
       "base_armor": 0,
       "base_crit": 8,
       "base_accuracy": 5,
-      "resistances": {"air": 25},
-      "tags": ["air", "beast", "support"]
+      "resistances": {
+        "air": 25
+      },
+      "tags": [
+        "air",
+        "beast",
+        "support"
+      ]
     },
     "Skeleton": {
       "display_name": "Skeleton",
@@ -357,8 +475,15 @@
       "base_armor": 5,
       "base_crit": 8,
       "base_accuracy": 0,
-      "resistances": {"physical": 10, "cold": 25, "poison": 100},
-      "tags": ["black", "undead"]
+      "resistances": {
+        "physical": 10,
+        "cold": 25,
+        "poison": 100
+      },
+      "tags": [
+        "black",
+        "undead"
+      ]
     },
     "Stone_Wall": {
       "display_name": "Stone Wall",
@@ -374,8 +499,15 @@
       "base_armor": 20,
       "base_crit": 0,
       "base_accuracy": 0,
-      "resistances": {"earth": 50, "physical": 25},
-      "tags": ["earth", "construct", "obstacle"]
+      "resistances": {
+        "earth": 50,
+        "physical": 25
+      },
+      "tags": [
+        "earth",
+        "construct",
+        "obstacle"
+      ]
     },
     "Vampire_Bats": {
       "display_name": "Vampire Bats",
@@ -391,8 +523,14 @@
       "base_armor": 0,
       "base_crit": 12,
       "base_accuracy": 0,
-      "resistances": {"black": 25},
-      "tags": ["black", "beast", "undead"],
+      "resistances": {
+        "black": 25
+      },
+      "tags": [
+        "black",
+        "beast",
+        "undead"
+      ],
       "movement_mode": "flying"
     },
     "Yaksha": {
@@ -409,8 +547,13 @@
       "base_armor": 10,
       "base_crit": 8,
       "base_accuracy": 0,
-      "resistances": {"earth": 25},
-      "tags": ["earth", "spirit"]
+      "resistances": {
+        "earth": 25
+      },
+      "tags": [
+        "earth",
+        "spirit"
+      ]
     },
     "Yakshini": {
       "display_name": "Yakshini",
@@ -426,8 +569,15 @@
       "base_armor": 5,
       "base_crit": 10,
       "base_accuracy": 5,
-      "resistances": {"earth": 20, "poison": 25},
-      "tags": ["earth", "spirit", "enchantment"]
+      "resistances": {
+        "earth": 20,
+        "poison": 25
+      },
+      "tags": [
+        "earth",
+        "spirit",
+        "enchantment"
+      ]
     },
     "Apsara": {
       "display_name": "Apsara",
@@ -443,8 +593,15 @@
       "base_armor": 5,
       "base_crit": 12,
       "base_accuracy": 10,
-      "resistances": {"holy": 50, "air": 25},
-      "tags": ["air", "spirit", "celestial"]
+      "resistances": {
+        "holy": 50,
+        "air": 25
+      },
+      "tags": [
+        "air",
+        "spirit",
+        "celestial"
+      ]
     },
     "Mountain_Hermit": {
       "display_name": "Mountain Hermit",
@@ -460,8 +617,13 @@
       "base_armor": 8,
       "base_crit": 10,
       "base_accuracy": 0,
-      "resistances": {"physical": 10},
-      "tags": ["earth", "beast"]
+      "resistances": {
+        "physical": 10
+      },
+      "tags": [
+        "earth",
+        "beast"
+      ]
     },
     "Crustacean_Knight": {
       "display_name": "Crustacean Knight",
@@ -477,8 +639,15 @@
       "base_armor": 18,
       "base_crit": 5,
       "base_accuracy": 0,
-      "resistances": {"water": 30, "physical": 20},
-      "tags": ["water", "beast", "construct"]
+      "resistances": {
+        "water": 30,
+        "physical": 20
+      },
+      "tags": [
+        "water",
+        "beast",
+        "construct"
+      ]
     },
     "Eldritch_Spawn": {
       "display_name": "Eldritch Spawn",
@@ -494,8 +663,15 @@
       "base_armor": 5,
       "base_crit": 10,
       "base_accuracy": 5,
-      "resistances": {"space": 30, "physical": 10},
-      "tags": ["space", "spirit", "chaos"]
+      "resistances": {
+        "space": 30,
+        "physical": 10
+      },
+      "tags": [
+        "space",
+        "spirit",
+        "chaos"
+      ]
     },
     "Godling": {
       "display_name": "Godling",
@@ -511,8 +687,15 @@
       "base_armor": 8,
       "base_crit": 12,
       "base_accuracy": 10,
-      "resistances": {"holy": 50, "fire": 25},
-      "tags": ["fire", "spirit", "divine"]
+      "resistances": {
+        "holy": 50,
+        "fire": 25
+      },
+      "tags": [
+        "fire",
+        "spirit",
+        "divine"
+      ]
     },
     "Hellhound": {
       "display_name": "Hellhound",
@@ -528,8 +711,14 @@
       "base_armor": 3,
       "base_crit": 14,
       "base_accuracy": 0,
-      "resistances": {"fire": 50},
-      "tags": ["fire", "beast", "demon"]
+      "resistances": {
+        "fire": 50
+      },
+      "tags": [
+        "fire",
+        "beast",
+        "demon"
+      ]
     },
     "Ice_Devil": {
       "display_name": "Ice Devil",
@@ -545,8 +734,14 @@
       "base_armor": 10,
       "base_crit": 8,
       "base_accuracy": 5,
-      "resistances": {"cold": 50, "fire": -25},
-      "tags": ["water", "demon"]
+      "resistances": {
+        "cold": 50,
+        "fire": -25
+      },
+      "tags": [
+        "water",
+        "demon"
+      ]
     },
     "Ice_Totem": {
       "display_name": "Ice Totem",
@@ -562,8 +757,15 @@
       "base_armor": 12,
       "base_crit": 5,
       "base_accuracy": 10,
-      "resistances": {"cold": 75, "fire": -50},
-      "tags": ["water", "construct", "obstacle"]
+      "resistances": {
+        "cold": 75,
+        "fire": -50
+      },
+      "tags": [
+        "water",
+        "construct",
+        "obstacle"
+      ]
     },
     "Living_Armor": {
       "display_name": "Living Armor",
@@ -579,8 +781,14 @@
       "base_armor": 20,
       "base_crit": 5,
       "base_accuracy": 0,
-      "resistances": {"physical": 25, "earth": 15},
-      "tags": ["earth", "construct"]
+      "resistances": {
+        "physical": 25,
+        "earth": 15
+      },
+      "tags": [
+        "earth",
+        "construct"
+      ]
     },
     "Mara": {
       "display_name": "Mara",
@@ -596,8 +804,15 @@
       "base_armor": 8,
       "base_crit": 12,
       "base_accuracy": 10,
-      "resistances": {"black": 35, "fire": 20},
-      "tags": ["black", "demon", "spirit"]
+      "resistances": {
+        "black": 35,
+        "fire": 20
+      },
+      "tags": [
+        "black",
+        "demon",
+        "spirit"
+      ]
     },
     "Mass_of_Masks": {
       "display_name": "Mass of Masks",
@@ -613,8 +828,14 @@
       "base_armor": 0,
       "base_crit": 10,
       "base_accuracy": 5,
-      "resistances": {"space": 20},
-      "tags": ["space", "illusion", "construct"]
+      "resistances": {
+        "space": 20
+      },
+      "tags": [
+        "space",
+        "illusion",
+        "construct"
+      ]
     },
     "Rudra": {
       "display_name": "Rudra",
@@ -630,25 +851,49 @@
       "base_armor": 10,
       "base_crit": 15,
       "base_accuracy": 10,
-      "resistances": {"air": 50, "fire": 25},
-      "tags": ["fire", "air", "spirit", "divine"]
+      "resistances": {
+        "air": 50,
+        "fire": 25
+      },
+      "tags": [
+        "fire",
+        "air",
+        "spirit",
+        "divine"
+      ]
     },
     "Smoke_Imp": {
       "display_name": "Smoke Imp",
-      "base_hp": 50,
-      "base_mana": 20,
-      "base_stamina": 50,
+      "base_hp": 22,
+      "base_mana": 5,
+      "base_stamina": 32,
       "actions": 2,
-      "base_damage": 12,
+      "base_damage": 7,
       "damage_type": "fire",
-      "base_initiative": 15,
+      "base_initiative": 16,
       "base_movement": 5,
-      "base_dodge": 25,
+      "base_dodge": 22,
       "base_armor": 0,
-      "base_crit": 12,
+      "base_crit": 8,
       "base_accuracy": 0,
-      "resistances": {"fire": 40, "air": 20},
-      "tags": ["fire", "air", "demon"]
+      "resistances": {
+        "fire": 35
+      },
+      "on_hit": {
+        "Blinded": {
+          "chance": 30
+        }
+      },
+      "special": {
+        "ignores_smoke_cloud_penalty": true
+      },
+      "tags": [
+        "fire",
+        "earth",
+        "demon",
+        "smoke",
+        "domain_smoke"
+      ]
     },
     "Stone_Guardian": {
       "display_name": "Stone Guardian",
@@ -664,8 +909,15 @@
       "base_armor": 18,
       "base_crit": 5,
       "base_accuracy": 0,
-      "resistances": {"earth": 50, "physical": 15},
-      "tags": ["earth", "construct", "spirit"]
+      "resistances": {
+        "earth": 50,
+        "physical": 15
+      },
+      "tags": [
+        "earth",
+        "construct",
+        "spirit"
+      ]
     },
     "Stone_Shell": {
       "display_name": "Stone Shell",
@@ -681,8 +933,15 @@
       "base_armor": 25,
       "base_crit": 0,
       "base_accuracy": 0,
-      "resistances": {"earth": 50, "physical": 30},
-      "tags": ["earth", "construct", "obstacle"]
+      "resistances": {
+        "earth": 50,
+        "physical": 30
+      },
+      "tags": [
+        "earth",
+        "construct",
+        "obstacle"
+      ]
     },
     "Swarm_of_Imps": {
       "display_name": "Imp Swarm",
@@ -698,8 +957,14 @@
       "base_armor": 0,
       "base_crit": 10,
       "base_accuracy": 0,
-      "resistances": {"fire": 30},
-      "tags": ["fire", "demon", "swarm"]
+      "resistances": {
+        "fire": 30
+      },
+      "tags": [
+        "fire",
+        "demon",
+        "swarm"
+      ]
     },
     "Symbol_of_Healing": {
       "display_name": "Symbol of Healing",
@@ -715,8 +980,14 @@
       "base_armor": 5,
       "base_crit": 0,
       "base_accuracy": 0,
-      "resistances": {"holy": 75},
-      "tags": ["white", "construct", "support"],
+      "resistances": {
+        "holy": 75
+      },
+      "tags": [
+        "white",
+        "construct",
+        "support"
+      ],
       "on_turn_start_heal_allies": 8
     },
     "Venus_Flytrap": {
@@ -733,8 +1004,15 @@
       "base_armor": 8,
       "base_crit": 15,
       "base_accuracy": 5,
-      "resistances": {"earth": 25, "fire": -25},
-      "tags": ["earth", "plant", "beast"]
+      "resistances": {
+        "earth": 25,
+        "fire": -25
+      },
+      "tags": [
+        "earth",
+        "plant",
+        "beast"
+      ]
     },
     "Vetala": {
       "display_name": "Vetala",
@@ -750,8 +1028,15 @@
       "base_armor": 5,
       "base_crit": 14,
       "base_accuracy": 5,
-      "resistances": {"black": 30, "physical": 15},
-      "tags": ["black", "undead", "spirit"]
+      "resistances": {
+        "black": 30,
+        "physical": 15
+      },
+      "tags": [
+        "black",
+        "undead",
+        "spirit"
+      ]
     },
     "Zombie_Horde": {
       "display_name": "Zombie Horde",
@@ -767,8 +1052,16 @@
       "base_armor": 5,
       "base_crit": 5,
       "base_accuracy": -5,
-      "resistances": {"physical": 20, "cold": 30, "poison": 100},
-      "tags": ["black", "undead", "swarm"]
+      "resistances": {
+        "physical": 20,
+        "cold": 30,
+        "poison": 100
+      },
+      "tags": [
+        "black",
+        "undead",
+        "swarm"
+      ]
     },
     "Agnideva_Host": {
       "display_name": "Agnideva Host",
@@ -784,8 +1077,16 @@
       "base_armor": 8,
       "base_crit": 12,
       "base_accuracy": 10,
-      "resistances": {"fire": 75, "cold": -30},
-      "tags": ["fire", "spirit", "elemental", "host"]
+      "resistances": {
+        "fire": 75,
+        "cold": -30
+      },
+      "tags": [
+        "fire",
+        "spirit",
+        "elemental",
+        "host"
+      ]
     },
     "Ancestral_Guardian": {
       "display_name": "Ancestral Guardian",
@@ -801,8 +1102,15 @@
       "base_armor": 12,
       "base_crit": 10,
       "base_accuracy": 10,
-      "resistances": {"physical": 30, "space": 30},
-      "tags": ["space", "spirit", "white"]
+      "resistances": {
+        "physical": 30,
+        "space": 30
+      },
+      "tags": [
+        "space",
+        "spirit",
+        "white"
+      ]
     },
     "Dagger_Swarm": {
       "display_name": "Dagger Swarm",
@@ -818,8 +1126,15 @@
       "base_armor": 0,
       "base_crit": 20,
       "base_accuracy": 10,
-      "resistances": {"air": 30},
-      "tags": ["air", "construct", "weapon", "swarm"]
+      "resistances": {
+        "air": 30
+      },
+      "tags": [
+        "air",
+        "construct",
+        "weapon",
+        "swarm"
+      ]
     },
     "Daughter_of_Mara": {
       "display_name": "Daughter of Mara",
@@ -835,8 +1150,15 @@
       "base_armor": 8,
       "base_crit": 14,
       "base_accuracy": 10,
-      "resistances": {"black": 40, "fire": 20},
-      "tags": ["black", "demon", "spirit"]
+      "resistances": {
+        "black": 40,
+        "fire": 20
+      },
+      "tags": [
+        "black",
+        "demon",
+        "spirit"
+      ]
     },
     "Fire_Devil": {
       "display_name": "Fire Devil",
@@ -852,8 +1174,14 @@
       "base_armor": 12,
       "base_crit": 10,
       "base_accuracy": 5,
-      "resistances": {"fire": 75, "cold": -30},
-      "tags": ["fire", "demon"]
+      "resistances": {
+        "fire": 75,
+        "cold": -30
+      },
+      "tags": [
+        "fire",
+        "demon"
+      ]
     },
     "Flock_of_Eagles": {
       "display_name": "Eagle Flock",
@@ -869,8 +1197,14 @@
       "base_armor": 0,
       "base_crit": 18,
       "base_accuracy": 15,
-      "resistances": {"air": 30},
-      "tags": ["air", "beast", "swarm"],
+      "resistances": {
+        "air": 30
+      },
+      "tags": [
+        "air",
+        "beast",
+        "swarm"
+      ],
       "movement_mode": "flying"
     },
     "Fungal_Zombie": {
@@ -887,8 +1221,16 @@
       "base_armor": 8,
       "base_crit": 5,
       "base_accuracy": -5,
-      "resistances": {"earth": 25, "physical": 15, "poison": 100},
-      "tags": ["earth", "black", "undead"]
+      "resistances": {
+        "earth": 25,
+        "physical": 15,
+        "poison": 100
+      },
+      "tags": [
+        "earth",
+        "black",
+        "undead"
+      ]
     },
     "Gandharva_Host": {
       "display_name": "Gandharva Host",
@@ -904,8 +1246,16 @@
       "base_armor": 8,
       "base_crit": 12,
       "base_accuracy": 10,
-      "resistances": {"air": 40, "fire": 15},
-      "tags": ["air", "spirit", "celestial", "host"]
+      "resistances": {
+        "air": 40,
+        "fire": 15
+      },
+      "tags": [
+        "air",
+        "spirit",
+        "celestial",
+        "host"
+      ]
     },
     "Host_of_Kinnaras": {
       "display_name": "Kinnara Host",
@@ -921,8 +1271,15 @@
       "base_armor": 8,
       "base_crit": 12,
       "base_accuracy": 10,
-      "resistances": {"air": 40},
-      "tags": ["air", "spirit", "celestial", "host"]
+      "resistances": {
+        "air": 40
+      },
+      "tags": [
+        "air",
+        "spirit",
+        "celestial",
+        "host"
+      ]
     },
     "Mamo": {
       "display_name": "Mamo",
@@ -938,8 +1295,16 @@
       "base_armor": 10,
       "base_crit": 12,
       "base_accuracy": 5,
-      "resistances": {"black": 40, "earth": 20},
-      "tags": ["black", "earth", "spirit", "demon"]
+      "resistances": {
+        "black": 40,
+        "earth": 20
+      },
+      "tags": [
+        "black",
+        "earth",
+        "spirit",
+        "demon"
+      ]
     },
     "Naga_Host": {
       "display_name": "Naga Host",
@@ -955,8 +1320,16 @@
       "base_armor": 12,
       "base_crit": 10,
       "base_accuracy": 5,
-      "resistances": {"water": 40, "poison": 75},
-      "tags": ["water", "spirit", "serpent", "host"]
+      "resistances": {
+        "water": 40,
+        "poison": 75
+      },
+      "tags": [
+        "water",
+        "spirit",
+        "serpent",
+        "host"
+      ]
     },
     "Skeleton_Troop": {
       "display_name": "Skeleton Troop",
@@ -972,8 +1345,16 @@
       "base_armor": 10,
       "base_crit": 8,
       "base_accuracy": 0,
-      "resistances": {"physical": 15, "cold": 30, "poison": 100},
-      "tags": ["black", "undead", "host"]
+      "resistances": {
+        "physical": 15,
+        "cold": 30,
+        "poison": 100
+      },
+      "tags": [
+        "black",
+        "undead",
+        "host"
+      ]
     },
     "Solar_Guardian": {
       "display_name": "Solar Guardian",
@@ -989,8 +1370,15 @@
       "base_armor": 12,
       "base_crit": 12,
       "base_accuracy": 10,
-      "resistances": {"fire": 50, "holy": 50},
-      "tags": ["fire", "spirit", "divine"]
+      "resistances": {
+        "fire": 50,
+        "holy": 50
+      },
+      "tags": [
+        "fire",
+        "spirit",
+        "divine"
+      ]
     },
     "Stone_Prison": {
       "display_name": "Stone Prison",
@@ -1006,8 +1394,15 @@
       "base_armor": 22,
       "base_crit": 0,
       "base_accuracy": 0,
-      "resistances": {"earth": 75, "physical": 30},
-      "tags": ["earth", "construct", "obstacle"]
+      "resistances": {
+        "earth": 75,
+        "physical": 30
+      },
+      "tags": [
+        "earth",
+        "construct",
+        "obstacle"
+      ]
     },
     "Troupe_of_Puppets": {
       "display_name": "Puppet Troupe",
@@ -1023,8 +1418,15 @@
       "base_armor": 8,
       "base_crit": 8,
       "base_accuracy": 0,
-      "resistances": {"space": 20},
-      "tags": ["space", "construct", "illusion", "host"]
+      "resistances": {
+        "space": 20
+      },
+      "tags": [
+        "space",
+        "construct",
+        "illusion",
+        "host"
+      ]
     },
     "Undead_Yogi": {
       "display_name": "Undead Yogi",
@@ -1040,8 +1442,16 @@
       "base_armor": 8,
       "base_crit": 8,
       "base_accuracy": 10,
-      "resistances": {"black": 30, "poison": 100, "physical": 10},
-      "tags": ["black", "undead", "spirit"]
+      "resistances": {
+        "black": 30,
+        "poison": 100,
+        "physical": 10
+      },
+      "tags": [
+        "black",
+        "undead",
+        "spirit"
+      ]
     },
     "Yaksha_Host": {
       "display_name": "Yaksha Host",
@@ -1057,8 +1467,14 @@
       "base_armor": 14,
       "base_crit": 8,
       "base_accuracy": 0,
-      "resistances": {"earth": 35},
-      "tags": ["earth", "spirit", "host"]
+      "resistances": {
+        "earth": 35
+      },
+      "tags": [
+        "earth",
+        "spirit",
+        "host"
+      ]
     },
     "Agnideva_Lord": {
       "display_name": "Agnideva Lord",
@@ -1074,8 +1490,16 @@
       "base_armor": 12,
       "base_crit": 14,
       "base_accuracy": 10,
-      "resistances": {"fire": 100, "cold": -50},
-      "tags": ["fire", "spirit", "elemental", "lord"]
+      "resistances": {
+        "fire": 100,
+        "cold": -50
+      },
+      "tags": [
+        "fire",
+        "spirit",
+        "elemental",
+        "lord"
+      ]
     },
     "Avenger": {
       "display_name": "Avenger",
@@ -1091,8 +1515,14 @@
       "base_armor": 12,
       "base_crit": 15,
       "base_accuracy": 10,
-      "resistances": {"physical": 20, "space": 30},
-      "tags": ["space", "spirit"]
+      "resistances": {
+        "physical": 20,
+        "space": 30
+      },
+      "tags": [
+        "space",
+        "spirit"
+      ]
     },
     "Eldritch_Guardian": {
       "display_name": "Eldritch Guardian",
@@ -1108,8 +1538,15 @@
       "base_armor": 15,
       "base_crit": 12,
       "base_accuracy": 10,
-      "resistances": {"space": 50, "physical": 20},
-      "tags": ["space", "spirit", "chaos"]
+      "resistances": {
+        "space": 50,
+        "physical": 20
+      },
+      "tags": [
+        "space",
+        "spirit",
+        "chaos"
+      ]
     },
     "Garuda": {
       "display_name": "Garuda",
@@ -1125,8 +1562,16 @@
       "base_armor": 10,
       "base_crit": 18,
       "base_accuracy": 15,
-      "resistances": {"air": 75, "fire": 25},
-      "tags": ["air", "spirit", "celestial", "beast"],
+      "resistances": {
+        "air": 75,
+        "fire": 25
+      },
+      "tags": [
+        "air",
+        "spirit",
+        "celestial",
+        "beast"
+      ],
       "movement_mode": "flying"
     },
     "Honored_Dead": {
@@ -1143,8 +1588,17 @@
       "base_armor": 14,
       "base_crit": 10,
       "base_accuracy": 5,
-      "resistances": {"physical": 25, "cold": 40, "poison": 100},
-      "tags": ["black", "undead", "white", "spirit"]
+      "resistances": {
+        "physical": 25,
+        "cold": 40,
+        "poison": 100
+      },
+      "tags": [
+        "black",
+        "undead",
+        "white",
+        "spirit"
+      ]
     },
     "Imp_Collector": {
       "display_name": "Imp Collector",
@@ -1160,8 +1614,14 @@
       "base_armor": 10,
       "base_crit": 12,
       "base_accuracy": 5,
-      "resistances": {"fire": 60},
-      "tags": ["fire", "demon", "lord"]
+      "resistances": {
+        "fire": 60
+      },
+      "tags": [
+        "fire",
+        "demon",
+        "lord"
+      ]
     },
     "Lord_of_the_Wind": {
       "display_name": "Lord of the Wind",
@@ -1177,8 +1637,15 @@
       "base_armor": 8,
       "base_crit": 16,
       "base_accuracy": 15,
-      "resistances": {"air": 75},
-      "tags": ["air", "spirit", "elemental", "lord"],
+      "resistances": {
+        "air": 75
+      },
+      "tags": [
+        "air",
+        "spirit",
+        "elemental",
+        "lord"
+      ],
       "movement_mode": "flying"
     },
     "Naga_Prince": {
@@ -1195,8 +1662,16 @@
       "base_armor": 14,
       "base_crit": 12,
       "base_accuracy": 10,
-      "resistances": {"water": 50, "poison": 100},
-      "tags": ["water", "spirit", "serpent", "lord"]
+      "resistances": {
+        "water": 50,
+        "poison": 100
+      },
+      "tags": [
+        "water",
+        "spirit",
+        "serpent",
+        "lord"
+      ]
     },
     "Rudragana": {
       "display_name": "Rudragana",
@@ -1212,8 +1687,17 @@
       "base_armor": 12,
       "base_crit": 16,
       "base_accuracy": 10,
-      "resistances": {"fire": 75, "air": 40},
-      "tags": ["fire", "air", "spirit", "divine", "host"]
+      "resistances": {
+        "fire": 75,
+        "air": 40
+      },
+      "tags": [
+        "fire",
+        "air",
+        "spirit",
+        "divine",
+        "host"
+      ]
     },
     "Swarm_of_Maras": {
       "display_name": "Mara Swarm",
@@ -1229,8 +1713,16 @@
       "base_armor": 8,
       "base_crit": 14,
       "base_accuracy": 10,
-      "resistances": {"black": 50, "fire": 20},
-      "tags": ["black", "demon", "spirit", "swarm"]
+      "resistances": {
+        "black": 50,
+        "fire": 20
+      },
+      "tags": [
+        "black",
+        "demon",
+        "spirit",
+        "swarm"
+      ]
     },
     "Undead_Host": {
       "display_name": "Undead Host",
@@ -1246,8 +1738,16 @@
       "base_armor": 12,
       "base_crit": 5,
       "base_accuracy": -5,
-      "resistances": {"physical": 25, "cold": 40, "poison": 100},
-      "tags": ["black", "undead", "host"]
+      "resistances": {
+        "physical": 25,
+        "cold": 40,
+        "poison": 100
+      },
+      "tags": [
+        "black",
+        "undead",
+        "host"
+      ]
     },
     "Yaksha_Lord": {
       "display_name": "Yaksha Lord",
@@ -1263,8 +1763,15 @@
       "base_armor": 18,
       "base_crit": 10,
       "base_accuracy": 5,
-      "resistances": {"earth": 50, "physical": 15},
-      "tags": ["earth", "spirit", "lord"]
+      "resistances": {
+        "earth": 50,
+        "physical": 15
+      },
+      "tags": [
+        "earth",
+        "spirit",
+        "lord"
+      ]
     },
     "spirit_guardian": {
       "display_name": "Spirit Guardian",
@@ -1281,7 +1788,10 @@
       "base_crit": 0,
       "base_accuracy": 80,
       "resistances": {},
-      "tags": ["guardian_spirit", "construct"]
+      "tags": [
+        "guardian_spirit",
+        "construct"
+      ]
     },
     "rudra": {
       "display_name": "Rudra",
@@ -1297,8 +1807,14 @@
       "base_armor": 2,
       "base_crit": 12,
       "base_accuracy": 85,
-      "resistances": {"air": 30},
-      "tags": ["air", "spirit", "elemental"]
+      "resistances": {
+        "air": 30
+      },
+      "tags": [
+        "air",
+        "spirit",
+        "elemental"
+      ]
     },
     "stone_guardian": {
       "display_name": "Guardian King",
@@ -1314,8 +1830,15 @@
       "base_armor": 18,
       "base_crit": 5,
       "base_accuracy": 80,
-      "resistances": {"earth": 25, "physical": 15},
-      "tags": ["earth", "construct", "guardian"]
+      "resistances": {
+        "earth": 25,
+        "physical": 15
+      },
+      "tags": [
+        "earth",
+        "construct",
+        "guardian"
+      ]
     },
     "zombie": {
       "display_name": "Risen Dead",
@@ -1331,8 +1854,14 @@
       "base_armor": 4,
       "base_crit": 3,
       "base_accuracy": 70,
-      "resistances": {"black": 50, "poison": 50},
-      "tags": ["black", "undead"]
+      "resistances": {
+        "black": 50,
+        "poison": 50
+      },
+      "tags": [
+        "black",
+        "undead"
+      ]
     },
     "skeleton": {
       "display_name": "Skeleton",
@@ -1348,48 +1877,14 @@
       "base_armor": 6,
       "base_crit": 5,
       "base_accuracy": 78,
-      "resistances": {"black": 50, "physical": 20},
-      "tags": ["black", "undead"]
-    },
-    "Ash_Imp": {
-      "display_name": "Ash Imp",
-      "base_hp": 18,
-      "base_mana": 0,
-      "base_stamina": 30,
-      "actions": 2,
-      "base_damage": 8,
-      "damage_type": "fire",
-      "base_initiative": 15,
-      "base_movement": 5,
-      "base_dodge": 20,
-      "base_armor": 0,
-      "base_crit": 8,
-      "base_accuracy": 0,
-      "resistances": {"fire": 25},
-      "tags": ["fire", "earth", "demon", "domain_smoke"]
-    },
-    "Smoke_Imp": {
-      "display_name": "Smoke Imp",
-      "base_hp": 22,
-      "base_mana": 5,
-      "base_stamina": 32,
-      "actions": 2,
-      "base_damage": 7,
-      "damage_type": "fire",
-      "base_initiative": 16,
-      "base_movement": 5,
-      "base_dodge": 22,
-      "base_armor": 0,
-      "base_crit": 8,
-      "base_accuracy": 0,
-      "resistances": {"fire": 35},
-      "on_hit": {
-        "Blinded": {"chance": 30}
+      "resistances": {
+        "black": 50,
+        "physical": 20
       },
-      "special": {
-        "ignores_smoke_cloud_penalty": true
-      },
-      "tags": ["fire", "earth", "demon", "smoke", "domain_smoke"]
+      "tags": [
+        "black",
+        "undead"
+      ]
     },
     "Smoking_Mirror": {
       "display_name": "Smoking Mirror",
@@ -1405,7 +1900,11 @@
       "base_armor": 20,
       "base_crit": 0,
       "base_accuracy": 0,
-      "resistances": {"fire": 100, "smoke": 100, "water": -50},
+      "resistances": {
+        "fire": 100,
+        "smoke": 100,
+        "water": -50
+      },
       "special": {
         "immovable": true,
         "spawns_on_turn": {
@@ -1414,7 +1913,12 @@
           "every_n_turns": 2
         }
       },
-      "tags": ["construct", "smoke", "domain_smoke", "boss"]
+      "tags": [
+        "construct",
+        "smoke",
+        "domain_smoke",
+        "boss"
+      ]
     },
     "Crystal_Guardian": {
       "display_name": "Crystal Guardian",
@@ -1446,7 +1950,13 @@
         "attack_type": "laser",
         "attack_damage_type": "space"
       },
-      "tags": ["earth", "space", "construct", "crystal", "domain_crystal"]
+      "tags": [
+        "earth",
+        "space",
+        "construct",
+        "crystal",
+        "domain_crystal"
+      ]
     },
     "Glass_Mine": {
       "display_name": "Glass Mine",
@@ -1470,12 +1980,20 @@
           "damage": 25,
           "damage_type": "slashing",
           "radius": 2,
-          "statuses": ["Bleeding"],
+          "statuses": [
+            "Bleeding"
+          ],
           "bleed_guaranteed": true,
           "destroys_self": true
         }
       },
-      "tags": ["earth", "air", "construct", "trap", "domain_glass"]
+      "tags": [
+        "earth",
+        "air",
+        "construct",
+        "trap",
+        "domain_glass"
+      ]
     },
     "Mudling": {
       "display_name": "Mudling",
@@ -1491,11 +2009,47 @@
       "base_armor": 15,
       "base_crit": 0,
       "base_accuracy": 0,
-      "resistances": {"physical": 40},
-      "on_hit": {
-        "Slowed": {"chance": 50}
+      "resistances": {
+        "physical": 40
       },
-      "tags": ["earth", "water", "mud", "construct", "domain_mud"]
+      "on_hit": {
+        "Slowed": {
+          "chance": 50
+        }
+      },
+      "tags": [
+        "earth",
+        "water",
+        "mud",
+        "construct",
+        "domain_mud"
+      ]
+    },
+    "Cloud_Serpent": {
+      "display_name": "Cloud Serpent",
+      "base_hp": 118,
+      "base_mana": 70,
+      "base_stamina": 70,
+      "actions": 2,
+      "base_damage": 24,
+      "damage_type": "air",
+      "base_initiative": 19,
+      "base_movement": 7,
+      "base_dodge": 22,
+      "base_armor": 6,
+      "base_crit": 14,
+      "base_accuracy": 12,
+      "resistances": {
+        "air": 50,
+        "water": 50
+      },
+      "tags": [
+        "water",
+        "air",
+        "spirit",
+        "serpent",
+        "flying"
+      ]
     }
   }
 }
