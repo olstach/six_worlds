@@ -3477,7 +3477,7 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 				_apply_status_effect(target, "Regenerating", 3, regen_per_turn, caster)
 			# Purifying Stream (Water 2): Water healing spells also remove 1 negative status effect
 			if is_water_heal and PerkSystem.has_perk(caster_char_hw, "purifying_stream"):
-				_cleanse_status_effects(target, 1)
+				_cleanse_status_effects(target, CLEANSE_ALL, 1)
 
 	# --- Status effects (from spell.statuses_caused) ---
 	var statuses = spell.get("statuses_caused", [])
@@ -3513,7 +3513,8 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 	# --- Status removal (from spell.statuses_removed) ---
 	var statuses_removed = spell.get("statuses_removed", [])
 	if not statuses_removed.is_empty():
-		var cleansed = _cleanse_status_effects(target, statuses_removed.size())
+		# The spell's own list decides what comes off; its length no longer does.
+		var cleansed = _cleanse_status_effects(target, statuses_removed)
 		result.effects_applied.append({"type": "cleanse", "removed": cleansed})
 		# Gentle Removal (White 1): cleansing spells also heal target for 20% of caster Spellpower
 		var caster_char_gr = caster.character_data if "character_data" in caster else {}
@@ -4116,7 +4117,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 
 	# Cleansed: remove_all_debuffs fires immediately on application
 	if "remove_all_debuffs" in def.get("effects", []):
-		var removed_count = _cleanse_status_effects(unit, 99)
+		var removed_count = _cleanse_status_effects(unit, CLEANSE_ALL)
 		if removed_count > 0:
 			combat_log.emit("%s is cleansed of all debuffs!" % unit.unit_name)
 
@@ -4150,24 +4151,69 @@ func _remove_status_by_name(unit: Node, status_name: String) -> bool:
 	return false
 
 
-## Remove negative status effects using the dispellable flag from status definitions.
-## Only removes debuffs that are marked dispellable. Returns the count removed.
-func _cleanse_status_effects(unit: Node, count: int) -> int:
+## Category words a spell may list in `statuses_removed` instead of naming
+## statuses one by one. Anything else in that list is matched against the status
+## name, and against the `dispel_methods` each status declares.
+const CLEANSE_ALL := ["all_negative", "negative"]
+const CLEANSE_MENTAL := ["mental_negative"]
+## Status categories that count as mental for `mental_negative`.
+const MENTAL_CATEGORIES := ["cc", "cc_dot", "dot_cc", "debuff"]
+const MENTAL_EFFECTS := ["confused", "feared", "charmed", "dominated", "silenced", "asleep"]
+
+
+## Remove negative status effects a spell actually names.
+##
+## This used to take a count and strip that many dispellable debuffs, whichever
+## they happened to be — so `cleanse`, whose statuses_removed is
+## ["all_negative"], removed exactly one, and a spell naming three specific
+## statuses removed three arbitrary ones. It now honours the names, the category
+## words, and the `dispel_methods` every status already declares and nothing read.
+##
+## `wanted` may hold status names ("Rooted"), category words ("all_negative"),
+## or dispel-method names ("cleanse", "freedom", "clarity"). `limit` caps how
+## many come off; -1 means no cap.
+func _cleanse_status_effects(unit: Node, wanted: Array, limit: int = -1) -> int:
 	if not "status_effects" in unit:
 		return 0
+
+	var remove_all := false
+	var mental_only := false
+	for w in wanted:
+		var word := String(w)
+		if word in CLEANSE_ALL:
+			remove_all = true
+		elif word in CLEANSE_MENTAL:
+			mental_only = true
 
 	var removed = 0
 	var to_remove: Array[int] = []
 
 	for i in range(unit.status_effects.size()):
-		if removed >= count:
+		if limit >= 0 and removed >= limit:
 			break
 		var status_name = unit.status_effects[i].get("status", "")
 		var def = _status_effects.get(status_name, {})
-		# Only cleanse debuffs that are marked as dispellable
-		if def.get("type", "") == "debuff" and def.get("dispellable", false):
-			to_remove.append(i)
-			removed += 1
+		# Buffs and undispellable debuffs are never cleansed, whatever was asked for
+		if def.get("type", "") != "debuff" or not def.get("dispellable", false):
+			continue
+
+		var matched := remove_all
+		if not matched and mental_only:
+			matched = def.get("category", "") in MENTAL_CATEGORIES \
+				or def.get("effects", []).any(func(e): return String(e) in MENTAL_EFFECTS)
+		if not matched:
+			# Named outright, or reachable by a dispel method the spell provides
+			var methods: Array = def.get("dispel_methods", [])
+			for w in wanted:
+				var word := String(w)
+				if word == status_name or word in methods:
+					matched = true
+					break
+		if not matched:
+			continue
+
+		to_remove.append(i)
+		removed += 1
 
 	# Remove in reverse order to maintain indices
 	to_remove.reverse()

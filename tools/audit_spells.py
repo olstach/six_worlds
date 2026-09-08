@@ -149,8 +149,14 @@ def main():
                 tuple(sorted(v.get("statuses_caused") or [])), targeting_of(v),
                 json.dumps(v.get("aoe"), sort_keys=True),
                 # what a summon actually calls up is the whole point of a summon
-                # spell, so two that differ only there are not duplicates.
-                json.dumps(v.get("summon"), sort_keys=True))
+                # spell, so two that differ only there are not duplicates. Same
+                # for `aura` and `special`: radiant_visage and shining_mirage
+                # matched on every compared field while one buffed allies and the
+                # other confused enemies, because the difference lived in fields
+                # this signature was not looking at.
+                json.dumps(v.get("summon"), sort_keys=True),
+                json.dumps(v.get("aura"), sort_keys=True),
+                tuple(sorted((v.get("special") or {}).keys())))
 
     groups = defaultdict(list)
     for k, v in spells.items():

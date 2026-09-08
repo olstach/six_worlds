@@ -126,7 +126,7 @@
         "melee"
       ],
       "mana_cost": 15,
-      "damage": 15,
+      "damage": 19,
       "damage_type": "crushing",
       "target": {
         "type": "single",
@@ -477,7 +477,7 @@
         "cc"
       ],
       "mana_cost": 135,
-      "damage": 100,
+      "damage": 259,
       "damage_type": "crushing",
       "duration": "spellpower",
       "statuses_caused": [
@@ -784,7 +784,7 @@
         "damage"
       ],
       "mana_cost": 15,
-      "damage": 15,
+      "damage": 19,
       "damage_type": "piercing",
       "target": {
         "type": "single",
@@ -834,7 +834,7 @@
         "cc"
       ],
       "mana_cost": 40,
-      "damage": 35,
+      "damage": 66,
       "damage_type": "crushing",
       "statuses_caused": [
         "Pushed"
@@ -861,7 +861,7 @@
       ],
       "mana_cost": 60,
       "cost_modifier": 1.5,
-      "damage": 53,
+      "damage": 87,
       "damage_modifier": 1.5,
       "damage_type": "slashing",
       "target": {
@@ -885,7 +885,7 @@
         "aoe"
       ],
       "mana_cost": 75,
-      "damage": 60,
+      "damage": 127,
       "damage_type": "crushing",
       "target": {
         "type": "aoe",
@@ -914,7 +914,7 @@
         "aoe"
       ],
       "mana_cost": 75,
-      "damage": 60,
+      "damage": 127,
       "damage_type": "crushing",
       "target": {
         "type": "aoe",
@@ -945,7 +945,7 @@
       ],
       "mana_cost": 113,
       "cost_modifier": 1.5,
-      "damage": 90,
+      "damage": 176,
       "damage_modifier": 1.5,
       "damage_type": "slashing",
       "target": {
@@ -975,7 +975,7 @@
         "aoe"
       ],
       "mana_cost": 135,
-      "damage": 100,
+      "damage": 259,
       "damage_type": "crushing",
       "target": {
         "type": "aoe",
@@ -1006,7 +1006,7 @@
         "aoe"
       ],
       "mana_cost": 135,
-      "damage": 100,
+      "damage": 259,
       "damage_type": "physical_fire",
       "target": {
         "type": "aoe",
@@ -1036,7 +1036,7 @@
       ],
       "mana_cost": 304,
       "cost_modifier": 2.25,
-      "damage": 225,
+      "damage": 326,
       "damage_modifier": 2.25,
       "damage_type": "slashing",
       "target": {
@@ -1121,7 +1121,7 @@
         "aoe"
       ],
       "mana_cost": 225,
-      "damage": 150,
+      "damage": 404,
       "damage_type": "physical_fire",
       "target": {
         "type": "aoe",
@@ -1152,7 +1152,7 @@
       ],
       "mana_cost": 338,
       "cost_modifier": 1.5,
-      "damage": 225,
+      "damage": 522,
       "damage_modifier": 1.5,
       "damage_type": "slashing",
       "target": {
@@ -1330,7 +1330,7 @@
         "terrain"
       ],
       "mana_cost": 225,
-      "damage": 150,
+      "damage": 404,
       "damage_type": "crushing",
       "heal": 150,
       "requires": [
@@ -1344,7 +1344,12 @@
         "heals_all_allies": true,
         "destroys_random_obstacles": true
       },
-      "description": "Earthquake damages all enemies, heals all allies, destroys random obstacles"
+      "description": "Earthquake damages all enemies, heals all allies, destroys random obstacles",
+      "aoe": {
+        "type": "circle",
+        "size": "battlefield_width",
+        "origin": "caster"
+      }
     },
     "oily_skin": {
       "name": "Oily Skin",
@@ -1392,7 +1397,7 @@
         "disruption"
       ],
       "mana_cost": 40,
-      "damage": 1,
+      "damage": 25,
       "damage_type": "crushing",
       "damage_per_turn": true,
       "duration": "spellpower",
@@ -1426,7 +1431,7 @@
         "summon"
       ],
       "mana_cost": 40,
-      "damage": 35,
+      "damage": 66,
       "damage_type": "crushing",
       "special": {
         "delay_turns": 3,
@@ -1508,7 +1513,7 @@
         "damage"
       ],
       "mana_cost": 75,
-      "damage": 50,
+      "damage": 111,
       "damage_type": "piercing",
       "target": {
         "type": "single",
@@ -1538,7 +1543,8 @@
       "mana_cost": 135,
       "summon": "Fungal_Zombie",
       "target": {
-        "type": "corpse"
+        "type": "single",
+        "eligible": "corpse"
       },
       "description": "Cast on corpse - rises as slow summon with high HP, low damage, poisons"
     },
@@ -1558,7 +1564,7 @@
         "damage"
       ],
       "mana_cost": 135,
-      "damage": 20,
+      "damage": 149,
       "damage_type": "black",
       "damage_per_turn": true,
       "duration": "spellpower",
@@ -1596,7 +1602,7 @@
         "summon"
       ],
       "mana_cost": 225,
-      "damage": 150,
+      "damage": 404,
       "damage_type": "crushing",
       "target": {
         "type": "aoe",
@@ -1685,7 +1691,7 @@
         "damage"
       ],
       "mana_cost": 40,
-      "damage": 15,
+      "damage": 41,
       "duration": "spellpower",
       "statuses_caused": [
         "Slippery_Terrain"
@@ -2018,7 +2024,7 @@
         "cc"
       ],
       "mana_cost": 135,
-      "damage": 100,
+      "damage": 259,
       "damage_type": "water",
       "statuses_caused": [
         "Confused"
@@ -2079,7 +2085,7 @@
         "damage"
       ],
       "mana_cost": 15,
-      "damage": 5,
+      "damage": 8,
       "damage_type": "water",
       "special": {
         "push_distance": 1,
@@ -2140,7 +2146,7 @@
         "damage"
       ],
       "mana_cost": 40,
-      "damage": 10,
+      "damage": 36,
       "damage_type": "water",
       "special": {
         "push_distance": "spellpower",
@@ -2212,7 +2218,7 @@
         "damage"
       ],
       "mana_cost": 40,
-      "damage": 25,
+      "damage": 53,
       "damage_type": "ice",
       "statuses_caused": [
         "Frozen"
@@ -2242,7 +2248,7 @@
         "aoe"
       ],
       "mana_cost": 75,
-      "damage": 15,
+      "damage": 54,
       "damage_type": "water",
       "special": {
         "push_distance_min": 2,
@@ -2276,7 +2282,7 @@
         "aoe"
       ],
       "mana_cost": 75,
-      "damage": 45,
+      "damage": 103,
       "damage_type": "ice",
       "statuses_caused": [
         "Frozen"
@@ -2311,7 +2317,7 @@
         "cc"
       ],
       "mana_cost": 75,
-      "damage": 20,
+      "damage": 62,
       "damage_type": "physical",
       "damage_per_turn": true,
       "duration": "spellpower",
@@ -2343,7 +2349,7 @@
         "aoe"
       ],
       "mana_cost": 135,
-      "damage": 70,
+      "damage": 218,
       "damage_type": "ice",
       "statuses_caused": [
         "Frozen"
@@ -2378,7 +2384,7 @@
         "aoe"
       ],
       "mana_cost": 135,
-      "damage": 80,
+      "damage": 231,
       "damage_type": "ice",
       "statuses_caused": [
         "Frozen"
@@ -2414,7 +2420,7 @@
         "aoe"
       ],
       "mana_cost": 225,
-      "damage": 30,
+      "damage": 170,
       "damage_type": "water",
       "special": {
         "push_distance": "spellpower_far",
@@ -2447,7 +2453,7 @@
         "global"
       ],
       "mana_cost": 225,
-      "damage": 100,
+      "damage": 307,
       "damage_type": "ice",
       "statuses_caused": [
         "Frozen"
@@ -2459,7 +2465,12 @@
         "type": "global",
         "eligible": "enemy"
       },
-      "description": "Global freeze and ice damage to all enemies"
+      "description": "Global freeze and ice damage to all enemies",
+      "aoe": {
+        "type": "circle",
+        "size": "battlefield_width",
+        "origin": "caster"
+      }
     },
     "cooling_mist": {
       "name": "Cooling Mist",
@@ -2655,7 +2666,7 @@
         "dot"
       ],
       "mana_cost": 15,
-      "damage": 10,
+      "damage": 14,
       "damage_type": "poison",
       "statuses_caused": [
         "Poisoned"
@@ -2738,7 +2749,7 @@
         "escalating"
       ],
       "mana_cost": 40,
-      "damage": 5,
+      "damage": 30,
       "damage_type": "poison",
       "damage_per_turn": true,
       "duration": "spellpower",
@@ -2826,7 +2837,7 @@
         "aoe"
       ],
       "mana_cost": 75,
-      "damage": 30,
+      "damage": 79,
       "damage_type": "poison",
       "statuses_caused": [
         "Poisoned"
@@ -2863,7 +2874,7 @@
         "aoe"
       ],
       "mana_cost": 135,
-      "damage": 25,
+      "damage": 156,
       "damage_type": "water",
       "damage_per_turn": true,
       "duration": "until_save",
@@ -2900,7 +2911,7 @@
         "terrain"
       ],
       "mana_cost": 135,
-      "damage": 25,
+      "damage": 156,
       "damage_type": "poison",
       "damage_per_turn": true,
       "duration": "spellpower",
@@ -2938,7 +2949,7 @@
         "curse"
       ],
       "mana_cost": 225,
-      "damage": 150,
+      "damage": 404,
       "damage_type": "water",
       "save_type": "Constitution",
       "target": {
@@ -2953,7 +2964,12 @@
           "Construct"
         ]
       },
-      "description": "Major damage on failed Constitution save to all living enemies by evaporating water; 2x damage to water creatures, no damage to fire elementals/undead/constructs"
+      "description": "Major damage on failed Constitution save to all living enemies by evaporating water; 2x damage to water creatures, no damage to fire elementals/undead/constructs",
+      "aoe": {
+        "type": "circle",
+        "size": "battlefield_width",
+        "origin": "caster"
+      }
     },
     "plague_waters": {
       "name": "Plague Waters",
@@ -2971,7 +2987,7 @@
         "spreading"
       ],
       "mana_cost": 225,
-      "damage": 40,
+      "damage": 190,
       "damage_type": "poison",
       "damage_per_turn": true,
       "duration": "spellpower",
@@ -3009,7 +3025,7 @@
         "cc"
       ],
       "mana_cost": 75,
-      "damage": 55,
+      "damage": 119,
       "damage_type": "water",
       "statuses_caused": [
         "Stunned"
@@ -3070,7 +3086,7 @@
       ],
       "mana_cost": 135,
       "duration": "spellpower",
-      "damage": 35,
+      "damage": 169,
       "damage_type": "water",
       "statuses_caused": [
         "Frozen"
@@ -3135,7 +3151,7 @@
         "aoe"
       ],
       "mana_cost": 225,
-      "damage": 100,
+      "damage": 307,
       "damage_type": "water",
       "statuses_caused": [
         "Frozen",
@@ -3314,7 +3330,7 @@
         "Burning"
       ],
       "target": {
-        "type": "multi_target",
+        "type": "chain",
         "eligible": "enemy",
         "min_count": 2,
         "max_count": 5,
@@ -3322,8 +3338,9 @@
         "note": "Caster assigns each tongue to a target one by one; same target can receive multiple tongues"
       },
       "description": "Unleash 2–5 tongues of flame (count scales with spellpower). Each tongue is aimed separately at any enemy in range, dealing fire damage and applying Burning. Concentrate on one target or spread the pain.",
-      "damage": 35,
-      "damage_type": "fire"
+      "damage": 169,
+      "damage_type": "fire",
+      "chain_targets": 5
     },
     "berserk": {
       "name": "Berserk",
@@ -3670,7 +3687,7 @@
         "damage"
       ],
       "mana_cost": 15,
-      "damage": 15,
+      "damage": 19,
       "damage_type": "fire",
       "statuses_caused": [
         "Burning"
@@ -3756,7 +3773,7 @@
         "aoe"
       ],
       "mana_cost": 40,
-      "damage": 25,
+      "damage": 53,
       "damage_type": "fire",
       "statuses_caused": [
         "Burning"
@@ -3789,7 +3806,7 @@
         "lotus"
       ],
       "mana_cost": 40,
-      "damage": 25,
+      "damage": 53,
       "damage_type": "fire",
       "statuses_caused": [
         "Burning"
@@ -3857,7 +3874,7 @@
         "aoe"
       ],
       "mana_cost": 75,
-      "damage": 45,
+      "damage": 103,
       "damage_type": "fire",
       "statuses_caused": [
         "Burning"
@@ -3889,7 +3906,7 @@
         "aoe"
       ],
       "mana_cost": 75,
-      "damage": 50,
+      "damage": 111,
       "damage_type": "fire",
       "statuses_caused": [
         "Burning"
@@ -3954,7 +3971,7 @@
         "domain_spell"
       ],
       "mana_cost": 75,
-      "damage": 30,
+      "damage": 79,
       "damage_type": "fire",
       "statuses_caused": [
         "Silenced"
@@ -3989,7 +4006,7 @@
         "damage"
       ],
       "mana_cost": 75,
-      "damage": 25,
+      "damage": 70,
       "damage_type": "fire",
       "special": {
         "teleport_range": "short",
@@ -4046,7 +4063,7 @@
         "persistent"
       ],
       "mana_cost": 135,
-      "damage": 40,
+      "damage": 176,
       "damage_type": "fire",
       "duration": 4,
       "statuses_caused": [
@@ -4085,7 +4102,7 @@
         "aoe"
       ],
       "mana_cost": 225,
-      "damage": 120,
+      "damage": 346,
       "damage_type": "fire",
       "statuses_caused": [
         "Burning"
@@ -4117,7 +4134,7 @@
         "massive"
       ],
       "mana_cost": 225,
-      "damage": 150,
+      "damage": 404,
       "damage_type": "fire",
       "target": {
         "type": "single",
@@ -4140,7 +4157,7 @@
         "heal"
       ],
       "mana_cost": 15,
-      "damage": 5,
+      "damage": 8,
       "damage_type": "fire",
       "statuses_removed": [
         "Bleeding",
@@ -4196,7 +4213,7 @@
         "aoe"
       ],
       "mana_cost": 40,
-      "damage": 30,
+      "damage": 59,
       "damage_type": "solar",
       "statuses_caused": [
         "Burning"
@@ -4235,7 +4252,7 @@
         "damage"
       ],
       "mana_cost": 75,
-      "damage": 60,
+      "damage": 127,
       "damage_type": "solar",
       "target": {
         "type": "single",
@@ -4284,7 +4301,7 @@
         "aoe"
       ],
       "mana_cost": 135,
-      "damage": 80,
+      "damage": 231,
       "damage_type": "solar",
       "statuses_caused": [
         "Blinded"
@@ -4317,7 +4334,7 @@
         "buff"
       ],
       "mana_cost": 135,
-      "damage": 20,
+      "damage": 149,
       "damage_type": "fire",
       "statuses_removed": [
         "all_negative"
@@ -4351,7 +4368,7 @@
         "heal"
       ],
       "mana_cost": 225,
-      "damage": 120,
+      "damage": 346,
       "damage_type": "solar",
       "heal": 100,
       "target": {
@@ -4361,7 +4378,12 @@
         "damages_all_enemies": true,
         "heals_all_allies": true
       },
-      "description": "Major fire/white damage to all enemies, heal allies"
+      "description": "Major fire/white damage to all enemies, heal allies",
+      "aoe": {
+        "type": "circle",
+        "size": "battlefield_width",
+        "origin": "caster"
+      }
     },
     "cursed_flame": {
       "name": "Cursed Flame",
@@ -4378,7 +4400,7 @@
         "curse"
       ],
       "mana_cost": 15,
-      "damage": 15,
+      "damage": 19,
       "damage_type": "fire_black",
       "statuses_caused": [
         "Burning"
@@ -4436,7 +4458,7 @@
         "spreading"
       ],
       "mana_cost": 40,
-      "damage": 20,
+      "damage": 47,
       "damage_type": "fire",
       "statuses_caused": [
         "Burning"
@@ -4466,7 +4488,7 @@
         "dot"
       ],
       "mana_cost": 75,
-      "damage": 15,
+      "damage": 54,
       "damage_type": "fire",
       "damage_per_turn": true,
       "duration": "spellpower",
@@ -4517,7 +4539,7 @@
         "curse_synergy"
       ],
       "mana_cost": 75,
-      "damage": 25,
+      "damage": 70,
       "damage_type": "fire",
       "damage_per_turn": true,
       "duration": "spellpower",
@@ -4571,7 +4593,7 @@
         "anti_resurrection"
       ],
       "mana_cost": 135,
-      "damage": 70,
+      "damage": 218,
       "damage_type": "fire_black",
       "special": {
         "damage_split": {
@@ -4603,7 +4625,7 @@
         "aoe"
       ],
       "mana_cost": 225,
-      "damage": 120,
+      "damage": 346,
       "damage_type": "fire_black",
       "statuses_caused": [
         "Burning",
@@ -5115,7 +5137,7 @@
         "melee"
       ],
       "mana_cost": 15,
-      "damage": 20,
+      "damage": 25,
       "damage_type": "air",
       "statuses_caused": [
         "Stunned"
@@ -5210,7 +5232,7 @@
         "aoe"
       ],
       "mana_cost": 40,
-      "damage": 25,
+      "damage": 53,
       "damage_type": "air",
       "statuses_caused": [
         "Stunned"
@@ -5279,7 +5301,7 @@
         "damage"
       ],
       "mana_cost": 75,
-      "damage": 60,
+      "damage": 127,
       "damage_type": "air",
       "statuses_caused": [
         "Stunned"
@@ -5310,7 +5332,7 @@
         "persistent"
       ],
       "mana_cost": 135,
-      "damage": 40,
+      "damage": 176,
       "damage_type": "air",
       "duration": 4,
       "statuses_caused": [
@@ -5343,7 +5365,7 @@
         "damage"
       ],
       "mana_cost": 135,
-      "damage": 70,
+      "damage": 218,
       "damage_type": "air",
       "statuses_caused": [
         "Stunned"
@@ -5412,7 +5434,7 @@
       ],
       "mana_cost": 225,
       "duration": "spellpower",
-      "damage": 50,
+      "damage": 210,
       "damage_type": "air",
       "statuses_caused": [
         "Lightning_Form",
@@ -5475,7 +5497,7 @@
         "aoe"
       ],
       "mana_cost": 225,
-      "damage": 100,
+      "damage": 307,
       "damage_type": "air",
       "statuses_caused": [
         "Stunned"
@@ -5512,7 +5534,7 @@
         "cc"
       ],
       "mana_cost": 40,
-      "damage": 20,
+      "damage": 47,
       "damage_type": "space",
       "target": {
         "type": "single",
@@ -5634,7 +5656,7 @@
       "mana_cost": 40,
       "duration": "spellpower",
       "heal": 10,
-      "damage": 15,
+      "damage": 41,
       "damage_type": "air",
       "statuses_caused": [
         "Stunned"
@@ -5726,7 +5748,12 @@
         "type": "global",
         "eligible": "dead_ally"
       },
-      "description": "Resurrect all fallen allies with partial HP"
+      "description": "Resurrect all fallen allies with partial HP",
+      "aoe": {
+        "type": "circle",
+        "size": "battlefield_width",
+        "origin": "caster"
+      }
     },
     "stinking_cloud": {
       "name": "Stinking Cloud",
@@ -5777,7 +5804,7 @@
         "drain"
       ],
       "mana_cost": 40,
-      "damage": 25,
+      "damage": 53,
       "damage_type": "physical",
       "special": {
         "drains_stamina": true
@@ -5805,7 +5832,7 @@
         "terrain"
       ],
       "mana_cost": 75,
-      "damage": 20,
+      "damage": 62,
       "damage_type": "poison",
       "duration": "spellpower",
       "statuses_caused": [
@@ -5842,7 +5869,7 @@
         "dot"
       ],
       "mana_cost": 135,
-      "damage": 30,
+      "damage": 163,
       "damage_type": "physical",
       "damage_per_turn": true,
       "duration": "spellpower",
@@ -5874,7 +5901,7 @@
         "terrain"
       ],
       "mana_cost": 225,
-      "damage": 100,
+      "damage": 307,
       "damage_type": "poison",
       "duration": "spellpower",
       "save_type": "Constitution",
@@ -6432,7 +6459,7 @@
         "damage"
       ],
       "mana_cost": 15,
-      "damage": 15,
+      "damage": 19,
       "damage_type": "space",
       "target": {
         "type": "single",
@@ -6459,7 +6486,7 @@
         "damage"
       ],
       "mana_cost": 40,
-      "damage": 15,
+      "damage": 41,
       "damage_type": "space",
       "duration": "spellpower",
       "statuses_caused": [
@@ -6514,7 +6541,7 @@
         "drain"
       ],
       "mana_cost": 40,
-      "damage": 25,
+      "damage": 53,
       "damage_type": "space",
       "special": {
         "drains_mana": true,
@@ -6543,7 +6570,7 @@
         "terrain"
       ],
       "mana_cost": 75,
-      "damage": 30,
+      "damage": 79,
       "damage_type": "space",
       "duration": "spellpower",
       "statuses_caused": [
@@ -6608,12 +6635,12 @@
       ],
       "mana_cost": 75,
       "target": {
-        "type": "two_characters"
+        "type": "single"
       },
       "special": {
         "exchange_positions": true
       },
-      "description": "Exchange two characters' positions"
+      "description": "Swap positions with the target."
     },
     "psychic_blast": {
       "name": "Psychic Blast",
@@ -6630,7 +6657,7 @@
         "aoe"
       ],
       "mana_cost": 75,
-      "damage": 45,
+      "damage": 103,
       "damage_type": "space",
       "target": {
         "type": "aoe",
@@ -6659,7 +6686,7 @@
         "cc"
       ],
       "mana_cost": 75,
-      "damage": 40,
+      "damage": 95,
       "damage_type": "space",
       "statuses_caused": [
         "Feared"
@@ -6690,7 +6717,7 @@
         "banish"
       ],
       "mana_cost": 75,
-      "damage": 50,
+      "damage": 111,
       "damage_type": "space",
       "target": {
         "type": "single",
@@ -6743,7 +6770,7 @@
         "dot"
       ],
       "mana_cost": 135,
-      "damage": 25,
+      "damage": 156,
       "damage_type": "space",
       "damage_per_turn": true,
       "duration": "spellpower",
@@ -6778,7 +6805,7 @@
       ],
       "mana_cost": 135,
       "target": {
-        "type": "party"
+        "type": "self"
       },
       "special": {
         "flee_combat": true,
@@ -6801,7 +6828,7 @@
         "aoe"
       ],
       "mana_cost": 135,
-      "damage": 80,
+      "damage": 231,
       "damage_type": "space",
       "target": {
         "type": "aoe",
@@ -6866,7 +6893,12 @@
         "extra_turns": 1,
         "upgrade_can_extend_to_2": true
       },
-      "description": "Pin time itself in place - only caster can act for 1 turn. As Tilopa once nailed the sun to drink till sundown."
+      "description": "Pin time itself in place - only caster can act for 1 turn. As Tilopa once nailed the sun to drink till sundown.",
+      "aoe": {
+        "type": "circle",
+        "size": "battlefield_width",
+        "origin": "caster"
+      }
     },
     "planar_shift": {
       "name": "Planar Shift",
@@ -6884,7 +6916,7 @@
       ],
       "mana_cost": 225,
       "target": {
-        "type": "party"
+        "type": "self"
       },
       "special": {
         "move_to_different_world": true,
@@ -6935,7 +6967,7 @@
         "damage"
       ],
       "mana_cost": 225,
-      "damage": 60,
+      "damage": 229,
       "damage_type": "space",
       "target": {
         "type": "single",
@@ -7081,7 +7113,7 @@
         "cc"
       ],
       "mana_cost": 15,
-      "damage": 15,
+      "damage": 19,
       "damage_type": "space",
       "statuses_caused": [
         "Feared"
@@ -7754,7 +7786,7 @@
         "anti_undead"
       ],
       "mana_cost": 15,
-      "damage": 15,
+      "damage": 19,
       "damage_type": "white",
       "target": {
         "type": "single",
@@ -7827,7 +7859,7 @@
         "anti_undead"
       ],
       "mana_cost": 40,
-      "damage": 50,
+      "damage": 83,
       "damage_type": "white",
       "statuses_caused": [
         "Feared"
@@ -7913,7 +7945,7 @@
         "anti_undead"
       ],
       "mana_cost": 75,
-      "damage": 45,
+      "damage": 103,
       "damage_type": "white",
       "target": {
         "type": "aoe",
@@ -8016,7 +8048,7 @@
         "anti_undead"
       ],
       "mana_cost": 225,
-      "damage": 120,
+      "damage": 346,
       "damage_type": "white",
       "target": {
         "type": "aoe",
@@ -8216,7 +8248,7 @@
         "utility"
       ],
       "mana_cost": 75,
-      "damage": 50,
+      "damage": 111,
       "damage_type": "white_fire",
       "target": {
         "type": "single",
@@ -8320,9 +8352,10 @@
         "both_get_75_percent": true
       },
       "target": {
-        "type": "two_allies"
+        "type": "single",
+        "eligible": "ally"
       },
-      "description": "Link two allies, both receive 75% of any healing to either"
+      "description": "Link yourself to an ally; both receive 75% of any healing to either."
     },
     "honored_dead": {
       "name": "Honored Dead",
@@ -8559,7 +8592,7 @@
         "damage"
       ],
       "mana_cost": 225,
-      "damage": 50,
+      "damage": 210,
       "damage_type": "black",
       "damage_per_turn": true,
       "duration": "spellpower",
@@ -8924,7 +8957,7 @@
         "damage"
       ],
       "mana_cost": 15,
-      "damage": 15,
+      "damage": 19,
       "damage_type": "black",
       "target": {
         "type": "single",
@@ -8946,7 +8979,7 @@
         "damage"
       ],
       "mana_cost": 40,
-      "damage": 20,
+      "damage": 47,
       "damage_type": "black",
       "special": {
         "if_kills_raise_as_zombie": true
@@ -8996,7 +9029,7 @@
         "heal"
       ],
       "mana_cost": 40,
-      "damage": 25,
+      "damage": 53,
       "damage_type": "black",
       "special": {
         "heal_for_damage_dealt": true
@@ -9024,7 +9057,7 @@
         "aoe"
       ],
       "mana_cost": 75,
-      "damage": 40,
+      "damage": 95,
       "damage_type": "black",
       "statuses_caused": [
         "Feared"
@@ -9113,7 +9146,7 @@
         "damage"
       ],
       "mana_cost": 75,
-      "damage": 30,
+      "damage": 79,
       "damage_type": "black",
       "special": {
         "bonus_damage_per_debuff_on_target": true
@@ -9139,7 +9172,7 @@
         "chain"
       ],
       "mana_cost": 135,
-      "damage": 80,
+      "damage": 231,
       "damage_type": "black",
       "target": {
         "type": "single",
@@ -9166,7 +9199,7 @@
         "cc"
       ],
       "mana_cost": 135,
-      "damage": 50,
+      "damage": 191,
       "damage_type": "black",
       "statuses_caused": [
         "Blinded"
@@ -9197,7 +9230,7 @@
         "aoe"
       ],
       "mana_cost": 225,
-      "damage": 100,
+      "damage": 307,
       "damage_type": "black",
       "target": {
         "type": "aoe",
@@ -9351,7 +9384,7 @@
         "domain_spell"
       ],
       "mana_cost": 15,
-      "damage": 10,
+      "damage": 14,
       "damage_type": "slashing",
       "statuses_caused": [
         "Bleeding"
@@ -9472,7 +9505,7 @@
         "domain_spell"
       ],
       "mana_cost": 40,
-      "damage": 10,
+      "damage": 36,
       "damage_type": "space",
       "on_failed_save_random_one_of": [
         "Blinded"
@@ -9577,7 +9610,12 @@
       "target": {
         "type": "battlefield"
       },
-      "description": "Flood the battlefield with pure crystal light. Instantly removes all stealth, invisibility, blur, smoke-form, and illusion effects from every unit on the field — allies and enemies alike."
+      "description": "Flood the battlefield with pure crystal light. Instantly removes all stealth, invisibility, blur, smoke-form, and illusion effects from every unit on the field — allies and enemies alike.",
+      "aoe": {
+        "type": "circle",
+        "size": "battlefield_width",
+        "origin": "caster"
+      }
     },
     "steam_jet": {
       "name": "Steam Jet",
@@ -9596,7 +9634,7 @@
         "domain_spell"
       ],
       "mana_cost": 40,
-      "damage": 20,
+      "damage": 47,
       "damage_type": "fire",
       "target": {
         "type": "aoe",
@@ -9671,7 +9709,7 @@
         "domain_spell"
       ],
       "mana_cost": 135,
-      "damage": 30,
+      "damage": 163,
       "damage_type": "fire",
       "special": {
         "push_direction": "random",
@@ -9711,7 +9749,7 @@
         "domain_spell"
       ],
       "mana_cost": 135,
-      "damage": 5,
+      "damage": 128,
       "damage_type": "fire",
       "damage_per_turn": true,
       "duration": "spellpower",
@@ -9982,7 +10020,12 @@
         "eligible": "all"
       },
       "description": "A flash of pure awareness. All allies receive a light heal and have all debuffs lifted. All enemies simultaneously receive the Rainbow Orb — each of its four effects rolling independently per target.",
-      "domain": "rainbow"
+      "domain": "rainbow",
+      "aoe": {
+        "type": "circle",
+        "size": "battlefield_width",
+        "origin": "caster"
+      }
     },
     "rainbow_cloak": {
       "name": "Rainbow Cloak",
@@ -10080,7 +10123,7 @@
         }
       },
       "target": {
-        "type": "special"
+        "type": "self"
       },
       "description": "Transfer all burning stacks from all allies to enemies, distributed evenly. No stacks are lost."
     },
@@ -10265,45 +10308,6 @@
       },
       "description": "Radiate an aura in a 2-tile radius: all allies within gain immunity to mental debuffs, +2 AWR and +2 CON."
     },
-    "shining_mirage": {
-      "name": "Shining Mirage",
-      "subschool": "Enchantment",
-      "schools": [
-        "Fire",
-        "Space",
-        "Enchantment"
-      ],
-      "level": 7,
-      "theme": "luminosity",
-      "domain": "luminosity",
-      "tags": [
-        "luminosity",
-        "cc",
-        "aura",
-        "domain_spell"
-      ],
-      "mana_cost": 135,
-      "duration": "spellpower",
-      "special": {
-        "persistent_confusion_aura": {
-          "trigger": "start_of_each_enemy_turn",
-          "save": {
-            "attribute": "focus",
-            "base_difficulty": 14,
-            "difficulty_modifier_per_passed_save": -2,
-            "modifier_scope": "per_enemy",
-            "description": "Each enemy rolls FCS at the start of their turn or is confused for 1 turn. Each time a given enemy passes the save, their personal DC drops by 2 — they are slowly seeing through the mirage."
-          },
-          "on_fail": [
-            "Confused_1"
-          ]
-        }
-      },
-      "target": {
-        "type": "self"
-      },
-      "description": "Each enemy must make a FCS save at the start of their turn or be confused for 1 turn. Each passed save reduces that enemy's personal DC by 2 as they pierce the mirage."
-    },
     "battle_chant": {
       "name": "Battle Chant",
       "subschool": "Enchantment",
@@ -10446,7 +10450,12 @@
       "target": {
         "type": "battlefield"
       },
-      "description": "The sound hits everything. All enemies make a hard CON save or are stunned 1 turn. All allies take 1 turn of disorientation (−2 AWR, −2 Initiative) — no save. The caster is the source and feels nothing."
+      "description": "The sound hits everything. All enemies make a hard CON save or are stunned 1 turn. All allies take 1 turn of disorientation (−2 AWR, −2 Initiative) — no save. The caster is the source and feels nothing.",
+      "aoe": {
+        "type": "circle",
+        "size": "battlefield_width",
+        "origin": "caster"
+      }
     },
     "bitter_word": {
       "name": "Bitter Word",
@@ -10464,7 +10473,7 @@
         "silence"
       ],
       "mana_cost": 15,
-      "damage": 12,
+      "damage": 16,
       "damage_type": "black",
       "statuses_caused": [
         "Silenced"
