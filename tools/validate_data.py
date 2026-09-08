@@ -430,6 +430,50 @@ for spid, spell in _spell_data.items():
             err("spell->summon", f"spells.json:{spid}: summon '{sid}' is not a summon template")
 
 
+# ── spell special effects -> the registry ────────────────────────────────────
+# `special` used to be a free dict and grew 369 distinct keys across 210 spells,
+# 88% of them used exactly once and three of them read by anything. It is now
+# {"effects": [typed entries], "legacy": {frozen old keys}}, and this is the
+# guard: a type outside the registry, a missing required param, or a legacy key
+# that is not on the frozen list is an error. Existing debt is grandfathered and
+# visible; new debt cannot be added.
+_fx_registry = load("resources/data/spell_effects.json")
+_fx_types = _fx_registry["effects"]
+_fx_legacy = set(_fx_registry.get("legacy_keys", []))
+_fx_required = {
+    name: [p for p, doc in spec.get("params", {}).items()
+           if isinstance(doc, str) and "required" in doc]
+    for name, spec in _fx_types.items()
+}
+for spid, spell in _spell_data.items():
+    if spid.startswith("_") or not isinstance(spell, dict):
+        continue
+    special = spell.get("special")
+    if not isinstance(special, dict):
+        continue
+    for key in special:
+        if key not in ("effects", "legacy"):
+            err("spell->special", f"spells.json:{spid}: `special` may only hold "
+                                  f"`effects` and `legacy`, found '{key}'")
+    for entry in special.get("effects", []):
+        if not isinstance(entry, dict):
+            err("spell->special", f"spells.json:{spid}: effects entry is not an object")
+            continue
+        etype = entry.get("type", "")
+        if etype not in _fx_types:
+            err("spell->special", f"spells.json:{spid}: effect type '{etype}' is not in "
+                                  f"spell_effects.json — declare it there first")
+            continue
+        for p in _fx_required[etype]:
+            if p not in entry:
+                err("spell->special", f"spells.json:{spid}: effect '{etype}' is missing "
+                                      f"required param '{p}'")
+    for key in special.get("legacy", {}):
+        if key not in _fx_legacy:
+            err("spell->special", f"spells.json:{spid}: legacy special key '{key}' is not on "
+                                  f"the frozen list — give it a registry type instead")
+
+
 # ── races and backgrounds ────────────────────────────────────────────────────
 for group in ("races", "backgrounds"):
     for key, entry in races_data[group].items():

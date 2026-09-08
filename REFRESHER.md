@@ -95,8 +95,18 @@ if you write a checker, check its negatives.
 It checks events→encounters/shops/items/spells/traits/skills/wounds/karma,
 map configs→events/mobs/pickups, shops→items/spells/companions,
 companions→births/backgrounds/items/spells/traits, races and backgrounds→
-skills/traits/equipment/typical_backgrounds, encounters→archetypes, and
-code→perk ids/status names.
+skills/traits/equipment/typical_backgrounds, encounters→archetypes,
+code→perk ids/status names, spells→statuses/summon templates, and spell
+`special` blocks against the effect registry.
+
+**Spell `special` has a registry now.** `resources/data/spell_effects.json`
+defines 25 typed effect types (5 implemented) and freezes the 361 legacy keys
+still in use. Every spell's `special` is `{"effects": [...], "legacy": {...}}`.
+New spell mechanics go in `effects` as a registered type — the validator
+rejects unknown types, missing required params, and any legacy key not on the
+frozen list, so **the legacy list can shrink and can never grow**. The backlog
+is 361 keys, 299 of them bare `true` flags that need a number decided before
+they can be migrated.
 
 ## Started but not finished
 

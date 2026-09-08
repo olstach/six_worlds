@@ -116,3 +116,28 @@ and its numbers are Claude's — Naga_Prince's statline traded toward the air ha
 air magic capstones, were rewritten because they restated the level-5 perks; that
 prose is Claude's too.
 
+
+### Spells, second pass (2026-09-08)
+
+**Two spells were narrowed, not fixed.** `space_swap` was written as "exchange the
+positions of two characters" and `karmic_bond` as "link two allies"; neither
+two-target form exists in the targeting code. They now read as the caster swapping
+with its target and the caster linking to one ally. That is a design change made
+to keep them castable — if the two-character version is what you want, it needs a
+targeting mode built for it, and the descriptions should go back.
+
+**108 damage numbers were rescaled** to make damage track mana cost. No spell's
+identity changed, but every number in that set is Claude's arithmetic rather than
+your judgement, so anything that now feels wrong for its flavour is worth
+overriding.
+
+**`shining_mirage` is gone** at your instruction, along with the shop stock entry
+and the domain reference that pointed at it. Worth knowing: it and `radiant_visage`
+were not actually the same spell — the mirage confused enemies, the visage buffed
+allies — the audit had simply not compared those fields. The removal stands
+because you called it; the reason given for it was wrong.
+
+**The `special` registry descriptions are Claude's.** `resources/data/spell_effects.json`
+names 25 effect types and writes a one-line description for each. Those lines are
+the vocabulary new spell mechanics will be written against, so they are worth
+reading before the vocabulary sets.

@@ -1045,7 +1045,9 @@
       },
       "description": "Strike with a blade of transmuted gold. Deals heavy physical damage. Kills leave the corpse gilded — adds bonus gold to post-combat loot.",
       "special": {
-        "gold_on_kill": true
+        "legacy": {
+          "gold_on_kill": true
+        }
       }
     },
     "golden_cage": {
@@ -1069,8 +1071,10 @@
         "Caged"
       ],
       "special": {
-        "gold_on_break": true,
-        "gold_dust_falls": true
+        "legacy": {
+          "gold_on_break": true,
+          "gold_dust_falls": true
+        }
       },
       "target": {
         "type": "single",
@@ -1185,9 +1189,11 @@
       "damage": null,
       "save_type": "Constitution",
       "special": {
-        "instant_kill": true,
-        "gold_on_kill": true,
-        "gold_scales_with": "enemy_level"
+        "legacy": {
+          "instant_kill": true,
+          "gold_on_kill": true,
+          "gold_scales_with": "enemy_level"
+        }
       },
       "target": {
         "type": "single",
@@ -1340,9 +1346,11 @@
         "type": "global"
       },
       "special": {
-        "damages_all_enemies": true,
-        "heals_all_allies": true,
-        "destroys_random_obstacles": true
+        "legacy": {
+          "damages_all_enemies": true,
+          "heals_all_allies": true,
+          "destroys_random_obstacles": true
+        }
       },
       "description": "Earthquake damages all enemies, heals all allies, destroys random obstacles",
       "aoe": {
@@ -1372,8 +1380,10 @@
         "Fire_Vulnerable"
       ],
       "special": {
-        "fire_vulnerability": 50,
-        "cumulative": true
+        "legacy": {
+          "fire_vulnerability": 50,
+          "cumulative": true
+        }
       },
       "target": {
         "type": "single",
@@ -1405,8 +1415,10 @@
         "Swarmed"
       ],
       "special": {
-        "disrupts_concentration": true,
-        "triggers_focus_save": true
+        "legacy": {
+          "disrupts_concentration": true,
+          "triggers_focus_save": true
+        }
       },
       "target": {
         "type": "single",
@@ -1434,9 +1446,11 @@
       "damage": 66,
       "damage_type": "crushing",
       "special": {
-        "delay_turns": 3,
-        "summon_on_trigger": "Fungal_Spawn",
-        "dispellable": true
+        "legacy": {
+          "delay_turns": 3,
+          "summon_on_trigger": "Fungal_Spawn",
+          "dispellable": true
+        }
       },
       "statuses_caused": [
         "Infected",
@@ -1474,8 +1488,10 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "enemies_dying_on_terrain": true,
-        "rise_as_zombie": true
+        "legacy": {
+          "enemies_dying_on_terrain": true,
+          "rise_as_zombie": true
+        }
       },
       "description": "Cursed terrain - enemies dying on it rise as allied zombies"
     },
@@ -1520,8 +1536,10 @@
         "eligible": "enemy"
       },
       "special": {
-        "bonus_damage_vs_living": true,
-        "erupts_from_ground": true
+        "legacy": {
+          "bonus_damage_vs_living": true,
+          "erupts_from_ground": true
+        }
       },
       "description": "Bone erupts from ground, physical damage, bonus vs living creatures"
     },
@@ -1581,8 +1599,10 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "debuffs_all_stats": true,
-        "poisons": true
+        "legacy": {
+          "debuffs_all_stats": true,
+          "poisons": true
+        }
       },
       "description": "Cursed ground debuffs all stats and poisons those standing on it"
     },
@@ -1615,8 +1635,10 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "effect_on_living": "Infect",
-        "effect_on_corpse": "Fungal_Zombie"
+        "legacy": {
+          "effect_on_living": "Infect",
+          "effect_on_corpse": "Fungal_Zombie"
+        }
       },
       "description": "AoE - Infect on living creatures, Fungal Zombie on corpses"
     },
@@ -1665,8 +1687,10 @@
         "Water_Walking"
       ],
       "special": {
-        "ignore_water_terrain": true,
-        "walk_on_water": true
+        "legacy": {
+          "ignore_water_terrain": true,
+          "walk_on_water": true
+        }
       },
       "target": {
         "type": "single",
@@ -1737,7 +1761,9 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "slows_movement": true
+        "legacy": {
+          "slows_movement": true
+        }
       },
       "description": "Call up a patch of sucking mud. Characters moving through it are Slowed each turn they remain inside."
     },
@@ -1790,8 +1816,10 @@
         "Dampening_Aura"
       ],
       "special": {
-        "fire_damage_reduction_in_aura": true,
-        "extinguishes_burning": true
+        "legacy": {
+          "fire_damage_reduction_in_aura": true,
+          "extinguishes_burning": true
+        }
       },
       "target": {
         "type": "self"
@@ -1890,8 +1918,10 @@
       "mana_cost": 15,
       "summon": "Ice_Sheet",
       "special": {
-        "summon_count": 3,
-        "summon_hp": 1
+        "legacy": {
+          "summon_count": 3,
+          "summon_hp": 1
+        }
       },
       "target": {
         "type": "ground"
@@ -1957,8 +1987,10 @@
       "mana_cost": 75,
       "summon": "Ice_Totem",
       "special": {
-        "attacks_with": "Ice_Bolt",
-        "freeze_chance": true
+        "legacy": {
+          "attacks_with": "Ice_Bolt",
+          "freeze_chance": true
+        }
       },
       "target": {
         "type": "ground"
@@ -2030,11 +2062,13 @@
         "Confused"
       ],
       "special": {
-        "status_duration_range": [
-          1,
-          3
-        ],
-        "status_scales_with": "spellpower"
+        "legacy": {
+          "status_duration_range": [
+            1,
+            3
+          ],
+          "status_scales_with": "spellpower"
+        }
       },
       "target": {
         "type": "aoe",
@@ -2088,8 +2122,15 @@
       "damage": 8,
       "damage_type": "water",
       "special": {
-        "push_distance": 1,
-        "obstacle_bonus_damage": 10
+        "effects": [
+          {
+            "type": "push",
+            "distance": 1
+          }
+        ],
+        "legacy": {
+          "obstacle_bonus_damage": 10
+        }
       },
       "target": {
         "type": "single",
@@ -2149,8 +2190,10 @@
       "damage": 36,
       "damage_type": "water",
       "special": {
-        "push_distance": "spellpower",
-        "obstacle_bonus_damage": 25
+        "legacy": {
+          "push_distance": "spellpower",
+          "obstacle_bonus_damage": 25
+        }
       },
       "target": {
         "type": "aoe",
@@ -2186,7 +2229,9 @@
         "Frozen"
       ],
       "special": {
-        "freeze_chance": "upgrade_scaling"
+        "legacy": {
+          "freeze_chance": "upgrade_scaling"
+        }
       },
       "target": {
         "type": "aoe",
@@ -2224,7 +2269,9 @@
         "Frozen"
       ],
       "special": {
-        "freeze_chance": "upgrade_scaling"
+        "legacy": {
+          "freeze_chance": "upgrade_scaling"
+        }
       },
       "target": {
         "type": "single",
@@ -2251,9 +2298,21 @@
       "damage": 54,
       "damage_type": "water",
       "special": {
-        "push_distance_min": 2,
-        "push_distance_max": 3,
-        "obstacle_bonus_damage": 30
+        "effects": [
+          {
+            "type": "push",
+            "distance": 2,
+            "min_distance": 2
+          },
+          {
+            "type": "push",
+            "distance": 3,
+            "max_distance": 3
+          }
+        ],
+        "legacy": {
+          "obstacle_bonus_damage": 30
+        }
       },
       "target": {
         "type": "aoe",
@@ -2288,7 +2347,9 @@
         "Frozen"
       ],
       "special": {
-        "freeze_chance": "upgrade_scaling"
+        "legacy": {
+          "freeze_chance": "upgrade_scaling"
+        }
       },
       "target": {
         "type": "aoe",
@@ -2326,7 +2387,9 @@
         "Immobilized"
       ],
       "special": {
-        "dispellable": true
+        "legacy": {
+          "dispellable": true
+        }
       },
       "target": {
         "type": "single",
@@ -2355,7 +2418,9 @@
         "Frozen"
       ],
       "special": {
-        "freeze_chance": "upgrade_scaling"
+        "legacy": {
+          "freeze_chance": "upgrade_scaling"
+        }
       },
       "target": {
         "type": "aoe",
@@ -2390,7 +2455,9 @@
         "Frozen"
       ],
       "special": {
-        "freeze_chance": "upgrade_scaling"
+        "legacy": {
+          "freeze_chance": "upgrade_scaling"
+        }
       },
       "target": {
         "type": "aoe",
@@ -2423,8 +2490,10 @@
       "damage": 170,
       "damage_type": "water",
       "special": {
-        "push_distance": "spellpower_far",
-        "obstacle_bonus_damage": 70
+        "legacy": {
+          "push_distance": "spellpower_far",
+          "obstacle_bonus_damage": 70
+        }
       },
       "target": {
         "type": "aoe",
@@ -2459,7 +2528,9 @@
         "Frozen"
       ],
       "special": {
-        "freeze_chance": "high"
+        "legacy": {
+          "freeze_chance": "high"
+        }
       },
       "target": {
         "type": "global",
@@ -2725,7 +2796,9 @@
         "Poison_Skin"
       ],
       "special": {
-        "poisons_melee_attackers": true
+        "legacy": {
+          "poisons_melee_attackers": true
+        }
       },
       "target": {
         "type": "single",
@@ -2757,7 +2830,9 @@
         "Festering"
       ],
       "special": {
-        "damage_increases_each_turn": true
+        "legacy": {
+          "damage_increases_each_turn": true
+        }
       },
       "target": {
         "type": "single",
@@ -2853,8 +2928,15 @@
         "upgrade_scaling": "+1_length_per_tier"
       },
       "special": {
-        "pushes_enemies": true,
-        "push_distance": 2
+        "effects": [
+          {
+            "type": "push",
+            "distance": 2
+          }
+        ],
+        "legacy": {
+          "pushes_enemies": true
+        }
       },
       "description": "Wave of poisonous water, poison damage + poisoned + push"
     },
@@ -2929,8 +3011,10 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "cloud_effect": true,
-        "heavy_sinks_to_low_ground": true
+        "legacy": {
+          "cloud_effect": true,
+          "heavy_sinks_to_low_ground": true
+        }
       },
       "description": "Persistent poison cloud, damage + poisoned + slowed"
     },
@@ -2957,12 +3041,14 @@
         "eligible": "living_enemy"
       },
       "special": {
-        "damage_multiplier_water_creatures": 2.0,
-        "immune": [
-          "Fire_Elemental",
-          "Undead",
-          "Construct"
-        ]
+        "legacy": {
+          "damage_multiplier_water_creatures": 2.0,
+          "immune": [
+            "Fire_Elemental",
+            "Undead",
+            "Construct"
+          ]
+        }
       },
       "description": "Major damage on failed Constitution save to all living enemies by evaporating water; 2x damage to water creatures, no damage to fire elementals/undead/constructs",
       "aoe": {
@@ -3006,7 +3092,9 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "spreads_to_adjacent_enemies_each_turn": true
+        "legacy": {
+          "spreads_to_adjacent_enemies_each_turn": true
+        }
       },
       "description": "Disease that spreads between adjacent enemies each turn, poison damage + diseased (stat penalties + DoT)"
     },
@@ -3035,7 +3123,12 @@
         "eligible": "enemy"
       },
       "special": {
-        "visual": "vajra_meteor"
+        "effects": [
+          {
+            "type": "visual",
+            "text": "vajra_meteor"
+          }
+        ]
       },
       "description": "A vajra falls like a meteor, water damage + stun"
     },
@@ -3065,7 +3158,12 @@
         "upgrade_scaling": "single → aoe → all_enemies"
       },
       "special": {
-        "visual": "vajra_chains"
+        "effects": [
+          {
+            "type": "visual",
+            "text": "vajra_chains"
+          }
+        ]
       },
       "description": "Target bound by vajra chains, rooted + silenced"
     },
@@ -3101,10 +3199,17 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "allies_inside_protected": true,
-        "enemies_entering_damaged": true,
-        "freeze_chance": true,
-        "visual": "orbiting_vajras"
+        "effects": [
+          {
+            "type": "visual",
+            "text": "orbiting_vajras"
+          }
+        ],
+        "legacy": {
+          "allies_inside_protected": true,
+          "enemies_entering_damaged": true,
+          "freeze_chance": true
+        }
       },
       "description": "Protective circle of orbiting vajras, allies protected, enemies entering take water damage + freeze chance"
     },
@@ -3129,9 +3234,16 @@
         "requires_two_points": true
       },
       "special": {
-        "creates_portal": true,
-        "bidirectional": true,
-        "visual": "vajra_gate"
+        "effects": [
+          {
+            "type": "visual",
+            "text": "vajra_gate"
+          }
+        ],
+        "legacy": {
+          "creates_portal": true,
+          "bidirectional": true
+        }
       },
       "description": "Create a short-duration portal between two points marked by vajras"
     },
@@ -3168,7 +3280,12 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "visual": "vajra_rain"
+        "effects": [
+          {
+            "type": "visual",
+            "text": "vajra_rain"
+          }
+        ]
       },
       "description": "Multiple vajras rain down, water damage + freeze + knockdown"
     },
@@ -3244,7 +3361,9 @@
         "Fan_the_Flames"
       ],
       "special": {
-        "effect": "increase_burning_damage_dealt"
+        "legacy": {
+          "effect": "increase_burning_damage_dealt"
+        }
       },
       "target": {
         "type": "single",
@@ -3301,8 +3420,10 @@
         "Fireshield"
       ],
       "special": {
-        "retaliation_damage": "fire",
-        "triggers_on": "melee_attack_received"
+        "legacy": {
+          "retaliation_damage": "fire",
+          "triggers_on": "melee_attack_received"
+        }
       },
       "target": {
         "type": "single",
@@ -3390,8 +3511,10 @@
         "Magnetizing_Aura"
       ],
       "special": {
-        "triggers_on": "enemy_enters_melee_range",
-        "effect": "charm_chance"
+        "legacy": {
+          "triggers_on": "enemy_enters_melee_range",
+          "effect": "charm_chance"
+        }
       },
       "target": {
         "type": "single",
@@ -3425,8 +3548,10 @@
         "Water_Vulnerable_25"
       ],
       "special": {
-        "evasion_bonus": true,
-        "can_move_through_enemies": true
+        "legacy": {
+          "evasion_bonus": true,
+          "can_move_through_enemies": true
+        }
       },
       "target": {
         "type": "single",
@@ -3458,7 +3583,9 @@
         "Water_Vulnerable"
       ],
       "special": {
-        "aura_effect": "blind_and_damage_close_enemies"
+        "legacy": {
+          "aura_effect": "blind_and_damage_close_enemies"
+        }
       },
       "target": {
         "type": "self"
@@ -3487,7 +3614,9 @@
       ],
       "save_type": "Focus",
       "special": {
-        "on_success": "target_joins_party"
+        "legacy": {
+          "on_success": "target_joins_party"
+        }
       },
       "target": {
         "type": "single",
@@ -3716,7 +3845,9 @@
         "Burning"
       ],
       "special": {
-        "requires": "target_was_burning_within_2_turns"
+        "legacy": {
+          "requires": "target_was_burning_within_2_turns"
+        }
       },
       "target": {
         "type": "single",
@@ -3744,7 +3875,9 @@
       "mana_cost": 15,
       "duration": "spellpower",
       "special": {
-        "blocks_line_of_sight": true
+        "legacy": {
+          "blocks_line_of_sight": true
+        }
       },
       "target": {
         "type": "ground"
@@ -3842,9 +3975,11 @@
       "damage": "burning_stacks_consumed",
       "damage_type": "fire",
       "special": {
-        "requires_status": "Burning",
-        "removes_status": "Burning",
-        "damage_scales_with": "burning_stacks"
+        "legacy": {
+          "requires_status": "Burning",
+          "removes_status": "Burning",
+          "damage_scales_with": "burning_stacks"
+        }
       },
       "target": {
         "type": "single",
@@ -3977,7 +4112,9 @@
         "Silenced"
       ],
       "special": {
-        "enhanced_in_smoke": true
+        "legacy": {
+          "enhanced_in_smoke": true
+        }
       },
       "target": {
         "type": "aoe",
@@ -4009,8 +4146,10 @@
       "damage": 70,
       "damage_type": "fire",
       "special": {
-        "teleport_range": "short",
-        "fire_damage_at_departure": true
+        "legacy": {
+          "teleport_range": "short",
+          "fire_damage_at_departure": true
+        }
       },
       "target": {
         "type": "ground"
@@ -4070,9 +4209,11 @@
         "Burning"
       ],
       "special": {
-        "persistent_projectile": true,
-        "moves_slowly": true,
-        "damages_each_turn": true
+        "legacy": {
+          "persistent_projectile": true,
+          "moves_slowly": true,
+          "damages_each_turn": true
+        }
       },
       "target": {
         "type": "ground",
@@ -4219,9 +4360,11 @@
         "Burning"
       ],
       "special": {
-        "damage_split": {
-          "fire": 0.5,
-          "white": 0.5
+        "legacy": {
+          "damage_split": {
+            "fire": 0.5,
+            "white": 0.5
+          }
         }
       },
       "target": {
@@ -4375,8 +4518,10 @@
         "type": "global"
       },
       "special": {
-        "damages_all_enemies": true,
-        "heals_all_allies": true
+        "legacy": {
+          "damages_all_enemies": true,
+          "heals_all_allies": true
+        }
       },
       "description": "Major fire/white damage to all enemies, heal allies",
       "aoe": {
@@ -4406,9 +4551,11 @@
         "Burning"
       ],
       "special": {
-        "damage_split": {
-          "fire": 0.5,
-          "black": 0.5
+        "legacy": {
+          "damage_split": {
+            "fire": 0.5,
+            "black": 0.5
+          }
         }
       },
       "target": {
@@ -4468,8 +4615,10 @@
         "eligible": "enemy"
       },
       "special": {
-        "spreads_to_debuffed_targets": true,
-        "spreads_to_cursed_targets": true
+        "legacy": {
+          "spreads_to_debuffed_targets": true,
+          "spreads_to_cursed_targets": true
+        }
       },
       "description": "Fire that spreads to nearby cursed/debuffed targets"
     },
@@ -4547,7 +4696,9 @@
         "Soul_Burning"
       ],
       "special": {
-        "damage_scales_with_debuffs_on_target": true
+        "legacy": {
+          "damage_scales_with_debuffs_on_target": true
+        }
       },
       "target": {
         "type": "single",
@@ -4596,12 +4747,14 @@
       "damage": 218,
       "damage_type": "fire_black",
       "special": {
-        "damage_split": {
-          "fire": 0.5,
-          "black": 0.5
-        },
-        "prevents_resurrection": true,
-        "corpse_destroyed": true
+        "legacy": {
+          "damage_split": {
+            "fire": 0.5,
+            "black": 0.5
+          },
+          "prevents_resurrection": true,
+          "corpse_destroyed": true
+        }
       },
       "target": {
         "type": "single",
@@ -4632,11 +4785,13 @@
         "Blinded"
       ],
       "special": {
-        "damage_split": {
-          "fire": 0.5,
-          "black": 0.5
-        },
-        "blinding_effect": "no_ranged_no_targeted_spells_melee_half_hit"
+        "legacy": {
+          "damage_split": {
+            "fire": 0.5,
+            "black": 0.5
+          },
+          "blinding_effect": "no_ranged_no_targeted_spells_melee_half_hit"
+        }
       },
       "target": {
         "type": "aoe",
@@ -4670,8 +4825,10 @@
         "Electrified_Weapon"
       ],
       "special": {
-        "adds_air_damage": true,
-        "stun_chance": true
+        "legacy": {
+          "adds_air_damage": true,
+          "stun_chance": true
+        }
       },
       "target": {
         "type": "single",
@@ -4726,7 +4883,9 @@
         "Levitating"
       ],
       "special": {
-        "immune_to_geo_effects": true
+        "legacy": {
+          "immune_to_geo_effects": true
+        }
       },
       "target": {
         "type": "single",
@@ -4755,9 +4914,11 @@
         "Precision"
       ],
       "special": {
-        "range_bonus": true,
-        "accuracy_bonus": true,
-        "critical_bonus": true
+        "legacy": {
+          "range_bonus": true,
+          "accuracy_bonus": true,
+          "critical_bonus": true
+        }
       },
       "target": {
         "type": "single",
@@ -4786,7 +4947,9 @@
         "Air_Shield"
       ],
       "special": {
-        "ranged_damage_reduction": true
+        "legacy": {
+          "ranged_damage_reduction": true
+        }
       },
       "target": {
         "type": "single",
@@ -4815,10 +4978,12 @@
         "Favorable_Wind"
       ],
       "special": {
-        "aura_grants": [
-          "Hasted",
-          "Precision"
-        ]
+        "legacy": {
+          "aura_grants": [
+            "Hasted",
+            "Precision"
+          ]
+        }
       },
       "target": {
         "type": "single",
@@ -4847,9 +5012,11 @@
         "Flying"
       ],
       "special": {
-        "grants_flight": true,
-        "immune_to_ground_effects": true,
-        "immune_to_melee": "unless_flyer"
+        "legacy": {
+          "grants_flight": true,
+          "immune_to_ground_effects": true,
+          "immune_to_melee": "unless_flyer"
+        }
       },
       "target": {
         "type": "single",
@@ -4878,9 +5045,11 @@
         "Storm_Lord"
       ],
       "special": {
-        "lightning_aura_damages_attackers": true,
-        "grants_flight": true,
-        "immune_to_ranged": true
+        "legacy": {
+          "lightning_aura_damages_attackers": true,
+          "grants_flight": true,
+          "immune_to_ranged": true
+        }
       },
       "target": {
         "type": "self"
@@ -4948,8 +5117,10 @@
       "mana_cost": 40,
       "summon": "Singing_Birds",
       "special": {
-        "aura_buff": true,
-        "morale_boost": true
+        "legacy": {
+          "aura_buff": true,
+          "morale_boost": true
+        }
       },
       "target": {
         "type": "ground"
@@ -4996,8 +5167,10 @@
       "mana_cost": 75,
       "summon": "Apsara",
       "special": {
-        "heals_allies": true,
-        "charms_enemies": true
+        "legacy": {
+          "heals_allies": true,
+          "charms_enemies": true
+        }
       },
       "target": {
         "type": "ground"
@@ -5024,8 +5197,10 @@
       "mana_cost": 135,
       "summon": "Gandharva_Host",
       "special": {
-        "buffs_allies": true,
-        "heals_allies": true
+        "legacy": {
+          "buffs_allies": true,
+          "heals_allies": true
+        }
       },
       "target": {
         "type": "ground"
@@ -5117,8 +5292,10 @@
         "type": "ground"
       },
       "special": {
-        "self_movement": true,
-        "ignores_terrain": true
+        "legacy": {
+          "self_movement": true,
+          "ignores_terrain": true
+        }
       },
       "description": "Leap to target location, ignoring terrain"
     },
@@ -5143,8 +5320,10 @@
         "Stunned"
       ],
       "special": {
-        "stun_chance": true,
-        "melee_range": true
+        "legacy": {
+          "stun_chance": true,
+          "melee_range": true
+        }
       },
       "target": {
         "type": "single",
@@ -5172,9 +5351,11 @@
         "Blessed_Shot"
       ],
       "special": {
-        "next_ranged_guaranteed_hit": true,
-        "damage_boost": true,
-        "critical_boost": true
+        "legacy": {
+          "next_ranged_guaranteed_hit": true,
+          "damage_boost": true,
+          "critical_boost": true
+        }
       },
       "target": {
         "type": "self"
@@ -5210,9 +5391,11 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "launches_into_air": true,
-        "fall_damage": true,
-        "scatter_to_random_tile_in_aoe": true
+        "legacy": {
+          "launches_into_air": true,
+          "fall_damage": true,
+          "scatter_to_random_tile_in_aoe": true
+        }
       },
       "description": "Launch enemies into air, they take fall damage and scatter to random tiles"
     },
@@ -5238,7 +5421,9 @@
         "Stunned"
       ],
       "special": {
-        "stun_chance": true
+        "legacy": {
+          "stun_chance": true
+        }
       },
       "target": {
         "type": "aoe",
@@ -5281,9 +5466,11 @@
         "upgrade_scaling": "+1_length_per_tier"
       },
       "special": {
-        "pushes_enemies": true,
-        "push_distance": "spellpower",
-        "impact_damage_on_obstacle": true
+        "legacy": {
+          "pushes_enemies": true,
+          "push_distance": "spellpower",
+          "impact_damage_on_obstacle": true
+        }
       },
       "description": "Push enemies in cone, physical damage on obstacle impact"
     },
@@ -5307,8 +5494,10 @@
         "Stunned"
       ],
       "special": {
-        "stun_chance": true,
-        "high_damage": true
+        "legacy": {
+          "stun_chance": true,
+          "high_damage": true
+        }
       },
       "target": {
         "type": "single",
@@ -5339,11 +5528,13 @@
         "Stunned"
       ],
       "special": {
-        "persistent_projectile": true,
-        "damages_as_it_passes": true,
-        "explodes_on_obstacle_or_duration_end": true,
-        "explosion_aoe": 2,
-        "stun_chance": true
+        "legacy": {
+          "persistent_projectile": true,
+          "damages_as_it_passes": true,
+          "explodes_on_obstacle_or_duration_end": true,
+          "explosion_aoe": 2,
+          "stun_chance": true
+        }
       },
       "target": {
         "type": "ground",
@@ -5371,10 +5562,12 @@
         "Stunned"
       ],
       "special": {
-        "chains_to_nearby_enemies": true,
-        "chain_count": "spellpower",
-        "damage_reduction_per_chain": 0.15,
-        "stun_chance": true
+        "legacy": {
+          "chains_to_nearby_enemies": true,
+          "chain_count": "spellpower",
+          "damage_reduction_per_chain": 0.15,
+          "stun_chance": true
+        }
       },
       "target": {
         "type": "single",
@@ -5411,10 +5604,12 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "persistent_effect": true,
-        "moves_randomly": true,
-        "launches_into_air": true,
-        "scatter_to_random_tile": true
+        "legacy": {
+          "persistent_effect": true,
+          "moves_randomly": true,
+          "launches_into_air": true,
+          "scatter_to_random_tile": true
+        }
       },
       "description": "Persistent tornado that moves randomly, launching and scattering enemies"
     },
@@ -5443,8 +5638,10 @@
         "Water_Vulnerable_50"
       ],
       "special": {
-        "grants_flight": true,
-        "lightning_aura_damages_and_stuns": true
+        "legacy": {
+          "grants_flight": true,
+          "lightning_aura_damages_and_stuns": true
+        }
       },
       "target": {
         "type": "self"
@@ -5471,9 +5668,11 @@
         "Thin_Air"
       ],
       "special": {
-        "physical_immunity": true,
-        "cannot_deal_physical": true,
-        "major_speed_boost": true
+        "legacy": {
+          "physical_immunity": true,
+          "cannot_deal_physical": true,
+          "major_speed_boost": true
+        }
       },
       "target": {
         "type": "single",
@@ -5503,8 +5702,10 @@
         "Stunned"
       ],
       "special": {
-        "stun_chance": true,
-        "high_damage": true
+        "legacy": {
+          "stun_chance": true,
+          "high_damage": true
+        }
       },
       "target": {
         "type": "aoe",
@@ -5541,8 +5742,15 @@
         "eligible": "enemy"
       },
       "special": {
-        "pushes_target": true,
-        "push_distance": 3
+        "effects": [
+          {
+            "type": "push",
+            "distance": 3
+          }
+        ],
+        "legacy": {
+          "pushes_target": true
+        }
       },
       "description": "Wind carrying void energy, push + space damage"
     },
@@ -5576,8 +5784,10 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "allies_in_area_gain_phasing": true,
-        "physical_negation_25_percent": true
+        "legacy": {
+          "allies_in_area_gain_phasing": true,
+          "physical_negation_25_percent": true
+        }
       },
       "description": "Allies in area gain 25% physical damage negation"
     },
@@ -5607,8 +5817,10 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "teleports_enemies_randomly": true,
-        "scatter_range": 5
+        "legacy": {
+          "teleports_enemies_randomly": true,
+          "scatter_range": 5
+        }
       },
       "description": "Tear in space scatters enemies to random locations"
     },
@@ -5629,7 +5841,9 @@
       "mana_cost": 15,
       "heal": 15,
       "special": {
-        "restores_stamina": true
+        "legacy": {
+          "restores_stamina": true
+        }
       },
       "target": {
         "type": "single",
@@ -5662,9 +5876,11 @@
         "Stunned"
       ],
       "special": {
-        "aura_heals_allies": true,
-        "heal_per_turn": true,
-        "stuns_enemies_in_melee": true
+        "legacy": {
+          "aura_heals_allies": true,
+          "heal_per_turn": true,
+          "stuns_enemies_in_melee": true
+        }
       },
       "target": {
         "type": "self"
@@ -5696,7 +5912,9 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "removes_cloud_effects": true
+        "legacy": {
+          "removes_cloud_effects": true
+        }
       },
       "description": "Remove cloud effects (smoke, poison, stinking)"
     },
@@ -5741,8 +5959,10 @@
       ],
       "mana_cost": 225,
       "special": {
-        "resurrects_all_fallen_allies": true,
-        "partial_hp_on_resurrect": true
+        "legacy": {
+          "resurrects_all_fallen_allies": true,
+          "partial_hp_on_resurrect": true
+        }
       },
       "target": {
         "type": "global",
@@ -5784,8 +6004,10 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "cloud_effect": true,
-        "stuns_in_area": true
+        "legacy": {
+          "cloud_effect": true,
+          "stuns_in_area": true
+        }
       },
       "description": "Cloud that stuns enemies inside"
     },
@@ -5807,7 +6029,9 @@
       "damage": 53,
       "damage_type": "physical",
       "special": {
-        "drains_stamina": true
+        "legacy": {
+          "drains_stamina": true
+        }
       },
       "target": {
         "type": "single",
@@ -5848,8 +6072,10 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "cloud_effect": true,
-        "damages_and_poisons_in_area": true
+        "legacy": {
+          "cloud_effect": true,
+          "damages_and_poisons_in_area": true
+        }
       },
       "description": "Cloud that damages and poisons enemies inside"
     },
@@ -5915,9 +6141,11 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "cloud_effect": true,
-        "instant_kill_on_failed_save": true,
-        "damage_on_passed_save": true
+        "legacy": {
+          "cloud_effect": true,
+          "instant_kill_on_failed_save": true,
+          "damage_on_passed_save": true
+        }
       },
       "description": "Cloud that instantly kills on failed Constitution save, damage otherwise"
     },
@@ -5941,7 +6169,9 @@
         "Chameleon"
       ],
       "special": {
-        "sneak_bonus": true
+        "legacy": {
+          "sneak_bonus": true
+        }
       },
       "target": {
         "type": "single",
@@ -5969,9 +6199,11 @@
         "type": "ground"
       },
       "special": {
-        "creates_illusion": true,
-        "draws_attacks": true,
-        "hp_scales_with_spellpower": true
+        "legacy": {
+          "creates_illusion": true,
+          "draws_attacks": true,
+          "hp_scales_with_spellpower": true
+        }
       },
       "description": "Create illusory target that draws attacks, HP scales with spellpower"
     },
@@ -5995,7 +6227,9 @@
         "Magic_Shield"
       ],
       "special": {
-        "spell_damage_reduction": true
+        "legacy": {
+          "spell_damage_reduction": true
+        }
       },
       "target": {
         "type": "single",
@@ -6024,8 +6258,10 @@
         "Blurred"
       ],
       "special": {
-        "dodge_bonus": true,
-        "attacks_have_miss_chance": true
+        "legacy": {
+          "dodge_bonus": true,
+          "attacks_have_miss_chance": true
+        }
       },
       "target": {
         "type": "single",
@@ -6080,9 +6316,11 @@
         "Mirror_Images"
       ],
       "special": {
-        "creates_illusory_copies": true,
-        "copies_absorb_attacks": true,
-        "copy_count": "spellpower_scaling"
+        "legacy": {
+          "creates_illusory_copies": true,
+          "copies_absorb_attacks": true,
+          "copy_count": "spellpower_scaling"
+        }
       },
       "target": {
         "type": "single",
@@ -6112,8 +6350,10 @@
         "Magic_Mirror"
       ],
       "special": {
-        "spell_reflect_chance": true,
-        "reflect_chance_calculation": "caster_spellpower_vs_enemy_spellpower"
+        "legacy": {
+          "spell_reflect_chance": true,
+          "reflect_chance_calculation": "caster_spellpower_vs_enemy_spellpower"
+        }
       },
       "target": {
         "type": "single",
@@ -6143,9 +6383,11 @@
         "Mantric_Armor"
       ],
       "special": {
-        "hp_shield": "spellpower_based",
-        "elemental_resistance": 25,
-        "must_destroy_before_damage": true
+        "legacy": {
+          "hp_shield": "spellpower_based",
+          "elemental_resistance": 25,
+          "must_destroy_before_damage": true
+        }
       },
       "target": {
         "type": "self"
@@ -6178,9 +6420,11 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "disguises_terrain": true,
-        "can_hide_traps": true,
-        "can_create_fake_walls": true
+        "legacy": {
+          "disguises_terrain": true,
+          "can_hide_traps": true,
+          "can_create_fake_walls": true
+        }
       },
       "description": "Make area look different - hide traps, create illusory walls"
     },
@@ -6210,10 +6454,12 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "prevents_teleportation": true,
-        "prevents_phasing": true,
-        "prevents_fleeing": true,
-        "affects_everyone": true
+        "legacy": {
+          "prevents_teleportation": true,
+          "prevents_phasing": true,
+          "prevents_fleeing": true,
+          "affects_everyone": true
+        }
       },
       "description": "Lock down area - no teleportation, phasing, or fleeing for anyone"
     },
@@ -6234,10 +6480,12 @@
       "mana_cost": 15,
       "summon": "Trickster_Mask",
       "special": {
-        "low_hp": true,
-        "high_dodge": true,
-        "blinks_around": true,
-        "casts_cc_and_mental_spells": true
+        "legacy": {
+          "low_hp": true,
+          "high_dodge": true,
+          "blinks_around": true,
+          "casts_cc_and_mental_spells": true
+        }
       },
       "target": {
         "type": "ground"
@@ -6261,8 +6509,10 @@
       "mana_cost": 40,
       "summon": "Puppet",
       "special": {
-        "casts_white_and_black_spells": true,
-        "creepy_circus_vibe": true
+        "legacy": {
+          "casts_white_and_black_spells": true,
+          "creepy_circus_vibe": true
+        }
       },
       "target": {
         "type": "ground"
@@ -6286,8 +6536,10 @@
       "mana_cost": 40,
       "summon": "Nailing_Dagger",
       "special": {
-        "phurba_spirit": true,
-        "pins_enemies": true
+        "legacy": {
+          "phurba_spirit": true,
+          "pins_enemies": true
+        }
       },
       "target": {
         "type": "ground"
@@ -6311,8 +6563,10 @@
       "mana_cost": 75,
       "summon": "Eldritch_Spawn",
       "special": {
-        "tentacles_and_eyes": true,
-        "from_outer_night": true
+        "legacy": {
+          "tentacles_and_eyes": true,
+          "from_outer_night": true
+        }
       },
       "target": {
         "type": "ground"
@@ -6337,7 +6591,9 @@
       "mana_cost": 75,
       "summon": "Mass_of_Masks",
       "special": {
-        "multiple_trickster_masks": true
+        "legacy": {
+          "multiple_trickster_masks": true
+        }
       },
       "target": {
         "type": "ground"
@@ -6362,8 +6618,10 @@
       "mana_cost": 135,
       "summon": "Troupe_of_Puppets",
       "special": {
-        "multiple_puppets": true,
-        "creepy_circus_vibe": true
+        "legacy": {
+          "multiple_puppets": true,
+          "creepy_circus_vibe": true
+        }
       },
       "target": {
         "type": "ground"
@@ -6388,8 +6646,10 @@
       "mana_cost": 135,
       "summon": "Dagger_Swarm",
       "special": {
-        "multiple_daggers": true,
-        "attack_enemies": true
+        "legacy": {
+          "multiple_daggers": true,
+          "attack_enemies": true
+        }
       },
       "target": {
         "type": "ground"
@@ -6414,8 +6674,10 @@
       "mana_cost": 225,
       "summon": "Eldritch_Guardian",
       "special": {
-        "powerful_outer_being": true,
-        "rahula_like": true
+        "legacy": {
+          "powerful_outer_being": true,
+          "rahula_like": true
+        }
       },
       "target": {
         "type": "ground"
@@ -6440,8 +6702,10 @@
         "type": "self"
       },
       "special": {
-        "blink_out_of_melee": true,
-        "short_range": true
+        "legacy": {
+          "blink_out_of_melee": true,
+          "short_range": true
+        }
       },
       "description": "Blink out of melee range"
     },
@@ -6466,8 +6730,10 @@
         "eligible": "enemy"
       },
       "special": {
-        "guaranteed_hit": true,
-        "reliable_damage": true
+        "legacy": {
+          "guaranteed_hit": true,
+          "reliable_damage": true
+        }
       },
       "description": "Reliable space damage, guaranteed hit"
     },
@@ -6493,8 +6759,10 @@
         "Shadow_Pinned"
       ],
       "special": {
-        "pins_shadow": true,
-        "damage_if_move": true
+        "legacy": {
+          "pins_shadow": true,
+          "damage_if_move": true
+        }
       },
       "target": {
         "type": "single",
@@ -6521,8 +6789,10 @@
         "type": "ground"
       },
       "special": {
-        "teleport_self": true,
-        "medium_range": true
+        "legacy": {
+          "teleport_self": true,
+          "medium_range": true
+        }
       },
       "description": "Teleport oneself medium distance"
     },
@@ -6544,8 +6814,10 @@
       "damage": 53,
       "damage_type": "space",
       "special": {
-        "drains_mana": true,
-        "damage_based_on_mana_drained": true
+        "legacy": {
+          "drains_mana": true,
+          "damage_based_on_mana_drained": true
+        }
       },
       "target": {
         "type": "single",
@@ -6585,8 +6857,10 @@
         "width": 1
       },
       "special": {
-        "place_dagger_barrier": true,
-        "enemies_crossing_damaged_and_slowed": true
+        "legacy": {
+          "place_dagger_barrier": true,
+          "enemies_crossing_damaged_and_slowed": true
+        }
       },
       "description": "Place dagger on ground, enemies crossing take space damage and are slowed"
     },
@@ -6610,7 +6884,9 @@
         "Phasing"
       ],
       "special": {
-        "physical_damage_negation_chance": 50
+        "legacy": {
+          "physical_damage_negation_chance": 50
+        }
       },
       "target": {
         "type": "single",
@@ -6638,7 +6914,9 @@
         "type": "single"
       },
       "special": {
-        "exchange_positions": true
+        "legacy": {
+          "exchange_positions": true
+        }
       },
       "description": "Swap positions with the target."
     },
@@ -6698,7 +6976,9 @@
         "upgrade_scaling": "single → aoe → all_enemies"
       },
       "special": {
-        "illusion_of_fear": true
+        "legacy": {
+          "illusion_of_fear": true
+        }
       },
       "description": "Illusion of enemy's fear, space damage + fear"
     },
@@ -6724,8 +7004,10 @@
         "eligible": "enemy"
       },
       "special": {
-        "bonus_damage_to_spirits_demons": true,
-        "instantly_destroys_summons": true
+        "legacy": {
+          "bonus_damage_to_spirits_demons": true,
+          "instantly_destroys_summons": true
+        }
       },
       "description": "Extra damage to demons/spirits, instantly destroys summons"
     },
@@ -6748,9 +7030,11 @@
         "type": "ground"
       },
       "special": {
-        "teleport_self_or_other": true,
-        "long_range": true,
-        "line_of_sight": true
+        "legacy": {
+          "teleport_self_or_other": true,
+          "long_range": true,
+          "line_of_sight": true
+        }
       },
       "description": "Teleport oneself or another to target location"
     },
@@ -6783,9 +7067,11 @@
         "upgrade_scaling": "single → aoe → all_enemies"
       },
       "special": {
-        "dagger_orbits_target": true,
-        "continuous_damage": true,
-        "prevents_teleport_flee": true
+        "legacy": {
+          "dagger_orbits_target": true,
+          "continuous_damage": true,
+          "prevents_teleport_flee": true
+        }
       },
       "description": "Dagger orbits target, continuous damage, can't teleport or flee"
     },
@@ -6808,8 +7094,10 @@
         "type": "self"
       },
       "special": {
-        "flee_combat": true,
-        "teleport_to_safety": true
+        "legacy": {
+          "flee_combat": true,
+          "teleport_to_safety": true
+        }
       },
       "description": "Flee combat, teleport party to safety"
     },
@@ -6858,8 +7146,10 @@
       ],
       "mana_cost": 135,
       "special": {
-        "drains_significant_mana": true,
-        "mana_transferred_to_caster": true
+        "legacy": {
+          "drains_significant_mana": true,
+          "mana_transferred_to_caster": true
+        }
       },
       "target": {
         "type": "single",
@@ -6888,10 +7178,12 @@
         "type": "global"
       },
       "special": {
-        "stops_time": true,
-        "only_caster_can_act": true,
-        "extra_turns": 1,
-        "upgrade_can_extend_to_2": true
+        "legacy": {
+          "stops_time": true,
+          "only_caster_can_act": true,
+          "extra_turns": 1,
+          "upgrade_can_extend_to_2": true
+        }
       },
       "description": "Pin time itself in place - only caster can act for 1 turn. As Tilopa once nailed the sun to drink till sundown.",
       "aoe": {
@@ -6919,9 +7211,11 @@
         "type": "self"
       },
       "special": {
-        "move_to_different_world": true,
-        "same_location_different_plane": true,
-        "requires_world_unlocked": true
+        "legacy": {
+          "move_to_different_world": true,
+          "same_location_different_plane": true,
+          "requires_world_unlocked": true
+        }
       },
       "description": "Move to same spot in different world, if unlocked"
     },
@@ -6946,9 +7240,11 @@
         "requires_two_points": true
       },
       "special": {
-        "creates_permanent_portal": true,
-        "between_map_locations": true,
-        "bidirectional": true
+        "legacy": {
+          "creates_permanent_portal": true,
+          "between_map_locations": true,
+          "bidirectional": true
+        }
       },
       "description": "Establish permanent portal between two map locations"
     },
@@ -6974,9 +7270,11 @@
         "eligible": "enemy"
       },
       "special": {
-        "strips_magical_defenses": true,
-        "removes_buffs": true,
-        "damage_per_buff_removed": true
+        "legacy": {
+          "strips_magical_defenses": true,
+          "removes_buffs": true,
+          "damage_per_buff_removed": true
+        }
       },
       "description": "Strip magical defenses, damage increased per buff removed"
     },
@@ -7000,8 +7298,10 @@
         "Shimmering"
       ],
       "special": {
-        "minor_dodge_bonus": true,
-        "attackers_briefly_dazzled": true
+        "legacy": {
+          "minor_dodge_bonus": true,
+          "attackers_briefly_dazzled": true
+        }
       },
       "target": {
         "type": "single",
@@ -7058,9 +7358,11 @@
         "Sanctuary"
       ],
       "special": {
-        "cannot_be_targeted": true,
-        "cannot_target_enemies": true,
-        "breaks_on_offensive_action": true
+        "legacy": {
+          "cannot_be_targeted": true,
+          "cannot_target_enemies": true,
+          "breaks_on_offensive_action": true
+        }
       },
       "target": {
         "type": "single",
@@ -7089,8 +7391,10 @@
         "Invulnerable"
       ],
       "special": {
-        "immune_to_all_damage": true,
-        "short_duration": true
+        "legacy": {
+          "immune_to_all_damage": true,
+          "short_duration": true
+        }
       },
       "target": {
         "type": "single",
@@ -7120,7 +7424,9 @@
       ],
       "save_type": "Focus",
       "special": {
-        "fear_chance": true
+        "legacy": {
+          "fear_chance": true
+        }
       },
       "target": {
         "type": "single",
@@ -7252,9 +7558,11 @@
       "mana_cost": 135,
       "summon": "Mamo",
       "special": {
-        "casts_black_and_space_spells": true,
-        "casts_poison_spells": true,
-        "associated_with_disease": true
+        "legacy": {
+          "casts_black_and_space_spells": true,
+          "casts_poison_spells": true,
+          "associated_with_disease": true
+        }
       },
       "target": {
         "type": "ground"
@@ -7284,9 +7592,11 @@
         "eligible": "enemy"
       },
       "special": {
-        "hp_threshold": "spellpower_scaling",
-        "instant_kill_on_failed_save": true,
-        "damage_on_passed_save": "50%_target_max_hp"
+        "legacy": {
+          "hp_threshold": "spellpower_scaling",
+          "instant_kill_on_failed_save": true,
+          "damage_on_passed_save": "50%_target_max_hp"
+        }
       },
       "description": "Instant death on failed Focus save if below HP threshold (scales with spellpower), 50% max HP damage on passed save"
     },
@@ -7309,7 +7619,9 @@
         "Encouraged"
       ],
       "special": {
-        "initiative_bonus": true
+        "legacy": {
+          "initiative_bonus": true
+        }
       },
       "target": {
         "type": "single",
@@ -7338,7 +7650,9 @@
         "Soothing_Presence"
       ],
       "special": {
-        "heal_per_turn_aura": true
+        "legacy": {
+          "heal_per_turn_aura": true
+        }
       },
       "target": {
         "type": "self"
@@ -7365,7 +7679,9 @@
       ],
       "save_type": "Focus",
       "special": {
-        "chance_to_disengage": true
+        "legacy": {
+          "chance_to_disengage": true
+        }
       },
       "target": {
         "type": "single",
@@ -7393,8 +7709,10 @@
         "Blessed"
       ],
       "special": {
-        "attack_bonus": true,
-        "defense_bonus": true
+        "legacy": {
+          "attack_bonus": true,
+          "defense_bonus": true
+        }
       },
       "target": {
         "type": "single",
@@ -7424,7 +7742,9 @@
         "Regenerating"
       ],
       "special": {
-        "heal_per_turn": true
+        "legacy": {
+          "heal_per_turn": true
+        }
       },
       "target": {
         "type": "single",
@@ -7452,9 +7772,11 @@
         "Mirthful"
       ],
       "special": {
-        "initiative_bonus": true,
-        "speed_bonus": true,
-        "damage_bonus": true
+        "legacy": {
+          "initiative_bonus": true,
+          "speed_bonus": true,
+          "damage_bonus": true
+        }
       },
       "target": {
         "type": "single",
@@ -7482,8 +7804,10 @@
         "Praying"
       ],
       "special": {
-        "defense_bonus": true,
-        "magic_resistance_bonus": true
+        "legacy": {
+          "defense_bonus": true,
+          "magic_resistance_bonus": true
+        }
       },
       "target": {
         "type": "single",
@@ -7524,8 +7848,10 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "stronger_pacify": true,
-        "affects_all_enemies": true
+        "legacy": {
+          "stronger_pacify": true,
+          "affects_all_enemies": true
+        }
       },
       "description": "Strong pacify effect on all enemies in range"
     },
@@ -7548,8 +7874,10 @@
         "Divinely_Inspired"
       ],
       "special": {
-        "buffs_two_highest_stats": true,
-        "considerable_bonus": true
+        "legacy": {
+          "buffs_two_highest_stats": true,
+          "considerable_bonus": true
+        }
       },
       "target": {
         "type": "single",
@@ -7577,7 +7905,9 @@
         "Aura_of_Blessing"
       ],
       "special": {
-        "aura_grants_blessed": true
+        "legacy": {
+          "aura_grants_blessed": true
+        }
       },
       "target": {
         "type": "self"
@@ -7604,8 +7934,10 @@
         "Divine_Champion"
       ],
       "special": {
-        "buffs_all_stats": true,
-        "considerable_bonus": true
+        "legacy": {
+          "buffs_all_stats": true,
+          "considerable_bonus": true
+        }
       },
       "target": {
         "type": "single",
@@ -7630,8 +7962,10 @@
       "mana_cost": 15,
       "summon": "Guiding_Light",
       "special": {
-        "provides_vision": true,
-        "small_buff_aura": true
+        "legacy": {
+          "provides_vision": true,
+          "small_buff_aura": true
+        }
       },
       "target": {
         "type": "ground"
@@ -7655,10 +7989,12 @@
       "mana_cost": 40,
       "summon": "Kinnara",
       "special": {
-        "man_bird_hybrid": true,
-        "fast": true,
-        "defensive_fighter": true,
-        "support_abilities": true
+        "legacy": {
+          "man_bird_hybrid": true,
+          "fast": true,
+          "defensive_fighter": true,
+          "support_abilities": true
+        }
       },
       "target": {
         "type": "ground"
@@ -7682,11 +8018,13 @@
       "mana_cost": 75,
       "summon": "Godling",
       "special": {
-        "flying": true,
-        "support_white_mage": true,
-        "does_not_fight": true,
-        "luminous_humanoid": true,
-        "dissipates_into_light": true
+        "legacy": {
+          "flying": true,
+          "support_white_mage": true,
+          "does_not_fight": true,
+          "luminous_humanoid": true,
+          "dissipates_into_light": true
+        }
       },
       "target": {
         "type": "ground"
@@ -7710,8 +8048,10 @@
       "mana_cost": 75,
       "summon": "Symbol_of_Healing",
       "special": {
-        "static": true,
-        "healing_aura": true
+        "legacy": {
+          "static": true,
+          "healing_aura": true
+        }
       },
       "target": {
         "type": "ground"
@@ -7736,10 +8076,12 @@
       "mana_cost": 135,
       "summon": "Host_of_Kinnaras",
       "special": {
-        "multiple_kinnaras": true,
-        "healing": true,
-        "ranged": true,
-        "melee": true
+        "legacy": {
+          "multiple_kinnaras": true,
+          "healing": true,
+          "ranged": true,
+          "melee": true
+        }
       },
       "target": {
         "type": "ground"
@@ -7764,8 +8106,10 @@
       "mana_cost": 225,
       "summon": "Avenger",
       "special": {
-        "powerful_fighter": true,
-        "white_damage": true
+        "legacy": {
+          "powerful_fighter": true,
+          "white_damage": true
+        }
       },
       "target": {
         "type": "ground"
@@ -7793,7 +8137,9 @@
         "eligible": "enemy"
       },
       "special": {
-        "bonus_damage_vs_undead_demons": true
+        "legacy": {
+          "bonus_damage_vs_undead_demons": true
+        }
       },
       "description": "White damage, bonus vs undead and demons"
     },
@@ -7835,7 +8181,9 @@
       "mana_cost": 25,
       "heal": 20,
       "special": {
-        "reliably_dispels_one_negative_effect": true
+        "legacy": {
+          "reliably_dispels_one_negative_effect": true
+        }
       },
       "target": {
         "type": "single",
@@ -7877,9 +8225,11 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "destroys_weak_undead": true,
-        "fears_strong_undead": true,
-        "respects_undead_allies": true
+        "legacy": {
+          "destroys_weak_undead": true,
+          "fears_strong_undead": true,
+          "respects_undead_allies": true
+        }
       },
       "description": "Destroy weak undead, cause fear in strong undead (Focus save). Does not affect undead allies."
     },
@@ -7904,7 +8254,9 @@
         "upgrade_scaling": "single → aoe → all"
       },
       "special": {
-        "removes_all_magical_effects": true
+        "legacy": {
+          "removes_all_magical_effects": true
+        }
       },
       "description": "Remove all magical effects from target"
     },
@@ -7958,7 +8310,9 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "bonus_damage_vs_undead_demons": true
+        "legacy": {
+          "bonus_damage_vs_undead_demons": true
+        }
       },
       "description": "AoE white damage, bonus vs undead and demons"
     },
@@ -7981,7 +8335,9 @@
         "eligible": "dead_ally"
       },
       "special": {
-        "resurrects_with_1hp": true
+        "legacy": {
+          "resurrects_with_1hp": true
+        }
       },
       "description": "Raise dead ally with 1 HP"
     },
@@ -8029,7 +8385,9 @@
         "eligible": "dead_ally"
       },
       "special": {
-        "resurrects_with_full_hp": true
+        "legacy": {
+          "resurrects_with_full_hp": true
+        }
       },
       "description": "Raise dead ally with full HP"
     },
@@ -8061,7 +8419,9 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "devastating_vs_undead_demons": true
+        "legacy": {
+          "devastating_vs_undead_demons": true
+        }
       },
       "description": "Major AoE white damage, devastating to undead and demons"
     },
@@ -8084,8 +8444,10 @@
         "eligible": "corpse"
       },
       "special": {
-        "speak_with_dead": true,
-        "gain_information": true
+        "legacy": {
+          "speak_with_dead": true,
+          "gain_information": true
+        }
       },
       "description": "Speak with a corpse to gain information"
     },
@@ -8108,8 +8470,10 @@
         "Ancestral_Guidance"
       ],
       "special": {
-        "awareness_bonus": true,
-        "focus_bonus": true
+        "legacy": {
+          "awareness_bonus": true,
+          "focus_bonus": true
+        }
       },
       "target": {
         "type": "single",
@@ -8135,8 +8499,10 @@
       "mana_cost": 40,
       "summon": "Ancestral_Spirit",
       "special": {
-        "honored_dead": true,
-        "support_fighter": true
+        "legacy": {
+          "honored_dead": true,
+          "support_fighter": true
+        }
       },
       "target": {
         "type": "ground"
@@ -8169,9 +8535,11 @@
         "eligible": "corpse"
       },
       "special": {
-        "lays_corpse_to_rest": true,
-        "prevents_raising_as_undead": true,
-        "buffs_nearby_allies": true
+        "legacy": {
+          "lays_corpse_to_rest": true,
+          "prevents_raising_as_undead": true,
+          "buffs_nearby_allies": true
+        }
       },
       "description": "Lay corpse to rest (prevents raising), nearby allies receive ancestor's blessing"
     },
@@ -8195,7 +8563,9 @@
         "Lifelink"
       ],
       "special": {
-        "heal_50_percent_of_damage_dealt": true
+        "legacy": {
+          "heal_50_percent_of_damage_dealt": true
+        }
       },
       "target": {
         "type": "single",
@@ -8224,7 +8594,9 @@
         "Pain_Mirror"
       ],
       "special": {
-        "deal_50_percent_of_damage_taken_to_attacker": true
+        "legacy": {
+          "deal_50_percent_of_damage_taken_to_attacker": true
+        }
       },
       "target": {
         "type": "single",
@@ -8262,11 +8634,13 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "corpse_disappears": true,
-        "prevents_resurrection": true,
-        "white_fire_explosion": true,
-        "damages_all_enemies_in_aoe": true,
-        "bonus_damage_vs_undead": true
+        "legacy": {
+          "corpse_disappears": true,
+          "prevents_resurrection": true,
+          "white_fire_explosion": true,
+          "damages_all_enemies_in_aoe": true,
+          "bonus_damage_vs_undead": true
+        }
       },
       "description": "Corpse disappears in white/fire explosion, damages all enemies nearby, bonus vs undead"
     },
@@ -8290,8 +8664,10 @@
         "Ancestral_Vengeance"
       ],
       "special": {
-        "triggers_when_ally_dies": true,
-        "attack_damage_buff": true
+        "legacy": {
+          "triggers_when_ally_dies": true,
+          "attack_damage_buff": true
+        }
       },
       "target": {
         "type": "single",
@@ -8318,8 +8694,10 @@
       "mana_cost": 135,
       "summon": "Ancestral_Guardian",
       "special": {
-        "powerful_ancestor": true,
-        "protective": true
+        "legacy": {
+          "powerful_ancestor": true,
+          "protective": true
+        }
       },
       "target": {
         "type": "ground"
@@ -8347,9 +8725,11 @@
         "Karmic_Bond"
       ],
       "special": {
-        "links_two_allies": true,
-        "share_healing_received": true,
-        "both_get_75_percent": true
+        "legacy": {
+          "links_two_allies": true,
+          "share_healing_received": true,
+          "both_get_75_percent": true
+        }
       },
       "target": {
         "type": "single",
@@ -8376,8 +8756,10 @@
       "mana_cost": 225,
       "summon": "Honored_Dead",
       "special": {
-        "host_of_ancestors": true,
-        "buffed_spirits": true
+        "legacy": {
+          "host_of_ancestors": true,
+          "buffed_spirits": true
+        }
       },
       "target": {
         "type": "ground"
@@ -8404,9 +8786,11 @@
         "Eternal_Vow"
       ],
       "special": {
-        "when_target_dies": true,
-        "return_next_turn": true,
-        "return_with_20_percent_hp": true
+        "legacy": {
+          "when_target_dies": true,
+          "return_next_turn": true,
+          "return_with_20_percent_hp": true
+        }
       },
       "target": {
         "type": "single",
@@ -8458,7 +8842,9 @@
         "Blood_Hunger"
       ],
       "special": {
-        "lifesteal_on_attacks": true
+        "legacy": {
+          "lifesteal_on_attacks": true
+        }
       },
       "target": {
         "type": "single",
@@ -8537,8 +8923,10 @@
         "Shadow_Cloaked"
       ],
       "special": {
-        "stealth_bonus": true,
-        "dodge_bonus": true
+        "legacy": {
+          "stealth_bonus": true,
+          "dodge_bonus": true
+        }
       },
       "target": {
         "type": "single",
@@ -8567,9 +8955,11 @@
         "Doomed"
       ],
       "special": {
-        "dies_after_x_turns": true,
-        "turn_count": "spellpower_scaling",
-        "can_be_cleansed": true
+        "legacy": {
+          "dies_after_x_turns": true,
+          "turn_count": "spellpower_scaling",
+          "can_be_cleansed": true
+        }
       },
       "target": {
         "type": "single",
@@ -8600,7 +8990,9 @@
         "Rotting"
       ],
       "special": {
-        "debuff_all_attributes": true
+        "legacy": {
+          "debuff_all_attributes": true
+        }
       },
       "target": {
         "type": "single",
@@ -8645,10 +9037,12 @@
       "mana_cost": 15,
       "summon": "Imp",
       "special": {
-        "flying": true,
-        "high_dodge": true,
-        "low_damage": true,
-        "annoying": true
+        "legacy": {
+          "flying": true,
+          "high_dodge": true,
+          "low_damage": true,
+          "annoying": true
+        }
       },
       "target": {
         "type": "ground"
@@ -8692,8 +9086,10 @@
       "mana_cost": 40,
       "summon": "Vampire_Bats",
       "special": {
-        "swarm": true,
-        "lifesteal": true
+        "legacy": {
+          "swarm": true,
+          "lifesteal": true
+        }
       },
       "target": {
         "type": "ground"
@@ -8717,10 +9113,12 @@
       "mana_cost": 75,
       "summon": "Vetala",
       "special": {
-        "casts_black_magic": true,
-        "casts_fire_magic": true,
-        "casts_random_element": true,
-        "vampiric_attack": true
+        "legacy": {
+          "casts_black_magic": true,
+          "casts_fire_magic": true,
+          "casts_random_element": true,
+          "vampiric_attack": true
+        }
       },
       "target": {
         "type": "ground"
@@ -8765,11 +9163,13 @@
       "mana_cost": 75,
       "summon": "Mara",
       "special": {
-        "casts_black_magic": true,
-        "casts_space_magic": true,
-        "mental_manipulation": true,
-        "illusions": true,
-        "summons_weaker_black_creatures": true
+        "legacy": {
+          "casts_black_magic": true,
+          "casts_space_magic": true,
+          "mental_manipulation": true,
+          "illusions": true,
+          "summons_weaker_black_creatures": true
+        }
       },
       "target": {
         "type": "ground"
@@ -8836,10 +9236,12 @@
       "mana_cost": 135,
       "summon": "Undead_Yogi",
       "special": {
-        "casts_black_magic": true,
-        "casts_variety_of_elemental_spells": true,
-        "powerful_vengeful_spirit": true,
-        "lich_like": true
+        "legacy": {
+          "casts_black_magic": true,
+          "casts_variety_of_elemental_spells": true,
+          "powerful_vengeful_spirit": true,
+          "lich_like": true
+        }
       },
       "target": {
         "type": "ground"
@@ -8864,10 +9266,12 @@
       "mana_cost": 135,
       "summon": "Daughter_of_Mara",
       "special": {
-        "charms": true,
-        "dominates": true,
-        "mental_debuffs": true,
-        "illusions": true
+        "legacy": {
+          "charms": true,
+          "dominates": true,
+          "mental_debuffs": true,
+          "illusions": true
+        }
       },
       "target": {
         "type": "ground"
@@ -8936,7 +9340,9 @@
       "mana_cost": 225,
       "summon": "Imp_Collector",
       "special": {
-        "constantly_spawns_imps": true
+        "legacy": {
+          "constantly_spawns_imps": true
+        }
       },
       "target": {
         "type": "ground"
@@ -8982,7 +9388,9 @@
       "damage": 47,
       "damage_type": "black",
       "special": {
-        "if_kills_raise_as_zombie": true
+        "legacy": {
+          "if_kills_raise_as_zombie": true
+        }
       },
       "target": {
         "type": "single",
@@ -9009,8 +9417,10 @@
         "eligible": "enemy"
       },
       "special": {
-        "teleport_behind_target": true,
-        "assassin_setup": true
+        "legacy": {
+          "teleport_behind_target": true,
+          "assassin_setup": true
+        }
       },
       "description": "Teleport directly behind target enemy. 'While you sit here making plans, the Lord of Death stands behind you, smacking his lips.'"
     },
@@ -9032,7 +9442,9 @@
       "damage": 53,
       "damage_type": "black",
       "special": {
-        "heal_for_damage_dealt": true
+        "legacy": {
+          "heal_for_damage_dealt": true
+        }
       },
       "target": {
         "type": "single",
@@ -9095,8 +9507,10 @@
         "eligible": "enemy"
       },
       "special": {
-        "removes_buffs_from_enemy": true,
-        "caster_gains_buffs": true
+        "legacy": {
+          "removes_buffs_from_enemy": true,
+          "caster_gains_buffs": true
+        }
       },
       "description": "Remove buffs from enemy and gain them yourself"
     },
@@ -9126,9 +9540,11 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "obscures_vision": true,
-        "stealth_bonus_inside": true,
-        "ranged_range_reduced_50_percent": true
+        "legacy": {
+          "obscures_vision": true,
+          "stealth_bonus_inside": true,
+          "ranged_range_reduced_50_percent": true
+        }
       },
       "description": "Obscure vision in area, easier stealth, ranged attack range cut 50%"
     },
@@ -9149,7 +9565,9 @@
       "damage": 79,
       "damage_type": "black",
       "special": {
-        "bonus_damage_per_debuff_on_target": true
+        "legacy": {
+          "bonus_damage_per_debuff_on_target": true
+        }
       },
       "target": {
         "type": "single",
@@ -9179,8 +9597,10 @@
         "eligible": "enemy"
       },
       "special": {
-        "if_kills_chain_to_next_target": true,
-        "same_damage_to_next": true
+        "legacy": {
+          "if_kills_chain_to_next_target": true,
+          "same_damage_to_next": true
+        }
       },
       "description": "Major black damage, if it kills, same damage to next nearest enemy"
     },
@@ -9209,9 +9629,11 @@
         "eligible": "enemy"
       },
       "special": {
-        "like_lightning_but_black": true,
-        "blinds": true,
-        "less_damage_than_normal_lightning": true
+        "legacy": {
+          "like_lightning_but_black": true,
+          "blinds": true,
+          "less_damage_than_normal_lightning": true
+        }
       },
       "description": "Black damage + blind, like lightning but less damage"
     },
@@ -9596,15 +10018,10 @@
       ],
       "mana_cost": 135,
       "special": {
-        "dispels_all_battlefield": [
-          "Invisible",
-          "Blurred",
-          "Shadow_Cloaked",
-          "Smoke_Form",
-          "Chameleon",
-          "Shimmering",
-          "Phasing",
-          "Mirror_Images"
+        "effects": [
+          {
+            "type": "dispel_battlefield"
+          }
         ]
       },
       "target": {
@@ -9676,7 +10093,9 @@
         "Poisoned"
       ],
       "special": {
-        "restore_stamina_full": true
+        "legacy": {
+          "restore_stamina_full": true
+        }
       },
       "target": {
         "type": "aoe",
@@ -9712,10 +10131,22 @@
       "damage": 163,
       "damage_type": "fire",
       "special": {
-        "push_direction": "random",
-        "push_distance_min": 2,
-        "push_distance_max": 3,
-        "obstacle_bonus_damage": 25
+        "effects": [
+          {
+            "type": "push",
+            "distance": 2,
+            "min_distance": 2
+          },
+          {
+            "type": "push",
+            "distance": 3,
+            "max_distance": 3
+          }
+        ],
+        "legacy": {
+          "push_direction": "random",
+          "obstacle_bonus_damage": 25
+        }
       },
       "target": {
         "type": "ground"
@@ -9754,9 +10185,11 @@
       "damage_per_turn": true,
       "duration": "spellpower",
       "special": {
-        "cloud_effect": true,
-        "damage_scales_with_turns_in_fog": true,
-        "base_damage_per_turn": 5
+        "legacy": {
+          "cloud_effect": true,
+          "damage_scales_with_turns_in_fog": true,
+          "base_damage_per_turn": 5
+        }
       },
       "target": {
         "type": "ground"
@@ -9789,9 +10222,11 @@
       ],
       "mana_cost": 40,
       "special": {
-        "teleport_range": 5,
-        "ignore_line_of_sight": true,
-        "ignore_height": true
+        "legacy": {
+          "teleport_range": 5,
+          "ignore_line_of_sight": true,
+          "ignore_height": true
+        }
       },
       "target": {
         "type": "ground",
@@ -9879,8 +10314,10 @@
       ],
       "mana_cost": 135,
       "special": {
-        "teleport_target": "last_healing_location",
-        "affects_party": true
+        "legacy": {
+          "teleport_target": "last_healing_location",
+          "affects_party": true
+        }
       },
       "target": {
         "type": "self"
@@ -9905,27 +10342,29 @@
       ],
       "mana_cost": 40,
       "special": {
-        "each_effect_independent_chance": 0.25,
-        "effects": [
-          {
-            "type": "damage",
-            "damage": 35,
-            "damage_type": "random_elemental"
-          },
-          {
-            "type": "status",
-            "status": "Blinded"
-          },
-          {
-            "type": "status",
-            "status": "Confused"
-          },
-          {
-            "type": "status",
-            "status": "Charmed"
-          }
-        ],
-        "non_physical_damage_only": true
+        "legacy": {
+          "each_effect_independent_chance": 0.25,
+          "effects": [
+            {
+              "type": "damage",
+              "damage": 35,
+              "damage_type": "random_elemental"
+            },
+            {
+              "type": "status",
+              "status": "Blinded"
+            },
+            {
+              "type": "status",
+              "status": "Confused"
+            },
+            {
+              "type": "status",
+              "status": "Charmed"
+            }
+          ],
+          "non_physical_damage_only": true
+        }
       },
       "target": {
         "type": "single",
@@ -9954,27 +10393,29 @@
       ],
       "mana_cost": 135,
       "special": {
-        "each_effect_independent_chance": 0.25,
-        "effects": [
-          {
-            "type": "damage",
-            "damage": 35,
-            "damage_type": "random_elemental"
-          },
-          {
-            "type": "status",
-            "status": "Blinded"
-          },
-          {
-            "type": "status",
-            "status": "Confused"
-          },
-          {
-            "type": "status",
-            "status": "Charmed"
-          }
-        ],
-        "non_physical_damage_only": true
+        "legacy": {
+          "each_effect_independent_chance": 0.25,
+          "effects": [
+            {
+              "type": "damage",
+              "damage": 35,
+              "damage_type": "random_elemental"
+            },
+            {
+              "type": "status",
+              "status": "Blinded"
+            },
+            {
+              "type": "status",
+              "status": "Confused"
+            },
+            {
+              "type": "status",
+              "status": "Charmed"
+            }
+          ],
+          "non_physical_damage_only": true
+        }
       },
       "target": {
         "type": "aoe",
@@ -10011,9 +10452,11 @@
         "all_negative"
       ],
       "special": {
-        "heals_all_allies": true,
-        "cleanses_all_allies": true,
-        "applies_rainbow_orb_to_all_enemies": true
+        "legacy": {
+          "heals_all_allies": true,
+          "cleanses_all_allies": true,
+          "applies_rainbow_orb_to_all_enemies": true
+        }
       },
       "target": {
         "type": "global",
@@ -10050,9 +10493,11 @@
         "Rainbow_Cloak"
       ],
       "special": {
-        "elemental_resistance_all_pct": 50,
-        "reflect_chance_pct": 10,
-        "reflect_damage_pct": 50
+        "legacy": {
+          "elemental_resistance_all_pct": 50,
+          "reflect_chance_pct": 10,
+          "reflect_damage_pct": 50
+        }
       },
       "target": {
         "type": "self"
@@ -10080,11 +10525,13 @@
       "mana_cost": 15,
       "duration": "spellpower",
       "special": {
-        "fire_resist_pct": 25,
-        "water_resist_pct": 25,
-        "melee_counter_burn": {
-          "effect": "attacker_gains_burning_1",
-          "description": "While active, any enemy that strikes the caster in melee receives 1 burning stack"
+        "legacy": {
+          "fire_resist_pct": 25,
+          "water_resist_pct": 25,
+          "melee_counter_burn": {
+            "effect": "attacker_gains_burning_1",
+            "description": "While active, any enemy that strikes the caster in melee receives 1 burning stack"
+          }
         }
       },
       "target": {
@@ -10114,12 +10561,14 @@
       ],
       "mana_cost": 75,
       "special": {
-        "transfer_burning": {
-          "source": "all_allies",
-          "target": "all_enemies",
-          "distribution": "even",
-          "no_stacks_lost": true,
-          "description": "All burning stacks are lifted from every ally and redistributed evenly across all enemies. No stacks are lost; surplus stacks from uneven division go to enemies front-to-back."
+        "legacy": {
+          "transfer_burning": {
+            "source": "all_allies",
+            "target": "all_enemies",
+            "distribution": "even",
+            "no_stacks_lost": true,
+            "description": "All burning stacks are lifted from every ally and redistributed evenly across all enemies. No stacks are lost; surplus stacks from uneven division go to enemies front-to-back."
+          }
         }
       },
       "target": {
@@ -10147,21 +10596,23 @@
       ],
       "mana_cost": 75,
       "special": {
-        "self_cleanse_and_burst": {
-          "self_effect": "remove_all_debuffs",
-          "enemy_effect": {
-            "aoe_radius": 2,
-            "damage_type": "white",
-            "damage_magnitude": "light",
-            "damage_hits": "count_of_debuffs_removed",
-            "save": {
-              "attribute": "constitution",
-              "difficulty": "moderate",
-              "on_fail": [
-                "Blinded_1"
-              ]
-            },
-            "description": "Each debuff removed fires outward as a bolt of white radiance. Each bolt deals light white damage to enemies in 2-tile radius. CON save or blinded for 1 turn."
+        "legacy": {
+          "self_cleanse_and_burst": {
+            "self_effect": "remove_all_debuffs",
+            "enemy_effect": {
+              "aoe_radius": 2,
+              "damage_type": "white",
+              "damage_magnitude": "light",
+              "damage_hits": "count_of_debuffs_removed",
+              "save": {
+                "attribute": "constitution",
+                "difficulty": "moderate",
+                "on_fail": [
+                  "Blinded_1"
+                ]
+              },
+              "description": "Each debuff removed fires outward as a bolt of white radiance. Each bolt deals light white damage to enemies in 2-tile radius. CON save or blinded for 1 turn."
+            }
           }
         }
       },
@@ -10191,8 +10642,10 @@
       "mana_cost": 135,
       "duration": "spellpower",
       "special": {
-        "fire_resist_pct": 75,
-        "water_resist_pct": 75
+        "legacy": {
+          "fire_resist_pct": 75,
+          "water_resist_pct": 75
+        }
       },
       "statuses_caused": [
         "Focus_Plus_3",
@@ -10258,15 +10711,14 @@
       "mana_cost": 75,
       "duration": "combat",
       "special": {
-        "see_through_stealth": [
-          "Invisible",
-          "Chameleon",
-          "Shadow_Cloaked",
-          "Blurred",
-          "Mirror_Images",
-          "Smoke_Form"
+        "effects": [
+          {
+            "type": "see_through_stealth"
+          }
         ],
-        "range_bonus_pct": 50
+        "legacy": {
+          "range_bonus_pct": 50
+        }
       },
       "target": {
         "type": "single",
@@ -10427,21 +10879,23 @@
       ],
       "mana_cost": 135,
       "special": {
-        "enemies": {
-          "effect": "Stunned",
-          "save": "constitution",
-          "difficulty": "hard"
-        },
-        "allies": {
-          "effect": "Disoriented",
-          "magnitude": {
-            "awareness": -2,
-            "initiative": -2
+        "legacy": {
+          "enemies": {
+            "effect": "Stunned",
+            "save": "constitution",
+            "difficulty": "hard"
           },
-          "duration": 1,
-          "no_save": true
-        },
-        "caster_immune": true
+          "allies": {
+            "effect": "Disoriented",
+            "magnitude": {
+              "awareness": -2,
+              "initiative": -2
+            },
+            "duration": 1,
+            "no_save": true
+          },
+          "caster_immune": true
+        }
       },
       "save": {
         "attribute": "constitution",
@@ -10480,9 +10934,20 @@
       ],
       "save_type": "Focus",
       "special": {
-        "silence_chance": 50,
-        "silence_duration": 1,
-        "note": "Focus save negates the Silence; damage always applies"
+        "effects": [
+          {
+            "type": "apply_status",
+            "status": "Silenced",
+            "chance": 50
+          },
+          {
+            "type": "note",
+            "text": "Focus save negates the Silence; damage always applies"
+          }
+        ],
+        "legacy": {
+          "silence_duration": 1
+        }
       },
       "target": {
         "type": "single",
@@ -10516,9 +10981,16 @@
         "eligible": "enemy"
       },
       "special": {
-        "next_hit_damage_bonus_pct": 50,
-        "consumed_on_hit": true,
-        "note": "Status is consumed on the first hit received; if not consumed, expires after 3 turns"
+        "effects": [
+          {
+            "type": "note",
+            "text": "Status is consumed on the first hit received; if not consumed, expires after 3 turns"
+          }
+        ],
+        "legacy": {
+          "next_hit_damage_bonus_pct": 50,
+          "consumed_on_hit": true
+        }
       },
       "description": "Mark a target with the sigil of ending. No damage — but the next time the target is struck, that hit deals 50% additional damage of its original type. Consumed on trigger. The mark lasts up to 3 turns."
     },
@@ -10539,8 +11011,15 @@
       "mana_cost": 40,
       "heal": 50,
       "special": {
-        "restore_stamina_percent": 20,
-        "note": "Restores 20% of max Stamina in addition to HP"
+        "effects": [
+          {
+            "type": "note",
+            "text": "Restores 20% of max Stamina in addition to HP"
+          }
+        ],
+        "legacy": {
+          "restore_stamina_percent": 20
+        }
       },
       "target": {
         "type": "single",
@@ -10564,8 +11043,10 @@
       "mana_cost": 35,
       "enemy_only": true,
       "special": {
-        "teleport_to_adjacent_target": true,
-        "melee_attack_on_emerge": true
+        "legacy": {
+          "teleport_to_adjacent_target": true,
+          "melee_attack_on_emerge": true
+        }
       },
       "target": {
         "type": "single",

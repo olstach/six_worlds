@@ -459,49 +459,55 @@ Recorded so they aren't rediscovered as bugs.
   beside its siblings at 14 and 16, and air magic's two capstones rewritten so
   level 10 grants something level 5 does not. Prose on the capstones is Claude's.
 
-- **The spells have the same shape of problem as the perks, in one field.**
-  `tools/audit_spells.py` (new) maps it. 363 spells, and unlike the perks they
-  are properly structured — school, level, mana, damage, target, statuses all
-  real fields the code reads.
+- [x] ~~**Every spell now has a target combat can resolve.**~~ — fixed
+  2026-09-08. The 16 spells whose `target.type` reached no branch were rewritten
+  into the vocabulary the code reads: the nine battlefield-wide ones (`ice_age`,
+  `sunrise`, `breath_of_heaven`, `nail_the_sun`,
+  `mudra_of_touching_the_earth`, `wilting_curse`, `vision_of_reality`,
+  `crystal_light`, `up_to_eleven`) became an `aoe` circle at size
+  `battlefield_width`, the sentinel `AoEResolver` already expands to grid width;
+  two party escapes and one caster-centred transfer became `self`;
+  `fungal_zombie` moved its corpse requirement from `target.type` to
+  `target.eligible` where the normaliser looks; `tongues_of_fire` became a
+  5-target chain. `space_swap` and `karmic_bond` were narrowed from
+  two-characters to caster-and-target — both want Olaf's eye, the alternative
+  was leaving them uncastable.
 
-  - **`special` is where the mechanics went to die.** 210 spells carry a
-    `special` block using **369 distinct keys**, and
-    `CombatManager._apply_spell_special` branches on **three** of them:
-    `dispels_all_battlefield`, `see_through_stealth`, `stealth_bonus`. **88% of
-    the keys are used by exactly one spell** — `gold_on_kill`,
-    `launches_into_air`, `instant_kill_on_failed_save`, `damage_split` — so it is
-    a bag of one-off prose in dict clothing rather than a vocabulary. Even the
-    most reused keys are inert: `freeze_chance` on 8 spells, `stun_chance` on 7,
-    `push_distance` on 6.
+- [x] ~~**Cleansing reads the names now.**~~ — fixed 2026-09-08.
+  `_cleanse_status_effects(unit, count)` became
+  `_cleanse_status_effects(unit, wanted: Array, limit := -1)`. It honours
+  specific status names, the category words (`all_negative`, mental, and the
+  rest) and each status's own `dispel_methods`, instead of counting the list
+  and stripping that many arbitrary debuffs.
 
-  - **16 spells have a target type nothing branches on.** `get_spell()` maps
-    `target.type` onto a targeting string and passes anything it does not
-    recognise through verbatim; combat then matches no branch. Seven of the
-    sixteen are **level-9 capstones** — `ice_age`, `sunrise`, `breath_of_heaven`,
-    `nail_the_sun`, `mudra_of_touching_the_earth`, `wilting_curse`,
-    `vision_of_reality` — all typed `global`. The rest are `party` 2,
-    `battlefield` 2, and one each of `corpse`, `multi_target`, `two_characters`,
-    `two_allies`, `special`. `fungal_zombie` is the clearest bug: it wants the
-    corpse targeting that exists, but declares it under `target.type` instead of
-    `target.eligible`, which is where the normaliser looks.
+- [x] ~~**The damage curve tracks the cost.**~~ — fixed 2026-09-08. 108 damage
+  values rescaled; medians by level now run 19 / 53 / 103 / 191 / 326 against
+  mana ratios 1 / 2.67 / 5 / 9 / 15, i.e. damage rises slightly steeper than
+  cost so higher levels stay worth the mana.
 
-  - **Cleansing ignores the names.** `_cleanse_status_effects(unit, count)` takes
-    the *length* of `statuses_removed` and strips that many dispellable debuffs,
-    whichever they are. So `cleanse`, listing `["all_negative"]`, removes exactly
-    one debuff, and a spell naming three specific statuses removes three
-    arbitrary ones.
+- [x] ~~**The one genuine mechanical duplicate.**~~ — `shining_mirage` removed
+  2026-09-08 at Olaf's call, with its `shops.json` and `domains.json`
+  references. `radiant_visage` stays. Note the pair was *not* strictly
+  identical — the audit's signature had ignored `aura` and `special`, where one
+  buffed allies and the other confused enemies. The signature now covers both
+  fields and reports 0 duplicate groups.
 
-  - **One genuine mechanical duplicate**: `radiant_visage` and `shining_mirage`
-    are both Fire/Space/Enchantment L7, self-targeted, 135 mana, no damage, same
-    statuses. Their descriptions differ; nothing else does.
+- [ ] **`special` is standardised in shape but not yet in content.**
+  `resources/data/spell_effects.json` (new) is the registry: 25 typed effect
+  types, each with a description, its params, and an `implemented` flag — 5 are
+  implemented. Every spell's `special` is now
+  `{"effects": [...], "legacy": {...}}`, and `validate_data.py` rejects an
+  unknown effect type, a missing required param, or a legacy key not on the
+  frozen list. **New mechanics go in `effects` as a registered type; the frozen
+  list may shrink and must never grow.**
 
-  - **The damage curve flattens where the cost does not.** Median damage by level
-    runs 15, 25, 45, 50, 120 — L5 to L7 is almost flat — while median mana runs
-    15, 40, 75, 135, 225 and nearly doubles across the same step.
-
-  - **Healthy:** the mana curve is otherwise clean, all ten AoE shapes resolve in
-    `AoEResolver`, and every one of the ten schools has spells at every level
-    1/3/5/7/9 — 50 of 50 cells filled.
+  The backlog is real and it is design work, not renaming. Only **18 typed
+  entries across 15 spells** could be migrated automatically (push 7, visual 5,
+  note 3, dispel_battlefield 1, see_through_stealth 1, apply_status 1); **194
+  spells are still entirely legacy**, and **361 legacy keys** are frozen.
+  **299 of those 361 carry the bare value `true`** — `freeze_chance: true`,
+  `dodge_bonus: true` — so migrating one means inventing the number it should
+  have carried. That is a balance decision per spell, and it needs Olaf.
 
 - [x] ~~**Two dangling spell references.**~~ — fixed: `freedom` removed a status
   called `Earthbound` that does not exist (now `Grounded`), and `cloud_serpent`

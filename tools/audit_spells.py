@@ -97,28 +97,42 @@ def main():
     if not bad:
         print("\n  none")
 
-    # ── the special bag ─────────────────────────────────────────────────────
-    rule("`special` — the free-form mechanics bag")
-    keys = Counter()
-    carriers = 0
+    # ── the special vocabulary ──────────────────────────────────────────────
+    rule("`special` — typed effects against the frozen legacy backlog")
+    reg = load("resources/data/spell_effects.json")
+    types = reg["effects"]
+    legacy_frozen = set(reg.get("legacy_keys", []))
+    typed = Counter()
+    legacy = Counter()
+    with_typed = 0
     for v in spells.values():
         sp = v.get("special")
-        if isinstance(sp, dict):
-            carriers += 1
-            keys.update(sp.keys())
-    read = sorted(k for k in keys if k in HANDLED_SPECIAL)
-    named = sorted(k for k in keys if k in lits and k not in HANDLED_SPECIAL)
-    print(f"\n  {carriers} spells carry a `special` block, using {len(keys)} distinct keys")
-    print(f"  keys the dispatcher branches on: {len(read)}  {', '.join(read) or '—'}")
-    print(f"  keys it does not:               {len(keys) - len(read)}")
-    print(f"  (of those, {len(named)} appear as a string somewhere in the codebase, but for")
-    print(f"   unrelated reasons — _apply_spell_special is the only thing that reads `special`)")
-    once = [k for k, n in keys.items() if n == 1]
-    print(f"  keys used by exactly one spell: {len(once)} of {len(keys)} "
-          f"({len(once)/len(keys)*100:.0f}%)")
-    print("\n  most reused:")
-    for k, n in keys.most_common(12):
-        print(f"    {k:34s} {n:3d}   {'handled' if k in HANDLED_SPECIAL else 'inert'}")
+        if not isinstance(sp, dict):
+            continue
+        fx = sp.get("effects", [])
+        if fx:
+            with_typed += 1
+        for e in fx:
+            typed[e.get("type", "?")] += 1
+        legacy.update(sp.get("legacy", {}).keys())
+    impl = [t for t, spec in types.items() if spec.get("implemented")]
+    print(f"\n  registry: {len(types)} effect types, {len(impl)} of them implemented")
+    print(f"    implemented: {', '.join(sorted(impl))}")
+    print(f"\n  typed effect entries in use: {sum(typed.values())} across {with_typed} spells")
+    for t, n in typed.most_common():
+        mark = "" if types.get(t, {}).get("implemented") else "   (declared, not yet implemented)"
+        print(f"    {t:24s} {n:3d}{mark}")
+    print(f"\n  legacy keys still in use: {len(legacy)} distinct, {sum(legacy.values())} uses")
+    print(f"  frozen list holds {len(legacy_frozen)} — the backlog may shrink, never grow")
+    flags = [k for k, _n in legacy.items()
+             if all((v.get("special") or {}).get("legacy", {}).get(k) is True
+                    for v in spells.values()
+                    if k in (v.get("special") or {}).get("legacy", {}))]
+    print(f"  of those, {len(flags)} are bare `true` with no value — migrating one means")
+    print(f"  deciding a number, which is design work rather than a rename")
+    print("\n  most used legacy keys:")
+    for k, n in legacy.most_common(10):
+        print(f"    {k:34s} {n:3d}")
 
     # ── dangling references ─────────────────────────────────────────────────
     rule("Dangling references")
