@@ -2962,9 +2962,12 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 
 	# Skill-level mana cost reduction: apply only when at least one spell school
 	# matches a magic skill the caster has invested in (school-specific efficiency).
-	# Reduction is flat (e.g. space_magic 5 → -75), capped at 90% of base cost.
-	var skill_mana_reduction: int = caster.character_data.get("derived", {}).get("mana_cost_reduction", 0)
-	if skill_mana_reduction < 0:
+	# `mana_cost_pct` is a percentage and negative means cheaper (space_magic 5
+	# reads -75, i.e. 75% off), capped at 90% of base cost so a maxed school
+	# still pays something. It used to be read as a flat mana subtraction, which
+	# made a level-1 spell free and barely touched a level-9 one.
+	var skill_mana_pct: float = float(caster.character_data.get("derived", {}).get("mana_cost_pct", 0.0))
+	if skill_mana_pct < 0.0:
 		var spell_schools_lower: Array = spell.get("schools", []).map(func(s): return s.to_lower())
 		var caster_skills: Dictionary = caster.character_data.get("skills", {})
 		const MAGIC_SKILL_TO_SCHOOL = {
@@ -2980,9 +2983,8 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 				break
 		if school_matches:
 			var base_cost: int = spell.get("mana_cost", 0)
-			var max_reduction: int = int(base_cost * 0.90)
-			mana_cost = max(int(base_cost * 0.10), mana_cost + skill_mana_reduction)
-			mana_cost = max(mana_cost, int(spell.get("mana_cost", 0)) - max_reduction)
+			var discount: float = clampf(-skill_mana_pct, 0.0, 90.0) / 100.0
+			mana_cost = maxi(1, mana_cost - int(round(float(base_cost) * discount)))
 
 	# Deduct mana (sync to character_data so it persists after combat)
 	caster.current_mana -= mana_cost

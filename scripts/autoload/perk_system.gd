@@ -15,6 +15,10 @@ var _skill_perks: Dictionary = {}      # perk_id -> perk data
 var _cross_perks: Dictionary = {}      # perk_id -> perk data
 var _base_bonuses: Dictionary = {}     # skill_id -> base bonus table
 
+# Effect vocabulary loaded from perk_effects.json
+var _effect_defs: Dictionary = {}      # effect type -> definition
+var _condition_defs: Dictionary = {}   # condition name -> definition
+
 # Skill metadata loaded from skills.json
 var _skill_elements: Dictionary = {}   # skill_id -> element name
 
@@ -44,8 +48,10 @@ const PERKS_OFFERED: int = 4
 func _ready() -> void:
 	_load_skills_data()
 	_load_perks_data()
+	_load_effect_registry()
 	print("PerkSystem initialized: ", _skill_perks.size(), " skill perks, ",
-		_cross_perks.size(), " cross perks, ", _base_bonuses.size(), " base bonus tables")
+		_cross_perks.size(), " cross perks, ", _base_bonuses.size(), " base bonus tables, ",
+		_effect_defs.size(), " effect types")
 
 
 # ============================================
@@ -102,6 +108,108 @@ func _load_perks_data() -> void:
 	_base_bonuses = data.get("base_bonuses", {})
 	_skill_perks = data.get("skill_perks", {})
 	_cross_perks = data.get("cross_perks", {})
+
+
+func _load_effect_registry() -> void:
+	## Load the typed effect and condition vocabulary from perk_effects.json.
+	var file_path = "res://resources/data/perk_effects.json"
+	if not FileAccess.file_exists(file_path):
+		push_error("PerkSystem: perk_effects.json not found")
+		return
+
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	var json_text = file.get_as_text()
+	file.close()
+
+	var json = JSON.new()
+	if json.parse(json_text) != OK:
+		push_error("PerkSystem: Failed to parse perk_effects.json: ", json.get_error_message())
+		return
+
+	var data = json.get_data()
+	_effect_defs = data.get("effects", {})
+	_condition_defs = data.get("conditions", {})
+
+
+func get_effect_registry() -> Dictionary:
+	## The declared effect types, for tooling and UI.
+	return _effect_defs
+
+
+func get_condition_registry() -> Dictionary:
+	## The declared condition types, for tooling and UI.
+	return _condition_defs
+
+
+# ============================================
+# PERK EFFECTS
+# ============================================
+
+## Every typed effect on every perk this character owns, as
+## {perk_id, effect} pairs. Perks with no `effects` block contribute nothing —
+## most of them still only carry prose, which is what tools/audit_perks.py
+## counts and docs/review/PERK_FIXES.md lists.
+func get_perk_effects(character: Dictionary) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for perk_id in _get_owned_perk_ids(character):
+		var data := get_perk_data(perk_id)
+		for effect in data.get("effects", []):
+			if effect is Dictionary:
+				out.append({"perk_id": perk_id, "effect": effect})
+	return out
+
+
+## Standing stat modifiers from perks — the ones whose condition is `always`,
+## so they belong on the character sheet rather than being recomputed per swing.
+## Returns the three buckets CharacterSystem.apply_stat_modifiers expects.
+func get_passive_stat_modifiers(character: Dictionary) -> Dictionary:
+	var mods: Dictionary = {"pct": {}, "rate": {}, "flat": {}}
+	if not CharacterSystem:
+		return mods
+	for entry in get_perk_effects(character):
+		var effect: Dictionary = entry["effect"]
+		if String(effect.get("type", "")) != "stat":
+			continue
+		if String(effect.get("condition", "always")) != "always":
+			continue
+		# Anything aimed at someone else is not this character's standing stat.
+		if String(effect.get("to", "self")) != "self":
+			continue
+		var stat := CharacterSystem.canonical_stat(String(effect.get("stat", "")))
+		if stat == "":
+			continue
+		var amount := float(effect.get("amount", 0.0))
+		var is_percent := bool(effect.get("is_percent", true))
+		var bucket := "pct"
+		match CharacterSystem.stat_mode(stat):
+			"scaling":
+				bucket = "pct" if is_percent else "flat"
+			"rate":
+				bucket = "rate"
+			_:
+				bucket = "flat"
+		mods[bucket][stat] = float(mods[bucket].get(stat, 0.0)) + amount
+	return mods
+
+
+## Standing resistances from perks — `resistance` effects with condition
+## `always` aimed at the character itself. Returned as {name: percent} to be
+## merged into derived.resistances alongside racial, trait and equipment ones.
+func get_passive_resistances(character: Dictionary) -> Dictionary:
+	var out: Dictionary = {}
+	for entry in get_perk_effects(character):
+		var effect: Dictionary = entry["effect"]
+		if String(effect.get("type", "")) != "resistance":
+			continue
+		if String(effect.get("condition", "always")) != "always":
+			continue
+		if String(effect.get("to", "self")) != "self":
+			continue
+		var against := String(effect.get("against", ""))
+		if against == "":
+			continue
+		out[against] = float(out.get(against, 0.0)) + float(effect.get("pct", 0.0))
+	return out
 
 
 # ============================================

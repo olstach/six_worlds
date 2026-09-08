@@ -560,6 +560,76 @@ for gd_path in glob.glob(os.path.join(ROOT, "scripts/**/*.gd"), recursive=True):
         if match.group(1) not in statuses:
             err("code->status", f"{rel}: status '{match.group(1)}' not in statuses.json")
 
+# ── stat vocabulary ──────────────────────────────────────────────────────────
+# Every stat name written anywhere in the data must resolve through
+# stat_keys.json, or the modifier lands nowhere. That is exactly how 28 of the
+# 40 base_bonuses keys stayed dead: nothing ever checked them.
+stat_keys = load("resources/data/stat_keys.json")
+STAT_DEFS = stat_keys.get("stats", {})
+STAT_ALIASES = stat_keys.get("aliases", {})
+
+for alias, target in STAT_ALIASES.items():
+    if target not in STAT_DEFS:
+        err("stat_keys", f"alias '{alias}' points at unknown stat '{target}'")
+
+VALID_MODES = {"scaling", "rate", "flat"}
+for stat, sdef in STAT_DEFS.items():
+    mode = sdef.get("mode", "")
+    if mode not in VALID_MODES:
+        err("stat_keys", f"stat '{stat}' has unknown mode '{mode}'")
+
+
+def canonical_stat(name):
+    if name in STAT_DEFS:
+        return name
+    return STAT_ALIASES.get(name, "")
+
+
+for skill_id, table in perks_data.get("base_bonuses", {}).items():
+    for level, bonus in table.get("per_level", {}).items():
+        for raw_key in bonus:
+            if not canonical_stat(raw_key):
+                err("base_bonus->stat",
+                    f"{skill_id} L{level}: stat '{raw_key}' is not in stat_keys.json")
+
+# ── perks ────────────────────────────────────────────────────────────────────
+perk_effect_registry = load("resources/data/perk_effects.json")
+PERK_EFFECTS = perk_effect_registry.get("effects", {})
+PERK_CONDITIONS = perk_effect_registry.get("conditions", {})
+
+all_perks = {}
+all_perks.update(perks_data.get("skill_perks", {}))
+all_perks.update(perks_data.get("cross_perks", {}))
+
+for pid, perk in all_perks.items():
+    # Prerequisite perks must exist. Nothing checked this before, which is how a
+    # perk went on requiring a twin that had been deleted.
+    for prereq in perk.get("requires_perks", []):
+        options = prereq if isinstance(prereq, list) else [prereq]
+        for option in options:
+            if option not in perk_ids:
+                err("perk->perk", f"{pid}: requires_perks '{option}' does not exist")
+
+    for i, effect in enumerate(perk.get("effects", [])):
+        where = f"{pid}.effects[{i}]"
+        if not isinstance(effect, dict):
+            err("perk->effect", f"{where}: not an object")
+            continue
+        etype = effect.get("type", "")
+        if etype not in PERK_EFFECTS:
+            err("perk->effect", f"{where}: unknown effect type '{etype}'")
+            continue
+        condition = effect.get("condition", "always")
+        if condition not in PERK_CONDITIONS:
+            err("perk->effect", f"{where}: unknown condition '{condition}'")
+        for param, spec in PERK_EFFECTS[etype].get("params", {}).items():
+            if "required" in str(spec) and param not in effect:
+                err("perk->effect", f"{where}: '{etype}' is missing required param '{param}'")
+        if etype == "stat":
+            raw = effect.get("stat", "")
+            if raw and not canonical_stat(raw):
+                err("perk->stat", f"{where}: stat '{raw}' is not in stat_keys.json")
+
 # ── report ───────────────────────────────────────────────────────────────────
 print(f"TOTAL ISSUES: {len(errors)}")
 for category, count in Counter(c for c, _ in errors).most_common():

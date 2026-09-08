@@ -3103,7 +3103,15 @@
       "requires_perks": [],
       "description": "+15% to all mental saving throws.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "stat",
+          "condition": "always",
+          "stat": "mental_resistance_pct",
+          "amount": 15
+        }
+      ]
     },
     "steadfast_spirit": {
       "name": "Steadfast Spirit",
@@ -3134,7 +3142,39 @@
       "requires_perks": [],
       "description": "+20% resistance to all elemental damage.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "resistance",
+          "condition": "always",
+          "against": "fire",
+          "pct": 20
+        },
+        {
+          "type": "resistance",
+          "condition": "always",
+          "against": "water",
+          "pct": 20
+        },
+        {
+          "type": "resistance",
+          "condition": "always",
+          "against": "earth",
+          "pct": 20
+        },
+        {
+          "type": "resistance",
+          "condition": "always",
+          "against": "air",
+          "pct": 20
+        },
+        {
+          "type": "resistance",
+          "condition": "always",
+          "against": "space",
+          "pct": 20
+        }
+      ]
     },
     "inner_focus": {
       "name": "Inner Focus",
@@ -4743,7 +4783,7 @@
       "skill": "sorcery",
       "required_level": 9,
       "requires_perks": [
-        "no_followup_needed"
+        "no_follow_up_needed"
       ],
       "description": "If a single-target Sorcery spell kills the target, your next spell gains +50% Spellpower.",
       "flavor": "",
@@ -4866,7 +4906,27 @@
       "requires_perks": [],
       "description": "+25% resistance to Stun, Knockdown, and Exhaustion effects.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "status_resistance",
+          "condition": "always",
+          "against": "Stunned",
+          "pct": 25
+        },
+        {
+          "type": "status_resistance",
+          "condition": "always",
+          "against": "Knockdown",
+          "pct": 25
+        },
+        {
+          "type": "status_resistance",
+          "condition": "always",
+          "against": "Exhausted",
+          "pct": 25
+        }
+      ]
     },
     "still_standing": {
       "name": "Still Standing",
@@ -4884,7 +4944,21 @@
       "requires_perks": [],
       "description": "+30% weight limit and halve penalties from heavy equipment.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "stat",
+          "condition": "always",
+          "stat": "weight_limit",
+          "amount": 30,
+          "is_percent": true
+        },
+        {
+          "type": "note",
+          "condition": "always",
+          "text": "Penalties from heavy equipment are halved. The equipment-weight penalty system this refers to is not modelled yet."
+        }
+      ]
     },
     "nothing_wasted": {
       "name": "Nothing Wasted",
@@ -6409,7 +6483,26 @@
       "requires_perks": [],
       "description": "+25% resistance to bleed, poison, and other effects that bypass armor.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "resistance",
+          "condition": "always",
+          "against": "poison",
+          "pct": 25
+        },
+        {
+          "type": "status_resistance",
+          "condition": "always",
+          "against": "Bleeding",
+          "pct": 25
+        },
+        {
+          "type": "note",
+          "condition": "always",
+          "text": "Also covers other effects that bypass armor; which statuses those are has not been enumerated."
+        }
+      ]
     },
     "last_man_standing": {
       "name": "Last Man Standing",
@@ -8114,7 +8207,34 @@
       "description": "+10% max HP. +10% Armor. Crafted items are one quality tier higher. Immune to knockback and forced movement.",
       "flavor": "",
       "is_mantra": false,
-      "special_requirement": "earth_affinity_25"
+      "special_requirement": "earth_affinity_25",
+      "effects": [
+        {
+          "type": "stat",
+          "condition": "always",
+          "stat": "max_hp",
+          "amount": 10,
+          "is_percent": true
+        },
+        {
+          "type": "stat",
+          "condition": "always",
+          "stat": "armor",
+          "amount": 10,
+          "is_percent": true
+        },
+        {
+          "type": "unlock",
+          "condition": "crafting",
+          "capability": "quality_tier_up",
+          "detail": "Crafted items are one quality tier higher."
+        },
+        {
+          "type": "immunity",
+          "condition": "always",
+          "against": "forced_movement"
+        }
+      ]
     },
     "sentinel": {
       "name": "Sentinel",

@@ -1039,34 +1039,19 @@ func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dic
 		"armor_pierce": 0
 	}
 
-	# Apply PerkSystem base skill bonuses — mirrors CharacterSystem.update_derived_stats()
-	# so enemies benefit from the same per-skill-level stat tables as the player.
-	if PerkSystem:
-		for skill_id in skills:
-			var level: int = skills[skill_id]
-			if level <= 0:
-				continue
-			var bonus = PerkSystem.get_base_skill_bonuses_at_level(skill_id, level)
-			if bonus.is_empty():
-				continue
-			derived["accuracy"] += bonus.get("attack", 0)
-			derived["damage"]   += bonus.get("damage", 0)
-			derived["damage"]   += bonus.get("strength_weapon_damage", 0)
-			derived["crit_chance"] += bonus.get("crit_chance", 0.0)
-			derived["armor"]       += bonus.get("armor", 0)
-			derived["armor_pierce"] += bonus.get("armor_penetration", 0)
-			derived["max_hp"] += int(bonus.get("max_hp", 0))
-			derived["current_hp"] += int(bonus.get("max_hp", 0))
-			if bonus.has("spellpower"):
-				derived["spellpower"] += int(bonus.get("spellpower", 0))
-			derived["mana_cost_reduction"] = derived.get("mana_cost_reduction", 0) + int(bonus.get("mana_cost", 0))
-			derived["dodge"] += int(bonus.get("dodge", 0))
-			var stamina_bonus := int(bonus.get("stamina", 0))
-			derived["max_stamina"]   += stamina_bonus
-			derived["current_stamina"] += stamina_bonus
-			derived["initiative"] += int(bonus.get("initiative", 0))
-			if bonus.has("initiative_bonus"):
-				derived["initiative"] += int(bonus.get("initiative_bonus", 0))
+	# Apply the per-skill base bonus tables through the same code the player uses,
+	# so the two cannot drift apart. This block used to be a hand-copied
+	# translation of CharacterSystem's, and inherited the same bug: the tables
+	# hold percentages and were being added as flat points.
+	if CharacterSystem:
+		var mods: Dictionary = CharacterSystem.collect_skill_stat_modifiers(skills)
+		var hp_before: int = int(derived.get("max_hp", 0))
+		var stamina_before: int = int(derived.get("max_stamina", 0))
+		CharacterSystem.apply_stat_modifiers(derived, mods)
+		# Enemies are generated at full health, so carry any change to the pools
+		# straight over to the current values.
+		derived["current_hp"] = int(derived.get("current_hp", hp_before)) + (int(derived.get("max_hp", 0)) - hp_before)
+		derived["current_stamina"] = int(derived.get("current_stamina", stamina_before)) + (int(derived.get("max_stamina", 0)) - stamina_before)
 
 	return derived
 

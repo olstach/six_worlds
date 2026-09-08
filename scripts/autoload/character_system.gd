@@ -29,6 +29,16 @@ var _background_data: Dictionary = {}
 # Spell database for random starting spell selection
 var _spell_database: Dictionary = {}
 
+# Canonical stat vocabulary, loaded from stat_keys.json. `_stat_defs` maps a
+# canonical stat name to its definition ({mode, type, ...}); `_stat_aliases`
+# maps the legacy spellings scattered through the data files onto those names.
+# Everything that hands this system a stat modifier goes through canonical_stat()
+# first, so `attack`, `movement_speed` and `strength_weapon_damage` land on
+# `accuracy`, `movement` and `damage` instead of nowhere.
+var _stat_defs: Dictionary = {}
+var _stat_aliases: Dictionary = {}
+var _unknown_stat_warned: Dictionary = {}
+
 # Attribute costs - tripled linear scaling (rank * 3 per step)
 # 10→11 = 3 XP, 11→12 = 6 XP, ..., 19→20 = 30 XP, 29→30 = 60 XP
 # 10→20 total = 165 XP, 10→30 total = 630 XP (endgame godlike, ≈ skill L10)
@@ -219,10 +229,141 @@ const BASE_CHARACTER: Dictionary = {
 }
 
 func _ready() -> void:
+	_load_stat_keys()
 	_load_birth_data()
 	_load_spell_database()
 	print("CharacterSystem initialized with ", _birth_data.size(), " births, ",
-		_background_data.size(), " backgrounds, ", _spell_database.size(), " spells")
+		_background_data.size(), " backgrounds, ", _spell_database.size(), " spells, ",
+		_stat_defs.size(), " stat keys")
+
+
+## Load the canonical stat vocabulary. See resources/data/stat_keys.json for what
+## the three modes mean; the short version is that `scaling` percentages multiply
+## a computed base, `rate` percentages are the value themselves, and `flat` values
+## are added as-is.
+func _load_stat_keys() -> void:
+	var file_path := "res://resources/data/stat_keys.json"
+	if not FileAccess.file_exists(file_path):
+		push_error("CharacterSystem: stat_keys.json not found")
+		return
+	var file := FileAccess.open(file_path, FileAccess.READ)
+	var json_text := file.get_as_text()
+	file.close()
+	var json := JSON.new()
+	if json.parse(json_text) != OK:
+		push_error("CharacterSystem: Failed to parse stat_keys.json: " + json.get_error_message())
+		return
+	var data: Dictionary = json.get_data()
+	_stat_defs = data.get("stats", {})
+	_stat_aliases = data.get("aliases", {})
+
+
+## Resolve a stat name written anywhere in the data onto its canonical form.
+## Returns "" for a name the vocabulary does not know, warning once per name so
+## a typo in content is visible without spamming the log every frame.
+func canonical_stat(key: String) -> String:
+	if _stat_defs.has(key):
+		return key
+	if _stat_aliases.has(key):
+		return String(_stat_aliases[key])
+	if not _unknown_stat_warned.has(key):
+		_unknown_stat_warned[key] = true
+		push_warning("CharacterSystem: unknown stat key '%s' — add it to stat_keys.json" % key)
+	return ""
+
+
+## How a modifier on this stat combines: "scaling", "rate" or "flat".
+func stat_mode(stat: String) -> String:
+	return String(_stat_defs.get(stat, {}).get("mode", "flat"))
+
+
+## Accumulate the per-skill base bonus tables (perks.json `base_bonuses`) into
+## canonical stat modifiers. `levels` maps skill id -> effective level.
+##
+## Every value in those tables is a percentage. Swords 10 reads
+## `{"attack": 130, "damage": 130}`, meaning +130% accuracy and damage — not
+## +130 flat points, which is how they were read before and why anyone with a
+## skill at 5 or above had nonsensical combat stats.
+##
+## Shared by the player path (update_derived_stats) and the enemy path
+## (EnemySystem._build_derived_stats) so the two cannot drift apart again.
+func collect_skill_stat_modifiers(levels: Dictionary) -> Dictionary:
+	var mods: Dictionary = {"pct": {}, "rate": {}, "flat": {}}
+	if not PerkSystem:
+		return mods
+	for skill_id in levels:
+		var lvl: int = int(levels[skill_id])
+		if lvl <= 0:
+			continue
+		var bonus: Dictionary = PerkSystem.get_base_skill_bonuses_at_level(String(skill_id), lvl)
+		for raw_key in bonus:
+			_accumulate_stat_modifier(String(raw_key), float(bonus[raw_key]),
+				mods["pct"], mods["rate"], mods["flat"])
+	return mods
+
+
+## Apply accumulated modifiers to a derived-stat dictionary.
+## Scaling percentages multiply each stat's own computed base, rate percentages
+## add together (they have no base — the percentage is the value), and flat
+## values are added as written.
+func apply_stat_modifiers(derived: Dictionary, mods: Dictionary) -> void:
+	var flat_mods: Dictionary = mods.get("flat", {})
+	var pct_mods: Dictionary = mods.get("pct", {})
+	var rate_mods: Dictionary = mods.get("rate", {})
+
+	# Flat first: the convention is final = (base + flat) * (1 + pct/100), so a
+	# flat +1 Movement is scaled by a later +50% Movement rather than bolted on
+	# after it.
+	for stat in flat_mods:
+		var def_flat: Dictionary = _stat_defs.get(stat, {})
+		var summed: float = float(derived.get(stat, 0)) + float(flat_mods[stat])
+		derived[stat] = int(round(summed)) if String(def_flat.get("type", "int")) == "int" else summed
+
+	for stat in pct_mods:
+		var pct: float = float(pct_mods[stat])
+		if is_zero_approx(pct):
+			continue
+		var def: Dictionary = _stat_defs.get(stat, {})
+		var base_value: float = float(derived.get(stat, 0))
+		# A stat that is a pure bonus with no natural base — accuracy sits on top
+		# of a flat 80% hit chance and is 0 without equipment — declares the
+		# notional base its percentage is taken against. Everything else scales
+		# the value computed from attributes and equipment.
+		if def.has("pct_base"):
+			derived[stat] = base_value + float(def["pct_base"]) * pct / 100.0
+		else:
+			derived[stat] = base_value * (1.0 + pct / 100.0)
+		if String(def.get("type", "int")) == "int":
+			derived[stat] = int(round(float(derived[stat])))
+
+	# Rate stats have no base — the percentage is the value, and several sources
+	# simply add together.
+	for stat in rate_mods:
+		derived[stat] = float(derived.get(stat, 0.0)) + float(rate_mods[stat])
+
+
+## Route one incoming stat modifier into the right accumulator by its mode.
+## `raw_key` may be a legacy spelling; an unrecognised name is dropped with a
+## one-time warning rather than silently landing nowhere, which is exactly how
+## 28 of the 40 base_bonuses keys went unnoticed for as long as they did.
+func _accumulate_stat_modifier(raw_key: String, value: float,
+		pct_mods: Dictionary, rate_mods: Dictionary, flat_mods: Dictionary,
+		is_percent: bool = true) -> void:
+	var stat := canonical_stat(raw_key)
+	if stat == "":
+		return
+	match stat_mode(stat):
+		"scaling":
+			# A scaling stat takes either kind: "+30% weight limit" is a
+			# percentage of the computed base, "+1 Movement" is not.
+			if is_percent:
+				pct_mods[stat] = float(pct_mods.get(stat, 0.0)) + value
+			else:
+				flat_mods[stat] = float(flat_mods.get(stat, 0.0)) + value
+		"rate":
+			rate_mods[stat] = float(rate_mods.get(stat, 0.0)) + value
+		_:
+			flat_mods[stat] = float(flat_mods.get(stat, 0.0)) + value
 
 
 ## Load birth and background definitions from JSON
@@ -1110,14 +1251,6 @@ func update_derived_stats(character: Dictionary) -> void:
 	# Dodge from Finesse + equipment + water affinity
 	derived.dodge = effective_attrs.finesse + equip_bonus.get("dodge", 0) + affinity_bonus.get("dodge", 0)
 
-	# Extra leg pairs: each pair beyond the first gives +2 movement, +10 dodge, +20 weight_limit
-	if BodySystem:
-		var extra_pairs: int = BodySystem.get_extra_leg_pairs(character)
-		if extra_pairs > 0:
-			derived.movement += extra_pairs * 2
-			derived.dodge += extra_pairs * 10
-			derived.weight_limit += extra_pairs * 20
-
 	# Spellpower from Focus + equipment + space affinity
 	derived.spellpower = effective_attrs.focus + equip_bonus.get("spellpower", 0) + affinity_bonus.get("spellpower", 0)
 
@@ -1126,6 +1259,14 @@ func update_derived_stats(character: Dictionary) -> void:
 
 	# Weight limit from Strength + equipment (e.g. backpack)
 	derived.weight_limit = 100 + (effective_attrs.strength - 10) * 10 + equip_bonus.get("weight_limit", 0)
+
+	# Extra leg pairs: each pair beyond the first gives +2 movement, +10 dodge, +20 weight_limit
+	if BodySystem:
+		var extra_pairs: int = BodySystem.get_extra_leg_pairs(character)
+		if extra_pairs > 0:
+			derived.movement += extra_pairs * 2
+			derived.dodge += extra_pairs * 10
+			derived.weight_limit += extra_pairs * 20
 
 	# Combat stats from equipment + earth affinity
 	derived.damage = equip_bonus.get("damage", 0)
@@ -1146,39 +1287,30 @@ func update_derived_stats(character: Dictionary) -> void:
 	var equip_resists = equip_bonus.get("resistances", {})
 	for r in equip_resists:
 		new_resists[r] = new_resists.get(r, 0) + equip_resists[r]
+	if PerkSystem:
+		var perk_resists: Dictionary = PerkSystem.get_passive_resistances(character)
+		for r in perk_resists:
+			new_resists[r] = new_resists.get(r, 0) + perk_resists[r]
 	derived["resistances"] = new_resists
 
-	# Apply base skill bonuses from PerkSystem (data-driven per_level tables)
-	# Each skill contributes its cumulative bonuses at the character's effective level.
+	# Collect percentage and flat modifiers from every source that speaks the
+	# canonical stat vocabulary. They accumulate here and are applied in one pass
+	# further down, once the flat bases above are settled — a percentage has to
+	# know what it is a percentage *of*.
+	var effective_levels: Dictionary = {}
+	for skill_id in character.get("skills", {}):
+		effective_levels[skill_id] = get_effective_skill_level(character, String(skill_id))
+	var mods: Dictionary = collect_skill_stat_modifiers(effective_levels)
+
+	# Standing modifiers from perks (the `effects` blocks in perks.json, typed
+	# against perk_effects.json). Only effects whose condition is `always` land
+	# here; every other condition has to be evaluated in combat, where the
+	# situation it names can actually be checked.
 	if PerkSystem:
-		var all_skills = character.get("skills", {})
-		for skill_id in all_skills:
-			var effective_level = get_effective_skill_level(character, skill_id)
-			if effective_level == 0:
-				continue
-			var bonus = PerkSystem.get_base_skill_bonuses_at_level(skill_id, effective_level)
-			if bonus.is_empty():
-				continue
-			# Combat skill bonuses
-			derived["accuracy"] = derived.get("accuracy", 0) + bonus.get("attack", 0)
-			derived["damage"] = derived.get("damage", 0) + bonus.get("damage", 0)
-			derived["damage"] = derived.get("damage", 0) + bonus.get("strength_weapon_damage", 0)
-			derived["crit_chance"] = derived.get("crit_chance", 0.0) + bonus.get("crit_chance", 0.0)
-			derived["armor"] = derived.get("armor", 0) + bonus.get("armor", 0)
-			derived["armor_pierce"] = derived.get("armor_pierce", 0) + bonus.get("armor_penetration", 0)
-			# Armor skill: HP and damage reduction
-			derived["max_hp"] = derived.get("max_hp", 100) + int(bonus.get("max_hp", 0))
-			if bonus.has("damage_reduction_pct"):
-				derived["damage_reduction_pct"] = derived.get("damage_reduction_pct", 0.0) + bonus.get("damage_reduction_pct", 0.0)
-			# Magic school bonuses
-			if bonus.has("spellpower"):
-				derived["spellpower"] = derived.get("spellpower", 0) + int(bonus.get("spellpower", 0))
-			# Mana cost reduction (negative values in data = cost reduction per cast)
-			derived["mana_cost_reduction"] = derived.get("mana_cost_reduction", 0) + int(bonus.get("mana_cost", 0))
-			# General skill bonuses — key names match data exactly
-			derived["dodge"] = derived.get("dodge", 0) + int(bonus.get("dodge", 0))
-			derived["max_stamina"] = derived.get("max_stamina", 50) + int(bonus.get("stamina", 0))
-			derived["initiative"] = derived.get("initiative", 0) + int(bonus.get("initiative", 0))
+		var perk_mods: Dictionary = PerkSystem.get_passive_stat_modifiers(character)
+		for bucket in ["pct", "rate", "flat"]:
+			for stat in perk_mods.get(bucket, {}):
+				mods[bucket][stat] = float(mods[bucket].get(stat, 0.0)) + float(perk_mods[bucket][stat])
 
 	# Apply penalties for negative skill levels (quirks/debuffs pushing skills below 0).
 	for skill_id in NEGATIVE_SKILL_PENALTIES:
@@ -1234,6 +1366,26 @@ func update_derived_stats(character: Dictionary) -> void:
 			if stat.ends_with("_resistance"):
 				var element = stat.replace("_resistance", "")
 				derived["resistances"][element] = derived["resistances"].get(element, 0) + amount
+
+	# --- Percentage stage -------------------------------------------------
+	# Everything above this line is flat. Now apply the accumulated percentages,
+	# each against the base its own stat actually has. This is the step the data
+	# has always assumed and the code never had.
+	# Note the pools before the stage so a percentage that raises a maximum
+	# raises the current value with it, the same way the flat bonuses above do.
+	# Without this a fresh character would spawn a few HP short of full.
+	var hp_before_pct: int = int(derived.get("max_hp", 0))
+	var mana_before_pct: int = int(derived.get("max_mana", 0))
+	var stamina_before_pct: int = int(derived.get("max_stamina", 0))
+
+	apply_stat_modifiers(derived, mods)
+
+	derived.current_hp = int(derived.get("current_hp", hp_before_pct)) + (int(derived.max_hp) - hp_before_pct)
+	derived.current_mana = int(derived.get("current_mana", mana_before_pct)) + (int(derived.max_mana) - mana_before_pct)
+	derived.current_stamina = int(derived.get("current_stamina", stamina_before_pct)) + (int(derived.max_stamina) - stamina_before_pct)
+	derived.current_hp = mini(derived.current_hp, int(derived.max_hp))
+	derived.current_mana = mini(derived.current_mana, int(derived.max_mana))
+	derived.current_stamina = mini(derived.current_stamina, int(derived.max_stamina))
 
 	# Apply persistent wound/disease stat penalties (percentage-based, multiplicative).
 	# get_stat_penalties returns e.g. {"dodge": -25, "max_hp": -20} meaning -25%, -20%.
