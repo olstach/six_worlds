@@ -1,12 +1,8 @@
 {
   "_comment": "The vocabulary a perk's `effects` block may use. Each entry in a perk's `effects` array is {\"type\": <one of these>, \"condition\": <one of the conditions below>, ...params}. This file is the contract: validate_data.py rejects a type or condition that is not here, and a required param that is missing.",
-
   "_comment_why": "603 perks carried name, description, flavor and gating and no mechanical field at all — every effect lived in English prose, and the 168 that worked did so because someone hand-wrote an `if PerkSystem.has_perk(...)` for each one in combat code. That does not scale to 603. Typing the effect instead means a perk is wired by writing data, and the same evaluator serves all of them.",
-
   "_comment_conditions": "A perk's mechanics are almost never unconditional — that is the central fact about this data. Only about 19 of 603 are a plain standing bonus. Everything else fires while wielding something, against a certain target, on a trigger, or on a particular kind of spell. So `condition` is not an optional extra here; it is most of the content. An effect with condition `always` is applied by CharacterSystem.update_derived_stats and is visible on the character sheet. Everything else has to be evaluated where the condition can be checked, which means in combat.",
-
   "_comment_implemented": "`implemented` says whether code acts on the type yet. False means the effect is declared and validated but inert — honest, and visible in tools/audit_perks.py, rather than silently doing nothing.",
-
   "effects": {
     "stat": {
       "description": "Modify one canonical stat. Names come from stat_keys.json; `is_percent` decides whether the amount is a percentage of the stat's base or a flat addition.",
@@ -17,6 +13,15 @@
         "to": "self|ally|allies|party|target|enemies|summons, default self"
       },
       "implemented": true
+    },
+    "stat_conversion": {
+      "description": "Add a share of one stat to another. Parry adds 20% of Attack to Armor; Body as Conduit adds 25% of Spellpower to unarmed damage. Distinct from `stat` because the amount is not fixed — it tracks the source stat, so it has to be recomputed rather than folded into derived stats once.",
+      "params": {
+        "source": "canonical stat name from stat_keys.json, required",
+        "target": "canonical stat name from stat_keys.json, required",
+        "pct": "share of the source stat to add, required"
+      },
+      "implemented": false
     },
     "resistance": {
       "description": "Resistance to a damage element or a status category, as a percentage.",
@@ -146,35 +151,131 @@
     },
     "note": {
       "description": "The perk's effect as prose, deliberately not modelled. Use when the mechanic is genuinely one-off and belongs in the description rather than the engine.",
-      "params": {"text": "required"},
+      "params": {
+        "text": "required"
+      },
       "implemented": true
     }
   },
-
   "_comment_condition_list": "Conditions a perk effect may carry. `always` means the effect is a standing bonus and reaches the character sheet; every other condition has to be evaluated in combat against the situation named.",
-
   "conditions": {
-    "always":               {"description": "No condition. Applied to derived stats directly.", "implemented": true},
-    "wielding":             {"description": "While the named weapon type is equipped.", "params": {"weapon": "sword|axe|dagger|spear|mace|bow|crossbow|unarmed|shield, required"}, "implemented": false},
-    "armor_class":          {"description": "While wearing armor of the named weight.", "params": {"weight": "none|light|medium|heavy, required"}, "implemented": false},
-    "adjacent_allies":      {"description": "Number of allies within 1 tile.", "params": {"min": "optional", "max": "optional"}, "implemented": false},
-    "adjacent_enemies":     {"description": "Number of enemies within 1 tile.", "params": {"min": "optional", "max": "optional"}, "implemented": false},
-    "target_has_status":    {"description": "The target carries a status or any status.", "params": {"status": "name or 'any', required"}, "implemented": false},
-    "target_below_hp_pct":  {"description": "The target is under a share of its maximum HP.", "params": {"pct": "required"}, "implemented": false},
-    "self_below_hp_pct":    {"description": "This character is under a share of its maximum HP.", "params": {"pct": "required"}, "implemented": false},
-    "first_hit_on_target":  {"description": "The first time this character hits a given enemy in a combat.", "implemented": false},
-    "spell_school":         {"description": "The spell being cast carries the named school.", "params": {"school": "required"}, "implemented": false},
-    "turn_number":          {"description": "A particular turn of the combat.", "params": {"turn": "required"}, "implemented": false},
-    "on_hit":               {"description": "Triggered when this character lands an attack.", "implemented": false},
-    "on_crit":              {"description": "Triggered on a critical hit.", "implemented": false},
-    "on_kill":              {"description": "Triggered when this character kills.", "implemented": false},
-    "on_dodge":             {"description": "Triggered when this character dodges or parries.", "implemented": false},
-    "on_damage_taken":      {"description": "Triggered when this character is hit.", "implemented": false},
-    "on_ally_death":        {"description": "Triggered when an ally dies.", "implemented": false},
-    "on_cast":              {"description": "Triggered when this character casts a spell.", "implemented": false},
-    "out_of_combat":        {"description": "Applies only outside combat.", "implemented": false},
-    "crafting":             {"description": "Applies to items this character crafts.", "implemented": false},
-    "shopping":             {"description": "Applies to buying and selling.", "implemented": false},
-    "dialogue":             {"description": "Applies to social checks and dialogue rolls.", "implemented": false}
-  }
+    "always": {
+      "description": "No condition. Applied to derived stats directly.",
+      "implemented": true
+    },
+    "wielding": {
+      "description": "While the named weapon type is equipped.",
+      "params": {
+        "weapon": "sword|axe|dagger|spear|mace|bow|crossbow|unarmed|shield, required"
+      },
+      "implemented": false
+    },
+    "armor_class": {
+      "description": "While wearing armor of the named weight.",
+      "params": {
+        "weight": "none|light|medium|heavy, required"
+      },
+      "implemented": false
+    },
+    "adjacent_allies": {
+      "description": "Number of allies within 1 tile.",
+      "params": {
+        "min": "optional",
+        "max": "optional"
+      },
+      "implemented": false
+    },
+    "adjacent_enemies": {
+      "description": "Number of enemies within 1 tile.",
+      "params": {
+        "min": "optional",
+        "max": "optional"
+      },
+      "implemented": false
+    },
+    "target_has_status": {
+      "description": "The target carries a status or any status.",
+      "params": {
+        "status": "name or 'any', required"
+      },
+      "implemented": false
+    },
+    "target_below_hp_pct": {
+      "description": "The target is under a share of its maximum HP.",
+      "params": {
+        "pct": "required"
+      },
+      "implemented": false
+    },
+    "self_below_hp_pct": {
+      "description": "This character is under a share of its maximum HP.",
+      "params": {
+        "pct": "required"
+      },
+      "implemented": false
+    },
+    "first_hit_on_target": {
+      "description": "The first time this character hits a given enemy in a combat.",
+      "implemented": false
+    },
+    "spell_school": {
+      "description": "The spell being cast carries the named school.",
+      "params": {
+        "school": "required"
+      },
+      "implemented": false
+    },
+    "turn_number": {
+      "description": "A particular turn of the combat.",
+      "params": {
+        "turn": "required"
+      },
+      "implemented": false
+    },
+    "on_hit": {
+      "description": "Triggered when this character lands an attack.",
+      "implemented": false
+    },
+    "on_crit": {
+      "description": "Triggered on a critical hit.",
+      "implemented": false
+    },
+    "on_kill": {
+      "description": "Triggered when this character kills.",
+      "implemented": false
+    },
+    "on_dodge": {
+      "description": "Triggered when this character dodges or parries.",
+      "implemented": false
+    },
+    "on_damage_taken": {
+      "description": "Triggered when this character is hit.",
+      "implemented": false
+    },
+    "on_ally_death": {
+      "description": "Triggered when an ally dies.",
+      "implemented": false
+    },
+    "on_cast": {
+      "description": "Triggered when this character casts a spell.",
+      "implemented": false
+    },
+    "out_of_combat": {
+      "description": "Applies only outside combat.",
+      "implemented": false
+    },
+    "crafting": {
+      "description": "Applies to items this character crafts.",
+      "implemented": false
+    },
+    "shopping": {
+      "description": "Applies to buying and selling.",
+      "implemented": false
+    },
+    "dialogue": {
+      "description": "Applies to social checks and dialogue rolls.",
+      "implemented": false
+    }
+  },
+  "_comment_actives": "Active perks do NOT use this registry. They use a separate `combat_data` block read by scripts/combat/combat_arena.gd, which already implements buttons, stamina, cooldowns, weapon requirements, targeting, eight effect types and AI usage scoring. That pipeline works and is unused — no perk carries `combat_data`. Keep the two fields separate: `effects` is for passive and conditional mechanics, `combat_data` is for the ones the player presses a button to use. See docs/plans/PERK_WIRING_PLAN.md."
 }
