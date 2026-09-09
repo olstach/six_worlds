@@ -373,6 +373,20 @@ func get_perk_selection(character: Dictionary, count: int = PERKS_OFFERED, last_
 # PERK GRANTING
 # ============================================
 
+## Every perk id in the game, skill perks and cross perks together.
+## `_comment_*` section dividers in perks.json are skipped — their values are
+## plain strings, not perk dicts.
+func get_all_perk_ids() -> Array[String]:
+	var out: Array[String] = []
+	for source in [_skill_perks, _cross_perks]:
+		for perk_id in source:
+			if perk_id.begins_with("_"):
+				continue
+			out.append(String(perk_id))
+	out.sort()
+	return out
+
+
 ## Every skill id known to the game, from skills.json.
 ## Used when spending XP outside an archetype's priorities, so a character can
 ## pick up something its build would never have chosen.

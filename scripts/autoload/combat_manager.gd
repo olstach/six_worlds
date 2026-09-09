@@ -5426,6 +5426,26 @@ func ai_use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Di
 # ACTIVE SKILLS
 # ============================================
 
+## Effect strings `use_active_skill` below dispatches to a real resolver.
+## Keep in step with its match block — the UI greys out anything not listed here
+## rather than letting the player spend an action on "not yet implemented".
+const IMPLEMENTED_SKILL_EFFECTS: Array[String] = [
+	"attack_with_bonus", "dash_attack", "buff_self", "debuff_target",
+	"aoe_attack", "teleport", "stance", "heal_self", "enter_stealth",
+	"mark_target", "examine", "bonus_movement", "restore_stamina",
+	"restore_armor", "revive", "debuff_enemies", "buff_allies", "buff_ally",
+	"destroy_obstacle", "cleanse_and_buff", "grant_extra_action", "force_miss",
+	"grapple", "overcast", "retreat", "aoe_damage_and_status",
+	"buff_allies_debuff_enemies", "dispel_and_invert", "aggro_aura",
+	"share_buffs", "double_buffs", "chod_offering", "throw_phurba",
+]
+
+
+## True when an effect string resolves to something that actually happens.
+func is_active_skill_effect_implemented(effect: String) -> bool:
+	return effect in IMPLEMENTED_SKILL_EFFECTS
+
+
 ## Use an active skill. skill_data comes from perks.json with added combat_data.
 ## target_pos is used for targeted skills (single_enemy, aoe); ignored for self skills.
 func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) -> Dictionary:
