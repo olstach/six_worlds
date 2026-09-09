@@ -709,41 +709,40 @@ func _build_skill_tooltip(skill_id: String, trained: int, bonus: int, player_xp:
 
 
 func _format_bonus_preview(bonuses: Dictionary) -> String:
-	## Convert a bonus dict into a short human-readable string.
-	## e.g. {"attack": 10.0, "damage": 7.0} -> "+10 accuracy, +7 damage"
-	const BONUS_LABELS := {
-		"attack": "accuracy",
-		"damage": "damage",
-		"crit_chance": "crit%",
-		"armor_bonus": "armor",
-		"damage_reduction_pct": "dmg resist%",
-		"armor_penetration": "armor pierce",
-		"spellpower": "spellpower",
-		"mana_cost_reduction_pct": "mana cost%",
-		"dodge_bonus": "dodge",
+	## Convert a skill's base_bonuses row into a short human-readable string.
+	## e.g. {"attack": 75.0, "mana_cost": -75.0} -> "+75% accuracy, -75% mana cost"
+	##
+	## Two things were wrong here. The values are percentages and were printed as
+	## flat points, so Swords 5 advertised "+75 accuracy" on a 0-100 hit chance.
+	## And the local label table had drifted from the data it was labelling — it
+	## keyed on `dodge_bonus`, `armor_bonus` and `mana_cost_reduction_pct` while
+	## the tables write `dodge`, `armor` and `mana_cost`, so those three showed
+	## their raw key names. Names now resolve through stat_keys.json, which is
+	## the vocabulary the tables are actually written in, and the label is derived
+	## from the canonical name so there is no second table to drift.
+	const NICER_NAMES := {
+		"max_hp": "max HP",
+		"max_mana": "max mana",
 		"max_stamina": "stamina",
-		"initiative_bonus": "initiative",
-		"event_roll_bonus": "event bonus",
-		"mental_resistance_pct": "mental resist%",
-		"xp_gain_pct": "XP gain%",
-		"heal_effectiveness_pct": "heal%",
-		"melee_damage_bonus": "melee dmg",
-		"gold_gain_pct": "gold%",
-		"shop_discount_pct": "discount%",
-		"gold_bonus_pct": "loot gold%",
-		"stamina_recovery_bonus": "stamina regen",
-		"potion_effectiveness_pct": "potion%",
-		"equipment_quality_pct": "craft quality%",
-		"mandala_bonus": "mandala%",
+		"crit_chance": "crit",
+		"armor_pierce": "armor pierce",
+		"weight_limit": "carry weight",
 	}
 	var parts: Array[String] = []
 	for key in bonuses:
-		var val = bonuses[key]
-		if val == 0:
+		var val: float = float(bonuses[key])
+		if is_zero_approx(val):
 			continue
-		var label = BONUS_LABELS.get(key, key)
-		parts.append("+%s %s" % [str(int(val)), label])
+		var stat := CharacterSystem.canonical_stat(String(key))
+		var label: String = String(key)
+		if stat != "":
+			label = NICER_NAMES.get(stat, stat.trim_suffix("_pct").replace("_", " "))
+		# Only `flat` stats are counted in units; scaling and rate are percentages.
+		var suffix := "" if stat != "" and CharacterSystem.stat_mode(stat) == "flat" else "%"
+		var sign_str := "+" if val > 0.0 else ""
+		parts.append("%s%d%s %s" % [sign_str, int(round(val)), suffix, label])
 	return ", ".join(parts) if not parts.is_empty() else "(no change)"
+
 
 func _on_skill_pressed(skill_id: String) -> void:
 	var target := _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
