@@ -16,9 +16,10 @@ mantras) state their effect without a prefix.
 - **Active perks** — 75 of 109 now carry `combat_data` and resolve through one of the 32 `_resolve_*` handlers in `combat_manager.gd`: stamina cost, cooldowns, once-per-combat/turn limits, targeting, and the effect itself. See "Active perk wiring" below.
 - **164 passive perks are hand-wired by id** in `scripts/` — `momentum`, `cheap_shot`, `hit_back_harder`, `tidal_patience`, `call_the_shot`, `none_shall_pass` and others are checked directly by `PerkSystem.has_perk()` at the relevant combat moment. These deliberately get **no** `effects` array; a generic engine reading one would double-apply them.
 
+- **The passive effects engine** — landed 2026-09-10. A passive may carry an `effects` array instead of a hand-written branch; see "Passive engine" below.
+
 ### The gap
-Roughly 330 perks — the non-active ones with no code reference — exist only as
-human-readable `description` strings. No code reads or applies them.
+297 passive perks still exist only as human-readable `description` strings.
 
 ---
 
@@ -60,6 +61,46 @@ now filled in.
 | `guard_ally` | stalwart_guardian |
 | `ignore_resistances` on overcast | too_fast_to_react |
 | — | none_shall_pass (already wired as a passive ZoC reaction; its description says "Active", the code makes it always-on — a design call to settle) |
+
+## Passive engine (landed 2026-09-10)
+
+Steps 3-7 below are built. `PerkSystem` carries the query layer,
+`update_derived_stats()` folds in flat bonuses then conversions,
+`CombatUnit._get_conditional_perk_bonus()` evaluates gated effects where the
+stat is read, and `CombatManager._fire_perk_triggers()` dispatches reactive
+ones.
+
+| | count |
+|---|---|
+| Passive perks | 470 |
+| Implemented by hand, by id, in `scripts/` | 168 |
+| Carrying an `effects` array | 5 |
+| Still description-only | 297 |
+
+**The rule everything rests on:** a perk implemented by hand must never also
+carry an `effects` array, or it fires twice. `tools/wire_passive_perks.py`
+derives the hardcoded set by scanning `scripts/` rather than keeping a list, so
+a perk hardcoded tomorrow is protected without anyone remembering.
+`tools/verify_passive_perks.tscn` re-checks it against the shipped data. Note
+that **Parry and Improved Parry — this document's own worked example of a
+`stat_conversion` — are both hardcoded** and must stay that way.
+
+**Working effect types:** `stat_bonus` (conditional and not),
+`stat_conversion`, `resistance`, `on_trigger` (`on_hit`, `on_crit`, `on_kill`,
+`dodge_success`).
+
+**Not built:** `non_combat`. ShopSystem and EventManager have no consumer, and
+authoring an effect before its reader exists is the failure this whole pass
+spent its time undoing. Also unbuilt: `aura`, `cost_reduction`,
+`damage_modifier`, `resource_regen`, `spell_modifier`, `summon_modifier`,
+`special`.
+
+**Conditions understood** (`CombatUnit._perk_condition_met`): `wielding_sword`
+/ `_axe` / `_mace` / `_spear` / `_dagger` / `_staff`, `wielding_ranged`,
+`unarmed`, `not_flanked`, `did_not_move`, `moved_this_turn`, `from_stealth`,
+`below_half_hp`, `above_half_hp`. An unrecognised condition pushes an error and
+returns false — a gate that quietly opens always is worse than one that never
+opens.
 
 ### Approximations to review
 
