@@ -3253,7 +3253,14 @@
       "requires_perks": [],
       "description": "+15% to all mental saving throws.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "stat_bonus",
+          "stat": "mental_resistance_pct",
+          "value": 15
+        }
+      ]
     },
     "steadfast_spirit": {
       "name": "Steadfast Spirit",
@@ -3284,7 +3291,34 @@
       "requires_perks": [],
       "description": "+20% resistance to all elemental damage.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "resistance",
+          "damage_type": "fire",
+          "value": 20
+        },
+        {
+          "type": "resistance",
+          "damage_type": "water",
+          "value": 20
+        },
+        {
+          "type": "resistance",
+          "damage_type": "air",
+          "value": 20
+        },
+        {
+          "type": "resistance",
+          "damage_type": "earth",
+          "value": 20
+        },
+        {
+          "type": "resistance",
+          "damage_type": "space",
+          "value": 20
+        }
+      ]
     },
     "inner_focus": {
       "name": "Inner Focus",
@@ -3392,7 +3426,18 @@
       "requires_perks": [],
       "description": "Passive. If you didn't move last turn, ranged attacks gain +8% accuracy.",
       "flavor": "Still ground is the first lesson.",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "stat_bonus",
+          "stat": "accuracy",
+          "value": 8,
+          "conditions": [
+            "did_not_move",
+            "wielding_ranged"
+          ]
+        }
+      ]
     },
     "measured_distance": {
       "name": "Measured Distance",
@@ -4642,7 +4687,19 @@
       "requires_perks": [],
       "description": "Passive. When an enemy's melee attack misses you, your next unarmed attack this turn gains +20% crit chance.",
       "flavor": "You learn the shape of the miss.",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "on_trigger",
+          "trigger": "dodge_success",
+          "effect": {
+            "type": "buff",
+            "stat": "damage",
+            "value": 20,
+            "duration": 1
+          }
+        }
+      ]
     },
     "bare_chest": {
       "name": "Bare Chest",
@@ -7120,7 +7177,19 @@
       "requires_perks": [],
       "description": "+25% resistance to bleed, poison, and other effects that bypass armor.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "resistance",
+          "damage_type": "bleed",
+          "value": 25
+        },
+        {
+          "type": "resistance",
+          "damage_type": "poison",
+          "value": 25
+        }
+      ]
     },
     "last_man_standing": {
       "name": "Last Man Standing",

@@ -49,6 +49,43 @@ const DATA_KEYWORDS: Array[String] = [
 	"status_resistance",  # buff_ally: becomes save_bonus
 ]
 
+## Stats a passive perk may add to `character.derived`, each annotated with what
+## consumes it. Same rule as MODIFIABLE and the same reason: PerkSystem's
+## affinity bonuses computed mental_resistance_pct, healing_pct and damage_pct
+## for months and dropped all three on the floor, because update_derived_stats
+## only folded in the keys it happened to name.
+const DERIVED: Array[String] = [
+	# Flat combat stats, read by the matching CombatUnit getter.
+	"max_hp",
+	"max_mana",
+	"max_stamina",
+	"initiative",
+	"movement",
+	"dodge",
+	"accuracy",
+	"damage",
+	"armor",
+	"armor_pierce",
+	"crit_chance",
+	"spellpower",
+	"weight_limit",
+	# Percentage stats, each read at the point the percentage applies.
+	"damage_reduction_pct",    # CombatManager.apply_damage()
+	"mental_resistance_pct",   # CombatManager._perform_save_roll()
+	"healing_pct",             # CombatUnit.heal()
+	"damage_pct",              # CombatUnit.get_damage()
+	"mana_cost_reduction",     # CombatManager.cast_spell()
+	# Out-of-combat, read by their own systems.
+	"xp_gain_pct",             # CompanionSystem
+	"loot_chance_pct",         # CombatManager loot roll
+]
+
+
+## True when a passive may add to this derived stat.
+static func is_derived(stat: String) -> bool:
+	return stat in DERIVED
+
+
 ## Targeting modes CombatManager.get_active_skill_targets() can turn into tiles.
 const TARGETING: Array[String] = [
 	"self",         # resolves immediately on the user, no click

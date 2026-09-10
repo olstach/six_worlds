@@ -1487,6 +1487,7 @@ func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, 
 		result.merge(damage_result, true)
 		apply_damage(defender, result.damage, weapon_dmg_type)
 		_process_on_hit_perks(attacker, defender, result)
+		_fire_perk_triggers(attacker, "on_hit", {"target": defender})
 
 		# Wound and disease procs — scaled by chain_chance so later arms are less likely to inflict.
 		# chain_chance is 0–100; divide by 100 to get a 0–1 multiplier.
@@ -1769,6 +1770,11 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 
 		# --- Passive perk on-hit effects ---
 		_process_on_hit_perks(attacker, defender, result)
+		_fire_perk_triggers(attacker, "on_hit", {"target": defender})
+		if result.get("crit", false):
+			_fire_perk_triggers(attacker, "on_crit", {"target": defender})
+		if not defender.is_alive():
+			_fire_perk_triggers(attacker, "on_kill", {"target": defender})
 		# --- Weapon passive on-hit procs ---
 		_process_weapon_on_hit_procs(attacker, defender, result)
 		# --- Ammo special effects (fire arrow AoE, status procs) ---
@@ -1801,6 +1807,7 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 	else:
 		# Attack missed — check dodge/parry perks on defender
 		_process_on_dodge_perks(defender, attacker)
+		_fire_perk_triggers(defender, "dodge_success", {"attacker": attacker})
 		# Reset consecutive hit streaks on miss
 		attacker.momentum_stacks = 0
 		attacker.unarmed_hit_stacks = 0
@@ -2331,6 +2338,13 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 	# Marked_for_Death: damage_taken_increase makes unit take 50% more damage
 	if damage > 0 and _unit_has_effect(unit, "damage_taken_increase"):
 		damage = int(damage * 1.5)
+
+	# Flat damage reduction from the Armor skill table and passive perks.
+	# Capped at 90% so no build becomes untouchable.
+	if damage > 0 and "character_data" in unit:
+		var reduction: float = unit.character_data.get("derived", {}).get("damage_reduction_pct", 0.0)
+		if reduction > 0.0:
+			damage = maxi(1, int(damage * (1.0 - minf(reduction, 90.0) / 100.0)))
 
 	# Mantric_Armor: hp_shield absorbs damage before HP. Shield pool lives in the
 	# status entry's "value" field (0/unset → default 25); status expires when spent.
@@ -6150,6 +6164,12 @@ func _perform_save_roll(unit: Node, save_type: String) -> bool:
 	# were being written and never read — this is the reader.
 	if unit.has_method("_get_stat_modifier_bonus"):
 		save_chance = clampf(save_chance + unit._get_stat_modifier_bonus("save_bonus"), 10.0, 95.0)
+
+	# Mental resistance from space affinity and passive perks. Focus saves are
+	# the mental ones; this is what PerkSystem has been computing all along.
+	if save_type == "focus" and "character_data" in unit:
+		var mental: float = unit.character_data.get("derived", {}).get("mental_resistance_pct", 0.0)
+		save_chance = clampf(save_chance + mental, 10.0, 95.0)
 	return randf() * 100.0 <= save_chance
 
 
@@ -7267,6 +7287,58 @@ func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 
 
 ## Process on-hit procs from weapon passive dict.
+## ── Data-driven passive triggers ─────────────────────────────────────────────
+## Sits alongside _process_on_hit_perks() and friends, which stay as the home
+## for the 164 perks wired by id. This is for perks that describe themselves in
+## an `effects` array instead. A perk uses one mechanism or the other — never
+## both, or it fires twice — and tools/wire_passive_perks.py enforces that by
+## refusing to write `effects` for any perk id it finds referenced in scripts/.
+func _fire_perk_triggers(unit: Node, trigger: String, context: Dictionary = {}) -> void:
+	if unit == null or not "character_data" in unit or not PerkSystem:
+		return
+	for entry in PerkSystem.get_combat_passives(unit.character_data):
+		var effect: Dictionary = entry.effect
+		if effect.get("type", "") != "on_trigger":
+			continue
+		if effect.get("trigger", "") != trigger:
+			continue
+		var chance: float = float(effect.get("chance", 100))
+		if chance < 100.0 and randf() * 100.0 > chance:
+			continue
+		_apply_trigger_effect(unit, entry.perk_id, effect.get("effect", {}), context)
+
+
+## Resolve one fired trigger's payload.
+func _apply_trigger_effect(unit: Node, perk_id: String, payload: Dictionary,
+		context: Dictionary) -> void:
+	var target: Node = unit
+	if payload.get("target", "self") == "attacker" and context.has("attacker"):
+		target = context["attacker"]
+	elif payload.get("target", "self") == "victim" and context.has("target"):
+		target = context["target"]
+	if target == null or not target.is_alive():
+		return
+
+	match payload.get("type", ""):
+		"buff":
+			_apply_stat_modifier(target, payload.get("stat", ""),
+				int(payload.get("value", 0)), int(payload.get("duration", 1)))
+		"status":
+			_apply_status_effect(target, payload.get("status", ""),
+				int(payload.get("duration", 1)), 0, unit)
+		"heal":
+			if target.has_method("heal"):
+				target.heal(int(payload.get("value", 0)))
+		"restore_stamina":
+			if target.has_method("restore_stamina"):
+				target.restore_stamina(int(payload.get("value", 0)))
+		_:
+			push_error("CombatManager: perk '%s' has an on_trigger payload of unknown type '%s'"
+				% [perk_id, payload.get("type", "")])
+			return
+	combat_log.emit("%s: %s" % [unit.unit_name, PerkSystem.get_perk_data(perk_id).get("name", perk_id)])
+
+
 ## Called from attack_unit() after damage lands, alongside _process_on_hit_perks.
 func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictionary) -> void:
 	if not attacker.has_method("get_equipped_weapon"):
