@@ -12,24 +12,8 @@ extends Node
 
 var failures: int = 0
 
-## Every `targeting` value CombatManager.get_active_skill_targets() can turn
-## into tiles. Anything else leaves the arena in a targeting mode with an empty
-## highlight, which reads to the player as a dead button.
-const VALID_TARGETING: Array[String] = [
-	"self", "single_enemy", "single_ally", "aoe_point", "teleport", "dash_attack",
-]
-
-## Stats CombatUnit folds back out of `stat_modifiers`. A buff on any other stat
-## is applied and then never read.
-const LIVE_STATS: Array[String] = [
-	"initiative", "movement", "accuracy", "dodge",
-	"damage", "armor", "crit_chance", "spellpower",
-]
-
-## Extra stat keys individual resolvers special-case.
-const SPECIAL_STATS: Array[String] = [
-	"movement_mode", "skill_bonus", "status_resistance",
-]
+## The vocabularies live in CombatStats. Restating them here is what let the
+## first round of these bugs through, so this file only ever reads them.
 
 
 func _ready() -> void:
@@ -47,6 +31,7 @@ func _ready() -> void:
 		_check_costs(entry)
 
 	_check_non_combat_perks()
+	_check_modifiable_stats_are_read()
 	_check_no_orphan_actives()
 
 	if failures > 0:
@@ -85,7 +70,7 @@ func _check_effect(entry: Dictionary) -> void:
 
 func _check_targeting(entry: Dictionary) -> void:
 	var targeting: String = CombatManager.get_skill_targeting(entry.cd)
-	if not targeting in VALID_TARGETING:
+	if not CombatStats.is_targeting(targeting):
 		_fail("%s: targeting '%s' produces no target tiles" % [entry.id, targeting])
 	# Targeted skills need a reach. Melee resolvers default to 1, which silently
 	# makes a "visible enemy" skill adjacent-only, so require it to be explicit.
@@ -134,13 +119,13 @@ func _check_buff_stats(entry: Dictionary) -> void:
 	for key in ["buffs", "ally_buffs", "debuffs", "enemy_debuffs"]:
 		for buff in entry.cd.get(key, []):
 			var stat: String = str(buff.get("stat", ""))
-			if not stat in LIVE_STATS and not stat in SPECIAL_STATS:
+			if not CombatStats.is_authorable(stat):
 				_fail("%s: %s stat '%s' is never read back" % [entry.id, key, stat])
 	for key in ["self_buff", "target_debuff"]:
 		var buff: Dictionary = entry.cd.get(key, {})
 		if buff.is_empty():
 			continue
-		if not str(buff.get("stat", "")) in LIVE_STATS:
+		if not CombatStats.is_modifiable(str(buff.get("stat", ""))):
 			_fail("%s: %s stat '%s' is never read back" % [entry.id, key, buff.get("stat", "")])
 
 
@@ -164,6 +149,33 @@ func _check_costs(entry: Dictionary) -> void:
 	elif declared > 0:
 		_fail("%s: combat_data charges %d Stamina the description never mentions"
 			% [entry.id, declared])
+
+
+## Every stat in CombatStats.MODIFIABLE must have a consumer — some getter that
+## calls _get_stat_modifier_bonus("<stat>") and folds the result into a number
+## the game uses. This is the pairing that kept breaking: save_bonus was written
+## by Booster Shot from the day it shipped and nothing on the other end read it.
+##
+## Calling _get_stat_modifier_bonus() directly would prove nothing — it sums by
+## name for any string at all, so it answers for a stat with no consumer exactly
+## as it does for a real one. The consumer is what must be checked, so this
+## greps the sources for the call.
+func _check_modifiable_stats_are_read() -> void:
+	var sources := ""
+	for path in ["res://scripts/combat/combat_unit.gd",
+			"res://scripts/autoload/combat_manager.gd"]:
+		var f := FileAccess.open(path, FileAccess.READ)
+		if f == null:
+			_fail("cannot read %s to check stat consumers" % path)
+			return
+		sources += f.get_as_text()
+		f.close()
+
+	for stat in CombatStats.MODIFIABLE:
+		if not sources.contains('_get_stat_modifier_bonus("%s")' % stat):
+			_fail(("%s is in CombatStats.MODIFIABLE but nothing calls "
+				+ "_get_stat_modifier_bonus(\"%s\") — a modifier on it would be "
+				+ "stored and never applied") % [stat, stat])
 
 
 ## Overworld and out-of-combat abilities must not also carry combat_data.

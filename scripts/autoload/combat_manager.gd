@@ -3963,6 +3963,14 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 
 ## Apply a temporary stat modifier
 func _apply_stat_modifier(unit: Node, stat: String, value: int, duration: int) -> void:
+	# Refuse a stat no getter reads back rather than storing it forever. A
+	# modifier on an unknown name is invisible in play and indistinguishable
+	# from a balance problem, so it has to be loud here.
+	if not CombatStats.is_modifiable(stat):
+		push_error("CombatManager: cannot modify %s — %s"
+			% [stat, CombatStats.explain_unknown(stat)])
+		return
+
 	# Store modifiers on the unit for processing each turn
 	if not "stat_modifiers" in unit:
 		unit.set("stat_modifiers", [])
@@ -3972,9 +3980,6 @@ func _apply_stat_modifier(unit: Node, stat: String, value: int, duration: int) -
 		"value": value,
 		"duration": duration
 	})
-
-	# Apply immediate effect to derived stats
-	# This is simplified - full implementation would modify get_* functions
 
 
 ## Check if a unit's talisman perks grant immunity or resistance to a status.
@@ -6141,6 +6146,10 @@ func _perform_save_roll(unit: Node, save_type: String) -> bool:
 	var stat_val = attrs.get(save_type, 10)
 	# Each point above 10 adds 2% to the save chance; base 40%
 	var save_chance = clampf(40.0 + (stat_val - 10) * 2.0, 10.0, 90.0)
+	# save_bonus modifiers (Booster Shot's "+25% resistance to the next status")
+	# were being written and never read — this is the reader.
+	if unit.has_method("_get_stat_modifier_bonus"):
+		save_chance = clampf(save_chance + unit._get_stat_modifier_bonus("save_bonus"), 10.0, 95.0)
 	return randf() * 100.0 <= save_chance
 
 
@@ -6810,6 +6819,17 @@ func get_active_skill_targets(user: Node, combat_data: Dictionary) -> Array[Vect
 		"single_ally":
 			for unit in all_units:
 				if not unit.is_alive() or unit.team != user.team:
+					continue
+				var dist = _grid_distance(user.grid_position, unit.grid_position)
+				if dist <= skill_range:
+					result.append(unit.grid_position)
+		"downed_ally":
+			# is_alive() is false for a bleeding-out unit, so single_ally can
+			# never see the ally a revive exists to reach.
+			for unit in all_units:
+				if unit.team != user.team:
+					continue
+				if not (unit.is_bleeding_out or unit.is_dead):
 					continue
 				var dist = _grid_distance(user.grid_position, unit.grid_position)
 				if dist <= skill_range:

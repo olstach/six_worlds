@@ -6502,7 +6502,7 @@
       "is_mantra": false,
       "combat_data": {
         "effect": "revive",
-        "targeting": "aoe_point",
+        "targeting": "downed_ally",
         "once_per_combat": true,
         "range": 2,
         "heal_pct": 30,

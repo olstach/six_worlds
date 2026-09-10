@@ -29,6 +29,7 @@ Schema notes (derived from the resolvers, not invented):
 
 import argparse
 import json
+import re
 import pathlib
 import sys
 
@@ -36,13 +37,30 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 PERKS = ROOT / "resources" / "data" / "perks.json"
 STATUSES = ROOT / "resources" / "data" / "statuses.json"
 
-# Stats that CombatUnit actually reads back out of `stat_modifiers`.
-LIVE_STATS = {
-    "initiative", "movement", "accuracy", "dodge",
-    "damage", "armor", "crit_chance", "spellpower",
-}
-# Extra stat keys the resolvers special-case.
-SPECIAL_STATS = {"movement_mode", "skill_bonus", "status_resistance"}
+STATS_GD = ROOT / "scripts" / "combat" / "combat_stats.gd"
+
+
+def _gdscript_string_array(const_name):
+    """Read one `const NAME: Array[String] = [...]` out of combat_stats.gd.
+
+    The vocabularies live in GDScript because that is where they are enforced.
+    Parsing them here rather than restating them is the whole point: a second
+    copy of the list is how the bugs this file guards against got in.
+    """
+    text = STATS_GD.read_text(encoding="utf-8")
+    match = re.search(
+        r"const %s: Array\[String\] = \[(.*?)\]" % const_name, text, re.S
+    )
+    assert match, f"{const_name} not found in {STATS_GD.name}"
+    found = set(re.findall(r'"([^"]+)"', match.group(1)))
+    assert found, f"{const_name} parsed empty"
+    return found
+
+
+# Stats CombatUnit reads back out of `stat_modifiers`, and the data-only
+# keywords resolvers translate before applying. Single source: combat_stats.gd.
+LIVE_STATS = _gdscript_string_array("MODIFIABLE")
+SPECIAL_STATS = _gdscript_string_array("DATA_KEYWORDS")
 
 # Every effect string `use_active_skill` dispatches to a real resolver.
 LIVE_EFFECTS = {
@@ -55,9 +73,7 @@ LIVE_EFFECTS = {
     "buff_allies_debuff_enemies", "dispel_and_invert", "aggro_aura",
     "share_buffs", "double_buffs",
 }
-VALID_TARGETING = {
-    "self", "single_enemy", "single_ally", "aoe_point", "teleport", "dash_attack",
-}
+VALID_TARGETING = _gdscript_string_array("TARGETING")
 # Shapes AoEResolver.get_tiles() knows. A skill may declare a canonical `aoe`
 # block instead of the flat `aoe_radius`; unknown shapes fall back to a circle,
 # silently turning a sweep into a burst, so they are rejected here.
@@ -384,16 +400,12 @@ COMBAT_DATA = {
         "buffs": [{"stat": "status_resistance", "value": 25, "duration": 3}],
     },
     "diagnosis": {
-        # aoe_point rather than single_ally: examine works on either team, and
-        # single_ally targeting cannot reach a downed one.
+        # aoe_point rather than single_ally: examine reads either team.
         "effect": "examine", "targeting": "aoe_point",
         "free_action": True, "range": 6,
     },
     "miraculous_recovery": {
-        # aoe_point because get_active_skill_targets("single_ally") filters on
-        # is_alive(), which is false for exactly the bleeding-out ally this
-        # skill exists to revive.
-        "effect": "revive", "targeting": "aoe_point",
+        "effect": "revive", "targeting": "downed_ally",
         "once_per_combat": True, "range": 2, "heal_pct": 30,
         "cleanse_all_debuffs": True,
     },
