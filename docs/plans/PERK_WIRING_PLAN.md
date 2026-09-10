@@ -107,8 +107,7 @@ opens.
 These are wired and functional but do not match the description exactly, because
 the mechanic they ask for does not exist:
 
-- **180° arcs → radius-1 bursts**: red_harvest, sweeping_strike.
-- **Line attacks → radius bursts**: impaling_strike.
+- ~~180° arcs → radius-1 bursts~~ — **fixed 2026-09-10.** red_harvest and sweeping_strike use the new `arc` shape; impaling_strike uses `line`. impaling_strike still deals 80% to both tiles rather than 100/60, which needs per-tile damage falloff `AoEResolver` has no concept of.
 - **Pushes dropped**: shield_bash, overwhelming_blow (the latter keeps its "+25% instead" damage).
 - **Saves dropped** (the `aoe_attack`/`debuff_target` resolvers take no save): ground_slam and mountain_falls lose their knockdown/stun save, body_blow always knocks down.
 - **"Reduce next hit by 30%" → flat armour**: brace_for_impact. Same for second_wind's damage resistance and breath_easy's 90% reduction.
