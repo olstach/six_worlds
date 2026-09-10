@@ -33,6 +33,11 @@
 ##   around_caster— Circle centered on the caster regardless of target tile.
 ##   line         — Straight line from origin in caster→target direction.
 ##                  width=1: one tile wide; width=3: one tile each side.
+##   arc          — Melee sweep: every tile within `size` reach on the facing
+##                  side, `width` wide (default 3). size=1,width=3 is the three
+##                  tiles in front of the attacker; size=2 extends it to spear
+##                  reach. Geometrically a full-width line — kept as its own
+##                  name so weapon sweeps read as sweeps in the data.
 ##   cone         — Expands from 1 tile at the tip to `width` at the far end.
 ##   cone_forward — Same as cone; direction is locked to caster facing (same impl).
 ##   cross        — Plus-sign (+): center + arm_length tiles in each cardinal direction.
@@ -79,6 +84,11 @@ static func get_tiles(aoe: Dictionary, caster_pos: Vector2i, target_pos: Vector2
 		"line":
 			var width: int = aoe.get("width", 1)
 			return _line(origin, _dir4(caster_pos, target_pos), size, width, grid_size)
+
+		"arc":
+			# Full width at every step, unlike cone which tapers to a 1-tile tip.
+			var arc_width: int = aoe.get("width", 3)
+			return _line(origin, _dir4(caster_pos, target_pos), size, arc_width, grid_size)
 
 		"cone", "cone_forward":
 			# cone_forward direction is locked to caster's facing by the caller;
@@ -129,6 +139,10 @@ static func describe(aoe: Dictionary) -> String:
 			if width > 1:
 				return "Line (length %d, width %d)" % [size, width]
 			return "Line (length %d)" % size
+
+		"arc":
+			var arc_width: int = aoe.get("width", 3)
+			return "Arc (%d tiles wide, reach %d)" % [arc_width, size]
 
 		"cone", "cone_forward":
 			return "Cone (length %d)" % size

@@ -58,6 +58,13 @@ LIVE_EFFECTS = {
 VALID_TARGETING = {
     "self", "single_enemy", "single_ally", "aoe_point", "teleport", "dash_attack",
 }
+# Shapes AoEResolver.get_tiles() knows. A skill may declare a canonical `aoe`
+# block instead of the flat `aoe_radius`; unknown shapes fall back to a circle,
+# silently turning a sweep into a burst, so they are rejected here.
+VALID_AOE_SHAPES = {
+    "circle", "nova", "around_caster", "line", "arc", "cone", "cone_forward",
+    "cross", "band", "vertical_line", "field_of_view",
+}
 
 # ---------------------------------------------------------------------------
 # Perks whose description opens with "Active" but which never belong in the
@@ -108,10 +115,11 @@ COMBAT_DATA = {
         "self_buff": {"stat": "dodge", "value": -15, "duration": 1},
     },
     "red_harvest": {
-        # No arc geometry in the grid — a radius-1 burst centred on an adjacent
-        # tile covers the same enemies in practice.
+        # 180-degree arc: the three tiles in front of the attacker. The clicked
+        # tile only picks the facing — the shape anchors on the wielder.
         "effect": "aoe_attack", "targeting": "aoe_point",
-        "stamina_cost": 8, "range": 1, "aoe_radius": 1, "damage_pct": 100,
+        "stamina_cost": 8, "range": 1, "damage_pct": 100,
+        "aoe": {"type": "arc", "size": 1, "width": 3, "origin": "caster"},
     },
     "sundering_blow": {
         "effect": "attack_with_bonus", "targeting": "single_enemy", "range": 1,
@@ -139,8 +147,12 @@ COMBAT_DATA = {
 
     # ---- spears ----------------------------------------------------------
     "impaling_strike": {
+        # "Attack in a line, hitting up to 2 enemies." Full damage to the first
+        # and 60% to the second needs per-tile falloff the resolver does not
+        # have yet, so both take 80%.
         "effect": "aoe_attack", "targeting": "aoe_point",
-        "stamina_cost": 6, "range": 2, "aoe_radius": 1, "damage_pct": 80,
+        "stamina_cost": 6, "range": 2, "damage_pct": 80,
+        "aoe": {"type": "line", "size": 2, "width": 1, "origin": "caster"},
     },
     "pinning_thrust": {
         "effect": "debuff_target", "targeting": "single_enemy",
@@ -148,8 +160,10 @@ COMBAT_DATA = {
         "statuses": [{"status": "Immobilized", "duration": 2}],
     },
     "sweeping_strike": {
+        # "All enemies within reach in a 180-degree arc" — spear reach is 2.
         "effect": "aoe_attack", "targeting": "aoe_point",
-        "stamina_cost": 4, "range": 1, "aoe_radius": 1, "damage_pct": 75,
+        "stamina_cost": 4, "range": 2, "damage_pct": 75,
+        "aoe": {"type": "arc", "size": 2, "width": 3, "origin": "caster"},
     },
 
     # ---- ranged ----------------------------------------------------------
@@ -587,6 +601,11 @@ def validate(data, status_names):
         for entry in (cd.get("self_buff"), cd.get("target_debuff")):
             if entry and entry.get("stat") not in LIVE_STATS:
                 errors.append(f"{pid}: stat '{entry.get('stat')}' is never read back")
+        aoe = cd.get("aoe", {})
+        if aoe and aoe.get("type") not in VALID_AOE_SHAPES:
+            errors.append(f"{pid}: unknown aoe shape '{aoe.get('type')}'")
+        if aoe and "aoe_radius" in cd:
+            errors.append(f"{pid}: declares both an aoe block and aoe_radius")
         for entry in cd.get("statuses", []):
             if entry["status"] not in status_names:
                 errors.append(f"{pid}: unknown status '{entry['status']}'")

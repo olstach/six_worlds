@@ -909,9 +909,15 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 			combat_grid.clear_aoe_preview()
 	elif current_action_mode == ActionMode.USE_SKILL and not selected_skill.is_empty():
 		var skill_cd = selected_skill.get("combat_data", {})
-		var aoe_r = skill_cd.get("aoe_radius", 0)
-		if aoe_r > 0:
-			combat_grid.show_aoe_preview(grid_pos, aoe_r)
+		var skill_aoe: Dictionary = skill_cd.get("aoe", {})
+		var caster = CombatManager.get_current_unit()
+		if not skill_aoe.is_empty() and caster:
+			# Shaped sweeps (arc, line, cone) — the hover tile only sets direction
+			# when the shape anchors on the caster, so the silhouette tracks the
+			# mouse the same way a cone spell's does.
+			combat_grid.show_aoe_shape_preview(skill_aoe, caster.grid_position, grid_pos)
+		elif skill_cd.get("aoe_radius", 0) > 0:
+			combat_grid.show_aoe_preview(grid_pos, skill_cd.get("aoe_radius", 0))
 		else:
 			combat_grid.clear_aoe_preview()
 	else:

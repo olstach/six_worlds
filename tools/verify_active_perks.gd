@@ -41,6 +41,7 @@ func _ready() -> void:
 	for entry in wired:
 		_check_effect(entry)
 		_check_targeting(entry)
+		_check_aoe_shape(entry)
 		_check_statuses(entry)
 		_check_buff_stats(entry)
 		_check_costs(entry)
@@ -91,6 +92,22 @@ func _check_targeting(entry: Dictionary) -> void:
 	if targeting != "self" and not entry.cd.has("range") and not entry.cd.has("dash_range") \
 			and not entry.cd.has("teleport_range") and not entry.cd.has("aoe_radius"):
 		_fail("%s: targeting '%s' but no range declared" % [entry.id, targeting])
+
+
+## A shaped area must actually produce tiles. AoEResolver falls back to a circle
+## on an unknown shape with only a push_warning, which would quietly turn a
+## sweep into a burst, so run the real resolver and look at what comes back.
+func _check_aoe_shape(entry: Dictionary) -> void:
+	var aoe: Dictionary = entry.cd.get("aoe", {})
+	if aoe.is_empty():
+		return
+	if entry.cd.has("aoe_radius"):
+		_fail("%s: declares both an aoe block and aoe_radius" % entry.id)
+	# A caster at (10,10) aiming one tile east — enough to exercise every shape.
+	var tiles: Array[Vector2i] = AoEResolver.get_tiles(
+		aoe, Vector2i(10, 10), Vector2i(11, 10), Vector2i(48, 30))
+	if tiles.is_empty():
+		_fail("%s: aoe shape '%s' covers no tiles" % [entry.id, aoe.get("type", "")])
 
 
 ## Status names must resolve in CombatManager's loaded table, not just exist in

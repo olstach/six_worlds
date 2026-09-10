@@ -4436,8 +4436,13 @@
         "targeting": "aoe_point",
         "stamina_cost": 8,
         "range": 1,
-        "aoe_radius": 1,
-        "damage_pct": 100
+        "damage_pct": 100,
+        "aoe": {
+          "type": "arc",
+          "size": 1,
+          "width": 3,
+          "origin": "caster"
+        }
       }
     },
     "sundering_blow": {
@@ -5816,9 +5821,14 @@
         "effect": "aoe_attack",
         "targeting": "aoe_point",
         "stamina_cost": 4,
-        "range": 1,
-        "aoe_radius": 1,
-        "damage_pct": 75
+        "range": 2,
+        "damage_pct": 75,
+        "aoe": {
+          "type": "arc",
+          "size": 2,
+          "width": 3,
+          "origin": "caster"
+        }
       }
     },
     "impaling_strike": {
@@ -5834,8 +5844,13 @@
         "targeting": "aoe_point",
         "stamina_cost": 6,
         "range": 2,
-        "aoe_radius": 1,
-        "damage_pct": 80
+        "damage_pct": 80,
+        "aoe": {
+          "type": "line",
+          "size": 2,
+          "width": 1,
+          "origin": "caster"
+        }
       }
     },
     "water_finds_the_gap": {

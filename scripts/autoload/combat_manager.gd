@@ -5969,23 +5969,44 @@ func _resolve_debuff_target(user: Node, combat_data: Dictionary, target_pos: Vec
 
 
 ## AoE skill (Volley, Ground Slam, etc.)
+## Units an active skill's area covers, using the same AoEResolver shapes spells
+## use. Pass team = -1 for everyone, or a team id to filter.
+##
+## Shape comes from a canonical `aoe` block ({"type": "arc", "size": 1, ...}).
+## A skill that only declares the flat `aoe_radius` is read as a circle of that
+## radius, which is what the hand-rolled distance checks here used to do — so
+## perks can move onto real shapes one at a time.
+func _units_in_skill_aoe(user: Node, combat_data: Dictionary, target_pos: Vector2i,
+		team: int = -1) -> Array:
+	var aoe: Dictionary = combat_data.get("aoe", {})
+	if aoe.is_empty():
+		aoe = {"type": "circle", "size": combat_data.get("aoe_radius", 1)}
+
+	var grid_sz: Vector2i = combat_grid.grid_size if combat_grid else Vector2i(48, 30)
+	var tiles: Array[Vector2i] = AoEResolver.get_tiles(
+		aoe, user.grid_position, target_pos, grid_sz)
+
+	var hit: Array = []
+	for unit in all_units:
+		if not unit.is_alive():
+			continue
+		if team >= 0 and unit.team != team:
+			continue
+		if unit.grid_position in tiles:
+			hit.append(unit)
+	return hit
+
+
 func _resolve_aoe_skill(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
 	var max_range = combat_data.get("range", 4)
 	var distance = _grid_distance(user.grid_position, target_pos)
 	if distance > max_range:
 		return {"success": false, "reason": "Out of range"}
 
-	var aoe_radius = combat_data.get("aoe_radius", 1)
 	var damage_pct = combat_data.get("damage_pct", 60)  # % of normal damage
 
-	# Find all enemy units in AoE
-	var hit_targets: Array = []
-	for unit in all_units:
-		if not unit.is_alive() or unit.team == user.team:
-			continue
-		var d = _grid_distance(target_pos, unit.grid_position)
-		if d <= aoe_radius:
-			hit_targets.append(unit)
+	var enemy_team: int = 1 - (user.team if "team" in user else 0)
+	var hit_targets: Array = _units_in_skill_aoe(user, combat_data, target_pos, enemy_team)
 
 	var effects: Array = []
 	for target in hit_targets:
@@ -6217,12 +6238,17 @@ func _resolve_debuff_enemies_aoe(user: Node, combat_data: Dictionary, _target_po
 
 	var enemy_team = 1 - (user.team if "team" in user else 0)
 	var candidates: Array = []
-	for enemy in get_team_units(enemy_team):
-		if not enemy.is_alive():
-			continue
-		if targeting != "all_enemies" and _grid_distance(user.grid_position, enemy.grid_position) > aoe_radius:
-			continue
-		candidates.append(enemy)
+	if targeting == "all_enemies":
+		for enemy in get_team_units(enemy_team):
+			if enemy.is_alive():
+				candidates.append(enemy)
+	else:
+		# Self-centred: the shape anchors on the user, not on a clicked tile.
+		var aoe: Dictionary = combat_data.get("aoe", {"type": "circle", "size": aoe_radius})
+		aoe = aoe.duplicate()
+		aoe["origin"] = "caster"
+		candidates = _units_in_skill_aoe(
+			user, {"aoe": aoe}, user.grid_position, enemy_team)
 
 	for enemy in candidates:
 		# the_laughter_turns: only targets demoralised enemies; uses alternate status otherwise
@@ -6330,15 +6356,13 @@ func _resolve_destroy_obstacle(user: Node, combat_data: Dictionary, target_pos: 
 func _resolve_cleanse_and_buff(user: Node, combat_data: Dictionary) -> Dictionary:
 	var cleanse_list = combat_data.get("cleanses", [])  # Status names or categories to remove
 	var buffs = combat_data.get("buffs", [])
-	var aoe_radius = combat_data.get("aoe_radius", 3)
 	var effects: Array = []
 
-	for ally in get_team_units(user.team if "team" in user else 0):
-		if not ally.is_alive():
-			continue
-		if _grid_distance(user.grid_position, ally.grid_position) > aoe_radius:
-			continue
-
+	var aoe: Dictionary = combat_data.get(
+		"aoe", {"type": "circle", "size": combat_data.get("aoe_radius", 3)}).duplicate()
+	aoe["origin"] = "caster"
+	for ally in _units_in_skill_aoe(user, {"aoe": aoe}, user.grid_position,
+			user.team if "team" in user else 0):
 		# Cleanse matching statuses or categories
 		var to_remove: Array[int] = []
 		for i in range(ally.status_effects.size()):
@@ -6508,19 +6532,14 @@ func _resolve_aoe_damage_and_status(user: Node, combat_data: Dictionary, target_
 	if _grid_distance(user.grid_position, target_pos) > max_range:
 		return {"success": false, "reason": "Out of range"}
 
-	var aoe_radius = combat_data.get("aoe_radius", 3)
 	var damage_pct = combat_data.get("damage_pct", 75)
 	var damage_element = combat_data.get("damage_element", "physical")
 	var save_type = combat_data.get("save_type", "focus")
 	var statuses = combat_data.get("statuses", [])
 	var effects: Array = []
 
-	for enemy in get_team_units(1 - (user.team if "team" in user else 0)):
-		if not enemy.is_alive():
-			continue
-		if _grid_distance(target_pos, enemy.grid_position) > aoe_radius:
-			continue
-
+	var enemy_team: int = 1 - (user.team if "team" in user else 0)
+	for enemy in _units_in_skill_aoe(user, combat_data, target_pos, enemy_team):
 		# Spellpower-scaled damage
 		var base_dmg = int(user.get_spellpower() * damage_pct / 100.0)
 		var resist = enemy.get_resistance(damage_element) if enemy.has_method("get_resistance") else 0.0

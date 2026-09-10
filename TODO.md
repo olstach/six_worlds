@@ -247,6 +247,54 @@ immunity from undead hits), `stubborn_body` (Con 15+, +1 to all
 `escalation_rests`, as `character.wound_escalation_delay`), `iron_cortex` (arms
 1–2 always fire, 3+ still roll).
 
+### The 26 active perks still without a resolver (2026-09-10)
+
+75 of 109 active perks were wired in b746bc1. These 26 are the remainder, each
+blocked on machinery that does not exist. They stay correctly greyed out in the
+skill panel until it does. `tools/verify_active_perks.tscn` reprints this list
+on every run, so it cannot silently drift.
+
+- [ ] **`create_terrain`** — timed terrain tiles placed by a skill (9 perks):
+      `black_ice`, `fog_of_war`, `gravity_well`, `raise_wall`,
+      `crumbling_avalanche`, `improvised_barricade`, `prepared_ground`,
+      `inscribed_circle`, `the_door_stands_open`.
+      `CombatGrid` already has `add_terrain_effect()` and destructible
+      obstacles; what is missing is a resolver that places them and a duration
+      that ticks down.
+- [ ] **Counter/reaction stances** (5 perks): `counterstrike`,
+      `stand_in_the_gap`, `set_for_charge`, `kill_zone`, `heavenly_counterflow`.
+      Needs an on-being-attacked hook. The ZoC on-move hook already exists
+      (`_check_zoc_reactions`), so this is the sibling of a solved problem.
+- [ ] **`heal_ally`** — `field_medic`. `_resolve_heal_self` ignores its own
+      `targeting` field and always heals the user; splitting out a targeted
+      version is small.
+- [ ] **`create_images`** — `smoke_and_mirrors` (illusion units with 1 HP).
+- [ ] **`imbued_attack`** — `arcane_archer` (attack + spell hybrid).
+- [ ] **`consume_charm`** — `attune_charm`.
+- [ ] **`mass_teleport`** — `everyone_is_somewhere_else_now`.
+- [ ] **`recruit_or_pacify`** — `magnetism`.
+- [ ] **`place_trap`** — `trap_maker`.
+- [ ] **`steal_item`** — `the_invisible_hand`.
+- [ ] **`guard_ally`** — `stalwart_guardian`.
+- [ ] **`choose_one`** — `improvised_masterpiece`. Needs a pick-a-branch UI;
+      `disrupting_palm` is wired to its first branch as a stopgap.
+- [ ] **`ignore_resistances` on overcast** — `too_fast_to_react`. One field in
+      `cast_spell`'s resistance step.
+- [ ] **`none_shall_pass`** — not missing machinery, a spec mismatch. Written as
+      "Active. End your turn. Until your next turn, enemies cannot move through
+      your threatened area (2-tile reach) without taking a free attack and
+      suffering -2 Movement for 1 turn." Implemented as an always-on passive
+      free attack, with no turn-ending and no -2 Movement. Decide which it is.
+
+### The seven overworld perks are data with no consumer
+
+Flagged `non_combat` in b746bc1 so they stop rendering as dead buttons in the
+combat panel — that change did **not** implement them. `scout_ahead`,
+`investment`, `supply_and_demand`, `guided_practice`, `reinforce` and
+`inspiring_sermon` have zero references in `scripts/`. `forage` is the near
+miss: `camp_system.gd:156` already has a forage camp action open to everyone,
+and the perk that is supposed to improve it is never consulted.
+
 ## 8. Deferred by decision
 
 Recorded so they aren't rediscovered as bugs.
