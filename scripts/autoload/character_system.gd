@@ -771,14 +771,41 @@ func apply_background_skills(character: Dictionary, background: String) -> void:
 		if level > character.skills.get(skill_id, 0):
 			set_skill_level(character, skill_id, level)
 
-	# Learn starting spells from background data, or defaults if none specified
+	# Learn starting spells from background data, or defaults if none specified.
+	# Entries come in two shapes, the same two the birth path above accepts:
+	# a plain spell id, or a {school|schools, level, count} spec to roll from.
+	# This loop used to pass every entry straight to learn_spell(), which takes
+	# a String — so the 10 spec-shaped entries in races.json raised a type error
+	# that aborted the whole function, and seven backgrounds granted no spells
+	# at all. Rolled specs go through _pick_random_spell() now.
 	var starting_spells = data.get("starting_spells", [])
 	if starting_spells.is_empty():
 		learn_spell(character, "firebolt")
 		learn_spell(character, "lesser_heal")
 	else:
-		for spell_id in starting_spells:
-			learn_spell(character, spell_id)
+		for entry in starting_spells:
+			if entry is String:
+				learn_spell(character, entry)
+				continue
+			if not entry is Dictionary:
+				push_error("CharacterSystem: background '%s' has an unreadable "
+					% background + "starting_spells entry: %s" % [entry])
+				continue
+			var schools: Array = []
+			if entry.has("school"):
+				schools = [entry["school"]]
+			elif entry.has("schools"):
+				schools = entry["schools"]
+			else:
+				push_error("CharacterSystem: background '%s' starting_spells "
+					% background + "spec names no school: %s" % [entry])
+				continue
+			var spell_level := int(entry.get("level", 1))
+			for _i in range(int(entry.get("count", 1))):
+				var rolled := _pick_random_spell(
+					schools, spell_level, character.get("known_spells", []))
+				if rolled != "":
+					learn_spell(character, rolled)
 
 ## Apply starting equipment from the background definition to the player character.
 ## Items are added to the global inventory and immediately equipped.

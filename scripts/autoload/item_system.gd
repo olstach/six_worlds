@@ -1006,6 +1006,17 @@ func _generate_talisman_description(stats: Dictionary, skill_bonuses: Dictionary
 # Equipment generation tables (loaded from JSON)
 var _equipment_tables: Dictionary = {}
 
+
+## The raw procedural-generation tables (materials, quality levels, weapon and
+## armour bases). Exposed so tooling can derive bounds — the value ceiling of a
+## generated item, say — from the data instead of hard-coding a number that
+## silently goes stale when the tables change.
+func get_equipment_tables() -> Dictionary:
+	if _equipment_tables.is_empty():
+		_load_equipment_tables()
+	return _equipment_tables
+
+
 ## Load equipment generation tables
 func _load_equipment_tables() -> void:
 	var file_path = "res://resources/data/equipment_tables.json"

@@ -98,15 +98,6 @@ Each of these is an hour or less and touches one system.
 - [ ] **Spell impact sounds** for Air, Water, Earth (fire + generic exist).
 - [ ] **Background/realm music** — none.
 
-- [ ] **`tools/verify_enemy_xp.tscn` has a flaky check.** The kit-budget
-      assertion (`spent > budget * 6 + 400`) runs over procedurally generated
-      gear, so an unlucky high-value roll on a low-XP enemy trips it about one
-      run in ten with no code change — observed 1/10 on a branch that leaves
-      `enemy_system.gd`, `item_system.gd` and `items.json` byte-identical to
-      master. It should seed the RNG, or assert on a rate rather than on zero.
-      Until then, a single red run from this suite means "run it again", which
-      is the opposite of what a test should mean.
-
 ## 2. Implemented features with no content using them
 
 The mirror image of dead data: code paths that work and are never exercised.
@@ -914,6 +905,36 @@ they are wired.
 # Part IV — What got done
 
 Condensed changelog. Full checklists in git at `73a948c`.
+
+## 2026-09-11 — verify_enemy_xp made deterministic; two bugs it was hiding
+
+**The flaky kit-budget check is fixed at the root.** It asserted
+`spent > budget * 6 + 400` over procedurally generated gear and failed about
+one run in ten with no code change. The cause is that item value is
+*multiplicative* — `base x material.value_mult x quality.value_mult`, where
+material spans 0.25 (`hide`) to 15.0 (`vajra`) and quality 0.5 to 3.0
+(`masterwork`). The same base weapon therefore spans a 120x range with a long
+thin tail, and a 45x vajra-masterwork roll produces a ~2565-gold weapon. The
+kit budget picks a *rarity band*; it was never a spend cap, so a fixed linear
+threshold sat inside that tail and the assertion turned on the dice.
+
+Three changes: the suite seeds the RNG (`RNG_SEED`), so a failure is
+reproducible and bisectable instead of meaning "run it again"; the magic 400 is
+replaced by `ItemSystem.get_equipment_tables()`-derived arithmetic — the
+dearest base times the dearest material times the dearest quality, currently
+4500 — so the allowance follows the data instead of going stale; and a new
+aggregate assertion (`total gear <= 2x total budget`, currently 1.16x) carries
+the real weight, since one lucky roll cannot move it but budget ceasing to
+influence gear would. Both assertions were negative-tested.
+
+**Seeding immediately surfaced a real bug: seven backgrounds granted no
+starting spells.** `apply_background_skills()` passed every `starting_spells`
+entry straight to `learn_spell(character, spell_id: String)`, but 10 of the 12
+entries in `races.json` are `{school, level, count}` specs, not ids. Each raised
+a type error that aborted the rest of the function. The birth path twenty lines
+above already handled both shapes correctly via `_pick_random_spell()`; the
+background path had never been updated. palace_vizier, tide_seer,
+boundary_walker, network_node and flame_seeker now learn their spells.
 
 ## 2026-09-09/10 — perk wiring: actives, the AoE resolver, and the passive engine
 
