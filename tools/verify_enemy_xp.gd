@@ -10,8 +10,19 @@ extends Node
 
 var failures: int = 0
 
+## Every check below generates enemies, and generation is random in a way that
+## is not incidental: item value is multiplicative — base x material.value_mult
+## (0.25 .. 15.0 for vajra) x quality.value_mult (0.5 .. 3.0 for masterwork) —
+## so the same base weapon spans a 120x range and the tail is long and thin.
+## Unseeded, a threshold anywhere near that tail passes or fails on the roll
+## rather than on the code, and a suite that means "run it again" when it goes
+## red is worse than no suite. Seeding makes a failure reproducible and
+## bisectable; breadth comes from the ~380 enemies each pass generates.
+const RNG_SEED: int = 20260911
+
 
 func _ready() -> void:
+	seed(RNG_SEED)
 	_check_budgets()
 	_check_resolution()
 	_check_composition()
@@ -549,6 +560,7 @@ func _check_equipment() -> void:
 	var overspent := 0
 	var samples := 0
 	var carried_total := 0
+	var budget_total := 0
 	var accessories := 0
 	var armour_pieces := 0
 	for eid in EnemySystem.encounters:
@@ -568,15 +580,55 @@ func _check_equipment() -> void:
 					armour_pieces += 1
 			samples += 1
 			carried_total += spent
-			# generous margin: consumables and archetype-guaranteed items sit
-			# outside the pool, so this only catches gross overspend
-			if spent > budget * 6 + 400:
+			budget_total += budget
+			# The kit budget picks a rarity band; it is not a spend cap, and no
+			# budget is large enough to matter against one lucky vajra
+			# masterwork roll. So the per-enemy check allows 6x the budget plus
+			# the single dearest item the generator can produce, derived from
+			# the tables rather than guessed at — the constant 400 that used to
+			# sit here was tuned to a sample and drifted into the tail.
+			if spent > budget * 6 + _dearest_possible_item():
 				overspent += 1
 	expect(overspent == 0, "%d of %d enemies carry gear far beyond their kit budget"
 		% [overspent, samples])
+	# The invariant that actually protects the economy: across every enemy in
+	# the game, gear value tracks the budget that bought it. One lucky roll
+	# cannot move this, but budget ceasing to influence gear at all would.
+	var aggregate: float = float(carried_total) / maxf(float(budget_total), 1.0)
+	expect(aggregate <= 2.0,
+		"gear value across all enemies is %.2fx the total kit budget (max 2.0)" % aggregate)
 	print("   %d enemies: avg kit value %d, %d armour pieces, %d accessories"
 		% [samples, int(carried_total / maxi(samples, 1)), armour_pieces, accessories])
+	print("   gear value is %.2fx total kit budget; per-enemy ceiling allows one %d-gold item"
+		% [aggregate, _dearest_possible_item()])
 	expect(accessories > 0, "no enemy ever received an accessory")
+
+
+## The most a single generated item can be worth: the dearest weapon or armour
+## base, at the dearest material and the dearest quality. Read from the tables
+## so it follows the data instead of needing a human to remember this number.
+func _dearest_possible_item() -> int:
+	if _dearest_cache > 0:
+		return _dearest_cache
+	var tables: Dictionary = ItemSystem.get_equipment_tables()
+	var dearest_base: float = 0.0
+	for key in ["weapon_bases", "armor_bases"]:
+		for base_id in tables.get(key, {}):
+			dearest_base = maxf(dearest_base,
+				float(tables[key][base_id].get("value", 0)))
+	var dearest_material: float = 1.0
+	for mat_id in tables.get("materials", {}):
+		dearest_material = maxf(dearest_material,
+			float(tables["materials"][mat_id].get("value_mult", 1.0)))
+	var dearest_quality: float = 1.0
+	for q_id in tables.get("quality_levels", {}):
+		dearest_quality = maxf(dearest_quality,
+			float(tables["quality_levels"][q_id].get("value_mult", 1.0)))
+	_dearest_cache = int(dearest_base * dearest_material * dearest_quality)
+	return _dearest_cache
+
+
+var _dearest_cache: int = 0
 
 
 func _dump_table() -> void:
