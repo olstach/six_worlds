@@ -2,13 +2,119 @@
 
 ## Status Quo
 
+*Corrected 2026-09-09 against the code. The counts below replace an earlier
+draft that credited 31 active perks with a working pipeline and put the passive
+backlog at ~507; neither matched what is actually in the repo.*
+
+The game has **604 perks** (550 skill + 54 cross). By description prefix: 109
+open with "Active", 76 with "Passive", and the remaining 419 (26 of them
+mantras) state their effect without a prefix.
+
 ### What works
 - **Base skill bonuses** (`base_bonuses` in perks.json) — per-level stat tables (attack, damage, crit, armor, etc.) flow into `update_derived_stats()` via `PerkSystem.get_base_skill_bonuses_at_level()`.
 - **Elemental affinity bonuses** — `PerkSystem.get_affinity_bonuses()` feeds into `update_derived_stats()`.
-- **Active perks** (31 with `combat_data`) — full pipeline: stamina cost, cooldowns, targeting, 8 effect types (`attack_with_bonus`, `dash_attack`, `buff_self`, `debuff_target`, `aoe_attack`, `teleport`, `stance`, `heal_self`), plus AI usage scoring.
+- **Active perks** — 75 of 109 now carry `combat_data` and resolve through one of the 32 `_resolve_*` handlers in `combat_manager.gd`: stamina cost, cooldowns, once-per-combat/turn limits, targeting, and the effect itself. See "Active perk wiring" below.
+- **164 passive perks are hand-wired by id** in `scripts/` — `momentum`, `cheap_shot`, `hit_back_harder`, `tidal_patience`, `call_the_shot`, `none_shall_pass` and others are checked directly by `PerkSystem.has_perk()` at the relevant combat moment. These deliberately get **no** `effects` array; a generic engine reading one would double-apply them.
+
+- **The passive effects engine** — landed 2026-09-10. A passive may carry an `effects` array instead of a hand-written branch; see "Passive engine" below.
 
 ### The gap
-~507 passive perks are stored on characters as `{id, name}`. Their effects exist only as human-readable `description` strings. No code reads or applies them.
+297 passive perks still exist only as human-readable `description` strings.
+
+---
+
+## Active perk wiring (landed 2026-09-09)
+
+`combat_manager.gd` grew 32 active-skill resolvers over several commits, but no
+perk in `perks.json` ever carried the `combat_data` they read, so
+`combat_arena.gd` greyed out **every** "Active." perk as unimplemented. That is
+now filled in.
+
+| | count |
+|---|---|
+| Wired to an existing resolver | 75 |
+| Flagged `non_combat` (overworld / out-of-combat, filtered from the skill panel) | 7 |
+| Reclassified as passive (`host_of_the_winds`) | 1 |
+| Still awaiting a resolver | 26 |
+
+- `tools/wire_active_perks.py` holds the mapping and regenerates `perks.json`.
+- `tools/verify_active_perks.tscn` checks the result against the **live**
+  autoloads: effect strings resolve, targeting produces tiles, statuses exist in
+  `CombatManager`'s loaded table, buffed stats are ones `CombatUnit` reads back,
+  and the advertised stamina cost equals the charged one.
+
+### The 26 still waiting, by what they need
+
+| Missing resolver | Perks |
+|---|---|
+| `create_terrain` | black_ice, fog_of_war, gravity_well, raise_wall, crumbling_avalanche, improvised_barricade, prepared_ground, inscribed_circle, the_door_stands_open |
+| counter/reaction stance | counterstrike, stand_in_the_gap, set_for_charge, kill_zone, heavenly_counterflow |
+| `heal_ally` | field_medic |
+| `create_images` | smoke_and_mirrors |
+| `imbued_attack` | arcane_archer |
+| `consume_charm` | attune_charm |
+| `mass_teleport` | everyone_is_somewhere_else_now |
+| `recruit_or_pacify` | magnetism |
+| `place_trap` | trap_maker |
+| `steal_item` | the_invisible_hand |
+| `choose_one` (needs a picker UI) | improvised_masterpiece |
+| `guard_ally` | stalwart_guardian |
+| `ignore_resistances` on overcast | too_fast_to_react |
+| — | none_shall_pass (already wired as a passive ZoC reaction; its description says "Active", the code makes it always-on — a design call to settle) |
+
+## Passive engine (landed 2026-09-10)
+
+Steps 3-7 below are built. `PerkSystem` carries the query layer,
+`update_derived_stats()` folds in flat bonuses then conversions,
+`CombatUnit._get_conditional_perk_bonus()` evaluates gated effects where the
+stat is read, and `CombatManager._fire_perk_triggers()` dispatches reactive
+ones.
+
+| | count |
+|---|---|
+| Passive perks | 470 |
+| Implemented by hand, by id, in `scripts/` | 168 |
+| Carrying an `effects` array | 5 |
+| Still description-only | 297 |
+
+**The rule everything rests on:** a perk implemented by hand must never also
+carry an `effects` array, or it fires twice. `tools/wire_passive_perks.py`
+derives the hardcoded set by scanning `scripts/` rather than keeping a list, so
+a perk hardcoded tomorrow is protected without anyone remembering.
+`tools/verify_passive_perks.tscn` re-checks it against the shipped data. Note
+that **Parry and Improved Parry — this document's own worked example of a
+`stat_conversion` — are both hardcoded** and must stay that way.
+
+**Working effect types:** `stat_bonus` (conditional and not),
+`stat_conversion`, `resistance`, `on_trigger` (`on_hit`, `on_crit`, `on_kill`,
+`dodge_success`).
+
+**Not built:** `non_combat`. ShopSystem and EventManager have no consumer, and
+authoring an effect before its reader exists is the failure this whole pass
+spent its time undoing. Also unbuilt: `aura`, `cost_reduction`,
+`damage_modifier`, `resource_regen`, `spell_modifier`, `summon_modifier`,
+`special`.
+
+**Conditions understood** (`CombatUnit._perk_condition_met`): `wielding_sword`
+/ `_axe` / `_mace` / `_spear` / `_dagger` / `_staff`, `wielding_ranged`,
+`unarmed`, `not_flanked`, `did_not_move`, `moved_this_turn`, `from_stealth`,
+`below_half_hp`, `above_half_hp`. An unrecognised condition pushes an error and
+returns false — a gate that quietly opens always is worse than one that never
+opens.
+
+### Approximations to review
+
+These are wired and functional but do not match the description exactly, because
+the mechanic they ask for does not exist:
+
+- ~~180° arcs → radius-1 bursts~~ — **fixed 2026-09-10.** red_harvest and sweeping_strike use the new `arc` shape; impaling_strike uses `line`. impaling_strike still deals 80% to both tiles rather than 100/60, which needs per-tile damage falloff `AoEResolver` has no concept of.
+- **Pushes dropped**: shield_bash, overwhelming_blow (the latter keeps its "+25% instead" damage).
+- **Saves dropped** (the `aoe_attack`/`debuff_target` resolvers take no save): ground_slam and mountain_falls lose their knockdown/stun save, body_blow always knocks down.
+- **"Reduce next hit by 30%" → flat armour**: brace_for_impact. Same for second_wind's damage resistance and breath_easy's 90% reduction.
+- **"Choose one" → the first branch**: disrupting_palm always applies the armour debuff.
+- **Single-target taunt → unit-wide aggro**: `taunt`. `taunt_active` is the only aggro hook the AI reads.
+- **Radius buffs → whole party**: perfect_volley (`buff_allies` has no radius).
+- **`terms_of_engagement`**: "withdraw from the fight" maps onto the Pacified status, and applies regardless of the target's HP.
 
 ---
 

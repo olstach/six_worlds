@@ -909,9 +909,15 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 			combat_grid.clear_aoe_preview()
 	elif current_action_mode == ActionMode.USE_SKILL and not selected_skill.is_empty():
 		var skill_cd = selected_skill.get("combat_data", {})
-		var aoe_r = skill_cd.get("aoe_radius", 0)
-		if aoe_r > 0:
-			combat_grid.show_aoe_preview(grid_pos, aoe_r)
+		var skill_aoe: Dictionary = skill_cd.get("aoe", {})
+		var caster = CombatManager.get_current_unit()
+		if not skill_aoe.is_empty() and caster:
+			# Shaped sweeps (arc, line, cone) — the hover tile only sets direction
+			# when the shape anchors on the caster, so the silhouette tracks the
+			# mouse the same way a cone spell's does.
+			combat_grid.show_aoe_shape_preview(skill_aoe, caster.grid_position, grid_pos)
+		elif skill_cd.get("aoe_radius", 0) > 0:
+			combat_grid.show_aoe_preview(grid_pos, skill_cd.get("aoe_radius", 0))
 		else:
 			combat_grid.clear_aoe_preview()
 	else:
@@ -1817,6 +1823,11 @@ func _show_skills_panel(unit: CombatUnit) -> void:
 			if not has_combat_data and not is_mantra:
 				# Non-mantra with no combat_data = not yet implemented
 				can_use = false
+			elif not is_mantra and not CombatManager.is_active_skill_effect_implemented(
+					skill_data.get("combat_data", {}).get("effect", "")):
+				# Wired to an effect that has no resolver yet. Grey it out here
+				# rather than letting the click burn an action on a failure.
+				can_use = false
 			elif stamina_cost > 0 and unit.current_stamina < stamina_cost:
 				can_use = false
 			elif unit.is_skill_on_cooldown(perk_id):
@@ -1860,14 +1871,23 @@ func _get_active_skills(unit: CombatUnit) -> Array[Dictionary]:
 		var desc = data.get("description", "")
 		# Active perks start with "Active" in their description
 		if desc.begins_with("Active"):
+			# Overworld and out-of-combat abilities (Forage, Investment, …) read
+			# as "Active" but have no business in the combat panel.
+			if data.get("non_combat", false):
+				continue
+			var cd: Dictionary = data.get("combat_data", {})
 			var skill_info: Dictionary = {
 				"id": perk_entry.get("id", ""),
 				"name": data.get("name", perk_entry.get("id", "???")),
 				"description": desc,
 				"is_mantra": data.get("is_mantra", false),
-				"stamina_cost": _parse_stamina_cost(desc),
+				# combat_data is authoritative — it's what use_active_skill
+				# actually deducts. The description parse is only a fallback for
+				# perks that aren't wired yet, and it misses costs phrased as
+				# "(once per combat, 8 Stamina)".
+				"stamina_cost": cd.get("stamina_cost", _parse_stamina_cost(desc)),
 				"skill": data.get("skill", ""),
-				"combat_data": data.get("combat_data", {}),
+				"combat_data": cd,
 			}
 			result.append(skill_info)
 
@@ -3115,6 +3135,13 @@ func _show_victory_screen(rewards: Dictionary) -> void:
 	var jackpot_amount = rewards.get("jackpot_amount", 0)
 	var trade_bonus = rewards.get("trade_bonus", 0)
 	var enemy_count = rewards.get("enemy_count", 0)
+	# How much the enemy party cost to build, against what the player's party is
+	# worth. Replaces the old rewards.difficulty_ratio, which was dropped when XP
+	# rewards moved onto enemy_party_xp — the difficulty label below still reads it.
+	var party_worth: int = CharacterSystem.get_party_xp_worth()
+	var ratio: float = 1.0
+	if party_worth > 0:
+		ratio = float(rewards.get("enemy_party_xp", 0)) / float(party_worth)
 
 	# Full-screen overlay
 	var overlay = Control.new()

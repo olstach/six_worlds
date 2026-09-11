@@ -197,11 +197,11 @@ Varaha
 **Description**
 
 <!--@ races.json | varaha | description -->
-A low decision made at speed. Varaha neither bluff nor can be bluffed, and the forest has long since learned to concede the trail.
+Not looking for a fight, and not stepping off the trail either. Polite, in the way of a thing that could open you end to end and would rather not. No strength wasted, and never far from kin.
 <!--@end-->
 
 
-*Backgrounds: `old_tusk`, `sounder_guard`, `mycelium_tender`, `sounder_matron`, `herbalist`, `ancestor_priest`*
+*Backgrounds: `old_tusk`, `sounder_guard`, `mycelium_tender`, `sounder_matron`, `herbalist`, `ancestor_priest`, `young_brave`, `truffle_hunter`*
 
 
 ---
@@ -284,7 +284,7 @@ The blade-limbed mantis, the dragonfly, the ambush grasshopper. They live by the
 
 ## Marjara  `marjara`
 
-`uncommon  ·  attributes: strength+1, finesse+4, constitution-1, awareness+1, luck-1 (total +4)  ·  skills: daggers 2, grace 1, guile 1 (4 pts)  ·  traits: predator_grace, venom_ward  ·  reincarnation weight: 30`
+`uncommon  ·  attributes: strength+1, finesse+4, constitution-1, awareness+1, luck-1 (total +4)  ·  skills: daggers 2, grace 1, thievery 1 (4 pts)  ·  traits: predator_grace, venom_ward  ·  reincarnation weight: 30`
 
 
 **Name**
@@ -297,11 +297,11 @@ Marjara
 **Description**
 
 <!--@ races.json | marjara | description -->
-Dappled light is their native country — the flicker where a shape might be, and then is not. Whatever they wanted from you, they have usually already taken it.
+The patch of warm dappled light is their home, whatever they want at the moment their possession. Ever on the go, solitary and ungovernable, marjara can be found wandering in the least expected places.
 <!--@end-->
 
 
-*Backgrounds: `cache_master`, `canopy_ambush`, `forest_drifter`, `hedonist`, `herbalist`, `blood_drinker`*
+*Backgrounds: `cache_master`, `canopy_ambush`, `forest_drifter`, `hedonist`, `herbalist`, `blood_drinker`, `smuggler`, `pleasure_dancer`, `witch`, `cutpurse`, `cat_burglar`*
 
 
 ---
@@ -457,7 +457,7 @@ Something is being guarded — a spring, a hoard, a promise older than the hill 
 ---
 
 
-# Backgrounds  (67)
+# Backgrounds  (74)
 
 
 *What the character did with the birth they were given. Each appears once here, with the births that can take it.*
@@ -579,7 +579,7 @@ You have always lived at the edge where ocean meets sky, where river meets sea. 
 
 ## Cache Master  `cache_master`
 
-`births: Marjara  ·  skills: guile 2, logistics 1`
+`births: Marjara  ·  skills: thievery 1, guile 1, logistics 1`
 
 
 **Name**
@@ -592,7 +592,7 @@ Cache Master
 **Description**
 
 <!--@ backgrounds.json | cache_master | description -->
-Three kills in the ironwood tree. Two more near the river crossing. Memory is the art — a leopard who forgets their caches starves in winter. I remember every one. I have never been hungry.
+Wherever they go in the forest, they know a spot. A bag hidden here, food stashed in a tree stump there, a safehouse when you need it.
 <!--@end-->
 
 
@@ -611,7 +611,7 @@ Canopy Ambush
 **Description**
 
 <!--@ backgrounds.json | canopy_ambush | description -->
-They look for danger on the ground. They check behind rocks, test the wind for scent. They never look up. By the time they see me I am already resolved.
+They look for traps on the ground, listen for rustling in the leaves behind. The joke's on them, I've been watching from the treetops for hours.
 <!--@end-->
 
 
@@ -631,6 +631,25 @@ Caravan Guard
 
 <!--@ backgrounds.json | caravan_guard | description -->
 The trade roads between hive-cities need walking. You walk them heavy and slow, and nothing touches the cargo.
+<!--@end-->
+
+
+## Cat Burglar  `cat_burglar`
+
+`births: Marjara  ·  attributes: finesse+1  ·  skills: thievery 2, grace 1  ·  kit: plain_thieving_tools`
+
+
+**Name**
+
+<!--@ backgrounds.json | cat_burglar | name -->
+Cat Burglar
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | cat_burglar | description -->
+Up the wall, over the sill, and out again before the lamp is even lit. The name writes itself, and they have heard the joke.
 <!--@end-->
 
 
@@ -688,6 +707,25 @@ Herald of the Undersea Roads
 
 <!--@ backgrounds.json | current_herald | description -->
 News travels fast in the deep. You are faster.
+<!--@end-->
+
+
+## Cutpurse  `cutpurse`
+
+`births: Marjara  ·  skills: thievery 2, daggers 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | cutpurse | name -->
+Cutpurse
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | cutpurse | description -->
+Marjara stole nothing, marjara is innocent of this crime!
 <!--@end-->
 
 
@@ -769,7 +807,7 @@ The flame is a teacher. You have studied it your whole life. It has not yet cons
 
 ## Forest Drifter  `forest_drifter`
 
-`births: Marjara  ·  skills: guile 1, thievery 1, trade 1, comedy 1`
+`births: Marjara  ·  skills: thievery 1, trade 1, comedy 1`
 
 
 **Name**
@@ -782,7 +820,7 @@ Forest Drifter
 **Description**
 
 <!--@ backgrounds.json | forest_drifter | description -->
-No particular territory. No particular schedule. The road between the settlements has interesting smells — traders with dried meat, merchants with shiny things, pilgrims with nothing worth stealing. A hunt when hungry, a trade when bored, a long sleep in a warm patch of sunlight when neither seems worth the effort.
+A hunt when hungry, a trade when bored, a long sleep in a warm patch of sunlight when neither seems worth the effort.
 <!--@end-->
 
 
@@ -1073,7 +1111,7 @@ You are bound to a place. The meadow's health is your health. Strangers who wish
 
 ## Mycelium Tender  `mycelium_tender`
 
-`births: Varaha  ·  skills: earth_magic 1, alchemy 2`
+`births: Varaha  ·  skills: earth_magic 2, alchemy 1`
 
 
 **Name**
@@ -1086,7 +1124,7 @@ Mycelium Tender
 **Description**
 
 <!--@ backgrounds.json | mycelium_tender | description -->
-Most of the forest walks above the real richness — the fungal networks, the tuber gardens, the mycelium world that feeds everything else from below. I work underneath.
+You may find them sitting quietly in the clearing, listening to the mycelium sharing stories you couldn't even fathom.
 <!--@end-->
 
 
@@ -1143,7 +1181,7 @@ Old Tusk
 **Description**
 
 <!--@ backgrounds.json | old_tusk | description -->
-Forty seasons in these hills. I know which hollows flood in the rains and which stay dry. Where the healing clay is for the wallow. The slope where truffle runs deepest. The young ones follow me because memory outlasts tusks.
+Forty seasons in these hills. I know which hollows flood in the rains, where the healing clay is, where the truffle runs deepest.
 <!--@end-->
 
 
@@ -1163,6 +1201,25 @@ Vizier of the Deep Court
 
 <!--@ backgrounds.json | palace_vizier | description -->
 You attended the Naga King, drafted proclamations in brine-script, and read the omens in current-patterns.
+<!--@end-->
+
+
+## Pleasure Dancer  `pleasure_dancer`
+
+`births: Marjara  ·  skills: persuasion 2, guile 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | pleasure_dancer | name -->
+Pleasure Dancer
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | pleasure_dancer | description -->
+The cat folk know many find their grace and lack of morals quite delightful, at least before they wake from the reverie and find their purse missing.
 <!--@end-->
 
 
@@ -1394,6 +1451,25 @@ I know where the bitter herb grows. I know the clay that draws out poison.
 <!--@end-->
 
 
+## Smuggler  `smuggler`
+
+`births: Marjara  ·  skills: trade 2, guile 1  ·  kit: plain_merchants_scales`
+
+
+**Name**
+
+<!--@ backgrounds.json | smuggler | name -->
+Smuggler
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | smuggler | description -->
+I prefer to call it free trade, friend. Care for some supplies, arms — or perhaps something more exciting for a gentleman of such discerning tastes?
+<!--@end-->
+
+
 ## Songline Guide  `songline_guide`
 
 `births: Mriga  ·  attributes: charm+1  ·  skills: performance 1, persuasion 1, logistics 1  ·  kit: rations`
@@ -1415,7 +1491,7 @@ Listen, how the ancestors ran those paths where we run, how they drank where we 
 
 ## Sounder Guard  `sounder_guard`
 
-`births: Varaha  ·  attributes: constitution+1  ·  skills: martial_arts 2, armor 1`
+`births: Varaha  ·  attributes: constitution+1  ·  skills: maces 2, armor 1`
 
 
 **Name**
@@ -1428,13 +1504,13 @@ Sounder Guard
 **Description**
 
 <!--@ backgrounds.json | sounder_guard | description -->
-When something comes for the piglets it meets me first. There are boar-marks on wolves, leopards, a bear that learned better. The front of my face is a record of everything that has tested what is mine.
+The piglets run to me when they're scared, and not once have I failed them.
 <!--@end-->
 
 
 ## Sounder Matron  `sounder_matron`
 
-`births: Varaha  ·  skills: leadership 2, logistics 1, medicine 1`
+`births: Varaha  ·  skills: leadership 2, might 2`
 
 
 **Name**
@@ -1447,7 +1523,7 @@ Sounder Matron
 **Description**
 
 <!--@ backgrounds.json | sounder_matron | description -->
-She doesn't lead by being the largest or the most aggressive. She leads because she remembers the year the eastern valley flooded, and the year the wolves came in winter, and what worked both times. The sounder follows her because the sounder has tested every alternative.
+You might fight a wolf, but just try raising your voice against the mother.
 <!--@end-->
 
 
@@ -1641,6 +1717,25 @@ I know which fig ripens first and which mango is always bitter. I know who shoul
 <!--@end-->
 
 
+## Truffle Hunter  `truffle_hunter`
+
+`births: Varaha  ·  attributes: awareness+1  ·  skills: earth_magic 2`
+
+
+**Name**
+
+<!--@ backgrounds.json | truffle_hunter | name -->
+Truffle Hunter
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | truffle_hunter | description -->
+One starts seeking the morsels out by smell, then by intuition, finally by the psychic imprint of the burgeoning mycelium.
+<!--@end-->
+
+
 ## Tunnel Merchant  `tunnel_merchant`
 
 `births: Dura  ·  attributes: charm+1  ·  skills: trade 2, logistics 2`
@@ -1717,6 +1812,25 @@ Messages are cargo. Stories are currency. You carry both and charge for neither,
 <!--@end-->
 
 
+## Witch  `witch`
+
+`births: Marjara  ·  skills: sorcery 2, black_magic 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | witch | name -->
+Witch
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | witch | description -->
+Some find the power to resist in the very rejection of all imposed authority.
+<!--@end-->
+
+
 ## Gleaner of Drowned Palaces  `wreck_gleaner`
 
 `births: Karka, Makara, Matsya, Naga  ·  attributes: awareness+1  ·  skills: thievery 2, learning 1, trade 1`
@@ -1733,4 +1847,23 @@ Gleaner of Drowned Palaces
 
 <!--@ backgrounds.json | wreck_gleaner | description -->
 The surface-folk build ships and lose them to the deep. You have walked through more of their halls than any of them ever did.
+<!--@end-->
+
+
+## Young Brave  `young_brave`
+
+`births: Varaha  ·  attributes: strength+1, constitution+1  ·  skills: might 1`
+
+
+**Name**
+
+<!--@ backgrounds.json | young_brave | name -->
+Young Brave
+<!--@end-->
+
+
+**Description**
+
+<!--@ backgrounds.json | young_brave | description -->
+First bulk, then cut. This youngster has bulked impressively indeed.
 <!--@end-->

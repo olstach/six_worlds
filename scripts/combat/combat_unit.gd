@@ -796,7 +796,7 @@ func get_accuracy() -> int:
 	var derived = character_data.get("derived", {})
 	var weapon_acc = get_equipped_weapon().get("stats", {}).get("accuracy", 0)
 	var ammo_acc = get_selected_ammo().get("accuracy_bonus", 0) if is_ranged_weapon() else 0
-	return derived.get("accuracy", 0) + weapon_acc + ammo_acc + _get_status_stat_bonus("accuracy") + mantra_stat_bonuses.get("accuracy", 0) + _get_stat_modifier_bonus("accuracy") + get_pack_bonus()
+	return derived.get("accuracy", 0) + weapon_acc + ammo_acc + _get_status_stat_bonus("accuracy") + mantra_stat_bonuses.get("accuracy", 0) + _get_stat_modifier_bonus("accuracy") + get_pack_bonus() + _get_conditional_perk_bonus("accuracy")
 
 
 ## Return the current ammo definition dict (includes id, bonuses, special_effect).
@@ -826,7 +826,7 @@ func get_selected_ammo() -> Dictionary:
 func get_dodge() -> int:
 	var derived = character_data.get("derived", {})
 	var mantra_dodge = mantra_stat_bonuses.get("dodge", 0)
-	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge") + maxi(0, mantra_dodge) + _get_stat_modifier_bonus("dodge") + get_pack_bonus()
+	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge") + maxi(0, mantra_dodge) + _get_stat_modifier_bonus("dodge") + get_pack_bonus() + _get_conditional_perk_bonus("dodge")
 
 
 ## ai_behavior "pack_bonus": units of the same archetype hunt better in numbers.
@@ -889,9 +889,18 @@ func get_attack_damage() -> int:
 	# Add mantra stat bonuses (e.g. Jeweled Pagoda per-turn summon damage)
 	base_damage += mantra_stat_bonuses.get("damage", 0)
 
+	# Add conditional passive perk bonuses ("while wielding a sword", ...)
+	base_damage += _get_conditional_perk_bonus("damage")
+
 	# Add ammo damage bonus for ranged weapons
 	if is_ranged_weapon():
 		base_damage += get_selected_ammo().get("damage_bonus", 0)
+
+	# Percentage bonus from fire affinity and passive perks, applied last so it
+	# scales the finished total rather than the weapon's base.
+	var damage_pct: float = character_data.get("derived", {}).get("damage_pct", 0.0)
+	if damage_pct != 0.0:
+		base_damage = int(base_damage * (1.0 + damage_pct / 100.0))
 
 	return base_damage
 
@@ -933,7 +942,85 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 func get_armor() -> int:
 	var derived = character_data.get("derived", {})
 	var mantra_armor = mantra_stat_bonuses.get("armor", 0)
-	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_passive_perk_stat_bonus(self, "armor") + maxi(0, mantra_armor) + _get_stat_modifier_bonus("armor")
+	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_passive_perk_stat_bonus(self, "armor") + maxi(0, mantra_armor) + _get_stat_modifier_bonus("armor") + _get_conditional_perk_bonus("armor")
+
+
+## ── Conditional passive perk effects ─────────────────────────────────────────
+## A passive whose effect is gated ("while wielding a sword", "if you did not
+## move") cannot be baked into character.derived, because the answer changes
+## between turns. PerkSystem hands those over as-is and this evaluates them at
+## the moment a stat is read.
+##
+## Adding a condition: give it a case in _perk_condition_met(). An unrecognised
+## condition returns false and pushes an error rather than passing silently —
+## a passive that quietly applies always is worse than one that never does.
+
+
+## Total conditional passive bonus to one derived stat, for the getters below.
+func _get_conditional_perk_bonus(stat: String) -> int:
+	if character_data.is_empty() or not PerkSystem:
+		return 0
+	var total := 0
+	for entry in PerkSystem.get_combat_passives(character_data):
+		var effect: Dictionary = entry.effect
+		match effect.get("type", ""):
+			"stat_bonus":
+				if effect.get("stat", "") != stat:
+					continue
+				if _all_perk_conditions_met(effect.get("conditions", [])):
+					total += int(effect.get("value", 0))
+			"stat_conversion":
+				if effect.get("target_stat", "") != stat:
+					continue
+				if not _all_perk_conditions_met(effect.get("conditions", [])):
+					continue
+				# Read the source off derived, not off its getter: a getter
+				# would re-enter this function and two conversions pointing at
+				# each other would never terminate.
+				var source: int = character_data.get("derived", {}).get(
+					effect.get("source_stat", ""), 0)
+				total += int(source * effect.get("pct", 0) / 100.0)
+	return total
+
+
+func _all_perk_conditions_met(conditions: Array) -> bool:
+	for condition in conditions:
+		if not _perk_condition_met(str(condition)):
+			return false
+	return true
+
+
+func _perk_condition_met(condition: String) -> bool:
+	match condition:
+		"wielding_sword", "wielding_axe", "wielding_mace", "wielding_spear", \
+		"wielding_dagger", "wielding_staff":
+			return get_equipped_weapon().get("type", "") == condition.trim_prefix("wielding_")
+		"wielding_ranged":
+			return is_ranged_weapon()
+		"unarmed":
+			return get_equipped_weapon().is_empty()
+		"not_flanked":
+			return not is_flanked()
+		"did_not_move":
+			return not moved_this_turn
+		"moved_this_turn":
+			return moved_this_turn
+		"from_stealth":
+			return is_stealthed
+		"below_half_hp":
+			return current_hp * 2 < max_hp
+		"above_half_hp":
+			return current_hp * 2 >= max_hp
+		_:
+			push_error("CombatUnit: unknown passive perk condition '%s'" % condition)
+			return false
+
+
+## True when an enemy stands directly behind this unit, relative to its facing.
+func is_flanked() -> bool:
+	var behind: Vector2i = grid_position - facing
+	var unit_behind = CombatManager.get_unit_at(behind)
+	return unit_behind != null and unit_behind.is_alive() and unit_behind.team != team
 
 
 ## Get armor pierce value from equipped weapon (flat reduction to defender armor before damage)
@@ -1160,6 +1247,10 @@ func take_damage(amount: int) -> void:
 
 ## Heal HP
 func heal(amount: int) -> void:
+	# Healing effectiveness from water affinity and passive perks.
+	var healing_pct: float = character_data.get("derived", {}).get("healing_pct", 0.0)
+	if healing_pct != 0.0:
+		amount = int(amount * (1.0 + healing_pct / 100.0))
 	current_hp = mini(max_hp, current_hp + amount)
 	# Keep character_data in sync so HP persists after combat
 	var derived_heal = character_data.get("derived", {})

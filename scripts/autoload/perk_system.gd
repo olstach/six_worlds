@@ -373,6 +373,20 @@ func get_perk_selection(character: Dictionary, count: int = PERKS_OFFERED, last_
 # PERK GRANTING
 # ============================================
 
+## Every perk id in the game, skill perks and cross perks together.
+## `_comment_*` section dividers in perks.json are skipped — their values are
+## plain strings, not perk dicts.
+func get_all_perk_ids() -> Array[String]:
+	var out: Array[String] = []
+	for source in [_skill_perks, _cross_perks]:
+		for perk_id in source:
+			if perk_id.begins_with("_"):
+				continue
+			out.append(String(perk_id))
+	out.sort()
+	return out
+
+
 ## Every skill id known to the game, from skills.json.
 ## Used when spending XP outside an archetype's priorities, so a character can
 ## pick up something its build would never have chosen.
@@ -468,6 +482,134 @@ func get_perk_data(perk_id: String) -> Dictionary:
 	if perk_id in _cross_perks:
 		return _cross_perks[perk_id]
 	return {}
+
+
+# ============================================
+# PASSIVE PERK EFFECTS
+# ============================================
+#
+# A passive perk may carry an `effects` array describing what it does, so the
+# effect lives in data instead of in a hand-written branch keyed on the perk id.
+#
+#   "parry": {
+#     "description": "Passive. 20% of your Attack is added to Armor while
+#                     wielding a sword. Does not apply if flanked.",
+#     "effects": [
+#       {"type": "stat_conversion", "source_stat": "accuracy",
+#        "target_stat": "armor", "pct": 20,
+#        "conditions": ["wielding_sword", "not_flanked"]}
+#     ]
+#   }
+#
+# 164 perks are instead wired by id directly in combat code, because their
+# effects are reactive or too specific to describe in data. Those must NOT also
+# carry an `effects` array or the perk would fire twice; tools/wire_passive_
+# perks.py refuses to write one for any perk id it finds referenced in
+# scripts/.
+#
+# Where each effect type is consumed:
+#
+#   stat_bonus       unconditional → update_derived_stats(); conditional →
+#                    CombatUnit via get_conditional_stat_bonus()
+#   stat_conversion  update_derived_stats(), after flat bonuses, since it reads
+#                    a finished stat
+#   resistance       update_derived_stats(), into derived.resistances
+#   on_trigger       CombatManager._fire_perk_triggers() at the matching moment
+#   non_combat       ShopSystem / EventManager / CampSystem
+#
+# An effect naming a stat outside CombatStats.DERIVED is rejected at load:
+# writing to a derived key nothing reads is the single most common way an
+# effect in this codebase has ended up doing nothing at all.
+
+
+## Every passive effect a character's perks contribute.
+## Returns [{perk_id, effect}], optionally filtered to one effect type.
+func get_passive_effects(character: Dictionary, filter_type: String = "") -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for perk_id in _get_owned_perk_ids(character):
+		var perk: Dictionary = get_perk_data(perk_id)
+		for effect in perk.get("effects", []):
+			if filter_type != "" and effect.get("type", "") != filter_type:
+				continue
+			out.append({"perk_id": perk_id, "effect": effect})
+	return out
+
+
+## Flat stat bonuses from passive perks that apply unconditionally.
+## Conditional ones are skipped here and evaluated in combat instead — a
+## "while wielding a sword" bonus cannot be baked into a character sheet.
+func get_passive_stat_bonuses(character: Dictionary) -> Dictionary:
+	var totals: Dictionary = {}
+	for entry in get_passive_effects(character, "stat_bonus"):
+		var effect: Dictionary = entry.effect
+		if not effect.get("conditions", []).is_empty():
+			continue
+		var stat: String = effect.get("stat", "")
+		if not CombatStats.is_derived(stat):
+			push_error("PerkSystem: perk '%s' bonuses unknown derived stat '%s'"
+				% [entry.perk_id, stat])
+			continue
+		totals[stat] = totals.get(stat, 0) + effect.get("value", 0)
+	return totals
+
+
+## Stat conversions ("20% of Attack becomes Armor").
+## `derived` must already hold the finished flat totals — the whole point is to
+## read a stat after skills, equipment and flat perk bonuses have landed.
+## Conditional conversions are left to combat, same as conditional bonuses.
+func get_passive_stat_conversions(character: Dictionary, derived: Dictionary) -> Dictionary:
+	var totals: Dictionary = {}
+	for entry in get_passive_effects(character, "stat_conversion"):
+		var effect: Dictionary = entry.effect
+		if not effect.get("conditions", []).is_empty():
+			continue
+		var source: String = effect.get("source_stat", "")
+		var target: String = effect.get("target_stat", "")
+		if not CombatStats.is_derived(source) or not CombatStats.is_derived(target):
+			push_error("PerkSystem: perk '%s' converts between unknown stats '%s' -> '%s'"
+				% [entry.perk_id, source, target])
+			continue
+		var amount: int = int(derived.get(source, 0) * effect.get("pct", 0) / 100.0)
+		totals[target] = totals.get(target, 0) + amount
+	return totals
+
+
+## Resistances from passive perks, as damage_type -> percentage.
+## Merged into derived.resistances alongside racial, trait and equipment ones.
+func get_passive_resistances(character: Dictionary) -> Dictionary:
+	var totals: Dictionary = {}
+	for entry in get_passive_effects(character, "resistance"):
+		var effect: Dictionary = entry.effect
+		var damage_type: String = effect.get("damage_type", "")
+		if damage_type == "":
+			push_error("PerkSystem: perk '%s' has a resistance with no damage_type"
+				% entry.perk_id)
+			continue
+		totals[damage_type] = totals.get(damage_type, 0) + effect.get("value", 0)
+	return totals
+
+
+## Passive effects that need a live combat unit to judge — anything with a
+## `conditions` list, plus every on_trigger. CombatUnit and CombatManager
+## evaluate the conditions; PerkSystem only collects.
+func get_combat_passives(character: Dictionary) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for entry in get_passive_effects(character):
+		var effect: Dictionary = entry.effect
+		if effect.get("type", "") == "on_trigger" or not effect.get("conditions", []).is_empty():
+			out.append(entry)
+	return out
+
+
+## Out-of-combat effects, for ShopSystem, EventManager and CampSystem.
+## Filter on `effect.category` ("trade", "social", "exploration", …).
+func get_non_combat_effects(character: Dictionary, category: String = "") -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for entry in get_passive_effects(character, "non_combat"):
+		if category != "" and entry.effect.get("category", "") != category:
+			continue
+		out.append(entry)
+	return out
 
 
 # ============================================

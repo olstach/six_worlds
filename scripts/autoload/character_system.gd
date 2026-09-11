@@ -1144,6 +1144,13 @@ func update_derived_stats(character: Dictionary) -> void:
 	var equip_resists = equip_bonus.get("resistances", {})
 	for r in equip_resists:
 		new_resists[r] = new_resists.get(r, 0) + equip_resists[r]
+	# Passive perk resistances land here for the same reason traits do: this is
+	# the one place a character's standing resistances are assembled, and
+	# CombatUnit reads derived.resistances.
+	if PerkSystem:
+		var perk_resists: Dictionary = PerkSystem.get_passive_resistances(character)
+		for r in perk_resists:
+			new_resists[r] = new_resists.get(r, 0) + perk_resists[r]
 	derived["resistances"] = new_resists
 
 	# Apply base skill bonuses from PerkSystem (data-driven per_level tables)
@@ -1188,6 +1195,25 @@ func update_derived_stats(character: Dictionary) -> void:
 		for stat in penalty_per_level:
 			var total_penalty = penalty_per_level[stat] * levels_negative
 			derived[stat] = derived.get(stat, 0) + total_penalty
+
+	# Percentage bonuses from elemental affinity. The flat ones above are read
+	# key by key; these three were computed by get_affinity_bonuses() and then
+	# never folded in, so space/water/fire affinity silently paid out nothing
+	# for mental resistance, healing and damage.
+	for pct_stat in ["mental_resistance_pct", "healing_pct", "damage_pct"]:
+		if affinity_bonus.has(pct_stat):
+			derived[pct_stat] = derived.get(pct_stat, 0.0) + affinity_bonus[pct_stat]
+
+	# Passive perk effects. Flat bonuses first, then conversions, because a
+	# conversion reads a finished stat — Parry turning 20% of Attack into Armor
+	# has to see the Attack that skills and equipment already contributed.
+	if PerkSystem:
+		var perk_flat: Dictionary = PerkSystem.get_passive_stat_bonuses(character)
+		for stat_key in perk_flat:
+			derived[stat_key] = derived.get(stat_key, 0) + perk_flat[stat_key]
+		var perk_converted: Dictionary = PerkSystem.get_passive_stat_conversions(character, derived)
+		for stat_key in perk_converted:
+			derived[stat_key] = derived.get(stat_key, 0) + perk_converted[stat_key]
 
 	# Apply active map buffs from simples/shrines.
 	# Attribute-type buffs translate to their most direct derived-stat effects

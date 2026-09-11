@@ -2434,7 +2434,19 @@
       "requires_perks": [],
       "description": "Active (3 Stamina). Make an attack with +20% accuracy. On hit, gain +15% Armor for 1 turn.",
       "flavor": "The sword teaches restraint before aggression.",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "attack_with_bonus",
+        "targeting": "single_enemy",
+        "range": 1,
+        "stamina_cost": 3,
+        "accuracy_bonus": 20,
+        "self_buff": {
+          "stat": "armor",
+          "value": 15,
+          "duration": 1
+        }
+      }
     },
     "read_the_line": {
       "name": "Read the Line",
@@ -2461,7 +2473,14 @@
       "requires_perks": [],
       "description": "Active (4 Stamina). Leap up to 2 tiles toward an enemy and make a sword attack with +25% damage.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "dash_attack",
+        "targeting": "dash_attack",
+        "stamina_cost": 4,
+        "dash_range": 2,
+        "damage_bonus_pct": 25
+      }
     },
     "riposte": {
       "name": "Riposte",
@@ -2515,7 +2534,16 @@
       "requires_perks": [],
       "description": "Active (8 Stamina). A precise strike that ignores 50% of Armor and 50% of Resistances. If it kills the target, refund 4 Stamina.",
       "flavor": "Conflict ends when the line is drawn cleanly.",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "attack_with_bonus",
+        "targeting": "single_enemy",
+        "range": 1,
+        "stamina_cost": 8,
+        "armor_ignore_pct": 50,
+        "resist_ignore_pct": 50,
+        "refund_on_kill": 4
+      }
     },
     "centered_stance": {
       "name": "Centered Stance",
@@ -2581,7 +2609,19 @@
       "requires_perks": [],
       "description": "Active (3 Stamina). Move through enemies and difficult terrain this turn without penalty.",
       "flavor": "Two inches above the ground.",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_self",
+        "targeting": "self",
+        "stamina_cost": 3,
+        "buffs": [
+          {
+            "stat": "movement_mode",
+            "status": "Levitating",
+            "duration": 1
+          }
+        ]
+      }
     },
     "whirling_advance": {
       "name": "Whirling Advance",
@@ -2590,7 +2630,13 @@
       "requires_perks": [],
       "description": "Active (4 Stamina). Move up to your full Speed and make a melee attack at any point during the movement.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "dash_attack",
+        "targeting": "dash_attack",
+        "stamina_cost": 4,
+        "dash_range": 4
+      }
     },
     "disrupting_palm": {
       "name": "Disrupting Palm",
@@ -2599,7 +2645,21 @@
       "requires_perks": [],
       "description": "Active (4 Stamina). Make an unarmed or light-weapon attack. On hit, choose one: -15% Armor, -15% Focus, or -3 Initiative for 2 turns.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "debuff_target",
+        "targeting": "single_enemy",
+        "stamina_cost": 4,
+        "range": 1,
+        "deals_damage": true,
+        "debuffs": [
+          {
+            "stat": "armor",
+            "value": 15,
+            "duration": 2
+          }
+        ]
+      }
     },
     "step_between_moments": {
       "name": "Step Between Moments",
@@ -2608,7 +2668,26 @@
       "requires_perks": [],
       "description": "Active (6 Stamina). Teleport up to 3 tiles. Your next attack this round has +20% crit chance and ignores Dodge. After teleporting, gain +15% Dodge until your next turn.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "teleport",
+        "targeting": "teleport",
+        "stamina_cost": 6,
+        "range": 3,
+        "teleport_range": 3,
+        "buffs": [
+          {
+            "stat": "crit_chance",
+            "value": 20,
+            "duration": 1
+          },
+          {
+            "stat": "dodge",
+            "value": 15,
+            "duration": 1
+          }
+        ]
+      }
     },
     "heavenly_counterflow": {
       "name": "Heavenly Counterflow",
@@ -2805,7 +2884,25 @@
       "requires_perks": [],
       "description": "Active (once per combat, 12 Mana). For 1 turn, all allies take 90% reduced damage and are immune to status effects.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_allies",
+        "targeting": "self",
+        "once_per_combat": true,
+        "buffs": [
+          {
+            "stat": "armor",
+            "value": 90,
+            "duration": 1
+          }
+        ],
+        "statuses": [
+          {
+            "status": "Mental_Immunity",
+            "duration": 1
+          }
+        ]
+      }
     },
     "gentle_removal": {
       "name": "Gentle Removal",
@@ -3065,7 +3162,18 @@
       "requires_perks": [],
       "description": "Active. Attempt to control an enemy for 1 turn (Focus save negates). Costs 1 action.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "debuff_target",
+        "targeting": "single_enemy",
+        "range": 6,
+        "statuses": [
+          {
+            "status": "Dominated",
+            "duration": 1
+          }
+        ]
+      }
     },
     "magnetism": {
       "name": "Magnetism",
@@ -3085,7 +3193,19 @@
       "requires_perks": [],
       "description": "Active. Stun enemies in a 2-tile radius who fail a Focus save for 1 turn. Also functions as a blue option in intimidation dialogue events.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "debuff_enemies",
+        "targeting": "self",
+        "aoe_radius": 2,
+        "save_type": "focus",
+        "statuses": [
+          {
+            "status": "Stunned",
+            "duration": 1
+          }
+        ]
+      }
     },
     "crowd_influence": {
       "name": "Crowd Influence",
@@ -3094,7 +3214,37 @@
       "requires_perks": [],
       "description": "Active (once per combat). All allies gain +3 Initiative and +10% Armor. All enemies in line of sight who fail a Focus save suffer -3 Initiative and -10% Armor for 3 turns.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_allies_debuff_enemies",
+        "targeting": "self",
+        "once_per_combat": true,
+        "enemy_save_type": "focus",
+        "ally_buffs": [
+          {
+            "stat": "initiative",
+            "value": 3,
+            "duration": 3
+          },
+          {
+            "stat": "armor",
+            "value": 10,
+            "duration": 3
+          }
+        ],
+        "enemy_debuffs": [
+          {
+            "stat": "initiative",
+            "value": -3,
+            "duration": 3
+          },
+          {
+            "stat": "armor",
+            "value": -10,
+            "duration": 3
+          }
+        ]
+      }
     },
     "calm_mind": {
       "name": "Calm Mind",
@@ -3103,7 +3253,14 @@
       "requires_perks": [],
       "description": "+15% to all mental saving throws.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "stat_bonus",
+          "stat": "mental_resistance_pct",
+          "value": 15
+        }
+      ]
     },
     "steadfast_spirit": {
       "name": "Steadfast Spirit",
@@ -3134,7 +3291,34 @@
       "requires_perks": [],
       "description": "+20% resistance to all elemental damage.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "resistance",
+          "damage_type": "fire",
+          "value": 20
+        },
+        {
+          "type": "resistance",
+          "damage_type": "water",
+          "value": 20
+        },
+        {
+          "type": "resistance",
+          "damage_type": "air",
+          "value": 20
+        },
+        {
+          "type": "resistance",
+          "damage_type": "earth",
+          "value": 20
+        },
+        {
+          "type": "resistance",
+          "damage_type": "space",
+          "value": 20
+        }
+      ]
     },
     "inner_focus": {
       "name": "Inner Focus",
@@ -3172,7 +3356,18 @@
       "requires_perks": [],
       "description": "Active. Target enemy makes a Focus save. On failure, stops fighting for 2-4 turns. If combat ends during this time, the enemy does not re-engage. Full XP still granted.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "debuff_target",
+        "targeting": "single_enemy",
+        "range": 6,
+        "statuses": [
+          {
+            "status": "Pacified",
+            "duration": 3
+          }
+        ]
+      }
     },
     "aura_of_peace": {
       "name": "Aura of Peace",
@@ -3231,7 +3426,18 @@
       "requires_perks": [],
       "description": "Passive. If you didn't move last turn, ranged attacks gain +8% accuracy.",
       "flavor": "Still ground is the first lesson.",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "stat_bonus",
+          "stat": "accuracy",
+          "value": 8,
+          "conditions": [
+            "did_not_move",
+            "wielding_ranged"
+          ]
+        }
+      ]
     },
     "measured_distance": {
       "name": "Measured Distance",
@@ -3285,7 +3491,24 @@
       "requires_perks": [],
       "description": "Active (4 Stamina). Gain +25% accuracy and +20% damage on your next ranged attack this turn.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_self",
+        "targeting": "self",
+        "stamina_cost": 4,
+        "buffs": [
+          {
+            "stat": "accuracy",
+            "value": 25,
+            "duration": 1
+          },
+          {
+            "stat": "damage",
+            "value": 20,
+            "duration": 1
+          }
+        ]
+      }
     },
     "pinning_shot": {
       "name": "Pinning Shot",
@@ -3294,7 +3517,20 @@
       "requires_perks": [],
       "description": "Active (5 Stamina). Make a ranged attack. On hit, target's Movement is reduced to 0 for 1 turn (Constitution save negates the pin, damage still applies).",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "debuff_target",
+        "targeting": "single_enemy",
+        "stamina_cost": 5,
+        "range": 8,
+        "deals_damage": true,
+        "statuses": [
+          {
+            "status": "Immobilized",
+            "duration": 1
+          }
+        ]
+      }
     },
     "volley": {
       "name": "Volley",
@@ -3303,7 +3539,15 @@
       "requires_perks": [],
       "description": "Active (6 Stamina). Attack all enemies in a 2-tile-wide, 3-tile-long cone at 60% damage.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "aoe_attack",
+        "targeting": "aoe_point",
+        "stamina_cost": 6,
+        "range": 6,
+        "aoe_radius": 1,
+        "damage_pct": 60
+      }
     },
     "kill_zone": {
       "name": "Kill Zone",
@@ -3330,7 +3574,19 @@
       "requires_perks": [],
       "description": "Active (once per combat). Your next ranged attack is a guaranteed critical hit.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_self",
+        "targeting": "self",
+        "once_per_combat": true,
+        "buffs": [
+          {
+            "stat": "crit_chance",
+            "value": 100,
+            "duration": 1
+          }
+        ]
+      }
     },
     "soft_step": {
       "name": "Soft Step",
@@ -3481,7 +3737,23 @@
       "requires_perks": [],
       "description": "Active (3 Mana). Buff the caster's Attack by +15% and crit chance by +10% for 2 turns.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_self",
+        "targeting": "self",
+        "buffs": [
+          {
+            "stat": "accuracy",
+            "value": 15,
+            "duration": 2
+          },
+          {
+            "stat": "crit_chance",
+            "value": 10,
+            "duration": 2
+          }
+        ]
+      }
     },
     "perfect_volley": {
       "name": "Perfect Volley",
@@ -3490,7 +3762,23 @@
       "requires_perks": [],
       "description": "Active (8 Mana). Allies within 2 tiles gain +15% ranged Attack and +10% crit chance for 2 turns.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_allies",
+        "targeting": "self",
+        "buffs": [
+          {
+            "stat": "accuracy",
+            "value": 15,
+            "duration": 2
+          },
+          {
+            "stat": "crit_chance",
+            "value": 10,
+            "duration": 2
+          }
+        ]
+      }
     },
     "scattering_gust": {
       "name": "Scattering Gust",
@@ -3557,7 +3845,7 @@
       "requires_perks": [
         "chorus_of_birds"
       ],
-      "description": "Active Air summons also provide +5% Dodge and +2 Initiative to allies within 2 tiles.",
+      "description": "Passive. Your active Air summons also provide +5% Dodge and +2 Initiative to allies within 2 tiles.",
       "flavor": "",
       "is_mantra": false
     },
@@ -3683,7 +3971,15 @@
       "requires_perks": [],
       "description": "Active (must be in a ritual circle, 1 full turn of preparation). The next spell gains +100% Spellpower (additive with other overcast effects).",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "overcast",
+        "targeting": "self",
+        "requires": "ritual_circle",
+        "next_spell_bonus": {
+          "spellpower_bonus_pct": 100
+        }
+      }
     },
     "mantra_of_interdependent_arising": {
       "name": "Mantra of Interdependent Arising",
@@ -3710,7 +4006,13 @@
       "requires_perks": [],
       "description": "Active (free action). Examine an enemy to reveal basic stats (HP, Armor, top 2 resistances) and one weakness.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "examine",
+        "targeting": "single_enemy",
+        "free_action": true,
+        "range": 8
+      }
     },
     "predictive_model": {
       "name": "Predictive Model",
@@ -3781,7 +4083,8 @@
       "requires_perks": [],
       "description": "Active (out of combat). Teach a known spell to another character who meets the basic school requirements.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "non_combat": true
     },
     "crossdisciplinary_insight": {
       "name": "Cross-Disciplinary Insight",
@@ -3790,7 +4093,19 @@
       "requires_perks": [],
       "description": "Active (6 Mana, 3-turn duration). Grant an ally +2 to one of the caster's trained skills (caster must have at least 3 in that skill).",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_ally",
+        "targeting": "single_ally",
+        "range": 4,
+        "buffs": [
+          {
+            "stat": "skill_bonus",
+            "value": 2,
+            "duration": 3
+          }
+        ]
+      }
     },
     "the_lineage_continues": {
       "name": "The Lineage Continues",
@@ -3880,7 +4195,13 @@
       "requires_perks": [],
       "description": "Active (once per combat). Force an enemy's attack to miss. That enemy loses their remaining action for the turn.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "force_miss",
+        "targeting": "single_enemy",
+        "once_per_combat": true,
+        "range": 6
+      }
     },
     "smoke_and_mirrors": {
       "name": "Smoke and Mirrors",
@@ -4001,7 +4322,12 @@
       "requires_perks": [],
       "description": "Active. Force an enemy to focus attacks on you for 2 turns (Focus save negates).",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "aggro_aura",
+        "targeting": "self",
+        "duration": 2
+      }
     },
     "heckle": {
       "name": "Heckle",
@@ -4149,7 +4475,20 @@
       "requires_perks": [],
       "description": "Active (8 Stamina). Attack all enemies in a 180-degree arc for full damage with +15% crit chance.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "aoe_attack",
+        "targeting": "aoe_point",
+        "stamina_cost": 8,
+        "range": 1,
+        "damage_pct": 100,
+        "aoe": {
+          "type": "arc",
+          "size": 1,
+          "width": 3,
+          "origin": "caster"
+        }
+      }
     },
     "sundering_blow": {
       "name": "Sundering Blow",
@@ -4158,7 +4497,18 @@
       "requires_perks": [],
       "description": "Active (4 Stamina). Make an attack that reduces target's Armor by 30% for 3 turns.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "attack_with_bonus",
+        "targeting": "single_enemy",
+        "range": 1,
+        "stamina_cost": 4,
+        "target_debuff": {
+          "stat": "armor",
+          "value": 30,
+          "duration": 3
+        }
+      }
     },
     "crack_the_line": {
       "name": "Crack the Line",
@@ -4185,7 +4535,20 @@
       "requires_perks": [],
       "description": "Active (3 Stamina). A slow attack with +30% damage and +15% armor penetration, but you suffer -15% Dodge until next turn.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "attack_with_bonus",
+        "targeting": "single_enemy",
+        "range": 1,
+        "stamina_cost": 3,
+        "damage_bonus_pct": 30,
+        "armor_ignore_pct": 15,
+        "self_buff": {
+          "stat": "dodge",
+          "value": -15,
+          "duration": 1
+        }
+      }
     },
     "breaking_point": {
       "name": "Breaking Point",
@@ -4248,7 +4611,20 @@
       "requires_perks": [],
       "description": "Active (3 Stamina). A heavy strike that knocks an enemy prone for 1 turn (Constitution save negates).",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "debuff_target",
+        "targeting": "single_enemy",
+        "stamina_cost": 3,
+        "range": 1,
+        "deals_damage": true,
+        "statuses": [
+          {
+            "status": "Knocked_Down",
+            "duration": 1
+          }
+        ]
+      }
     },
     "rattle_the_cage": {
       "name": "Rattle the Cage",
@@ -4311,7 +4687,19 @@
       "requires_perks": [],
       "description": "Passive. When an enemy's melee attack misses you, your next unarmed attack this turn gains +20% crit chance.",
       "flavor": "You learn the shape of the miss.",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "on_trigger",
+          "trigger": "dodge_success",
+          "effect": {
+            "type": "buff",
+            "stat": "damage",
+            "value": 20,
+            "duration": 1
+          }
+        }
+      ]
     },
     "bare_chest": {
       "name": "Bare Chest",
@@ -4356,7 +4744,17 @@
       "requires_perks": [],
       "description": "Active (once per combat, 8 Stamina). Deal triple damage with an unarmed strike that cannot be Dodged or blocked by Armor.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "attack_with_bonus",
+        "targeting": "single_enemy",
+        "stamina_cost": 8,
+        "once_per_combat": true,
+        "range": 1,
+        "damage_bonus_pct": 200,
+        "armor_ignore_pct": 100,
+        "ignore_dodge": true
+      }
     },
     "akimbo": {
       "name": "Akimbo",
@@ -4388,8 +4786,10 @@
       "name": "Iron Cortex",
       "skill": "finesse",
       "required_level": 12,
-      "requires_perks": ["akimbo"],
-      "description": "Passive. Arms 1 and 2 always fire \u2014 the probability check is removed for your first two attacks. Arms 3+ still use the normal Finesse-based chain.",
+      "requires_perks": [
+        "akimbo"
+      ],
+      "description": "Passive. Arms 1 and 2 always fire — the probability check is removed for your first two attacks. Arms 3+ still use the normal Finesse-based chain.",
       "flavor": "Two hands, one will.",
       "is_mantra": false
     },
@@ -4636,7 +5036,15 @@
       "requires_perks": [],
       "description": "Active. The next spell gains +100% Spellpower but costs 50% more mana. (Additive with other overcast effects.)",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "overcast",
+        "targeting": "self",
+        "next_spell_bonus": {
+          "spellpower_bonus_pct": 100,
+          "mana_cost_multiplier": 1.5
+        }
+      }
     },
     "calculated_intensity": {
       "name": "Calculated Intensity",
@@ -4654,7 +5062,15 @@
       "requires_perks": [],
       "description": "Active. The next spell gains +100% Spellpower, but you take damage equal to 25% of the mana cost as HP loss. (Additive with other overcast effects.)",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "overcast",
+        "targeting": "self",
+        "next_spell_bonus": {
+          "spellpower_bonus_pct": 100,
+          "self_damage_pct_of_mana": 25
+        }
+      }
     },
     "say_it_louder": {
       "name": "Say It Louder",
@@ -4677,7 +5093,16 @@
       "requires_perks": [],
       "description": "Active (once per combat). The next spell gains +200% Spellpower and costs double mana. (Additive with other overcast effects.)",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "overcast",
+        "targeting": "self",
+        "once_per_combat": true,
+        "next_spell_bonus": {
+          "spellpower_bonus_pct": 200,
+          "mana_cost_multiplier": 2.0
+        }
+      }
     },
     "blink_reflex": {
       "name": "Blink Reflex",
@@ -4787,7 +5212,19 @@
       "requires_perks": [],
       "description": "Active (5 Stamina). Double the Strength bonus on your next melee attack.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_self",
+        "targeting": "self",
+        "stamina_cost": 5,
+        "buffs": [
+          {
+            "stat": "damage",
+            "value": 20,
+            "duration": 1
+          }
+        ]
+      }
     },
     "hard_to_tire": {
       "name": "Hard to Tire",
@@ -4805,7 +5242,21 @@
       "requires_perks": [],
       "description": "Active (3-turn cooldown). Recover 30% of max Stamina and gain +10% damage resistance for 2 turns.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "heal_self",
+        "targeting": "self",
+        "cooldown": 3,
+        "heal_value": 0,
+        "stamina_restore_pct": 30,
+        "buffs": [
+          {
+            "stat": "armor",
+            "value": 10,
+            "duration": 2
+          }
+        ]
+      }
     },
     "welltempered": {
       "name": "Well-Tempered",
@@ -4841,7 +5292,19 @@
       "requires_perks": [],
       "description": "Active (4 Stamina). Move through enemy-occupied tiles this turn, pushing enemies 1 tile to the side.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_self",
+        "targeting": "self",
+        "stamina_cost": 4,
+        "buffs": [
+          {
+            "stat": "movement_mode",
+            "status": "Levitating",
+            "duration": 1
+          }
+        ]
+      }
     },
     "unmovable_object": {
       "name": "Unmovable Object",
@@ -4944,7 +5407,14 @@
       "requires_perks": [],
       "description": "Active (free action, once per turn). Mark an enemy. The first ally to attack that enemy gains +15% accuracy and +15% damage.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "mark_target",
+        "targeting": "single_enemy",
+        "free_action": true,
+        "once_per_turn": true,
+        "range": 6
+      }
     },
     "roles_assigned": {
       "name": "Roles Assigned",
@@ -4986,7 +5456,24 @@
       "requires_perks": [],
       "description": "Active (1 action). Grant one ally +1 Movement and +10% accuracy until end of their next turn.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_ally",
+        "targeting": "single_ally",
+        "range": 6,
+        "buffs": [
+          {
+            "stat": "movement",
+            "value": 1,
+            "duration": 2
+          },
+          {
+            "stat": "accuracy",
+            "value": 10,
+            "duration": 2
+          }
+        ]
+      }
     },
     "chain_of_command": {
       "name": "Chain of Command",
@@ -5006,7 +5493,29 @@
       "requires_perks": [],
       "description": "Active (1 action, 3-turn cooldown). Remove mental status effects and Stun from allies within 3 tiles. Grant +3 Initiative for 2 turns.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "cleanse_and_buff",
+        "targeting": "self",
+        "cooldown": 3,
+        "aoe_radius": 3,
+        "cleanses": [
+          "mental",
+          "Stunned",
+          "Feared",
+          "Confused",
+          "Charmed",
+          "Dominated",
+          "Demoralized"
+        ],
+        "buffs": [
+          {
+            "stat": "initiative",
+            "value": 3,
+            "duration": 2
+          }
+        ]
+      }
     },
     "press_the_advantage": {
       "name": "Press the Advantage",
@@ -5042,7 +5551,14 @@
       "requires_perks": [],
       "description": "Active (once per combat). Up to 4 allies immediately gain an extra action. That action cannot be interrupted, countered, or delayed.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "grant_extra_action",
+        "targeting": "self",
+        "once_per_combat": true,
+        "range": 6,
+        "max_targets": 4
+      }
     },
     "rousing_display": {
       "name": "Rousing Display",
@@ -5087,7 +5603,25 @@
       "requires_perks": [],
       "description": "Active (1 action). Inflict -10% morale and -10% accuracy on a visible enemy for 2 turns.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "debuff_target",
+        "targeting": "single_enemy",
+        "range": 6,
+        "debuffs": [
+          {
+            "stat": "accuracy",
+            "value": 10,
+            "duration": 2
+          }
+        ],
+        "statuses": [
+          {
+            "status": "Demoralized",
+            "duration": 2
+          }
+        ]
+      }
     },
     "stage_fright": {
       "name": "Stage Fright",
@@ -5116,7 +5650,21 @@
       "requires_perks": [],
       "description": "Active (once per combat). All demoralized enemies must make a Focus save or become Confused or Panicked for 2 turns.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "debuff_enemies",
+        "targeting": "self",
+        "once_per_combat": true,
+        "aoe_radius": 6,
+        "save_type": "focus",
+        "requires_demoralized": true,
+        "statuses": [
+          {
+            "status": "Confused",
+            "duration": 2
+          }
+        ]
+      }
     },
     "look_at_me": {
       "name": "Look at Me",
@@ -5125,7 +5673,12 @@
       "requires_perks": [],
       "description": "Active (1 action). For 2 turns, enemies within 3 tiles have +25% chance to target you.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "aggro_aura",
+        "targeting": "self",
+        "duration": 2
+      }
     },
     "misdirection": {
       "name": "Misdirection",
@@ -5280,7 +5833,20 @@
       "requires_perks": [],
       "description": "Active (5 Stamina). Make a spear attack. On hit, target's Movement is reduced to 0 for 2 turns (Constitution save negates the pin, damage still applies).",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "debuff_target",
+        "targeting": "single_enemy",
+        "stamina_cost": 5,
+        "range": 2,
+        "deals_damage": true,
+        "statuses": [
+          {
+            "status": "Immobilized",
+            "duration": 2
+          }
+        ]
+      }
     },
     "disciplined_formation": {
       "name": "Disciplined Formation",
@@ -5307,7 +5873,20 @@
       "requires_perks": [],
       "description": "Active (4 Stamina). Attack all enemies within reach in a 180-degree arc at 75% damage.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "aoe_attack",
+        "targeting": "aoe_point",
+        "stamina_cost": 4,
+        "range": 2,
+        "damage_pct": 75,
+        "aoe": {
+          "type": "arc",
+          "size": 2,
+          "width": 3,
+          "origin": "caster"
+        }
+      }
     },
     "impaling_strike": {
       "name": "Impaling Strike",
@@ -5316,7 +5895,20 @@
       "requires_perks": [],
       "description": "Active (6 Stamina). Attack in a line, hitting up to 2 enemies. Full damage to the first, 60% to the second.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "aoe_attack",
+        "targeting": "aoe_point",
+        "stamina_cost": 6,
+        "range": 2,
+        "damage_pct": 80,
+        "aoe": {
+          "type": "line",
+          "size": 2,
+          "width": 1,
+          "origin": "caster"
+        }
+      }
     },
     "water_finds_the_gap": {
       "name": "Water Finds the Gap",
@@ -5457,7 +6049,23 @@
       "requires_perks": [],
       "description": "Active (once per combat, 15 Mana). All enemies in a 3-tile radius take Water damage (75% Spellpower) and are Silenced for 2 turns (Focus save negates silence, damage still applies).",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "aoe_damage_and_status",
+        "targeting": "aoe_point",
+        "once_per_combat": true,
+        "range": 5,
+        "aoe_radius": 3,
+        "damage_pct": 75,
+        "damage_element": "water",
+        "save_type": "focus",
+        "statuses": [
+          {
+            "status": "Silenced",
+            "duration": 2
+          }
+        ]
+      }
     },
     "mantra_of_the_medicine_buddha": {
       "name": "Mantra of the Medicine Buddha",
@@ -5533,7 +6141,13 @@
       ],
       "description": "Active (once per combat). All your currently active buffs are applied to all allies at full strength for 2 turns.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "share_buffs",
+        "targeting": "self",
+        "once_per_combat": true,
+        "duration": 2
+      }
     },
     "weakening_gaze": {
       "name": "Weakening Gaze",
@@ -5560,7 +6174,13 @@
       "requires_perks": [],
       "description": "Active (4 Mana). Dispel one buff from an enemy. If successful, the buff's inverse is applied as a debuff for 2 turns.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "dispel_and_invert",
+        "targeting": "single_enemy",
+        "range": 5,
+        "duration": 2
+      }
     },
     "efficient_enchanting": {
       "name": "Efficient Enchanting",
@@ -5587,7 +6207,13 @@
       "requires_perks": [],
       "description": "Active (8 Mana, once per combat). Double the effectiveness of all active buffs on one ally for 3 turns.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "double_buffs",
+        "targeting": "single_ally",
+        "once_per_combat": true,
+        "range": 4
+      }
     },
     "reactive_shielding": {
       "name": "Reactive Shielding",
@@ -5641,7 +6267,19 @@
       "requires_perks": [],
       "description": "Active (2 Stamina). Move through enemy-occupied tiles without provoking reaction attacks this turn.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_self",
+        "targeting": "self",
+        "stamina_cost": 2,
+        "buffs": [
+          {
+            "stat": "movement_mode",
+            "status": "Levitating",
+            "duration": 1
+          }
+        ]
+      }
     },
     "flowing_evasion": {
       "name": "Flowing Evasion",
@@ -5659,7 +6297,14 @@
       "requires_perks": [],
       "description": "Active (3 Stamina). After taking an action, immediately move up to 2 tiles (free action, does not provoke).",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "bonus_movement",
+        "targeting": "self",
+        "stamina_cost": 3,
+        "free_action": true,
+        "bonus_movement": 2
+      }
     },
     "uncatchable": {
       "name": "Uncatchable",
@@ -5704,7 +6349,25 @@
       "requires_perks": [],
       "description": "Active (once per combat, 6 Stamina). For 1 turn, all attacks against you suffer -30% accuracy and you may move freely between your actions (total movement equal to 2x your Movement).",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_self",
+        "targeting": "self",
+        "stamina_cost": 6,
+        "once_per_combat": true,
+        "buffs": [
+          {
+            "stat": "dodge",
+            "value": 30,
+            "duration": 1
+          },
+          {
+            "stat": "movement",
+            "value": 3,
+            "duration": 1
+          }
+        ]
+      }
     },
     "cats_landing": {
       "name": "Cat's Landing",
@@ -5789,7 +6452,13 @@
       "requires_perks": [],
       "description": "Active (free action). Examine an ally to reveal all active status effects and their remaining durations. Examining an enemy reveals their HP and any vulnerabilities.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "examine",
+        "targeting": "aoe_point",
+        "free_action": true,
+        "range": 6
+      }
     },
     "know_the_symptoms": {
       "name": "Know the Symptoms",
@@ -5818,7 +6487,20 @@
       "requires_perks": [],
       "description": "Active (4 Stamina). Grant an ally +25% resistance to the next status effect applied to them (lasts until triggered or 3 turns).",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_ally",
+        "targeting": "single_ally",
+        "stamina_cost": 4,
+        "range": 4,
+        "buffs": [
+          {
+            "stat": "status_resistance",
+            "value": 25,
+            "duration": 3
+          }
+        ]
+      }
     },
     "immune_system": {
       "name": "Immune System",
@@ -5874,7 +6556,15 @@
       "requires_perks": [],
       "description": "Active (once per combat). Revive a bleeding-out ally to 30% HP and cleanse all negative status effects.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "revive",
+        "targeting": "downed_ally",
+        "once_per_combat": true,
+        "range": 2,
+        "heal_pct": 30,
+        "cleanse_all_debuffs": true
+      }
     },
     "field_surgeon": {
       "name": "Field Surgeon",
@@ -6006,7 +6696,13 @@
       "requires_perks": [],
       "description": "Active (once per encounter). Destroy one magical barrier, lock, or environmental hazard using alchemical means.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "destroy_obstacle",
+        "targeting": "aoe_point",
+        "once_per_combat": true,
+        "range": 3
+      }
     },
     "emergency_flask": {
       "name": "Emergency Flask",
@@ -6115,7 +6811,14 @@
       "requires_perks": [],
       "description": "Active (free action, 3-turn cooldown). Move up to 3 tiles immediately, ignoring reaction attacks and terrain penalties.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "bonus_movement",
+        "targeting": "self",
+        "free_action": true,
+        "cooldown": 3,
+        "bonus_movement": 3
+      }
     },
     "vanishing_act": {
       "name": "Vanishing Act",
@@ -6227,7 +6930,14 @@
       "requires_perks": [],
       "description": "Active (3 Stamina). Make an attack that pushes the enemy 1 tile. If they can't be pushed (wall, another unit), they take +25% damage instead.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "attack_with_bonus",
+        "targeting": "single_enemy",
+        "range": 1,
+        "stamina_cost": 3,
+        "damage_bonus_pct": 25
+      }
     },
     "follow_through": {
       "name": "Follow Through",
@@ -6245,7 +6955,15 @@
       "requires_perks": [],
       "description": "Active (5 Stamina). Strike the ground, dealing 60% damage to all enemies within 1 tile. Enemies must pass a Finesse save or be knocked prone.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "aoe_attack",
+        "targeting": "aoe_point",
+        "stamina_cost": 5,
+        "range": 1,
+        "aoe_radius": 1,
+        "damage_pct": 60
+      }
     },
     "earthquake": {
       "name": "Earthquake",
@@ -6265,7 +6983,15 @@
       "requires_perks": [],
       "description": "Active (10 Stamina, once per combat). Devastating overhead strike dealing 200% damage. Target must pass a Constitution save at -20% or be Stunned for 2 turns. All enemies within 1 tile take 50% damage.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "attack_with_bonus",
+        "targeting": "single_enemy",
+        "range": 1,
+        "stamina_cost": 10,
+        "once_per_combat": true,
+        "damage_bonus_pct": 100
+      }
     },
     "relentless_advance": {
       "name": "Relentless Advance",
@@ -6346,7 +7072,21 @@
       "requires_perks": [],
       "description": "Active (3 Stamina). Requires shield. Push an enemy 1 tile and apply -10% accuracy for 1 turn.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "debuff_target",
+        "targeting": "single_enemy",
+        "stamina_cost": 3,
+        "range": 1,
+        "deals_damage": true,
+        "debuffs": [
+          {
+            "stat": "accuracy",
+            "value": 10,
+            "duration": 1
+          }
+        ]
+      }
     },
     "deflection": {
       "name": "Deflection",
@@ -6377,7 +7117,18 @@
       "requires_perks": [],
       "description": "Active. End your turn. Until next turn, gain +25% Armor and adjacent allies gain +10% Armor.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "stance",
+        "targeting": "self",
+        "buffs": [
+          {
+            "stat": "armor",
+            "value": 25,
+            "duration": 2
+          }
+        ]
+      }
     },
     "stalwart_guardian": {
       "name": "Stalwart Guardian",
@@ -6395,7 +7146,20 @@
       "requires_perks": [],
       "description": "Active (free action, 3-turn cooldown). Until your next turn, reduce the next incoming hit by 30%.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_self",
+        "targeting": "self",
+        "free_action": true,
+        "cooldown": 3,
+        "buffs": [
+          {
+            "stat": "armor",
+            "value": 30,
+            "duration": 1
+          }
+        ]
+      }
     },
     "damage_control": {
       "name": "Damage Control",
@@ -6413,7 +7177,19 @@
       "requires_perks": [],
       "description": "+25% resistance to bleed, poison, and other effects that bypass armor.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "resistance",
+          "damage_type": "bleed",
+          "value": 25
+        },
+        {
+          "type": "resistance",
+          "damage_type": "poison",
+          "value": 25
+        }
+      ]
     },
     "last_man_standing": {
       "name": "Last Man Standing",
@@ -6456,7 +7232,9 @@
       "name": "Stubborn Body",
       "skill": "armor",
       "required_level": 8,
-      "requires_perks": ["hardened"],
+      "requires_perks": [
+        "hardened"
+      ],
       "special_requirement": "constitution_15",
       "description": "Passive. All wounds require 1 additional rest before they escalate to a worse form.",
       "flavor": "It takes longer to break what refuses to stay broken.",
@@ -6505,7 +7283,19 @@
       "requires_perks": [],
       "description": "Active (once per combat, 12 Mana). Target enemy must pass a Constitution save at -20% or be turned to stone for 3 turns (incapacitated, immune to damage, +50% Armor). On save, Slowed for 2 turns instead.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "debuff_target",
+        "targeting": "single_enemy",
+        "once_per_combat": true,
+        "range": 6,
+        "statuses": [
+          {
+            "status": "Petrified",
+            "duration": 3
+          }
+        ]
+      }
     },
     "raise_wall": {
       "name": "Raise Wall",
@@ -6581,7 +7371,25 @@
       "requires_perks": [],
       "description": "Active (once per combat, 15 Mana). All allies gain +25% Armor, +25% to all saves, and immunity to knockdown and knockback for 3 turns.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_allies",
+        "targeting": "self",
+        "once_per_combat": true,
+        "buffs": [
+          {
+            "stat": "armor",
+            "value": 25,
+            "duration": 3
+          }
+        ],
+        "statuses": [
+          {
+            "status": "Resolute",
+            "duration": 3
+          }
+        ]
+      }
     },
     "mantra_of_the_earth_store_bodhisattva": {
       "name": "Mantra of the Earth Store Bodhisattva",
@@ -6704,7 +7512,15 @@
       "requires_perks": [],
       "description": "Active (free action). Direct one summon to immediately move up to its full Movement and make one attack.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "grant_extra_action",
+        "targeting": "self",
+        "free_action": true,
+        "range": 8,
+        "max_targets": 1,
+        "summon_only": true
+      }
     },
     "guardian_instinct": {
       "name": "Guardian Instinct",
@@ -6776,7 +7592,8 @@
       "requires_perks": [],
       "description": "Active (overworld). Search the current area for supplies. Yield depends on terrain: food in forests, herbs in meadows, minerals in mountains.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "non_combat": true
     },
     "extended_march": {
       "name": "Extended March",
@@ -6812,7 +7629,8 @@
       "requires_perks": [],
       "description": "Active (overworld). Reveal nearby points of interest and dangers within a moderate radius.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "non_combat": true
     },
     "lay_of_the_land": {
       "name": "Lay of the Land",
@@ -6886,7 +7704,12 @@
       "requires_perks": [],
       "description": "Active. Once per encounter, the party may retreat from combat without penalty (no lost items, no reputation loss). Must be used before any ally begins bleeding out.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "retreat",
+        "targeting": "self",
+        "once_per_combat": true
+      }
     },
     "know_the_market": {
       "name": "Know the Market",
@@ -6951,7 +7774,8 @@
       "requires_perks": [],
       "description": "Active (overworld). Invest gold in a settlement. Returns 150% of the invested amount after several in-game days.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "non_combat": true
     },
     "diversified_portfolio": {
       "name": "Diversified Portfolio",
@@ -7002,7 +7826,8 @@
       "requires_perks": [],
       "description": "Active (overworld). Check available trade goods between known settlements. Buying low and selling high grants triple the normal gold difference.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "non_combat": true
     },
     "merchant_prince": {
       "name": "Merchant Prince",
@@ -7067,7 +7892,8 @@
       "requires_perks": [],
       "description": "Active (out of combat). Upgrade an existing piece of equipment, granting +10% to its primary stat permanently.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "non_combat": true
     },
     "socket": {
       "name": "Socket",
@@ -7096,7 +7922,14 @@
       "requires_perks": [],
       "description": "Active (1 action in combat, 3-turn cooldown). Restore 25% of an ally's Armor value, countering sunder effects.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "restore_armor",
+        "targeting": "single_ally",
+        "cooldown": 3,
+        "range": 2,
+        "armor_restore_pct": 25
+      }
     },
     "improvised_barricade": {
       "name": "Improvised Barricade",
@@ -7215,7 +8048,15 @@
       "requires_perks": [],
       "description": "Active (8 Stamina). Strike the ground rather than a target. Every enemy within 2 tiles is Knocked_Down and takes crushing damage equal to your Strength; structures and obstacles in the radius are destroyed outright.",
       "flavor": "You do not argue with a mace. You are simply, eventually, agreed with.",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "aoe_attack",
+        "targeting": "aoe_point",
+        "stamina_cost": 8,
+        "range": 2,
+        "aoe_radius": 2,
+        "damage_pct": 100
+      }
     },
     "the_line_holds": {
       "name": "The Line Holds",
@@ -7233,7 +8074,16 @@
       "requires_perks": [],
       "description": "Active (once per combat, 6 Stamina). Spend your whole turn aiming. The shot ignores cover, line of sight, and Armor entirely, and critically hits if the target is below half HP.",
       "flavor": "The arrow was released a long time before it left the string.",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "attack_with_bonus",
+        "targeting": "single_enemy",
+        "stamina_cost": 6,
+        "once_per_combat": true,
+        "range": 80,
+        "armor_ignore_pct": 100,
+        "ignore_dodge": true
+      }
     },
     "empty_hand_full_world": {
       "name": "Empty Hand, Full World",
@@ -7269,7 +8119,25 @@
       "requires_perks": [],
       "description": "Active (once per combat, 15 Mana). For 3 turns you cannot be Immobilized, Rooted, Grappled or Knocked_Down, you move through occupied tiles freely, and every Water spell you cast costs half.",
       "flavor": "Ask the river to hold still and see how the conversation goes.",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_self",
+        "targeting": "self",
+        "once_per_combat": true,
+        "buffs": [
+          {
+            "stat": "movement_mode",
+            "status": "Levitating",
+            "duration": 3
+          }
+        ],
+        "statuses": [
+          {
+            "status": "Resolute",
+            "duration": 3
+          }
+        ]
+      }
     },
     "root_and_summit": {
       "name": "Root and Summit",
@@ -7386,7 +8254,27 @@
       "requires_perks": [],
       "description": "Active (once per combat). Hold the field. All enemies who can see you must save or spend their turn watching; allies gain +25% damage and immunity to fear for 2 turns.",
       "flavor": "They came to kill you and they stayed to find out how it ends.",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "buff_allies_debuff_enemies",
+        "targeting": "self",
+        "once_per_combat": true,
+        "enemy_save_type": "focus",
+        "ally_buffs": [
+          {
+            "stat": "damage",
+            "value": 25,
+            "duration": 2
+          }
+        ],
+        "enemy_debuffs": [
+          {
+            "stat": "accuracy",
+            "value": -25,
+            "duration": 2
+          }
+        ]
+      }
     },
     "the_water_finds_the_crack": {
       "name": "The Water Finds the Crack",
@@ -7497,7 +8385,20 @@
       ],
       "description": "Active (once per combat). Name terms before blood is drawn. Enemies below half HP must save or withdraw from the fight entirely; those who stay take −15% damage for 2 turns from having heard you out.",
       "flavor": "Most fights continue because nobody thought to offer an alternative.",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "debuff_enemies",
+        "targeting": "self",
+        "once_per_combat": true,
+        "aoe_radius": 10,
+        "save_type": "charm",
+        "statuses": [
+          {
+            "status": "Pacified",
+            "duration": 3
+          }
+        ]
+      }
     },
     "the_second_arrow": {
       "name": "The Second Arrow",
@@ -7585,7 +8486,19 @@
       },
       "description": "Active (5 Stamina). Grab an adjacent enemy. They cannot move or attack until they pass a Strength check (your Strength + Unarmed vs their Strength + 10). Your unarmed attacks against a grappled target have +30% accuracy and cannot be Dodged.",
       "flavor": "You're not going anywhere.",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "grapple",
+        "targeting": "single_enemy",
+        "stamina_cost": 5,
+        "range": 1,
+        "statuses": [
+          {
+            "status": "Grappled",
+            "duration": 99
+          }
+        ]
+      }
     },
     "skirmisher": {
       "name": "Skirmisher",
@@ -7684,7 +8597,14 @@
       "description": "Active (4 Stamina + 8 Mana). Channel divine energy into a weapon strike: +30% damage as Holy. Heals you for 25% of damage dealt. Double damage vs undead and demons.",
       "flavor": "",
       "is_mantra": false,
-      "special_requirement": "any_weapon_skill_at_5"
+      "special_requirement": "any_weapon_skill_at_5",
+      "combat_data": {
+        "effect": "attack_with_bonus",
+        "targeting": "single_enemy",
+        "range": 1,
+        "stamina_cost": 4,
+        "damage_bonus_pct": 30
+      }
     },
     "elementalist": {
       "name": "Elementalist",
@@ -7925,7 +8845,12 @@
       },
       "description": "Active (1 action). Tell a joke that restores 15% Stamina to all allies within earshot. Outside of combat, removes Fear and restores low morale.",
       "flavor": "\"We're not going to die here. I haven't finished my bit.\"",
-      "is_mantra": false
+      "is_mantra": false,
+      "combat_data": {
+        "effect": "restore_stamina",
+        "targeting": "self",
+        "stamina_restore_pct": 15
+      }
     },
     "healer_general": {
       "name": "Healer General",
@@ -7958,7 +8883,8 @@
       },
       "description": "Active (1 action, non-combat). Give a speech that grants all party members +10% to their next skill check and +5% damage for the next encounter. Stacks up to 2 times between rests.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "non_combat": true
     },
     "know_your_enemy": {
       "name": "Know Your Enemy",

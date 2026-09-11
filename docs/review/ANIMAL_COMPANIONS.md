@@ -1,6 +1,6 @@
 # Animal Realm — Companions
 
-*41 companions.*
+*52 companions.*
 
 *Edit the prose between the anchors. The stat block under each name is generated; change it in `companions.json` instead.*
 
@@ -50,7 +50,7 @@ Born between two wheels on a road nobody names. Prices everything, respects noth
 
 ## Chitrangada  `chitrangada`
 
-`birth: marjara  ·  background: canopy_ambush  ·  traits: quick, brave  ·  cost: 850`
+`birth: marjara  ·  background: canopy_ambush  ·  traits: quick, brave  ·  cost: 850  ·  fixed_items: ['health_potion']`
 
 
 **Skills** *(strongest first)*
@@ -63,7 +63,7 @@ unarmed, guile, grace
 **Flavor Text**
 
 <!--@ companions.json | chitrangada | flavor_text -->
-Drops on things from above and has never once had to explain herself afterwards. Pale as limestone, silent as weather, entirely without malice.
+Pale as limestone, silent as weather, entirely without malice. Killing is what a cat does, isn't it?
 <!--@end-->
 
 
@@ -107,7 +107,7 @@ She has never given an order; she yawns at the right moment and the argument end
 
 ## Ekadamshtra  `ekadamshtra`
 
-`birth: varaha  ·  background: sounder_matron  ·  traits: patient, generous  ·  cost: 950`
+`birth: varaha  ·  background: sounder_matron  ·  traits: patient, generous  ·  cost: 950  ·  fixed_items: ['rations']`
 
 
 **Skills** *(strongest first)*
@@ -120,7 +120,7 @@ might, earth_magic, logistics
 **Flavor Text**
 
 <!--@ companions.json | ekadamshtra | flavor_text -->
-Ran a sounder of forty for thirty years and handed it on cleanly, which almost never happens. Eats last. Sleeps where everyone can see her.
+Ran a sounder of forty for thirty years and handed it on cleanly, a rare event indeed. She eats last, sleeps with one eye open.
 <!--@end-->
 
 
@@ -140,6 +140,25 @@ performance, grace, persuasion
 
 <!--@ companions.json | enakshi | flavor_text -->
 Has held the clearing eleven seasons running and has never once had to touch anyone to do it.
+<!--@end-->
+
+
+## Ghoraka  `ghoraka`
+
+`birth: varaha  ·  background: ancestor_priest  ·  traits: grudge_bearer, mourner  ·  cost: 1050  ·  fixed_items: ['prayer_beads']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | ghoraka | build_weights -->
+black_magic, ritual, earth_magic
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | ghoraka | flavor_text -->
+When the wolves killed his sounder, he found a source of power deep in the grief and bloodlust. Now the wolves keep their distance, seeing the oily smoke seeping from his eyes.
 <!--@end-->
 
 
@@ -257,6 +276,63 @@ Taking such delight in the hunt, in the kill, in the tearing of flesh, must have
 <!--@end-->
 
 
+## Kshanaka  `kshanaka`
+
+`birth: marjara  ·  background: pleasure_dancer  ·  traits: attractive, flirt  ·  cost: 950  ·  fixed_items: ['silver_ring']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | kshanaka | build_weights -->
+persuasion, guile, grace
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | kshanaka | flavor_text -->
+How can you resist her eyes, her hips, her laughter? Wait — what did you say happened to her last master?
+<!--@end-->
+
+
+## Mandaka  `mandaka`
+
+`birth: marjara  ·  background: cat_burglar  ·  traits: quick, covetous  ·  cost: 950  ·  fixed_items: ['plain_thieving_tools']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | mandaka | build_weights -->
+thievery, guile, grace
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | mandaka | flavor_text -->
+Third storey, no rope, and back down with the thing before the dog finished turning its head. Considers locks a personal remark.
+<!--@end-->
+
+
+## Mrichha  `mrichha`
+
+`birth: varaha  ·  background: truffle_hunter  ·  traits: patient, pilgrim  ·  cost: 1000  ·  fixed_items: ['rations', 'healing_herb']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | mrichha | build_weights -->
+earth_magic, space_magic, yoga
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | mrichha | flavor_text -->
+Disappearing from one clearing and appearing in another, bringing food and medicine. Others say they travel through the roots and hyphae.
+<!--@end-->
+
+
 ## Nadaka  `nadaka`
 
 `birth: gana  ·  background: forest_singer  ·  traits: curious, secret_bearer  ·  cost: 900  ·  fixed_items: ['lucky_charm']`
@@ -295,6 +371,25 @@ Taken young, sold south, came back in silk with rings on every point. Holds your
 <!--@end-->
 
 
+## Niloka  `niloka`
+
+`birth: marjara  ·  background: healer  ·  traits: secret_bearer, clear_eyed  ·  cost: 900  ·  fixed_items: ['healing_herb']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | niloka | build_weights -->
+white_magic, medicine, black_magic
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | niloka | flavor_text -->
+I'm here to patch you up, child. Why? And why do you care, pray tell?
+<!--@end-->
+
+
 ## Nishkasita  `nishkasita`
 
 `birth: rakshasa  ·  background: hedonist  ·  traits: vain, haunted  ·  cost: 700  ·  fixed_items: ['health_potion']`
@@ -330,6 +425,63 @@ smithing, sorcery, ranged
 
 <!--@ companions.json | phalguna | flavor_text -->
 Can build anything out of anything given an afternoon and no supervision. Every solution is temporary, every temporary solution has now been load-bearing for six years.
+<!--@end-->
+
+
+## Phulla  `phulla`
+
+`birth: varaha  ·  background: mycelium_tender  ·  traits: ascetic, warm_hearted  ·  cost: 900  ·  fixed_items: ['herb_bundle', 'raw_reagents']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | phulla | build_weights -->
+white_magic, alchemy, earth_magic
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | phulla | flavor_text -->
+They started out with oyster mushrooms, then learned the way of the morel, finally graduated to the little ones that speak. Now, they work healing and miracles, insisting the power flows through, not from them.
+<!--@end-->
+
+
+## Runborn  `runborn`
+
+`birth: varaha  ·  background: young_brave  ·  traits: hot_tempered, homesick  ·  cost: 800`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | runborn | build_weights -->
+might, unarmed, yoga
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | runborn | flavor_text -->
+Exiled from the sounder for killing a brother in a fit of rage. Now they seek redemption and self-discipline.
+<!--@end-->
+
+
+## Rupaka  `rupaka`
+
+`birth: marjara  ·  background: witch  ·  traits: stubborn, suspicious  ·  cost: 1000  ·  fixed_items: ['lucky_charm']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | rupaka | build_weights -->
+sorcery, black_magic, enchantment
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | rupaka | flavor_text -->
+They tried to change her into a proper little lady and failed. She tried to change them into newts and succeeded.
 <!--@end-->
 
 
@@ -409,6 +561,25 @@ He woke from a nightmare to see his lair and his fur on fire, spreading from the
 <!--@end-->
 
 
+## Sthiraka  `sthiraka`
+
+`birth: marjara  ·  background: monk  ·  traits: patient, ascetic  ·  cost: 900`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | sthiraka | build_weights -->
+martial_arts, yoga, grace
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | sthiraka | flavor_text -->
+The changing texture of the light is enough to keep him entertained. Better not bother him without a good reason, though.
+<!--@end-->
+
+
 ## Takshari  `takshari`
 
 `birth: rakshasa  ·  background: ancestor_priest  ·  traits: superstitious, mourner  ·  cost: 1000  ·  fixed_items: ['prayer_beads']`
@@ -463,6 +634,44 @@ persuasion, fire_magic, performance
 
 <!--@ companions.json | unmatta | flavor_text -->
 Came down from the hills for one season of silk and wine and has not gone back in nine years. Insists he could stop. Nobody has asked him to.
+<!--@end-->
+
+
+## Varika  `varika`
+
+`birth: marjara  ·  background: smuggler  ·  traits: greedy, gossip  ·  cost: 850  ·  fixed_items: ['plain_merchants_scales']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | varika | build_weights -->
+trade, thievery, daggers
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | varika | flavor_text -->
+This, my lord? How did I acquire it? Oh, from a middle aged person of no particular characteristics, of course!
+<!--@end-->
+
+
+## Vasuda  `vasuda`
+
+`birth: varaha  ·  background: hunter  ·  traits: quick, frail  ·  cost: 850  ·  fixed_items: ['hunting_bow']`
+
+
+**Skills** *(strongest first)*
+
+<!--@ companions.json | vasuda | build_weights -->
+ranged, armor, logistics
+<!--@end-->
+
+
+**Flavor Text**
+
+<!--@ companions.json | vasuda | flavor_text -->
+Born too early, she was the weakest in the sounder. She found inventive ways to pull her weight and protect her kin.
 <!--@end-->
 
 

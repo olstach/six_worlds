@@ -1487,6 +1487,7 @@ func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, 
 		result.merge(damage_result, true)
 		apply_damage(defender, result.damage, weapon_dmg_type)
 		_process_on_hit_perks(attacker, defender, result)
+		_fire_perk_triggers(attacker, "on_hit", {"target": defender})
 
 		# Wound and disease procs — scaled by chain_chance so later arms are less likely to inflict.
 		# chain_chance is 0–100; divide by 100 to get a 0–1 multiplier.
@@ -1769,6 +1770,11 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 
 		# --- Passive perk on-hit effects ---
 		_process_on_hit_perks(attacker, defender, result)
+		_fire_perk_triggers(attacker, "on_hit", {"target": defender})
+		if result.get("crit", false):
+			_fire_perk_triggers(attacker, "on_crit", {"target": defender})
+		if not defender.is_alive():
+			_fire_perk_triggers(attacker, "on_kill", {"target": defender})
 		# --- Weapon passive on-hit procs ---
 		_process_weapon_on_hit_procs(attacker, defender, result)
 		# --- Ammo special effects (fire arrow AoE, status procs) ---
@@ -1801,6 +1807,7 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 	else:
 		# Attack missed — check dodge/parry perks on defender
 		_process_on_dodge_perks(defender, attacker)
+		_fire_perk_triggers(defender, "dodge_success", {"attacker": attacker})
 		# Reset consecutive hit streaks on miss
 		attacker.momentum_stacks = 0
 		attacker.unarmed_hit_stacks = 0
@@ -2331,6 +2338,13 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 	# Marked_for_Death: damage_taken_increase makes unit take 50% more damage
 	if damage > 0 and _unit_has_effect(unit, "damage_taken_increase"):
 		damage = int(damage * 1.5)
+
+	# Flat damage reduction from the Armor skill table and passive perks.
+	# Capped at 90% so no build becomes untouchable.
+	if damage > 0 and "character_data" in unit:
+		var reduction: float = unit.character_data.get("derived", {}).get("damage_reduction_pct", 0.0)
+		if reduction > 0.0:
+			damage = maxi(1, int(damage * (1.0 - minf(reduction, 90.0) / 100.0)))
 
 	# Mantric_Armor: hp_shield absorbs damage before HP. Shield pool lives in the
 	# status entry's "value" field (0/unset → default 25); status expires when spent.
@@ -3963,6 +3977,14 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 
 ## Apply a temporary stat modifier
 func _apply_stat_modifier(unit: Node, stat: String, value: int, duration: int) -> void:
+	# Refuse a stat no getter reads back rather than storing it forever. A
+	# modifier on an unknown name is invisible in play and indistinguishable
+	# from a balance problem, so it has to be loud here.
+	if not CombatStats.is_modifiable(stat):
+		push_error("CombatManager: cannot modify %s — %s"
+			% [stat, CombatStats.explain_unknown(stat)])
+		return
+
 	# Store modifiers on the unit for processing each turn
 	if not "stat_modifiers" in unit:
 		unit.set("stat_modifiers", [])
@@ -3972,9 +3994,6 @@ func _apply_stat_modifier(unit: Node, stat: String, value: int, duration: int) -
 		"value": value,
 		"duration": duration
 	})
-
-	# Apply immediate effect to derived stats
-	# This is simplified - full implementation would modify get_* functions
 
 
 ## Check if a unit's talisman perks grant immunity or resistance to a status.
@@ -5426,6 +5445,26 @@ func ai_use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Di
 # ACTIVE SKILLS
 # ============================================
 
+## Effect strings `use_active_skill` below dispatches to a real resolver.
+## Keep in step with its match block — the UI greys out anything not listed here
+## rather than letting the player spend an action on "not yet implemented".
+const IMPLEMENTED_SKILL_EFFECTS: Array[String] = [
+	"attack_with_bonus", "dash_attack", "buff_self", "debuff_target",
+	"aoe_attack", "teleport", "stance", "heal_self", "enter_stealth",
+	"mark_target", "examine", "bonus_movement", "restore_stamina",
+	"restore_armor", "revive", "debuff_enemies", "buff_allies", "buff_ally",
+	"destroy_obstacle", "cleanse_and_buff", "grant_extra_action", "force_miss",
+	"grapple", "overcast", "retreat", "aoe_damage_and_status",
+	"buff_allies_debuff_enemies", "dispel_and_invert", "aggro_aura",
+	"share_buffs", "double_buffs", "chod_offering", "throw_phurba",
+]
+
+
+## True when an effect string resolves to something that actually happens.
+func is_active_skill_effect_implemented(effect: String) -> bool:
+	return effect in IMPLEMENTED_SKILL_EFFECTS
+
+
 ## Use an active skill. skill_data comes from perks.json with added combat_data.
 ## target_pos is used for targeted skills (single_enemy, aoe); ignored for self skills.
 func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) -> Dictionary:
@@ -5949,23 +5988,44 @@ func _resolve_debuff_target(user: Node, combat_data: Dictionary, target_pos: Vec
 
 
 ## AoE skill (Volley, Ground Slam, etc.)
+## Units an active skill's area covers, using the same AoEResolver shapes spells
+## use. Pass team = -1 for everyone, or a team id to filter.
+##
+## Shape comes from a canonical `aoe` block ({"type": "arc", "size": 1, ...}).
+## A skill that only declares the flat `aoe_radius` is read as a circle of that
+## radius, which is what the hand-rolled distance checks here used to do — so
+## perks can move onto real shapes one at a time.
+func _units_in_skill_aoe(user: Node, combat_data: Dictionary, target_pos: Vector2i,
+		team: int = -1) -> Array:
+	var aoe: Dictionary = combat_data.get("aoe", {})
+	if aoe.is_empty():
+		aoe = {"type": "circle", "size": combat_data.get("aoe_radius", 1)}
+
+	var grid_sz: Vector2i = combat_grid.grid_size if combat_grid else Vector2i(48, 30)
+	var tiles: Array[Vector2i] = AoEResolver.get_tiles(
+		aoe, user.grid_position, target_pos, grid_sz)
+
+	var hit: Array = []
+	for unit in all_units:
+		if not unit.is_alive():
+			continue
+		if team >= 0 and unit.team != team:
+			continue
+		if unit.grid_position in tiles:
+			hit.append(unit)
+	return hit
+
+
 func _resolve_aoe_skill(user: Node, combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
 	var max_range = combat_data.get("range", 4)
 	var distance = _grid_distance(user.grid_position, target_pos)
 	if distance > max_range:
 		return {"success": false, "reason": "Out of range"}
 
-	var aoe_radius = combat_data.get("aoe_radius", 1)
 	var damage_pct = combat_data.get("damage_pct", 60)  # % of normal damage
 
-	# Find all enemy units in AoE
-	var hit_targets: Array = []
-	for unit in all_units:
-		if not unit.is_alive() or unit.team == user.team:
-			continue
-		var d = _grid_distance(target_pos, unit.grid_position)
-		if d <= aoe_radius:
-			hit_targets.append(unit)
+	var enemy_team: int = 1 - (user.team if "team" in user else 0)
+	var hit_targets: Array = _units_in_skill_aoe(user, combat_data, target_pos, enemy_team)
 
 	var effects: Array = []
 	for target in hit_targets:
@@ -6100,6 +6160,16 @@ func _perform_save_roll(unit: Node, save_type: String) -> bool:
 	var stat_val = attrs.get(save_type, 10)
 	# Each point above 10 adds 2% to the save chance; base 40%
 	var save_chance = clampf(40.0 + (stat_val - 10) * 2.0, 10.0, 90.0)
+	# save_bonus modifiers (Booster Shot's "+25% resistance to the next status")
+	# were being written and never read — this is the reader.
+	if unit.has_method("_get_stat_modifier_bonus"):
+		save_chance = clampf(save_chance + unit._get_stat_modifier_bonus("save_bonus"), 10.0, 95.0)
+
+	# Mental resistance from space affinity and passive perks. Focus saves are
+	# the mental ones; this is what PerkSystem has been computing all along.
+	if save_type == "focus" and "character_data" in unit:
+		var mental: float = unit.character_data.get("derived", {}).get("mental_resistance_pct", 0.0)
+		save_chance = clampf(save_chance + mental, 10.0, 95.0)
 	return randf() * 100.0 <= save_chance
 
 
@@ -6197,12 +6267,17 @@ func _resolve_debuff_enemies_aoe(user: Node, combat_data: Dictionary, _target_po
 
 	var enemy_team = 1 - (user.team if "team" in user else 0)
 	var candidates: Array = []
-	for enemy in get_team_units(enemy_team):
-		if not enemy.is_alive():
-			continue
-		if targeting != "all_enemies" and _grid_distance(user.grid_position, enemy.grid_position) > aoe_radius:
-			continue
-		candidates.append(enemy)
+	if targeting == "all_enemies":
+		for enemy in get_team_units(enemy_team):
+			if enemy.is_alive():
+				candidates.append(enemy)
+	else:
+		# Self-centred: the shape anchors on the user, not on a clicked tile.
+		var aoe: Dictionary = combat_data.get("aoe", {"type": "circle", "size": aoe_radius})
+		aoe = aoe.duplicate()
+		aoe["origin"] = "caster"
+		candidates = _units_in_skill_aoe(
+			user, {"aoe": aoe}, user.grid_position, enemy_team)
 
 	for enemy in candidates:
 		# the_laughter_turns: only targets demoralised enemies; uses alternate status otherwise
@@ -6310,15 +6385,13 @@ func _resolve_destroy_obstacle(user: Node, combat_data: Dictionary, target_pos: 
 func _resolve_cleanse_and_buff(user: Node, combat_data: Dictionary) -> Dictionary:
 	var cleanse_list = combat_data.get("cleanses", [])  # Status names or categories to remove
 	var buffs = combat_data.get("buffs", [])
-	var aoe_radius = combat_data.get("aoe_radius", 3)
 	var effects: Array = []
 
-	for ally in get_team_units(user.team if "team" in user else 0):
-		if not ally.is_alive():
-			continue
-		if _grid_distance(user.grid_position, ally.grid_position) > aoe_radius:
-			continue
-
+	var aoe: Dictionary = combat_data.get(
+		"aoe", {"type": "circle", "size": combat_data.get("aoe_radius", 3)}).duplicate()
+	aoe["origin"] = "caster"
+	for ally in _units_in_skill_aoe(user, {"aoe": aoe}, user.grid_position,
+			user.team if "team" in user else 0):
 		# Cleanse matching statuses or categories
 		var to_remove: Array[int] = []
 		for i in range(ally.status_effects.size()):
@@ -6488,19 +6561,14 @@ func _resolve_aoe_damage_and_status(user: Node, combat_data: Dictionary, target_
 	if _grid_distance(user.grid_position, target_pos) > max_range:
 		return {"success": false, "reason": "Out of range"}
 
-	var aoe_radius = combat_data.get("aoe_radius", 3)
 	var damage_pct = combat_data.get("damage_pct", 75)
 	var damage_element = combat_data.get("damage_element", "physical")
 	var save_type = combat_data.get("save_type", "focus")
 	var statuses = combat_data.get("statuses", [])
 	var effects: Array = []
 
-	for enemy in get_team_units(1 - (user.team if "team" in user else 0)):
-		if not enemy.is_alive():
-			continue
-		if _grid_distance(target_pos, enemy.grid_position) > aoe_radius:
-			continue
-
+	var enemy_team: int = 1 - (user.team if "team" in user else 0)
+	for enemy in _units_in_skill_aoe(user, combat_data, target_pos, enemy_team):
 		# Spellpower-scaled damage
 		var base_dmg = int(user.get_spellpower() * damage_pct / 100.0)
 		var resist = enemy.get_resistance(damage_element) if enemy.has_method("get_resistance") else 0.0
@@ -6771,6 +6839,17 @@ func get_active_skill_targets(user: Node, combat_data: Dictionary) -> Array[Vect
 		"single_ally":
 			for unit in all_units:
 				if not unit.is_alive() or unit.team != user.team:
+					continue
+				var dist = _grid_distance(user.grid_position, unit.grid_position)
+				if dist <= skill_range:
+					result.append(unit.grid_position)
+		"downed_ally":
+			# is_alive() is false for a bleeding-out unit, so single_ally can
+			# never see the ally a revive exists to reach.
+			for unit in all_units:
+				if unit.team != user.team:
+					continue
+				if not (unit.is_bleeding_out or unit.is_dead):
 					continue
 				var dist = _grid_distance(user.grid_position, unit.grid_position)
 				if dist <= skill_range:
@@ -7208,6 +7287,58 @@ func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 
 
 ## Process on-hit procs from weapon passive dict.
+## ── Data-driven passive triggers ─────────────────────────────────────────────
+## Sits alongside _process_on_hit_perks() and friends, which stay as the home
+## for the 164 perks wired by id. This is for perks that describe themselves in
+## an `effects` array instead. A perk uses one mechanism or the other — never
+## both, or it fires twice — and tools/wire_passive_perks.py enforces that by
+## refusing to write `effects` for any perk id it finds referenced in scripts/.
+func _fire_perk_triggers(unit: Node, trigger: String, context: Dictionary = {}) -> void:
+	if unit == null or not "character_data" in unit or not PerkSystem:
+		return
+	for entry in PerkSystem.get_combat_passives(unit.character_data):
+		var effect: Dictionary = entry.effect
+		if effect.get("type", "") != "on_trigger":
+			continue
+		if effect.get("trigger", "") != trigger:
+			continue
+		var chance: float = float(effect.get("chance", 100))
+		if chance < 100.0 and randf() * 100.0 > chance:
+			continue
+		_apply_trigger_effect(unit, entry.perk_id, effect.get("effect", {}), context)
+
+
+## Resolve one fired trigger's payload.
+func _apply_trigger_effect(unit: Node, perk_id: String, payload: Dictionary,
+		context: Dictionary) -> void:
+	var target: Node = unit
+	if payload.get("target", "self") == "attacker" and context.has("attacker"):
+		target = context["attacker"]
+	elif payload.get("target", "self") == "victim" and context.has("target"):
+		target = context["target"]
+	if target == null or not target.is_alive():
+		return
+
+	match payload.get("type", ""):
+		"buff":
+			_apply_stat_modifier(target, payload.get("stat", ""),
+				int(payload.get("value", 0)), int(payload.get("duration", 1)))
+		"status":
+			_apply_status_effect(target, payload.get("status", ""),
+				int(payload.get("duration", 1)), 0, unit)
+		"heal":
+			if target.has_method("heal"):
+				target.heal(int(payload.get("value", 0)))
+		"restore_stamina":
+			if target.has_method("restore_stamina"):
+				target.restore_stamina(int(payload.get("value", 0)))
+		_:
+			push_error("CombatManager: perk '%s' has an on_trigger payload of unknown type '%s'"
+				% [perk_id, payload.get("type", "")])
+			return
+	combat_log.emit("%s: %s" % [unit.unit_name, PerkSystem.get_perk_data(perk_id).get("name", perk_id)])
+
+
 ## Called from attack_unit() after damage lands, alongside _process_on_hit_perks.
 func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictionary) -> void:
 	if not attacker.has_method("get_equipped_weapon"):
