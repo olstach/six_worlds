@@ -98,6 +98,15 @@ Each of these is an hour or less and touches one system.
 - [ ] **Spell impact sounds** for Air, Water, Earth (fire + generic exist).
 - [ ] **Background/realm music** — none.
 
+- [ ] **`tools/verify_enemy_xp.tscn` has a flaky check.** The kit-budget
+      assertion (`spent > budget * 6 + 400`) runs over procedurally generated
+      gear, so an unlucky high-value roll on a low-XP enemy trips it about one
+      run in ten with no code change — observed 1/10 on a branch that leaves
+      `enemy_system.gd`, `item_system.gd` and `items.json` byte-identical to
+      master. It should seed the RNG, or assert on a rate rather than on zero.
+      Until then, a single red run from this suite means "run it again", which
+      is the opposite of what a test should mean.
+
 ## 2. Implemented features with no content using them
 
 The mirror image of dead data: code paths that work and are never exercised.
@@ -534,6 +543,69 @@ Spec: `docs/superpowers/specs/2026-08-31-enemy-xp-generation-design.md`
 
 ---
 
+## 9. The passive perk backlog (2026-09-10)
+
+The engine is built and proven; the data is barely started. Of 470 passive
+perks: **168** are implemented by hand in `scripts/` (checked by id with
+`PerkSystem.has_perk()` at the moment they matter), **5** carry an `effects`
+array, **297** are still description-only.
+
+**The rule everything rests on:** a hand-implemented perk must never *also*
+carry an `effects` array, or it fires twice. `tools/wire_passive_perks.py`
+derives the hardcoded set by scanning `scripts/` rather than keeping a list, so
+a perk hardcoded tomorrow is protected without anyone remembering, and
+`verify_passive_perks` re-checks it against shipped data. Note that **Parry and
+Improved Parry — the plan document's own worked example of a
+`stat_conversion` — are both hardcoded** and must stay that way.
+
+Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
+`resistance`, `on_trigger`.
+
+- [ ] **Author the remaining 297.** Mechanical, and the tooling refuses bad
+      data, but it is a long pass. Worth doing skill by skill.
+- [ ] **`non_combat` effects are deliberately unbuilt.** ShopSystem and
+      EventManager have no consumer for them. Authoring an effect before its
+      reader exists is the exact failure this whole pass spent its time
+      undoing — build the consumers first. This is what the seven overworld
+      perks in §7 are waiting on too.
+- [ ] **Unbuilt effect types:** `aura`, `cost_reduction`, `damage_modifier`,
+      `resource_regen`, `spell_modifier`, `summon_modifier`, `special`.
+      `summon_modifier` has the most data waiting on it — several black, fire
+      and air perks buff summons and all of them are inert.
+- [ ] **More trigger points.** `_fire_perk_triggers` is only called for
+      `on_hit`, `on_crit`, `on_kill`, `dodge_success`. The taxonomy also wants
+      `combat_start`, `turn_start`, `take_damage`, `parry_success`,
+      `ally_damaged`.
+- [ ] **More conditions.** `_perk_condition_met` answers fourteen. Missing ones
+      the perk text asks for: `wearing_heavy_armor`, `unarmored_or_light`,
+      `first_attack_combat`, `first_attack_turn`, `from_behind`,
+      `target_bleeding`, `target_debuffed`, `on_terrain_type`.
+
+## 10. Systems the perk text assumes and the game does not have
+
+Found while wiring the actives. Each is worth building as a system rather than
+as a one-off, because several perks and spells want the same thing.
+
+- [ ] **Saving throws are three unrelated mechanisms.**
+      `CombatManager._perform_save_roll()` is a flat `40% + 2%/point above 10`
+      with no DC and no d20; `statuses.json` carries `save_type` and
+      `save_at_end_of_turn` fields nothing reads; `EventManager` has its own
+      d20+DC system. Perk text says "Constitution save at -20%" and "Focus save
+      DC 16" and neither is expressible. Unifying on the event system's d20+DC
+      unblocks ground_slam's knockdown, mountain_falls' stun and body_blow at
+      once, and finally gives `statuses.json`'s save fields a reader.
+- [ ] **Forced movement does not exist.** There is a `Pushed` status and perks
+      that talk about knockback, but no function relocates a unit — "Put Your
+      Weight Into It" applies `Knocked_Down` instead. One
+      `_displace_unit(unit, direction, tiles)` respecting walls, occupancy and
+      the Juggernaut immunity already written at `combat_manager.gd:6977`
+      covers shield_bash, overwhelming_blow, the push spells and the knockback
+      perks together.
+- [ ] **AoE damage falloff.** `impaling_strike` wants 100% to the first tile
+      and 60% to the second; `AoEResolver` returns an unordered tile list with
+      no concept of distance-weighting. Useful for every spell that wants a
+      softer edge.
+
 # Part II — Designs waiting to be built
 
 Kept in full: these are settled designs with no implementation yet.
@@ -842,6 +914,69 @@ they are wired.
 # Part IV — What got done
 
 Condensed changelog. Full checklists in git at `73a948c`.
+
+## 2026-09-09/10 — perk wiring: actives, the AoE resolver, and the passive engine
+
+Five commits on `claude/perk-wiring-active`, working through
+`docs/plans/PERK_WIRING_PLAN.md`. That plan's "status quo" turned out to be
+wrong in both directions and is corrected in place; the counts below are the
+real ones.
+
+**Active perks got the data their resolvers were waiting for.**
+`combat_manager.gd` had accumulated 32 `_resolve_*` handlers dispatched from
+`use_active_skill`, but **no perk in perks.json had ever carried the
+`combat_data` they read** — not at HEAD, not in any earlier revision of the
+file. Since `combat_arena.gd` greys out any non-mantra skill with empty
+`combat_data`, all 109 "Active." perks were unclickable and the resolvers had
+never once run. 75 are now wired; 7 overworld ones are flagged `non_combat` and
+filtered out of the combat panel; `host_of_the_winds` is reclassified passive
+(it describes summons that are active, and only reached the panel because the
+panel matches on the "Active" prefix); 26 remain, listed in Part I §7.
+
+**Active skills now use the shared AoE resolver.** `aoe_resolver.gd` already had
+ten shapes and `cast_spell` routed through it, but the four active-skill AoE
+resolvers each hand-rolled `_grid_distance(...) <= aoe_radius`, so every skill
+area was a circle whatever the perk said. `_units_in_skill_aoe()` is the single
+entry point now, falling back to `aoe_radius` as a circle so genuine bursts are
+untouched. New `arc` shape (full width at every step, where `cone` tapers to a
+tip): `size 1, width 3` is the three tiles in front of the attacker, `size 2`
+reaches spear range. red_harvest and sweeping_strike use it, impaling_strike
+uses `line`. Skill hover previews draw the silhouette.
+
+**`CombatStats` is now the one vocabulary** for stat and targeting names
+(`MODIFIABLE`, `DERIVED`, `DATA_KEYWORDS`, `TARGETING`), each entry annotated
+with what consumes it. `_apply_stat_modifier()` refuses an unmodifiable stat
+with a `push_error` instead of storing it. Both perk tools read these lists
+rather than restating them.
+
+**The passive effects engine is built** — steps 3-7 of the plan. PerkSystem
+carries the query layer; `update_derived_stats()` folds in flat bonuses then
+conversions (in that order, since a conversion reads a finished stat);
+`CombatUnit._get_conditional_perk_bonus()` evaluates gated effects where the
+stat is read; `CombatManager._fire_perk_triggers()` dispatches `on_hit`,
+`on_crit`, `on_kill` and `dodge_success`. Only 5 perks are wired to it so far —
+see Part I §9.
+
+**Six things were being computed and never read.** Same failure each time: a
+value written under one name and read under another, or not read at all, with
+`.get(key, default)` quietly covering the gap.
+
+| What | Was |
+|---|---|
+| `combat_arena.gd` | Would not parse. `8eeffe5` deleted `var ratio` from `_show_victory_screen` and left four uses fifty lines below — **the combat scene had failed to load since 2026-09-03**. |
+| `save_bonus` | Booster Shot wrote it from the day it shipped; nothing read it. The perk did nothing. Now read by `_perform_save_roll()`. |
+| `mental_resistance_pct`, `healing_pct`, `damage_pct` | Computed by `get_affinity_bonuses()` and never folded into `derived`. Space, water and fire affinity paid out nothing for mental resistance, healing or damage. |
+| `damage_reduction_pct` | Folded into `derived` but never read in combat, so the Armor skill's damage reduction did nothing. Now read by `apply_damage()`. |
+| Skill stamina cost | The button parsed it by regex from the description while `use_active_skill` charged `combat_data.stamina_cost`. The regex misses "(once per combat, 8 Stamina)", so One Inch advertised itself as free, passed the affordability check, then drained 8. |
+| Revive targeting | `single_ally` filters on `is_alive()`, false for exactly the bleeding-out ally a revive exists for. New `downed_ally` mode. |
+
+**New tooling.** `tools/wire_active_perks.py` and `tools/wire_passive_perks.py`
+own the data and regenerate `perks.json`; `tools/verify_active_perks.tscn` and
+`tools/verify_passive_perks.tscn` check the result against the **live**
+autoloads, which `validate_data.py` structurally cannot — it parses JSON in
+Python and never exercises a GDScript loader. Both verifiers were negative-
+tested: deliberately breaking a value, an AoE shape name, a stat vocabulary
+entry and the double-wiring rule each trips them.
 
 ## 2026-07-27 — post-break audit and follow-up passes
 
