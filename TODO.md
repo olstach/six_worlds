@@ -723,7 +723,8 @@ one saving-throw mechanic. See Part IV for what changed.
 Found while wiring the actives. Each is worth building as a system rather than
 as a one-off, because several perks and spells want the same thing.
 
-- [ ] **Saving throws are three unrelated mechanisms.**
+- [x] **Saving throws are three unrelated mechanisms.** Built 2026-09-12 —
+      `SaveSystem`. Original note kept for the reasoning:
       `CombatManager._perform_save_roll()` is a flat `40% + 2%/point above 10`
       with no DC and no d20; `statuses.json` carries `save_type` and
       `save_at_end_of_turn` fields nothing reads; `EventManager` has its own
@@ -731,14 +732,16 @@ as a one-off, because several perks and spells want the same thing.
       DC 16" and neither is expressible. Unifying on the event system's d20+DC
       unblocks ground_slam's knockdown, mountain_falls' stun and body_blow at
       once, and finally gives `statuses.json`'s save fields a reader.
-- [ ] **Forced movement does not exist.** There is a `Pushed` status and perks
+- [x] **Forced movement does not exist.** Built 2026-09-12 —
+      `_displace_unit` / `_apply_push`. Original note: There is a `Pushed` status and perks
       that talk about knockback, but no function relocates a unit — "Put Your
       Weight Into It" applies `Knocked_Down` instead. One
       `_displace_unit(unit, direction, tiles)` respecting walls, occupancy and
       the Juggernaut immunity already written at `combat_manager.gd:6977`
       covers shield_bash, overwhelming_blow, the push spells and the knockback
       perks together.
-- [ ] **AoE damage falloff.** `impaling_strike` wants 100% to the first tile
+- [x] **AoE damage falloff.** Built 2026-09-12 — opt-in `falloff` lists.
+      Original note: `impaling_strike` wants 100% to the first tile
       and 60% to the second; `AoEResolver` returns an unordered tile list with
       no concept of distance-weighting. Useful for every spell that wants a
       softer edge.
