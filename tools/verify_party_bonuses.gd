@@ -112,10 +112,7 @@ func _check_refresh_on_skill_change() -> void:
 
 
 func _check_refresh_on_party_change() -> void:
-	# Leadership buys room for other people now, so a party that intends to
-	# recruit needs someone who can lead. A Leadership-0 party travels alone
-	# and add_companion() correctly refuses.
-	_party([{"swords": 5, "leadership": 3}])
+	_party([{"swords": 5}])
 	var alone: float = _member(0)["derived"].get("healing_pct", 0.0)
 
 	var medic: Dictionary = CharacterSystem.create_blank_character()

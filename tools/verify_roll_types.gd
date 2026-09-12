@@ -94,10 +94,10 @@ func _check_social_bonus_applies_only_to_social_rolls() -> void:
 	_done()
 
 
-## Party size is Leadership's payout: 1 alone, +1 companion at Leadership 1, 3,
-## 5, 7 and 9, so a Leadership-9 leader fields six.
+## Two companions come free — nobody should have to buy a skill to travel with
+## anyone — and Leadership adds one at 3, 6 and 9, topping out at six.
 func _check_leadership_sets_the_party_cap() -> void:
-	var expected := {0: 1, 1: 2, 2: 2, 3: 3, 5: 4, 7: 5, 9: 6, 10: 6}
+	var expected := {0: 3, 1: 3, 2: 3, 3: 4, 5: 4, 6: 5, 8: 5, 9: 6, 10: 6}
 	for level in expected:
 		_party([{"leadership": level}])
 		var cap: int = CharacterSystem.get_max_party_size()
