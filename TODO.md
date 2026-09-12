@@ -149,7 +149,18 @@ The mirror image of dead data: code paths that work and are never exercised.
   Part III below. This is the largest single gap: most general skills currently
   pay out only their combat numbers.
 
-  **These are not the simple renames they look like.** It is tempting to map
+  **Renamed 2026-09-12 so the trap is visible in the name.** `_pct` is a
+  percentage, `party_` means one member's skill pays the whole party, a bare
+  name is flat. The convention is recorded in `perks.json`'s `base_bonuses._comment`
+  and enforced by `validate_data.py`. Five live keys were renamed at the same
+  time because their names misled: `attack` → `accuracy` (it lands on
+  `derived.accuracy`), `armor_penetration` → `armor_pierce`, `stamina` →
+  `max_stamina` (a maximum, not current), `mana_cost` → `mana_cost_reduction`
+  (negative values mean cheaper), `strength_weapon_damage` →
+  `weapon_damage_from_strength`. Verified behaviour-preserving: derived stats
+  for every skill at levels 1/5/10/15 are byte-identical before and after.
+
+  **They were never the simple renames they looked like.** It is tempting to map
   the dead keys onto live derived stats by name — `mental_resistance` onto
   `mental_resistance_pct`, `movement_speed` onto `movement`. Checked against the
   values, most of that is wrong:
@@ -163,17 +174,33 @@ The mirror image of dead data: code paths that work and are never exercised.
   | `loot_quality` | thievery | 5 → 75 | quality is not `loot_chance_pct`'s chance |
   | `mental_resistance` | yoga | 5 → 125 | same concept as `mental_resistance_pct`, but +125% is an auto-pass and needs rescaling |
 
-  What the table actually needs is two things that do not exist: a family of
-  **percentage-shaped derived stats** with consumers (a `movement_pct` distinct
-  from tiles, a magic-specific resistance), and a **party-wide propagation
-  mechanism** for the `(party)` keys — the "logistics train" named in
-  `CLAUDE.md`, where one character's skill pays the whole party. Until those
-  exist, renaming keys moves the gap without closing it.
+  What the table still needs is two things that do not exist: **consumers for
+  the percentage stats**, and a **party-wide propagation mechanism** for the
+  `party_` keys — the "logistics train" named in `CLAUDE.md`, where one
+  character's skill pays the whole party.
 
-  Two of the keys are also labels rather than identifiers —
-  `healing_effectiveness_(party)` and `poison/disease_resistance_(party)` carry
-  parentheses and a slash. Whatever replaces them should separate id from
-  display name.
+- [ ] **Party-wide bonuses: the design, when someone builds it.** They behave
+      like equipment bonuses — another additive source folded into `derived` —
+      except the source is a different character's skill. No ordering problem
+      arises because they derive from **raw skill levels**, never from another
+      character's `derived`, so nothing waits on anything.
+
+      Two decisions inside it:
+
+      - **Best member, not sum.** Four medics should not be four times one
+        medic. Taking the best also matches the rule the game already uses
+        everywhere — "any party member meeting a requirement enables the
+        choice" — and makes the specialist *the* specialist.
+      - **A refresh hook is mandatory.** If B levels Medicine, A's `derived` is
+        stale. `update_derived_stats` has to run for the whole party whenever
+        skills or party membership change, not just for the character who
+        changed. This is the part that bites later if it is not built in from
+        the start.
+
+      Combat-facing `party_` keys land in `derived`; the rest
+      (`party_xp_gain_pct`, `party_travel_speed_pct`,
+      `party_supply_duration_pct`, `party_skill_check_bonus`) are read by
+      CompanionSystem, MapManager, CampSystem and EventManager.
 
 - [x] **This whole bug class is now caught automatically.** `validate_data.py`
   gained a data→code check: five vocabularies (base_bonuses stats, status

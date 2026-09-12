@@ -517,20 +517,35 @@ def _read_by_code(value):
     return f'"{value}"' in _gd_source
 
 
-def check_vocabulary(label, values):
+def check_vocabulary(label, values, pattern=None):
+    """pattern: a %s-format string for a more precise read than a bare literal.
+
+    base_bonuses needs it. Its keys share a namespace with derived stat names,
+    so a bare literal search finds "mental_resistance_pct" in combat_stats.gd
+    and calls the skill table read — while update_derived_stats still never
+    looks at it. Searching for `bonus.get("<key>"` asks the real question.
+    """
     accepted = set(_baseline.get(label, {}).get("values", []))
     for value in sorted(values):
-        if _read_by_code(value) or value in accepted:
+        if value in accepted:
             continue
-        err("data->code", f"{label} '{value}' is declared in data but no code reads it")
+        found = (pattern % value) in _gd_source if pattern else _read_by_code(value)
+        if not found:
+            err("data->code", f"{label} '{value}' is declared in data but no code reads it")
 
 
 # Stat keys paid out by the per-level skill tables.
 _stat_keys = set()
-for _tbl in perks_data.get("base_bonuses", {}).values():
+for _skill, _tbl in perks_data.get("base_bonuses", {}).items():
+    if _skill.startswith("_"):
+        continue  # "_comment" section dividers are strings, not tables
     for _stats in _tbl.get("per_level", {}).values():
         _stat_keys.update(_stats)
-check_vocabulary("base_bonuses stat", _stat_keys)
+# `bonus` is the per-level dict in update_derived_stats; .get / .has are the
+# only ways it is read.
+check_vocabulary("base_bonuses stat", _stat_keys, 'bonus.get("%s"')
+_has_read = {k for k in _stat_keys if 'bonus.has("%s"' % k in _gd_source}
+check_vocabulary("base_bonuses stat", _has_read, 'bonus.has("%s"')
 
 # Behaviour strings on status definitions.
 _status_effects = set()

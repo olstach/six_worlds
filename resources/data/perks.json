@@ -1,546 +1,547 @@
 {
   "base_bonuses": {
+    "_comment": "Per-level stat payouts per skill. NAMING: a `_pct` suffix means a percentage; a `party_` prefix means one member's skill pays the whole party; a bare name is flat/absolute. A key here must match the derived stat it lands on exactly — they share one vocabulary, declared in scripts/combat/combat_stats.gd. Keys that no code reads are listed in tools/vocabulary_baseline.json with the reason; validate_data.py fails on any new one.",
     "swords": {
       "stats": [
-        "attack",
+        "accuracy",
         "damage"
       ],
       "per_level": {
         "1": {
-          "attack": 5.0,
-          "damage": 5.0
+          "damage": 5.0,
+          "accuracy": 5.0
         },
         "2": {
-          "attack": 15.0,
-          "damage": 15.0
+          "damage": 15.0,
+          "accuracy": 15.0
         },
         "3": {
-          "attack": 30.0,
-          "damage": 30.0
+          "damage": 30.0,
+          "accuracy": 30.0
         },
         "4": {
-          "attack": 50.0,
-          "damage": 50.0
+          "damage": 50.0,
+          "accuracy": 50.0
         },
         "5": {
-          "attack": 75.0,
-          "damage": 75.0
+          "damage": 75.0,
+          "accuracy": 75.0
         },
         "6": {
-          "attack": 90.0,
-          "damage": 90.0
+          "damage": 90.0,
+          "accuracy": 90.0
         },
         "7": {
-          "attack": 100.0,
-          "damage": 100.0
+          "damage": 100.0,
+          "accuracy": 100.0
         },
         "8": {
-          "attack": 110.0,
-          "damage": 110.0
+          "damage": 110.0,
+          "accuracy": 110.0
         },
         "9": {
-          "attack": 120.0,
-          "damage": 120.0
+          "damage": 120.0,
+          "accuracy": 120.0
         },
         "10": {
-          "attack": 130.0,
-          "damage": 130.0
+          "damage": 130.0,
+          "accuracy": 130.0
         },
         "11": {
-          "attack": 130.0,
-          "damage": 130.0
+          "damage": 130.0,
+          "accuracy": 130.0
         },
         "12": {
-          "attack": 130.0,
-          "damage": 130.0
+          "damage": 130.0,
+          "accuracy": 130.0
         },
         "13": {
-          "attack": 130.0,
-          "damage": 130.0
+          "damage": 130.0,
+          "accuracy": 130.0
         },
         "14": {
-          "attack": 130.0,
-          "damage": 130.0
+          "damage": 130.0,
+          "accuracy": 130.0
         },
         "15": {
-          "attack": 130.0,
-          "damage": 130.0
+          "damage": 130.0,
+          "accuracy": 130.0
         }
       }
     },
     "martial_arts": {
       "stats": [
-        "attack",
+        "accuracy",
         "crit_chance"
       ],
       "per_level": {
         "1": {
-          "attack": 5.0,
-          "crit_chance": 5.0
+          "crit_chance": 5.0,
+          "accuracy": 5.0
         },
         "2": {
-          "attack": 15.0,
-          "crit_chance": 10.0
+          "crit_chance": 10.0,
+          "accuracy": 15.0
         },
         "3": {
-          "attack": 30.0,
-          "crit_chance": 20.0
+          "crit_chance": 20.0,
+          "accuracy": 30.0
         },
         "4": {
-          "attack": 50.0,
-          "crit_chance": 35.0
+          "crit_chance": 35.0,
+          "accuracy": 50.0
         },
         "5": {
-          "attack": 75.0,
-          "crit_chance": 50.0
+          "crit_chance": 50.0,
+          "accuracy": 75.0
         },
         "6": {
-          "attack": 90.0,
-          "crit_chance": 55.0
+          "crit_chance": 55.0,
+          "accuracy": 90.0
         },
         "7": {
-          "attack": 100.0,
-          "crit_chance": 60.0
+          "crit_chance": 60.0,
+          "accuracy": 100.0
         },
         "8": {
-          "attack": 110.0,
-          "crit_chance": 65.0
+          "crit_chance": 65.0,
+          "accuracy": 110.0
         },
         "9": {
-          "attack": 120.0,
-          "crit_chance": 70.0
+          "crit_chance": 70.0,
+          "accuracy": 120.0
         },
         "10": {
-          "attack": 130.0,
-          "crit_chance": 75.0
+          "crit_chance": 75.0,
+          "accuracy": 130.0
         },
         "11": {
-          "attack": 130.0,
-          "crit_chance": 75.0
+          "crit_chance": 75.0,
+          "accuracy": 130.0
         },
         "12": {
-          "attack": 130.0,
-          "crit_chance": 75.0
+          "crit_chance": 75.0,
+          "accuracy": 130.0
         },
         "13": {
-          "attack": 130.0,
-          "crit_chance": 75.0
+          "crit_chance": 75.0,
+          "accuracy": 130.0
         },
         "14": {
-          "attack": 130.0,
-          "crit_chance": 75.0
+          "crit_chance": 75.0,
+          "accuracy": 130.0
         },
         "15": {
-          "attack": 130.0,
-          "crit_chance": 75.0
+          "crit_chance": 75.0,
+          "accuracy": 130.0
         }
       }
     },
     "space_magic": {
       "stats": [
         "spellpower",
-        "mana_cost"
+        "mana_cost_reduction"
       ],
       "per_level": {
         "1": {
           "spellpower": 5.0,
-          "mana_cost": -5.0
+          "mana_cost_reduction": -5.0
         },
         "2": {
           "spellpower": 15.0,
-          "mana_cost": -15.0
+          "mana_cost_reduction": -15.0
         },
         "3": {
           "spellpower": 30.0,
-          "mana_cost": -30.0
+          "mana_cost_reduction": -30.0
         },
         "4": {
           "spellpower": 50.0,
-          "mana_cost": -50.0
+          "mana_cost_reduction": -50.0
         },
         "5": {
           "spellpower": 75.0,
-          "mana_cost": -75.0
+          "mana_cost_reduction": -75.0
         },
         "6": {
           "spellpower": 90.0,
-          "mana_cost": -85.0
+          "mana_cost_reduction": -85.0
         },
         "7": {
           "spellpower": 100.0,
-          "mana_cost": -90.0
+          "mana_cost_reduction": -90.0
         },
         "8": {
           "spellpower": 110.0,
-          "mana_cost": -95.0
+          "mana_cost_reduction": -95.0
         },
         "9": {
           "spellpower": 120.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "10": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "11": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "12": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "13": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "14": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "15": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         }
       }
     },
     "white_magic": {
       "stats": [
         "spellpower",
-        "mana_cost"
+        "mana_cost_reduction"
       ],
       "per_level": {
         "1": {
           "spellpower": 5.0,
-          "mana_cost": -5.0
+          "mana_cost_reduction": -5.0
         },
         "2": {
           "spellpower": 15.0,
-          "mana_cost": -15.0
+          "mana_cost_reduction": -15.0
         },
         "3": {
           "spellpower": 30.0,
-          "mana_cost": -30.0
+          "mana_cost_reduction": -30.0
         },
         "4": {
           "spellpower": 50.0,
-          "mana_cost": -50.0
+          "mana_cost_reduction": -50.0
         },
         "5": {
           "spellpower": 75.0,
-          "mana_cost": -75.0
+          "mana_cost_reduction": -75.0
         },
         "6": {
           "spellpower": 90.0,
-          "mana_cost": -85.0
+          "mana_cost_reduction": -85.0
         },
         "7": {
           "spellpower": 100.0,
-          "mana_cost": -90.0
+          "mana_cost_reduction": -90.0
         },
         "8": {
           "spellpower": 110.0,
-          "mana_cost": -95.0
+          "mana_cost_reduction": -95.0
         },
         "9": {
           "spellpower": 120.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "10": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "11": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "12": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "13": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "14": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "15": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         }
       }
     },
     "black_magic": {
       "stats": [
         "spellpower",
-        "mana_cost"
+        "mana_cost_reduction"
       ],
       "per_level": {
         "1": {
           "spellpower": 5.0,
-          "mana_cost": -5.0
+          "mana_cost_reduction": -5.0
         },
         "2": {
           "spellpower": 15.0,
-          "mana_cost": -15.0
+          "mana_cost_reduction": -15.0
         },
         "3": {
           "spellpower": 30.0,
-          "mana_cost": -30.0
+          "mana_cost_reduction": -30.0
         },
         "4": {
           "spellpower": 50.0,
-          "mana_cost": -50.0
+          "mana_cost_reduction": -50.0
         },
         "5": {
           "spellpower": 75.0,
-          "mana_cost": -75.0
+          "mana_cost_reduction": -75.0
         },
         "6": {
           "spellpower": 90.0,
-          "mana_cost": -85.0
+          "mana_cost_reduction": -85.0
         },
         "7": {
           "spellpower": 100.0,
-          "mana_cost": -90.0
+          "mana_cost_reduction": -90.0
         },
         "8": {
           "spellpower": 110.0,
-          "mana_cost": -95.0
+          "mana_cost_reduction": -95.0
         },
         "9": {
           "spellpower": 120.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "10": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "11": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "12": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "13": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "14": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "15": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         }
       }
     },
     "persuasion": {
       "stats": [
-        "charm_effectiveness",
-        "trading_price"
+        "charm_effectiveness_pct",
+        "trading_price_pct"
       ],
       "per_level": {
         "1": {
-          "charm_effectiveness": 5.0,
-          "trading_price": 5.0
+          "charm_effectiveness_pct": 5.0,
+          "trading_price_pct": 5.0
         },
         "2": {
-          "charm_effectiveness": 15.0,
-          "trading_price": 10.0
+          "charm_effectiveness_pct": 15.0,
+          "trading_price_pct": 10.0
         },
         "3": {
-          "charm_effectiveness": 30.0,
-          "trading_price": 15.0
+          "charm_effectiveness_pct": 30.0,
+          "trading_price_pct": 15.0
         },
         "4": {
-          "charm_effectiveness": 50.0,
-          "trading_price": 20.0
+          "charm_effectiveness_pct": 50.0,
+          "trading_price_pct": 20.0
         },
         "5": {
-          "charm_effectiveness": 75.0,
-          "trading_price": 25.0
+          "charm_effectiveness_pct": 75.0,
+          "trading_price_pct": 25.0
         },
         "6": {
-          "charm_effectiveness": 90.0,
-          "trading_price": 30.0
+          "charm_effectiveness_pct": 90.0,
+          "trading_price_pct": 30.0
         },
         "7": {
-          "charm_effectiveness": 100.0,
-          "trading_price": 35.0
+          "charm_effectiveness_pct": 100.0,
+          "trading_price_pct": 35.0
         },
         "8": {
-          "charm_effectiveness": 110.0,
-          "trading_price": 40.0
+          "charm_effectiveness_pct": 110.0,
+          "trading_price_pct": 40.0
         },
         "9": {
-          "charm_effectiveness": 120.0,
-          "trading_price": 45.0
+          "charm_effectiveness_pct": 120.0,
+          "trading_price_pct": 45.0
         },
         "10": {
-          "charm_effectiveness": 130.0,
-          "trading_price": 50.0
+          "charm_effectiveness_pct": 130.0,
+          "trading_price_pct": 50.0
         },
         "11": {
-          "charm_effectiveness": 130.0,
-          "trading_price": 50.0
+          "charm_effectiveness_pct": 130.0,
+          "trading_price_pct": 50.0
         },
         "12": {
-          "charm_effectiveness": 130.0,
-          "trading_price": 50.0
+          "charm_effectiveness_pct": 130.0,
+          "trading_price_pct": 50.0
         },
         "13": {
-          "charm_effectiveness": 130.0,
-          "trading_price": 50.0
+          "charm_effectiveness_pct": 130.0,
+          "trading_price_pct": 50.0
         },
         "14": {
-          "charm_effectiveness": 130.0,
-          "trading_price": 50.0
+          "charm_effectiveness_pct": 130.0,
+          "trading_price_pct": 50.0
         },
         "15": {
-          "charm_effectiveness": 130.0,
-          "trading_price": 50.0
+          "charm_effectiveness_pct": 130.0,
+          "trading_price_pct": 50.0
         }
       }
     },
     "yoga": {
       "stats": [
-        "mental_resistance",
-        "magic_damage_resistance"
+        "mental_resistance_pct",
+        "magic_resistance_pct"
       ],
       "per_level": {
         "1": {
-          "mental_resistance": 5.0,
-          "magic_damage_resistance": 5.0
+          "magic_resistance_pct": 5.0,
+          "mental_resistance_pct": 5.0
         },
         "2": {
-          "mental_resistance": 15.0,
-          "magic_damage_resistance": 10.0
+          "magic_resistance_pct": 10.0,
+          "mental_resistance_pct": 15.0
         },
         "3": {
-          "mental_resistance": 30.0,
-          "magic_damage_resistance": 15.0
+          "magic_resistance_pct": 15.0,
+          "mental_resistance_pct": 30.0
         },
         "4": {
-          "mental_resistance": 50.0,
-          "magic_damage_resistance": 25.0
+          "magic_resistance_pct": 25.0,
+          "mental_resistance_pct": 50.0
         },
         "5": {
-          "mental_resistance": 75.0,
-          "magic_damage_resistance": 50.0
+          "magic_resistance_pct": 50.0,
+          "mental_resistance_pct": 75.0
         },
         "6": {
-          "mental_resistance": 85.0,
-          "magic_damage_resistance": 55.0
+          "magic_resistance_pct": 55.0,
+          "mental_resistance_pct": 85.0
         },
         "7": {
-          "mental_resistance": 95.0,
-          "magic_damage_resistance": 60.0
+          "magic_resistance_pct": 60.0,
+          "mental_resistance_pct": 95.0
         },
         "8": {
-          "mental_resistance": 105.0,
-          "magic_damage_resistance": 65.0
+          "magic_resistance_pct": 65.0,
+          "mental_resistance_pct": 105.0
         },
         "9": {
-          "mental_resistance": 115.0,
-          "magic_damage_resistance": 70.0
+          "magic_resistance_pct": 70.0,
+          "mental_resistance_pct": 115.0
         },
         "10": {
-          "mental_resistance": 125.0,
-          "magic_damage_resistance": 75.0
+          "magic_resistance_pct": 75.0,
+          "mental_resistance_pct": 125.0
         },
         "11": {
-          "mental_resistance": 125.0,
-          "magic_damage_resistance": 75.0
+          "magic_resistance_pct": 75.0,
+          "mental_resistance_pct": 125.0
         },
         "12": {
-          "mental_resistance": 125.0,
-          "magic_damage_resistance": 75.0
+          "magic_resistance_pct": 75.0,
+          "mental_resistance_pct": 125.0
         },
         "13": {
-          "mental_resistance": 125.0,
-          "magic_damage_resistance": 75.0
+          "magic_resistance_pct": 75.0,
+          "mental_resistance_pct": 125.0
         },
         "14": {
-          "mental_resistance": 125.0,
-          "magic_damage_resistance": 75.0
+          "magic_resistance_pct": 75.0,
+          "mental_resistance_pct": 125.0
         },
         "15": {
-          "mental_resistance": 125.0,
-          "magic_damage_resistance": 75.0
+          "magic_resistance_pct": 75.0,
+          "mental_resistance_pct": 125.0
         }
       }
     },
     "ranged": {
       "stats": [
-        "attack",
+        "accuracy",
         "crit_chance"
       ],
       "per_level": {
         "1": {
-          "attack": 5.0,
-          "crit_chance": 2.5
+          "crit_chance": 2.5,
+          "accuracy": 5.0
         },
         "2": {
-          "attack": 15.0,
-          "crit_chance": 5.0
+          "crit_chance": 5.0,
+          "accuracy": 15.0
         },
         "3": {
-          "attack": 30.0,
-          "crit_chance": 7.5
+          "crit_chance": 7.5,
+          "accuracy": 30.0
         },
         "4": {
-          "attack": 50.0,
-          "crit_chance": 10.0
+          "crit_chance": 10.0,
+          "accuracy": 50.0
         },
         "5": {
-          "attack": 75.0,
-          "crit_chance": 15.0
+          "crit_chance": 15.0,
+          "accuracy": 75.0
         },
         "6": {
-          "attack": 90.0,
-          "crit_chance": 18.0
+          "crit_chance": 18.0,
+          "accuracy": 90.0
         },
         "7": {
-          "attack": 100.0,
-          "crit_chance": 20.0
+          "crit_chance": 20.0,
+          "accuracy": 100.0
         },
         "8": {
-          "attack": 110.0,
-          "crit_chance": 22.0
+          "crit_chance": 22.0,
+          "accuracy": 110.0
         },
         "9": {
-          "attack": 120.0,
-          "crit_chance": 25.0
+          "crit_chance": 25.0,
+          "accuracy": 120.0
         },
         "10": {
-          "attack": 130.0,
-          "crit_chance": 27.0
+          "crit_chance": 27.0,
+          "accuracy": 130.0
         },
         "11": {
-          "attack": 130.0,
-          "crit_chance": 27.0
+          "crit_chance": 27.0,
+          "accuracy": 130.0
         },
         "12": {
-          "attack": 130.0,
-          "crit_chance": 27.0
+          "crit_chance": 27.0,
+          "accuracy": 130.0
         },
         "13": {
-          "attack": 130.0,
-          "crit_chance": 27.0
+          "crit_chance": 27.0,
+          "accuracy": 130.0
         },
         "14": {
-          "attack": 130.0,
-          "crit_chance": 27.0
+          "crit_chance": 27.0,
+          "accuracy": 130.0
         },
         "15": {
-          "attack": 130.0,
-          "crit_chance": 27.0
+          "crit_chance": 27.0,
+          "accuracy": 130.0
         }
       }
     },
@@ -615,204 +616,204 @@
     "air_magic": {
       "stats": [
         "spellpower",
-        "mana_cost"
+        "mana_cost_reduction"
       ],
       "per_level": {
         "1": {
           "spellpower": 5.0,
-          "mana_cost": -5.0
+          "mana_cost_reduction": -5.0
         },
         "2": {
           "spellpower": 15.0,
-          "mana_cost": -15.0
+          "mana_cost_reduction": -15.0
         },
         "3": {
           "spellpower": 30.0,
-          "mana_cost": -30.0
+          "mana_cost_reduction": -30.0
         },
         "4": {
           "spellpower": 50.0,
-          "mana_cost": -50.0
+          "mana_cost_reduction": -50.0
         },
         "5": {
           "spellpower": 75.0,
-          "mana_cost": -75.0
+          "mana_cost_reduction": -75.0
         },
         "6": {
           "spellpower": 90.0,
-          "mana_cost": -85.0
+          "mana_cost_reduction": -85.0
         },
         "7": {
           "spellpower": 100.0,
-          "mana_cost": -90.0
+          "mana_cost_reduction": -90.0
         },
         "8": {
           "spellpower": 110.0,
-          "mana_cost": -95.0
+          "mana_cost_reduction": -95.0
         },
         "9": {
           "spellpower": 120.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "10": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "11": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "12": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "13": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "14": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "15": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         }
       }
     },
     "ritual": {
       "stats": [
         "spellpower",
-        "status_effect_chance"
+        "status_effect_chance_pct"
       ],
       "per_level": {
         "1": {
           "spellpower": 5.0,
-          "status_effect_chance": 5.0
+          "status_effect_chance_pct": 5.0
         },
         "2": {
           "spellpower": 15.0,
-          "status_effect_chance": 10.0
+          "status_effect_chance_pct": 10.0
         },
         "3": {
           "spellpower": 30.0,
-          "status_effect_chance": 20.0
+          "status_effect_chance_pct": 20.0
         },
         "4": {
           "spellpower": 50.0,
-          "status_effect_chance": 35.0
+          "status_effect_chance_pct": 35.0
         },
         "5": {
           "spellpower": 75.0,
-          "status_effect_chance": 50.0
+          "status_effect_chance_pct": 50.0
         },
         "6": {
           "spellpower": 90.0,
-          "status_effect_chance": 55.0
+          "status_effect_chance_pct": 55.0
         },
         "7": {
           "spellpower": 100.0,
-          "status_effect_chance": 60.0
+          "status_effect_chance_pct": 60.0
         },
         "8": {
           "spellpower": 110.0,
-          "status_effect_chance": 65.0
+          "status_effect_chance_pct": 65.0
         },
         "9": {
           "spellpower": 120.0,
-          "status_effect_chance": 70.0
+          "status_effect_chance_pct": 70.0
         },
         "10": {
           "spellpower": 130.0,
-          "status_effect_chance": 75.0
+          "status_effect_chance_pct": 75.0
         },
         "11": {
           "spellpower": 130.0,
-          "status_effect_chance": 75.0
+          "status_effect_chance_pct": 75.0
         },
         "12": {
           "spellpower": 130.0,
-          "status_effect_chance": 75.0
+          "status_effect_chance_pct": 75.0
         },
         "13": {
           "spellpower": 130.0,
-          "status_effect_chance": 75.0
+          "status_effect_chance_pct": 75.0
         },
         "14": {
           "spellpower": 130.0,
-          "status_effect_chance": 75.0
+          "status_effect_chance_pct": 75.0
         },
         "15": {
           "spellpower": 130.0,
-          "status_effect_chance": 75.0
+          "status_effect_chance_pct": 75.0
         }
       }
     },
     "learning": {
       "stats": [
-        "party_xp_gain",
-        "party_skill_checks"
+        "party_xp_gain_pct",
+        "party_skill_check_bonus"
       ],
       "per_level": {
         "1": {
-          "party_xp_gain": 3.0,
-          "party_skill_checks": 1.0
+          "party_xp_gain_pct": 3.0,
+          "party_skill_check_bonus": 1.0
         },
         "2": {
-          "party_xp_gain": 6.0,
-          "party_skill_checks": 2.0
+          "party_xp_gain_pct": 6.0,
+          "party_skill_check_bonus": 2.0
         },
         "3": {
-          "party_xp_gain": 9.0,
-          "party_skill_checks": 3.0
+          "party_xp_gain_pct": 9.0,
+          "party_skill_check_bonus": 3.0
         },
         "4": {
-          "party_xp_gain": 12.0,
-          "party_skill_checks": 4.0
+          "party_xp_gain_pct": 12.0,
+          "party_skill_check_bonus": 4.0
         },
         "5": {
-          "party_xp_gain": 15.0,
-          "party_skill_checks": 5.0
+          "party_xp_gain_pct": 15.0,
+          "party_skill_check_bonus": 5.0
         },
         "6": {
-          "party_xp_gain": 20.0,
-          "party_skill_checks": 6.0
+          "party_xp_gain_pct": 20.0,
+          "party_skill_check_bonus": 6.0
         },
         "7": {
-          "party_xp_gain": 25.0,
-          "party_skill_checks": 7.0
+          "party_xp_gain_pct": 25.0,
+          "party_skill_check_bonus": 7.0
         },
         "8": {
-          "party_xp_gain": 30.0,
-          "party_skill_checks": 8.0
+          "party_xp_gain_pct": 30.0,
+          "party_skill_check_bonus": 8.0
         },
         "9": {
-          "party_xp_gain": 36.0,
-          "party_skill_checks": 9.0
+          "party_xp_gain_pct": 36.0,
+          "party_skill_check_bonus": 9.0
         },
         "10": {
-          "party_xp_gain": 42.0,
-          "party_skill_checks": 10.0
+          "party_xp_gain_pct": 42.0,
+          "party_skill_check_bonus": 10.0
         },
         "11": {
-          "party_xp_gain": 42.0,
-          "party_skill_checks": 10.0
+          "party_xp_gain_pct": 42.0,
+          "party_skill_check_bonus": 10.0
         },
         "12": {
-          "party_xp_gain": 42.0,
-          "party_skill_checks": 10.0
+          "party_xp_gain_pct": 42.0,
+          "party_skill_check_bonus": 10.0
         },
         "13": {
-          "party_xp_gain": 42.0,
-          "party_skill_checks": 10.0
+          "party_xp_gain_pct": 42.0,
+          "party_skill_check_bonus": 10.0
         },
         "14": {
-          "party_xp_gain": 42.0,
-          "party_skill_checks": 10.0
+          "party_xp_gain_pct": 42.0,
+          "party_skill_check_bonus": 10.0
         },
         "15": {
-          "party_xp_gain": 42.0,
-          "party_skill_checks": 10.0
+          "party_xp_gain_pct": 42.0,
+          "party_skill_check_bonus": 10.0
         }
       }
     },
@@ -886,137 +887,137 @@
     },
     "comedy": {
       "stats": [
-        "luck_modifier",
+        "luck_pct",
         "dodge"
       ],
       "per_level": {
         "1": {
-          "luck_modifier": 5.0,
-          "dodge": 2.0
+          "dodge": 2.0,
+          "luck_pct": 5.0
         },
         "2": {
-          "luck_modifier": 10.0,
-          "dodge": 4.0
+          "dodge": 4.0,
+          "luck_pct": 10.0
         },
         "3": {
-          "luck_modifier": 15.0,
-          "dodge": 6.0
+          "dodge": 6.0,
+          "luck_pct": 15.0
         },
         "4": {
-          "luck_modifier": 20.0,
-          "dodge": 8.0
+          "dodge": 8.0,
+          "luck_pct": 20.0
         },
         "5": {
-          "luck_modifier": 25.0,
-          "dodge": 10.0
+          "dodge": 10.0,
+          "luck_pct": 25.0
         },
         "6": {
-          "luck_modifier": 30.0,
-          "dodge": 12.0
+          "dodge": 12.0,
+          "luck_pct": 30.0
         },
         "7": {
-          "luck_modifier": 35.0,
-          "dodge": 14.0
+          "dodge": 14.0,
+          "luck_pct": 35.0
         },
         "8": {
-          "luck_modifier": 40.0,
-          "dodge": 16.0
+          "dodge": 16.0,
+          "luck_pct": 40.0
         },
         "9": {
-          "luck_modifier": 45.0,
-          "dodge": 18.0
+          "dodge": 18.0,
+          "luck_pct": 45.0
         },
         "10": {
-          "luck_modifier": 50.0,
-          "dodge": 20.0
+          "dodge": 20.0,
+          "luck_pct": 50.0
         },
         "11": {
-          "luck_modifier": 50.0,
-          "dodge": 20.0
+          "dodge": 20.0,
+          "luck_pct": 50.0
         },
         "12": {
-          "luck_modifier": 50.0,
-          "dodge": 20.0
+          "dodge": 20.0,
+          "luck_pct": 50.0
         },
         "13": {
-          "luck_modifier": 50.0,
-          "dodge": 20.0
+          "dodge": 20.0,
+          "luck_pct": 50.0
         },
         "14": {
-          "luck_modifier": 50.0,
-          "dodge": 20.0
+          "dodge": 20.0,
+          "luck_pct": 50.0
         },
         "15": {
-          "luck_modifier": 50.0,
-          "dodge": 20.0
+          "dodge": 20.0,
+          "luck_pct": 50.0
         }
       }
     },
     "axes": {
       "stats": [
         "damage",
-        "armor_penetration"
+        "armor_pierce"
       ],
       "per_level": {
         "1": {
           "damage": 5.0,
-          "armor_penetration": 5.0
+          "armor_pierce": 5.0
         },
         "2": {
           "damage": 15.0,
-          "armor_penetration": 10.0
+          "armor_pierce": 10.0
         },
         "3": {
           "damage": 30.0,
-          "armor_penetration": 20.0
+          "armor_pierce": 20.0
         },
         "4": {
           "damage": 50.0,
-          "armor_penetration": 30.0
+          "armor_pierce": 30.0
         },
         "5": {
           "damage": 75.0,
-          "armor_penetration": 45.0
+          "armor_pierce": 45.0
         },
         "6": {
           "damage": 90.0,
-          "armor_penetration": 52.0
+          "armor_pierce": 52.0
         },
         "7": {
           "damage": 100.0,
-          "armor_penetration": 58.0
+          "armor_pierce": 58.0
         },
         "8": {
           "damage": 110.0,
-          "armor_penetration": 64.0
+          "armor_pierce": 64.0
         },
         "9": {
           "damage": 120.0,
-          "armor_penetration": 70.0
+          "armor_pierce": 70.0
         },
         "10": {
           "damage": 130.0,
-          "armor_penetration": 75.0
+          "armor_pierce": 75.0
         },
         "11": {
           "damage": 130.0,
-          "armor_penetration": 75.0
+          "armor_pierce": 75.0
         },
         "12": {
           "damage": 130.0,
-          "armor_penetration": 75.0
+          "armor_pierce": 75.0
         },
         "13": {
           "damage": 130.0,
-          "armor_penetration": 75.0
+          "armor_pierce": 75.0
         },
         "14": {
           "damage": 130.0,
-          "armor_penetration": 75.0
+          "armor_pierce": 75.0
         },
         "15": {
           "damage": 130.0,
-          "armor_penetration": 75.0
+          "armor_pierce": 75.0
         }
       }
     },
@@ -1091,68 +1092,68 @@
     "fire_magic": {
       "stats": [
         "spellpower",
-        "burning_damage"
+        "burning_damage_pct"
       ],
       "per_level": {
         "1": {
           "spellpower": 5.0,
-          "burning_damage": 5.0
+          "burning_damage_pct": 5.0
         },
         "2": {
           "spellpower": 15.0,
-          "burning_damage": 15.0
+          "burning_damage_pct": 15.0
         },
         "3": {
           "spellpower": 30.0,
-          "burning_damage": 30.0
+          "burning_damage_pct": 30.0
         },
         "4": {
           "spellpower": 50.0,
-          "burning_damage": 50.0
+          "burning_damage_pct": 50.0
         },
         "5": {
           "spellpower": 75.0,
-          "burning_damage": 75.0
+          "burning_damage_pct": 75.0
         },
         "6": {
           "spellpower": 90.0,
-          "burning_damage": 90.0
+          "burning_damage_pct": 90.0
         },
         "7": {
           "spellpower": 100.0,
-          "burning_damage": 100.0
+          "burning_damage_pct": 100.0
         },
         "8": {
           "spellpower": 110.0,
-          "burning_damage": 110.0
+          "burning_damage_pct": 110.0
         },
         "9": {
           "spellpower": 120.0,
-          "burning_damage": 120.0
+          "burning_damage_pct": 120.0
         },
         "10": {
           "spellpower": 130.0,
-          "burning_damage": 130.0
+          "burning_damage_pct": 130.0
         },
         "11": {
           "spellpower": 130.0,
-          "burning_damage": 130.0
+          "burning_damage_pct": 130.0
         },
         "12": {
           "spellpower": 130.0,
-          "burning_damage": 130.0
+          "burning_damage_pct": 130.0
         },
         "13": {
           "spellpower": 130.0,
-          "burning_damage": 130.0
+          "burning_damage_pct": 130.0
         },
         "14": {
           "spellpower": 130.0,
-          "burning_damage": 130.0
+          "burning_damage_pct": 130.0
         },
         "15": {
           "spellpower": 130.0,
-          "burning_damage": 130.0
+          "burning_damage_pct": 130.0
         }
       }
     },
@@ -1226,205 +1227,205 @@
     },
     "might": {
       "stats": [
-        "strength_weapon_damage",
-        "stamina"
+        "weapon_damage_from_strength",
+        "max_stamina"
       ],
       "per_level": {
         "1": {
-          "strength_weapon_damage": 5.0,
-          "stamina": 5.0
+          "max_stamina": 5.0,
+          "weapon_damage_from_strength": 5.0
         },
         "2": {
-          "strength_weapon_damage": 15.0,
-          "stamina": 10.0
+          "max_stamina": 10.0,
+          "weapon_damage_from_strength": 15.0
         },
         "3": {
-          "strength_weapon_damage": 30.0,
-          "stamina": 20.0
+          "max_stamina": 20.0,
+          "weapon_damage_from_strength": 30.0
         },
         "4": {
-          "strength_weapon_damage": 50.0,
-          "stamina": 30.0
+          "max_stamina": 30.0,
+          "weapon_damage_from_strength": 50.0
         },
         "5": {
-          "strength_weapon_damage": 75.0,
-          "stamina": 45.0
+          "max_stamina": 45.0,
+          "weapon_damage_from_strength": 75.0
         },
         "6": {
-          "strength_weapon_damage": 90.0,
-          "stamina": 52.0
+          "max_stamina": 52.0,
+          "weapon_damage_from_strength": 90.0
         },
         "7": {
-          "strength_weapon_damage": 100.0,
-          "stamina": 58.0
+          "max_stamina": 58.0,
+          "weapon_damage_from_strength": 100.0
         },
         "8": {
-          "strength_weapon_damage": 110.0,
-          "stamina": 64.0
+          "max_stamina": 64.0,
+          "weapon_damage_from_strength": 110.0
         },
         "9": {
-          "strength_weapon_damage": 120.0,
-          "stamina": 70.0
+          "max_stamina": 70.0,
+          "weapon_damage_from_strength": 120.0
         },
         "10": {
-          "strength_weapon_damage": 130.0,
-          "stamina": 75.0
+          "max_stamina": 75.0,
+          "weapon_damage_from_strength": 130.0
         },
         "11": {
-          "strength_weapon_damage": 130.0,
-          "stamina": 75.0
+          "max_stamina": 75.0,
+          "weapon_damage_from_strength": 130.0
         },
         "12": {
-          "strength_weapon_damage": 130.0,
-          "stamina": 75.0
+          "max_stamina": 75.0,
+          "weapon_damage_from_strength": 130.0
         },
         "13": {
-          "strength_weapon_damage": 130.0,
-          "stamina": 75.0
+          "max_stamina": 75.0,
+          "weapon_damage_from_strength": 130.0
         },
         "14": {
-          "strength_weapon_damage": 130.0,
-          "stamina": 75.0
+          "max_stamina": 75.0,
+          "weapon_damage_from_strength": 130.0
         },
         "15": {
-          "strength_weapon_damage": 130.0,
-          "stamina": 75.0
+          "max_stamina": 75.0,
+          "weapon_damage_from_strength": 130.0
         }
       }
     },
     "leadership": {
       "stats": [
         "max_companions",
-        "morale_effects"
+        "morale_pct"
       ],
       "per_level": {
         "1": {
           "max_companions": 1.0,
-          "morale_effects": 5.0
+          "morale_pct": 5.0
         },
         "2": {
           "max_companions": 2.0,
-          "morale_effects": 10.0
+          "morale_pct": 10.0
         },
         "3": {
           "max_companions": 3.0,
-          "morale_effects": 20.0
+          "morale_pct": 20.0
         },
         "4": {
           "max_companions": 4.0,
-          "morale_effects": 35.0
+          "morale_pct": 35.0
         },
         "5": {
           "max_companions": 5.0,
-          "morale_effects": 50.0
+          "morale_pct": 50.0
         },
         "6": {
           "max_companions": 5.0,
-          "morale_effects": 60.0
+          "morale_pct": 60.0
         },
         "7": {
           "max_companions": 5.0,
-          "morale_effects": 70.0
+          "morale_pct": 70.0
         },
         "8": {
           "max_companions": 5.0,
-          "morale_effects": 80.0
+          "morale_pct": 80.0
         },
         "9": {
           "max_companions": 5.0,
-          "morale_effects": 90.0
+          "morale_pct": 90.0
         },
         "10": {
           "max_companions": 5.0,
-          "morale_effects": 100.0
+          "morale_pct": 100.0
         },
         "11": {
           "max_companions": 5.0,
-          "morale_effects": 100.0
+          "morale_pct": 100.0
         },
         "12": {
           "max_companions": 5.0,
-          "morale_effects": 100.0
+          "morale_pct": 100.0
         },
         "13": {
           "max_companions": 5.0,
-          "morale_effects": 100.0
+          "morale_pct": 100.0
         },
         "14": {
           "max_companions": 5.0,
-          "morale_effects": 100.0
+          "morale_pct": 100.0
         },
         "15": {
           "max_companions": 5.0,
-          "morale_effects": 100.0
+          "morale_pct": 100.0
         }
       }
     },
     "performance": {
       "stats": [
-        "morale_effects",
-        "social_roll_success"
+        "morale_pct",
+        "social_roll_pct"
       ],
       "per_level": {
         "1": {
-          "morale_effects": 5.0,
-          "social_roll_success": 5.0
+          "morale_pct": 5.0,
+          "social_roll_pct": 5.0
         },
         "2": {
-          "morale_effects": 10.0,
-          "social_roll_success": 10.0
+          "morale_pct": 10.0,
+          "social_roll_pct": 10.0
         },
         "3": {
-          "morale_effects": 20.0,
-          "social_roll_success": 20.0
+          "morale_pct": 20.0,
+          "social_roll_pct": 20.0
         },
         "4": {
-          "morale_effects": 35.0,
-          "social_roll_success": 35.0
+          "morale_pct": 35.0,
+          "social_roll_pct": 35.0
         },
         "5": {
-          "morale_effects": 50.0,
-          "social_roll_success": 50.0
+          "morale_pct": 50.0,
+          "social_roll_pct": 50.0
         },
         "6": {
-          "morale_effects": 55.0,
-          "social_roll_success": 55.0
+          "morale_pct": 55.0,
+          "social_roll_pct": 55.0
         },
         "7": {
-          "morale_effects": 60.0,
-          "social_roll_success": 60.0
+          "morale_pct": 60.0,
+          "social_roll_pct": 60.0
         },
         "8": {
-          "morale_effects": 65.0,
-          "social_roll_success": 65.0
+          "morale_pct": 65.0,
+          "social_roll_pct": 65.0
         },
         "9": {
-          "morale_effects": 70.0,
-          "social_roll_success": 70.0
+          "morale_pct": 70.0,
+          "social_roll_pct": 70.0
         },
         "10": {
-          "morale_effects": 75.0,
-          "social_roll_success": 75.0
+          "morale_pct": 75.0,
+          "social_roll_pct": 75.0
         },
         "11": {
-          "morale_effects": 75.0,
-          "social_roll_success": 75.0
+          "morale_pct": 75.0,
+          "social_roll_pct": 75.0
         },
         "12": {
-          "morale_effects": 75.0,
-          "social_roll_success": 75.0
+          "morale_pct": 75.0,
+          "social_roll_pct": 75.0
         },
         "13": {
-          "morale_effects": 75.0,
-          "social_roll_success": 75.0
+          "morale_pct": 75.0,
+          "social_roll_pct": 75.0
         },
         "14": {
-          "morale_effects": 75.0,
-          "social_roll_success": 75.0
+          "morale_pct": 75.0,
+          "social_roll_pct": 75.0
         },
         "15": {
-          "morale_effects": 75.0,
-          "social_roll_success": 75.0
+          "morale_pct": 75.0,
+          "social_roll_pct": 75.0
         }
       }
     },
@@ -1515,476 +1516,476 @@
     "water_magic": {
       "stats": [
         "spellpower",
-        "mana_cost"
+        "mana_cost_reduction"
       ],
       "per_level": {
         "1": {
           "spellpower": 5.0,
-          "mana_cost": -5.0
+          "mana_cost_reduction": -5.0
         },
         "2": {
           "spellpower": 15.0,
-          "mana_cost": -15.0
+          "mana_cost_reduction": -15.0
         },
         "3": {
           "spellpower": 30.0,
-          "mana_cost": -30.0
+          "mana_cost_reduction": -30.0
         },
         "4": {
           "spellpower": 50.0,
-          "mana_cost": -50.0
+          "mana_cost_reduction": -50.0
         },
         "5": {
           "spellpower": 75.0,
-          "mana_cost": -75.0
+          "mana_cost_reduction": -75.0
         },
         "6": {
           "spellpower": 90.0,
-          "mana_cost": -85.0
+          "mana_cost_reduction": -85.0
         },
         "7": {
           "spellpower": 100.0,
-          "mana_cost": -90.0
+          "mana_cost_reduction": -90.0
         },
         "8": {
           "spellpower": 110.0,
-          "mana_cost": -95.0
+          "mana_cost_reduction": -95.0
         },
         "9": {
           "spellpower": 120.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "10": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "11": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "12": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "13": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "14": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "15": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         }
       }
     },
     "enchantment": {
       "stats": [
         "spellpower",
-        "effect_duration"
+        "effect_duration_pct"
       ],
       "per_level": {
         "1": {
           "spellpower": 5.0,
-          "effect_duration": 5.0
+          "effect_duration_pct": 5.0
         },
         "2": {
           "spellpower": 15.0,
-          "effect_duration": 10.0
+          "effect_duration_pct": 10.0
         },
         "3": {
           "spellpower": 30.0,
-          "effect_duration": 20.0
+          "effect_duration_pct": 20.0
         },
         "4": {
           "spellpower": 50.0,
-          "effect_duration": 30.0
+          "effect_duration_pct": 30.0
         },
         "5": {
           "spellpower": 75.0,
-          "effect_duration": 45.0
+          "effect_duration_pct": 45.0
         },
         "6": {
           "spellpower": 90.0,
-          "effect_duration": 52.0
+          "effect_duration_pct": 52.0
         },
         "7": {
           "spellpower": 100.0,
-          "effect_duration": 58.0
+          "effect_duration_pct": 58.0
         },
         "8": {
           "spellpower": 110.0,
-          "effect_duration": 64.0
+          "effect_duration_pct": 64.0
         },
         "9": {
           "spellpower": 120.0,
-          "effect_duration": 70.0
+          "effect_duration_pct": 70.0
         },
         "10": {
           "spellpower": 130.0,
-          "effect_duration": 75.0
+          "effect_duration_pct": 75.0
         },
         "11": {
           "spellpower": 130.0,
-          "effect_duration": 75.0
+          "effect_duration_pct": 75.0
         },
         "12": {
           "spellpower": 130.0,
-          "effect_duration": 75.0
+          "effect_duration_pct": 75.0
         },
         "13": {
           "spellpower": 130.0,
-          "effect_duration": 75.0
+          "effect_duration_pct": 75.0
         },
         "14": {
           "spellpower": 130.0,
-          "effect_duration": 75.0
+          "effect_duration_pct": 75.0
         },
         "15": {
           "spellpower": 130.0,
-          "effect_duration": 75.0
+          "effect_duration_pct": 75.0
         }
       }
     },
     "grace": {
       "stats": [
         "dodge",
-        "movement_speed"
+        "movement_pct"
       ],
       "per_level": {
         "1": {
           "dodge": 5.0,
-          "movement_speed": 10.0
+          "movement_pct": 10.0
         },
         "2": {
           "dodge": 10.0,
-          "movement_speed": 15.0
+          "movement_pct": 15.0
         },
         "3": {
           "dodge": 15.0,
-          "movement_speed": 20.0
+          "movement_pct": 20.0
         },
         "4": {
           "dodge": 20.0,
-          "movement_speed": 30.0
+          "movement_pct": 30.0
         },
         "5": {
           "dodge": 25.0,
-          "movement_speed": 40.0
+          "movement_pct": 40.0
         },
         "6": {
           "dodge": 30.0,
-          "movement_speed": 45.0
+          "movement_pct": 45.0
         },
         "7": {
           "dodge": 35.0,
-          "movement_speed": 50.0
+          "movement_pct": 50.0
         },
         "8": {
           "dodge": 40.0,
-          "movement_speed": 55.0
+          "movement_pct": 55.0
         },
         "9": {
           "dodge": 45.0,
-          "movement_speed": 60.0
+          "movement_pct": 60.0
         },
         "10": {
           "dodge": 50.0,
-          "movement_speed": 65.0
+          "movement_pct": 65.0
         },
         "11": {
           "dodge": 50.0,
-          "movement_speed": 65.0
+          "movement_pct": 65.0
         },
         "12": {
           "dodge": 50.0,
-          "movement_speed": 65.0
+          "movement_pct": 65.0
         },
         "13": {
           "dodge": 50.0,
-          "movement_speed": 65.0
+          "movement_pct": 65.0
         },
         "14": {
           "dodge": 50.0,
-          "movement_speed": 65.0
+          "movement_pct": 65.0
         },
         "15": {
           "dodge": 50.0,
-          "movement_speed": 65.0
+          "movement_pct": 65.0
         }
       }
     },
     "medicine": {
       "stats": [
-        "healing_effectiveness_(party)",
-        "poison/disease_resistance_(party)"
+        "party_healing_pct",
+        "party_poison_disease_resistance_pct"
       ],
       "per_level": {
         "1": {
-          "healing_effectiveness_(party)": 10.0,
-          "poison/disease_resistance_(party)": 10.0
+          "party_healing_pct": 10.0,
+          "party_poison_disease_resistance_pct": 10.0
         },
         "2": {
-          "healing_effectiveness_(party)": 20.0,
-          "poison/disease_resistance_(party)": 15.0
+          "party_healing_pct": 20.0,
+          "party_poison_disease_resistance_pct": 15.0
         },
         "3": {
-          "healing_effectiveness_(party)": 35.0,
-          "poison/disease_resistance_(party)": 25.0
+          "party_healing_pct": 35.0,
+          "party_poison_disease_resistance_pct": 25.0
         },
         "4": {
-          "healing_effectiveness_(party)": 50.0,
-          "poison/disease_resistance_(party)": 35.0
+          "party_healing_pct": 50.0,
+          "party_poison_disease_resistance_pct": 35.0
         },
         "5": {
-          "healing_effectiveness_(party)": 75.0,
-          "poison/disease_resistance_(party)": 50.0
+          "party_healing_pct": 75.0,
+          "party_poison_disease_resistance_pct": 50.0
         },
         "6": {
-          "healing_effectiveness_(party)": 90.0,
-          "poison/disease_resistance_(party)": 55.0
+          "party_healing_pct": 90.0,
+          "party_poison_disease_resistance_pct": 55.0
         },
         "7": {
-          "healing_effectiveness_(party)": 100.0,
-          "poison/disease_resistance_(party)": 60.0
+          "party_healing_pct": 100.0,
+          "party_poison_disease_resistance_pct": 60.0
         },
         "8": {
-          "healing_effectiveness_(party)": 110.0,
-          "poison/disease_resistance_(party)": 65.0
+          "party_healing_pct": 110.0,
+          "party_poison_disease_resistance_pct": 65.0
         },
         "9": {
-          "healing_effectiveness_(party)": 120.0,
-          "poison/disease_resistance_(party)": 70.0
+          "party_healing_pct": 120.0,
+          "party_poison_disease_resistance_pct": 70.0
         },
         "10": {
-          "healing_effectiveness_(party)": 130.0,
-          "poison/disease_resistance_(party)": 75.0
+          "party_healing_pct": 130.0,
+          "party_poison_disease_resistance_pct": 75.0
         },
         "11": {
-          "healing_effectiveness_(party)": 130.0,
-          "poison/disease_resistance_(party)": 75.0
+          "party_healing_pct": 130.0,
+          "party_poison_disease_resistance_pct": 75.0
         },
         "12": {
-          "healing_effectiveness_(party)": 130.0,
-          "poison/disease_resistance_(party)": 75.0
+          "party_healing_pct": 130.0,
+          "party_poison_disease_resistance_pct": 75.0
         },
         "13": {
-          "healing_effectiveness_(party)": 130.0,
-          "poison/disease_resistance_(party)": 75.0
+          "party_healing_pct": 130.0,
+          "party_poison_disease_resistance_pct": 75.0
         },
         "14": {
-          "healing_effectiveness_(party)": 130.0,
-          "poison/disease_resistance_(party)": 75.0
+          "party_healing_pct": 130.0,
+          "party_poison_disease_resistance_pct": 75.0
         },
         "15": {
-          "healing_effectiveness_(party)": 130.0,
-          "poison/disease_resistance_(party)": 75.0
+          "party_healing_pct": 130.0,
+          "party_poison_disease_resistance_pct": 75.0
         }
       }
     },
     "alchemy": {
       "stats": [
-        "consumable_power",
-        "crafting_yield"
+        "consumable_power_pct",
+        "crafting_yield_pct"
       ],
       "per_level": {
         "1": {
-          "consumable_power": 10.0,
-          "crafting_yield": 10.0
+          "consumable_power_pct": 10.0,
+          "crafting_yield_pct": 10.0
         },
         "2": {
-          "consumable_power": 20.0,
-          "crafting_yield": 15.0
+          "consumable_power_pct": 20.0,
+          "crafting_yield_pct": 15.0
         },
         "3": {
-          "consumable_power": 35.0,
-          "crafting_yield": 25.0
+          "consumable_power_pct": 35.0,
+          "crafting_yield_pct": 25.0
         },
         "4": {
-          "consumable_power": 50.0,
-          "crafting_yield": 35.0
+          "consumable_power_pct": 50.0,
+          "crafting_yield_pct": 35.0
         },
         "5": {
-          "consumable_power": 75.0,
-          "crafting_yield": 50.0
+          "consumable_power_pct": 75.0,
+          "crafting_yield_pct": 50.0
         },
         "6": {
-          "consumable_power": 90.0,
-          "crafting_yield": 55.0
+          "consumable_power_pct": 90.0,
+          "crafting_yield_pct": 55.0
         },
         "7": {
-          "consumable_power": 100.0,
-          "crafting_yield": 60.0
+          "consumable_power_pct": 100.0,
+          "crafting_yield_pct": 60.0
         },
         "8": {
-          "consumable_power": 110.0,
-          "crafting_yield": 65.0
+          "consumable_power_pct": 110.0,
+          "crafting_yield_pct": 65.0
         },
         "9": {
-          "consumable_power": 120.0,
-          "crafting_yield": 70.0
+          "consumable_power_pct": 120.0,
+          "crafting_yield_pct": 70.0
         },
         "10": {
-          "consumable_power": 130.0,
-          "crafting_yield": 75.0
+          "consumable_power_pct": 130.0,
+          "crafting_yield_pct": 75.0
         },
         "11": {
-          "consumable_power": 130.0,
-          "crafting_yield": 75.0
+          "consumable_power_pct": 130.0,
+          "crafting_yield_pct": 75.0
         },
         "12": {
-          "consumable_power": 130.0,
-          "crafting_yield": 75.0
+          "consumable_power_pct": 130.0,
+          "crafting_yield_pct": 75.0
         },
         "13": {
-          "consumable_power": 130.0,
-          "crafting_yield": 75.0
+          "consumable_power_pct": 130.0,
+          "crafting_yield_pct": 75.0
         },
         "14": {
-          "consumable_power": 130.0,
-          "crafting_yield": 75.0
+          "consumable_power_pct": 130.0,
+          "crafting_yield_pct": 75.0
         },
         "15": {
-          "consumable_power": 130.0,
-          "crafting_yield": 75.0
+          "consumable_power_pct": 130.0,
+          "crafting_yield_pct": 75.0
         }
       }
     },
     "thievery": {
       "stats": [
-        "loot_quality",
-        "trap_detection"
+        "loot_quality_pct",
+        "trap_detection_pct"
       ],
       "per_level": {
         "1": {
-          "loot_quality": 5.0,
-          "trap_detection": 10.0
+          "loot_quality_pct": 5.0,
+          "trap_detection_pct": 10.0
         },
         "2": {
-          "loot_quality": 10.0,
-          "trap_detection": 20.0
+          "loot_quality_pct": 10.0,
+          "trap_detection_pct": 20.0
         },
         "3": {
-          "loot_quality": 20.0,
-          "trap_detection": 30.0
+          "loot_quality_pct": 20.0,
+          "trap_detection_pct": 30.0
         },
         "4": {
-          "loot_quality": 30.0,
-          "trap_detection": 45.0
+          "loot_quality_pct": 30.0,
+          "trap_detection_pct": 45.0
         },
         "5": {
-          "loot_quality": 45.0,
-          "trap_detection": 60.0
+          "loot_quality_pct": 45.0,
+          "trap_detection_pct": 60.0
         },
         "6": {
-          "loot_quality": 52.0,
-          "trap_detection": 65.0
+          "loot_quality_pct": 52.0,
+          "trap_detection_pct": 65.0
         },
         "7": {
-          "loot_quality": 58.0,
-          "trap_detection": 70.0
+          "loot_quality_pct": 58.0,
+          "trap_detection_pct": 70.0
         },
         "8": {
-          "loot_quality": 64.0,
-          "trap_detection": 75.0
+          "loot_quality_pct": 64.0,
+          "trap_detection_pct": 75.0
         },
         "9": {
-          "loot_quality": 70.0,
-          "trap_detection": 80.0
+          "loot_quality_pct": 70.0,
+          "trap_detection_pct": 80.0
         },
         "10": {
-          "loot_quality": 75.0,
-          "trap_detection": 85.0
+          "loot_quality_pct": 75.0,
+          "trap_detection_pct": 85.0
         },
         "11": {
-          "loot_quality": 75.0,
-          "trap_detection": 85.0
+          "loot_quality_pct": 75.0,
+          "trap_detection_pct": 85.0
         },
         "12": {
-          "loot_quality": 75.0,
-          "trap_detection": 85.0
+          "loot_quality_pct": 75.0,
+          "trap_detection_pct": 85.0
         },
         "13": {
-          "loot_quality": 75.0,
-          "trap_detection": 85.0
+          "loot_quality_pct": 75.0,
+          "trap_detection_pct": 85.0
         },
         "14": {
-          "loot_quality": 75.0,
-          "trap_detection": 85.0
+          "loot_quality_pct": 75.0,
+          "trap_detection_pct": 85.0
         },
         "15": {
-          "loot_quality": 75.0,
-          "trap_detection": 85.0
+          "loot_quality_pct": 75.0,
+          "trap_detection_pct": 85.0
         }
       }
     },
     "maces": {
       "stats": [
         "damage",
-        "stun_chance"
+        "stun_chance_pct"
       ],
       "per_level": {
         "1": {
           "damage": 5.0,
-          "stun_chance": 3.0
+          "stun_chance_pct": 3.0
         },
         "2": {
           "damage": 15.0,
-          "stun_chance": 6.0
+          "stun_chance_pct": 6.0
         },
         "3": {
           "damage": 30.0,
-          "stun_chance": 10.0
+          "stun_chance_pct": 10.0
         },
         "4": {
           "damage": 50.0,
-          "stun_chance": 15.0
+          "stun_chance_pct": 15.0
         },
         "5": {
           "damage": 75.0,
-          "stun_chance": 25.0
+          "stun_chance_pct": 25.0
         },
         "6": {
           "damage": 90.0,
-          "stun_chance": 28.0
+          "stun_chance_pct": 28.0
         },
         "7": {
           "damage": 100.0,
-          "stun_chance": 31.0
+          "stun_chance_pct": 31.0
         },
         "8": {
           "damage": 110.0,
-          "stun_chance": 34.0
+          "stun_chance_pct": 34.0
         },
         "9": {
           "damage": 120.0,
-          "stun_chance": 37.0
+          "stun_chance_pct": 37.0
         },
         "10": {
           "damage": 130.0,
-          "stun_chance": 40.0
+          "stun_chance_pct": 40.0
         },
         "11": {
           "damage": 130.0,
-          "stun_chance": 40.0
+          "stun_chance_pct": 40.0
         },
         "12": {
           "damage": 130.0,
-          "stun_chance": 40.0
+          "stun_chance_pct": 40.0
         },
         "13": {
           "damage": 130.0,
-          "stun_chance": 40.0
+          "stun_chance_pct": 40.0
         },
         "14": {
           "damage": 130.0,
-          "stun_chance": 40.0
+          "stun_chance_pct": 40.0
         },
         "15": {
           "damage": 130.0,
-          "stun_chance": 40.0
+          "stun_chance_pct": 40.0
         }
       }
     },
@@ -2059,340 +2060,340 @@
     "earth_magic": {
       "stats": [
         "spellpower",
-        "mana_cost"
+        "mana_cost_reduction"
       ],
       "per_level": {
         "1": {
           "spellpower": 5.0,
-          "mana_cost": -5.0
+          "mana_cost_reduction": -5.0
         },
         "2": {
           "spellpower": 15.0,
-          "mana_cost": -15.0
+          "mana_cost_reduction": -15.0
         },
         "3": {
           "spellpower": 30.0,
-          "mana_cost": -30.0
+          "mana_cost_reduction": -30.0
         },
         "4": {
           "spellpower": 50.0,
-          "mana_cost": -50.0
+          "mana_cost_reduction": -50.0
         },
         "5": {
           "spellpower": 75.0,
-          "mana_cost": -75.0
+          "mana_cost_reduction": -75.0
         },
         "6": {
           "spellpower": 90.0,
-          "mana_cost": -85.0
+          "mana_cost_reduction": -85.0
         },
         "7": {
           "spellpower": 100.0,
-          "mana_cost": -90.0
+          "mana_cost_reduction": -90.0
         },
         "8": {
           "spellpower": 110.0,
-          "mana_cost": -95.0
+          "mana_cost_reduction": -95.0
         },
         "9": {
           "spellpower": 120.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "10": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "11": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "12": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "13": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "14": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         },
         "15": {
           "spellpower": 130.0,
-          "mana_cost": -100.0
+          "mana_cost_reduction": -100.0
         }
       }
     },
     "summoning": {
       "stats": [
         "spellpower",
-        "summon_hp"
+        "summon_hp_pct"
       ],
       "per_level": {
         "1": {
           "spellpower": 5.0,
-          "summon_hp": 10.0
+          "summon_hp_pct": 10.0
         },
         "2": {
           "spellpower": 15.0,
-          "summon_hp": 20.0
+          "summon_hp_pct": 20.0
         },
         "3": {
           "spellpower": 30.0,
-          "summon_hp": 30.0
+          "summon_hp_pct": 30.0
         },
         "4": {
           "spellpower": 50.0,
-          "summon_hp": 45.0
+          "summon_hp_pct": 45.0
         },
         "5": {
           "spellpower": 75.0,
-          "summon_hp": 60.0
+          "summon_hp_pct": 60.0
         },
         "6": {
           "spellpower": 90.0,
-          "summon_hp": 65.0
+          "summon_hp_pct": 65.0
         },
         "7": {
           "spellpower": 100.0,
-          "summon_hp": 70.0
+          "summon_hp_pct": 70.0
         },
         "8": {
           "spellpower": 110.0,
-          "summon_hp": 75.0
+          "summon_hp_pct": 75.0
         },
         "9": {
           "spellpower": 120.0,
-          "summon_hp": 80.0
+          "summon_hp_pct": 80.0
         },
         "10": {
           "spellpower": 130.0,
-          "summon_hp": 85.0
+          "summon_hp_pct": 85.0
         },
         "11": {
           "spellpower": 130.0,
-          "summon_hp": 85.0
+          "summon_hp_pct": 85.0
         },
         "12": {
           "spellpower": 130.0,
-          "summon_hp": 85.0
+          "summon_hp_pct": 85.0
         },
         "13": {
           "spellpower": 130.0,
-          "summon_hp": 85.0
+          "summon_hp_pct": 85.0
         },
         "14": {
           "spellpower": 130.0,
-          "summon_hp": 85.0
+          "summon_hp_pct": 85.0
         },
         "15": {
           "spellpower": 130.0,
-          "summon_hp": 85.0
+          "summon_hp_pct": 85.0
         }
       }
     },
     "logistics": {
       "stats": [
-        "supply_duration_(party)",
-        "travel_speed_(party)"
+        "party_supply_duration_pct",
+        "party_travel_speed_pct"
       ],
       "per_level": {
         "1": {
-          "supply_duration_(party)": 10.0,
-          "travel_speed_(party)": 5.0
+          "party_supply_duration_pct": 10.0,
+          "party_travel_speed_pct": 5.0
         },
         "2": {
-          "supply_duration_(party)": 20.0,
-          "travel_speed_(party)": 10.0
+          "party_supply_duration_pct": 20.0,
+          "party_travel_speed_pct": 10.0
         },
         "3": {
-          "supply_duration_(party)": 30.0,
-          "travel_speed_(party)": 15.0
+          "party_supply_duration_pct": 30.0,
+          "party_travel_speed_pct": 15.0
         },
         "4": {
-          "supply_duration_(party)": 45.0,
-          "travel_speed_(party)": 25.0
+          "party_supply_duration_pct": 45.0,
+          "party_travel_speed_pct": 25.0
         },
         "5": {
-          "supply_duration_(party)": 60.0,
-          "travel_speed_(party)": 35.0
+          "party_supply_duration_pct": 60.0,
+          "party_travel_speed_pct": 35.0
         },
         "6": {
-          "supply_duration_(party)": 65.0,
-          "travel_speed_(party)": 40.0
+          "party_supply_duration_pct": 65.0,
+          "party_travel_speed_pct": 40.0
         },
         "7": {
-          "supply_duration_(party)": 70.0,
-          "travel_speed_(party)": 45.0
+          "party_supply_duration_pct": 70.0,
+          "party_travel_speed_pct": 45.0
         },
         "8": {
-          "supply_duration_(party)": 75.0,
-          "travel_speed_(party)": 50.0
+          "party_supply_duration_pct": 75.0,
+          "party_travel_speed_pct": 50.0
         },
         "9": {
-          "supply_duration_(party)": 80.0,
-          "travel_speed_(party)": 55.0
+          "party_supply_duration_pct": 80.0,
+          "party_travel_speed_pct": 55.0
         },
         "10": {
-          "supply_duration_(party)": 85.0,
-          "travel_speed_(party)": 60.0
+          "party_supply_duration_pct": 85.0,
+          "party_travel_speed_pct": 60.0
         },
         "11": {
-          "supply_duration_(party)": 85.0,
-          "travel_speed_(party)": 60.0
+          "party_supply_duration_pct": 85.0,
+          "party_travel_speed_pct": 60.0
         },
         "12": {
-          "supply_duration_(party)": 85.0,
-          "travel_speed_(party)": 60.0
+          "party_supply_duration_pct": 85.0,
+          "party_travel_speed_pct": 60.0
         },
         "13": {
-          "supply_duration_(party)": 85.0,
-          "travel_speed_(party)": 60.0
+          "party_supply_duration_pct": 85.0,
+          "party_travel_speed_pct": 60.0
         },
         "14": {
-          "supply_duration_(party)": 85.0,
-          "travel_speed_(party)": 60.0
+          "party_supply_duration_pct": 85.0,
+          "party_travel_speed_pct": 60.0
         },
         "15": {
-          "supply_duration_(party)": 85.0,
-          "travel_speed_(party)": 60.0
+          "party_supply_duration_pct": 85.0,
+          "party_travel_speed_pct": 60.0
         }
       }
     },
     "trade": {
       "stats": [
-        "buy_discount",
-        "sell_markup"
+        "buy_discount_pct",
+        "sell_markup_pct"
       ],
       "per_level": {
         "1": {
-          "buy_discount": 5.0,
-          "sell_markup": 5.0
+          "buy_discount_pct": 5.0,
+          "sell_markup_pct": 5.0
         },
         "2": {
-          "buy_discount": 10.0,
-          "sell_markup": 10.0
+          "buy_discount_pct": 10.0,
+          "sell_markup_pct": 10.0
         },
         "3": {
-          "buy_discount": 15.0,
-          "sell_markup": 20.0
+          "buy_discount_pct": 15.0,
+          "sell_markup_pct": 20.0
         },
         "4": {
-          "buy_discount": 25.0,
-          "sell_markup": 30.0
+          "buy_discount_pct": 25.0,
+          "sell_markup_pct": 30.0
         },
         "5": {
-          "buy_discount": 35.0,
-          "sell_markup": 45.0
+          "buy_discount_pct": 35.0,
+          "sell_markup_pct": 45.0
         },
         "6": {
-          "buy_discount": 40.0,
-          "sell_markup": 50.0
+          "buy_discount_pct": 40.0,
+          "sell_markup_pct": 50.0
         },
         "7": {
-          "buy_discount": 45.0,
-          "sell_markup": 55.0
+          "buy_discount_pct": 45.0,
+          "sell_markup_pct": 55.0
         },
         "8": {
-          "buy_discount": 50.0,
-          "sell_markup": 60.0
+          "buy_discount_pct": 50.0,
+          "sell_markup_pct": 60.0
         },
         "9": {
-          "buy_discount": 55.0,
-          "sell_markup": 65.0
+          "buy_discount_pct": 55.0,
+          "sell_markup_pct": 65.0
         },
         "10": {
-          "buy_discount": 60.0,
-          "sell_markup": 70.0
+          "buy_discount_pct": 60.0,
+          "sell_markup_pct": 70.0
         },
         "11": {
-          "buy_discount": 60.0,
-          "sell_markup": 70.0
+          "buy_discount_pct": 60.0,
+          "sell_markup_pct": 70.0
         },
         "12": {
-          "buy_discount": 60.0,
-          "sell_markup": 70.0
+          "buy_discount_pct": 60.0,
+          "sell_markup_pct": 70.0
         },
         "13": {
-          "buy_discount": 60.0,
-          "sell_markup": 70.0
+          "buy_discount_pct": 60.0,
+          "sell_markup_pct": 70.0
         },
         "14": {
-          "buy_discount": 60.0,
-          "sell_markup": 70.0
+          "buy_discount_pct": 60.0,
+          "sell_markup_pct": 70.0
         },
         "15": {
-          "buy_discount": 60.0,
-          "sell_markup": 70.0
+          "buy_discount_pct": 60.0,
+          "sell_markup_pct": 70.0
         }
       }
     },
     "smithing": {
       "stats": [
-        "crafting_quality",
-        "repair_efficiency"
+        "crafting_quality_pct",
+        "repair_efficiency_pct"
       ],
       "per_level": {
         "1": {
-          "crafting_quality": 10.0,
-          "repair_efficiency": 10.0
+          "crafting_quality_pct": 10.0,
+          "repair_efficiency_pct": 10.0
         },
         "2": {
-          "crafting_quality": 20.0,
-          "repair_efficiency": 20.0
+          "crafting_quality_pct": 20.0,
+          "repair_efficiency_pct": 20.0
         },
         "3": {
-          "crafting_quality": 35.0,
-          "repair_efficiency": 30.0
+          "crafting_quality_pct": 35.0,
+          "repair_efficiency_pct": 30.0
         },
         "4": {
-          "crafting_quality": 50.0,
-          "repair_efficiency": 45.0
+          "crafting_quality_pct": 50.0,
+          "repair_efficiency_pct": 45.0
         },
         "5": {
-          "crafting_quality": 75.0,
-          "repair_efficiency": 60.0
+          "crafting_quality_pct": 75.0,
+          "repair_efficiency_pct": 60.0
         },
         "6": {
-          "crafting_quality": 90.0,
-          "repair_efficiency": 65.0
+          "crafting_quality_pct": 90.0,
+          "repair_efficiency_pct": 65.0
         },
         "7": {
-          "crafting_quality": 100.0,
-          "repair_efficiency": 70.0
+          "crafting_quality_pct": 100.0,
+          "repair_efficiency_pct": 70.0
         },
         "8": {
-          "crafting_quality": 110.0,
-          "repair_efficiency": 75.0
+          "crafting_quality_pct": 110.0,
+          "repair_efficiency_pct": 75.0
         },
         "9": {
-          "crafting_quality": 120.0,
-          "repair_efficiency": 80.0
+          "crafting_quality_pct": 120.0,
+          "repair_efficiency_pct": 80.0
         },
         "10": {
-          "crafting_quality": 130.0,
-          "repair_efficiency": 85.0
+          "crafting_quality_pct": 130.0,
+          "repair_efficiency_pct": 85.0
         },
         "11": {
-          "crafting_quality": 130.0,
-          "repair_efficiency": 85.0
+          "crafting_quality_pct": 130.0,
+          "repair_efficiency_pct": 85.0
         },
         "12": {
-          "crafting_quality": 130.0,
-          "repair_efficiency": 85.0
+          "crafting_quality_pct": 130.0,
+          "repair_efficiency_pct": 85.0
         },
         "13": {
-          "crafting_quality": 130.0,
-          "repair_efficiency": 85.0
+          "crafting_quality_pct": 130.0,
+          "repair_efficiency_pct": 85.0
         },
         "14": {
-          "crafting_quality": 130.0,
-          "repair_efficiency": 85.0
+          "crafting_quality_pct": 130.0,
+          "repair_efficiency_pct": 85.0
         },
         "15": {
-          "crafting_quality": 130.0,
-          "repair_efficiency": 85.0
+          "crafting_quality_pct": 130.0,
+          "repair_efficiency_pct": 85.0
         }
       }
     }

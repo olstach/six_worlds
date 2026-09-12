@@ -66,7 +66,7 @@ const NEGATIVE_SKILL_PENALTIES: Dictionary = {
 	"ritual":       {"spellpower": -2},
 	"yoga":         {"spellpower": -2},
 	"learning":     {"xp_gain_pct": -10.0},
-	"medicine":     {"healing_bonus_pct": -5.0},
+	"medicine":     {"healing_pct": -5.0},
 	"guile":        {"dodge": -2},
 	"grace":        {"dodge": -2, "initiative": -1},
 	"might":        {"damage": -3},
@@ -1192,12 +1192,12 @@ func update_derived_stats(character: Dictionary) -> void:
 			if bonus.is_empty():
 				continue
 			# Combat skill bonuses
-			derived["accuracy"] = derived.get("accuracy", 0) + bonus.get("attack", 0)
+			derived["accuracy"] = derived.get("accuracy", 0) + bonus.get("accuracy", 0)
 			derived["damage"] = derived.get("damage", 0) + bonus.get("damage", 0)
-			derived["damage"] = derived.get("damage", 0) + bonus.get("strength_weapon_damage", 0)
+			derived["damage"] = derived.get("damage", 0) + bonus.get("weapon_damage_from_strength", 0)
 			derived["crit_chance"] = derived.get("crit_chance", 0.0) + bonus.get("crit_chance", 0.0)
 			derived["armor"] = derived.get("armor", 0) + bonus.get("armor", 0)
-			derived["armor_pierce"] = derived.get("armor_pierce", 0) + bonus.get("armor_penetration", 0)
+			derived["armor_pierce"] = derived.get("armor_pierce", 0) + bonus.get("armor_pierce", 0)
 			# Armor skill: HP and damage reduction
 			derived["max_hp"] = derived.get("max_hp", 100) + int(bonus.get("max_hp", 0))
 			if bonus.has("damage_reduction_pct"):
@@ -1205,11 +1205,12 @@ func update_derived_stats(character: Dictionary) -> void:
 			# Magic school bonuses
 			if bonus.has("spellpower"):
 				derived["spellpower"] = derived.get("spellpower", 0) + int(bonus.get("spellpower", 0))
-			# Mana cost reduction (negative values in data = cost reduction per cast)
-			derived["mana_cost_reduction"] = derived.get("mana_cost_reduction", 0) + int(bonus.get("mana_cost", 0))
-			# General skill bonuses — key names match data exactly
+			# Negative values in the table mean the cast gets cheaper.
+			derived["mana_cost_reduction"] = derived.get("mana_cost_reduction", 0) + int(bonus.get("mana_cost_reduction", 0))
+			# From here the data key and the derived key are the same word, which
+			# is the point of the naming convention — see base_bonuses._comment.
 			derived["dodge"] = derived.get("dodge", 0) + int(bonus.get("dodge", 0))
-			derived["max_stamina"] = derived.get("max_stamina", 50) + int(bonus.get("stamina", 0))
+			derived["max_stamina"] = derived.get("max_stamina", 50) + int(bonus.get("max_stamina", 0))
 			derived["initiative"] = derived.get("initiative", 0) + int(bonus.get("initiative", 0))
 
 	# Apply penalties for negative skill levels (quirks/debuffs pushing skills below 0).
@@ -1220,6 +1221,13 @@ func update_derived_stats(character: Dictionary) -> void:
 		var penalty_per_level: Dictionary = NEGATIVE_SKILL_PENALTIES[skill_id]
 		var levels_negative: int = -eff  # e.g. eff=-2 → 2 levels of penalty
 		for stat in penalty_per_level:
+			# Guard the spelling. This table wrote "healing_bonus_pct" while
+			# CombatUnit.heal() read "healing_pct", so negative Medicine did
+			# nothing at all — the third spelling of that one concept.
+			if not CombatStats.is_derived(stat):
+				push_error("CharacterSystem: NEGATIVE_SKILL_PENALTIES['%s'] targets '%s', %s"
+					% [skill_id, stat, CombatStats.explain_unknown(stat)])
+				continue
 			var total_penalty = penalty_per_level[stat] * levels_negative
 			derived[stat] = derived.get(stat, 0) + total_penalty
 
