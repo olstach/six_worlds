@@ -937,6 +937,21 @@ func calculate_attribute_cost(current_value: int, increase_amount: int) -> int:
 ## Set skill level directly (for initialization)
 func set_skill_level(character: Dictionary, skill: String, level: int) -> void:
 	character.skills[skill] = level
+	# A `party_` payout from this skill feeds every other member's derived
+	# stats, so one member levelling up restates the whole party. Without this
+	# the others keep yesterday's numbers and nothing anywhere goes red.
+	update_party_derived_stats()
+
+
+## Recompute derived stats for every party member.
+##
+## Needed because party-wide bonuses cross between characters: B levelling
+## Medicine changes A's healing. Safe to call freely — party bonuses read raw
+## skill levels, never another character's derived stats, so this cannot
+## recurse.
+func update_party_derived_stats() -> void:
+	for member in party:
+		update_derived_stats(member)
 
 ## Upgrade a skill (costs XP based on current level)
 ## Returns true if the skill was upgraded. Emits perk_selection_requested
@@ -1180,6 +1195,21 @@ func update_derived_stats(character: Dictionary) -> void:
 			new_resists[r] = new_resists.get(r, 0) + perk_resists[r]
 	derived["resistances"] = new_resists
 
+	# Zero every stat that is accumulated in place below, because this function
+	# recomputes a character from scratch and must be safe to call repeatedly.
+	#
+	# Stats assigned fresh (`derived.max_hp = 100 + ...`) were always fine. These
+	# are the ones written as `derived[k] = derived.get(k, 0) + ...`, which reads
+	# back the PREVIOUS call's total and adds to it. Nothing reset them, so they
+	# grew by their full value every time — mana_cost_reduction reached -500
+	# after five calls, and since this runs on level-up, equip, rest and party
+	# change, spells were getting monotonically cheaper until they were free.
+	for accumulated in ["damage_reduction_pct", "mana_cost_reduction",
+			"mental_resistance_pct", "healing_pct", "damage_pct",
+			"magic_resistance_pct", "movement_pct", "summon_hp_pct",
+			"xp_gain_pct", "loot_chance_pct", "spellpower_fire"]:
+		derived[accumulated] = 0.0
+
 	# Apply base skill bonuses from PerkSystem (data-driven per_level tables)
 	# Each skill contributes its cumulative bonuses at the character's effective level.
 	if PerkSystem:
@@ -1212,6 +1242,19 @@ func update_derived_stats(character: Dictionary) -> void:
 			derived["dodge"] = derived.get("dodge", 0) + int(bonus.get("dodge", 0))
 			derived["max_stamina"] = derived.get("max_stamina", 50) + int(bonus.get("max_stamina", 0))
 			derived["initiative"] = derived.get("initiative", 0) + int(bonus.get("initiative", 0))
+			# Percentage stats, read one by one rather than through a loop over
+			# key names. A loop hides the read from validate_data.py's data->code
+			# check, which looks for `bonus.get("<key>"` precisely because the
+			# looser search for a bare literal produced false negatives. Spelling
+			# each out keeps every payout greppable from its stat name.
+			derived["mental_resistance_pct"] = derived.get("mental_resistance_pct", 0.0) \
+				+ float(bonus.get("mental_resistance_pct", 0.0))
+			derived["magic_resistance_pct"] = derived.get("magic_resistance_pct", 0.0) \
+				+ float(bonus.get("magic_resistance_pct", 0.0))
+			derived["movement_pct"] = derived.get("movement_pct", 0.0) \
+				+ float(bonus.get("movement_pct", 0.0))
+			derived["summon_hp_pct"] = derived.get("summon_hp_pct", 0.0) \
+				+ float(bonus.get("summon_hp_pct", 0.0))
 
 	# Apply penalties for negative skill levels (quirks/debuffs pushing skills below 0).
 	for skill_id in NEGATIVE_SKILL_PENALTIES:
@@ -1238,6 +1281,25 @@ func update_derived_stats(character: Dictionary) -> void:
 	for pct_stat in ["mental_resistance_pct", "healing_pct", "damage_pct"]:
 		if affinity_bonus.has(pct_stat):
 			derived[pct_stat] = derived.get(pct_stat, 0.0) + affinity_bonus[pct_stat]
+
+	# Party-wide skill payouts. One member's training pays the whole party, best
+	# member only — see PartyBonuses. These read raw skill levels, never another
+	# character's derived stats, so there is no ordering problem and nothing
+	# waits on anything.
+	derived["healing_pct"] = derived.get("healing_pct", 0.0) \
+		+ PartyBonuses.best("party_healing_pct")
+	var party_resist: float = PartyBonuses.best("party_poison_disease_resistance_pct")
+	if party_resist > 0.0:
+		for damage_type in ["poison", "disease"]:
+			new_resists[damage_type] = new_resists.get(damage_type, 0) + int(party_resist)
+		derived["resistances"] = new_resists
+
+	# Movement is in tiles, so its percentage applies to the finished total
+	# rather than being added to it. This is the distinction that made
+	# `movement_speed` look like a rename of `movement` when it was not.
+	var movement_pct: float = derived.get("movement_pct", 0.0)
+	if movement_pct != 0.0:
+		derived["movement"] = int(derived.get("movement", 0) * (1.0 + movement_pct / 100.0))
 
 	# Passive perk effects. Flat bonuses first, then conversions, because a
 	# conversion reads a finished stat — Parry turning 20% of Attack into Armor
@@ -1324,6 +1386,7 @@ func add_companion(character: Dictionary) -> bool:
 	if party.size() >= max_party_size:
 		return false
 	party.append(character)
+	update_party_derived_stats()
 	print("Added companion: ", character.name)
 	return true
 
@@ -1336,6 +1399,7 @@ func remove_companion(index: int) -> bool:
 	if RelationshipSystem:
 		RelationshipSystem.forget_character(party[index])
 	party.remove_at(index)
+	update_party_derived_stats()
 	return true
 
 ## Get all party members

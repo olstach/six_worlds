@@ -75,6 +75,9 @@ const DERIVED: Array[String] = [
 	"healing_pct",             # CombatUnit.heal()
 	"damage_pct",              # CombatUnit.get_damage()
 	"mana_cost_reduction",     # CombatManager.cast_spell()
+	"magic_resistance_pct",    # CombatManager.apply_damage(), magic types only
+	"movement_pct",            # CharacterSystem.update_derived_stats()
+	"summon_hp_pct",           # CombatManager._spawn_summoned_unit()
 	# Out-of-combat, read by their own systems.
 	"xp_gain_pct",             # CompanionSystem
 	"loot_chance_pct",         # CombatManager loot roll
