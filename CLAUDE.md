@@ -1,7 +1,7 @@
 # Six Worlds - Project Context for Claude
 
 ## Project Overview
-**Six Worlds** is a tactical RPG roguelike set in Tibetan Buddhist cosmology, built in Godot 4.6 using GDScript.
+**Six Worlds** is a tactical RPG roguelike set in Tibetan Buddhist cosmology, built in Godot 4.7 using GDScript.
 
 **Visual Style**: Tibetan thangka painting aesthetics combined with classic pixel art - ornate UI frames with sacred colors (deep reds, golds, indigos) surrounding pixel art characters and environments.
 
@@ -10,7 +10,7 @@
 ## Development Workflow
 
 ### File Locations
-- **Project directory**: `/home/gnoll/Documents/1_Projects/Six_Worlds_3/`
+- **Project directory**: `/home/gnoll/Documents/1_Projects/six_worlds/`
 - Always write files directly to this directory
 - Test scenes go in `scenes/ui/`
 - AutoLoad singletons go in `scripts/autoload/`
@@ -18,6 +18,17 @@
 
 ### Content Creation Pattern
 Olaf handles content creation (races, characters, events, spells) during offline time, then collaborates with Claude to integrate content into game systems. When given raw content, format it properly and integrate with existing JSON structures.
+
+### Verifying a change
+
+`tools/verify_all.sh` is the single entry point: parse, boot, data, and the
+in-engine verifier scenes. Run it after any change. `validate_data.py` alone is
+not sufficient — it parses JSON in Python and never exercises a GDScript
+loader, which is how `animal_events.json` once loaded 0 of its 86 events while
+the validator reported no issues.
+
+Adding a new `class_name` requires committing `.godot/global_script_class_cache.cfg`,
+or the class fails to resolve at runtime while the parse stays clean.
 
 ### Code Style
 - Comment code clearly - Olaf is at beginner-intermediate level with Godot
@@ -92,14 +103,14 @@ Olaf handles content creation (races, characters, events, spells) during offline
 
 ## Current Implementation Status
 
-**See `REFRESHER.md` for the current state snapshot and `TODO.md` for detailed
-task lists — both are kept up to date; this section is only a summary.**
+**See `README.md` for the current state and `TODO.md` for the open work —
+both are kept current; this section is only a summary.**
 
-### Working Systems (20 autoloads)
+### Working Systems (21 autoloads)
 - Characters, karma/reincarnation, events (dynamic DCs, gated rolls), grid
   combat (spells/AoE/statuses/AI), overworld (real-time movement, mobs,
   portals with boss gating), shops/guilds/training, procedural items
-  (weapons/armor/talismans/implements), 558 perks, psychology/pressure,
+  (weapons/armor/talismans/implements), 604 perks, psychology/pressure,
   traits, wounds, body plans (multi-arm species), camp/rest/time/lunar
   calendar, save/load (3 slots), audio, cheat console
 - Realms with content: hell, hungry_ghost, animal (human/asura/god empty)
@@ -140,27 +151,28 @@ Instead of levels, use relative XP comparison with descriptive labels ("slightly
 - `resources/data/skills.json` - Skill definitions by category/element
 
 ### Documentation
-- `README.md` - Project overview and usage
-- `TODO.md` - Tasks and design questions
-- `EVENT_SYSTEM.md` - Event system documentation
+- `README.md` - current state, how to run and verify, where things live
+- `TODO.md` - open work, deferred decisions, designs waiting to be built
+- `docs/superpowers/specs/` - approved designs not yet implemented
+- `tools/verify_all.sh` - run this after any change
 
-## Future Features (Planned)
+## What is still open
 
-### High Priority
-- Overworld map (HoMM-style tile exploration)
-- Tactical combat (grid-based like Disgaea/FF Tactics)
-- More events per realm
+This section listed the overworld map, tactical combat and save/load as
+"planned" long after all three shipped. It is not maintained here any more —
+`TODO.md` is the live list, and it is organised so that open work, deferred
+decisions and unbuilt designs are separate things.
 
-### Medium Priority
-- UI polish (upgrade selection popup, equipment screen, party management)
-- Complete data files (all races, backgrounds, spells, items)
-- Save/load system
+The largest remaining gaps, for orientation only:
 
-### Design Questions Still Open
-- Combat grid size and positioning importance
-- Realm-specific mechanics (Hell = combat focus, Human = dialogue focus, etc.)
-- Mantra/deity yoga mechanical implementation
-- Klesha system (elemental affinities causing emotional status effects)
+- **Three realms have no content at all** — human, asura, god.
+- **Nothing has been played end to end.** Systems are verified individually;
+  the full reincarnation loop has not been sat down with.
+- **297 passive perks are description-only**, and the passive effects engine
+  that would read them is built but barely used.
+- **Long-standing design questions:** realm-specific mechanics (hell = combat,
+  human = dialogue), the klesha system (affinities causing emotional statuses),
+  and Yidam/Dharmapala — the last two have complete designs in `TODO.md` Part II.
 
 ## Things to Remember
 
