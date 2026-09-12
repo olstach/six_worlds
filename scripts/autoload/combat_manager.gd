@@ -3385,11 +3385,16 @@ func _calculate_status_duration(caster: Node, spell: Dictionary, bonus: int) -> 
 	# Enchantment is the main modifier; spellpower contributes less to keep dedicated
 	# enchanters clearly ahead of raw-power builds.
 	if dur_field == "spellpower" or dur_field == "spellpower_turns" or dur_field == null:
-		var enchantment_level: int = 0
+		# Enchantment's contribution comes from its per-level table
+		# (effect_duration_turns), not from a rule restated here. It used to be
+		# `int(level / 2)` in this function while the table carried a parallel
+		# effect_duration_pct that nothing read — two statements of one mechanic,
+		# one of them dead. The table now holds the same numbers it always
+		# produced, in a place they can be tuned.
+		var enc_contribution: int = 0
 		if "character_data" in caster:
-			enchantment_level = caster.character_data.get("skills", {}).get("enchantment", 0)
-		# Enchantment: +1 turn per 2 skill levels (Enc 2=+1 … Enc 14=+7)
-		var enc_contribution: int = int(enchantment_level / 2)
+			enc_contribution = int(caster.character_data.get("derived", {}).get(
+				"effect_duration_turns", 0))
 		# Spellpower: +1 turn per 15 points (secondary — typical SP 10–30 adds +0 to +2)
 		var sp_contribution: int = int(bonus / 15)
 		return maxi(1, 2 + enc_contribution + sp_contribution)
