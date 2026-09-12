@@ -470,16 +470,23 @@ but may not be what the game wants.
         single better item rather than several common ones. That chance is one
         of the main points of the Luck attribute, which currently does very
         little.
-      - **Two quality vocabularies.** `quality_levels` runs poor / common /
-        good / fine / masterwork, but the trade tools encode their grade in
-        their ids as plain / fine / masterwork / storied / legendary. They
-        overlap without matching. Assignment currently maps storied and
-        legendary onto masterwork; reconciling the ladders properly is a design
-        call.
-      - **Armour materials are still metal-shaped.** `cloth` and `leather` were
-        added 2026-09-12 because 78 robes and hats had no material that fitted
-        them, but the table is otherwise wood/bone/stone/metal. Scale, hide and
-        silk are missing if armour is ever to be generated with real variety.
+      - ~~Two quality vocabularies~~ — **settled 2026-09-12.** One ladder:
+        poor / common / good / fine / masterwork. The trade tools' "storied"
+        and "legendary" were never quality — a storied lute is a masterwork
+        lute with a story on it, which is *enchantment*. They map to masterwork
+        and earn their value through the enchantment tier.
+      - ~~Armour materials are metal-shaped~~ — **hide, scale, chitin and silk
+        added 2026-09-12.** Silk is not structural: historically a silk layer
+        catches an arrowhead and lets it be drawn back out, so it carries a
+        ranged resistance rather than armour, and is allowed on robes, hats and
+        capes only. A silk helmet would still be nonsense.
+      - [ ] **Equipment generation only covers weapons and armour.** The twelve
+        accessory types now have base entries and can be priced, but
+        `generate_weapon` / `generate_armor` have no sibling for them. Nothing
+        procedurally produces a focus, charm, ring or cape — and focus items are
+        the single largest equipment category in the game at 210. A
+        `generate_accessory` is the obvious next expansion, and it is what would
+        let loot offer anything but weapons and armour.
       - Blocked on this: `crafting_quality_pct`, `crafting_yield_pct`,
         `loot_quality_pct`.
 

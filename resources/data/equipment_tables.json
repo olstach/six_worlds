@@ -206,6 +206,81 @@
         "focus"
 	  ],
 	  "_note": "Shell. Ritual implements — dorje, drilbu, khatvanga."
+	},
+	"hide": {
+	  "tier": 1,
+	  "damage_mult": 0.5,
+	  "armor_mult": 0.7,
+	  "weight_mult": 0.7,
+	  "value_mult": 0.4,
+	  "base_durability": 55,
+	  "fragility": 1.4,
+	  "name_prefix": "Hide",
+	  "allowed_types": [
+		"armor",
+		"helmet",
+		"gloves",
+		"boots",
+		"pants",
+        "shield"
+	  ]
+	},
+	"scale": {
+	  "tier": 3,
+	  "damage_mult": 0.6,
+	  "armor_mult": 1.05,
+	  "weight_mult": 0.9,
+	  "value_mult": 0.85,
+	  "base_durability": 75,
+	  "fragility": 1.1,
+	  "name_prefix": "Scale",
+	  "allowed_types": [
+		"armor",
+		"helmet",
+		"gloves",
+		"boots",
+		"pants",
+        "shield"
+	  ]
+	},
+	"chitin": {
+	  "tier": 3,
+	  "damage_mult": 0.75,
+	  "armor_mult": 0.95,
+	  "weight_mult": 0.45,
+	  "value_mult": 0.9,
+	  "base_durability": 60,
+	  "fragility": 1.25,
+	  "name_prefix": "Chitin",
+	  "_note": "Light for its protection. Hungry ghost and animal realm creatures.",
+	  "allowed_types": [
+		"armor",
+		"helmet",
+		"gloves",
+		"boots",
+		"pants",
+		"shield",
+        "dagger"
+	  ]
+	},
+	"silk": {
+	  "tier": 2,
+	  "damage_mult": 0.4,
+	  "armor_mult": 0.3,
+	  "weight_mult": 0.2,
+	  "value_mult": 1.6,
+	  "base_durability": 25,
+	  "fragility": 1.7,
+	  "name_prefix": "Silk",
+	  "resistances": {
+		"ranged": 10
+	  },
+	  "_note": "Historically arrow-resistant: a silk layer catches the head and lets it be drawn out. Worn, not armoured — robes and cloaks.",
+	  "allowed_types": [
+		"robe",
+		"hat",
+        "cape"
+	  ]
 	}
   },
   "quality_levels": {
@@ -877,5 +952,93 @@
 	  "sky_iron": 35,
 	  "vajra": 45
 	}
-  }
+  },
+  "enchantment_levels": {
+	"none": {
+	  "value_mult": 1.0,
+	  "name_suffix": ""
+	},
+	"touched": {
+	  "value_mult": 3.0,
+	  "name_suffix": "Touched"
+	},
+	"blessed": {
+	  "value_mult": 10.0,
+	  "name_suffix": "Blessed"
+	},
+	"empowered": {
+	  "value_mult": 30.0,
+	  "name_suffix": "Empowered"
+	},
+	"perfected": {
+	  "value_mult": 70.0,
+	  "name_suffix": "Perfected"
+	}
+  },
+  "_comment_enchantment": "Material and quality describe what an item IS; enchantment describes what has been done to it. Value = base x material x quality x enchantment. Without this term the model priced a legendary crown as a masterwork cloth hat — plain items sat at a median 1.13x of expected while enchanted ones sat at 20x, which is the whole discrepancy.",
+  "accessory_bases": {
+	"focus": {
+	  "value": 62,
+	  "weight": 1.0,
+	  "slot": "weapon_main",
+	  "skill": "ritual"
+	},
+	"tool": {
+	  "value": 35,
+	  "weight": 2.0,
+	  "slot": "weapon_main"
+	},
+	"charm": {
+	  "value": 80,
+	  "weight": 0.0,
+	  "slot": "talisman"
+	},
+	"talisman": {
+	  "value": 58,
+	  "weight": 0.0,
+	  "slot": "trinket1"
+	},
+	"amulet": {
+	  "value": 75,
+	  "weight": 0.0,
+	  "slot": "trinket1"
+	},
+	"trinket": {
+	  "value": 62,
+	  "weight": 0.0,
+	  "slot": "trinket1"
+	},
+	"ring": {
+	  "value": 35,
+	  "weight": 0.0,
+	  "slot": "ring1"
+	},
+	"cape": {
+	  "value": 32,
+	  "weight": 2.0,
+	  "slot": "back"
+	},
+	"eyewear": {
+	  "value": 75,
+	  "weight": 0.0,
+	  "slot": "face"
+	},
+	"face_cloth": {
+	  "value": 8,
+	  "weight": 0.0,
+	  "slot": "face"
+	},
+	"thrown": {
+	  "value": 20,
+	  "weight": 1.0,
+	  "slot": "weapon_main",
+	  "damage": 5
+	},
+	"prosthetic": {
+	  "value": 160,
+	  "weight": 2.0,
+	  "slot": "hand_r"
+	}
+  },
+  "_comment_accessory_bases": "Everything that is equipment but neither weapon nor armour. These twelve types covered 328 of 486 authored items — two thirds of the game's equipment — with no base entry, so none of it could be tiered or generated. Values are the median of each family's plain members, so existing items sit at roughly 1x."
 }
