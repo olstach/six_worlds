@@ -7628,15 +7628,17 @@ func _process_ammo_special_effect(attacker: Node, defender: Node, ammo: Dictiona
 
 
 ## Deduct durability from the attacker's equipped weapon after use.
-## fragility in item.generated.fragility = durability cost per attack.
-## Vajra (fragility 0.0) and static items never degrade.
+## Durability cost per attack comes from ItemSystem.get_item_fragility(), which
+## answers for both item populations — generated items from the material they
+## were built with, authored items from the material they now declare, at a
+## gentler rate. Vajra and quest oddments still never degrade.
 func _deduct_weapon_durability(unit: Node) -> void:
 	if not unit.has_method("get_equipped_weapon"):
 		return
 	var weapon = unit.get_equipped_weapon()
 	if weapon.is_empty():
 		return
-	var fragility: float = weapon.get("generated", {}).get("fragility", 0.0)
+	var fragility: float = ItemSystem.get_item_fragility(weapon)
 	if fragility <= 0.0:
 		return  # Indestructible or not a generated item
 	if not "character_data" in unit:
