@@ -184,10 +184,16 @@ The mirror image of dead data: code paths that work and are never exercised.
       add/remove. Six keys wired and rescaled (see `base_bonuses._comment` for
       the rule). Design notes kept below for the next phase:
 
-- [ ] **Phase 2 — economy and crafting** (~7 keys): `buy_discount_pct`,
-      `sell_markup_pct`, `trading_price_pct`, `crafting_quality_pct`,
-      `crafting_yield_pct`, `repair_efficiency_pct`, `consumable_power_pct`.
-      Consumers in ShopSystem and ItemSystem. Mostly mechanical.
+- [x] **Phase 2 — economy and crafting** — done 2026-09-12. Turned out to be
+      mostly *convergence*: Trade discounts and the Alchemy potion bonus already
+      existed as hand-rolled code that disagreed with the tables. Five keys
+      wired, two left with reasons:
+      - `crafting_quality_pct` has **no mechanic to attach to** — camp crafting
+        pulls from a fixed `CRAFT_TABLE` with no quality concept. Building one
+        is a feature, not a wiring job.
+      - `crafting_yield_pct` is owned by **Alchemy** while camp crafting reads
+        **Smithing**. Needs a decision about which skill crafts what before it
+        can mean anything.
 - [ ] **Phase 3 — social, exploration, progression** (~8 keys):
       `charm_effectiveness_pct`, `social_roll_pct`, `party_skill_check_bonus`,
       `morale_pct`, `party_travel_speed_pct`, `party_supply_duration_pct`,

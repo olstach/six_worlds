@@ -17,7 +17,8 @@ signal barter_completed(items_traded: Array, gold_paid: int, item_received: Stri
 
 # Price modifiers
 const SELL_PRICE_RATIO: float = 0.5  # Sell items for 50% of value
-const TRADE_SKILL_DISCOUNT: float = 0.05  # 5% discount per Trade skill level
+# Trade's price effect lives in the per-level table now (party_buy_discount_pct
+# and party_sell_markup_pct), not in a constant here — see _get_trade_discount().
 const CHARM_DISCOUNT_PER_POINT: float = 0.02  # 2% discount per Charm point above 10
 const CHARM_BASELINE: int = 10  # Charm value considered "neutral"
 
@@ -116,8 +117,10 @@ func get_sell_price(item_id: String) -> int:
 		return 0
 
 	var base_price = item.get("value", 10)
-	# For selling, discounts become bonuses (capped at 25% bonus)
-	var bonus = min(_get_total_discount() * 0.5, 0.25)
+	# Selling is its own skill payout rather than half of the buying one, so a
+	# build can be good at one and not the other.
+	var bonus: float = (PartyBonuses.best("party_sell_markup_pct") / 100.0) \
+		if PartyBonuses else 0.0
 	# Shop modifier inverted for selling (high markup shops pay less)
 	var shop_modifier = _get_shop_price_modifier()
 	var sell_modifier = 2.0 - shop_modifier if shop_modifier > 0 else 1.0
@@ -164,16 +167,19 @@ func get_skill_training_cost(current_level: int) -> int:
 
 
 ## Get best Trade skill level from party
+## Trade and Persuasion both move prices, and both are party-wide: the best
+## negotiator in the group does the talking.
+##
+## This used to be a hand-rolled best-in-party loop over `trade` multiplied by a
+## linear 5%-per-level constant, which disagreed with the per-level table —
+## Trade 5 gave 25% where the table says 35%. PartyBonuses now resolves it from
+## the table, so the number lives in data where it can be tuned, and the
+## best-member rule is the same one every other party bonus uses.
 func _get_trade_discount() -> float:
-	var best_trade = 0
-
-	if CharacterSystem:
-		for character in CharacterSystem.get_party():
-			var trade_level = character.get("skills", {}).get("trade", 0)
-			if trade_level > best_trade:
-				best_trade = trade_level
-
-	return best_trade * TRADE_SKILL_DISCOUNT
+	if not PartyBonuses:
+		return 0.0
+	return (PartyBonuses.best("party_buy_discount_pct")
+		+ PartyBonuses.best("party_trading_price_pct")) / 100.0
 
 
 ## Get Charm-based price modifier from party (best Charm in party)

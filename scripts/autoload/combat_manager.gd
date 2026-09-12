@@ -5180,13 +5180,18 @@ func get_bomb_aoe_radius(item_id: String) -> int:
 
 ## Get Alchemy skill consumable_power bonus percentage
 ## Matches perks.json: 10/20/35/50/75 per skill level
+## Alchemy's effect on a consumable, as a percentage.
+##
+## This was a six-entry table indexed by skill level, written when skills capped
+## at 5. Skills have gone to 10 since, and the out-of-range branch returned 0.0 —
+## so Alchemy 6 through 10 gave no bonus at all while Alchemy 5 gave 75%, and
+## levelling the skill past 5 made your potions worse. It reads
+## consumable_power_pct from the per-level table now, which covers every level
+## and can be tuned in data.
 func _get_alchemy_bonus(user: Node) -> float:
-	var skills = user.character_data.get("skills", {})
-	var alchemy_level = skills.get("alchemy", 0)
-	var bonus_table = [0.0, 10.0, 20.0, 35.0, 50.0, 75.0]
-	if alchemy_level >= 0 and alchemy_level < bonus_table.size():
-		return bonus_table[alchemy_level]
-	return 0.0
+	if not "character_data" in user:
+		return 0.0
+	return float(user.character_data.get("derived", {}).get("consumable_power_pct", 0.0))
 
 
 ## Apply a charm: stores a buff on the unit that reduces mana cost of the next matching spell

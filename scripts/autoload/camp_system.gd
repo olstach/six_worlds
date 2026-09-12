@@ -535,8 +535,22 @@ func _exec_brew_combat(performer: Dictionary) -> Dictionary:
 	}
 
 
+## Scrap a deep repair costs for this character. Smithing makes it cheaper, and
+## never free — a repair that costs nothing removes the decision.
+func repair_scrap_cost(performer: Dictionary) -> int:
+	const BASE_SCRAP: int = 3
+	var efficiency: float = performer.get("derived", {}).get("repair_efficiency_pct", 0.0)
+	return maxi(1, int(round(BASE_SCRAP * (1.0 - minf(efficiency, 75.0) / 100.0))))
+
+
 func _exec_deep_repair(party: Array) -> Dictionary:
-	if not GameState.consume_supply("scrap", 3):
+	var performer: Dictionary = party[0] if not party.is_empty() else {}
+	# The best smith in the party does the work.
+	for member in party:
+		if member.get("derived", {}).get("repair_efficiency_pct", 0.0) \
+				> performer.get("derived", {}).get("repair_efficiency_pct", 0.0):
+			performer = member
+	if not GameState.consume_supply("scrap", repair_scrap_cost(performer)):
 		return {"message": "Not enough scrap for deep repair.", "ok": false}
 	var armor_slots: Array[String] = ["head", "chest", "hand_l", "hand_r", "legs", "feet"]
 	for char in party:

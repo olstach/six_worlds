@@ -1207,7 +1207,8 @@ func update_derived_stats(character: Dictionary) -> void:
 	for accumulated in ["damage_reduction_pct", "mana_cost_reduction",
 			"mental_resistance_pct", "healing_pct", "damage_pct",
 			"magic_resistance_pct", "movement_pct", "summon_hp_pct",
-			"xp_gain_pct", "loot_chance_pct", "spellpower_fire"]:
+			"xp_gain_pct", "loot_chance_pct", "spellpower_fire",
+			"consumable_power_pct", "repair_efficiency_pct"]:
 		derived[accumulated] = 0.0
 
 	# Apply base skill bonuses from PerkSystem (data-driven per_level tables)
@@ -1255,6 +1256,10 @@ func update_derived_stats(character: Dictionary) -> void:
 				+ float(bonus.get("movement_pct", 0.0))
 			derived["summon_hp_pct"] = derived.get("summon_hp_pct", 0.0) \
 				+ float(bonus.get("summon_hp_pct", 0.0))
+			derived["consumable_power_pct"] = derived.get("consumable_power_pct", 0.0) \
+				+ float(bonus.get("consumable_power_pct", 0.0))
+			derived["repair_efficiency_pct"] = derived.get("repair_efficiency_pct", 0.0) \
+				+ float(bonus.get("repair_efficiency_pct", 0.0))
 
 	# Apply penalties for negative skill levels (quirks/debuffs pushing skills below 0).
 	for skill_id in NEGATIVE_SKILL_PENALTIES:
