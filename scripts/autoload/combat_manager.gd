@@ -3500,7 +3500,7 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 	if not save_statuses.is_empty():
 		var save_attr = spell.get("save_type", "constitution").to_lower()
 		var save_duration: int = _calculate_status_duration(caster, spell, bonus)
-		if not _perform_save_roll(target, save_attr):  # false = failed save = effect applies
+		if not _spell_save(caster, target, spell, save_attr).success:  # failed save = effect applies
 			for status_name in save_statuses:
 				_apply_status_effect(target, status_name, save_duration, 0, caster)
 				result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
@@ -3511,7 +3511,7 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 	if not random_statuses.is_empty():
 		var rand_save_attr = spell.get("save_type", "finesse").to_lower()
 		var rand_duration: int = _calculate_status_duration(caster, spell, bonus)
-		if not _perform_save_roll(target, rand_save_attr):
+		if not _spell_save(caster, target, spell, rand_save_attr).success:
 			var chosen_status = random_statuses[randi() % random_statuses.size()]
 			_apply_status_effect(target, chosen_status, rand_duration, 0, caster)
 			result.effects_applied.append({"type": "status", "status": chosen_status, "applied": true})
@@ -6187,24 +6187,34 @@ func get_skill_targeting(combat_data: Dictionary) -> String:
 #  dispel_and_invert, aggro_aura, share_buffs, double_buffs, restore_armor)
 # ============================================
 
-## Attribute-based saving throw. Returns true if the unit SAVES (resists the effect).
-## save_type is an attribute name ("strength", "focus", "finesse", etc.)
-func _perform_save_roll(unit: Node, save_type: String) -> bool:
-	var attrs = unit.character_data.get("attributes", {}) if "character_data" in unit else {}
-	var stat_val = attrs.get(save_type, 10)
-	# Each point above 10 adds 2% to the save chance; base 40%
-	var save_chance = clampf(40.0 + (stat_val - 10) * 2.0, 10.0, 90.0)
-	# save_bonus modifiers (Booster Shot's "+25% resistance to the next status")
-	# were being written and never read — this is the reader.
-	if unit.has_method("_get_stat_modifier_bonus"):
-		save_chance = clampf(save_chance + unit._get_stat_modifier_bonus("save_bonus"), 10.0, 95.0)
+## Roll a save against a spell. The caster's Focus sets the DC unless the spell
+## names another attribute; `save_tier` and `save_dc_modifier` let one spell be
+## harder to shrug off than another.
+##
+## See SaveSystem for the model. The percentage-based roll this replaced took no
+## input at all from the caster, so a Constitution-12 target resisted every
+## effect in the game at exactly 44% whoever cast it.
+func _spell_save(caster: Node, target: Node, spell: Dictionary,
+		save_type: String) -> Dictionary:
+	var dc: int = SaveSystem.dc_for(
+		caster,
+		String(spell.get("dc_stat", "focus")).to_lower(),
+		String(spell.get("save_tier", "normal")),
+		int(spell.get("save_dc_modifier", 0)))
+	return SaveSystem.roll(target, save_type, dc)
 
-	# Mental resistance from space affinity and passive perks. Focus saves are
-	# the mental ones; this is what PerkSystem has been computing all along.
-	if save_type == "focus" and "character_data" in unit:
-		var mental: float = unit.character_data.get("derived", {}).get("mental_resistance_pct", 0.0)
-		save_chance = clampf(save_chance + mental, 10.0, 95.0)
-	return randf() * 100.0 <= save_chance
+
+## Roll a save against an active skill, reading the same fields out of its
+## combat_data. Weapon skills default their DC to Strength; a skill that is
+## really a mental effect says `"dc_stat": "focus"`.
+func _skill_save(user: Node, target: Node, combat_data: Dictionary,
+		save_type: String) -> Dictionary:
+	var dc: int = SaveSystem.dc_for(
+		user,
+		String(combat_data.get("dc_stat", "strength")).to_lower(),
+		String(combat_data.get("save_tier", "normal")),
+		int(combat_data.get("save_dc_modifier", 0)))
+	return SaveSystem.roll(target, save_type, dc)
 
 
 ## Bonus movement (spring_step, quick_escape): add movement tiles for rest of this turn.
@@ -6318,12 +6328,12 @@ func _resolve_debuff_enemies_aoe(user: Node, combat_data: Dictionary, _target_po
 		if requires_demoralized:
 			var is_demoralised = enemy.has_status("Demoralized") or enemy.has_status("Feared") or enemy.has_status("Gloomy")
 			if not is_demoralised:
-				if not alt_status.is_empty() and not _perform_save_roll(enemy, save_type):
+				if not alt_status.is_empty() and not _skill_save(user, enemy, combat_data, save_type).success:
 					_apply_status_effect(enemy, alt_status.get("status", "Confused"), alt_status.get("duration", 2), 0, user)
 					effects.append({"type": "status", "target": enemy, "status": alt_status.get("status", "")})
 				continue
 
-		if _perform_save_roll(enemy, save_type):
+		if _skill_save(user, enemy, combat_data, save_type).success:
 			continue  # Resisted
 
 		for se in statuses_to_apply:
@@ -6614,7 +6624,7 @@ func _resolve_aoe_damage_and_status(user: Node, combat_data: Dictionary, target_
 		effects.append({"type": "damage", "target": enemy, "damage": actual_dmg})
 
 		# Status on failed save
-		if not _perform_save_roll(enemy, save_type) and enemy.is_alive():
+		if not _skill_save(user, enemy, combat_data, save_type).success and enemy.is_alive():
 			for se in statuses:
 				_apply_status_effect(enemy, se.get("status", ""), se.get("duration", 2), 0, user)
 				effects.append({"type": "status", "target": enemy, "status": se.get("status", "")})
@@ -6646,7 +6656,7 @@ func _resolve_buff_allies_debuff_enemies(user: Node, combat_data: Dictionary) ->
 	for enemy in get_team_units(1 - (user.team if "team" in user else 0)):
 		if not enemy.is_alive():
 			continue
-		if _perform_save_roll(enemy, enemy_save_type):
+		if _skill_save(user, enemy, combat_data, enemy_save_type).success:
 			continue
 		for debuff in enemy_debuffs:
 			var stat = debuff.get("stat", "")

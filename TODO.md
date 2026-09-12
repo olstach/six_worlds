@@ -68,11 +68,8 @@ Then, depending on appetite:
       `docs/superpowers/specs/2026-09-12-combat-systems-standardization-design.md`.
       Both are additive: nothing behaves differently until a perk or spell opts
       in.
-- [ ] **One saving-throw mechanic** — the remaining part of that spec:
-      `d20 + defender attribute` vs `10 + attacker attribute + tier`. Held back
-      deliberately because it is the only part that shifts balance — every CC
-      effect in the game changes probability, and it wants a tuning pass in play
-      afterwards. The design is approved; the implementation is not started.
+- [x] **One saving-throw mechanic** — built 2026-09-12. That spec is now fully
+      implemented.
 
 ---
 
@@ -260,6 +257,16 @@ Human, asura and god need: map config, archetypes, encounters, event file,
 companions, backgrounds, shops. Human-realm zone design is sketched in Part II.
 
 ## 6. Balance passes waiting on play
+
+- [ ] **Saving throws, after the 2026-09-12 rework.** Every CC effect in combat
+      changed probability. A Constitution-12 target used to resist *everything*
+      at a flat 44%; now it is 55% against an equal attacker, 15% against a
+      Focus-20 caster, and 85% if it is Constitution-18. That spread is the
+      point — but the tiers (easy -4, normal 0, hard +4, brutal +8) and which
+      effect sits in which tier are first guesses. Nothing has been played.
+      Watch for: hard CC landing too reliably on low-Constitution characters,
+      and high-attribute characters becoming immune to anything at `easy`.
+
 
 All first-pass numbers. Nothing here is a bug; they need a playthrough.
 
@@ -709,8 +716,8 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
 
 ## 11. Systems the perk text assumes and the game does not have
 
-**Two of the three are now built** (2026-09-12): forced movement and AoE damage
-falloff. Saving throws remain — see "Approved designs not yet built" above.
+**All three are built** (2026-09-12): forced movement, AoE damage falloff, and
+one saving-throw mechanic. See Part IV for what changed.
 
 
 Found while wiring the actives. Each is worth building as a system rather than

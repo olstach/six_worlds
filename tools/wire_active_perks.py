@@ -77,6 +77,24 @@ VALID_TARGETING = _gdscript_string_array("TARGETING")
 # Shapes AoEResolver.get_tiles() knows. A skill may declare a canonical `aoe`
 # block instead of the flat `aoe_radius`; unknown shapes fall back to a circle,
 # silently turning a sweep into a burst, so they are rejected here.
+# Attributes and tiers a save may name. Read from SaveSystem rather than
+# restated, same rule as the stat vocabularies.
+SAVE_GD = ROOT / "scripts" / "combat" / "save_system.gd"
+
+
+def _save_system_names(const_name, pattern):
+    text = SAVE_GD.read_text(encoding="utf-8")
+    match = re.search(pattern % const_name, text, re.S)
+    assert match, f"{const_name} not found in {SAVE_GD.name}"
+    found = set(re.findall(r'"([^"]+)"', match.group(1)))
+    assert found, f"{const_name} parsed empty"
+    return found
+
+
+SAVE_ATTRIBUTES = _save_system_names(
+    "ATTRIBUTES", r"const %s: Array\[String\] = \[(.*?)\n\]")
+SAVE_TIERS = _save_system_names("TIERS", r"const %s: Dictionary = \{(.*?)\n\}")
+
 VALID_AOE_SHAPES = {
     "circle", "nova", "around_caster", "line", "arc", "cone", "cone_forward",
     "cross", "band", "vertical_line", "field_of_view",
@@ -357,12 +375,12 @@ COMBAT_DATA = {
         # alternate_status left empty so non-demoralised enemies are skipped.
         "effect": "debuff_enemies", "targeting": "self",
         "once_per_combat": True, "aoe_radius": 6, "save_type": "focus",
-        "requires_demoralized": True,
+        "dc_stat": "charm", "requires_demoralized": True,
         "statuses": [{"status": "Confused", "duration": 2}],
     },
     "the_performance_of_a_lifetime": {
         "effect": "buff_allies_debuff_enemies", "targeting": "self",
-        "once_per_combat": True, "enemy_save_type": "focus",
+        "once_per_combat": True, "enemy_save_type": "focus", "dc_stat": "charm",
         "ally_buffs": [{"stat": "damage", "value": 25, "duration": 2}],
         "enemy_debuffs": [{"stat": "accuracy", "value": -25, "duration": 2}],
     },
@@ -374,7 +392,7 @@ COMBAT_DATA = {
     },
     "crowd_influence": {
         "effect": "buff_allies_debuff_enemies", "targeting": "self",
-        "once_per_combat": True, "enemy_save_type": "focus",
+        "once_per_combat": True, "enemy_save_type": "focus", "dc_stat": "charm",
         "ally_buffs": [
             {"stat": "initiative", "value": 3, "duration": 3},
             {"stat": "armor", "value": 10, "duration": 3},
@@ -386,13 +404,14 @@ COMBAT_DATA = {
     },
     "intimidating_stance": {
         "effect": "debuff_enemies", "targeting": "self",
-        "aoe_radius": 2, "save_type": "focus",
+        "aoe_radius": 2, "save_type": "focus", "dc_stat": "charm",
         "statuses": [{"status": "Stunned", "duration": 1}],
     },
     "terms_of_engagement": {
         # "withdraw from the fight" maps onto Pacified (disengaged, will not attack).
         "effect": "debuff_enemies", "targeting": "self",
         "once_per_combat": True, "aoe_radius": 10, "save_type": "charm",
+        "dc_stat": "charm",
         "statuses": [{"status": "Pacified", "duration": 3}],
     },
     "pacify_the_confused": {
@@ -515,6 +534,7 @@ COMBAT_DATA = {
         "effect": "aoe_damage_and_status", "targeting": "aoe_point",
         "once_per_combat": True, "range": 5, "aoe_radius": 3,
         "damage_pct": 75, "damage_element": "water", "save_type": "focus",
+        "dc_stat": "focus",
         "statuses": [{"status": "Silenced", "duration": 2}],
     },
     "the_river_has_no_shape": {
@@ -620,6 +640,13 @@ def validate(data, status_names):
         for entry in (cd.get("self_buff"), cd.get("target_debuff")):
             if entry and entry.get("stat") not in LIVE_STATS:
                 errors.append(f"{pid}: stat '{entry.get('stat')}' is never read back")
+        if "dc_stat" in cd and cd["dc_stat"] not in SAVE_ATTRIBUTES:
+            errors.append(f"{pid}: dc_stat '{cd['dc_stat']}' is not an attribute")
+        for key in ("save_type", "enemy_save_type"):
+            if key in cd and cd[key] not in SAVE_ATTRIBUTES:
+                errors.append(f"{pid}: {key} '{cd[key]}' is not an attribute")
+        if "save_tier" in cd and cd["save_tier"] not in SAVE_TIERS:
+            errors.append(f"{pid}: unknown save_tier '{cd['save_tier']}'")
         push = cd.get("push", {})
         if push:
             if not isinstance(push.get("tiles"), int) or push.get("tiles") == 0:

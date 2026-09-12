@@ -90,7 +90,9 @@ stat or an area shape:
 - `scripts/combat/combat_stats.gd` — the one list of stat and targeting names,
   each annotated with what consumes it.
 - `scripts/autoload/aoe_resolver.gd` — every AoE shape, with a recipe for adding
-  one.
+  one, plus opt-in per-ring damage falloff.
+- `scripts/combat/save_system.gd` — the one saving-throw mechanic. `d20 +
+  defender attribute` vs `10 + attacker attribute + tier`.
 
 ---
 

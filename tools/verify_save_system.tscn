@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tools/verify_save_system.gd" id="1_v"]
+
+[node name="VerifySaveSystem" type="Node"]
+script = ExtResource("1_v")

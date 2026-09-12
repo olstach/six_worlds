@@ -3200,6 +3200,7 @@
         "targeting": "self",
         "aoe_radius": 2,
         "save_type": "focus",
+        "dc_stat": "charm",
         "statuses": [
           {
             "status": "Stunned",
@@ -3221,6 +3222,7 @@
         "targeting": "self",
         "once_per_combat": true,
         "enemy_save_type": "focus",
+        "dc_stat": "charm",
         "ally_buffs": [
           {
             "stat": "initiative",
@@ -5658,6 +5660,7 @@
         "once_per_combat": true,
         "aoe_radius": 6,
         "save_type": "focus",
+        "dc_stat": "charm",
         "requires_demoralized": true,
         "statuses": [
           {
@@ -6064,6 +6067,7 @@
         "damage_pct": 75,
         "damage_element": "water",
         "save_type": "focus",
+        "dc_stat": "focus",
         "statuses": [
           {
             "status": "Silenced",
@@ -8271,6 +8275,7 @@
         "targeting": "self",
         "once_per_combat": true,
         "enemy_save_type": "focus",
+        "dc_stat": "charm",
         "ally_buffs": [
           {
             "stat": "damage",
@@ -8403,6 +8408,7 @@
         "once_per_combat": true,
         "aoe_radius": 10,
         "save_type": "charm",
+        "dc_stat": "charm",
         "statuses": [
           {
             "status": "Pacified",

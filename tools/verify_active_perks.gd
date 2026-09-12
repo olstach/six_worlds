@@ -163,7 +163,8 @@ func _check_costs(entry: Dictionary) -> void:
 func _check_modifiable_stats_are_read() -> void:
 	var sources := ""
 	for path in ["res://scripts/combat/combat_unit.gd",
-			"res://scripts/autoload/combat_manager.gd"]:
+			"res://scripts/autoload/combat_manager.gd",
+			"res://scripts/combat/save_system.gd"]:
 		var f := FileAccess.open(path, FileAccess.READ)
 		if f == null:
 			_fail("cannot read %s to check stat consumers" % path)
