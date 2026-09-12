@@ -344,68 +344,68 @@
     "persuasion": {
       "stats": [
         "charm_effectiveness_pct",
-        "trading_price_pct"
+        "party_trading_price_pct"
       ],
       "per_level": {
         "1": {
           "charm_effectiveness_pct": 5.0,
-          "trading_price_pct": 5.0
+          "party_trading_price_pct": 1.5
         },
         "2": {
           "charm_effectiveness_pct": 15.0,
-          "trading_price_pct": 10.0
+          "party_trading_price_pct": 3.0
         },
         "3": {
           "charm_effectiveness_pct": 30.0,
-          "trading_price_pct": 15.0
+          "party_trading_price_pct": 4.5
         },
         "4": {
           "charm_effectiveness_pct": 50.0,
-          "trading_price_pct": 20.0
+          "party_trading_price_pct": 6.0
         },
         "5": {
           "charm_effectiveness_pct": 75.0,
-          "trading_price_pct": 25.0
+          "party_trading_price_pct": 7.5
         },
         "6": {
           "charm_effectiveness_pct": 90.0,
-          "trading_price_pct": 30.0
+          "party_trading_price_pct": 9.0
         },
         "7": {
           "charm_effectiveness_pct": 100.0,
-          "trading_price_pct": 35.0
+          "party_trading_price_pct": 10.5
         },
         "8": {
           "charm_effectiveness_pct": 110.0,
-          "trading_price_pct": 40.0
+          "party_trading_price_pct": 12.0
         },
         "9": {
           "charm_effectiveness_pct": 120.0,
-          "trading_price_pct": 45.0
+          "party_trading_price_pct": 13.5
         },
         "10": {
           "charm_effectiveness_pct": 130.0,
-          "trading_price_pct": 50.0
+          "party_trading_price_pct": 15.0
         },
         "11": {
           "charm_effectiveness_pct": 130.0,
-          "trading_price_pct": 50.0
+          "party_trading_price_pct": 15.0
         },
         "12": {
           "charm_effectiveness_pct": 130.0,
-          "trading_price_pct": 50.0
+          "party_trading_price_pct": 15.0
         },
         "13": {
           "charm_effectiveness_pct": 130.0,
-          "trading_price_pct": 50.0
+          "party_trading_price_pct": 15.0
         },
         "14": {
           "charm_effectiveness_pct": 130.0,
-          "trading_price_pct": 50.0
+          "party_trading_price_pct": 15.0
         },
         "15": {
           "charm_effectiveness_pct": 130.0,
-          "trading_price_pct": 50.0
+          "party_trading_price_pct": 15.0
         }
       }
     },
@@ -1792,63 +1792,63 @@
       ],
       "per_level": {
         "1": {
-          "consumable_power_pct": 10.0,
+          "consumable_power_pct": 3.8,
           "crafting_yield_pct": 10.0
         },
         "2": {
-          "consumable_power_pct": 20.0,
+          "consumable_power_pct": 7.7,
           "crafting_yield_pct": 15.0
         },
         "3": {
-          "consumable_power_pct": 35.0,
+          "consumable_power_pct": 13.5,
           "crafting_yield_pct": 25.0
         },
         "4": {
-          "consumable_power_pct": 50.0,
+          "consumable_power_pct": 19.2,
           "crafting_yield_pct": 35.0
         },
         "5": {
-          "consumable_power_pct": 75.0,
+          "consumable_power_pct": 28.8,
           "crafting_yield_pct": 50.0
         },
         "6": {
-          "consumable_power_pct": 90.0,
+          "consumable_power_pct": 34.6,
           "crafting_yield_pct": 55.0
         },
         "7": {
-          "consumable_power_pct": 100.0,
+          "consumable_power_pct": 38.5,
           "crafting_yield_pct": 60.0
         },
         "8": {
-          "consumable_power_pct": 110.0,
+          "consumable_power_pct": 42.3,
           "crafting_yield_pct": 65.0
         },
         "9": {
-          "consumable_power_pct": 120.0,
+          "consumable_power_pct": 46.2,
           "crafting_yield_pct": 70.0
         },
         "10": {
-          "consumable_power_pct": 130.0,
+          "consumable_power_pct": 50.0,
           "crafting_yield_pct": 75.0
         },
         "11": {
-          "consumable_power_pct": 130.0,
+          "consumable_power_pct": 50.0,
           "crafting_yield_pct": 75.0
         },
         "12": {
-          "consumable_power_pct": 130.0,
+          "consumable_power_pct": 50.0,
           "crafting_yield_pct": 75.0
         },
         "13": {
-          "consumable_power_pct": 130.0,
+          "consumable_power_pct": 50.0,
           "crafting_yield_pct": 75.0
         },
         "14": {
-          "consumable_power_pct": 130.0,
+          "consumable_power_pct": 50.0,
           "crafting_yield_pct": 75.0
         },
         "15": {
-          "consumable_power_pct": 130.0,
+          "consumable_power_pct": 50.0,
           "crafting_yield_pct": 75.0
         }
       }
@@ -2263,69 +2263,69 @@
     },
     "trade": {
       "stats": [
-        "buy_discount_pct",
-        "sell_markup_pct"
+        "party_buy_discount_pct",
+        "party_sell_markup_pct"
       ],
       "per_level": {
         "1": {
-          "buy_discount_pct": 5.0,
-          "sell_markup_pct": 5.0
+          "party_buy_discount_pct": 2.9,
+          "party_sell_markup_pct": 1.8
         },
         "2": {
-          "buy_discount_pct": 10.0,
-          "sell_markup_pct": 10.0
+          "party_buy_discount_pct": 5.8,
+          "party_sell_markup_pct": 3.6
         },
         "3": {
-          "buy_discount_pct": 15.0,
-          "sell_markup_pct": 20.0
+          "party_buy_discount_pct": 8.8,
+          "party_sell_markup_pct": 7.1
         },
         "4": {
-          "buy_discount_pct": 25.0,
-          "sell_markup_pct": 30.0
+          "party_buy_discount_pct": 14.6,
+          "party_sell_markup_pct": 10.7
         },
         "5": {
-          "buy_discount_pct": 35.0,
-          "sell_markup_pct": 45.0
+          "party_buy_discount_pct": 20.4,
+          "party_sell_markup_pct": 16.1
         },
         "6": {
-          "buy_discount_pct": 40.0,
-          "sell_markup_pct": 50.0
+          "party_buy_discount_pct": 23.3,
+          "party_sell_markup_pct": 17.9
         },
         "7": {
-          "buy_discount_pct": 45.0,
-          "sell_markup_pct": 55.0
+          "party_buy_discount_pct": 26.2,
+          "party_sell_markup_pct": 19.6
         },
         "8": {
-          "buy_discount_pct": 50.0,
-          "sell_markup_pct": 60.0
+          "party_buy_discount_pct": 29.2,
+          "party_sell_markup_pct": 21.4
         },
         "9": {
-          "buy_discount_pct": 55.0,
-          "sell_markup_pct": 65.0
+          "party_buy_discount_pct": 32.1,
+          "party_sell_markup_pct": 23.2
         },
         "10": {
-          "buy_discount_pct": 60.0,
-          "sell_markup_pct": 70.0
+          "party_buy_discount_pct": 35.0,
+          "party_sell_markup_pct": 25.0
         },
         "11": {
-          "buy_discount_pct": 60.0,
-          "sell_markup_pct": 70.0
+          "party_buy_discount_pct": 35.0,
+          "party_sell_markup_pct": 25.0
         },
         "12": {
-          "buy_discount_pct": 60.0,
-          "sell_markup_pct": 70.0
+          "party_buy_discount_pct": 35.0,
+          "party_sell_markup_pct": 25.0
         },
         "13": {
-          "buy_discount_pct": 60.0,
-          "sell_markup_pct": 70.0
+          "party_buy_discount_pct": 35.0,
+          "party_sell_markup_pct": 25.0
         },
         "14": {
-          "buy_discount_pct": 60.0,
-          "sell_markup_pct": 70.0
+          "party_buy_discount_pct": 35.0,
+          "party_sell_markup_pct": 25.0
         },
         "15": {
-          "buy_discount_pct": 60.0,
-          "sell_markup_pct": 70.0
+          "party_buy_discount_pct": 35.0,
+          "party_sell_markup_pct": 25.0
         }
       }
     },
@@ -2337,63 +2337,63 @@
       "per_level": {
         "1": {
           "crafting_quality_pct": 10.0,
-          "repair_efficiency_pct": 10.0
+          "repair_efficiency_pct": 5.9
         },
         "2": {
           "crafting_quality_pct": 20.0,
-          "repair_efficiency_pct": 20.0
+          "repair_efficiency_pct": 11.8
         },
         "3": {
           "crafting_quality_pct": 35.0,
-          "repair_efficiency_pct": 30.0
+          "repair_efficiency_pct": 17.6
         },
         "4": {
           "crafting_quality_pct": 50.0,
-          "repair_efficiency_pct": 45.0
+          "repair_efficiency_pct": 26.5
         },
         "5": {
           "crafting_quality_pct": 75.0,
-          "repair_efficiency_pct": 60.0
+          "repair_efficiency_pct": 35.3
         },
         "6": {
           "crafting_quality_pct": 90.0,
-          "repair_efficiency_pct": 65.0
+          "repair_efficiency_pct": 38.2
         },
         "7": {
           "crafting_quality_pct": 100.0,
-          "repair_efficiency_pct": 70.0
+          "repair_efficiency_pct": 41.2
         },
         "8": {
           "crafting_quality_pct": 110.0,
-          "repair_efficiency_pct": 75.0
+          "repair_efficiency_pct": 44.1
         },
         "9": {
           "crafting_quality_pct": 120.0,
-          "repair_efficiency_pct": 80.0
+          "repair_efficiency_pct": 47.1
         },
         "10": {
           "crafting_quality_pct": 130.0,
-          "repair_efficiency_pct": 85.0
+          "repair_efficiency_pct": 50.0
         },
         "11": {
           "crafting_quality_pct": 130.0,
-          "repair_efficiency_pct": 85.0
+          "repair_efficiency_pct": 50.0
         },
         "12": {
           "crafting_quality_pct": 130.0,
-          "repair_efficiency_pct": 85.0
+          "repair_efficiency_pct": 50.0
         },
         "13": {
           "crafting_quality_pct": 130.0,
-          "repair_efficiency_pct": 85.0
+          "repair_efficiency_pct": 50.0
         },
         "14": {
           "crafting_quality_pct": 130.0,
-          "repair_efficiency_pct": 85.0
+          "repair_efficiency_pct": 50.0
         },
         "15": {
           "crafting_quality_pct": 130.0,
-          "repair_efficiency_pct": 85.0
+          "repair_efficiency_pct": 50.0
         }
       }
     }
