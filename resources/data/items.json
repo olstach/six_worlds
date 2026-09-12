@@ -4902,7 +4902,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 60,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -4911,7 +4911,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 6
+        "spellpower": 6,
+        "focus": 1
       },
       "skill_bonuses": {
         "black_magic": {
@@ -4933,7 +4934,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 210,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -4942,7 +4943,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 10
+        "spellpower": 10,
+        "focus": 2
       },
       "skill_bonuses": {
         "black_magic": {
@@ -4964,7 +4966,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 540,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -4973,7 +4975,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 15
+        "spellpower": 15,
+        "focus": 3
       },
       "skill_bonuses": {
         "black_magic": {
@@ -4995,7 +4998,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "rare",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 1080,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -5004,7 +5007,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 20
+        "spellpower": 20,
+        "focus": 4
       },
       "skill_bonuses": {
         "black_magic": {
@@ -5026,7 +5030,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 2700,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -5035,7 +5039,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 27
+        "spellpower": 27,
+        "focus": 5
       },
       "skill_bonuses": {
         "black_magic": {
@@ -6097,7 +6102,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 60,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -6106,7 +6111,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 15
+        "max_mana": 15,
+        "awareness": 1
       },
       "skill_bonuses": {
         "space_magic": {
@@ -6131,7 +6137,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 210,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -6140,7 +6146,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 26
+        "max_mana": 26,
+        "awareness": 2
       },
       "skill_bonuses": {
         "space_magic": {
@@ -6165,7 +6172,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 540,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -6174,7 +6181,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 40
+        "max_mana": 40,
+        "awareness": 3
       },
       "skill_bonuses": {
         "space_magic": {
@@ -6199,7 +6207,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 1080,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -6208,7 +6216,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 56
+        "max_mana": 56,
+        "awareness": 4
       },
       "skill_bonuses": {
         "space_magic": {
@@ -6233,7 +6242,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 2700,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -6242,7 +6251,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 75
+        "max_mana": 75,
+        "awareness": 5
       },
       "skill_bonuses": {
         "space_magic": {
@@ -7365,7 +7375,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "common",
-      "element": "space",
+      "element": "earth",
       "weight": 5,
       "value": 80,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -7380,6 +7390,9 @@
       "skill_bonuses": {
         "black_magic": {
           "plain_bone_khatvanga_mat": 1
+        },
+        "enchantment": {
+          "plain_bone_khatvanga": 1
         }
       },
       "abilities": [],
@@ -7398,7 +7411,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "common",
-      "element": "space",
+      "element": "earth",
       "weight": 5,
       "value": 280,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -7413,6 +7426,9 @@
       "skill_bonuses": {
         "black_magic": {
           "blessed_bone_khatvanga_mat": 2
+        },
+        "enchantment": {
+          "blessed_bone_khatvanga": 2
         }
       },
       "abilities": [],
@@ -7431,7 +7447,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "earth",
       "weight": 5,
       "value": 720,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -7447,6 +7463,9 @@
       "skill_bonuses": {
         "black_magic": {
           "empowered_bone_khatvanga_mat": 3
+        },
+        "enchantment": {
+          "empowered_bone_khatvanga": 3
         }
       },
       "abilities": [],
@@ -7465,7 +7484,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "rare",
-      "element": "space",
+      "element": "earth",
       "weight": 5,
       "value": 1440,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -7481,6 +7500,9 @@
       "skill_bonuses": {
         "black_magic": {
           "perfected_bone_khatvanga_mat": 4
+        },
+        "enchantment": {
+          "perfected_bone_khatvanga": 4
         }
       },
       "abilities": [],
@@ -7499,7 +7521,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "legendary",
-      "element": "space",
+      "element": "earth",
       "weight": 5,
       "value": 3600,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -7515,6 +7537,9 @@
       "skill_bonuses": {
         "black_magic": {
           "legendary_bone_khatvanga_mat": 5
+        },
+        "enchantment": {
+          "legendary_bone_khatvanga": 5
         }
       },
       "abilities": [],
@@ -8613,7 +8638,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "air",
+      "element": "earth",
       "weight": 1,
       "value": 55,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -8625,11 +8650,11 @@
         "max_mana": 18
       },
       "skill_bonuses": {
-        "enchantment": {
-          "plain_bone_damaru": 1
-        },
         "black_magic": {
           "plain_bone_damaru_mat": 1
+        },
+        "summoning": {
+          "plain_bone_damaru": 1
         }
       },
       "abilities": [],
@@ -8649,7 +8674,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "air",
+      "element": "earth",
       "weight": 1,
       "value": 192,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -8661,11 +8686,11 @@
         "max_mana": 30
       },
       "skill_bonuses": {
-        "enchantment": {
-          "blessed_bone_damaru": 2
-        },
         "black_magic": {
           "blessed_bone_damaru_mat": 2
+        },
+        "summoning": {
+          "blessed_bone_damaru": 2
         }
       },
       "abilities": [],
@@ -8685,7 +8710,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "air",
+      "element": "earth",
       "weight": 1,
       "value": 495,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -8697,11 +8722,11 @@
         "max_mana": 45
       },
       "skill_bonuses": {
-        "enchantment": {
-          "empowered_bone_damaru": 3
-        },
         "black_magic": {
           "empowered_bone_damaru_mat": 3
+        },
+        "summoning": {
+          "empowered_bone_damaru": 3
         }
       },
       "abilities": [],
@@ -8721,7 +8746,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "air",
+      "element": "earth",
       "weight": 1,
       "value": 990,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -8733,11 +8758,11 @@
         "max_mana": 62
       },
       "skill_bonuses": {
-        "enchantment": {
-          "perfected_bone_damaru": 4
-        },
         "black_magic": {
           "perfected_bone_damaru_mat": 4
+        },
+        "summoning": {
+          "perfected_bone_damaru": 4
         }
       },
       "abilities": [],
@@ -8757,7 +8782,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "air",
+      "element": "earth",
       "weight": 1,
       "value": 2475,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -8769,11 +8794,11 @@
         "max_mana": 82
       },
       "skill_bonuses": {
-        "enchantment": {
-          "legendary_bone_damaru": 5
-        },
         "black_magic": {
           "legendary_bone_damaru_mat": 5
+        },
+        "summoning": {
+          "legendary_bone_damaru": 5
         }
       },
       "abilities": [],
@@ -8793,7 +8818,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "earth",
+      "element": "fire",
       "weight": 1,
       "value": 65,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -8805,11 +8830,11 @@
         "spellpower": 5
       },
       "skill_bonuses": {
-        "summoning": {
-          "plain_copper_kangling": 1
-        },
         "fire_magic": {
           "plain_copper_kangling_mat": 1
+        },
+        "ritual": {
+          "plain_copper_kangling": 1
         }
       },
       "abilities": [],
@@ -8828,7 +8853,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "earth",
+      "element": "fire",
       "weight": 1,
       "value": 227,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -8840,11 +8865,11 @@
         "spellpower": 9
       },
       "skill_bonuses": {
-        "summoning": {
-          "blessed_copper_kangling": 2
-        },
         "fire_magic": {
           "blessed_copper_kangling_mat": 2
+        },
+        "ritual": {
+          "blessed_copper_kangling": 2
         }
       },
       "abilities": [],
@@ -8863,7 +8888,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "earth",
+      "element": "fire",
       "weight": 1,
       "value": 585,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -8875,11 +8900,11 @@
         "spellpower": 14
       },
       "skill_bonuses": {
-        "summoning": {
-          "empowered_copper_kangling": 3
-        },
         "fire_magic": {
           "empowered_copper_kangling_mat": 3
+        },
+        "ritual": {
+          "empowered_copper_kangling": 3
         }
       },
       "abilities": [],
@@ -8898,7 +8923,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "earth",
+      "element": "fire",
       "weight": 1,
       "value": 1170,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -8910,11 +8935,11 @@
         "spellpower": 20
       },
       "skill_bonuses": {
-        "summoning": {
-          "perfected_copper_kangling": 4
-        },
         "fire_magic": {
           "perfected_copper_kangling_mat": 4
+        },
+        "ritual": {
+          "perfected_copper_kangling": 4
         }
       },
       "abilities": [],
@@ -8933,7 +8958,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "earth",
+      "element": "fire",
       "weight": 1,
       "value": 2925,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -8945,11 +8970,11 @@
         "spellpower": 28
       },
       "skill_bonuses": {
-        "summoning": {
-          "legendary_copper_kangling": 5
-        },
         "fire_magic": {
           "legendary_copper_kangling_mat": 5
+        },
+        "ritual": {
+          "legendary_copper_kangling": 5
         }
       },
       "abilities": [],
@@ -8968,7 +8993,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "earth",
+      "element": "water",
       "weight": 1,
       "value": 65,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -8980,11 +9005,11 @@
         "spellpower": 5
       },
       "skill_bonuses": {
-        "summoning": {
-          "plain_silver_kangling": 1
-        },
         "water_magic": {
           "plain_silver_kangling_mat": 1
+        },
+        "ritual": {
+          "plain_silver_kangling": 1
         }
       },
       "abilities": [],
@@ -9003,7 +9028,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "earth",
+      "element": "water",
       "weight": 1,
       "value": 227,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -9015,11 +9040,11 @@
         "spellpower": 9
       },
       "skill_bonuses": {
-        "summoning": {
-          "blessed_silver_kangling": 2
-        },
         "water_magic": {
           "blessed_silver_kangling_mat": 2
+        },
+        "ritual": {
+          "blessed_silver_kangling": 2
         }
       },
       "abilities": [],
@@ -9038,7 +9063,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "earth",
+      "element": "water",
       "weight": 1,
       "value": 585,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -9050,11 +9075,11 @@
         "spellpower": 14
       },
       "skill_bonuses": {
-        "summoning": {
-          "empowered_silver_kangling": 3
-        },
         "water_magic": {
           "empowered_silver_kangling_mat": 3
+        },
+        "ritual": {
+          "empowered_silver_kangling": 3
         }
       },
       "abilities": [],
@@ -9073,7 +9098,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "earth",
+      "element": "water",
       "weight": 1,
       "value": 1170,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -9085,11 +9110,11 @@
         "spellpower": 20
       },
       "skill_bonuses": {
-        "summoning": {
-          "perfected_silver_kangling": 4
-        },
         "water_magic": {
           "perfected_silver_kangling_mat": 4
+        },
+        "ritual": {
+          "perfected_silver_kangling": 4
         }
       },
       "abilities": [],
@@ -9108,7 +9133,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "earth",
+      "element": "water",
       "weight": 1,
       "value": 2925,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -9120,11 +9145,11 @@
         "spellpower": 28
       },
       "skill_bonuses": {
-        "summoning": {
-          "legendary_silver_kangling": 5
-        },
         "water_magic": {
           "legendary_silver_kangling_mat": 5
+        },
+        "ritual": {
+          "legendary_silver_kangling": 5
         }
       },
       "abilities": [],
@@ -9155,11 +9180,11 @@
         "spellpower": 5
       },
       "skill_bonuses": {
-        "summoning": {
-          "plain_gold_kangling": 1
-        },
         "earth_magic": {
           "plain_gold_kangling_mat": 1
+        },
+        "ritual": {
+          "plain_gold_kangling": 1
         }
       },
       "abilities": [],
@@ -9190,11 +9215,11 @@
         "spellpower": 9
       },
       "skill_bonuses": {
-        "summoning": {
-          "blessed_gold_kangling": 2
-        },
         "earth_magic": {
           "blessed_gold_kangling_mat": 2
+        },
+        "ritual": {
+          "blessed_gold_kangling": 2
         }
       },
       "abilities": [],
@@ -9225,11 +9250,11 @@
         "spellpower": 14
       },
       "skill_bonuses": {
-        "summoning": {
-          "empowered_gold_kangling": 3
-        },
         "earth_magic": {
           "empowered_gold_kangling_mat": 3
+        },
+        "ritual": {
+          "empowered_gold_kangling": 3
         }
       },
       "abilities": [],
@@ -9260,11 +9285,11 @@
         "spellpower": 20
       },
       "skill_bonuses": {
-        "summoning": {
-          "perfected_gold_kangling": 4
-        },
         "earth_magic": {
           "perfected_gold_kangling_mat": 4
+        },
+        "ritual": {
+          "perfected_gold_kangling": 4
         }
       },
       "abilities": [],
@@ -9295,11 +9320,11 @@
         "spellpower": 28
       },
       "skill_bonuses": {
-        "summoning": {
-          "legendary_gold_kangling": 5
-        },
         "earth_magic": {
           "legendary_gold_kangling_mat": 5
+        },
+        "ritual": {
+          "legendary_gold_kangling": 5
         }
       },
       "abilities": [],
@@ -9318,7 +9343,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "earth",
+      "element": "air",
       "weight": 1,
       "value": 65,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -9330,11 +9355,11 @@
         "spellpower": 5
       },
       "skill_bonuses": {
-        "summoning": {
-          "plain_iron_kangling": 1
-        },
         "air_magic": {
           "plain_iron_kangling_mat": 1
+        },
+        "ritual": {
+          "plain_iron_kangling": 1
         }
       },
       "abilities": [],
@@ -9353,7 +9378,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "earth",
+      "element": "air",
       "weight": 1,
       "value": 227,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -9365,11 +9390,11 @@
         "spellpower": 9
       },
       "skill_bonuses": {
-        "summoning": {
-          "blessed_iron_kangling": 2
-        },
         "air_magic": {
           "blessed_iron_kangling_mat": 2
+        },
+        "ritual": {
+          "blessed_iron_kangling": 2
         }
       },
       "abilities": [],
@@ -9388,7 +9413,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "earth",
+      "element": "air",
       "weight": 1,
       "value": 585,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -9400,11 +9425,11 @@
         "spellpower": 14
       },
       "skill_bonuses": {
-        "summoning": {
-          "empowered_iron_kangling": 3
-        },
         "air_magic": {
           "empowered_iron_kangling_mat": 3
+        },
+        "ritual": {
+          "empowered_iron_kangling": 3
         }
       },
       "abilities": [],
@@ -9423,7 +9448,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "earth",
+      "element": "air",
       "weight": 1,
       "value": 1170,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -9435,11 +9460,11 @@
         "spellpower": 20
       },
       "skill_bonuses": {
-        "summoning": {
-          "perfected_iron_kangling": 4
-        },
         "air_magic": {
           "perfected_iron_kangling_mat": 4
+        },
+        "ritual": {
+          "perfected_iron_kangling": 4
         }
       },
       "abilities": [],
@@ -9458,7 +9483,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "earth",
+      "element": "air",
       "weight": 1,
       "value": 2925,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -9470,11 +9495,11 @@
         "spellpower": 28
       },
       "skill_bonuses": {
-        "summoning": {
-          "legendary_iron_kangling": 5
-        },
         "air_magic": {
           "legendary_iron_kangling_mat": 5
+        },
+        "ritual": {
+          "legendary_iron_kangling": 5
         }
       },
       "abilities": [],
@@ -9493,7 +9518,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "earth",
+      "element": "space",
       "weight": 1,
       "value": 65,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Bronze is a compromise — not the ideal metal for space-work, but workable. Practitioners who cannot find sky-iron use it and find it adequate.",
@@ -9505,11 +9530,11 @@
         "spellpower": 5
       },
       "skill_bonuses": {
-        "summoning": {
-          "plain_bronze_kangling": 1
-        },
         "space_magic": {
           "plain_bronze_kangling_mat": 1
+        },
+        "ritual": {
+          "plain_bronze_kangling": 1
         }
       },
       "abilities": [],
@@ -9528,7 +9553,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "earth",
+      "element": "space",
       "weight": 1,
       "value": 227,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Bronze is a compromise — not the ideal metal for space-work, but workable. Practitioners who cannot find sky-iron use it and find it adequate.",
@@ -9540,11 +9565,11 @@
         "spellpower": 9
       },
       "skill_bonuses": {
-        "summoning": {
-          "blessed_bronze_kangling": 2
-        },
         "space_magic": {
           "blessed_bronze_kangling_mat": 2
+        },
+        "ritual": {
+          "blessed_bronze_kangling": 2
         }
       },
       "abilities": [],
@@ -9563,7 +9588,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "earth",
+      "element": "space",
       "weight": 1,
       "value": 585,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Bronze is a compromise — not the ideal metal for space-work, but workable. Practitioners who cannot find sky-iron use it and find it adequate.",
@@ -9575,11 +9600,11 @@
         "spellpower": 14
       },
       "skill_bonuses": {
-        "summoning": {
-          "empowered_bronze_kangling": 3
-        },
         "space_magic": {
           "empowered_bronze_kangling_mat": 3
+        },
+        "ritual": {
+          "empowered_bronze_kangling": 3
         }
       },
       "abilities": [],
@@ -9598,7 +9623,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "earth",
+      "element": "space",
       "weight": 1,
       "value": 1170,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Sky-iron fell from beyond the world. It carries the quality of space itself — distance, and the absence of obstacle.",
@@ -9610,11 +9635,11 @@
         "spellpower": 20
       },
       "skill_bonuses": {
-        "summoning": {
-          "perfected_sky_iron_kangling": 4
-        },
         "space_magic": {
           "perfected_sky_iron_kangling_mat": 4
+        },
+        "ritual": {
+          "perfected_sky_iron_kangling": 4
         }
       },
       "abilities": [],
@@ -9633,7 +9658,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "earth",
+      "element": "space",
       "weight": 1,
       "value": 2925,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. Sky-iron fell from beyond the world. It carries the quality of space itself — distance, and the absence of obstacle.",
@@ -9645,11 +9670,11 @@
         "spellpower": 28
       },
       "skill_bonuses": {
-        "summoning": {
-          "legendary_sky_iron_kangling": 5
-        },
         "space_magic": {
           "legendary_sky_iron_kangling_mat": 5
+        },
+        "ritual": {
+          "legendary_sky_iron_kangling": 5
         }
       },
       "abilities": [],
@@ -9668,7 +9693,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "earth",
+      "element": "water",
       "weight": 1,
       "value": 65,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -9680,11 +9705,11 @@
         "spellpower": 5
       },
       "skill_bonuses": {
-        "summoning": {
-          "plain_conch_kangling": 1
-        },
         "white_magic": {
           "plain_conch_kangling_mat": 1
+        },
+        "ritual": {
+          "plain_conch_kangling": 1
         }
       },
       "abilities": [],
@@ -9703,7 +9728,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "earth",
+      "element": "water",
       "weight": 1,
       "value": 227,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -9715,11 +9740,11 @@
         "spellpower": 9
       },
       "skill_bonuses": {
-        "summoning": {
-          "blessed_conch_kangling": 2
-        },
         "white_magic": {
           "blessed_conch_kangling_mat": 2
+        },
+        "ritual": {
+          "blessed_conch_kangling": 2
         }
       },
       "abilities": [],
@@ -9738,7 +9763,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "earth",
+      "element": "water",
       "weight": 1,
       "value": 585,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -9750,11 +9775,11 @@
         "spellpower": 14
       },
       "skill_bonuses": {
-        "summoning": {
-          "empowered_conch_kangling": 3
-        },
         "white_magic": {
           "empowered_conch_kangling_mat": 3
+        },
+        "ritual": {
+          "empowered_conch_kangling": 3
         }
       },
       "abilities": [],
@@ -9773,7 +9798,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "earth",
+      "element": "water",
       "weight": 1,
       "value": 1170,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -9785,11 +9810,11 @@
         "spellpower": 20
       },
       "skill_bonuses": {
-        "summoning": {
-          "perfected_conch_kangling": 4
-        },
         "white_magic": {
           "perfected_conch_kangling_mat": 4
+        },
+        "ritual": {
+          "perfected_conch_kangling": 4
         }
       },
       "abilities": [],
@@ -9808,7 +9833,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "earth",
+      "element": "water",
       "weight": 1,
       "value": 2925,
       "description": "A thigh-bone trumpet. The sound calls what should not be called. Used in Chöd to offer the self — spend 25% of max mana to stack raw spellpower. When mana is gone, the cost comes from HP. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -9820,11 +9845,11 @@
         "spellpower": 28
       },
       "skill_bonuses": {
-        "summoning": {
-          "legendary_conch_kangling": 5
-        },
         "white_magic": {
           "legendary_conch_kangling_mat": 5
+        },
+        "ritual": {
+          "legendary_conch_kangling": 5
         }
       },
       "abilities": [],
@@ -9855,11 +9880,11 @@
         "spellpower": 5
       },
       "skill_bonuses": {
-        "summoning": {
-          "plain_bone_kangling": 1
-        },
         "black_magic": {
           "plain_bone_kangling_mat": 1
+        },
+        "ritual": {
+          "plain_bone_kangling": 1
         }
       },
       "abilities": [],
@@ -9890,11 +9915,11 @@
         "spellpower": 9
       },
       "skill_bonuses": {
-        "summoning": {
-          "blessed_bone_kangling": 2
-        },
         "black_magic": {
           "blessed_bone_kangling_mat": 2
+        },
+        "ritual": {
+          "blessed_bone_kangling": 2
         }
       },
       "abilities": [],
@@ -9925,11 +9950,11 @@
         "spellpower": 14
       },
       "skill_bonuses": {
-        "summoning": {
-          "empowered_bone_kangling": 3
-        },
         "black_magic": {
           "empowered_bone_kangling_mat": 3
+        },
+        "ritual": {
+          "empowered_bone_kangling": 3
         }
       },
       "abilities": [],
@@ -9960,11 +9985,11 @@
         "spellpower": 20
       },
       "skill_bonuses": {
-        "summoning": {
-          "perfected_bone_kangling": 4
-        },
         "black_magic": {
           "perfected_bone_kangling_mat": 4
+        },
+        "ritual": {
+          "perfected_bone_kangling": 4
         }
       },
       "abilities": [],
@@ -9995,11 +10020,11 @@
         "spellpower": 28
       },
       "skill_bonuses": {
-        "summoning": {
-          "legendary_bone_kangling": 5
-        },
         "black_magic": {
           "legendary_bone_kangling_mat": 5
+        },
+        "ritual": {
+          "legendary_bone_kangling": 5
         }
       },
       "abilities": [],
@@ -11128,7 +11153,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "fire",
+      "element": "earth",
       "weight": 1,
       "value": 70,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -11165,7 +11190,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "fire",
+      "element": "earth",
       "weight": 1,
       "value": 245,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -11202,7 +11227,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "fire",
+      "element": "earth",
       "weight": 1,
       "value": 630,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -11239,7 +11264,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "rare",
-      "element": "fire",
+      "element": "earth",
       "weight": 1,
       "value": 1260,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",
@@ -11276,7 +11301,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "fire",
+      "element": "earth",
       "weight": 1,
       "value": 3150,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Bone is the wrathful material — it has already been through death. Black magic practices find their anchor here naturally.",

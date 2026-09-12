@@ -490,16 +490,6 @@ but may not be what the game wants.
       - Blocked on this: `crafting_quality_pct`, `crafting_yield_pct`,
         `loot_quality_pct`.
 
-- [ ] **The kangling collides with the damaru.** Both now grant Summoning.
-      The damaru is Summoning by design; the kangling already granted it and
-      was not in that list. The kangling is the chöd trumpet — an instrument of
-      severance and offering, cutting through self-grasping — so **Yoga** or
-      **Black magic** may suit it better. It already carries `chod_offering` as
-      a special mechanic and bone as its material, which codes for Black magic
-      on the metal axis, so Yoga is probably the cleaner answer. Recorded as
-      found rather than guessed; `ritual_implements.kangling._unresolved` in
-      equipment_tables.json says the same.
-
 - [ ] **Ritual implement coding is declared but not yet player-facing.** The
       tables now say copper serves fire and the phurba serves sorcery, and the
       verifier enforces it — but a tooltip still shows a Copper Phurba without
