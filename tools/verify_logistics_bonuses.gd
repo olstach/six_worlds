@@ -59,7 +59,7 @@ func _check_skill_check_bonus_reaches_event_rolls() -> void:
 	# a whole event, so assert the call site — the value being right is useless
 	# if nothing adds it in.
 	_assert_call_site("res://scripts/autoload/event_manager.gd",
-		"roll + best_value + get_party_roll_bonus()",
+		"roll + best_value + get_roll_bonus(roll_req)",
 		"the event roll does not add the party bonus")
 	_done()
 
