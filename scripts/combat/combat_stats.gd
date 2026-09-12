@@ -84,6 +84,8 @@ const DERIVED: Array[String] = [
 	"burning_damage_pct",      # CombatManager fire damage-over-time tick
 	"status_effect_chance_pct",# CombatManager.effective_status_chance()
 	"stun_chance_pct",         # CombatManager._process_on_hit_perks(), mace only
+	"party_social_roll_pct",   # EventManager.get_roll_bonus(), social checks
+	"party_max_companions",    # CharacterSystem.get_max_party_size()
 	# Out-of-combat, read by their own systems.
 	"xp_gain_pct",             # CompanionSystem
 	"loot_chance_pct",         # CombatManager loot roll

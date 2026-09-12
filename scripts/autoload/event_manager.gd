@@ -407,6 +407,53 @@ const DC_TIER_MODIFIERS: Dictionary = {
 ## Resolve a roll difficulty to an absolute DC.
 ## Accepts a tier string ("normal", "difficult", …) or a legacy integer DC.
 ## Tier: DC = best_party_stat + modifier, keeping difficulty constant regardless of power level.
+## What kind of check a roll is.
+##
+## Every roll in the shipped events already names a stat — a skill or an
+## attribute — so the stat implies the category and all 168 of them classify
+## with no data change. `category` on the roll overrides that when the stat does
+## not tell the story: an Awareness check that is really reading a room is a
+## social check, and only the author knows that.
+const ROLL_CATEGORIES: Dictionary = {
+	"social":     {"attributes": ["charm"],
+				   "skills": ["persuasion", "comedy", "performance", "guile"]},
+	"physical":   {"attributes": ["strength", "constitution", "finesse"],
+				   "skills": ["might", "grace", "thievery", "armor"]},
+	"perception": {"attributes": ["awareness"],
+				   "skills": ["learning", "logistics", "medicine"]},
+	"mental":     {"attributes": ["focus"],
+				   "skills": ["yoga", "ritual", "alchemy", "smithing", "trade"]},
+	"fortune":    {"attributes": ["luck"], "skills": []},
+}
+
+
+func get_roll_category(roll_req: Dictionary) -> String:
+	if roll_req.has("category"):
+		return String(roll_req["category"])
+	var skill: String = String(roll_req.get("skill", ""))
+	var attribute: String = String(roll_req.get("attribute", ""))
+	for category in ROLL_CATEGORIES:
+		if skill != "" and skill in ROLL_CATEGORIES[category]["skills"]:
+			return category
+		if attribute != "" and attribute in ROLL_CATEGORIES[category]["attributes"]:
+			return category
+	return "general"
+
+
+## Total party bonus to one roll: the flat scholar bonus that applies to
+## everything, plus whatever the roll's own category attracts.
+func get_roll_bonus(roll_req: Dictionary) -> int:
+	var bonus: int = get_party_roll_bonus()
+	if not PartyBonuses:
+		return bonus
+	if get_roll_category(roll_req) == "social":
+		# Persuasion and Performance are different social competences feeding
+		# one axis, so a party with both talkers is better at talking than a
+		# party with one.
+		bonus += int(round(PartyBonuses.best("party_social_roll_pct") / 5.0))
+	return bonus
+
+
 ## Flat bonus the party's best scholar adds to any event roll.
 ##
 ## Worth having precisely because an event tier DC is `best_party_stat +
@@ -465,7 +512,7 @@ func make_choice(choice: Dictionary, passing_character = null) -> Dictionary:
 		# Resolve tier string → absolute DC now that best_value is known.
 		var difficulty = _resolve_roll_dc(raw_difficulty, best_value)
 		var roll = randi() % 20 + 1
-		var total = roll + best_value + get_party_roll_bonus()
+		var total = roll + best_value + get_roll_bonus(roll_req)
 		var success = total >= difficulty
 
 		# Choose appropriate outcome

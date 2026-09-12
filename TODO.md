@@ -201,13 +201,17 @@ The mirror image of dead data: code paths that work and are never exercised.
       - **`morale_pct`** — removed 2026-09-12. It was a relic of an idea that
         became PsychologySystem. The live question it leaves behind is in
         "Things to ponder": Leadership ought to touch companion psychology.
-      - **`charm_effectiveness_pct`, `social_roll_pct`**: events carry no
-        check-type tag, so neither can be scoped to the rolls it should affect.
-        Needs events to declare what kind of check a roll is.
+      - **`charm_effectiveness_pct`, `social_roll_pct`** — done 2026-09-12.
+        They turned out to be one stat with two sources, now
+        `party_social_roll_pct`. Event rolls did not need tagging after all:
+        each already names a skill or an attribute, so the category derives
+        from it, with an optional `category` on the roll for the cases where
+        the stat does not tell the story.
       - **`loot_quality_pct`**: no loot rarity mechanic to attach to.
-      - **`max_companions`**: would replace the hardcoded `max_party_size = 8`
-        with a Leadership cap topping out at 5. That is a party-size design
-        change, not a wiring job.
+      - **`max_companions`** — done 2026-09-12 as `party_max_companions`. A
+        companion at Leadership 1, and another at 3, 5, 7 and 9, so a
+        Leadership-9 leader fields six in total. Without the skill you travel
+        alone.
 - [ ] **Needs a proc site, not a consumer** (4 keys): `stun_chance_pct` (maces
       on-hit), `burning_damage_pct` (fire DoT), `status_effect_chance_pct`
       (status application), `luck_pct`. Each is its own small integration.
@@ -436,6 +440,26 @@ but may not be what the game wants.
       checklist. The whole party-bonus logic may want rethinking rather than
       tuning — the current pass standardizes it so it is legible enough to
       reason about, not because the rule is settled.
+
+- [ ] **Equipment, crafting and loot want one audit together.** Olaf's
+      direction, 2026-09-12, recorded before it evaporates:
+
+      - **All non-consumable items should have quality.** Weapons and armour
+        already do: material and quality set the stat ranges, traits modify
+        from there. Everything else that is not a consumable should work the
+        same way. Crafting is messy in general and this is the spine of tidying
+        it.
+      - **Alchemy crafts consumables. Smithing crafts ammo and repairs today,
+        and should produce equipment in future.** That answers which skill
+        `crafting_yield_pct` belongs to — it is Alchemy's, for consumables —
+        and what `crafting_quality_pct` needs before it can mean anything.
+      - **Loot value should derive from the defeated party's total XP against
+        the player party's**, with a percentage chance to receive it as a
+        single better item rather than several common ones. That chance is one
+        of the main points of the Luck attribute, which currently does very
+        little.
+      - Blocked on this: `crafting_quality_pct`, `crafting_yield_pct`,
+        `loot_quality_pct`.
 
 - [ ] **Leadership should touch companion psychology.** `morale_pct` was
       removed 2026-09-12 as a relic: it was an early sketch that grew into

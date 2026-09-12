@@ -1,14 +1,11 @@
 {
   "_comment": "Values declared in data that no code reads, accepted for now. The data->code check in validate_data.py fails on anything unread that is NOT listed here, so this file is the record of known gaps rather than a way to silence the check. Shrink it by wiring a consumer, never by adding a line without a reason.",
   "base_bonuses stat": {
-    "_reason": "Skill payouts with no consumer yet. `_pct` is a percentage, `party_` means one member's skill pays the whole party (best member — see PartyBonuses), a bare name is flat. Seven remain and NONE is merely unwired — each is blocked on a decision or a missing system: charm_effectiveness_pct and social_roll_pct need events to declare what kind of check a roll is; crafting_quality_pct needs crafted items to have a quality at all; crafting_yield_pct is owned by Alchemy while crafting reads Smithing; loot_quality_pct needs loot rarity to be a thing; max_companions would replace the hardcoded max_party_size of 8 with a Leadership cap of 5, a party-size design change; trap_detection_pct waits on the traps design. See TODO for each.",
+    "_reason": "Skill payouts with no consumer yet. `_pct` is a percentage, `party_` means one member's skill pays the whole party (best member — see PartyBonuses), a bare name is flat. Four remain, each blocked on design work rather than wiring: crafting_quality_pct and crafting_yield_pct wait on the equipment and crafting audit (non-consumable items gaining a quality, Smithing producing equipment); loot_quality_pct waits on the loot design (total value from the defeated party's XP, with Luck buying a chance at one better item instead of several common ones); trap_detection_pct waits on the traps design. All three are written up in TODO.",
     "values": [
-      "charm_effectiveness_pct",
       "crafting_quality_pct",
       "crafting_yield_pct",
       "loot_quality_pct",
-      "max_companions",
-      "social_roll_pct",
       "trap_detection_pct"
     ]
   },

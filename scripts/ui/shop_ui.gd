@@ -684,7 +684,7 @@ func _create_companion_panel(companion_id: String, def: Dictionary) -> void:
 	var price_mult: float = clampf(party_xp / 1200.0, 0.20, 2.0)
 	var cost: int = maxi(10, int(base_cost * price_mult))
 	var can_afford: bool = GameState.can_afford(cost)
-	var party_full: bool = CharacterSystem.get_party().size() >= CharacterSystem.max_party_size
+	var party_full: bool = CharacterSystem.get_party().size() >= CharacterSystem.get_max_party_size()
 
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(0, 140)

@@ -17,7 +17,9 @@ signal perk_selection_requested(character_data: Dictionary, perks: Array)
 
 # Party data - player is always index 0
 var party: Array[Dictionary] = []
-var max_party_size: int = 8
+## Fallback cap, used only when PartyBonuses cannot be reached. The real cap is
+## Leadership's payout — see get_max_party_size().
+const PARTY_SIZE_FALLBACK: int = 6
 
 # Birth and background data loaded from JSON
 var _birth_data: Dictionary = {}
@@ -1402,9 +1404,20 @@ func get_player() -> Dictionary:
 		return {}
 	return party[0]
 
+## How many characters the party may hold, the leader included.
+##
+## Leadership is what buys room for other people: a companion at Leadership 1,
+## and another at 3, 5, 7 and 9, so a Leadership-9 leader fields six in total.
+## Alone without the skill, you travel alone.
+func get_max_party_size() -> int:
+	if not PartyBonuses:
+		return PARTY_SIZE_FALLBACK
+	return 1 + int(PartyBonuses.best("party_max_companions"))
+
+
 ## Add companion to party
 func add_companion(character: Dictionary) -> bool:
-	if party.size() >= max_party_size:
+	if party.size() >= get_max_party_size():
 		return false
 	party.append(character)
 	update_party_derived_stats()
