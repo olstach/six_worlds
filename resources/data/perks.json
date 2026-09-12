@@ -756,64 +756,64 @@
       ],
       "per_level": {
         "1": {
-          "party_xp_gain_pct": 3.0,
-          "party_skill_check_bonus": 1.0
+          "party_xp_gain_pct": 1.8,
+          "party_skill_check_bonus": 0
         },
         "2": {
-          "party_xp_gain_pct": 6.0,
-          "party_skill_check_bonus": 2.0
+          "party_xp_gain_pct": 3.6,
+          "party_skill_check_bonus": 1
         },
         "3": {
-          "party_xp_gain_pct": 9.0,
-          "party_skill_check_bonus": 3.0
+          "party_xp_gain_pct": 5.4,
+          "party_skill_check_bonus": 1
         },
         "4": {
-          "party_xp_gain_pct": 12.0,
-          "party_skill_check_bonus": 4.0
+          "party_xp_gain_pct": 7.1,
+          "party_skill_check_bonus": 1
         },
         "5": {
-          "party_xp_gain_pct": 15.0,
-          "party_skill_check_bonus": 5.0
+          "party_xp_gain_pct": 8.9,
+          "party_skill_check_bonus": 2
         },
         "6": {
-          "party_xp_gain_pct": 20.0,
-          "party_skill_check_bonus": 6.0
+          "party_xp_gain_pct": 11.9,
+          "party_skill_check_bonus": 2
         },
         "7": {
-          "party_xp_gain_pct": 25.0,
-          "party_skill_check_bonus": 7.0
+          "party_xp_gain_pct": 14.9,
+          "party_skill_check_bonus": 2
         },
         "8": {
-          "party_xp_gain_pct": 30.0,
-          "party_skill_check_bonus": 8.0
+          "party_xp_gain_pct": 17.9,
+          "party_skill_check_bonus": 2
         },
         "9": {
-          "party_xp_gain_pct": 36.0,
-          "party_skill_check_bonus": 9.0
+          "party_xp_gain_pct": 21.4,
+          "party_skill_check_bonus": 3
         },
         "10": {
-          "party_xp_gain_pct": 42.0,
-          "party_skill_check_bonus": 10.0
+          "party_xp_gain_pct": 25.0,
+          "party_skill_check_bonus": 3
         },
         "11": {
-          "party_xp_gain_pct": 42.0,
-          "party_skill_check_bonus": 10.0
+          "party_xp_gain_pct": 25.0,
+          "party_skill_check_bonus": 3
         },
         "12": {
-          "party_xp_gain_pct": 42.0,
-          "party_skill_check_bonus": 10.0
+          "party_xp_gain_pct": 25.0,
+          "party_skill_check_bonus": 3
         },
         "13": {
-          "party_xp_gain_pct": 42.0,
-          "party_skill_check_bonus": 10.0
+          "party_xp_gain_pct": 25.0,
+          "party_skill_check_bonus": 3
         },
         "14": {
-          "party_xp_gain_pct": 42.0,
-          "party_skill_check_bonus": 10.0
+          "party_xp_gain_pct": 25.0,
+          "party_skill_check_bonus": 3
         },
         "15": {
-          "party_xp_gain_pct": 42.0,
-          "party_skill_check_bonus": 10.0
+          "party_xp_gain_pct": 25.0,
+          "party_skill_check_bonus": 3
         }
       }
     },
@@ -2200,64 +2200,64 @@
       ],
       "per_level": {
         "1": {
-          "party_supply_duration_pct": 10.0,
-          "party_travel_speed_pct": 5.0
+          "party_supply_duration_pct": 4.7,
+          "party_travel_speed_pct": 2.5
         },
         "2": {
-          "party_supply_duration_pct": 20.0,
-          "party_travel_speed_pct": 10.0
+          "party_supply_duration_pct": 9.4,
+          "party_travel_speed_pct": 5.0
         },
         "3": {
-          "party_supply_duration_pct": 30.0,
-          "party_travel_speed_pct": 15.0
+          "party_supply_duration_pct": 14.1,
+          "party_travel_speed_pct": 7.5
         },
         "4": {
-          "party_supply_duration_pct": 45.0,
-          "party_travel_speed_pct": 25.0
+          "party_supply_duration_pct": 21.2,
+          "party_travel_speed_pct": 12.5
         },
         "5": {
-          "party_supply_duration_pct": 60.0,
-          "party_travel_speed_pct": 35.0
+          "party_supply_duration_pct": 28.2,
+          "party_travel_speed_pct": 17.5
         },
         "6": {
-          "party_supply_duration_pct": 65.0,
-          "party_travel_speed_pct": 40.0
+          "party_supply_duration_pct": 30.6,
+          "party_travel_speed_pct": 20.0
         },
         "7": {
-          "party_supply_duration_pct": 70.0,
-          "party_travel_speed_pct": 45.0
+          "party_supply_duration_pct": 32.9,
+          "party_travel_speed_pct": 22.5
         },
         "8": {
-          "party_supply_duration_pct": 75.0,
-          "party_travel_speed_pct": 50.0
+          "party_supply_duration_pct": 35.3,
+          "party_travel_speed_pct": 25.0
         },
         "9": {
-          "party_supply_duration_pct": 80.0,
-          "party_travel_speed_pct": 55.0
+          "party_supply_duration_pct": 37.6,
+          "party_travel_speed_pct": 27.5
         },
         "10": {
-          "party_supply_duration_pct": 85.0,
-          "party_travel_speed_pct": 60.0
+          "party_supply_duration_pct": 40.0,
+          "party_travel_speed_pct": 30.0
         },
         "11": {
-          "party_supply_duration_pct": 85.0,
-          "party_travel_speed_pct": 60.0
+          "party_supply_duration_pct": 40.0,
+          "party_travel_speed_pct": 30.0
         },
         "12": {
-          "party_supply_duration_pct": 85.0,
-          "party_travel_speed_pct": 60.0
+          "party_supply_duration_pct": 40.0,
+          "party_travel_speed_pct": 30.0
         },
         "13": {
-          "party_supply_duration_pct": 85.0,
-          "party_travel_speed_pct": 60.0
+          "party_supply_duration_pct": 40.0,
+          "party_travel_speed_pct": 30.0
         },
         "14": {
-          "party_supply_duration_pct": 85.0,
-          "party_travel_speed_pct": 60.0
+          "party_supply_duration_pct": 40.0,
+          "party_travel_speed_pct": 30.0
         },
         "15": {
-          "party_supply_duration_pct": 85.0,
-          "party_travel_speed_pct": 60.0
+          "party_supply_duration_pct": 40.0,
+          "party_travel_speed_pct": 30.0
         }
       }
     },

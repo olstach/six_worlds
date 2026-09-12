@@ -387,7 +387,23 @@ func add_supply(supply_type: String, amount: int) -> void:
 
 
 ## Consume supplies (returns true if enough were available)
+## What a nominal supply cost actually consumes, after the party quartermaster.
+##
+## Every consume_supply() call passes a literal amount, so this is the one place
+## a party-wide efficiency can apply without editing every call site.
+func effective_supply_cost(amount: int) -> int:
+	if amount <= 0 or not PartyBonuses:
+		return amount
+	var efficiency: float = PartyBonuses.best("party_supply_duration_pct")
+	if efficiency <= 0.0:
+		return amount
+	# Supplies lasting X% longer means each draw costs proportionally less.
+	# Floored at 1 so stock is always spent — free upkeep removes the decision.
+	return maxi(1, int(round(float(amount) / (1.0 + minf(efficiency, 100.0) / 100.0))))
+
+
 func consume_supply(supply_type: String, amount: int) -> bool:
+	amount = effective_supply_cost(amount)
 	if amount <= 0:
 		return true
 	var current := get_supply(supply_type)

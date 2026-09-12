@@ -486,6 +486,9 @@ func apply_party_xp(base_amount: int) -> void:
 	for member in party:
 		# Per-character xp_gain_pct modifier (e.g. negative from low learning skill)
 		var xp_pct: float = member.get("derived", {}).get("xp_gain_pct", 0.0)
+		# The best scholar in the party teaches the rest.
+		if PartyBonuses:
+			xp_pct += PartyBonuses.best("party_xp_gain_pct")
 		var member_amount := maxi(1, int(float(final_amount) * (1.0 + xp_pct / 100.0)))
 		CharacterSystem.grant_xp(member, member_amount)
 		if member.has("free_xp"):

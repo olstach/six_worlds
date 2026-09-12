@@ -407,6 +407,18 @@ const DC_TIER_MODIFIERS: Dictionary = {
 ## Resolve a roll difficulty to an absolute DC.
 ## Accepts a tier string ("normal", "difficult", …) or a legacy integer DC.
 ## Tier: DC = best_party_stat + modifier, keeping difficulty constant regardless of power level.
+## Flat bonus the party's best scholar adds to any event roll.
+##
+## Worth having precisely because an event tier DC is `best_party_stat +
+## modifier` against a roll of `d20 + best_party_stat` — the attribute cancels,
+## so a flat bonus is the only thing that can move a tier roll's odds at all.
+## (Whether that cancellation is right is its own open question; see TODO.)
+func get_party_roll_bonus() -> int:
+	if not PartyBonuses:
+		return 0
+	return int(PartyBonuses.best("party_skill_check_bonus"))
+
+
 func _resolve_roll_dc(raw_difficulty, best_value: int) -> int:
 	if raw_difficulty is String:
 		var modifier: int = DC_TIER_MODIFIERS.get(raw_difficulty, DC_TIER_MODIFIERS["normal"])
@@ -453,7 +465,7 @@ func make_choice(choice: Dictionary, passing_character = null) -> Dictionary:
 		# Resolve tier string → absolute DC now that best_value is known.
 		var difficulty = _resolve_roll_dc(raw_difficulty, best_value)
 		var roll = randi() % 20 + 1
-		var total = roll + best_value
+		var total = roll + best_value + get_party_roll_bonus()
 		var success = total >= difficulty
 
 		# Choose appropriate outcome
