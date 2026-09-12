@@ -176,8 +176,7 @@ The mirror image of dead data: code paths that work and are never exercised.
 
   What the table still needs is two things that do not exist: **consumers for
   the percentage stats**, and a **party-wide propagation mechanism** for the
-  `party_` keys — the "logistics train" named in `CLAUDE.md`, where one
-  character's skill pays the whole party.
+  `party_` keys.
 
 - [ ] **Party-wide bonuses: the design, when someone builds it.** They behave
       like equipment bonuses — another additive source folded into `derived` —
@@ -185,17 +184,18 @@ The mirror image of dead data: code paths that work and are never exercised.
       arises because they derive from **raw skill levels**, never from another
       character's `derived`, so nothing waits on anything.
 
-      Two decisions inside it:
+      **Best member, not sum** (decided 2026-09-12). Four medics should not be
+      four times one medic. Taking the best also matches the rule the game
+      already uses everywhere — "any party member meeting a requirement enables
+      the choice" — and makes the specialist *the* specialist. It has a known
+      cost, recorded under "Things to ponder" below.
 
-      - **Best member, not sum.** Four medics should not be four times one
-        medic. Taking the best also matches the rule the game already uses
-        everywhere — "any party member meeting a requirement enables the
-        choice" — and makes the specialist *the* specialist.
-      - **A refresh hook is mandatory.** If B levels Medicine, A's `derived` is
-        stale. `update_derived_stats` has to run for the whole party whenever
-        skills or party membership change, not just for the character who
-        changed. This is the part that bites later if it is not built in from
-        the start.
+      **A refresh hook is mandatory** — this is a build requirement, not a
+      design question. Party-wide bonuses mean one member's skill feeds every
+      other member's `derived`, so `update_derived_stats` has to run for the
+      **whole party** whenever skills or party membership change, not just for
+      the character who changed. Miss it and stats go quietly stale, which is
+      the hardest class of bug to notice in this codebase.
 
       Combat-facing `party_` keys land in `derived`; the rest
       (`party_xp_gain_pct`, `party_travel_speed_pct`,
@@ -367,9 +367,55 @@ combat panel — that change did **not** implement them. `scout_ahead`,
 miss: `camp_system.gd:156` already has a forage camp action open to everyone,
 and the perk that is supposed to improve it is never consulted.
 
-## 8. Deferred by decision
+## 8. Things to ponder
+
+Live design questions. Not bugs, not deferred decisions — the shape of these is
+still genuinely open, and each was raised because something built today works
+but may not be what the game wants.
+
+- [ ] **Best-member party bonuses make the second specialist worthless.** With
+      best-member, a party's second-best Medicine contributes exactly nothing,
+      so levelling it is wasted XP and the player learns to stop. Summing has
+      the opposite problem (four medics become four times a medic, which is
+      absurd and off-theme), so neither pure rule is right. Worth considering:
+      diminishing contribution from lower-ranked members, or a small flat
+      assist per additional member above a threshold.
+
+- [ ] **Party-wide bonuses invite min-maxing once the player knows the game.**
+      If one character's skill pays the whole party, the optimal build is one
+      specialist per useful skill and nobody redundant. That is a legible
+      strategy, which is good, but it flattens party composition into a
+      checklist. The whole party-bonus logic may want rethinking rather than
+      tuning — the current pass standardizes it so it is legible enough to
+      reason about, not because the rule is settled.
+
+- [ ] **Support characters as equipment-shaped content.** The retired
+      "logistics train" idea has one part worth keeping: a hireling who is not
+      a full character — a cook who grants a supply bonus, a mule that raises
+      carry weight. Content-wise a person, mechanically a piece of equipment.
+      Not needed now, and mechanically close to the planned **mounts and pets**
+      system, so the two should be designed together when that comes up.
+
+## 9. Deferred by decision
 
 Recorded so they aren't rediscovered as bugs.
+
+### 2026-09-12 — the "logistics train" is retired
+
+The original idea was a way to bring non-combat characters — a medic, a smith, a
+trader — into the party without them being dead weight in a fight: a second
+class of party member who contributed support bonuses instead of combat.
+
+The game grew past it. Every character and NPC now runs on the same character
+system, so there is no "full character" versus "support character" distinction
+left to make. A medic in the party is simply a party member who is good at
+Medicine and less good at swinging a sword, which is a more coherent thing for
+the game to be about.
+
+What survives is the mechanic, not the framing: `party_`-prefixed skill payouts,
+where one member's skill pays the whole party. That is designed (§3 above) and
+unbuilt. The support-character-as-equipment idea is parked in "Things to ponder"
+for whenever mounts and pets are designed.
 
 ### 2026-09-12 — event rolls ignore the attribute, deliberately for now
 
@@ -619,7 +665,7 @@ Spec: `docs/superpowers/specs/2026-08-31-enemy-xp-generation-design.md`
 
 ---
 
-## 9. The passive perk backlog (2026-09-10)
+## 10. The passive perk backlog (2026-09-10)
 
 The engine is built and proven; the data is barely started. Of 470 passive
 perks: **168** are implemented by hand in `scripts/` (checked by id with
@@ -657,7 +703,7 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
       `first_attack_combat`, `first_attack_turn`, `from_behind`,
       `target_bleeding`, `target_debuffed`, `on_terrain_type`.
 
-## 10. Systems the perk text assumes and the game does not have
+## 11. Systems the perk text assumes and the game does not have
 
 Found while wiring the actives. Each is worth building as a system rather than
 as a one-off, because several perks and spells want the same thing.
@@ -1086,7 +1132,7 @@ conversions (in that order, since a conversion reads a finished stat);
 `CombatUnit._get_conditional_perk_bonus()` evaluates gated effects where the
 stat is read; `CombatManager._fire_perk_triggers()` dispatches `on_hit`,
 `on_crit`, `on_kill` and `dodge_success`. Only 5 perks are wired to it so far —
-see Part I §9.
+see Part I §10.
 
 **Six things were being computed and never read.** Same failure each time: a
 value written under one name and read under another, or not read at all, with

@@ -1,7 +1,7 @@
 {
   "_comment": "Values declared in data that no code reads, accepted for now. The data->code check in validate_data.py fails on anything unread that is NOT listed here, so this file is the record of known gaps rather than a way to silence the check. Shrink it by wiring a consumer, never by adding a line without a reason.",
   "base_bonuses stat": {
-    "_reason": "Skill payouts with no consumer yet. Names now carry their own units and scope: `_pct` is a percentage, `party_` means one member's skill pays the whole party, a bare name is flat. That convention exists because the old names hid the difference — `movement_speed` reaching 65 looked like it belonged in `derived.movement`, which is measured in tiles. Two things are still missing before these can be wired: percentage-shaped consumers, and a party-wide propagation mechanism (the 'logistics train').",
+    "_reason": "Skill payouts with no consumer yet. Names now carry their own units and scope: `_pct` is a percentage, `party_` means one member's skill pays the whole party, a bare name is flat. That convention exists because the old names hid the difference — `movement_speed` reaching 65 looked like it belonged in `derived.movement`, which is measured in tiles. Two things are still missing before these can be wired: percentage-shaped consumers, and a party-wide propagation mechanism (designed, not built - see TODO).",
     "values": [
       "burning_damage_pct",
       "buy_discount_pct",

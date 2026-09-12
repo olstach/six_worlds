@@ -181,4 +181,8 @@ The largest remaining gaps, for orientation only:
 3. **Clarify ambiguous requirements** before implementing
 4. **Break large systems into testable components**
 5. **Olaf has a spell list** (in SPECIFICATION/chat1.txt) with ~150+ spells organized by school/level
-6. **Logistics train** - Ask about this system (party-wide passive bonuses from Logistics, Medicine, etc.)
+6. **Party-wide skill bonuses** - Some skill-table payouts are prefixed
+   `party_`: one member's skill pays the whole party, best member only.
+   Designed, not built - see TODO. The older "logistics train" framing
+   (support-only party members) is retired; every character runs on the
+   same system now.
