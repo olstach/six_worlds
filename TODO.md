@@ -194,10 +194,21 @@ The mirror image of dead data: code paths that work and are never exercised.
       - `crafting_yield_pct` is owned by **Alchemy** while camp crafting reads
         **Smithing**. Needs a decision about which skill crafts what before it
         can mean anything.
-- [ ] **Phase 3 — social, exploration, progression** (~8 keys):
-      `charm_effectiveness_pct`, `social_roll_pct`, `party_skill_check_bonus`,
-      `morale_pct`, `party_travel_speed_pct`, `party_supply_duration_pct`,
-      `party_xp_gain_pct`, `loot_quality_pct`, `max_companions`.
+- [x] **Phase 3 — logistics and learning** — done 2026-09-12. Four wired:
+      `party_skill_check_bonus` (event rolls), `party_supply_duration_pct`
+      (supply draws), `party_xp_gain_pct` (XP award), `party_travel_speed_pct`
+      (overworld movement). The other five are each blocked on something real:
+      - **`morale_pct` has no system.** No file in `scripts/` contains the word
+        "morale". Two skills pay into a mechanic that was never built. Decide
+        whether morale is a thing this game has — PsychologySystem's pressure
+        may already be it under another name — before wiring anything.
+      - **`charm_effectiveness_pct`, `social_roll_pct`**: events carry no
+        check-type tag, so neither can be scoped to the rolls it should affect.
+        Needs events to declare what kind of check a roll is.
+      - **`loot_quality_pct`**: no loot rarity mechanic to attach to.
+      - **`max_companions`**: would replace the hardcoded `max_party_size = 8`
+        with a Leadership cap topping out at 5. That is a party-size design
+        change, not a wiring job.
 - [ ] **Needs a proc site, not a consumer** (4 keys): `stun_chance_pct` (maces
       on-hit), `burning_damage_pct` (fire DoT), `status_effect_chance_pct`
       (status application), `luck_pct`. Each is its own small integration.

@@ -293,7 +293,7 @@ func _process(delta: float) -> void:
 		return
 
 	# Advance progress based on speed and delta
-	var effective_speed = base_speed * speed_mult
+	var effective_speed = base_speed * speed_mult * get_party_speed_multiplier()
 	_move_progress += effective_speed * delta
 
 	# Interpolate world position between current tile and target tile
@@ -710,6 +710,14 @@ func get_terrain_description(pos: Vector2i) -> String:
 ## Get speed multiplier for terrain at position
 ## Returns: 2.0 = double speed, 1.0 = normal, 0.5 = half, -1.0 = impassable
 ## Accounts for movement abilities (water_walking, flight, etc.)
+## How much faster the party travels for having a quartermaster. 1.0 when it
+## does not — packing well is the skill, not the walking.
+func get_party_speed_multiplier() -> float:
+	if not PartyBonuses:
+		return 1.0
+	return 1.0 + PartyBonuses.best("party_travel_speed_pct") / 100.0
+
+
 func get_terrain_speed(pos: Vector2i) -> float:
 	var terrain = get_terrain(pos)
 	var base_speed = TERRAIN_SPEED.get(terrain, 1.0)
