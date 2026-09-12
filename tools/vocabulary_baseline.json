@@ -1,0 +1,63 @@
+{
+  "_comment": "Values declared in data that no code reads, accepted for now. The data->code check in validate_data.py fails on anything unread that is NOT listed here, so this file is the record of known gaps rather than a way to silence the check. Shrink it by wiring a consumer, never by adding a line without a reason.",
+  "base_bonuses stat": {
+    "_reason": "Percentage-shaped skill payouts with no percentage-shaped consumer, plus party-wide bonuses ('the logistics train') that have no propagation mechanism. See TODO Part III. NOT simple renames: movement_speed reaches 65 against a derived.movement measured in tiles.",
+    "values": [
+      "burning_damage",
+      "buy_discount",
+      "charm_effectiveness",
+      "consumable_power",
+      "crafting_quality",
+      "crafting_yield",
+      "effect_duration",
+      "healing_effectiveness_(party)",
+      "loot_quality",
+      "luck_modifier",
+      "magic_damage_resistance",
+      "max_companions",
+      "mental_resistance",
+      "morale_effects",
+      "movement_speed",
+      "party_skill_checks",
+      "party_xp_gain",
+      "poison/disease_resistance_(party)",
+      "repair_efficiency",
+      "sell_markup",
+      "social_roll_success",
+      "status_effect_chance",
+      "summon_hp",
+      "supply_duration_(party)",
+      "trading_price",
+      "trap_detection",
+      "travel_speed_(party)"
+    ]
+  },
+  "status effect": {
+    "_reason": "Behaviour strings on statuses.json entries that no code interprets. Several are one-off mechanics on a single status; `knockback` gains a reader when forced movement lands.",
+    "values": [
+      "black_damage_per_turn",
+      "can_move",
+      "can_walk_on_water",
+      "cannot_flee",
+      "cannot_fly",
+      "cannot_target_spells",
+      "cannot_teleport",
+      "damage_increases_each_turn",
+      "fire_damage_per_turn_internal",
+      "heal_50_percent_of_damage_dealt",
+      "illusory_copies",
+      "joins_party_permanently",
+      "knockback",
+      "lifesteal_on_attacks",
+      "light_aura",
+      "linked_to_ally",
+      "random_attacks",
+      "random_spellcasting",
+      "relationship_bonus",
+      "return_with_20_percent_hp",
+      "space_damage_per_turn",
+      "spreads_on_contact",
+      "stat_penalties"
+    ]
+  }
+}

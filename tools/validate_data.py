@@ -485,6 +485,92 @@ for gd_path in glob.glob(os.path.join(ROOT, "scripts/**/*.gd"), recursive=True):
         if match.group(1) not in statuses:
             err("code->status", f"{rel}: status '{match.group(1)}' not in statuses.json")
 
+# ── data -> code ─────────────────────────────────────────────────────────────
+# The checks above ask "does the id this code names exist in the data?". This
+# section asks the reverse, which is where every silent failure in this project
+# has actually lived: "does anything read the value this data declares?"
+#
+# A stat key, status behaviour string or shape name that no code reads is not a
+# missing feature — it is a feature that looks present in the data, reviews as
+# present, and does nothing. mental_resistance_pct, healing_pct, damage_pct,
+# damage_reduction_pct and save_bonus were all in that state simultaneously.
+#
+# Values already known to be unread live in tools/vocabulary_baseline.json with
+# a reason attached, so this check fails only on NEW drift. Shrink the baseline
+# by wiring a consumer; never by adding a line without a reason.
+
+_gd_source = "\n".join(
+    open(p, encoding="utf-8").read()
+    for p in glob.glob(os.path.join(ROOT, "scripts/**/*.gd"), recursive=True)
+)
+_baseline = load("tools/vocabulary_baseline.json")
+
+
+def _read_by_code(value):
+    """True when the literal appears anywhere in scripts/.
+
+    Deliberately crude. It cannot see a name assembled at runtime, so a false
+    "unread" is possible — that is what the baseline is for. What it does catch
+    reliably is the common case: data declares a key and no source file ever
+    mentions it.
+    """
+    return f'"{value}"' in _gd_source
+
+
+def check_vocabulary(label, values):
+    accepted = set(_baseline.get(label, {}).get("values", []))
+    for value in sorted(values):
+        if _read_by_code(value) or value in accepted:
+            continue
+        err("data->code", f"{label} '{value}' is declared in data but no code reads it")
+
+
+# Stat keys paid out by the per-level skill tables.
+_stat_keys = set()
+for _tbl in perks_data.get("base_bonuses", {}).values():
+    for _stats in _tbl.get("per_level", {}).values():
+        _stat_keys.update(_stats)
+check_vocabulary("base_bonuses stat", _stat_keys)
+
+# Behaviour strings on status definitions.
+_status_effects = set()
+for _s in load("resources/data/statuses.json")["statuses"]:
+    _status_effects.update(str(e) for e in _s.get("effects", []))
+check_vocabulary("status effect", _status_effects)
+
+# AoE shape names, across both spells and perk combat_data. An unknown shape
+# falls back to a circle inside AoEResolver with only a push_warning, which
+# turns a sweep into a burst without anything going red.
+_shapes = set()
+for _sp in load("resources/data/spells.json")["spells"].values():
+    if isinstance(_sp, dict) and isinstance(_sp.get("aoe"), dict):
+        _shapes.add(str(_sp["aoe"].get("type", "circle")))
+for _section in ("skill_perks", "cross_perks"):
+    for _pk in perks_data.get(_section, {}).values():
+        if not isinstance(_pk, dict):
+            continue
+        _aoe = _pk.get("combat_data", {}).get("aoe")
+        if isinstance(_aoe, dict):
+            _shapes.add(str(_aoe.get("type", "circle")))
+check_vocabulary("aoe shape", _shapes)
+
+# Effect types dispatched by use_active_skill, and passive effect types read by
+# PerkSystem.
+_effect_types = set()
+_passive_types = set()
+for _section in ("skill_perks", "cross_perks"):
+    for _pk in perks_data.get(_section, {}).values():
+        if not isinstance(_pk, dict):
+            continue
+        _cd = _pk.get("combat_data", {})
+        if _cd.get("effect"):
+            _effect_types.add(str(_cd["effect"]))
+        for _fx in _pk.get("effects", []):
+            if isinstance(_fx, dict) and _fx.get("type"):
+                _passive_types.add(str(_fx["type"]))
+check_vocabulary("active skill effect", _effect_types)
+check_vocabulary("passive effect type", _passive_types)
+
 # ── report ───────────────────────────────────────────────────────────────────
 print(f"TOTAL ISSUES: {len(errors)}")
 for category, count in Counter(c for c, _ in errors).most_common():
