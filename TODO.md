@@ -63,12 +63,16 @@ Then, depending on appetite:
 
 ## Approved designs not yet built
 
-- [ ] **Combat systems standardization** —
+- [x] **Forced movement and AoE damage falloff** — built 2026-09-12, two of the
+      three parts of
       `docs/superpowers/specs/2026-09-12-combat-systems-standardization-design.md`.
-      Three independent changes that should land separately: one saving-throw
-      mechanic (d20 + defender attribute vs 10 + attacker attribute + tier),
-      forced movement, and opt-in AoE damage falloff. The saves work is the only
-      one that shifts balance, and wants a tuning pass in play afterwards.
+      Both are additive: nothing behaves differently until a perk or spell opts
+      in.
+- [ ] **One saving-throw mechanic** — the remaining part of that spec:
+      `d20 + defender attribute` vs `10 + attacker attribute + tier`. Held back
+      deliberately because it is the only part that shifts balance — every CC
+      effect in the game changes probability, and it wants a tuning pass in play
+      afterwards. The design is approved; the implementation is not started.
 
 ---
 
@@ -704,6 +708,10 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
       `target_bleeding`, `target_debuffed`, `on_terrain_type`.
 
 ## 11. Systems the perk text assumes and the game does not have
+
+**Two of the three are now built** (2026-09-12): forced movement and AoE damage
+falloff. Saving throws remain — see "Approved designs not yet built" above.
+
 
 Found while wiring the actives. Each is worth building as a system rather than
 as a one-off, because several perks and spells want the same thing.

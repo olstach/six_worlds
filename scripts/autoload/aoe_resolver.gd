@@ -163,6 +163,64 @@ static func describe(aoe: Dictionary) -> String:
 			return "AoE (%s, size %d)" % [shape, size]
 
 
+## Shapes that march outward from the origin along a facing direction. Their
+## first covered ring is one tile out; every other shape's first ring is the
+## origin tile itself.
+const DIRECTIONAL_SHAPES: Array[String] = ["line", "arc", "cone", "cone_forward"]
+
+
+## Damage multiplier for one tile of an area, from the `falloff` list.
+##
+## `falloff` is OPT-IN: an aoe block without it returns 1.0 for every tile, so
+## areas damage evenly exactly as they always have. It must stay that way —
+## most areas should hit evenly, and a silent default here would be a balance
+## change wearing a refactor's clothes.
+##
+##   "falloff": [100, 60]   ring 0 -> 1.0, ring 1 -> 0.6, ring 2+ -> 0.6
+##
+## The list is indexed by ring WITHIN THE SHAPE, not by raw distance from the
+## origin. A caster-anchored line puts its first target at distance 1, so
+## indexing by distance would hand that target the second entry — which is
+## exactly the bug that made impaling_strike deal 80% to both tiles instead of
+## 100 and 60.
+static func falloff_at(aoe: Dictionary, caster_pos: Vector2i, target_pos: Vector2i,
+		tile: Vector2i) -> float:
+	var falloff: Array = aoe.get("falloff", [])
+	if falloff.is_empty():
+		return 1.0
+
+	var ring: int = ring_of(aoe, caster_pos, target_pos, tile)
+	if ring < 0:
+		return 1.0
+	var index: int = mini(ring, falloff.size() - 1)
+	return float(falloff[index]) / 100.0
+
+
+## Which ring of the shape a tile falls in. 0 is the first ring the shape
+## actually covers. Returns -1 for a tile the shape does not reach.
+static func ring_of(aoe: Dictionary, caster_pos: Vector2i, target_pos: Vector2i,
+		tile: Vector2i) -> int:
+	var origin: Vector2i = _resolve_origin(aoe, caster_pos, target_pos)
+	var shape: String = aoe.get("type", "circle")
+
+	if shape in DIRECTIONAL_SHAPES:
+		# Project the tile onto the facing direction to recover the step index
+		# the shape builder used. This works for the diagonal directions _dir4
+		# can return as well as the cardinals, because dividing by the
+		# direction's own squared length normalises both cases.
+		var direction: Vector2i = _dir4(caster_pos, target_pos)
+		var delta: Vector2i = tile - origin
+		var span: int = direction.x * direction.x + direction.y * direction.y
+		if span == 0:
+			return -1
+		var step: int = (delta.x * direction.x + delta.y * direction.y) / span
+		return step - 1 if step >= 1 else -1
+
+	# Centred shapes include the origin, and _circle measures in Manhattan
+	# distance, so the ring is that distance.
+	return absi(tile.x - origin.x) + absi(tile.y - origin.y)
+
+
 # ─── Internal helpers ─────────────────────────────────────────────────────────
 
 ## Resolve the primary size value, accepting legacy field names.

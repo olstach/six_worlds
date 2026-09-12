@@ -153,8 +153,13 @@ COMBAT_DATA = {
         "stamina_cost": 10, "once_per_combat": True, "damage_bonus_pct": 100,
     },
     "overwhelming_blow": {
+        # "Pushes the enemy 1 tile. If they can't be pushed (wall, another
+        # unit), they take +25% damage instead." The bonus is now conditional on
+        # the push actually failing, which is what the text says — it used to be
+        # unconditional because nothing could push.
         "effect": "attack_with_bonus", "targeting": "single_enemy", "range": 1,
-        "stamina_cost": 3, "damage_bonus_pct": 25,
+        "stamina_cost": 3,
+        "push": {"tiles": 1, "blocked_damage_bonus_pct": 25},
     },
     "the_mountain_answers": {
         "effect": "aoe_attack", "targeting": "aoe_point",
@@ -163,12 +168,12 @@ COMBAT_DATA = {
 
     # ---- spears ----------------------------------------------------------
     "impaling_strike": {
-        # "Attack in a line, hitting up to 2 enemies." Full damage to the first
-        # and 60% to the second needs per-tile falloff the resolver does not
-        # have yet, so both take 80%.
+        # "Attack in a line, hitting up to 2 enemies. Full damage to the first,
+        # 60% to the second." Now exactly that, via per-ring falloff.
         "effect": "aoe_attack", "targeting": "aoe_point",
-        "stamina_cost": 6, "range": 2, "damage_pct": 80,
-        "aoe": {"type": "line", "size": 2, "width": 1, "origin": "caster"},
+        "stamina_cost": 6, "range": 2, "damage_pct": 100,
+        "aoe": {"type": "line", "size": 2, "width": 1, "origin": "caster",
+                "falloff": [100, 60]},
     },
     "pinning_thrust": {
         "effect": "debuff_target", "targeting": "single_enemy",
@@ -254,9 +259,11 @@ COMBAT_DATA = {
         "buffs": [{"stat": "armor", "value": 30, "duration": 1}],
     },
     "shield_bash": {
+        # "Push an enemy 1 tile and apply -10% accuracy for 1 turn."
         "effect": "debuff_target", "targeting": "single_enemy",
         "stamina_cost": 3, "range": 1, "deals_damage": True,
         "debuffs": [{"stat": "accuracy", "value": 10, "duration": 1}],
+        "push": {"tiles": 1},
     },
     "shield_wall": {
         "effect": "stance", "targeting": "self",
@@ -613,6 +620,13 @@ def validate(data, status_names):
         for entry in (cd.get("self_buff"), cd.get("target_debuff")):
             if entry and entry.get("stat") not in LIVE_STATS:
                 errors.append(f"{pid}: stat '{entry.get('stat')}' is never read back")
+        push = cd.get("push", {})
+        if push:
+            if not isinstance(push.get("tiles"), int) or push.get("tiles") == 0:
+                errors.append(f"{pid}: push needs a non-zero integer `tiles`")
+            for key in push:
+                if key not in ("tiles", "blocked_damage_bonus_pct"):
+                    errors.append(f"{pid}: unknown push key '{key}'")
         aoe = cd.get("aoe", {})
         if aoe and aoe.get("type") not in VALID_AOE_SHAPES:
             errors.append(f"{pid}: unknown aoe shape '{aoe.get('type')}'")
