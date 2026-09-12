@@ -1,18 +1,14 @@
 {
   "_comment": "Values declared in data that no code reads, accepted for now. The data->code check in validate_data.py fails on anything unread that is NOT listed here, so this file is the record of known gaps rather than a way to silence the check. Shrink it by wiring a consumer, never by adding a line without a reason.",
   "base_bonuses stat": {
-    "_reason": "Skill payouts with no consumer yet. `_pct` is a percentage, `party_` means one member's skill pays the whole party (best member — see PartyBonuses), a bare name is flat. What remains is NOT simply unwired; each is blocked on something. morale_pct: no morale system exists — no file in scripts/ mentions the word. charm_effectiveness_pct and social_roll_pct: events carry no check-type tag, so neither can be scoped to the rolls it should affect. loot_quality_pct: no loot rarity mechanic to attach to. max_companions: would replace the hardcoded max_party_size of 8 with a Leadership-driven cap topping out at 5, which is a party-size design change rather than a wiring job. effect_duration_pct: DUPLICATES the live Enchantment mechanic. crafting_quality_pct: no quality concept for crafted items. crafting_yield_pct: owned by Alchemy while crafting reads Smithing. trap_detection_pct: waits on the traps design. See TODO for all of them.",
+    "_reason": "Skill payouts with no consumer yet. `_pct` is a percentage, `party_` means one member's skill pays the whole party (best member — see PartyBonuses), a bare name is flat. Seven remain and NONE is merely unwired — each is blocked on a decision or a missing system: charm_effectiveness_pct and social_roll_pct need events to declare what kind of check a roll is; crafting_quality_pct needs crafted items to have a quality at all; crafting_yield_pct is owned by Alchemy while crafting reads Smithing; loot_quality_pct needs loot rarity to be a thing; max_companions would replace the hardcoded max_party_size of 8 with a Leadership cap of 5, a party-size design change; trap_detection_pct waits on the traps design. See TODO for each.",
     "values": [
-      "burning_damage_pct",
       "charm_effectiveness_pct",
       "crafting_quality_pct",
       "crafting_yield_pct",
       "loot_quality_pct",
-      "luck_pct",
       "max_companions",
       "social_roll_pct",
-      "status_effect_chance_pct",
-      "stun_chance_pct",
       "trap_detection_pct"
     ]
   },

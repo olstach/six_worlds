@@ -1209,7 +1209,8 @@ func update_derived_stats(character: Dictionary) -> void:
 			"magic_resistance_pct", "movement_pct", "summon_hp_pct",
 			"xp_gain_pct", "loot_chance_pct", "spellpower_fire",
 			"consumable_power_pct", "repair_efficiency_pct",
-			"effect_duration_turns"]:
+			"effect_duration_turns", "burning_damage_pct",
+			"status_effect_chance_pct", "stun_chance_pct"]:
 		derived[accumulated] = 0.0
 
 	# Apply base skill bonuses from PerkSystem (data-driven per_level tables)
@@ -1263,6 +1264,18 @@ func update_derived_stats(character: Dictionary) -> void:
 				+ float(bonus.get("repair_efficiency_pct", 0.0))
 			derived["effect_duration_turns"] = derived.get("effect_duration_turns", 0) \
 				+ int(bonus.get("effect_duration_turns", 0))
+			derived["burning_damage_pct"] = derived.get("burning_damage_pct", 0.0) \
+				+ float(bonus.get("burning_damage_pct", 0.0))
+			derived["status_effect_chance_pct"] = derived.get("status_effect_chance_pct", 0.0) \
+				+ float(bonus.get("status_effect_chance_pct", 0.0))
+			derived["stun_chance_pct"] = derived.get("stun_chance_pct", 0.0) \
+				+ float(bonus.get("stun_chance_pct", 0.0))
+			# Comedy's luck feeds the two things Luck actually drives, rather
+			# than existing as a number with no outcome of its own.
+			var luck_bonus: float = float(bonus.get("luck_pct", 0.0))
+			if luck_bonus != 0.0:
+				derived["crit_chance"] = derived.get("crit_chance", 0.0) + luck_bonus
+				derived["loot_chance_pct"] = derived.get("loot_chance_pct", 0.0) + luck_bonus
 
 	# Apply penalties for negative skill levels (quirks/debuffs pushing skills below 0).
 	for skill_id in NEGATIVE_SKILL_PENALTIES:

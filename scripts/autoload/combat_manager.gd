@@ -1721,7 +1721,9 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 					result["oil_damage_type"] = oil_dmg_type
 				# Roll for status proc
 				var oil_status = oil.get("status", "")
-				var oil_chance = oil.get("status_chance", 0)
+				var oil_chance = effective_status_chance(
+					attacker.character_data if "character_data" in attacker else {},
+					oil.get("status_chance", 0))
 				if oil_status != "" and oil_chance > 0:
 					if randf() * 100.0 <= oil_chance:
 						var oil_duration = oil.get("status_duration", 2)
@@ -4253,6 +4255,13 @@ func _process_status_effects(unit: Node) -> bool:
 			# Fan_the_Flames: source with increase_burning_damage_dealt adds 50% to fire DoT
 			if element == "fire" and effect.has("source"):
 				var dot_source = effect["source"]
+				# Fire Magic makes the burn bite harder. Read off whoever set
+				# the fire, which the status entry already remembers.
+				if is_instance_valid(dot_source) and "character_data" in dot_source:
+					var burn_pct: float = dot_source.character_data.get("derived", {}).get(
+						"burning_damage_pct", 0.0)
+					if burn_pct > 0.0:
+						damage = int(damage * (1.0 + burn_pct / 100.0))
 				if is_instance_valid(dot_source) and _unit_has_effect(dot_source, "increase_burning_damage_dealt"):
 					damage = int(damage * 1.5)
 			apply_damage(unit, damage, element)
@@ -5495,6 +5504,18 @@ const IMPLEMENTED_SKILL_EFFECTS: Array[String] = [
 	"buff_allies_debuff_enemies", "dispel_and_invert", "aggro_aura",
 	"share_buffs", "double_buffs", "chod_offering", "throw_phurba",
 ]
+
+
+## A status's chance to land, after the applier's Ritual training.
+##
+## Takes a character dict rather than a unit so non-combat callers can use it
+## too. A zero chance stays zero — an effect with no chance to apply is saying
+## it does not apply, not that it is unlikely — and nothing exceeds 100.
+func effective_status_chance(character: Dictionary, base_chance: int) -> int:
+	if base_chance <= 0:
+		return base_chance
+	var bonus: float = character.get("derived", {}).get("status_effect_chance_pct", 0.0)
+	return clampi(int(round(base_chance * (1.0 + bonus / 100.0))), 0, 100)
 
 
 ## True when an effect string resolves to something that actually happens.
@@ -7765,6 +7786,18 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "spear":
 			if not defender.is_alive():
 				_apply_stat_modifier(attacker, "movement", 2, 1)
+
+	# Maces stun. The skill table has carried a stun chance since before there
+	# was anywhere to read it; this is that place. Mace only — the payout is for
+	# swinging something blunt and heavy, not for hitting hard in general.
+	if "character_data" in attacker and attacker.has_method("get_equipped_weapon"):
+		if attacker.get_equipped_weapon().get("type", "") == "mace":
+			var stun_pct: float = attacker.character_data.get("derived", {}).get(
+				"stun_chance_pct", 0.0)
+			if stun_pct > 0.0 and randf() * 100.0 < stun_pct:
+				_apply_status_effect(defender, "Stunned", 1, 0, attacker)
+				combat_log.emit("%s's mace rings %s's skull!"
+					% [attacker.unit_name, defender.unit_name])
 
 	# Put Your Weight Into It (Might 1): 15% chance to knockback 1 tile OR stun 1 turn on melee hit
 	if _unit_has_perk(attacker, "put_your_weight_into_it"):
