@@ -1,7 +1,7 @@
 {
   "_comment": "Values declared in data that no code reads, accepted for now. The data->code check in validate_data.py fails on anything unread that is NOT listed here, so this file is the record of known gaps rather than a way to silence the check. Shrink it by wiring a consumer, never by adding a line without a reason.",
   "base_bonuses stat": {
-    "_reason": "Skill payouts with no consumer yet. Names now carry their own units and scope: `_pct` is a percentage, `party_` means one member's skill pays the whole party, a bare name is flat. That convention exists because the old names hid the difference — `movement_speed` reaching 65 looked like it belonged in `derived.movement`, which is measured in tiles. Two things are still missing before these can be wired: percentage-shaped consumers, and a party-wide propagation mechanism (designed, not built - see TODO).",
+    "_reason": "Skill payouts with no consumer yet. Names carry their own units and scope: `_pct` is a percentage, `party_` means one member's skill pays the whole party (best member — see PartyBonuses), a bare name is flat. Six were wired 2026-09-12 and left this list. Of the rest: effect_duration_pct DUPLICATES a live mechanic (Enchantment duration is already computed from skill level in _calculate_status_duration, so wiring it would double-count), and trap_detection_pct has no system to hook into at all — see TODO on traps. The remainder each need their own consumer written.",
     "values": [
       "burning_damage_pct",
       "buy_discount_pct",
@@ -12,13 +12,8 @@
       "effect_duration_pct",
       "loot_quality_pct",
       "luck_pct",
-      "magic_resistance_pct",
       "max_companions",
-      "mental_resistance_pct",
       "morale_pct",
-      "movement_pct",
-      "party_healing_pct",
-      "party_poison_disease_resistance_pct",
       "party_skill_check_bonus",
       "party_supply_duration_pct",
       "party_travel_speed_pct",
@@ -28,7 +23,6 @@
       "social_roll_pct",
       "status_effect_chance_pct",
       "stun_chance_pct",
-      "summon_hp_pct",
       "trading_price_pct",
       "trap_detection_pct"
     ]

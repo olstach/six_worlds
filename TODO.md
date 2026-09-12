@@ -179,7 +179,28 @@ The mirror image of dead data: code paths that work and are never exercised.
   the percentage stats**, and a **party-wide propagation mechanism** for the
   `party_` keys.
 
-- [ ] **Party-wide bonuses: the design, when someone builds it.** They behave
+- [x] **Party-wide bonuses** — built 2026-09-12 as `PartyBonuses`, best member,
+      with `update_party_derived_stats()` firing on skill change and party
+      add/remove. Six keys wired and rescaled (see `base_bonuses._comment` for
+      the rule). Design notes kept below for the next phase:
+
+- [ ] **Phase 2 — economy and crafting** (~7 keys): `buy_discount_pct`,
+      `sell_markup_pct`, `trading_price_pct`, `crafting_quality_pct`,
+      `crafting_yield_pct`, `repair_efficiency_pct`, `consumable_power_pct`.
+      Consumers in ShopSystem and ItemSystem. Mostly mechanical.
+- [ ] **Phase 3 — social, exploration, progression** (~8 keys):
+      `charm_effectiveness_pct`, `social_roll_pct`, `party_skill_check_bonus`,
+      `morale_pct`, `party_travel_speed_pct`, `party_supply_duration_pct`,
+      `party_xp_gain_pct`, `loot_quality_pct`, `max_companions`.
+- [ ] **Needs a proc site, not a consumer** (4 keys): `stun_chance_pct` (maces
+      on-hit), `burning_damage_pct` (fire DoT), `status_effect_chance_pct`
+      (status application), `luck_pct`. Each is its own small integration.
+- [ ] **`effect_duration_pct` is a DUPLICATE, not a gap.** Enchantment's
+      duration bonus already works, computed straight from the skill level in
+      `_calculate_status_duration` (+1 turn per 2 levels). Wiring the table key
+      would double-count it. Decide which one is the truth and delete the other
+      — do not wire this.
+- [ ] **Original design notes:** They behave
       like equipment bonuses — another additive source folded into `derived` —
       except the source is a different character's skill. No ordering problem
       arises because they derive from **raw skill levels**, never from another
@@ -399,6 +420,24 @@ but may not be what the game wants.
       checklist. The whole party-bonus logic may want rethinking rather than
       tuning — the current pass standardizes it so it is legible enough to
       reason about, not because the rule is settled.
+
+- [ ] **Traps — a battle feature, not an overworld one.** Originally conceived
+      as a combat mechanic and the pieces are scattered across both readings,
+      which is why it keeps looking like two half-features:
+
+      - `trap_maker` (Smithing) is a combat perk deferred on a `place_trap`
+        resolver — see §7. "Place a trap on an adjacent tile. The first enemy to
+        enter takes damage equal to 30% of your Focus and is immobilized."
+      - `trap_detection_pct` (Thievery) is a dead skill-table key, currently
+        with no system at all. It was read as overworld detection, which is
+        probably wrong: if traps are a battle feature, this is the counterplay
+        to enemies placing them.
+      - `Trapped` exists as a status in statuses.json.
+
+      Design question before either gets built: are traps placed in combat only,
+      or do they persist on the overworld map? That decides whether detection is
+      a combat action, a map passive, or both — and `trap_detection_pct` cannot
+      be wired until it is answered.
 
 - [ ] **Support characters as equipment-shaped content.** The retired
       "logistics train" idea has one part worth keeping: a hireling who is not

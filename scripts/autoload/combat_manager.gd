@@ -2346,6 +2346,14 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 		if reduction > 0.0:
 			damage = maxi(1, int(damage * (1.0 - minf(reduction, 90.0) / 100.0)))
 
+		# Magic resistance from the Yoga table. Applies to the elemental and
+		# arcane damage types only — a sword is not resisted by equanimity.
+		if damage_type in MAGIC_DAMAGE_TYPES:
+			var magic_resist: float = unit.character_data.get("derived", {}).get(
+				"magic_resistance_pct", 0.0)
+			if magic_resist > 0.0:
+				damage = maxi(1, int(damage * (1.0 - minf(magic_resist, 90.0) / 100.0)))
+
 	# Mantric_Armor: hp_shield absorbs damage before HP. Shield pool lives in the
 	# status entry's "value" field (0/unset → default 25); status expires when spent.
 	if damage > 0:
@@ -3671,6 +3679,18 @@ func _spawn_summoned_unit(caster: Node, summon_id: String, target_pos: Vector2i,
 	summon_unit.summoner_id = caster.get_instance_id()  # Track ownership for mantra effects
 	summon_unit.init_as_enemy(summon_data)
 	summon_unit.team = caster.team  # Summon fights on the caster's side
+
+	# Summoning skill makes what you raise sturdier. Applied before any
+	# empowerment below, so the two multiply rather than one overwriting the
+	# other.
+	var summon_hp_pct: float = caster.character_data.get("derived", {}).get(
+		"summon_hp_pct", 0.0) if "character_data" in caster else 0.0
+	if summon_hp_pct > 0.0:
+		var trained_hp: int = int(summon_unit.max_hp * (1.0 + summon_hp_pct / 100.0))
+		summon_unit.max_hp = trained_hp
+		summon_unit.current_hp = trained_hp
+		summon_unit.character_data.get("derived", {})["max_hp"] = trained_hp
+		summon_unit.character_data.get("derived", {})["current_hp"] = trained_hp
 	# Jeweled Pagoda DY: if caster.next_summon_empowered is set, consume it and apply buffs
 	if "next_summon_empowered" in caster and caster.next_summon_empowered:
 		caster.next_summon_empowered = false
@@ -5444,6 +5464,13 @@ func ai_use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Di
 # ============================================
 # ACTIVE SKILLS
 # ============================================
+
+## Damage types magic_resistance_pct applies to. Physical damage is not on the
+## list: the Yoga table's resistance is to magic, not to being hit.
+const MAGIC_DAMAGE_TYPES: Array[String] = [
+	"space", "air", "fire", "water", "earth", "holy", "shadow", "arcane",
+]
+
 
 ## Effect strings `use_active_skill` below dispatches to a real resolver.
 ## Keep in step with its match block — the UI greys out anything not listed here
