@@ -1015,6 +1015,21 @@ var _equipment_tables: Dictionary = {}
 const AUTHORED_WEAR_FACTOR: float = 0.5
 
 
+## The base entry for an item type, wherever it lives.
+##
+## Weapons, armour and accessories are three tables because they carry different
+## fields, but a caller asking "what is a `focus` worth before material and
+## quality" should not have to know which of the three to look in.
+func get_base_for_type(item_type: String) -> Dictionary:
+	if _equipment_tables.is_empty():
+		_load_equipment_tables()
+	for table in ["weapon_bases", "armor_bases", "accessory_bases"]:
+		var entry: Dictionary = _equipment_tables.get(table, {}).get(item_type, {})
+		if not entry.is_empty():
+			return entry
+	return {}
+
+
 ## Every item id the game knows, authored and runtime-generated alike.
 ## `_comment` dividers are skipped — their values are strings, not items.
 func get_all_item_ids() -> Array[String]:

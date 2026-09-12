@@ -23,7 +23,8 @@
       "durability": 85,
       "max_durability": 85,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "bronze_sword": {
       "name": "Bronze Khanda",
@@ -47,7 +48,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "steel_longsword": {
       "name": "Steel Khanda",
@@ -71,7 +73,8 @@
       "durability": 110,
       "max_durability": 110,
       "material": "steel",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "bronze_talwar": {
       "name": "Bronze Talwar",
@@ -96,7 +99,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "bronze_dao": {
       "name": "Bronze Dao",
@@ -121,7 +125,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "bronze_patisa": {
       "name": "Bronze Patisa",
@@ -145,7 +150,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "iron_khanda": {
       "name": "Iron Khanda",
@@ -169,7 +175,8 @@
       "durability": 85,
       "max_durability": 85,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "iron_dao": {
       "name": "Iron Dao",
@@ -194,7 +201,8 @@
       "durability": 85,
       "max_durability": 85,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "iron_patisa": {
       "name": "Iron Patisa",
@@ -218,7 +226,8 @@
       "durability": 85,
       "max_durability": 85,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "steel_talwar": {
       "name": "Steel Talwar",
@@ -243,7 +252,8 @@
       "durability": 110,
       "max_durability": 110,
       "material": "steel",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "steel_dao": {
       "name": "Steel Dao",
@@ -268,7 +278,8 @@
       "durability": 110,
       "max_durability": 110,
       "material": "steel",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "steel_patisa": {
       "name": "Steel Patisa",
@@ -292,7 +303,8 @@
       "durability": 110,
       "max_durability": 110,
       "material": "steel",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "damascene_khanda": {
       "name": "Damascene Khanda",
@@ -316,7 +328,8 @@
       "durability": 140,
       "max_durability": 140,
       "material": "damascene",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "damascene_talwar": {
       "name": "Damascene Talwar",
@@ -341,7 +354,8 @@
       "durability": 140,
       "max_durability": 140,
       "material": "damascene",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "damascene_dao": {
       "name": "Damascene Dao",
@@ -366,7 +380,8 @@
       "durability": 140,
       "max_durability": 140,
       "material": "damascene",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "damascene_patisa": {
       "name": "Damascene Patisa",
@@ -390,7 +405,8 @@
       "durability": 140,
       "max_durability": 140,
       "material": "damascene",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "sky_iron_khanda": {
       "name": "Sky-iron Khanda",
@@ -414,7 +430,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "sky_iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "sky_iron_talwar": {
       "name": "Sky-iron Talwar",
@@ -439,7 +456,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "sky_iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "sky_iron_dao": {
       "name": "Sky-iron Dao",
@@ -464,7 +482,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "sky_iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "sky_iron_patisa": {
       "name": "Sky-iron Patisa",
@@ -488,7 +507,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "sky_iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "vajra_khanda": {
       "name": "Vajra Khanda",
@@ -512,7 +532,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "vajra",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "none"
     },
     "vajra_talwar": {
       "name": "Vajra Talwar",
@@ -537,7 +558,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "vajra",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "none"
     },
     "vajra_dao": {
       "name": "Vajra Dao",
@@ -562,7 +584,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "vajra",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "none"
     },
     "vajra_patisa": {
       "name": "Vajra Patisa",
@@ -586,7 +609,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "steel",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "steel_urumi": {
       "name": "Steel Urumi",
@@ -613,7 +637,8 @@
       "durability": 110,
       "max_durability": 110,
       "material": "steel",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "wooden_staff": {
       "name": "Wooden Staff",
@@ -634,7 +659,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "wood",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "oak_staff": {
       "name": "Oak Staff",
@@ -657,7 +683,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "wood",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "hunting_bow": {
       "name": "Dhanush",
@@ -683,7 +710,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "wood",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "short_bow": {
       "name": "Short Bow",
@@ -709,7 +737,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "wood",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "longbow": {
       "name": "Longbow",
@@ -736,7 +765,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "wood",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "composite_bow": {
       "name": "Composite Bow",
@@ -762,7 +792,8 @@
       "durability": 55,
       "max_durability": 55,
       "material": "composite",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "throwing_knife": {
       "name": "Throwing Knife",
@@ -786,7 +817,8 @@
       },
       "abilities": [],
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "iron_chakram": {
       "name": "Iron Chakram",
@@ -812,7 +844,8 @@
       "retrievable": true,
       "abilities": [],
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "steel_chakram": {
       "name": "Steel Chakram",
@@ -838,7 +871,8 @@
       "retrievable": true,
       "abilities": [],
       "material": "steel",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "iron_dagger": {
       "name": "Iron Dagger",
@@ -862,7 +896,8 @@
       "durability": 85,
       "max_durability": 85,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "iron_katar": {
       "name": "Iron Katar",
@@ -887,7 +922,8 @@
       "durability": 85,
       "max_durability": 85,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "steel_katar": {
       "name": "Steel Katar",
@@ -912,7 +948,8 @@
       "durability": 110,
       "max_durability": 110,
       "material": "steel",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "iron_bichawa": {
       "name": "Iron Bichawa",
@@ -937,7 +974,8 @@
       "durability": 85,
       "max_durability": 85,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "steel_bichawa": {
       "name": "Steel Bichawa",
@@ -962,7 +1000,8 @@
       "durability": 110,
       "max_durability": 110,
       "material": "steel",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "bronze_kukri": {
       "name": "Bronze Kukri",
@@ -987,7 +1026,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "iron_kukri": {
       "name": "Iron Kukri",
@@ -1012,7 +1052,8 @@
       "durability": 85,
       "max_durability": 85,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "steel_kukri": {
       "name": "Steel Kukri",
@@ -1037,7 +1078,8 @@
       "durability": 110,
       "max_durability": 110,
       "material": "steel",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "iron_axe": {
       "name": "Iron Axe",
@@ -1060,7 +1102,8 @@
       "durability": 85,
       "max_durability": 85,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "iron_mace": {
       "name": "Iron Gada",
@@ -1085,7 +1128,8 @@
       "durability": 85,
       "max_durability": 85,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "wooden_spear": {
       "name": "Wooden Spear",
@@ -1108,7 +1152,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "wood",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "iron_trishula": {
       "name": "Iron Trishula",
@@ -1135,7 +1180,8 @@
       "durability": 85,
       "max_durability": 85,
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "steel_trishula": {
       "name": "Steel Trishula",
@@ -1162,7 +1208,8 @@
       "durability": 110,
       "max_durability": 110,
       "material": "steel",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "wooden_shield": {
       "name": "Wooden Shield",
@@ -1185,7 +1232,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "wood",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "iron_shield": {
       "name": "Iron Shield",
@@ -1208,7 +1256,8 @@
       "durability": 85,
       "max_durability": 85,
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "leather_vest": {
       "name": "Chuba",
@@ -1227,7 +1276,8 @@
       },
       "abilities": [],
       "material": "leather",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "padded_armor": {
       "name": "Padded Armor",
@@ -1246,7 +1296,8 @@
       },
       "abilities": [],
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "chainmail": {
       "name": "Chainmail",
@@ -1267,7 +1318,8 @@
       },
       "abilities": [],
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "lamellar_armor": {
       "name": "Lamellar Armor",
@@ -1288,7 +1340,8 @@
       },
       "abilities": [],
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "cloth_robe": {
       "name": "Cloth Robe",
@@ -1307,7 +1360,8 @@
       },
       "abilities": [],
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "monks_robe": {
       "name": "Monk's Robe",
@@ -1331,7 +1385,8 @@
       },
       "abilities": [],
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "leather_cap": {
       "name": "Leather Cap",
@@ -1349,7 +1404,8 @@
       },
       "abilities": [],
       "material": "leather",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "iron_helmet": {
       "name": "Iron Helmet",
@@ -1370,7 +1426,8 @@
       },
       "abilities": [],
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "cloth_hood": {
       "name": "Cloth Hood",
@@ -1388,7 +1445,8 @@
       },
       "abilities": [],
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "monks_hood": {
       "name": "Monk's Hood",
@@ -1411,7 +1469,8 @@
       },
       "abilities": [],
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "leather_gloves": {
       "name": "Leather Gloves",
@@ -1429,7 +1488,8 @@
       },
       "abilities": [],
       "material": "leather",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "iron_gauntlets": {
       "name": "Iron Gauntlets",
@@ -1450,7 +1510,8 @@
       },
       "abilities": [],
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "leather_pants": {
       "name": "Leather Pants",
@@ -1468,7 +1529,8 @@
       },
       "abilities": [],
       "material": "leather",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "iron_greaves": {
       "name": "Iron Greaves",
@@ -1489,7 +1551,8 @@
       },
       "abilities": [],
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "leather_boots": {
       "name": "Leather Boots",
@@ -1508,7 +1571,8 @@
       },
       "abilities": [],
       "material": "leather",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "travelers_boots": {
       "name": "Traveler's Boots",
@@ -1527,7 +1591,8 @@
       },
       "abilities": [],
       "material": "leather",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "copper_ring": {
       "name": "Copper Ring",
@@ -1545,7 +1610,8 @@
       },
       "abilities": [],
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "silver_ring": {
       "name": "Silver Ring",
@@ -1564,7 +1630,8 @@
       },
       "abilities": [],
       "material": "silver",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "travelers_amulet": {
       "name": "Traveler's Amulet",
@@ -1582,7 +1649,8 @@
       },
       "abilities": [],
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "bone_amulet": {
       "name": "Bone Amulet",
@@ -1601,7 +1669,8 @@
       },
       "abilities": [],
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "lucky_charm": {
       "name": "Lucky Charm",
@@ -1620,7 +1689,8 @@
       },
       "abilities": [],
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "prayer_beads": {
       "name": "Prayer Beads",
@@ -1639,7 +1709,8 @@
       },
       "abilities": [],
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "vajra_thunderbolt": {
       "name": "Vajra Thunderbolt",
@@ -1664,8 +1735,10 @@
       "abilities": [],
       "durability": 85,
       "max_durability": 85,
-      "material": "vajra",
-      "quality": "masterwork"
+      "material": "bronze",
+      "quality": "masterwork",
+      "gilding": "vajra",
+      "enchantment": "touched"
     },
     "yamas_ledger": {
       "name": "Yama's Ledger",
@@ -1686,7 +1759,8 @@
       },
       "abilities": [],
       "material": "bone",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "mantle_of_the_undying_flame": {
       "name": "Mantle of the Undying Flame",
@@ -1706,7 +1780,8 @@
       },
       "abilities": [],
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "frozen_heart_amulet": {
       "name": "Frozen Heart Amulet",
@@ -1726,7 +1801,8 @@
       },
       "abilities": [],
       "material": "bone",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "health_potion": {
       "name": "Health Potion",
@@ -2040,8 +2116,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "enchantment": "none"
     },
     "white_charm_middling": {
       "name": "Middling White Charm",
@@ -2056,8 +2133,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "good"
+      "material": "bronze",
+      "quality": "good",
+      "enchantment": "none"
     },
     "white_charm_rare": {
       "name": "Rare White Charm",
@@ -2072,8 +2150,9 @@
         "spellpower_bonus": 0.1
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "fine"
+      "material": "bronze",
+      "quality": "fine",
+      "enchantment": "none"
     },
     "white_charm_unique": {
       "name": "Unique White Charm",
@@ -2088,8 +2167,9 @@
         "spellpower_bonus": 0.2
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "masterwork"
+      "material": "bronze",
+      "quality": "masterwork",
+      "enchantment": "none"
     },
     "fire_charm_common": {
       "name": "Common Fire Charm",
@@ -2104,8 +2184,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "enchantment": "none"
     },
     "fire_charm_middling": {
       "name": "Middling Fire Charm",
@@ -2120,8 +2201,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "good"
+      "material": "bronze",
+      "quality": "good",
+      "enchantment": "none"
     },
     "fire_charm_rare": {
       "name": "Rare Fire Charm",
@@ -2136,8 +2218,9 @@
         "spellpower_bonus": 0.1
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "fine"
+      "material": "scale",
+      "quality": "fine",
+      "enchantment": "none"
     },
     "fire_charm_unique": {
       "name": "Unique Fire Charm",
@@ -2152,8 +2235,9 @@
         "spellpower_bonus": 0.2
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "masterwork"
+      "material": "bronze",
+      "quality": "masterwork",
+      "enchantment": "none"
     },
     "earth_charm_common": {
       "name": "Common Earth Charm",
@@ -2169,7 +2253,8 @@
       },
       "slot": "talisman",
       "material": "wood",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "earth_charm_middling": {
       "name": "Middling Earth Charm",
@@ -2184,8 +2269,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "good"
+      "material": "bronze",
+      "quality": "good",
+      "enchantment": "none"
     },
     "earth_charm_rare": {
       "name": "Rare Earth Charm",
@@ -2200,8 +2286,9 @@
         "spellpower_bonus": 0.1
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "fine"
+      "material": "bronze",
+      "quality": "fine",
+      "enchantment": "none"
     },
     "earth_charm_unique": {
       "name": "Unique Earth Charm",
@@ -2216,8 +2303,10 @@
         "spellpower_bonus": 0.2
       },
       "slot": "talisman",
-      "material": "gold",
-      "quality": "masterwork"
+      "material": "bone",
+      "quality": "masterwork",
+      "gilding": "gold",
+      "enchantment": "none"
     },
     "water_charm_common": {
       "name": "Common Water Charm",
@@ -2232,8 +2321,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "enchantment": "none"
     },
     "air_charm_common": {
       "name": "Common Air Charm",
@@ -2248,8 +2338,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "enchantment": "none"
     },
     "space_charm_common": {
       "name": "Common Space Charm",
@@ -2264,8 +2355,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "enchantment": "none"
     },
     "black_charm_common": {
       "name": "Common Black Charm",
@@ -2281,7 +2373,8 @@
       },
       "slot": "talisman",
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "sorcery_charm_common": {
       "name": "Common Sorcery Charm",
@@ -2296,8 +2389,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "enchantment": "none"
     },
     "enchantment_charm_common": {
       "name": "Common Enchantment Charm",
@@ -2312,8 +2406,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "enchantment": "none"
     },
     "summoning_charm_common": {
       "name": "Common Summoning Charm",
@@ -2328,8 +2423,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "enchantment": "none"
     },
     "ice_shard": {
       "name": "Ice Shard",
@@ -2348,7 +2444,8 @@
       },
       "abilities": [],
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "soul_stone": {
       "name": "Soul Stone",
@@ -2367,7 +2464,8 @@
       },
       "abilities": [],
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "fire_resistance_talisman": {
       "name": "Fire Resistance Talisman",
@@ -2386,7 +2484,8 @@
         "fire_resistance": 15
       },
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "good_iron_weapon": {
       "name": "Good Iron Weapon",
@@ -2415,7 +2514,8 @@
       "durability": 85,
       "max_durability": 85,
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "good_iron_armor": {
       "name": "Good Iron Armor",
@@ -2441,7 +2541,8 @@
         "material": "iron"
       },
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "random_common_talisman": {
       "name": "Carved Token",
@@ -2463,7 +2564,8 @@
         "rarity": "common"
       },
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "fire_bomb": {
       "name": "Fire Bomb",
@@ -3638,7 +3740,8 @@
       "durability": 30,
       "max_durability": 30,
       "slot": "weapon_off",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "bone_sword": {
       "name": "Bone Khanda",
@@ -3655,7 +3758,8 @@
       "durability": 30,
       "max_durability": 30,
       "slot": "weapon_main",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "bone_club": {
       "name": "Bone Gada",
@@ -3672,7 +3776,8 @@
       "durability": 30,
       "max_durability": 30,
       "slot": "weapon_main",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "bone_spear": {
       "name": "Bone Spear",
@@ -3689,7 +3794,8 @@
       "durability": 30,
       "max_durability": 30,
       "slot": "weapon_main",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "bronze_dagger": {
       "name": "Bronze Dagger",
@@ -3705,7 +3811,8 @@
       "durability": 65,
       "max_durability": 65,
       "slot": "weapon_off",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "bronze_axe": {
       "name": "Bronze Axe",
@@ -3721,7 +3828,8 @@
       "durability": 65,
       "max_durability": 65,
       "slot": "weapon_main",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "bronze_mace": {
       "name": "Bronze Gada",
@@ -3738,7 +3846,8 @@
       "durability": 65,
       "max_durability": 65,
       "slot": "weapon_main",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "bronze_spear": {
       "name": "Bronze Spear",
@@ -3755,7 +3864,8 @@
       "durability": 65,
       "max_durability": 65,
       "slot": "weapon_main",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "obsidian_dagger": {
       "name": "Obsidian Dagger",
@@ -3772,7 +3882,8 @@
       "durability": 20,
       "max_durability": 20,
       "slot": "weapon_off",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "obsidian_blade": {
       "name": "Obsidian Dao",
@@ -3791,7 +3902,8 @@
       "durability": 20,
       "max_durability": 20,
       "slot": "weapon_main",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "obsidian_spear": {
       "name": "Obsidian Spear",
@@ -3809,7 +3921,8 @@
       "durability": 20,
       "max_durability": 20,
       "slot": "weapon_main",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "ember_core": {
       "name": "Ember Core",
@@ -3850,7 +3963,8 @@
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_copper_dorje": {
       "name": "Blessed Copper Dorje",
@@ -3880,7 +3994,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_copper_dorje": {
       "name": "Empowered Copper Dorje",
@@ -3910,7 +4025,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_copper_dorje": {
       "name": "Perfected Copper Dorje",
@@ -3940,7 +4056,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_copper_dorje": {
       "name": "Legendary Copper Dorje",
@@ -3970,7 +4087,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_silver_dorje": {
       "name": "Plain Silver Dorje",
@@ -3999,8 +4117,10 @@
       "durability": 40,
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
-      "material": "silver",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "gilding": "silver",
+      "enchantment": "none"
     },
     "blessed_silver_dorje": {
       "name": "Blessed Silver Dorje",
@@ -4030,7 +4150,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "empowered_silver_dorje": {
       "name": "Empowered Silver Dorje",
@@ -4060,7 +4181,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "perfected_silver_dorje": {
       "name": "Perfected Silver Dorje",
@@ -4090,7 +4212,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "legendary_silver_dorje": {
       "name": "Legendary Silver Dorje",
@@ -4120,7 +4243,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_gold_dorje": {
       "name": "Plain Gold Dorje",
@@ -4149,8 +4273,10 @@
       "durability": 40,
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
-      "material": "gold",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "gilding": "gold",
+      "enchantment": "none"
     },
     "blessed_gold_dorje": {
       "name": "Blessed Gold Dorje",
@@ -4180,7 +4306,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "empowered_gold_dorje": {
       "name": "Empowered Gold Dorje",
@@ -4210,7 +4337,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "perfected_gold_dorje": {
       "name": "Perfected Gold Dorje",
@@ -4240,7 +4368,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "legendary_gold_dorje": {
       "name": "Legendary Gold Dorje",
@@ -4270,7 +4399,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "plain_iron_dorje": {
       "name": "Plain Iron Dorje",
@@ -4300,7 +4430,8 @@
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_iron_dorje": {
       "name": "Blessed Iron Dorje",
@@ -4330,7 +4461,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_iron_dorje": {
       "name": "Empowered Iron Dorje",
@@ -4360,7 +4492,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_iron_dorje": {
       "name": "Perfected Iron Dorje",
@@ -4390,7 +4523,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_iron_dorje": {
       "name": "Legendary Iron Dorje",
@@ -4420,7 +4554,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_bronze_dorje": {
       "name": "Plain Bronze Dorje",
@@ -4450,7 +4585,8 @@
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_bronze_dorje": {
       "name": "Blessed Bronze Dorje",
@@ -4480,7 +4616,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_bronze_dorje": {
       "name": "Empowered Bronze Dorje",
@@ -4510,7 +4647,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "bronze",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_sky_iron_dorje": {
       "name": "Perfected Sky-iron Dorje",
@@ -4540,7 +4678,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "sky_iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "legendary_sky_iron_dorje": {
       "name": "Legendary Sky-iron Dorje",
@@ -4570,7 +4709,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "sky_iron",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "plain_conch_dorje": {
       "name": "Plain Conch Dorje",
@@ -4600,7 +4740,8 @@
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_conch_dorje": {
       "name": "Blessed Conch Dorje",
@@ -4630,7 +4771,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_conch_dorje": {
       "name": "Empowered Conch Dorje",
@@ -4660,7 +4802,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_conch_dorje": {
       "name": "Perfected Conch Dorje",
@@ -4690,7 +4833,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_conch_dorje": {
       "name": "Legendary Conch Dorje",
@@ -4720,7 +4864,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_bone_dorje": {
       "name": "Plain Bone Dorje",
@@ -4750,7 +4895,8 @@
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_bone_dorje": {
       "name": "Blessed Bone Dorje",
@@ -4780,7 +4926,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_bone_dorje": {
       "name": "Empowered Bone Dorje",
@@ -4810,7 +4957,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_bone_dorje": {
       "name": "Perfected Bone Dorje",
@@ -4840,7 +4988,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "empowered"
     },
     "legendary_bone_dorje": {
       "name": "Legendary Bone Dorje",
@@ -4870,7 +5019,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_copper_drilbu": {
       "name": "Plain Copper Drilbu",
@@ -4903,7 +5053,8 @@
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_copper_drilbu": {
       "name": "Blessed Copper Drilbu",
@@ -4936,7 +5087,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_copper_drilbu": {
       "name": "Empowered Copper Drilbu",
@@ -4969,7 +5121,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_copper_drilbu": {
       "name": "Perfected Copper Drilbu",
@@ -5002,7 +5155,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_copper_drilbu": {
       "name": "Legendary Copper Drilbu",
@@ -5035,7 +5189,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_silver_drilbu": {
       "name": "Plain Silver Drilbu",
@@ -5067,8 +5222,10 @@
       "durability": 40,
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
-      "material": "silver",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "gilding": "silver",
+      "enchantment": "none"
     },
     "blessed_silver_drilbu": {
       "name": "Blessed Silver Drilbu",
@@ -5101,7 +5258,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "empowered_silver_drilbu": {
       "name": "Empowered Silver Drilbu",
@@ -5134,7 +5292,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "perfected_silver_drilbu": {
       "name": "Perfected Silver Drilbu",
@@ -5167,7 +5326,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "legendary_silver_drilbu": {
       "name": "Legendary Silver Drilbu",
@@ -5200,7 +5360,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_gold_drilbu": {
       "name": "Plain Gold Drilbu",
@@ -5232,8 +5393,10 @@
       "durability": 40,
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
-      "material": "gold",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "gilding": "gold",
+      "enchantment": "none"
     },
     "blessed_gold_drilbu": {
       "name": "Blessed Gold Drilbu",
@@ -5266,7 +5429,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "empowered_gold_drilbu": {
       "name": "Empowered Gold Drilbu",
@@ -5299,7 +5463,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "perfected_gold_drilbu": {
       "name": "Perfected Gold Drilbu",
@@ -5332,7 +5497,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "legendary_gold_drilbu": {
       "name": "Legendary Gold Drilbu",
@@ -5365,7 +5531,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "plain_iron_drilbu": {
       "name": "Plain Iron Drilbu",
@@ -5398,7 +5565,8 @@
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_iron_drilbu": {
       "name": "Blessed Iron Drilbu",
@@ -5431,7 +5599,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_iron_drilbu": {
       "name": "Empowered Iron Drilbu",
@@ -5464,7 +5633,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_iron_drilbu": {
       "name": "Perfected Iron Drilbu",
@@ -5497,7 +5667,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_iron_drilbu": {
       "name": "Legendary Iron Drilbu",
@@ -5530,7 +5701,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_bronze_drilbu": {
       "name": "Plain Bronze Drilbu",
@@ -5561,7 +5733,8 @@
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_bronze_drilbu": {
       "name": "Blessed Bronze Drilbu",
@@ -5592,7 +5765,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_bronze_drilbu": {
       "name": "Empowered Bronze Drilbu",
@@ -5623,7 +5797,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "bronze",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_sky_iron_drilbu": {
       "name": "Perfected Sky-iron Drilbu",
@@ -5654,7 +5829,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "sky_iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "legendary_sky_iron_drilbu": {
       "name": "Legendary Sky-iron Drilbu",
@@ -5685,7 +5861,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "sky_iron",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "plain_conch_drilbu": {
       "name": "Plain Conch Drilbu",
@@ -5718,7 +5895,8 @@
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_conch_drilbu": {
       "name": "Blessed Conch Drilbu",
@@ -5751,7 +5929,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_conch_drilbu": {
       "name": "Empowered Conch Drilbu",
@@ -5784,7 +5963,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_conch_drilbu": {
       "name": "Perfected Conch Drilbu",
@@ -5817,7 +5997,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_conch_drilbu": {
       "name": "Legendary Conch Drilbu",
@@ -5850,7 +6031,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_bone_drilbu": {
       "name": "Plain Bone Drilbu",
@@ -5883,7 +6065,8 @@
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_bone_drilbu": {
       "name": "Blessed Bone Drilbu",
@@ -5916,7 +6099,8 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_bone_drilbu": {
       "name": "Empowered Bone Drilbu",
@@ -5949,7 +6133,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_bone_drilbu": {
       "name": "Perfected Bone Drilbu",
@@ -5982,7 +6167,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "empowered"
     },
     "legendary_bone_drilbu": {
       "name": "Legendary Bone Drilbu",
@@ -6015,7 +6201,8 @@
       "max_durability": 9999,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_copper_khatvanga": {
       "name": "Plain Copper Khatvanga",
@@ -6047,7 +6234,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -2,
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_copper_khatvanga": {
       "name": "Blessed Copper Khatvanga",
@@ -6079,7 +6267,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_copper_khatvanga": {
       "name": "Empowered Copper Khatvanga",
@@ -6112,7 +6301,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "copper",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_copper_khatvanga": {
       "name": "Perfected Copper Khatvanga",
@@ -6145,7 +6335,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "copper",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "empowered"
     },
     "legendary_copper_khatvanga": {
       "name": "Legendary Copper Khatvanga",
@@ -6178,7 +6369,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -8,
       "material": "copper",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_silver_khatvanga": {
       "name": "Plain Silver Khatvanga",
@@ -6210,7 +6402,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -2,
       "material": "silver",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_silver_khatvanga": {
       "name": "Blessed Silver Khatvanga",
@@ -6242,7 +6435,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "silver",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_silver_khatvanga": {
       "name": "Empowered Silver Khatvanga",
@@ -6275,7 +6469,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "silver",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "perfected_silver_khatvanga": {
       "name": "Perfected Silver Khatvanga",
@@ -6308,7 +6503,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "silver",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "legendary_silver_khatvanga": {
       "name": "Legendary Silver Khatvanga",
@@ -6341,7 +6537,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -8,
       "material": "silver",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_gold_khatvanga": {
       "name": "Plain Gold Khatvanga",
@@ -6372,8 +6569,10 @@
       "max_durability": 40,
       "passive_aura": "initiative_debuff",
       "aura_value": -2,
-      "material": "gold",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "gilding": "gold",
+      "enchantment": "none"
     },
     "blessed_gold_khatvanga": {
       "name": "Blessed Gold Khatvanga",
@@ -6405,7 +6604,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "gold",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "empowered_gold_khatvanga": {
       "name": "Empowered Gold Khatvanga",
@@ -6438,7 +6638,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "gold",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "perfected_gold_khatvanga": {
       "name": "Perfected Gold Khatvanga",
@@ -6471,7 +6672,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "gold",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "legendary_gold_khatvanga": {
       "name": "Legendary Gold Khatvanga",
@@ -6504,7 +6706,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -8,
       "material": "gold",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "plain_iron_khatvanga": {
       "name": "Plain Iron Khatvanga",
@@ -6536,7 +6739,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -2,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_iron_khatvanga": {
       "name": "Blessed Iron Khatvanga",
@@ -6568,7 +6772,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_iron_khatvanga": {
       "name": "Empowered Iron Khatvanga",
@@ -6601,7 +6806,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_iron_khatvanga": {
       "name": "Perfected Iron Khatvanga",
@@ -6634,7 +6840,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_iron_khatvanga": {
       "name": "Legendary Iron Khatvanga",
@@ -6667,7 +6874,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -8,
       "material": "iron",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_bronze_khatvanga": {
       "name": "Plain Bronze Khatvanga",
@@ -6699,7 +6907,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -2,
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_bronze_khatvanga": {
       "name": "Blessed Bronze Khatvanga",
@@ -6731,7 +6940,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_bronze_khatvanga": {
       "name": "Empowered Bronze Khatvanga",
@@ -6764,7 +6974,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "bronze",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_sky_iron_khatvanga": {
       "name": "Perfected Sky-iron Khatvanga",
@@ -6797,7 +7008,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "sky_iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "legendary_sky_iron_khatvanga": {
       "name": "Legendary Sky-iron Khatvanga",
@@ -6830,7 +7042,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -8,
       "material": "sky_iron",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "plain_conch_khatvanga": {
       "name": "Plain Conch Khatvanga",
@@ -6862,7 +7075,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -2,
       "material": "conch",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_conch_khatvanga": {
       "name": "Blessed Conch Khatvanga",
@@ -6894,7 +7108,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "conch",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_conch_khatvanga": {
       "name": "Empowered Conch Khatvanga",
@@ -6927,7 +7142,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "conch",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_conch_khatvanga": {
       "name": "Perfected Conch Khatvanga",
@@ -6960,7 +7176,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "conch",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_conch_khatvanga": {
       "name": "Legendary Conch Khatvanga",
@@ -6993,7 +7210,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -8,
       "material": "conch",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_bone_khatvanga": {
       "name": "Plain Bone Khatvanga",
@@ -7025,7 +7243,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -2,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_bone_khatvanga": {
       "name": "Blessed Bone Khatvanga",
@@ -7057,7 +7276,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_bone_khatvanga": {
       "name": "Empowered Bone Khatvanga",
@@ -7090,7 +7310,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "perfected_bone_khatvanga": {
       "name": "Perfected Bone Khatvanga",
@@ -7123,7 +7344,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "bone",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "empowered"
     },
     "legendary_bone_khatvanga": {
       "name": "Legendary Bone Khatvanga",
@@ -7156,7 +7378,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -8,
       "material": "bone",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "plain_copper_damaru": {
       "name": "Plain Copper Damaru",
@@ -7191,7 +7414,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_copper_damaru": {
       "name": "Blessed Copper Damaru",
@@ -7226,7 +7450,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_copper_damaru": {
       "name": "Empowered Copper Damaru",
@@ -7261,7 +7486,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "copper",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_copper_damaru": {
       "name": "Perfected Copper Damaru",
@@ -7296,7 +7522,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "copper",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_copper_damaru": {
       "name": "Legendary Copper Damaru",
@@ -7331,7 +7558,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "copper",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_silver_damaru": {
       "name": "Plain Silver Damaru",
@@ -7365,8 +7593,10 @@
       "special_mechanic": "rhythm_charge",
       "charge_max": 3,
       "charge_discount": 0.4,
-      "material": "silver",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "gilding": "silver",
+      "enchantment": "none"
     },
     "blessed_silver_damaru": {
       "name": "Blessed Silver Damaru",
@@ -7401,7 +7631,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "silver",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "empowered_silver_damaru": {
       "name": "Empowered Silver Damaru",
@@ -7436,7 +7667,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "silver",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "perfected_silver_damaru": {
       "name": "Perfected Silver Damaru",
@@ -7471,7 +7703,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "silver",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "legendary_silver_damaru": {
       "name": "Legendary Silver Damaru",
@@ -7506,7 +7739,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "silver",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_gold_damaru": {
       "name": "Plain Gold Damaru",
@@ -7540,8 +7774,10 @@
       "special_mechanic": "rhythm_charge",
       "charge_max": 3,
       "charge_discount": 0.4,
-      "material": "gold",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "gilding": "gold",
+      "enchantment": "none"
     },
     "blessed_gold_damaru": {
       "name": "Blessed Gold Damaru",
@@ -7576,7 +7812,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "gold",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "empowered_gold_damaru": {
       "name": "Empowered Gold Damaru",
@@ -7611,7 +7848,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "gold",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "perfected_gold_damaru": {
       "name": "Perfected Gold Damaru",
@@ -7646,7 +7884,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "gold",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "legendary_gold_damaru": {
       "name": "Legendary Gold Damaru",
@@ -7681,7 +7920,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "gold",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "plain_iron_damaru": {
       "name": "Plain Iron Damaru",
@@ -7716,7 +7956,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_iron_damaru": {
       "name": "Blessed Iron Damaru",
@@ -7751,7 +7992,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_iron_damaru": {
       "name": "Empowered Iron Damaru",
@@ -7786,7 +8028,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "perfected_iron_damaru": {
       "name": "Perfected Iron Damaru",
@@ -7821,7 +8064,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_iron_damaru": {
       "name": "Legendary Iron Damaru",
@@ -7856,7 +8100,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "iron",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_bronze_damaru": {
       "name": "Plain Bronze Damaru",
@@ -7891,7 +8136,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_bronze_damaru": {
       "name": "Blessed Bronze Damaru",
@@ -7926,7 +8172,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_bronze_damaru": {
       "name": "Empowered Bronze Damaru",
@@ -7961,7 +8208,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "bronze",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_sky_iron_damaru": {
       "name": "Perfected Sky-iron Damaru",
@@ -7996,7 +8244,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "sky_iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "legendary_sky_iron_damaru": {
       "name": "Legendary Sky-iron Damaru",
@@ -8031,7 +8280,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "sky_iron",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "plain_conch_damaru": {
       "name": "Plain Conch Damaru",
@@ -8066,7 +8316,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "conch",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_conch_damaru": {
       "name": "Blessed Conch Damaru",
@@ -8101,7 +8352,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "conch",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_conch_damaru": {
       "name": "Empowered Conch Damaru",
@@ -8136,7 +8388,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "conch",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_conch_damaru": {
       "name": "Perfected Conch Damaru",
@@ -8171,7 +8424,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "conch",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_conch_damaru": {
       "name": "Legendary Conch Damaru",
@@ -8206,7 +8460,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "conch",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_bone_damaru": {
       "name": "Plain Bone Damaru",
@@ -8241,7 +8496,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_bone_damaru": {
       "name": "Blessed Bone Damaru",
@@ -8276,7 +8532,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_bone_damaru": {
       "name": "Empowered Bone Damaru",
@@ -8311,7 +8568,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_bone_damaru": {
       "name": "Perfected Bone Damaru",
@@ -8346,7 +8604,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "bone",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "empowered"
     },
     "legendary_bone_damaru": {
       "name": "Legendary Bone Damaru",
@@ -8381,7 +8640,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "bone",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_copper_kangling": {
       "name": "Plain Copper Kangling",
@@ -8415,7 +8675,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_copper_kangling": {
       "name": "Blessed Copper Kangling",
@@ -8449,7 +8710,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_copper_kangling": {
       "name": "Empowered Copper Kangling",
@@ -8483,7 +8745,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "copper",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_copper_kangling": {
       "name": "Perfected Copper Kangling",
@@ -8517,7 +8780,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "copper",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "empowered"
     },
     "legendary_copper_kangling": {
       "name": "Legendary Copper Kangling",
@@ -8551,7 +8815,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "copper",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_silver_kangling": {
       "name": "Plain Silver Kangling",
@@ -8585,7 +8850,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "silver",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_silver_kangling": {
       "name": "Blessed Silver Kangling",
@@ -8619,7 +8885,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "silver",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "empowered_silver_kangling": {
       "name": "Empowered Silver Kangling",
@@ -8653,7 +8920,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "silver",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "perfected_silver_kangling": {
       "name": "Perfected Silver Kangling",
@@ -8687,7 +8955,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "silver",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "legendary_silver_kangling": {
       "name": "Legendary Silver Kangling",
@@ -8721,7 +8990,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "silver",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_gold_kangling": {
       "name": "Plain Gold Kangling",
@@ -8755,7 +9025,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_gold_kangling": {
       "name": "Blessed Gold Kangling",
@@ -8789,7 +9060,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_gold_kangling": {
       "name": "Empowered Gold Kangling",
@@ -8823,7 +9095,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "perfected_gold_kangling": {
       "name": "Perfected Gold Kangling",
@@ -8857,7 +9130,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "empowered"
     },
     "legendary_gold_kangling": {
       "name": "Legendary Gold Kangling",
@@ -8891,7 +9165,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_iron_kangling": {
       "name": "Plain Iron Kangling",
@@ -8925,7 +9200,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_iron_kangling": {
       "name": "Blessed Iron Kangling",
@@ -8959,7 +9235,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_iron_kangling": {
       "name": "Empowered Iron Kangling",
@@ -8993,7 +9270,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "perfected_iron_kangling": {
       "name": "Perfected Iron Kangling",
@@ -9027,7 +9305,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "empowered"
     },
     "legendary_iron_kangling": {
       "name": "Legendary Iron Kangling",
@@ -9061,7 +9340,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_bronze_kangling": {
       "name": "Plain Bronze Kangling",
@@ -9095,7 +9375,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_bronze_kangling": {
       "name": "Blessed Bronze Kangling",
@@ -9129,7 +9410,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_bronze_kangling": {
       "name": "Empowered Bronze Kangling",
@@ -9163,7 +9445,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bronze",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_sky_iron_kangling": {
       "name": "Perfected Sky-iron Kangling",
@@ -9197,7 +9480,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "sky_iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "legendary_sky_iron_kangling": {
       "name": "Legendary Sky-iron Kangling",
@@ -9231,7 +9515,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "sky_iron",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "plain_conch_kangling": {
       "name": "Plain Conch Kangling",
@@ -9265,7 +9550,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "conch",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_conch_kangling": {
       "name": "Blessed Conch Kangling",
@@ -9299,7 +9585,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "conch",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_conch_kangling": {
       "name": "Empowered Conch Kangling",
@@ -9333,7 +9620,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "conch",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_conch_kangling": {
       "name": "Perfected Conch Kangling",
@@ -9367,7 +9655,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "conch",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_conch_kangling": {
       "name": "Legendary Conch Kangling",
@@ -9401,7 +9690,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "conch",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_bone_kangling": {
       "name": "Plain Bone Kangling",
@@ -9435,7 +9725,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_bone_kangling": {
       "name": "Blessed Bone Kangling",
@@ -9469,7 +9760,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_bone_kangling": {
       "name": "Empowered Bone Kangling",
@@ -9503,7 +9795,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "perfected_bone_kangling": {
       "name": "Perfected Bone Kangling",
@@ -9537,7 +9830,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "empowered"
     },
     "legendary_bone_kangling": {
       "name": "Legendary Bone Kangling",
@@ -9571,7 +9865,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_copper_phurba": {
       "name": "Plain Copper Phurba",
@@ -9607,7 +9902,8 @@
       "throw_base_damage": 8,
       "throw_save_dc": 16,
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_copper_phurba": {
       "name": "Blessed Copper Phurba",
@@ -9643,7 +9939,8 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_copper_phurba": {
       "name": "Empowered Copper Phurba",
@@ -9679,7 +9976,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "copper",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_copper_phurba": {
       "name": "Perfected Copper Phurba",
@@ -9715,7 +10013,8 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "copper",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "empowered"
     },
     "legendary_copper_phurba": {
       "name": "Legendary Copper Phurba",
@@ -9751,7 +10050,8 @@
       "throw_base_damage": 20,
       "throw_save_dc": 16,
       "material": "copper",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_silver_phurba": {
       "name": "Plain Silver Phurba",
@@ -9787,7 +10087,8 @@
       "throw_base_damage": 8,
       "throw_save_dc": 16,
       "material": "silver",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_silver_phurba": {
       "name": "Blessed Silver Phurba",
@@ -9823,7 +10124,8 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "silver",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "empowered_silver_phurba": {
       "name": "Empowered Silver Phurba",
@@ -9859,7 +10161,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "silver",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "perfected_silver_phurba": {
       "name": "Perfected Silver Phurba",
@@ -9895,7 +10198,8 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "silver",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "legendary_silver_phurba": {
       "name": "Legendary Silver Phurba",
@@ -9931,7 +10235,8 @@
       "throw_base_damage": 20,
       "throw_save_dc": 16,
       "material": "silver",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_gold_phurba": {
       "name": "Plain Gold Phurba",
@@ -9966,8 +10271,10 @@
       "throw_mana_cost": 15,
       "throw_base_damage": 8,
       "throw_save_dc": 16,
-      "material": "gold",
-      "quality": "common"
+      "material": "bronze",
+      "quality": "common",
+      "gilding": "gold",
+      "enchantment": "none"
     },
     "blessed_gold_phurba": {
       "name": "Blessed Gold Phurba",
@@ -10003,7 +10310,8 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "gold",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "empowered_gold_phurba": {
       "name": "Empowered Gold Phurba",
@@ -10039,7 +10347,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "gold",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "perfected_gold_phurba": {
       "name": "Perfected Gold Phurba",
@@ -10075,7 +10384,8 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "gold",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "legendary_gold_phurba": {
       "name": "Legendary Gold Phurba",
@@ -10111,7 +10421,8 @@
       "throw_base_damage": 20,
       "throw_save_dc": 16,
       "material": "gold",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "plain_iron_phurba": {
       "name": "Plain Iron Phurba",
@@ -10147,7 +10458,8 @@
       "throw_base_damage": 8,
       "throw_save_dc": 16,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_iron_phurba": {
       "name": "Blessed Iron Phurba",
@@ -10183,7 +10495,8 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_iron_phurba": {
       "name": "Empowered Iron Phurba",
@@ -10219,7 +10532,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_iron_phurba": {
       "name": "Perfected Iron Phurba",
@@ -10255,7 +10569,8 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_iron_phurba": {
       "name": "Legendary Iron Phurba",
@@ -10291,7 +10606,8 @@
       "throw_base_damage": 20,
       "throw_save_dc": 16,
       "material": "iron",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_bronze_phurba": {
       "name": "Plain Bronze Phurba",
@@ -10327,7 +10643,8 @@
       "throw_base_damage": 8,
       "throw_save_dc": 16,
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_bronze_phurba": {
       "name": "Blessed Bronze Phurba",
@@ -10363,7 +10680,8 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "bronze",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_bronze_phurba": {
       "name": "Empowered Bronze Phurba",
@@ -10399,7 +10717,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "bronze",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_sky_iron_phurba": {
       "name": "Perfected Sky-iron Phurba",
@@ -10435,7 +10754,8 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "sky_iron",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "legendary_sky_iron_phurba": {
       "name": "Legendary Sky-iron Phurba",
@@ -10471,7 +10791,8 @@
       "throw_base_damage": 20,
       "throw_save_dc": 16,
       "material": "sky_iron",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "plain_conch_phurba": {
       "name": "Plain Conch Phurba",
@@ -10507,7 +10828,8 @@
       "throw_base_damage": 8,
       "throw_save_dc": 16,
       "material": "conch",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_conch_phurba": {
       "name": "Blessed Conch Phurba",
@@ -10543,7 +10865,8 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "conch",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_conch_phurba": {
       "name": "Empowered Conch Phurba",
@@ -10579,7 +10902,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "conch",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "perfected_conch_phurba": {
       "name": "Perfected Conch Phurba",
@@ -10615,7 +10939,8 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "conch",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_conch_phurba": {
       "name": "Legendary Conch Phurba",
@@ -10651,7 +10976,8 @@
       "throw_base_damage": 20,
       "throw_save_dc": 16,
       "material": "conch",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_bone_phurba": {
       "name": "Plain Bone Phurba",
@@ -10687,7 +11013,8 @@
       "throw_base_damage": 8,
       "throw_save_dc": 16,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_bone_phurba": {
       "name": "Blessed Bone Phurba",
@@ -10723,7 +11050,8 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_bone_phurba": {
       "name": "Empowered Bone Phurba",
@@ -10759,7 +11087,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "perfected_bone_phurba": {
       "name": "Perfected Bone Phurba",
@@ -10795,7 +11124,8 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "bone",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "empowered"
     },
     "legendary_bone_phurba": {
       "name": "Legendary Bone Phurba",
@@ -10831,7 +11161,8 @@
       "throw_base_damage": 20,
       "throw_save_dc": 16,
       "material": "bone",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "plain_space_ngakpa_robe": {
       "name": "Plain Red-And-White Striped Ngakpa Robe",
@@ -10858,7 +11189,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "plain_space_ngakpa_crown": {
       "name": "Plain Space Ngakpa Crown",
@@ -10886,7 +11218,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_space_ngakpa_robe": {
       "name": "Blessed Red-And-White Striped Ngakpa Robe",
@@ -10913,7 +11246,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "blessed_space_ngakpa_crown": {
       "name": "Blessed Space Ngakpa Crown",
@@ -10941,7 +11275,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_space_ngakpa_robe": {
       "name": "Empowered Red-And-White Striped Ngakpa Robe",
@@ -10969,7 +11304,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "empowered_space_ngakpa_crown": {
       "name": "Empowered Space Ngakpa Crown",
@@ -10997,7 +11333,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "perfected_space_ngakpa_robe": {
       "name": "Perfected Red-And-White Striped Ngakpa Robe",
@@ -11026,7 +11363,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "perfected"
     },
     "perfected_space_ngakpa_crown": {
       "name": "Perfected Space Ngakpa Crown",
@@ -11055,7 +11393,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "perfected"
     },
     "legendary_space_ngakpa_robe": {
       "name": "Legendary Red-And-White Striped Ngakpa Robe",
@@ -11084,7 +11423,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "legendary_space_ngakpa_crown": {
       "name": "Legendary Space Ngakpa Crown",
@@ -11113,7 +11453,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "plain_air_ngakpa_robe": {
       "name": "Plain Green Ngakpa Robe",
@@ -11140,7 +11481,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "plain_air_ngakpa_crown": {
       "name": "Plain Air Ngakpa Crown",
@@ -11168,7 +11510,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_air_ngakpa_robe": {
       "name": "Blessed Green Ngakpa Robe",
@@ -11195,7 +11538,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "blessed_air_ngakpa_crown": {
       "name": "Blessed Air Ngakpa Crown",
@@ -11223,7 +11567,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_air_ngakpa_robe": {
       "name": "Empowered Green Ngakpa Robe",
@@ -11251,7 +11596,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "empowered_air_ngakpa_crown": {
       "name": "Empowered Air Ngakpa Crown",
@@ -11279,7 +11625,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "perfected_air_ngakpa_robe": {
       "name": "Perfected Green Ngakpa Robe",
@@ -11308,7 +11655,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "perfected"
     },
     "perfected_air_ngakpa_crown": {
       "name": "Perfected Air Ngakpa Crown",
@@ -11337,7 +11685,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "perfected"
     },
     "legendary_air_ngakpa_robe": {
       "name": "Legendary Green Ngakpa Robe",
@@ -11366,7 +11715,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "legendary_air_ngakpa_crown": {
       "name": "Legendary Air Ngakpa Crown",
@@ -11395,7 +11745,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "plain_fire_ngakpa_robe": {
       "name": "Plain Red Ngakpa Robe",
@@ -11422,7 +11773,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "plain_fire_ngakpa_crown": {
       "name": "Plain Fire Ngakpa Crown",
@@ -11450,7 +11802,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_fire_ngakpa_robe": {
       "name": "Blessed Red Ngakpa Robe",
@@ -11477,7 +11830,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "blessed_fire_ngakpa_crown": {
       "name": "Blessed Fire Ngakpa Crown",
@@ -11505,7 +11859,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "empowered_fire_ngakpa_robe": {
       "name": "Empowered Red Ngakpa Robe",
@@ -11533,7 +11888,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "empowered_fire_ngakpa_crown": {
       "name": "Empowered Fire Ngakpa Crown",
@@ -11561,7 +11917,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "copper",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "perfected_fire_ngakpa_robe": {
       "name": "Perfected Red Ngakpa Robe",
@@ -11590,7 +11947,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "perfected"
     },
     "perfected_fire_ngakpa_crown": {
       "name": "Perfected Fire Ngakpa Crown",
@@ -11619,7 +11977,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "copper",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "empowered"
     },
     "legendary_fire_ngakpa_robe": {
       "name": "Legendary Red Ngakpa Robe",
@@ -11648,7 +12007,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "legendary_fire_ngakpa_crown": {
       "name": "Legendary Fire Ngakpa Crown",
@@ -11677,7 +12037,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "copper",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "plain_water_ngakpa_robe": {
       "name": "Plain Blue Ngakpa Robe",
@@ -11704,7 +12065,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "plain_water_ngakpa_crown": {
       "name": "Plain Water Ngakpa Crown",
@@ -11732,7 +12094,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "silver",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "blessed_water_ngakpa_robe": {
       "name": "Blessed Blue Ngakpa Robe",
@@ -11759,7 +12122,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "blessed_water_ngakpa_crown": {
       "name": "Blessed Water Ngakpa Crown",
@@ -11787,7 +12151,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "silver",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "empowered_water_ngakpa_robe": {
       "name": "Empowered Blue Ngakpa Robe",
@@ -11815,7 +12180,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "empowered_water_ngakpa_crown": {
       "name": "Empowered Water Ngakpa Crown",
@@ -11843,7 +12209,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "silver",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "perfected_water_ngakpa_robe": {
       "name": "Perfected Blue Ngakpa Robe",
@@ -11872,7 +12239,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "perfected"
     },
     "perfected_water_ngakpa_crown": {
       "name": "Perfected Water Ngakpa Crown",
@@ -11901,7 +12269,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "silver",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "legendary_water_ngakpa_robe": {
       "name": "Legendary Blue Ngakpa Robe",
@@ -11930,7 +12299,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "legendary_water_ngakpa_crown": {
       "name": "Legendary Water Ngakpa Crown",
@@ -11959,7 +12329,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "silver",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_earth_ngakpa_robe": {
       "name": "Plain Yellow Ngakpa Robe",
@@ -11986,7 +12357,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "plain_earth_ngakpa_crown": {
       "name": "Plain Earth Ngakpa Crown",
@@ -12013,8 +12385,10 @@
       "abilities": [],
       "durability": 40,
       "max_durability": 40,
-      "material": "gold",
-      "quality": "common"
+      "material": "cloth",
+      "quality": "common",
+      "gilding": "gold",
+      "enchantment": "touched"
     },
     "blessed_earth_ngakpa_robe": {
       "name": "Blessed Yellow Ngakpa Robe",
@@ -12041,7 +12415,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "blessed_earth_ngakpa_crown": {
       "name": "Blessed Earth Ngakpa Crown",
@@ -12069,7 +12444,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "gold",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "empowered_earth_ngakpa_robe": {
       "name": "Empowered Yellow Ngakpa Robe",
@@ -12097,7 +12473,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "empowered_earth_ngakpa_crown": {
       "name": "Empowered Earth Ngakpa Crown",
@@ -12125,7 +12502,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "gold",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "perfected_earth_ngakpa_robe": {
       "name": "Perfected Yellow Ngakpa Robe",
@@ -12154,7 +12532,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "perfected"
     },
     "perfected_earth_ngakpa_crown": {
       "name": "Perfected Earth Ngakpa Crown",
@@ -12183,7 +12562,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "gold",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "legendary_earth_ngakpa_robe": {
       "name": "Legendary Yellow Ngakpa Robe",
@@ -12212,7 +12592,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "legendary_earth_ngakpa_crown": {
       "name": "Legendary Earth Ngakpa Crown",
@@ -12241,7 +12622,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "gold",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "plain_healers_robe": {
       "name": "Plain Healer's Robe",
@@ -12268,7 +12650,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "plain_healers_crown": {
       "name": "Plain Healer's Crown",
@@ -12295,8 +12678,10 @@
       "abilities": [],
       "durability": 40,
       "max_durability": 40,
-      "material": "gold",
-      "quality": "common"
+      "material": "cloth",
+      "quality": "common",
+      "gilding": "gold",
+      "enchantment": "touched"
     },
     "blessed_healers_robe": {
       "name": "Blessed Healer's Robe",
@@ -12324,7 +12709,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "blessed_healers_crown": {
       "name": "Blessed Healer's Crown",
@@ -12355,7 +12741,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "gold",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "empowered_healers_robe": {
       "name": "Empowered Healer's Robe",
@@ -12384,7 +12771,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "empowered_healers_crown": {
       "name": "Empowered Healer's Crown",
@@ -12415,7 +12803,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "gold",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "perfected_healers_robe": {
       "name": "Perfected Healer's Robe",
@@ -12444,7 +12833,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "perfected"
     },
     "perfected_healers_crown": {
       "name": "Perfected Healer's Crown",
@@ -12475,7 +12865,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "gold",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "legendary_healers_robe": {
       "name": "Legendary Healer's Robe",
@@ -12504,7 +12895,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "legendary_healers_crown": {
       "name": "Legendary Healer's Crown",
@@ -12535,7 +12927,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "gold",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_black_sorcerer_robe": {
       "name": "Plain Black Sorcerer's Robe",
@@ -12562,7 +12955,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "plain_black_sorcerer_crown": {
       "name": "Plain Black Sorcerer's Crown",
@@ -12589,7 +12983,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_black_sorcerer_robe": {
       "name": "Blessed Black Sorcerer's Robe",
@@ -12619,7 +13014,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "blessed"
     },
     "blessed_black_sorcerer_crown": {
       "name": "Blessed Black Sorcerer's Crown",
@@ -12649,7 +13045,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "bone",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "empowered"
     },
     "empowered_black_sorcerer_robe": {
       "name": "Empowered Black Sorcerer's Robe",
@@ -12680,7 +13077,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "empowered_black_sorcerer_crown": {
       "name": "Empowered Black Sorcerer's Crown",
@@ -12711,7 +13109,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "perfected_black_sorcerer_robe": {
       "name": "Perfected Black Sorcerer's Robe",
@@ -12743,7 +13142,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "bone",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "perfected"
     },
     "perfected_black_sorcerer_crown": {
       "name": "Perfected Black Sorcerer's Crown",
@@ -12775,7 +13175,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "bone",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "perfected"
     },
     "legendary_black_sorcerer_robe": {
       "name": "Legendary Black Sorcerer's Robe",
@@ -12807,7 +13208,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "bone",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "legendary_black_sorcerer_crown": {
       "name": "Legendary Black Sorcerer's Crown",
@@ -12839,7 +13241,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "bone",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "plain_pandita_cap": {
       "name": "Plain Pandita Cap",
@@ -12865,7 +13268,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_pandita_cap": {
       "name": "Blessed Pandita Cap",
@@ -12894,7 +13298,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "empowered"
     },
     "empowered_pandita_cap": {
       "name": "Empowered Pandita Cap",
@@ -12925,7 +13330,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "perfected_pandita_cap": {
       "name": "Perfected Pandita Cap",
@@ -12956,7 +13362,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "perfected"
     },
     "legendary_pandita_cap": {
       "name": "Legendary Pandita Cap",
@@ -12987,7 +13394,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "plain_longlife_cap": {
       "name": "Plain Long-life Cap",
@@ -13013,7 +13421,8 @@
       "durability": 40,
       "max_durability": 40,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "blessed_longlife_cap": {
       "name": "Blessed Long-life Cap",
@@ -13042,7 +13451,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "empowered"
     },
     "empowered_longlife_cap": {
       "name": "Empowered Long-life Cap",
@@ -13071,7 +13481,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "empowered"
     },
     "perfected_longlife_cap": {
       "name": "Perfected Long-life Cap",
@@ -13100,7 +13511,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "perfected"
     },
     "legendary_longlife_cap": {
       "name": "Legendary Long-life Cap",
@@ -13129,7 +13541,8 @@
       "durability": 9999,
       "max_durability": 9999,
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "air_charm_middling": {
       "name": "Middling Air Charm",
@@ -13144,8 +13557,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "good"
+      "material": "bronze",
+      "quality": "good",
+      "enchantment": "none"
     },
     "air_charm_rare": {
       "name": "Rare Air Charm",
@@ -13160,8 +13574,9 @@
         "spellpower_bonus": 0.1
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "fine"
+      "material": "bronze",
+      "quality": "fine",
+      "enchantment": "none"
     },
     "air_charm_unique": {
       "name": "Unique Air Charm",
@@ -13176,8 +13591,10 @@
         "spellpower_bonus": 0.2
       },
       "slot": "talisman",
-      "material": "silver",
-      "quality": "masterwork"
+      "material": "bone",
+      "quality": "masterwork",
+      "gilding": "silver",
+      "enchantment": "none"
     },
     "black_charm_middling": {
       "name": "Middling Black Charm",
@@ -13192,8 +13609,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "good"
+      "material": "bronze",
+      "quality": "good",
+      "enchantment": "none"
     },
     "black_charm_rare": {
       "name": "Rare Black Charm",
@@ -13208,8 +13626,9 @@
         "spellpower_bonus": 0.1
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "fine"
+      "material": "bronze",
+      "quality": "fine",
+      "enchantment": "none"
     },
     "black_charm_unique": {
       "name": "Unique Black Charm",
@@ -13224,8 +13643,9 @@
         "spellpower_bonus": 0.2
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "masterwork"
+      "material": "bronze",
+      "quality": "masterwork",
+      "enchantment": "none"
     },
     "water_charm_middling": {
       "name": "Middling Water Charm",
@@ -13240,8 +13660,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "good"
+      "material": "bronze",
+      "quality": "good",
+      "enchantment": "none"
     },
     "water_charm_rare": {
       "name": "Rare Water Charm",
@@ -13256,8 +13677,9 @@
         "spellpower_bonus": 0.1
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "fine"
+      "material": "bronze",
+      "quality": "fine",
+      "enchantment": "none"
     },
     "water_charm_unique": {
       "name": "Unique Water Charm",
@@ -13272,8 +13694,9 @@
         "spellpower_bonus": 0.2
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "masterwork"
+      "material": "bronze",
+      "quality": "masterwork",
+      "enchantment": "none"
     },
     "space_charm_middling": {
       "name": "Middling Space Charm",
@@ -13288,8 +13711,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "good"
+      "material": "bronze",
+      "quality": "good",
+      "enchantment": "none"
     },
     "space_charm_rare": {
       "name": "Rare Space Charm",
@@ -13304,8 +13728,9 @@
         "spellpower_bonus": 0.1
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "fine"
+      "material": "bronze",
+      "quality": "fine",
+      "enchantment": "none"
     },
     "space_charm_unique": {
       "name": "Unique Space Charm",
@@ -13320,8 +13745,9 @@
         "spellpower_bonus": 0.2
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "masterwork"
+      "material": "bronze",
+      "quality": "masterwork",
+      "enchantment": "none"
     },
     "sorcery_charm_middling": {
       "name": "Middling Sorcery Charm",
@@ -13337,7 +13763,8 @@
       },
       "slot": "talisman",
       "material": "copper",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "sorcery_charm_rare": {
       "name": "Rare Sorcery Charm",
@@ -13352,8 +13779,9 @@
         "spellpower_bonus": 0.1
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "fine"
+      "material": "bronze",
+      "quality": "fine",
+      "enchantment": "none"
     },
     "sorcery_charm_unique": {
       "name": "Unique Sorcery Charm",
@@ -13368,8 +13796,9 @@
         "spellpower_bonus": 0.2
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "masterwork"
+      "material": "bronze",
+      "quality": "masterwork",
+      "enchantment": "none"
     },
     "enchantment_charm_middling": {
       "name": "Middling Enchantment Charm",
@@ -13385,7 +13814,9 @@
       },
       "slot": "talisman",
       "material": "bone",
-      "quality": "good"
+      "quality": "good",
+      "gilding": "silk",
+      "enchantment": "none"
     },
     "enchantment_charm_rare": {
       "name": "Rare Enchantment Charm",
@@ -13400,8 +13831,9 @@
         "spellpower_bonus": 0.1
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "fine"
+      "material": "bronze",
+      "quality": "fine",
+      "enchantment": "none"
     },
     "enchantment_charm_unique": {
       "name": "Unique Enchantment Charm",
@@ -13416,8 +13848,9 @@
         "spellpower_bonus": 0.2
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "masterwork"
+      "material": "bronze",
+      "quality": "masterwork",
+      "enchantment": "none"
     },
     "summoning_charm_middling": {
       "name": "Middling Summoning Charm",
@@ -13432,8 +13865,9 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "good"
+      "material": "bronze",
+      "quality": "good",
+      "enchantment": "none"
     },
     "summoning_charm_rare": {
       "name": "Rare Summoning Charm",
@@ -13448,8 +13882,9 @@
         "spellpower_bonus": 0.1
       },
       "slot": "talisman",
-      "material": "bone",
-      "quality": "fine"
+      "material": "bronze",
+      "quality": "fine",
+      "enchantment": "none"
     },
     "summoning_charm_unique": {
       "name": "Unique Summoning Charm",
@@ -13465,7 +13900,9 @@
       },
       "slot": "talisman",
       "material": "bone",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "gilding": "silk",
+      "enchantment": "none"
     },
     "travel_cape": {
       "name": "Travel Cape",
@@ -13485,7 +13922,8 @@
       "durability": 60,
       "max_durability": 60,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "wool_cloak": {
       "name": "Wool Cloak",
@@ -13506,7 +13944,8 @@
       "durability": 80,
       "max_durability": 80,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "silk_cape": {
       "name": "Silk Cape",
@@ -13526,8 +13965,9 @@
       "abilities": [],
       "durability": 50,
       "max_durability": 50,
-      "material": "cloth",
-      "quality": "good"
+      "material": "silk",
+      "quality": "good",
+      "enchantment": "none"
     },
     "shadowcloak": {
       "name": "Shadowcloak",
@@ -13550,7 +13990,8 @@
       "durability": 70,
       "max_durability": 70,
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "pilgrim_mantle": {
       "name": "Pilgrim's Mantle",
@@ -13572,7 +14013,8 @@
       "durability": 70,
       "max_durability": 70,
       "material": "cloth",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "touched"
     },
     "backpack": {
       "name": "Backpack",
@@ -13594,7 +14036,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "face_cloth": {
       "name": "Face Cloth",
@@ -13617,7 +14060,8 @@
       "durability": 30,
       "max_durability": 30,
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "smoked_lenses": {
       "name": "Smoked Glass Lenses",
@@ -13638,7 +14082,8 @@
         "blindness_immunity: grants immunity to the Blinded status effect when equipped; wire passive check in CombatUnit or ItemSystem when applying the blinded status"
       ],
       "material": "copper",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "steel_khanda": {
       "name": "Steel Khanda",
@@ -13662,7 +14107,8 @@
       "durability": 110,
       "max_durability": 110,
       "material": "steel",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "iron_ring": {
       "name": "Iron Ring",
@@ -13681,7 +14127,8 @@
       },
       "abilities": [],
       "material": "iron",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "steel_ring": {
       "name": "Steel Ring",
@@ -13700,7 +14147,8 @@
       },
       "abilities": [],
       "material": "steel",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "smelling_salts": {
       "name": "Smelling Salts",
@@ -13855,7 +14303,8 @@
       "stats": {},
       "skill_bonuses": {},
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "prosthetic_crude_hand": {
       "name": "Crude Prosthetic Hand",
@@ -13873,7 +14322,8 @@
       "stats": {},
       "abilities": [],
       "material": "leather",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "prosthetic_fitted_hand": {
       "name": "Fitted Prosthetic Hand",
@@ -13891,7 +14341,8 @@
       "stats": {},
       "abilities": [],
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "prosthetic_fine_hand": {
       "name": "Fine Prosthetic Hand",
@@ -13911,7 +14362,8 @@
       },
       "abilities": [],
       "material": "steel",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "prosthetic_crude_arm": {
       "name": "Crude Prosthetic Arm",
@@ -13929,7 +14381,8 @@
       "stats": {},
       "abilities": [],
       "material": "wood",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "prosthetic_fitted_arm": {
       "name": "Fitted Prosthetic Arm",
@@ -13947,7 +14400,8 @@
       "stats": {},
       "abilities": [],
       "material": "iron",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "prosthetic_fine_arm": {
       "name": "Fine Prosthetic Arm",
@@ -13967,7 +14421,8 @@
       },
       "abilities": [],
       "material": "steel",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "prosthetic_crude_leg": {
       "name": "Crude Prosthetic Leg",
@@ -13985,7 +14440,8 @@
       "stats": {},
       "abilities": [],
       "material": "leather",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "prosthetic_fitted_leg": {
       "name": "Fitted Prosthetic Leg",
@@ -14003,7 +14459,8 @@
       "stats": {},
       "abilities": [],
       "material": "leather",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "prosthetic_fine_leg": {
       "name": "Fine Prosthetic Leg",
@@ -14023,7 +14480,8 @@
       },
       "abilities": [],
       "material": "steel",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "prosthetic_crude_foot": {
       "name": "Crude Prosthetic Foot",
@@ -14041,7 +14499,8 @@
       "stats": {},
       "abilities": [],
       "material": "leather",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "prosthetic_fitted_foot": {
       "name": "Fitted Prosthetic Foot",
@@ -14059,7 +14518,8 @@
       "stats": {},
       "abilities": [],
       "material": "leather",
-      "quality": "good"
+      "quality": "good",
+      "enchantment": "none"
     },
     "prosthetic_fine_foot": {
       "name": "Fine Prosthetic Foot",
@@ -14079,7 +14539,8 @@
       },
       "abilities": [],
       "material": "leather",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "plain_medicine_bag": {
       "name": "Plain Medicine Bag",
@@ -14101,7 +14562,8 @@
         }
       },
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "fine_medicine_bag": {
       "name": "Fine Medicine Bag",
@@ -14123,7 +14585,8 @@
         }
       },
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "masterwork_medicine_bag": {
       "name": "Masterwork Medicine Bag",
@@ -14145,7 +14608,8 @@
         }
       },
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "storied_medicine_bag": {
       "name": "Storied Medicine Bag",
@@ -14167,7 +14631,8 @@
         }
       },
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "legendary_medicine_bag": {
       "name": "Legendary Medicine Bag",
@@ -14189,7 +14654,8 @@
         }
       },
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "plain_lute": {
       "name": "Plain Lute",
@@ -14211,7 +14677,8 @@
         }
       },
       "material": "wood",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "fine_lute": {
       "name": "Fine Lute",
@@ -14233,7 +14700,8 @@
         }
       },
       "material": "wood",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "masterwork_lute": {
       "name": "Masterwork Lute",
@@ -14255,7 +14723,8 @@
         }
       },
       "material": "wood",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "storied_lute": {
       "name": "Storied Lute",
@@ -14277,7 +14746,8 @@
         }
       },
       "material": "wood",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "legendary_lute": {
       "name": "Legendary Lute",
@@ -14299,7 +14769,8 @@
         }
       },
       "material": "wood",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "plain_thieving_tools": {
       "name": "Plain Thieving Tools",
@@ -14321,7 +14792,8 @@
         }
       },
       "material": "steel",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "fine_thieving_tools": {
       "name": "Fine Thieving Tools",
@@ -14343,7 +14815,8 @@
         }
       },
       "material": "steel",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "masterwork_thieving_tools": {
       "name": "Masterwork Thieving Tools",
@@ -14365,7 +14838,8 @@
         }
       },
       "material": "steel",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "storied_thieving_tools": {
       "name": "Storied Thieving Tools",
@@ -14387,7 +14861,8 @@
         }
       },
       "material": "steel",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_thieving_tools": {
       "name": "Legendary Thieving Tools",
@@ -14409,7 +14884,8 @@
         }
       },
       "material": "steel",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_alchemists_kit": {
       "name": "Plain Alchemist's Kit",
@@ -14431,7 +14907,8 @@
         }
       },
       "material": "copper",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "fine_alchemists_kit": {
       "name": "Fine Alchemist's Kit",
@@ -14453,7 +14930,8 @@
         }
       },
       "material": "copper",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "masterwork_alchemists_kit": {
       "name": "Masterwork Alchemist's Kit",
@@ -14475,7 +14953,8 @@
         }
       },
       "material": "copper",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "storied_alchemists_kit": {
       "name": "Storied Alchemist's Kit",
@@ -14497,7 +14976,8 @@
         }
       },
       "material": "copper",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "legendary_alchemists_kit": {
       "name": "Legendary Alchemist's Kit",
@@ -14519,7 +14999,8 @@
         }
       },
       "material": "copper",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_merchants_scales": {
       "name": "Plain Merchant's Scales",
@@ -14540,8 +15021,9 @@
           "plain_merchants_scales_tool": 1
         }
       },
-      "material": "bronze",
-      "quality": "common"
+      "material": "scale",
+      "quality": "common",
+      "enchantment": "none"
     },
     "fine_merchants_scales": {
       "name": "Fine Merchant's Scales",
@@ -14562,8 +15044,9 @@
           "fine_merchants_scales_tool": 2
         }
       },
-      "material": "bronze",
-      "quality": "fine"
+      "material": "scale",
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "masterwork_merchants_scales": {
       "name": "Masterwork Merchant's Scales",
@@ -14584,8 +15067,9 @@
           "masterwork_merchants_scales_tool": 3
         }
       },
-      "material": "bronze",
-      "quality": "masterwork"
+      "material": "scale",
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "storied_merchants_scales": {
       "name": "Storied Merchant's Scales",
@@ -14606,8 +15090,9 @@
           "storied_merchants_scales_tool": 4
         }
       },
-      "material": "bronze",
-      "quality": "masterwork"
+      "material": "scale",
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "legendary_merchants_scales": {
       "name": "Legendary Merchant's Scales",
@@ -14628,8 +15113,9 @@
           "legendary_merchants_scales_tool": 5
         }
       },
-      "material": "bronze",
-      "quality": "masterwork"
+      "material": "scale",
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "plain_smiths_hammer": {
       "name": "Plain Smith's Hammer",
@@ -14651,7 +15137,8 @@
         }
       },
       "material": "steel",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "none"
     },
     "fine_smiths_hammer": {
       "name": "Fine Smith's Hammer",
@@ -14673,7 +15160,8 @@
         }
       },
       "material": "steel",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "masterwork_smiths_hammer": {
       "name": "Masterwork Smith's Hammer",
@@ -14695,7 +15183,8 @@
         }
       },
       "material": "steel",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "storied_smiths_hammer": {
       "name": "Storied Smith's Hammer",
@@ -14717,7 +15206,8 @@
         }
       },
       "material": "steel",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_smiths_hammer": {
       "name": "Legendary Smith's Hammer",
@@ -14739,7 +15229,8 @@
         }
       },
       "material": "steel",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "plain_quartermasters_ledger": {
       "name": "Plain Quartermaster's Ledger",
@@ -14761,7 +15252,8 @@
         }
       },
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "fine_quartermasters_ledger": {
       "name": "Fine Quartermaster's Ledger",
@@ -14783,7 +15275,8 @@
         }
       },
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "masterwork_quartermasters_ledger": {
       "name": "Masterwork Quartermaster's Ledger",
@@ -14805,7 +15298,8 @@
         }
       },
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "storied_quartermasters_ledger": {
       "name": "Storied Quartermaster's Ledger",
@@ -14827,7 +15321,8 @@
         }
       },
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "legendary_quartermasters_ledger": {
       "name": "Legendary Quartermaster's Ledger",
@@ -14849,7 +15344,8 @@
         }
       },
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     },
     "plain_war_standard": {
       "name": "Plain War Standard",
@@ -14871,7 +15367,8 @@
         }
       },
       "material": "cloth",
-      "quality": "common"
+      "quality": "common",
+      "enchantment": "touched"
     },
     "fine_war_standard": {
       "name": "Fine War Standard",
@@ -14893,7 +15390,8 @@
         }
       },
       "material": "cloth",
-      "quality": "fine"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "masterwork_war_standard": {
       "name": "Masterwork War Standard",
@@ -14915,7 +15413,8 @@
         }
       },
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "blessed"
     },
     "storied_war_standard": {
       "name": "Storied War Standard",
@@ -14937,7 +15436,8 @@
         }
       },
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "legendary_war_standard": {
       "name": "Legendary War Standard",
@@ -14959,7 +15459,8 @@
         }
       },
       "material": "cloth",
-      "quality": "masterwork"
+      "quality": "masterwork",
+      "enchantment": "perfected"
     }
   },
   "item_types": {

@@ -3,7 +3,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 4
+const EXPECTED_CHECKS: int = 6
 
 
 func _ready() -> void:
@@ -11,6 +11,8 @@ func _ready() -> void:
 	_check_materials_exist_in_the_tables()
 	_check_authored_items_now_wear()
 	_check_stats_were_not_touched()
+	_check_every_type_has_a_base()
+	_check_values_match_the_tiering()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -108,4 +110,56 @@ func _check_stats_were_not_touched() -> void:
 		_fail("iron_sword's material is %s" % sword.get("material", ""))
 	if not sword.has("stats") or sword["stats"].is_empty():
 		_fail("iron_sword lost its stats block")
+	_done()
+
+
+## Every equipment type must have a base entry, or its items cannot be tiered,
+## generated or priced. Twelve types covering 328 of 486 items had none.
+func _check_every_type_has_a_base() -> void:
+	var missing: Dictionary = {}
+	for item_id in _equipment_items():
+		var item_type: String = str(ItemSystem.get_item(item_id).get("type", ""))
+		if item_type != "" and ItemSystem.get_base_for_type(item_type).is_empty():
+			missing[item_type] = true
+	if not missing.is_empty():
+		_fail("equipment types with no base entry: %s" % missing.keys())
+	_done()
+
+
+## The tags have to mean something: an item's value should follow from
+## base x material x quality x enchantment.
+##
+## Before enchantment was added, plain items sat at a median 1.13x of expected
+## while enchanted ones sat at 20x — the model had no term for what had been
+## done to an item, only for what it was made of. With that term and the twelve
+## missing bases, all 486 land inside half-to-double.
+func _check_values_match_the_tiering() -> void:
+	var tables: Dictionary = ItemSystem.get_equipment_tables()
+	var materials: Dictionary = tables.get("materials", {})
+	var qualities: Dictionary = tables.get("quality_levels", {})
+	var enchantments: Dictionary = tables.get("enchantment_levels", {})
+	var outliers: Array[String] = []
+	var checked := 0
+
+	for item_id in _equipment_items():
+		var item: Dictionary = ItemSystem.get_item(item_id)
+		var base: Dictionary = ItemSystem.get_base_for_type(str(item.get("type", "")))
+		if base.is_empty():
+			continue
+		var expected: float = float(base.get("value", 50)) \
+			* float(materials.get(str(item.get("material", "")), {}).get("value_mult", 1.0)) \
+			* float(qualities.get(str(item.get("quality", "")), {}).get("value_mult", 1.0)) \
+			* float(enchantments.get(str(item.get("enchantment", "none")), {}).get("value_mult", 1.0))
+		if expected <= 0.0:
+			continue
+		checked += 1
+		var ratio: float = float(item.get("value", 0)) / expected
+		if ratio < 0.5 or ratio > 2.0:
+			outliers.append("%s %.2fx" % [item_id, ratio])
+
+	if checked < 400:
+		_fail("only %d items were priced against the model — expected ~486" % checked)
+	if not outliers.is_empty():
+		_fail("%d items are priced outside half-to-double what their tags imply: %s"
+			% [outliers.size(), outliers.slice(0, 6)])
 	_done()
