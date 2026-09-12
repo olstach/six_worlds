@@ -178,10 +178,12 @@ func _check_values_match_the_tiering() -> void:
 	_done()
 
 
+## Not all metals — conch is shell and bone is bone — but they code the same
+## way: the material says which element the implement serves.
 const RITUAL_METALS: Array[String] = ["sky_iron", "copper", "silver", "gold",
-	"iron", "conch", "bronze"]
-const RITUAL_IMPLEMENTS: Array[String] = ["khatvanga", "drilbu", "damaru",
-	"phurba", "dorje"]
+	"iron", "conch", "bronze", "bone"]
+const RITUAL_IMPLEMENTS: Array[String] = ["khatvanga", "kangling", "drilbu",
+	"damaru", "phurba", "dorje"]
 
 
 func _ritual_implements() -> Array[String]:

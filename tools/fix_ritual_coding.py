@@ -40,8 +40,11 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 ITEMS = ROOT / "resources" / "data" / "items.json"
 
 # Longest first so "sky_iron" is not read as "iron".
-METALS = ["sky_iron", "copper", "silver", "gold", "iron", "conch", "bronze"]
-IMPLEMENTS = ["khatvanga", "drilbu", "damaru", "phurba", "dorje"]
+# `bone` and `conch` are not metals, but they code the same way: the
+# material an implement is made of says which element it serves.
+METALS = ["sky_iron", "copper", "silver", "gold", "iron", "conch",
+          "bronze", "bone"]
+IMPLEMENTS = ["khatvanga", "kangling", "drilbu", "damaru", "phurba", "dorje"]
 
 METAL_ELEMENT = {
     "copper": "fire", "silver": "water", "gold": "earth", "iron": "air",
@@ -50,12 +53,16 @@ METAL_ELEMENT = {
     # the pacifying activity, which is traditionally white and watery. Its
     # white_magic bonus was already correct and is left alone.
     "conch": "water",
+    # Charnel ground practice. Earth, and the black magic school.
+    "bone": "earth",
 }
 
 # Where each implement's bonus goes. Focus and Awareness are attributes, which
 # items grant through `stats`; the other three are skills.
 IMPLEMENT_SKILL = {
     "khatvanga": "enchantment", "damaru": "summoning", "phurba": "sorcery",
+    # The chod trumpet calls the rite; the damaru calls what answers it.
+    "kangling": "ritual",
 }
 IMPLEMENT_ATTRIBUTE = {"dorje": "focus", "drilbu": "awareness"}
 
