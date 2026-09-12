@@ -3942,7 +3942,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "fire",
       "weight": 1,
       "value": 60,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -3951,7 +3951,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 6
+        "spellpower": 6,
+        "focus": 1
       },
       "skill_bonuses": {
         "fire_magic": {
@@ -3973,7 +3974,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "fire",
       "weight": 1,
       "value": 210,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -3982,7 +3983,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 10
+        "spellpower": 10,
+        "focus": 2
       },
       "skill_bonuses": {
         "fire_magic": {
@@ -3995,7 +3997,7 @@
       "set_pair": "dorje_drilbu",
       "material": "copper",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_copper_dorje": {
       "name": "Empowered Copper Dorje",
@@ -4004,7 +4006,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "fire",
       "weight": 1,
       "value": 540,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -4013,7 +4015,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 15
+        "spellpower": 15,
+        "focus": 3
       },
       "skill_bonuses": {
         "fire_magic": {
@@ -4035,7 +4038,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "rare",
-      "element": "space",
+      "element": "fire",
       "weight": 1,
       "value": 1080,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -4044,7 +4047,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 20
+        "spellpower": 20,
+        "focus": 4
       },
       "skill_bonuses": {
         "fire_magic": {
@@ -4066,7 +4070,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "space",
+      "element": "fire",
       "weight": 1,
       "value": 2700,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -4075,7 +4079,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 27
+        "spellpower": 27,
+        "focus": 5
       },
       "skill_bonuses": {
         "fire_magic": {
@@ -4088,7 +4093,7 @@
       "set_pair": "dorje_drilbu",
       "material": "copper",
       "quality": "masterwork",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "plain_silver_dorje": {
       "name": "Plain Silver Dorje",
@@ -4097,7 +4102,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 60,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -4106,7 +4111,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 6
+        "spellpower": 6,
+        "focus": 1
       },
       "skill_bonuses": {
         "water_magic": {
@@ -4117,9 +4123,8 @@
       "durability": 40,
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
-      "material": "bronze",
+      "material": "silver",
       "quality": "common",
-      "gilding": "silver",
       "enchantment": "none"
     },
     "blessed_silver_dorje": {
@@ -4129,7 +4134,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 210,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -4138,7 +4143,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 10
+        "spellpower": 10,
+        "focus": 2
       },
       "skill_bonuses": {
         "water_magic": {
@@ -4151,7 +4157,7 @@
       "set_pair": "dorje_drilbu",
       "material": "silver",
       "quality": "common",
-      "enchantment": "none"
+      "enchantment": "touched"
     },
     "empowered_silver_dorje": {
       "name": "Empowered Silver Dorje",
@@ -4160,7 +4166,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 540,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -4169,7 +4175,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 15
+        "spellpower": 15,
+        "focus": 3
       },
       "skill_bonuses": {
         "water_magic": {
@@ -4182,7 +4189,7 @@
       "set_pair": "dorje_drilbu",
       "material": "silver",
       "quality": "good",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "perfected_silver_dorje": {
       "name": "Perfected Silver Dorje",
@@ -4191,7 +4198,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "rare",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 1080,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -4200,7 +4207,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 20
+        "spellpower": 20,
+        "focus": 4
       },
       "skill_bonuses": {
         "water_magic": {
@@ -4213,7 +4221,7 @@
       "set_pair": "dorje_drilbu",
       "material": "silver",
       "quality": "fine",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "legendary_silver_dorje": {
       "name": "Legendary Silver Dorje",
@@ -4222,7 +4230,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 2700,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -4231,7 +4239,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 27
+        "spellpower": 27,
+        "focus": 5
       },
       "skill_bonuses": {
         "water_magic": {
@@ -4253,7 +4262,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 60,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -4262,7 +4271,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 6
+        "spellpower": 6,
+        "focus": 1
       },
       "skill_bonuses": {
         "earth_magic": {
@@ -4273,9 +4283,8 @@
       "durability": 40,
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
-      "material": "bronze",
+      "material": "gold",
       "quality": "common",
-      "gilding": "gold",
       "enchantment": "none"
     },
     "blessed_gold_dorje": {
@@ -4285,7 +4294,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 210,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -4294,7 +4303,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 10
+        "spellpower": 10,
+        "focus": 2
       },
       "skill_bonuses": {
         "earth_magic": {
@@ -4307,7 +4317,7 @@
       "set_pair": "dorje_drilbu",
       "material": "gold",
       "quality": "common",
-      "enchantment": "none"
+      "enchantment": "touched"
     },
     "empowered_gold_dorje": {
       "name": "Empowered Gold Dorje",
@@ -4316,7 +4326,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 540,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -4325,7 +4335,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 15
+        "spellpower": 15,
+        "focus": 3
       },
       "skill_bonuses": {
         "earth_magic": {
@@ -4338,7 +4349,7 @@
       "set_pair": "dorje_drilbu",
       "material": "gold",
       "quality": "good",
-      "enchantment": "none"
+      "enchantment": "blessed"
     },
     "perfected_gold_dorje": {
       "name": "Perfected Gold Dorje",
@@ -4347,7 +4358,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "rare",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 1080,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -4356,7 +4367,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 20
+        "spellpower": 20,
+        "focus": 4
       },
       "skill_bonuses": {
         "earth_magic": {
@@ -4369,7 +4381,7 @@
       "set_pair": "dorje_drilbu",
       "material": "gold",
       "quality": "fine",
-      "enchantment": "none"
+      "enchantment": "blessed"
     },
     "legendary_gold_dorje": {
       "name": "Legendary Gold Dorje",
@@ -4378,7 +4390,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 2700,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -4387,7 +4399,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 27
+        "spellpower": 27,
+        "focus": 5
       },
       "skill_bonuses": {
         "earth_magic": {
@@ -4400,7 +4413,7 @@
       "set_pair": "dorje_drilbu",
       "material": "gold",
       "quality": "masterwork",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "plain_iron_dorje": {
       "name": "Plain Iron Dorje",
@@ -4409,7 +4422,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "air",
       "weight": 1,
       "value": 60,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -4418,7 +4431,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 6
+        "spellpower": 6,
+        "focus": 1
       },
       "skill_bonuses": {
         "air_magic": {
@@ -4440,7 +4454,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "air",
       "weight": 1,
       "value": 210,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -4449,7 +4463,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 10
+        "spellpower": 10,
+        "focus": 2
       },
       "skill_bonuses": {
         "air_magic": {
@@ -4471,7 +4486,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "air",
       "weight": 1,
       "value": 540,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -4480,7 +4495,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 15
+        "spellpower": 15,
+        "focus": 3
       },
       "skill_bonuses": {
         "air_magic": {
@@ -4502,7 +4518,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "rare",
-      "element": "space",
+      "element": "air",
       "weight": 1,
       "value": 1080,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -4511,7 +4527,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 20
+        "spellpower": 20,
+        "focus": 4
       },
       "skill_bonuses": {
         "air_magic": {
@@ -4533,7 +4550,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "space",
+      "element": "air",
       "weight": 1,
       "value": 2700,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -4542,7 +4559,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 27
+        "spellpower": 27,
+        "focus": 5
       },
       "skill_bonuses": {
         "air_magic": {
@@ -4573,7 +4591,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 6
+        "spellpower": 6,
+        "focus": 1
       },
       "skill_bonuses": {
         "space_magic": {
@@ -4604,7 +4623,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 10
+        "spellpower": 10,
+        "focus": 2
       },
       "skill_bonuses": {
         "space_magic": {
@@ -4635,7 +4655,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 15
+        "spellpower": 15,
+        "focus": 3
       },
       "skill_bonuses": {
         "space_magic": {
@@ -4666,7 +4687,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 20
+        "spellpower": 20,
+        "focus": 4
       },
       "skill_bonuses": {
         "space_magic": {
@@ -4679,7 +4701,7 @@
       "set_pair": "dorje_drilbu",
       "material": "sky_iron",
       "quality": "fine",
-      "enchantment": "none"
+      "enchantment": "blessed"
     },
     "legendary_sky_iron_dorje": {
       "name": "Legendary Sky-iron Dorje",
@@ -4697,7 +4719,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 27
+        "spellpower": 27,
+        "focus": 5
       },
       "skill_bonuses": {
         "space_magic": {
@@ -4710,7 +4733,7 @@
       "set_pair": "dorje_drilbu",
       "material": "sky_iron",
       "quality": "masterwork",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "plain_conch_dorje": {
       "name": "Plain Conch Dorje",
@@ -4719,7 +4742,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 60,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -4728,7 +4751,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 6
+        "spellpower": 6,
+        "focus": 1
       },
       "skill_bonuses": {
         "white_magic": {
@@ -4750,7 +4774,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 210,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -4759,7 +4783,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 10
+        "spellpower": 10,
+        "focus": 2
       },
       "skill_bonuses": {
         "white_magic": {
@@ -4781,7 +4806,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 540,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -4790,7 +4815,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 15
+        "spellpower": 15,
+        "focus": 3
       },
       "skill_bonuses": {
         "white_magic": {
@@ -4812,7 +4838,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "rare",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 1080,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -4821,7 +4847,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 20
+        "spellpower": 20,
+        "focus": 4
       },
       "skill_bonuses": {
         "white_magic": {
@@ -4843,7 +4870,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 2700,
       "description": "A ritual sceptre, the symbol of indestructible method. Weak as a weapon. In the right hand of a trained practitioner, it amplifies every spell cast. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -4852,7 +4879,8 @@
       },
       "stats": {
         "damage": 2,
-        "spellpower": 27
+        "spellpower": 27,
+        "focus": 5
       },
       "skill_bonuses": {
         "white_magic": {
@@ -4896,7 +4924,7 @@
       "set_pair": "dorje_drilbu",
       "material": "bone",
       "quality": "common",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "blessed_bone_dorje": {
       "name": "Blessed Bone Dorje",
@@ -4927,7 +4955,7 @@
       "set_pair": "dorje_drilbu",
       "material": "bone",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_bone_dorje": {
       "name": "Empowered Bone Dorje",
@@ -4989,7 +5017,7 @@
       "set_pair": "dorje_drilbu",
       "material": "bone",
       "quality": "fine",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "legendary_bone_dorje": {
       "name": "Legendary Bone Dorje",
@@ -5020,7 +5048,7 @@
       "set_pair": "dorje_drilbu",
       "material": "bone",
       "quality": "masterwork",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "plain_copper_drilbu": {
       "name": "Plain Copper Drilbu",
@@ -5029,7 +5057,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "fire",
       "weight": 1,
       "value": 60,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -5038,7 +5066,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 15
+        "max_mana": 15,
+        "awareness": 1
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5063,7 +5092,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "fire",
       "weight": 1,
       "value": 210,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -5072,7 +5101,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 26
+        "max_mana": 26,
+        "awareness": 2
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5088,7 +5118,7 @@
       "set_pair": "dorje_drilbu",
       "material": "copper",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_copper_drilbu": {
       "name": "Empowered Copper Drilbu",
@@ -5097,7 +5127,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "fire",
       "weight": 1,
       "value": 540,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -5106,7 +5136,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 40
+        "max_mana": 40,
+        "awareness": 3
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5131,7 +5162,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "space",
+      "element": "fire",
       "weight": 1,
       "value": 1080,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -5140,7 +5171,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 56
+        "max_mana": 56,
+        "awareness": 4
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5165,7 +5197,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "space",
+      "element": "fire",
       "weight": 1,
       "value": 2700,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -5174,7 +5206,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 75
+        "max_mana": 75,
+        "awareness": 5
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5190,7 +5223,7 @@
       "set_pair": "dorje_drilbu",
       "material": "copper",
       "quality": "masterwork",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "plain_silver_drilbu": {
       "name": "Plain Silver Drilbu",
@@ -5199,7 +5232,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 60,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -5208,7 +5241,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 15
+        "max_mana": 15,
+        "awareness": 1
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5222,9 +5256,8 @@
       "durability": 40,
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
-      "material": "bronze",
+      "material": "silver",
       "quality": "common",
-      "gilding": "silver",
       "enchantment": "none"
     },
     "blessed_silver_drilbu": {
@@ -5234,7 +5267,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 210,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -5243,7 +5276,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 26
+        "max_mana": 26,
+        "awareness": 2
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5259,7 +5293,7 @@
       "set_pair": "dorje_drilbu",
       "material": "silver",
       "quality": "common",
-      "enchantment": "none"
+      "enchantment": "touched"
     },
     "empowered_silver_drilbu": {
       "name": "Empowered Silver Drilbu",
@@ -5268,7 +5302,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 540,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -5277,7 +5311,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 40
+        "max_mana": 40,
+        "awareness": 3
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5293,7 +5328,7 @@
       "set_pair": "dorje_drilbu",
       "material": "silver",
       "quality": "good",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "perfected_silver_drilbu": {
       "name": "Perfected Silver Drilbu",
@@ -5302,7 +5337,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 1080,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -5311,7 +5346,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 56
+        "max_mana": 56,
+        "awareness": 4
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5327,7 +5363,7 @@
       "set_pair": "dorje_drilbu",
       "material": "silver",
       "quality": "fine",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "legendary_silver_drilbu": {
       "name": "Legendary Silver Drilbu",
@@ -5336,7 +5372,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 2700,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -5345,7 +5381,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 75
+        "max_mana": 75,
+        "awareness": 5
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5370,7 +5407,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 60,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -5379,7 +5416,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 15
+        "max_mana": 15,
+        "awareness": 1
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5393,9 +5431,8 @@
       "durability": 40,
       "max_durability": 40,
       "set_pair": "dorje_drilbu",
-      "material": "bronze",
+      "material": "gold",
       "quality": "common",
-      "gilding": "gold",
       "enchantment": "none"
     },
     "blessed_gold_drilbu": {
@@ -5405,7 +5442,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 210,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -5414,7 +5451,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 26
+        "max_mana": 26,
+        "awareness": 2
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5430,7 +5468,7 @@
       "set_pair": "dorje_drilbu",
       "material": "gold",
       "quality": "common",
-      "enchantment": "none"
+      "enchantment": "touched"
     },
     "empowered_gold_drilbu": {
       "name": "Empowered Gold Drilbu",
@@ -5439,7 +5477,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 540,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -5448,7 +5486,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 40
+        "max_mana": 40,
+        "awareness": 3
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5464,7 +5503,7 @@
       "set_pair": "dorje_drilbu",
       "material": "gold",
       "quality": "good",
-      "enchantment": "none"
+      "enchantment": "blessed"
     },
     "perfected_gold_drilbu": {
       "name": "Perfected Gold Drilbu",
@@ -5473,7 +5512,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 1080,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -5482,7 +5521,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 56
+        "max_mana": 56,
+        "awareness": 4
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5498,7 +5538,7 @@
       "set_pair": "dorje_drilbu",
       "material": "gold",
       "quality": "fine",
-      "enchantment": "none"
+      "enchantment": "blessed"
     },
     "legendary_gold_drilbu": {
       "name": "Legendary Gold Drilbu",
@@ -5507,7 +5547,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "space",
+      "element": "earth",
       "weight": 1,
       "value": 2700,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -5516,7 +5556,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 75
+        "max_mana": 75,
+        "awareness": 5
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5532,7 +5573,7 @@
       "set_pair": "dorje_drilbu",
       "material": "gold",
       "quality": "masterwork",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "plain_iron_drilbu": {
       "name": "Plain Iron Drilbu",
@@ -5541,7 +5582,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "air",
       "weight": 1,
       "value": 60,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -5550,7 +5591,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 15
+        "max_mana": 15,
+        "awareness": 1
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5575,7 +5617,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "air",
       "weight": 1,
       "value": 210,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -5584,7 +5626,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 26
+        "max_mana": 26,
+        "awareness": 2
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5609,7 +5652,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "air",
       "weight": 1,
       "value": 540,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -5618,7 +5661,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 40
+        "max_mana": 40,
+        "awareness": 3
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5643,7 +5687,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "space",
+      "element": "air",
       "weight": 1,
       "value": 1080,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -5652,7 +5696,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 56
+        "max_mana": 56,
+        "awareness": 4
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5677,7 +5722,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "space",
+      "element": "air",
       "weight": 1,
       "value": 2700,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -5686,7 +5731,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 75
+        "max_mana": 75,
+        "awareness": 5
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5720,7 +5766,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 15
+        "max_mana": 15,
+        "awareness": 1
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5752,7 +5799,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 26
+        "max_mana": 26,
+        "awareness": 2
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5784,7 +5832,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 40
+        "max_mana": 40,
+        "awareness": 3
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5816,7 +5865,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 56
+        "max_mana": 56,
+        "awareness": 4
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5830,7 +5880,7 @@
       "set_pair": "dorje_drilbu",
       "material": "sky_iron",
       "quality": "fine",
-      "enchantment": "none"
+      "enchantment": "blessed"
     },
     "legendary_sky_iron_drilbu": {
       "name": "Legendary Sky-iron Drilbu",
@@ -5848,7 +5898,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 75
+        "max_mana": 75,
+        "awareness": 5
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5862,7 +5913,7 @@
       "set_pair": "dorje_drilbu",
       "material": "sky_iron",
       "quality": "masterwork",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "plain_conch_drilbu": {
       "name": "Plain Conch Drilbu",
@@ -5871,7 +5922,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 60,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -5880,7 +5931,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 15
+        "max_mana": 15,
+        "awareness": 1
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5905,7 +5957,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 210,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -5914,7 +5966,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 26
+        "max_mana": 26,
+        "awareness": 2
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5939,7 +5992,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 540,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -5948,7 +6001,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 40
+        "max_mana": 40,
+        "awareness": 3
       },
       "skill_bonuses": {
         "space_magic": {
@@ -5973,7 +6027,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 1080,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -5982,7 +6036,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 56
+        "max_mana": 56,
+        "awareness": 4
       },
       "skill_bonuses": {
         "space_magic": {
@@ -6007,7 +6062,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "space",
+      "element": "water",
       "weight": 1,
       "value": 2700,
       "description": "A ritual bell, held in the left hand. Its tone represents sunyata — emptiness. Rung in concert with the dorje, it opens the practitioner to a larger mana pool. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -6016,7 +6071,8 @@
       },
       "stats": {
         "damage": 0,
-        "max_mana": 75
+        "max_mana": 75,
+        "awareness": 5
       },
       "skill_bonuses": {
         "space_magic": {
@@ -6066,7 +6122,7 @@
       "set_pair": "dorje_drilbu",
       "material": "bone",
       "quality": "common",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "blessed_bone_drilbu": {
       "name": "Blessed Bone Drilbu",
@@ -6100,7 +6156,7 @@
       "set_pair": "dorje_drilbu",
       "material": "bone",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_bone_drilbu": {
       "name": "Empowered Bone Drilbu",
@@ -6168,7 +6224,7 @@
       "set_pair": "dorje_drilbu",
       "material": "bone",
       "quality": "fine",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "legendary_bone_drilbu": {
       "name": "Legendary Bone Drilbu",
@@ -6202,7 +6258,7 @@
       "set_pair": "dorje_drilbu",
       "material": "bone",
       "quality": "masterwork",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "plain_copper_khatvanga": {
       "name": "Plain Copper Khatvanga",
@@ -6211,7 +6267,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "common",
-      "element": "space",
+      "element": "fire",
       "weight": 5,
       "value": 80,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -6226,6 +6282,9 @@
       "skill_bonuses": {
         "fire_magic": {
           "plain_copper_khatvanga_mat": 1
+        },
+        "enchantment": {
+          "plain_copper_khatvanga": 1
         }
       },
       "abilities": [],
@@ -6235,7 +6294,7 @@
       "aura_value": -2,
       "material": "copper",
       "quality": "common",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "blessed_copper_khatvanga": {
       "name": "Blessed Copper Khatvanga",
@@ -6244,7 +6303,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "common",
-      "element": "space",
+      "element": "fire",
       "weight": 5,
       "value": 280,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -6259,6 +6318,9 @@
       "skill_bonuses": {
         "fire_magic": {
           "blessed_copper_khatvanga_mat": 2
+        },
+        "enchantment": {
+          "blessed_copper_khatvanga": 2
         }
       },
       "abilities": [],
@@ -6268,7 +6330,7 @@
       "aura_value": -3,
       "material": "copper",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_copper_khatvanga": {
       "name": "Empowered Copper Khatvanga",
@@ -6277,7 +6339,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "fire",
       "weight": 5,
       "value": 720,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -6293,6 +6355,9 @@
       "skill_bonuses": {
         "fire_magic": {
           "empowered_copper_khatvanga_mat": 3
+        },
+        "enchantment": {
+          "empowered_copper_khatvanga": 3
         }
       },
       "abilities": [],
@@ -6311,7 +6376,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "rare",
-      "element": "space",
+      "element": "fire",
       "weight": 5,
       "value": 1440,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -6327,6 +6392,9 @@
       "skill_bonuses": {
         "fire_magic": {
           "perfected_copper_khatvanga_mat": 4
+        },
+        "enchantment": {
+          "perfected_copper_khatvanga": 4
         }
       },
       "abilities": [],
@@ -6336,7 +6404,7 @@
       "aura_value": -6,
       "material": "copper",
       "quality": "fine",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "legendary_copper_khatvanga": {
       "name": "Legendary Copper Khatvanga",
@@ -6345,7 +6413,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "legendary",
-      "element": "space",
+      "element": "fire",
       "weight": 5,
       "value": 3600,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -6361,6 +6429,9 @@
       "skill_bonuses": {
         "fire_magic": {
           "legendary_copper_khatvanga_mat": 5
+        },
+        "enchantment": {
+          "legendary_copper_khatvanga": 5
         }
       },
       "abilities": [],
@@ -6379,7 +6450,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "common",
-      "element": "space",
+      "element": "water",
       "weight": 5,
       "value": 80,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -6394,6 +6465,9 @@
       "skill_bonuses": {
         "water_magic": {
           "plain_silver_khatvanga_mat": 1
+        },
+        "enchantment": {
+          "plain_silver_khatvanga": 1
         }
       },
       "abilities": [],
@@ -6412,7 +6486,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "common",
-      "element": "space",
+      "element": "water",
       "weight": 5,
       "value": 280,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -6427,6 +6501,9 @@
       "skill_bonuses": {
         "water_magic": {
           "blessed_silver_khatvanga_mat": 2
+        },
+        "enchantment": {
+          "blessed_silver_khatvanga": 2
         }
       },
       "abilities": [],
@@ -6445,7 +6522,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "water",
       "weight": 5,
       "value": 720,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -6461,6 +6538,9 @@
       "skill_bonuses": {
         "water_magic": {
           "empowered_silver_khatvanga_mat": 3
+        },
+        "enchantment": {
+          "empowered_silver_khatvanga": 3
         }
       },
       "abilities": [],
@@ -6470,7 +6550,7 @@
       "aura_value": -4,
       "material": "silver",
       "quality": "good",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "perfected_silver_khatvanga": {
       "name": "Perfected Silver Khatvanga",
@@ -6479,7 +6559,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "rare",
-      "element": "space",
+      "element": "water",
       "weight": 5,
       "value": 1440,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -6495,6 +6575,9 @@
       "skill_bonuses": {
         "water_magic": {
           "perfected_silver_khatvanga_mat": 4
+        },
+        "enchantment": {
+          "perfected_silver_khatvanga": 4
         }
       },
       "abilities": [],
@@ -6504,7 +6587,7 @@
       "aura_value": -6,
       "material": "silver",
       "quality": "fine",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "legendary_silver_khatvanga": {
       "name": "Legendary Silver Khatvanga",
@@ -6513,7 +6596,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "legendary",
-      "element": "space",
+      "element": "water",
       "weight": 5,
       "value": 3600,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -6529,6 +6612,9 @@
       "skill_bonuses": {
         "water_magic": {
           "legendary_silver_khatvanga_mat": 5
+        },
+        "enchantment": {
+          "legendary_silver_khatvanga": 5
         }
       },
       "abilities": [],
@@ -6538,7 +6624,7 @@
       "aura_value": -8,
       "material": "silver",
       "quality": "masterwork",
-      "enchantment": "blessed"
+      "enchantment": "empowered"
     },
     "plain_gold_khatvanga": {
       "name": "Plain Gold Khatvanga",
@@ -6547,7 +6633,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "common",
-      "element": "space",
+      "element": "earth",
       "weight": 5,
       "value": 80,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -6562,6 +6648,9 @@
       "skill_bonuses": {
         "earth_magic": {
           "plain_gold_khatvanga_mat": 1
+        },
+        "enchantment": {
+          "plain_gold_khatvanga": 1
         }
       },
       "abilities": [],
@@ -6569,9 +6658,8 @@
       "max_durability": 40,
       "passive_aura": "initiative_debuff",
       "aura_value": -2,
-      "material": "bronze",
+      "material": "gold",
       "quality": "common",
-      "gilding": "gold",
       "enchantment": "none"
     },
     "blessed_gold_khatvanga": {
@@ -6581,7 +6669,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "common",
-      "element": "space",
+      "element": "earth",
       "weight": 5,
       "value": 280,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -6596,6 +6684,9 @@
       "skill_bonuses": {
         "earth_magic": {
           "blessed_gold_khatvanga_mat": 2
+        },
+        "enchantment": {
+          "blessed_gold_khatvanga": 2
         }
       },
       "abilities": [],
@@ -6605,7 +6696,7 @@
       "aura_value": -3,
       "material": "gold",
       "quality": "common",
-      "enchantment": "none"
+      "enchantment": "touched"
     },
     "empowered_gold_khatvanga": {
       "name": "Empowered Gold Khatvanga",
@@ -6614,7 +6705,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "earth",
       "weight": 5,
       "value": 720,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -6630,6 +6721,9 @@
       "skill_bonuses": {
         "earth_magic": {
           "empowered_gold_khatvanga_mat": 3
+        },
+        "enchantment": {
+          "empowered_gold_khatvanga": 3
         }
       },
       "abilities": [],
@@ -6639,7 +6733,7 @@
       "aura_value": -4,
       "material": "gold",
       "quality": "good",
-      "enchantment": "none"
+      "enchantment": "blessed"
     },
     "perfected_gold_khatvanga": {
       "name": "Perfected Gold Khatvanga",
@@ -6648,7 +6742,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "rare",
-      "element": "space",
+      "element": "earth",
       "weight": 5,
       "value": 1440,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -6664,6 +6758,9 @@
       "skill_bonuses": {
         "earth_magic": {
           "perfected_gold_khatvanga_mat": 4
+        },
+        "enchantment": {
+          "perfected_gold_khatvanga": 4
         }
       },
       "abilities": [],
@@ -6673,7 +6770,7 @@
       "aura_value": -6,
       "material": "gold",
       "quality": "fine",
-      "enchantment": "none"
+      "enchantment": "blessed"
     },
     "legendary_gold_khatvanga": {
       "name": "Legendary Gold Khatvanga",
@@ -6682,7 +6779,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "legendary",
-      "element": "space",
+      "element": "earth",
       "weight": 5,
       "value": 3600,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -6698,6 +6795,9 @@
       "skill_bonuses": {
         "earth_magic": {
           "legendary_gold_khatvanga_mat": 5
+        },
+        "enchantment": {
+          "legendary_gold_khatvanga": 5
         }
       },
       "abilities": [],
@@ -6707,7 +6807,7 @@
       "aura_value": -8,
       "material": "gold",
       "quality": "masterwork",
-      "enchantment": "touched"
+      "enchantment": "empowered"
     },
     "plain_iron_khatvanga": {
       "name": "Plain Iron Khatvanga",
@@ -6716,7 +6816,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "common",
-      "element": "space",
+      "element": "air",
       "weight": 5,
       "value": 80,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -6731,6 +6831,9 @@
       "skill_bonuses": {
         "air_magic": {
           "plain_iron_khatvanga_mat": 1
+        },
+        "enchantment": {
+          "plain_iron_khatvanga": 1
         }
       },
       "abilities": [],
@@ -6749,7 +6852,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "common",
-      "element": "space",
+      "element": "air",
       "weight": 5,
       "value": 280,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -6764,6 +6867,9 @@
       "skill_bonuses": {
         "air_magic": {
           "blessed_iron_khatvanga_mat": 2
+        },
+        "enchantment": {
+          "blessed_iron_khatvanga": 2
         }
       },
       "abilities": [],
@@ -6782,7 +6888,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "air",
       "weight": 5,
       "value": 720,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -6798,6 +6904,9 @@
       "skill_bonuses": {
         "air_magic": {
           "empowered_iron_khatvanga_mat": 3
+        },
+        "enchantment": {
+          "empowered_iron_khatvanga": 3
         }
       },
       "abilities": [],
@@ -6816,7 +6925,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "rare",
-      "element": "space",
+      "element": "air",
       "weight": 5,
       "value": 1440,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -6832,6 +6941,9 @@
       "skill_bonuses": {
         "air_magic": {
           "perfected_iron_khatvanga_mat": 4
+        },
+        "enchantment": {
+          "perfected_iron_khatvanga": 4
         }
       },
       "abilities": [],
@@ -6850,7 +6962,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "legendary",
-      "element": "space",
+      "element": "air",
       "weight": 5,
       "value": 3600,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -6866,6 +6978,9 @@
       "skill_bonuses": {
         "air_magic": {
           "legendary_iron_khatvanga_mat": 5
+        },
+        "enchantment": {
+          "legendary_iron_khatvanga": 5
         }
       },
       "abilities": [],
@@ -6899,6 +7014,9 @@
       "skill_bonuses": {
         "space_magic": {
           "plain_bronze_khatvanga_mat": 1
+        },
+        "enchantment": {
+          "plain_bronze_khatvanga": 1
         }
       },
       "abilities": [],
@@ -6932,6 +7050,9 @@
       "skill_bonuses": {
         "space_magic": {
           "blessed_bronze_khatvanga_mat": 2
+        },
+        "enchantment": {
+          "blessed_bronze_khatvanga": 2
         }
       },
       "abilities": [],
@@ -6941,7 +7062,7 @@
       "aura_value": -3,
       "material": "bronze",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_bronze_khatvanga": {
       "name": "Empowered Bronze Khatvanga",
@@ -6966,6 +7087,9 @@
       "skill_bonuses": {
         "space_magic": {
           "empowered_bronze_khatvanga_mat": 3
+        },
+        "enchantment": {
+          "empowered_bronze_khatvanga": 3
         }
       },
       "abilities": [],
@@ -7000,6 +7124,9 @@
       "skill_bonuses": {
         "space_magic": {
           "perfected_sky_iron_khatvanga_mat": 4
+        },
+        "enchantment": {
+          "perfected_sky_iron_khatvanga": 4
         }
       },
       "abilities": [],
@@ -7009,7 +7136,7 @@
       "aura_value": -6,
       "material": "sky_iron",
       "quality": "fine",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "legendary_sky_iron_khatvanga": {
       "name": "Legendary Sky-iron Khatvanga",
@@ -7034,6 +7161,9 @@
       "skill_bonuses": {
         "space_magic": {
           "legendary_sky_iron_khatvanga_mat": 5
+        },
+        "enchantment": {
+          "legendary_sky_iron_khatvanga": 5
         }
       },
       "abilities": [],
@@ -7043,7 +7173,7 @@
       "aura_value": -8,
       "material": "sky_iron",
       "quality": "masterwork",
-      "enchantment": "touched"
+      "enchantment": "empowered"
     },
     "plain_conch_khatvanga": {
       "name": "Plain Conch Khatvanga",
@@ -7052,7 +7182,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "common",
-      "element": "space",
+      "element": "water",
       "weight": 5,
       "value": 80,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -7067,6 +7197,9 @@
       "skill_bonuses": {
         "white_magic": {
           "plain_conch_khatvanga_mat": 1
+        },
+        "enchantment": {
+          "plain_conch_khatvanga": 1
         }
       },
       "abilities": [],
@@ -7085,7 +7218,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "common",
-      "element": "space",
+      "element": "water",
       "weight": 5,
       "value": 280,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -7100,6 +7233,9 @@
       "skill_bonuses": {
         "white_magic": {
           "blessed_conch_khatvanga_mat": 2
+        },
+        "enchantment": {
+          "blessed_conch_khatvanga": 2
         }
       },
       "abilities": [],
@@ -7118,7 +7254,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "uncommon",
-      "element": "space",
+      "element": "water",
       "weight": 5,
       "value": 720,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -7134,6 +7270,9 @@
       "skill_bonuses": {
         "white_magic": {
           "empowered_conch_khatvanga_mat": 3
+        },
+        "enchantment": {
+          "empowered_conch_khatvanga": 3
         }
       },
       "abilities": [],
@@ -7152,7 +7291,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "rare",
-      "element": "space",
+      "element": "water",
       "weight": 5,
       "value": 1440,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -7168,6 +7307,9 @@
       "skill_bonuses": {
         "white_magic": {
           "perfected_conch_khatvanga_mat": 4
+        },
+        "enchantment": {
+          "perfected_conch_khatvanga": 4
         }
       },
       "abilities": [],
@@ -7186,7 +7328,7 @@
       "slot": "weapon_main",
       "two_handed": true,
       "rarity": "legendary",
-      "element": "space",
+      "element": "water",
       "weight": 5,
       "value": 3600,
       "description": "A trident staff topped with a skull, the emblem of wrathful practice. Enemies within melee range feel their composure — and initiative — erode. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -7202,6 +7344,9 @@
       "skill_bonuses": {
         "white_magic": {
           "legendary_conch_khatvanga_mat": 5
+        },
+        "enchantment": {
+          "legendary_conch_khatvanga": 5
         }
       },
       "abilities": [],
@@ -7244,7 +7389,7 @@
       "aura_value": -2,
       "material": "bone",
       "quality": "common",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "blessed_bone_khatvanga": {
       "name": "Blessed Bone Khatvanga",
@@ -7277,7 +7422,7 @@
       "aura_value": -3,
       "material": "bone",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_bone_khatvanga": {
       "name": "Empowered Bone Khatvanga",
@@ -7311,7 +7456,7 @@
       "aura_value": -4,
       "material": "bone",
       "quality": "good",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "perfected_bone_khatvanga": {
       "name": "Perfected Bone Khatvanga",
@@ -7345,7 +7490,7 @@
       "aura_value": -6,
       "material": "bone",
       "quality": "fine",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "legendary_bone_khatvanga": {
       "name": "Legendary Bone Khatvanga",
@@ -7379,7 +7524,7 @@
       "aura_value": -8,
       "material": "bone",
       "quality": "masterwork",
-      "enchantment": "perfected"
+      "enchantment": "empowered"
     },
     "plain_copper_damaru": {
       "name": "Plain Copper Damaru",
@@ -7388,7 +7533,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "air",
+      "element": "fire",
       "weight": 1,
       "value": 55,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -7400,11 +7545,11 @@
         "max_mana": 18
       },
       "skill_bonuses": {
-        "enchantment": {
-          "plain_copper_damaru": 1
-        },
         "fire_magic": {
           "plain_copper_damaru_mat": 1
+        },
+        "summoning": {
+          "plain_copper_damaru": 1
         }
       },
       "abilities": [],
@@ -7424,7 +7569,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "air",
+      "element": "fire",
       "weight": 1,
       "value": 192,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -7436,11 +7581,11 @@
         "max_mana": 30
       },
       "skill_bonuses": {
-        "enchantment": {
-          "blessed_copper_damaru": 2
-        },
         "fire_magic": {
           "blessed_copper_damaru_mat": 2
+        },
+        "summoning": {
+          "blessed_copper_damaru": 2
         }
       },
       "abilities": [],
@@ -7451,7 +7596,7 @@
       "charge_discount": 0.4,
       "material": "copper",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_copper_damaru": {
       "name": "Empowered Copper Damaru",
@@ -7460,7 +7605,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "air",
+      "element": "fire",
       "weight": 1,
       "value": 495,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -7472,11 +7617,11 @@
         "max_mana": 45
       },
       "skill_bonuses": {
-        "enchantment": {
-          "empowered_copper_damaru": 3
-        },
         "fire_magic": {
           "empowered_copper_damaru_mat": 3
+        },
+        "summoning": {
+          "empowered_copper_damaru": 3
         }
       },
       "abilities": [],
@@ -7487,7 +7632,7 @@
       "charge_discount": 0.4,
       "material": "copper",
       "quality": "good",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "perfected_copper_damaru": {
       "name": "Perfected Copper Damaru",
@@ -7496,7 +7641,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "air",
+      "element": "fire",
       "weight": 1,
       "value": 990,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -7508,11 +7653,11 @@
         "max_mana": 62
       },
       "skill_bonuses": {
-        "enchantment": {
-          "perfected_copper_damaru": 4
-        },
         "fire_magic": {
           "perfected_copper_damaru_mat": 4
+        },
+        "summoning": {
+          "perfected_copper_damaru": 4
         }
       },
       "abilities": [],
@@ -7532,7 +7677,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "air",
+      "element": "fire",
       "weight": 1,
       "value": 2475,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Copper carries fire — transformation, passion, and the forge. The practitioner who wields this brings heat to every working.",
@@ -7544,11 +7689,11 @@
         "max_mana": 82
       },
       "skill_bonuses": {
-        "enchantment": {
-          "legendary_copper_damaru": 5
-        },
         "fire_magic": {
           "legendary_copper_damaru_mat": 5
+        },
+        "summoning": {
+          "legendary_copper_damaru": 5
         }
       },
       "abilities": [],
@@ -7559,7 +7704,7 @@
       "charge_discount": 0.4,
       "material": "copper",
       "quality": "masterwork",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "plain_silver_damaru": {
       "name": "Plain Silver Damaru",
@@ -7568,7 +7713,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "air",
+      "element": "water",
       "weight": 1,
       "value": 55,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -7580,11 +7725,11 @@
         "max_mana": 18
       },
       "skill_bonuses": {
-        "enchantment": {
-          "plain_silver_damaru": 1
-        },
         "water_magic": {
           "plain_silver_damaru_mat": 1
+        },
+        "summoning": {
+          "plain_silver_damaru": 1
         }
       },
       "abilities": [],
@@ -7593,9 +7738,8 @@
       "special_mechanic": "rhythm_charge",
       "charge_max": 3,
       "charge_discount": 0.4,
-      "material": "bronze",
+      "material": "silver",
       "quality": "common",
-      "gilding": "silver",
       "enchantment": "none"
     },
     "blessed_silver_damaru": {
@@ -7605,7 +7749,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "air",
+      "element": "water",
       "weight": 1,
       "value": 192,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -7617,11 +7761,11 @@
         "max_mana": 30
       },
       "skill_bonuses": {
-        "enchantment": {
-          "blessed_silver_damaru": 2
-        },
         "water_magic": {
           "blessed_silver_damaru_mat": 2
+        },
+        "summoning": {
+          "blessed_silver_damaru": 2
         }
       },
       "abilities": [],
@@ -7632,7 +7776,7 @@
       "charge_discount": 0.4,
       "material": "silver",
       "quality": "common",
-      "enchantment": "none"
+      "enchantment": "touched"
     },
     "empowered_silver_damaru": {
       "name": "Empowered Silver Damaru",
@@ -7641,7 +7785,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "air",
+      "element": "water",
       "weight": 1,
       "value": 495,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -7653,11 +7797,11 @@
         "max_mana": 45
       },
       "skill_bonuses": {
-        "enchantment": {
-          "empowered_silver_damaru": 3
-        },
         "water_magic": {
           "empowered_silver_damaru_mat": 3
+        },
+        "summoning": {
+          "empowered_silver_damaru": 3
         }
       },
       "abilities": [],
@@ -7677,7 +7821,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "air",
+      "element": "water",
       "weight": 1,
       "value": 990,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -7689,11 +7833,11 @@
         "max_mana": 62
       },
       "skill_bonuses": {
-        "enchantment": {
-          "perfected_silver_damaru": 4
-        },
         "water_magic": {
           "perfected_silver_damaru_mat": 4
+        },
+        "summoning": {
+          "perfected_silver_damaru": 4
         }
       },
       "abilities": [],
@@ -7704,7 +7848,7 @@
       "charge_discount": 0.4,
       "material": "silver",
       "quality": "fine",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "legendary_silver_damaru": {
       "name": "Legendary Silver Damaru",
@@ -7713,7 +7857,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "air",
+      "element": "water",
       "weight": 1,
       "value": 2475,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -7725,11 +7869,11 @@
         "max_mana": 82
       },
       "skill_bonuses": {
-        "enchantment": {
-          "legendary_silver_damaru": 5
-        },
         "water_magic": {
           "legendary_silver_damaru_mat": 5
+        },
+        "summoning": {
+          "legendary_silver_damaru": 5
         }
       },
       "abilities": [],
@@ -7749,7 +7893,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "air",
+      "element": "earth",
       "weight": 1,
       "value": 55,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -7761,11 +7905,11 @@
         "max_mana": 18
       },
       "skill_bonuses": {
-        "enchantment": {
-          "plain_gold_damaru": 1
-        },
         "earth_magic": {
           "plain_gold_damaru_mat": 1
+        },
+        "summoning": {
+          "plain_gold_damaru": 1
         }
       },
       "abilities": [],
@@ -7774,9 +7918,8 @@
       "special_mechanic": "rhythm_charge",
       "charge_max": 3,
       "charge_discount": 0.4,
-      "material": "bronze",
+      "material": "gold",
       "quality": "common",
-      "gilding": "gold",
       "enchantment": "none"
     },
     "blessed_gold_damaru": {
@@ -7786,7 +7929,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "air",
+      "element": "earth",
       "weight": 1,
       "value": 192,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -7798,11 +7941,11 @@
         "max_mana": 30
       },
       "skill_bonuses": {
-        "enchantment": {
-          "blessed_gold_damaru": 2
-        },
         "earth_magic": {
           "blessed_gold_damaru_mat": 2
+        },
+        "summoning": {
+          "blessed_gold_damaru": 2
         }
       },
       "abilities": [],
@@ -7813,7 +7956,7 @@
       "charge_discount": 0.4,
       "material": "gold",
       "quality": "common",
-      "enchantment": "none"
+      "enchantment": "touched"
     },
     "empowered_gold_damaru": {
       "name": "Empowered Gold Damaru",
@@ -7822,7 +7965,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "air",
+      "element": "earth",
       "weight": 1,
       "value": 495,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -7834,11 +7977,11 @@
         "max_mana": 45
       },
       "skill_bonuses": {
-        "enchantment": {
-          "empowered_gold_damaru": 3
-        },
         "earth_magic": {
           "empowered_gold_damaru_mat": 3
+        },
+        "summoning": {
+          "empowered_gold_damaru": 3
         }
       },
       "abilities": [],
@@ -7849,7 +7992,7 @@
       "charge_discount": 0.4,
       "material": "gold",
       "quality": "good",
-      "enchantment": "none"
+      "enchantment": "touched"
     },
     "perfected_gold_damaru": {
       "name": "Perfected Gold Damaru",
@@ -7858,7 +8001,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "air",
+      "element": "earth",
       "weight": 1,
       "value": 990,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -7870,11 +8013,11 @@
         "max_mana": 62
       },
       "skill_bonuses": {
-        "enchantment": {
-          "perfected_gold_damaru": 4
-        },
         "earth_magic": {
           "perfected_gold_damaru_mat": 4
+        },
+        "summoning": {
+          "perfected_gold_damaru": 4
         }
       },
       "abilities": [],
@@ -7885,7 +8028,7 @@
       "charge_discount": 0.4,
       "material": "gold",
       "quality": "fine",
-      "enchantment": "none"
+      "enchantment": "blessed"
     },
     "legendary_gold_damaru": {
       "name": "Legendary Gold Damaru",
@@ -7894,7 +8037,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "air",
+      "element": "earth",
       "weight": 1,
       "value": 2475,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -7906,11 +8049,11 @@
         "max_mana": 82
       },
       "skill_bonuses": {
-        "enchantment": {
-          "legendary_gold_damaru": 5
-        },
         "earth_magic": {
           "legendary_gold_damaru_mat": 5
+        },
+        "summoning": {
+          "legendary_gold_damaru": 5
         }
       },
       "abilities": [],
@@ -7921,7 +8064,7 @@
       "charge_discount": 0.4,
       "material": "gold",
       "quality": "masterwork",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "plain_iron_damaru": {
       "name": "Plain Iron Damaru",
@@ -7942,11 +8085,11 @@
         "max_mana": 18
       },
       "skill_bonuses": {
-        "enchantment": {
-          "plain_iron_damaru": 1
-        },
         "air_magic": {
           "plain_iron_damaru_mat": 1
+        },
+        "summoning": {
+          "plain_iron_damaru": 1
         }
       },
       "abilities": [],
@@ -7978,11 +8121,11 @@
         "max_mana": 30
       },
       "skill_bonuses": {
-        "enchantment": {
-          "blessed_iron_damaru": 2
-        },
         "air_magic": {
           "blessed_iron_damaru_mat": 2
+        },
+        "summoning": {
+          "blessed_iron_damaru": 2
         }
       },
       "abilities": [],
@@ -8014,11 +8157,11 @@
         "max_mana": 45
       },
       "skill_bonuses": {
-        "enchantment": {
-          "empowered_iron_damaru": 3
-        },
         "air_magic": {
           "empowered_iron_damaru_mat": 3
+        },
+        "summoning": {
+          "empowered_iron_damaru": 3
         }
       },
       "abilities": [],
@@ -8050,11 +8193,11 @@
         "max_mana": 62
       },
       "skill_bonuses": {
-        "enchantment": {
-          "perfected_iron_damaru": 4
-        },
         "air_magic": {
           "perfected_iron_damaru_mat": 4
+        },
+        "summoning": {
+          "perfected_iron_damaru": 4
         }
       },
       "abilities": [],
@@ -8086,11 +8229,11 @@
         "max_mana": 82
       },
       "skill_bonuses": {
-        "enchantment": {
-          "legendary_iron_damaru": 5
-        },
         "air_magic": {
           "legendary_iron_damaru_mat": 5
+        },
+        "summoning": {
+          "legendary_iron_damaru": 5
         }
       },
       "abilities": [],
@@ -8110,7 +8253,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "air",
+      "element": "space",
       "weight": 1,
       "value": 55,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Bronze is a compromise — not the ideal metal for space-work, but workable. Practitioners who cannot find sky-iron use it and find it adequate.",
@@ -8122,11 +8265,11 @@
         "max_mana": 18
       },
       "skill_bonuses": {
-        "enchantment": {
-          "plain_bronze_damaru": 1
-        },
         "space_magic": {
           "plain_bronze_damaru_mat": 1
+        },
+        "summoning": {
+          "plain_bronze_damaru": 1
         }
       },
       "abilities": [],
@@ -8146,7 +8289,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "air",
+      "element": "space",
       "weight": 1,
       "value": 192,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Bronze is a compromise — not the ideal metal for space-work, but workable. Practitioners who cannot find sky-iron use it and find it adequate.",
@@ -8158,11 +8301,11 @@
         "max_mana": 30
       },
       "skill_bonuses": {
-        "enchantment": {
-          "blessed_bronze_damaru": 2
-        },
         "space_magic": {
           "blessed_bronze_damaru_mat": 2
+        },
+        "summoning": {
+          "blessed_bronze_damaru": 2
         }
       },
       "abilities": [],
@@ -8182,7 +8325,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "air",
+      "element": "space",
       "weight": 1,
       "value": 495,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Bronze is a compromise — not the ideal metal for space-work, but workable. Practitioners who cannot find sky-iron use it and find it adequate.",
@@ -8194,11 +8337,11 @@
         "max_mana": 45
       },
       "skill_bonuses": {
-        "enchantment": {
-          "empowered_bronze_damaru": 3
-        },
         "space_magic": {
           "empowered_bronze_damaru_mat": 3
+        },
+        "summoning": {
+          "empowered_bronze_damaru": 3
         }
       },
       "abilities": [],
@@ -8209,7 +8352,7 @@
       "charge_discount": 0.4,
       "material": "bronze",
       "quality": "good",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "perfected_sky_iron_damaru": {
       "name": "Perfected Sky-iron Damaru",
@@ -8218,7 +8361,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "air",
+      "element": "space",
       "weight": 1,
       "value": 990,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Sky-iron fell from beyond the world. It carries the quality of space itself — distance, and the absence of obstacle.",
@@ -8230,11 +8373,11 @@
         "max_mana": 62
       },
       "skill_bonuses": {
-        "enchantment": {
-          "perfected_sky_iron_damaru": 4
-        },
         "space_magic": {
           "perfected_sky_iron_damaru_mat": 4
+        },
+        "summoning": {
+          "perfected_sky_iron_damaru": 4
         }
       },
       "abilities": [],
@@ -8245,7 +8388,7 @@
       "charge_discount": 0.4,
       "material": "sky_iron",
       "quality": "fine",
-      "enchantment": "none"
+      "enchantment": "blessed"
     },
     "legendary_sky_iron_damaru": {
       "name": "Legendary Sky-iron Damaru",
@@ -8254,7 +8397,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "air",
+      "element": "space",
       "weight": 1,
       "value": 2475,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. Sky-iron fell from beyond the world. It carries the quality of space itself — distance, and the absence of obstacle.",
@@ -8266,11 +8409,11 @@
         "max_mana": 82
       },
       "skill_bonuses": {
-        "enchantment": {
-          "legendary_sky_iron_damaru": 5
-        },
         "space_magic": {
           "legendary_sky_iron_damaru_mat": 5
+        },
+        "summoning": {
+          "legendary_sky_iron_damaru": 5
         }
       },
       "abilities": [],
@@ -8281,7 +8424,7 @@
       "charge_discount": 0.4,
       "material": "sky_iron",
       "quality": "masterwork",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "plain_conch_damaru": {
       "name": "Plain Conch Damaru",
@@ -8290,7 +8433,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "air",
+      "element": "water",
       "weight": 1,
       "value": 55,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -8302,11 +8445,11 @@
         "max_mana": 18
       },
       "skill_bonuses": {
-        "enchantment": {
-          "plain_conch_damaru": 1
-        },
         "white_magic": {
           "plain_conch_damaru_mat": 1
+        },
+        "summoning": {
+          "plain_conch_damaru": 1
         }
       },
       "abilities": [],
@@ -8326,7 +8469,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
-      "element": "air",
+      "element": "water",
       "weight": 1,
       "value": 192,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -8338,11 +8481,11 @@
         "max_mana": 30
       },
       "skill_bonuses": {
-        "enchantment": {
-          "blessed_conch_damaru": 2
-        },
         "white_magic": {
           "blessed_conch_damaru_mat": 2
+        },
+        "summoning": {
+          "blessed_conch_damaru": 2
         }
       },
       "abilities": [],
@@ -8362,7 +8505,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "air",
+      "element": "water",
       "weight": 1,
       "value": 495,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -8374,11 +8517,11 @@
         "max_mana": 45
       },
       "skill_bonuses": {
-        "enchantment": {
-          "empowered_conch_damaru": 3
-        },
         "white_magic": {
           "empowered_conch_damaru_mat": 3
+        },
+        "summoning": {
+          "empowered_conch_damaru": 3
         }
       },
       "abilities": [],
@@ -8389,7 +8532,7 @@
       "charge_discount": 0.4,
       "material": "conch",
       "quality": "good",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "perfected_conch_damaru": {
       "name": "Perfected Conch Damaru",
@@ -8398,7 +8541,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
-      "element": "air",
+      "element": "water",
       "weight": 1,
       "value": 990,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -8410,11 +8553,11 @@
         "max_mana": 62
       },
       "skill_bonuses": {
-        "enchantment": {
-          "perfected_conch_damaru": 4
-        },
         "white_magic": {
           "perfected_conch_damaru_mat": 4
+        },
+        "summoning": {
+          "perfected_conch_damaru": 4
         }
       },
       "abilities": [],
@@ -8434,7 +8577,7 @@
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "air",
+      "element": "water",
       "weight": 1,
       "value": 2475,
       "description": "A small double-headed drum shaken by a cord. Three spells cast while holding it and the rhythm reaches its peak — the next spell costs 40% less mana. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -8446,11 +8589,11 @@
         "max_mana": 82
       },
       "skill_bonuses": {
-        "enchantment": {
-          "legendary_conch_damaru": 5
-        },
         "white_magic": {
           "legendary_conch_damaru_mat": 5
+        },
+        "summoning": {
+          "legendary_conch_damaru": 5
         }
       },
       "abilities": [],
@@ -8497,7 +8640,7 @@
       "charge_discount": 0.4,
       "material": "bone",
       "quality": "common",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "blessed_bone_damaru": {
       "name": "Blessed Bone Damaru",
@@ -8533,7 +8676,7 @@
       "charge_discount": 0.4,
       "material": "bone",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_bone_damaru": {
       "name": "Empowered Bone Damaru",
@@ -8569,7 +8712,7 @@
       "charge_discount": 0.4,
       "material": "bone",
       "quality": "good",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "perfected_bone_damaru": {
       "name": "Perfected Bone Damaru",
@@ -8605,7 +8748,7 @@
       "charge_discount": 0.4,
       "material": "bone",
       "quality": "fine",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "legendary_bone_damaru": {
       "name": "Legendary Bone Damaru",
@@ -8641,7 +8784,7 @@
       "charge_discount": 0.4,
       "material": "bone",
       "quality": "masterwork",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "plain_copper_kangling": {
       "name": "Plain Copper Kangling",
@@ -8676,7 +8819,7 @@
       "chod_cost_pct": 0.25,
       "material": "copper",
       "quality": "common",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "blessed_copper_kangling": {
       "name": "Blessed Copper Kangling",
@@ -8711,7 +8854,7 @@
       "chod_cost_pct": 0.25,
       "material": "copper",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_copper_kangling": {
       "name": "Empowered Copper Kangling",
@@ -8781,7 +8924,7 @@
       "chod_cost_pct": 0.25,
       "material": "copper",
       "quality": "fine",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "legendary_copper_kangling": {
       "name": "Legendary Copper Kangling",
@@ -8816,7 +8959,7 @@
       "chod_cost_pct": 0.25,
       "material": "copper",
       "quality": "masterwork",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "plain_silver_kangling": {
       "name": "Plain Silver Kangling",
@@ -8886,7 +9029,7 @@
       "chod_cost_pct": 0.25,
       "material": "silver",
       "quality": "common",
-      "enchantment": "none"
+      "enchantment": "touched"
     },
     "empowered_silver_kangling": {
       "name": "Empowered Silver Kangling",
@@ -8921,7 +9064,7 @@
       "chod_cost_pct": 0.25,
       "material": "silver",
       "quality": "good",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "perfected_silver_kangling": {
       "name": "Perfected Silver Kangling",
@@ -8956,7 +9099,7 @@
       "chod_cost_pct": 0.25,
       "material": "silver",
       "quality": "fine",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "legendary_silver_kangling": {
       "name": "Legendary Silver Kangling",
@@ -9026,7 +9169,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "common",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "blessed_gold_kangling": {
       "name": "Blessed Gold Kangling",
@@ -9061,7 +9204,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_gold_kangling": {
       "name": "Empowered Gold Kangling",
@@ -9096,7 +9239,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "good",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "perfected_gold_kangling": {
       "name": "Perfected Gold Kangling",
@@ -9131,7 +9274,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "fine",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "legendary_gold_kangling": {
       "name": "Legendary Gold Kangling",
@@ -9166,7 +9309,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "masterwork",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "plain_iron_kangling": {
       "name": "Plain Iron Kangling",
@@ -9201,7 +9344,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "common",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "blessed_iron_kangling": {
       "name": "Blessed Iron Kangling",
@@ -9236,7 +9379,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_iron_kangling": {
       "name": "Empowered Iron Kangling",
@@ -9271,7 +9414,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "good",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "perfected_iron_kangling": {
       "name": "Perfected Iron Kangling",
@@ -9306,7 +9449,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "fine",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "legendary_iron_kangling": {
       "name": "Legendary Iron Kangling",
@@ -9341,7 +9484,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "masterwork",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "plain_bronze_kangling": {
       "name": "Plain Bronze Kangling",
@@ -9481,7 +9624,7 @@
       "chod_cost_pct": 0.25,
       "material": "sky_iron",
       "quality": "fine",
-      "enchantment": "none"
+      "enchantment": "blessed"
     },
     "legendary_sky_iron_kangling": {
       "name": "Legendary Sky-iron Kangling",
@@ -9516,7 +9659,7 @@
       "chod_cost_pct": 0.25,
       "material": "sky_iron",
       "quality": "masterwork",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "plain_conch_kangling": {
       "name": "Plain Conch Kangling",
@@ -9726,7 +9869,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "common",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "blessed_bone_kangling": {
       "name": "Blessed Bone Kangling",
@@ -9761,7 +9904,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_bone_kangling": {
       "name": "Empowered Bone Kangling",
@@ -9796,7 +9939,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "good",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "perfected_bone_kangling": {
       "name": "Perfected Bone Kangling",
@@ -9831,7 +9974,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "fine",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "legendary_bone_kangling": {
       "name": "Legendary Bone Kangling",
@@ -9866,7 +10009,7 @@
       "chod_cost_pct": 0.25,
       "material": "bone",
       "quality": "masterwork",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "plain_copper_phurba": {
       "name": "Plain Copper Phurba",
@@ -9903,7 +10046,7 @@
       "throw_save_dc": 16,
       "material": "copper",
       "quality": "common",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "blessed_copper_phurba": {
       "name": "Blessed Copper Phurba",
@@ -9940,7 +10083,7 @@
       "throw_save_dc": 16,
       "material": "copper",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_copper_phurba": {
       "name": "Empowered Copper Phurba",
@@ -10014,7 +10157,7 @@
       "throw_save_dc": 16,
       "material": "copper",
       "quality": "fine",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "legendary_copper_phurba": {
       "name": "Legendary Copper Phurba",
@@ -10051,7 +10194,7 @@
       "throw_save_dc": 16,
       "material": "copper",
       "quality": "masterwork",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "plain_silver_phurba": {
       "name": "Plain Silver Phurba",
@@ -10060,7 +10203,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "fire",
+      "element": "water",
       "weight": 1,
       "value": 70,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -10097,7 +10240,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "fire",
+      "element": "water",
       "weight": 1,
       "value": 245,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -10125,7 +10268,7 @@
       "throw_save_dc": 16,
       "material": "silver",
       "quality": "common",
-      "enchantment": "none"
+      "enchantment": "touched"
     },
     "empowered_silver_phurba": {
       "name": "Empowered Silver Phurba",
@@ -10134,7 +10277,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "fire",
+      "element": "water",
       "weight": 1,
       "value": 630,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -10162,7 +10305,7 @@
       "throw_save_dc": 16,
       "material": "silver",
       "quality": "good",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "perfected_silver_phurba": {
       "name": "Perfected Silver Phurba",
@@ -10171,7 +10314,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "rare",
-      "element": "fire",
+      "element": "water",
       "weight": 1,
       "value": 1260,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -10199,7 +10342,7 @@
       "throw_save_dc": 16,
       "material": "silver",
       "quality": "fine",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "legendary_silver_phurba": {
       "name": "Legendary Silver Phurba",
@@ -10208,7 +10351,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "fire",
+      "element": "water",
       "weight": 1,
       "value": 3150,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Silver belongs to water — clarity, reflection, and the deep current. Spells cast through silver flow rather than strike.",
@@ -10245,7 +10388,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "fire",
+      "element": "earth",
       "weight": 1,
       "value": 70,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -10271,9 +10414,8 @@
       "throw_mana_cost": 15,
       "throw_base_damage": 8,
       "throw_save_dc": 16,
-      "material": "bronze",
+      "material": "gold",
       "quality": "common",
-      "gilding": "gold",
       "enchantment": "none"
     },
     "blessed_gold_phurba": {
@@ -10283,7 +10425,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "fire",
+      "element": "earth",
       "weight": 1,
       "value": 245,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -10311,7 +10453,7 @@
       "throw_save_dc": 16,
       "material": "gold",
       "quality": "common",
-      "enchantment": "none"
+      "enchantment": "touched"
     },
     "empowered_gold_phurba": {
       "name": "Empowered Gold Phurba",
@@ -10320,7 +10462,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "fire",
+      "element": "earth",
       "weight": 1,
       "value": 630,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -10348,7 +10490,7 @@
       "throw_save_dc": 16,
       "material": "gold",
       "quality": "good",
-      "enchantment": "none"
+      "enchantment": "blessed"
     },
     "perfected_gold_phurba": {
       "name": "Perfected Gold Phurba",
@@ -10357,7 +10499,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "rare",
-      "element": "fire",
+      "element": "earth",
       "weight": 1,
       "value": 1260,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -10385,7 +10527,7 @@
       "throw_save_dc": 16,
       "material": "gold",
       "quality": "fine",
-      "enchantment": "none"
+      "enchantment": "blessed"
     },
     "legendary_gold_phurba": {
       "name": "Legendary Gold Phurba",
@@ -10394,7 +10536,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "fire",
+      "element": "earth",
       "weight": 1,
       "value": 3150,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Gold is earth's incorruptible face — abundance, permanence, and stability. Earth-working through gold tends to endure longer than the fight.",
@@ -10422,7 +10564,7 @@
       "throw_save_dc": 16,
       "material": "gold",
       "quality": "masterwork",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "plain_iron_phurba": {
       "name": "Plain Iron Phurba",
@@ -10431,7 +10573,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "fire",
+      "element": "air",
       "weight": 1,
       "value": 70,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -10468,7 +10610,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "fire",
+      "element": "air",
       "weight": 1,
       "value": 245,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -10505,7 +10647,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "fire",
+      "element": "air",
       "weight": 1,
       "value": 630,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -10542,7 +10684,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "rare",
-      "element": "fire",
+      "element": "air",
       "weight": 1,
       "value": 1260,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -10579,7 +10721,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "fire",
+      "element": "air",
       "weight": 1,
       "value": 3150,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Iron is the metal of air — sharp, mobile, cutting. Storm and wind obey it more readily than softer metals.",
@@ -10616,7 +10758,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "fire",
+      "element": "space",
       "weight": 1,
       "value": 70,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Bronze is a compromise — not the ideal metal for space-work, but workable. Practitioners who cannot find sky-iron use it and find it adequate.",
@@ -10653,7 +10795,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "fire",
+      "element": "space",
       "weight": 1,
       "value": 245,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Bronze is a compromise — not the ideal metal for space-work, but workable. Practitioners who cannot find sky-iron use it and find it adequate.",
@@ -10681,7 +10823,7 @@
       "throw_save_dc": 16,
       "material": "bronze",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_bronze_phurba": {
       "name": "Empowered Bronze Phurba",
@@ -10690,7 +10832,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "fire",
+      "element": "space",
       "weight": 1,
       "value": 630,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Bronze is a compromise — not the ideal metal for space-work, but workable. Practitioners who cannot find sky-iron use it and find it adequate.",
@@ -10727,7 +10869,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "rare",
-      "element": "fire",
+      "element": "space",
       "weight": 1,
       "value": 1260,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Sky-iron fell from beyond the world. It carries the quality of space itself — distance, and the absence of obstacle.",
@@ -10755,7 +10897,7 @@
       "throw_save_dc": 16,
       "material": "sky_iron",
       "quality": "fine",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "legendary_sky_iron_phurba": {
       "name": "Legendary Sky-iron Phurba",
@@ -10764,7 +10906,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "fire",
+      "element": "space",
       "weight": 1,
       "value": 3150,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. Sky-iron fell from beyond the world. It carries the quality of space itself — distance, and the absence of obstacle.",
@@ -10792,7 +10934,7 @@
       "throw_save_dc": 16,
       "material": "sky_iron",
       "quality": "masterwork",
-      "enchantment": "touched"
+      "enchantment": "blessed"
     },
     "plain_conch_phurba": {
       "name": "Plain Conch Phurba",
@@ -10801,7 +10943,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "fire",
+      "element": "water",
       "weight": 1,
       "value": 70,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -10838,7 +10980,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "common",
-      "element": "fire",
+      "element": "water",
       "weight": 1,
       "value": 245,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -10875,7 +11017,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "uncommon",
-      "element": "fire",
+      "element": "water",
       "weight": 1,
       "value": 630,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -10912,7 +11054,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "rare",
-      "element": "fire",
+      "element": "water",
       "weight": 1,
       "value": 1260,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -10949,7 +11091,7 @@
       "slot": "weapon_main",
       "two_handed": false,
       "rarity": "legendary",
-      "element": "fire",
+      "element": "water",
       "weight": 1,
       "value": 3150,
       "description": "A three-bladed ritual dagger. The three blades cut through ignorance, attachment, and aversion. Can be used to physically strike, but its true power is thrown — a ranged attack that pins and subjugates. The conch announces peace — pacification, healing, and the dharma that soothes. White magic runs through conch like water through a shell.",
@@ -10977,7 +11119,7 @@
       "throw_save_dc": 16,
       "material": "conch",
       "quality": "masterwork",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "plain_bone_phurba": {
       "name": "Plain Bone Phurba",
@@ -11014,7 +11156,7 @@
       "throw_save_dc": 16,
       "material": "bone",
       "quality": "common",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "blessed_bone_phurba": {
       "name": "Blessed Bone Phurba",
@@ -11051,7 +11193,7 @@
       "throw_save_dc": 16,
       "material": "bone",
       "quality": "common",
-      "enchantment": "blessed"
+      "enchantment": "touched"
     },
     "empowered_bone_phurba": {
       "name": "Empowered Bone Phurba",
@@ -11088,7 +11230,7 @@
       "throw_save_dc": 16,
       "material": "bone",
       "quality": "good",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "perfected_bone_phurba": {
       "name": "Perfected Bone Phurba",
@@ -11125,7 +11267,7 @@
       "throw_save_dc": 16,
       "material": "bone",
       "quality": "fine",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "legendary_bone_phurba": {
       "name": "Legendary Bone Phurba",
@@ -11162,7 +11304,7 @@
       "throw_save_dc": 16,
       "material": "bone",
       "quality": "masterwork",
-      "enchantment": "perfected"
+      "enchantment": "blessed"
     },
     "plain_space_ngakpa_robe": {
       "name": "Plain Red-And-White Striped Ngakpa Robe",

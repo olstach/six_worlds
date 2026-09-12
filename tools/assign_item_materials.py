@@ -135,6 +135,7 @@ def main():
     for table in ("weapon_bases", "armor_bases", "accessory_bases"):
         bases.update(tables.get(table, {}))
     qualities = tables["quality_levels"]
+    ritual_metals = tables.get("ritual_metals", {})
 
     how = Counter()
     how_set = {}
@@ -148,7 +149,12 @@ def main():
             continue
         item.pop("enchantment", None)
         item.pop("gilding", None)
-        if item_id in AUTHORED_MATERIALS:
+        if item.get("type") == "focus":
+            # A ritual implement's metal is doctrine: copper serves fire,
+            # silver water, gold earth. Never re-infer it and never read it as
+            # gilding — doing so is what erased the elemental coding.
+            how["ritual metal kept as doctrine"] += 1
+        elif item_id in AUTHORED_MATERIALS:
             how["authored by hand"] += 1
         else:
             item.pop("material", None)
@@ -163,7 +169,7 @@ def main():
         # If the named material would price the item far above what it costs,
         # the metal is plating: re-infer from the type or slot.
         base = bases.get(item.get("type", ""), {})
-        if how_set.get(item_id) == "named" and base:
+        if how_set.get(item_id) == "named" and base and item.get("type") != "focus":
             named_value = (base.get("value", 50)
                            * materials.get(item["material"], {}).get("value_mult", 1.0)
                            * qualities.get(item["quality"], {}).get("value_mult", 1.0))
@@ -180,7 +186,10 @@ def main():
         # Enchantment, from where the authored value actually sits.
         mat = materials.get(item["material"], {})
         qual = qualities.get(item["quality"], {})
-        expected = (base.get("value", 50) * mat.get("value_mult", 1.0)
+        material_mult = mat.get("value_mult", 1.0)
+        if item.get("type") == "focus" and item["material"] in ritual_metals:
+            material_mult = ritual_metals[item["material"]].get("value_mult", 1.0)
+        expected = (base.get("value", 50) * material_mult
                     * qual.get("value_mult", 1.0))
         ratio = (item.get("value", 0) / expected) if expected else 1.0
         item["enchantment"] = next(name for limit, name in ENCHANTMENT_BANDS if ratio < limit)
