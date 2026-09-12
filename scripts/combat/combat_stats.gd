@@ -80,6 +80,10 @@ const DERIVED: Array[String] = [
 	"summon_hp_pct",           # CombatManager._spawn_summoned_unit()
 	"consumable_power_pct",    # CombatManager._apply_potion_effect()
 	"repair_efficiency_pct",   # CampSystem.repair_scrap_cost()
+	"effect_duration_turns",   # CombatManager._calculate_status_duration()
+	"burning_damage_pct",      # CombatManager fire damage-over-time tick
+	"status_effect_chance_pct",# CombatManager.effective_status_chance()
+	"stun_chance_pct",         # CombatManager._process_on_hit_perks(), mace only
 	# Out-of-combat, read by their own systems.
 	"xp_gain_pct",             # CompanionSystem
 	"loot_chance_pct",         # CombatManager loot roll

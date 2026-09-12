@@ -198,10 +198,9 @@ The mirror image of dead data: code paths that work and are never exercised.
       `party_skill_check_bonus` (event rolls), `party_supply_duration_pct`
       (supply draws), `party_xp_gain_pct` (XP award), `party_travel_speed_pct`
       (overworld movement). The other five are each blocked on something real:
-      - **`morale_pct` has no system.** No file in `scripts/` contains the word
-        "morale". Two skills pay into a mechanic that was never built. Decide
-        whether morale is a thing this game has — PsychologySystem's pressure
-        may already be it under another name — before wiring anything.
+      - **`morale_pct`** — removed 2026-09-12. It was a relic of an idea that
+        became PsychologySystem. The live question it leaves behind is in
+        "Things to ponder": Leadership ought to touch companion psychology.
       - **`charm_effectiveness_pct`, `social_roll_pct`**: events carry no
         check-type tag, so neither can be scoped to the rolls it should affect.
         Needs events to declare what kind of check a roll is.
@@ -437,6 +436,15 @@ but may not be what the game wants.
       checklist. The whole party-bonus logic may want rethinking rather than
       tuning — the current pass standardizes it so it is legible enough to
       reason about, not because the rule is settled.
+
+- [ ] **Leadership should touch companion psychology.** `morale_pct` was
+      removed 2026-09-12 as a relic: it was an early sketch that grew into
+      PsychologySystem instead, and it left Leadership and Performance paying
+      into a mechanic nobody ever built. But the intent underneath is sound —
+      leading people well should affect how they hold up. Somewhere between
+      Leadership level and companion pressure/relationships there is a wiring
+      worth designing. Deliberately not specified here; it wants thought, not a
+      stat key.
 
 - [ ] **Traps — a battle feature, not an overworld one.** Originally conceived
       as a combat mechanic and the pieces are scattered across both readings,

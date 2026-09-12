@@ -689,63 +689,63 @@
       "per_level": {
         "1": {
           "spellpower": 5.0,
-          "status_effect_chance_pct": 5.0
+          "status_effect_chance_pct": 2.0
         },
         "2": {
           "spellpower": 15.0,
-          "status_effect_chance_pct": 10.0
+          "status_effect_chance_pct": 4.0
         },
         "3": {
           "spellpower": 30.0,
-          "status_effect_chance_pct": 20.0
+          "status_effect_chance_pct": 8.0
         },
         "4": {
           "spellpower": 50.0,
-          "status_effect_chance_pct": 35.0
+          "status_effect_chance_pct": 14.0
         },
         "5": {
           "spellpower": 75.0,
-          "status_effect_chance_pct": 50.0
+          "status_effect_chance_pct": 20.0
         },
         "6": {
           "spellpower": 90.0,
-          "status_effect_chance_pct": 55.0
+          "status_effect_chance_pct": 22.0
         },
         "7": {
           "spellpower": 100.0,
-          "status_effect_chance_pct": 60.0
+          "status_effect_chance_pct": 24.0
         },
         "8": {
           "spellpower": 110.0,
-          "status_effect_chance_pct": 65.0
+          "status_effect_chance_pct": 26.0
         },
         "9": {
           "spellpower": 120.0,
-          "status_effect_chance_pct": 70.0
+          "status_effect_chance_pct": 28.0
         },
         "10": {
           "spellpower": 130.0,
-          "status_effect_chance_pct": 75.0
+          "status_effect_chance_pct": 30.0
         },
         "11": {
           "spellpower": 130.0,
-          "status_effect_chance_pct": 75.0
+          "status_effect_chance_pct": 30.0
         },
         "12": {
           "spellpower": 130.0,
-          "status_effect_chance_pct": 75.0
+          "status_effect_chance_pct": 30.0
         },
         "13": {
           "spellpower": 130.0,
-          "status_effect_chance_pct": 75.0
+          "status_effect_chance_pct": 30.0
         },
         "14": {
           "spellpower": 130.0,
-          "status_effect_chance_pct": 75.0
+          "status_effect_chance_pct": 30.0
         },
         "15": {
           "spellpower": 130.0,
-          "status_effect_chance_pct": 75.0
+          "status_effect_chance_pct": 30.0
         }
       }
     },
@@ -893,63 +893,63 @@
       "per_level": {
         "1": {
           "dodge": 2.0,
-          "luck_pct": 5.0
+          "luck_pct": 1.0
         },
         "2": {
           "dodge": 4.0,
-          "luck_pct": 10.0
+          "luck_pct": 2.0
         },
         "3": {
           "dodge": 6.0,
-          "luck_pct": 15.0
+          "luck_pct": 3.0
         },
         "4": {
           "dodge": 8.0,
-          "luck_pct": 20.0
+          "luck_pct": 4.0
         },
         "5": {
           "dodge": 10.0,
-          "luck_pct": 25.0
+          "luck_pct": 5.0
         },
         "6": {
           "dodge": 12.0,
-          "luck_pct": 30.0
+          "luck_pct": 6.0
         },
         "7": {
           "dodge": 14.0,
-          "luck_pct": 35.0
+          "luck_pct": 7.0
         },
         "8": {
           "dodge": 16.0,
-          "luck_pct": 40.0
+          "luck_pct": 8.0
         },
         "9": {
           "dodge": 18.0,
-          "luck_pct": 45.0
+          "luck_pct": 9.0
         },
         "10": {
           "dodge": 20.0,
-          "luck_pct": 50.0
+          "luck_pct": 10.0
         },
         "11": {
           "dodge": 20.0,
-          "luck_pct": 50.0
+          "luck_pct": 10.0
         },
         "12": {
           "dodge": 20.0,
-          "luck_pct": 50.0
+          "luck_pct": 10.0
         },
         "13": {
           "dodge": 20.0,
-          "luck_pct": 50.0
+          "luck_pct": 10.0
         },
         "14": {
           "dodge": 20.0,
-          "luck_pct": 50.0
+          "luck_pct": 10.0
         },
         "15": {
           "dodge": 20.0,
-          "luck_pct": 50.0
+          "luck_pct": 10.0
         }
       }
     },
@@ -1097,63 +1097,63 @@
       "per_level": {
         "1": {
           "spellpower": 5.0,
-          "burning_damage_pct": 5.0
+          "burning_damage_pct": 1.9
         },
         "2": {
           "spellpower": 15.0,
-          "burning_damage_pct": 15.0
+          "burning_damage_pct": 5.8
         },
         "3": {
           "spellpower": 30.0,
-          "burning_damage_pct": 30.0
+          "burning_damage_pct": 11.5
         },
         "4": {
           "spellpower": 50.0,
-          "burning_damage_pct": 50.0
+          "burning_damage_pct": 19.2
         },
         "5": {
           "spellpower": 75.0,
-          "burning_damage_pct": 75.0
+          "burning_damage_pct": 28.8
         },
         "6": {
           "spellpower": 90.0,
-          "burning_damage_pct": 90.0
+          "burning_damage_pct": 34.6
         },
         "7": {
           "spellpower": 100.0,
-          "burning_damage_pct": 100.0
+          "burning_damage_pct": 38.5
         },
         "8": {
           "spellpower": 110.0,
-          "burning_damage_pct": 110.0
+          "burning_damage_pct": 42.3
         },
         "9": {
           "spellpower": 120.0,
-          "burning_damage_pct": 120.0
+          "burning_damage_pct": 46.2
         },
         "10": {
           "spellpower": 130.0,
-          "burning_damage_pct": 130.0
+          "burning_damage_pct": 50.0
         },
         "11": {
           "spellpower": 130.0,
-          "burning_damage_pct": 130.0
+          "burning_damage_pct": 50.0
         },
         "12": {
           "spellpower": 130.0,
-          "burning_damage_pct": 130.0
+          "burning_damage_pct": 50.0
         },
         "13": {
           "spellpower": 130.0,
-          "burning_damage_pct": 130.0
+          "burning_damage_pct": 50.0
         },
         "14": {
           "spellpower": 130.0,
-          "burning_damage_pct": 130.0
+          "burning_damage_pct": 50.0
         },
         "15": {
           "spellpower": 130.0,
-          "burning_damage_pct": 130.0
+          "burning_damage_pct": 50.0
         }
       }
     },
@@ -1295,136 +1295,104 @@
     },
     "leadership": {
       "stats": [
-        "max_companions",
-        "morale_pct"
+        "max_companions"
       ],
       "per_level": {
         "1": {
-          "max_companions": 1.0,
-          "morale_pct": 5.0
+          "max_companions": 1.0
         },
         "2": {
-          "max_companions": 2.0,
-          "morale_pct": 10.0
+          "max_companions": 2.0
         },
         "3": {
-          "max_companions": 3.0,
-          "morale_pct": 20.0
+          "max_companions": 3.0
         },
         "4": {
-          "max_companions": 4.0,
-          "morale_pct": 35.0
+          "max_companions": 4.0
         },
         "5": {
-          "max_companions": 5.0,
-          "morale_pct": 50.0
+          "max_companions": 5.0
         },
         "6": {
-          "max_companions": 5.0,
-          "morale_pct": 60.0
+          "max_companions": 5.0
         },
         "7": {
-          "max_companions": 5.0,
-          "morale_pct": 70.0
+          "max_companions": 5.0
         },
         "8": {
-          "max_companions": 5.0,
-          "morale_pct": 80.0
+          "max_companions": 5.0
         },
         "9": {
-          "max_companions": 5.0,
-          "morale_pct": 90.0
+          "max_companions": 5.0
         },
         "10": {
-          "max_companions": 5.0,
-          "morale_pct": 100.0
+          "max_companions": 5.0
         },
         "11": {
-          "max_companions": 5.0,
-          "morale_pct": 100.0
+          "max_companions": 5.0
         },
         "12": {
-          "max_companions": 5.0,
-          "morale_pct": 100.0
+          "max_companions": 5.0
         },
         "13": {
-          "max_companions": 5.0,
-          "morale_pct": 100.0
+          "max_companions": 5.0
         },
         "14": {
-          "max_companions": 5.0,
-          "morale_pct": 100.0
+          "max_companions": 5.0
         },
         "15": {
-          "max_companions": 5.0,
-          "morale_pct": 100.0
+          "max_companions": 5.0
         }
       }
     },
     "performance": {
       "stats": [
-        "morale_pct",
         "social_roll_pct"
       ],
       "per_level": {
         "1": {
-          "morale_pct": 5.0,
           "social_roll_pct": 5.0
         },
         "2": {
-          "morale_pct": 10.0,
           "social_roll_pct": 10.0
         },
         "3": {
-          "morale_pct": 20.0,
           "social_roll_pct": 20.0
         },
         "4": {
-          "morale_pct": 35.0,
           "social_roll_pct": 35.0
         },
         "5": {
-          "morale_pct": 50.0,
           "social_roll_pct": 50.0
         },
         "6": {
-          "morale_pct": 55.0,
           "social_roll_pct": 55.0
         },
         "7": {
-          "morale_pct": 60.0,
           "social_roll_pct": 60.0
         },
         "8": {
-          "morale_pct": 65.0,
           "social_roll_pct": 65.0
         },
         "9": {
-          "morale_pct": 70.0,
           "social_roll_pct": 70.0
         },
         "10": {
-          "morale_pct": 75.0,
           "social_roll_pct": 75.0
         },
         "11": {
-          "morale_pct": 75.0,
           "social_roll_pct": 75.0
         },
         "12": {
-          "morale_pct": 75.0,
           "social_roll_pct": 75.0
         },
         "13": {
-          "morale_pct": 75.0,
           "social_roll_pct": 75.0
         },
         "14": {
-          "morale_pct": 75.0,
           "social_roll_pct": 75.0
         },
         "15": {
-          "morale_pct": 75.0,
           "social_roll_pct": 75.0
         }
       }
@@ -1584,68 +1552,68 @@
     "enchantment": {
       "stats": [
         "spellpower",
-        "effect_duration_pct"
+        "effect_duration_turns"
       ],
       "per_level": {
         "1": {
           "spellpower": 5.0,
-          "effect_duration_pct": 5.0
+          "effect_duration_turns": 0
         },
         "2": {
           "spellpower": 15.0,
-          "effect_duration_pct": 10.0
+          "effect_duration_turns": 1
         },
         "3": {
           "spellpower": 30.0,
-          "effect_duration_pct": 20.0
+          "effect_duration_turns": 1
         },
         "4": {
           "spellpower": 50.0,
-          "effect_duration_pct": 30.0
+          "effect_duration_turns": 2
         },
         "5": {
           "spellpower": 75.0,
-          "effect_duration_pct": 45.0
+          "effect_duration_turns": 2
         },
         "6": {
           "spellpower": 90.0,
-          "effect_duration_pct": 52.0
+          "effect_duration_turns": 3
         },
         "7": {
           "spellpower": 100.0,
-          "effect_duration_pct": 58.0
+          "effect_duration_turns": 3
         },
         "8": {
           "spellpower": 110.0,
-          "effect_duration_pct": 64.0
+          "effect_duration_turns": 4
         },
         "9": {
           "spellpower": 120.0,
-          "effect_duration_pct": 70.0
+          "effect_duration_turns": 4
         },
         "10": {
           "spellpower": 130.0,
-          "effect_duration_pct": 75.0
+          "effect_duration_turns": 5
         },
         "11": {
           "spellpower": 130.0,
-          "effect_duration_pct": 75.0
+          "effect_duration_turns": 5
         },
         "12": {
           "spellpower": 130.0,
-          "effect_duration_pct": 75.0
+          "effect_duration_turns": 6
         },
         "13": {
           "spellpower": 130.0,
-          "effect_duration_pct": 75.0
+          "effect_duration_turns": 6
         },
         "14": {
           "spellpower": 130.0,
-          "effect_duration_pct": 75.0
+          "effect_duration_turns": 7
         },
         "15": {
           "spellpower": 130.0,
-          "effect_duration_pct": 75.0
+          "effect_duration_turns": 7
         }
       }
     },
@@ -1929,63 +1897,63 @@
       "per_level": {
         "1": {
           "damage": 5.0,
-          "stun_chance_pct": 3.0
+          "stun_chance_pct": 1.1
         },
         "2": {
           "damage": 15.0,
-          "stun_chance_pct": 6.0
+          "stun_chance_pct": 2.2
         },
         "3": {
           "damage": 30.0,
-          "stun_chance_pct": 10.0
+          "stun_chance_pct": 3.8
         },
         "4": {
           "damage": 50.0,
-          "stun_chance_pct": 15.0
+          "stun_chance_pct": 5.6
         },
         "5": {
           "damage": 75.0,
-          "stun_chance_pct": 25.0
+          "stun_chance_pct": 9.4
         },
         "6": {
           "damage": 90.0,
-          "stun_chance_pct": 28.0
+          "stun_chance_pct": 10.5
         },
         "7": {
           "damage": 100.0,
-          "stun_chance_pct": 31.0
+          "stun_chance_pct": 11.6
         },
         "8": {
           "damage": 110.0,
-          "stun_chance_pct": 34.0
+          "stun_chance_pct": 12.8
         },
         "9": {
           "damage": 120.0,
-          "stun_chance_pct": 37.0
+          "stun_chance_pct": 13.9
         },
         "10": {
           "damage": 130.0,
-          "stun_chance_pct": 40.0
+          "stun_chance_pct": 15.0
         },
         "11": {
           "damage": 130.0,
-          "stun_chance_pct": 40.0
+          "stun_chance_pct": 15.0
         },
         "12": {
           "damage": 130.0,
-          "stun_chance_pct": 40.0
+          "stun_chance_pct": 15.0
         },
         "13": {
           "damage": 130.0,
-          "stun_chance_pct": 40.0
+          "stun_chance_pct": 15.0
         },
         "14": {
           "damage": 130.0,
-          "stun_chance_pct": 40.0
+          "stun_chance_pct": 15.0
         },
         "15": {
           "damage": 130.0,
-          "stun_chance_pct": 40.0
+          "stun_chance_pct": 15.0
         }
       }
     },
