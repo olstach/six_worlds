@@ -1006,6 +1006,45 @@ func _generate_talisman_description(stats: Dictionary, skill_bonuses: Dictionary
 # Equipment generation tables (loaded from JSON)
 var _equipment_tables: Dictionary = {}
 
+## Authored items wear more slowly than generated ones. They were indestructible
+## until 2026-09-12 — weapon degradation reads generated.fragility, which is
+## absent on anything hand-authored and defaults to zero — so 486 items never
+## degraded while 358 of them carried durability fields nothing decremented.
+## Giving them a material makes them wear; halving it makes that a change in the
+## game rather than a change in the difficulty.
+const AUTHORED_WEAR_FACTOR: float = 0.5
+
+
+## Every item id the game knows, authored and runtime-generated alike.
+## `_comment` dividers are skipped — their values are strings, not items.
+func get_all_item_ids() -> Array[String]:
+	var out: Array[String] = []
+	for source in [_item_database, _runtime_items]:
+		for item_id in source:
+			if not str(item_id).begins_with("_"):
+				out.append(String(item_id))
+	out.sort()
+	return out
+
+
+## How much durability one use costs this item. Zero means it never degrades.
+##
+## Generated items carry their own fragility, computed from the material they
+## were built with. Authored items look theirs up from the material they now
+## declare, at the gentler rate above. An item with neither is indestructible,
+## which is the right answer for quest oddments.
+func get_item_fragility(item: Dictionary) -> float:
+	var generated: Dictionary = item.get("generated", {})
+	if generated.has("fragility"):
+		return float(generated["fragility"])
+	var material: String = String(item.get("material", ""))
+	if material == "":
+		return 0.0
+	if _equipment_tables.is_empty():
+		_load_equipment_tables()
+	var info: Dictionary = _equipment_tables.get("materials", {}).get(material, {})
+	return float(info.get("fragility", 0.0)) * AUTHORED_WEAR_FACTOR
+
 
 ## The raw procedural-generation tables (materials, quality levels, weapon and
 ## armour bases). Exposed so tooling can derive bounds — the value ceiling of a
