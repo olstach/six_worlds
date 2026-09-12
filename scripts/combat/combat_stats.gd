@@ -37,7 +37,7 @@ const MODIFIABLE: Array[String] = [
 	"armor",        # CombatUnit.get_armor()
 	"crit_chance",  # CombatUnit.get_crit_chance()
 	"spellpower",   # CombatUnit.get_spellpower()
-	"save_bonus",   # CombatManager._perform_save_roll()
+	"save_bonus",   # SaveSystem._bonus_for()
 ]
 
 ## Keywords that may appear as a `stat` in perk and spell data but that never
@@ -71,7 +71,7 @@ const DERIVED: Array[String] = [
 	"weight_limit",
 	# Percentage stats, each read at the point the percentage applies.
 	"damage_reduction_pct",    # CombatManager.apply_damage()
-	"mental_resistance_pct",   # CombatManager._perform_save_roll()
+	"mental_resistance_pct",   # SaveSystem._bonus_for()
 	"healing_pct",             # CombatUnit.heal()
 	"damage_pct",              # CombatUnit.get_damage()
 	"mana_cost_reduction",     # CombatManager.cast_spell()
