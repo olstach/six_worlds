@@ -3,7 +3,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 6
+const EXPECTED_CHECKS: int = 8
 
 
 func _ready() -> void:
@@ -13,6 +13,8 @@ func _ready() -> void:
 	_check_stats_were_not_touched()
 	_check_every_type_has_a_base()
 	_check_values_match_the_tiering()
+	_check_ritual_metal_coding()
+	_check_ritual_implement_coding()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -146,8 +148,19 @@ func _check_values_match_the_tiering() -> void:
 		var base: Dictionary = ItemSystem.get_base_for_type(str(item.get("type", "")))
 		if base.is_empty():
 			continue
+		# A ritual implement's metal is a coding, not a cost: gold and copper
+		# dorjes serve different elements and cost the same. Their value comes
+		# from consecration alone, so the structural material multiplier — which
+		# would price gold at 6x — does not apply.
+		var ritual: Dictionary = tables.get("ritual_metals", {})
+		var material_mult: float = float(materials.get(
+			str(item.get("material", "")), {}).get("value_mult", 1.0))
+		if str(item.get("type", "")) == "focus" \
+				and ritual.has(str(item.get("material", ""))):
+			material_mult = float(ritual[str(item.get("material", ""))].get("value_mult", 1.0))
+
 		var expected: float = float(base.get("value", 50)) \
-			* float(materials.get(str(item.get("material", "")), {}).get("value_mult", 1.0)) \
+			* material_mult \
 			* float(qualities.get(str(item.get("quality", "")), {}).get("value_mult", 1.0)) \
 			* float(enchantments.get(str(item.get("enchantment", "none")), {}).get("value_mult", 1.0))
 		if expected <= 0.0:
@@ -162,4 +175,87 @@ func _check_values_match_the_tiering() -> void:
 	if not outliers.is_empty():
 		_fail("%d items are priced outside half-to-double what their tags imply: %s"
 			% [outliers.size(), outliers.slice(0, 6)])
+	_done()
+
+
+const RITUAL_METALS: Array[String] = ["sky_iron", "copper", "silver", "gold",
+	"iron", "conch", "bronze"]
+const RITUAL_IMPLEMENTS: Array[String] = ["khatvanga", "drilbu", "damaru",
+	"phurba", "dorje"]
+
+
+func _ritual_implements() -> Array[String]:
+	var out: Array[String] = []
+	for item_id in ItemSystem.get_all_item_ids():
+		if str(ItemSystem.get_item(item_id).get("type", "")) != "focus":
+			continue
+		var has_metal := false
+		var has_implement := false
+		for metal in RITUAL_METALS:
+			if metal in item_id:
+				has_metal = true
+		for implement in RITUAL_IMPLEMENTS:
+			if implement in item_id:
+				has_implement = true
+		if has_metal and has_implement:
+			out.append(item_id)
+	return out
+
+
+## The metal an implement is made of says which element it serves, and grants
+## that element's school. This is doctrine, not decoration: a copper phurba is
+## for fire work and a silver one for healing. It was correct in the skill
+## bonuses and wrong in the `element` field, which followed the implement
+## instead — so every metal read space/air/fire and nothing anywhere was water.
+func _check_ritual_metal_coding() -> void:
+	var table: Dictionary = ItemSystem.get_equipment_tables().get("ritual_metals", {})
+	if table.is_empty():
+		_fail("ritual_metals is not declared in equipment_tables.json")
+		_done()
+		return
+	var wrong: Array[String] = []
+	for item_id in _ritual_implements():
+		var item: Dictionary = ItemSystem.get_item(item_id)
+		for metal in RITUAL_METALS:
+			if not metal in item_id:
+				continue
+			var coding: Dictionary = table.get(metal, {})
+			if str(item.get("element", "")) != str(coding.get("element", "")):
+				wrong.append("%s element=%s want=%s"
+					% [item_id, item.get("element", ""), coding.get("element", "")])
+			elif not item.get("skill_bonuses", {}).has(str(coding.get("grants", ""))):
+				wrong.append("%s lacks %s" % [item_id, coding.get("grants", "")])
+			break
+	if not wrong.is_empty():
+		_fail("%d implements are mis-coded for their metal: %s"
+			% [wrong.size(), wrong.slice(0, 4)])
+	_done()
+
+
+## The implement says which practice it serves, and grants that skill or
+## attribute. Only the phurba was right: the damaru granted the khatvanga's
+## enchantment, and the dorje, drilbu and khatvanga granted nothing at all.
+func _check_ritual_implement_coding() -> void:
+	var table: Dictionary = ItemSystem.get_equipment_tables().get("ritual_implements", {})
+	if table.is_empty():
+		_fail("ritual_implements is not declared in equipment_tables.json")
+		_done()
+		return
+	var wrong: Array[String] = []
+	for item_id in _ritual_implements():
+		var item: Dictionary = ItemSystem.get_item(item_id)
+		for implement in RITUAL_IMPLEMENTS:
+			if not implement in item_id:
+				continue
+			var coding: Dictionary = table.get(implement, {})
+			var skill: String = str(coding.get("grants_skill", ""))
+			var attribute: String = str(coding.get("grants_attribute", ""))
+			if skill != "" and not item.get("skill_bonuses", {}).has(skill):
+				wrong.append("%s lacks %s" % [item_id, skill])
+			elif attribute != "" and int(item.get("stats", {}).get(attribute, 0)) <= 0:
+				wrong.append("%s lacks %s" % [item_id, attribute])
+			break
+	if not wrong.is_empty():
+		_fail("%d implements are mis-coded for their type: %s"
+			% [wrong.size(), wrong.slice(0, 4)])
 	_done()

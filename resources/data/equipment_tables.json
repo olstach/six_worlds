@@ -1040,5 +1040,91 @@
 	  "slot": "hand_r"
 	}
   },
-  "_comment_accessory_bases": "Everything that is equipment but neither weapon nor armour. These twelve types covered 328 of 486 authored items — two thirds of the game's equipment — with no base entry, so none of it could be tiered or generated. Values are the median of each family's plain members, so existing items sit at roughly 1x."
+  "_comment_accessory_bases": "Everything that is equipment but neither weapon nor armour. These twelve types covered 328 of 486 authored items — two thirds of the game's equipment — with no base entry, so none of it could be tiered or generated. Values are the median of each family's plain members, so existing items sit at roughly 1x.",
+  "_comment_ritual": "Ritual implements carry TWO codings that add rather than compete. The metal says which element the implement serves; the implement says which practice it is an instrument of. A copper phurba boosts fire magic AND sorcery, which between them are exactly Fireball's two schools. A silver phurba boosts water and sorcery — the traditional instrument of intense healing, purification through a wrathful focus. Consecration grade sets the magnitude on both axes, 1 through 5. None of this was written down anywhere before 2026-09-12: it lived in the item names and in Olaf's head, which is why a refactor could damage it with nothing going red. The metal does NOT move an implement's price — every ritual_metals entry carries value_mult 1.0, against the 0.25-to-15x spread the same metals have as structural materials. A gold dorje and a copper dorje cost the same and do different things, which is the whole idea.",
+  "ritual_metals": {
+	"copper": {
+	  "element": "fire",
+	  "grants": "fire_magic",
+	  "value_mult": 1.0
+	},
+	"silver": {
+	  "element": "water",
+	  "grants": "water_magic",
+	  "value_mult": 1.0
+	},
+	"gold": {
+	  "element": "earth",
+	  "grants": "earth_magic",
+	  "value_mult": 1.0
+	},
+	"iron": {
+	  "element": "air",
+	  "grants": "air_magic",
+	  "value_mult": 1.0
+	},
+	"bronze": {
+	  "element": "space",
+	  "grants": "space_magic",
+	  "_note": "Common and a mixture, so neutral — mildly space-coded.",
+	  "value_mult": 1.0
+	},
+	"sky_iron": {
+	  "element": "space",
+	  "grants": "space_magic",
+	  "_note": "The properly space-coded material. Meteoric.",
+	  "value_mult": 1.0
+	},
+	"conch": {
+	  "element": "water",
+	  "grants": "white_magic",
+	  "_note": "Not a metal. Codes for the pacifying rites — healing and purification — rather than for an element.",
+	  "value_mult": 1.0
+	},
+	"bone": {
+	  "element": "earth",
+	  "grants": "black_magic",
+	  "value_mult": 1.0,
+	  "_note": "Charnel ground practice. Not a metal either — the kangling and the bone implements are carved, not cast."
+	}
+  },
+  "ritual_implements": {
+	"dorje": {
+	  "grants_attribute": "focus"
+	},
+	"drilbu": {
+	  "grants_attribute": "awareness"
+	},
+	"khatvanga": {
+	  "grants_skill": "enchantment"
+	},
+	"damaru": {
+	  "grants_skill": "summoning"
+	},
+	"phurba": {
+	  "grants_skill": "sorcery"
+	},
+	"kangling": {
+	  "grants_skill": "summoning",
+	  "_unresolved": "COLLISION: the damaru is also summoning. Recorded as found rather than guessed — the kangling is the chod trumpet, an instrument of severance and offering, so yoga or black magic may suit it better. Needs Olaf's call."
+	}
+  },
+  "consecration_levels": {
+	"plain": {
+	  "magnitude": 1
+	},
+	"blessed": {
+	  "magnitude": 2
+	},
+	"empowered": {
+	  "magnitude": 3
+	},
+	"perfected": {
+	  "magnitude": 4
+	},
+	"legendary": {
+	  "magnitude": 5
+	}
+  },
+  "_comment_consecration": "Consecration is to a ritual implement what quality is to a weapon: the scale of how well-made and well-blessed it is. It is the ONLY thing that should move an implement's price. A gold dorje must not cost more than a copper one — they serve different elements, not different tiers."
 }
