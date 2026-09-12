@@ -17,9 +17,10 @@ signal perk_selection_requested(character_data: Dictionary, perks: Array)
 
 # Party data - player is always index 0
 var party: Array[Dictionary] = []
-## Fallback cap, used only when PartyBonuses cannot be reached. The real cap is
-## Leadership's payout — see get_max_party_size().
-const PARTY_SIZE_FALLBACK: int = 6
+## Companions you may travel with before Leadership enters into it. Asking the
+## player to buy a skill for their first companion makes no sense; what
+## Leadership buys is the party beyond the ones who would come anyway.
+const BASE_COMPANIONS: int = 2
 
 # Birth and background data loaded from JSON
 var _birth_data: Dictionary = {}
@@ -1406,13 +1407,20 @@ func get_player() -> Dictionary:
 
 ## How many characters the party may hold, the leader included.
 ##
-## Leadership is what buys room for other people: a companion at Leadership 1,
-## and another at 3, 5, 7 and 9, so a Leadership-9 leader fields six in total.
-## Alone without the skill, you travel alone.
+## Two companions come free; Leadership adds one at 3, 6 and 9, so a
+## Leadership-9 leader fields six in total.
+##
+## The ceiling is deliberately low. Party size is the strongest stat in the
+## game: the party-check rule opens a choice when ANY member qualifies, and
+## every PartyBonuses payout resolves to the best member — so each extra
+## character is another roll of the dice on having every specialist at once,
+## across all 35 skills. XP dilution is the existing counterweight, but it
+## costs combat power while the benefit is in non-combat checks, of which there
+## are far more. Raising this is not a small change.
 func get_max_party_size() -> int:
 	if not PartyBonuses:
-		return PARTY_SIZE_FALLBACK
-	return 1 + int(PartyBonuses.best("party_max_companions"))
+		return 1 + BASE_COMPANIONS
+	return 1 + maxi(BASE_COMPANIONS, int(PartyBonuses.best("party_max_companions")))
 
 
 ## Add companion to party

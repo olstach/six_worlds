@@ -1299,22 +1299,22 @@
       ],
       "per_level": {
         "1": {
-          "party_max_companions": 1
+          "party_max_companions": 2
         },
         "2": {
-          "party_max_companions": 1
+          "party_max_companions": 2
         },
         "3": {
-          "party_max_companions": 2
+          "party_max_companions": 3
         },
         "4": {
-          "party_max_companions": 2
+          "party_max_companions": 3
         },
         "5": {
           "party_max_companions": 3
         },
         "6": {
-          "party_max_companions": 3
+          "party_max_companions": 4
         },
         "7": {
           "party_max_companions": 4

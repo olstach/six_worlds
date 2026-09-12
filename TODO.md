@@ -208,10 +208,9 @@ The mirror image of dead data: code paths that work and are never exercised.
         from it, with an optional `category` on the roll for the cases where
         the stat does not tell the story.
       - **`loot_quality_pct`**: no loot rarity mechanic to attach to.
-      - **`max_companions`** — done 2026-09-12 as `party_max_companions`. A
-        companion at Leadership 1, and another at 3, 5, 7 and 9, so a
-        Leadership-9 leader fields six in total. Without the skill you travel
-        alone.
+      - **`max_companions`** — done 2026-09-12 as `party_max_companions`. Two
+        companions come free; Leadership adds one at 3, 6 and 9, topping out at
+        a party of six.
 - [ ] **Needs a proc site, not a consumer** (4 keys): `stun_chance_pct` (maces
       on-hit), `burning_damage_pct` (fire DoT), `status_effect_chance_pct`
       (status application), `luck_pct`. Each is its own small integration.
@@ -420,6 +419,19 @@ miss: `camp_system.gd:156` already has a forage camp action open to everyone,
 and the perk that is supposed to improve it is never consulted.
 
 ## 8. Things to ponder
+
+- [ ] **Party size may still be undercosted, and Leadership may still want
+      nerfing.** The cap is 3 free, 6 at Leadership 9. The reason it is that low:
+      party size is arguably the strongest stat in the game. The party-check
+      rule opens a choice when *any* member qualifies, and every `PartyBonuses`
+      payout resolves to the best member — so each extra character is another
+      roll of the dice on having every specialist at once, across 35 skills.
+      XP dilution is the existing counterweight, but it costs *combat* power
+      while the benefit lands on *non-combat* checks, of which there are far
+      more. Rejected as a Leadership payout for the same reason: making
+      Leadership reduce XP dilution would remove the only cost wide parties
+      pay. Leadership keeps its active perks and, eventually, the companion
+      psychology wiring below. Revisit after a playthrough.
 
 Live design questions. Not bugs, not deferred decisions — the shape of these is
 still genuinely open, and each was raised because something built today works
