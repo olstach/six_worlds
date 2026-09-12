@@ -5902,12 +5902,16 @@
         "targeting": "aoe_point",
         "stamina_cost": 6,
         "range": 2,
-        "damage_pct": 80,
+        "damage_pct": 100,
         "aoe": {
           "type": "line",
           "size": 2,
           "width": 1,
-          "origin": "caster"
+          "origin": "caster",
+          "falloff": [
+            100,
+            60
+          ]
         }
       }
     },
@@ -6937,7 +6941,10 @@
         "targeting": "single_enemy",
         "range": 1,
         "stamina_cost": 3,
-        "damage_bonus_pct": 25
+        "push": {
+          "tiles": 1,
+          "blocked_damage_bonus_pct": 25
+        }
       }
     },
     "follow_through": {
@@ -7086,7 +7093,10 @@
             "value": 10,
             "duration": 1
           }
-        ]
+        ],
+        "push": {
+          "tiles": 1
+        }
       }
     },
     "deflection": {

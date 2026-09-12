@@ -5799,6 +5799,14 @@ func _resolve_attack_skill(user: Node, combat_data: Dictionary, target_pos: Vect
 	var dmg_result = calculate_physical_damage(user, target, dmg_type)
 	var damage = dmg_result.damage
 
+	# Forced movement, resolved before damage because an effect may make its
+	# bonus conditional on the push failing — Overwhelming Blow deals its extra
+	# 25% only when the target had nowhere to go.
+	var push_result: Dictionary = {}
+	if combat_data.has("push"):
+		push_result = _apply_push(user, target, combat_data["push"])
+		damage_bonus_pct += int(push_result.get("damage_bonus_pct", 0))
+
 	# Apply damage bonus
 	if damage_bonus_pct > 0:
 		damage = int(damage * (1.0 + damage_bonus_pct / 100.0))
@@ -5837,6 +5845,10 @@ func _resolve_attack_skill(user: Node, combat_data: Dictionary, target_pos: Vect
 		var duration = target_debuff.get("duration", 2)
 		_apply_stat_modifier(target, stat, -value, duration)
 		result.effects.append({"type": "target_debuff", "stat": stat, "value": value, "duration": duration})
+
+	if not push_result.is_empty():
+		result.effects.append({"type": "push", "target": target,
+			"moved": push_result.get("moved", 0), "lost": push_result.get("lost", 0)})
 
 	# Stamina refund on kill
 	var refund_on_kill = combat_data.get("refund_on_kill", 0)
@@ -5964,9 +5976,16 @@ func _resolve_debuff_target(user: Node, combat_data: Dictionary, target_pos: Vec
 	if not hit:
 		return {"success": true, "hit": false, "target": target, "effects": []}
 
+	var effects: Array = []
+
+	# Forced movement on a landed hit.
+	if combat_data.has("push") and target.is_alive():
+		var push_result: Dictionary = _apply_push(user, target, combat_data["push"])
+		effects.append({"type": "push", "target": target,
+			"moved": push_result.get("moved", 0), "lost": push_result.get("lost", 0)})
+
 	# Apply debuffs
 	var debuffs = combat_data.get("debuffs", [])
-	var effects: Array = []
 	for debuff in debuffs:
 		var stat = debuff.get("stat", "")
 		var value = debuff.get("value", 0)
@@ -5995,11 +6014,22 @@ func _resolve_debuff_target(user: Node, combat_data: Dictionary, target_pos: Vec
 ## A skill that only declares the flat `aoe_radius` is read as a circle of that
 ## radius, which is what the hand-rolled distance checks here used to do — so
 ## perks can move onto real shapes one at a time.
-func _units_in_skill_aoe(user: Node, combat_data: Dictionary, target_pos: Vector2i,
-		team: int = -1) -> Array:
+## The canonical `aoe` block for a skill, resolved once so the tile lookup, the
+## damage falloff and the UI preview cannot disagree about the shape.
+##
+## A skill that only declares the flat `aoe_radius` reads as a circle of that
+## radius, which is what the hand-rolled distance checks used to do — so the
+## perks that genuinely want a burst stay untouched.
+func _skill_aoe_block(combat_data: Dictionary) -> Dictionary:
 	var aoe: Dictionary = combat_data.get("aoe", {})
 	if aoe.is_empty():
-		aoe = {"type": "circle", "size": combat_data.get("aoe_radius", 1)}
+		return {"type": "circle", "size": combat_data.get("aoe_radius", 1)}
+	return aoe
+
+
+func _units_in_skill_aoe(user: Node, combat_data: Dictionary, target_pos: Vector2i,
+		team: int = -1) -> Array:
+	var aoe: Dictionary = _skill_aoe_block(combat_data)
 
 	var grid_sz: Vector2i = combat_grid.grid_size if combat_grid else Vector2i(48, 30)
 	var tiles: Array[Vector2i] = AoEResolver.get_tiles(
@@ -6028,10 +6058,14 @@ func _resolve_aoe_skill(user: Node, combat_data: Dictionary, target_pos: Vector2
 	var hit_targets: Array = _units_in_skill_aoe(user, combat_data, target_pos, enemy_team)
 
 	var effects: Array = []
+	var aoe_block: Dictionary = _skill_aoe_block(combat_data)
 	for target in hit_targets:
 		var dmg_type = user.get_weapon_damage_type()
 		var dmg_result = calculate_physical_damage(user, target, dmg_type)
 		var damage = int(dmg_result.damage * damage_pct / 100.0)
+		# Opt-in per-ring falloff. Returns 1.0 unless the shape declares one.
+		damage = int(damage * AoEResolver.falloff_at(
+			aoe_block, user.grid_position, target_pos, target.grid_position))
 		apply_damage(target, damage, dmg_type)
 		effects.append({"type": "aoe_damage", "target": target, "damage": damage})
 
@@ -6569,8 +6603,11 @@ func _resolve_aoe_damage_and_status(user: Node, combat_data: Dictionary, target_
 
 	var enemy_team: int = 1 - (user.team if "team" in user else 0)
 	for enemy in _units_in_skill_aoe(user, combat_data, target_pos, enemy_team):
-		# Spellpower-scaled damage
+		# Spellpower-scaled damage, with opt-in per-ring falloff.
 		var base_dmg = int(user.get_spellpower() * damage_pct / 100.0)
+		base_dmg = int(base_dmg * AoEResolver.falloff_at(
+			_skill_aoe_block(combat_data), user.grid_position, target_pos,
+			enemy.grid_position))
 		var resist = enemy.get_resistance(damage_element) if enemy.has_method("get_resistance") else 0.0
 		var actual_dmg = maxi(1, int(base_dmg * (1.0 - resist / 100.0)))
 		apply_damage(enemy, actual_dmg, damage_element)
@@ -8008,6 +8045,95 @@ func _process_turn_start_perks(unit: Node) -> void:
 	if mana_pct > 0.0 and unit.current_mana < unit.max_mana:
 		var mana_amount = ceili(unit.max_mana * mana_pct)
 		unit.restore_mana(mana_amount)
+
+# ============================================
+# FORCED MOVEMENT
+# ============================================
+
+## Move a unit against its will, one tile at a time, and report what happened.
+##
+## Returns {moved, lost, blocked_by, immune}:
+##   moved      tiles actually travelled
+##   lost       tiles the push asked for and did not get
+##   blocked_by the unit that stopped it, or null for a wall or the map edge
+##   immune     true when the target cannot be moved at all
+##
+## `tiles` may be negative to pull instead of push, so one primitive serves
+## both and there is no second copy of the walk to keep in step.
+##
+## THIS FUNCTION DECIDES NOTHING ABOUT CONSEQUENCES. It reports lost tiles and
+## the caller chooses what they mean. Baking "impact damage per tile" in here
+## would force every push in the game to share one rule, and a gust of wind and
+## a mace blow should not have to.
+func _displace_unit(unit: Node, direction: Vector2i, tiles: int,
+		_source: Node = null) -> Dictionary:
+	var result := {"moved": 0, "lost": 0, "blocked_by": null, "immune": false}
+	if unit == null or direction == Vector2i.ZERO or tiles == 0:
+		return result
+
+	# A pull is a push the other way.
+	var step_dir: Vector2i = direction
+	var distance: int = tiles
+	if distance < 0:
+		step_dir = -direction
+		distance = -distance
+
+	# Juggernaut and friends. _check_perk_status_immunity already owns the
+	# question "can this unit be moved against its will", via the Pushed status.
+	if _check_perk_status_immunity(unit, "Pushed"):
+		result.immune = true
+		result.lost = distance
+		combat_log.emit("%s cannot be moved." % unit.unit_name)
+		return result
+
+	if combat_grid == null:
+		result.lost = distance
+		return result
+
+	for _i in range(distance):
+		var next: Vector2i = unit.grid_position + step_dir
+		if not combat_grid.is_valid_position(next) or not combat_grid.is_tile_walkable(next):
+			break
+		var occupant = combat_grid.get_unit_at(next)
+		if occupant != null:
+			result.blocked_by = occupant
+			break
+		var from: Vector2i = unit.grid_position
+		if not combat_grid.move_unit(unit, next):
+			break
+		unit_moved.emit(unit, from, next)
+		result.moved += 1
+
+	result.lost = distance - result.moved
+	return result
+
+
+## Run an effect's `push` block against a target and report the consequence the
+## effect asked for.
+##
+##   "push": {"tiles": 1, "blocked_damage_bonus_pct": 25}
+##
+## That is Overwhelming Blow's description implemented literally — "pushes the
+## enemy 1 tile. If they can't be pushed (wall, another unit), they take +25%
+## damage instead."
+##
+## One parser, because this same block appears in perk combat_data, in spell
+## data and in perk on_trigger payloads. Three copies of a schema is how the
+## vocabulary defects this project spent a week unwinding got in.
+func _apply_push(source: Node, target: Node, push_data: Dictionary) -> Dictionary:
+	if source == null or target == null or push_data.is_empty():
+		return {"moved": 0, "lost": 0, "blocked_by": null, "immune": false,
+			"damage_bonus_pct": 0}
+
+	# Away from the source; a negative `tiles` drags the target inward instead.
+	var direction: Vector2i = AoEResolver._dir4(source.grid_position, target.grid_position)
+	var result: Dictionary = _displace_unit(
+		target, direction, int(push_data.get("tiles", 1)), source)
+
+	result["damage_bonus_pct"] = int(push_data.get("blocked_damage_bonus_pct", 0)) \
+		if result.get("lost", 0) > 0 else 0
+	return result
+
 
 # ============================================
 # ZONE OF CONTROL REACTIONS
