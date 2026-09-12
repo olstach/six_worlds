@@ -1,62 +1,74 @@
 # Six Worlds — TODO
 
-**Last updated:** 2026-08-31
+**Last updated:** 2026-09-12
 
-This file was an append-only log for a long time and had grown to the point
-where finished work outweighed the remaining work three to one. It is now
-organised as: **where things stand → what is still open → designs waiting to be
-built → what got done**. The full historical checklists (every `[x]` line from
-the psychology, weapons, camp, wounds and body-plan passes) are preserved in git
-at commit `73a948c` if you ever want the detail back.
+The open list. Organised as: **what to do next → what is still open → designs
+waiting to be built → what got done**. The full historical checklists (every
+`[x]` line from the psychology, weapons, camp, wounds and body-plan passes) are
+preserved in git at commit `73a948c`.
+
+`README.md` holds the current state of the project — realm coverage, content
+totals, how to run and verify it. It is not repeated here, because this file
+kept a second copy of those numbers and they drifted: as of today it still
+claimed 600 perks, 565 items, 103 traits and Godot 4.6 against a real 604, 606,
+121 and 4.7.2. One place for facts.
 
 Companion documents:
-- `REFRESHER.md` — orientation after a break; read that first
-- `PERKS.md` — perk trees per skill
-- `EVENT_SYSTEM.md` — how events, choices and outcomes work
-- `EDIT_LATER.md` — prose that needs your pass
-- `tools/validate_data.py` — run after any content edit; exits non-zero on a
-  dangling reference
+- `PERKS.md` — perk trees per skill, hand-maintained
+- `CHARACTERS.md` — companion bios, hand-maintained
+- `docs/review/` — all realm prose; round-trips to JSON via
+  `tools/import_review_docs.py`
+- `docs/superpowers/specs/` — designs approved but not yet built
+- `tools/verify_all.sh` — run after any edit
 
 ---
 
-## Where things stand
+## Where to pick up
 
-### Content
+**A hell → hungry ghost → animal playthrough.** All three realms are populated
+and none of the recent content has been played; the animal realm has never been
+played at all. Progression is genuinely gated now (boss seal enforced, boss
+events exist), and a large batch of mechanics went from data-only to live
+without anyone seeing them move. Use the cheat console to skip ahead.
 
-| Realm | Map | Archetypes | Events | Companions | Quests | Dead map weight |
-|---|---|---|---|---|---|---|
-| **Hell** | ✓ cold / fire + divider | 45 | 79 | 24 | 3 | 0% |
-| **Hungry Ghost** | ✓ 3 zones | 23 | 150 | 23 | 0 | 0% |
-| **Animal** | ✓ ocean / forest / meadow | 34 | 94 | 24 | 0 | 0% |
-| Human | ✗ | ✗ | ✗ | ✗ | ✗ | — |
-| Asura | ✗ | ✗ | ✗ | ✗ | ✗ | — |
-| God | ✗ | ✗ | ✗ | ✗ | ✗ | — |
+Worth watching for specifically:
 
-Plus 33 cross-realm domain events (13 plain, 9 camp-triggered, 8 trait-triggered,
-3 relationship-triggered). **356 events total**.
+- **First-pass balance numbers** — summoning terrain +25%, pack bonus,
+  shield/mirror-image pools, reflect chances, wound-healing prices. All guessed,
+  none played.
+- **Difficulty multipliers** (easy 0.75× … boss 1.6×) now apply to every event
+  fight for the first time.
+- **The wounds and psychology panels** — first look at whether those systems are
+  tuned sanely now that they are visible.
+- **Active perks.** 75 of them became usable in 2026-09; before that every one
+  was greyed out, so none has ever been pressed in a real fight.
 
-Other totals: **600 perks** (546 skill + 54 cross, every skill covered at every
-level 1–10), **363 spells**, **565 items**, **103 traits** (84 gameplay + 19
-racial), **12 prosthetics**.
+Then, depending on appetite:
 
-### Systems
+- **Content:** more quests (the board works but holds three, all hell),
+  `PERKS.md`'s empty tiers, cursed items.
+- **Systems:** the three approved combat designs below, prosthetic items
+  (small, unblocks a fully-coded flow), or combat-UI polish (wound icons,
+  per-arm damage popups).
+- **Big swing:** YidamSystem — the design in Part II is complete enough to
+  build, mantra counts already accumulate, and camp Mantra Recitation feeds it
+  with nothing reading the result.
 
-Twenty-one autoloads, all wired: characters/XP, karma/reincarnation, events, grid
-combat (spells, AoE via `AoEResolver`, statuses, AI, projectiles), overworld
-(real-time movement, mobs, portals with boss gating), shops/training/guilds,
-procedural items, perks, psychology/pressure, traits, wounds, body plans
-(multi-arm species, limb loss, prosthetics), party relationships,
-camp/rest/time/lunar calendar, save/load (3 slots), audio, cheat console.
-Engine: **Godot 4.6**.
+- [ ] **All recent prose is Claude's and wants Olaf's pass.** The three hungry
+      ghost map-critical events (boss + both pass guardians), the 34 further HG
+      events, the 47 animal zone events, and the 24 animal companion bios.
+      Marked **NEW EVENT** / **NEW** in `docs/review/`.
 
-Validator reports **0 issues**; all scripts pass `gdparse`.
+---
 
-### What has never been played
+## Approved designs not yet built
 
-Everything added in the 2026-07-27 passes. The animal realm has never been
-played at all; hungry ghost gained 71 events; boss gating, difficulty
-multipliers, wound healing, the quest chains, and a large batch of statuses went
-from data-only to live. See `REFRESHER.md` § Point of departure.
+- [ ] **Combat systems standardization** —
+      `docs/superpowers/specs/2026-09-12-combat-systems-standardization-design.md`.
+      Three independent changes that should land separately: one saving-throw
+      mechanic (d20 + defender attribute vs 10 + attacker attribute + tier),
+      forced movement, and opt-in AoE damage falloff. The saves work is the only
+      one that shifts balance, and wants a tuning pass in play afterwards.
 
 ---
 
@@ -136,6 +148,66 @@ The mirror image of dead data: code paths that work and are never exercised.
   with owning skill, L1/L5/L10 values and the system each would hook into is in
   Part III below. This is the largest single gap: most general skills currently
   pay out only their combat numbers.
+
+  **Renamed 2026-09-12 so the trap is visible in the name.** `_pct` is a
+  percentage, `party_` means one member's skill pays the whole party, a bare
+  name is flat. The convention is recorded in `perks.json`'s `base_bonuses._comment`
+  and enforced by `validate_data.py`. Five live keys were renamed at the same
+  time because their names misled: `attack` → `accuracy` (it lands on
+  `derived.accuracy`), `armor_penetration` → `armor_pierce`, `stamina` →
+  `max_stamina` (a maximum, not current), `mana_cost` → `mana_cost_reduction`
+  (negative values mean cheaper), `strength_weapon_damage` →
+  `weapon_damage_from_strength`. Verified behaviour-preserving: derived stats
+  for every skill at levels 1/5/10/15 are byte-identical before and after.
+
+  **They were never the simple renames they looked like.** It is tempting to map
+  the dead keys onto live derived stats by name — `mental_resistance` onto
+  `mental_resistance_pct`, `movement_speed` onto `movement`. Checked against the
+  values, most of that is wrong:
+
+  | dead key | skill | L1 → L15 | why not a rename |
+  |---|---|---|---|
+  | `movement_speed` | grace | 10 → 65 | `derived.movement` is in **tiles** (base 3–4). This is a percentage; renaming grants 65 tiles. |
+  | `healing_effectiveness_(party)` | medicine | 10 → 130 | party-wide; `healing_pct` is per-character |
+  | `magic_damage_resistance` | yoga | 5 → 75 | magic only; `damage_reduction_pct` is all damage |
+  | `party_xp_gain` | learning | 3 → 42 | party-wide; `xp_gain_pct` is per-character |
+  | `loot_quality` | thievery | 5 → 75 | quality is not `loot_chance_pct`'s chance |
+  | `mental_resistance` | yoga | 5 → 125 | same concept as `mental_resistance_pct`, but +125% is an auto-pass and needs rescaling |
+
+  What the table still needs is two things that do not exist: **consumers for
+  the percentage stats**, and a **party-wide propagation mechanism** for the
+  `party_` keys.
+
+- [ ] **Party-wide bonuses: the design, when someone builds it.** They behave
+      like equipment bonuses — another additive source folded into `derived` —
+      except the source is a different character's skill. No ordering problem
+      arises because they derive from **raw skill levels**, never from another
+      character's `derived`, so nothing waits on anything.
+
+      **Best member, not sum** (decided 2026-09-12). Four medics should not be
+      four times one medic. Taking the best also matches the rule the game
+      already uses everywhere — "any party member meeting a requirement enables
+      the choice" — and makes the specialist *the* specialist. It has a known
+      cost, recorded under "Things to ponder" below.
+
+      **A refresh hook is mandatory** — this is a build requirement, not a
+      design question. Party-wide bonuses mean one member's skill feeds every
+      other member's `derived`, so `update_derived_stats` has to run for the
+      **whole party** whenever skills or party membership change, not just for
+      the character who changed. Miss it and stats go quietly stale, which is
+      the hardest class of bug to notice in this codebase.
+
+      Combat-facing `party_` keys land in `derived`; the rest
+      (`party_xp_gain_pct`, `party_travel_speed_pct`,
+      `party_supply_duration_pct`, `party_skill_check_bonus`) are read by
+      CompanionSystem, MapManager, CampSystem and EventManager.
+
+- [x] **This whole bug class is now caught automatically.** `validate_data.py`
+  gained a data→code check: five vocabularies (base_bonuses stats, status
+  behaviour strings, AoE shapes, active skill effects, passive effect types) are
+  checked for values that no code reads. Known gaps live in
+  `tools/vocabulary_baseline.json` with a reason attached, so the check fails
+  only on new drift. Shrink the baseline by wiring a consumer.
 - [ ] **6 embedded `todo` keys in the data files** promise mechanics no code
   reads. Nothing in TODO.md ever tracked them:
   - `traits.json` — `aquatic` / `flying` party-wide tile traversal,
@@ -295,9 +367,68 @@ combat panel — that change did **not** implement them. `scout_ahead`,
 miss: `camp_system.gd:156` already has a forage camp action open to everyone,
 and the perk that is supposed to improve it is never consulted.
 
-## 8. Deferred by decision
+## 8. Things to ponder
+
+Live design questions. Not bugs, not deferred decisions — the shape of these is
+still genuinely open, and each was raised because something built today works
+but may not be what the game wants.
+
+- [ ] **Best-member party bonuses make the second specialist worthless.** With
+      best-member, a party's second-best Medicine contributes exactly nothing,
+      so levelling it is wasted XP and the player learns to stop. Summing has
+      the opposite problem (four medics become four times a medic, which is
+      absurd and off-theme), so neither pure rule is right. Worth considering:
+      diminishing contribution from lower-ranked members, or a small flat
+      assist per additional member above a threshold.
+
+- [ ] **Party-wide bonuses invite min-maxing once the player knows the game.**
+      If one character's skill pays the whole party, the optimal build is one
+      specialist per useful skill and nobody redundant. That is a legible
+      strategy, which is good, but it flattens party composition into a
+      checklist. The whole party-bonus logic may want rethinking rather than
+      tuning — the current pass standardizes it so it is legible enough to
+      reason about, not because the rule is settled.
+
+- [ ] **Support characters as equipment-shaped content.** The retired
+      "logistics train" idea has one part worth keeping: a hireling who is not
+      a full character — a cook who grants a supply bonus, a mule that raises
+      carry weight. Content-wise a person, mechanically a piece of equipment.
+      Not needed now, and mechanically close to the planned **mounts and pets**
+      system, so the two should be designed together when that comes up.
+
+## 9. Deferred by decision
 
 Recorded so they aren't rediscovered as bugs.
+
+### 2026-09-12 — the "logistics train" is retired
+
+The original idea was a way to bring non-combat characters — a medic, a smith, a
+trader — into the party without them being dead weight in a fight: a second
+class of party member who contributed support bonuses instead of combat.
+
+The game grew past it. Every character and NPC now runs on the same character
+system, so there is no "full character" versus "support character" distinction
+left to make. A medic in the party is simply a party member who is good at
+Medicine and less good at swinging a sword, which is a more coherent thing for
+the game to be about.
+
+What survives is the mechanic, not the framing: `party_`-prefixed skill payouts,
+where one member's skill pays the whole party. That is designed (§3 above) and
+unbuilt. The support-character-as-equipment idea is parked in "Things to ponder"
+for whenever mounts and pets are designed.
+
+### 2026-09-12 — event rolls ignore the attribute, deliberately for now
+
+An event tier DC is `best_party_stat + modifier` and the roll is
+`d20 + best_party_stat`, so the attribute cancels and every tier is a flat
+probability — a Focus-18 party rolls no better than a Focus-8 one. The comment
+says this is intended ("difficulty constant regardless of power level").
+
+Defensible for a skill check, and left alone when combat saves were
+standardized, because changing it silently reweights every blue and yellow
+choice across 348 events that were authored against the current odds. If it
+does change, it needs an events balance pass in the same breath, not a
+one-line edit.
 
 ### 2026-08-31 — from the enemy-XP design session
 
@@ -534,7 +665,7 @@ Spec: `docs/superpowers/specs/2026-08-31-enemy-xp-generation-design.md`
 
 ---
 
-## 9. The passive perk backlog (2026-09-10)
+## 10. The passive perk backlog (2026-09-10)
 
 The engine is built and proven; the data is barely started. Of 470 passive
 perks: **168** are implemented by hand in `scripts/` (checked by id with
@@ -572,7 +703,7 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
       `first_attack_combat`, `first_attack_turn`, `from_behind`,
       `target_bleeding`, `target_debuffed`, `on_terrain_type`.
 
-## 10. Systems the perk text assumes and the game does not have
+## 11. Systems the perk text assumes and the game does not have
 
 Found while wiring the actives. Each is worth building as a system rather than
 as a one-off, because several perks and spells want the same thing.
@@ -906,6 +1037,31 @@ they are wired.
 
 Condensed changelog. Full checklists in git at `73a948c`.
 
+## 2026-09-12 — documentation cleanup
+
+Nine documents removed. Each was describing a state the project had left, which
+is worse than having no document — `PERK_WIRING_PLAN.md`'s wrong status quo cost
+a full session's first hour before it was checked against the code.
+
+| Removed | Why |
+|---|---|
+| `HELL_EVENTS.md` | Headed "Source of truth for hell_events.json" while holding **50 of 79** events, and not wired to `import_review_docs.py`. `docs/review/EVENTS_HELL.md` is the real source. |
+| `HG_EVENTS.md` | Same header, **14 of 150** events. Editing it and asking for a sync would have put 136 events at risk. |
+| `PROJECT_ANALYSIS.md` | A point-in-time March audit ("14 autoloads"); superseded by this file. |
+| `REFRESHER.md` | Orientation doc; its current state moved to `README.md` and its "point of departure" to "Where to pick up" above. |
+| `EVENT_SYSTEM.md` | January; duplicated `CLAUDE.md`'s description of grey/blue/yellow choices. |
+| `EDIT_LATER.md` | One live item (prose wants Olaf's pass), folded into "Where to pick up". |
+| `docs/plans/STATUS_EFFECTS_PLAN.md` | Opens "Critical Bug: Status Definitions Never Load". False — 168 load and 158 of 181 effect strings are handled. |
+| `docs/plans/2026-03-01-companions-*.md` (4) | Completed plans; the system shipped. Specs now live in `docs/superpowers/specs/`. |
+| `docs/plans/2026-03-02-recruitment-*.md` (2) | Same. |
+
+Kept: `PERKS.md` and `CHARACTERS.md` (hand-maintained design sources),
+`docs/review/` (round-trips to JSON), `docs/plans/PERK_WIRING_PLAN.md`
+(corrected and current), `CLAUDE.md` (agent working agreement).
+
+`README.md` rewritten from the live boot output rather than from the previous
+README, which claimed Godot 4.3 and 12 autoloads against a real 4.7.2 and 21.
+
 ## 2026-09-11 — verify_enemy_xp made deterministic; two bugs it was hiding
 
 **The flaky kit-budget check is fixed at the root.** It asserted
@@ -976,7 +1132,7 @@ conversions (in that order, since a conversion reads a finished stat);
 `CombatUnit._get_conditional_perk_bonus()` evaluates gated effects where the
 stat is read; `CombatManager._fire_perk_triggers()` dispatches `on_hit`,
 `on_crit`, `on_kill` and `dodge_success`. Only 5 perks are wired to it so far —
-see Part I §9.
+see Part I §10.
 
 **Six things were being computed and never read.** Same failure each time: a
 value written under one name and read under another, or not read at all, with

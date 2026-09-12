@@ -99,7 +99,12 @@ func _load_perks_data() -> void:
 		return
 
 	var data = json.get_data()
-	_base_bonuses = data.get("base_bonuses", {})
+	# Drop "_comment" section dividers: their values are plain strings, not
+	# bonus tables, and they would otherwise inflate the count logged below.
+	_base_bonuses = {}
+	for skill_id in data.get("base_bonuses", {}):
+		if not str(skill_id).begins_with("_"):
+			_base_bonuses[skill_id] = data["base_bonuses"][skill_id]
 	_skill_perks = data.get("skill_perks", {})
 	_cross_perks = data.get("cross_perks", {})
 
