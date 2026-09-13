@@ -490,14 +490,25 @@ but may not be what the game wants.
       - Blocked on this: `crafting_quality_pct`, `crafting_yield_pct`,
         `loot_quality_pct`.
 
-- [ ] **Item-granted auras have no consumer.** Three garments now carry
-      `passive_aura` — the two high-grade healer's robes
-      (`healing_regeneration`) and the top longlife caps (`longlife_hp`) — and
-      nothing reads the field on an equipped item. `_process_aura_effects()`
-      handles *status*-driven auras and one khata uses `passive_aura` through a
-      hardcoded branch, so both halves exist and are not joined. This is the
-      single blocker on the garb designs landing complete, and it is small:
-      equip-time, grant the aura status; on unequip, remove it.
+- [ ] ~~Item-granted auras have no consumer~~ — **built 2026-09-13**, as one
+      system rather than the equip-time hook first sketched here. Auras are now
+      declared in `resources/data/auras.json` and resolved by
+      `scripts/combat/aura_system.gd`; equipment, statuses, perks and units all
+      name one the same way, and a spell reaches auras through the status it
+      applies. Five separate hardcoded implementations collapsed into it. See
+      `verify_auras.tscn` (16 checks, 14/14 mutations caught).
+
+      Open, now that the mechanism exists:
+      - **Nothing shows an aura in the UI.** A player standing in a healing
+        field gets no indication of where it comes from or how far it reaches.
+        The status bar shows *statuses*, and most auras are not statuses.
+      - **The AI does not know auras exist.** It will not step into a friendly
+        aura, out of a hostile one, or focus the unit projecting one, which
+        makes every aura in the game a pure player-side advantage.
+      - **Only two item lines actually carry one** (khatvanga, healer's robe,
+        longlife cap). The mechanism is now much cheaper than the content.
+      - `radius: 99` on `avatar_of_the_storm` is how "party-wide" is currently
+        spelled. It works, but a real `scope: party` would read better.
 
 - [ ] ~~Specialist ritual robes~~ — **built 2026-09-13.** Eight new graded
       families (pandita robe, sage's, tantric, dreamer's, chodpa's, chodpa's

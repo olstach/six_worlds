@@ -115,7 +115,7 @@ func _load_perks_data() -> void:
 
 func get_eligible_perks(character: Dictionary) -> Array[String]:
 	## Returns all perk IDs the character qualifies for but doesn't have yet.
-	var owned := _get_owned_perk_ids(character)
+	var owned := get_owned_perk_ids(character)
 	var eligible: Array[String] = []
 
 	# Check skill perks
@@ -457,7 +457,9 @@ func has_perk(character: Dictionary, perk_id: String) -> bool:
 	return false
 
 
-func _get_owned_perk_ids(character: Dictionary) -> Array[String]:
+## All perk IDs the character owns. Public because AuraSystem needs to ask a
+## character what it emits, and perks are one of the four aura sources.
+func get_owned_perk_ids(character: Dictionary) -> Array[String]:
 	## Get a list of all perk IDs the character owns.
 	var ids: Array[String] = []
 	if not character.has("perks"):
@@ -473,7 +475,7 @@ func _get_owned_perk_ids(character: Dictionary) -> Array[String]:
 func get_character_perks(character: Dictionary) -> Array[Dictionary]:
 	## Get full perk data for all perks a character has.
 	var result: Array[Dictionary] = []
-	for perk_id in _get_owned_perk_ids(character):
+	for perk_id in get_owned_perk_ids(character):
 		var perk_data = get_perk_data(perk_id)
 		if not perk_data.is_empty():
 			result.append({"id": perk_id, "data": perk_data})
@@ -531,7 +533,7 @@ func get_perk_data(perk_id: String) -> Dictionary:
 ## Returns [{perk_id, effect}], optionally filtered to one effect type.
 func get_passive_effects(character: Dictionary, filter_type: String = "") -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
-	for perk_id in _get_owned_perk_ids(character):
+	for perk_id in get_owned_perk_ids(character):
 		var perk: Dictionary = get_perk_data(perk_id)
 		for effect in perk.get("effects", []):
 			if filter_type != "" and effect.get("type", "") != filter_type:

@@ -37,9 +37,26 @@ bad() { printf '   \033[31mFAIL\033[0m %s\n' "$1"; failed=1; }
 # the .godot caches. Put the tree back afterwards so a verification run never
 # shows up as a source change — but keep global_script_class_cache.cfg, which
 # is tracked and must be current for any newly added class_name to resolve.
+#
+# Restore from a SNAPSHOT TAKEN AT STARTUP, not from git HEAD. Reverting to HEAD
+# also destroys uncommitted edits to these files, which is a nasty trap: add a
+# key to statuses.json, run the verifier to check it, and the verifier silently
+# deletes your change and then reports that nothing reads it. That happened
+# while this very aura refactor was being written. A snapshot undoes Godot's
+# reformat and nothing else.
+REFORMATTED_FILES=(project.godot resources/data/races.json resources/data/statuses.json)
+SNAPSHOT_DIR=$(mktemp -d)
+trap 'rm -rf "$SNAPSHOT_DIR"' EXIT
+
+for f in "${REFORMATTED_FILES[@]}"; do
+    [ -f "$f" ] && cp "$f" "$SNAPSHOT_DIR/$(echo "$f" | tr / _)"
+done
+
 restore_tree() {
-    git checkout -- project.godot resources/data/races.json \
-        resources/data/statuses.json 2>/dev/null
+    for f in "${REFORMATTED_FILES[@]}"; do
+        snap="$SNAPSHOT_DIR/$(echo "$f" | tr / _)"
+        [ -f "$snap" ] && cp "$snap" "$f"
+    done
     git checkout -- .godot/editor .godot/uid_cache.bin 2>/dev/null
 }
 

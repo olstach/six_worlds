@@ -599,15 +599,13 @@
       "name": "Favorable_Wind",
       "type": "buff",
       "category": "aura",
-      "effects": [
-        "aura_grants_haste",
-        "aura_grants_precision"
-      ],
+      "effects": [],
       "duration_type": "spellpower",
       "dispellable": true,
       "dispel_methods": [
         "dispel"
-      ]
+      ],
+      "aura": "favorable_wind"
     },
     {
       "name": "Flying",
@@ -1000,15 +998,15 @@
       "name": "Soothing_Presence",
       "type": "buff",
       "category": "aura",
-      "effects": [
-        "heal_allies_per_turn_in_aura"
-      ],
+      "effects": [],
       "heal_per_turn": 5,
       "duration_type": "spellpower",
       "dispellable": true,
       "dispel_methods": [
         "dispel"
-      ]
+      ],
+      "aura": "soothing_presence",
+      "aura_value": 5
     },
     {
       "name": "Pacified",
@@ -1071,14 +1069,13 @@
       "name": "Aura_of_Blessing",
       "type": "buff",
       "category": "aura",
-      "effects": [
-        "grants_blessed_to_nearby_allies"
-      ],
+      "effects": [],
       "duration_type": "spellpower",
       "dispellable": true,
       "dispel_methods": [
         "dispel"
-      ]
+      ],
+      "aura": "aura_of_blessing"
     },
     {
       "name": "Divine_Champion",
@@ -1406,14 +1403,13 @@
       "name": "Dampening_Aura",
       "type": "buff",
       "category": "aura",
-      "effects": [
-        "aura_reduces_enemy_spell_damage"
-      ],
+      "effects": [],
       "duration_type": "spellpower",
       "dispellable": true,
       "dispel_methods": [
         "dispel"
-      ]
+      ],
+      "aura": "dampening_aura"
     },
     {
       "name": "Dodge_Debuff",
@@ -1756,8 +1752,7 @@
       "category": "transformation",
       "effects": [
         "fire_damage_immunity",
-        "adds_fire_damage_to_attacks",
-        "light_aura"
+        "adds_fire_damage_to_attacks"
       ],
       "grants_vulnerability": {
         "water": 50
@@ -1767,7 +1762,8 @@
       "dispel_methods": [
         "dispel",
         "water_damage"
-      ]
+      ],
+      "aura": "light_aura"
     },
     {
       "name": "Soul_Burning",

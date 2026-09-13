@@ -217,6 +217,9 @@ func _ready() -> void:
 	_load_spell_database()
 	_load_status_definitions()
 	_load_summon_templates()
+	# max_hp auras are the one payload that has to be stored, so they need a
+	# refresh whenever the distance between units changes.
+	unit_moved.connect(_on_unit_moved_refresh_auras)
 	print("CombatManager initialized with ", _spell_database.size(), " spells, ",
 		_status_effects.size(), " status effects, ",
 		_summon_templates.size(), " summon templates")
@@ -2356,6 +2359,16 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 			if magic_resist > 0.0:
 				damage = maxi(1, int(damage * (1.0 - minf(magic_resist, 90.0) / 100.0)))
 
+	# Aura protection (Dampening_Aura and anything else declaring
+	# damage_taken_pct). Sits here rather than in the spell path so it covers
+	# every source of magic damage, not just the one that had it hardcoded.
+	if damage > 0:
+		var kind: String = "magic" if damage_type in MAGIC_DAMAGE_TYPES else "physical"
+		var aura_mult: float = AuraSystem.damage_taken_multiplier(
+			unit, kind, all_units, _aura_distance)
+		if not is_equal_approx(aura_mult, 1.0):
+			damage = maxi(1, int(damage * aura_mult))
+
 	# Mantric_Armor: hp_shield absorbs damage before HP. Shield pool lives in the
 	# status entry's "value" field (0/unset → default 25); status expires when spent.
 	if damage > 0:
@@ -3452,14 +3465,6 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 			if _unit_has_effect(target, "spell_damage_reduction"):
 				total_damage = int(total_damage * 0.75)
 
-			# Dampening_Aura: any ally of the target within 2 tiles reduces incoming spell damage by 25%
-			if total_damage > 0 and combat_grid:
-				var allies_nearby = _get_allies_within_range(target, 2)
-				for ally in allies_nearby:
-					if _unit_has_effect(ally, "aura_reduces_enemy_spell_damage"):
-						total_damage = int(total_damage * 0.75)
-						break
-
 			# Lord of Death DY: empowered summons deal 30% bonus spell damage
 			if "lord_of_death_empowered" in caster and caster.lord_of_death_empowered:
 				total_damage = int(total_damage * 1.3)
@@ -3709,7 +3714,7 @@ func _spawn_summoned_unit(caster: Node, summon_id: String, target_pos: Vector2i,
 		d["max_hp"] = emp_hp
 		d["current_hp"] = emp_hp
 		d["damage"] = d.get("damage", 0) * 2  # derived.damage is read by get_attack_damage()
-		summon_unit.has_summon_aura = true
+		summon_unit.intrinsic_auras.append("summon_empowerment")
 		combat_log.emit("%s: Empowered summon — %s is supercharged!" % [caster.unit_name, summon_unit.unit_name])
 
 	# Apply flying status if template specifies it
@@ -3910,7 +3915,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 			_apply_stat_modifier(caster, "movement", 1, 1)
 
 	# Static Edge (Air 1): all attacks deal +10% weapon damage as Air damage
-	# Wired in get_passive_perk_stat_bonus; here we add it as a bonus damage proc on spell hits
+	# Wired in get_continuous_stat_bonus; here we add it as a bonus damage proc on spell hits
 	# Chain Spark (Air 3): Lightning spells have 30% chance to chain to 1 adjacent target
 	if PerkSystem.has_perk(caster_char, "chain_spark") and has_damage:
 		var is_lightning = element in ["air", "lightning"] or schools.any(func(s): return s.to_lower() == "air")
@@ -4328,7 +4333,8 @@ func _process_status_effects(unit: Node) -> bool:
 	_process_status_spread(unit)
 
 	# Process aura effects (buff nearby allies each turn)
-	_process_aura_effects(unit)
+	_refresh_aura_max_hp()
+	_process_auras(unit)
 
 	# Also process stat modifiers (buff/debuff duration tick)
 	_process_stat_modifiers(unit)
@@ -4422,57 +4428,114 @@ func _spread_chance_to_float(chance_str: String) -> float:
 			return 0.0
 
 
-## Process aura status effects — statuses that buff/heal nearby allies each turn.
-## Called once per unit per turn during status processing.
-## Aura effects:
-##   - Favorable_Wind: grants Hasted + Precision to allies within 2 tiles
-##   - Aura_of_Blessing: grants Blessed to allies within 2 tiles
-##   - Soothing_Presence: heals allies within 2 tiles for heal_per_turn
-##   - Magnetizing_Aura: chance to charm enemies who end turn adjacent (handled separately)
-##   - Storm_Lord / Lightning_Form: lightning aura damages melee attackers (handled in reactive)
-func _process_aura_effects(unit: Node) -> void:
-	if not "status_effects" in unit or unit.status_effects.is_empty():
+## Fire the per-turn payloads of every aura this unit emits.
+##
+## Called once per unit per turn. The unit's own auras tick on its own turn,
+## which is what keeps a two-emitter fight from healing anyone twice per round.
+##
+## Only per-turn payloads resolve here. `stat`, `damage_taken_pct` and `max_hp`
+## are continuous: they are read where they apply, so that stepping out of an
+## aura removes them with no bookkeeping. See AuraSystem.
+##
+## Reactive effects are not auras and stay where they are: the lightning
+## retaliation on Storm_Lord and Lightning_Form fires when someone attacks, and
+## Magnetizing_Aura's charm fires on approach. An aura is a standing field; a
+## trigger is a response.
+func _process_auras(unit: Node) -> void:
+	if unit == null or not is_instance_valid(unit) or unit.is_dead:
+		return
+	if not "grid_position" in unit:
 		return
 
-	for effect in unit.status_effects:
-		var status_name = effect.get("status", "")
-		var def = _status_effects.get(status_name, {})
-		var effects = def.get("effects", [])
+	for aura in AuraSystem.emitted_by(unit):
+		for target in all_units:
+			if not is_instance_valid(target) or not "grid_position" in target:
+				continue
+			var dist: int = _grid_distance(unit.grid_position, target.grid_position)
+			if not AuraSystem.reaches(aura, unit, target, dist):
+				continue
+			var mult: float = AuraSystem.sign_for(aura, unit, target)
+			for payload in aura["payloads"]:
+				_apply_aura_payload(unit, target, aura, payload, mult)
 
-		# Favorable Wind — grant Hasted and Precision to nearby allies
-		if "aura_grants_haste" in effects or "aura_grants_precision" in effects:
-			var allies = _get_allies_in_range(unit, 2)
-			for ally in allies:
-				if "aura_grants_haste" in effects and not ally.has_status("Hasted"):
-					_apply_status_effect(ally, "Hasted", 2)
-					status_effect_triggered.emit(unit, "Favorable_Wind", 0, "aura")
-				if "aura_grants_precision" in effects and not ally.has_status("Precision"):
-					_apply_status_effect(ally, "Precision", 2)
 
-		# Aura of Blessing — grant Blessed to nearby allies
-		if "grants_blessed_to_nearby_allies" in effects:
-			var allies = _get_allies_in_range(unit, 2)
-			for ally in allies:
-				if not ally.has_status("Blessed"):
-					_apply_status_effect(ally, "Blessed", 2)
-					status_effect_triggered.emit(unit, "Aura_of_Blessing", 0, "aura")
+## Resolve one payload of one aura onto one unit inside it.
+##
+## Unknown kinds warn rather than pass silently. A payload nothing resolves is
+## indistinguishable from an aura that works until someone plays the character,
+## and that is the bug this whole refactor exists to make impossible.
+func _apply_aura_payload(source: Node, target: Node, aura: Dictionary, payload: Dictionary, mult: float) -> void:
+	var kind: String = payload.get("kind", "")
+	match kind:
+		"grant_status":
+			var status_name: String = payload.get("status", "")
+			if status_name == "" or target.has_status(status_name):
+				return
+			_apply_status_effect(target, status_name, int(payload.get("duration", 2)))
+			status_effect_triggered.emit(source, aura["name"], 0, "aura")
 
-		# Soothing Presence — heal nearby allies each turn
-		if "heal_allies_per_turn_in_aura" in effects:
-			var heal_amount = def.get("heal_per_turn", 5)
-			var allies = _get_allies_in_range(unit, 2)
-			for ally in allies:
-				if ally.current_hp < ally.max_hp:
-					ally.heal(heal_amount)
-					unit_healed.emit(ally, heal_amount)
-					status_effect_triggered.emit(unit, "Soothing_Presence", heal_amount, "aura")
+		"heal":
+			var amount: int = int(float(payload.get("amount", 0)) * mult)
+			if amount <= 0 or target.current_hp >= target.max_hp:
+				return
+			target.heal(amount)
+			unit_healed.emit(target, amount)
+			status_effect_triggered.emit(source, aura["name"], amount, "aura")
 
-		# Magnetizing Aura — charm chance when enemy moves adjacent
-		# This is handled reactively in movement processing, not per-turn
-		# (charm_chance_on_enemy_melee_approach)
+		"damage":
+			var amount: int = int(float(payload.get("amount", 0)) * mult)
+			if amount <= 0:
+				return
+			apply_damage(target, amount, payload.get("element", "physical"))
+			status_effect_triggered.emit(source, aura["name"], amount, "aura")
 
-		# Lightning auras (Storm_Lord, Lightning_Form) are reactive,
-		# handled in _process_reactive_statuses
+		"stat", "damage_taken_pct", "max_hp":
+			pass  # continuous — read at the point they apply, never applied here
+
+		_:
+			push_warning("AuraSystem: aura '%s' (%s '%s') — %s"
+				% [aura["id"], aura["source_kind"], aura["source_id"],
+					AuraSystem.explain_unknown_kind(kind)])
+
+
+## Recompute every unit's aura-granted max HP.
+##
+## max_hp is the one payload that cannot be computed on demand, because
+## current_hp has to be clamped when the bonus goes away. So it is stored — and
+## applied as a DELTA against what this function set last time, which makes a
+## repeated call a no-op instead of a doubling. That distinction is the whole
+## reason mana_cost_reduction once reached -500 in this codebase.
+func _refresh_aura_max_hp() -> void:
+	for unit in all_units:
+		if not is_instance_valid(unit) or unit.is_dead:
+			continue
+		if not "grid_position" in unit or not "aura_max_hp" in unit:
+			continue
+		var want: int = AuraSystem.max_hp_bonus(unit, all_units, _aura_distance)
+		var delta: int = want - unit.aura_max_hp
+		if delta == 0:
+			continue
+		unit.aura_max_hp = want
+		unit.max_hp = maxi(1, unit.max_hp + delta)
+		if delta > 0:
+			# Walking into a protective aura should feel like protection, so the
+			# granted HP arrives filled rather than as an empty bar extension.
+			unit.current_hp += delta
+		unit.current_hp = clampi(unit.current_hp, 1, unit.max_hp)
+
+
+## Any movement can move a unit into or out of a max_hp aura, so recheck all of
+## them. Cheap: a refresh that changes nothing exits on a zero delta.
+func _on_unit_moved_refresh_auras(_unit: Node, _from: Vector2i, _to: Vector2i) -> void:
+	_refresh_aura_max_hp()
+
+
+## Distance between two units, as AuraSystem wants it: a Callable, so that file
+## never needs to know how this grid measures itself.
+func _aura_distance(a: Node, b: Node) -> int:
+	if not "grid_position" in a or not "grid_position" in b:
+		return 9999
+	return _grid_distance(a.grid_position, b.grid_position)
 
 
 ## Get all alive allied units within range of source (same team, excludes self)
@@ -4803,21 +4866,6 @@ func _unit_has_effect(unit: Node, effect_name: String) -> bool:
 			return true
 	return false
 
-
-## Returns all living units on the same team as 'center' within Chebyshev distance 'radius', excluding center itself.
-func _get_allies_within_range(center: Node, radius: int) -> Array:
-	var result: Array = []
-	if not "grid_position" in center:
-		return result
-	var center_team = center.team if "team" in center else -1
-	for unit in all_units:
-		if unit == center or unit.is_dead:
-			continue
-		if "team" in unit and unit.team == center_team:
-			var diff = unit.grid_position - center.grid_position
-			if absi(diff.x) <= radius and absi(diff.y) <= radius:
-				result.append(unit)
-	return result
 
 
 ## Check if unit can make weapon attacks (not Forgetful/Pacified)
@@ -7197,12 +7245,22 @@ func _unit_is_unarmored(unit: Node) -> bool:
 	return true
 
 
-## Get passive perk stat bonuses for a unit.
-## Called by CombatUnit stat getters to include perk effects.
-## Returns the total bonus/penalty for the given stat.
-func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
+## Every standing bonus to `stat` that is computed fresh rather than stored:
+## perks, equipment passives, and auras projected by anyone on the field.
+##
+## Called by the CombatUnit stat getters. Nothing here is ever written to the
+## unit, which is precisely what makes it safe — a bonus that stops applying
+## (the aura walked away, the weapon was swapped) disappears because the next
+## read does not find it, with no reset step to forget.
+##
+## Named for perks alone until auras joined it; the shape was always "what does
+## this unit get right now, from everything around it".
+func get_continuous_stat_bonus(unit: Node, stat: String) -> int:
 	var total := 0
 	var char_data = unit.character_data if "character_data" in unit else {}
+
+	# --- Auras projected by any unit on the field, including this one ---
+	total += int(round(AuraSystem.stat_bonus(unit, stat, all_units, _aura_distance)))
 
 	# --- Equipment-based bonuses (apply regardless of whether the unit has perks) ---
 	match stat:
@@ -7215,22 +7273,6 @@ func get_passive_perk_stat_bonus(unit: Node, stat: String) -> int:
 				if parry_eff > 0:
 					var acc = unit.get_accuracy() if unit.has_method("get_accuracy") else 0
 					total += int(acc * parry_eff / 100.0)
-		"initiative":
-			# Khatvanga aura: any adjacent enemy wielding a Khatvanga reduces this unit's initiative
-			if "grid_position" in unit and "team" in unit:
-				var enemy_team = 1 - unit.team
-				for enemy in get_team_units(enemy_team):
-					if not "grid_position" in enemy:
-						continue
-					if _grid_distance(unit.grid_position, enemy.grid_position) > 1:
-						continue
-					var enemy_char = enemy.character_data if "character_data" in enemy else {}
-					var khata_id = ItemSystem.get_equipped_item(enemy_char, "weapon_main")
-					if khata_id != "":
-						var khata_item = ItemSystem.get_item(khata_id)
-						if khata_item.get("passive_aura", "") == "initiative_debuff":
-							total -= khata_item.get("aura_value", 3)
-
 	if not char_data.has("perks"):
 		return total  # No perks — return equipment-only bonuses
 
@@ -7887,7 +7929,7 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 		else:
 			attacker.unarmed_hit_stacks = 0
 
-	# Every Opening Is an Invitation: +10% crit vs statused — applied via get_passive_perk_stat_bonus
+	# Every Opening Is an Invitation: +10% crit vs statused — applied via get_continuous_stat_bonus
 	# Anatomy Knowledge: +10% damage vs biological enemies — applied in calculate_physical_damage
 	# Shadow Strike: stealth attacks auto-hit + crit (implemented in attack_unit)
 	# Blood in the Wind: +movement when enemies bleeding (checked in stat getter)
@@ -8316,23 +8358,6 @@ func _trigger_cleave(killer: Node, dead_pos: Vector2i) -> void:
 	_trigger_free_attack(killer, nearest)
 
 
-## Apply the aura effect for an empowered summon at the start of its turn.
-## Adds ±10 to mantra_stat_bonuses["armor"], ["dodge"], ["crit_chance"] for
-## all units within 2 tiles — positive for allies, negative for enemies.
-## The negative values are clamped to 0 in the getter (floor applied there).
-func _process_summon_aura(unit: Node) -> void:
-	for u in all_units:
-		if u.is_dead:
-			continue
-		var dist = _grid_distance(unit.grid_position, u.grid_position)
-		if dist > 2:
-			continue
-		var bonus = 10 if u.team == unit.team else -10
-		u.mantra_stat_bonuses["armor"] = u.mantra_stat_bonuses.get("armor", 0) + bonus
-		u.mantra_stat_bonuses["dodge"] = u.mantra_stat_bonuses.get("dodge", 0) + bonus
-		u.mantra_stat_bonuses["crit_chance"] = u.mantra_stat_bonuses.get("crit_chance", 0.0) + float(bonus)
-
-
 ## Return all live units whose summoner_id matches caster.get_instance_id()
 func _get_owned_summons(caster: Node) -> Array:
 	var caster_id = caster.get_instance_id()
@@ -8387,11 +8412,6 @@ func _process_mantra_effects_and_auras(unit: Node) -> void:
 		if unit.active_mantras[perk_id] >= 5 and not unit.deity_yoga_triggered.get(perk_id, false):
 			unit.deity_yoga_triggered[perk_id] = true
 			_trigger_deity_yoga(unit, perk_id, spellpower)
-
-	# Process summon aura if this unit has one
-	if "has_summon_aura" in unit and unit.has_summon_aura:
-		_process_summon_aura(unit)
-
 
 ## Apply the per-turn aura effect for a specific mantra at the given stack level.
 ## stacks: 1-5; spellpower: caster's current spellpower.

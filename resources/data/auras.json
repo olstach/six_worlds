@@ -1,0 +1,110 @@
+{
+  "_comment": "Aura definitions. An aura is a field around a unit that affects other units by proximity. Any source may declare one with an `aura` key naming an id here: an item (passive_aura), a status (aura), a perk (aura), or a spell/active skill (aura, which applies its carrier status). Sources may override `magnitude` per instance — a graded item line does this to scale one aura across five consecrations. Resolution lives in scripts/combat/aura_system.gd; the vocabulary of payload kinds is enforced there, so a misspelled kind fails loudly instead of being silently skipped.",
+
+  "_comment_radius": "Radius is in grid tiles, Chebyshev distance, and never includes the emitter unless `affects` is 'self' or 'all'.",
+
+  "_comment_affects": "allies | enemies | all | self. `invert_for_enemies` flips the sign of every numeric payload for units on the other team, which is how one declaration expresses 'helps my side, hurts theirs'.",
+
+  "auras": {
+    "favorable_wind": {
+      "name": "Favorable Wind",
+      "radius": 2,
+      "affects": "allies",
+      "payloads": [
+        {"kind": "grant_status", "status": "Hasted", "duration": 2},
+        {"kind": "grant_status", "status": "Precision", "duration": 2}
+      ]
+    },
+
+    "aura_of_blessing": {
+      "name": "Aura of Blessing",
+      "radius": 2,
+      "affects": "allies",
+      "payloads": [
+        {"kind": "grant_status", "status": "Blessed", "duration": 2}
+      ]
+    },
+
+    "soothing_presence": {
+      "name": "Soothing Presence",
+      "radius": 2,
+      "affects": "allies",
+      "payloads": [
+        {"kind": "heal", "amount": 5}
+      ]
+    },
+
+    "dampening_aura": {
+      "name": "Dampening Aura",
+      "radius": 2,
+      "affects": "allies",
+      "self_included": true,
+      "payloads": [
+        {"kind": "damage_taken_pct", "amount": -25, "only": "magic"}
+      ]
+    },
+
+    "light_aura": {
+      "name": "Light of the Sun",
+      "radius": 2,
+      "affects": "enemies",
+      "payloads": [
+        {"kind": "stat", "stat": "accuracy", "amount": -10}
+      ],
+      "_comment": "Solar_Form declared this effect string for months with no consumer anywhere. Dazzling nearby enemies is the reading the status description already implied."
+    },
+
+    "initiative_debuff": {
+      "name": "Weight of the Khatvanga",
+      "radius": 1,
+      "affects": "enemies",
+      "payloads": [
+        {"kind": "stat", "stat": "initiative", "amount": -3}
+      ],
+      "_comment": "Khatvanga items override the magnitude per consecration grade, -2 through -8."
+    },
+
+    "healing_regeneration": {
+      "name": "Healing Presence",
+      "radius": 2,
+      "affects": "allies",
+      "self_included": true,
+      "payloads": [
+        {"kind": "heal", "amount": 3}
+      ]
+    },
+
+    "longlife_hp": {
+      "name": "Long Life",
+      "radius": 1,
+      "affects": "allies",
+      "self_included": true,
+      "payloads": [
+        {"kind": "max_hp", "amount": 10}
+      ]
+    },
+
+    "summon_empowerment": {
+      "name": "Empowered Summon",
+      "radius": 2,
+      "affects": "all",
+      "invert_for_enemies": true,
+      "payloads": [
+        {"kind": "stat", "stat": "armor", "amount": 10},
+        {"kind": "stat", "stat": "dodge", "amount": 10},
+        {"kind": "stat", "stat": "crit_chance", "amount": 10}
+      ]
+    },
+
+    "avatar_of_the_storm": {
+      "name": "Avatar of the Storm",
+      "radius": 99,
+      "affects": "allies",
+      "self_included": true,
+      "payloads": [
+        {"kind": "stat", "stat": "accuracy", "amount": 5}
+      ],
+      "_comment": "Party-wide rather than proximity-based, hence the radius. The air damage and stun chance this perk also grants stay in the on-hit path; only the standing bonus is an aura."
+    }
+  }
+}

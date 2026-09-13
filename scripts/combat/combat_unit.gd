@@ -91,9 +91,16 @@ var summoner_id: int = 0
 # Jeweled Pagoda DY: set on caster; consumed on next _spawn_summoned_unit() call
 var next_summon_empowered: bool = false
 
-# Set on a summon spawned while caster.next_summon_empowered was true
-# Processed in _process_summon_aura() at start of this unit's turn
-var has_summon_aura: bool = false
+# Auras this unit projects by its own nature rather than through anything it
+# carries — set by whatever created the unit. A summon spawned while its caster
+# had next_summon_empowered gets "summon_empowerment" here, which is all that
+# distinction ever needed to be. See AuraSystem.
+var intrinsic_auras: Array[String] = []
+
+# max HP currently granted by auras. Stored, unlike every other aura payload,
+# because current_hp must be clamped when the bonus goes away; kept as a running
+# total so refreshes apply a delta and cannot double up.
+var aura_max_hp: int = 0
 
 # Set on summons by Lord of Death DY: multiplies their damage by 1.3
 var lord_of_death_empowered: bool = false
@@ -646,13 +653,13 @@ func is_targetable() -> bool:
 func get_initiative() -> int:
 	var derived = character_data.get("derived", {})
 	var weapon_init = get_equipped_weapon().get("stats", {}).get("initiative", 0)
-	return derived.get("initiative", 10) + weapon_init + _get_status_stat_bonus("initiative") + CombatManager.get_passive_perk_stat_bonus(self, "initiative") + mantra_stat_bonuses.get("initiative", 0) + _get_stat_modifier_bonus("initiative")
+	return derived.get("initiative", 10) + weapon_init + _get_status_stat_bonus("initiative") + CombatManager.get_continuous_stat_bonus(self, "initiative") + mantra_stat_bonuses.get("initiative", 0) + _get_stat_modifier_bonus("initiative")
 
 
 ## Get movement range (includes status effect and perk bonuses)
 func get_movement() -> int:
 	var derived = character_data.get("derived", {})
-	return maxi(0, derived.get("movement", 3) + _get_status_stat_bonus("movement") + CombatManager.get_passive_perk_stat_bonus(self, "movement") + mantra_stat_bonuses.get("movement", 0) + _get_stat_modifier_bonus("movement"))
+	return maxi(0, derived.get("movement", 3) + _get_status_stat_bonus("movement") + CombatManager.get_continuous_stat_bonus(self, "movement") + mantra_stat_bonuses.get("movement", 0) + _get_stat_modifier_bonus("movement"))
 
 
 ## Get maximum actions per turn
@@ -796,7 +803,7 @@ func get_accuracy() -> int:
 	var derived = character_data.get("derived", {})
 	var weapon_acc = get_equipped_weapon().get("stats", {}).get("accuracy", 0)
 	var ammo_acc = get_selected_ammo().get("accuracy_bonus", 0) if is_ranged_weapon() else 0
-	return derived.get("accuracy", 0) + weapon_acc + ammo_acc + _get_status_stat_bonus("accuracy") + mantra_stat_bonuses.get("accuracy", 0) + _get_stat_modifier_bonus("accuracy") + get_pack_bonus() + _get_conditional_perk_bonus("accuracy")
+	return derived.get("accuracy", 0) + weapon_acc + ammo_acc + _get_status_stat_bonus("accuracy") + CombatManager.get_continuous_stat_bonus(self, "accuracy") + mantra_stat_bonuses.get("accuracy", 0) + _get_stat_modifier_bonus("accuracy") + get_pack_bonus() + _get_conditional_perk_bonus("accuracy")
 
 
 ## Return the current ammo definition dict (includes id, bonuses, special_effect).
@@ -826,7 +833,7 @@ func get_selected_ammo() -> Dictionary:
 func get_dodge() -> int:
 	var derived = character_data.get("derived", {})
 	var mantra_dodge = mantra_stat_bonuses.get("dodge", 0)
-	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_passive_perk_stat_bonus(self, "dodge") + maxi(0, mantra_dodge) + _get_stat_modifier_bonus("dodge") + get_pack_bonus() + _get_conditional_perk_bonus("dodge")
+	return derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_continuous_stat_bonus(self, "dodge") + maxi(0, mantra_dodge) + _get_stat_modifier_bonus("dodge") + get_pack_bonus() + _get_conditional_perk_bonus("dodge")
 
 
 ## ai_behavior "pack_bonus": units of the same archetype hunt better in numbers.
@@ -881,7 +888,7 @@ func get_attack_damage() -> int:
 	base_damage += _get_status_stat_bonus("damage")
 
 	# Add passive perk damage bonuses
-	base_damage += CombatManager.get_passive_perk_stat_bonus(self, "damage")
+	base_damage += CombatManager.get_continuous_stat_bonus(self, "damage")
 
 	# Add active skill stat modifier bonuses
 	base_damage += _get_stat_modifier_bonus("damage")
@@ -942,7 +949,7 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 func get_armor() -> int:
 	var derived = character_data.get("derived", {})
 	var mantra_armor = mantra_stat_bonuses.get("armor", 0)
-	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_passive_perk_stat_bonus(self, "armor") + maxi(0, mantra_armor) + _get_stat_modifier_bonus("armor") + _get_conditional_perk_bonus("armor")
+	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_continuous_stat_bonus(self, "armor") + maxi(0, mantra_armor) + _get_stat_modifier_bonus("armor") + _get_conditional_perk_bonus("armor")
 
 
 ## ── Conditional passive perk effects ─────────────────────────────────────────
@@ -1036,7 +1043,7 @@ func get_crit_chance() -> float:
 	var weapon_crit = float(equipped.get("stats", {}).get("crit_chance", 0))
 	# Natural weapons can carry a crit_bonus field (e.g. mantis blades +10%)
 	var natural_crit = float(equipped.get("crit_bonus", 0))
-	return float(derived.get("crit_chance", 5)) + weapon_crit + natural_crit + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_passive_perk_stat_bonus(self, "crit_chance")) + maxf(0.0, mantra_crit) + float(_get_stat_modifier_bonus("crit_chance"))
+	return float(derived.get("crit_chance", 5)) + weapon_crit + natural_crit + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_continuous_stat_bonus(self, "crit_chance")) + maxf(0.0, mantra_crit) + float(_get_stat_modifier_bonus("crit_chance"))
 
 
 ## Get current stamina
@@ -1111,7 +1118,7 @@ func tick_mantras() -> void:
 func get_spellpower() -> int:
 	var derived = character_data.get("derived", {})
 	var weapon_sp = get_equipped_weapon().get("stats", {}).get("spellpower", 0)
-	return derived.get("spellpower", 0) + weapon_sp + _get_status_stat_bonus("spellpower") + mantra_stat_bonuses.get("spellpower", 0) + _get_stat_modifier_bonus("spellpower") + chod_spellpower_bonus
+	return derived.get("spellpower", 0) + weapon_sp + _get_status_stat_bonus("spellpower") + CombatManager.get_continuous_stat_bonus(self, "spellpower") + mantra_stat_bonuses.get("spellpower", 0) + _get_stat_modifier_bonus("spellpower") + chod_spellpower_bonus
 
 
 ## Get magic skill bonus for an element (spellpower from the skill's base_bonuses table)
