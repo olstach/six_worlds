@@ -1735,10 +1735,9 @@
       "abilities": [],
       "durability": 85,
       "max_durability": 85,
-      "material": "bronze",
+      "material": "diamond",
       "quality": "masterwork",
-      "gilding": "vajra",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "yamas_ledger": {
       "name": "Yama's Ledger",
@@ -2201,7 +2200,7 @@
         "spellpower_bonus": 0
       },
       "slot": "talisman",
-      "material": "bronze",
+      "material": "crystal",
       "quality": "good",
       "enchantment": "none"
     },
@@ -2286,7 +2285,7 @@
         "spellpower_bonus": 0.1
       },
       "slot": "talisman",
-      "material": "bronze",
+      "material": "crystal",
       "quality": "fine",
       "enchantment": "none"
     },
@@ -2463,9 +2462,9 @@
         "max_mana": 8
       },
       "abilities": [],
-      "material": "bone",
+      "material": "turquoise",
       "quality": "good",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "fire_resistance_talisman": {
       "name": "Fire Resistance Talisman",
@@ -3996,7 +3995,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_copper_dorje": {
@@ -4028,8 +4027,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_copper_dorje": {
       "name": "Perfected Copper Dorje",
@@ -4060,8 +4059,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_copper_dorje": {
       "name": "Legendary Copper Dorje",
@@ -4156,7 +4155,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_silver_dorje": {
@@ -4188,8 +4187,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_silver_dorje": {
       "name": "Perfected Silver Dorje",
@@ -4220,8 +4219,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_silver_dorje": {
       "name": "Legendary Silver Dorje",
@@ -4316,7 +4315,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_gold_dorje": {
@@ -4348,8 +4347,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_gold_dorje": {
       "name": "Perfected Gold Dorje",
@@ -4380,8 +4379,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_gold_dorje": {
       "name": "Legendary Gold Dorje",
@@ -4476,7 +4475,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_iron_dorje": {
@@ -4508,8 +4507,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_iron_dorje": {
       "name": "Perfected Iron Dorje",
@@ -4540,8 +4539,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_iron_dorje": {
       "name": "Legendary Iron Dorje",
@@ -4636,7 +4635,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "bronze",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_bronze_dorje": {
@@ -4668,8 +4667,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "bronze",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_sky_iron_dorje": {
       "name": "Perfected Sky-iron Dorje",
@@ -4700,8 +4699,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "sky_iron",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_sky_iron_dorje": {
       "name": "Legendary Sky-iron Dorje",
@@ -4796,7 +4795,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_conch_dorje": {
@@ -4828,8 +4827,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_conch_dorje": {
       "name": "Perfected Conch Dorje",
@@ -4860,8 +4859,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_conch_dorje": {
       "name": "Legendary Conch Dorje",
@@ -4956,7 +4955,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_bone_dorje": {
@@ -4988,8 +4987,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_bone_dorje": {
       "name": "Perfected Bone Dorje",
@@ -5020,8 +5019,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_bone_dorje": {
       "name": "Legendary Bone Dorje",
@@ -5122,7 +5121,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_copper_drilbu": {
@@ -5157,8 +5156,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_copper_drilbu": {
       "name": "Perfected Copper Drilbu",
@@ -5192,8 +5191,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "copper",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_copper_drilbu": {
       "name": "Legendary Copper Drilbu",
@@ -5297,7 +5296,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_silver_drilbu": {
@@ -5332,8 +5331,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_silver_drilbu": {
       "name": "Perfected Silver Drilbu",
@@ -5367,8 +5366,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "silver",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_silver_drilbu": {
       "name": "Legendary Silver Drilbu",
@@ -5472,7 +5471,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_gold_drilbu": {
@@ -5507,8 +5506,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_gold_drilbu": {
       "name": "Perfected Gold Drilbu",
@@ -5542,8 +5541,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "gold",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_gold_drilbu": {
       "name": "Legendary Gold Drilbu",
@@ -5647,7 +5646,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_iron_drilbu": {
@@ -5682,8 +5681,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_iron_drilbu": {
       "name": "Perfected Iron Drilbu",
@@ -5717,8 +5716,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "iron",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_iron_drilbu": {
       "name": "Legendary Iron Drilbu",
@@ -5818,7 +5817,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "bronze",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_bronze_drilbu": {
@@ -5851,8 +5850,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "bronze",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_sky_iron_drilbu": {
       "name": "Perfected Sky-iron Drilbu",
@@ -5884,8 +5883,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "sky_iron",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_sky_iron_drilbu": {
       "name": "Legendary Sky-iron Drilbu",
@@ -5987,7 +5986,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_conch_drilbu": {
@@ -6022,8 +6021,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_conch_drilbu": {
       "name": "Perfected Conch Drilbu",
@@ -6057,8 +6056,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "conch",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_conch_drilbu": {
       "name": "Legendary Conch Drilbu",
@@ -6162,7 +6161,7 @@
       "max_durability": 65,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_bone_drilbu": {
@@ -6197,8 +6196,8 @@
       "max_durability": 90,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_bone_drilbu": {
       "name": "Perfected Bone Drilbu",
@@ -6232,8 +6231,8 @@
       "max_durability": 180,
       "set_pair": "dorje_drilbu",
       "material": "bone",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_bone_drilbu": {
       "name": "Legendary Bone Drilbu",
@@ -6339,7 +6338,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "copper",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_copper_khatvanga": {
@@ -6376,8 +6375,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "copper",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_copper_khatvanga": {
       "name": "Perfected Copper Khatvanga",
@@ -6413,7 +6412,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "copper",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_copper_khatvanga": {
@@ -6522,7 +6521,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "silver",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_silver_khatvanga": {
@@ -6559,8 +6558,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "silver",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_silver_khatvanga": {
       "name": "Perfected Silver Khatvanga",
@@ -6596,7 +6595,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "silver",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_silver_khatvanga": {
@@ -6705,7 +6704,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "gold",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_gold_khatvanga": {
@@ -6742,8 +6741,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "gold",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_gold_khatvanga": {
       "name": "Perfected Gold Khatvanga",
@@ -6779,7 +6778,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "gold",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_gold_khatvanga": {
@@ -6888,7 +6887,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "iron",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_iron_khatvanga": {
@@ -6925,8 +6924,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "iron",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_iron_khatvanga": {
       "name": "Perfected Iron Khatvanga",
@@ -6962,7 +6961,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "iron",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_iron_khatvanga": {
@@ -7071,7 +7070,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "bronze",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_bronze_khatvanga": {
@@ -7108,8 +7107,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "bronze",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_sky_iron_khatvanga": {
       "name": "Perfected Sky-iron Khatvanga",
@@ -7145,7 +7144,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "sky_iron",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_sky_iron_khatvanga": {
@@ -7254,7 +7253,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "conch",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_conch_khatvanga": {
@@ -7291,8 +7290,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "conch",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_conch_khatvanga": {
       "name": "Perfected Conch Khatvanga",
@@ -7328,7 +7327,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "conch",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_conch_khatvanga": {
@@ -7437,7 +7436,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -3,
       "material": "bone",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_bone_khatvanga": {
@@ -7474,8 +7473,8 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -4,
       "material": "bone",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_bone_khatvanga": {
       "name": "Perfected Bone Khatvanga",
@@ -7511,7 +7510,7 @@
       "passive_aura": "initiative_debuff",
       "aura_value": -6,
       "material": "bone",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_bone_khatvanga": {
@@ -7620,7 +7619,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "copper",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_copper_damaru": {
@@ -7656,7 +7655,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "copper",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "touched"
     },
     "perfected_copper_damaru": {
@@ -7692,8 +7691,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "copper",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_copper_damaru": {
       "name": "Legendary Copper Damaru",
@@ -7800,7 +7799,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "silver",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_silver_damaru": {
@@ -7836,7 +7835,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "silver",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "touched"
     },
     "perfected_silver_damaru": {
@@ -7872,8 +7871,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "silver",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_silver_damaru": {
       "name": "Legendary Silver Damaru",
@@ -7980,7 +7979,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "gold",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_gold_damaru": {
@@ -8016,7 +8015,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "gold",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "touched"
     },
     "perfected_gold_damaru": {
@@ -8052,8 +8051,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "gold",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_gold_damaru": {
       "name": "Legendary Gold Damaru",
@@ -8160,7 +8159,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "iron",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_iron_damaru": {
@@ -8196,7 +8195,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "iron",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "touched"
     },
     "perfected_iron_damaru": {
@@ -8232,8 +8231,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "iron",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_iron_damaru": {
       "name": "Legendary Iron Damaru",
@@ -8340,7 +8339,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "bronze",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_bronze_damaru": {
@@ -8376,7 +8375,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "bronze",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "touched"
     },
     "perfected_sky_iron_damaru": {
@@ -8412,8 +8411,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "sky_iron",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_sky_iron_damaru": {
       "name": "Legendary Sky-iron Damaru",
@@ -8520,7 +8519,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "conch",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_conch_damaru": {
@@ -8556,7 +8555,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "conch",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "touched"
     },
     "perfected_conch_damaru": {
@@ -8592,8 +8591,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "conch",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_conch_damaru": {
       "name": "Legendary Conch Damaru",
@@ -8700,7 +8699,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "bone",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_bone_damaru": {
@@ -8736,7 +8735,7 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "bone",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "touched"
     },
     "perfected_bone_damaru": {
@@ -8772,8 +8771,8 @@
       "charge_max": 3,
       "charge_discount": 0.4,
       "material": "bone",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_bone_damaru": {
       "name": "Legendary Bone Damaru",
@@ -8878,7 +8877,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "copper",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_copper_kangling": {
@@ -8913,8 +8912,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "copper",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_copper_kangling": {
       "name": "Perfected Copper Kangling",
@@ -8948,7 +8947,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "copper",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_copper_kangling": {
@@ -9053,7 +9052,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "silver",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_silver_kangling": {
@@ -9088,8 +9087,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "silver",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_silver_kangling": {
       "name": "Perfected Silver Kangling",
@@ -9123,7 +9122,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "silver",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_silver_kangling": {
@@ -9228,7 +9227,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_gold_kangling": {
@@ -9263,8 +9262,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_gold_kangling": {
       "name": "Perfected Gold Kangling",
@@ -9298,7 +9297,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_gold_kangling": {
@@ -9403,7 +9402,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_iron_kangling": {
@@ -9438,8 +9437,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_iron_kangling": {
       "name": "Perfected Iron Kangling",
@@ -9473,7 +9472,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_iron_kangling": {
@@ -9578,7 +9577,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bronze",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_bronze_kangling": {
@@ -9613,8 +9612,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bronze",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_sky_iron_kangling": {
       "name": "Perfected Sky-iron Kangling",
@@ -9648,7 +9647,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "sky_iron",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_sky_iron_kangling": {
@@ -9753,7 +9752,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "conch",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_conch_kangling": {
@@ -9788,8 +9787,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "conch",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_conch_kangling": {
       "name": "Perfected Conch Kangling",
@@ -9823,7 +9822,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "conch",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_conch_kangling": {
@@ -9928,7 +9927,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_bone_kangling": {
@@ -9963,8 +9962,8 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_bone_kangling": {
       "name": "Perfected Bone Kangling",
@@ -9998,7 +9997,7 @@
       "special_mechanic": "chod_offering",
       "chod_cost_pct": 0.25,
       "material": "bone",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_bone_kangling": {
@@ -10107,7 +10106,7 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "copper",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_copper_phurba": {
@@ -10144,8 +10143,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "copper",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_copper_phurba": {
       "name": "Perfected Copper Phurba",
@@ -10181,7 +10180,7 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "copper",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_copper_phurba": {
@@ -10292,7 +10291,7 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "silver",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_silver_phurba": {
@@ -10329,8 +10328,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "silver",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_silver_phurba": {
       "name": "Perfected Silver Phurba",
@@ -10366,7 +10365,7 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "silver",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_silver_phurba": {
@@ -10477,7 +10476,7 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "gold",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_gold_phurba": {
@@ -10514,8 +10513,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "gold",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_gold_phurba": {
       "name": "Perfected Gold Phurba",
@@ -10551,7 +10550,7 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "gold",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_gold_phurba": {
@@ -10662,7 +10661,7 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "iron",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_iron_phurba": {
@@ -10699,8 +10698,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "iron",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_iron_phurba": {
       "name": "Perfected Iron Phurba",
@@ -10736,7 +10735,7 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "iron",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_iron_phurba": {
@@ -10847,7 +10846,7 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "bronze",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_bronze_phurba": {
@@ -10884,8 +10883,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "bronze",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_sky_iron_phurba": {
       "name": "Perfected Sky-iron Phurba",
@@ -10921,7 +10920,7 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "sky_iron",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_sky_iron_phurba": {
@@ -11032,7 +11031,7 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "conch",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_conch_phurba": {
@@ -11069,8 +11068,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "conch",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_conch_phurba": {
       "name": "Perfected Conch Phurba",
@@ -11106,7 +11105,7 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "conch",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_conch_phurba": {
@@ -11217,7 +11216,7 @@
       "throw_base_damage": 10,
       "throw_save_dc": 16,
       "material": "bone",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "touched"
     },
     "empowered_bone_phurba": {
@@ -11254,8 +11253,8 @@
       "throw_base_damage": 13,
       "throw_save_dc": 16,
       "material": "bone",
-      "quality": "good",
-      "enchantment": "blessed"
+      "quality": "fine",
+      "enchantment": "touched"
     },
     "perfected_bone_phurba": {
       "name": "Perfected Bone Phurba",
@@ -11291,7 +11290,7 @@
       "throw_base_damage": 16,
       "throw_save_dc": 16,
       "material": "bone",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "blessed"
     },
     "legendary_bone_phurba": {
@@ -11413,7 +11412,7 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "blessed"
     },
     "blessed_space_ngakpa_crown": {
@@ -11442,7 +11441,7 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "blessed"
     },
     "empowered_space_ngakpa_robe": {
@@ -11471,7 +11470,7 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "empowered"
     },
     "empowered_space_ngakpa_crown": {
@@ -11500,7 +11499,7 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "empowered"
     },
     "perfected_space_ngakpa_robe": {
@@ -11530,8 +11529,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine",
-      "enchantment": "perfected"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "perfected_space_ngakpa_crown": {
       "name": "Perfected Space Ngakpa Crown",
@@ -11560,8 +11559,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine",
-      "enchantment": "perfected"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "legendary_space_ngakpa_robe": {
       "name": "Legendary Red-And-White Striped Ngakpa Robe",
@@ -11705,7 +11704,7 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "blessed"
     },
     "blessed_air_ngakpa_crown": {
@@ -11734,7 +11733,7 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "blessed"
     },
     "empowered_air_ngakpa_robe": {
@@ -11763,7 +11762,7 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "empowered"
     },
     "empowered_air_ngakpa_crown": {
@@ -11792,7 +11791,7 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "empowered"
     },
     "perfected_air_ngakpa_robe": {
@@ -11822,8 +11821,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine",
-      "enchantment": "perfected"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "perfected_air_ngakpa_crown": {
       "name": "Perfected Air Ngakpa Crown",
@@ -11852,8 +11851,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine",
-      "enchantment": "perfected"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "legendary_air_ngakpa_robe": {
       "name": "Legendary Green Ngakpa Robe",
@@ -11997,7 +11996,7 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "blessed"
     },
     "blessed_fire_ngakpa_crown": {
@@ -12026,7 +12025,7 @@
       "durability": 65,
       "max_durability": 65,
       "material": "copper",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "blessed"
     },
     "empowered_fire_ngakpa_robe": {
@@ -12055,7 +12054,7 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "empowered"
     },
     "empowered_fire_ngakpa_crown": {
@@ -12084,8 +12083,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "copper",
-      "quality": "good",
-      "enchantment": "empowered"
+      "quality": "fine",
+      "enchantment": "blessed"
     },
     "perfected_fire_ngakpa_robe": {
       "name": "Perfected Red Ngakpa Robe",
@@ -12114,8 +12113,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine",
-      "enchantment": "perfected"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "perfected_fire_ngakpa_crown": {
       "name": "Perfected Fire Ngakpa Crown",
@@ -12144,7 +12143,7 @@
       "durability": 180,
       "max_durability": 180,
       "material": "copper",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "empowered"
     },
     "legendary_fire_ngakpa_robe": {
@@ -12289,7 +12288,7 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "blessed"
     },
     "blessed_water_ngakpa_crown": {
@@ -12318,8 +12317,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "silver",
-      "quality": "common",
-      "enchantment": "touched"
+      "quality": "good",
+      "enchantment": "none"
     },
     "empowered_water_ngakpa_robe": {
       "name": "Empowered Blue Ngakpa Robe",
@@ -12347,7 +12346,7 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "empowered"
     },
     "empowered_water_ngakpa_crown": {
@@ -12376,7 +12375,7 @@
       "durability": 90,
       "max_durability": 90,
       "material": "silver",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "touched"
     },
     "perfected_water_ngakpa_robe": {
@@ -12406,8 +12405,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine",
-      "enchantment": "perfected"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "perfected_water_ngakpa_crown": {
       "name": "Perfected Water Ngakpa Crown",
@@ -12436,8 +12435,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "silver",
-      "quality": "fine",
-      "enchantment": "blessed"
+      "quality": "masterwork",
+      "enchantment": "touched"
     },
     "legendary_water_ngakpa_robe": {
       "name": "Legendary Blue Ngakpa Robe",
@@ -12582,7 +12581,7 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "blessed"
     },
     "blessed_earth_ngakpa_crown": {
@@ -12611,7 +12610,7 @@
       "durability": 65,
       "max_durability": 65,
       "material": "gold",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "none"
     },
     "empowered_earth_ngakpa_robe": {
@@ -12640,7 +12639,7 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "empowered"
     },
     "empowered_earth_ngakpa_crown": {
@@ -12669,7 +12668,7 @@
       "durability": 90,
       "max_durability": 90,
       "material": "gold",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "none"
     },
     "perfected_earth_ngakpa_robe": {
@@ -12699,8 +12698,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine",
-      "enchantment": "perfected"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "perfected_earth_ngakpa_crown": {
       "name": "Perfected Earth Ngakpa Crown",
@@ -12729,8 +12728,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "gold",
-      "quality": "fine",
-      "enchantment": "touched"
+      "quality": "masterwork",
+      "enchantment": "none"
     },
     "legendary_earth_ngakpa_robe": {
       "name": "Legendary Yellow Ngakpa Robe",
@@ -12876,7 +12875,7 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "blessed"
     },
     "blessed_healers_crown": {
@@ -12908,7 +12907,7 @@
       "durability": 65,
       "max_durability": 65,
       "material": "gold",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "none"
     },
     "empowered_healers_robe": {
@@ -12938,7 +12937,7 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "empowered"
     },
     "empowered_healers_crown": {
@@ -12970,8 +12969,8 @@
       "durability": 90,
       "max_durability": 90,
       "material": "gold",
-      "quality": "good",
-      "enchantment": "touched"
+      "quality": "fine",
+      "enchantment": "none"
     },
     "perfected_healers_robe": {
       "name": "Perfected Healer's Robe",
@@ -13000,8 +12999,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine",
-      "enchantment": "perfected"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "perfected_healers_crown": {
       "name": "Perfected Healer's Crown",
@@ -13032,7 +13031,7 @@
       "durability": 180,
       "max_durability": 180,
       "material": "gold",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "touched"
     },
     "legendary_healers_robe": {
@@ -13181,7 +13180,7 @@
       "durability": 65,
       "max_durability": 65,
       "material": "bone",
-      "quality": "common",
+      "quality": "good",
       "enchantment": "blessed"
     },
     "blessed_black_sorcerer_crown": {
@@ -13212,8 +13211,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "bone",
-      "quality": "common",
-      "enchantment": "empowered"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "empowered_black_sorcerer_robe": {
       "name": "Empowered Black Sorcerer's Robe",
@@ -13244,7 +13243,7 @@
       "durability": 90,
       "max_durability": 90,
       "material": "bone",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "empowered"
     },
     "empowered_black_sorcerer_crown": {
@@ -13276,7 +13275,7 @@
       "durability": 90,
       "max_durability": 90,
       "material": "bone",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "empowered"
     },
     "perfected_black_sorcerer_robe": {
@@ -13309,8 +13308,8 @@
       "durability": 180,
       "max_durability": 180,
       "material": "bone",
-      "quality": "fine",
-      "enchantment": "perfected"
+      "quality": "masterwork",
+      "enchantment": "empowered"
     },
     "perfected_black_sorcerer_crown": {
       "name": "Perfected Black Sorcerer's Crown",
@@ -13342,7 +13341,7 @@
       "durability": 180,
       "max_durability": 180,
       "material": "bone",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "perfected"
     },
     "legendary_black_sorcerer_robe": {
@@ -13465,8 +13464,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common",
-      "enchantment": "empowered"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "empowered_pandita_cap": {
       "name": "Empowered Pandita Cap",
@@ -13497,7 +13496,7 @@
       "durability": 90,
       "max_durability": 90,
       "material": "cloth",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "empowered"
     },
     "perfected_pandita_cap": {
@@ -13529,7 +13528,7 @@
       "durability": 180,
       "max_durability": 180,
       "material": "cloth",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "perfected"
     },
     "legendary_pandita_cap": {
@@ -13573,17 +13572,13 @@
       "element": "earth",
       "weight": 1,
       "value": 30,
-      "description": "A round cap embroidered with the eight auspicious symbols, worn during longevity practices. The tradition holds that the body can be persuaded to cooperate if you approach it correctly. This cap is part of the approach.",
+      "description": "A cap of long life. The wearer endures.",
       "requirements": {},
       "stats": {
         "armor": 1,
-        "max_hp": 8
+        "max_hp": 18
       },
-      "skill_bonuses": {
-        "white_magic": {
-          "plain_longlife_cap": 1
-        }
-      },
+      "skill_bonuses": {},
       "abilities": [],
       "durability": 40,
       "max_durability": 40,
@@ -13600,16 +13595,13 @@
       "element": "earth",
       "weight": 1,
       "value": 120,
-      "description": "A round cap embroidered with the eight auspicious symbols, worn during longevity practices. The tradition holds that the body can be persuaded to cooperate if you approach it correctly. This cap is part of the approach.",
+      "description": "A cap of long life. The wearer endures.",
       "requirements": {},
       "stats": {
         "armor": 1,
-        "max_hp": 15
+        "max_hp": 26
       },
       "skill_bonuses": {
-        "white_magic": {
-          "blessed_longlife_cap": 1
-        },
         "medicine": {
           "blessed_longlife_cap": 1
         }
@@ -13618,8 +13610,8 @@
       "durability": 65,
       "max_durability": 65,
       "material": "cloth",
-      "quality": "common",
-      "enchantment": "empowered"
+      "quality": "good",
+      "enchantment": "blessed"
     },
     "empowered_longlife_cap": {
       "name": "Empowered Long-life Cap",
@@ -13630,16 +13622,13 @@
       "element": "earth",
       "weight": 1,
       "value": 360,
-      "description": "A round cap embroidered with the eight auspicious symbols, worn during longevity practices. The tradition holds that the body can be persuaded to cooperate if you approach it correctly. This cap is part of the approach.",
+      "description": "A cap of long life. Those who stand beside its wearer find themselves harder to kill.",
       "requirements": {},
       "stats": {
         "armor": 2,
-        "max_hp": 25
+        "max_hp": 34
       },
       "skill_bonuses": {
-        "white_magic": {
-          "empowered_longlife_cap": 2
-        },
         "medicine": {
           "empowered_longlife_cap": 1
         }
@@ -13647,8 +13636,9 @@
       "abilities": [],
       "durability": 90,
       "max_durability": 90,
+      "passive_aura": "longlife_hp",
       "material": "cloth",
-      "quality": "good",
+      "quality": "fine",
       "enchantment": "empowered"
     },
     "perfected_longlife_cap": {
@@ -13660,16 +13650,13 @@
       "element": "earth",
       "weight": 1,
       "value": 825,
-      "description": "A round cap embroidered with the eight auspicious symbols, worn during longevity practices. The tradition holds that the body can be persuaded to cooperate if you approach it correctly. This cap is part of the approach.",
+      "description": "A cap of long life. Those who stand beside its wearer find themselves harder to kill.",
       "requirements": {},
       "stats": {
         "armor": 2,
-        "max_hp": 40
+        "max_hp": 42
       },
       "skill_bonuses": {
-        "white_magic": {
-          "perfected_longlife_cap": 2
-        },
         "medicine": {
           "perfected_longlife_cap": 2
         }
@@ -13677,8 +13664,9 @@
       "abilities": [],
       "durability": 180,
       "max_durability": 180,
+      "passive_aura": "longlife_hp",
       "material": "cloth",
-      "quality": "fine",
+      "quality": "masterwork",
       "enchantment": "perfected"
     },
     "legendary_longlife_cap": {
@@ -13690,16 +13678,13 @@
       "element": "earth",
       "weight": 1,
       "value": 2100,
-      "description": "A round cap embroidered with the eight auspicious symbols, worn during longevity practices. The tradition holds that the body can be persuaded to cooperate if you approach it correctly. This cap is part of the approach.",
+      "description": "A cap of long life. Those who stand beside its wearer find themselves harder to kill.",
       "requirements": {},
       "stats": {
         "armor": 3,
-        "max_hp": 60
+        "max_hp": 50
       },
       "skill_bonuses": {
-        "white_magic": {
-          "legendary_longlife_cap": 3
-        },
         "medicine": {
           "legendary_longlife_cap": 2
         }
@@ -13707,6 +13692,7 @@
       "abilities": [],
       "durability": 9999,
       "max_durability": 9999,
+      "passive_aura": "longlife_hp",
       "material": "cloth",
       "quality": "masterwork",
       "enchantment": "perfected"
@@ -13895,7 +13881,7 @@
         "spellpower_bonus": 0.1
       },
       "slot": "talisman",
-      "material": "bronze",
+      "material": "crystal",
       "quality": "fine",
       "enchantment": "none"
     },
@@ -13912,8 +13898,9 @@
         "spellpower_bonus": 0.2
       },
       "slot": "talisman",
-      "material": "bronze",
+      "material": "bone",
       "quality": "masterwork",
+      "gilding": "star_sapphire",
       "enchantment": "none"
     },
     "sorcery_charm_middling": {
@@ -15628,6 +15615,1550 @@
       "material": "cloth",
       "quality": "masterwork",
       "enchantment": "perfected"
+    },
+    "citrine_mala": {
+      "name": "Citrine Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "material": "citrine",
+      "weight": 0.5,
+      "value": 45,
+      "description": "A hundred and eight beads of citrine, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 4
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "citrine_mala": 1
+        },
+        "earth_magic": {
+          "citrine_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "topaz_mala": {
+      "name": "Topaz Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "element": "earth",
+      "material": "topaz",
+      "weight": 0.5,
+      "value": 260,
+      "description": "A hundred and eight beads of topaz, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 6
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "topaz_mala": 2
+        },
+        "earth_magic": {
+          "topaz_mala_mat": 2
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "turquoise_mala": {
+      "name": "Turquoise Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "water",
+      "material": "turquoise",
+      "weight": 0.5,
+      "value": 45,
+      "description": "A hundred and eight beads of turquoise, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 4
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "turquoise_mala": 1
+        },
+        "water_magic": {
+          "turquoise_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "star_sapphire_mala": {
+      "name": "Star Sapphire Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "element": "water",
+      "material": "star_sapphire",
+      "weight": 0.5,
+      "value": 260,
+      "description": "A hundred and eight beads of star sapphire, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 6
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "star_sapphire_mala": 2
+        },
+        "water_magic": {
+          "star_sapphire_mala_mat": 2
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "sandalwood_mala": {
+      "name": "Sandalwood Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "air",
+      "material": "sandalwood",
+      "weight": 0.5,
+      "value": 45,
+      "description": "A hundred and eight beads of sandalwood, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 4
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "sandalwood_mala": 1
+        },
+        "air_magic": {
+          "sandalwood_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "emerald_mala": {
+      "name": "Emerald Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "element": "air",
+      "material": "emerald",
+      "weight": 0.5,
+      "value": 260,
+      "description": "A hundred and eight beads of emerald, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 6
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "emerald_mala": 2
+        },
+        "air_magic": {
+          "emerald_mala_mat": 2
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "coral_mala": {
+      "name": "Coral Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "fire",
+      "material": "coral",
+      "weight": 0.5,
+      "value": 45,
+      "description": "A hundred and eight beads of coral, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 4
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "coral_mala": 1
+        },
+        "fire_magic": {
+          "coral_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "ruby_mala": {
+      "name": "Ruby Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "element": "fire",
+      "material": "ruby",
+      "weight": 0.5,
+      "value": 260,
+      "description": "A hundred and eight beads of ruby, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 6
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "ruby_mala": 2
+        },
+        "fire_magic": {
+          "ruby_mala_mat": 2
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "crystal_mala": {
+      "name": "Crystal Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "space",
+      "material": "crystal",
+      "weight": 0.5,
+      "value": 45,
+      "description": "A hundred and eight beads of crystal, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 4
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "crystal_mala": 1
+        },
+        "space_magic": {
+          "crystal_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "diamond_mala": {
+      "name": "Diamond Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "element": "space",
+      "material": "diamond",
+      "weight": 0.5,
+      "value": 260,
+      "description": "A hundred and eight beads of diamond, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 6
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "diamond_mala": 2
+        },
+        "space_magic": {
+          "diamond_mala_mat": 2
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "moonstone_mala": {
+      "name": "Moonstone Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "water",
+      "material": "moonstone",
+      "weight": 0.5,
+      "value": 45,
+      "description": "A hundred and eight beads of moonstone, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 4
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "moonstone_mala": 1
+        },
+        "white_magic": {
+          "moonstone_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "conch_bead_mala": {
+      "name": "Conch Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "element": "water",
+      "material": "conch_bead",
+      "weight": 0.5,
+      "value": 260,
+      "description": "A hundred and eight beads of conch, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 6
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "conch_bead_mala": 2
+        },
+        "white_magic": {
+          "conch_bead_mala_mat": 2
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "bone_bead_mala": {
+      "name": "Bone Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "material": "bone_bead",
+      "weight": 0.5,
+      "value": 45,
+      "description": "A hundred and eight beads of bone, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 4
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "bone_bead_mala": 1
+        },
+        "black_magic": {
+          "bone_bead_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "devils_bone_mala": {
+      "name": "Devil's Bone Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "element": "earth",
+      "material": "devils_bone",
+      "weight": 0.5,
+      "value": 260,
+      "description": "A hundred and eight beads of devil's bone, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 6
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "devils_bone_mala": 2
+        },
+        "black_magic": {
+          "devils_bone_mala_mat": 2
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "smoke_crystal_mala": {
+      "name": "Smoke Crystal Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "fire",
+      "material": "smoke_crystal",
+      "weight": 0.5,
+      "value": 45,
+      "description": "A hundred and eight beads of smoke crystal, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 4
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "smoke_crystal_mala": 1
+        },
+        "sorcery": {
+          "smoke_crystal_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "agate_mala": {
+      "name": "Agate Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "element": "fire",
+      "material": "agate",
+      "weight": 0.5,
+      "value": 260,
+      "description": "A hundred and eight beads of agate, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 6
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "agate_mala": 2
+        },
+        "sorcery": {
+          "agate_mala_mat": 2
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "rosewood_mala": {
+      "name": "Rosewood Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "water",
+      "material": "rosewood",
+      "weight": 0.5,
+      "value": 45,
+      "description": "A hundred and eight beads of rosewood, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 4
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "rosewood_mala": 1
+        },
+        "enchantment": {
+          "rosewood_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "opal_mala": {
+      "name": "Opal Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "element": "water",
+      "material": "opal",
+      "weight": 0.5,
+      "value": 260,
+      "description": "A hundred and eight beads of opal, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 6
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "opal_mala": 2
+        },
+        "enchantment": {
+          "opal_mala_mat": 2
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "amethyst_mala": {
+      "name": "Amethyst Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "space",
+      "material": "amethyst",
+      "weight": 0.5,
+      "value": 45,
+      "description": "A hundred and eight beads of amethyst, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 4
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "amethyst_mala": 1
+        },
+        "summoning": {
+          "amethyst_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "mirror_bead_mala": {
+      "name": "Mirror Bead Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "element": "space",
+      "material": "mirror_bead",
+      "weight": 0.5,
+      "value": 260,
+      "description": "A hundred and eight beads of mirror bead, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 6
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "mirror_bead_mala": 2
+        },
+        "summoning": {
+          "mirror_bead_mala_mat": 2
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "none"
+    },
+    "plain_bronze_melong": {
+      "name": "Plain Bronze Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "bronze",
+      "weight": 1.0,
+      "value": 236,
+      "description": "A disc of polished bronze hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 1,
+        "magic_resistance_pct": 4
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_bronze_melong": {
+      "name": "Blessed Bronze Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "bronze",
+      "weight": 1.0,
+      "value": 495,
+      "description": "A disc of polished bronze hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 2,
+        "magic_resistance_pct": 8
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "good",
+      "enchantment": "touched"
+    },
+    "empowered_bronze_melong": {
+      "name": "Empowered Bronze Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "material": "bronze",
+      "weight": 1.0,
+      "value": 840,
+      "description": "A disc of polished bronze hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "spellpower": 3,
+        "magic_resistance_pct": 12
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_bronze_melong": {
+      "name": "Perfected Bronze Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "bronze",
+      "weight": 1.0,
+      "value": 1271,
+      "description": "A disc of polished bronze hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "spellpower": 4,
+        "magic_resistance_pct": 16
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "legendary_bronze_melong": {
+      "name": "Legendary Bronze Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "bronze",
+      "weight": 1.0,
+      "value": 1785,
+      "description": "A disc of polished bronze hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 16
+      },
+      "stats": {
+        "spellpower": 5,
+        "magic_resistance_pct": 20
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "plain_copper_melong": {
+      "name": "Plain Copper Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "copper",
+      "weight": 1.0,
+      "value": 236,
+      "description": "A disc of polished copper hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 1,
+        "magic_resistance_pct": 4
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_copper_melong": {
+      "name": "Blessed Copper Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "copper",
+      "weight": 1.0,
+      "value": 495,
+      "description": "A disc of polished copper hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 2,
+        "magic_resistance_pct": 8
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "good",
+      "enchantment": "touched"
+    },
+    "empowered_copper_melong": {
+      "name": "Empowered Copper Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "material": "copper",
+      "weight": 1.0,
+      "value": 840,
+      "description": "A disc of polished copper hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "spellpower": 3,
+        "magic_resistance_pct": 12
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_copper_melong": {
+      "name": "Perfected Copper Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "copper",
+      "weight": 1.0,
+      "value": 1271,
+      "description": "A disc of polished copper hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "spellpower": 4,
+        "magic_resistance_pct": 16
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "legendary_copper_melong": {
+      "name": "Legendary Copper Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "copper",
+      "weight": 1.0,
+      "value": 1785,
+      "description": "A disc of polished copper hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 16
+      },
+      "stats": {
+        "spellpower": 5,
+        "magic_resistance_pct": 20
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "plain_silver_melong": {
+      "name": "Plain Silver Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "silver",
+      "weight": 1.0,
+      "value": 236,
+      "description": "A disc of polished silver hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 1,
+        "magic_resistance_pct": 4
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_silver_melong": {
+      "name": "Blessed Silver Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "silver",
+      "weight": 1.0,
+      "value": 495,
+      "description": "A disc of polished silver hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 2,
+        "magic_resistance_pct": 8
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "good",
+      "enchantment": "touched"
+    },
+    "empowered_silver_melong": {
+      "name": "Empowered Silver Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "material": "silver",
+      "weight": 1.0,
+      "value": 840,
+      "description": "A disc of polished silver hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "spellpower": 3,
+        "magic_resistance_pct": 12
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_silver_melong": {
+      "name": "Perfected Silver Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "silver",
+      "weight": 1.0,
+      "value": 1271,
+      "description": "A disc of polished silver hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "spellpower": 4,
+        "magic_resistance_pct": 16
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "legendary_silver_melong": {
+      "name": "Legendary Silver Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "silver",
+      "weight": 1.0,
+      "value": 1785,
+      "description": "A disc of polished silver hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 16
+      },
+      "stats": {
+        "spellpower": 5,
+        "magic_resistance_pct": 20
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "plain_gold_melong": {
+      "name": "Plain Gold Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "gold",
+      "weight": 1.0,
+      "value": 236,
+      "description": "A disc of polished gold hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 1,
+        "magic_resistance_pct": 4
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_gold_melong": {
+      "name": "Blessed Gold Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "gold",
+      "weight": 1.0,
+      "value": 495,
+      "description": "A disc of polished gold hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 2,
+        "magic_resistance_pct": 8
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "good",
+      "enchantment": "touched"
+    },
+    "empowered_gold_melong": {
+      "name": "Empowered Gold Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "material": "gold",
+      "weight": 1.0,
+      "value": 840,
+      "description": "A disc of polished gold hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "spellpower": 3,
+        "magic_resistance_pct": 12
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_gold_melong": {
+      "name": "Perfected Gold Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "gold",
+      "weight": 1.0,
+      "value": 1271,
+      "description": "A disc of polished gold hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "spellpower": 4,
+        "magic_resistance_pct": 16
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "legendary_gold_melong": {
+      "name": "Legendary Gold Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "gold",
+      "weight": 1.0,
+      "value": 1785,
+      "description": "A disc of polished gold hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 16
+      },
+      "stats": {
+        "spellpower": 5,
+        "magic_resistance_pct": 20
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "plain_iron_melong": {
+      "name": "Plain Iron Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "iron",
+      "weight": 1.0,
+      "value": 236,
+      "description": "A disc of polished iron hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 1,
+        "magic_resistance_pct": 4
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_iron_melong": {
+      "name": "Blessed Iron Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "iron",
+      "weight": 1.0,
+      "value": 495,
+      "description": "A disc of polished iron hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 2,
+        "magic_resistance_pct": 8
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "good",
+      "enchantment": "touched"
+    },
+    "empowered_iron_melong": {
+      "name": "Empowered Iron Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "material": "iron",
+      "weight": 1.0,
+      "value": 840,
+      "description": "A disc of polished iron hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "spellpower": 3,
+        "magic_resistance_pct": 12
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_iron_melong": {
+      "name": "Perfected Iron Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "iron",
+      "weight": 1.0,
+      "value": 1271,
+      "description": "A disc of polished iron hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "spellpower": 4,
+        "magic_resistance_pct": 16
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "legendary_iron_melong": {
+      "name": "Legendary Iron Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "iron",
+      "weight": 1.0,
+      "value": 1785,
+      "description": "A disc of polished iron hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 16
+      },
+      "stats": {
+        "spellpower": 5,
+        "magic_resistance_pct": 20
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "plain_sky_iron_melong": {
+      "name": "Plain Sky Iron Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "sky_iron",
+      "weight": 1.0,
+      "value": 236,
+      "description": "A disc of polished sky iron hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 1,
+        "magic_resistance_pct": 4
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_sky_iron_melong": {
+      "name": "Blessed Sky Iron Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "sky_iron",
+      "weight": 1.0,
+      "value": 495,
+      "description": "A disc of polished sky iron hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 2,
+        "magic_resistance_pct": 8
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "good",
+      "enchantment": "touched"
+    },
+    "empowered_sky_iron_melong": {
+      "name": "Empowered Sky Iron Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "material": "sky_iron",
+      "weight": 1.0,
+      "value": 840,
+      "description": "A disc of polished sky iron hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "spellpower": 3,
+        "magic_resistance_pct": 12
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_sky_iron_melong": {
+      "name": "Perfected Sky Iron Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "sky_iron",
+      "weight": 1.0,
+      "value": 1271,
+      "description": "A disc of polished sky iron hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "spellpower": 4,
+        "magic_resistance_pct": 16
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "legendary_sky_iron_melong": {
+      "name": "Legendary Sky Iron Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "sky_iron",
+      "weight": 1.0,
+      "value": 1785,
+      "description": "A disc of polished sky iron hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 16
+      },
+      "stats": {
+        "spellpower": 5,
+        "magic_resistance_pct": 20
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "plain_conch_melong": {
+      "name": "Plain Conch Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "conch",
+      "weight": 1.0,
+      "value": 236,
+      "description": "A disc of polished conch hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 1,
+        "magic_resistance_pct": 4
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_conch_melong": {
+      "name": "Blessed Conch Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "conch",
+      "weight": 1.0,
+      "value": 495,
+      "description": "A disc of polished conch hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 2,
+        "magic_resistance_pct": 8
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "good",
+      "enchantment": "touched"
+    },
+    "empowered_conch_melong": {
+      "name": "Empowered Conch Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "material": "conch",
+      "weight": 1.0,
+      "value": 840,
+      "description": "A disc of polished conch hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "spellpower": 3,
+        "magic_resistance_pct": 12
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_conch_melong": {
+      "name": "Perfected Conch Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "conch",
+      "weight": 1.0,
+      "value": 1271,
+      "description": "A disc of polished conch hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "spellpower": 4,
+        "magic_resistance_pct": 16
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "legendary_conch_melong": {
+      "name": "Legendary Conch Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "conch",
+      "weight": 1.0,
+      "value": 1785,
+      "description": "A disc of polished conch hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 16
+      },
+      "stats": {
+        "spellpower": 5,
+        "magic_resistance_pct": 20
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "plain_bone_melong": {
+      "name": "Plain Bone Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "bone",
+      "weight": 1.0,
+      "value": 236,
+      "description": "A disc of polished bone hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "spellpower": 1,
+        "magic_resistance_pct": 4
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_bone_melong": {
+      "name": "Blessed Bone Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "material": "bone",
+      "weight": 1.0,
+      "value": 495,
+      "description": "A disc of polished bone hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "spellpower": 2,
+        "magic_resistance_pct": 8
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "quality": "good",
+      "enchantment": "touched"
+    },
+    "empowered_bone_melong": {
+      "name": "Empowered Bone Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "rare",
+      "material": "bone",
+      "weight": 1.0,
+      "value": 840,
+      "description": "A disc of polished bone hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "spellpower": 3,
+        "magic_resistance_pct": 12
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_bone_melong": {
+      "name": "Perfected Bone Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "bone",
+      "weight": 1.0,
+      "value": 1271,
+      "description": "A disc of polished bone hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "spellpower": 4,
+        "magic_resistance_pct": 16
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "legendary_bone_melong": {
+      "name": "Legendary Bone Melong",
+      "weapon_class": "Divination mirror",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "material": "bone",
+      "weight": 1.0,
+      "value": 1785,
+      "description": "A disc of polished bone hung at the breast. It shows what approaches, and turns some of it away.",
+      "requirements": {
+        "focus": 16
+      },
+      "stats": {
+        "spellpower": 5,
+        "magic_resistance_pct": 20
+      },
+      "skill_bonuses": {},
+      "abilities": [],
+      "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
     }
   },
   "item_types": {
