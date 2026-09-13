@@ -611,6 +611,31 @@ for _sid, _sp in _spells.items():
             f"'{_sp['requires_status']}', which does not exist")
 
 
+# ── Repositioning ────────────────────────────────────────────────────────────
+#
+# An unknown mode moves nobody while the effect reports success, which is the
+# same silent failure the `damage` type guard produced.
+_rp_src = open(os.path.join(ROOT, "scripts/combat/repositioning.gd"), encoding="utf-8").read()
+_m = re.search(r"const MODES[^=]*=\s*\[(.*?)\]", _rp_src, re.S)
+_modes = set(re.findall(r'"([^"]+)"', _m.group(1))) if _m else set()
+if not _modes:
+    err("data->code", "could not read Repositioning.MODES — reposition blocks unchecked")
+
+for _sid, _sp in _spells.items():
+    _rp = _sp.get("reposition")
+    if not isinstance(_rp, dict):
+        if _rp is not None:
+            err("data->code", f"spell '{_sid}' has a non-object `reposition`")
+        continue
+    if _rp.get("mode") not in _modes:
+        err("data->code", f"spell '{_sid}' uses reposition mode "
+            f"'{_rp.get('mode')}', which is not in Repositioning.MODES — "
+            "the unit would not move and the spell would report success")
+    if _rp.get("mover") not in (None, "caster", "target"):
+        err("data->code", f"spell '{_sid}' has mover '{_rp.get('mover')}'; "
+            "only 'caster' and 'target' are resolved")
+
+
 # ── Auras ────────────────────────────────────────────────────────────────────
 #
 # Four kinds of source may declare an aura, and all four name it the same way.
