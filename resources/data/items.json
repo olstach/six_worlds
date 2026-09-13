@@ -1384,9 +1384,9 @@
         }
       },
       "abilities": [],
-      "material": "cloth",
+      "material": "cotton",
       "quality": "common",
-      "enchantment": "touched"
+      "enchantment": "none"
     },
     "leather_cap": {
       "name": "Leather Cap",
@@ -11646,7 +11646,7 @@
       "abilities": [],
       "durability": 40,
       "max_durability": 40,
-      "material": "cloth",
+      "material": "cotton",
       "quality": "common",
       "enchantment": "touched"
     },
@@ -11703,7 +11703,7 @@
       "abilities": [],
       "durability": 65,
       "max_durability": 65,
-      "material": "cloth",
+      "material": "cotton",
       "quality": "good",
       "enchantment": "blessed"
     },
@@ -11761,9 +11761,9 @@
       "abilities": [],
       "durability": 90,
       "max_durability": 90,
-      "material": "cloth",
+      "material": "cotton",
       "quality": "fine",
-      "enchantment": "empowered"
+      "enchantment": "blessed"
     },
     "empowered_air_ngakpa_crown": {
       "name": "Empowered Air Ngakpa Crown",
@@ -11820,7 +11820,7 @@
       "abilities": [],
       "durability": 180,
       "max_durability": 180,
-      "material": "cloth",
+      "material": "cotton",
       "quality": "masterwork",
       "enchantment": "empowered"
     },
@@ -11880,7 +11880,7 @@
       "abilities": [],
       "durability": 9999,
       "max_durability": 9999,
-      "material": "cloth",
+      "material": "cotton",
       "quality": "masterwork",
       "enchantment": "perfected"
     },
@@ -12815,7 +12815,7 @@
       "abilities": [],
       "durability": 40,
       "max_durability": 40,
-      "material": "cloth",
+      "material": "cotton",
       "quality": "common",
       "enchantment": "touched"
     },
@@ -12874,7 +12874,7 @@
       "abilities": [],
       "durability": 65,
       "max_durability": 65,
-      "material": "cloth",
+      "material": "cotton",
       "quality": "good",
       "enchantment": "blessed"
     },
@@ -12936,9 +12936,10 @@
       "abilities": [],
       "durability": 90,
       "max_durability": 90,
-      "material": "cloth",
+      "material": "cotton",
       "quality": "fine",
-      "enchantment": "empowered"
+      "enchantment": "blessed",
+      "passive_aura": "healing_regeneration"
     },
     "empowered_healers_crown": {
       "name": "Empowered Healer's Crown",
@@ -12998,9 +12999,10 @@
       "abilities": [],
       "durability": 180,
       "max_durability": 180,
-      "material": "cloth",
+      "material": "cotton",
       "quality": "masterwork",
-      "enchantment": "empowered"
+      "enchantment": "empowered",
+      "passive_aura": "healing_regeneration"
     },
     "perfected_healers_crown": {
       "name": "Perfected Healer's Crown",
@@ -13060,9 +13062,10 @@
       "abilities": [],
       "durability": 9999,
       "max_durability": 9999,
-      "material": "cloth",
+      "material": "cotton",
       "quality": "masterwork",
-      "enchantment": "perfected"
+      "enchantment": "perfected",
+      "passive_aura": "healing_regeneration"
     },
     "legendary_healers_crown": {
       "name": "Legendary Healer's Crown",
@@ -13095,320 +13098,6 @@
       "material": "gold",
       "quality": "masterwork",
       "enchantment": "blessed"
-    },
-    "plain_black_sorcerer_robe": {
-      "name": "Plain Black Sorcerer's Robe",
-      "type": "robe",
-      "slot": "chest",
-      "two_handed": false,
-      "rarity": "common",
-      "element": "space",
-      "weight": 4,
-      "value": 50,
-      "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
-      "requirements": {
-        "focus": 8
-      },
-      "stats": {
-        "armor": 3
-      },
-      "skill_bonuses": {
-        "black_magic": {
-          "plain_black_sorcerer_robe": 1
-        }
-      },
-      "abilities": [],
-      "durability": 40,
-      "max_durability": 40,
-      "material": "bone",
-      "quality": "common",
-      "enchantment": "touched"
-    },
-    "plain_black_sorcerer_crown": {
-      "name": "Plain Black Sorcerer's Crown",
-      "type": "hat",
-      "slot": "head",
-      "two_handed": false,
-      "rarity": "common",
-      "element": "space",
-      "weight": 2,
-      "value": 35,
-      "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
-      "requirements": {
-        "focus": 8
-      },
-      "stats": {
-        "armor": 1
-      },
-      "skill_bonuses": {
-        "black_magic": {
-          "plain_black_sorcerer_crown": 1
-        }
-      },
-      "abilities": [],
-      "durability": 40,
-      "max_durability": 40,
-      "material": "bone",
-      "quality": "common",
-      "enchantment": "touched"
-    },
-    "blessed_black_sorcerer_robe": {
-      "name": "Blessed Black Sorcerer's Robe",
-      "type": "robe",
-      "slot": "chest",
-      "two_handed": false,
-      "rarity": "common",
-      "element": "space",
-      "weight": 4,
-      "value": 200,
-      "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
-      "requirements": {
-        "focus": 10
-      },
-      "stats": {
-        "armor": 3
-      },
-      "skill_bonuses": {
-        "black_magic": {
-          "blessed_black_sorcerer_robe": 1
-        },
-        "sorcery": {
-          "blessed_black_sorcerer_robe": 1
-        }
-      },
-      "abilities": [],
-      "durability": 65,
-      "max_durability": 65,
-      "material": "bone",
-      "quality": "good",
-      "enchantment": "blessed"
-    },
-    "blessed_black_sorcerer_crown": {
-      "name": "Blessed Black Sorcerer's Crown",
-      "type": "hat",
-      "slot": "head",
-      "two_handed": false,
-      "rarity": "common",
-      "element": "space",
-      "weight": 2,
-      "value": 140,
-      "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
-      "requirements": {
-        "focus": 10
-      },
-      "stats": {
-        "armor": 2
-      },
-      "skill_bonuses": {
-        "black_magic": {
-          "blessed_black_sorcerer_crown": 1
-        },
-        "sorcery": {
-          "blessed_black_sorcerer_crown": 1
-        }
-      },
-      "abilities": [],
-      "durability": 65,
-      "max_durability": 65,
-      "material": "bone",
-      "quality": "good",
-      "enchantment": "blessed"
-    },
-    "empowered_black_sorcerer_robe": {
-      "name": "Empowered Black Sorcerer's Robe",
-      "type": "robe",
-      "slot": "chest",
-      "two_handed": false,
-      "rarity": "uncommon",
-      "element": "space",
-      "weight": 4,
-      "value": 600,
-      "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
-      "requirements": {
-        "focus": 12
-      },
-      "stats": {
-        "armor": 4,
-        "spellpower": 5
-      },
-      "skill_bonuses": {
-        "black_magic": {
-          "empowered_black_sorcerer_robe": 2
-        },
-        "sorcery": {
-          "empowered_black_sorcerer_robe": 1
-        }
-      },
-      "abilities": [],
-      "durability": 90,
-      "max_durability": 90,
-      "material": "bone",
-      "quality": "fine",
-      "enchantment": "empowered"
-    },
-    "empowered_black_sorcerer_crown": {
-      "name": "Empowered Black Sorcerer's Crown",
-      "type": "hat",
-      "slot": "head",
-      "two_handed": false,
-      "rarity": "uncommon",
-      "element": "space",
-      "weight": 2,
-      "value": 420,
-      "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
-      "requirements": {
-        "focus": 12
-      },
-      "stats": {
-        "armor": 2,
-        "spellpower": 3
-      },
-      "skill_bonuses": {
-        "black_magic": {
-          "empowered_black_sorcerer_crown": 2
-        },
-        "sorcery": {
-          "empowered_black_sorcerer_crown": 1
-        }
-      },
-      "abilities": [],
-      "durability": 90,
-      "max_durability": 90,
-      "material": "bone",
-      "quality": "fine",
-      "enchantment": "empowered"
-    },
-    "perfected_black_sorcerer_robe": {
-      "name": "Perfected Black Sorcerer's Robe",
-      "type": "robe",
-      "slot": "chest",
-      "two_handed": false,
-      "rarity": "rare",
-      "element": "space",
-      "weight": 4,
-      "value": 1375,
-      "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
-      "requirements": {
-        "focus": 14
-      },
-      "stats": {
-        "armor": 4,
-        "spellpower": 8,
-        "initiative": 2
-      },
-      "skill_bonuses": {
-        "black_magic": {
-          "perfected_black_sorcerer_robe": 2
-        },
-        "sorcery": {
-          "perfected_black_sorcerer_robe": 2
-        }
-      },
-      "abilities": [],
-      "durability": 180,
-      "max_durability": 180,
-      "material": "bone",
-      "quality": "masterwork",
-      "enchantment": "empowered"
-    },
-    "perfected_black_sorcerer_crown": {
-      "name": "Perfected Black Sorcerer's Crown",
-      "type": "hat",
-      "slot": "head",
-      "two_handed": false,
-      "rarity": "rare",
-      "element": "space",
-      "weight": 2,
-      "value": 962,
-      "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
-      "requirements": {
-        "focus": 14
-      },
-      "stats": {
-        "armor": 3,
-        "spellpower": 5,
-        "initiative": 1
-      },
-      "skill_bonuses": {
-        "black_magic": {
-          "perfected_black_sorcerer_crown": 2
-        },
-        "sorcery": {
-          "perfected_black_sorcerer_crown": 2
-        }
-      },
-      "abilities": [],
-      "durability": 180,
-      "max_durability": 180,
-      "material": "bone",
-      "quality": "masterwork",
-      "enchantment": "perfected"
-    },
-    "legendary_black_sorcerer_robe": {
-      "name": "Legendary Black Sorcerer's Robe",
-      "type": "robe",
-      "slot": "chest",
-      "two_handed": false,
-      "rarity": "legendary",
-      "element": "space",
-      "weight": 4,
-      "value": 3500,
-      "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
-      "requirements": {
-        "focus": 16
-      },
-      "stats": {
-        "armor": 5,
-        "spellpower": 12,
-        "initiative": 3
-      },
-      "skill_bonuses": {
-        "black_magic": {
-          "legendary_black_sorcerer_robe": 3
-        },
-        "sorcery": {
-          "legendary_black_sorcerer_robe": 2
-        }
-      },
-      "abilities": [],
-      "durability": 9999,
-      "max_durability": 9999,
-      "material": "bone",
-      "quality": "masterwork",
-      "enchantment": "perfected"
-    },
-    "legendary_black_sorcerer_crown": {
-      "name": "Legendary Black Sorcerer's Crown",
-      "type": "hat",
-      "slot": "head",
-      "two_handed": false,
-      "rarity": "legendary",
-      "element": "space",
-      "weight": 2,
-      "value": 2450,
-      "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
-      "requirements": {
-        "focus": 16
-      },
-      "stats": {
-        "armor": 3,
-        "spellpower": 8,
-        "initiative": 2
-      },
-      "skill_bonuses": {
-        "black_magic": {
-          "legendary_black_sorcerer_crown": 3
-        },
-        "sorcery": {
-          "legendary_black_sorcerer_crown": 2
-        }
-      },
-      "abilities": [],
-      "durability": 9999,
-      "max_durability": 9999,
-      "material": "bone",
-      "quality": "masterwork",
-      "enchantment": "perfected"
     },
     "plain_pandita_cap": {
       "name": "Plain Pandita Cap",
@@ -15616,8 +15305,8 @@
       "quality": "masterwork",
       "enchantment": "perfected"
     },
-    "citrine_mala": {
-      "name": "Citrine Mala",
+    "plain_citrine_mala": {
+      "name": "Plain Citrine Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
@@ -15626,118 +15315,298 @@
       "element": "earth",
       "material": "citrine",
       "weight": 0.5,
-      "value": 45,
+      "value": 144,
       "description": "A hundred and eight beads of citrine, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 8
+        "focus": 7
+      },
+      "stats": {
+        "spellpower": 2
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "plain_citrine_mala": 1
+        },
+        "earth_magic": {
+          "plain_citrine_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_citrine_mala": {
+      "name": "Blessed Citrine Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "material": "citrine",
+      "weight": 0.5,
+      "value": 279,
+      "description": "A hundred and eight beads of citrine, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 9
       },
       "stats": {
         "spellpower": 4
       },
       "skill_bonuses": {
         "yoga": {
-          "citrine_mala": 1
+          "blessed_citrine_mala": 2
         },
         "earth_magic": {
-          "citrine_mala_mat": 1
+          "blessed_citrine_mala_mat": 2
         }
       },
       "abilities": [],
-      "quality": "common",
-      "enchantment": "none"
+      "quality": "good",
+      "enchantment": "touched"
     },
-    "topaz_mala": {
-      "name": "Topaz Mala",
+    "empowered_citrine_mala": {
+      "name": "Empowered Citrine Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
       "element": "earth",
-      "material": "topaz",
+      "material": "citrine",
       "weight": 0.5,
-      "value": 260,
-      "description": "A hundred and eight beads of topaz, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "value": 452,
+      "description": "A hundred and eight beads of citrine, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 10
+        "focus": 11
       },
       "stats": {
         "spellpower": 6
       },
       "skill_bonuses": {
         "yoga": {
-          "topaz_mala": 2
+          "empowered_citrine_mala": 3
         },
         "earth_magic": {
-          "topaz_mala_mat": 2
+          "empowered_citrine_mala_mat": 3
         }
       },
       "abilities": [],
-      "quality": "common",
+      "quality": "fine",
+      "enchantment": "touched"
+    },
+    "perfected_topaz_mala": {
+      "name": "Perfected Topaz Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "earth",
+      "material": "topaz",
+      "weight": 0.5,
+      "value": 661,
+      "description": "A hundred and eight beads of topaz, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 13
+      },
+      "stats": {
+        "spellpower": 8
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "perfected_topaz_mala": 4
+        },
+        "earth_magic": {
+          "perfected_topaz_mala_mat": 4
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
       "enchantment": "none"
     },
-    "turquoise_mala": {
-      "name": "Turquoise Mala",
+    "legendary_topaz_mala": {
+      "name": "Legendary Topaz Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "earth",
+      "material": "topaz",
+      "weight": 0.5,
+      "value": 905,
+      "description": "A hundred and eight beads of topaz, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 15
+      },
+      "stats": {
+        "spellpower": 10
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "legendary_topaz_mala": 5
+        },
+        "earth_magic": {
+          "legendary_topaz_mala_mat": 5
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
+      "enchantment": "none"
+    },
+    "plain_aquamarine_mala": {
+      "name": "Plain Aquamarine Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
       "element": "water",
-      "material": "turquoise",
+      "material": "aquamarine",
       "weight": 0.5,
-      "value": 45,
-      "description": "A hundred and eight beads of turquoise, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "value": 144,
+      "description": "A hundred and eight beads of aquamarine, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 8
+        "focus": 7
+      },
+      "stats": {
+        "spellpower": 2
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "plain_aquamarine_mala": 1
+        },
+        "water_magic": {
+          "plain_aquamarine_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_aquamarine_mala": {
+      "name": "Blessed Aquamarine Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "water",
+      "material": "aquamarine",
+      "weight": 0.5,
+      "value": 279,
+      "description": "A hundred and eight beads of aquamarine, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 9
       },
       "stats": {
         "spellpower": 4
       },
       "skill_bonuses": {
         "yoga": {
-          "turquoise_mala": 1
+          "blessed_aquamarine_mala": 2
         },
         "water_magic": {
-          "turquoise_mala_mat": 1
+          "blessed_aquamarine_mala_mat": 2
         }
       },
       "abilities": [],
-      "quality": "common",
-      "enchantment": "none"
+      "quality": "good",
+      "enchantment": "touched"
     },
-    "star_sapphire_mala": {
-      "name": "Star Sapphire Mala",
+    "empowered_aquamarine_mala": {
+      "name": "Empowered Aquamarine Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
       "element": "water",
-      "material": "star_sapphire",
+      "material": "aquamarine",
       "weight": 0.5,
-      "value": 260,
-      "description": "A hundred and eight beads of star sapphire, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "value": 452,
+      "description": "A hundred and eight beads of aquamarine, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 10
+        "focus": 11
       },
       "stats": {
         "spellpower": 6
       },
       "skill_bonuses": {
         "yoga": {
-          "star_sapphire_mala": 2
+          "empowered_aquamarine_mala": 3
         },
         "water_magic": {
-          "star_sapphire_mala_mat": 2
+          "empowered_aquamarine_mala_mat": 3
         }
       },
       "abilities": [],
-      "quality": "common",
+      "quality": "fine",
+      "enchantment": "touched"
+    },
+    "perfected_star_sapphire_mala": {
+      "name": "Perfected Star Sapphire Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "water",
+      "material": "star_sapphire",
+      "weight": 0.5,
+      "value": 661,
+      "description": "A hundred and eight beads of star sapphire, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 13
+      },
+      "stats": {
+        "spellpower": 8
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "perfected_star_sapphire_mala": 4
+        },
+        "water_magic": {
+          "perfected_star_sapphire_mala_mat": 4
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
       "enchantment": "none"
     },
-    "sandalwood_mala": {
-      "name": "Sandalwood Mala",
+    "legendary_star_sapphire_mala": {
+      "name": "Legendary Star Sapphire Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "water",
+      "material": "star_sapphire",
+      "weight": 0.5,
+      "value": 905,
+      "description": "A hundred and eight beads of star sapphire, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 15
+      },
+      "stats": {
+        "spellpower": 10
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "legendary_star_sapphire_mala": 5
+        },
+        "water_magic": {
+          "legendary_star_sapphire_mala_mat": 5
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
+      "enchantment": "none"
+    },
+    "plain_sandalwood_mala": {
+      "name": "Plain Sandalwood Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
@@ -15746,58 +15615,148 @@
       "element": "air",
       "material": "sandalwood",
       "weight": 0.5,
-      "value": 45,
+      "value": 144,
       "description": "A hundred and eight beads of sandalwood, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 8
+        "focus": 7
+      },
+      "stats": {
+        "spellpower": 2
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "plain_sandalwood_mala": 1
+        },
+        "air_magic": {
+          "plain_sandalwood_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_sandalwood_mala": {
+      "name": "Blessed Sandalwood Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "air",
+      "material": "sandalwood",
+      "weight": 0.5,
+      "value": 279,
+      "description": "A hundred and eight beads of sandalwood, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 9
       },
       "stats": {
         "spellpower": 4
       },
       "skill_bonuses": {
         "yoga": {
-          "sandalwood_mala": 1
+          "blessed_sandalwood_mala": 2
         },
         "air_magic": {
-          "sandalwood_mala_mat": 1
+          "blessed_sandalwood_mala_mat": 2
         }
       },
       "abilities": [],
-      "quality": "common",
-      "enchantment": "none"
+      "quality": "good",
+      "enchantment": "touched"
     },
-    "emerald_mala": {
-      "name": "Emerald Mala",
+    "empowered_sandalwood_mala": {
+      "name": "Empowered Sandalwood Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
       "element": "air",
-      "material": "emerald",
+      "material": "sandalwood",
       "weight": 0.5,
-      "value": 260,
-      "description": "A hundred and eight beads of emerald, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "value": 452,
+      "description": "A hundred and eight beads of sandalwood, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 10
+        "focus": 11
       },
       "stats": {
         "spellpower": 6
       },
       "skill_bonuses": {
         "yoga": {
-          "emerald_mala": 2
+          "empowered_sandalwood_mala": 3
         },
         "air_magic": {
-          "emerald_mala_mat": 2
+          "empowered_sandalwood_mala_mat": 3
         }
       },
       "abilities": [],
-      "quality": "common",
+      "quality": "fine",
+      "enchantment": "touched"
+    },
+    "perfected_emerald_mala": {
+      "name": "Perfected Emerald Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "air",
+      "material": "emerald",
+      "weight": 0.5,
+      "value": 661,
+      "description": "A hundred and eight beads of emerald, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 13
+      },
+      "stats": {
+        "spellpower": 8
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "perfected_emerald_mala": 4
+        },
+        "air_magic": {
+          "perfected_emerald_mala_mat": 4
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
       "enchantment": "none"
     },
-    "coral_mala": {
-      "name": "Coral Mala",
+    "legendary_emerald_mala": {
+      "name": "Legendary Emerald Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "air",
+      "material": "emerald",
+      "weight": 0.5,
+      "value": 905,
+      "description": "A hundred and eight beads of emerald, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 15
+      },
+      "stats": {
+        "spellpower": 10
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "legendary_emerald_mala": 5
+        },
+        "air_magic": {
+          "legendary_emerald_mala_mat": 5
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
+      "enchantment": "none"
+    },
+    "plain_coral_mala": {
+      "name": "Plain Coral Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
@@ -15806,58 +15765,148 @@
       "element": "fire",
       "material": "coral",
       "weight": 0.5,
-      "value": 45,
+      "value": 144,
       "description": "A hundred and eight beads of coral, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 8
+        "focus": 7
+      },
+      "stats": {
+        "spellpower": 2
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "plain_coral_mala": 1
+        },
+        "fire_magic": {
+          "plain_coral_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_coral_mala": {
+      "name": "Blessed Coral Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "fire",
+      "material": "coral",
+      "weight": 0.5,
+      "value": 279,
+      "description": "A hundred and eight beads of coral, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 9
       },
       "stats": {
         "spellpower": 4
       },
       "skill_bonuses": {
         "yoga": {
-          "coral_mala": 1
+          "blessed_coral_mala": 2
         },
         "fire_magic": {
-          "coral_mala_mat": 1
+          "blessed_coral_mala_mat": 2
         }
       },
       "abilities": [],
-      "quality": "common",
-      "enchantment": "none"
+      "quality": "good",
+      "enchantment": "touched"
     },
-    "ruby_mala": {
-      "name": "Ruby Mala",
+    "empowered_coral_mala": {
+      "name": "Empowered Coral Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
       "element": "fire",
-      "material": "ruby",
+      "material": "coral",
       "weight": 0.5,
-      "value": 260,
-      "description": "A hundred and eight beads of ruby, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "value": 452,
+      "description": "A hundred and eight beads of coral, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 10
+        "focus": 11
       },
       "stats": {
         "spellpower": 6
       },
       "skill_bonuses": {
         "yoga": {
-          "ruby_mala": 2
+          "empowered_coral_mala": 3
         },
         "fire_magic": {
-          "ruby_mala_mat": 2
+          "empowered_coral_mala_mat": 3
         }
       },
       "abilities": [],
-      "quality": "common",
+      "quality": "fine",
+      "enchantment": "touched"
+    },
+    "perfected_ruby_mala": {
+      "name": "Perfected Ruby Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "fire",
+      "material": "ruby",
+      "weight": 0.5,
+      "value": 661,
+      "description": "A hundred and eight beads of ruby, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 13
+      },
+      "stats": {
+        "spellpower": 8
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "perfected_ruby_mala": 4
+        },
+        "fire_magic": {
+          "perfected_ruby_mala_mat": 4
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
       "enchantment": "none"
     },
-    "crystal_mala": {
-      "name": "Crystal Mala",
+    "legendary_ruby_mala": {
+      "name": "Legendary Ruby Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "fire",
+      "material": "ruby",
+      "weight": 0.5,
+      "value": 905,
+      "description": "A hundred and eight beads of ruby, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 15
+      },
+      "stats": {
+        "spellpower": 10
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "legendary_ruby_mala": 5
+        },
+        "fire_magic": {
+          "legendary_ruby_mala_mat": 5
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
+      "enchantment": "none"
+    },
+    "plain_crystal_mala": {
+      "name": "Plain Crystal Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
@@ -15866,118 +15915,298 @@
       "element": "space",
       "material": "crystal",
       "weight": 0.5,
-      "value": 45,
+      "value": 144,
       "description": "A hundred and eight beads of crystal, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 8
+        "focus": 7
+      },
+      "stats": {
+        "spellpower": 2
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "plain_crystal_mala": 1
+        },
+        "space_magic": {
+          "plain_crystal_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_crystal_mala": {
+      "name": "Blessed Crystal Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "space",
+      "material": "crystal",
+      "weight": 0.5,
+      "value": 279,
+      "description": "A hundred and eight beads of crystal, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 9
       },
       "stats": {
         "spellpower": 4
       },
       "skill_bonuses": {
         "yoga": {
-          "crystal_mala": 1
+          "blessed_crystal_mala": 2
         },
         "space_magic": {
-          "crystal_mala_mat": 1
+          "blessed_crystal_mala_mat": 2
         }
       },
       "abilities": [],
-      "quality": "common",
-      "enchantment": "none"
+      "quality": "good",
+      "enchantment": "touched"
     },
-    "diamond_mala": {
-      "name": "Diamond Mala",
+    "empowered_crystal_mala": {
+      "name": "Empowered Crystal Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
       "element": "space",
-      "material": "diamond",
+      "material": "crystal",
       "weight": 0.5,
-      "value": 260,
-      "description": "A hundred and eight beads of diamond, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "value": 452,
+      "description": "A hundred and eight beads of crystal, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 10
+        "focus": 11
       },
       "stats": {
         "spellpower": 6
       },
       "skill_bonuses": {
         "yoga": {
-          "diamond_mala": 2
+          "empowered_crystal_mala": 3
         },
         "space_magic": {
-          "diamond_mala_mat": 2
+          "empowered_crystal_mala_mat": 3
         }
       },
       "abilities": [],
-      "quality": "common",
+      "quality": "fine",
+      "enchantment": "touched"
+    },
+    "perfected_diamond_mala": {
+      "name": "Perfected Diamond Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "space",
+      "material": "diamond",
+      "weight": 0.5,
+      "value": 661,
+      "description": "A hundred and eight beads of diamond, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 13
+      },
+      "stats": {
+        "spellpower": 8
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "perfected_diamond_mala": 4
+        },
+        "space_magic": {
+          "perfected_diamond_mala_mat": 4
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
       "enchantment": "none"
     },
-    "moonstone_mala": {
-      "name": "Moonstone Mala",
+    "legendary_diamond_mala": {
+      "name": "Legendary Diamond Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "space",
+      "material": "diamond",
+      "weight": 0.5,
+      "value": 905,
+      "description": "A hundred and eight beads of diamond, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 15
+      },
+      "stats": {
+        "spellpower": 10
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "legendary_diamond_mala": 5
+        },
+        "space_magic": {
+          "legendary_diamond_mala_mat": 5
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
+      "enchantment": "none"
+    },
+    "plain_turquoise_mala": {
+      "name": "Plain Turquoise Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "common",
       "element": "water",
-      "material": "moonstone",
+      "material": "turquoise",
       "weight": 0.5,
-      "value": 45,
-      "description": "A hundred and eight beads of moonstone, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "value": 144,
+      "description": "A hundred and eight beads of turquoise, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 8
+        "focus": 7
+      },
+      "stats": {
+        "spellpower": 2
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "plain_turquoise_mala": 1
+        },
+        "white_magic": {
+          "plain_turquoise_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_turquoise_mala": {
+      "name": "Blessed Turquoise Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "water",
+      "material": "turquoise",
+      "weight": 0.5,
+      "value": 279,
+      "description": "A hundred and eight beads of turquoise, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 9
       },
       "stats": {
         "spellpower": 4
       },
       "skill_bonuses": {
         "yoga": {
-          "moonstone_mala": 1
+          "blessed_turquoise_mala": 2
         },
         "white_magic": {
-          "moonstone_mala_mat": 1
+          "blessed_turquoise_mala_mat": 2
         }
       },
       "abilities": [],
-      "quality": "common",
-      "enchantment": "none"
+      "quality": "good",
+      "enchantment": "touched"
     },
-    "conch_bead_mala": {
-      "name": "Conch Mala",
+    "empowered_turquoise_mala": {
+      "name": "Empowered Turquoise Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
       "element": "water",
-      "material": "conch_bead",
+      "material": "turquoise",
       "weight": 0.5,
-      "value": 260,
-      "description": "A hundred and eight beads of conch, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "value": 452,
+      "description": "A hundred and eight beads of turquoise, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 10
+        "focus": 11
       },
       "stats": {
         "spellpower": 6
       },
       "skill_bonuses": {
         "yoga": {
-          "conch_bead_mala": 2
+          "empowered_turquoise_mala": 3
         },
         "white_magic": {
-          "conch_bead_mala_mat": 2
+          "empowered_turquoise_mala_mat": 3
         }
       },
       "abilities": [],
-      "quality": "common",
+      "quality": "fine",
+      "enchantment": "touched"
+    },
+    "perfected_conch_bead_mala": {
+      "name": "Perfected Conch Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "water",
+      "material": "conch_bead",
+      "weight": 0.5,
+      "value": 661,
+      "description": "A hundred and eight beads of conch, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 13
+      },
+      "stats": {
+        "spellpower": 8
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "perfected_conch_bead_mala": 4
+        },
+        "white_magic": {
+          "perfected_conch_bead_mala_mat": 4
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
       "enchantment": "none"
     },
-    "bone_bead_mala": {
-      "name": "Bone Mala",
+    "legendary_conch_bead_mala": {
+      "name": "Legendary Conch Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "water",
+      "material": "conch_bead",
+      "weight": 0.5,
+      "value": 905,
+      "description": "A hundred and eight beads of conch, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 15
+      },
+      "stats": {
+        "spellpower": 10
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "legendary_conch_bead_mala": 5
+        },
+        "white_magic": {
+          "legendary_conch_bead_mala_mat": 5
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
+      "enchantment": "none"
+    },
+    "plain_bone_bead_mala": {
+      "name": "Plain Bone Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
@@ -15986,58 +16215,148 @@
       "element": "earth",
       "material": "bone_bead",
       "weight": 0.5,
-      "value": 45,
+      "value": 144,
       "description": "A hundred and eight beads of bone, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 8
+        "focus": 7
+      },
+      "stats": {
+        "spellpower": 2
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "plain_bone_bead_mala": 1
+        },
+        "black_magic": {
+          "plain_bone_bead_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_bone_bead_mala": {
+      "name": "Blessed Bone Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "earth",
+      "material": "bone_bead",
+      "weight": 0.5,
+      "value": 279,
+      "description": "A hundred and eight beads of bone, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 9
       },
       "stats": {
         "spellpower": 4
       },
       "skill_bonuses": {
         "yoga": {
-          "bone_bead_mala": 1
+          "blessed_bone_bead_mala": 2
         },
         "black_magic": {
-          "bone_bead_mala_mat": 1
+          "blessed_bone_bead_mala_mat": 2
         }
       },
       "abilities": [],
-      "quality": "common",
-      "enchantment": "none"
+      "quality": "good",
+      "enchantment": "touched"
     },
-    "devils_bone_mala": {
-      "name": "Devil's Bone Mala",
+    "empowered_bone_bead_mala": {
+      "name": "Empowered Bone Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
       "element": "earth",
-      "material": "devils_bone",
+      "material": "bone_bead",
       "weight": 0.5,
-      "value": 260,
-      "description": "A hundred and eight beads of devil's bone, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "value": 452,
+      "description": "A hundred and eight beads of bone, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 10
+        "focus": 11
       },
       "stats": {
         "spellpower": 6
       },
       "skill_bonuses": {
         "yoga": {
-          "devils_bone_mala": 2
+          "empowered_bone_bead_mala": 3
         },
         "black_magic": {
-          "devils_bone_mala_mat": 2
+          "empowered_bone_bead_mala_mat": 3
         }
       },
       "abilities": [],
-      "quality": "common",
+      "quality": "fine",
+      "enchantment": "touched"
+    },
+    "perfected_devils_bone_mala": {
+      "name": "Perfected Devil's Bone Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "earth",
+      "material": "devils_bone",
+      "weight": 0.5,
+      "value": 661,
+      "description": "A hundred and eight beads of devil's bone, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 13
+      },
+      "stats": {
+        "spellpower": 8
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "perfected_devils_bone_mala": 4
+        },
+        "black_magic": {
+          "perfected_devils_bone_mala_mat": 4
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
       "enchantment": "none"
     },
-    "smoke_crystal_mala": {
-      "name": "Smoke Crystal Mala",
+    "legendary_devils_bone_mala": {
+      "name": "Legendary Devil's Bone Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "earth",
+      "material": "devils_bone",
+      "weight": 0.5,
+      "value": 905,
+      "description": "A hundred and eight beads of devil's bone, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 15
+      },
+      "stats": {
+        "spellpower": 10
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "legendary_devils_bone_mala": 5
+        },
+        "black_magic": {
+          "legendary_devils_bone_mala_mat": 5
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
+      "enchantment": "none"
+    },
+    "plain_smoke_crystal_mala": {
+      "name": "Plain Smoke Crystal Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
@@ -16046,58 +16365,148 @@
       "element": "fire",
       "material": "smoke_crystal",
       "weight": 0.5,
-      "value": 45,
+      "value": 144,
       "description": "A hundred and eight beads of smoke crystal, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 8
+        "focus": 7
+      },
+      "stats": {
+        "spellpower": 2
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "plain_smoke_crystal_mala": 1
+        },
+        "sorcery": {
+          "plain_smoke_crystal_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_smoke_crystal_mala": {
+      "name": "Blessed Smoke Crystal Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "fire",
+      "material": "smoke_crystal",
+      "weight": 0.5,
+      "value": 279,
+      "description": "A hundred and eight beads of smoke crystal, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 9
       },
       "stats": {
         "spellpower": 4
       },
       "skill_bonuses": {
         "yoga": {
-          "smoke_crystal_mala": 1
+          "blessed_smoke_crystal_mala": 2
         },
         "sorcery": {
-          "smoke_crystal_mala_mat": 1
+          "blessed_smoke_crystal_mala_mat": 2
         }
       },
       "abilities": [],
-      "quality": "common",
-      "enchantment": "none"
+      "quality": "good",
+      "enchantment": "touched"
     },
-    "agate_mala": {
-      "name": "Agate Mala",
+    "empowered_smoke_crystal_mala": {
+      "name": "Empowered Smoke Crystal Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
       "element": "fire",
-      "material": "agate",
+      "material": "smoke_crystal",
       "weight": 0.5,
-      "value": 260,
-      "description": "A hundred and eight beads of agate, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "value": 452,
+      "description": "A hundred and eight beads of smoke crystal, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 10
+        "focus": 11
       },
       "stats": {
         "spellpower": 6
       },
       "skill_bonuses": {
         "yoga": {
-          "agate_mala": 2
+          "empowered_smoke_crystal_mala": 3
         },
         "sorcery": {
-          "agate_mala_mat": 2
+          "empowered_smoke_crystal_mala_mat": 3
         }
       },
       "abilities": [],
-      "quality": "common",
+      "quality": "fine",
+      "enchantment": "touched"
+    },
+    "perfected_agate_mala": {
+      "name": "Perfected Agate Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "fire",
+      "material": "agate",
+      "weight": 0.5,
+      "value": 661,
+      "description": "A hundred and eight beads of agate, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 13
+      },
+      "stats": {
+        "spellpower": 8
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "perfected_agate_mala": 4
+        },
+        "sorcery": {
+          "perfected_agate_mala_mat": 4
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
       "enchantment": "none"
     },
-    "rosewood_mala": {
-      "name": "Rosewood Mala",
+    "legendary_agate_mala": {
+      "name": "Legendary Agate Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "fire",
+      "material": "agate",
+      "weight": 0.5,
+      "value": 905,
+      "description": "A hundred and eight beads of agate, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 15
+      },
+      "stats": {
+        "spellpower": 10
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "legendary_agate_mala": 5
+        },
+        "sorcery": {
+          "legendary_agate_mala_mat": 5
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
+      "enchantment": "none"
+    },
+    "plain_rosewood_mala": {
+      "name": "Plain Rosewood Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
@@ -16106,58 +16515,148 @@
       "element": "water",
       "material": "rosewood",
       "weight": 0.5,
-      "value": 45,
+      "value": 144,
       "description": "A hundred and eight beads of rosewood, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 8
+        "focus": 7
+      },
+      "stats": {
+        "spellpower": 2
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "plain_rosewood_mala": 1
+        },
+        "enchantment": {
+          "plain_rosewood_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_rosewood_mala": {
+      "name": "Blessed Rosewood Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "water",
+      "material": "rosewood",
+      "weight": 0.5,
+      "value": 279,
+      "description": "A hundred and eight beads of rosewood, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 9
       },
       "stats": {
         "spellpower": 4
       },
       "skill_bonuses": {
         "yoga": {
-          "rosewood_mala": 1
+          "blessed_rosewood_mala": 2
         },
         "enchantment": {
-          "rosewood_mala_mat": 1
+          "blessed_rosewood_mala_mat": 2
         }
       },
       "abilities": [],
-      "quality": "common",
-      "enchantment": "none"
+      "quality": "good",
+      "enchantment": "touched"
     },
-    "opal_mala": {
-      "name": "Opal Mala",
+    "empowered_rosewood_mala": {
+      "name": "Empowered Rosewood Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
       "element": "water",
-      "material": "opal",
+      "material": "rosewood",
       "weight": 0.5,
-      "value": 260,
-      "description": "A hundred and eight beads of opal, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "value": 452,
+      "description": "A hundred and eight beads of rosewood, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 10
+        "focus": 11
       },
       "stats": {
         "spellpower": 6
       },
       "skill_bonuses": {
         "yoga": {
-          "opal_mala": 2
+          "empowered_rosewood_mala": 3
         },
         "enchantment": {
-          "opal_mala_mat": 2
+          "empowered_rosewood_mala_mat": 3
         }
       },
       "abilities": [],
-      "quality": "common",
+      "quality": "fine",
+      "enchantment": "touched"
+    },
+    "perfected_opal_mala": {
+      "name": "Perfected Opal Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "water",
+      "material": "opal",
+      "weight": 0.5,
+      "value": 661,
+      "description": "A hundred and eight beads of opal, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 13
+      },
+      "stats": {
+        "spellpower": 8
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "perfected_opal_mala": 4
+        },
+        "enchantment": {
+          "perfected_opal_mala_mat": 4
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
       "enchantment": "none"
     },
-    "amethyst_mala": {
-      "name": "Amethyst Mala",
+    "legendary_opal_mala": {
+      "name": "Legendary Opal Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "water",
+      "material": "opal",
+      "weight": 0.5,
+      "value": 905,
+      "description": "A hundred and eight beads of opal, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 15
+      },
+      "stats": {
+        "spellpower": 10
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "legendary_opal_mala": 5
+        },
+        "enchantment": {
+          "legendary_opal_mala_mat": 5
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
+      "enchantment": "none"
+    },
+    "plain_amethyst_mala": {
+      "name": "Plain Amethyst Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
@@ -16166,54 +16665,144 @@
       "element": "space",
       "material": "amethyst",
       "weight": 0.5,
-      "value": 45,
+      "value": 144,
       "description": "A hundred and eight beads of amethyst, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 8
+        "focus": 7
+      },
+      "stats": {
+        "spellpower": 2
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "plain_amethyst_mala": 1
+        },
+        "summoning": {
+          "plain_amethyst_mala_mat": 1
+        }
+      },
+      "abilities": [],
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_amethyst_mala": {
+      "name": "Blessed Amethyst Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "space",
+      "material": "amethyst",
+      "weight": 0.5,
+      "value": 279,
+      "description": "A hundred and eight beads of amethyst, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 9
       },
       "stats": {
         "spellpower": 4
       },
       "skill_bonuses": {
         "yoga": {
-          "amethyst_mala": 1
+          "blessed_amethyst_mala": 2
         },
         "summoning": {
-          "amethyst_mala_mat": 1
+          "blessed_amethyst_mala_mat": 2
         }
       },
       "abilities": [],
-      "quality": "common",
-      "enchantment": "none"
+      "quality": "good",
+      "enchantment": "touched"
     },
-    "mirror_bead_mala": {
-      "name": "Mirror Bead Mala",
+    "empowered_amethyst_mala": {
+      "name": "Empowered Amethyst Mala",
       "weapon_class": "Prayer beads",
       "type": "focus",
       "slot": "weapon_off",
       "two_handed": false,
       "rarity": "rare",
       "element": "space",
-      "material": "mirror_bead",
+      "material": "amethyst",
       "weight": 0.5,
-      "value": 260,
-      "description": "A hundred and eight beads of mirror bead, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "value": 452,
+      "description": "A hundred and eight beads of amethyst, worn smooth at the thumb. Counts the recitation so the mind need not.",
       "requirements": {
-        "focus": 10
+        "focus": 11
       },
       "stats": {
         "spellpower": 6
       },
       "skill_bonuses": {
         "yoga": {
-          "mirror_bead_mala": 2
+          "empowered_amethyst_mala": 3
         },
         "summoning": {
-          "mirror_bead_mala_mat": 2
+          "empowered_amethyst_mala_mat": 3
         }
       },
       "abilities": [],
-      "quality": "common",
+      "quality": "fine",
+      "enchantment": "touched"
+    },
+    "perfected_mirror_bead_mala": {
+      "name": "Perfected Mirror Bead Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "space",
+      "material": "mirror_bead",
+      "weight": 0.5,
+      "value": 661,
+      "description": "A hundred and eight beads of mirror bead, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 13
+      },
+      "stats": {
+        "spellpower": 8
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "perfected_mirror_bead_mala": 4
+        },
+        "summoning": {
+          "perfected_mirror_bead_mala_mat": 4
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
+      "enchantment": "none"
+    },
+    "legendary_mirror_bead_mala": {
+      "name": "Legendary Mirror Bead Mala",
+      "weapon_class": "Prayer beads",
+      "type": "focus",
+      "slot": "weapon_off",
+      "two_handed": false,
+      "rarity": "epic",
+      "element": "space",
+      "material": "mirror_bead",
+      "weight": 0.5,
+      "value": 905,
+      "description": "A hundred and eight beads of mirror bead, worn smooth at the thumb. Counts the recitation so the mind need not.",
+      "requirements": {
+        "focus": 15
+      },
+      "stats": {
+        "spellpower": 10
+      },
+      "skill_bonuses": {
+        "yoga": {
+          "legendary_mirror_bead_mala": 5
+        },
+        "summoning": {
+          "legendary_mirror_bead_mala_mat": 5
+        }
+      },
+      "abilities": [],
+      "quality": "masterwork",
       "enchantment": "none"
     },
     "plain_bronze_melong": {
@@ -17157,6 +17746,1365 @@
       "skill_bonuses": {},
       "abilities": [],
       "grants_status": "Magic_Mirror",
+      "quality": "masterwork",
+      "enchantment": "blessed"
+    },
+    "plain_black_mantra_robe": {
+      "name": "Plain Black Mantra's Robe",
+      "type": "robe",
+      "slot": "chest",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "space",
+      "weight": 4,
+      "value": 50,
+      "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "armor": 3
+      },
+      "skill_bonuses": {
+        "black_magic": {
+          "plain_black_mantra_robe": 1
+        }
+      },
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40,
+      "material": "bone",
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_black_mantra_robe": {
+      "name": "Blessed Black Mantra's Robe",
+      "type": "robe",
+      "slot": "chest",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "space",
+      "weight": 4,
+      "value": 200,
+      "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "armor": 3
+      },
+      "skill_bonuses": {
+        "black_magic": {
+          "blessed_black_mantra_robe": 1
+        },
+        "sorcery": {
+          "blessed_black_mantra_robe": 1
+        }
+      },
+      "abilities": [],
+      "durability": 65,
+      "max_durability": 65,
+      "material": "bone",
+      "quality": "good",
+      "enchantment": "blessed"
+    },
+    "empowered_black_mantra_robe": {
+      "name": "Empowered Black Mantra's Robe",
+      "type": "robe",
+      "slot": "chest",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "space",
+      "weight": 4,
+      "value": 600,
+      "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "armor": 4,
+        "spellpower": 5
+      },
+      "skill_bonuses": {
+        "black_magic": {
+          "empowered_black_mantra_robe": 2
+        },
+        "sorcery": {
+          "empowered_black_mantra_robe": 1
+        }
+      },
+      "abilities": [],
+      "durability": 90,
+      "max_durability": 90,
+      "material": "bone",
+      "quality": "fine",
+      "enchantment": "empowered"
+    },
+    "perfected_black_mantra_robe": {
+      "name": "Perfected Black Mantra's Robe",
+      "type": "robe",
+      "slot": "chest",
+      "two_handed": false,
+      "rarity": "rare",
+      "element": "space",
+      "weight": 4,
+      "value": 1375,
+      "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "armor": 4,
+        "spellpower": 8,
+        "initiative": 2
+      },
+      "skill_bonuses": {
+        "black_magic": {
+          "perfected_black_mantra_robe": 2
+        },
+        "sorcery": {
+          "perfected_black_mantra_robe": 2
+        }
+      },
+      "abilities": [],
+      "durability": 180,
+      "max_durability": 180,
+      "material": "bone",
+      "quality": "masterwork",
+      "enchantment": "empowered"
+    },
+    "legendary_black_mantra_robe": {
+      "name": "Legendary Black Mantra's Robe",
+      "type": "robe",
+      "slot": "chest",
+      "two_handed": false,
+      "rarity": "legendary",
+      "element": "space",
+      "weight": 4,
+      "value": 3500,
+      "description": "Black wool heavily embroidered with bone-white thread, charnel ground symbols running hem to collar. Practitioners of the dark schools wear it as armor of a different kind — it communicates what you are before you have to prove it.",
+      "requirements": {
+        "focus": 16
+      },
+      "stats": {
+        "armor": 5,
+        "spellpower": 12,
+        "initiative": 3
+      },
+      "skill_bonuses": {
+        "black_magic": {
+          "legendary_black_mantra_robe": 3
+        },
+        "sorcery": {
+          "legendary_black_mantra_robe": 2
+        }
+      },
+      "abilities": [],
+      "durability": 9999,
+      "max_durability": 9999,
+      "material": "bone",
+      "quality": "masterwork",
+      "enchantment": "perfected"
+    },
+    "plain_black_mantra_hat": {
+      "name": "Plain Black Mantra's Crown",
+      "type": "hat",
+      "slot": "head",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "space",
+      "weight": 2,
+      "value": 35,
+      "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "armor": 1
+      },
+      "skill_bonuses": {
+        "black_magic": {
+          "plain_black_mantra_hat": 1
+        }
+      },
+      "abilities": [],
+      "durability": 40,
+      "max_durability": 40,
+      "material": "bone",
+      "quality": "common",
+      "enchantment": "touched"
+    },
+    "blessed_black_mantra_hat": {
+      "name": "Blessed Black Mantra's Crown",
+      "type": "hat",
+      "slot": "head",
+      "two_handed": false,
+      "rarity": "common",
+      "element": "space",
+      "weight": 2,
+      "value": 140,
+      "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "armor": 2
+      },
+      "skill_bonuses": {
+        "black_magic": {
+          "blessed_black_mantra_hat": 1
+        },
+        "sorcery": {
+          "blessed_black_mantra_hat": 1
+        }
+      },
+      "abilities": [],
+      "durability": 65,
+      "max_durability": 65,
+      "material": "bone",
+      "quality": "good",
+      "enchantment": "blessed"
+    },
+    "empowered_black_mantra_hat": {
+      "name": "Empowered Black Mantra's Crown",
+      "type": "hat",
+      "slot": "head",
+      "two_handed": false,
+      "rarity": "uncommon",
+      "element": "space",
+      "weight": 2,
+      "value": 420,
+      "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "armor": 2,
+        "spellpower": 3
+      },
+      "skill_bonuses": {
+        "black_magic": {
+          "empowered_black_mantra_hat": 2
+        },
+        "sorcery": {
+          "empowered_black_mantra_hat": 1
+        }
+      },
+      "abilities": [],
+      "durability": 90,
+      "max_durability": 90,
+      "material": "bone",
+      "quality": "fine",
+      "enchantment": "empowered"
+    },
+    "perfected_black_mantra_hat": {
+      "name": "Perfected Black Mantra's Crown",
+      "type": "hat",
+      "slot": "head",
+      "two_handed": false,
+      "rarity": "rare",
+      "element": "space",
+      "weight": 2,
+      "value": 962,
+      "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "armor": 3,
+        "spellpower": 5,
+        "initiative": 1
+      },
+      "skill_bonuses": {
+        "black_magic": {
+          "perfected_black_mantra_hat": 2
+        },
+        "sorcery": {
+          "perfected_black_mantra_hat": 2
+        }
+      },
+      "abilities": [],
+      "durability": 180,
+      "max_durability": 180,
+      "material": "bone",
+      "quality": "masterwork",
+      "enchantment": "perfected"
+    },
+    "legendary_black_mantra_hat": {
+      "name": "Legendary Black Mantra's Crown",
+      "type": "hat",
+      "slot": "head",
+      "two_handed": false,
+      "rarity": "legendary",
+      "element": "space",
+      "weight": 2,
+      "value": 2450,
+      "description": "A black crown of lacquered bone and iron. The weight is real and the message is clear.",
+      "requirements": {
+        "focus": 16
+      },
+      "stats": {
+        "armor": 3,
+        "spellpower": 8,
+        "initiative": 2
+      },
+      "skill_bonuses": {
+        "black_magic": {
+          "legendary_black_mantra_hat": 3
+        },
+        "sorcery": {
+          "legendary_black_mantra_hat": 2
+        }
+      },
+      "abilities": [],
+      "durability": 9999,
+      "max_durability": 9999,
+      "material": "bone",
+      "quality": "masterwork",
+      "enchantment": "perfected"
+    },
+    "plain_pandita_robe": {
+      "name": "Plain Pandita Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "common",
+      "weight": 3,
+      "value": 128,
+      "description": "The scholar's robe. Debate is a kind of combat, and this is its armour.",
+      "requirements": {
+        "focus": 6
+      },
+      "stats": {
+        "armor": 1,
+        "max_mana": 5
+      },
+      "skill_bonuses": {
+        "learning": {
+          "plain_pandita_robe": 1
+        }
+      },
+      "abilities": [],
+      "material": "cloth",
+      "quality": "common",
+      "enchantment": "blessed"
+    },
+    "blessed_pandita_robe": {
+      "name": "Blessed Cotton Pandita Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "common",
+      "weight": 3,
+      "value": 264,
+      "description": "The scholar's robe. Debate is a kind of combat, and this is its armour.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 10
+      },
+      "skill_bonuses": {
+        "learning": {
+          "blessed_pandita_robe": 2
+        },
+        "persuasion": {
+          "blessed_pandita_robe_sec": 1
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "good",
+      "enchantment": "blessed"
+    },
+    "empowered_pandita_robe": {
+      "name": "Empowered Cotton Pandita Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "rare",
+      "weight": 3,
+      "value": 444,
+      "description": "The scholar's robe. Debate is a kind of combat, and this is its armour.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 15
+      },
+      "skill_bonuses": {
+        "learning": {
+          "empowered_pandita_robe": 3
+        },
+        "persuasion": {
+          "empowered_pandita_robe_sec": 1
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_pandita_robe": {
+      "name": "Perfected Silk Pandita Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "epic",
+      "weight": 3,
+      "value": 667,
+      "description": "The scholar's robe. Debate is a kind of combat, and this is its armour.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 20
+      },
+      "skill_bonuses": {
+        "learning": {
+          "perfected_pandita_robe": 4
+        },
+        "persuasion": {
+          "perfected_pandita_robe_sec": 2
+        }
+      },
+      "abilities": [],
+      "material": "silk",
+      "quality": "masterwork",
+      "enchantment": "touched"
+    },
+    "legendary_pandita_robe": {
+      "name": "Legendary Silk Pandita Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "epic",
+      "weight": 3,
+      "value": 934,
+      "description": "The scholar's robe. Debate is a kind of combat, and this is its armour.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 25
+      },
+      "skill_bonuses": {
+        "learning": {
+          "legendary_pandita_robe": 5
+        },
+        "persuasion": {
+          "legendary_pandita_robe_sec": 2
+        }
+      },
+      "abilities": [],
+      "material": "silk",
+      "quality": "masterwork",
+      "enchantment": "touched"
+    },
+    "plain_sages_robe": {
+      "name": "Plain Sages Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "common",
+      "weight": 3,
+      "value": 128,
+      "description": "Plain and heavy. The sage mends and endures in equal measure.",
+      "requirements": {
+        "focus": 6
+      },
+      "stats": {
+        "armor": 1,
+        "max_mana": 5
+      },
+      "skill_bonuses": {
+        "earth_magic": {
+          "plain_sages_robe": 1
+        },
+        "white_magic": {
+          "plain_sages_robe_sec": 1
+        }
+      },
+      "abilities": [],
+      "material": "cloth",
+      "quality": "common",
+      "enchantment": "blessed"
+    },
+    "blessed_sages_robe": {
+      "name": "Blessed Cotton Sages Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "common",
+      "weight": 3,
+      "value": 264,
+      "description": "Plain and heavy. The sage mends and endures in equal measure.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 10
+      },
+      "skill_bonuses": {
+        "earth_magic": {
+          "blessed_sages_robe": 1
+        },
+        "white_magic": {
+          "blessed_sages_robe_sec": 1
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "good",
+      "enchantment": "blessed"
+    },
+    "empowered_sages_robe": {
+      "name": "Empowered Cotton Sages Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "rare",
+      "weight": 3,
+      "value": 444,
+      "description": "Plain and heavy. The sage mends and endures in equal measure.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 15
+      },
+      "skill_bonuses": {
+        "earth_magic": {
+          "empowered_sages_robe": 2
+        },
+        "white_magic": {
+          "empowered_sages_robe_sec": 2
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_sages_robe": {
+      "name": "Perfected Silk Sages Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "epic",
+      "weight": 3,
+      "value": 667,
+      "description": "Plain and heavy. The sage mends and endures in equal measure.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 20
+      },
+      "skill_bonuses": {
+        "earth_magic": {
+          "perfected_sages_robe": 2
+        },
+        "white_magic": {
+          "perfected_sages_robe_sec": 2
+        }
+      },
+      "abilities": [],
+      "material": "silk",
+      "quality": "masterwork",
+      "enchantment": "touched"
+    },
+    "legendary_sages_robe": {
+      "name": "Legendary Silk Sages Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "epic",
+      "weight": 3,
+      "value": 934,
+      "description": "Plain and heavy. The sage mends and endures in equal measure.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 25
+      },
+      "skill_bonuses": {
+        "earth_magic": {
+          "legendary_sages_robe": 3
+        },
+        "white_magic": {
+          "legendary_sages_robe_sec": 3
+        }
+      },
+      "abilities": [],
+      "material": "silk",
+      "quality": "masterwork",
+      "enchantment": "touched"
+    },
+    "plain_tantric_robe": {
+      "name": "Plain Tantric Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "common",
+      "weight": 3,
+      "value": 128,
+      "description": "Cut for the long ceremonies, where the rite runs past midnight.",
+      "requirements": {
+        "focus": 6
+      },
+      "stats": {
+        "armor": 1,
+        "max_mana": 5
+      },
+      "skill_bonuses": {
+        "ritual": {
+          "plain_tantric_robe": 1
+        }
+      },
+      "abilities": [],
+      "material": "cloth",
+      "quality": "common",
+      "enchantment": "blessed"
+    },
+    "blessed_tantric_robe": {
+      "name": "Blessed Cotton Tantric Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "common",
+      "weight": 3,
+      "value": 264,
+      "description": "Cut for the long ceremonies, where the rite runs past midnight.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 10
+      },
+      "skill_bonuses": {
+        "ritual": {
+          "blessed_tantric_robe": 2
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "good",
+      "enchantment": "blessed"
+    },
+    "empowered_tantric_robe": {
+      "name": "Empowered Cotton Tantric Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "rare",
+      "weight": 3,
+      "value": 444,
+      "description": "Cut for the long ceremonies, where the rite runs past midnight.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 15
+      },
+      "skill_bonuses": {
+        "ritual": {
+          "empowered_tantric_robe": 3
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_tantric_robe": {
+      "name": "Perfected Silk Tantric Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "epic",
+      "weight": 3,
+      "value": 667,
+      "description": "Cut for the long ceremonies, where the rite runs past midnight.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 20
+      },
+      "skill_bonuses": {
+        "ritual": {
+          "perfected_tantric_robe": 4
+        }
+      },
+      "abilities": [],
+      "material": "silk",
+      "quality": "masterwork",
+      "enchantment": "touched"
+    },
+    "legendary_tantric_robe": {
+      "name": "Legendary Silk Tantric Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "epic",
+      "weight": 3,
+      "value": 934,
+      "description": "Cut for the long ceremonies, where the rite runs past midnight.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 25
+      },
+      "skill_bonuses": {
+        "ritual": {
+          "legendary_tantric_robe": 5
+        }
+      },
+      "abilities": [],
+      "material": "silk",
+      "quality": "masterwork",
+      "enchantment": "touched"
+    },
+    "plain_dreamers_robe": {
+      "name": "Plain Dreamers Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "common",
+      "weight": 3,
+      "value": 128,
+      "description": "Loose, and strangely quiet. Worn for the practices done while asleep.",
+      "requirements": {
+        "focus": 6
+      },
+      "stats": {
+        "armor": 1,
+        "max_mana": 5
+      },
+      "skill_bonuses": {
+        "enchantment": {
+          "plain_dreamers_robe": 1
+        }
+      },
+      "abilities": [],
+      "material": "cloth",
+      "quality": "common",
+      "enchantment": "blessed"
+    },
+    "blessed_dreamers_robe": {
+      "name": "Blessed Cotton Dreamers Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "common",
+      "weight": 3,
+      "value": 264,
+      "description": "Loose, and strangely quiet. Worn for the practices done while asleep.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 10
+      },
+      "skill_bonuses": {
+        "enchantment": {
+          "blessed_dreamers_robe": 2
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "good",
+      "enchantment": "blessed"
+    },
+    "empowered_dreamers_robe": {
+      "name": "Empowered Cotton Dreamers Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "rare",
+      "weight": 3,
+      "value": 444,
+      "description": "Loose, and strangely quiet. Worn for the practices done while asleep.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 15
+      },
+      "skill_bonuses": {
+        "enchantment": {
+          "empowered_dreamers_robe": 3
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_dreamers_robe": {
+      "name": "Perfected Silk Dreamers Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "epic",
+      "weight": 3,
+      "value": 667,
+      "description": "Loose, and strangely quiet. Worn for the practices done while asleep.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 20
+      },
+      "skill_bonuses": {
+        "enchantment": {
+          "perfected_dreamers_robe": 4
+        }
+      },
+      "abilities": [],
+      "material": "silk",
+      "quality": "masterwork",
+      "enchantment": "touched"
+    },
+    "legendary_dreamers_robe": {
+      "name": "Legendary Silk Dreamers Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "epic",
+      "weight": 3,
+      "value": 934,
+      "description": "Loose, and strangely quiet. Worn for the practices done while asleep.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 25
+      },
+      "skill_bonuses": {
+        "enchantment": {
+          "legendary_dreamers_robe": 5
+        }
+      },
+      "abilities": [],
+      "material": "silk",
+      "quality": "masterwork",
+      "enchantment": "touched"
+    },
+    "plain_chodpa_robe": {
+      "name": "Plain Chodpa Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "common",
+      "weight": 3,
+      "value": 128,
+      "description": "The chodpa's robe, worn to the charnel ground and not washed after.",
+      "requirements": {
+        "focus": 6
+      },
+      "stats": {
+        "armor": 1,
+        "max_mana": 5
+      },
+      "skill_bonuses": {
+        "summoning": {
+          "plain_chodpa_robe": 1
+        }
+      },
+      "abilities": [],
+      "material": "cloth",
+      "quality": "common",
+      "enchantment": "blessed"
+    },
+    "blessed_chodpa_robe": {
+      "name": "Blessed Cotton Chodpa Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "common",
+      "weight": 3,
+      "value": 264,
+      "description": "The chodpa's robe, worn to the charnel ground and not washed after.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 10
+      },
+      "skill_bonuses": {
+        "summoning": {
+          "blessed_chodpa_robe": 2
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "good",
+      "enchantment": "blessed"
+    },
+    "empowered_chodpa_robe": {
+      "name": "Empowered Cotton Chodpa Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "rare",
+      "weight": 3,
+      "value": 444,
+      "description": "The chodpa's robe, worn to the charnel ground and not washed after.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 15
+      },
+      "skill_bonuses": {
+        "summoning": {
+          "empowered_chodpa_robe": 3
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_chodpa_robe": {
+      "name": "Perfected Silk Chodpa Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "epic",
+      "weight": 3,
+      "value": 667,
+      "description": "The chodpa's robe, worn to the charnel ground and not washed after.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 20
+      },
+      "skill_bonuses": {
+        "summoning": {
+          "perfected_chodpa_robe": 4
+        }
+      },
+      "abilities": [],
+      "material": "silk",
+      "quality": "masterwork",
+      "enchantment": "touched"
+    },
+    "legendary_chodpa_robe": {
+      "name": "Legendary Silk Chodpa Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "epic",
+      "weight": 3,
+      "value": 934,
+      "description": "The chodpa's robe, worn to the charnel ground and not washed after.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 25
+      },
+      "skill_bonuses": {
+        "summoning": {
+          "legendary_chodpa_robe": 5
+        }
+      },
+      "abilities": [],
+      "material": "silk",
+      "quality": "masterwork",
+      "enchantment": "touched"
+    },
+    "plain_chodpa_eye_covering": {
+      "name": "Plain Chodpa Eye Covering",
+      "type": "hat",
+      "slot": "head",
+      "rarity": "common",
+      "weight": 1,
+      "value": 90,
+      "description": "A blindfold of dark cloth. What is called does not need to be seen.",
+      "requirements": {
+        "focus": 6
+      },
+      "stats": {
+        "armor": 1,
+        "max_mana": 3
+      },
+      "skill_bonuses": {
+        "summoning": {
+          "plain_chodpa_eye_covering": 1
+        }
+      },
+      "abilities": [],
+      "material": "cloth",
+      "quality": "common",
+      "enchantment": "blessed"
+    },
+    "blessed_chodpa_eye_covering": {
+      "name": "Blessed Cotton Chodpa Eye Covering",
+      "type": "hat",
+      "slot": "head",
+      "rarity": "common",
+      "weight": 1,
+      "value": 184,
+      "description": "A blindfold of dark cloth. What is called does not need to be seen.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 6
+      },
+      "skill_bonuses": {
+        "summoning": {
+          "blessed_chodpa_eye_covering": 2
+        },
+        "black_magic": {
+          "blessed_chodpa_eye_covering_sec": 1
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "good",
+      "enchantment": "blessed"
+    },
+    "empowered_chodpa_eye_covering": {
+      "name": "Empowered Cotton Chodpa Eye Covering",
+      "type": "hat",
+      "slot": "head",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 310,
+      "description": "A blindfold of dark cloth. What is called does not need to be seen.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 9
+      },
+      "skill_bonuses": {
+        "summoning": {
+          "empowered_chodpa_eye_covering": 3
+        },
+        "black_magic": {
+          "empowered_chodpa_eye_covering_sec": 1
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_chodpa_eye_covering": {
+      "name": "Perfected Silk Chodpa Eye Covering",
+      "type": "hat",
+      "slot": "head",
+      "rarity": "epic",
+      "weight": 1,
+      "value": 467,
+      "description": "A blindfold of dark cloth. What is called does not need to be seen.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 12
+      },
+      "skill_bonuses": {
+        "summoning": {
+          "perfected_chodpa_eye_covering": 4
+        },
+        "black_magic": {
+          "perfected_chodpa_eye_covering_sec": 2
+        }
+      },
+      "abilities": [],
+      "material": "cloth",
+      "quality": "masterwork",
+      "enchantment": "empowered"
+    },
+    "legendary_chodpa_eye_covering": {
+      "name": "Legendary Silk Chodpa Eye Covering",
+      "type": "hat",
+      "slot": "head",
+      "rarity": "epic",
+      "weight": 1,
+      "value": 653,
+      "description": "A blindfold of dark cloth. What is called does not need to be seen.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 15
+      },
+      "skill_bonuses": {
+        "summoning": {
+          "legendary_chodpa_eye_covering": 5
+        },
+        "black_magic": {
+          "legendary_chodpa_eye_covering_sec": 2
+        }
+      },
+      "abilities": [],
+      "material": "cloth",
+      "quality": "masterwork",
+      "enchantment": "empowered"
+    },
+    "plain_sorcerer_robe": {
+      "name": "Plain Sorcerer Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "common",
+      "weight": 3,
+      "value": 128,
+      "description": "Heavy brocade bearing the face of Mahakala, for the wrathful rites.",
+      "requirements": {
+        "focus": 6
+      },
+      "stats": {
+        "armor": 1,
+        "max_mana": 5
+      },
+      "skill_bonuses": {
+        "sorcery": {
+          "plain_sorcerer_robe": 1
+        }
+      },
+      "abilities": [],
+      "material": "cloth",
+      "quality": "common",
+      "enchantment": "blessed"
+    },
+    "blessed_sorcerer_robe": {
+      "name": "Blessed Cotton Sorcerer Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "common",
+      "weight": 3,
+      "value": 264,
+      "description": "Heavy brocade bearing the face of Mahakala, for the wrathful rites.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 10
+      },
+      "skill_bonuses": {
+        "sorcery": {
+          "blessed_sorcerer_robe": 2
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "good",
+      "enchantment": "blessed"
+    },
+    "empowered_sorcerer_robe": {
+      "name": "Empowered Cotton Sorcerer Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "rare",
+      "weight": 3,
+      "value": 444,
+      "description": "Heavy brocade bearing the face of Mahakala, for the wrathful rites.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 15,
+        "spellpower": 3
+      },
+      "skill_bonuses": {
+        "sorcery": {
+          "empowered_sorcerer_robe": 3
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_sorcerer_robe": {
+      "name": "Perfected Silk Sorcerer Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "epic",
+      "weight": 3,
+      "value": 667,
+      "description": "Heavy brocade bearing the face of Mahakala, for the wrathful rites.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 20,
+        "spellpower": 6
+      },
+      "skill_bonuses": {
+        "sorcery": {
+          "perfected_sorcerer_robe": 4
+        }
+      },
+      "abilities": [],
+      "material": "silk",
+      "quality": "masterwork",
+      "enchantment": "touched"
+    },
+    "legendary_sorcerer_robe": {
+      "name": "Legendary Silk Sorcerer Robe",
+      "type": "robe",
+      "slot": "chest",
+      "rarity": "epic",
+      "weight": 3,
+      "value": 934,
+      "description": "Heavy brocade bearing the face of Mahakala, for the wrathful rites.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 25,
+        "spellpower": 9
+      },
+      "skill_bonuses": {
+        "sorcery": {
+          "legendary_sorcerer_robe": 5
+        }
+      },
+      "abilities": [],
+      "material": "silk",
+      "quality": "masterwork",
+      "enchantment": "touched"
+    },
+    "plain_sorcerer_hat": {
+      "name": "Plain Sorcerer Hat",
+      "type": "hat",
+      "slot": "head",
+      "rarity": "common",
+      "weight": 1,
+      "value": 90,
+      "description": "The pointed hat of the wrathful rites, worn with the Mahakala robe.",
+      "requirements": {
+        "focus": 6
+      },
+      "stats": {
+        "armor": 1,
+        "max_mana": 3
+      },
+      "skill_bonuses": {
+        "sorcery": {
+          "plain_sorcerer_hat": 1
+        }
+      },
+      "abilities": [],
+      "material": "cloth",
+      "quality": "common",
+      "enchantment": "blessed"
+    },
+    "blessed_sorcerer_hat": {
+      "name": "Blessed Cotton Sorcerer Hat",
+      "type": "hat",
+      "slot": "head",
+      "rarity": "common",
+      "weight": 1,
+      "value": 184,
+      "description": "The pointed hat of the wrathful rites, worn with the Mahakala robe.",
+      "requirements": {
+        "focus": 8
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 6
+      },
+      "skill_bonuses": {
+        "sorcery": {
+          "blessed_sorcerer_hat": 2
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "good",
+      "enchantment": "blessed"
+    },
+    "empowered_sorcerer_hat": {
+      "name": "Empowered Cotton Sorcerer Hat",
+      "type": "hat",
+      "slot": "head",
+      "rarity": "rare",
+      "weight": 1,
+      "value": 310,
+      "description": "The pointed hat of the wrathful rites, worn with the Mahakala robe.",
+      "requirements": {
+        "focus": 10
+      },
+      "stats": {
+        "armor": 2,
+        "max_mana": 9,
+        "spellpower": 3
+      },
+      "skill_bonuses": {
+        "sorcery": {
+          "empowered_sorcerer_hat": 3
+        }
+      },
+      "abilities": [],
+      "material": "cotton",
+      "quality": "fine",
+      "enchantment": "blessed"
+    },
+    "perfected_sorcerer_hat": {
+      "name": "Perfected Silk Sorcerer Hat",
+      "type": "hat",
+      "slot": "head",
+      "rarity": "epic",
+      "weight": 1,
+      "value": 467,
+      "description": "The pointed hat of the wrathful rites, worn with the Mahakala robe.",
+      "requirements": {
+        "focus": 12
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 12,
+        "spellpower": 6
+      },
+      "skill_bonuses": {
+        "sorcery": {
+          "perfected_sorcerer_hat": 4
+        }
+      },
+      "abilities": [],
+      "material": "silk",
+      "quality": "masterwork",
+      "enchantment": "touched"
+    },
+    "legendary_sorcerer_hat": {
+      "name": "Legendary Silk Sorcerer Hat",
+      "type": "hat",
+      "slot": "head",
+      "rarity": "epic",
+      "weight": 1,
+      "value": 653,
+      "description": "The pointed hat of the wrathful rites, worn with the Mahakala robe.",
+      "requirements": {
+        "focus": 14
+      },
+      "stats": {
+        "armor": 3,
+        "max_mana": 15,
+        "spellpower": 9
+      },
+      "skill_bonuses": {
+        "sorcery": {
+          "legendary_sorcerer_hat": 5
+        }
+      },
+      "abilities": [],
+      "material": "silk",
       "quality": "masterwork",
       "enchantment": "blessed"
     }

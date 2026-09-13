@@ -561,6 +561,38 @@
         "mala"
 	  ],
 	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"aquamarine": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "value_mult": 0.7,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "name_prefix": "Aquamarine",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead — the sea-stone. Water."
+	},
+	"cotton": {
+	  "tier": 1,
+	  "damage_mult": 0.4,
+	  "armor_mult": 0.4,
+	  "weight_mult": 0.35,
+	  "value_mult": 0.45,
+	  "base_durability": 40,
+	  "fragility": 1.5,
+	  "name_prefix": "Cotton",
+	  "allowed_types": [
+		"robe",
+		"hat",
+		"cape",
+		"gloves",
+		"boots",
+        "pants"
+	  ]
 	}
   },
   "quality_levels": {
@@ -1381,9 +1413,10 @@
 	},
 	"turquoise": {
 	  "element": "water",
-	  "grants": "water_magic",
+	  "grants": "white_magic",
 	  "value_mult": 1.0,
-	  "_mala_only": true
+	  "_mala_only": true,
+	  "_note": "Life-force stone — rlung and rtsa. Pacifying activity rather than the sea, which is aquamarine's."
 	},
 	"star_sapphire": {
 	  "element": "water",
@@ -1424,12 +1457,6 @@
 	"diamond": {
 	  "element": "space",
 	  "grants": "space_magic",
-	  "value_mult": 1.0,
-	  "_mala_only": true
-	},
-	"moonstone": {
-	  "element": "water",
-	  "grants": "white_magic",
 	  "value_mult": 1.0,
 	  "_mala_only": true
 	},
@@ -1486,6 +1513,12 @@
 	  "grants": "summoning",
 	  "value_mult": 1.0,
 	  "_mala_only": true
+	},
+	"aquamarine": {
+	  "element": "water",
+	  "grants": "water_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
 	}
   },
   "ritual_implements": {
@@ -1534,5 +1567,13 @@
 	  "magnitude": 5
 	}
   },
-  "_comment_consecration": "Consecration is to a ritual implement what quality is to a weapon: the scale of how well-made and well-blessed it is. It is the ONLY thing that should move an implement's price. A gold dorje must not cost more than a copper one — they serve different elements, not different tiers."
+  "_comment_consecration": "Consecration is to a ritual implement what quality is to a weapon: the scale of how well-made and well-blessed it is. It is the ONLY thing that should move an implement's price. A gold dorje must not cost more than a copper one — they serve different elements, not different tiers.",
+  "garb_fabric_ladder": {
+	"1": "cloth",
+	"2": "cotton",
+	"3": "cotton",
+	"4": "silk",
+	"5": "silk"
+  },
+  "_comment_garb_fabric": "Ritual garb runs the consecration ladder like every other graded line, and the fabric marks where on it you are: unmarked cloth at the first grade, cotton through the middle, silk at the top two. It is a flavoured shorthand for the grade rather than a second axis — a player can read the rank off the cloth without being told. Metal threading was considered as an elemental axis and dropped: it would have multiplied the line without adding a decision."
 }
