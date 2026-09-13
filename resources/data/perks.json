@@ -7995,7 +7995,8 @@
       "requires_perks": [],
       "description": "Aura. All allies' attacks deal +5% bonus Air damage and gain a 10% chance to Stun for 1 turn.",
       "flavor": "The sky fights beside you.",
-      "is_mantra": false
+      "is_mantra": false,
+      "aura": "avatar_of_the_storm"
     },
     "avatar_of_the_wind": {
       "name": "Avatar of the Wind",

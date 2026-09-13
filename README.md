@@ -93,6 +93,9 @@ stat or an area shape:
   one, plus opt-in per-ring damage falloff.
 - `scripts/combat/save_system.gd` — the one saving-throw mechanic. `d20 +
   defender attribute` vs `10 + attacker attribute + tier`.
+- `scripts/combat/aura_system.gd` — proximity effects. Equipment, statuses,
+  perks and units all declare an aura by naming one in
+  `resources/data/auras.json`; spells reach them through the status they apply.
 
 ---
 

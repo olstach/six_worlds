@@ -565,6 +565,73 @@ for _s in load("resources/data/statuses.json")["statuses"]:
     _status_effects.update(str(e) for e in _s.get("effects", []))
 check_vocabulary("status effect", _status_effects)
 
+# ── Auras ────────────────────────────────────────────────────────────────────
+#
+# Four kinds of source may declare an aura, and all four name it the same way.
+# Two things can go wrong and neither shows up at runtime: a source names an
+# aura that does not exist (it is collected, warned about once, and dropped), or
+# a definition uses a payload kind nothing resolves (it is collected and
+# silently ignored). Both are the write-with-no-reader bug in a new costume.
+_auras = load("resources/data/auras.json")["auras"]
+_aura_ids = {k for k in _auras if not k.startswith("_")}
+
+# The vocabulary lives in aura_system.gd and is read from there, never restated
+# here — a second copy of a vocabulary is how the original bug got in.
+_kinds_src = open(os.path.join(ROOT, "scripts/combat/aura_system.gd"), encoding="utf-8").read()
+_m = re.search(r"const PAYLOAD_KINDS[^=]*=\s*\[(.*?)\]", _kinds_src, re.S)
+_payload_kinds = set(re.findall(r'"([^"]+)"', _m.group(1))) if _m else set()
+if not _payload_kinds:
+    err("data->code", "could not read AuraSystem.PAYLOAD_KINDS — aura payloads unchecked")
+
+for _aid, _adef in _auras.items():
+    if _aid.startswith("_"):
+        continue
+    for _pl in _adef.get("payloads", []):
+        _kind = str(_pl.get("kind", ""))
+        if _kind not in _payload_kinds:
+            err("data->code", f"aura '{_aid}' has payload kind '{_kind}', "
+                f"which is not in AuraSystem.PAYLOAD_KINDS — nothing resolves it")
+    if _adef.get("affects", "allies") not in ("allies", "enemies", "all", "self"):
+        err("data->code", f"aura '{_aid}' affects '{_adef.get('affects')}', "
+            "which AuraSystem.reaches() does not recognise — it will reach nobody")
+
+# Every source that names an aura must name one that exists.
+for _iid, _it in load("resources/data/items.json")["items"].items():
+    _a = _it.get("passive_aura", "")
+    if _a and _a not in _aura_ids:
+        err("data->code", f"item '{_iid}' declares unknown aura '{_a}'")
+for _st in load("resources/data/statuses.json")["statuses"]:
+    _a = _st.get("aura", "")
+    if _a and _a not in _aura_ids:
+        err("data->code", f"status '{_st.get('name')}' declares unknown aura '{_a}'")
+_perks_file = load("resources/data/perks.json")
+for _section in ("skill_perks", "cross_perks"):
+    for _pid, _pk in _perks_file.get(_section, {}).items():
+        if not isinstance(_pk, dict):
+            continue
+        _a = _pk.get("aura", "")
+        if _a and _a not in _aura_ids:
+            err("data->code", f"perk '{_pid}' declares unknown aura '{_a}'")
+
+# And every declared aura must have at least one source naming it, or it is
+# content that exists only in the definitions file.
+_named = set()
+for _it in load("resources/data/items.json")["items"].values():
+    if _it.get("passive_aura"):
+        _named.add(_it["passive_aura"])
+for _st in load("resources/data/statuses.json")["statuses"]:
+    if _st.get("aura"):
+        _named.add(_st["aura"])
+for _section in ("skill_perks", "cross_perks"):
+    for _pk in _perks_file.get(_section, {}).values():
+        if isinstance(_pk, dict) and _pk.get("aura"):
+            _named.add(_pk["aura"])
+_named |= set(re.findall(r'intrinsic_auras\.append\("([^"]+)"\)', _gd_source))
+for _aid in sorted(_aura_ids - _named):
+    err("data->code", f"aura '{_aid}' is defined but no item, status, perk or "
+        "unit declares it — it can never fire")
+
+
 # AoE shape names, across both spells and perk combat_data. An unknown shape
 # falls back to a circle inside AoEResolver with only a push_warning, which
 # turns a sweep into a burst without anything going red.

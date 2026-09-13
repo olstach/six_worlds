@@ -1,7 +1,7 @@
 {
   "_comment": "Values declared in data that no code reads, accepted for now. The data->code check in validate_data.py fails on anything unread that is NOT listed here, so this file is the record of known gaps rather than a way to silence the check. Shrink it by wiring a consumer, never by adding a line without a reason.",
   "base_bonuses stat": {
-    "_reason": "Skill payouts with no consumer yet. `_pct` is a percentage, `party_` means one member's skill pays the whole party (best member — see PartyBonuses), a bare name is flat. Four remain, each blocked on design work rather than wiring: crafting_quality_pct and crafting_yield_pct wait on the equipment and crafting audit (non-consumable items gaining a quality, Smithing producing equipment); loot_quality_pct waits on the loot design (total value from the defeated party's XP, with Luck buying a chance at one better item instead of several common ones); trap_detection_pct waits on the traps design. All three are written up in TODO.",
+    "_reason": "Skill payouts with no consumer yet. `_pct` is a percentage, `party_` means one member's skill pays the whole party (best member \u2014 see PartyBonuses), a bare name is flat. Four remain, each blocked on design work rather than wiring: crafting_quality_pct and crafting_yield_pct wait on the equipment and crafting audit (non-consumable items gaining a quality, Smithing producing equipment); loot_quality_pct waits on the loot design (total value from the defeated party's XP, with Luck buying a chance at one better item instead of several common ones); trap_detection_pct waits on the traps design. All three are written up in TODO.",
     "values": [
       "crafting_quality_pct",
       "crafting_yield_pct",
@@ -26,7 +26,6 @@
       "joins_party_permanently",
       "knockback",
       "lifesteal_on_attacks",
-      "light_aura",
       "linked_to_ally",
       "random_attacks",
       "random_spellcasting",
