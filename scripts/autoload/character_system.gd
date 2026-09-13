@@ -17,6 +17,16 @@ signal perk_selection_requested(character_data: Dictionary, perks: Array)
 
 # Party data - player is always index 0
 var party: Array[Dictionary] = []
+
+## Companions who died and were taken out of the party.
+##
+## They used to be deleted outright — `_cleanup_dead_companions` removed them
+## and logged "lost forever", and that was the end of the record. Keeping them
+## costs almost nothing and buys three things: resurrection has something to
+## reach for, an event can name someone the party actually lost rather than a
+## stranger, and the run ends with a list of the dead, which for this game is
+## not a bookkeeping detail.
+var fallen: Array[Dictionary] = []
 ## Companions you may travel with before Leadership enters into it. Asking the
 ## player to buy a skill for their first companion makes no sense; what
 ## Leadership buys is the party beyond the ones who would come anyway.
@@ -1443,6 +1453,48 @@ func remove_companion(index: int) -> bool:
 	party.remove_at(index)
 	update_party_derived_stats()
 	return true
+
+
+## Move a companion out of the party and into the record of the dead.
+##
+## Death is the only exit that remembers. Dismissing someone uses
+## remove_companion and they are simply gone; dying puts them here, where
+## Resurrection can still reach them.
+func record_fallen(index: int, cause: String = "") -> bool:
+	if index <= 0 or index >= party.size():
+		return false
+	var who: Dictionary = party[index]
+	who["died_of"] = cause
+	who["died_on_day"] = GameState.current_day if GameState else 0
+	fallen.append(who)
+	return remove_companion(index)
+
+
+## Bring one of the fallen back into the party, at `hp_pct` of their maximum.
+##
+## Returns the restored character, or an empty dictionary if the index is bad or
+## the party is full — a resurrection into a party with no room would otherwise
+## delete the person a second time.
+func restore_fallen(index: int, hp_pct: int = 100) -> Dictionary:
+	if index < 0 or index >= fallen.size():
+		return {}
+	if party.size() >= get_max_party_size():
+		return {}
+	var who: Dictionary = fallen[index]
+	fallen.remove_at(index)
+	who.erase("died_of")
+	who.erase("died_on_day")
+	update_derived_stats(who)
+	var max_hp: int = int(who.get("derived", {}).get("max_hp", 1))
+	who["derived"]["current_hp"] = maxi(1, int(max_hp * hp_pct / 100.0))
+	party.append(who)
+	update_party_derived_stats()
+	return who
+
+
+## Everyone this run has lost, most recent last.
+func get_fallen() -> Array[Dictionary]:
+	return fallen
 
 ## Get all party members
 func get_party() -> Array[Dictionary]:

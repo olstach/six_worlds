@@ -2709,6 +2709,58 @@ func _kill_unit(unit: Node) -> void:
 	_check_immediate_combat_end()
 
 
+## Raise the dead, at whatever tier the spell asked for.
+##
+##   "resurrection": {"tier": "revive", "hp_pct": 1}
+##   "resurrection": {"tier": "revive", "hp_pct": 30, "scope": "all_allies"}
+##
+## See Resurrection for why stabilise, revive and raise are three acts rather
+## than one.
+func _apply_resurrection(caster: Node, target: Node, spec: Dictionary,
+		result: Dictionary) -> void:
+	var tier: String = spec.get("tier", "revive")
+	if not Resurrection.is_tier(tier):
+		push_warning("CombatManager: %s" % Resurrection.explain_unknown_tier(tier))
+		return
+
+	var scope: String = spec.get("scope", "single")
+	var hp_pct: int = int(spec.get("hp_pct", 100))
+	var candidates: Array = []
+	if scope == "all_allies":
+		# Everyone on the caster's side who is down, which is the whole point of
+		# a 225-mana spell called Breath of Heaven.
+		for unit in all_units:
+			if is_instance_valid(unit) and "team" in unit and unit.team == caster.team:
+				candidates.append(unit)
+	else:
+		candidates.append(target)
+
+	var raised := 0
+	for unit in candidates:
+		var check: Dictionary = Resurrection.can_revive(unit)
+		if not check.ok:
+			if scope == "single":
+				combat_log.emit(check.reason)
+				result.effects_applied.append({"type": "no_effect", "reason": check.reason})
+			continue
+		var hp: int = Resurrection.hp_for(unit, hp_pct)
+		unit.is_dead = false
+		unit.is_bleeding_out = false
+		unit.bleed_out_turns = 0
+		unit.current_hp = hp
+		if spec.get("cleanse", false):
+			unit.status_effects.clear()
+		if unit.has_method("_update_visuals"):
+			unit._update_visuals()
+		unit_healed.emit(unit, hp)
+		combat_log.emit("%s rises again with %d HP." % [unit.unit_name, hp])
+		result.effects_applied.append({"type": "resurrect", "target": unit, "hp": hp})
+		raised += 1
+
+	if raised > 0 and scope == "all_allies":
+		combat_log.emit("%s calls %d of the fallen back." % [caster.unit_name, raised])
+
+
 ## Revive a bleeding out unit
 func revive_unit(unit: Node, hp_amount: int) -> void:
 	if not unit.is_bleeding_out:
@@ -3309,10 +3361,32 @@ func _get_spell_targets(caster: Node, spell: Dictionary, target_pos: Vector2i) -
 					targets.append(unit)
 
 		"single_corpse":
-			# For revive spells - check bleeding out units
+			# Revive spells. This filtered on is_bleeding_out alone, so the only
+			# people a resurrection could reach were the ones not yet dead —
+			# the same shape as single_ally filtering on is_alive() and missing
+			# the person the spell exists for.
 			var unit = get_unit_at(target_pos)
-			if unit and unit.is_bleeding_out:
+			if unit and (unit.is_bleeding_out or unit.is_dead):
 				targets.append(unit)
+
+		"global":
+			# The whole field, filtered by who the spell is for. Four spells
+			# declared `target: global` and got no targets at all, because
+			# nothing here matched the word.
+			var eligible: String = spell.get("target", {}).get("eligible", "enemy")
+			for unit in all_units:
+				if not is_instance_valid(unit):
+					continue
+				var same_team: bool = "team" in unit and unit.team == caster.team
+				match eligible:
+					"all":
+						targets.append(unit)
+					"ally", "dead_ally":
+						if same_team:
+							targets.append(unit)
+					_:
+						if not same_team:
+							targets.append(unit)
 
 		"aoe":
 			var aoe_def: Dictionary = spell.get("aoe", {"type": "circle", "size": 2, "origin": "target"})
@@ -3639,6 +3713,15 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 			var cleanse_heal = maxi(1, int(caster.get_spellpower() * 0.20))
 			target.heal(cleanse_heal)
 			unit_healed.emit(target, cleanse_heal)
+
+	# --- Resurrection (from spell.resurrection) ---
+	if spell.has("resurrection"):
+		_apply_resurrection(caster, target, spell["resurrection"], result)
+
+	# --- Corpse destruction: a body burned to nothing cannot be raised ---
+	if spell.get("special", {}).get("prevents_resurrection", false):
+		if "corpse_destroyed" in target:
+			target.corpse_destroyed = true
 
 	# --- Status operations (from spell.status_ops) ---
 	if spell.has("status_ops"):
@@ -5218,9 +5301,11 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 					valid_positions.append(unit.grid_position)
 
 		"single_corpse":
-			# Bleeding out allies
+			# Downed allies, dead or still bleeding. This is the tile-highlight
+			# path, so excluding the dead here meant a resurrection could not
+			# even be aimed at one.
 			for unit in all_units:
-				if not unit.is_bleeding_out:
+				if not (unit.is_bleeding_out or unit.is_dead):
 					continue
 				if unit.team != caster.team:
 					continue

@@ -682,6 +682,30 @@ for _sid, _sp in _spells.items():
                 "a status nor a StatusOps tag — it removes nothing")
 
 
+# ── Resurrection ─────────────────────────────────────────────────────────────
+_res_src = open(os.path.join(ROOT, "scripts/combat/resurrection.gd"), encoding="utf-8").read()
+_tiers = _gd_list(_res_src, "TIERS")
+_scopes = _gd_list(_res_src, "SCOPES")
+if not _tiers or not _scopes:
+    err("data->code", "could not read Resurrection.TIERS/SCOPES — unchecked")
+
+for _sid, _sp in _spells.items():
+    _rs = _sp.get("resurrection")
+    if _rs is None:
+        continue
+    if not isinstance(_rs, dict):
+        err("data->code", f"spell '{_sid}' has a non-object `resurrection`")
+        continue
+    if _rs.get("tier", "revive") not in _tiers:
+        err("data->code", f"spell '{_sid}' uses resurrection tier "
+            f"'{_rs.get('tier')}', which is not in Resurrection.TIERS")
+    if _rs.get("scope", "single") not in _scopes:
+        err("data->code", f"spell '{_sid}' uses resurrection scope "
+            f"'{_rs.get('scope')}', which is not in Resurrection.SCOPES")
+    if not isinstance(_rs.get("hp_pct", 100), int):
+        err("data->code", f"spell '{_sid}' has a non-integer resurrection hp_pct")
+
+
 # ── Auras ────────────────────────────────────────────────────────────────────
 #
 # Four kinds of source may declare an aura, and all four name it the same way.

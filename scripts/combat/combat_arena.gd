@@ -2860,16 +2860,22 @@ func _cleanup_dead_companions() -> void:
 			# Iterate in reverse so removing one doesn't shift remaining indices
 			for i in range(party.size() - 1, 0, -1):
 				if party[i].get("name", "") == unit.unit_name:
-					CharacterSystem.remove_companion(i)
-					_log_message("%s has been lost forever." % unit.unit_name)
+					# Recorded rather than deleted, so a shrine or a high-level
+					# healing event still has someone to reach for. A destroyed
+					# corpse is remembered as destroyed and stays unreachable.
+					var cause := "corpse destroyed" if unit.corpse_destroyed else "killed in battle"
+					CharacterSystem.record_fallen(i, cause)
+					_log_message("%s has fallen." % unit.unit_name)
 					break
 
 func _on_combat_ended(victory: bool) -> void:
 	_update_action_buttons()
 
-	if victory:
-		_stabilize_bleeding_companions()
-		_cleanup_dead_companions()
+	# The dead are counted whichever way the fight went. This ran on victory
+	# only, so losing a companion in a fight you also lost left them in the
+	# party at zero health — alive again by the next screen.
+	_stabilize_bleeding_companions()
+	_cleanup_dead_companions()
 
 	if victory:
 		_log_message("=== VICTORY! ===")
@@ -2900,8 +2906,8 @@ func _on_combat_ended(victory: bool) -> void:
 			_log_message("=== ALL HAVE FALLEN ===")
 			_show_defeat_screen()
 		else:
-			# Fled — companions who died before the retreat are still gone
-			_cleanup_dead_companions()
+			# The dead were already recorded at the top of this function, on
+			# every outcome — retreat included.
 			_log_message("=== RETREAT ===")
 			GameState.returning_from_combat = true
 			SaveManager.autosave()
