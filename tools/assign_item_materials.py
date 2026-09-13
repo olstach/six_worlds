@@ -165,14 +165,6 @@ def main():
             how_set[item_id] = source
             how["material from " + source] += 1
         item.pop("quality", None)
-        if "_mala" in item_id:
-            # Malas run no consecration ladder: the material carries the grade
-            # on its own, so quality stays neutral and does not multiply it.
-            item["quality"] = "common"
-            item["enchantment"] = "none"
-            chosen[item["material"]] += 1
-            touched += 1
-            continue
         if True:
             grade = next((ID_QUALITY[w] for w in item_id.split("_") if w in ID_QUALITY), None)
             item["quality"] = grade or RARITY_QUALITY.get(item.get("rarity", "common"), "common")
@@ -197,9 +189,10 @@ def main():
         mat = materials.get(item["material"], {})
         qual = qualities.get(item["quality"], {})
         # A dorje's metal does not price it — gold and copper serve different
-        # elements at the same cost. A mala's material is the exact opposite:
-        # it carries the grade, because malas run no consecration ladder. So
-        # the parity rule applies to every ritual implement EXCEPT malas.
+        # elements at the same cost. A mala's stone is different: the line
+        # shifts to the rarer stone at the top two grades, so the stone is part
+        # of the grading and must keep its own value. The parity rule therefore
+        # applies to every ritual implement EXCEPT malas.
         material_mult = mat.get("value_mult", 1.0)
         if (item.get("type") == "focus" and item["material"] in ritual_metals
                 and not ritual_metals[item["material"]].get("_mala_only", False)):

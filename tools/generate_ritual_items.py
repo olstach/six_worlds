@@ -33,17 +33,28 @@ ITEMS = ROOT / "resources" / "data" / "items.json"
 # material table: diamond IS vajra, which is space-coded everywhere else in the
 # game, so it moves to space and star sapphire — blue, and deep — takes water.
 MALA_MATERIALS = {
-    "earth":       [("citrine", 1), ("topaz", 2)],
-    "water":       [("turquoise", 1), ("star_sapphire", 2)],
-    "air":         [("sandalwood", 1), ("emerald", 2)],
-    "fire":        [("coral", 1), ("ruby", 2)],
-    "space":       [("crystal", 1), ("diamond", 2)],
-    "white":       [("moonstone", 1), ("conch_bead", 2)],
-    "black":       [("bone_bead", 1), ("devils_bone", 2)],
-    "sorcery":     [("smoke_crystal", 1), ("agate", 2)],
-    "enchantment": [("rosewood", 1), ("opal", 2)],
-    "summoning":   [("amethyst", 1), ("mirror_bead", 2)],
+    "earth":       ["citrine", "topaz"],
+    "water":       ["aquamarine", "star_sapphire"],
+    "air":         ["sandalwood", "emerald"],
+    "fire":        ["coral", "ruby"],
+    "space":       ["crystal", "diamond"],
+    # Turquoise is the life-force stone — rlung and rtsa, the vital winds and
+    # channels — which puts it closer to the pacifying white activity than to
+    # water. Aquamarine takes water, where the sea-stone belongs.
+    "white":       ["turquoise", "conch_bead"],
+    "black":       ["bone_bead", "devils_bone"],
+    "sorcery":     ["smoke_crystal", "agate"],
+    "enchantment": ["rosewood", "opal"],
+    "summoning":   ["amethyst", "mirror_bead"],
 }
+
+# Malas run the same consecration ladder as every other implement — losing it
+# cost the incremental progress that makes a line feel like a line — but the
+# top two grades are strung from the rarer stone. The grade is legible at a
+# glance: a Perfected mala is visibly a different object, not the same beads
+# blessed harder.
+MATERIAL_FOR_GRADE = {1: 0, 2: 0, 3: 0, 4: 1, 5: 1}
+
 # Which school a mala's material feeds. The five elements take their magic
 # school; the other five are schools already.
 SCHOOL_OF = {
@@ -61,6 +72,7 @@ ELEMENT_OF = {
 }
 PRETTY = {
     "star_sapphire": "Star Sapphire", "smoke_crystal": "Smoke Crystal",
+    "aquamarine": "Aquamarine",
     "conch_bead": "Conch", "bone_bead": "Bone", "devils_bone": "Devil's Bone",
     "mirror_bead": "Mirror Bead",
 }
@@ -77,30 +89,32 @@ def pretty(name):
 def build_malas():
     out = {}
     for school, materials in MALA_MATERIALS.items():
-        for material, grade in materials:
-            item_id = f"{material}_mala"
+        for grade_name, magnitude in CONSECRATIONS:
+            material = materials[MATERIAL_FOR_GRADE[magnitude]]
+            item_id = f"{grade_name}_{material}_mala"
             out[item_id] = {
-                "name": f"{pretty(material)} Mala",
+                "name": f"{grade_name.title()} {pretty(material)} Mala",
                 "weapon_class": "Prayer beads",
                 "type": "focus",
                 "slot": "weapon_off",
                 "two_handed": False,
-                "rarity": "common" if grade == 1 else "rare",
+                "rarity": "common" if magnitude <= 2 else
+                          ("rare" if magnitude == 3 else "epic"),
                 "element": ELEMENT_OF[school],
                 "material": material,
                 "weight": 0.5,
-                "value": 45 if grade == 1 else 260,
+                "value": int(50 * (1 + magnitude * 0.8) ** 1.8),
                 "description": (
                     "A hundred and eight beads of %s, worn smooth at the "
                     "thumb. Counts the recitation so the mind need not."
                     % pretty(material).lower()),
-                "requirements": {"focus": 6 + grade * 2},
-                "stats": {"spellpower": 2 + grade * 2},
-                # Yoga from the implement, the school from the material — the
+                "requirements": {"focus": 5 + magnitude * 2},
+                "stats": {"spellpower": magnitude * 2},
+                # Yoga from the implement, the school from the substance — the
                 # same two axes every ritual implement runs on.
                 "skill_bonuses": {
-                    "yoga": {item_id: grade},
-                    SCHOOL_OF[school]: {item_id + "_mat": grade},
+                    "yoga": {item_id: magnitude},
+                    SCHOOL_OF[school]: {item_id + "_mat": magnitude},
                 },
                 "abilities": [],
             }
@@ -147,21 +161,28 @@ def main():
 
     data = json.loads(ITEMS.read_text(encoding="utf-8"))
     malas, melongs = build_malas(), build_melongs()
-    clash = (set(malas) | set(melongs)) & set(data["items"])
-    if clash:
-        print("ERROR: ids already exist:", sorted(clash)[:5], file=sys.stderr)
-        return 1
+    # Regenerating replaces the families this tool owns rather than refusing:
+    # a generator that cannot be re-run is a generator you edit by hand once.
+    owned = [k for k in data["items"]
+             if k.endswith("_mala") or k.endswith("_melong")]
 
-    print(f"malas:   {len(malas)}  ({len(MALA_MATERIALS)} schools x 2 materials)")
+    print(f"malas:   {len(malas)}  ({len(MALA_MATERIALS)} schools x {len(CONSECRATIONS)} consecrations)")
     print(f"melongs: {len(melongs)} ({len(MELONG_METALS)} metals x {len(CONSECRATIONS)} consecrations)")
-    print(f"\nsample: {json.dumps(malas['turquoise_mala'], ensure_ascii=False)[:200]}")
+    for g in ("plain", "empowered", "legendary"):
+        for key in malas:
+            if key.startswith(g) and "mala" in key and ("conch" in key or "turquoise" in key):
+                print(f"  {key:32s} {malas[key]['value']:5d}g  "
+                      f"{list(malas[key]['skill_bonuses'])}")
+                break
     if not args.write:
         print("\ndry run — pass --write to apply")
         return 0
+    for key in owned:
+        del data["items"][key]
     data["items"].update(malas)
     data["items"].update(melongs)
     ITEMS.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"\nwrote {len(malas) + len(melongs)} items to {ITEMS.relative_to(ROOT)}")
+    print(f"\nreplaced {len(owned)}, wrote {len(malas) + len(melongs)} items")
     return 0
 
 

@@ -490,7 +490,27 @@ but may not be what the game wants.
       - Blocked on this: `crafting_quality_pct`, `crafting_yield_pct`,
         `loot_quality_pct`.
 
-- [ ] **Specialist ritual robes — designed 2026-09-13, not built.** Olaf's
+- [ ] **Item-granted auras have no consumer.** Three garments now carry
+      `passive_aura` — the two high-grade healer's robes
+      (`healing_regeneration`) and the top longlife caps (`longlife_hp`) — and
+      nothing reads the field on an equipped item. `_process_aura_effects()`
+      handles *status*-driven auras and one khata uses `passive_aura` through a
+      hardcoded branch, so both halves exist and are not joined. This is the
+      single blocker on the garb designs landing complete, and it is small:
+      equip-time, grant the aura status; on unequip, remove it.
+
+- [ ] ~~Specialist ritual robes~~ — **built 2026-09-13.** Eight new graded
+      families (pandita robe, sage's, tantric, dreamer's, chodpa's, chodpa's
+      eye covering, sorcerer's robe and hat), the black sorcerer's line renamed
+      to black mantra, and the fabric ladder applied to all 108 graded
+      garments. Remaining gaps, minor:
+      - **Enchantment and Ritual have a robe but no headwear.** Every other
+        school has both or is covered twice.
+      - **Yoga has no dedicated garment.** It appears only as the pandita cap's
+        secondary; `monks_robe` grants it but is ungraded and outside the
+        system.
+
+- [ ] **Superseded — the original specialist robe design.** Olaf's
       list, recorded before it evaporates. All graded 1-5 like the ngakpa line,
       chest slot unless noted:
       - healer's robe — white magic, **regeneration aura** at high grades
