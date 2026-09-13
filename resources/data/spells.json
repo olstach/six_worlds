@@ -1787,7 +1787,6 @@
         "Dampening_Aura"
       ],
       "special": {
-        "fire_damage_reduction_in_aura": true,
         "extinguishes_burning": true
       },
       "target": {
@@ -2084,16 +2083,16 @@
       "mana_cost": 15,
       "damage": 5,
       "damage_type": "water",
-      "special": {
-        "push_distance": 1,
-        "obstacle_bonus_damage": 10
-      },
       "target": {
         "type": "single",
         "eligible": "enemy",
         "range": "melee"
       },
-      "description": "Push one enemy in melee 1 tile, minor damage"
+      "description": "Push one enemy in melee 1 tile, minor damage",
+      "push": {
+        "tiles": 1,
+        "blocked_damage": 10
+      }
     },
     "rain": {
       "name": "Rain",
@@ -2145,10 +2144,6 @@
       "mana_cost": 40,
       "damage": 10,
       "damage_type": "water",
-      "special": {
-        "push_distance": "spellpower",
-        "obstacle_bonus_damage": 25
-      },
       "target": {
         "type": "aoe",
         "eligible": "enemy"
@@ -2160,7 +2155,12 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_width_per_tier"
       },
-      "description": "3 tiles wide, push based on spellpower, minor damage"
+      "description": "3 tiles wide, push based on spellpower, minor damage",
+      "push": {
+        "tiles": 1,
+        "per_spellpower": 0.08,
+        "blocked_damage": 25
+      }
     },
     "flash_freeze": {
       "name": "Flash Freeze",
@@ -2244,11 +2244,6 @@
       "mana_cost": 75,
       "damage": 15,
       "damage_type": "water",
-      "special": {
-        "push_distance_min": 2,
-        "push_distance_max": 3,
-        "obstacle_bonus_damage": 30
-      },
       "target": {
         "type": "aoe",
         "eligible": "enemy"
@@ -2259,7 +2254,12 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_radius_per_tier"
       },
-      "description": "Push all around caster 2-3 tiles, minor damage"
+      "description": "Push all around caster 2-3 tiles, minor damage",
+      "push": {
+        "tiles": 2,
+        "variance": 1,
+        "blocked_damage": 30
+      }
     },
     "hail_storm": {
       "name": "Hail Storm",
@@ -2416,10 +2416,6 @@
       "mana_cost": 225,
       "damage": 30,
       "damage_type": "water",
-      "special": {
-        "push_distance": "spellpower_far",
-        "obstacle_bonus_damage": 70
-      },
       "target": {
         "type": "aoe",
         "eligible": "enemy"
@@ -2429,7 +2425,12 @@
         "base_size": "battlefield_width",
         "upgradeable": false
       },
-      "description": "Long vertical line, pushes far based on spellpower, moderate damage on obstacle hit"
+      "description": "Long vertical line, pushes far based on spellpower, moderate damage on obstacle hit",
+      "push": {
+        "tiles": 2,
+        "per_spellpower": 0.16,
+        "blocked_damage": 70
+      }
     },
     "ice_age": {
       "name": "Ice Age",
@@ -2841,11 +2842,11 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_length_per_tier"
       },
-      "special": {
-        "pushes_enemies": true,
-        "push_distance": 2
-      },
-      "description": "Wave of poisonous water, poison damage + poisoned + push"
+      "description": "Wave of poisonous water, poison damage + poisoned + push",
+      "push": {
+        "tiles": 2,
+        "blocked_damage": 15
+      }
     },
     "hands_of_the_drowned": {
       "name": "Hands of the Drowned",
@@ -3440,9 +3441,6 @@
         "Fire_Immune",
         "Water_Vulnerable"
       ],
-      "special": {
-        "aura_effect": "blind_and_damage_close_enemies"
-      },
       "target": {
         "type": "self"
       },
@@ -4798,12 +4796,6 @@
       "statuses_caused": [
         "Favorable_Wind"
       ],
-      "special": {
-        "aura_grants": [
-          "Hasted",
-          "Precision"
-        ]
-      },
       "target": {
         "type": "single",
         "eligible": "ally",
@@ -4931,10 +4923,6 @@
       ],
       "mana_cost": 40,
       "summon": "Singing_Birds",
-      "special": {
-        "aura_buff": true,
-        "morale_boost": true
-      },
       "target": {
         "type": "ground"
       },
@@ -4979,10 +4967,6 @@
       ],
       "mana_cost": 75,
       "summon": "Apsara",
-      "special": {
-        "heals_allies": true,
-        "charms_enemies": true
-      },
       "target": {
         "type": "ground"
       },
@@ -5007,10 +4991,6 @@
       ],
       "mana_cost": 135,
       "summon": "Gandharva_Host",
-      "special": {
-        "buffs_allies": true,
-        "heals_allies": true
-      },
       "target": {
         "type": "ground"
       },
@@ -5193,12 +5173,10 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_radius_per_tier"
       },
-      "special": {
-        "launches_into_air": true,
-        "fall_damage": true,
-        "scatter_to_random_tile_in_aoe": true
-      },
-      "description": "Launch enemies into air, they take fall damage and scatter to random tiles"
+      "description": "Launch enemies into air, they take fall damage and scatter to random tiles",
+      "scatter": {
+        "range": 2
+      }
     },
     "thunderclap": {
       "name": "Thunderclap",
@@ -5264,12 +5242,12 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_length_per_tier"
       },
-      "special": {
-        "pushes_enemies": true,
-        "push_distance": "spellpower",
-        "impact_damage_on_obstacle": true
-      },
-      "description": "Push enemies in cone, physical damage on obstacle impact"
+      "description": "Push enemies in cone, physical damage on obstacle impact",
+      "push": {
+        "tiles": 1,
+        "per_spellpower": 0.08,
+        "blocked_damage": 40
+      }
     },
     "lightning": {
       "name": "Lightning",
@@ -5396,11 +5374,12 @@
       },
       "special": {
         "persistent_effect": true,
-        "moves_randomly": true,
-        "launches_into_air": true,
-        "scatter_to_random_tile": true
+        "moves_randomly": true
       },
-      "description": "Persistent tornado that moves randomly, launching and scattering enemies"
+      "description": "Persistent tornado that moves randomly, launching and scattering enemies",
+      "scatter": {
+        "range": 2
+      }
     },
     "lightning_form": {
       "name": "Lightning Form",
@@ -5524,11 +5503,11 @@
         "type": "single",
         "eligible": "enemy"
       },
-      "special": {
-        "pushes_target": true,
-        "push_distance": 3
-      },
-      "description": "Wind carrying void energy, push + space damage"
+      "description": "Wind carrying void energy, push + space damage",
+      "push": {
+        "tiles": 3,
+        "blocked_damage": 15
+      }
     },
     "phase_wind": {
       "name": "Phase Wind",
@@ -5590,11 +5569,10 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_radius_per_tier"
       },
-      "special": {
-        "teleports_enemies_randomly": true,
-        "scatter_range": 5
-      },
-      "description": "Tear in space scatters enemies to random locations"
+      "description": "Tear in space scatters enemies to random locations",
+      "scatter": {
+        "range": 5
+      }
     },
     "gentle_breeze": {
       "name": "Gentle Breeze",
@@ -5643,13 +5621,8 @@
       "damage": 15,
       "damage_type": "air",
       "statuses_caused": [
-        "Stunned"
+        "Radiance"
       ],
-      "special": {
-        "aura_heals_allies": true,
-        "heal_per_turn": true,
-        "stuns_enemies_in_melee": true
-      },
       "target": {
         "type": "self"
       },
@@ -7314,9 +7287,6 @@
       "statuses_caused": [
         "Soothing_Presence"
       ],
-      "special": {
-        "heal_per_turn_aura": true
-      },
       "target": {
         "type": "self"
       },
@@ -7553,9 +7523,6 @@
       "statuses_caused": [
         "Aura_of_Blessing"
       ],
-      "special": {
-        "aura_grants_blessed": true
-      },
       "target": {
         "type": "self"
       },
@@ -7607,8 +7574,7 @@
       "mana_cost": 15,
       "summon": "Guiding_Light",
       "special": {
-        "provides_vision": true,
-        "small_buff_aura": true
+        "provides_vision": true
       },
       "target": {
         "type": "ground"
@@ -9682,12 +9648,6 @@
       "mana_cost": 135,
       "damage": 30,
       "damage_type": "fire",
-      "special": {
-        "push_direction": "random",
-        "push_distance_min": 2,
-        "push_distance_max": 3,
-        "obstacle_bonus_damage": 25
-      },
       "target": {
         "type": "ground"
       },
@@ -9698,7 +9658,13 @@
         "upgrade_scaling": "+1_arm_length_per_tier"
       },
       "description": "Superheated geyser erupts at target location in a cross AoE — moderate fire damage and throws each target 2-3 tiles in a random direction; bonus damage if thrown into a wall",
-      "domain": "steam"
+      "domain": "steam",
+      "push": {
+        "tiles": 2,
+        "variance": 1,
+        "direction": "random",
+        "blocked_damage": 25
+      }
     },
     "scalding_fog": {
       "name": "Scalding Fog",
@@ -10272,7 +10238,10 @@
       "target": {
         "type": "self"
       },
-      "description": "Radiate an aura in a 2-tile radius: all allies within gain immunity to mental debuffs, +2 AWR and +2 CON."
+      "description": "Radiate light in a 2-tile radius. Allies within are immune to mental debuffs, gain 2 Initiative, and carry 10 extra health while they stand in it.",
+      "statuses_caused": [
+        "Radiant_Visage"
+      ]
     },
     "shining_mirage": {
       "name": "Shining Mirage",

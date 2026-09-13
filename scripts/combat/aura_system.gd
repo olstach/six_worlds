@@ -157,23 +157,22 @@ static func emitted_by(unit: Node) -> Array[Dictionary]:
 		for effect in unit.status_effects:
 			var status_name: String = effect.get("status", "")
 			var def: Dictionary = CombatManager.get_status_definition(status_name)
-			var aura_id: String = def.get("aura", "")
-			if aura_id == "":
-				continue
-			var inst := _instance(aura_id, "status", status_name, def.get("aura_value", null))
-			if not inst.is_empty():
-				out.append(inst)
+			# One status may carry several auras. Radiance both mends the allies
+			# around it and dazzles whoever closes to melee, and those reach
+			# different teams at different radii, so they cannot be one aura.
+			for aura_id in _aura_ids_of(def):
+				var inst := _instance(aura_id, "status", status_name, def.get("aura_value", null))
+				if not inst.is_empty():
+					out.append(inst)
 
 	# 3. PERKS — standing auras a character carries permanently.
 	if not char_data.is_empty():
 		for perk_id in PerkSystem.get_owned_perk_ids(char_data):
 			var pdef: Dictionary = PerkSystem.get_perk_data(perk_id)
-			var aura_id: String = pdef.get("aura", "")
-			if aura_id == "":
-				continue
-			var inst := _instance(aura_id, "perk", perk_id, pdef.get("aura_value", null))
-			if not inst.is_empty():
-				out.append(inst)
+			for aura_id in _aura_ids_of(pdef):
+				var inst := _instance(aura_id, "perk", perk_id, pdef.get("aura_value", null))
+				if not inst.is_empty():
+					out.append(inst)
 
 	# 4. INTRINSIC — a flag set by the code that created the unit, for auras
 	#    that belong to the creature rather than to anything it carries.
@@ -215,6 +214,19 @@ static func _instance(aura_id: String, source_kind: String, source_id: String, m
 		"source_kind": source_kind,
 		"source_id": source_id,
 	}
+
+
+## The auras a definition declares. `aura` may name one or list several.
+static func _aura_ids_of(def: Dictionary) -> Array[String]:
+	var ids: Array[String] = []
+	var raw = def.get("aura", null)
+	if raw is String and raw != "":
+		ids.append(raw)
+	elif raw is Array:
+		for entry in raw:
+			if entry is String and entry != "":
+				ids.append(entry)
+	return ids
 
 
 static func _equipped_item_ids(char_data: Dictionary) -> Array[String]:

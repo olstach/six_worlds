@@ -19,7 +19,7 @@ var grid: CombatGrid
 ## A runtime error inside a check aborts it and returns control to _ready(),
 ## which would then find no failures and report OK having verified nothing.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 16
+const EXPECTED_CHECKS: int = 19
 
 
 func _ready() -> void:
@@ -56,6 +56,11 @@ func _ready() -> void:
 
 	# Damage multipliers.
 	_check_damage_taken_pct_is_filtered_by_kind()
+
+	# Several auras from one source, and payloads that fire on a roll.
+	_check_status_can_carry_several_auras()
+	_check_summon_template_auras_reach_the_creature()
+	_check_grant_status_chance_is_respected()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -443,4 +448,100 @@ func _check_damage_taken_pct_is_filtered_by_kind() -> void:
 		_fail("Dampening_Aura reduced PHYSICAL damage too: took %d of 100 — "
 			% physical_taken + "the `only` filter is not being applied")
 	_cleanup([guard, ally])
+	_done()
+
+
+# ── Several auras from one source ────────────────────────────────────────────
+
+## Radiance mends the allies around it AND dazzles whoever closes to melee.
+## Those reach different teams at different radii, so they cannot be one aura —
+## the status names both.
+func _check_status_can_carry_several_auras() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0)
+	var ally := _make_unit(Vector2i(6, 5), 0)
+	var foe := _make_unit(Vector2i(4, 5), 1)
+	CombatManager._apply_status_effect(caster, "Radiance", 3)
+
+	var auras := AuraSystem.emitted_by(caster)
+	if auras.size() < 2:
+		_fail("Radiance produced %d aura(s); it declares two" % auras.size())
+
+	ally.current_hp = 50
+	# The glare fires on a 35% roll, so give it enough turns to land once.
+	var stunned := false
+	for _i in 25:
+		CombatManager._process_auras(caster)
+		if foe.has_status("Stunned"):
+			stunned = true
+			break
+	if ally.current_hp <= 50:
+		_fail("Radiance healed no ally (hp %d) — the healing half never fired"
+			% ally.current_hp)
+	if not stunned:
+		_fail("Radiance never stunned an adjacent enemy across 25 turns — the "
+			+ "melee half never fired")
+	_cleanup([caster, ally, foe])
+	_done()
+
+
+## The four helper summons exist to stand somewhere and help. Their auras live
+## on the creature's template, not on the sentence that summoned it.
+##
+## Spawned through the REAL summoning path. The first version of this check set
+## intrinsic_auras by hand and then asserted the template's data separately,
+## which tested both ends and not the wire between them — unhooking the spawn
+## path entirely left it green.
+func _check_summon_template_auras_reach_the_creature() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0)
+	var result: Dictionary = CombatManager._spawn_summoned_unit(
+		caster, "Singing_Birds", Vector2i(7, 5), 0)
+	if not result.get("success", false):
+		_fail("could not summon Singing_Birds: %s" % str(result.get("reason", "?")))
+		_cleanup([caster])
+		_done()
+		return
+
+	var bird: Node = result["unit"]
+	if not "singing_birds" in bird.intrinsic_auras:
+		_fail("the summoned birds carry auras %s — the template's `auras` never "
+			% str(bird.intrinsic_auras) + "reached the creature")
+
+	var ally := _make_unit(Vector2i(8, 5), 0)
+	CombatManager._process_auras(bird)
+	if not ally.has_status("Encouraged"):
+		_fail("a summoned Singing Birds left the adjacent ally unencouraged")
+
+	_cleanup([caster, ally, bird])
+	_done()
+
+
+## A field that charmed everyone beside it every turn would end fights by
+## itself, so grant_status may fire on a roll — and the roll must be read.
+func _check_grant_status_chance_is_respected() -> void:
+	var apsara := _make_unit(Vector2i(5, 5), 0)
+	apsara.intrinsic_auras.append("apsara_charm")
+	var foe := _make_unit(Vector2i(6, 5), 1)
+
+	# At 25% the charm must not land on the very first turn every time, but
+	# must land within a generous window. Sampling both ends keeps the check
+	# honest about which failure it caught.
+	var first_turn_hits := 0
+	var ever_hit := false
+	for _trial in 20:
+		foe.status_effects.clear()
+		CombatManager._process_auras(apsara)
+		if foe.has_status("Charmed"):
+			first_turn_hits += 1
+	if first_turn_hits == 20:
+		_fail("a 25%% chance payload landed on all 20 first turns — the chance "
+			+ "is not being rolled")
+	foe.status_effects.clear()
+	for _i in 60:
+		CombatManager._process_auras(apsara)
+		if foe.has_status("Charmed"):
+			ever_hit = true
+			break
+	if not ever_hit:
+		_fail("a 25%% chance payload never landed across 60 turns")
+	_cleanup([apsara, foe])
 	_done()

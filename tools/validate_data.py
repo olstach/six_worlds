@@ -646,18 +646,25 @@ for _iid, _it in load("resources/data/items.json")["items"].items():
     _a = _it.get("passive_aura", "")
     if _a and _a not in _aura_ids:
         err("data->code", f"item '{_iid}' declares unknown aura '{_a}'")
+def _declared_auras(defn):
+    """`aura` may name one aura or list several."""
+    _a = defn.get("aura", "")
+    if isinstance(_a, str):
+        return [_a] if _a else []
+    return [str(x) for x in _a] if isinstance(_a, list) else []
+
 for _st in load("resources/data/statuses.json")["statuses"]:
-    _a = _st.get("aura", "")
-    if _a and _a not in _aura_ids:
-        err("data->code", f"status '{_st.get('name')}' declares unknown aura '{_a}'")
+    for _a in _declared_auras(_st):
+        if _a not in _aura_ids:
+            err("data->code", f"status '{_st.get('name')}' declares unknown aura '{_a}'")
 _perks_file = load("resources/data/perks.json")
 for _section in ("skill_perks", "cross_perks"):
     for _pid, _pk in _perks_file.get(_section, {}).items():
         if not isinstance(_pk, dict):
             continue
-        _a = _pk.get("aura", "")
-        if _a and _a not in _aura_ids:
-            err("data->code", f"perk '{_pid}' declares unknown aura '{_a}'")
+        for _a in _declared_auras(_pk):
+            if _a not in _aura_ids:
+                err("data->code", f"perk '{_pid}' declares unknown aura '{_a}'")
 
 # And every declared aura must have at least one source naming it, or it is
 # content that exists only in the definitions file.
@@ -666,13 +673,15 @@ for _it in load("resources/data/items.json")["items"].values():
     if _it.get("passive_aura"):
         _named.add(_it["passive_aura"])
 for _st in load("resources/data/statuses.json")["statuses"]:
-    if _st.get("aura"):
-        _named.add(_st["aura"])
+    _named.update(_declared_auras(_st))
 for _section in ("skill_perks", "cross_perks"):
     for _pk in _perks_file.get(_section, {}).values():
-        if isinstance(_pk, dict) and _pk.get("aura"):
-            _named.add(_pk["aura"])
+        if isinstance(_pk, dict):
+            _named.update(_declared_auras(_pk))
 _named |= set(re.findall(r'intrinsic_auras\.append\("([^"]+)"\)', _gd_source))
+for _tpl in load("resources/data/summon_templates.json")["templates"].values():
+    for _a in _tpl.get("auras", []):
+        _named.add(str(_a))
 for _aid in sorted(_aura_ids - _named):
     err("data->code", f"aura '{_aid}' is defined but no item, status, perk or "
         "unit declares it — it can never fire")
