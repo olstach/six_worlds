@@ -5698,15 +5698,16 @@
         "out_of_combat"
       ],
       "mana_cost": 225,
-      "special": {
-        "resurrects_all_fallen_allies": true,
-        "partial_hp_on_resurrect": true
-      },
       "target": {
         "type": "global",
         "eligible": "dead_ally"
       },
-      "description": "Resurrect all fallen allies with partial HP"
+      "description": "Resurrect all fallen allies with partial HP",
+      "resurrection": {
+        "tier": "revive",
+        "hp_pct": 30,
+        "scope": "all_allies"
+      }
     },
     "stinking_cloud": {
       "name": "Stinking Cloud",
@@ -7941,12 +7942,13 @@
       "mana_cost": 135,
       "target": {
         "type": "single",
-        "eligible": "dead_ally"
+        "eligible": "corpse"
       },
-      "special": {
-        "resurrects_with_1hp": true
-      },
-      "description": "Raise dead ally with 1 HP"
+      "description": "Raise dead ally with 1 HP",
+      "resurrection": {
+        "tier": "revive",
+        "hp_pct": 1
+      }
     },
     "rejuvenate": {
       "name": "Rejuvenate",
@@ -7989,12 +7991,14 @@
       "mana_cost": 225,
       "target": {
         "type": "single",
-        "eligible": "dead_ally"
+        "eligible": "corpse"
       },
-      "special": {
-        "resurrects_with_full_hp": true
-      },
-      "description": "Raise dead ally with full HP"
+      "description": "Raise dead ally with full HP",
+      "resurrection": {
+        "tier": "revive",
+        "hp_pct": 100,
+        "cleanse": true
+      }
     },
     "divine_wrath": {
       "name": "Divine Wrath",

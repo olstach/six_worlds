@@ -739,6 +739,31 @@ func apply_outcome(outcome: Dictionary) -> void:
 
 		# Wound/disease outcome — e.g. {"id": "deep_cut", "target": "random"} or {"id": "rot_sickness", "target": "all"}
 		# target: "all" applies to every party member, "random" picks one.
+		# Bring back one of the dead — the thing a high-level healing shrine or
+		# a bargain with something older than you has to offer that a potion
+		# does not. CharacterSystem keeps the record; this reaches into it.
+		#
+		#   "resurrect": {"target": "last"}          the most recent loss
+		#   "resurrect": {"target": "choice"}        the player picks (UI pending)
+		#   "resurrect": {"target": "last", "hp_pct": 50}
+		if "resurrect" in rewards:
+			var res_entry = rewards.resurrect
+			var fallen: Array = CharacterSystem.get_fallen()
+			var check: Dictionary = Resurrection.can_raise(
+				fallen.size() - 1, fallen.size(),
+				CharacterSystem.get_party().size(),
+				CharacterSystem.get_max_party_size())
+			if not check.ok:
+				print("EventManager: resurrection offered but %s" % check.reason)
+			else:
+				var hp_pct: int = int(res_entry.get("hp_pct", 100))
+				# "last" is the only target resolved so far; a chooser needs UI.
+				var raised: Dictionary = CharacterSystem.restore_fallen(
+					fallen.size() - 1, hp_pct)
+				if not raised.is_empty():
+					print("EventManager: %s returns to the party"
+						% raised.get("name", "?"))
+
 		if "wound" in rewards:
 			var wound_entry = rewards.wound
 			var wound_id: String = str(wound_entry.get("id", ""))

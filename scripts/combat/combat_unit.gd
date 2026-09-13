@@ -35,6 +35,10 @@ var max_actions: int = 2
 var is_bleeding_out: bool = false
 var bleed_out_turns: int = 0
 var is_dead: bool = false
+
+# Balefire and the funeral pyre leave nothing to raise. Checked by
+# Resurrection.can_revive(), and the only hard refusal in that system.
+var corpse_destroyed: bool = false
 var moved_this_turn: bool = false  # Set when unit moves; cleared at turn start (used by open_the_gate perk)
 var momentum_stacks: int = 0       # Consecutive axe hits; cleared on miss or turn start (momentum perk)
 var unarmed_hit_stacks: int = 0    # Consecutive unarmed hits; cleared on miss or turn start (keep_hitting perk)

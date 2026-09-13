@@ -203,8 +203,24 @@ and events too.
       effect phrased "removes…", "steals…", "transfers…" wants this rather than
       its own branch — and items and events can use it as readily as spells.
 
+- [ ] **Resurrection** (`resurrection.gd`) — three acts, not one: *stabilise*
+      a unit still bleeding out, *revive* one dead on the field, *raise* a
+      companion the party lost in an earlier fight. The third reaches
+      `CharacterSystem.fallen`, the record of the dead, which exists so that a
+      shrine or a high-level healing event has someone to name. Offer it from
+      events with `"rewards": {"resurrect": {"target": "last"}}`.
+      `prevents_resurrection` is the only hard refusal.
+
 - [ ] **Party bonuses** (`party_bonuses.gd`) — `party_`-prefixed payouts,
       best member rather than sum.
+
+- [ ] **The fallen have no UI and no narrative reach.**
+      `CharacterSystem.fallen` now records everyone the run has lost, and only
+      resurrection reads it. Worth more: a memorial screen, events that name
+      your specific dead, karma consequences for raising them, and a
+      `resurrect` event outcome that lets the player CHOOSE rather than always
+      taking the most recent loss — the chooser needs UI and currently defaults
+      to "last".
 
 ## 4. Data with no consumer
 

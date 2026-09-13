@@ -15,7 +15,7 @@ var failures: int = 0
 var grid: CombatGrid
 
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 26
+const EXPECTED_CHECKS: int = 34
 
 
 func _ready() -> void:
@@ -58,6 +58,15 @@ func _ready() -> void:
 	_check_steal_moves_a_buff_to_the_thief()
 	_check_transfer_loses_nothing()
 	_check_convert_scales_with_what_it_spends()
+
+	_check_raise_dead_returns_a_dead_unit()
+	_check_resurrect_returns_more_than_raise_dead()
+	_check_destroyed_corpse_refuses_resurrection()
+	_check_resurrection_refuses_the_living()
+	_check_breath_of_heaven_reaches_the_whole_party()
+	_check_a_dead_ally_can_be_targeted()
+	_check_the_fallen_are_recorded_and_can_be_raised()
+	_check_raise_dead_cast_end_to_end()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -641,4 +650,180 @@ func _check_convert_scales_with_what_it_spends() -> void:
 	if light.has_status("Poisoned") or heavy.has_status("Burning"):
 		_fail("flash_of_radiance did not shed the debuffs it spent")
 	_cleanup([light, foe_light, heavy, foe_heavy])
+	_done()
+
+
+# ── Resurrection ─────────────────────────────────────────────────────────────
+
+func _down(unit: CombatUnit) -> void:
+	unit.is_dead = true
+	unit.is_bleeding_out = false
+	unit.current_hp = 0
+
+
+## raise_dead is 135 mana and did nothing at all — the game had no working
+## resurrection at any tier.
+func _check_raise_dead_returns_a_dead_unit() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 15)
+	var corpse := _make_unit(Vector2i(6, 5), 0)
+	_down(corpse)
+
+	var spell: Dictionary = CombatManager.get_spell("raise_dead")
+	CombatManager._apply_spell_effects(caster, corpse, spell, 0)
+	if corpse.is_dead:
+		_fail("raise_dead left the target dead")
+	elif corpse.current_hp < 1:
+		_fail("raise_dead returned the target at %d hp — a resurrection that "
+			% corpse.current_hp + "returns someone at zero kills them again")
+	_cleanup([caster, corpse])
+	_done()
+
+
+## The 225-mana version returns you whole; the 135-mana one returns you standing.
+## If they are the same, the tier does not exist.
+func _check_resurrect_returns_more_than_raise_dead() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 15)
+	var a := _make_unit(Vector2i(6, 5), 0)
+	var b := _make_unit(Vector2i(7, 5), 0)
+	_down(a)
+	_down(b)
+
+	CombatManager._apply_spell_effects(caster, a, CombatManager.get_spell("raise_dead"), 0)
+	CombatManager._apply_spell_effects(caster, b, CombatManager.get_spell("resurrect"), 0)
+	if b.current_hp <= a.current_hp:
+		_fail("resurrect returned %d hp and raise_dead %d — the 225-mana spell "
+			% [b.current_hp, a.current_hp] + "is no better than the 135-mana one")
+	if b.current_hp != b.max_hp:
+		_fail("resurrect returned %d of %d hp" % [b.current_hp, b.max_hp])
+	_cleanup([caster, a, b])
+	_done()
+
+
+## Balefire and the funeral pyre leave nothing to raise. This is the only hard
+## refusal in the system and what makes those spells worth casting.
+func _check_destroyed_corpse_refuses_resurrection() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 15)
+	var corpse := _make_unit(Vector2i(6, 5), 0)
+	_down(corpse)
+	corpse.corpse_destroyed = true
+
+	CombatManager._apply_spell_effects(caster, corpse, CombatManager.get_spell("resurrect"), 0)
+	if not corpse.is_dead:
+		_fail("resurrect raised someone whose body was destroyed")
+	_cleanup([caster, corpse])
+	_done()
+
+
+func _check_resurrection_refuses_the_living() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 15)
+	var alive := _make_unit(Vector2i(6, 5), 0)
+	alive.current_hp = 40
+
+	CombatManager._apply_spell_effects(caster, alive, CombatManager.get_spell("resurrect"), 0)
+	if alive.current_hp != 40:
+		_fail("resurrect healed a living target to %d — it should refuse them"
+			% alive.current_hp)
+	_cleanup([caster, alive])
+	_done()
+
+
+## Breath of Heaven raises everyone on the caster's side, which is the whole
+## point of a 225-mana spell with that name.
+func _check_breath_of_heaven_reaches_the_whole_party() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 15)
+	var a := _make_unit(Vector2i(6, 5), 0)
+	var b := _make_unit(Vector2i(7, 5), 0)
+	var foe := _make_unit(Vector2i(8, 5), 1)
+	_down(a)
+	_down(b)
+	_down(foe)
+
+	CombatManager._apply_spell_effects(caster, a, CombatManager.get_spell("breath_of_heaven"), 0)
+	if a.is_dead or b.is_dead:
+		_fail("breath_of_heaven raised %s — it should reach every fallen ally"
+			% ("neither" if a.is_dead and b.is_dead else "only one"))
+	if not foe.is_dead:
+		_fail("breath_of_heaven raised an enemy")
+	_cleanup([caster, a, b, foe])
+	_done()
+
+
+## The targeting filtered on is_bleeding_out alone, so the only people a
+## resurrection could reach were the ones not yet dead.
+func _check_a_dead_ally_can_be_targeted() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 15)
+	caster.character_data["skills"] = {"white_magic": 9, "sorcery": 9}
+	var corpse := _make_unit(Vector2i(6, 5), 0)
+	_down(corpse)
+
+	var tiles: Array[Vector2i] = CombatManager.get_spell_targets(caster, "raise_dead")
+	if not corpse.grid_position in tiles:
+		_fail("a dead ally's tile is not offered as a target for raise_dead — "
+			+ "the spell cannot be aimed at the person it exists for")
+	_cleanup([caster, corpse])
+	_done()
+
+
+## Out of combat, resurrection reaches the record of the dead rather than a unit
+## on a grid. That record is what lets an event offer it at all.
+func _check_the_fallen_are_recorded_and_can_be_raised() -> void:
+	var saved_party: Array = CharacterSystem.party.duplicate()
+	var saved_fallen: Array = CharacterSystem.fallen.duplicate()
+	CharacterSystem.party.clear()
+	CharacterSystem.fallen.clear()
+
+	for who in ["Leader", "Doomed"]:
+		var c: Dictionary = CharacterSystem.create_blank_character()
+		c["name"] = who
+		CharacterSystem.party.append(c)
+
+	if not CharacterSystem.record_fallen(1, "killed in battle"):
+		_fail("record_fallen refused a valid companion")
+	if CharacterSystem.party.size() != 1:
+		_fail("the fallen companion is still in the party")
+	if CharacterSystem.get_fallen().size() != 1:
+		_fail("the fallen companion was not recorded — an event has nobody to raise")
+
+	var raised: Dictionary = CharacterSystem.restore_fallen(0, 50)
+	if raised.is_empty():
+		_fail("restore_fallen returned nobody")
+	elif CharacterSystem.party.size() != 2:
+		_fail("the raised companion did not rejoin the party")
+	elif raised.get("derived", {}).get("current_hp", 0) <= 0:
+		_fail("the raised companion came back at %d hp"
+			% raised.get("derived", {}).get("current_hp", 0))
+	if not CharacterSystem.get_fallen().is_empty():
+		_fail("the raised companion is still listed among the dead")
+
+	CharacterSystem.party.assign(saved_party)
+	CharacterSystem.fallen.assign(saved_fallen)
+	_done()
+
+
+## The checks above call _apply_spell_effects directly, which skips target
+## resolution entirely — so reverting `single_corpse` to bleeding-out-only left
+## every one of them green while the spell became uncastable at a corpse. This
+## one goes through cast_spell, the way the game does.
+func _check_raise_dead_cast_end_to_end() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 15)
+	caster.character_data["skills"] = {"white_magic": 9, "sorcery": 9}
+	caster.current_mana = 500
+	caster.actions_remaining = 2
+	CombatManager.turn_order = [caster]
+	CombatManager.current_unit_index = 0
+
+	var corpse := _make_unit(Vector2i(6, 5), 0)
+	_down(corpse)
+
+	var result: Dictionary = CombatManager.cast_spell(caster, "raise_dead", corpse.grid_position)
+	if not result.get("success", false):
+		_fail("casting raise_dead at a dead ally failed: %s"
+			% str(result.get("reason", "?")))
+	elif corpse.is_dead:
+		_fail("raise_dead reported success and the ally is still dead — the "
+			+ "cast found no targets")
+
+	CombatManager.turn_order = []
+	CombatManager.current_unit_index = 0
+	_cleanup([caster, corpse])
 	_done()
