@@ -15,7 +15,7 @@ var failures: int = 0
 var grid: CombatGrid
 
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 10
+const EXPECTED_CHECKS: int = 14
 
 
 func _ready() -> void:
@@ -39,6 +39,11 @@ func _ready() -> void:
 	_check_unknown_formula_deals_nothing()
 	_check_no_spell_deals_nothing_by_accident()
 	_check_save_type_is_case_insensitive()
+
+	_check_push_moves_the_target()
+	_check_blocked_push_deals_its_damage()
+	_check_push_scales_with_spellpower()
+	_check_scatter_relocates_the_target()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -300,4 +305,70 @@ func _check_save_type_is_case_insensitive() -> void:
 		_fail("the same save reads %.2f as 'Focus' and %.2f as 'focus' — the "
 			% [upper, lower] + "capitalised spelling is losing the attribute")
 	_cleanup([defender])
+	_done()
+
+
+# ── Forced movement ──────────────────────────────────────────────────────────
+
+## Surge is a level 1 Water spell dealing 5 damage whose actual point — shove
+## the target a tile — sat in an unread `special` key.
+func _check_push_moves_the_target() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 12)
+	var target := _make_unit(Vector2i(6, 5), 1)
+	_damage_dealt("surge", caster, target)
+	if target.grid_position == Vector2i(6, 5):
+		_fail("surge left the target standing on %s — the push never happened"
+			% str(target.grid_position))
+	_cleanup([caster, target])
+	_done()
+
+
+## And when there is nowhere to go, the wall is the weapon. 5 damage becomes 15.
+func _check_blocked_push_deals_its_damage() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 12)
+	var target := _make_unit(Vector2i(6, 5), 1)
+	var wall := _make_unit(Vector2i(7, 5), 1)   # a body blocks a push as surely as stone
+
+	var open_caster := _make_unit(Vector2i(5, 12), 0, 12)
+	var open_target := _make_unit(Vector2i(6, 12), 1)
+
+	var blocked: int = _damage_dealt("surge", caster, target)
+	var unblocked: int = _damage_dealt("surge", open_caster, open_target)
+
+	if target.grid_position != Vector2i(6, 5):
+		_fail("the blocked target moved to %s" % str(target.grid_position))
+	if blocked <= unblocked:
+		_fail("surge dealt %d into an obstacle and %d into open ground — "
+			% [blocked, unblocked] + "the slam damage is not being applied")
+	_cleanup([caster, target, wall, open_caster, open_target])
+	_done()
+
+
+## Wave and Tsunami push further for a stronger caster; Surge never does.
+func _check_push_scales_with_spellpower() -> void:
+	var weak := _make_unit(Vector2i(2, 2), 0, 5)
+	var strong := _make_unit(Vector2i(2, 8), 0, 40)
+	var t1 := _make_unit(Vector2i(3, 2), 1)
+	var t2 := _make_unit(Vector2i(3, 8), 1)
+
+	_damage_dealt("tsunami", weak, t1)
+	_damage_dealt("tsunami", strong, t2)
+	var weak_dist: int = absi(t1.grid_position.x - 3)
+	var strong_dist: int = absi(t2.grid_position.x - 3)
+	if strong_dist <= weak_dist:
+		_fail("tsunami pushed %d tiles at focus 40 and %d at focus 5 — "
+			% [strong_dist, weak_dist] + "per_spellpower is not being read")
+	_cleanup([weak, strong, t1, t2])
+	_done()
+
+
+## A scatter has no direction: it puts the target down somewhere else entirely.
+func _check_scatter_relocates_the_target() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 12)
+	var target := _make_unit(Vector2i(8, 5), 1)
+	_damage_dealt("air_bomb", caster, target)
+	if target.grid_position == Vector2i(8, 5):
+		_fail("air_bomb left the target on %s — the scatter never happened"
+			% str(target.grid_position))
+	_cleanup([caster, target])
 	_done()

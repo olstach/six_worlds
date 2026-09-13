@@ -1,5 +1,17 @@
 # Spell audit — 2026-09-13
 
+> **Progress.** Items 1–4 of the suggested order are done (commits through
+> `58ce5de` and the forced-movement/aura pass after it). What remains: the
+> domains (5), resurrection (6), moving flavour keys to `notes` (7), and the
+> deeper passes on the inert spells, summon behaviour, removals and expansions.
+>
+> **One correction to this document.** The aura bucket below was built by
+> keyword and mis-filed three spells. `sunrise`, `mudra_of_touching_the_earth`
+> and `vision_of_reality` matched on `heals_all_allies`, but they are
+> `target: global` one-shots — battlefield-wide instants, not standing fields.
+> They need global targeting, not auras, and they are counted with the inert
+> spells instead.
+
 363 spells. The corpus is **not bloated** — that was my first hypothesis and it
 was wrong. There is exactly one mechanically duplicated pair, nine spells thin
 enough to have no identity, and a school-by-level spread that is close to even.

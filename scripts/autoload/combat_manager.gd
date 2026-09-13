@@ -3502,6 +3502,30 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 		if spent != "":
 			_remove_status_by_name(target, spent)
 
+	# --- Forced movement (from spell.push and spell.scatter) ---
+	#
+	# Fifteen spells had their whole identity written into unread `special`
+	# keys. Surge is the clearest: a level 1 Water spell dealing 5 damage, whose
+	# point is that it shoves someone into a wall for 10 more. The water ladder
+	# — surge, wave, ripple, tsunami — escalates exactly that idea, and none of
+	# it reached the field.
+	if spell.has("push") and target.is_alive():
+		var push_result: Dictionary = _apply_push(caster, target, spell["push"])
+		var slam: int = push_result.get("blocked_damage", 0)
+		if slam > 0:
+			var slam_type: String = spell.get("damage_type", "physical")
+			apply_damage(target, slam, slam_type)
+			combat_log.emit("%s is slammed into an obstacle!" % target.unit_name)
+			result.effects_applied.append({"type": "damage", "amount": slam,
+				"element": slam_type, "cause": "blocked_push"})
+		result.effects_applied.append({"type": "push",
+			"moved": push_result.get("moved", 0), "lost": push_result.get("lost", 0)})
+
+	if spell.has("scatter") and target.is_alive():
+		var scatter_range: int = int(spell["scatter"].get("range", 2))
+		if _scatter_unit(target, scatter_range):
+			result.effects_applied.append({"type": "scatter", "range": scatter_range})
+
 	# --- Direct healing (from spell.heal) ---
 	var base_heal = spell.get("heal", null)
 	if base_heal != null and (base_heal is int or base_heal is float):
@@ -3721,6 +3745,14 @@ func _spawn_summoned_unit(caster: Node, summon_id: String, target_pos: Vector2i,
 	summon_unit.summoner_id = caster.get_instance_id()  # Track ownership for mantra effects
 	summon_unit.init_as_enemy(summon_data)
 	summon_unit.team = caster.team  # Summon fights on the caster's side
+
+	# Auras the creature projects by its nature. Four summons — the singing
+	# birds, the guiding light, the apsara, the gandharva host — exist entirely
+	# to stand somewhere and help whoever is near them, and every one of them
+	# described that in an unread `special` key on its summoning spell. It
+	# belongs on the creature, not on the sentence that called it.
+	for aura_id in template.get("auras", []):
+		summon_unit.intrinsic_auras.append(str(aura_id))
 
 	# Summoning skill makes what you raise sturdier. Applied before any
 	# empowerment below, so the two multiply rather than one overwriting the
@@ -4500,6 +4532,11 @@ func _apply_aura_payload(source: Node, target: Node, aura: Dictionary, payload: 
 		"grant_status":
 			var status_name: String = payload.get("status", "")
 			if status_name == "" or target.has_status(status_name):
+				return
+			# A standing field that charmed everyone beside it every single turn
+			# would end fights on its own, so a payload may fire on a roll.
+			var chance: float = float(payload.get("chance", 1.0))
+			if chance < 1.0 and randf() > chance:
 				return
 			_apply_status_effect(target, status_name, int(payload.get("duration", 2)))
 			status_effect_triggered.emit(source, aura["name"], 0, "aura")
@@ -8266,6 +8303,8 @@ func _displace_unit(unit: Node, direction: Vector2i, tiles: int,
 ## effect asked for.
 ##
 ##   "push": {"tiles": 1, "blocked_damage_bonus_pct": 25}
+##   "push": {"tiles": 2, "per_spellpower": 0.16, "blocked_damage": 70}
+##   "push": {"tiles": 2, "variance": 1, "direction": "random", "blocked_damage": 25}
 ##
 ## That is Overwhelming Blow's description implemented literally — "pushes the
 ## enemy 1 tile. If they can't be pushed (wall, another unit), they take +25%
@@ -8277,16 +8316,69 @@ func _displace_unit(unit: Node, direction: Vector2i, tiles: int,
 func _apply_push(source: Node, target: Node, push_data: Dictionary) -> Dictionary:
 	if source == null or target == null or push_data.is_empty():
 		return {"moved": 0, "lost": 0, "blocked_by": null, "immune": false,
-			"damage_bonus_pct": 0}
+			"damage_bonus_pct": 0, "blocked_damage": 0}
 
-	# Away from the source; a negative `tiles` drags the target inward instead.
-	var direction: Vector2i = AoEResolver._dir4(source.grid_position, target.grid_position)
-	var result: Dictionary = _displace_unit(
-		target, direction, int(push_data.get("tiles", 1)), source)
+	# Distance. `tiles` is the base; a spell may add a spellpower term and a
+	# random spread on top, which is how the water ladder escalates from Surge's
+	# flat single tile to Tsunami's sweep across the field.
+	var tiles: int = int(push_data.get("tiles", 1))
+	var per_sp: float = float(push_data.get("per_spellpower", 0.0))
+	if per_sp > 0.0 and source.has_method("get_spellpower"):
+		tiles += int(source.get_spellpower() * per_sp)
+	var variance: int = int(push_data.get("variance", 0))
+	if variance > 0:
+		tiles += randi() % (variance + 1)
 
-	result["damage_bonus_pct"] = int(push_data.get("blocked_damage_bonus_pct", 0)) \
-		if result.get("lost", 0) > 0 else 0
+	# Away from the source by default; a negative `tiles` drags the target
+	# inward instead. A geyser erupting underfoot throws people anywhere.
+	var direction: Vector2i
+	if push_data.get("direction", "away") == "random":
+		var dirs: Array = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1),
+			Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)]
+		direction = dirs[randi() % dirs.size()]
+	else:
+		direction = AoEResolver._dir4(source.grid_position, target.grid_position)
+
+	var result: Dictionary = _displace_unit(target, direction, tiles, source)
+
+	# Two ways to be paid for a blocked push, because two kinds of effect want
+	# it. A perk adds a percentage to damage it was already dealing;
+	# a spell that deals almost nothing on its own — Surge is 5 — pays a flat
+	# amount, so the wall behind the target is the whole point of casting it.
+	var stopped: bool = result.get("lost", 0) > 0
+	result["damage_bonus_pct"] = int(push_data.get("blocked_damage_bonus_pct", 0)) if stopped else 0
+	result["blocked_damage"] = int(push_data.get("blocked_damage", 0)) if stopped else 0
 	return result
+
+
+## Throw a unit to a random walkable tile within `range_tiles`.
+##
+## Distinct from a push: there is no direction, and the scatter does not stop at
+## the first obstacle — an air bomb puts people down somewhere else entirely.
+## Returns true if the unit actually landed somewhere new.
+func _scatter_unit(unit: Node, range_tiles: int) -> bool:
+	if combat_grid == null or unit == null or not "grid_position" in unit:
+		return false
+	var candidates: Array[Vector2i] = []
+	var origin: Vector2i = unit.grid_position
+	for dx in range(-range_tiles, range_tiles + 1):
+		for dy in range(-range_tiles, range_tiles + 1):
+			var tile := origin + Vector2i(dx, dy)
+			if tile == origin:
+				continue
+			if not combat_grid.is_valid_position(tile) or not combat_grid.is_tile_walkable(tile):
+				continue
+			if combat_grid.get_unit_at(tile) != null:
+				continue
+			candidates.append(tile)
+	if candidates.is_empty():
+		return false
+	var dest: Vector2i = candidates[randi() % candidates.size()]
+	var from: Vector2i = origin
+	if not combat_grid.move_unit(unit, dest):
+		return false
+	unit_moved.emit(unit, from, dest)
+	return true
 
 
 # ============================================
