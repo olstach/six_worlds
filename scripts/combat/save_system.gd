@@ -57,8 +57,20 @@ const BASE_DC: int = 10
 const PERCENT_PER_ROLL_POINT: float = 5.0
 
 
+## Attribute names arrive in two cases. spells.json writes "Focus" and
+## "Constitution"; perk combat_data and this file's own defaults write "focus".
+## Two spell call sites remembered to lower-case before calling and two perk
+## ones did not, which is a trap rather than a convention — an unnormalised
+## "Focus" reaches _attribute_of, misses the lower-case attributes dictionary,
+## and silently defaults the defender's attribute to 10.
+##
+## So normalisation happens HERE, once, at the boundary. Callers may pass either.
+static func _norm(save_type: String) -> String:
+	return save_type.to_lower()
+
+
 static func is_valid_save_type(save_type: String) -> bool:
-	return save_type in ATTRIBUTES
+	return _norm(save_type) in ATTRIBUTES
 
 
 ## The number a defender must reach. `dc_stat` is the attacker's attribute:
@@ -74,7 +86,7 @@ static func dc_for(attacker: Node, dc_stat: String, tier: String = "normal",
 		push_error("SaveSystem: unknown save tier '%s' — expected one of %s"
 			% [tier, ", ".join(TIERS.keys())])
 		tier = "normal"
-	return BASE_DC + _attribute_of(attacker, dc_stat) + int(TIERS[tier]) + modifier
+	return BASE_DC + _attribute_of(attacker, _norm(dc_stat)) + int(TIERS[tier]) + modifier
 
 
 ## The defender's chance to resist, as 0.0-1.0.
@@ -82,7 +94,7 @@ static func dc_for(attacker: Node, dc_stat: String, tier: String = "normal",
 ## Exposed separately from roll() so the odds can be asserted exactly rather
 ## than only sampled, and so UI can show a number without rolling for it.
 static func success_chance(defender: Node, save_type: String, dc: int) -> float:
-	var needed: int = dc - _attribute_of(defender, save_type) - _bonus_for(defender, save_type)
+	var needed: int = dc - _attribute_of(defender, _norm(save_type)) - _bonus_for(defender, _norm(save_type))
 	# A natural 1 always fails and a natural 20 always succeeds, so every save
 	# stays possible and none is ever certain. The event system uses the same
 	# floor for its "almost impossible" tier.
@@ -98,7 +110,7 @@ static func roll(defender: Node, save_type: String, dc: int) -> Dictionary:
 		push_error("SaveSystem: '%s' is not an attribute, so it cannot be saved with"
 			% save_type)
 	var die: int = randi() % 20 + 1
-	var total: int = die + _attribute_of(defender, save_type) + _bonus_for(defender, save_type)
+	var total: int = die + _attribute_of(defender, _norm(save_type)) + _bonus_for(defender, _norm(save_type))
 	var success: bool = die == 20 or (die != 1 and total >= dc)
 	return {
 		"success": success,

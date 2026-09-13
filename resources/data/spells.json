@@ -1093,7 +1093,10 @@
         "massive"
       ],
       "mana_cost": 225,
-      "damage": "spellpower_scaling",
+      "damage": {
+        "formula": "spellpower",
+        "multiplier": 6
+      },
       "damage_type": "crushing",
       "requires": [
         "Sorcery 5"
@@ -2193,10 +2196,7 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_radius_per_tier"
       },
-      "save": {
-        "attribute": "finesse",
-        "difficulty": "hard"
-      }
+      "save_type": "Finesse"
     },
     "ice_bolt": {
       "name": "Ice Bolt",
@@ -3822,7 +3822,12 @@
         "burning_synergy"
       ],
       "mana_cost": 40,
-      "damage": "burning_stacks_consumed",
+      "damage": {
+        "formula": "status_stacks",
+        "status": "Burning",
+        "per_stack": 20,
+        "consumes": true
+      },
       "damage_type": "fire",
       "special": {
         "requires_status": "Burning",
@@ -3840,7 +3845,8 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_radius_per_tier"
       },
-      "description": "Burning enemy explodes, removes burning stacks"
+      "description": "Burning enemy explodes, removes burning stacks",
+      "requires_status": "Burning"
     },
     "fireball": {
       "name": "Fireball",
@@ -5175,7 +5181,7 @@
         "aoe"
       ],
       "mana_cost": 40,
-      "damage": "fall_damage",
+      "damage": 20,
       "damage_type": "physical",
       "target": {
         "type": "aoe",
@@ -5246,7 +5252,7 @@
         "cc"
       ],
       "mana_cost": 75,
-      "damage": "impact_damage",
+      "damage": 0,
       "damage_type": "physical",
       "target": {
         "type": "aoe",
@@ -5376,7 +5382,7 @@
         "persistent"
       ],
       "mana_cost": 135,
-      "damage": "fall_damage",
+      "damage": 20,
       "damage_type": "physical",
       "duration": "spellpower",
       "target": {
@@ -7244,7 +7250,10 @@
         "execute"
       ],
       "mana_cost": 225,
-      "damage": "50%_max_hp",
+      "damage": {
+        "formula": "target_max_hp_pct",
+        "percent": 50
+      },
       "damage_type": "space",
       "save_type": "Focus",
       "target": {
@@ -10381,27 +10390,21 @@
         "domain_spell"
       ],
       "mana_cost": 75,
-      "damage": {
-        "type": "space",
-        "magnitude": "moderate"
-      },
+      "damage": 35,
       "aoe": {
         "type": "circle",
         "radius": 2,
         "origin": "caster"
       },
-      "save": {
-        "attribute": "constitution",
-        "difficulty": "moderate",
-        "on_fail": [
-          "Stunned_1"
-        ]
-      },
       "target": {
         "type": "ground",
         "origin": "caster"
       },
-      "description": "Moderate space damage in a 2-tile radius around the caster. CON save or stunned 1 turn."
+      "description": "Moderate space damage in a 2-tile radius around the caster. CON save or stunned 1 turn.",
+      "save_type": "Constitution",
+      "statuses_caused": [
+        "Stunned"
+      ]
     },
     "up_to_eleven": {
       "name": "Up to Eleven",
@@ -10439,14 +10442,11 @@
         },
         "caster_immune": true
       },
-      "save": {
-        "attribute": "constitution",
-        "difficulty": "hard"
-      },
       "target": {
         "type": "battlefield"
       },
-      "description": "The sound hits everything. All enemies make a hard CON save or are stunned 1 turn. All allies take 1 turn of disorientation (−2 AWR, −2 Initiative) — no save. The caster is the source and feels nothing."
+      "description": "The sound hits everything. All enemies make a hard CON save or are stunned 1 turn. All allies take 1 turn of disorientation (−2 AWR, −2 Initiative) — no save. The caster is the source and feels nothing.",
+      "save_type": "Constitution"
     },
     "bitter_word": {
       "name": "Bitter Word",

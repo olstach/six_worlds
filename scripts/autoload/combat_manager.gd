@@ -2723,6 +2723,17 @@ func revive_unit(unit: Node, hp_amount: int) -> void:
 # SPELL CASTING
 # ============================================
 
+## Every spell id in the database. Sweeps that must cover the whole spell list —
+## verify_spells.tscn asserts no spell carries an unreadable `damage` — need to
+## enumerate it rather than restate it.
+func get_all_spell_ids() -> Array[String]:
+	var ids: Array[String] = []
+	for key in _spell_database:
+		if not key.begins_with("_"):
+			ids.append(key)
+	return ids
+
+
 ## Get a spell by ID (normalizes data format)
 func get_spell(spell_id: String) -> Dictionary:
 	if spell_id in _spell_database:
@@ -3435,42 +3446,61 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 	}
 
 	# --- Direct damage (from spell.damage and spell.damage_type) ---
-	var base_damage = spell.get("damage", null)
-	if base_damage != null and (base_damage is int or base_damage is float):
-		if int(base_damage) > 0:
-			var element = spell.get("damage_type", "physical")
-			var total_damage = int(base_damage) + bonus
+	#
+	# `damage` is usually a number and sometimes a formula block — an execute
+	# measured against the target's own health, a nuke that scales off the
+	# caster, a detonation that spends a damage-over-time. SpellDamage owns that
+	# vocabulary. The guard that used to sit here tested `is int or is float`
+	# and silently dropped every formula, which is how seven spells (two of them
+	# 225-mana capstones) came to deal nothing at all.
+	#
+	# A spell may also require a status on its target to work at all; without it
+	# there is no damage to compute.
+	var required_status: String = spell.get("requires_status", "")
+	if required_status != "" and not target.has_status(required_status):
+		result.effects_applied.append({"type": "no_effect", "reason": "requires " + required_status})
+		return result
 
-			# Chains of Suffering: +15% Black spell damage vs targets with any debuff
-			var caster_char = caster.character_data if "character_data" in caster else {}
-			if element == "black" and PerkSystem.has_perk(caster_char, "chains_of_suffering"):
-				if target.status_effects.size() > 0:
-					total_damage = int(total_damage * 1.15)
+	var base_damage: int = SpellDamage.resolve(spell, caster, target)
+	if base_damage > 0:
+		var element = spell.get("damage_type", "physical")
+		var total_damage = int(base_damage) + bonus
 
-			# Elementalist: +25% damage when targeting an elemental weakness (negative resistance)
-			if PerkSystem.has_perk(caster_char, "elementalist"):
-				if target.get_resistance(element) < 0:
-					total_damage = int(total_damage * 1.25)
+		# Chains of Suffering: +15% Black spell damage vs targets with any debuff
+		var caster_char = caster.character_data if "character_data" in caster else {}
+		if element == "black" and PerkSystem.has_perk(caster_char, "chains_of_suffering"):
+			if target.status_effects.size() > 0:
+				total_damage = int(total_damage * 1.15)
 
-			# Variance ±15%
-			var variance = randf_range(0.85, 1.15)
-			total_damage = int(total_damage * variance)
+		# Elementalist: +25% damage when targeting an elemental weakness (negative resistance)
+		if PerkSystem.has_perk(caster_char, "elementalist"):
+			if target.get_resistance(element) < 0:
+				total_damage = int(total_damage * 1.25)
 
-			# Apply resistance
-			var resistance = target.get_resistance(element)
-			total_damage = int(total_damage * (1.0 - resistance / 100.0))
-			total_damage = maxi(1, total_damage)
+		# Variance ±15%
+		var variance = randf_range(0.85, 1.15)
+		total_damage = int(total_damage * variance)
 
-			# Magic_Shield / Golden_Defense: 25% spell damage reduction
-			if _unit_has_effect(target, "spell_damage_reduction"):
-				total_damage = int(total_damage * 0.75)
+		# Apply resistance
+		var resistance = target.get_resistance(element)
+		total_damage = int(total_damage * (1.0 - resistance / 100.0))
+		total_damage = maxi(1, total_damage)
 
-			# Lord of Death DY: empowered summons deal 30% bonus spell damage
-			if "lord_of_death_empowered" in caster and caster.lord_of_death_empowered:
-				total_damage = int(total_damage * 1.3)
+		# Magic_Shield / Golden_Defense: 25% spell damage reduction
+		if _unit_has_effect(target, "spell_damage_reduction"):
+			total_damage = int(total_damage * 0.75)
 
-			apply_damage(target, total_damage, element)
-			result.effects_applied.append({"type": "damage", "amount": total_damage, "element": element})
+		# Lord of Death DY: empowered summons deal 30% bonus spell damage
+		if "lord_of_death_empowered" in caster and caster.lord_of_death_empowered:
+			total_damage = int(total_damage * 1.3)
+
+		apply_damage(target, total_damage, element)
+		result.effects_applied.append({"type": "damage", "amount": total_damage, "element": element})
+
+		# A status_stacks formula is paid for with the status it counted.
+		var spent: String = SpellDamage.consumes_status(spell)
+		if spent != "":
+			_remove_status_by_name(target, spent)
 
 	# --- Direct healing (from spell.heal) ---
 	var base_heal = spell.get("heal", null)

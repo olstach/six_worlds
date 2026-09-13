@@ -561,9 +561,55 @@ check_vocabulary("base_bonuses stat", _stat_keys, [
 
 # Behaviour strings on status definitions.
 _status_effects = set()
+_status_names = set()
 for _s in load("resources/data/statuses.json")["statuses"]:
     _status_effects.update(str(e) for e in _s.get("effects", []))
+    if _s.get("name"):
+        _status_names.add(str(_s["name"]))
 check_vocabulary("status effect", _status_effects)
+
+# ── Spell damage and saves ───────────────────────────────────────────────────
+#
+# Two failures that leave no trace at runtime. A `damage` value the resolver
+# cannot read is skipped by a type guard, so the spell deals nothing and says
+# nothing — seven spells shipped that way, two of them 225-mana capstones. And
+# `save` is a plausible misspelling of `save_type` that nothing reads, so the
+# spell rolls no save while its description promises one.
+_spells_all = load("resources/data/spells.json")["spells"]
+_spells = {k: v for k, v in _spells_all.items()
+           if not k.startswith("_") and isinstance(v, dict)}
+
+_sd_src = open(os.path.join(ROOT, "scripts/combat/spell_damage.gd"), encoding="utf-8").read()
+_m = re.search(r"const FORMULAS[^=]*=\s*\[(.*?)\]", _sd_src, re.S)
+_formulas = set(re.findall(r'"([^"]+)"', _m.group(1))) if _m else set()
+if not _formulas:
+    err("data->code", "could not read SpellDamage.FORMULAS — spell damage unchecked")
+
+_ss_src = open(os.path.join(ROOT, "scripts/combat/save_system.gd"), encoding="utf-8").read()
+_m = re.search(r"const ATTRIBUTES[^=]*=\s*\[(.*?)\]", _ss_src, re.S)
+_save_attrs = set(re.findall(r'"([^"]+)"', _m.group(1))) if _m else set()
+
+for _sid, _sp in _spells.items():
+    _dm = _sp.get("damage")
+    if _dm is not None and not isinstance(_dm, (int, float)):
+        if not isinstance(_dm, dict):
+            err("data->code", f"spell '{_sid}' has {type(_dm).__name__} in `damage`; "
+                "the resolver skips anything that is not a number or a formula block")
+        elif _dm.get("formula") not in _formulas:
+            err("data->code", f"spell '{_sid}' uses damage formula "
+                f"'{_dm.get('formula')}', which is not in SpellDamage.FORMULAS — "
+                "it would resolve to zero damage")
+    if "save" in _sp:
+        err("data->code", f"spell '{_sid}' uses `save`; the field is read as "
+            "`save_type`, so this spell rolls no save at all")
+    _st = _sp.get("save_type")
+    if _st and _save_attrs and _st.lower() not in _save_attrs:
+        err("data->code", f"spell '{_sid}' has save_type '{_st}', which is not a "
+            "SaveSystem attribute — SaveSystem.roll() refuses it")
+    if _sp.get("requires_status") and _sp["requires_status"] not in _status_names:
+        err("data->code", f"spell '{_sid}' requires status "
+            f"'{_sp['requires_status']}', which does not exist")
+
 
 # ── Auras ────────────────────────────────────────────────────────────────────
 #
