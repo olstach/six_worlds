@@ -15,7 +15,7 @@ var failures: int = 0
 var grid: CombatGrid
 
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 19
+const EXPECTED_CHECKS: int = 26
 
 
 func _ready() -> void:
@@ -50,6 +50,14 @@ func _ready() -> void:
 	_check_teleport_respects_its_range()
 	_check_swap_exchanges_two_units()
 	_check_anchored_blocks_placement_but_not_a_shove()
+
+	_check_cleanse_removes_everything_not_one_thing()
+	_check_named_removal_takes_the_named_status()
+	_check_count_caps_a_removal()
+	_check_dispel_takes_buffs_too()
+	_check_steal_moves_a_buff_to_the_thief()
+	_check_transfer_loses_nothing()
+	_check_convert_scales_with_what_it_spends()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -473,4 +481,164 @@ func _check_anchored_blocks_placement_but_not_a_shove() -> void:
 		_fail("an Anchored unit resisted a shove (moved %d) — anchoring should "
 			% shoved.get("moved", 0) + "stop displacement, not force")
 	_cleanup([caster, victim])
+	_done()
+
+
+# ── Status operations ────────────────────────────────────────────────────────
+
+## The bug that shipped: `statuses_removed` says WHICH statuses to remove, and
+## the combat reader used its LENGTH as a count. `cleanse: ["all_negative"]` is
+## a one-element list, so the spell that promises to remove everything removed
+## exactly one thing.
+func _check_cleanse_removes_everything_not_one_thing() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 15)
+	var target := _make_unit(Vector2i(6, 5), 0)
+	for status in ["Poisoned", "Bleeding", "Slowed", "Burning"]:
+		CombatManager._apply_status_effect(target, status, 3)
+	var before: int = target.status_effects.size()
+
+	var spell: Dictionary = CombatManager.get_spell("cleanse")
+	CombatManager._apply_spell_effects(caster, target, spell, 0)
+
+	if target.status_effects.size() >= before:
+		_fail("cleanse removed nothing from %d debuffs" % before)
+	elif target.status_effects.size() > 0:
+		_fail("cleanse left %d of %d debuffs — it is still removing a count "
+			% [target.status_effects.size(), before]
+			+ "rather than everything the tag names")
+	_cleanup([caster, target])
+	_done()
+
+
+## And a named list must take the ones it names, not whatever is nearest.
+func _check_named_removal_takes_the_named_status() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 15)
+	var target := _make_unit(Vector2i(6, 5), 0)
+	# Poisoned first, so a reader that takes "the first dispellable debuff"
+	# takes the wrong one.
+	CombatManager._apply_status_effect(target, "Poisoned", 3)
+	CombatManager._apply_status_effect(target, "Burning", 3)
+
+	var spell: Dictionary = CombatManager.get_spell("cooling_mist")
+	CombatManager._apply_spell_effects(caster, target, spell, 0)
+
+	if target.has_status("Burning"):
+		_fail("cooling_mist left the Burning it names")
+	if not target.has_status("Poisoned"):
+		_fail("cooling_mist removed the Poison it does not name")
+	_cleanup([caster, target])
+	_done()
+
+
+func _check_count_caps_a_removal() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 15)
+	var target := _make_unit(Vector2i(6, 5), 0)
+	for status in ["Poisoned", "Bleeding", "Slowed"]:
+		CombatManager._apply_status_effect(target, status, 3)
+
+	# Cure removes exactly one — "reliably", which is its whole level 1 identity.
+	var spell: Dictionary = CombatManager.get_spell("cure")
+	CombatManager._apply_spell_effects(caster, target, spell, 0)
+	if target.status_effects.size() != 2:
+		_fail("cure left %d of 3 debuffs, expected 2" % target.status_effects.size())
+	_cleanup([caster, target])
+	_done()
+
+
+## A dispel does not care whose side an effect is on — that is what separates
+## it from a cleanse.
+func _check_dispel_takes_buffs_too() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 15)
+	var target := _make_unit(Vector2i(6, 5), 1)
+	CombatManager._apply_status_effect(target, "Blessed", 3)
+	CombatManager._apply_status_effect(target, "Poisoned", 3)
+
+	var spell: Dictionary = CombatManager.get_spell("dispel")
+	CombatManager._apply_spell_effects(caster, target, spell, 0)
+	if target.has_status("Blessed"):
+		_fail("dispel left a buff in place — it is only cleansing debuffs")
+	if target.has_status("Poisoned"):
+		_fail("dispel left a debuff in place")
+	_cleanup([caster, target])
+	_done()
+
+
+## Stealing is not deleting: the buff has to arrive on the thief.
+func _check_steal_moves_a_buff_to_the_thief() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 15)
+	var victim := _make_unit(Vector2i(6, 5), 1)
+	CombatManager._apply_status_effect(victim, "Blessed", 4)
+	CombatManager._apply_status_effect(victim, "Poisoned", 4)
+
+	var spell: Dictionary = CombatManager.get_spell("steal_blessings")
+	CombatManager._apply_spell_effects(caster, victim, spell, 0)
+
+	if victim.has_status("Blessed"):
+		_fail("steal_blessings left the blessing on its victim")
+	if not caster.has_status("Blessed"):
+		_fail("steal_blessings removed the blessing but the caster did not gain it")
+	if not victim.has_status("Poisoned"):
+		_fail("steal_blessings took a debuff as well — it selects buffs only")
+	_cleanup([caster, victim])
+	_done()
+
+
+## Heat Transfer's own data says no stacks are lost. Every stack lifted off an
+## ally has to land on an enemy.
+func _check_transfer_loses_nothing() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 15)
+	var ally := _make_unit(Vector2i(6, 5), 0)
+	var foe_a := _make_unit(Vector2i(9, 5), 1)
+	var foe_b := _make_unit(Vector2i(9, 7), 1)
+
+	for _i in 3:
+		CombatManager._apply_status_effect(ally, "Burning", 3)
+	CombatManager._apply_status_effect(caster, "Burning", 3)
+	var lifted: int = SpellDamage.stacks_of(ally, "Burning") \
+		+ SpellDamage.stacks_of(caster, "Burning")
+
+	var spell: Dictionary = CombatManager.get_spell("heat_transfer")
+	CombatManager._apply_spell_effects(caster, foe_a, spell, 0)
+
+	var on_allies: int = SpellDamage.stacks_of(ally, "Burning") \
+		+ SpellDamage.stacks_of(caster, "Burning")
+	var on_foes: int = SpellDamage.stacks_of(foe_a, "Burning") \
+		+ SpellDamage.stacks_of(foe_b, "Burning")
+	if on_allies != 0:
+		_fail("heat_transfer left %d burning stack(s) on the party" % on_allies)
+	if on_foes != lifted:
+		_fail("heat_transfer lifted %d stack(s) and delivered %d — stacks were lost"
+			% [lifted, on_foes])
+	_cleanup([caster, ally, foe_a, foe_b])
+	_done()
+
+
+## Each debuff shed becomes a bolt, so a heavily afflicted caster detonates
+## harder. If the burst is flat, the spell has no reason to exist.
+func _check_convert_scales_with_what_it_spends() -> void:
+	var light := _make_unit(Vector2i(2, 2), 0, 15)
+	var foe_light := _make_unit(Vector2i(3, 2), 1)
+	CombatManager._apply_status_effect(light, "Poisoned", 3)
+
+	var heavy := _make_unit(Vector2i(2, 8), 0, 15)
+	var foe_heavy := _make_unit(Vector2i(3, 8), 1)
+	for status in ["Poisoned", "Bleeding", "Slowed", "Burning"]:
+		CombatManager._apply_status_effect(heavy, status, 3)
+
+	var spell: Dictionary = CombatManager.get_spell("flash_of_radiance")
+	var hp_light: int = foe_light.current_hp
+	var hp_heavy: int = foe_heavy.current_hp
+	CombatManager._apply_spell_effects(light, foe_light, spell, 0)
+	CombatManager._apply_spell_effects(heavy, foe_heavy, spell, 0)
+
+	var dealt_light: int = hp_light - foe_light.current_hp
+	var dealt_heavy: int = hp_heavy - foe_heavy.current_hp
+	if dealt_light <= 0:
+		_fail("flash_of_radiance with one debuff dealt %d" % dealt_light)
+	if dealt_heavy <= dealt_light:
+		_fail("flash_of_radiance dealt %d with four debuffs and %d with one — "
+			% [dealt_heavy, dealt_light] + "the burst does not scale with what it spends")
+	if light.has_status("Poisoned") or heavy.has_status("Burning"):
+		_fail("flash_of_radiance did not shed the debuffs it spent")
+	_cleanup([light, foe_light, heavy, foe_heavy])
 	_done()

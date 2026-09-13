@@ -3621,9 +3621,16 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 			result.effects_applied.append({"type": "status", "status": chosen_status, "applied": true})
 
 	# --- Status removal (from spell.statuses_removed) ---
+	#
+	# The list says WHICH statuses to remove, not how many. Reading its length
+	# as a count meant `cleanse: ["all_negative"]` removed exactly one debuff,
+	# and `cooling_mist: ["Burning"]` removed one arbitrary debuff that was
+	# probably not the burning. The overworld path read the same field correctly
+	# the whole time, so a spell behaved one way on the map and another in a fight.
 	var statuses_removed = spell.get("statuses_removed", [])
 	if not statuses_removed.is_empty():
-		var cleansed = _cleanse_status_effects(target, statuses_removed.size())
+		var selector: Dictionary = StatusOps.selector_from_removed_list(statuses_removed)
+		var cleansed: int = _remove_selected_statuses(target, selector)
 		result.effects_applied.append({"type": "cleanse", "removed": cleansed})
 		# Gentle Removal (White 1): cleansing spells also heal target for 20% of caster Spellpower
 		var caster_char_gr = caster.character_data if "character_data" in caster else {}
@@ -3632,6 +3639,11 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 			var cleanse_heal = maxi(1, int(caster.get_spellpower() * 0.20))
 			target.heal(cleanse_heal)
 			unit_healed.emit(target, cleanse_heal)
+
+	# --- Status operations (from spell.status_ops) ---
+	if spell.has("status_ops"):
+		for op_spec in spell["status_ops"]:
+			_apply_status_op(caster, target, op_spec, result)
 
 	# --- Special effects (from spell.special) ---
 	var special = spell.get("special", {})
@@ -4287,6 +4299,123 @@ func _remove_status_by_name(unit: Node, status_name: String) -> bool:
 
 ## Remove negative status effects using the dispellable flag from status definitions.
 ## Only removes debuffs that are marked dispellable. Returns the count removed.
+## Remove every status on `unit` that `selector` picks. Returns how many went.
+func _remove_selected_statuses(unit: Node, selector: Dictionary) -> int:
+	var picked: Array = StatusOps.select(unit, selector, _status_effects)
+	var removed := 0
+	for entry in picked:
+		if _remove_status_by_name(unit, entry.get("status", "")):
+			removed += 1
+	return removed
+
+
+## Which unit a status op means by "caster", "target", "all_allies", "all_enemies".
+func _units_for_role(role: String, caster: Node, target: Node) -> Array:
+	match role:
+		"caster":
+			return [caster]
+		"target":
+			return [target]
+		"all_allies":
+			return get_team_units(caster.team if "team" in caster else 0)
+		"all_enemies":
+			return get_team_units(1 - (caster.team if "team" in caster else 0))
+	return [target]
+
+
+## Perform one status operation.
+##
+##   {"op": "remove",   "select": {"tag": "magical"}, "on": "target"}
+##   {"op": "steal",    "select": {"tag": "positive"}, "from": "target", "to": "caster"}
+##   {"op": "transfer", "select": {"names": ["Burning"]}, "from": "all_allies", "to": "all_enemies"}
+##   {"op": "convert",  "select": {"tag": "all_negative"}, "on": "caster",
+##    "into": "damage", "per_status": 12, "damage_type": "white", "radius": 2}
+func _apply_status_op(caster: Node, target: Node, op_spec: Dictionary,
+		result: Dictionary) -> void:
+	var op: String = op_spec.get("op", "")
+	if not StatusOps.is_op(op):
+		push_warning("CombatManager: spell status op — %s"
+			% StatusOps.explain_unknown_op(op))
+		return
+	var selector: Dictionary = op_spec.get("select", {})
+
+	match op:
+		"remove":
+			var total := 0
+			for unit in _units_for_role(op_spec.get("on", "target"), caster, target):
+				total += _remove_selected_statuses(unit, selector)
+			result.effects_applied.append({"type": "cleanse", "removed": total})
+
+		"steal":
+			# The thief keeps whatever duration was left, which is what makes
+			# stealing a raised shield worth more than stealing a fading one.
+			var thief: Node = _units_for_role(op_spec.get("to", "caster"), caster, target)[0]
+			var taken := 0
+			for victim in _units_for_role(op_spec.get("from", "target"), caster, target):
+				for entry in StatusOps.select(victim, selector, _status_effects):
+					var name: String = entry.get("status", "")
+					var left: int = int(entry.get("duration", 1))
+					var value: int = int(entry.get("value", 0))
+					if _remove_status_by_name(victim, name):
+						_apply_status_effect(thief, name, left, value, caster)
+						taken += 1
+			if taken > 0:
+				combat_log.emit("%s takes %d blessing(s) for itself!"
+					% [thief.unit_name, taken])
+			result.effects_applied.append({"type": "steal", "count": taken})
+
+		"transfer":
+			# Group to group, spread evenly, nothing lost. Heat Transfer lifts
+			# every burning stack off the party and hands it to the people who
+			# lit them; a stack removed from an ally must land on an enemy.
+			var sources: Array = _units_for_role(op_spec.get("from", "caster"), caster, target)
+			var sinks: Array = _units_for_role(op_spec.get("to", "target"), caster, target)
+			sinks = sinks.filter(func(u): return is_instance_valid(u) and not u.is_dead)
+			if sinks.is_empty():
+				result.effects_applied.append({"type": "transfer", "count": 0})
+				return
+			var carried: Array = []
+			for source in sources:
+				for entry in StatusOps.select(source, selector, _status_effects):
+					var name: String = entry.get("status", "")
+					var left: int = int(entry.get("duration", 1))
+					if _remove_status_by_name(source, name):
+						carried.append({"status": name, "duration": left})
+			# Even distribution, front to back, so a remainder does not vanish.
+			for i in range(carried.size()):
+				var sink: Node = sinks[i % sinks.size()]
+				_apply_status_effect(sink, carried[i]["status"],
+					carried[i]["duration"], 0, caster)
+			if not carried.is_empty():
+				combat_log.emit("%d effect(s) change hands." % carried.size())
+			result.effects_applied.append({"type": "transfer", "count": carried.size()})
+
+		"convert":
+			# Spend the statuses for something else. Each one removed becomes a
+			# bolt, so a heavily-debuffed caster detonates harder.
+			var on_unit: Node = _units_for_role(op_spec.get("on", "caster"), caster, target)[0]
+			var spent: int = _remove_selected_statuses(on_unit, selector)
+			if spent <= 0:
+				result.effects_applied.append({"type": "convert", "count": 0})
+				return
+			var per: int = int(op_spec.get("per_status", 0))
+			var element: String = op_spec.get("damage_type", "physical")
+			var radius: int = int(op_spec.get("radius", 2))
+			var burst: int = spent * per
+			var struck := 0
+			for unit in all_units:
+				if unit.is_dead or not "team" in unit or unit.team == on_unit.team:
+					continue
+				if _grid_distance(on_unit.grid_position, unit.grid_position) > radius:
+					continue
+				apply_damage(unit, burst, element)
+				struck += 1
+			combat_log.emit("%s sheds %d affliction(s) as light!"
+				% [on_unit.unit_name, spent])
+			result.effects_applied.append({"type": "convert", "count": spent,
+				"damage": burst, "struck": struck})
+
+
 func _cleanse_status_effects(unit: Node, count: int) -> int:
 	if not "status_effects" in unit:
 		return 0
