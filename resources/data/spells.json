@@ -6981,7 +6981,9 @@
         "Rooted",
         "Slowed",
         "Held",
-        "Earthbound"
+        "Paralyzed",
+        "Immobilized",
+        "Grounded"
       ],
       "target": {
         "type": "single",
@@ -7782,15 +7784,22 @@
       ],
       "mana_cost": 25,
       "heal": 20,
-      "special": {
-        "reliably_dispels_one_negative_effect": true
-      },
       "target": {
         "type": "single",
         "eligible": "ally",
         "upgrade_scaling": "single → aoe → all_allies"
       },
-      "description": "Heal moderate HP and reliably remove one negative effect."
+      "description": "Heal moderate HP and reliably remove one negative effect.",
+      "status_ops": [
+        {
+          "op": "remove",
+          "select": {
+            "tag": "all_negative",
+            "count": 1
+          },
+          "on": "target"
+        }
+      ]
     },
     "turn_undead": {
       "name": "Turn Undead",
@@ -7851,10 +7860,16 @@
         "eligible": "any",
         "upgrade_scaling": "single → aoe → all"
       },
-      "special": {
-        "removes_all_magical_effects": true
-      },
-      "description": "Remove all magical effects from target"
+      "description": "Remove all magical effects from target",
+      "status_ops": [
+        {
+          "op": "remove",
+          "select": {
+            "tag": "magical"
+          },
+          "on": "target"
+        }
+      ]
     },
     "greater_heal": {
       "name": "Vase of Healing",
@@ -9044,11 +9059,17 @@
         "type": "single",
         "eligible": "enemy"
       },
-      "special": {
-        "removes_buffs_from_enemy": true,
-        "caster_gains_buffs": true
-      },
-      "description": "Remove buffs from enemy and gain them yourself"
+      "description": "Remove buffs from enemy and gain them yourself",
+      "status_ops": [
+        {
+          "op": "steal",
+          "select": {
+            "tag": "positive"
+          },
+          "from": "target",
+          "to": "caster"
+        }
+      ]
     },
     "shroud_of_darkness": {
       "name": "Shroud of Darkness",
@@ -10053,19 +10074,22 @@
         "domain_spell"
       ],
       "mana_cost": 75,
-      "special": {
-        "transfer_burning": {
-          "source": "all_allies",
-          "target": "all_enemies",
-          "distribution": "even",
-          "no_stacks_lost": true,
-          "description": "All burning stacks are lifted from every ally and redistributed evenly across all enemies. No stacks are lost; surplus stacks from uneven division go to enemies front-to-back."
-        }
-      },
       "target": {
         "type": "special"
       },
-      "description": "Transfer all burning stacks from all allies to enemies, distributed evenly. No stacks are lost."
+      "description": "Transfer all burning stacks from all allies to enemies, distributed evenly. No stacks are lost.",
+      "status_ops": [
+        {
+          "op": "transfer",
+          "select": {
+            "names": [
+              "Burning"
+            ]
+          },
+          "from": "all_allies",
+          "to": "all_enemies"
+        }
+      ]
     },
     "flash_of_radiance": {
       "name": "Flash of Radiance",
@@ -10086,29 +10110,27 @@
         "domain_spell"
       ],
       "mana_cost": 75,
-      "special": {
-        "self_cleanse_and_burst": {
-          "self_effect": "remove_all_debuffs",
-          "enemy_effect": {
-            "aoe_radius": 2,
-            "damage_type": "white",
-            "damage_magnitude": "light",
-            "damage_hits": "count_of_debuffs_removed",
-            "save": {
-              "attribute": "constitution",
-              "difficulty": "moderate",
-              "on_fail": [
-                "Blinded_1"
-              ]
-            },
-            "description": "Each debuff removed fires outward as a bolt of white radiance. Each bolt deals light white damage to enemies in 2-tile radius. CON save or blinded for 1 turn."
-          }
-        }
-      },
       "target": {
         "type": "self"
       },
-      "description": "Remove all debuffs from self. Each debuff removed becomes a bolt of white radiance striking all enemies in a 2-tile radius for light white damage. CON save or blinded 1 turn."
+      "description": "Remove all debuffs from self. Each debuff removed becomes a bolt of white radiance striking all enemies in a 2-tile radius for light white damage. CON save or blinded 1 turn.",
+      "status_ops": [
+        {
+          "op": "convert",
+          "select": {
+            "tag": "all_negative"
+          },
+          "on": "caster",
+          "into": "damage",
+          "per_status": 12,
+          "damage_type": "white",
+          "radius": 2
+        }
+      ],
+      "save_type": "Constitution",
+      "statuses_caused": [
+        "Blinded"
+      ]
     },
     "blazing_and_dripping": {
       "name": "Blazing and Dripping",

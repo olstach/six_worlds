@@ -636,6 +636,52 @@ for _sid, _sp in _spells.items():
             "only 'caster' and 'target' are resolved")
 
 
+# ── Status operations ────────────────────────────────────────────────────────
+#
+# An unknown op or an unrecognised selector tag changes nothing while the spell
+# reports success — the same silent shape as the damage and reposition guards.
+_so_src = open(os.path.join(ROOT, "scripts/combat/status_ops.gd"), encoding="utf-8").read()
+def _gd_list(src, name):
+    m = re.search(r"const %s[^=]*=\s*\[(.*?)\]" % name, src, re.S)
+    return set(re.findall(r'"([^"]+)"', m.group(1))) if m else set()
+
+_ops = _gd_list(_so_src, "OPS")
+_tags = _gd_list(_so_src, "TAGS")
+if not _ops or not _tags:
+    err("data->code", "could not read StatusOps.OPS/TAGS — status ops unchecked")
+
+_roles = {"caster", "target", "all_allies", "all_enemies"}
+for _sid, _sp in _spells.items():
+    for _op in _sp.get("status_ops", []):
+        if _op.get("op") not in _ops:
+            err("data->code", f"spell '{_sid}' uses status op '{_op.get('op')}', "
+                "which is not in StatusOps.OPS — nothing would perform it")
+        _sel = _op.get("select", {})
+        if not _sel.get("names") and not _sel.get("tag"):
+            err("data->code", f"spell '{_sid}' has a status op selecting neither "
+                "names nor a tag, so it picks nothing")
+        if _sel.get("tag") and _sel["tag"] not in _tags:
+            err("data->code", f"spell '{_sid}' selects status tag "
+                f"'{_sel['tag']}', which is not in StatusOps.TAGS")
+        for _nm in _sel.get("names", []):
+            if _nm not in _status_names:
+                err("data->code", f"spell '{_sid}' selects status '{_nm}', "
+                    "which does not exist")
+        for _field in ("on", "from", "to"):
+            if _op.get(_field) and _op[_field] not in _roles:
+                err("data->code", f"spell '{_sid}' status op names role "
+                    f"'{_op[_field]}' for `{_field}`, which is not resolved")
+
+# `statuses_removed` mixes literal status names with group tags. Both must
+# resolve, or the entry silently selects nothing.
+for _sid, _sp in _spells.items():
+    for _entry in _sp.get("statuses_removed", []):
+        _e = str(_entry)
+        if _e not in _tags and _e not in _status_names:
+            err("data->code", f"spell '{_sid}' removes '{_e}', which is neither "
+                "a status nor a StatusOps tag — it removes nothing")
+
+
 # ── Auras ────────────────────────────────────────────────────────────────────
 #
 # Four kinds of source may declare an aura, and all four name it the same way.

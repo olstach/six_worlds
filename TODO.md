@@ -187,6 +187,22 @@ and events too.
       system, which means they cannot be resisted by the stat the player
       levelled for exactly that.
 
+- [ ] **Repositioning** (`repositioning.gd`) — push, pull, teleport, swap,
+      scatter, behind, adjacent. One mechanic with a mode, and the split that
+      matters is whether the unit *travels* (crosses each tile, can be stopped,
+      can be hurt by stopping) or is *placed* (arrives regardless). Ask it of
+      anything that moves someone against their will, and of any status that
+      should stop that — `prevents_teleportation` refuses the placed modes and
+      is readable by any status that wants it.
+
+- [ ] **Status operations** (`status_ops.gd`) — select statuses off a unit by
+      name or by group tag, then remove, steal, transfer or convert them.
+      Dispel and cleanse are two points on that surface; the others are a spell
+      that wears an enemy's blessings, one that hands your party's burning to
+      the people who lit it, one that spends its own afflictions as damage. Any
+      effect phrased "removes…", "steals…", "transfers…" wants this rather than
+      its own branch — and items and events can use it as readily as spells.
+
 - [ ] **Party bonuses** (`party_bonuses.gd`) — `party_`-prefixed payouts,
       best member rather than sum.
 
