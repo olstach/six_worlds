@@ -5080,11 +5080,12 @@
       "target": {
         "type": "ground"
       },
-      "special": {
-        "self_movement": true,
-        "ignores_terrain": true
-      },
-      "description": "Leap to target location, ignoring terrain"
+      "description": "Leap to target location, ignoring terrain",
+      "reposition": {
+        "mode": "teleport",
+        "self": true,
+        "range": 4
+      }
     },
     "shocking_grasp": {
       "name": "Shocking Grasp",
@@ -6162,12 +6163,12 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "prevents_teleportation": true,
-        "prevents_phasing": true,
-        "prevents_fleeing": true,
-        "affects_everyone": true
+        "prevents_fleeing": true
       },
-      "description": "Lock down area - no teleportation, phasing, or fleeing for anyone"
+      "description": "Lock down area - no teleportation, phasing, or fleeing for anyone",
+      "statuses_caused": [
+        "Anchored"
+      ]
     },
     "trickster_mask": {
       "name": "Trickster Mask",
@@ -6391,11 +6392,12 @@
       "target": {
         "type": "self"
       },
-      "special": {
-        "blink_out_of_melee": true,
-        "short_range": true
-      },
-      "description": "Blink out of melee range"
+      "description": "Blink out of melee range",
+      "reposition": {
+        "mode": "teleport",
+        "self": true,
+        "range": 3
+      }
     },
     "magic_missile": {
       "name": "Magic Missile",
@@ -6472,11 +6474,12 @@
       "target": {
         "type": "ground"
       },
-      "special": {
-        "teleport_self": true,
-        "medium_range": true
-      },
-      "description": "Teleport oneself medium distance"
+      "description": "Teleport oneself medium distance",
+      "reposition": {
+        "mode": "teleport",
+        "self": true,
+        "range": 6
+      }
     },
     "mana_flare": {
       "name": "Mana Flare",
@@ -6587,12 +6590,14 @@
       ],
       "mana_cost": 75,
       "target": {
-        "type": "two_characters"
+        "type": "single",
+        "eligible": "all"
       },
-      "special": {
-        "exchange_positions": true
-      },
-      "description": "Exchange two characters' positions"
+      "description": "Trade places with another character anywhere in sight — ally or enemy. The caster and the target swap tiles instantly.",
+      "reposition": {
+        "mode": "swap",
+        "mover": "caster"
+      }
     },
     "psychic_blast": {
       "name": "Psychic Blast",
@@ -6699,12 +6704,12 @@
       "target": {
         "type": "ground"
       },
-      "special": {
-        "teleport_self_or_other": true,
-        "long_range": true,
-        "line_of_sight": true
-      },
-      "description": "Teleport oneself or another to target location"
+      "description": "Teleport oneself or another to target location",
+      "reposition": {
+        "mode": "teleport",
+        "self": true,
+        "range": 12
+      }
     },
     "wrathful_binding": {
       "name": "Wrathful Binding",
@@ -8951,10 +8956,13 @@
         "eligible": "enemy"
       },
       "special": {
-        "teleport_behind_target": true,
         "assassin_setup": true
       },
-      "description": "Teleport directly behind target enemy. 'While you sit here making plans, the Lord of Death stands behind you, smacking his lips.'"
+      "description": "Teleport directly behind target enemy. 'While you sit here making plans, the Lord of Death stands behind you, smacking his lips.'",
+      "reposition": {
+        "mode": "behind",
+        "mover": "caster"
+      }
     },
     "life_drain": {
       "name": "Life Drain",
@@ -10524,14 +10532,17 @@
       "mana_cost": 35,
       "enemy_only": true,
       "special": {
-        "teleport_to_adjacent_target": true,
         "melee_attack_on_emerge": true
       },
       "target": {
         "type": "single",
         "eligible": "enemy"
       },
-      "description": "Submerge into the earth and erupt directly adjacent to a target. Immediately make a melee attack on emergence. (Enemy-only)"
+      "description": "Sink into the earth and surface beside the target, striking as you emerge.",
+      "reposition": {
+        "mode": "adjacent",
+        "mover": "caster"
+      }
     }
   }
 }

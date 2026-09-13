@@ -15,7 +15,7 @@ var failures: int = 0
 var grid: CombatGrid
 
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 14
+const EXPECTED_CHECKS: int = 19
 
 
 func _ready() -> void:
@@ -44,6 +44,12 @@ func _ready() -> void:
 	_check_blocked_push_deals_its_damage()
 	_check_push_scales_with_spellpower()
 	_check_scatter_relocates_the_target()
+
+	_check_push_still_works_through_reposition()
+	_check_self_teleport_moves_the_caster()
+	_check_teleport_respects_its_range()
+	_check_swap_exchanges_two_units()
+	_check_anchored_blocks_placement_but_not_a_shove()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -371,4 +377,100 @@ func _check_scatter_relocates_the_target() -> void:
 		_fail("air_bomb left the target on %s — the scatter never happened"
 			% str(target.grid_position))
 	_cleanup([caster, target])
+	_done()
+
+
+# ── Repositioning ────────────────────────────────────────────────────────────
+
+## A push is one mode among several now. The refactor must not have cost the
+## thing it generalised — perks and the water ladder both still go through here.
+func _check_push_still_works_through_reposition() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 12)
+	var target := _make_unit(Vector2i(6, 5), 1)
+	var result: Dictionary = CombatManager.reposition(
+		target, {"mode": "push", "tiles": 2}, caster, target.grid_position)
+	if target.grid_position != Vector2i(8, 5):
+		_fail("a 2-tile push put the target on %s, expected (8, 5)"
+			% str(target.grid_position))
+	if result.get("moved", 0) != 2:
+		_fail("push reported moving %d tiles, expected 2" % result.get("moved", 0))
+	_cleanup([caster, target])
+	_done()
+
+
+## Blink, Jump, Get Out and Teleport are one mechanic at four ranges. Each spent
+## four months as an unread `special` key.
+func _check_self_teleport_moves_the_caster() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 12)
+	caster.current_mana = 500
+	# cast_spell runs the whole turn economy, so the probe has to be the unit
+	# whose turn it is and has to have an action to spend.
+	caster.actions_remaining = 2
+	# Blink is a level 3 Space/Sorcery spell, and cast_spell checks that the
+	# caster can actually cast it. Set on this probe alone, so the damage
+	# checks above keep their numbers.
+	caster.character_data["skills"] = {"space_magic": 9, "sorcery": 9}
+	CombatManager.turn_order = [caster]
+	CombatManager.current_unit_index = 0
+	var dest := Vector2i(9, 5)
+	var result: Dictionary = CombatManager.cast_spell(caster, "blink", dest)
+	if not result.get("success", false):
+		_fail("blink failed: %s" % str(result.get("reason", "?")))
+	elif caster.grid_position != dest:
+		_fail("blink left the caster on %s, expected %s"
+			% [str(caster.grid_position), str(dest)])
+	CombatManager.turn_order = []
+	CombatManager.current_unit_index = 0
+	_cleanup([caster])
+	_done()
+
+
+## Range is what separates them, so it has to bite.
+func _check_teleport_respects_its_range() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 12)
+	caster.current_mana = 500
+	var far := Vector2i(5 + 20, 5)
+	var result: Dictionary = CombatManager.reposition(
+		caster, {"mode": "teleport", "self": true, "range": 3}, caster, far)
+	if result.get("ok", false):
+		_fail("a range 3 teleport reached %s, 20 tiles away" % str(far))
+	if caster.grid_position != Vector2i(5, 5):
+		_fail("the caster moved to %s despite the refusal" % str(caster.grid_position))
+	_cleanup([caster])
+	_done()
+
+
+## Both units move at once, or the first would be blocked by the second.
+func _check_swap_exchanges_two_units() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 12)
+	var other := _make_unit(Vector2i(9, 9), 1)
+	CombatManager.reposition(caster, {"mode": "swap"}, caster, Vector2i(9, 9))
+	if caster.grid_position != Vector2i(9, 9):
+		_fail("after a swap the caster is on %s, expected (9, 9)"
+			% str(caster.grid_position))
+	if other.grid_position != Vector2i(5, 5):
+		_fail("after a swap the other unit is on %s, expected (5, 5)"
+			% str(other.grid_position))
+	_cleanup([caster, other])
+	_done()
+
+
+## Dimensional Anchor pins someone to the plane. That stops a teleport and not a
+## shove — being nailed to the world does not make you heavy.
+func _check_anchored_blocks_placement_but_not_a_shove() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 12)
+	var victim := _make_unit(Vector2i(6, 5), 1)
+	CombatManager._apply_status_effect(victim, "Anchored", 5)
+
+	var teleported: Dictionary = CombatManager.reposition(
+		victim, {"mode": "teleport", "range": 5}, caster, Vector2i(6, 9))
+	if teleported.get("ok", false):
+		_fail("an Anchored unit teleported to %s" % str(victim.grid_position))
+
+	var shoved: Dictionary = CombatManager.reposition(
+		victim, {"mode": "push", "tiles": 1}, caster, victim.grid_position)
+	if shoved.get("moved", 0) != 1:
+		_fail("an Anchored unit resisted a shove (moved %d) — anchoring should "
+			% shoved.get("moved", 0) + "stop displacement, not force")
+	_cleanup([caster, victim])
 	_done()

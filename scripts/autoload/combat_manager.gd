@@ -3149,6 +3149,25 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		spell_cast.emit(caster, spell, [], [summon_result])
 		return {"success": true, "spell": spell, "targets": [], "results": [summon_result], "mana_cost": mana_cost}
 
+	# --- Repositioning the caster: Blink, Jump, Get Out, Teleport ---
+	#
+	# These aim at a tile rather than a unit, so they never reach the per-target
+	# path where the rest of a spell resolves. Each one had its own unread
+	# `special` key — teleport_self, blink_out_of_melee, ignores_terrain — and
+	# each is the same mechanic with a different range.
+	if spell.has("reposition") and bool(spell["reposition"].get("self", false)):
+		var self_spec: Dictionary = spell["reposition"]
+		var move_result: Dictionary = reposition(caster, self_spec, caster, target_pos)
+		if not move_result.get("ok", false):
+			return {"success": false, "reason": move_result.get("reason", "cannot move there")}
+		use_action(1)   # mana was already deducted above, with every other spell
+		combat_log.emit("%s steps through space." % caster.unit_name)
+		var move_results: Array = [{"target": caster, "effects_applied": [
+			{"type": "reposition", "mode": self_spec.get("mode", "teleport")}]}]
+		spell_cast.emit(caster, spell, [caster], move_results)
+		return {"success": true, "spell": spell, "targets": [caster],
+			"results": move_results, "mana_cost": mana_cost}
+
 	# --- Illusion spells: spawn a decoy unit that draws enemy attacks ---
 	if targeting == "ground" and spell.get("special", {}).get("creates_illusion", false):
 		use_action(1)
@@ -3521,10 +3540,21 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 		result.effects_applied.append({"type": "push",
 			"moved": push_result.get("moved", 0), "lost": push_result.get("lost", 0)})
 
+	# Repositioning aimed at the TARGET: Behind You, Burrow, Space Swap. The
+	# caster is the one who moves in the first two, so `mover` says who.
+	if spell.has("reposition") and not bool(spell["reposition"].get("self", false)):
+		var spec: Dictionary = spell["reposition"]
+		var mover: Node = caster if spec.get("mover", "caster") == "caster" else target
+		var move_result: Dictionary = reposition(mover, spec, caster, target.grid_position)
+		result.effects_applied.append({"type": "reposition",
+			"mode": spec.get("mode", "push"), "ok": move_result.get("ok", false),
+			"reason": move_result.get("reason", "")})
+
 	if spell.has("scatter") and target.is_alive():
-		var scatter_range: int = int(spell["scatter"].get("range", 2))
-		if _scatter_unit(target, scatter_range):
-			result.effects_applied.append({"type": "scatter", "range": scatter_range})
+		var scatter_spec := {"mode": "scatter", "range": int(spell["scatter"].get("range", 2))}
+		if reposition(target, scatter_spec, caster, target.grid_position).get("ok", false):
+			result.effects_applied.append({"type": "scatter",
+				"range": scatter_spec["range"]})
 
 	# --- Direct healing (from spell.heal) ---
 	var base_heal = spell.get("heal", null)
@@ -8314,71 +8344,104 @@ func _displace_unit(unit: Node, direction: Vector2i, tiles: int,
 ## data and in perk on_trigger payloads. Three copies of a schema is how the
 ## vocabulary defects this project spent a week unwinding got in.
 func _apply_push(source: Node, target: Node, push_data: Dictionary) -> Dictionary:
-	if source == null or target == null or push_data.is_empty():
-		return {"moved": 0, "lost": 0, "blocked_by": null, "immune": false,
-			"damage_bonus_pct": 0, "blocked_damage": 0}
-
-	# Distance. `tiles` is the base; a spell may add a spellpower term and a
-	# random spread on top, which is how the water ladder escalates from Surge's
-	# flat single tile to Tsunami's sweep across the field.
-	var tiles: int = int(push_data.get("tiles", 1))
-	var per_sp: float = float(push_data.get("per_spellpower", 0.0))
-	if per_sp > 0.0 and source.has_method("get_spellpower"):
-		tiles += int(source.get_spellpower() * per_sp)
-	var variance: int = int(push_data.get("variance", 0))
-	if variance > 0:
-		tiles += randi() % (variance + 1)
-
-	# Away from the source by default; a negative `tiles` drags the target
-	# inward instead. A geyser erupting underfoot throws people anywhere.
-	var direction: Vector2i
-	if push_data.get("direction", "away") == "random":
-		var dirs: Array = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1),
-			Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)]
-		direction = dirs[randi() % dirs.size()]
-	else:
-		direction = AoEResolver._dir4(source.grid_position, target.grid_position)
-
-	var result: Dictionary = _displace_unit(target, direction, tiles, source)
-
-	# Two ways to be paid for a blocked push, because two kinds of effect want
-	# it. A perk adds a percentage to damage it was already dealing;
-	# a spell that deals almost nothing on its own — Surge is 5 — pays a flat
-	# amount, so the wall behind the target is the whole point of casting it.
-	var stopped: bool = result.get("lost", 0) > 0
-	result["damage_bonus_pct"] = int(push_data.get("blocked_damage_bonus_pct", 0)) if stopped else 0
-	result["blocked_damage"] = int(push_data.get("blocked_damage", 0)) if stopped else 0
-	return result
+	var spec: Dictionary = push_data.duplicate()
+	if not spec.has("mode"):
+		spec["mode"] = "pull" if spec.get("direction", "") == "toward" else "push"
+	return reposition(target, spec, source, target.grid_position if target != null
+		else Vector2i.ZERO)
 
 
-## Throw a unit to a random walkable tile within `range_tiles`.
+## Move a unit somewhere it did not choose to go. THE one entry point.
 ##
-## Distinct from a push: there is no direction, and the scatter does not stop at
-## the first obstacle — an air bomb puts people down somewhere else entirely.
-## Returns true if the unit actually landed somewhere new.
-func _scatter_unit(unit: Node, range_tiles: int) -> bool:
-	if combat_grid == null or unit == null or not "grid_position" in unit:
-		return false
-	var candidates: Array[Vector2i] = []
-	var origin: Vector2i = unit.grid_position
-	for dx in range(-range_tiles, range_tiles + 1):
-		for dy in range(-range_tiles, range_tiles + 1):
-			var tile := origin + Vector2i(dx, dy)
-			if tile == origin:
-				continue
-			if not combat_grid.is_valid_position(tile) or not combat_grid.is_tile_walkable(tile):
-				continue
-			if combat_grid.get_unit_at(tile) != null:
-				continue
-			candidates.append(tile)
-	if candidates.is_empty():
-		return false
-	var dest: Vector2i = candidates[randi() % candidates.size()]
-	var from: Vector2i = origin
-	if not combat_grid.move_unit(unit, dest):
-		return false
-	unit_moved.emit(unit, from, dest)
-	return true
+## Every mode shares the same refusals — a unit immune to being moved, a missing
+## grid, nowhere to land — and the same reporting, so callers never have to know
+## whether they asked for a shove or a teleport. See Repositioning for the
+## vocabulary and for why travelled and placed modes are different things.
+##
+##   "reposition": {"mode": "push", "tiles": 1, "blocked_damage": 10}
+##   "reposition": {"mode": "teleport", "range": 6}
+##   "reposition": {"mode": "behind"}
+##
+## `aim` is the tile the caster picked, and only the placed modes read it.
+func reposition(unit: Node, spec: Dictionary, source: Node = null,
+		aim: Vector2i = Vector2i.ZERO) -> Dictionary:
+	var result := {"moved": 0, "lost": 0, "blocked_by": null, "immune": false,
+		"damage_bonus_pct": 0, "blocked_damage": 0, "ok": false, "reason": ""}
+	if unit == null or not is_instance_valid(unit) or not "grid_position" in unit:
+		result.reason = "no unit"
+		return result
+
+	var mode: String = spec.get("mode", "push")
+	if not Repositioning.is_mode(mode):
+		push_warning("CombatManager.reposition: %s" % Repositioning.explain_unknown(mode))
+		result.reason = "unknown mode"
+		return result
+
+	# Juggernaut and friends. One immunity question for every mode: can this
+	# unit be moved against its will? Dimensional Anchor answers it for the
+	# placed modes only — being nailed to the plane does not stop a shove.
+	if _check_perk_status_immunity(unit, "Pushed"):
+		result.immune = true
+		result.reason = "cannot be moved"
+		combat_log.emit("%s cannot be moved." % unit.unit_name)
+		return result
+	if not Repositioning.is_travelled(mode) and _unit_has_effect(unit, "prevents_teleportation"):
+		result.immune = true
+		result.reason = "anchored to this plane"
+		combat_log.emit("%s is anchored and cannot be displaced." % unit.unit_name)
+		return result
+
+	if Repositioning.is_travelled(mode):
+		var tiles: int = Repositioning.distance_for(spec, source)
+		if mode == "pull":
+			tiles = -tiles
+		var direction: Vector2i = Repositioning.direction_for(spec, source, unit)
+		var travelled: Dictionary = _displace_unit(unit, direction, tiles, source)
+		result.merge(travelled, true)
+		result.ok = travelled.get("moved", 0) > 0
+
+		# Two ways to be paid for a blocked push, because two kinds of effect
+		# want it. A perk adds a percentage to damage it was already dealing; a
+		# spell that deals almost nothing on its own — Surge is 5 — pays a flat
+		# amount, so the wall behind the target is the point of casting it.
+		var stopped: bool = travelled.get("lost", 0) > 0
+		result.damage_bonus_pct = int(spec.get("blocked_damage_bonus_pct", 0)) if stopped else 0
+		result.blocked_damage = int(spec.get("blocked_damage", 0)) if stopped else 0
+		return result
+
+	# Placed: leaves one tile, arrives at another, nothing in between.
+	var plan: Dictionary = Repositioning.destination(
+		mode, unit, source, spec, aim, combat_grid)
+	if not plan.get("ok", false):
+		result.reason = plan.get("reason", "")
+		return result
+
+	var from: Vector2i = unit.grid_position
+	var dest: Vector2i = plan["tile"]
+	var partner: Node = plan.get("swap_with", null)
+
+	if partner != null:
+		# Both units leave at once, so neither destination is occupied when the
+		# other arrives. Moving them one at a time would have the first blocked
+		# by the second.
+		var partner_from: Vector2i = partner.grid_position
+		combat_grid.unit_positions.erase(from)
+		combat_grid.unit_positions.erase(partner_from)
+		unit.grid_position = dest
+		partner.grid_position = from
+		combat_grid.unit_positions[dest] = unit
+		combat_grid.unit_positions[from] = partner
+		unit_moved.emit(unit, from, dest)
+		unit_moved.emit(partner, partner_from, from)
+	else:
+		if not combat_grid.move_unit(unit, dest):
+			result.reason = "the grid refused the move"
+			return result
+		unit_moved.emit(unit, from, dest)
+
+	result.ok = true
+	result.moved = maxi(absi(dest.x - from.x), absi(dest.y - from.y))
+	return result
 
 
 # ============================================
