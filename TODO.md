@@ -143,7 +143,54 @@ The mirror image of dead data: code paths that work and are never exercised.
 - [ ] **`tactical_assessment` perk** (Logistics 7) exists in perks.json with no
   code — it was meant to unlock preset formations.
 
-## 3. Data with no consumer
+## 3. Implemented systems to tie in
+
+Systems that are built, verified and working, and that existing content does
+not know about. These are not gaps in the systems — they are gaps in the
+*content that could be using them*, which makes this the checklist to hold open
+whenever spells, perks, items or events get reviewed.
+
+The question to ask of each piece of content is not "is this broken" but "would
+this be better if it knew about one of these".
+
+**First application: `docs/plans/SPELL_AUDIT.md` (2026-09-13).** Auditing the
+363 spells against this list found 15 spells whose whole identity is forced
+movement they never got, ~13 asking for auras, and 40 that resolve to nothing
+at all when cast. The checklist works; it should be run against perks, items
+and events too.
+
+- [ ] **Forced movement** (`_displace_unit`, `_apply_push`) — push, pull and
+      the collision rules that come with them: a unit shoved into a wall or
+      another unit takes the blocked-damage path instead of moving. Built for
+      the perk pass and barely used outside it. A shockwave that only damages
+      is a worse shockwave. Worth asking of every Air and Water spell, every
+      mace and staff, and anything thematically about *force* rather than
+      *heat*.
+
+- [ ] **Auras** (`aura_system.gd`, `resources/data/auras.json`) — a field
+      around a unit that affects others by proximity, declarable by equipment,
+      a status, a perk, or the unit itself, and reachable by a spell through
+      the status it applies. Ten definitions exist and three item lines use
+      them. Any spell that currently reads "for N turns, you and nearby allies
+      …" is an aura written the long way. Note the two open gaps before leaning
+      on it hard: nothing shows an aura in the UI, and the AI does not know
+      auras exist, so it will not step into or out of one.
+
+- [ ] **AoE shapes with falloff** (`aoe_resolver.gd`) — circle, nova, line,
+      arc, cone, cross, band, plus opt-in per-ring damage falloff. The shape
+      vocabulary is much richer than the spell list uses; most area spells are
+      still circles. Falloff is opt-in by design and almost nothing opts in.
+
+- [ ] **Saving throws** (`save_system.gd`) — one mechanic, four tiers, and a
+      known conversion: one d20 point is five percentage points. Spells that
+      roll their own chance-to-apply are not wrong, but they are outside the
+      system, which means they cannot be resisted by the stat the player
+      levelled for exactly that.
+
+- [ ] **Party bonuses** (`party_bonuses.gd`) — `party_`-prefixed payouts,
+      best member rather than sum.
+
+## 4. Data with no consumer
 
 - [ ] **27 of the 40 `base_bonuses` stat keys are read by nothing.** Full table
   with owning skill, L1/L5/L10 values and the system each would hook into is in
@@ -261,7 +308,7 @@ The mirror image of dead data: code paths that work and are never exercised.
 - [ ] **`skeleton_king_duel`** stops at 10% HP — verify the special win
   condition still fires after the combat refactors.
 
-## 4. Content that wants writing
+## 5. Content that wants writing
 
 - [ ] **A prose pass on 81 events and 24 companion bios.** The animal realm's 47
   zone events, hungry ghost's 34 gap-fill events, the three HG boss/pass-guardian
@@ -291,12 +338,12 @@ The mirror image of dead data: code paths that work and are never exercised.
 - [ ] **Realm-specific rest events** — "something stirs in the night" flavour
   when resting in hell / hungry ghost.
 
-## 5. Whole realms
+## 6. Whole realms
 
 Human, asura and god need: map config, archetypes, encounters, event file,
 companions, backgrounds, shops. Human-realm zone design is sketched in Part II.
 
-## 6. Balance passes waiting on play
+## 7. Balance passes waiting on play
 
 - [ ] **Saving throws, after the 2026-09-12 rework.** Every CC effect in combat
       changed probability. A Constitution-12 target used to resist *everything*
@@ -345,7 +392,7 @@ All first-pass numbers. Nothing here is a bug; they need a playthrough.
 - Trade L10 reads 60% buy discount / 70% sell markup — probably intended as a
   soft cap, not a literal multiplier. Decide before wiring (Part III)
 
-## 7. Perks deferred on missing systems
+## 8. Perks deferred on missing systems
 
 Not gaps in the perk trees — these are written and waiting on machinery.
 
@@ -418,7 +465,7 @@ combat panel — that change did **not** implement them. `scout_ahead`,
 miss: `camp_system.gd:156` already has a forage camp action open to everyone,
 and the perk that is supposed to improve it is never consulted.
 
-## 8. Things to ponder
+## 9. Things to ponder
 
 - [ ] **Party size may still be undercosted, and Leadership may still want
       nerfing.** The cap is 3 free, 6 at Leadership 9. The reason it is that low:
@@ -576,7 +623,7 @@ but may not be what the game wants.
       which is why it keeps looking like two half-features:
 
       - `trap_maker` (Smithing) is a combat perk deferred on a `place_trap`
-        resolver — see §7. "Place a trap on an adjacent tile. The first enemy to
+        resolver — see §8. "Place a trap on an adjacent tile. The first enemy to
         enter takes damage equal to 30% of your Focus and is immobilized."
       - `trap_detection_pct` (Thievery) is a dead skill-table key, currently
         with no system at all. It was read as overworld detection, which is
@@ -596,7 +643,7 @@ but may not be what the game wants.
       Not needed now, and mechanically close to the planned **mounts and pets**
       system, so the two should be designed together when that comes up.
 
-## 9. Deferred by decision
+## 10. Deferred by decision
 
 Recorded so they aren't rediscovered as bugs.
 
@@ -613,7 +660,7 @@ Medicine and less good at swinging a sword, which is a more coherent thing for
 the game to be about.
 
 What survives is the mechanic, not the framing: `party_`-prefixed skill payouts,
-where one member's skill pays the whole party. That is designed (§3 above) and
+where one member's skill pays the whole party. That is designed (§4 above) and
 unbuilt. The support-character-as-equipment idea is parked in "Things to ponder"
 for whenever mounts and pets are designed.
 
@@ -865,7 +912,7 @@ Spec: `docs/superpowers/specs/2026-08-31-enemy-xp-generation-design.md`
 
 ---
 
-## 10. The passive perk backlog (2026-09-10)
+## 11. The passive perk backlog (2026-09-10)
 
 The engine is built and proven; the data is barely started. Of 470 passive
 perks: **168** are implemented by hand in `scripts/` (checked by id with
@@ -889,7 +936,7 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
       EventManager have no consumer for them. Authoring an effect before its
       reader exists is the exact failure this whole pass spent its time
       undoing — build the consumers first. This is what the seven overworld
-      perks in §7 are waiting on too.
+      perks in §8 are waiting on too.
 - [ ] **Unbuilt effect types:** `aura`, `cost_reduction`, `damage_modifier`,
       `resource_regen`, `spell_modifier`, `summon_modifier`, `special`.
       `summon_modifier` has the most data waiting on it — several black, fire
@@ -903,7 +950,7 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
       `first_attack_combat`, `first_attack_turn`, `from_behind`,
       `target_bleeding`, `target_debuffed`, `on_terrain_type`.
 
-## 11. Systems the perk text assumes and the game does not have
+## 12. Systems the perk text assumes and the game does not have
 
 **All three are built** (2026-09-12): forced movement, AoE damage falloff, and
 one saving-throw mechanic. See Part IV for what changed.
@@ -1315,7 +1362,7 @@ file. Since `combat_arena.gd` greys out any non-mantra skill with empty
 never once run. 75 are now wired; 7 overworld ones are flagged `non_combat` and
 filtered out of the combat panel; `host_of_the_winds` is reclassified passive
 (it describes summons that are active, and only reached the panel because the
-panel matches on the "Active" prefix); 26 remain, listed in Part I §7.
+panel matches on the "Active" prefix); 26 remain, listed in Part I §8.
 
 **Active skills now use the shared AoE resolver.** `aoe_resolver.gd` already had
 ten shapes and `cast_spell` routed through it, but the four active-skill AoE
@@ -1339,7 +1386,7 @@ conversions (in that order, since a conversion reads a finished stat);
 `CombatUnit._get_conditional_perk_bonus()` evaluates gated effects where the
 stat is read; `CombatManager._fire_perk_triggers()` dispatches `on_hit`,
 `on_crit`, `on_kill` and `dodge_success`. Only 5 perks are wired to it so far —
-see Part I §10.
+see Part I §11.
 
 **Six things were being computed and never read.** Same failure each time: a
 value written under one name and read under another, or not read at all, with
