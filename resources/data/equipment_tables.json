@@ -1,1130 +1,1538 @@
 {
   "_comment": "Equipment generation tables: materials, quality, traits, and base stats for procedural weapons/armor",
   "materials": {
-    "wood": {
-      "tier": 0,
-      "damage_mult": 0.55,
-      "armor_mult": 0.0,
-      "weight_mult": 0.65,
-      "value_mult": 0.25,
-      "base_durability": 35,
-      "fragility": 1.3,
-      "name_prefix": "Wooden",
-      "allowed_types": [
-        "staff",
+	"wood": {
+	  "tier": 0,
+	  "damage_mult": 0.55,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.65,
+	  "value_mult": 0.25,
+	  "base_durability": 35,
+	  "fragility": 1.3,
+	  "name_prefix": "Wooden",
+	  "allowed_types": [
+		"staff",
         "club"
-      ]
-    },
-    "bone": {
-      "tier": 1,
-      "damage_mult": 0.65,
-      "armor_mult": 0.55,
-      "weight_mult": 0.6,
-      "value_mult": 0.35,
-      "base_durability": 30,
-      "fragility": 1.5,
-      "name_prefix": "Bone"
-    },
-    "obsidian": {
-      "tier": 2,
-      "damage_mult": 0.9,
-      "armor_mult": 0.15,
-      "weight_mult": 0.5,
-      "value_mult": 0.9,
-      "base_durability": 20,
-      "fragility": 3.0,
-      "name_prefix": "Obsidian",
-      "stat_bonuses": {
-        "crit_chance": 3
-      },
-      "_note": "High dmg/crit, brittle, poor armor material"
-    },
-    "bronze": {
-      "tier": 3,
-      "damage_mult": 0.8,
-      "armor_mult": 0.8,
-      "weight_mult": 0.9,
-      "value_mult": 0.65,
-      "base_durability": 65,
-      "fragility": 1.0,
-      "name_prefix": "Bronze"
-    },
-    "iron": {
-      "tier": 4,
-      "damage_mult": 1.0,
-      "armor_mult": 1.0,
-      "weight_mult": 1.0,
-      "value_mult": 1.0,
-      "base_durability": 85,
-      "fragility": 1.0,
-      "name_prefix": "Iron"
-    },
-    "steel": {
-      "tier": 5,
-      "damage_mult": 1.2,
-      "armor_mult": 1.2,
-      "weight_mult": 0.95,
-      "value_mult": 1.5,
-      "base_durability": 110,
-      "fragility": 1.0,
-      "name_prefix": "Steel"
-    },
-    "damascene": {
-      "tier": 6,
-      "damage_mult": 1.35,
-      "armor_mult": 1.3,
-      "weight_mult": 0.85,
-      "value_mult": 2.5,
-      "base_durability": 140,
-      "fragility": 0.8,
-      "name_prefix": "Damascene"
-    },
-    "sky_iron": {
-      "tier": 7,
-      "damage_mult": 1.5,
-      "armor_mult": 1.55,
-      "weight_mult": 0.75,
-      "value_mult": 5.0,
-      "base_durability": 180,
-      "fragility": 0.6,
-      "name_prefix": "Sky-iron",
-      "_note": "Tibetan meteoritic iron (gnam lcags)"
-    },
-    "vajra": {
-      "tier": 8,
-      "damage_mult": 1.7,
-      "armor_mult": 1.8,
-      "weight_mult": 0.65,
-      "value_mult": 15.0,
-      "base_durability": 9999,
-      "fragility": 0.0,
-      "name_prefix": "Vajra",
-      "_note": "Indestructible divine metal — never degrades"
-    },
-    "copper": {
-      "tier": 2,
-      "damage_mult": 0.7,
-      "armor_mult": 0.6,
-      "weight_mult": 0.85,
-      "value_mult": 0.5,
-      "base_durability": 55,
-      "fragility": 1.2,
-      "name_prefix": "Copper",
-      "allowed_types": [
+	  ]
+	},
+	"bone": {
+	  "tier": 1,
+	  "damage_mult": 0.65,
+	  "armor_mult": 0.55,
+	  "weight_mult": 0.6,
+	  "value_mult": 0.35,
+	  "base_durability": 30,
+	  "fragility": 1.5,
+	  "name_prefix": "Bone"
+	},
+	"obsidian": {
+	  "tier": 2,
+	  "damage_mult": 0.9,
+	  "armor_mult": 0.15,
+	  "weight_mult": 0.5,
+	  "value_mult": 0.9,
+	  "base_durability": 20,
+	  "fragility": 3.0,
+	  "name_prefix": "Obsidian",
+	  "stat_bonuses": {
+		"crit_chance": 3
+	  },
+	  "_note": "High dmg/crit, brittle, poor armor material"
+	},
+	"bronze": {
+	  "tier": 3,
+	  "damage_mult": 0.8,
+	  "armor_mult": 0.8,
+	  "weight_mult": 0.9,
+	  "value_mult": 0.65,
+	  "base_durability": 65,
+	  "fragility": 1.0,
+	  "name_prefix": "Bronze"
+	},
+	"iron": {
+	  "tier": 4,
+	  "damage_mult": 1.0,
+	  "armor_mult": 1.0,
+	  "weight_mult": 1.0,
+	  "value_mult": 1.0,
+	  "base_durability": 85,
+	  "fragility": 1.0,
+	  "name_prefix": "Iron"
+	},
+	"steel": {
+	  "tier": 5,
+	  "damage_mult": 1.2,
+	  "armor_mult": 1.2,
+	  "weight_mult": 0.95,
+	  "value_mult": 1.5,
+	  "base_durability": 110,
+	  "fragility": 1.0,
+	  "name_prefix": "Steel"
+	},
+	"damascene": {
+	  "tier": 6,
+	  "damage_mult": 1.35,
+	  "armor_mult": 1.3,
+	  "weight_mult": 0.85,
+	  "value_mult": 2.5,
+	  "base_durability": 140,
+	  "fragility": 0.8,
+	  "name_prefix": "Damascene"
+	},
+	"sky_iron": {
+	  "tier": 7,
+	  "damage_mult": 1.5,
+	  "armor_mult": 1.55,
+	  "weight_mult": 0.75,
+	  "value_mult": 5.0,
+	  "base_durability": 180,
+	  "fragility": 0.6,
+	  "name_prefix": "Sky-iron",
+	  "_note": "Tibetan meteoritic iron (gnam lcags)"
+	},
+	"vajra": {
+	  "tier": 8,
+	  "damage_mult": 1.7,
+	  "armor_mult": 1.8,
+	  "weight_mult": 0.65,
+	  "value_mult": 15.0,
+	  "base_durability": 9999,
+	  "fragility": 0.0,
+	  "name_prefix": "Vajra",
+	  "_note": "Indestructible divine metal — never degrades"
+	},
+	"copper": {
+	  "tier": 2,
+	  "damage_mult": 0.7,
+	  "armor_mult": 0.6,
+	  "weight_mult": 0.85,
+	  "value_mult": 0.5,
+	  "base_durability": 55,
+	  "fragility": 1.2,
+	  "name_prefix": "Copper",
+	  "allowed_types": [
         "focus"
-      ],
-      "_note": "Traditional material for ritual implements — bells, vajras, offering bowls"
-    },
-    "silver": {
-      "tier": 4,
-      "damage_mult": 0.75,
-      "armor_mult": 0.65,
-      "weight_mult": 0.8,
-      "value_mult": 2.0,
-      "base_durability": 70,
-      "fragility": 1.1,
-      "name_prefix": "Silver",
-      "allowed_types": [
+	  ],
+	  "_note": "Traditional material for ritual implements — bells, vajras, offering bowls"
+	},
+	"silver": {
+	  "tier": 4,
+	  "damage_mult": 0.75,
+	  "armor_mult": 0.65,
+	  "weight_mult": 0.8,
+	  "value_mult": 2.0,
+	  "base_durability": 70,
+	  "fragility": 1.1,
+	  "name_prefix": "Silver",
+	  "allowed_types": [
         "focus"
-      ],
-      "_note": "Purified ritual material; associated with the moon and clarity"
-    },
-    "gold": {
-      "tier": 6,
-      "damage_mult": 0.8,
-      "armor_mult": 0.7,
-      "weight_mult": 0.9,
-      "value_mult": 6.0,
-      "base_durability": 90,
-      "fragility": 0.9,
-      "name_prefix": "Golden",
-      "allowed_types": [
+	  ],
+	  "_note": "Purified ritual material; associated with the moon and clarity"
+	},
+	"gold": {
+	  "tier": 6,
+	  "damage_mult": 0.8,
+	  "armor_mult": 0.7,
+	  "weight_mult": 0.9,
+	  "value_mult": 6.0,
+	  "base_durability": 90,
+	  "fragility": 0.9,
+	  "name_prefix": "Golden",
+	  "allowed_types": [
         "focus"
-      ],
-      "_note": "Highest earthly ritual material; solar, incorruptible"
-    },
-    "cloth": {
-      "tier": 0,
-      "damage_mult": 0.4,
-      "armor_mult": 0.35,
-      "weight_mult": 0.3,
-      "value_mult": 0.3,
-      "base_durability": 30,
-      "fragility": 1.6,
-      "name_prefix": "Cloth",
-      "allowed_types": [
-        "robe",
-        "hat",
-        "gloves",
-        "boots",
+	  ],
+	  "_note": "Highest earthly ritual material; solar, incorruptible"
+	},
+	"cloth": {
+	  "tier": 0,
+	  "damage_mult": 0.4,
+	  "armor_mult": 0.35,
+	  "weight_mult": 0.3,
+	  "value_mult": 0.3,
+	  "base_durability": 30,
+	  "fragility": 1.6,
+	  "name_prefix": "Cloth",
+	  "allowed_types": [
+		"robe",
+		"hat",
+		"gloves",
+		"boots",
         "pants"
-      ],
-      "_note": "Soft goods. Robes and hats had no material that fitted them."
-    },
-    "leather": {
-      "tier": 1,
-      "damage_mult": 0.5,
-      "armor_mult": 0.6,
-      "weight_mult": 0.5,
-      "value_mult": 0.45,
-      "base_durability": 50,
-      "fragility": 1.35,
-      "name_prefix": "Leather",
-      "allowed_types": [
-        "armor",
-        "helmet",
-        "gloves",
-        "boots",
-        "pants",
+	  ],
+	  "_note": "Soft goods. Robes and hats had no material that fitted them."
+	},
+	"leather": {
+	  "tier": 1,
+	  "damage_mult": 0.5,
+	  "armor_mult": 0.6,
+	  "weight_mult": 0.5,
+	  "value_mult": 0.45,
+	  "base_durability": 50,
+	  "fragility": 1.35,
+	  "name_prefix": "Leather",
+	  "allowed_types": [
+		"armor",
+		"helmet",
+		"gloves",
+		"boots",
+		"pants",
         "shield"
-      ]
-    },
-    "composite": {
-      "tier": 3,
-      "damage_mult": 0.9,
-      "armor_mult": 0.0,
-      "weight_mult": 0.7,
-      "value_mult": 0.8,
-      "base_durability": 65,
-      "fragility": 1.15,
-      "name_prefix": "Composite",
-      "allowed_types": [
+	  ]
+	},
+	"composite": {
+	  "tier": 3,
+	  "damage_mult": 0.9,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.7,
+	  "value_mult": 0.8,
+	  "base_durability": 65,
+	  "fragility": 1.15,
+	  "name_prefix": "Composite",
+	  "allowed_types": [
         "bow"
-      ],
-      "_note": "Horn, sinew and wood laminate. Bows only."
-    },
-    "conch": {
-      "tier": 2,
-      "damage_mult": 0.5,
-      "armor_mult": 0.0,
-      "weight_mult": 0.5,
-      "value_mult": 0.9,
-      "base_durability": 40,
-      "fragility": 1.5,
-      "name_prefix": "Conch",
-      "allowed_types": [
+	  ],
+	  "_note": "Horn, sinew and wood laminate. Bows only."
+	},
+	"conch": {
+	  "tier": 2,
+	  "damage_mult": 0.5,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.5,
+	  "value_mult": 0.9,
+	  "base_durability": 40,
+	  "fragility": 1.5,
+	  "name_prefix": "Conch",
+	  "allowed_types": [
         "focus"
-      ],
-      "_note": "Shell. Ritual implements — dorje, drilbu, khatvanga."
-    },
-    "hide": {
-      "tier": 1,
-      "damage_mult": 0.5,
-      "armor_mult": 0.7,
-      "weight_mult": 0.7,
-      "value_mult": 0.4,
-      "base_durability": 55,
-      "fragility": 1.4,
-      "name_prefix": "Hide",
-      "allowed_types": [
-        "armor",
-        "helmet",
-        "gloves",
-        "boots",
-        "pants",
+	  ],
+	  "_note": "Shell. Ritual implements — dorje, drilbu, khatvanga."
+	},
+	"hide": {
+	  "tier": 1,
+	  "damage_mult": 0.5,
+	  "armor_mult": 0.7,
+	  "weight_mult": 0.7,
+	  "value_mult": 0.4,
+	  "base_durability": 55,
+	  "fragility": 1.4,
+	  "name_prefix": "Hide",
+	  "allowed_types": [
+		"armor",
+		"helmet",
+		"gloves",
+		"boots",
+		"pants",
         "shield"
-      ]
-    },
-    "scale": {
-      "tier": 3,
-      "damage_mult": 0.6,
-      "armor_mult": 1.05,
-      "weight_mult": 0.9,
-      "value_mult": 0.85,
-      "base_durability": 75,
-      "fragility": 1.1,
-      "name_prefix": "Scale",
-      "allowed_types": [
-        "armor",
-        "helmet",
-        "gloves",
-        "boots",
-        "pants",
+	  ]
+	},
+	"scale": {
+	  "tier": 3,
+	  "damage_mult": 0.6,
+	  "armor_mult": 1.05,
+	  "weight_mult": 0.9,
+	  "value_mult": 0.85,
+	  "base_durability": 75,
+	  "fragility": 1.1,
+	  "name_prefix": "Scale",
+	  "allowed_types": [
+		"armor",
+		"helmet",
+		"gloves",
+		"boots",
+		"pants",
         "shield"
-      ]
-    },
-    "chitin": {
-      "tier": 3,
-      "damage_mult": 0.75,
-      "armor_mult": 0.95,
-      "weight_mult": 0.45,
-      "value_mult": 0.9,
-      "base_durability": 60,
-      "fragility": 1.25,
-      "name_prefix": "Chitin",
-      "_note": "Light for its protection. Hungry ghost and animal realm creatures.",
-      "allowed_types": [
-        "armor",
-        "helmet",
-        "gloves",
-        "boots",
-        "pants",
-        "shield",
+	  ]
+	},
+	"chitin": {
+	  "tier": 3,
+	  "damage_mult": 0.75,
+	  "armor_mult": 0.95,
+	  "weight_mult": 0.45,
+	  "value_mult": 0.9,
+	  "base_durability": 60,
+	  "fragility": 1.25,
+	  "name_prefix": "Chitin",
+	  "_note": "Light for its protection. Hungry ghost and animal realm creatures.",
+	  "allowed_types": [
+		"armor",
+		"helmet",
+		"gloves",
+		"boots",
+		"pants",
+		"shield",
         "dagger"
-      ]
-    },
-    "silk": {
-      "tier": 2,
-      "damage_mult": 0.4,
-      "armor_mult": 0.3,
-      "weight_mult": 0.2,
-      "value_mult": 1.6,
-      "base_durability": 25,
-      "fragility": 1.7,
-      "name_prefix": "Silk",
-      "resistances": {
-        "ranged": 10
-      },
-      "_note": "Historically arrow-resistant: a silk layer catches the head and lets it be drawn out. Worn, not armoured — robes and cloaks.",
-      "allowed_types": [
-        "robe",
-        "hat",
+	  ]
+	},
+	"silk": {
+	  "tier": 2,
+	  "damage_mult": 0.4,
+	  "armor_mult": 0.3,
+	  "weight_mult": 0.2,
+	  "value_mult": 1.6,
+	  "base_durability": 25,
+	  "fragility": 1.7,
+	  "name_prefix": "Silk",
+	  "resistances": {
+		"ranged": 10
+	  },
+	  "_note": "Historically arrow-resistant: a silk layer catches the head and lets it be drawn out. Worn, not armoured — robes and cloaks.",
+	  "allowed_types": [
+		"robe",
+		"hat",
         "cape"
-      ]
-    }
+	  ]
+	},
+	"citrine": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 0.7,
+	  "name_prefix": "Citrine",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"topaz": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 3.2,
+	  "name_prefix": "Topaz",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"turquoise": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 0.7,
+	  "name_prefix": "Turquoise",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"star_sapphire": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 3.2,
+	  "name_prefix": "Star Sapphire",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"sandalwood": {
+	  "tier": 1,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.15,
+	  "base_durability": 35,
+	  "fragility": 1.2,
+	  "value_mult": 0.7,
+	  "name_prefix": "Sandalwood",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"emerald": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 3.2,
+	  "name_prefix": "Emerald",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"coral": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 0.7,
+	  "name_prefix": "Coral",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"ruby": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 3.2,
+	  "name_prefix": "Ruby",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"crystal": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 0.7,
+	  "name_prefix": "Crystal",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"diamond": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 3.2,
+	  "name_prefix": "Diamond",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"moonstone": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 0.7,
+	  "name_prefix": "Moonstone",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"conch_bead": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 3.2,
+	  "name_prefix": "Conch Bead",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"bone_bead": {
+	  "tier": 1,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.15,
+	  "base_durability": 35,
+	  "fragility": 1.2,
+	  "value_mult": 0.7,
+	  "name_prefix": "Bone Bead",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"devils_bone": {
+	  "tier": 1,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.15,
+	  "base_durability": 35,
+	  "fragility": 1.2,
+	  "value_mult": 3.2,
+	  "name_prefix": "Devils Bone",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"smoke_crystal": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 0.7,
+	  "name_prefix": "Smoke Crystal",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"agate": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 3.2,
+	  "name_prefix": "Agate",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"rosewood": {
+	  "tier": 1,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.15,
+	  "base_durability": 35,
+	  "fragility": 1.2,
+	  "value_mult": 0.7,
+	  "name_prefix": "Rosewood",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"opal": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 3.2,
+	  "name_prefix": "Opal",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"amethyst": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 0.7,
+	  "name_prefix": "Amethyst",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	},
+	"mirror_bead": {
+	  "tier": 2,
+	  "damage_mult": 0.3,
+	  "armor_mult": 0.0,
+	  "weight_mult": 0.2,
+	  "base_durability": 60,
+	  "fragility": 0.9,
+	  "value_mult": 3.2,
+	  "name_prefix": "Mirror Bead",
+	  "allowed_types": [
+        "mala"
+	  ],
+	  "_note": "Mala bead. The material is the grade — malas have no consecration ladder."
+	}
   },
   "quality_levels": {
-    "poor": {
-      "stat_mult": 0.7,
-      "value_mult": 0.5,
-      "trait_slots": 0,
-      "name_prefix": "Crude"
-    },
-    "common": {
-      "stat_mult": 1.0,
-      "value_mult": 1.0,
-      "trait_slots": 0,
-      "name_prefix": ""
-    },
-    "good": {
-      "stat_mult": 1.15,
-      "value_mult": 1.4,
-      "trait_slots": 1,
-      "name_prefix": "Good"
-    },
-    "fine": {
-      "stat_mult": 1.3,
-      "value_mult": 2.0,
-      "trait_slots": 1,
-      "name_prefix": "Fine"
-    },
-    "masterwork": {
-      "stat_mult": 1.5,
-      "value_mult": 3.0,
-      "trait_slots": 2,
-      "name_prefix": "Masterwork"
-    }
+	"poor": {
+	  "stat_mult": 0.7,
+	  "value_mult": 0.5,
+	  "trait_slots": 0,
+	  "name_prefix": "Crude"
+	},
+	"common": {
+	  "stat_mult": 1.0,
+	  "value_mult": 1.0,
+	  "trait_slots": 0,
+	  "name_prefix": ""
+	},
+	"good": {
+	  "stat_mult": 1.15,
+	  "value_mult": 1.4,
+	  "trait_slots": 1,
+	  "name_prefix": "Good"
+	},
+	"fine": {
+	  "stat_mult": 1.3,
+	  "value_mult": 2.0,
+	  "trait_slots": 1,
+	  "name_prefix": "Fine"
+	},
+	"masterwork": {
+	  "stat_mult": 1.5,
+	  "value_mult": 3.0,
+	  "trait_slots": 2,
+	  "name_prefix": "Masterwork"
+	}
   },
   "weapon_bases": {
-    "sword": {
-      "damage": 8,
-      "accuracy": 0,
-      "weight": 8,
-      "value": 50,
-      "element": "space",
-      "two_handed": false,
-      "skill": "swords"
-    },
-    "dagger": {
-      "damage": 4,
-      "accuracy": 15,
-      "weight": 2,
-      "value": 25,
-      "element": "air",
-      "two_handed": false,
-      "skill": "daggers",
-      "crit_chance": 5
-    },
-    "axe": {
-      "damage": 10,
-      "accuracy": -5,
-      "weight": 10,
-      "value": 55,
-      "element": "fire",
-      "two_handed": false,
-      "skill": "axes"
-    },
-    "mace": {
-      "damage": 9,
-      "accuracy": 0,
-      "weight": 9,
-      "value": 50,
-      "element": "earth",
-      "two_handed": false,
-      "skill": "maces",
-      "armor_pierce": 5
-    },
-    "spear": {
-      "damage": 6,
-      "accuracy": 5,
-      "weight": 5,
-      "value": 35,
-      "element": "water",
-      "two_handed": true,
-      "skill": "spears"
-    },
-    "staff": {
-      "damage": 4,
-      "accuracy": 0,
-      "weight": 4,
-      "value": 30,
-      "element": "space",
-      "two_handed": true,
-      "skill": "martial_arts",
-      "spellpower": 8
-    },
-    "bow": {
-      "damage": 7,
-      "accuracy": 10,
-      "weight": 3,
-      "value": 40,
-      "element": "air",
-      "two_handed": true,
-      "skill": "ranged",
-      "range": 5,
-      "ammo": 20
-    },
-    "crossbow": {
-      "damage": 9,
-      "accuracy": 5,
-      "weight": 6,
-      "value": 55,
-      "element": "air",
-      "two_handed": true,
-      "skill": "ranged",
-      "range": 6,
-      "ammo": 20
-    },
-    "javelin": {
-      "damage": 5,
-      "accuracy": 5,
-      "weight": 3,
-      "value": 25,
-      "element": "water",
-      "two_handed": false,
-      "skill": "spears",
-      "range": 3,
-      "ammo": 5
-    },
-    "club": {
-      "damage": 8,
-      "accuracy": -5,
-      "weight": 7,
-      "value": 20,
-      "element": "earth",
-      "two_handed": false,
-      "skill": "maces"
-    }
+	"sword": {
+	  "damage": 8,
+	  "accuracy": 0,
+	  "weight": 8,
+	  "value": 50,
+	  "element": "space",
+	  "two_handed": false,
+	  "skill": "swords"
+	},
+	"dagger": {
+	  "damage": 4,
+	  "accuracy": 15,
+	  "weight": 2,
+	  "value": 25,
+	  "element": "air",
+	  "two_handed": false,
+	  "skill": "daggers",
+	  "crit_chance": 5
+	},
+	"axe": {
+	  "damage": 10,
+	  "accuracy": -5,
+	  "weight": 10,
+	  "value": 55,
+	  "element": "fire",
+	  "two_handed": false,
+	  "skill": "axes"
+	},
+	"mace": {
+	  "damage": 9,
+	  "accuracy": 0,
+	  "weight": 9,
+	  "value": 50,
+	  "element": "earth",
+	  "two_handed": false,
+	  "skill": "maces",
+	  "armor_pierce": 5
+	},
+	"spear": {
+	  "damage": 6,
+	  "accuracy": 5,
+	  "weight": 5,
+	  "value": 35,
+	  "element": "water",
+	  "two_handed": true,
+	  "skill": "spears"
+	},
+	"staff": {
+	  "damage": 4,
+	  "accuracy": 0,
+	  "weight": 4,
+	  "value": 30,
+	  "element": "space",
+	  "two_handed": true,
+	  "skill": "martial_arts",
+	  "spellpower": 8
+	},
+	"bow": {
+	  "damage": 7,
+	  "accuracy": 10,
+	  "weight": 3,
+	  "value": 40,
+	  "element": "air",
+	  "two_handed": true,
+	  "skill": "ranged",
+	  "range": 5,
+	  "ammo": 20
+	},
+	"crossbow": {
+	  "damage": 9,
+	  "accuracy": 5,
+	  "weight": 6,
+	  "value": 55,
+	  "element": "air",
+	  "two_handed": true,
+	  "skill": "ranged",
+	  "range": 6,
+	  "ammo": 20
+	},
+	"javelin": {
+	  "damage": 5,
+	  "accuracy": 5,
+	  "weight": 3,
+	  "value": 25,
+	  "element": "water",
+	  "two_handed": false,
+	  "skill": "spears",
+	  "range": 3,
+	  "ammo": 5
+	},
+	"club": {
+	  "damage": 8,
+	  "accuracy": -5,
+	  "weight": 7,
+	  "value": 20,
+	  "element": "earth",
+	  "two_handed": false,
+	  "skill": "maces"
+	}
   },
   "armor_bases": {
-    "helmet": {
-      "armor": 2,
-      "dodge": 0,
-      "weight": 4,
-      "value": 40,
-      "slot": "head"
-    },
-    "hat": {
-      "armor": 0,
-      "dodge": 0,
-      "weight": 1,
-      "value": 20,
-      "slot": "head",
-      "max_mana": 5
-    },
-    "armor": {
-      "armor": 6,
-      "dodge": -3,
-      "weight": 20,
-      "value": 100,
-      "slot": "chest"
-    },
-    "robe": {
-      "armor": 1,
-      "dodge": 0,
-      "weight": 3,
-      "value": 40,
-      "slot": "chest",
-      "max_mana": 10
-    },
-    "gloves": {
-      "armor": 1,
-      "dodge": 0,
-      "weight": 2,
-      "value": 20,
-      "slot": "hand_l"
-    },
-    "gauntlets": {
-      "armor": 2,
-      "dodge": 0,
-      "weight": 4,
-      "value": 45,
-      "slot": "hand_l",
-      "damage": 1
-    },
-    "pants": {
-      "armor": 2,
-      "dodge": 0,
-      "weight": 5,
-      "value": 30,
-      "slot": "legs"
-    },
-    "greaves": {
-      "armor": 4,
-      "dodge": -2,
-      "weight": 8,
-      "value": 65,
-      "slot": "legs"
-    },
-    "boots": {
-      "armor": 1,
-      "dodge": 0,
-      "weight": 3,
-      "value": 25,
-      "slot": "feet"
-    },
-    "shield": {
-      "armor": 3,
-      "dodge": 5,
-      "weight": 8,
-      "value": 50,
-      "slot": "weapon_off"
-    }
+	"helmet": {
+	  "armor": 2,
+	  "dodge": 0,
+	  "weight": 4,
+	  "value": 40,
+	  "slot": "head"
+	},
+	"hat": {
+	  "armor": 0,
+	  "dodge": 0,
+	  "weight": 1,
+	  "value": 20,
+	  "slot": "head",
+	  "max_mana": 5
+	},
+	"armor": {
+	  "armor": 6,
+	  "dodge": -3,
+	  "weight": 20,
+	  "value": 100,
+	  "slot": "chest"
+	},
+	"robe": {
+	  "armor": 1,
+	  "dodge": 0,
+	  "weight": 3,
+	  "value": 40,
+	  "slot": "chest",
+	  "max_mana": 10
+	},
+	"gloves": {
+	  "armor": 1,
+	  "dodge": 0,
+	  "weight": 2,
+	  "value": 20,
+	  "slot": "hand_l"
+	},
+	"gauntlets": {
+	  "armor": 2,
+	  "dodge": 0,
+	  "weight": 4,
+	  "value": 45,
+	  "slot": "hand_l",
+	  "damage": 1
+	},
+	"pants": {
+	  "armor": 2,
+	  "dodge": 0,
+	  "weight": 5,
+	  "value": 30,
+	  "slot": "legs"
+	},
+	"greaves": {
+	  "armor": 4,
+	  "dodge": -2,
+	  "weight": 8,
+	  "value": 65,
+	  "slot": "legs"
+	},
+	"boots": {
+	  "armor": 1,
+	  "dodge": 0,
+	  "weight": 3,
+	  "value": 25,
+	  "slot": "feet"
+	},
+	"shield": {
+	  "armor": 3,
+	  "dodge": 5,
+	  "weight": 8,
+	  "value": 50,
+	  "slot": "weapon_off"
+	}
   },
   "weapon_traits": {
-    "_comment": "Stats with _pct suffix are percentages of base weapon stats. Chance values are flat probabilities. Range is flat.",
-    "sharp": {
-      "damage_pct": 10,
-      "crit_chance": 3,
-      "budget_cost": 2,
-      "types": [
-        "sword",
-        "dagger",
+	"_comment": "Stats with _pct suffix are percentages of base weapon stats. Chance values are flat probabilities. Range is flat.",
+	"sharp": {
+	  "damage_pct": 10,
+	  "crit_chance": 3,
+	  "budget_cost": 2,
+	  "types": [
+		"sword",
+		"dagger",
         "axe"
-      ]
-    },
-    "serrated": {
-      "damage_pct": 5,
-      "bleed_chance": 15,
-      "budget_cost": 2,
-      "types": [
-        "sword",
-        "dagger",
+	  ]
+	},
+	"serrated": {
+	  "damage_pct": 5,
+	  "bleed_chance": 15,
+	  "budget_cost": 2,
+	  "types": [
+		"sword",
+		"dagger",
         "axe"
-      ]
-    },
-    "balanced": {
-      "accuracy_pct": 15,
-      "budget_cost": 2,
-      "types": [
-        "sword",
-        "dagger",
-        "spear",
-        "mace",
+	  ]
+	},
+	"balanced": {
+	  "accuracy_pct": 15,
+	  "budget_cost": 2,
+	  "types": [
+		"sword",
+		"dagger",
+		"spear",
+		"mace",
         "javelin"
-      ]
-    },
-    "heavy": {
-      "damage_pct": 15,
-      "accuracy_pct": -10,
-      "budget_cost": 2,
-      "types": [
-        "axe",
-        "mace",
+	  ]
+	},
+	"heavy": {
+	  "damage_pct": 15,
+	  "accuracy_pct": -10,
+	  "budget_cost": 2,
+	  "types": [
+		"axe",
+		"mace",
         "sword"
-      ]
-    },
-    "swift": {
-      "accuracy_pct": 10,
-      "initiative_pct": 10,
-      "budget_cost": 2,
-      "types": [
-        "dagger",
-        "sword",
-        "spear",
+	  ]
+	},
+	"swift": {
+	  "accuracy_pct": 10,
+	  "initiative_pct": 10,
+	  "budget_cost": 2,
+	  "types": [
+		"dagger",
+		"sword",
+		"spear",
         "javelin"
-      ]
-    },
-    "brutal": {
-      "damage_pct": 10,
-      "armor_pierce_pct": 10,
-      "budget_cost": 3,
-      "types": [
-        "axe",
+	  ]
+	},
+	"brutal": {
+	  "damage_pct": 10,
+	  "armor_pierce_pct": 10,
+	  "budget_cost": 3,
+	  "types": [
+		"axe",
         "mace"
-      ]
-    },
-    "precise": {
-      "accuracy_pct": 8,
-      "crit_chance": 5,
-      "budget_cost": 3,
-      "types": [
-        "dagger",
-        "sword",
-        "bow",
+	  ]
+	},
+	"precise": {
+	  "accuracy_pct": 8,
+	  "crit_chance": 5,
+	  "budget_cost": 3,
+	  "types": [
+		"dagger",
+		"sword",
+		"bow",
         "crossbow"
-      ]
-    },
-    "venomous": {
-      "poison_chance": 15,
-      "budget_cost": 3,
-      "types": [
-        "dagger",
-        "spear",
-        "sword",
-        "axe",
+	  ]
+	},
+	"venomous": {
+	  "poison_chance": 15,
+	  "budget_cost": 3,
+	  "types": [
+		"dagger",
+		"spear",
+		"sword",
+		"axe",
         "javelin"
-      ]
-    },
-    "blessed": {
-      "damage_pct": 5,
-      "spellpower_pct": 10,
-      "budget_cost": 3,
-      "types": [
-        "staff",
-        "mace",
-        "sword",
-        "spear",
+	  ]
+	},
+	"blessed": {
+	  "damage_pct": 5,
+	  "spellpower_pct": 10,
+	  "budget_cost": 3,
+	  "types": [
+		"staff",
+		"mace",
+		"sword",
+		"spear",
         "javelin"
-      ]
-    },
-    "longshot": {
-      "range": 1,
-      "accuracy_pct": 8,
-      "budget_cost": 3,
-      "types": [
-        "bow",
+	  ]
+	},
+	"longshot": {
+	  "range": 1,
+	  "accuracy_pct": 8,
+	  "budget_cost": 3,
+	  "types": [
+		"bow",
         "crossbow"
-      ]
-    },
-    "blood_drinking": {
-      "lifesteal": 10,
-      "budget_cost": 4,
-      "types": [
-        "sword",
-        "dagger",
+	  ]
+	},
+	"blood_drinking": {
+	  "lifesteal": 10,
+	  "budget_cost": 4,
+	  "types": [
+		"sword",
+		"dagger",
         "axe"
-      ]
-    },
-    "mind_drinking": {
-      "manasteal": 10,
-      "budget_cost": 4,
-      "types": [
-        "staff",
-        "dagger",
+	  ]
+	},
+	"mind_drinking": {
+	  "manasteal": 10,
+	  "budget_cost": 4,
+	  "types": [
+		"staff",
+		"dagger",
         "spear"
-      ]
-    },
-    "thundering": {
-      "damage_pct": 10,
-      "stun_chance": 10,
-      "budget_cost": 4,
-      "types": [
-        "mace",
-        "axe",
+	  ]
+	},
+	"thundering": {
+	  "damage_pct": 10,
+	  "stun_chance": 10,
+	  "budget_cost": 4,
+	  "types": [
+		"mace",
+		"axe",
         "staff"
-      ]
-    },
-    "fiery": {
-      "damage_pct": 8,
-      "burn_chance": 15,
-      "budget_cost": 3,
-      "types": [
-        "sword",
-        "axe",
-        "mace",
+	  ]
+	},
+	"fiery": {
+	  "damage_pct": 8,
+	  "burn_chance": 15,
+	  "budget_cost": 3,
+	  "types": [
+		"sword",
+		"axe",
+		"mace",
         "staff"
-      ]
-    },
-    "bonechilling": {
-      "damage_pct": 8,
-      "freeze_chance": 15,
-      "budget_cost": 3,
-      "types": [
-        "spear",
-        "sword",
-        "dagger",
-        "staff",
+	  ]
+	},
+	"bonechilling": {
+	  "damage_pct": 8,
+	  "freeze_chance": 15,
+	  "budget_cost": 3,
+	  "types": [
+		"spear",
+		"sword",
+		"dagger",
+		"staff",
         "javelin"
-      ]
-    },
-    "void_infused": {
-      "space_damage_pct": 15,
-      "budget_cost": 3,
-      "types": [
-        "staff",
-        "sword",
+	  ]
+	},
+	"void_infused": {
+	  "space_damage_pct": 15,
+	  "budget_cost": 3,
+	  "types": [
+		"staff",
+		"sword",
         "spear"
-      ]
-    },
-    "gilded": {
-      "loot_value_pct": 25,
-      "budget_cost": 2,
-      "types": [
-        "sword",
-        "dagger",
-        "axe",
-        "mace",
-        "spear",
-        "bow",
-        "crossbow",
+	  ]
+	},
+	"gilded": {
+	  "loot_value_pct": 25,
+	  "budget_cost": 2,
+	  "types": [
+		"sword",
+		"dagger",
+		"axe",
+		"mace",
+		"spear",
+		"bow",
+		"crossbow",
         "javelin"
-      ]
-    },
-    "cancelling": {
-      "dispel_chance": 15,
-      "budget_cost": 3,
-      "types": [
-        "staff",
-        "mace",
+	  ]
+	},
+	"cancelling": {
+	  "dispel_chance": 15,
+	  "budget_cost": 3,
+	  "types": [
+		"staff",
+		"mace",
         "sword"
-      ]
-    },
-    "heartseeking": {
-      "crit_chance": 8,
-      "budget_cost": 3,
-      "types": [
-        "bow",
-        "crossbow",
+	  ]
+	},
+	"heartseeking": {
+	  "crit_chance": 8,
+	  "budget_cost": 3,
+	  "types": [
+		"bow",
+		"crossbow",
         "dagger"
-      ]
-    },
-    "silencing": {
-      "silence_chance": 12,
-      "budget_cost": 3,
-      "types": [
-        "staff",
-        "bow",
+	  ]
+	},
+	"silencing": {
+	  "silence_chance": 12,
+	  "budget_cost": 3,
+	  "types": [
+		"staff",
+		"bow",
         "crossbow"
-      ]
-    },
-    "resonant": {
-      "spellpower_pct": 15,
-      "budget_cost": 3,
-      "types": [
+	  ]
+	},
+	"resonant": {
+	  "spellpower_pct": 15,
+	  "budget_cost": 3,
+	  "types": [
         "staff"
-      ]
-    }
+	  ]
+	}
   },
   "armor_traits": {
-    "_comment": "Stats with _pct suffix are percentages of base stats. Chance/resistance values are flat probabilities. Movement is flat.",
-    "reinforced": {
-      "armor_pct": 10,
-      "budget_cost": 2,
-      "types": [
-        "armor",
-        "helmet",
-        "gauntlets",
-        "greaves",
+	"_comment": "Stats with _pct suffix are percentages of base stats. Chance/resistance values are flat probabilities. Movement is flat.",
+	"reinforced": {
+	  "armor_pct": 10,
+	  "budget_cost": 2,
+	  "types": [
+		"armor",
+		"helmet",
+		"gauntlets",
+		"greaves",
         "shield"
-      ]
-    },
-    "padded": {
-      "armor_pct": 5,
-      "dodge_pct": 5,
-      "budget_cost": 2,
-      "types": [
-        "armor",
-        "robe",
-        "gloves",
+	  ]
+	},
+	"padded": {
+	  "armor_pct": 5,
+	  "dodge_pct": 5,
+	  "budget_cost": 2,
+	  "types": [
+		"armor",
+		"robe",
+		"gloves",
         "pants"
-      ]
-    },
-    "light": {
-      "dodge_pct": 10,
-      "movement": 1,
-      "budget_cost": 2,
-      "types": [
-        "armor",
-        "boots",
-        "gloves",
+	  ]
+	},
+	"light": {
+	  "dodge_pct": 10,
+	  "movement": 1,
+	  "budget_cost": 2,
+	  "types": [
+		"armor",
+		"boots",
+		"gloves",
         "pants"
-      ]
-    },
-    "sturdy": {
-      "max_hp_pct": 8,
-      "budget_cost": 2,
-      "types": [
-        "armor",
-        "helmet",
-        "shield",
+	  ]
+	},
+	"sturdy": {
+	  "max_hp_pct": 8,
+	  "budget_cost": 2,
+	  "types": [
+		"armor",
+		"helmet",
+		"shield",
         "greaves"
-      ]
-    },
-    "enchanted": {
-      "max_mana_pct": 10,
-      "budget_cost": 2,
-      "types": [
-        "robe",
-        "hat",
+	  ]
+	},
+	"enchanted": {
+	  "max_mana_pct": 10,
+	  "budget_cost": 2,
+	  "types": [
+		"robe",
+		"hat",
         "gloves"
-      ]
-    },
-    "resilient": {
-      "max_stamina_pct": 8,
-      "budget_cost": 2,
-      "types": [
-        "armor",
-        "boots",
-        "pants",
+	  ]
+	},
+	"resilient": {
+	  "max_stamina_pct": 8,
+	  "budget_cost": 2,
+	  "types": [
+		"armor",
+		"boots",
+		"pants",
         "greaves"
-      ]
-    },
-    "mantra_etched": {
-      "spellpower_pct": 10,
-      "budget_cost": 3,
-      "types": [
-        "robe",
-        "hat",
+	  ]
+	},
+	"mantra_etched": {
+	  "spellpower_pct": 10,
+	  "budget_cost": 3,
+	  "types": [
+		"robe",
+		"hat",
         "shield"
-      ]
-    },
-    "spiked": {
-      "damage_pct": 8,
-      "budget_cost": 2,
-      "types": [
-        "gauntlets",
-        "shield",
-        "armor",
+	  ]
+	},
+	"spiked": {
+	  "damage_pct": 8,
+	  "budget_cost": 2,
+	  "types": [
+		"gauntlets",
+		"shield",
+		"armor",
         "helmet"
-      ]
-    },
-    "fleet": {
-      "movement": 1,
-      "dodge_pct": 10,
-      "budget_cost": 3,
-      "types": [
+	  ]
+	},
+	"fleet": {
+	  "movement": 1,
+	  "dodge_pct": 10,
+	  "budget_cost": 3,
+	  "types": [
         "boots"
-      ]
-    },
-    "fireproof": {
-      "fire_resistance": 15,
-      "budget_cost": 2,
-      "types": [
-        "armor",
-        "robe",
+	  ]
+	},
+	"fireproof": {
+	  "fire_resistance": 15,
+	  "budget_cost": 2,
+	  "types": [
+		"armor",
+		"robe",
         "shield"
-      ]
-    },
-    "insulated": {
-      "air_resistance": 15,
-      "budget_cost": 2,
-      "types": [
-        "armor",
-        "robe",
+	  ]
+	},
+	"insulated": {
+	  "air_resistance": 15,
+	  "budget_cost": 2,
+	  "types": [
+		"armor",
+		"robe",
         "hat"
-      ]
-    },
-    "waterproof": {
-      "water_resistance": 15,
-      "budget_cost": 2,
-      "types": [
-        "armor",
-        "robe",
+	  ]
+	},
+	"waterproof": {
+	  "water_resistance": 15,
+	  "budget_cost": 2,
+	  "types": [
+		"armor",
+		"robe",
         "boots"
-      ]
-    },
-    "void_warded": {
-      "space_resistance": 15,
-      "budget_cost": 2,
-      "types": [
-        "robe",
-        "hat",
+	  ]
+	},
+	"void_warded": {
+	  "space_resistance": 15,
+	  "budget_cost": 2,
+	  "types": [
+		"robe",
+		"hat",
         "shield"
-      ]
-    },
-    "steadfast": {
-      "debuff_resistance": 15,
-      "budget_cost": 3,
-      "types": [
-        "armor",
-        "helmet",
-        "shield",
+	  ]
+	},
+	"steadfast": {
+	  "debuff_resistance": 15,
+	  "budget_cost": 3,
+	  "types": [
+		"armor",
+		"helmet",
+		"shield",
         "boots"
-      ]
-    }
+	  ]
+	}
   },
   "rarity_to_quality_weights": {
-    "common": {
-      "poor": 30,
-      "common": 60,
-      "good": 10
-    },
-    "uncommon": {
-      "common": 40,
-      "good": 45,
-      "fine": 15
-    },
-    "rare": {
-      "good": 30,
-      "fine": 50,
-      "masterwork": 20
-    },
-    "epic": {
-      "fine": 40,
-      "masterwork": 60
-    },
-    "legendary": {
-      "masterwork": 100
-    }
+	"common": {
+	  "poor": 30,
+	  "common": 60,
+	  "good": 10
+	},
+	"uncommon": {
+	  "common": 40,
+	  "good": 45,
+	  "fine": 15
+	},
+	"rare": {
+	  "good": 30,
+	  "fine": 50,
+	  "masterwork": 20
+	},
+	"epic": {
+	  "fine": 40,
+	  "masterwork": 60
+	},
+	"legendary": {
+	  "masterwork": 100
+	}
   },
   "tier_to_material_weights": {
-    "0": {
-      "wood": 70,
-      "bone": 30
-    },
-    "1": {
-      "bone": 70,
-      "obsidian": 30
-    },
-    "2": {
-      "bone": 20,
-      "obsidian": 50,
-      "bronze": 30
-    },
-    "3": {
-      "obsidian": 15,
-      "bronze": 50,
-      "iron": 35
-    },
-    "4": {
-      "bronze": 20,
-      "iron": 50,
-      "steel": 30
-    },
-    "5": {
-      "iron": 20,
-      "steel": 50,
-      "damascene": 30
-    },
-    "6": {
-      "steel": 20,
-      "damascene": 50,
-      "sky_iron": 30
-    },
-    "7": {
-      "damascene": 20,
-      "sky_iron": 50,
-      "vajra": 30
-    },
-    "8": {
-      "sky_iron": 30,
-      "vajra": 70
-    }
+	"0": {
+	  "wood": 70,
+	  "bone": 30
+	},
+	"1": {
+	  "bone": 70,
+	  "obsidian": 30
+	},
+	"2": {
+	  "bone": 20,
+	  "obsidian": 50,
+	  "bronze": 30
+	},
+	"3": {
+	  "obsidian": 15,
+	  "bronze": 50,
+	  "iron": 35
+	},
+	"4": {
+	  "bronze": 20,
+	  "iron": 50,
+	  "steel": 30
+	},
+	"5": {
+	  "iron": 20,
+	  "steel": 50,
+	  "damascene": 30
+	},
+	"6": {
+	  "steel": 20,
+	  "damascene": 50,
+	  "sky_iron": 30
+	},
+	"7": {
+	  "damascene": 20,
+	  "sky_iron": 50,
+	  "vajra": 30
+	},
+	"8": {
+	  "sky_iron": 30,
+	  "vajra": 70
+	}
   },
   "realm_material_weights": {
-    "hell": {
-      "bone": 50,
-      "obsidian": 35,
-      "bronze": 15
-    },
-    "hungry_ghost": {
-      "bone": 20,
-      "obsidian": 30,
-      "bronze": 30,
-      "iron": 15,
-      "steel": 5
-    },
-    "animal": {
-      "bone": 5,
-      "obsidian": 10,
-      "bronze": 35,
-      "iron": 35,
-      "steel": 15
-    },
-    "human": {
-      "bronze": 5,
-      "iron": 30,
-      "steel": 40,
-      "damascene": 20,
-      "sky_iron": 5
-    },
-    "demi_god": {
-      "iron": 5,
-      "steel": 25,
-      "damascene": 40,
-      "sky_iron": 25,
-      "vajra": 5
-    },
-    "god": {
-      "steel": 5,
-      "damascene": 15,
-      "sky_iron": 35,
-      "vajra": 45
-    }
+	"hell": {
+	  "bone": 50,
+	  "obsidian": 35,
+	  "bronze": 15
+	},
+	"hungry_ghost": {
+	  "bone": 20,
+	  "obsidian": 30,
+	  "bronze": 30,
+	  "iron": 15,
+	  "steel": 5
+	},
+	"animal": {
+	  "bone": 5,
+	  "obsidian": 10,
+	  "bronze": 35,
+	  "iron": 35,
+	  "steel": 15
+	},
+	"human": {
+	  "bronze": 5,
+	  "iron": 30,
+	  "steel": 40,
+	  "damascene": 20,
+	  "sky_iron": 5
+	},
+	"demi_god": {
+	  "iron": 5,
+	  "steel": 25,
+	  "damascene": 40,
+	  "sky_iron": 25,
+	  "vajra": 5
+	},
+	"god": {
+	  "steel": 5,
+	  "damascene": 15,
+	  "sky_iron": 35,
+	  "vajra": 45
+	}
   },
   "enchantment_levels": {
-    "none": {
-      "value_mult": 1.0,
-      "name_suffix": ""
-    },
-    "touched": {
-      "value_mult": 3.0,
-      "name_suffix": "Touched"
-    },
-    "blessed": {
-      "value_mult": 10.0,
-      "name_suffix": "Blessed"
-    },
-    "empowered": {
-      "value_mult": 30.0,
-      "name_suffix": "Empowered"
-    },
-    "perfected": {
-      "value_mult": 70.0,
-      "name_suffix": "Perfected"
-    }
+	"none": {
+	  "value_mult": 1.0,
+	  "name_suffix": ""
+	},
+	"touched": {
+	  "value_mult": 3.0,
+	  "name_suffix": "Touched"
+	},
+	"blessed": {
+	  "value_mult": 10.0,
+	  "name_suffix": "Blessed"
+	},
+	"empowered": {
+	  "value_mult": 30.0,
+	  "name_suffix": "Empowered"
+	},
+	"perfected": {
+	  "value_mult": 70.0,
+	  "name_suffix": "Perfected"
+	}
   },
   "_comment_enchantment": "Material and quality describe what an item IS; enchantment describes what has been done to it. Value = base x material x quality x enchantment. Without this term the model priced a legendary crown as a masterwork cloth hat — plain items sat at a median 1.13x of expected while enchanted ones sat at 20x, which is the whole discrepancy.",
   "accessory_bases": {
-    "focus": {
-      "value": 62,
-      "weight": 1.0,
-      "slot": "weapon_main",
-      "skill": "ritual"
-    },
-    "tool": {
-      "value": 35,
-      "weight": 2.0,
-      "slot": "weapon_main"
-    },
-    "charm": {
-      "value": 80,
-      "weight": 0.0,
-      "slot": "talisman"
-    },
-    "talisman": {
-      "value": 58,
-      "weight": 0.0,
-      "slot": "trinket1"
-    },
-    "amulet": {
-      "value": 75,
-      "weight": 0.0,
-      "slot": "trinket1"
-    },
-    "trinket": {
-      "value": 62,
-      "weight": 0.0,
-      "slot": "trinket1"
-    },
-    "ring": {
-      "value": 35,
-      "weight": 0.0,
-      "slot": "ring1"
-    },
-    "cape": {
-      "value": 32,
-      "weight": 2.0,
-      "slot": "back"
-    },
-    "eyewear": {
-      "value": 75,
-      "weight": 0.0,
-      "slot": "face"
-    },
-    "face_cloth": {
-      "value": 8,
-      "weight": 0.0,
-      "slot": "face"
-    },
-    "thrown": {
-      "value": 20,
-      "weight": 1.0,
-      "slot": "weapon_main",
-      "damage": 5
-    },
-    "prosthetic": {
-      "value": 160,
-      "weight": 2.0,
-      "slot": "hand_r"
-    }
+	"focus": {
+	  "value": 62,
+	  "weight": 1.0,
+	  "slot": "weapon_main",
+	  "skill": "ritual"
+	},
+	"tool": {
+	  "value": 35,
+	  "weight": 2.0,
+	  "slot": "weapon_main"
+	},
+	"charm": {
+	  "value": 80,
+	  "weight": 0.0,
+	  "slot": "talisman"
+	},
+	"talisman": {
+	  "value": 58,
+	  "weight": 0.0,
+	  "slot": "trinket1"
+	},
+	"amulet": {
+	  "value": 75,
+	  "weight": 0.0,
+	  "slot": "trinket1"
+	},
+	"trinket": {
+	  "value": 62,
+	  "weight": 0.0,
+	  "slot": "trinket1"
+	},
+	"ring": {
+	  "value": 35,
+	  "weight": 0.0,
+	  "slot": "ring1"
+	},
+	"cape": {
+	  "value": 32,
+	  "weight": 2.0,
+	  "slot": "back"
+	},
+	"eyewear": {
+	  "value": 75,
+	  "weight": 0.0,
+	  "slot": "face"
+	},
+	"face_cloth": {
+	  "value": 8,
+	  "weight": 0.0,
+	  "slot": "face"
+	},
+	"thrown": {
+	  "value": 20,
+	  "weight": 1.0,
+	  "slot": "weapon_main",
+	  "damage": 5
+	},
+	"prosthetic": {
+	  "value": 160,
+	  "weight": 2.0,
+	  "slot": "hand_r"
+	}
   },
   "_comment_accessory_bases": "Everything that is equipment but neither weapon nor armour. These twelve types covered 328 of 486 authored items — two thirds of the game's equipment — with no base entry, so none of it could be tiered or generated. Values are the median of each family's plain members, so existing items sit at roughly 1x.",
   "_comment_ritual": "Ritual implements carry TWO codings that add rather than compete. The metal says which element the implement serves; the implement says which practice it is an instrument of. A copper phurba boosts fire magic AND sorcery, which between them are exactly Fireball's two schools. A silver phurba boosts water and sorcery — the traditional instrument of intense healing, purification through a wrathful focus. Consecration grade sets the magnitude on both axes, 1 through 5. None of this was written down anywhere before 2026-09-12: it lived in the item names and in Olaf's head, which is why a refactor could damage it with nothing going red. The metal does NOT move an implement's price — every ritual_metals entry carries value_mult 1.0, against the 0.25-to-15x spread the same metals have as structural materials. A gold dorje and a copper dorje cost the same and do different things, which is the whole idea.",
   "ritual_metals": {
-    "copper": {
-      "element": "fire",
-      "grants": "fire_magic",
-      "value_mult": 1.0
-    },
-    "silver": {
-      "element": "water",
-      "grants": "water_magic",
-      "value_mult": 1.0
-    },
-    "gold": {
-      "element": "earth",
-      "grants": "earth_magic",
-      "value_mult": 1.0
-    },
-    "iron": {
-      "element": "air",
-      "grants": "air_magic",
-      "value_mult": 1.0
-    },
-    "bronze": {
-      "element": "space",
-      "grants": "space_magic",
-      "_note": "Common and a mixture, so neutral — mildly space-coded.",
-      "value_mult": 1.0
-    },
-    "sky_iron": {
-      "element": "space",
-      "grants": "space_magic",
-      "_note": "The properly space-coded material. Meteoric.",
-      "value_mult": 1.0
-    },
-    "conch": {
-      "element": "water",
-      "grants": "white_magic",
-      "_note": "Not a metal. Codes for the pacifying rites — healing and purification — rather than for an element.",
-      "value_mult": 1.0
-    },
-    "bone": {
-      "element": "earth",
-      "grants": "black_magic",
-      "value_mult": 1.0,
-      "_note": "Charnel ground practice. Not a metal either — the kangling and the bone implements are carved, not cast."
-    }
+	"copper": {
+	  "element": "fire",
+	  "grants": "fire_magic",
+	  "value_mult": 1.0
+	},
+	"silver": {
+	  "element": "water",
+	  "grants": "water_magic",
+	  "value_mult": 1.0
+	},
+	"gold": {
+	  "element": "earth",
+	  "grants": "earth_magic",
+	  "value_mult": 1.0
+	},
+	"iron": {
+	  "element": "air",
+	  "grants": "air_magic",
+	  "value_mult": 1.0
+	},
+	"bronze": {
+	  "element": "space",
+	  "grants": "space_magic",
+	  "_note": "Common and a mixture, so neutral — mildly space-coded.",
+	  "value_mult": 1.0
+	},
+	"sky_iron": {
+	  "element": "space",
+	  "grants": "space_magic",
+	  "_note": "The properly space-coded material. Meteoric.",
+	  "value_mult": 1.0
+	},
+	"conch": {
+	  "element": "water",
+	  "grants": "white_magic",
+	  "_note": "Not a metal. Codes for the pacifying rites — healing and purification — rather than for an element.",
+	  "value_mult": 1.0
+	},
+	"bone": {
+	  "element": "earth",
+	  "grants": "black_magic",
+	  "value_mult": 1.0,
+	  "_note": "Charnel ground practice. Not a metal either — the kangling and the bone implements are carved, not cast."
+	},
+	"citrine": {
+	  "element": "earth",
+	  "grants": "earth_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"topaz": {
+	  "element": "earth",
+	  "grants": "earth_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"turquoise": {
+	  "element": "water",
+	  "grants": "water_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"star_sapphire": {
+	  "element": "water",
+	  "grants": "water_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"sandalwood": {
+	  "element": "air",
+	  "grants": "air_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"emerald": {
+	  "element": "air",
+	  "grants": "air_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"coral": {
+	  "element": "fire",
+	  "grants": "fire_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"ruby": {
+	  "element": "fire",
+	  "grants": "fire_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"crystal": {
+	  "element": "space",
+	  "grants": "space_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"diamond": {
+	  "element": "space",
+	  "grants": "space_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"moonstone": {
+	  "element": "water",
+	  "grants": "white_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"conch_bead": {
+	  "element": "water",
+	  "grants": "white_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"bone_bead": {
+	  "element": "earth",
+	  "grants": "black_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"devils_bone": {
+	  "element": "earth",
+	  "grants": "black_magic",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"smoke_crystal": {
+	  "element": "fire",
+	  "grants": "sorcery",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"agate": {
+	  "element": "fire",
+	  "grants": "sorcery",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"rosewood": {
+	  "element": "water",
+	  "grants": "enchantment",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"opal": {
+	  "element": "water",
+	  "grants": "enchantment",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"amethyst": {
+	  "element": "space",
+	  "grants": "summoning",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	},
+	"mirror_bead": {
+	  "element": "space",
+	  "grants": "summoning",
+	  "value_mult": 1.0,
+	  "_mala_only": true
+	}
   },
   "ritual_implements": {
-    "dorje": {
-      "grants_attribute": "focus"
-    },
-    "drilbu": {
-      "grants_attribute": "awareness"
-    },
-    "khatvanga": {
-      "grants_skill": "enchantment"
-    },
-    "damaru": {
-      "grants_skill": "summoning"
-    },
-    "phurba": {
-      "grants_skill": "sorcery"
-    },
-    "kangling": {
-      "grants_skill": "ritual",
-      "_note": "The chod trumpet — severance, and the offering of the body. Ritual rather than Summoning, which belongs to the damaru: the kangling calls the rite, it does not call what answers."
-    }
+	"dorje": {
+	  "grants_attribute": "focus"
+	},
+	"drilbu": {
+	  "grants_attribute": "awareness"
+	},
+	"khatvanga": {
+	  "grants_skill": "enchantment"
+	},
+	"damaru": {
+	  "grants_skill": "summoning"
+	},
+	"phurba": {
+	  "grants_skill": "sorcery"
+	},
+	"kangling": {
+	  "grants_skill": "ritual",
+	  "_note": "The chod trumpet — severance, and the offering of the body. Ritual rather than Summoning, which belongs to the damaru: the kangling calls the rite, it does not call what answers."
+	},
+	"mala": {
+	  "grants_skill": "yoga",
+	  "_note": "The recitation rosary. No consecration ladder — the material is the grade, which is how malas actually work: everyone has one and everyone knows what everyone else's is made of."
+	},
+	"melong": {
+	  "grants_stat": "magic_resistance_pct",
+	  "_note": "The divination mirror. Protection rather than sight: resistance, and from the third consecration a chance to turn a spell back on its caster via the Magic_Mirror status."
+	}
   },
   "consecration_levels": {
-    "plain": {
-      "magnitude": 1
-    },
-    "blessed": {
-      "magnitude": 2
-    },
-    "empowered": {
-      "magnitude": 3
-    },
-    "perfected": {
-      "magnitude": 4
-    },
-    "legendary": {
-      "magnitude": 5
-    }
+	"plain": {
+	  "magnitude": 1
+	},
+	"blessed": {
+	  "magnitude": 2
+	},
+	"empowered": {
+	  "magnitude": 3
+	},
+	"perfected": {
+	  "magnitude": 4
+	},
+	"legendary": {
+	  "magnitude": 5
+	}
   },
   "_comment_consecration": "Consecration is to a ritual implement what quality is to a weapon: the scale of how well-made and well-blessed it is. It is the ONLY thing that should move an implement's price. A gold dorje must not cost more than a copper one — they serve different elements, not different tiers."
 }

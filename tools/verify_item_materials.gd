@@ -71,7 +71,7 @@ func _check_materials_exist_in_the_tables() -> void:
 		if material != "" and not known.has(material):
 			bad.append("%s:%s" % [item_id, material])
 	if not bad.is_empty():
-		_fail("items name materials that do not exist: %s" % bad.slice(0, 5))
+		_fail("items name materials that do not exist: %s" % [bad.slice(0, 5)])
 	_done()
 
 
@@ -155,9 +155,13 @@ func _check_values_match_the_tiering() -> void:
 		var ritual: Dictionary = tables.get("ritual_metals", {})
 		var material_mult: float = float(materials.get(
 			str(item.get("material", "")), {}).get("value_mult", 1.0))
-		if str(item.get("type", "")) == "focus" \
-				and ritual.has(str(item.get("material", ""))):
-			material_mult = float(ritual[str(item.get("material", ""))].get("value_mult", 1.0))
+		# A mala's material carries its grade — malas run no consecration
+		# ladder — so the parity rule that keeps a gold dorje level with a
+		# copper one must not flatten a diamond mala to a crystal one.
+		var material_name: String = str(item.get("material", ""))
+		if str(item.get("type", "")) == "focus" and ritual.has(material_name) \
+				and not bool(ritual[material_name].get("_mala_only", false)):
+			material_mult = float(ritual[material_name].get("value_mult", 1.0))
 
 		var expected: float = float(base.get("value", 50)) \
 			* material_mult \

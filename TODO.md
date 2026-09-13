@@ -490,6 +490,40 @@ but may not be what the game wants.
       - Blocked on this: `crafting_quality_pct`, `crafting_yield_pct`,
         `loot_quality_pct`.
 
+- [ ] **Specialist ritual robes — designed 2026-09-13, not built.** Olaf's
+      list, recorded before it evaporates. All graded 1-5 like the ngakpa line,
+      chest slot unless noted:
+      - healer's robe — white magic, **regeneration aura** at high grades
+        (adjacent allies heal a little each turn)
+      - black sorcerer's robe — sorcery, spellpower at high grades
+      - pandita robe — learning, persuasion at high grades
+      - sage's robe — earth **and** white, both smaller, rising incrementally
+      - tantric robe — ritual
+      - dreamer's robe — enchantment
+      - chodpa's robe — summoning
+      - chodpa's eye covering (**head**) — summoning, black at high grades
+      - **No longlife robe** — it is a hat accessory to the healer's robe.
+
+      **Gap: black magic has no robe.** The black sorcerer's robe grants
+      *sorcery*; black appears only on the chodpa's eye covering at high
+      grades. Every other school gets a dedicated garment. Either the black
+      sorcerer's robe should grant black magic too, or a separate one is
+      missing.
+
+      **Material axis, per Olaf:** cotton / wool / silk as the quality tiers,
+      with metal-threading for elemental variation — "silver-threaded silk
+      healer's robe". That reuses `ritual_metals` for the thread, which is
+      tidy. The caution is multiplication: 3 fabrics x 8 threads x 8 families x
+      5 grades is 960 items. Suggest the thread only appears on the top two
+      grades, so most robes are plain fabric and a threaded one is a find.
+
+      **Blocked on machinery:** the regeneration aura and the longlife cap's HP
+      aura need an item-granted aura path. `_process_aura_effects()` handles
+      status-driven auras and `passive_aura` exists as an item field (one khata
+      uses it), but nothing connects an equipped item to an aura status. The
+      longlife caps carry `passive_aura: "longlife_hp"` as of 2026-09-13 with
+      no consumer yet — the first thing to wire.
+
 - [ ] **Ritual implement coding is declared but not yet player-facing.** The
       tables now say copper serves fire and the phurba serves sorcery, and the
       verifier enforces it — but a tooltip still shows a Copper Phurba without
