@@ -4774,6 +4774,26 @@ func _apply_aura_payload(source: Node, target: Node, aura: Dictionary, payload: 
 			var chance: float = float(payload.get("chance", 1.0))
 			if chance < 1.0 and randf() > chance:
 				return
+
+			# Or on a saving throw, which is the better answer when the effect
+			# is something a person could see through rather than dodge. The DC
+			# may fall each time a given target resists it: Shining Mirage wears
+			# out against anyone who keeps their head, and that has to be
+			# remembered per-target, not per-aura.
+			var save_spec: Dictionary = payload.get("save", {})
+			if not save_spec.is_empty():
+				var aura_id: String = aura.get("id", "")
+				var passes: int = int(target.aura_save_passes.get(aura_id, 0)) \
+					if "aura_save_passes" in target else 0
+				var dc: int = int(save_spec.get("dc", 12)) \
+					- passes * int(save_spec.get("dc_drop_per_pass", 0))
+				var roll: Dictionary = SaveSystem.roll(
+					target, save_spec.get("attribute", "focus"), maxi(1, dc))
+				if roll.success:
+					if "aura_save_passes" in target:
+						target.aura_save_passes[aura_id] = passes + 1
+					return
+
 			_apply_status_effect(target, status_name, int(payload.get("duration", 2)))
 			status_effect_triggered.emit(source, aura["name"], 0, "aura")
 
@@ -4887,52 +4907,43 @@ func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictiona
 		var def = _status_effects.get(status_name, {})
 		var effects = def.get("effects", [])
 
-		# Elemental damage to melee attackers (Fireshield, Tongues of Fire, etc.)
-		# Supports any "X_damage_to_melee_attackers" pattern
-		if is_melee:
-			var reactive_dmg_map = {
-				"fire_damage_to_melee_attackers": "fire",
-				"air_damage_to_melee_attackers": "air",
-				"water_damage_to_melee_attackers": "water",
-				"earth_damage_to_melee_attackers": "earth",
-				"space_damage_to_melee_attackers": "space",
-				"poison_damage_to_melee_attackers": "poison",
-				"black_damage_to_melee_attackers": "black",
-				"white_damage_to_melee_attackers": "white",
-			}
-			for reactive_effect in reactive_dmg_map:
-				if reactive_effect in effects:
-					var element = reactive_dmg_map[reactive_effect]
-					var reactive_dmg = 5 + effect.get("value", 0)
-					apply_damage(attacker, reactive_dmg, element)
-					status_effect_triggered.emit(defender, status_name, reactive_dmg, "reactive")
+		# --- Retaliation, declared on the status rather than branched on here ---
+		#
+		# Six statuses hit back at whoever hits them, and each had its own
+		# branch: an eight-entry map of "<element>_damage_to_melee_attackers"
+		# strings, two lightning variants differing only in magnitude and a
+		# stun, a poison one, and a reflection. They are one mechanic — when
+		# struck, do something to the attacker — with different numbers.
+		var retal: Dictionary = def.get("retaliation", {})
+		if not retal.is_empty():
+			var reach: String = retal.get("range", "melee")
+			if reach != "melee" or is_melee:
+				# `value` on the status entry is a per-application bonus the
+				# old branches all honoured, so it survives the move.
+				var bonus: int = int(effect.get("value", 0))
+				var element: String = retal.get("element", "physical")
 
-		# Poison Skin — poison melee attackers
-		if "poisons_melee_attackers" in effects and is_melee:
-			if not attacker.has_status("Poisoned"):
-				_apply_status_effect(attacker, "Poisoned", 3)
-				status_effect_triggered.emit(defender, status_name, 0, "reactive")
+				var hit: int = int(retal.get("damage", 0))
+				if hit > 0:
+					apply_damage(attacker, hit + bonus, element)
+					status_effect_triggered.emit(defender, status_name, hit + bonus, "reactive")
 
-		# Pain Mirror — reflect 50% damage to attacker
-		if "deal_50_percent_damage_taken_to_attacker" in effects:
-			var reflect = int(result.damage * 0.5)
-			if reflect > 0:
-				apply_damage(attacker, reflect, "physical")
-				status_effect_triggered.emit(defender, status_name, reflect, "reactive")
+				# A reflection is measured against what just landed, which is
+				# why Pain Mirror answers a spell from across the room and the
+				# others only answer a blade.
+				var reflect_pct: float = float(retal.get("reflect_pct", 0))
+				if reflect_pct > 0.0:
+					var reflected: int = int(result.get("damage", 0) * reflect_pct / 100.0)
+					if reflected > 0:
+						apply_damage(attacker, reflected, element)
+						status_effect_triggered.emit(defender, status_name, reflected, "reactive")
 
-		# Lightning aura — damages (and optionally stuns) melee attackers
-		if "lightning_aura_damages_attackers" in effects and is_melee:
-			var lightning_dmg = 8 + effect.get("value", 0)
-			apply_damage(attacker, lightning_dmg, "air")
-			status_effect_triggered.emit(defender, status_name, lightning_dmg, "reactive")
-
-		if "lightning_aura_damages_and_stuns" in effects and is_melee:
-			var lightning_dmg = 10 + effect.get("value", 0)
-			apply_damage(attacker, lightning_dmg, "air")
-			# 30% chance to stun
-			if randf() < 0.3:
-				_apply_status_effect(attacker, "Stunned", 1)
-			status_effect_triggered.emit(defender, status_name, lightning_dmg, "reactive")
+				var give: String = retal.get("status", "")
+				if give != "" and not attacker.has_status(give):
+					if randf() <= float(retal.get("status_chance", 1.0)):
+						_apply_status_effect(attacker, give,
+							int(retal.get("status_duration", 1)), 0, defender)
+						status_effect_triggered.emit(defender, status_name, 0, "reactive")
 
 		# Magnetizing Aura — chance to charm melee attackers
 		if "charm_chance_on_enemy_melee_approach" in effects and is_melee:

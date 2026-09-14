@@ -15,7 +15,7 @@ var failures: int = 0
 var grid: CombatGrid
 
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 41
+const EXPECTED_CHECKS: int = 46
 
 
 func _ready() -> void:
@@ -75,6 +75,12 @@ func _ready() -> void:
 	_check_damage_lands_regardless_of_the_save()
 	_check_mana_transfer_moves_what_was_there()
 	_check_a_transfer_cannot_create_what_is_not_there()
+
+	_check_inner_flame_grants_resistance()
+	_check_inner_flame_burns_whoever_strikes_it()
+	_check_retaliation_respects_its_range()
+	_check_mirage_confusion_can_be_resisted()
+	_check_mirage_wears_out_against_whoever_resists_it()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -1014,4 +1020,115 @@ func _check_a_transfer_cannot_create_what_is_not_there() -> void:
 	if victim.current_mana < 0:
 		_fail("the victim's mana went negative: %d" % victim.current_mana)
 	_cleanup([caster, victim])
+	_done()
+
+
+# ── Retaliation and granted resistance ───────────────────────────────────────
+
+## `grants_resistance` was missing until Inner Flame needed it: a status could
+## make you WEAKER to an element in data, and could only make you stronger
+## through a hand-written effect string.
+func _check_inner_flame_grants_resistance() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 12)
+	var before_fire: float = caster.get_resistance("fire")
+	var before_water: float = caster.get_resistance("water")
+
+	CombatManager._apply_spell_effects(caster, caster,
+		CombatManager.get_spell("inner_flame"), 0)
+
+	if caster.get_resistance("fire") <= before_fire:
+		_fail("inner_flame left fire resistance at %.0f" % caster.get_resistance("fire"))
+	if caster.get_resistance("water") <= before_water:
+		_fail("inner_flame left water resistance at %.0f" % caster.get_resistance("water"))
+	_cleanup([caster])
+	_done()
+
+
+## "The body radiates heat" — anyone who closes to melee catches light.
+func _check_inner_flame_burns_whoever_strikes_it() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 12)
+	var attacker := _make_unit(Vector2i(6, 5), 1)
+	CombatManager._apply_status_effect(caster, "Inner_Flame", 5)
+
+	CombatManager._process_reactive_statuses(attacker, caster, {"damage": 10})
+	if not attacker.has_status("Burning"):
+		_fail("striking a unit with Inner Flame in melee did not set the "
+			+ "attacker alight")
+	_cleanup([caster, attacker])
+	_done()
+
+
+## Melee retaliation answers a blade and not a spell from across the room.
+## Pain Mirror, which declares `range: any`, answers both.
+func _check_retaliation_respects_its_range() -> void:
+	var defender := _make_unit(Vector2i(5, 5), 0, 12)
+	var far := _make_unit(Vector2i(20, 20), 1)
+	CombatManager._apply_status_effect(defender, "Inner_Flame", 5)
+
+	CombatManager._process_reactive_statuses(far, defender, {"damage": 10})
+	if far.has_status("Burning"):
+		_fail("a melee retaliation reached an attacker 15 tiles away")
+
+	var mirrored := _make_unit(Vector2i(21, 21), 1)
+	var reflector := _make_unit(Vector2i(6, 6), 0)
+	CombatManager._apply_status_effect(reflector, "Pain_Mirror", 5)
+	var before: int = mirrored.current_hp
+	CombatManager._process_reactive_statuses(mirrored, reflector, {"damage": 40})
+	if mirrored.current_hp >= before:
+		_fail("Pain Mirror declares `range: any` and reflected nothing at a "
+			+ "distant attacker")
+	_cleanup([defender, far, mirrored, reflector])
+	_done()
+
+
+# ── A resistible aura ────────────────────────────────────────────────────────
+
+## The mirage confuses, but it is something you could see through rather than
+## something you dodge — so it is a save, not a flat chance.
+func _check_mirage_confusion_can_be_resisted() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 30)
+	var weak := _make_unit(Vector2i(6, 5), 1)
+	weak.character_data["attributes"]["focus"] = 1
+	var sharp := _make_unit(Vector2i(7, 5), 1)
+	sharp.character_data["attributes"]["focus"] = 60
+	CombatManager._apply_status_effect(caster, "Shining_Mirage", 9)
+
+	var weak_hits := 0
+	var sharp_hits := 0
+	for _i in 20:
+		weak.status_effects.clear()
+		sharp.status_effects.clear()
+		weak.aura_save_passes.clear()
+		sharp.aura_save_passes.clear()
+		CombatManager._process_auras(caster)
+		if weak.has_status("Confused"):
+			weak_hits += 1
+		if sharp.has_status("Confused"):
+			sharp_hits += 1
+
+	if weak_hits == 0:
+		_fail("the mirage confused a focus-1 enemy 0 times in 20")
+	if sharp_hits >= weak_hits:
+		_fail("the mirage confused a focus-60 enemy %d times and a focus-1 one "
+			% sharp_hits + "%d — the save is not gating it" % weak_hits)
+	_cleanup([caster, weak, sharp])
+	_done()
+
+
+## And it wears out against anyone who keeps their head: each save they make
+## drops the DC they personally face.
+func _check_mirage_wears_out_against_whoever_resists_it() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 30)
+	var enemy := _make_unit(Vector2i(6, 5), 1)
+	enemy.character_data["attributes"]["focus"] = 40
+	CombatManager._apply_status_effect(caster, "Shining_Mirage", 9)
+
+	for _i in 12:
+		enemy.status_effects.clear()
+		CombatManager._process_auras(caster)
+	var passes: int = int(enemy.aura_save_passes.get("shining_mirage", 0))
+	if passes <= 0:
+		_fail("a focus-40 enemy recorded no successful saves in 12 turns, so "
+			+ "the DC can never decay")
+	_cleanup([caster, enemy])
 	_done()

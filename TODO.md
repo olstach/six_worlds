@@ -229,6 +229,23 @@ and events too.
       obvious next payouts, and traps and hazards should be able to grant them
       too.
 
+- [ ] **Retaliation** (`retaliation` on a status) — when struck, do something
+      to whoever struck you: damage, a status, or a share of what just landed,
+      at melee reach or any. Six statuses had six branches for one mechanic.
+      Armour that bites back, a thorned familiar, a cursed item and a perk all
+      want the same block, and none of them is a status yet.
+
+- [ ] **Granted resistance** (`grants_resistance` on a status) — the symmetric
+      partner of `grants_vulnerability`, which existed alone for months. Any
+      status can now make you tougher against an element in data rather than
+      through a hand-written branch.
+
+- [ ] **Resistible aura payloads** (`save` on an aura's `grant_status`) — an
+      aura effect that a target can throw off, with a DC that may fall each
+      time that particular target resists it. Shining Mirage wears out against
+      anyone who keeps their head. Any aura doing something to a mind rather
+      than to a body probably wants this instead of a flat chance.
+
 - [ ] **Party bonuses** (`party_bonuses.gd`) — `party_`-prefixed payouts,
       best member rather than sum.
 
