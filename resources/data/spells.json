@@ -10820,6 +10820,81 @@
       "description": "The nearest creature is put somewhere else entirely — anywhere on this map. Gone from your road, and still in the world, possibly now across the one you meant to take.",
       "map_target": "mob",
       "map_target_range": 10
+    },
+    "following_wind": {
+      "name": "Following Wind",
+      "subschool": "Enchantment",
+      "schools": [
+        "Air",
+        "Enchantment"
+      ],
+      "level": 5,
+      "theme": "wind",
+      "tags": [
+        "wind",
+        "buff",
+        "travel",
+        "out_of_combat"
+      ],
+      "mana_cost": 75,
+      "duration": "spellpower",
+      "target": {
+        "type": "party"
+      },
+      "statuses_caused": [
+        "Following_Wind"
+      ],
+      "description": "The wind turns and stays turned. The party crosses ground forty percent faster for as long as it holds — named for what you want, not for a headwind, which is the one against you."
+    },
+    "rahulas_cloak": {
+      "name": "Rahula's Cloak",
+      "subschool": "Enchantment",
+      "schools": [
+        "Space",
+        "Enchantment"
+      ],
+      "level": 5,
+      "theme": "space",
+      "tags": [
+        "space",
+        "buff",
+        "stealth",
+        "out_of_combat"
+      ],
+      "mana_cost": 75,
+      "duration": "spellpower",
+      "target": {
+        "type": "party"
+      },
+      "statuses_caused": [
+        "Rahulas_Cloak"
+      ],
+      "description": "Nothing on the road sees the party. Creatures do not notice them, those already hunting lose the trail, and walking into something starts no fight. It does not last."
+    },
+    "a_vision_of_plenty": {
+      "name": "A Vision of Plenty",
+      "subschool": "White",
+      "schools": [
+        "Earth",
+        "White"
+      ],
+      "level": 3,
+      "theme": "abundance",
+      "tags": [
+        "earth",
+        "white",
+        "utility",
+        "out_of_combat"
+      ],
+      "mana_cost": 40,
+      "target": {
+        "type": "party"
+      },
+      "provision": {
+        "food_per_member": 6,
+        "herbs": 4
+      },
+      "description": "Food enough for one good night, and herbs to go with it — topped up to exactly that and no further. It will not fill a storehouse; a caster who spends forty mana a night is not spending it elsewhere."
     }
   }
 }

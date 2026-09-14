@@ -2585,6 +2585,32 @@
         "cleanse"
 	  ],
 	  "description": "Loose burning ground carries you as a road would."
+	},
+	{
+	  "name": "Following_Wind",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [],
+	  "grants_travel_speed_pct": 40.0,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+        "cleanse"
+	  ],
+	  "description": "The air moves with the party rather than against it. Ground goes by faster."
+	},
+	{
+	  "name": "Rahulas_Cloak",
+	  "type": "buff",
+	  "category": "buff",
+	  "effects": [],
+	  "grants_concealment": true,
+	  "duration_type": "spellpower",
+	  "dispellable": true,
+	  "dispel_methods": [
+        "cleanse"
+	  ],
+	  "description": "Nothing on the road notices the party pass. Rāhu swallows the sun and is not observed doing it."
 	}
   ]
 }

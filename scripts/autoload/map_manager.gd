@@ -740,9 +740,10 @@ func get_terrain_description(pos: Vector2i) -> String:
 ## How much faster the party travels for having a quartermaster. 1.0 when it
 ## does not — packing well is the skill, not the walking.
 func get_party_speed_multiplier() -> float:
-	if not PartyBonuses:
-		return 1.0
-	return 1.0 + PartyBonuses.best("party_travel_speed_pct") / 100.0
+	# Training and magic both push the same figure: a Logistics payout the
+	# party earned, plus whatever a spell is lending them right now.
+	var from_skill: float = PartyBonuses.best("party_travel_speed_pct") if PartyBonuses else 0.0
+	return 1.0 + (from_skill + travel_speed_bonus_pct) / 100.0
 
 
 func get_terrain_speed(pos: Vector2i) -> float:
@@ -809,13 +810,31 @@ func has_movement_ability(ability: String) -> bool:
 ##
 ## Any party member's spell serves the whole party: they are walking together,
 ## and a bridge of water under one person is a bridge under all of them.
+## Extra travel speed the party is carrying from spells, as a percentage.
+## Recomputed alongside movement abilities.
+var travel_speed_bonus_pct: float = 0.0
+
+## While true, creatures neither notice nor chase the party, and stepping onto
+## a hostile tile starts nothing.
+var party_concealed: bool = false
+
+
 func refresh_movement_abilities(party: Array, status_defs: Dictionary) -> void:
 	var granted: Dictionary = {}
+	travel_speed_bonus_pct = 0.0
+	party_concealed = false
 	for character in party:
 		# From a spell, for as long as it lasts.
 		for entry in character.get("overworld_statuses", []):
-			_collect_movement_ability(
-				status_defs.get(entry.get("status", ""), {}), granted)
+			var def: Dictionary = status_defs.get(entry.get("status", ""), {})
+			_collect_movement_ability(def, granted)
+			# Best member, not sum — two people carrying the same wind do not
+			# make it blow twice as hard, which is the rule the party skill
+			# payouts already use.
+			travel_speed_bonus_pct = maxf(travel_speed_bonus_pct,
+				float(def.get("grants_travel_speed_pct", 0.0)))
+			if bool(def.get("grants_concealment", false)):
+				party_concealed = true
 		# And from training, permanently. Sure Step is a Logistics perk rather
 		# than a spell because a quartermaster who cannot cross broken ground
 		# is not much of one — and because a general sure-footing SPELL would
@@ -1421,6 +1440,20 @@ func _apply_reward(reward: Dictionary) -> void:
 # PORTAL OBJECTS
 # ============================================
 
+## Walk back through a portal to a realm already unlocked.
+##
+## The far side has no portal object of its own pointing home — the generator
+## places one per realm — so the return rides on the same object the party
+## arrived through, which persists with its map.
+func _pass_through_portal(obj: Dictionary, to_realm: String, to_map: String) -> void:
+	portal_entered.emit(obj.data)
+	GameState.travel_to_world(to_realm)
+	if to_map == "":
+		to_map = "%s_01" % to_realm
+	obj.data["destination_map"] = to_map
+	obj.data["destination_realm"] = to_realm
+
+
 ## Instantly move the party to a tile on the current map (Cloud Gate, debug).
 func teleport_party(tile: Vector2i) -> void:
 	stop_movement()
@@ -1433,6 +1466,24 @@ func teleport_party(tile: Vector2i) -> void:
 
 func _handle_portal_object(obj: Dictionary) -> void:
 	stop_movement()
+
+	# A portal is TWO-WAY once its far side has been reached. The realms were
+	# a ladder: one portal each, pointing forward, and no way back short of a
+	# level 9 spell. Backtracking is rarely powerful — the party outgrows a
+	# realm — but it is how you return to a shop, a temple or a trainer with
+	# the gold and the levels you did not have the first time.
+	#
+	# Which way this portal goes depends on where the party is standing: from
+	# home it leads on, and from the far side it leads back.
+	if GameState:
+		var came_from: String = str(obj.data.get("origin_realm", ""))
+		if came_from != "" and GameState.current_world == str(obj.data.get("destination_realm", "")):
+			if came_from in GameState.unlocked_worlds:
+				_pass_through_portal(obj, came_from, str(obj.data.get("origin_map", "")))
+			else:
+				portal_blocked.emit("The way back has closed behind you.")
+			return
+
 	# Sealed portals require the current realm's boss to be defeated first
 	if obj.data.get("requires_boss_defeated", false) and GameState:
 		var world: String = GameState.current_world
@@ -1446,6 +1497,11 @@ func _handle_portal_object(obj: Dictionary) -> void:
 	if GameState and not dest_realm.is_empty():
 		# Unlock the destination realm as a reincarnation option (meta-progression)
 		GameState.unlock_world(dest_realm)
+		# Remember the way back before leaving, so the far side's portal knows
+		# where home is. Written onto the object, which travels with the map
+		# now that maps persist.
+		obj.data["origin_realm"] = GameState.current_world
+		obj.data["origin_map"] = current_map_id
 		GameState.travel_to_world(dest_realm)
 
 	# NOTE: the actual load_map(dest_map) happens in overworld's portal_entered
@@ -1675,6 +1731,13 @@ func _process_roaming_mob(mob: Dictionary, delta: float) -> void:
 
 ## Process aggressive attitude: detect and pursue the player
 func _process_aggressive_mob(mob: Dictionary, delta: float) -> void:
+	# A concealed party is not there to be hunted. Anything already chasing
+	# loses the trail.
+	if party_concealed:
+		if mob.is_pursuing:
+			_end_pursuit(mob)
+		return
+
 	var dist_to_player = absi(mob.position.x - party_position.x) + absi(mob.position.y - party_position.y)
 
 	if mob.is_pursuing:
@@ -1729,6 +1792,11 @@ func _handle_mob_encounter(mob: Dictionary) -> void:
 	# Step over a sleeping creature without waking it. This is what Peace buys:
 	# not safety, but a few steps of passage.
 	if int(mob.get("asleep_steps", 0)) > 0:
+		return
+
+	# Or walk straight through, unseen. Rahula swallows the sun and is not
+	# observed doing it.
+	if party_concealed:
 		return
 
 	mob_met_player.emit(mob)

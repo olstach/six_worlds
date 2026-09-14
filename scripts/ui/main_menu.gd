@@ -1679,6 +1679,27 @@ func _apply_overworld_spell(spell_id: String, spell_data: Dictionary,
 		var scope: int = 99 if spell_data["resurrection"].get("scope", "single") == "all_allies" else 1
 		return _raise_the_fallen(spell_data, scope)
 
+	# Conjured supply. Deliberately cannot bank: it tops the party up to one
+	# night's worth and no further, so it removes the risk of starving without
+	# removing the cost of eating.
+	if spell_data.has("provision") and GameState:
+		var spec: Dictionary = spell_data["provision"]
+		var party_size: int = maxi(1, CharacterSystem.get_party().size())
+		var want_food: int = int(spec.get("food_per_member", 6)) * party_size
+		var want_herbs: int = int(spec.get("herbs", 4))
+		var gave_food: int = maxi(0, want_food - GameState.food)
+		var gave_herbs: int = maxi(0, want_herbs - GameState.herbs)
+		if gave_food <= 0 and gave_herbs <= 0:
+			return "The party already has all it needs for the night"
+		GameState.add_supply("food", gave_food)
+		GameState.add_supply("herbs", gave_herbs)
+		var got: Array[String] = []
+		if gave_food > 0:
+			got.append("%d food" % gave_food)
+		if gave_herbs > 0:
+			got.append("%d herbs" % gave_herbs)
+		return "The ground provides: " + ", ".join(got)
+
 	# Going somewhere. Four spells, one block, distinguished by reach.
 	if spell_data.has("translocate") and MapManager:
 		return _apply_translocation(spell_data, aim)

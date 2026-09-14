@@ -13,7 +13,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 33
+const EXPECTED_CHECKS: int = 37
 
 var _menu: Node
 var _saved_party: Array = []
@@ -72,6 +72,11 @@ func _ready() -> void:
 	_check_planar_gate_unlocks_what_it_opens()
 	_check_the_gate_goes_where_it_is_told()
 	_check_every_world_is_offered_to_the_gate()
+
+	_check_following_wind_speeds_the_party()
+	_check_rahulas_cloak_hides_the_party()
+	_check_a_vision_of_plenty_feeds_one_night_only()
+	_check_a_portal_leads_back_once_unlocked()
 
 	_finish()
 
@@ -980,4 +985,148 @@ func _check_every_world_is_offered_to_the_gate() -> void:
 		_fail("resolving a pending world cast for 'asura' landed on '%s'"
 			% GameState.current_world)
 	GameState.current_world = saved_world2
+	_done()
+
+
+# ── The last three, and the way home ─────────────────────────────────────────
+
+func _check_following_wind_speeds_the_party() -> void:
+	# Two members, because with one there is no difference between taking the
+	# best and adding them up — and adding them up is the bug.
+	_party(2)
+	MapManager.clear_movement_abilities()
+	MapManager.refresh_movement_abilities(CharacterSystem.party, _defs())
+	var before: float = MapManager.get_party_speed_multiplier()
+
+	_cast("following_wind")
+	var after: float = MapManager.get_party_speed_multiplier()
+	if after <= before:
+		_fail("Following Wind left travel speed at %.2f (was %.2f)" % [after, before])
+
+	# The spell landed on the whole party. Two people carrying the same wind
+	# must not make it blow twice as hard.
+	var carrying := 0
+	for member in CharacterSystem.party:
+		for entry in member.get("overworld_statuses", []):
+			if entry.get("status", "") == "Following_Wind":
+				carrying += 1
+	if carrying < 2:
+		_fail("only %d of 2 party members caught the wind" % carrying)
+	elif after > before + 0.41:
+		_fail("two carriers gave %.2f speed against a 40%% spell — the bonus "
+			% after + "is being summed rather than taken at its best")
+
+	# And it lapses with the spell, like every other map effect. Run it out on
+	# EVERYONE: one member still carrying it is one member still carrying it,
+	# which is the whole point of a party-wide buff.
+	for member in CharacterSystem.party:
+		for entry in member.get("overworld_statuses", []):
+			entry["duration"] = 1
+	StatusOps.tick_overworld(CharacterSystem.party, _defs())
+	if MapManager.get_party_speed_multiplier() > before:
+		_fail("the wind is still blowing after the spell ran out")
+	_done()
+
+
+## Nothing notices, nothing chases, and walking into something starts nothing.
+func _check_rahulas_cloak_hides_the_party() -> void:
+	_party(1)
+	_stage_map()
+	MapManager.clear_movement_abilities()
+	_add_mob("hunter", Vector2i(12, 10))
+	MapManager.mobs[0]["attitude"] = 2      # AGGRESSIVE
+	MapManager.mobs[0]["is_pursuing"] = true
+
+	_cast("rahulas_cloak")
+	if not MapManager.party_concealed:
+		_fail("Rahula's Cloak did not conceal the party")
+
+	MapManager.tick_mobs()
+	if MapManager.mobs[0].get("is_pursuing", false):
+		_fail("a hunter kept the trail of a concealed party")
+
+	# Standing on it starts nothing.
+	MapManager._handle_mob_encounter(MapManager.mobs[0])
+
+	for entry in _statuses_on(0):
+		entry["duration"] = 1
+	StatusOps.tick_overworld(CharacterSystem.party, _defs())
+	if MapManager.party_concealed:
+		_fail("the party is still hidden after the cloak ran out")
+	_done()
+
+
+## One night's worth, topped up to exactly that. It must not bank, or the
+## supply economy stops mattering.
+func _check_a_vision_of_plenty_feeds_one_night_only() -> void:
+	_party(3)
+	var saved_food: int = GameState.food
+	var saved_herbs: int = GameState.herbs
+	GameState.food = 0
+	GameState.herbs = 0
+
+	_cast("a_vision_of_plenty")
+	var after_food: int = GameState.food
+	if after_food != 18:      # 6 per member, party of three
+		_fail("A Vision of Plenty gave %d food for a party of 3; expected 18"
+			% after_food)
+	if GameState.herbs != 4:
+		_fail("A Vision of Plenty gave %d herbs; expected 4" % GameState.herbs)
+
+	# Cast again on a full larder: nothing, because it tops up rather than adds.
+	var said: String = _cast("a_vision_of_plenty")
+	if GameState.food > after_food:
+		_fail("casting twice banked %d food — it should top up, not accumulate"
+			% (GameState.food - after_food))
+	if not "already" in said:
+		_fail("a second cast on a full larder said '%s'" % said)
+
+	GameState.food = saved_food
+	GameState.herbs = saved_herbs
+	_done()
+
+
+## The realms were a ladder — one portal each, pointing forward. Backtracking
+## is rarely powerful, but it is how a party returns to a shop or a temple
+## with the gold they did not have the first time.
+func _check_a_portal_leads_back_once_unlocked() -> void:
+	var saved_world: String = GameState.current_world
+	var saved_unlocked: Array = GameState.unlocked_worlds.duplicate()
+	GameState.current_world = "hungry_ghost"
+	GameState.unlocked_worlds = ["hell", "hungry_ghost"]
+
+	# The object the party arrived through, carrying the way home.
+	var gate := {"data": {
+		"destination_realm": "hungry_ghost", "destination_map": "hungry_ghost_01",
+		"origin_realm": "hell", "origin_map": "hell_01",
+	}}
+	MapManager._handle_portal_object(gate)
+	if GameState.current_world != "hell":
+		_fail("stepping back through the portal left the party in '%s'"
+			% GameState.current_world)
+
+	# And it refuses when the far side was never unlocked — audibly. Travel
+	# already refuses a locked realm on its own, so the only thing this guard
+	# adds is telling the player why nothing happened, and that is what has
+	# to be asserted or the guard is untested.
+	GameState.current_world = "hungry_ghost"
+	GameState.unlocked_worlds = ["hungry_ghost"]
+	var told: Array[String] = []
+	var listener := func(msg: String): told.append(msg)
+	MapManager.portal_blocked.connect(listener)
+	var sealed := {"data": {
+		"destination_realm": "hungry_ghost", "destination_map": "hungry_ghost_01",
+		"origin_realm": "hell", "origin_map": "hell_01",
+	}}
+	MapManager._handle_portal_object(sealed)
+	MapManager.portal_blocked.disconnect(listener)
+
+	if GameState.current_world != "hungry_ghost":
+		_fail("a portal led back to a realm that was never unlocked")
+	if told.is_empty():
+		_fail("walking into a sealed way back said nothing — the party is left "
+			+ "standing at a portal that silently does not work")
+
+	GameState.current_world = saved_world
+	GameState.unlocked_worlds.assign(saved_unlocked)
 	_done()
