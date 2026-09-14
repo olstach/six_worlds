@@ -192,6 +192,12 @@ static func tick_overworld(party: Array, defs: Dictionary) -> Array[String]:
 		expired.reverse()
 		for idx in expired:
 			statuses.remove_at(idx)
+
+	# A spell that lets the party cross water stops doing so the moment it runs
+	# out, and the only way to notice is to recompute. Doing it here means no
+	# caller has to remember.
+	if MapManager:
+		MapManager.refresh_movement_abilities(party, defs)
 	return log_lines
 
 

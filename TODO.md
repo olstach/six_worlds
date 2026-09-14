@@ -130,6 +130,16 @@ The mirror image of dead data: code paths that work and are never exercised.
   (~3% per trait). Creation now rolls one, which makes them reachable, but
   seeding companions would make the party feel much more distinct. Deliberately
   left to Olaf, since it is companion characterisation.
+- [ ] **Conversation with the dead, as an event option.** `converse_with_the
+      _dead` (L1 White/Black) has no combat use and no map use — speaking with
+      a corpse is an *event* beat. It should appear as a blue requirement
+      option gated on a degree of Black magic, letting a party with the skill
+      learn something at a battlefield, a charnel ground or a fresh grave that
+      a party without it walks past. No new machinery: blue options and skill
+      gates both exist. It wants written events, not code. The spell's
+      `out_of_combat` tag was removed 2026-09-14 so it stops offering a Cast
+      button that does nothing.
+
 - [ ] **`wound` and `sever_part` event rewards** are still unused by any event —
   nothing in the game maims you outside combat.
 - [ ] **Cursed items** — "cursed" is a status and a terrain type; zero cursed

@@ -1634,6 +1634,12 @@ func _apply_overworld_spell(spell_id: String, spell_data: Dictionary, caster: Di
 			if not taken.is_empty():
 				results.append("%s: %d effect(s) dispelled" % [target_name, taken.size()])
 
+	# A spell may have just granted the party a way across water or over a
+	# mountain, and the map has to be told before the next step.
+	if MapManager:
+		MapManager.refresh_movement_abilities(
+			CharacterSystem.get_party(), CombatManager.get_all_status_definitions())
+
 	if results.is_empty():
 		return "No effect"
 	return " | ".join(results)

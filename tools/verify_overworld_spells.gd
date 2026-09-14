@@ -13,7 +13,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 9
+const EXPECTED_CHECKS: int = 13
 
 var _menu: Node
 var _saved_party: Array = []
@@ -44,6 +44,11 @@ func _ready() -> void:
 	_check_stamina_restore_variants()
 	_check_resurrection_reaches_the_fallen()
 	_check_overworld_statuses_expire()
+
+	_check_water_walking_opens_water()
+	_check_sure_footing_removes_the_slowdown()
+	_check_an_ability_lapses_when_its_status_does()
+	_check_flight_grants_both_of_its_abilities()
 
 	_finish()
 
@@ -251,4 +256,107 @@ func _check_overworld_statuses_expire() -> void:
 	if not _statuses_on(0).is_empty():
 		_fail("after 3 steps, %s still stands on a 2-step duration"
 			% str(_statuses_on(0)))
+	_done()
+
+
+# ── Movement abilities ───────────────────────────────────────────────────────
+
+func _defs() -> Dictionary:
+	return CombatManager.get_all_status_definitions()
+
+
+## MapManager has read `movement_abilities` in get_terrain_speed all along —
+## water, mountains and lava each name the ability that opens them — and
+## nothing ever granted one. Three spells existed for exactly this and none was
+## castable on the map.
+func _check_water_walking_opens_water() -> void:
+	_party(1)
+	MapManager.clear_movement_abilities()
+	# Stage a real water tile and ask the real question: can the party cross?
+	# Asserting only that the flag is set would pass while terrain ignored it.
+	var tile := Vector2i(3, 3)
+	MapManager.tiles[tile] = MapManager.Terrain.WATER
+	MapManager.map_size = Vector2i(maxi(MapManager.map_size.x, 8),
+		maxi(MapManager.map_size.y, 8))
+
+	if MapManager.is_passable(tile):
+		_fail("water is passable with no ability, so this check proves nothing")
+		_done()
+		return
+
+	_cast("water_walking")
+	if not MapManager.is_passable(tile):
+		_fail("after Water Walking the party still cannot cross water "
+			+ "(abilities: %s)" % str(MapManager.movement_abilities))
+	MapManager.tiles.erase(tile)
+	_done()
+
+
+## Sure footing answers the other half of terrain — the slowdown — which
+## TERRAIN_ABILITIES never spoke about. Levitate claimed "immunity to
+## ground/terrain effects" and delivered none.
+func _check_sure_footing_removes_the_slowdown() -> void:
+	_party(1)
+	MapManager.clear_movement_abilities()
+	var tile := Vector2i(4, 4)
+	MapManager.tiles[tile] = MapManager.Terrain.SWAMP
+	MapManager.map_size = Vector2i(maxi(MapManager.map_size.x, 8),
+		maxi(MapManager.map_size.y, 8))
+	var slowed: float = MapManager.get_terrain_speed(tile)
+	if slowed >= 1.0:
+		_fail("swamp is not slow in this build, so the check proves nothing")
+		MapManager.tiles.erase(tile)
+		_done()
+		return
+
+	_cast("levitate")
+	if MapManager.get_terrain_speed(tile) <= slowed:
+		_fail("after Levitate a swamp still costs %.2f speed (was %.2f) — sure "
+			% [MapManager.get_terrain_speed(tile), slowed]
+			+ "footing is set but terrain does not read it")
+	MapManager.tiles.erase(tile)
+	_done()
+
+
+## And it lapses. The ability is recomputed from who is still carrying the
+## status, so a spell that has worn off simply is not found.
+func _check_an_ability_lapses_when_its_status_does() -> void:
+	_party(1)
+	MapManager.clear_movement_abilities()
+	_cast("water_walking")
+	if not MapManager.has_movement_ability("water_walking"):
+		_fail("could not stage the ability")
+		_done()
+		return
+
+	# Run the status out.
+	for s in _statuses_on(0):
+		s["duration"] = 1
+	StatusOps.tick_overworld(CharacterSystem.party, _defs())
+	if MapManager.has_movement_ability("water_walking"):
+		_fail("the party still walks on water after the spell expired")
+	_done()
+
+
+## Flying grants two abilities at once — over the mountains, and nothing
+## underfoot to slow you. A source may name one ability or several, and only
+## casting the one that names several tests that.
+func _check_flight_grants_both_of_its_abilities() -> void:
+	_party(1)
+	MapManager.clear_movement_abilities()
+	var peak := Vector2i(5, 5)
+	var bog := Vector2i(6, 6)
+	MapManager.tiles[peak] = MapManager.Terrain.MOUNTAINS
+	MapManager.tiles[bog] = MapManager.Terrain.SWAMP
+	MapManager.map_size = Vector2i(maxi(MapManager.map_size.x, 9),
+		maxi(MapManager.map_size.y, 9))
+
+	_cast("fly")
+	if not MapManager.is_passable(peak):
+		_fail("after Fly the party still cannot cross a mountain")
+	if MapManager.get_terrain_speed(bog) < 1.0:
+		_fail("after Fly a swamp still slows the party to %.2f — the second "
+			% MapManager.get_terrain_speed(bog) + "ability in the list was dropped")
+	MapManager.tiles.erase(peak)
+	MapManager.tiles.erase(bog)
 	_done()

@@ -722,6 +722,14 @@ func get_terrain_speed(pos: Vector2i) -> float:
 	var terrain = get_terrain(pos)
 	var base_speed = TERRAIN_SPEED.get(terrain, 1.0)
 	if base_speed > 0:
+		# Sure footing removes the SLOWDOWN, which is a different question from
+		# passability and had no answer at all — TERRAIN_ABILITIES only ever
+		# spoke about the three impassable terrains. `sure_footed` covers every
+		# kind of bad ground; `surefoot_<terrain>` covers one.
+		if base_speed < 1.0:
+			var named := "surefoot_%s" % TERRAIN_NAMES.get(terrain, "").to_lower()
+			if movement_abilities.get("sure_footed", false) or movement_abilities.get(named, false):
+				return 1.0
 		return base_speed
 	# Check if a movement ability overrides impassability
 	var required = TERRAIN_ABILITIES.get(terrain, "")
@@ -763,6 +771,29 @@ func set_movement_ability(ability: String, active: bool) -> void:
 ## Check if a movement ability is active
 func has_movement_ability(ability: String) -> bool:
 	return movement_abilities.get(ability, false)
+
+
+## Recompute which movement abilities the party currently has, from the
+## statuses its members are carrying.
+##
+## RECOMPUTED, never incremented. A spell wears off by no longer being on
+## anyone, and the next refresh simply does not find it — which is the same
+## reason aura stat bonuses are read on demand rather than stored.
+##
+## Any party member's spell serves the whole party: they are walking together,
+## and a bridge of water under one person is a bridge under all of them.
+func refresh_movement_abilities(party: Array, status_defs: Dictionary) -> void:
+	var granted: Dictionary = {}
+	for character in party:
+		for entry in character.get("overworld_statuses", []):
+			var def: Dictionary = status_defs.get(entry.get("status", ""), {})
+			var grants = def.get("grants_movement_ability", null)
+			if grants is String and grants != "":
+				granted[grants] = true
+			elif grants is Array:
+				for ability in grants:
+					granted[str(ability)] = true
+	movement_abilities = granted
 
 
 ## Clear all movement abilities (e.g. on map change)
