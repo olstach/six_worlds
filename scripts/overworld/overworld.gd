@@ -190,6 +190,9 @@ func _ready() -> void:
 	journal_button.pressed.connect(func(): _open_char_sheet_to_tab(5))
 	char_sheet.visibility_changed.connect(_on_char_sheet_visibility_changed)
 	char_sheet.overworld_spell_cast.connect(_on_overworld_spell_cast)
+	char_sheet.overworld_spell_targeting.connect(_on_overworld_spell_targeting)
+	map_renderer.target_picked.connect(_on_spell_target_picked)
+	map_renderer.targeting_cancelled.connect(_on_spell_targeting_cancelled)
 
 	# Ensure overlays start hidden
 	_set_event_visible(false)
@@ -286,7 +289,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				_update_time_label()
 				get_viewport().set_input_as_handled()
 			KEY_ESCAPE:
-				if _rest_open:
+				if map_renderer.is_targeting():
+					map_renderer.cancel_targeting()
+					get_viewport().set_input_as_handled()
+				elif _rest_open:
 					_close_rest_panel()
 					get_viewport().set_input_as_handled()
 				elif _main_menu_open:
@@ -1461,6 +1467,25 @@ func _show_camp_event(event_id: String) -> void:
 	MapManager.pause_movement()
 	_set_event_visible(true)
 	event_display.show_event(event_id, "", false)
+
+
+## A spell needs aiming: hand the map over and wait for a click.
+func _on_overworld_spell_targeting(kind: String, reach: int, label: String) -> void:
+	map_renderer.begin_targeting(kind, reach, label)
+	_show_toast("%s — choose a target" % label)
+
+
+func _on_spell_target_picked(tile: Vector2i) -> void:
+	var detail: String = char_sheet.resolve_pending_map_cast(tile)
+	if detail != "":
+		_show_toast(detail)
+
+
+func _on_spell_targeting_cancelled() -> void:
+	var spell_name: String = char_sheet.pending_map_cast_name()
+	char_sheet.cancel_pending_map_cast()
+	if spell_name != "":
+		_show_toast("%s — cancelled" % spell_name)
 
 
 ## Show a toast when the player casts a spell from the overworld spellbook.

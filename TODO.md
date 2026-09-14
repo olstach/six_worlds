@@ -130,15 +130,25 @@ The mirror image of dead data: code paths that work and are never exercised.
   (~3% per trait). Creation now rolls one, which makes them reachable, but
   seeding companions would make the party feel much more distinct. Deliberately
   left to Olaf, since it is companion characterisation.
-- [ ] **Interactions with friendly groups.** Open Heart (White/Ench. 5) turns
-      a hostile creature on the map permanently friendly, and a FRIENDLY mob
-      opens an event dialog when met — but only if it carries an `event_id`,
-      and one talked round mid-journey has no conversation written for it. It
-      stands aside instead of blocking the road, which is honest but thin.
-      What it wants: a small set of parley events a pacified creature can draw
-      from, and then the things Olaf named — trade, and whatever other
-      interaction types friendly groups should support. The mechanism is
-      built; this is content plus a default event.
+- [ ] **Interactions with friendly NPCs and groups.** A mob with the FRIENDLY
+      attitude opens an event dialog when the party meets it — but only if it
+      carries an `event_id`. There is no default, so a friendly creature
+      without one simply stands aside.
+
+      What it wants, roughly in order:
+      - **A default parley event** any friendly group can fall back on, so
+        meeting one is never silent.
+      - **Trade.** ShopSystem exists and handles 91 shops; a wandering group
+        with goods is a shop that walks.
+      - **Whatever else a friendly group should support** — information about
+        the region, a companion offer, passage through territory, a blessing
+        from a travelling monk. This is the open half.
+
+      *Open Heart* (White/Ench. 5), a spell turning a hostile creature
+      permanently friendly, was designed and then dropped on 2026-09-14
+      precisely because of this gap: befriending something is two lines, and a
+      spell whose entire point is the conversation afterwards is not finished
+      until the conversation exists. Bring it back when this does.
 
 - [ ] **Conversation with the dead, as an event option.** `converse_with_the
       _dead` (L1 White/Black) has no combat use and no map use — speaking with
