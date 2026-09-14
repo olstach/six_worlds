@@ -13,7 +13,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 25
+const EXPECTED_CHECKS: int = 26
 
 var _menu: Node
 var _saved_party: Array = []
@@ -60,9 +60,10 @@ func _ready() -> void:
 
 	_check_peace_puts_the_nearest_creature_to_sleep()
 	_check_a_sleeping_creature_stops_and_wakes()
-	_check_open_heart_ends_the_hostility()
 	_check_misdirection_moves_it_a_short_way()
 	_check_begone_sends_it_further_than_misdirection()
+	_check_targeting_only_offers_legal_targets()
+	_check_the_renderer_refuses_illegal_targets()
 
 	_finish()
 
@@ -106,6 +107,12 @@ func _party(n: int) -> void:
 func _cast(spell_id: String) -> String:
 	var spell: Dictionary = CombatManager.get_spell(spell_id)
 	return _menu._apply_overworld_spell(spell_id, spell, CharacterSystem.party[0])
+
+
+## Cast at a chosen tile, the way the targeting UI does.
+func _cast_at(spell_id: String, tile: Vector2i) -> String:
+	var spell: Dictionary = CombatManager.get_spell(spell_id)
+	return _menu._apply_overworld_spell(spell_id, spell, CharacterSystem.party[0], tile)
 
 
 func _statuses_on(i: int) -> Array:
@@ -595,11 +602,11 @@ func _check_peace_puts_the_nearest_creature_to_sleep() -> void:
 	_add_mob("close", Vector2i(13, 10))    # 3 tiles
 	_add_mob("distant", Vector2i(30, 10))  # 20 tiles, outside radius 6
 
-	_cast("peace")
+	_cast_at("peace", Vector2i(13, 10))
 	if int(MapManager.mobs[0].get("asleep_steps", 0)) <= 0:
-		_fail("Peace left the nearest creature awake")
+		_fail("Peace left the creature it was aimed at awake")
 	if int(MapManager.mobs[1].get("asleep_steps", 0)) > 0:
-		_fail("Peace also reached a creature 20 tiles away on a radius of 6")
+		_fail("Peace also reached a creature it was not aimed at")
 
 	# The radius only bites when the NEAREST creature is out of reach — with
 	# two in play the spell picks the closer one either way, so dropping the
@@ -608,11 +615,11 @@ func _check_peace_puts_the_nearest_creature_to_sleep() -> void:
 	_party(1)
 	_stage_map()
 	_add_mob("far_only", Vector2i(30, 10))   # 20 tiles, radius is 6
-	var said: String = _cast("peace")
+	var said: String = _cast_at("peace", Vector2i(30, 10))
 	if int(MapManager.mobs[0].get("asleep_steps", 0)) > 0:
-		_fail("Peace reached the only creature on the map at 20 tiles")
-	if not "nothing" in said:
-		_fail("Peace with nothing in range said '%s'" % said)
+		_fail("Peace reached a creature 20 tiles away on a radius of 6")
+	if not "reach" in said:
+		_fail("Peace aimed out of range said '%s'" % said)
 	_done()
 
 
@@ -623,7 +630,7 @@ func _check_a_sleeping_creature_stops_and_wakes() -> void:
 	_add_mob("sleeper", Vector2i(13, 10))
 	MapManager.mobs[0]["is_pursuing"] = true
 	MapManager.mobs[0]["mode"] = 2   # ROAMING
-	_cast("peace")
+	_cast_at("peace", Vector2i(13, 10))
 
 	if MapManager.mobs[0].get("is_pursuing", false):
 		_fail("a sleeping creature is still giving chase")
@@ -642,22 +649,6 @@ func _check_a_sleeping_creature_stops_and_wakes() -> void:
 	_done()
 
 
-func _check_open_heart_ends_the_hostility() -> void:
-	_party(1)
-	_stage_map()
-	_add_mob("brigand", Vector2i(13, 10))
-	MapManager.mobs[0]["attitude"] = 2   # AGGRESSIVE
-	MapManager.mobs[0]["is_pursuing"] = true
-
-	_cast("open_heart")
-	if MapManager.mobs[0].attitude != 0:   # FRIENDLY
-		_fail("Open Heart left the creature at attitude %s"
-			% str(MapManager.mobs[0].attitude))
-	if MapManager.mobs[0].get("is_pursuing", false):
-		_fail("a befriended creature is still pursuing")
-	_done()
-
-
 func _check_misdirection_moves_it_a_short_way() -> void:
 	_party(1)
 	_stage_map()
@@ -667,7 +658,7 @@ func _check_misdirection_moves_it_a_short_way() -> void:
 	_add_mob("shunted", Vector2i(14, 10))
 	var was: Vector2i = MapManager.mobs[0].position
 
-	_cast("misdirection")
+	_cast_at("misdirection", Vector2i(14, 10))
 	var now: Vector2i = MapManager.mobs[0].position
 	if now == was:
 		_fail("Misdirection did not move the creature")
@@ -694,11 +685,84 @@ func _check_begone_sends_it_further_than_misdirection() -> void:
 	var total := 0
 	for _i in 8:
 		MapManager.mobs[0]["position"] = was
-		_cast("begone")
+		_cast_at("begone", was)
 		total += maxi(absi(MapManager.mobs[0].position.x - was.x),
 			absi(MapManager.mobs[0].position.y - was.y))
 	var mean: float = float(total) / 8.0
 	if mean <= 8.0:
 		_fail("Begone! averaged %.1f tiles over 8 casts — no further than "
 			% mean + "Misdirection, so the two spells are the same spell")
+	_done()
+
+
+## The renderer decides what may be clicked, and a spell aimed at empty ground
+## or at something out of reach must do nothing rather than quietly picking
+## whatever was closest — which is what the first version of these spells did.
+func _check_targeting_only_offers_legal_targets() -> void:
+	_party(1)
+	_stage_map()
+	_add_mob("in_reach", Vector2i(13, 10))    # 3 tiles
+	_add_mob("too_far", Vector2i(40, 10))     # 30 tiles
+
+	var empty: String = _cast_at("peace", Vector2i(12, 12))
+	if not "nothing" in empty:
+		_fail("Peace aimed at empty ground said '%s'" % empty)
+	for mob in MapManager.mobs:
+		if int(mob.get("asleep_steps", 0)) > 0:
+			_fail("Peace aimed at empty ground still slept %s" % str(mob.id))
+
+	var far: String = _cast_at("peace", Vector2i(40, 10))
+	if not "reach" in far:
+		_fail("Peace aimed 30 tiles away said '%s'" % far)
+	if int(MapManager.mobs[1].get("asleep_steps", 0)) > 0:
+		_fail("Peace reached a creature far outside its radius")
+
+	# And the aimed-at one does work.
+	_cast_at("peace", Vector2i(13, 10))
+	if int(MapManager.mobs[0].get("asleep_steps", 0)) <= 0:
+		_fail("Peace aimed at a legal target did nothing")
+	_done()
+
+
+## The renderer decides what may be CLICKED, which is a separate guard from the
+## one MapManager applies when the spell resolves. Both must hold: the first
+## stops you aiming at nothing, the second stops a bad aim landing anyway.
+## Testing only through the resolver left the click guard unverified.
+func _check_the_renderer_refuses_illegal_targets() -> void:
+	_party(1)
+	_stage_map()
+	for x in range(60):
+		for y in range(60):
+			MapManager.tiles[Vector2i(x, y)] = MapManager.Terrain.PLAINS
+	_add_mob("in_reach", Vector2i(13, 10))    # 3 tiles
+	_add_mob("too_far", Vector2i(40, 10))     # 30 tiles
+	# Both must be visible, or "cannot click it" would be true for the wrong reason.
+	for mob in MapManager.mobs:
+		mob["revealed"] = true
+
+	var renderer: Node2D = load("res://scripts/overworld/map_renderer.gd").new()
+	add_child(renderer)
+	renderer.begin_targeting("mob", 6, "Peace")
+
+	if not renderer._is_legal_target(Vector2i(13, 10)):
+		_fail("the renderer refuses a visible creature 3 tiles away, inside a "
+			+ "radius of 6")
+	if renderer._is_legal_target(Vector2i(40, 10)):
+		_fail("the renderer offers a creature 30 tiles away on a radius of 6")
+	if renderer._is_legal_target(Vector2i(12, 12)):
+		_fail("the renderer offers empty ground as a creature")
+
+	# A tile-targeted spell wants passable ground, not a creature.
+	renderer.begin_targeting("tile", 5, "Blink")
+	if not renderer._is_legal_target(Vector2i(12, 10)):
+		_fail("the renderer refuses passable ground 2 tiles away")
+	MapManager.tiles[Vector2i(12, 10)] = MapManager.Terrain.MOUNTAINS
+	MapManager.clear_movement_abilities()
+	if renderer._is_legal_target(Vector2i(12, 10)):
+		_fail("the renderer offers an impassable tile as a destination")
+
+	renderer.cancel_targeting()
+	if renderer.is_targeting():
+		_fail("cancelling left the renderer in targeting mode")
+	renderer.queue_free()
 	_done()

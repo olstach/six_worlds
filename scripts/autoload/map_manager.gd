@@ -895,46 +895,44 @@ func reveal(origin: Vector2i, spec: Dictionary) -> Dictionary:
 ## What can be done to a creature on the map without fighting it.
 const MOB_EFFECTS: Array[String] = [
 	"sleep",     # stops moving, stops pursuing, and lets the party step past
-	"befriend",  # attitude becomes FRIENDLY and it no longer starts a fight
 	"displace",  # shunted a short way in a random direction
 	"banish",    # sent to a random tile anywhere on the map
 ]
 
 
-## Apply an effect to the nearest creature within reach.
+## Apply an effect to the creature standing on `tile`.
 ##
 ##   {"what": "sleep", "radius": 6, "steps": 5}
 ##   {"what": "displace", "radius": 8, "distance": 6, "variance": 2}
 ##
-## The NEAREST one, because there is no way to point at a creature on the
-## overworld — no selection UI exists and every map spell so far targets the
-## party. Acting on whatever is closest is both castable today and the right
-## reading: you deal with the thing bearing down on you.
+## The player picks the target — map_renderer enters a targeting mode and only
+## offers creatures the party can see and that are inside `radius`. An earlier
+## version acted on whichever creature was NEAREST, which was a workaround for
+## having no way to point at one.
 ##
 ## Returns {ok, name, reason}.
-func affect_nearest_mob(origin: Vector2i, spec: Dictionary) -> Dictionary:
+func affect_mob_at(tile: Vector2i, spec: Dictionary) -> Dictionary:
 	var what: String = spec.get("what", "")
 	if not what in MOB_EFFECTS:
 		push_warning("MapManager: '%s' is not in MOB_EFFECTS, so nothing happens" % what)
 		return {"ok": false, "name": "", "reason": "unknown effect"}
 
 	var radius: int = int(spec.get("radius", 8))
+	var origin: Vector2i = get_party_position()
+	if maxi(absi(tile.x - origin.x), absi(tile.y - origin.y)) > radius:
+		return {"ok": false, "name": "", "reason": "out of reach"}
+
 	var best: Dictionary = {}
-	var best_dist: int = 1 << 30
 	for mob in mobs:
-		var dist: int = maxi(absi(mob.position.x - origin.x), absi(mob.position.y - origin.y))
-		if dist <= radius and dist < best_dist:
-			best_dist = dist
+		if mob.position == tile:
 			best = mob
+			break
 	if best.is_empty():
-		return {"ok": false, "name": "", "reason": "nothing close enough"}
+		return {"ok": false, "name": "", "reason": "nothing there"}
 
 	match what:
 		"sleep":
 			best["asleep_steps"] = int(spec.get("steps", 5))
-			best["is_pursuing"] = false
-		"befriend":
-			best["attitude"] = MobAttitude.FRIENDLY
 			best["is_pursuing"] = false
 		"displace", "banish":
 			var dest: Vector2i = best.position

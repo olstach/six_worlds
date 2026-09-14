@@ -48,6 +48,16 @@ const GRID_COLOR := Color(0.0, 0.0, 0.0, 0.15)
 # Current tile the mouse is hovering over (-1,-1 means none)
 var hover_tile: Vector2i = Vector2i(-1, -1)
 
+## Spell targeting. While a kind is set, a left click picks a target instead of
+## setting a destination — a map spell that aimed itself at "whatever is
+## nearest" was a workaround for not having this.
+signal target_picked(tile: Vector2i)
+signal targeting_cancelled()
+
+var targeting_kind: String = ""    # "" | "mob" | "tile"
+var targeting_range: int = -1      # -1 for unlimited
+var targeting_label: String = ""
+
 # Pulsing animation for aggressive mobs
 var _pulse_time: float = 0.0
 
@@ -117,7 +127,72 @@ func _process(delta: float) -> void:
 				MapManager.set_destination(target)
 
 
+## Enter targeting mode for a spell. `kind` is "mob" or "tile".
+func begin_targeting(kind: String, reach: int, label: String) -> void:
+	targeting_kind = kind
+	targeting_range = reach
+	targeting_label = label
+	queue_redraw()
+
+
+func cancel_targeting() -> void:
+	if targeting_kind == "":
+		return
+	targeting_kind = ""
+	targeting_range = -1
+	targeting_label = ""
+	queue_redraw()
+	targeting_cancelled.emit()
+
+
+func is_targeting() -> bool:
+	return targeting_kind != ""
+
+
+## Is this a target the current spell will accept?
+func _is_legal_target(tile: Vector2i) -> bool:
+	if not _is_valid_tile(tile):
+		return false
+	if targeting_range >= 0:
+		var origin: Vector2i = MapManager.get_party_position()
+		if maxi(absi(tile.x - origin.x), absi(tile.y - origin.y)) > targeting_range:
+			return false
+	match targeting_kind:
+		"mob":
+			# Only creatures the party can actually see. Aiming at one sensed
+			# by nothing would be aiming at a rumour.
+			for mob in MapManager.get_visible_mobs():
+				if mob.position == tile:
+					return true
+			return false
+		"tile":
+			return MapManager.is_passable(tile)
+	return false
+
+
 func _unhandled_input(event: InputEvent) -> void:
+	# While targeting, the map answers a question instead of taking orders.
+	if targeting_kind != "":
+		if event is InputEventMouseButton and event.pressed:
+			if event.button_index == MOUSE_BUTTON_RIGHT:
+				cancel_targeting()
+				get_viewport().set_input_as_handled()
+				return
+			if event.button_index == MOUSE_BUTTON_LEFT:
+				var picked := _mouse_to_tile()
+				if _is_legal_target(picked):
+					var chosen := picked
+					cancel_targeting()
+					target_picked.emit(chosen)
+				get_viewport().set_input_as_handled()
+				return
+		elif event is InputEventMouseMotion:
+			var moved := _mouse_to_tile()
+			if moved != hover_tile:
+				hover_tile = moved
+				queue_redraw()
+			return
+
 	# Mouse click to set destination
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var tile = _mouse_to_tile()
@@ -229,6 +304,56 @@ func _draw() -> void:
 	if hover_tile.x >= 0 and hover_tile.x < map_w and hover_tile.y >= 0 and hover_tile.y < map_h:
 		draw_rect(Rect2(hover_tile.x * ts, hover_tile.y * ts, ts, ts), HOVER_COLOR, false, 2.0)
 		_draw_hover_tooltip(hover_tile, ts)
+
+	# --- Layer 8: Spell targeting ---
+	if targeting_kind != "":
+		_draw_targeting(ts, vx0, vy0, vx1, vy1)
+
+
+## Show what the spell being aimed will accept, and what the cursor is on.
+##
+## Drawn over everything else so a legal target is never hidden behind a mob
+## marker — when the map is asking a question, the answer has to be readable.
+func _draw_targeting(ts: int, vx0: int, vy0: int, vx1: int, vy1: int) -> void:
+	var pulse: float = 0.45 + 0.25 * sin(_pulse_time * 4.0)
+	var ok_colour := Color(0.45, 0.95, 0.6, pulse)
+	var origin: Vector2i = MapManager.get_party_position()
+
+	if targeting_kind == "mob":
+		for mob in MapManager.get_visible_mobs():
+			if not _is_legal_target(mob.position):
+				continue
+			var r := Rect2(mob.position.x * ts, mob.position.y * ts, ts, ts)
+			draw_rect(r, Color(0.45, 0.95, 0.6, pulse * 0.35))
+			draw_rect(r, ok_colour, false, 2.0)
+	elif targeting_range >= 0:
+		# A ring rather than every tile: filling the whole reachable area
+		# would bury the map under a wash of green.
+		for y in range(maxi(vy0, origin.y - targeting_range),
+				mini(vy1, origin.y + targeting_range + 1)):
+			for x in range(maxi(vx0, origin.x - targeting_range),
+					mini(vx1, origin.x + targeting_range + 1)):
+				var edge: int = maxi(absi(x - origin.x), absi(y - origin.y))
+				if edge == targeting_range and _is_legal_target(Vector2i(x, y)):
+					draw_rect(Rect2(x * ts, y * ts, ts, ts),
+						Color(0.45, 0.95, 0.6, pulse * 0.30))
+
+	# The cursor: green where the spell would land, red where it would not.
+	if _is_valid_tile(hover_tile):
+		var legal: bool = _is_legal_target(hover_tile)
+		var cursor := ok_colour if legal else Color(0.95, 0.35, 0.35, pulse)
+		draw_rect(Rect2(hover_tile.x * ts, hover_tile.y * ts, ts, ts), cursor, false, 3.0)
+
+	# And the instruction, anchored to the party so it is always on screen.
+	var font := ThemeDB.fallback_font
+	var prompt := "%s — click a %s, right-click to cancel" % [
+		targeting_label, "creature" if targeting_kind == "mob" else "tile"]
+	var at := Vector2(origin.x * ts - ts * 4, origin.y * ts - ts * 2)
+	var width: float = font.get_string_size(prompt, HORIZONTAL_ALIGNMENT_LEFT,
+		-1, 12).x
+	draw_rect(Rect2(at.x - 4, at.y - 13, width + 8, 18), Color(0.05, 0.04, 0.09, 0.85))
+	draw_string(font, at, prompt, HORIZONTAL_ALIGNMENT_LEFT, -1, 12,
+		Color(0.85, 0.95, 0.88))
 
 
 ## Draw an information tooltip above the hovered tile when it has a mob or object.

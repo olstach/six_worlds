@@ -10,6 +10,13 @@ extends Control
 signal tab_changed(tab_index: int)
 signal overworld_spell_cast(spell_name: String, detail: String)
 
+## A spell that has to be aimed at something on the map. The sheet closes and
+## the overworld takes over; nothing is spent until a target is confirmed.
+signal overworld_spell_targeting(kind: String, reach: int, label: String)
+
+## The cast waiting on a target: {spell_id, spell_data, caster}.
+var _pending_map_cast: Dictionary = {}
+
 # Use unique names (%) for nodes marked with unique_name_in_owner
 @onready var tab_container: TabContainer = $MarginContainer/VBoxContainer/TabContainer
 @onready var name_value: Label = %NameValue
@@ -1412,6 +1419,19 @@ func _create_spell_card(spell_id: String, spell_data: Dictionary) -> PanelContai
 			if mana_now < mana_cost:
 				AudioManager.play("ui_denied")
 				return
+
+			# A spell that must be aimed spends nothing yet: the sheet closes,
+			# the map asks where, and the mana goes when a target is confirmed.
+			var aim: String = str(spell_data.get("map_target", ""))
+			if aim != "":
+				_pending_map_cast = {"spell_id": spell_id, "spell_data": spell_data,
+					"caster": caster}
+				overworld_spell_targeting.emit(aim,
+					int(spell_data.get("map_target_range", -1)),
+					str(spell_data.get("name", spell_id)))
+				hide()
+				return
+
 			derived_now["current_mana"] = max(0, mana_now - mana_cost)
 			AudioManager.play("spell_cast")
 			var detail := _apply_overworld_spell(spell_id, spell_data, caster)
@@ -1470,6 +1490,38 @@ func _create_spell_card(spell_id: String, spell_data: Dictionary) -> PanelContai
 	return card
 
 
+## Finish a cast that was waiting on a target, and spend the mana now.
+##
+## Returns the toast text, or "" if there was nothing pending. Mana is taken
+## here rather than at the button, so cancelling an aim costs nothing.
+func resolve_pending_map_cast(tile: Vector2i) -> String:
+	if _pending_map_cast.is_empty():
+		return ""
+	var spell_id: String = _pending_map_cast.spell_id
+	var spell_data: Dictionary = _pending_map_cast.spell_data
+	var caster: Dictionary = _pending_map_cast.caster
+	_pending_map_cast = {}
+
+	var derived: Dictionary = caster.get("derived", {})
+	var cost: int = int(spell_data.get("mana_cost", 0))
+	if int(derived.get("current_mana", 0)) < cost:
+		return "Not enough mana"
+	derived["current_mana"] = max(0, int(derived.get("current_mana", 0)) - cost)
+	AudioManager.play("spell_cast")
+	return _apply_overworld_spell(spell_id, spell_data, caster, tile)
+
+
+## Abandon a cast that was waiting on a target. Nothing was spent.
+func cancel_pending_map_cast() -> void:
+	_pending_map_cast = {}
+
+
+func pending_map_cast_name() -> String:
+	if _pending_map_cast.is_empty():
+		return ""
+	return str(_pending_map_cast.spell_data.get("name", ""))
+
+
 ## Bring back up to `limit` of the party's dead, at the spell's own hp fraction.
 ##
 ## Resurrection out of combat reaches CharacterSystem.fallen rather than a unit
@@ -1497,7 +1549,8 @@ func _raise_the_fallen(spell_data: Dictionary, limit: int) -> String:
 	return "%s returns to the party" % ", ".join(names)
 
 
-func _apply_overworld_spell(spell_id: String, spell_data: Dictionary, caster: Dictionary) -> String:
+func _apply_overworld_spell(spell_id: String, spell_data: Dictionary,
+		caster: Dictionary, aim: Vector2i = Vector2i(-1, -1)) -> String:
 	## Apply a spell's effects outside of combat and return a result string for the toast.
 	var party := CharacterSystem.get_party()
 	var target_info: Dictionary = spell_data.get("target", {})
@@ -1514,8 +1567,7 @@ func _apply_overworld_spell(spell_id: String, spell_data: Dictionary, caster: Di
 
 	# A spell aimed at something out on the map, rather than at the party.
 	if spell_data.has("mob_effect") and MapManager:
-		var hit: Dictionary = MapManager.affect_nearest_mob(
-			MapManager.get_party_position(), spell_data["mob_effect"])
+		var hit: Dictionary = MapManager.affect_mob_at(aim, spell_data["mob_effect"])
 		if not hit.get("ok", false):
 			return "The spell finds nothing to work on — %s" % hit.get("reason", "")
 		match spell_data["mob_effect"].get("what", ""):

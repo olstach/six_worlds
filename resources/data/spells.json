@@ -10756,32 +10756,9 @@
         "radius": 6,
         "steps": 5
       },
-      "description": "The nearest creature lies down and sleeps for five steps. It does not follow, and it does not wake when you walk past it."
-    },
-    "open_heart": {
-      "name": "Open Heart",
-      "subschool": "Enchantment",
-      "schools": [
-        "White",
-        "Enchantment"
-      ],
-      "level": 5,
-      "theme": "peace",
-      "tags": [
-        "white",
-        "cc",
-        "utility",
-        "out_of_combat"
-      ],
-      "mana_cost": 75,
-      "target": {
-        "type": "self"
-      },
-      "mob_effect": {
-        "what": "befriend",
-        "radius": 6
-      },
-      "description": "The nearest creature stops meaning you harm — permanently. It will not give chase and will not start a fight, and may have something to say."
+      "description": "The nearest creature lies down and sleeps for five steps. It does not follow, and it does not wake when you walk past it.",
+      "map_target": "mob",
+      "map_target_range": 6
     },
     "misdirection": {
       "name": "Misdirection",
@@ -10808,7 +10785,9 @@
         "distance": 6,
         "variance": 2
       },
-      "description": "Fold the ground under the nearest creature and it is somewhere else — five to eight tiles off, and you do not choose where."
+      "description": "Fold the ground under the nearest creature and it is somewhere else — five to eight tiles off, and you do not choose where.",
+      "map_target": "mob",
+      "map_target_range": 8
     },
     "begone": {
       "name": "Begone!",
@@ -10833,7 +10812,9 @@
         "what": "banish",
         "radius": 10
       },
-      "description": "The nearest creature is put somewhere else entirely — anywhere on this map. Gone from your road, and still in the world, possibly now across the one you meant to take."
+      "description": "The nearest creature is put somewhere else entirely — anywhere on this map. Gone from your road, and still in the world, possibly now across the one you meant to take.",
+      "map_target": "mob",
+      "map_target_range": 10
     }
   }
 }
