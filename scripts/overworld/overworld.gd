@@ -191,6 +191,7 @@ func _ready() -> void:
 	char_sheet.visibility_changed.connect(_on_char_sheet_visibility_changed)
 	char_sheet.overworld_spell_cast.connect(_on_overworld_spell_cast)
 	char_sheet.overworld_spell_targeting.connect(_on_overworld_spell_targeting)
+	char_sheet.overworld_spell_world_choice.connect(_open_world_picker)
 	map_renderer.target_picked.connect(_on_spell_target_picked)
 	map_renderer.targeting_cancelled.connect(_on_spell_targeting_cancelled)
 
@@ -289,7 +290,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				_update_time_label()
 				get_viewport().set_input_as_handled()
 			KEY_ESCAPE:
-				if map_renderer.is_targeting():
+				if _world_picker_layer != null:
+					_on_world_pick_cancelled()
+					get_viewport().set_input_as_handled()
+				elif map_renderer.is_targeting():
 					map_renderer.cancel_targeting()
 					get_viewport().set_input_as_handled()
 				elif _rest_open:
@@ -1486,6 +1490,125 @@ func _tick_planar_excursion() -> void:
 	MapManager.teleport_party(Vector2i(int(home.get("x", 0)), int(home.get("y", 0))))
 	_update_hud()
 	_show_toast("The world takes the party back")
+
+
+# ============================================
+# WORLD PICKER
+# ============================================
+
+var _world_picker_layer: CanvasLayer = null
+
+
+## Choose a plane. Built for the Planar Gate, which is the whole of high
+## bodhisattva magic in one button — so it shows every realm, including the
+## ones the party has never reached, because reaching them is the point.
+##
+## Realms already unlocked read bright; the rest are dimmed but selectable,
+## which is the difference between "somewhere you know" and "somewhere you are
+## about to."
+func _open_world_picker(label: String) -> void:
+	if _world_picker_layer != null:
+		return
+	MapManager.pause_movement()
+
+	_world_picker_layer = CanvasLayer.new()
+	_world_picker_layer.layer = 32
+	add_child(_world_picker_layer)
+
+	var dimmer := ColorRect.new()
+	dimmer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dimmer.color = Color(0, 0, 0, 0.7)
+	_world_picker_layer.add_child(dimmer)
+
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_world_picker_layer.add_child(center)
+
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(360, 0)
+	panel.add_theme_stylebox_override("panel",
+		UIStyle.make_stylebox(Color(0.35, 0.3, 0.6), 2, 10, 24, 0.9))
+	center.add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	panel.add_child(vbox)
+
+	var title := Label.new()
+	title.text = label
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color(0.75, 0.7, 0.95))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	var blurb := Label.new()
+	blurb.text = "Where does the gate open?"
+	blurb.add_theme_font_size_override("font_size", 12)
+	blurb.add_theme_color_override("font_color", Color(0.62, 0.58, 0.72))
+	blurb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(blurb)
+
+	var sep := HSeparator.new()
+	sep.add_theme_color_override("separator", Color(0.35, 0.3, 0.6, 0.5))
+	vbox.add_child(sep)
+
+	for world_id in GameState.WORLDS:
+		var info: Dictionary = GameState.WORLDS[world_id]
+		var known: bool = world_id in GameState.unlocked_worlds
+		var here: bool = world_id == GameState.current_world
+
+		var btn := Button.new()
+		btn.text = info.get("name", world_id)
+		if here:
+			btn.text += "   (you are here)"
+		elif not known:
+			btn.text += "   (never reached)"
+		btn.disabled = here
+		btn.custom_minimum_size = Vector2(0, 34)
+		btn.add_theme_font_size_override("font_size", 14)
+		btn.tooltip_text = info.get("description", "")
+		# Dimmed for somewhere the party has never been, bright for somewhere
+		# they know — but both are open to a gate.
+		var tint := Color(0.85, 0.82, 0.95) if known else Color(0.48, 0.45, 0.60)
+		if here:
+			tint = Color(0.40, 0.38, 0.45)
+		btn.add_theme_color_override("font_color", tint)
+		btn.add_theme_stylebox_override("normal", UIStyle.make_stylebox(
+			Color(0.32, 0.27, 0.5) if known else Color(0.20, 0.18, 0.30), 1, 5, 10))
+		if not here:
+			btn.pressed.connect(func(): _on_world_picked(world_id))
+		vbox.add_child(btn)
+
+	var cancel := Button.new()
+	cancel.text = "Close the ways"
+	cancel.custom_minimum_size = Vector2(0, 30)
+	cancel.add_theme_font_size_override("font_size", 12)
+	cancel.pressed.connect(_on_world_pick_cancelled)
+	vbox.add_child(cancel)
+
+
+func _close_world_picker() -> void:
+	if _world_picker_layer == null:
+		return
+	_world_picker_layer.queue_free()
+	_world_picker_layer = null
+	MapManager.resume_movement()
+
+
+func _on_world_picked(world_id: String) -> void:
+	_close_world_picker()
+	var detail: String = char_sheet.resolve_pending_world_cast(world_id)
+	if detail != "":
+		_show_toast(detail)
+	_update_hud()
+
+
+func _on_world_pick_cancelled() -> void:
+	var spell_name: String = char_sheet.pending_map_cast_name()
+	_close_world_picker()
+	char_sheet.cancel_pending_map_cast()
+	if spell_name != "":
+		_show_toast("%s — cancelled" % spell_name)
 
 
 ## A spell needs aiming: hand the map over and wait for a click.
