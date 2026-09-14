@@ -892,6 +892,87 @@ func reveal(origin: Vector2i, spec: Dictionary) -> Dictionary:
 	return found
 
 
+## What can be done to a creature on the map without fighting it.
+const MOB_EFFECTS: Array[String] = [
+	"sleep",     # stops moving, stops pursuing, and lets the party step past
+	"befriend",  # attitude becomes FRIENDLY and it no longer starts a fight
+	"displace",  # shunted a short way in a random direction
+	"banish",    # sent to a random tile anywhere on the map
+]
+
+
+## Apply an effect to the nearest creature within reach.
+##
+##   {"what": "sleep", "radius": 6, "steps": 5}
+##   {"what": "displace", "radius": 8, "distance": 6, "variance": 2}
+##
+## The NEAREST one, because there is no way to point at a creature on the
+## overworld — no selection UI exists and every map spell so far targets the
+## party. Acting on whatever is closest is both castable today and the right
+## reading: you deal with the thing bearing down on you.
+##
+## Returns {ok, name, reason}.
+func affect_nearest_mob(origin: Vector2i, spec: Dictionary) -> Dictionary:
+	var what: String = spec.get("what", "")
+	if not what in MOB_EFFECTS:
+		push_warning("MapManager: '%s' is not in MOB_EFFECTS, so nothing happens" % what)
+		return {"ok": false, "name": "", "reason": "unknown effect"}
+
+	var radius: int = int(spec.get("radius", 8))
+	var best: Dictionary = {}
+	var best_dist: int = 1 << 30
+	for mob in mobs:
+		var dist: int = maxi(absi(mob.position.x - origin.x), absi(mob.position.y - origin.y))
+		if dist <= radius and dist < best_dist:
+			best_dist = dist
+			best = mob
+	if best.is_empty():
+		return {"ok": false, "name": "", "reason": "nothing close enough"}
+
+	match what:
+		"sleep":
+			best["asleep_steps"] = int(spec.get("steps", 5))
+			best["is_pursuing"] = false
+		"befriend":
+			best["attitude"] = MobAttitude.FRIENDLY
+			best["is_pursuing"] = false
+		"displace", "banish":
+			var dest: Vector2i = best.position
+			if what == "banish":
+				dest = _random_walkable_tile(best.position)
+			else:
+				var reach: int = int(spec.get("distance", 6)) \
+					+ (randi() % maxi(1, int(spec.get("variance", 2)) + 1))
+				dest = _random_walkable_tile(best.position, reach, reach)
+			if dest == best.position:
+				return {"ok": false, "name": best.get("name", ""),
+					"reason": "nowhere to send it"}
+			best["position"] = dest
+			best["is_pursuing"] = false
+			best["revealed"] = false   # out of sight again, wherever it landed
+
+	return {"ok": true, "name": best.get("name", "something"), "reason": ""}
+
+
+## A walkable, unoccupied tile. With no bounds it may be anywhere on the map;
+## with them, a ring at roughly that distance from `from`.
+func _random_walkable_tile(from: Vector2i, min_dist: int = -1, max_dist: int = -1) -> Vector2i:
+	var candidates: Array[Vector2i] = []
+	for x in range(map_size.x):
+		for y in range(map_size.y):
+			var tile := Vector2i(x, y)
+			if tile == from or not is_passable(tile):
+				continue
+			if min_dist >= 0:
+				var dist: int = maxi(absi(x - from.x), absi(y - from.y))
+				if dist < min_dist or dist > max_dist:
+					continue
+			candidates.append(tile)
+	if candidates.is_empty():
+		return from
+	return candidates[randi() % candidates.size()]
+
+
 ## Rough compass bearing, for telling someone which way to walk.
 func _compass_toward(from: Vector2i, to: Vector2i) -> String:
 	var d: Vector2i = to - from
@@ -1605,6 +1686,11 @@ func _end_pursuit(mob: Dictionary) -> void:
 
 ## Handle what happens when a mob and the player are on the same tile
 func _handle_mob_encounter(mob: Dictionary) -> void:
+	# Step over a sleeping creature without waking it. This is what Peace buys:
+	# not safety, but a few steps of passage.
+	if int(mob.get("asleep_steps", 0)) > 0:
+		return
+
 	mob_met_player.emit(mob)
 
 	match mob.attitude:
@@ -1616,7 +1702,10 @@ func _handle_mob_encounter(mob: Dictionary) -> void:
 				mob_event_triggered.emit(mob)
 				event_triggered.emit(event_id, mob)
 			else:
-				push_warning("Friendly mob has no event_id: " + mob.name)
+				# A creature talked round mid-journey has no conversation
+				# written for it yet. It stands aside rather than blocking the
+				# road — see TODO on interactions with friendly groups.
+				resume_movement()
 
 		MobAttitude.HOSTILE, MobAttitude.AGGRESSIVE:
 			# Trigger combat
@@ -1707,6 +1796,13 @@ func tick_mobs() -> void:
 	for mob in mobs:
 		if mob.is_moving:
 			continue  # Already mid-move, skip this tick
+		# A sleeping creature does not roam, patrol or give chase, and wakes
+		# one step at a time.
+		var asleep: int = int(mob.get("asleep_steps", 0))
+		if asleep > 0:
+			mob["asleep_steps"] = asleep - 1
+			mob["is_pursuing"] = false
+			continue
 		match mob.get("mode", MobMode.STATIONARY):
 			MobMode.PATROL:
 				_process_patrol_mob(mob, 0.0)

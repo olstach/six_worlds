@@ -751,6 +751,28 @@ for _sid, _sp in _spells.items():
         err("data->code", f"spell '{_sid}' has a non-object `on_kill`")
 
 
+# ── Mob effects ─────────────────────────────────────────────────────────────
+_mm_src2 = open(os.path.join(ROOT, "scripts/autoload/map_manager.gd"), encoding="utf-8").read()
+_m = re.search(r"const MOB_EFFECTS[^=]*=\s*\[(.*?)\]", _mm_src2, re.S)
+_mob_effects = set(re.findall(r'"(\w+)"', _m.group(1))) if _m else set()
+if not _mob_effects:
+    err("data->code", "could not read MapManager.MOB_EFFECTS — unchecked")
+
+for _sid, _sp in _spells.items():
+    _me = _sp.get("mob_effect")
+    if _me is None:
+        continue
+    if not isinstance(_me, dict):
+        err("data->code", f"spell '{_sid}' has a non-object `mob_effect`")
+        continue
+    if _me.get("what") not in _mob_effects:
+        err("data->code", f"spell '{_sid}' uses mob effect '{_me.get('what')}', "
+            "which is not in MapManager.MOB_EFFECTS — nothing would happen")
+    if "out_of_combat" not in _sp.get("tags", []):
+        err("data->code", f"spell '{_sid}' declares a mob_effect but is not "
+            "tagged out_of_combat, so it can never reach the map")
+
+
 # ── Divination reveals ──────────────────────────────────────────────────────
 _mm_reveal = open(os.path.join(ROOT, "scripts/autoload/map_manager.gd"), encoding="utf-8").read()
 _m = re.search(r"const REVEAL_GROUPS[^=]*=\s*\{(.*?)\n\}", _mm_reveal, re.S)
