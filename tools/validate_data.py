@@ -751,6 +751,32 @@ for _sid, _sp in _spells.items():
         err("data->code", f"spell '{_sid}' has a non-object `on_kill`")
 
 
+# ── Divination reveals ──────────────────────────────────────────────────────
+_mm_reveal = open(os.path.join(ROOT, "scripts/autoload/map_manager.gd"), encoding="utf-8").read()
+_m = re.search(r"const REVEAL_GROUPS[^=]*=\s*\{(.*?)\n\}", _mm_reveal, re.S)
+_groups = set(re.findall(r'"(\w+)":\s*\[', _m.group(1))) if _m else set()
+_reveal_what = _groups | {"terrain", "mobs", "all"}
+if not _groups:
+    err("data->code", "could not read MapManager.REVEAL_GROUPS — reveals unchecked")
+
+for _sid, _sp in _spells.items():
+    _rv = _sp.get("reveal")
+    if _rv is None:
+        continue
+    if not isinstance(_rv, dict):
+        err("data->code", f"spell '{_sid}' has a non-object `reveal`")
+        continue
+    if _rv.get("what") not in _reveal_what:
+        err("data->code", f"spell '{_sid}' reveals '{_rv.get('what')}', which "
+            "MapManager.reveal() does not recognise — it would show nothing")
+    if not _rv.get("radius") and not _rv.get("nearest"):
+        err("data->code", f"spell '{_sid}' has a reveal with neither a radius "
+            "nor a `nearest` count, so it reaches nowhere")
+    if "out_of_combat" not in _sp.get("tags", []):
+        err("data->code", f"spell '{_sid}' declares a reveal but is not tagged "
+            "out_of_combat, so it can never be cast where the map is")
+
+
 # ── Movement abilities ──────────────────────────────────────────────────────
 #
 # An ability name terrain never asks about grants nothing. TERRAIN_ABILITIES

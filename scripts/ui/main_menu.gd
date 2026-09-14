@@ -1512,6 +1512,23 @@ func _apply_overworld_spell(spell_id: String, spell_data: Dictionary, caster: Di
 		var scope: int = 99 if spell_data["resurrection"].get("scope", "single") == "all_allies" else 1
 		return _raise_the_fallen(spell_data, scope)
 
+	# A divination shows the party something rather than doing anything to
+	# them, so it resolves before targeting and never touches a party member.
+	if spell_data.has("reveal") and MapManager:
+		var found: Dictionary = MapManager.reveal(
+			MapManager.get_party_position(), spell_data["reveal"])
+		var seen: Array[String] = []
+		if found.get("nearest_name", "") != "":
+			seen.append("%s lies to the %s"
+				% [found.nearest_name, found.nearest_dir])
+		if int(found.get("mobs", 0)) > 0:
+			seen.append("%d creature(s) sensed" % found.mobs)
+		if int(found.get("objects", 0)) > 0:
+			seen.append("%d place(s) revealed" % found.objects)
+		if int(found.get("tiles", 0)) > 0:
+			seen.append("%d tiles mapped" % found.tiles)
+		return " | ".join(seen) if not seen.is_empty() else "Nothing new to see"
+
 	# Determine who gets hit
 	var targets: Array[Dictionary] = []
 	match target_type:

@@ -814,6 +814,98 @@ func clear_movement_abilities() -> void:
 	movement_abilities.clear()
 
 
+## Icon groups a reveal may ask for. `icon` is what actually distinguishes one
+## map object from another — there is no type field finer than
+## EVENT/PICKUP/PORTAL — so the groups are named here rather than guessed at
+## each call site.
+const REVEAL_GROUPS: Dictionary = {
+	"shelter": ["rest", "shop", "merchant"],        # somewhere to stop and be helped
+	"places":  ["rest", "shop", "merchant", "shrine", "dungeon", "event",
+				"treasure", "npc", "portal"],        # everything worth walking to
+}
+
+
+## Show the party something they have not walked to.
+##
+##   {"what": "mobs",    "radius": 16}
+##   {"what": "places",  "radius": 26}
+##   {"what": "all",     "radius": -1}    the whole map
+##   {"what": "shelter", "nearest": 1}    the closest one, however far
+##
+## `what` is either "terrain", "mobs", "all", or one of REVEAL_GROUPS. Returns
+## what was found, so a spell can say so rather than reporting "No effect".
+func reveal(origin: Vector2i, spec: Dictionary) -> Dictionary:
+	var what: String = spec.get("what", "terrain")
+	var radius: int = int(spec.get("radius", 0))
+	var nearest: int = int(spec.get("nearest", 0))
+	var found := {"mobs": 0, "objects": 0, "tiles": 0, "nearest_name": "", "nearest_dir": ""}
+
+	var in_reach := func(pos: Vector2i) -> bool:
+		if radius < 0:
+			return true
+		return maxi(absi(pos.x - origin.x), absi(pos.y - origin.y)) <= radius
+
+	if what in ["terrain", "all"]:
+		var span: int = radius if radius >= 0 else maxi(map_size.x, map_size.y)
+		for dx in range(-span, span + 1):
+			for dy in range(-span, span + 1):
+				var tile := origin + Vector2i(dx, dy)
+				if is_valid_position(tile) and not visited_tiles.get(tile, false):
+					visited_tiles[tile] = true
+					found.tiles += 1
+
+	if what in ["mobs", "all"]:
+		for mob in mobs:
+			if in_reach.call(mob.position) and not mob.get("revealed", false):
+				mob["revealed"] = true
+				found.mobs += 1
+
+	var icons: Array = REVEAL_GROUPS.get(what, [])
+	if what == "all":
+		icons = REVEAL_GROUPS["places"]
+	if not icons.is_empty():
+		if nearest > 0:
+			# The closest matching object at any distance, which is what you
+			# want when you are lost rather than surveying.
+			var best: Dictionary = {}
+			var best_dist: int = 1 << 30
+			for pos in objects:
+				var obj: Dictionary = objects[pos]
+				if not obj.get("icon", "") in icons:
+					continue
+				var dist: int = maxi(absi(pos.x - origin.x), absi(pos.y - origin.y))
+				if dist < best_dist:
+					best_dist = dist
+					best = obj
+			if not best.is_empty():
+				best["visible"] = true
+				found.objects += 1
+				found.nearest_name = best.get("name", best.get("icon", "somewhere"))
+				found.nearest_dir = _compass_toward(origin, best.get("position", origin))
+		else:
+			for pos in objects:
+				var obj: Dictionary = objects[pos]
+				if obj.get("icon", "") in icons and in_reach.call(pos) \
+						and not obj.get("visible", false):
+					obj["visible"] = true
+					found.objects += 1
+	return found
+
+
+## Rough compass bearing, for telling someone which way to walk.
+func _compass_toward(from: Vector2i, to: Vector2i) -> String:
+	var d: Vector2i = to - from
+	if d == Vector2i.ZERO:
+		return "here"
+	var vertical := "north" if d.y < 0 else "south"
+	var horizontal := "west" if d.x < 0 else "east"
+	if absi(d.x) < absi(d.y) / 2:
+		return vertical
+	if absi(d.y) < absi(d.x) / 2:
+		return horizontal
+	return vertical + "-" + horizontal
+
+
 ## Get the region name at a tile position (e.g. "cold_hell", "fire_hell")
 ## Returns "" if no region is defined for that position
 func get_region_at(pos: Vector2i) -> String:
@@ -1581,7 +1673,10 @@ func get_all_mobs() -> Array[Dictionary]:
 func get_visible_mobs() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for mob in mobs:
-		if is_tile_visited(mob.position):
+		# Seen because you have been there, or because something showed you.
+		# Divination gets its own flag rather than lighting the tile, or
+		# sensing a single enemy would quietly uncover the map around it.
+		if is_tile_visited(mob.position) or mob.get("revealed", false):
 			result.append(mob)
 	return result
 
