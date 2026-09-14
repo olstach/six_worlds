@@ -107,11 +107,22 @@ static func matches(entry: Dictionary, selector: Dictionary, defs: Dictionary) -
 ## `unit.status_effects`, so a caller can read a stolen buff's remaining
 ## duration before removing it.
 static func select(unit: Node, selector: Dictionary, defs: Dictionary) -> Array:
-	var picked: Array = []
 	if unit == null or not "status_effects" in unit:
-		return picked
-	for i in range(unit.status_effects.size() - 1, -1, -1):
-		var entry: Dictionary = unit.status_effects[i]
+		return []
+	return select_from(unit.status_effects, selector, defs)
+
+
+## The same selection against a bare list of status entries.
+##
+## A combat unit keeps its statuses on `status_effects`; a character walking the
+## map keeps them in `overworld_statuses` on a plain Dictionary, with the same
+## `{"status": name, "duration": n}` shape. Selecting is identical either way,
+## and it was writing the map's second copy of "which of these do I remove" that
+## first showed the two halves had drifted apart.
+static func select_from(entries: Array, selector: Dictionary, defs: Dictionary) -> Array:
+	var picked: Array = []
+	for i in range(entries.size() - 1, -1, -1):
+		var entry: Dictionary = entries[i]
 		if matches(entry, selector, defs):
 			picked.append(entry)
 	var cap: int = int(selector.get("count", 0))
@@ -143,3 +154,52 @@ static func selector_from_removed_list(removed: Array) -> Dictionary:
 	if tag != "":
 		selector["tag"] = tag
 	return selector
+
+
+# ── The overworld tick ───────────────────────────────────────────────────────
+
+## Advance every party member's overworld statuses by one step.
+##
+## Lives here rather than in the overworld scene because it mutates party data
+## and has a rule worth testing: ONLY A DAMAGE-OVER-TIME DAMAGES. The scene's
+## version assumed every entry in the list was a poison, because for a long
+## time every entry was — so the first buff to land there would have cost the
+## party health once a step and announced itself as "Blessed -3 HP".
+##
+## Returns one line per thing that happened, for the caller to show however it
+## shows things.
+static func tick_overworld(party: Array, defs: Dictionary) -> Array[String]:
+	var log_lines: Array[String] = []
+	for character in party:
+		var statuses: Array = character.get("overworld_statuses", [])
+		if statuses.is_empty():
+			continue
+		var expired: Array[int] = []
+		for i in range(statuses.size()):
+			var entry: Dictionary = statuses[i]
+			var def: Dictionary = defs.get(entry.get("status", ""), {})
+			if is_damage_over_time(entry, def):
+				var dmg: int = int(entry.get("damage_per_step",
+					def.get("damage_per_turn", 3)))
+				var derived: Dictionary = character.get("derived", {})
+				var hp: int = int(derived.get("current_hp", derived.get("max_hp", 10)))
+				derived["current_hp"] = maxi(0, hp - dmg)
+				log_lines.append("%s: %s -%d HP"
+					% [character.get("name", "?"), entry.get("status", "?"), dmg])
+			entry["duration"] = int(entry.get("duration", 1)) - 1
+			if entry["duration"] <= 0:
+				expired.append(i)
+		expired.reverse()
+		for idx in expired:
+			statuses.remove_at(idx)
+	return log_lines
+
+
+## Does this status hurt you a little each step?
+##
+## A buff never does, whatever else it carries, and a debuff only does if it
+## actually names a per-tick figure somewhere.
+static func is_damage_over_time(entry: Dictionary, def: Dictionary) -> bool:
+	if def.get("type", "debuff") != "debuff":
+		return false
+	return entry.has("damage_per_step") or def.has("damage_per_turn")

@@ -313,6 +313,12 @@ func _load_status_definitions() -> void:
 
 
 ## Get a status definition by name (for external use by CombatUnit, etc.)
+## The whole status table. StatusOps needs it to answer "is this a debuff, and
+## is it dispellable", and the overworld path needs the same answers as combat.
+func get_all_status_definitions() -> Dictionary:
+	return _status_effects
+
+
 func get_status_definition(status_name: String) -> Dictionary:
 	return _status_effects.get(status_name, {})
 

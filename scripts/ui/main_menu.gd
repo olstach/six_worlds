@@ -1470,12 +1470,47 @@ func _create_spell_card(spell_id: String, spell_data: Dictionary) -> PanelContai
 	return card
 
 
+## Bring back up to `limit` of the party's dead, at the spell's own hp fraction.
+##
+## Resurrection out of combat reaches CharacterSystem.fallen rather than a unit
+## on a grid. Before that record existed this path could only answer "No fallen
+## allies in the party", which it did whether or not there were any.
+func _raise_the_fallen(spell_data: Dictionary, limit: int) -> String:
+	var fallen: Array = CharacterSystem.get_fallen()
+	if fallen.is_empty():
+		return "No fallen allies to call back"
+	var hp_pct: int = int(spell_data.get("resurrection", {}).get("hp_pct", 100))
+	var names: Array[String] = []
+	# Most recent first: the person you just lost is the one you meant.
+	for _i in range(mini(limit, fallen.size())):
+		var check: Dictionary = Resurrection.can_raise(
+			fallen.size() - 1, fallen.size(),
+			CharacterSystem.get_party().size(), CharacterSystem.get_max_party_size())
+		if not check.ok:
+			break
+		var raised: Dictionary = CharacterSystem.restore_fallen(fallen.size() - 1, hp_pct)
+		if raised.is_empty():
+			break
+		names.append(str(raised.get("name", "someone")))
+	if names.is_empty():
+		return "There is no room in the party for the dead to return"
+	return "%s returns to the party" % ", ".join(names)
+
+
 func _apply_overworld_spell(spell_id: String, spell_data: Dictionary, caster: Dictionary) -> String:
 	## Apply a spell's effects outside of combat and return a result string for the toast.
 	var party := CharacterSystem.get_party()
 	var target_info: Dictionary = spell_data.get("target", {})
 	var target_type: String    = target_info.get("type",     "single")
 	var target_eligible: String = target_info.get("eligible", "ally")
+
+	# A resurrection reaches the record of the dead, not anyone standing here,
+	# whichever way its targeting is spelled. raise_dead and resurrect say
+	# `type: single, eligible: corpse` and the dispatch below matches on TYPE,
+	# so they used to resolve to "the caster" and heal nobody.
+	if spell_data.has("resurrection"):
+		var scope: int = 99 if spell_data["resurrection"].get("scope", "single") == "all_allies" else 1
+		return _raise_the_fallen(spell_data, scope)
 
 	# Determine who gets hit
 	var targets: Array[Dictionary] = []
@@ -1484,12 +1519,12 @@ func _apply_overworld_spell(spell_id: String, spell_data: Dictionary, caster: Di
 			targets = [caster]
 		"aoe", "global":
 			if target_eligible == "dead_ally":
-				return "No fallen allies in the party"
+				return _raise_the_fallen(spell_data, 99)
 			targets = party
 		"party":
 			targets = party
 		"dead_ally":
-			return "No fallen allies in the party"
+			return _raise_the_fallen(spell_data, 1)
 		"corpse":
 			return "No corpse here to perform rites over"
 		"ground":
@@ -1539,35 +1574,65 @@ func _apply_overworld_spell(spell_id: String, spell_data: Dictionary, caster: Di
 				if actual > 0:
 					results.append("%s +%d HP" % [target_name, actual])
 
-		# Stamina restore (e.g. Gentle Breeze)
-		if special.get("restores_stamina", false):
-			var max_st: int = derived.get("max_stamina", 50)
-			var cur_st: int = derived.get("current_stamina", max_st)
-			if cur_st < max_st:
-				derived["current_stamina"] = max_st
-				results.append("%s stamina restored" % target_name)
+		# Stamina restore. Three spells ask for it three ways — a flag, a
+		# percentage and "full" — and only the flag was read.
+		var stamina_restored := 0
+		var max_st: int = derived.get("max_stamina", 50)
+		var cur_st: int = derived.get("current_stamina", max_st)
+		if special.get("restores_stamina", false) or special.get("restore_stamina_full", false):
+			stamina_restored = max_st - cur_st
+		elif special.has("restore_stamina_percent"):
+			stamina_restored = mini(max_st - cur_st,
+				int(max_st * float(special["restore_stamina_percent"]) / 100.0))
+		if stamina_restored > 0:
+			derived["current_stamina"] = cur_st + stamina_restored
+			results.append("%s +%d stamina" % [target_name, stamina_restored])
 
-		# Overworld status removal
-		if not statuses_removed.is_empty():
-			var ow_statuses: Array = target.get("overworld_statuses", [])
-			if not ow_statuses.is_empty():
-				var remove_all := "all_negative" in statuses_removed \
-						or "negative" in statuses_removed
-				var to_remove: Array[int] = []
-				for i in range(ow_statuses.size()):
-					var s_name: String = ow_statuses[i].get("status", "")
-					if remove_all:
-						to_remove.append(i)
-					else:
-						for tag in statuses_removed:
-							if s_name.to_lower() == (tag as String).to_lower():
-								to_remove.append(i)
-								break
-				to_remove.reverse()
-				for idx in to_remove:
-					ow_statuses.remove_at(idx)
-				if not to_remove.is_empty():
-					results.append("%s cleansed" % target_name)
+		# Statuses the spell GRANTS. Seven spells on the overworld list carry
+		# `statuses_caused` and not one of them landed: the map could remove a
+		# status it had no way to acquire from a spell.
+		var ow_statuses: Array = target.get("overworld_statuses", [])
+		if not target.has("overworld_statuses"):
+			target["overworld_statuses"] = ow_statuses
+		for granted in spell_data.get("statuses_caused", []):
+			var already := false
+			for existing in ow_statuses:
+				if existing.get("status", "") == granted:
+					already = true
+					break
+			if already:
+				continue
+			var gdef: Dictionary = CombatManager.get_status_definition(granted)
+			ow_statuses.append({
+				"status": granted,
+				"duration": int(gdef.get("default_duration", 3)),
+			})
+			results.append("%s gains %s" % [target_name, granted.replace("_", " ")])
+
+		# Status removal, through the same selector combat uses. This is where
+		# the two halves had drifted: the map read the tags correctly and combat
+		# counted the list's length, so one spell behaved two ways.
+		if not statuses_removed.is_empty() and not ow_statuses.is_empty():
+			var selector: Dictionary = StatusOps.selector_from_removed_list(statuses_removed)
+			var defs: Dictionary = CombatManager.get_all_status_definitions()
+			var doomed: Array = StatusOps.select_from(ow_statuses, selector, defs)
+			for entry in doomed:
+				ow_statuses.erase(entry)
+			if not doomed.is_empty():
+				results.append("%s cleansed" % target_name)
+
+		# Status operations — dispel and its relatives, which do not fit
+		# `statuses_removed` because they may take buffs as well.
+		for op_spec in spell_data.get("status_ops", []):
+			if op_spec.get("op", "") != "remove":
+				continue  # steal, transfer and convert need two combatants
+			var op_sel: Dictionary = op_spec.get("select", {})
+			var op_defs: Dictionary = CombatManager.get_all_status_definitions()
+			var taken: Array = StatusOps.select_from(ow_statuses, op_sel, op_defs)
+			for entry in taken:
+				ow_statuses.erase(entry)
+			if not taken.is_empty():
+				results.append("%s: %d effect(s) dispelled" % [target_name, taken.size()])
 
 	if results.is_empty():
 		return "No effect"
