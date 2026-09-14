@@ -211,6 +211,24 @@ and events too.
       events with `"rewards": {"resurrect": {"target": "last"}}`.
       `prevents_resurrection` is the only hard refusal.
 
+- [ ] **Save gates** (`on_failed_save` / `on_passed_save` on a spell) — one
+      roll, two branches, carrying statuses, damage, percent-of-max damage or
+      outright death. Three separate fields used to say this. Any effect whose
+      description contains "or", "unless" or "on a failed save" wants the gate
+      rather than its own branch, and perks and items can use the same shape.
+
+- [ ] **Resource operations** (`resource_ops.gd`) — drain, restore or transfer
+      health, mana and stamina, with amounts that compose (flat, percent of
+      max, percent of current, per spellpower). A vampiric weapon, a
+      restorative meal, a karmic bond that shares healing and an exhausting
+      event are all this, and none of them is a spell.
+
+- [ ] **Kill rewards** (`on_kill` on a spell) — what a death pays out beyond
+      the usual end-of-combat rewards, priced off the victim's `xp_earned` so
+      it cannot out-earn the fight. Gold so far; loot, XP and karma are the
+      obvious next payouts, and traps and hazards should be able to grant them
+      too.
+
 - [ ] **Party bonuses** (`party_bonuses.gd`) — `party_`-prefixed payouts,
       best member rather than sum.
 
@@ -222,7 +240,39 @@ and events too.
       taking the most recent loss — the chooser needs UI and currently defaults
       to "last".
 
-## 4. Data with no consumer
+## 4. Terrain and zones — wants its own audit
+
+Deferred deliberately (2026-09-13) until the spell pass finished. It is a
+system question, not a handful of spell fixes, and the spell audit kept running
+into its edges.
+
+**What points at it.** Five spells are inert for want of it — `false_terrain`,
+`grave_soil`, `rain_of_mud`, `vajra_gate` and `shroud_of_darkness` — and three
+more are partly so. `clear_air` exists to remove "cloud effects" that are not
+statuses and not terrain features either. `tornado` keeps `persistent_effect`
+and `moves_randomly`, a hazard that relocates itself each round.
+`vajra_mandala` is a ground-anchored zone that protects allies inside it and
+hurts enemies entering — an aura bound to a place rather than a unit.
+
+**The questions the audit should answer.**
+
+- Is a *zone* a unit, a tile property, or a third thing? An aura is attached to
+  a body and moves with it; a mandala sits on the ground and does not. The aura
+  system could carry zones if an invisible anchor unit is acceptable, and that
+  may be the cheapest honest answer.
+- Do zones tick, move, expire, stack, and what happens where two overlap?
+- What is a "cloud"? Several spells create them and one removes them, and the
+  category exists in no file.
+- How does terrain relate to the existing `terrain` status category and to the
+  overworld terrain the battlefield is generated from?
+- Entering and leaving: a zone that damages "enemies entering" needs a movement
+  hook, which `unit_moved` already provides.
+
+**Existing pieces to build on:** `AuraSystem` (proximity fields, already has
+enter/leave semantics by recomputation), `unit_moved`, the `terrain` status
+category, `combat_grid` tile state, and `AoEResolver` for shapes.
+
+## 5. Data with no consumer
 
 - [ ] **27 of the 40 `base_bonuses` stat keys are read by nothing.** Full table
   with owning skill, L1/L5/L10 values and the system each would hook into is in
@@ -340,7 +390,7 @@ and events too.
 - [ ] **`skeleton_king_duel`** stops at 10% HP — verify the special win
   condition still fires after the combat refactors.
 
-## 5. Content that wants writing
+## 6. Content that wants writing
 
 - [ ] **A prose pass on 81 events and 24 companion bios.** The animal realm's 47
   zone events, hungry ghost's 34 gap-fill events, the three HG boss/pass-guardian
@@ -370,12 +420,12 @@ and events too.
 - [ ] **Realm-specific rest events** — "something stirs in the night" flavour
   when resting in hell / hungry ghost.
 
-## 6. Whole realms
+## 7. Whole realms
 
 Human, asura and god need: map config, archetypes, encounters, event file,
 companions, backgrounds, shops. Human-realm zone design is sketched in Part II.
 
-## 7. Balance passes waiting on play
+## 8. Balance passes waiting on play
 
 - [ ] **Saving throws, after the 2026-09-12 rework.** Every CC effect in combat
       changed probability. A Constitution-12 target used to resist *everything*
@@ -424,7 +474,7 @@ All first-pass numbers. Nothing here is a bug; they need a playthrough.
 - Trade L10 reads 60% buy discount / 70% sell markup — probably intended as a
   soft cap, not a literal multiplier. Decide before wiring (Part III)
 
-## 8. Perks deferred on missing systems
+## 9. Perks deferred on missing systems
 
 Not gaps in the perk trees — these are written and waiting on machinery.
 
@@ -497,7 +547,31 @@ combat panel — that change did **not** implement them. `scout_ahead`,
 miss: `camp_system.gd:156` already has a forage camp action open to everyone,
 and the perk that is supposed to improve it is never consulted.
 
-## 9. Things to ponder
+## 10. Things to ponder
+
+### Resurrection in events — what should it cost?
+
+The mechanism is built: `CharacterSystem.fallen` records everyone the run has
+lost, and an event grants a return with
+`"rewards": {"resurrect": {"target": "last"}}`. What is not decided is what it
+should mean.
+
+- **Price.** Gold is the dull answer. Karma is the interesting one — pulling
+  someone back out of the bardo is an intervention in exactly the process this
+  game is about, and it should probably cost something in the realm the run is
+  heading toward. An XP price on the whole party is another option: everyone
+  gives up some of their progress to bring one person back.
+- **Who chooses.** Right now `"last"` is the only target that resolves, so the
+  game picks. Letting the player choose needs UI and makes the decision real:
+  a party that has lost three people has to say which one matters.
+- **What comes back.** The same person, or someone changed? A `death_touched`
+  trait already exists for characters who should have died and did not, and it
+  is currently granted only by the survive-a-fatal-blow paths.
+- **Whether it should be common.** Four spells and an event hook is already a
+  lot of resurrection for a game whose subject is impermanence. It may be that
+  raising the dead should be rare, expensive and slightly wrong, rather than a
+  service the party buys.
+
 
 - [ ] **Party size may still be undercosted, and Leadership may still want
       nerfing.** The cap is 3 free, 6 at Leadership 9. The reason it is that low:
@@ -655,7 +729,7 @@ but may not be what the game wants.
       which is why it keeps looking like two half-features:
 
       - `trap_maker` (Smithing) is a combat perk deferred on a `place_trap`
-        resolver — see §8. "Place a trap on an adjacent tile. The first enemy to
+        resolver — see §9. "Place a trap on an adjacent tile. The first enemy to
         enter takes damage equal to 30% of your Focus and is immobilized."
       - `trap_detection_pct` (Thievery) is a dead skill-table key, currently
         with no system at all. It was read as overworld detection, which is
@@ -675,7 +749,7 @@ but may not be what the game wants.
       Not needed now, and mechanically close to the planned **mounts and pets**
       system, so the two should be designed together when that comes up.
 
-## 10. Deferred by decision
+## 11. Deferred by decision
 
 Recorded so they aren't rediscovered as bugs.
 
@@ -692,7 +766,7 @@ Medicine and less good at swinging a sword, which is a more coherent thing for
 the game to be about.
 
 What survives is the mechanic, not the framing: `party_`-prefixed skill payouts,
-where one member's skill pays the whole party. That is designed (§4 above) and
+where one member's skill pays the whole party. That is designed (§5 above) and
 unbuilt. The support-character-as-equipment idea is parked in "Things to ponder"
 for whenever mounts and pets are designed.
 
@@ -944,7 +1018,7 @@ Spec: `docs/superpowers/specs/2026-08-31-enemy-xp-generation-design.md`
 
 ---
 
-## 11. The passive perk backlog (2026-09-10)
+## 12. The passive perk backlog (2026-09-10)
 
 The engine is built and proven; the data is barely started. Of 470 passive
 perks: **168** are implemented by hand in `scripts/` (checked by id with
@@ -968,7 +1042,7 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
       EventManager have no consumer for them. Authoring an effect before its
       reader exists is the exact failure this whole pass spent its time
       undoing — build the consumers first. This is what the seven overworld
-      perks in §8 are waiting on too.
+      perks in §9 are waiting on too.
 - [ ] **Unbuilt effect types:** `aura`, `cost_reduction`, `damage_modifier`,
       `resource_regen`, `spell_modifier`, `summon_modifier`, `special`.
       `summon_modifier` has the most data waiting on it — several black, fire
@@ -982,7 +1056,7 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
       `first_attack_combat`, `first_attack_turn`, `from_behind`,
       `target_bleeding`, `target_debuffed`, `on_terrain_type`.
 
-## 12. Systems the perk text assumes and the game does not have
+## 13. Systems the perk text assumes and the game does not have
 
 **All three are built** (2026-09-12): forced movement, AoE damage falloff, and
 one saving-throw mechanic. See Part IV for what changed.
@@ -1394,7 +1468,7 @@ file. Since `combat_arena.gd` greys out any non-mantra skill with empty
 never once run. 75 are now wired; 7 overworld ones are flagged `non_combat` and
 filtered out of the combat panel; `host_of_the_winds` is reclassified passive
 (it describes summons that are active, and only reached the panel because the
-panel matches on the "Active" prefix); 26 remain, listed in Part I §8.
+panel matches on the "Active" prefix); 26 remain, listed in Part I §9.
 
 **Active skills now use the shared AoE resolver.** `aoe_resolver.gd` already had
 ten shapes and `cast_spell` routed through it, but the four active-skill AoE
@@ -1418,7 +1492,7 @@ conversions (in that order, since a conversion reads a finished stat);
 `CombatUnit._get_conditional_perk_bonus()` evaluates gated effects where the
 stat is read; `CombatManager._fire_perk_triggers()` dispatches `on_hit`,
 `on_crit`, `on_kill` and `dodge_success`. Only 5 perks are wired to it so far —
-see Part I §11.
+see Part I §12.
 
 **Six things were being computed and never read.** Same failure each time: a
 value written under one name and read under another, or not read at all, with

@@ -15,7 +15,7 @@ var failures: int = 0
 var grid: CombatGrid
 
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 34
+const EXPECTED_CHECKS: int = 41
 
 
 func _ready() -> void:
@@ -67,6 +67,14 @@ func _ready() -> void:
 	_check_a_dead_ally_can_be_targeted()
 	_check_the_fallen_are_recorded_and_can_be_raised()
 	_check_raise_dead_cast_end_to_end()
+
+	_check_failed_save_kills_and_passed_save_does_not()
+	_check_a_kill_can_pay_gold()
+	_check_gold_scales_with_what_was_killed()
+	_check_save_gate_statuses_still_apply()
+	_check_damage_lands_regardless_of_the_save()
+	_check_mana_transfer_moves_what_was_there()
+	_check_a_transfer_cannot_create_what_is_not_there()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -189,6 +197,13 @@ func _check_target_max_hp_formula() -> void:
 	var big := _make_unit(Vector2i(7, 5), 1)
 	big.max_hp = 400
 	big.current_hp = 400
+	# Liberate is an execute: it kills outright on a FAILED save, and a corpse
+	# tells us nothing about the damage formula — both targets simply lose
+	# every point they had. Let them pass the save so only the base damage
+	# lands. (This check silently stopped testing the formula the moment the
+	# instant-kill gate was wired, and the mutation sweep is what caught it.)
+	small.character_data["attributes"]["focus"] = 99
+	big.character_data["attributes"]["focus"] = 99
 
 	var on_small: int = _damage_dealt("liberate", caster, small)
 	var on_big: int = _damage_dealt("liberate", caster, big)
@@ -360,7 +375,9 @@ func _check_blocked_push_deals_its_damage() -> void:
 
 	if target.grid_position != Vector2i(6, 5):
 		_fail("the blocked target moved to %s" % str(target.grid_position))
-	if blocked <= unblocked:
+	# Surge deals 5 and slams for 10, so a working slam is three times the open
+	# figure. Plain ">" let a broken slam pass on ±15% variance alone.
+	if blocked < unblocked * 2:
 		_fail("surge dealt %d into an obstacle and %d into open ground — "
 			% [blocked, unblocked] + "the slam damage is not being applied")
 	_cleanup([caster, target, wall, open_caster, open_target])
@@ -826,4 +843,175 @@ func _check_raise_dead_cast_end_to_end() -> void:
 	CombatManager.turn_order = []
 	CombatManager.current_unit_index = 0
 	_cleanup([caster, corpse])
+	_done()
+
+
+# ── Save gates, kill rewards, resource operations ────────────────────────────
+
+## Midas Touch is 300 mana — the most expensive spell in the game — and did
+## nothing. A hard save resists it entirely; failing it is death.
+func _check_failed_save_kills_and_passed_save_does_not() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 40)
+	# A feeble victim fails; a formidable one passes. The save is the spell.
+	var feeble := _make_unit(Vector2i(6, 5), 1)
+	feeble.character_data["attributes"]["constitution"] = 1
+	var stout := _make_unit(Vector2i(7, 5), 1)
+	stout.character_data["attributes"]["constitution"] = 80
+
+	var spell: Dictionary = CombatManager.get_spell("midas_touch")
+	var feeble_deaths := 0
+	var stout_deaths := 0
+	for _i in 12:
+		feeble.is_dead = false
+		feeble.current_hp = feeble.max_hp
+		stout.is_dead = false
+		stout.current_hp = stout.max_hp
+		CombatManager._apply_spell_effects(caster, feeble, spell, 0)
+		CombatManager._apply_spell_effects(caster, stout, spell, 0)
+		if feeble.current_hp <= 0:
+			feeble_deaths += 1
+		if stout.current_hp <= 0:
+			stout_deaths += 1
+
+	if feeble_deaths == 0:
+		_fail("midas_touch killed nobody across 12 casts at a constitution-1 target")
+	if stout_deaths >= feeble_deaths:
+		_fail("midas_touch killed a constitution-80 target %d times and a "
+			% stout_deaths + "constitution-1 target %d — the save is not gating it"
+			% feeble_deaths)
+	_cleanup([caster, feeble, stout])
+	_done()
+
+
+## And what is left is worth taking.
+func _check_a_kill_can_pay_gold() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 40)
+	caster.team = 0
+	var victim := _make_unit(Vector2i(6, 5), 1)
+	victim.character_data["attributes"]["constitution"] = 1
+	victim.character_data["xp_earned"] = 2000
+
+	var before: int = GameState.gold
+	var spell: Dictionary = CombatManager.get_spell("midas_touch")
+	for _i in 12:
+		victim.is_dead = false
+		victim.current_hp = victim.max_hp
+		CombatManager._apply_spell_effects(caster, victim, spell, 0)
+	if GameState.gold <= before:
+		_fail("midas_touch killed its target repeatedly and paid no gold")
+	GameState.gold = before
+	_cleanup([caster, victim])
+	_done()
+
+
+## A pauper is not worth as much as a champion.
+func _check_gold_scales_with_what_was_killed() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 40)
+	var spell: Dictionary = CombatManager.get_spell("midas_touch")
+
+	var earned := []
+	for worth in [100, 5000]:
+		var victim := _make_unit(Vector2i(6, 5), 1)
+		victim.character_data["attributes"]["constitution"] = 1
+		victim.character_data["xp_earned"] = worth
+		var before: int = GameState.gold
+		for _i in 12:
+			victim.is_dead = false
+			victim.current_hp = victim.max_hp
+			CombatManager._apply_spell_effects(caster, victim, spell, 0)
+		earned.append(GameState.gold - before)
+		GameState.gold = before
+		_cleanup([victim])
+
+	# Fifty times the worth should pay far more than fifty times nothing. A
+	# plain ">" is not enough: a nat 20 always saves, so the two runs kill
+	# slightly different numbers of times and a flat, unscaled reward can come
+	# out ahead on kill count alone.
+	if earned[1] < earned[0] * 10:
+		_fail("killing a 5000-xp enemy paid %d and a 100-xp one paid %d — the "
+			% [earned[1], earned[0]] + "reward is not scaling with what died")
+	_cleanup([caster])
+	_done()
+
+
+## The gate carries statuses too — this is what metal_to_mud used to do through
+## its own separate field, and it must survive the consolidation.
+func _check_save_gate_statuses_still_apply() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 40)
+	var victim := _make_unit(Vector2i(6, 5), 1)
+	victim.character_data["attributes"]["constitution"] = 1
+
+	var spell: Dictionary = CombatManager.get_spell("metal_to_mud")
+	var landed := false
+	for _i in 12:
+		victim.status_effects.clear()
+		CombatManager._apply_spell_effects(caster, victim, spell, 0)
+		if victim.has_status("Armor_Reduced") or victim.has_status("Damage_Debuff"):
+			landed = true
+			break
+	if not landed:
+		_fail("metal_to_mud never applied its statuses across 12 casts at a "
+			+ "constitution-1 target")
+	_cleanup([caster, victim])
+	_done()
+
+
+## Bitter Word's author note was the specification: the damage always applies
+## and the save is only against the silence. So a target who passes every save
+## must still be taking damage.
+func _check_damage_lands_regardless_of_the_save() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 10)
+	var stout := _make_unit(Vector2i(6, 5), 1)
+	stout.character_data["attributes"]["focus"] = 80
+
+	var spell: Dictionary = CombatManager.get_spell("bitter_word")
+	var before: int = stout.current_hp
+	for _i in 6:
+		CombatManager._apply_spell_effects(caster, stout, spell, 0)
+	if stout.current_hp >= before:
+		_fail("bitter_word dealt nothing to a target who resisted the silence — "
+			+ "the damage is being gated on the save it should not be")
+	_cleanup([caster, stout])
+	_done()
+
+
+## Mana Drain takes what a caster is holding and keeps it.
+func _check_mana_transfer_moves_what_was_there() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 20)
+	var victim := _make_unit(Vector2i(6, 5), 1)
+	caster.max_mana = 300
+	caster.current_mana = 50
+	victim.max_mana = 200
+	victim.current_mana = 200
+
+	var spell: Dictionary = CombatManager.get_spell("mana_drain")
+	CombatManager._apply_spell_effects(caster, victim, spell, 0)
+
+	if victim.current_mana >= 200:
+		_fail("mana_drain left the victim with %d of 200 mana" % victim.current_mana)
+	if caster.current_mana <= 50:
+		_fail("mana_drain took the victim's mana and gave the caster none "
+			+ "(still %d)" % caster.current_mana)
+	_cleanup([caster, victim])
+	_done()
+
+
+## Draining an empty pool must not conjure the resource. A transfer hands on
+## only what was actually there.
+func _check_a_transfer_cannot_create_what_is_not_there() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 20)
+	var victim := _make_unit(Vector2i(6, 5), 1)
+	caster.max_mana = 300
+	caster.current_mana = 10
+	victim.max_mana = 200
+	victim.current_mana = 0
+
+	var spell: Dictionary = CombatManager.get_spell("mana_drain")
+	CombatManager._apply_spell_effects(caster, victim, spell, 0)
+	if caster.current_mana != 10:
+		_fail("draining an empty caster gave the thief %d mana, up from 10"
+			% caster.current_mana)
+	if victim.current_mana < 0:
+		_fail("the victim's mana went negative: %d" % victim.current_mana)
+	_cleanup([caster, victim])
 	_done()
