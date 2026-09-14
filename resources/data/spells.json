@@ -8207,9 +8207,6 @@
       "statuses_caused": [
         "Pain_Mirror"
       ],
-      "special": {
-        "deal_50_percent_of_damage_taken_to_attacker": true
-      },
       "target": {
         "type": "single",
         "eligible": "ally",
@@ -10067,20 +10064,15 @@
       ],
       "mana_cost": 15,
       "duration": "spellpower",
-      "special": {
-        "fire_resist_pct": 25,
-        "water_resist_pct": 25,
-        "melee_counter_burn": {
-          "effect": "attacker_gains_burning_1",
-          "description": "While active, any enemy that strikes the caster in melee receives 1 burning stack"
-        }
-      },
       "target": {
         "type": "single",
         "eligible": "self",
         "upgrade_scaling": "single → aoe → all_allies"
       },
-      "description": "+25% fire and water resistance for duration. While active, enemies that strike you in melee receive 1 burning stack — the body radiates heat."
+      "description": "+25% fire and water resistance for duration. While active, enemies that strike you in melee receive 1 burning stack — the body radiates heat.",
+      "statuses_caused": [
+        "Inner_Flame"
+      ]
     },
     "heat_transfer": {
       "name": "Heat Transfer",
@@ -10319,25 +10311,13 @@
       ],
       "mana_cost": 135,
       "duration": "spellpower",
-      "special": {
-        "persistent_confusion_aura": {
-          "trigger": "start_of_each_enemy_turn",
-          "save": {
-            "attribute": "focus",
-            "base_difficulty": 14,
-            "difficulty_modifier_per_passed_save": -2,
-            "modifier_scope": "per_enemy",
-            "description": "Each enemy rolls FCS at the start of their turn or is confused for 1 turn. Each time a given enemy passes the save, their personal DC drops by 2 — they are slowly seeing through the mirage."
-          },
-          "on_fail": [
-            "Confused_1"
-          ]
-        }
-      },
       "target": {
         "type": "self"
       },
-      "description": "Each enemy must make a FCS save at the start of their turn or be confused for 1 turn. Each passed save reduces that enemy's personal DC by 2 as they pierce the mirage."
+      "description": "Each enemy must make a FCS save at the start of their turn or be confused for 1 turn. Each passed save reduces that enemy's personal DC by 2 as they pierce the mirage.",
+      "statuses_caused": [
+        "Shining_Mirage"
+      ]
     },
     "battle_chant": {
       "name": "Battle Chant",

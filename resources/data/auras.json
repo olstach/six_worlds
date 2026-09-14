@@ -255,6 +255,24 @@
           "duration": 2
         }
       ]
+    },
+    "shining_mirage": {
+      "name": "Shining Mirage",
+      "radius": 99,
+      "affects": "enemies",
+      "payloads": [
+        {
+          "kind": "grant_status",
+          "status": "Confused",
+          "duration": 1,
+          "save": {
+            "attribute": "focus",
+            "dc": 14,
+            "dc_drop_per_pass": 2
+          }
+        }
+      ],
+      "_comment": "Battlefield-wide, and resistible. Each enemy who makes the save sees a little further through it, so the DC they personally face drops by 2 every time — the mirage wears out against anyone who keeps their head."
     }
   }
 }

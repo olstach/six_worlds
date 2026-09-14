@@ -751,6 +751,35 @@ for _sid, _sp in _spells.items():
         err("data->code", f"spell '{_sid}' has a non-object `on_kill`")
 
 
+# ── Retaliation and granted resistances ─────────────────────────────────────
+_RETAL_KEYS = {"range", "damage", "element", "reflect_pct", "status",
+               "status_duration", "status_chance"}
+for _st in load("resources/data/statuses.json")["statuses"]:
+    _r = _st.get("retaliation")
+    if _r is None:
+        continue
+    if not isinstance(_r, dict):
+        err("data->code", f"status '{_st.get('name')}' has a non-object `retaliation`")
+        continue
+    for _k in _r:
+        if _k not in _RETAL_KEYS:
+            err("data->code", f"status '{_st.get('name')}' retaliation carries "
+                f"'{_k}', which _process_reactive_statuses does not resolve")
+    if _r.get("range", "melee") not in ("melee", "any"):
+        err("data->code", f"status '{_st.get('name')}' retaliates at range "
+            f"'{_r.get('range')}'; only 'melee' and 'any' are resolved")
+    if _r.get("status") and _r["status"] not in _status_names:
+        err("data->code", f"status '{_st.get('name')}' retaliates with status "
+            f"'{_r['status']}', which does not exist")
+    if not _r.get("damage") and not _r.get("reflect_pct") and not _r.get("status"):
+        err("data->code", f"status '{_st.get('name')}' has a retaliation that "
+            "deals no damage, reflects nothing and applies nothing")
+    _gr = _st.get("grants_resistance")
+    if _gr is not None and not isinstance(_gr, dict):
+        err("data->code", f"status '{_st.get('name')}' has a non-object "
+            "`grants_resistance`")
+
+
 # ── Auras ────────────────────────────────────────────────────────────────────
 #
 # Four kinds of source may declare an aura, and all four name it the same way.

@@ -101,6 +101,11 @@ var next_summon_empowered: bool = false
 # distinction ever needed to be. See AuraSystem.
 var intrinsic_auras: Array[String] = []
 
+# How many times this unit has resisted each aura, by aura id. Shining Mirage
+# lowers its own DC against anyone who keeps seeing through it, so the count
+# has to live on the person doing the seeing.
+var aura_save_passes: Dictionary = {}
+
 # max HP currently granted by auras. Stored, unlike every other aura payload,
 # because current_hp must be clamped when the bonus goes away; kept as a running
 # total so refreshes apply a delta and cannot double up.
@@ -1198,6 +1203,14 @@ func get_resistance(damage_type: String) -> float:
 		if damage_type == "air":
 			if "air_damage_immunity" in effects or "air_immune" in effects:
 				base = 100.0  # Lightning_Form: immune to air
+
+		# grants_resistance: the symmetric partner of grants_vulnerability, and
+		# missing until Inner Flame needed it. A status could make you weaker to
+		# an element in data and could only make you stronger through a
+		# hand-written effect string.
+		var resist: Dictionary = def.get("grants_resistance", {})
+		if resist.has(damage_type):
+			base += float(resist[damage_type])
 
 		# grants_vulnerability field (used by Smoke_Form, Lightning_Form)
 		var vuln = def.get("grants_vulnerability", {})
