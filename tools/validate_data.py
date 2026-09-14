@@ -751,6 +751,35 @@ for _sid, _sp in _spells.items():
         err("data->code", f"spell '{_sid}' has a non-object `on_kill`")
 
 
+# ── Movement abilities ──────────────────────────────────────────────────────
+#
+# An ability name terrain never asks about grants nothing. TERRAIN_ABILITIES
+# names the three that open impassable ground, and sure footing is spelled
+# `sure_footed` or `surefoot_<terrain>`.
+_mm_src = open(os.path.join(ROOT, "scripts/autoload/map_manager.gd"), encoding="utf-8").read()
+_passage = set(re.findall(r'Terrain\.\w+:\s*"(\w+)"', _mm_src))
+_terrains = {t.lower() for t in re.findall(r'Terrain\.\w+:\s*"(\w+)"\s*$', _mm_src, re.M)}
+_terrain_names = {m.lower() for m in re.findall(r'Terrain\.\w+:\s*"([A-Z]\w+)"', _mm_src)}
+_valid_abilities = _passage | {"sure_footed"} | {"surefoot_%s" % t for t in _terrain_names}
+
+def _check_abilities(label, name, decl):
+    if decl is None:
+        return
+    names = [decl] if isinstance(decl, str) else [str(x) for x in decl]
+    for _a in names:
+        if _a not in _valid_abilities:
+            err("data->code", f"{label} '{name}' grants movement ability "
+                f"'{_a}', which no terrain asks about — it would do nothing")
+
+for _st in load("resources/data/statuses.json")["statuses"]:
+    _check_abilities("status", _st.get("name"), _st.get("grants_movement_ability"))
+_perks_for_abilities = load("resources/data/perks.json")
+for _section in ("skill_perks", "cross_perks"):
+    for _pid, _pk in _perks_for_abilities.get(_section, {}).items():
+        if isinstance(_pk, dict):
+            _check_abilities("perk", _pid, _pk.get("grants_movement_ability"))
+
+
 # ── Per-team branches and expiry summons ────────────────────────────────────
 _summon_templates = load("resources/data/summon_templates.json")["templates"]
 for _sid, _sp in _spells.items():

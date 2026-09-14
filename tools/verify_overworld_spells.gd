@@ -13,7 +13,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 13
+const EXPECTED_CHECKS: int = 16
 
 var _menu: Node
 var _saved_party: Array = []
@@ -49,6 +49,9 @@ func _ready() -> void:
 	_check_sure_footing_removes_the_slowdown()
 	_check_an_ability_lapses_when_its_status_does()
 	_check_flight_grants_both_of_its_abilities()
+	_check_lava_walking_opens_lava()
+	_check_per_terrain_footing_is_narrow()
+	_check_a_perk_grants_footing_permanently()
 
 	_finish()
 
@@ -359,4 +362,96 @@ func _check_flight_grants_both_of_its_abilities() -> void:
 			% MapManager.get_terrain_speed(bog) + "ability in the list was dropped")
 	MapManager.tiles.erase(peak)
 	MapManager.tiles.erase(bog)
+	_done()
+
+
+## Fire had no mobility magic at all, and lava was the one impassable terrain
+## with no spell.
+func _check_lava_walking_opens_lava() -> void:
+	_party(1)
+	MapManager.clear_movement_abilities()
+	var flow := Vector2i(7, 3)
+	MapManager.tiles[flow] = MapManager.Terrain.LAVA
+	MapManager.map_size = Vector2i(maxi(MapManager.map_size.x, 9),
+		maxi(MapManager.map_size.y, 9))
+	if MapManager.is_passable(flow):
+		_fail("lava is passable with no ability, so this check proves nothing")
+		MapManager.tiles.erase(flow)
+		_done()
+		return
+
+	_cast("lava_walking")
+	if not MapManager.is_passable(flow):
+		_fail("after Lava Walking the party still cannot cross lava (%s)"
+			% str(MapManager.movement_abilities))
+	MapManager.tiles.erase(flow)
+	_done()
+
+
+## Each element answers its own ground, and only its own. Marshtread crosses a
+## bog at pace and leaves the desert exactly as slow as it was — that
+## narrowness is the reason to carry more than one.
+func _check_per_terrain_footing_is_narrow() -> void:
+	_party(1)
+	MapManager.clear_movement_abilities()
+	var bog := Vector2i(2, 6)
+	var dune := Vector2i(3, 6)
+	MapManager.tiles[bog] = MapManager.Terrain.SWAMP
+	MapManager.tiles[dune] = MapManager.Terrain.DESERT
+	MapManager.map_size = Vector2i(maxi(MapManager.map_size.x, 9),
+		maxi(MapManager.map_size.y, 9))
+	var dune_before: float = MapManager.get_terrain_speed(dune)
+
+	_cast("marshtread")
+	if MapManager.get_terrain_speed(bog) < 1.0:
+		_fail("Marshtread left a swamp at %.2f speed"
+			% MapManager.get_terrain_speed(bog))
+	if MapManager.get_terrain_speed(dune) != dune_before:
+		_fail("Marshtread also cleared the desert (%.2f -> %.2f) — the "
+			% [dune_before, MapManager.get_terrain_speed(dune)]
+			+ "per-terrain abilities are not narrow")
+
+	# And the desert spell does the opposite.
+	_party(1)
+	MapManager.clear_movement_abilities()
+	_cast("camels_blessing")
+	if MapManager.get_terrain_speed(dune) < 1.0:
+		_fail("Camel's Blessing left the desert at %.2f speed"
+			% MapManager.get_terrain_speed(dune))
+	if MapManager.get_terrain_speed(bog) >= 1.0:
+		_fail("Camel's Blessing also cleared the swamp")
+	MapManager.tiles.erase(bog)
+	MapManager.tiles.erase(dune)
+	_done()
+
+
+## Sure Step is training rather than a spell, so it holds with no status and
+## no duration — a quartermaster who cannot cross broken ground is not much
+## of one.
+func _check_a_perk_grants_footing_permanently() -> void:
+	_party(1)
+	MapManager.clear_movement_abilities()
+	var wood := Vector2i(4, 7)
+	MapManager.tiles[wood] = MapManager.Terrain.FOREST
+	MapManager.map_size = Vector2i(maxi(MapManager.map_size.x, 9),
+		maxi(MapManager.map_size.y, 9))
+	var slowed: float = MapManager.get_terrain_speed(wood)
+	if slowed >= 1.0:
+		_fail("forest is not slow in this build, so the check proves nothing")
+		MapManager.tiles.erase(wood)
+		_done()
+		return
+
+	CharacterSystem.party[0]["perks"] = [{"id": "sure_step"}]
+	MapManager.refresh_movement_abilities(CharacterSystem.party, _defs())
+	if MapManager.get_terrain_speed(wood) <= slowed:
+		_fail("Sure Step left a forest at %.2f speed — a perk grants no "
+			% MapManager.get_terrain_speed(wood) + "movement ability")
+
+	# It must also survive a tick, which recomputes from scratch.
+	StatusOps.tick_overworld(CharacterSystem.party, _defs())
+	if MapManager.get_terrain_speed(wood) <= slowed:
+		_fail("Sure Step lapsed after one step — a perk is not a status and "
+			+ "does not expire")
+	MapManager.tiles.erase(wood)
 	_done()
