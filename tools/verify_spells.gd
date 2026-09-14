@@ -15,7 +15,7 @@ var failures: int = 0
 var grid: CombatGrid
 
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 46
+const EXPECTED_CHECKS: int = 51
 
 
 func _ready() -> void:
@@ -81,6 +81,12 @@ func _ready() -> void:
 	_check_retaliation_respects_its_range()
 	_check_mirage_confusion_can_be_resisted()
 	_check_mirage_wears_out_against_whoever_resists_it()
+
+	_check_time_stops_for_everyone_but_the_caster()
+	_check_time_stopped_cannot_be_cleansed()
+	_check_battlefield_targeting_resolves()
+	_check_a_spell_can_treat_the_two_sides_differently()
+	_check_a_status_can_hatch_a_creature_on_expiry()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -1131,4 +1137,113 @@ func _check_mirage_wears_out_against_whoever_resists_it() -> void:
 		_fail("a focus-40 enemy recorded no successful saves in 12 turns, so "
 			+ "the DC can never decay")
 	_cleanup([caster, enemy])
+	_done()
+
+
+# ── Turn order and battlefield-wide effects ──────────────────────────────────
+
+## Nail the Sun: every other combatant loses their next turn, so the caster
+## acts again before anyone moves. The "extra turn" its old key described is
+## the CONSEQUENCE of that, not a second effect — granting both would pay the
+## caster twice.
+func _check_time_stops_for_everyone_but_the_caster() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 30)
+	var ally := _make_unit(Vector2i(6, 5), 0)
+	var foe := _make_unit(Vector2i(7, 5), 1)
+
+	var spell: Dictionary = CombatManager.get_spell("nail_the_sun")
+	for target in CombatManager._get_spell_targets(caster, spell, caster.grid_position):
+		CombatManager._apply_spell_effects(caster, target, spell, 0)
+
+	if not ally.has_status("Time_Stopped"):
+		_fail("nail_the_sun left an ally still moving — time stops for the field")
+	if not foe.has_status("Time_Stopped"):
+		_fail("nail_the_sun left an enemy still moving")
+	if caster.has_status("Time_Stopped"):
+		_fail("nail_the_sun froze the caster, who is the one holding the nail")
+	_cleanup([caster, ally, foe])
+	_done()
+
+
+## There is no time in which to shake it off.
+func _check_time_stopped_cannot_be_cleansed() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 30)
+	var victim := _make_unit(Vector2i(6, 5), 1)
+	CombatManager._apply_status_effect(victim, "Time_Stopped", 1)
+
+	CombatManager._remove_selected_statuses(victim, {"tag": "all_negative"})
+	if not victim.has_status("Time_Stopped"):
+		_fail("a cleanse removed Time_Stopped, which is declared undispellable")
+	_cleanup([caster, victim])
+	_done()
+
+
+## Three spells said `target: battlefield` and nothing resolved the word, so
+## they had no targets at all.
+func _check_battlefield_targeting_resolves() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 30)
+	var ally := _make_unit(Vector2i(6, 5), 0)
+	var foe := _make_unit(Vector2i(7, 5), 1)
+
+	# up_to_eleven says `target: battlefield` in its data, which is the word its
+	# author used and which nothing resolved. The normaliser's job is to turn it
+	# into the one _get_spell_targets knows.
+	var spell: Dictionary = CombatManager.get_spell("up_to_eleven")
+	if spell.get("targeting", "") != "global":
+		_fail("`target: battlefield` normalised to targeting '%s', expected "
+			% str(spell.get("targeting", "")) + "'global'")
+	var targets: Array = CombatManager._get_spell_targets(caster, spell, caster.grid_position)
+	if targets.size() != 2:
+		_fail("a battlefield spell found %d targets among caster + 2 others, "
+			% targets.size() + "expected 2")
+	if caster in targets:
+		_fail("`eligible: others` included the caster")
+	_cleanup([caster, ally, foe])
+	_done()
+
+
+## Up to Eleven stuns the enemy and merely rattles your own people. One spell,
+## two payloads.
+func _check_a_spell_can_treat_the_two_sides_differently() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 30)
+	var ally := _make_unit(Vector2i(6, 5), 0)
+	var foe := _make_unit(Vector2i(7, 5), 1)
+	foe.character_data["attributes"]["constitution"] = 1
+
+	var spell: Dictionary = CombatManager.get_spell("up_to_eleven")
+	for target in CombatManager._get_spell_targets(caster, spell, caster.grid_position):
+		CombatManager._apply_spell_effects(caster, target, spell, 0)
+
+	if not ally.has_status("Disoriented"):
+		_fail("up_to_eleven left the caster's own side untouched")
+	if ally.has_status("Stunned"):
+		_fail("up_to_eleven stunned an ally — the enemy branch reached the "
+			+ "wrong side")
+	if not foe.has_status("Stunned"):
+		_fail("up_to_eleven did not stun a constitution-1 enemy")
+	_cleanup([caster, ally, foe])
+	_done()
+
+
+## The scheduler the game already had and did not finish: three `*_on_expire`
+## effects worked and the fourth carried a TODO and a hardcoded creature name.
+func _check_a_status_can_hatch_a_creature_on_expiry() -> void:
+	var victim := _make_unit(Vector2i(5, 5), 1)
+	var before: int = CombatManager.all_units.size()
+
+	var def: Dictionary = CombatManager.get_status_definition("Infected")
+	if def.get("summon_on_expire", "") != "Fungal_Spawn":
+		_fail("Infected declares summon_on_expire '%s'"
+			% str(def.get("summon_on_expire", "")))
+	CombatManager._on_status_expired(victim, "Infected", def, {})
+
+	if CombatManager.all_units.size() <= before:
+		_fail("Infected expired and nothing crawled out — the expiry summon "
+			+ "never fired")
+	else:
+		# Clean up whatever hatched.
+		for unit in CombatManager.all_units.duplicate():
+			if unit != victim and is_instance_valid(unit):
+				_cleanup([unit])
+	_cleanup([victim])
 	_done()

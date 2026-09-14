@@ -212,7 +212,6 @@
       "type": "debuff",
       "category": "delayed",
       "effects": [
-        "spawn_fungal_spawn_on_expire",
         "damage_on_expire",
         "bleed_on_expire"
       ],
@@ -221,7 +220,8 @@
       "dispellable": true,
       "dispel_methods": [
         "cleanse"
-      ]
+      ],
+      "summon_on_expire": "Fungal_Spawn"
     },
     {
       "name": "Swarmed",
@@ -2505,6 +2505,35 @@
         "cleanse"
       ],
       "description": "The caster's outline swims and doubles. Those who look at it lose track of themselves — until they learn to look past it."
+    },
+    {
+      "name": "Time_Stopped",
+      "type": "debuff",
+      "category": "cc",
+      "effects": [
+        "skip_turn",
+        "cannot_act"
+      ],
+      "duration_type": "turns",
+      "default_duration": 1,
+      "dispellable": false,
+      "dispel_methods": [],
+      "description": "Held outside the moment. Not stunned, not held — simply not yet. Nothing shakes this off, because there is no time in which to do so."
+    },
+    {
+      "name": "Disoriented",
+      "type": "debuff",
+      "category": "debuff",
+      "effects": [
+        "all_stats_penalty"
+      ],
+      "duration_type": "turns",
+      "default_duration": 1,
+      "dispellable": true,
+      "dispel_methods": [
+        "cleanse"
+      ],
+      "description": "Ears ringing, footing uncertain. Everything is a little harder for a moment."
     }
   ]
 }

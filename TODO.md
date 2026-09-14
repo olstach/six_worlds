@@ -246,6 +246,16 @@ and events too.
       anyone who keeps their head. Any aura doing something to a mind rather
       than to a body probably wants this instead of a flat chance.
 
+- [ ] **Per-team outcomes** (`on_allies` / `on_enemies` on a spell) — one
+      effect that treats the two sides differently, each branch carrying its
+      own statuses and its own save. Up to Eleven stuns the enemy and merely
+      rattles your own people. Any area effect with friendly fire wants this
+      rather than two spells.
+
+- [ ] **Expiry summons** (`summon_on_expire` on a status) — the fourth
+      `*_on_expire`, alongside death, damage and bleed. A status that ripens
+      into a creature. Traps, eggs, curses and anything gestating want it.
+
 - [ ] **Party bonuses** (`party_bonuses.gd`) — `party_`-prefixed payouts,
       best member rather than sum.
 
@@ -289,7 +299,51 @@ hurts enemies entering — an aura bound to a place rather than a unit.
 enter/leave semantics by recomputation), `unit_moved`, the `terrain` status
 category, `combat_grid` tile state, and `AoEResolver` for shapes.
 
-## 5. Data with no consumer
+## 5. Resistances — wants its own audit
+
+Raised 2026-09-14, after `grants_resistance` turned out not to exist while
+`grants_vulnerability` had been structured and data-driven for months. That
+asymmetry is a symptom: resistance is not one system, it is six that happen to
+reduce damage.
+
+**What is in play.** `get_resistance()` alone runs about sixty lines of
+special cases, and at least these mechanisms all modify incoming damage
+independently of one another:
+
+- the unit's own `resistances` dictionary, with `PHYSICAL_SUBTYPES` falling
+  back from `crushing`/`slashing`/`piercing` to a generic `physical`
+- `grants_resistance` and `grants_vulnerability`, structured per-status
+- `vulnerability_pct`, a separate per-status number
+- named effect strings — `physical_resist_50`, `vulnerable_to_physical`,
+  `physical_immunity`, `fire_damage_immunity`, and a dozen siblings
+- `damage_reduction_pct` from the Armor skill table, capped at 90%
+- `magic_resistance_pct` from the Yoga table, applying only to
+  `MAGIC_DAMAGE_TYPES`
+- aura `damage_taken_pct`, added 2026-09-13
+- `spell_damage_reduction` as a flat 25% status branch inside the damage path
+
+**Questions the audit should answer.**
+
+- What is the ORDER of application, and is it additive or multiplicative? Two
+  sources of 50% are either 100% (immune) or 75%, and nothing states which.
+- Is there a cap? `damage_reduction_pct` has one at 90%; nothing else does, so
+  a stacked build may already be able to reach zero.
+- Do the elemental types form a closed set? The spell audit found compound
+  damage types (`fire_black`, `physical_fire`, `white_fire`) alongside the
+  `physical`/`crushing`/`slashing`/`piercing` split — two schemes in one field.
+- Should immunity be a resistance of 100, or a separate thing that short-
+  circuits? Both exist now.
+- Resistance and vulnerability are the same axis with opposite signs, and the
+  data has them as two fields. Should they be one?
+- What does the player SEE? A character sheet cannot currently show a true
+  figure for "how much fire damage do I take", because the answer is scattered
+  across six systems and three files.
+
+**Likely shape of the fix:** one `Resistances` resolver, in the mould of
+`AuraSystem` and `StatusOps` — every source declared, one documented order of
+application, one cap, and a single function the UI can call to show a number.
+
+## 6. Data with no consumer
 
 - [ ] **27 of the 40 `base_bonuses` stat keys are read by nothing.** Full table
   with owning skill, L1/L5/L10 values and the system each would hook into is in
@@ -407,7 +461,7 @@ category, `combat_grid` tile state, and `AoEResolver` for shapes.
 - [ ] **`skeleton_king_duel`** stops at 10% HP — verify the special win
   condition still fires after the combat refactors.
 
-## 6. Content that wants writing
+## 7. Content that wants writing
 
 - [ ] **A prose pass on 81 events and 24 companion bios.** The animal realm's 47
   zone events, hungry ghost's 34 gap-fill events, the three HG boss/pass-guardian
@@ -437,12 +491,12 @@ category, `combat_grid` tile state, and `AoEResolver` for shapes.
 - [ ] **Realm-specific rest events** — "something stirs in the night" flavour
   when resting in hell / hungry ghost.
 
-## 7. Whole realms
+## 8. Whole realms
 
 Human, asura and god need: map config, archetypes, encounters, event file,
 companions, backgrounds, shops. Human-realm zone design is sketched in Part II.
 
-## 8. Balance passes waiting on play
+## 9. Balance passes waiting on play
 
 - [ ] **Saving throws, after the 2026-09-12 rework.** Every CC effect in combat
       changed probability. A Constitution-12 target used to resist *everything*
@@ -491,7 +545,7 @@ All first-pass numbers. Nothing here is a bug; they need a playthrough.
 - Trade L10 reads 60% buy discount / 70% sell markup — probably intended as a
   soft cap, not a literal multiplier. Decide before wiring (Part III)
 
-## 9. Perks deferred on missing systems
+## 10. Perks deferred on missing systems
 
 Not gaps in the perk trees — these are written and waiting on machinery.
 
@@ -564,7 +618,7 @@ combat panel — that change did **not** implement them. `scout_ahead`,
 miss: `camp_system.gd:156` already has a forage camp action open to everyone,
 and the perk that is supposed to improve it is never consulted.
 
-## 10. Things to ponder
+## 11. Things to ponder
 
 ### Resurrection in events — what should it cost?
 
@@ -746,7 +800,7 @@ but may not be what the game wants.
       which is why it keeps looking like two half-features:
 
       - `trap_maker` (Smithing) is a combat perk deferred on a `place_trap`
-        resolver — see §9. "Place a trap on an adjacent tile. The first enemy to
+        resolver — see §10. "Place a trap on an adjacent tile. The first enemy to
         enter takes damage equal to 30% of your Focus and is immobilized."
       - `trap_detection_pct` (Thievery) is a dead skill-table key, currently
         with no system at all. It was read as overworld detection, which is
@@ -766,7 +820,7 @@ but may not be what the game wants.
       Not needed now, and mechanically close to the planned **mounts and pets**
       system, so the two should be designed together when that comes up.
 
-## 11. Deferred by decision
+## 12. Deferred by decision
 
 Recorded so they aren't rediscovered as bugs.
 
@@ -783,7 +837,7 @@ Medicine and less good at swinging a sword, which is a more coherent thing for
 the game to be about.
 
 What survives is the mechanic, not the framing: `party_`-prefixed skill payouts,
-where one member's skill pays the whole party. That is designed (§5 above) and
+where one member's skill pays the whole party. That is designed (§6 above) and
 unbuilt. The support-character-as-equipment idea is parked in "Things to ponder"
 for whenever mounts and pets are designed.
 
@@ -1035,7 +1089,7 @@ Spec: `docs/superpowers/specs/2026-08-31-enemy-xp-generation-design.md`
 
 ---
 
-## 12. The passive perk backlog (2026-09-10)
+## 13. The passive perk backlog (2026-09-10)
 
 The engine is built and proven; the data is barely started. Of 470 passive
 perks: **168** are implemented by hand in `scripts/` (checked by id with
@@ -1059,7 +1113,7 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
       EventManager have no consumer for them. Authoring an effect before its
       reader exists is the exact failure this whole pass spent its time
       undoing — build the consumers first. This is what the seven overworld
-      perks in §9 are waiting on too.
+      perks in §10 are waiting on too.
 - [ ] **Unbuilt effect types:** `aura`, `cost_reduction`, `damage_modifier`,
       `resource_regen`, `spell_modifier`, `summon_modifier`, `special`.
       `summon_modifier` has the most data waiting on it — several black, fire
@@ -1073,7 +1127,7 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
       `first_attack_combat`, `first_attack_turn`, `from_behind`,
       `target_bleeding`, `target_debuffed`, `on_terrain_type`.
 
-## 13. Systems the perk text assumes and the game does not have
+## 14. Systems the perk text assumes and the game does not have
 
 **All three are built** (2026-09-12): forced movement, AoE damage falloff, and
 one saving-throw mechanic. See Part IV for what changed.
@@ -1485,7 +1539,7 @@ file. Since `combat_arena.gd` greys out any non-mantra skill with empty
 never once run. 75 are now wired; 7 overworld ones are flagged `non_combat` and
 filtered out of the combat panel; `host_of_the_winds` is reclassified passive
 (it describes summons that are active, and only reached the panel because the
-panel matches on the "Active" prefix); 26 remain, listed in Part I §9.
+panel matches on the "Active" prefix); 26 remain, listed in Part I §10.
 
 **Active skills now use the shared AoE resolver.** `aoe_resolver.gd` already had
 ten shapes and `cast_spell` routed through it, but the four active-skill AoE
@@ -1509,7 +1563,7 @@ conversions (in that order, since a conversion reads a finished stat);
 `CombatUnit._get_conditional_perk_bonus()` evaluates gated effects where the
 stat is read; `CombatManager._fire_perk_triggers()` dispatches `on_hit`,
 `on_crit`, `on_kill` and `dodge_success`. Only 5 perks are wired to it so far —
-see Part I §12.
+see Part I §13.
 
 **Six things were being computed and never read.** Same failure each time: a
 value written under one name and read under another, or not read at all, with

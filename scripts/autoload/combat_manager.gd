@@ -2845,6 +2845,11 @@ func get_spell(spell_id: String) -> Dictionary:
 						spell["aoe_radius"] = r
 					"chain":
 						spell["targeting"] = "chain"
+					"battlefield":
+						# A third spelling of "the whole field", used by three
+						# spells and resolved by nothing. `global` is the one
+						# _get_spell_targets knows.
+						spell["targeting"] = "global"
 					_:
 						spell["targeting"] = target_type
 
@@ -3381,6 +3386,13 @@ func _get_spell_targets(caster: Node, spell: Dictionary, target_pos: Vector2i) -
 				match eligible:
 					"all":
 						targets.append(unit)
+					"others":
+						# Everyone except the caster, both sides. Time stops for
+						# the whole field and the person who stopped it keeps
+						# moving; the sound hits everyone and the one making it
+						# feels nothing.
+						if unit != caster:
+							targets.append(unit)
 					"ally", "dead_ally":
 						if same_team:
 							targets.append(unit)
@@ -3670,6 +3682,28 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 		for status_name in statuses:
 			_apply_status_effect(target, status_name, duration, 0, caster)
 			result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
+
+	# --- Per-team outcomes: a spell that treats the two sides differently ---
+	#
+	# Up to Eleven stuns the enemy and merely rattles your own people. That is
+	# one spell with two payloads, not two spells, and expressing it needed a
+	# branch on whose side the target is standing.
+	var side_branch: Dictionary = spell.get(
+		"on_allies" if ("team" in target and "team" in caster and target.team == caster.team)
+		else "on_enemies", {})
+	if not side_branch.is_empty() and target != caster:
+		var side_duration: int = _calculate_status_duration(caster, spell, bonus)
+		var side_passed := false
+		if side_branch.has("save_type"):
+			var side_spell: Dictionary = spell.duplicate()
+			side_spell["save_tier"] = side_branch.get("save_tier", spell.get("save_tier", "normal"))
+			side_passed = _spell_save(caster, target, side_spell,
+				String(side_branch["save_type"]).to_lower()).success
+		if not side_passed:
+			for side_status in side_branch.get("statuses", []):
+				_apply_status_effect(target, side_status, side_duration, 0, caster)
+				result.effects_applied.append({"type": "status",
+					"status": side_status, "applied": true})
 
 	# --- Outcomes gated on a saving throw ---
 	#
@@ -4680,9 +4714,16 @@ func _on_status_expired(unit: Node, status_name: String, def: Dictionary, effect
 
 	# Spawn-on-expire effects (Infected spawns fungal creature) — emit signal for
 	# encounter system to handle, since we don't create units directly here
-	if "spawn_fungal_spawn_on_expire" in effects:
-		# TODO: Wire to encounter spawn system
-		push_warning("Status expired with spawn effect: ", status_name, " on ", unit.unit_name)
+	# A status that leaves something behind when it runs out. This is the
+	# scheduler the game already had and did not finish: `death_on_expire`,
+	# `damage_on_expire` and `bleed_on_expire` all work, and the fourth —
+	# something crawling out of the corpse — carried a TODO and a hardcoded
+	# creature name. `summon_on_expire` names the template instead, so any
+	# status can ripen into any creature.
+	var hatches: String = def.get("summon_on_expire", "")
+	if hatches != "" and "grid_position" in unit:
+		_spawn_summoned_unit(unit, hatches, unit.grid_position, 0)
+		combat_log.emit("Something tears its way out of %s." % unit.unit_name)
 
 
 ## Process status spread — statuses with "spread" data can jump to adjacent units.
