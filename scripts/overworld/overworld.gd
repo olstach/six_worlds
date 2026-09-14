@@ -756,6 +756,7 @@ func _on_party_moved(_from: Vector2i, _to: Vector2i) -> void:
 	GameState.advance_time(GameState.HOURS_PER_STEP)
 	_update_terrain_label()
 	_tick_overworld_statuses()
+	_tick_planar_excursion()
 	_update_time_label()
 	_tick_supply_step()
 	_check_party_death()
@@ -1467,6 +1468,24 @@ func _show_camp_event(event_id: String) -> void:
 	MapManager.pause_movement()
 	_set_event_visible(true)
 	event_display.show_event(event_id, "", false)
+
+
+## A party away on another plane is pulled home when their time runs out.
+func _tick_planar_excursion() -> void:
+	if GameState.planar_return.is_empty():
+		return
+	if not GameState.tick_planar_excursion():
+		var left: int = int(GameState.planar_return.get("steps_left", 0))
+		if left <= 5:
+			_show_toast("The pull home strengthens — %d steps" % left)
+		return
+	var home: Dictionary = GameState.planar_return
+	GameState.planar_return = {}
+	MapManager.stash_current_map()
+	MapManager.load_map(str(home.get("map_id", "hell_01")))
+	MapManager.teleport_party(Vector2i(int(home.get("x", 0)), int(home.get("y", 0))))
+	_update_hud()
+	_show_toast("The world takes the party back")
 
 
 ## A spell needs aiming: hand the map over and wait for a click.

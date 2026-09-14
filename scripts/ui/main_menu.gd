@@ -1490,6 +1490,74 @@ func _create_spell_card(spell_id: String, spell_data: Dictionary) -> PanelContai
 	return card
 
 
+## Move the party somewhere: a tile, a town, or another plane.
+##
+##   {"how": "tile",   "range": 15}    where you point, on this map
+##   {"how": "refuge"}                 the nearest town, wherever that is
+##   {"how": "excursion", "steps": 30} another plane, briefly
+##   {"how": "gate"}                   another plane, for good
+func _apply_translocation(spell_data: Dictionary, aim: Vector2i) -> String:
+	var spec: Dictionary = spell_data["translocate"]
+	match str(spec.get("how", "")):
+		"tile":
+			if aim.x < 0 or not MapManager.is_passable(aim):
+				return "Nowhere to step to"
+			MapManager.teleport_party(aim)
+			return "The party steps across"
+
+		"refuge":
+			var haven: Dictionary = MapManager.nearest_object_of(
+				MapManager.get_party_position(), MapManager.REVEAL_GROUPS["shelter"])
+			if haven.is_empty():
+				return "There is no refuge in this realm to reach for"
+			MapManager.teleport_party(haven.get("position", MapManager.get_party_position()))
+			return "The party is pulled to %s" % haven.get("name", "safety")
+
+		"excursion", "gate":
+			return _shift_plane(spec, str(spec.get("how", "")) == "gate")
+	return "Nothing happens"
+
+
+## Planar Shift and Planar Gate. Both cross worlds; only the Gate keeps one.
+func _shift_plane(spec: Dictionary, permanent: bool) -> String:
+	# Which world is not chosen by the caster — there is no picker, and for
+	# the Shift that reads right anyway: you do not choose where you flee to.
+	# The Gate opens onto the next plane the party has NOT unlocked, which is
+	# what makes it the only way to reach one.
+	var candidates: Array[String] = []
+	for world in GameState.WORLDS:
+		if world == GameState.current_world:
+			continue
+		if permanent and world in GameState.unlocked_worlds:
+			continue
+		candidates.append(world)
+	if candidates.is_empty():
+		# Every plane already reached; the Gate simply goes somewhere else.
+		for world in GameState.WORLDS:
+			if world != GameState.current_world:
+				candidates.append(world)
+	if candidates.is_empty():
+		return "There is nowhere else to go"
+
+	var destination: String = candidates[0] if permanent 		else candidates[randi() % candidates.size()]
+	var here: String = MapManager.current_map_id
+	var at: Vector2i = MapManager.get_party_position()
+
+	if permanent:
+		GameState.unlock_world(destination)
+		GameState.travel_to_world(destination)
+		GameState.planar_return = {}
+	elif not GameState.begin_planar_excursion(
+			destination, int(spec.get("steps", 30)), here, at):
+		return "The ways will not open from here"
+
+	MapManager.stash_current_map()
+	MapManager.load_map("%s_01" % destination)
+	var world_name: String = GameState.WORLDS[destination].get("name", destination)
+	return ("A gate opens onto %s, and holds" % world_name) if permanent 		else ("The party slips into %s — %d steps before the pull home"
+			% [world_name, int(spec.get("steps", 30))])
+
+
 ## Finish a cast that was waiting on a target, and spend the mana now.
 ##
 ## Returns the toast text, or "" if there was nothing pending. Mana is taken
@@ -1564,6 +1632,10 @@ func _apply_overworld_spell(spell_id: String, spell_data: Dictionary,
 	if spell_data.has("resurrection"):
 		var scope: int = 99 if spell_data["resurrection"].get("scope", "single") == "all_allies" else 1
 		return _raise_the_fallen(spell_data, scope)
+
+	# Going somewhere. Four spells, one block, distinguished by reach.
+	if spell_data.has("translocate") and MapManager:
+		return _apply_translocation(spell_data, aim)
 
 	# A spell aimed at something out on the map, rather than at the party.
 	if spell_data.has("mob_effect") and MapManager:

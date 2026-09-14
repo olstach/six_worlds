@@ -13,7 +13,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 26
+const EXPECTED_CHECKS: int = 31
 
 var _menu: Node
 var _saved_party: Array = []
@@ -64,6 +64,12 @@ func _ready() -> void:
 	_check_begone_sends_it_further_than_misdirection()
 	_check_targeting_only_offers_legal_targets()
 	_check_the_renderer_refuses_illegal_targets()
+
+	_check_teleport_steps_to_the_chosen_tile()
+	_check_intervention_finds_the_nearest_refuge()
+	_check_a_visited_map_comes_back_as_it_was()
+	_check_planar_shift_crosses_without_unlocking()
+	_check_planar_gate_unlocks_what_it_opens()
 
 	_finish()
 
@@ -765,4 +771,132 @@ func _check_the_renderer_refuses_illegal_targets() -> void:
 	if renderer.is_targeting():
 		_fail("cancelling left the renderer in targeting mode")
 	renderer.queue_free()
+	_done()
+
+
+# ── Teleportation ────────────────────────────────────────────────────────────
+
+func _open_ground() -> void:
+	for x in range(60):
+		for y in range(60):
+			MapManager.tiles[Vector2i(x, y)] = MapManager.Terrain.PLAINS
+
+
+func _check_teleport_steps_to_the_chosen_tile() -> void:
+	_party(1)
+	_stage_map()
+	_open_ground()
+	var dest := Vector2i(20, 14)
+	_cast_at("teleport", dest)
+	if MapManager.get_party_position() != dest:
+		_fail("Teleport left the party at %s, aimed at %s"
+			% [str(MapManager.get_party_position()), str(dest)])
+	_done()
+
+
+## The last-ditch button, so it must find a refuge and not a shrine or a chest.
+func _check_intervention_finds_the_nearest_refuge() -> void:
+	_party(1)
+	_stage_map()
+	_open_ground()
+	_add_object(Vector2i(12, 10), "shrine", "Roadside Shrine")   # 2 tiles, not a refuge
+	_add_object(Vector2i(25, 10), "rest", "Near Teahouse")       # 15 tiles
+	_add_object(Vector2i(50, 10), "shop", "Far Market")          # 40 tiles
+
+	var said: String = _cast("intervention")
+	if MapManager.get_party_position() != Vector2i(25, 10):
+		_fail("Intervention put the party at %s; the nearest refuge is (25, 10) — %s"
+			% [str(MapManager.get_party_position()), said])
+	_done()
+
+
+## Generated maps are rolled fresh every load, and nothing kept the old one —
+## so leaving a world and returning handed you a different version of it.
+func _check_a_visited_map_comes_back_as_it_was() -> void:
+	_party(1)
+	_stage_map()
+	_open_ground()
+	MapManager.current_map_id = "probe_a"
+	MapManager.tiles[Vector2i(5, 5)] = MapManager.Terrain.LAVA
+	MapManager.visited_tiles[Vector2i(7, 7)] = true
+	var fingerprint: int = MapManager.tiles[Vector2i(5, 5)]
+
+	MapManager.stash_current_map()
+	if not MapManager.visited_maps.has("probe_a"):
+		_fail("leaving a map did not stash it")
+		_done()
+		return
+
+	# Somewhere else, then back.
+	MapManager.current_map_id = "probe_b"
+	MapManager.tiles.clear()
+	MapManager.visited_tiles.clear()
+	MapManager.load_map("probe_a")
+
+	if MapManager.current_map_id != "probe_a":
+		_fail("returning loaded '%s'" % MapManager.current_map_id)
+	elif MapManager.tiles.get(Vector2i(5, 5), -1) != fingerprint:
+		_fail("the lava at (5,5) is gone — the map was regenerated rather "
+			+ "than restored")
+	elif not MapManager.is_tile_visited(Vector2i(7, 7)):
+		_fail("the fog came back — what the party had explored was lost")
+	_done()
+
+
+## Planar Shift reaches a plane the party has no right to be in, and does not
+## give them a way back to it.
+func _check_planar_shift_crosses_without_unlocking() -> void:
+	var saved_world: String = GameState.current_world
+	var saved_unlocked: Array = GameState.unlocked_worlds.duplicate()
+	var saved_return: Dictionary = GameState.planar_return.duplicate()
+
+	GameState.current_world = "hell"
+	GameState.unlocked_worlds = ["hell"]
+	GameState.planar_return = {}
+
+	var ok: bool = GameState.begin_planar_excursion("god", 3, "hell_01", Vector2i(4, 4))
+	if not ok:
+		_fail("begin_planar_excursion refused a locked world — bypassing the "
+			+ "lock is the point of the spell")
+	elif GameState.current_world != "god":
+		_fail("the party is in '%s', expected god" % GameState.current_world)
+	elif "god" in GameState.unlocked_worlds:
+		_fail("Planar Shift unlocked the world it visited; only the Gate does that")
+
+	# And the pull home comes on schedule.
+	var home := false
+	for _i in 3:
+		home = GameState.tick_planar_excursion()
+	if not home:
+		_fail("the excursion did not end after its 3 steps")
+	elif GameState.current_world != "hell":
+		_fail("the party came home to '%s'" % GameState.current_world)
+
+	GameState.current_world = saved_world
+	GameState.unlocked_worlds.assign(saved_unlocked)
+	GameState.planar_return = saved_return
+	_done()
+
+
+## The Gate is the opposite bargain: it keeps what it opens.
+func _check_planar_gate_unlocks_what_it_opens() -> void:
+	var saved_world: String = GameState.current_world
+	var saved_unlocked: Array = GameState.unlocked_worlds.duplicate()
+	GameState.current_world = "hell"
+	GameState.unlocked_worlds = ["hell"]
+
+	_party(1)
+	_stage_map()
+	_cast("portal")
+
+	if GameState.current_world == "hell":
+		_fail("Planar Gate did not move the party")
+	elif not GameState.current_world in GameState.unlocked_worlds:
+		_fail("Planar Gate opened onto '%s' and did not unlock it"
+			% GameState.current_world)
+	if not GameState.planar_return.is_empty():
+		_fail("Planar Gate left a return pending; it is permanent")
+
+	GameState.current_world = saved_world
+	GameState.unlocked_worlds.assign(saved_unlocked)
 	_done()
