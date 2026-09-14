@@ -2037,6 +2037,30 @@
         "construct",
         "domain_mud"
       ]
+    },
+    "Fungal_Spawn": {
+      "display_name": "Fungal Spawn",
+      "base_hp": 25,
+      "base_mana": 0,
+      "base_stamina": 30,
+      "actions": 1,
+      "base_damage": 6,
+      "damage_type": "poison",
+      "base_initiative": 6,
+      "base_movement": 3,
+      "base_dodge": 5,
+      "base_armor": 2,
+      "base_crit": 0,
+      "base_accuracy": 0,
+      "resistances": {
+        "poison": 100,
+        "black": 25
+      },
+      "tags": [
+        "earth",
+        "fungal",
+        "undead"
+      ]
     }
   }
 }

@@ -751,6 +751,31 @@ for _sid, _sp in _spells.items():
         err("data->code", f"spell '{_sid}' has a non-object `on_kill`")
 
 
+# ── Per-team branches and expiry summons ────────────────────────────────────
+_summon_templates = load("resources/data/summon_templates.json")["templates"]
+for _sid, _sp in _spells.items():
+    for _side in ("on_allies", "on_enemies"):
+        _b = _sp.get(_side)
+        if _b is None:
+            continue
+        if not isinstance(_b, dict):
+            err("data->code", f"spell '{_sid}' has a non-object `{_side}`")
+            continue
+        for _st in _b.get("statuses", []):
+            if _st not in _status_names:
+                err("data->code", f"spell '{_sid}' `{_side}` names status "
+                    f"'{_st}', which does not exist")
+        if _b.get("save_type") and _save_attrs and _b["save_type"].lower() not in _save_attrs:
+            err("data->code", f"spell '{_sid}' `{_side}` saves on "
+                f"'{_b['save_type']}', which is not an attribute")
+
+for _st in load("resources/data/statuses.json")["statuses"]:
+    _hatch = _st.get("summon_on_expire")
+    if _hatch and _hatch not in _summon_templates:
+        err("data->code", f"status '{_st.get('name')}' hatches '{_hatch}' on "
+            "expiry, and no summon template by that name exists")
+
+
 # ── Retaliation and granted resistances ─────────────────────────────────────
 _RETAL_KEYS = {"range", "damage", "element", "reflect_pct", "status",
                "status_duration", "status_chance"}

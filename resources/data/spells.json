@@ -1438,11 +1438,6 @@
       "mana_cost": 40,
       "damage": 35,
       "damage_type": "crushing",
-      "special": {
-        "delay_turns": 3,
-        "summon_on_trigger": "Fungal_Spawn",
-        "dispellable": true
-      },
       "statuses_caused": [
         "Infected",
         "Bleeding"
@@ -6862,15 +6857,13 @@
       "mana_cost": 225,
       "duration": 1,
       "target": {
-        "type": "global"
+        "type": "global",
+        "eligible": "others"
       },
-      "special": {
-        "stops_time": true,
-        "only_caster_can_act": true,
-        "extra_turns": 1,
-        "upgrade_can_extend_to_2": true
-      },
-      "description": "Pin time itself in place - only caster can act for 1 turn. As Tilopa once nailed the sun to drink till sundown."
+      "description": "Pin time itself in place. Every other combatant loses their next turn, so the caster acts again before anyone moves. As Tilopa once nailed the sun to the sky to drink till sundown.",
+      "statuses_caused": [
+        "Time_Stopped"
+      ]
     },
     "planar_shift": {
       "name": "Planar Shift",
@@ -10431,28 +10424,23 @@
         "domain_spell"
       ],
       "mana_cost": 135,
-      "special": {
-        "enemies": {
-          "effect": "Stunned",
-          "save": "constitution",
-          "difficulty": "hard"
-        },
-        "allies": {
-          "effect": "Disoriented",
-          "magnitude": {
-            "awareness": -2,
-            "initiative": -2
-          },
-          "duration": 1,
-          "no_save": true
-        },
-        "caster_immune": true
-      },
       "target": {
-        "type": "battlefield"
+        "type": "battlefield",
+        "eligible": "others"
       },
       "description": "The sound hits everything. All enemies make a hard CON save or are stunned 1 turn. All allies take 1 turn of disorientation (−2 AWR, −2 Initiative) — no save. The caster is the source and feels nothing.",
-      "save_type": "Constitution"
+      "on_enemies": {
+        "statuses": [
+          "Stunned"
+        ],
+        "save_type": "Constitution",
+        "save_tier": "hard"
+      },
+      "on_allies": {
+        "statuses": [
+          "Disoriented"
+        ]
+      }
     },
     "bitter_word": {
       "name": "Bitter Word",
