@@ -2540,6 +2540,51 @@
         "cleanse"
       ],
       "description": "Ears ringing, footing uncertain. Everything is a little harder for a moment."
+    },
+    {
+      "name": "Lava_Walking",
+      "type": "buff",
+      "category": "buff",
+      "effects": [],
+      "grants_movement_ability": "lava_immunity",
+      "duration_type": "spellpower",
+      "dispellable": true,
+      "dispel_methods": [
+        "cleanse"
+      ],
+      "description": "The ground runs molten and does not care. Fire has no mobility magic of its own; this is the whole of it."
+    },
+    {
+      "name": "Marshtread",
+      "type": "buff",
+      "category": "buff",
+      "effects": [],
+      "grants_movement_ability": [
+        "surefoot_swamp",
+        "surefoot_snow"
+      ],
+      "duration_type": "spellpower",
+      "dispellable": true,
+      "dispel_methods": [
+        "cleanse"
+      ],
+      "description": "Ground that gives way holds you up. Bog and deep snow are the same problem."
+    },
+    {
+      "name": "Camels_Blessing",
+      "type": "buff",
+      "category": "buff",
+      "effects": [],
+      "grants_movement_ability": [
+        "surefoot_desert",
+        "surefoot_sand"
+      ],
+      "duration_type": "spellpower",
+      "dispellable": true,
+      "dispel_methods": [
+        "cleanse"
+      ],
+      "description": "Loose burning ground carries you as a road would."
     }
   ]
 }

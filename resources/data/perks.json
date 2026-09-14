@@ -8429,6 +8429,21 @@
       "description": "Passive. Dagger attacks against a target that has not yet acted this combat, or that is unaware of you, ignore Armor entirely rather than 25%.",
       "flavor": "Armour covers what a person expects to be hit.",
       "is_mantra": false
+    },
+    "sure_step": {
+      "name": "Sure Step",
+      "skill": "logistics",
+      "required_level": 4,
+      "requires_perks": [],
+      "description": "Broken ground no longer slows the party: forest, hills and ruins are crossed at open-road pace.",
+      "flavor": "Knowing where to put your feet is most of knowing where you are going.",
+      "is_mantra": false,
+      "non_combat": true,
+      "grants_movement_ability": [
+        "surefoot_forest",
+        "surefoot_hills",
+        "surefoot_ruins"
+      ]
     }
   },
   "cross_perks": {

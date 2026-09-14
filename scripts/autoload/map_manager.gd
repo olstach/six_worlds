@@ -785,15 +785,28 @@ func has_movement_ability(ability: String) -> bool:
 func refresh_movement_abilities(party: Array, status_defs: Dictionary) -> void:
 	var granted: Dictionary = {}
 	for character in party:
+		# From a spell, for as long as it lasts.
 		for entry in character.get("overworld_statuses", []):
-			var def: Dictionary = status_defs.get(entry.get("status", ""), {})
-			var grants = def.get("grants_movement_ability", null)
-			if grants is String and grants != "":
-				granted[grants] = true
-			elif grants is Array:
-				for ability in grants:
-					granted[str(ability)] = true
+			_collect_movement_ability(
+				status_defs.get(entry.get("status", ""), {}), granted)
+		# And from training, permanently. Sure Step is a Logistics perk rather
+		# than a spell because a quartermaster who cannot cross broken ground
+		# is not much of one — and because a general sure-footing SPELL would
+		# only have duplicated Levitate.
+		if PerkSystem:
+			for perk_id in PerkSystem.get_owned_perk_ids(character):
+				_collect_movement_ability(PerkSystem.get_perk_data(perk_id), granted)
 	movement_abilities = granted
+
+
+## Read a `grants_movement_ability` declaration, which may name one or several.
+func _collect_movement_ability(source: Dictionary, into: Dictionary) -> void:
+	var grants = source.get("grants_movement_ability", null)
+	if grants is String and grants != "":
+		into[grants] = true
+	elif grants is Array:
+		for ability in grants:
+			into[str(ability)] = true
 
 
 ## Clear all movement abilities (e.g. on map change)

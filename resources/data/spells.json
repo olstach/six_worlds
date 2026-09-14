@@ -1651,7 +1651,7 @@
         "Water",
         "Enchantment"
       ],
-      "level": 1,
+      "level": 3,
       "theme": "water",
       "tags": [
         "water",
@@ -1659,7 +1659,7 @@
         "mobility",
         "out_of_combat"
       ],
-      "mana_cost": 15,
+      "mana_cost": 40,
       "duration": "spellpower",
       "statuses_caused": [
         "Water_Walking"
@@ -10554,6 +10554,85 @@
         "mode": "adjacent",
         "mover": "caster"
       }
+    },
+    "lava_walking": {
+      "name": "Lava Walking",
+      "subschool": "Enchantment",
+      "schools": [
+        "Fire",
+        "Enchantment"
+      ],
+      "level": 5,
+      "theme": "fire",
+      "tags": [
+        "fire",
+        "buff",
+        "mobility",
+        "out_of_combat"
+      ],
+      "mana_cost": 75,
+      "duration": "spellpower",
+      "target": {
+        "type": "self"
+      },
+      "statuses_caused": [
+        "Lava_Walking"
+      ],
+      "description": "Walk on molten stone as on a road. The only way across lava that is not flight, and the only mobility magic Fire has."
+    },
+    "marshtread": {
+      "name": "Marshtread",
+      "subschool": "Enchantment",
+      "schools": [
+        "Earth",
+        "Water",
+        "Enchantment"
+      ],
+      "level": 1,
+      "theme": "mud",
+      "tags": [
+        "earth",
+        "water",
+        "buff",
+        "mobility",
+        "out_of_combat"
+      ],
+      "mana_cost": 15,
+      "duration": "spellpower",
+      "target": {
+        "type": "self"
+      },
+      "statuses_caused": [
+        "Marshtread"
+      ],
+      "description": "Bog and snowdrift hold your weight. Ground that gives way stops costing you the day."
+    },
+    "camels_blessing": {
+      "name": "Camel's Blessing",
+      "subschool": "Enchantment",
+      "schools": [
+        "Fire",
+        "Earth",
+        "Enchantment"
+      ],
+      "level": 1,
+      "theme": "sand",
+      "tags": [
+        "fire",
+        "earth",
+        "buff",
+        "mobility",
+        "out_of_combat"
+      ],
+      "mana_cost": 15,
+      "duration": "spellpower",
+      "target": {
+        "type": "self"
+      },
+      "statuses_caused": [
+        "Camels_Blessing"
+      ],
+      "description": "Sand and hot stone carry you as a road would. Named for the only animal that crosses them without complaint."
     }
   }
 }
