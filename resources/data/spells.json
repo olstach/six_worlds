@@ -6697,20 +6697,26 @@
       "level": 7,
       "theme": "space",
       "tags": [
-        "space",
         "mobility",
-        "out_of_combat"
+        "out_of_combat",
+        "space"
       ],
       "mana_cost": 135,
       "target": {
         "type": "ground"
       },
-      "description": "Teleport oneself or another to target location",
+      "description": "Step across up to fifteen tiles of the map to any ground you can stand on. In a fight it moves only the caster; out of one it takes the party.",
       "reposition": {
         "mode": "teleport",
         "self": true,
         "range": 12
-      }
+      },
+      "translocate": {
+        "how": "tile",
+        "range": 15
+      },
+      "map_target": "tile",
+      "map_target_range": 15
     },
     "wrathful_binding": {
       "name": "Wrathful Binding",
@@ -6754,22 +6760,22 @@
         "Space",
         "Sorcery"
       ],
-      "level": 7,
+      "level": 5,
       "theme": "space",
       "tags": [
+        "escape",
+        "out_of_combat",
         "space",
-        "utility",
-        "escape"
+        "utility"
       ],
-      "mana_cost": 135,
+      "mana_cost": 75,
       "target": {
         "type": "party"
       },
-      "special": {
-        "flee_combat": true,
-        "teleport_to_safety": true
-      },
-      "description": "Flee combat, teleport party to safety"
+      "description": "Something older than you takes an interest. The party is pulled to the nearest town, teahouse or market, however far that is.",
+      "translocate": {
+        "how": "refuge"
+      }
     },
     "psychic_tremor": {
       "name": "Psychic Tremor",
@@ -6866,26 +6872,26 @@
         "Space",
         "Sorcery"
       ],
-      "level": 9,
+      "level": 7,
       "theme": "space",
       "tags": [
-        "space",
         "mobility",
+        "out_of_combat",
+        "space",
         "world"
       ],
-      "mana_cost": 225,
+      "mana_cost": 135,
       "target": {
         "type": "party"
       },
-      "special": {
-        "move_to_different_world": true,
-        "same_location_different_plane": true,
-        "requires_world_unlocked": true
-      },
-      "description": "Move to same spot in different world, if unlocked"
+      "description": "The party falls sideways out of this world into another — any other, including ones they have no right to be in — and is pulled back after thirty steps. A way to see somewhere, or to stop being where you are.",
+      "translocate": {
+        "how": "excursion",
+        "steps": 30
+      }
     },
     "portal": {
-      "name": "Portal",
+      "name": "Planar Gate",
       "subschool": "Sorcery",
       "schools": [
         "Space",
@@ -6894,22 +6900,20 @@
       "level": 9,
       "theme": "space",
       "tags": [
-        "space",
         "mobility",
+        "out_of_combat",
+        "space",
         "utility"
       ],
       "mana_cost": 225,
       "duration": "permanent_until_used",
       "target": {
-        "type": "ground",
-        "requires_two_points": true
+        "type": "party"
       },
-      "special": {
-        "creates_permanent_portal": true,
-        "between_map_locations": true,
-        "bidirectional": true
-      },
-      "description": "Establish permanent portal between two map locations"
+      "description": "Open a way onto a plane the party has never reached, and leave it open. The realm is unlocked for good — the only means of reaching one without walking the road that leads there.",
+      "translocate": {
+        "how": "gate"
+      }
     },
     "spellstrike": {
       "name": "Spellstrike",

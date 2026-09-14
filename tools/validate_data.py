@@ -751,6 +751,28 @@ for _sid, _sp in _spells.items():
         err("data->code", f"spell '{_sid}' has a non-object `on_kill`")
 
 
+# ── Translocation ───────────────────────────────────────────────────────────
+_mm_src3 = open(os.path.join(ROOT, "scripts/autoload/map_manager.gd"), encoding="utf-8").read()
+_HOWS = {"tile", "refuge", "excursion", "gate"}
+for _sid, _sp in _spells.items():
+    _tr = _sp.get("translocate")
+    if _tr is None:
+        continue
+    if not isinstance(_tr, dict):
+        err("data->code", f"spell '{_sid}' has a non-object `translocate`")
+        continue
+    if _tr.get("how") not in _HOWS:
+        err("data->code", f"spell '{_sid}' translocates by '{_tr.get('how')}', "
+            "which _apply_translocation does not resolve")
+    if "out_of_combat" not in _sp.get("tags", []):
+        err("data->code", f"spell '{_sid}' translocates but is not tagged "
+            "out_of_combat, so it can never reach the map")
+    # A tile destination has to be pointed at, or it has no destination.
+    if _tr.get("how") == "tile" and _sp.get("map_target") != "tile":
+        err("data->code", f"spell '{_sid}' translocates to a tile but declares "
+            "no `map_target: tile`, so nothing would ever aim it")
+
+
 # ── Mob effects ─────────────────────────────────────────────────────────────
 _mm_src2 = open(os.path.join(ROOT, "scripts/autoload/map_manager.gd"), encoding="utf-8").read()
 _m = re.search(r"const MOB_EFFECTS[^=]*=\s*\[(.*?)\]", _mm_src2, re.S)

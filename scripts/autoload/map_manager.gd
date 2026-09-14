@@ -461,8 +461,35 @@ func get_remaining_path() -> Array[Vector2i]:
 # ============================================
 
 ## Load a map from JSON data
+## Every map the party has been on this run, by id, in the same shape
+## get_save_data() produces.
+##
+## Generated maps are built with randomize() and nothing kept the old one, so
+## walking back through a portal handed you a DIFFERENT version of the world
+## you had just explored — new terrain, new objects, mobs you had already dealt
+## with standing about again. It did not show because the realms are mostly
+## one-way, and it became unavoidable the moment a spell could take you
+## somewhere and bring you back.
+var visited_maps: Dictionary = {}
+
+
+## Put the current map away before leaving it, so returning finds it as it was.
+func stash_current_map() -> void:
+	if current_map_id != "":
+		visited_maps[current_map_id] = get_save_data()
+
+
 func load_map(map_id: String) -> bool:
 	stop_movement()
+
+	# Somewhere we have been: restore it rather than rolling a new one.
+	if map_id != current_map_id and visited_maps.has(map_id):
+		stash_current_map()
+		load_save_data(visited_maps[map_id])
+		print("Map restored from this run: ", map_id)
+		return true
+	if map_id != current_map_id:
+		stash_current_map()
 
 	# Try static JSON map first
 	var file_path = "res://resources/data/maps/%s.json" % map_id
@@ -969,6 +996,21 @@ func _random_walkable_tile(from: Vector2i, min_dist: int = -1, max_dist: int = -
 	if candidates.is_empty():
 		return from
 	return candidates[randi() % candidates.size()]
+
+
+## The closest object of one of `icons`, or {} if there is none.
+func nearest_object_of(origin: Vector2i, icons: Array) -> Dictionary:
+	var best: Dictionary = {}
+	var best_dist: int = 1 << 30
+	for pos in objects:
+		var obj: Dictionary = objects[pos]
+		if not obj.get("icon", "") in icons:
+			continue
+		var dist: int = maxi(absi(pos.x - origin.x), absi(pos.y - origin.y))
+		if dist < best_dist:
+			best_dist = dist
+			best = obj
+	return best
 
 
 ## Rough compass bearing, for telling someone which way to walk.
@@ -1993,7 +2035,8 @@ func get_save_data() -> Dictionary:
 		"mobs": _serialize_mobs(),
 		"regions": regions.duplicate(true),
 		"movement_abilities": movement_abilities.duplicate(),
-		"searched_tiles": _serialize_positions(searched_tiles.keys())
+		"searched_tiles": _serialize_positions(searched_tiles.keys()),
+		"visited_maps": visited_maps.duplicate(true)
 	}
 
 
@@ -2049,6 +2092,12 @@ func load_save_data(data: Dictionary) -> void:
 		var parts = pos_str.split(",")
 		if parts.size() == 2:
 			searched_tiles[Vector2i(int(parts[0]), int(parts[1]))] = true
+
+	# Other maps visited this run. Guarded: load_save_data is also how a
+	# stashed map is restored, and that inner call must not wipe the stash it
+	# was read from.
+	if data.has("visited_maps"):
+		visited_maps = (data["visited_maps"] as Dictionary).duplicate(true)
 
 	# Notify renderer and other listeners that the map is ready
 	map_loaded.emit(current_map_id)

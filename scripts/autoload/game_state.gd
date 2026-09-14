@@ -176,6 +176,40 @@ func travel_to_world(world_name: String) -> bool:
 	else:
 		return false
 
+## Where the party was before a Planar Shift, and how long they have left.
+##
+## {world, map_id, x, y, steps_left}. Empty when nobody is away.
+var planar_return: Dictionary = {}
+
+
+## Send the party to another plane for a while. Bypasses `unlocked_worlds`
+## deliberately — reaching somewhere is not the same as having a way back to
+## it, and this spell grants the first without the second. The world is NOT
+## unlocked; only a Planar Gate does that.
+func begin_planar_excursion(world_name: String, steps: int,
+		from_map: String, at: Vector2i) -> bool:
+	if not world_name in WORLDS or world_name == current_world:
+		return false
+	planar_return = {
+		"world": current_world, "map_id": from_map,
+		"x": at.x, "y": at.y, "steps_left": steps,
+	}
+	current_world = world_name
+	return true
+
+
+## One step of an excursion. Returns true when the party has just been pulled
+## home, so the caller can load the map they came from.
+func tick_planar_excursion() -> bool:
+	if planar_return.is_empty():
+		return false
+	planar_return.steps_left = int(planar_return.steps_left) - 1
+	if planar_return.steps_left > 0:
+		return false
+	current_world = planar_return.get("world", current_world)
+	return true
+
+
 ## Unlock a world directly - called when a portal to a new realm is discovered
 func unlock_world(world_name: String) -> void:
 	if world_name in WORLDS and world_name not in unlocked_worlds:
