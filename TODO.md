@@ -130,6 +130,16 @@ The mirror image of dead data: code paths that work and are never exercised.
   (~3% per trait). Creation now rolls one, which makes them reachable, but
   seeding companions would make the party feel much more distinct. Deliberately
   left to Olaf, since it is companion characterisation.
+- [ ] **Interactions with friendly groups.** Open Heart (White/Ench. 5) turns
+      a hostile creature on the map permanently friendly, and a FRIENDLY mob
+      opens an event dialog when met — but only if it carries an `event_id`,
+      and one talked round mid-journey has no conversation written for it. It
+      stands aside instead of blocking the road, which is honest but thin.
+      What it wants: a small set of parley events a pacified creature can draw
+      from, and then the things Olaf named — trade, and whatever other
+      interaction types friendly groups should support. The mechanism is
+      built; this is content plus a default event.
+
 - [ ] **Conversation with the dead, as an event option.** `converse_with_the
       _dead` (L1 White/Black) has no combat use and no map use — speaking with
       a corpse is an *event* beat. It should appear as a blue requirement

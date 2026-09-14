@@ -1512,6 +1512,19 @@ func _apply_overworld_spell(spell_id: String, spell_data: Dictionary, caster: Di
 		var scope: int = 99 if spell_data["resurrection"].get("scope", "single") == "all_allies" else 1
 		return _raise_the_fallen(spell_data, scope)
 
+	# A spell aimed at something out on the map, rather than at the party.
+	if spell_data.has("mob_effect") and MapManager:
+		var hit: Dictionary = MapManager.affect_nearest_mob(
+			MapManager.get_party_position(), spell_data["mob_effect"])
+		if not hit.get("ok", false):
+			return "The spell finds nothing to work on — %s" % hit.get("reason", "")
+		match spell_data["mob_effect"].get("what", ""):
+			"sleep":     return "%s sleeps" % hit.name
+			"befriend":  return "%s no longer means you harm" % hit.name
+			"displace":  return "%s is swept aside" % hit.name
+			"banish":    return "%s is gone from the road" % hit.name
+		return "%s is affected" % hit.name
+
 	# A divination shows the party something rather than doing anything to
 	# them, so it resolves before targeting and never touches a party member.
 	if spell_data.has("reveal") and MapManager:

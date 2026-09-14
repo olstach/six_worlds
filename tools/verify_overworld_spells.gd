@@ -13,7 +13,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 20
+const EXPECTED_CHECKS: int = 25
 
 var _menu: Node
 var _saved_party: Array = []
@@ -57,6 +57,12 @@ func _ready() -> void:
 	_check_a_reveal_respects_its_radius()
 	_check_survey_shows_places_not_enemies()
 	_check_wayfinding_names_the_nearest_shelter()
+
+	_check_peace_puts_the_nearest_creature_to_sleep()
+	_check_a_sleeping_creature_stops_and_wakes()
+	_check_open_heart_ends_the_hostility()
+	_check_misdirection_moves_it_a_short_way()
+	_check_begone_sends_it_further_than_misdirection()
 
 	_finish()
 
@@ -473,9 +479,19 @@ func _stage_map() -> void:
 	MapManager.party_position = Vector2i(10, 10)
 
 
+## Matches the shape MapManager spawns, not a minimal stub — tick_mobs reads
+## `is_moving` unguarded, and a fixture thinner than the real thing fails for
+## reasons that have nothing to do with the spell under test.
 func _add_mob(id: String, at: Vector2i) -> void:
-	MapManager.mobs.append({"id": id, "position": at, "name": id,
-		"icon": "enemy", "mode": 0, "attitude": 1})
+	MapManager.mobs.append({
+		"id": id, "position": at, "name": id, "icon": "enemy",
+		"mode": 0, "attitude": 1, "is_moving": false, "is_pursuing": false,
+		"roam_timer": 0.0, "roam_radius": 4, "roam_pause": 1.0,
+		"home_position": at, "pursuit_path": [] as Array[Vector2i],
+		"pursuit_path_index": 0, "pursuit_timer": 0.0,
+		"detect_range": 3, "leash_range": 5, "aggression": 0.0,
+		"data": {},
+	})
 
 
 func _add_object(at: Vector2i, icon: String, name: String) -> void:
@@ -566,4 +582,123 @@ func _check_wayfinding_names_the_nearest_shelter() -> void:
 			revealed += 1
 	if revealed != 1:
 		_fail("Wayfinding revealed %d places; it should show exactly one" % revealed)
+	_done()
+
+
+# ── Mob handling ─────────────────────────────────────────────────────────────
+
+## The nearest one, because there is no way to point at a creature on the
+## overworld — and because you deal with what is bearing down on you.
+func _check_peace_puts_the_nearest_creature_to_sleep() -> void:
+	_party(1)
+	_stage_map()
+	_add_mob("close", Vector2i(13, 10))    # 3 tiles
+	_add_mob("distant", Vector2i(30, 10))  # 20 tiles, outside radius 6
+
+	_cast("peace")
+	if int(MapManager.mobs[0].get("asleep_steps", 0)) <= 0:
+		_fail("Peace left the nearest creature awake")
+	if int(MapManager.mobs[1].get("asleep_steps", 0)) > 0:
+		_fail("Peace also reached a creature 20 tiles away on a radius of 6")
+
+	# The radius only bites when the NEAREST creature is out of reach — with
+	# two in play the spell picks the closer one either way, so dropping the
+	# check entirely would go unnoticed. One distant creature is the case that
+	# tells them apart.
+	_party(1)
+	_stage_map()
+	_add_mob("far_only", Vector2i(30, 10))   # 20 tiles, radius is 6
+	var said: String = _cast("peace")
+	if int(MapManager.mobs[0].get("asleep_steps", 0)) > 0:
+		_fail("Peace reached the only creature on the map at 20 tiles")
+	if not "nothing" in said:
+		_fail("Peace with nothing in range said '%s'" % said)
+	_done()
+
+
+## Sleep has to stop the creature AND let the party past, then run out.
+func _check_a_sleeping_creature_stops_and_wakes() -> void:
+	_party(1)
+	_stage_map()
+	_add_mob("sleeper", Vector2i(13, 10))
+	MapManager.mobs[0]["is_pursuing"] = true
+	MapManager.mobs[0]["mode"] = 2   # ROAMING
+	_cast("peace")
+
+	if MapManager.mobs[0].get("is_pursuing", false):
+		_fail("a sleeping creature is still giving chase")
+
+	var stayed: Vector2i = MapManager.mobs[0].position
+	MapManager.tick_mobs()
+	if MapManager.mobs[0].position != stayed:
+		_fail("a sleeping roamer wandered from %s to %s"
+			% [str(stayed), str(MapManager.mobs[0].position)])
+
+	# Five steps, then awake.
+	for _i in 6:
+		MapManager.tick_mobs()
+	if int(MapManager.mobs[0].get("asleep_steps", 0)) > 0:
+		_fail("the creature is still asleep after 7 steps of a 5-step spell")
+	_done()
+
+
+func _check_open_heart_ends_the_hostility() -> void:
+	_party(1)
+	_stage_map()
+	_add_mob("brigand", Vector2i(13, 10))
+	MapManager.mobs[0]["attitude"] = 2   # AGGRESSIVE
+	MapManager.mobs[0]["is_pursuing"] = true
+
+	_cast("open_heart")
+	if MapManager.mobs[0].attitude != 0:   # FRIENDLY
+		_fail("Open Heart left the creature at attitude %s"
+			% str(MapManager.mobs[0].attitude))
+	if MapManager.mobs[0].get("is_pursuing", false):
+		_fail("a befriended creature is still pursuing")
+	_done()
+
+
+func _check_misdirection_moves_it_a_short_way() -> void:
+	_party(1)
+	_stage_map()
+	for x in range(60):
+		for y in range(60):
+			MapManager.tiles[Vector2i(x, y)] = MapManager.Terrain.PLAINS
+	_add_mob("shunted", Vector2i(14, 10))
+	var was: Vector2i = MapManager.mobs[0].position
+
+	_cast("misdirection")
+	var now: Vector2i = MapManager.mobs[0].position
+	if now == was:
+		_fail("Misdirection did not move the creature")
+	else:
+		var moved: int = maxi(absi(now.x - was.x), absi(now.y - was.y))
+		if moved < 6 or moved > 8:
+			_fail("Misdirection moved the creature %d tiles; 6-8 was intended"
+				% moved)
+	_done()
+
+
+## Begone! is the same idea without a leash — anywhere on the map, which will
+## usually be much further than Misdirection.
+func _check_begone_sends_it_further_than_misdirection() -> void:
+	_party(1)
+	_stage_map()
+	for x in range(60):
+		for y in range(60):
+			MapManager.tiles[Vector2i(x, y)] = MapManager.Terrain.PLAINS
+	_add_mob("banished", Vector2i(14, 10))
+	var was: Vector2i = MapManager.mobs[0].position
+
+	# Averaged, because a random tile on a 60x60 map is occasionally nearby.
+	var total := 0
+	for _i in 8:
+		MapManager.mobs[0]["position"] = was
+		_cast("begone")
+		total += maxi(absi(MapManager.mobs[0].position.x - was.x),
+			absi(MapManager.mobs[0].position.y - was.y))
+	var mean: float = float(total) / 8.0
+	if mean <= 8.0:
+		_fail("Begone! averaged %.1f tiles over 8 casts — no further than "
+			% mean + "Misdirection, so the two spells are the same spell")
 	_done()
