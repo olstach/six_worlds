@@ -13,7 +13,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 31
+const EXPECTED_CHECKS: int = 33
 
 var _menu: Node
 var _saved_party: Array = []
@@ -70,6 +70,8 @@ func _ready() -> void:
 	_check_a_visited_map_comes_back_as_it_was()
 	_check_planar_shift_crosses_without_unlocking()
 	_check_planar_gate_unlocks_what_it_opens()
+	_check_the_gate_goes_where_it_is_told()
+	_check_every_world_is_offered_to_the_gate()
 
 	_finish()
 
@@ -899,4 +901,83 @@ func _check_planar_gate_unlocks_what_it_opens() -> void:
 
 	GameState.current_world = saved_world
 	GameState.unlocked_worlds.assign(saved_unlocked)
+	_done()
+
+
+## The Gate is the spell that decides where it goes. Choosing for the caster
+## would miss the whole point of it.
+func _check_the_gate_goes_where_it_is_told() -> void:
+	var saved_world: String = GameState.current_world
+	var saved_unlocked: Array = GameState.unlocked_worlds.duplicate()
+	GameState.current_world = "hell"
+	GameState.unlocked_worlds = ["hell", "hungry_ghost", "animal"]
+
+	_party(1)
+	_stage_map()
+	var spell: Dictionary = CombatManager.get_spell("portal").duplicate(true)
+	spell["translocate"] = (spell["translocate"] as Dictionary).duplicate()
+
+	# An ALREADY-UNLOCKED world, which the automatic pick would never choose —
+	# it prefers unreached ones. Only an explicit choice lands here.
+	spell["translocate"]["world"] = "animal"
+	_menu._apply_overworld_spell("portal", spell, CharacterSystem.party[0])
+	if GameState.current_world != "animal":
+		_fail("the Gate was told 'animal' and opened onto '%s'"
+			% GameState.current_world)
+
+	# And somewhere never reached.
+	GameState.current_world = "hell"
+	spell["translocate"]["world"] = "god"
+	_menu._apply_overworld_spell("portal", spell, CharacterSystem.party[0])
+	if GameState.current_world != "god":
+		_fail("the Gate was told 'god' and opened onto '%s'"
+			% GameState.current_world)
+	elif not "god" in GameState.unlocked_worlds:
+		_fail("the Gate reached an unvisited plane and did not keep it")
+
+	GameState.current_world = saved_world
+	GameState.unlocked_worlds.assign(saved_unlocked)
+	_done()
+
+
+## Every realm is offered, including the ones never reached — reaching them is
+## what the spell is for. Only the one underfoot is refused.
+func _check_every_world_is_offered_to_the_gate() -> void:
+	var offered := 0
+	var refused := 0
+	for world_id in GameState.WORLDS:
+		if world_id == GameState.current_world:
+			refused += 1
+		else:
+			offered += 1
+	if GameState.WORLDS.size() != 6:
+		_fail("expected six realms, found %d" % GameState.WORLDS.size())
+	if offered != 5 or refused != 1:
+		_fail("the picker would offer %d realms and refuse %d; expected 5 and 1"
+			% [offered, refused])
+
+	# And the Cast button would raise the picker for it. The button cannot be
+	# pressed headless, so the rule it applies lives in a function both it and
+	# this check call — a branch nothing can reach is a branch nothing checks.
+	if _menu.spell_prompt_kind(CombatManager.get_spell("portal")) != "world":
+		_fail("Planar Gate would not raise the world picker")
+	if _menu.spell_prompt_kind(CombatManager.get_spell("peace")) != "mob":
+		_fail("Peace would not raise the creature picker")
+	if _menu.spell_prompt_kind(CombatManager.get_spell("teleport")) != "tile":
+		_fail("Teleport would not raise the tile picker")
+	if _menu.spell_prompt_kind(CombatManager.get_spell("lesser_heal")) != "":
+		_fail("Lesser Heal would stop to ask something")
+
+	# The whole pending-cast path, the way the picker drives it.
+	var saved_world2: String = GameState.current_world
+	GameState.current_world = "hell"
+	_menu._pending_map_cast = {"spell_id": "portal",
+		"spell_data": CombatManager.get_spell("portal"),
+		"caster": CharacterSystem.party[0]}
+	CharacterSystem.party[0]["derived"]["current_mana"] = 400
+	_menu.resolve_pending_world_cast("asura")
+	if GameState.current_world != "asura":
+		_fail("resolving a pending world cast for 'asura' landed on '%s'"
+			% GameState.current_world)
+	GameState.current_world = saved_world2
 	_done()

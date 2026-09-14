@@ -6913,7 +6913,8 @@
       "description": "Open a way onto a plane the party has never reached, and leave it open. The realm is unlocked for good — the only means of reaching one without walking the road that leads there.",
       "translocate": {
         "how": "gate"
-      }
+      },
+      "world_target": true
     },
     "spellstrike": {
       "name": "Spellstrike",

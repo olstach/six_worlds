@@ -130,6 +130,28 @@ The mirror image of dead data: code paths that work and are never exercised.
   (~3% per trait). Creation now rolls one, which makes them reachable, but
   seeding companions would make the party feel much more distinct. Deliberately
   left to Olaf, since it is companion characterisation.
+- [ ] **Walking back between worlds — the multiverse, not the ladder.**
+      Map state is solved as of 2026-09-14: `MapManager.visited_maps` keeps
+      every map the run has been on and restores it rather than regenerating,
+      and it saves with the run. What is NOT solved is *navigation*. Each realm
+      has exactly one portal and it points forward; `unlocked_worlds` is read
+      only by KarmaSystem, for choosing a reincarnation destination.
+
+      So the only way back to an earlier world is the Planar Gate — a level 9
+      Space/Sorcery spell. That makes the multiverse a capstone reward rather
+      than something that opens gradually as you go.
+
+      What it wants: **return portals**. A realm's portal should be two-way
+      once its far side has been reached, or each realm should carry a way
+      back alongside the way on. The world picker built for the Gate is
+      already the UI for it — `_open_world_picker()` in overworld.gd takes a
+      label and hands back a world id.
+
+      The design question underneath, which is Olaf's: should backtracking be
+      free, cost time or supplies, or carry a karmic price? A realm you can
+      leave and re-enter at will is a very different game from one you pass
+      through once.
+
 - [ ] **Interactions with friendly NPCs and groups.** A mob with the FRIENDLY
       attitude opens an event dialog when the party meets it — but only if it
       carries an `event_id`. There is no default, so a friendly creature

@@ -14,6 +14,10 @@ signal overworld_spell_cast(spell_name: String, detail: String)
 ## the overworld takes over; nothing is spent until a target is confirmed.
 signal overworld_spell_targeting(kind: String, reach: int, label: String)
 
+## A spell that crosses worlds and lets the caster say which. High bodhisattva
+## magic chooses where it goes.
+signal overworld_spell_world_choice(label: String)
+
 ## The cast waiting on a target: {spell_id, spell_data, caster}.
 var _pending_map_cast: Dictionary = {}
 
@@ -1422,13 +1426,16 @@ func _create_spell_card(spell_id: String, spell_data: Dictionary) -> PanelContai
 
 			# A spell that must be aimed spends nothing yet: the sheet closes,
 			# the map asks where, and the mana goes when a target is confirmed.
-			var aim: String = str(spell_data.get("map_target", ""))
-			if aim != "":
+			var prompt: String = spell_prompt_kind(spell_data)
+			if prompt != "":
 				_pending_map_cast = {"spell_id": spell_id, "spell_data": spell_data,
 					"caster": caster}
-				overworld_spell_targeting.emit(aim,
-					int(spell_data.get("map_target_range", -1)),
-					str(spell_data.get("name", spell_id)))
+				if prompt == "world":
+					overworld_spell_world_choice.emit(str(spell_data.get("name", spell_id)))
+				else:
+					overworld_spell_targeting.emit(prompt,
+						int(spell_data.get("map_target_range", -1)),
+						str(spell_data.get("name", spell_id)))
 				hide()
 				return
 
@@ -1539,7 +1546,11 @@ func _shift_plane(spec: Dictionary, permanent: bool) -> String:
 	if candidates.is_empty():
 		return "There is nowhere else to go"
 
-	var destination: String = candidates[0] if permanent 		else candidates[randi() % candidates.size()]
+	# A chosen world wins outright: the Gate is the spell that decides where it
+	# goes, and picking on the caster's behalf would miss the whole point.
+	var destination: String = str(spec.get("world", ""))
+	if destination == "" or destination == GameState.current_world:
+		destination = candidates[0] if permanent else candidates[randi() % candidates.size()]
 	var here: String = MapManager.current_map_id
 	var at: Vector2i = MapManager.get_party_position()
 
@@ -1577,6 +1588,41 @@ func resolve_pending_map_cast(tile: Vector2i) -> String:
 	derived["current_mana"] = max(0, int(derived.get("current_mana", 0)) - cost)
 	AudioManager.play("spell_cast")
 	return _apply_overworld_spell(spell_id, spell_data, caster, tile)
+
+
+## What must be answered before this spell can resolve: "world", "mob", "tile",
+## or "" for one that simply happens.
+##
+## A function rather than a condition inside the Cast button, so the rule can
+## be tested — the button itself cannot be pressed from a headless verifier,
+## and a branch nothing can reach is a branch nothing can check.
+func spell_prompt_kind(spell_data: Dictionary) -> String:
+	if bool(spell_data.get("world_target", false)):
+		return "world"
+	return str(spell_data.get("map_target", ""))
+
+
+## Finish a cast that was waiting on a choice of world.
+func resolve_pending_world_cast(world_id: String) -> String:
+	if _pending_map_cast.is_empty():
+		return ""
+	var spell_data: Dictionary = _pending_map_cast.spell_data
+	var caster: Dictionary = _pending_map_cast.caster
+	var spell_id: String = _pending_map_cast.spell_id
+	_pending_map_cast = {}
+
+	var derived: Dictionary = caster.get("derived", {})
+	var cost: int = int(spell_data.get("mana_cost", 0))
+	if int(derived.get("current_mana", 0)) < cost:
+		return "Not enough mana"
+	derived["current_mana"] = max(0, int(derived.get("current_mana", 0)) - cost)
+	AudioManager.play("spell_cast")
+
+	# The chosen destination rides along so _shift_plane need not guess.
+	var aimed: Dictionary = spell_data.duplicate(true)
+	aimed["translocate"] = (spell_data.get("translocate", {}) as Dictionary).duplicate()
+	aimed["translocate"]["world"] = world_id
+	return _apply_overworld_spell(spell_id, aimed, caster)
 
 
 ## Abandon a cast that was waiting on a target. Nothing was spent.
