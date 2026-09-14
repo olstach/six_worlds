@@ -3671,28 +3671,22 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 			_apply_status_effect(target, status_name, duration, 0, caster)
 			result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
 
-	# --- Status effects on failed save (from spell.statuses_caused_on_failed_save) ---
-	# Used by spells like metal_to_mud: all listed statuses are applied only if the target fails
-	# a saving throw. save_type names an attribute ("constitution", "finesse", etc.)
-	var save_statuses = spell.get("statuses_caused_on_failed_save", [])
-	if not save_statuses.is_empty():
-		var save_attr = spell.get("save_type", "constitution").to_lower()
-		var save_duration: int = _calculate_status_duration(caster, spell, bonus)
-		if not _spell_save(caster, target, spell, save_attr).success:  # failed save = effect applies
-			for status_name in save_statuses:
-				_apply_status_effect(target, status_name, save_duration, 0, caster)
-				result.effects_applied.append({"type": "status", "status": status_name, "applied": true})
+	# --- Outcomes gated on a saving throw ---
+	#
+	# One roll, two branches. Three separate fields used to say this —
+	# `statuses_caused_on_failed_save`, `on_failed_save_random_one_of`, and a
+	# pile of `*_on_failed_save` keys in `special` that nothing read — for a
+	# pattern that is the same every time: roll once, and what happens depends
+	# on the result. Bitter Word's author note spelled it out exactly ("Focus
+	# save negates the Silence; damage always applies"), which is why the damage
+	# above this block is deliberately not gated.
+	if spell.has("on_failed_save") or spell.has("on_passed_save"):
+		_apply_save_gated(caster, target, spell, bonus, result)
 
-	# --- Random status on failed save (from spell.on_failed_save_random_one_of) ---
-	# Used by spells like rain_of_mud: one random status from the list is applied on failed save.
-	var random_statuses = spell.get("on_failed_save_random_one_of", [])
-	if not random_statuses.is_empty():
-		var rand_save_attr = spell.get("save_type", "finesse").to_lower()
-		var rand_duration: int = _calculate_status_duration(caster, spell, bonus)
-		if not _spell_save(caster, target, spell, rand_save_attr).success:
-			var chosen_status = random_statuses[randi() % random_statuses.size()]
-			_apply_status_effect(target, chosen_status, rand_duration, 0, caster)
-			result.effects_applied.append({"type": "status", "status": chosen_status, "applied": true})
+	# --- Resource operations (from spell.resource_ops) ---
+	if spell.has("resource_ops"):
+		for res_spec in spell["resource_ops"]:
+			_apply_resource_op(caster, target, res_spec, result)
 
 	# --- Status removal (from spell.statuses_removed) ---
 	#
@@ -6611,6 +6605,135 @@ func get_skill_targeting(combat_data: Dictionary) -> String:
 ## See SaveSystem for the model. The percentage-based roll this replaced took no
 ## input at all from the caster, so a Constitution-12 target resisted every
 ## effect in the game at exactly 44% whoever cast it.
+## Roll the spell's save once and apply whichever branch it landed in.
+##
+##   "save_type": "Constitution",
+##   "on_failed_save": {"instant_kill": true},
+##   "on_failed_save": {"statuses": ["Damage_Debuff"], "random_one_of": [...]},
+##   "on_passed_save": {"damage_pct_of_max_hp": 50}
+##
+## The gate is general on purpose. Midas Touch turns someone to gold, Deathfog
+## kills outright and settles for damage if resisted, Metal to Mud corrodes
+## armour — the same roll, different consequences, and previously three
+## different fields plus several unread `special` keys.
+func _apply_save_gated(caster: Node, target: Node, spell: Dictionary,
+		bonus: int, result: Dictionary) -> void:
+	var save_attr: String = String(spell.get("save_type", "constitution")).to_lower()
+	var roll: Dictionary = _spell_save(caster, target, spell, save_attr)
+	var branch: Dictionary = spell.get(
+		"on_passed_save" if roll.success else "on_failed_save", {})
+	result.effects_applied.append({"type": "save", "passed": roll.success,
+		"roll": roll.get("roll", 0), "dc": roll.get("dc", 0)})
+	if branch.is_empty():
+		return
+
+	# Statuses, named or drawn at random from a set.
+	var duration: int = _calculate_status_duration(caster, spell, bonus)
+	for status_name in branch.get("statuses", []):
+		_apply_status_effect(target, status_name, duration, 0, caster)
+		result.effects_applied.append({"type": "status", "status": status_name,
+			"applied": true})
+	var pool: Array = branch.get("random_one_of", [])
+	if not pool.is_empty():
+		var chosen: String = pool[randi() % pool.size()]
+		_apply_status_effect(target, chosen, duration, 0, caster)
+		result.effects_applied.append({"type": "status", "status": chosen,
+			"applied": true})
+
+	# Damage measured against the victim rather than written flat, which is
+	# what an execute wants on a passed save.
+	if branch.has("damage_pct_of_max_hp"):
+		var dmg: int = maxi(1, int(target.max_hp * float(branch["damage_pct_of_max_hp"]) / 100.0))
+		apply_damage(target, dmg, spell.get("damage_type", "physical"))
+		result.effects_applied.append({"type": "damage", "amount": dmg,
+			"element": spell.get("damage_type", "physical"), "cause": "passed_save"})
+
+	if branch.has("damage"):
+		var flat: int = int(branch["damage"])
+		if flat > 0:
+			apply_damage(target, flat, spell.get("damage_type", "physical"))
+			result.effects_applied.append({"type": "damage", "amount": flat,
+				"element": spell.get("damage_type", "physical")})
+
+	# Outright death, and the rewards a death can carry.
+	if bool(branch.get("instant_kill", false)) and not target.is_dead:
+		combat_log.emit("%s is undone." % target.unit_name)
+		apply_damage(target, target.current_hp + target.max_hp, "true")
+		result.effects_applied.append({"type": "instant_kill", "target": target})
+		_grant_kill_reward(caster, target, spell.get("on_kill", {}), result)
+
+
+## What a kill pays out, beyond the usual end-of-combat rewards.
+##
+## Midas Touch turns its victim to gold, and Golden Blade and the golden cage
+## want the same thing. The amount is a fraction of the target's `xp_earned` —
+## the same measure the end-of-combat gold already uses, so a spell that pays
+## you for a kill cannot quietly out-earn the fight it happened in.
+func _grant_kill_reward(killer: Node, victim: Node, on_kill: Dictionary,
+		result: Dictionary) -> void:
+	if on_kill.is_empty() or not "team" in killer or killer.team != Team.PLAYER:
+		return
+	var gold_spec: Dictionary = on_kill.get("gold", {})
+	if gold_spec.is_empty():
+		return
+	var worth: int = 0
+	if "character_data" in victim:
+		worth = int(victim.character_data.get("xp_earned", 0))
+	var gold: int = int(gold_spec.get("flat", 0)) \
+		+ int(worth * float(gold_spec.get("pct_of_xp_worth", 0)) / 100.0)
+	if gold <= 0:
+		return
+	GameState.add_gold(gold)
+	combat_log.emit("%s's remains turn to gold — %d coin." % [victim.unit_name, gold])
+	result.effects_applied.append({"type": "gold", "amount": gold})
+
+
+## Drain, restore or move a resource between units.
+##
+##   {"op": "transfer", "resource": "mana", "from": "target", "to": "caster",
+##    "amount": {"pct_of_current": 60}}
+##
+## See ResourceOps: the vocabulary is shared so a vampiric weapon, a
+## restorative meal and this spell all say the same thing the same way.
+func _apply_resource_op(caster: Node, target: Node, spec: Dictionary,
+		result: Dictionary) -> void:
+	var mode: String = spec.get("op", "drain")
+	var resource: String = spec.get("resource", "mana")
+	if not ResourceOps.is_mode(mode):
+		push_warning("CombatManager: %s" % ResourceOps.explain_unknown_mode(mode))
+		return
+	if not ResourceOps.is_resource(resource):
+		push_warning("CombatManager: %s" % ResourceOps.explain_unknown_resource(resource))
+		return
+
+	var from_unit: Node = target if spec.get("from", "target") == "target" else caster
+	var to_unit: Node = caster if spec.get("to", "caster") == "caster" else target
+	var amount_spec: Dictionary = spec.get("amount", {})
+
+	match mode:
+		"drain":
+			var taken: int = ResourceOps.drain(from_unit, resource,
+				ResourceOps.amount_for(amount_spec, resource, from_unit, caster))
+			result.effects_applied.append({"type": "drain", "resource": resource,
+				"amount": taken})
+		"restore":
+			var given: int = ResourceOps.restore(to_unit, resource,
+				ResourceOps.amount_for(amount_spec, resource, to_unit, caster))
+			result.effects_applied.append({"type": "restore", "resource": resource,
+				"amount": given})
+		"transfer":
+			# Only what was actually there gets handed on, or a drain against an
+			# empty pool would create the resource out of nothing.
+			var moved: int = ResourceOps.drain(from_unit, resource,
+				ResourceOps.amount_for(amount_spec, resource, from_unit, caster))
+			var landed: int = ResourceOps.restore(to_unit, resource, moved)
+			if moved > 0:
+				combat_log.emit("%s draws %d %s from %s."
+					% [to_unit.unit_name, moved, resource, from_unit.unit_name])
+			result.effects_applied.append({"type": "transfer", "resource": resource,
+				"amount": moved, "landed": landed})
+
+
 func _spell_save(caster: Node, target: Node, spell: Dictionary,
 		save_type: String) -> Dictionary:
 	var dc: int = SaveSystem.dc_for(

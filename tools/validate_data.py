@@ -706,6 +706,51 @@ for _sid, _sp in _spells.items():
         err("data->code", f"spell '{_sid}' has a non-integer resurrection hp_pct")
 
 
+# ── Save gates, kill rewards and resource operations ────────────────────────
+_ro_src = open(os.path.join(ROOT, "scripts/combat/resource_ops.gd"), encoding="utf-8").read()
+_res_modes = _gd_list(_ro_src, "MODES")
+_res_kinds = set(re.findall(r'^\t"([a-z]+)":\s*\{"current"', _ro_src, re.M))
+if not _res_modes or not _res_kinds:
+    err("data->code", "could not read ResourceOps.MODES/RESOURCES — unchecked")
+
+_gate_keys = {"statuses", "random_one_of", "damage", "damage_pct_of_max_hp",
+              "instant_kill"}
+for _sid, _sp in _spells.items():
+    for _side in ("on_failed_save", "on_passed_save"):
+        _branch = _sp.get(_side)
+        if _branch is None:
+            continue
+        if not isinstance(_branch, dict):
+            err("data->code", f"spell '{_sid}' has a non-object `{_side}`")
+            continue
+        if not _sp.get("save_type"):
+            err("data->code", f"spell '{_sid}' declares `{_side}` but no "
+                "`save_type`, so there is no roll to gate it on")
+        for _k in _branch:
+            if _k not in _gate_keys:
+                err("data->code", f"spell '{_sid}' `{_side}` carries '{_k}', "
+                    "which _apply_save_gated does not resolve")
+        for _st in list(_branch.get("statuses", [])) + list(_branch.get("random_one_of", [])):
+            if _st not in _status_names:
+                err("data->code", f"spell '{_sid}' `{_side}` names status "
+                    f"'{_st}', which does not exist")
+
+    for _op in _sp.get("resource_ops", []):
+        if _op.get("op") not in _res_modes:
+            err("data->code", f"spell '{_sid}' uses resource op "
+                f"'{_op.get('op')}', which is not in ResourceOps.MODES")
+        if _op.get("resource") not in _res_kinds:
+            err("data->code", f"spell '{_sid}' moves resource "
+                f"'{_op.get('resource')}', which is not in ResourceOps.RESOURCES")
+        if not _op.get("amount"):
+            err("data->code", f"spell '{_sid}' has a resource op with no "
+                "`amount`, so it moves nothing")
+
+    _ok = _sp.get("on_kill")
+    if _ok is not None and not isinstance(_ok, dict):
+        err("data->code", f"spell '{_sid}' has a non-object `on_kill`")
+
+
 # ── Auras ────────────────────────────────────────────────────────────────────
 #
 # Four kinds of source may declare an aura, and all four name it the same way.

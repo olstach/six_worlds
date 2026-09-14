@@ -1044,8 +1044,10 @@
         "eligible": "enemy"
       },
       "description": "Strike with a blade of transmuted gold. Deals heavy physical damage. Kills leave the corpse gilded — adds bonus gold to post-combat loot.",
-      "special": {
-        "gold_on_kill": true
+      "on_kill": {
+        "gold": {
+          "pct_of_xp_worth": 10
+        }
       }
     },
     "golden_cage": {
@@ -1068,15 +1070,16 @@
       "statuses_caused": [
         "Caged"
       ],
-      "special": {
-        "gold_on_break": true,
-        "gold_dust_falls": true
-      },
       "target": {
         "type": "single",
         "eligible": "enemy"
       },
-      "description": "Imprison the target in a cage of living gold. When the cage breaks or the effect ends — gold dust falls. Adds a small gold bonus to post-combat loot."
+      "description": "Imprison the target in a cage of living gold. When the cage breaks or the effect ends — gold dust falls. Adds a small gold bonus to post-combat loot.",
+      "on_kill": {
+        "gold": {
+          "pct_of_xp_worth": 15
+        }
+      }
     },
     "implosion": {
       "name": "Implosion",
@@ -1187,16 +1190,20 @@
       "cost_modifier": 1.33,
       "damage": null,
       "save_type": "Constitution",
-      "special": {
-        "instant_kill": true,
-        "gold_on_kill": true,
-        "gold_scales_with": "enemy_level"
-      },
       "target": {
         "type": "single",
         "eligible": "enemy"
       },
-      "description": "Instant kill on failed resist, adds gold based on enemy level"
+      "description": "The target turns to soft gold from the inside. A hard Constitution save resists it entirely; failing it is death, and what is left is worth taking.",
+      "on_failed_save": {
+        "instant_kill": true
+      },
+      "on_kill": {
+        "gold": {
+          "pct_of_xp_worth": 25
+        }
+      },
+      "save_tier": "hard"
     },
     "herbal_remedy": {
       "name": "Herbal Remedy",
@@ -5869,11 +5876,15 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "special": {
-        "cloud_effect": true,
-        "instant_kill_on_failed_save": true,
-        "damage_on_passed_save": true
+        "cloud_effect": true
       },
-      "description": "Cloud that instantly kills on failed Constitution save, damage otherwise"
+      "description": "Cloud that instantly kills on failed Constitution save, damage otherwise",
+      "on_failed_save": {
+        "instant_kill": true
+      },
+      "on_passed_save": {
+        "damage_pct_of_max_hp": 25
+      }
     },
     "chameleon": {
       "name": "Chameleon",
@@ -6815,16 +6826,24 @@
         "utility"
       ],
       "mana_cost": 135,
-      "special": {
-        "drains_significant_mana": true,
-        "mana_transferred_to_caster": true
-      },
       "target": {
         "type": "single",
         "eligible": "enemy",
         "upgrade_scaling": "single → aoe → all_enemies"
       },
-      "description": "Drain significant mana from target, transfer to caster"
+      "description": "Draw the mana out of another caster and keep it. Takes most of what they are holding, so a full reservoir is worth more than a spent one.",
+      "resource_ops": [
+        {
+          "op": "transfer",
+          "resource": "mana",
+          "from": "target",
+          "to": "caster",
+          "amount": {
+            "pct_of_current": 60,
+            "per_spellpower": 0.5
+          }
+        }
+      ]
     },
     "nail_the_sun": {
       "name": "Nail the Sun",
@@ -7241,12 +7260,10 @@
         "type": "single",
         "eligible": "enemy"
       },
-      "special": {
-        "hp_threshold": "spellpower_scaling",
-        "instant_kill_on_failed_save": true,
-        "damage_on_passed_save": "50%_target_max_hp"
-      },
-      "description": "Instant death on failed Focus save if below HP threshold (scales with spellpower), 50% max HP damage on passed save"
+      "description": "Instant death on failed Focus save if below HP threshold (scales with spellpower), 50% max HP damage on passed save",
+      "on_failed_save": {
+        "instant_kill": true
+      }
     },
     "encourage": {
       "name": "Encourage",
@@ -9264,16 +9281,18 @@
       "damage": null,
       "duration": "spellpower",
       "save_type": "Constitution",
-      "statuses_caused_on_failed_save": [
-        "Damage_Debuff",
-        "Armor_Reduced"
-      ],
       "target": {
         "type": "single",
         "eligible": "enemy",
         "upgrade_scaling": "single → aoe → all_enemies"
       },
-      "description": "Metal corrodes into useless mud. On failed Constitution save: reduces target's damage output and armor."
+      "description": "Metal corrodes into useless mud. On failed Constitution save: reduces target's damage output and armor.",
+      "on_failed_save": {
+        "statuses": [
+          "Damage_Debuff",
+          "Armor_Reduced"
+        ]
+      }
     },
     "rain_of_mud": {
       "name": "Rain of Mud",
@@ -9295,11 +9314,6 @@
       "mana_cost": 225,
       "damage": null,
       "save_type": "Finesse",
-      "on_failed_save_random_one_of": [
-        "Blinded",
-        "Slowed",
-        "Disarmed"
-      ],
       "target": {
         "type": "aoe",
         "eligible": "enemy"
@@ -9310,7 +9324,14 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_radius_per_tier"
       },
-      "description": "A torrent of mud crashes down. Each enemy that fails a Finesse save is afflicted by one of: Blinded, Slowed, or Disarmed (random)."
+      "description": "A torrent of mud crashes down. Each enemy that fails a Finesse save is afflicted by one of: Blinded, Slowed, or Disarmed (random).",
+      "on_failed_save": {
+        "random_one_of": [
+          "Blinded",
+          "Slowed",
+          "Disarmed"
+        ]
+      }
     },
     "mindmuck": {
       "name": "Mindmuck",
@@ -9482,9 +9503,6 @@
       "mana_cost": 40,
       "damage": 10,
       "damage_type": "space",
-      "on_failed_save_random_one_of": [
-        "Blinded"
-      ],
       "save_type": "Awareness",
       "duration": 1,
       "target": {
@@ -9497,7 +9515,12 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_radius_per_tier"
       },
-      "description": "Shatter light into the eyes of all nearby enemies. Light space damage; 50% chance to Blind for 1 turn (Awareness save)."
+      "description": "Shatter light into the eyes of all nearby enemies. Light space damage; 50% chance to Blind for 1 turn (Awareness save).",
+      "on_failed_save": {
+        "random_one_of": [
+          "Blinded"
+        ]
+      }
     },
     "crystal_guardian": {
       "name": "Crystal Guardian",
@@ -10469,20 +10492,20 @@
       "mana_cost": 15,
       "damage": 12,
       "damage_type": "black",
-      "statuses_caused": [
-        "Silenced"
-      ],
       "save_type": "Focus",
       "special": {
-        "silence_chance": 50,
-        "silence_duration": 1,
-        "note": "Focus save negates the Silence; damage always applies"
+        "silence_chance": 50
       },
       "target": {
         "type": "single",
         "eligible": "enemy"
       },
-      "description": "Speak a syllable of pure negation. Minor black damage; 50% chance to Silence for 1 turn (Focus save to resist). Against casters, this is harassment. Against mantras already in progress, it may be devastating."
+      "description": "Speak a syllable of pure negation. Minor black damage; 50% chance to Silence for 1 turn (Focus save to resist). Against casters, this is harassment. Against mantras already in progress, it may be devastating.",
+      "on_failed_save": {
+        "statuses": [
+          "Silenced"
+        ]
+      }
     },
     "mark_for_death": {
       "name": "Mark for Death",
