@@ -10633,6 +10633,104 @@
         "Camels_Blessing"
       ],
       "description": "Sand and hot stone carry you as a road would. Named for the only animal that crosses them without complaint."
+    },
+    "wayfinding": {
+      "name": "Wayfinding",
+      "subschool": "Sorcery",
+      "schools": [
+        "Air",
+        "Sorcery"
+      ],
+      "level": 1,
+      "theme": "wind",
+      "tags": [
+        "divination",
+        "utility",
+        "out_of_combat"
+      ],
+      "mana_cost": 15,
+      "target": {
+        "type": "self"
+      },
+      "reveal": {
+        "what": "shelter",
+        "nearest": 1
+      },
+      "description": "Find the nearest shelter — a town, a shop, a teahouse — however far it lies, and which way to walk."
+    },
+    "sense_danger": {
+      "name": "Sense Danger",
+      "subschool": "Sorcery",
+      "schools": [
+        "Air",
+        "Sorcery"
+      ],
+      "level": 3,
+      "theme": "wind",
+      "tags": [
+        "divination",
+        "utility",
+        "out_of_combat"
+      ],
+      "mana_cost": 40,
+      "target": {
+        "type": "self"
+      },
+      "reveal": {
+        "what": "mobs",
+        "radius": 16
+      },
+      "description": "Every creature within sixteen tiles, seen or unseen. Turns a blind march into a decision."
+    },
+    "survey_the_land": {
+      "name": "Survey the Land",
+      "subschool": "Sorcery",
+      "schools": [
+        "Air",
+        "Earth",
+        "Sorcery"
+      ],
+      "level": 5,
+      "theme": "stone",
+      "tags": [
+        "divination",
+        "utility",
+        "out_of_combat"
+      ],
+      "mana_cost": 75,
+      "target": {
+        "type": "self"
+      },
+      "reveal": {
+        "what": "places",
+        "radius": 26
+      },
+      "description": "Every place worth walking to within twenty-six tiles — shops, shrines, temples, portals and what has been left lying about."
+    },
+    "mirror_scrying": {
+      "name": "Mirror Scrying",
+      "subschool": "Sorcery",
+      "schools": [
+        "Space",
+        "White",
+        "Sorcery"
+      ],
+      "level": 7,
+      "theme": "mirror",
+      "tags": [
+        "divination",
+        "utility",
+        "out_of_combat"
+      ],
+      "mana_cost": 135,
+      "target": {
+        "type": "self"
+      },
+      "reveal": {
+        "what": "all",
+        "radius": -1
+      },
+      "description": "Hold up the melong and the whole country appears in it: ground, roads, every place and every creature on them. Space, because the mirror does not look out — it looks across."
     }
   }
 }

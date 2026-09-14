@@ -13,7 +13,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 16
+const EXPECTED_CHECKS: int = 20
 
 var _menu: Node
 var _saved_party: Array = []
@@ -52,6 +52,11 @@ func _ready() -> void:
 	_check_lava_walking_opens_lava()
 	_check_per_terrain_footing_is_narrow()
 	_check_a_perk_grants_footing_permanently()
+
+	_check_sense_danger_finds_unseen_mobs()
+	_check_a_reveal_respects_its_radius()
+	_check_survey_shows_places_not_enemies()
+	_check_wayfinding_names_the_nearest_shelter()
 
 	_finish()
 
@@ -454,4 +459,111 @@ func _check_a_perk_grants_footing_permanently() -> void:
 		_fail("Sure Step lapsed after one step — a perk is not a status and "
 			+ "does not expire")
 	MapManager.tiles.erase(wood)
+	_done()
+
+
+# ── Divination ───────────────────────────────────────────────────────────────
+
+## Stage a mob and an object at known tiles, with the party at the origin.
+func _stage_map() -> void:
+	MapManager.mobs.clear()
+	MapManager.objects.clear()
+	MapManager.visited_tiles.clear()
+	MapManager.map_size = Vector2i(60, 60)
+	MapManager.party_position = Vector2i(10, 10)
+
+
+func _add_mob(id: String, at: Vector2i) -> void:
+	MapManager.mobs.append({"id": id, "position": at, "name": id,
+		"icon": "enemy", "mode": 0, "attitude": 1})
+
+
+func _add_object(at: Vector2i, icon: String, name: String) -> void:
+	MapManager.objects[at] = {"id": name, "position": at, "icon": icon,
+		"name": name, "visible": false, "type": 0}
+
+
+## A mob outside the fog is invisible until something shows it.
+func _check_sense_danger_finds_unseen_mobs() -> void:
+	_party(1)
+	_stage_map()
+	_add_mob("near_wolf", Vector2i(18, 10))    # 8 tiles — inside 16
+	if MapManager.get_visible_mobs().size() != 0:
+		_fail("an unvisited mob is already visible, so this proves nothing")
+		_done()
+		return
+
+	_cast("sense_danger")
+	if MapManager.get_visible_mobs().size() != 1:
+		_fail("Sense Danger revealed %d mobs, expected 1"
+			% MapManager.get_visible_mobs().size())
+	_done()
+
+
+## And one beyond its reach stays hidden — the radius is the spell.
+func _check_a_reveal_respects_its_radius() -> void:
+	_party(1)
+	_stage_map()
+	_add_mob("near_wolf", Vector2i(18, 10))    # 8 tiles
+	_add_mob("far_wolf", Vector2i(50, 10))     # 40 tiles — outside 16
+	_cast("sense_danger")
+
+	var seen: Array = MapManager.get_visible_mobs()
+	var names: Array[String] = []
+	for m in seen:
+		names.append(str(m.get("id", "")))
+	if not "near_wolf" in names:
+		_fail("Sense Danger missed a mob 8 tiles away")
+	if "far_wolf" in names:
+		_fail("Sense Danger reached a mob 40 tiles away on a radius of 16")
+
+	# Mirror Scrying has no radius at all and must reach both.
+	_cast("mirror_scrying")
+	if MapManager.get_visible_mobs().size() != 2:
+		_fail("Mirror Scrying showed %d of 2 mobs across the whole map"
+			% MapManager.get_visible_mobs().size())
+	_done()
+
+
+## Survey shows places, not creatures. A spell that quietly did both would
+## make Sense Danger pointless.
+func _check_survey_shows_places_not_enemies() -> void:
+	_party(1)
+	_stage_map()
+	_add_object(Vector2i(14, 10), "shop", "Bone Market")
+	_add_mob("lurker", Vector2i(14, 12))
+	_cast("survey_the_land")
+
+	var revealed := 0
+	for pos in MapManager.objects:
+		if MapManager.objects[pos].get("visible", false):
+			revealed += 1
+	if revealed != 1:
+		_fail("Survey the Land revealed %d of 1 place" % revealed)
+	if MapManager.get_visible_mobs().size() != 0:
+		_fail("Survey the Land also revealed creatures — that is Sense "
+			+ "Danger's job and the two would collapse into one spell")
+	_done()
+
+
+## Wayfinding finds the closest shelter at any distance, and says which way.
+func _check_wayfinding_names_the_nearest_shelter() -> void:
+	_party(1)
+	_stage_map()
+	_add_object(Vector2i(10, 45), "rest", "Far Teahouse")     # 35 south
+	_add_object(Vector2i(28, 10), "shop", "Nearer Market")    # 18 east
+	_add_object(Vector2i(12, 10), "enemy", "Ambush")          # close, not shelter
+
+	var said: String = _cast("wayfinding")
+	if not "Nearer Market" in said:
+		_fail("Wayfinding named '%s' — expected the nearer of two shelters" % said)
+	if not "east" in said:
+		_fail("Wayfinding gave no direction: '%s'" % said)
+
+	var revealed := 0
+	for pos in MapManager.objects:
+		if MapManager.objects[pos].get("visible", false):
+			revealed += 1
+	if revealed != 1:
+		_fail("Wayfinding revealed %d places; it should show exactly one" % revealed)
 	_done()
