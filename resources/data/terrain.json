@@ -1,0 +1,248 @@
+{
+  "_comment": "The ONE terrain vocabulary, shared by the overworld map and the battle grid. Each entry carries what the overworld needs (speed, the ability that opens it when impassable, display text) and what a battlefield needs (`battle`), so a tile of this ground means the same thing whichever scale you are looking at it on.",
+  "_comment_ids": "`id` must match MapManager.Terrain, which is what saved maps store. The battlefield mapping used to be a `match` on these numbers with the name in a comment — in two separate tables — so reordering the enum would silently remap every battlefield. Naming them here lets validate_data.py check the pairing instead.",
+  "_comment_battle": "`battle` says what a 9x6 block of this ground becomes. `tile` is the default passability for its tiles (floor/water/difficult/wall/pit). `height` raises it. `obstacles` is how many of each to scatter per block, and `hazard` an optional terrain effect with the chance of a tile carrying it. Every terrain has a battle block, including the flat ones — five terrains used to have none at all, which is why a desert fight looked exactly like a grassland one.",
+  "terrain": {
+    "plains": {
+      "id": 0,
+      "name": "Plains",
+      "speed": 1.0,
+      "description": "Open grassland. Normal movement speed.",
+      "battle": {
+        "tile": "floor",
+        "obstacles": {
+          "rock": 0.5
+        }
+      }
+    },
+    "road": {
+      "id": 1,
+      "name": "Road",
+      "speed": 2.0,
+      "description": "Paved path. Double movement speed.",
+      "battle": {
+        "tile": "floor",
+        "obstacles": {}
+      }
+    },
+    "forest": {
+      "id": 2,
+      "name": "Forest",
+      "speed": 0.5,
+      "description": "Dense woodland. Half movement speed.",
+      "battle": {
+        "tile": "difficult",
+        "obstacles": {
+          "tree": 4,
+          "fallen_tree": 1
+        }
+      },
+      "summon_affinity": {
+        "school": "earth",
+        "label": "the old forest"
+      }
+    },
+    "hills": {
+      "id": 3,
+      "name": "Hills",
+      "speed": 0.5,
+      "description": "Steep terrain. Half movement speed.",
+      "battle": {
+        "tile": "floor",
+        "height": 1,
+        "obstacles": {
+          "rock": 2
+        }
+      },
+      "summon_affinity": {
+        "school": "earth",
+        "label": "the hills"
+      }
+    },
+    "mountains": {
+      "id": 4,
+      "name": "Mountains",
+      "speed": -1.0,
+      "ability": "flight",
+      "description": "Impassable mountain peaks.",
+      "battle": {
+        "tile": "wall",
+        "height": 2,
+        "obstacles": {
+          "rock": 2
+        }
+      },
+      "summon_affinity": {
+        "school": "earth",
+        "label": "the mountain bones"
+      }
+    },
+    "water": {
+      "id": 5,
+      "name": "Water",
+      "speed": -1.0,
+      "ability": "water_walking",
+      "description": "Deep water. Cannot cross without a boat.",
+      "battle": {
+        "tile": "water",
+        "hazard": {
+          "effect": "wet",
+          "chance": 0.25,
+          "value": 0
+        },
+        "obstacles": {}
+      },
+      "summon_affinity": {
+        "school": "water",
+        "label": "the living water"
+      }
+    },
+    "swamp": {
+      "id": 6,
+      "name": "Swamp",
+      "speed": 0.5,
+      "description": "Boggy marsh. Half movement speed.",
+      "battle": {
+        "tile": "difficult",
+        "hazard": {
+          "effect": "poison",
+          "chance": 0.1,
+          "value": 3
+        },
+        "obstacles": {
+          "fallen_tree": 1,
+          "tree": 1
+        }
+      },
+      "summon_affinity": {
+        "school": "water",
+        "label": "the standing marsh"
+      }
+    },
+    "desert": {
+      "id": 7,
+      "name": "Desert",
+      "speed": 0.75,
+      "description": "Arid wasteland. Reduced movement speed.",
+      "battle": {
+        "tile": "difficult",
+        "obstacles": {
+          "rock": 1
+        }
+      },
+      "summon_affinity": {
+        "school": "fire",
+        "label": "the sun-struck waste"
+      }
+    },
+    "snow": {
+      "id": 8,
+      "name": "Snow",
+      "speed": 0.5,
+      "description": "Frozen tundra. Half movement speed.",
+      "battle": {
+        "tile": "difficult",
+        "hazard": {
+          "effect": "ice",
+          "chance": 0.2,
+          "value": 0
+        },
+        "obstacles": {
+          "rock": 0.5
+        }
+      },
+      "summon_affinity": {
+        "school": "water",
+        "label": "the deep drifts"
+      }
+    },
+    "lava": {
+      "id": 9,
+      "name": "Lava",
+      "speed": -1.0,
+      "ability": "lava_immunity",
+      "description": "Molten rock. Impassable.",
+      "battle": {
+        "tile": "pit",
+        "hazard": {
+          "effect": "fire",
+          "chance": 0.6,
+          "value": 5
+        },
+        "obstacles": {
+          "rock": 1
+        }
+      },
+      "summon_affinity": {
+        "school": "fire",
+        "label": "the burning ground"
+      }
+    },
+    "bridge": {
+      "id": 10,
+      "name": "Bridge",
+      "speed": 1.5,
+      "description": "Constructed crossing. Good movement speed.",
+      "battle": {
+        "tile": "floor",
+        "obstacles": {
+          "barricade": 1
+        }
+      }
+    },
+    "ice": {
+      "id": 11,
+      "name": "Ice",
+      "speed": 1.25,
+      "description": "Frozen surface. Slightly fast but treacherous.",
+      "battle": {
+        "tile": "floor",
+        "hazard": {
+          "effect": "ice",
+          "chance": 0.45,
+          "value": 0
+        },
+        "obstacles": {}
+      },
+      "summon_affinity": {
+        "school": "water",
+        "label": "the deep ice"
+      }
+    },
+    "sand": {
+      "id": 12,
+      "name": "Sand",
+      "speed": 0.75,
+      "description": "Loose sand. Reduced movement speed.",
+      "battle": {
+        "tile": "difficult",
+        "obstacles": {
+          "rock": 0.5
+        }
+      },
+      "summon_affinity": {
+        "school": "earth",
+        "label": "the shifting dunes"
+      }
+    },
+    "ruins": {
+      "id": 13,
+      "name": "Ruins",
+      "speed": 0.75,
+      "description": "Crumbling structures. Reduced movement speed.",
+      "battle": {
+        "tile": "difficult",
+        "obstacles": {
+          "pillar": 2,
+          "barricade": 1,
+          "rock": 1
+        }
+      },
+      "summon_affinity": {
+        "school": "black",
+        "label": "the charnel ruins"
+      }
+    }
+  },
+  "_comment_affinity": "`summon_affinity` is what a Summoning spell draws on when the battle is fought on this ground. It was a second table keyed on bare terrain integers in combat_manager.gd, which is how snow, desert and sand came to have none while ice did."
+}

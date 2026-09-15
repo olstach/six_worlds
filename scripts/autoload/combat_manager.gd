@@ -199,16 +199,11 @@ var battlefield_overworld_terrain: int = -1
 ## nagas in water, earth spirits in mountains, nature spirits in forest,
 ## hungry ghosts in ruins and charnel grounds.
 ## Values are MapManager.Terrain enum ints; see map_manager.gd.
-const SUMMON_TERRAIN_AFFINITY: Dictionary = {
-	5:  {"school": "water", "label": "the living water"},        # WATER
-	6:  {"school": "water", "label": "the standing marsh"},      # SWAMP
-	11: {"school": "water", "label": "the deep ice"},            # ICE
-	2:  {"school": "earth", "label": "the old forest"},          # FOREST
-	4:  {"school": "earth", "label": "the mountain bones"},      # MOUNTAINS
-	3:  {"school": "earth", "label": "the hills"},               # HILLS
-	13: {"school": "black", "label": "the charnel ruins"},       # RUINS
-	9:  {"school": "fire",  "label": "the burning ground"},      # LAVA
-}
+# Summoning draws on the spirits native to the ground a fight is on. This was
+# a table keyed on bare terrain integers with the names in comments — the same
+# shape as the battlefield mapping, and the reason snow, desert and sand had no
+# affinity while ice did. It lives in resources/data/terrain.json now, beside
+# everything else that ground means.
 
 # Combat rewards (filled before combat_ended signal, cleared on next combat start)
 var last_combat_rewards: Dictionary = {}
@@ -3177,7 +3172,7 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	if battlefield_overworld_terrain >= 0:
 		var schools_lower_sum: Array = spell.get("schools", []).map(func(s): return s.to_lower())
 		if "summoning" in schools_lower_sum:
-			var affinity: Dictionary = SUMMON_TERRAIN_AFFINITY.get(battlefield_overworld_terrain, {})
+			var affinity: Dictionary = Ground.summon_affinity_of(battlefield_overworld_terrain)
 			if not affinity.is_empty() and affinity.get("school", "") in schools_lower_sum:
 				var summon_delta := int(spellpower_bonus * 0.25)
 				spellpower_bonus += summon_delta

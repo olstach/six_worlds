@@ -1677,13 +1677,24 @@ func _on_discovery_made(_pos: Vector2i, discovery: Dictionary) -> void:
 
 ## Sample overworld terrain around a position for combat battle map generation
 ## Checks a 5x5 area and returns the dominant terrain type and all terrain counts
+## Take a 5×5 window of world tiles around the party, keeping WHERE each one
+## is and not only how many there are.
+##
+## `counts` and `dominant` are still returned — dominant feeds the Summoning
+## affinity — but `grid` is the one the battlefield is built from. The old
+## version returned counts alone, which is why the battlefield could reflect
+## the proportions of the ground around the party and nothing of its shape.
 func _sample_terrain_context(center: Vector2i) -> Dictionary:
-	var terrain_counts: Dictionary = {}  # Terrain type int -> count
+	var terrain_counts: Dictionary = {}
+	var grid: Array = []
 	for dy in range(-2, 3):
+		var row: Array = []
 		for dx in range(-2, 3):
 			var pos = center + Vector2i(dx, dy)
 			var t = MapManager.get_terrain(pos)
+			row.append(t)
 			terrain_counts[t] = terrain_counts.get(t, 0) + 1
+		grid.append(row)
 
 	# Find dominant terrain (most common type in the sample area)
 	var dominant = MapManager.Terrain.PLAINS
@@ -1696,6 +1707,7 @@ func _sample_terrain_context(center: Vector2i) -> Dictionary:
 	return {
 		"dominant": dominant,
 		"counts": terrain_counts,
+		"grid": grid,
 		"region": MapManager.get_region_at(center)
 	}
 

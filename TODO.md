@@ -319,9 +319,31 @@ and events too.
       taking the most recent loss — the chooser needs UI and currently defaults
       to "last".
 
-## 4. Terrain and zones — audited 2026-09-15, see `docs/plans/TERRAIN_AUDIT.md`
+## 4. Terrain and zones — vocabulary and zoom done; zones remain
 
-Audited. The full write-up is in `docs/plans/TERRAIN_AUDIT.md`; the headline
+**Steps 1–3 done 2026-09-15.** One terrain vocabulary lives in
+`resources/data/terrain.json` and is read through `Ground` by the overworld map
+and the battle grid alike; battle tiles carry a `ground`; the battlefield is
+built in three passes by `BattlefieldGenerator` so the arrangement of the
+ground survives the zoom; all fourteen terrains carry battle traits where five
+had none. Both tables keyed on bare terrain integers are gone, and
+validate_data.py now checks the vocabulary — contiguous ids, a battle block per
+terrain, and tile/hazard/obstacle names that CombatGrid actually has.
+
+**Still to do: zones (step 4) and height from hills and mountains (step 5).**
+Zones are the bigger one and five spells wait on them; the proposal is in the
+audit — a zone is an aura with a place instead of a body, so it should reuse
+`AuraSystem`'s payload vocabulary rather than grow a second one.
+
+Three questions the work did not settle, and Olaf should: whether combat
+changes the overworld (a forest burned, a wall broken — the maps persist now,
+so it is possible); whether battlefields persist if the same tile is fought on
+twice; and whether height is worth sampling from the overworld at all or is a
+battle-only idea that hills merely suggest.
+
+---
+
+The original write-up is in `docs/plans/TERRAIN_AUDIT.md`; the headline
 is that Olaf's goal — the battle map reading as a zoom into the overworld tile,
 Moonring-style — is blocked by two things rather than one.
 

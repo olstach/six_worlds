@@ -52,66 +52,33 @@ enum Terrain {
 
 # Terrain -> movement ability required to traverse when normally impassable
 # If the party has the matching ability, the terrain becomes passable at reduced speed
-const TERRAIN_ABILITIES: Dictionary = {
-	Terrain.WATER: "water_walking",
-	Terrain.MOUNTAINS: "flight",
-	Terrain.LAVA: "lava_immunity"   # flight also works (checked separately)
-}
+# The per-terrain data that used to live in four const tables here now lives in
+# resources/data/terrain.json, read through Ground — because the battle grid
+# needs the same answers and two copies of "what is forest" would drift. The
+# `Terrain` enum above stays: it is what every call site types against and what
+# saved maps store.
+#
+# These wrappers keep the old shapes working for the handful of places that
+# index the tables directly rather than calling get_terrain_speed() and friends.
 
-# Speed multipliers for terrain types
-# 0.5 = half speed, 1.0 = normal, 2.0 = double speed, -1 = impassable
-const TERRAIN_SPEED: Dictionary = {
-	Terrain.PLAINS: 1.0,
-	Terrain.ROAD: 2.0,       # Fast travel
-	Terrain.FOREST: 0.5,     # Slow - thick undergrowth
-	Terrain.HILLS: 0.5,      # Slow - steep inclines
-	Terrain.MOUNTAINS: -1.0, # Impassable
-	Terrain.WATER: -1.0,     # Impassable (without boat)
-	Terrain.SWAMP: 0.5,      # Slow - sticky mud
-	Terrain.DESERT: 0.75,    # Somewhat slow - loose sand
-	Terrain.SNOW: 0.5,       # Slow - deep drifts
-	Terrain.LAVA: -1.0,      # Impassable
-	Terrain.BRIDGE: 1.5,     # Slightly fast - constructed path
-	Terrain.ICE: 1.25,       # Slightly fast but slippery (future: slide mechanic)
-	Terrain.SAND: 0.75,      # Somewhat slow - beach/dunes
-	Terrain.RUINS: 0.75      # Somewhat slow - rubble and debris
-}
+static func _terrain_table(field: String) -> Dictionary:
+	var out: Dictionary = {}
+	for key in Ground.all():
+		var entry: Dictionary = Ground.all()[key]
+		if entry.has(field):
+			out[int(entry.get("id", -1))] = entry[field]
+	return out
 
-# Terrain display names
-const TERRAIN_NAMES: Dictionary = {
-	Terrain.PLAINS: "Plains",
-	Terrain.ROAD: "Road",
-	Terrain.FOREST: "Forest",
-	Terrain.HILLS: "Hills",
-	Terrain.MOUNTAINS: "Mountains",
-	Terrain.WATER: "Water",
-	Terrain.SWAMP: "Swamp",
-	Terrain.DESERT: "Desert",
-	Terrain.SNOW: "Snow",
-	Terrain.LAVA: "Lava",
-	Terrain.BRIDGE: "Bridge",
-	Terrain.ICE: "Ice",
-	Terrain.SAND: "Sand",
-	Terrain.RUINS: "Ruins"
-}
 
-# Short description for UI tooltips
-const TERRAIN_DESCRIPTIONS: Dictionary = {
-	Terrain.PLAINS: "Open grassland. Normal movement speed.",
-	Terrain.ROAD: "Paved path. Double movement speed.",
-	Terrain.FOREST: "Dense woodland. Half movement speed.",
-	Terrain.HILLS: "Steep terrain. Half movement speed.",
-	Terrain.MOUNTAINS: "Impassable mountain peaks.",
-	Terrain.WATER: "Deep water. Cannot cross without a boat.",
-	Terrain.SWAMP: "Boggy marsh. Half movement speed.",
-	Terrain.DESERT: "Arid wasteland. Reduced movement speed.",
-	Terrain.SNOW: "Frozen tundra. Half movement speed.",
-	Terrain.LAVA: "Molten rock. Impassable.",
-	Terrain.BRIDGE: "Constructed crossing. Good movement speed.",
-	Terrain.ICE: "Frozen surface. Slightly fast but treacherous.",
-	Terrain.SAND: "Loose sand. Reduced movement speed.",
-	Terrain.RUINS: "Crumbling structures. Reduced movement speed."
-}
+## Terrain -> movement ability required to traverse when normally impassable.
+static func terrain_abilities() -> Dictionary:
+	return _terrain_table("ability")
+
+
+## Terrain -> speed multiplier. Negative means impassable.
+static func terrain_speeds() -> Dictionary:
+	return _terrain_table("speed")
+
 
 # Base discovery chances per terrain type (before skill bonuses)
 # When the party enters one of these terrain types for the first time,
@@ -725,13 +692,13 @@ func get_terrain(pos: Vector2i) -> int:
 ## Get terrain name for display
 func get_terrain_name(pos: Vector2i) -> String:
 	var terrain = get_terrain(pos)
-	return TERRAIN_NAMES.get(terrain, "Unknown")
+	return Ground.name_of(terrain)
 
 
 ## Get terrain description for tooltips
 func get_terrain_description(pos: Vector2i) -> String:
 	var terrain = get_terrain(pos)
-	return TERRAIN_DESCRIPTIONS.get(terrain, "")
+	return Ground.description_of(terrain)
 
 
 ## Get speed multiplier for terrain at position
@@ -748,19 +715,19 @@ func get_party_speed_multiplier() -> float:
 
 func get_terrain_speed(pos: Vector2i) -> float:
 	var terrain = get_terrain(pos)
-	var base_speed = TERRAIN_SPEED.get(terrain, 1.0)
+	var base_speed: float = Ground.speed_of(terrain)
 	if base_speed > 0:
 		# Sure footing removes the SLOWDOWN, which is a different question from
 		# passability and had no answer at all — TERRAIN_ABILITIES only ever
 		# spoke about the three impassable terrains. `sure_footed` covers every
 		# kind of bad ground; `surefoot_<terrain>` covers one.
 		if base_speed < 1.0:
-			var named := "surefoot_%s" % TERRAIN_NAMES.get(terrain, "").to_lower()
+			var named := "surefoot_%s" % Ground.name_of(terrain).to_lower()
 			if movement_abilities.get("sure_footed", false) or movement_abilities.get(named, false):
 				return 1.0
 		return base_speed
 	# Check if a movement ability overrides impassability
-	var required = TERRAIN_ABILITIES.get(terrain, "")
+	var required: String = Ground.ability_for(terrain)
 	if not required.is_empty() and movement_abilities.get(required, false):
 		return 0.75  # Ability-enabled traversal is slower than normal
 	# Flight overrides mountains and lava

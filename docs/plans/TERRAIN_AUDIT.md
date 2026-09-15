@@ -1,5 +1,14 @@
 # Terrain and zones — audit
 
+> **Steps 1–3 are done (2026-09-15).** One vocabulary in
+> `resources/data/terrain.json`, read through `Ground` by both the map and the
+> battle grid; the battlefield built in three passes by
+> `BattlefieldGenerator`, so arrangement survives the zoom; all fourteen
+> terrains carry battle traits. Both magic-number tables are gone.
+>
+> **Remaining: zones (step 4) and height from hills and mountains (step 5).**
+> The three open questions at the foot of this document are still open.
+
 **2026-09-15.** Covers the overworld map and the battle grid together, because
 Olaf wants them contiguous: the battlefield should read as a zoom into the tile
 the party is standing on, the way Moonring does it and Qud does to a lesser

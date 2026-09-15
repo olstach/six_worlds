@@ -108,6 +108,10 @@ const COLOR_OBSTACLE_FALLEN_TREE = Color(0.42, 0.28, 0.12)
 # GridTile structure (named to avoid conflict with Godot's TileData)
 class GridTile:
 	var type: int = TileType.FLOOR
+	# What KIND of ground this is, from the shared vocabulary the overworld
+	# uses — forest, swamp, lava. `type` answers whether you can walk here;
+	# this answers where "here" is, which nothing could answer before.
+	var ground: int = 0  # MapManager.Terrain / Ground id; 0 is plains
 	var walkable: bool = true
 	var movement_cost: int = 1
 	var height: int = 0  # For height system (0 = ground level)
@@ -188,6 +192,7 @@ func _initialize_grid() -> void:
 
 ## Set up grid from a map definition
 ## Supports: "size" (Vector2i), "tiles" (dict of "x,y" -> TileType),
+##           "grounds" (dict of "x,y" -> Ground id),
 ##           "effects" (array of {pos, effect, value}), "heights" (array of {pos, height})
 func setup_from_map(map_data: Dictionary) -> void:
 	grid_size = map_data.get("size", Vector2i(16, 10))
@@ -202,6 +207,16 @@ func setup_from_map(map_data: Dictionary) -> void:
 			var tile_type = tile_overrides[pos_str]
 			if pos in tiles:
 				tiles[pos] = GridTile.new(tile_type)
+
+	# Apply ground types. Done after the tile overrides because a tile rebuilt
+	# by an override is a fresh GridTile and would lose its ground.
+	var ground_map = map_data.get("grounds", {})
+	for pos_str in ground_map:
+		var parts = pos_str.split(",")
+		if parts.size() == 2:
+			var pos = Vector2i(int(parts[0]), int(parts[1]))
+			if pos in tiles:
+				tiles[pos].ground = int(ground_map[pos_str])
 
 	# Apply terrain effects (fire, ice, poison, etc.)
 	var effect_list = map_data.get("effects", [])
@@ -1091,6 +1106,14 @@ func get_tile_height(grid_pos: Vector2i) -> int:
 
 	var tile = tiles.get(grid_pos)
 	return tile.height if tile else 0
+
+
+## What kind of ground is at this tile — a Ground id, the same vocabulary the
+## overworld map uses.
+func get_ground(pos: Vector2i) -> int:
+	if pos in tiles:
+		return tiles[pos].ground
+	return 0
 
 
 ## Check if unit can move between heights based on movement mode

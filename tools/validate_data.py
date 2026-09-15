@@ -795,6 +795,52 @@ for _sid, _sp in _spells.items():
             "tagged out_of_combat, so it can never reach the map")
 
 
+# ── The terrain vocabulary ──────────────────────────────────────────────────
+#
+# One list, shared by the overworld map and the battle grid. `id` is the
+# contract with MapManager.Terrain and with every saved map, so it is the ids
+# rather than the names that must stay put.
+_terrain_data = load("resources/data/terrain.json")["terrain"]
+_terrain_rows = {k: v for k, v in _terrain_data.items() if not k.startswith("_")}
+_ground_src = open(os.path.join(ROOT, "scripts/combat/ground.gd"), encoding="utf-8").read()
+_tile_types = _gd_list(_ground_src, "TILE_TYPES")
+_hazards = _gd_list(_ground_src, "HAZARDS")
+_obstacle_kinds = _gd_list(_ground_src, "OBSTACLES")
+
+_seen_ids = {}
+for _key, _row in _terrain_rows.items():
+    _tid = _row.get("id")
+    if not isinstance(_tid, int):
+        err("data->code", f"terrain '{_key}' has no integer id")
+        continue
+    if _tid in _seen_ids:
+        err("data->code", f"terrain '{_key}' and '{_seen_ids[_tid]}' share id {_tid} — "
+            "saved maps store the id, so a collision silently rewrites ground")
+    _seen_ids[_tid] = _key
+
+    _battle = _row.get("battle")
+    if not isinstance(_battle, dict):
+        err("data->code", f"terrain '{_key}' has no `battle` block, so a block of "
+            "it would generate featureless ground")
+        continue
+    if _battle.get("tile", "floor") not in _tile_types:
+        err("data->code", f"terrain '{_key}' defaults its tiles to "
+            f"'{_battle.get('tile')}', which is not a CombatGrid tile type")
+    for _obs in _battle.get("obstacles", {}):
+        if _obs not in _obstacle_kinds:
+            err("data->code", f"terrain '{_key}' scatters '{_obs}', which is not "
+                "a CombatGrid obstacle type")
+    _haz = _battle.get("hazard")
+    if isinstance(_haz, dict) and _haz.get("effect", "none") not in _hazards:
+        err("data->code", f"terrain '{_key}' carries hazard "
+            f"'{_haz.get('effect')}', which is not a CombatGrid terrain effect")
+
+_expected = set(range(len(_terrain_rows)))
+if set(_seen_ids) != _expected:
+    err("data->code", "terrain ids are not contiguous from 0: got %s"
+        % sorted(_seen_ids))
+
+
 # ── Divination reveals ──────────────────────────────────────────────────────
 _mm_reveal = open(os.path.join(ROOT, "scripts/autoload/map_manager.gd"), encoding="utf-8").read()
 _m = re.search(r"const REVEAL_GROUPS[^=]*=\s*\{(.*?)\n\}", _mm_reveal, re.S)
@@ -826,11 +872,11 @@ for _sid, _sp in _spells.items():
 # An ability name terrain never asks about grants nothing. TERRAIN_ABILITIES
 # names the three that open impassable ground, and sure footing is spelled
 # `sure_footed` or `surefoot_<terrain>`.
-_mm_src = open(os.path.join(ROOT, "scripts/autoload/map_manager.gd"), encoding="utf-8").read()
-_passage = set(re.findall(r'Terrain\.\w+:\s*"(\w+)"', _mm_src))
-_terrains = {t.lower() for t in re.findall(r'Terrain\.\w+:\s*"(\w+)"\s*$', _mm_src, re.M)}
-_terrain_names = {m.lower() for m in re.findall(r'Terrain\.\w+:\s*"([A-Z]\w+)"', _mm_src)}
-_valid_abilities = _passage | {"sure_footed"} | {"surefoot_%s" % t for t in _terrain_names}
+# Terrain names and the abilities that open them now come from the shared
+# vocabulary rather than from a regex over map_manager.gd — which broke the
+# moment those const tables moved into data, exactly as it should have.
+_passage = {v["ability"] for v in _terrain_rows.values() if v.get("ability")}
+_valid_abilities = _passage | {"sure_footed"} | {"surefoot_%s" % k for k in _terrain_rows}
 
 def _check_abilities(label, name, decl):
     if decl is None:
