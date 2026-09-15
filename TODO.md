@@ -330,16 +330,35 @@ had none. Both tables keyed on bare terrain integers are gone, and
 validate_data.py now checks the vocabulary — contiguous ids, a battle block per
 terrain, and tile/hazard/obstacle names that CombatGrid actually has.
 
-**Still to do: zones (step 4) and height from hills and mountains (step 5).**
+**Height done 2026-09-15 (step 5).** `relief` per terrain is a ceiling, not a
+value: the generator raises mounds across the whole field and each tile takes
+the lower of the mound over it and its own ground's relief. So a slope spills
+from the hills onto the grass beside them and stops dead at the water's edge,
+and mountains rise higher than hills while a road stays graded and level. Even
+grassland undulates a little, because not much land is flat.
+
+**Still to do: zones (step 4).**
 Zones are the bigger one and five spells wait on them; the proposal is in the
 audit — a zone is an aura with a place instead of a body, so it should reuse
 `AuraSystem`'s payload vocabulary rather than grow a second one.
 
-Three questions the work did not settle, and Olaf should: whether combat
-changes the overworld (a forest burned, a wall broken — the maps persist now,
-so it is possible); whether battlefields persist if the same tile is fought on
-twice; and whether height is worth sampling from the overworld at all or is a
-battle-only idea that hills merely suggest.
+**The three open questions are answered (2026-09-15).**
+
+- *Battlefields persisting:* **no.** Olaf's reasoning, and it is right — more
+  data to keep and to break occasionally, for something nobody would notice.
+- *Height:* **yes**, and done. See above.
+- *Combat changing the overworld:* **deliberately not built.** The flashy
+  version — burn a forest and the tile becomes plains, so fire is a travel
+  strategy — pays off rarely, because the party seldom walks back across a
+  tile it fought on, and it needs a rule for what every damage type does to
+  every terrain. Not worth it.
+
+  The version worth having is smaller and belongs to content that does not
+  exist yet: **a tile where a battle happened is marked as a battlefield**, and
+  that mark is where the deferred Black magic "speak with the dead" perk finds
+  something to speak to. Building the flag now would be data nothing reads —
+  the exact bug this project keeps finding — so it is recorded here as part of
+  that perk's requirements instead.
 
 ---
 

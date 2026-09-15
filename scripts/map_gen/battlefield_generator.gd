@@ -16,8 +16,9 @@ class_name BattlefieldGenerator
 ##   2. GREEBLE.  Along the seams between blocks, tiles take their neighbour's
 ##                ground on a falling chance. Without this the lake is a
 ##                rectangle and the field reads as graph paper.
-##   3. FURNITURE. Obstacles and hazards, seeded per block from what that
-##                ground actually grows, rather than from a global budget.
+##   3. FURNITURE. Relief, then obstacles and hazards — the first raised across
+##                the whole field so slopes cross seams, the rest seeded per
+##                block from what that ground actually grows.
 ##
 ## Pure: it takes a sample and a size and returns map data. No grid, no scene,
 ## no randomness it did not seed itself — so a test can ask what it built.
@@ -26,6 +27,10 @@ class_name BattlefieldGenerator
 ## One tile of certainty would be a jagged line; three is a coastline.
 const GREEBLE_DEPTH: int = 3
 const GREEBLE_CHANCE: Array[float] = [0.55, 0.30, 0.12]
+
+## Roughly one mound per this many tiles. Sparse enough that the ground reads
+## as rolling rather than as gravel.
+const TILES_PER_MOUND: int = 55
 
 
 ## Build a battlefield from a square sample of world tiles.
@@ -144,10 +149,6 @@ static func generate(sample: Array, size: Vector2i, rng_seed: int = 0) -> Dictio
 			if tile_type != CombatGrid.TileType.FLOOR:
 				tiles["%d,%d" % [x, y]] = tile_type
 
-			var height: int = int(battle.get("height", 0))
-			if height != 0:
-				heights.append({"pos": here, "height": height})
-
 			var hazard: Dictionary = battle.get("hazard", {})
 			if not hazard.is_empty() and randf() < float(hazard.get("chance", 0.0)):
 				effects.append({
@@ -155,6 +156,38 @@ static func generate(sample: Array, size: Vector2i, rng_seed: int = 0) -> Dictio
 					"effect": _hazard_from(str(hazard.get("effect", "none"))),
 					"value": int(hazard.get("value", 0)),
 				})
+
+	# ── Relief ──────────────────────────────────────────────────────────────
+	#
+	# Mounds raised across the whole field rather than per block, so a hill
+	# spills onto the grass beside it instead of stopping square at a seam.
+	# Each tile then takes the LOWER of the mound over it and its own ground's
+	# ceiling, which is what makes a slope run down into a lake and stop.
+	var relief: Dictionary = {}   # Vector2i -> height
+	var mound_count: int = maxi(1, size.x * size.y / TILES_PER_MOUND)
+	for _m in range(mound_count):
+		var centre := Vector2i(randi() % size.x, randi() % size.y)
+		var ceiling: int = Ground.relief_of(int(ground[centre]))
+		if ceiling <= 0:
+			continue   # nothing rises out of water, swamp or a paved road
+		var peak: int = randi_range(1, ceiling)
+		# A gentle slope: one tile of run per level of rise, plus one, so a
+		# three-level peak is a hill rather than a pillar.
+		var reach: int = peak + 1
+		for dy in range(-reach, reach + 1):
+			for dx in range(-reach, reach + 1):
+				var at := centre + Vector2i(dx, dy)
+				if not ground.has(at):
+					continue
+				var fall: int = maxi(absi(dx), absi(dy))
+				var h: int = peak - fall
+				if h > int(relief.get(at, 0)):
+					relief[at] = h
+
+	for at in relief:
+		var capped: int = mini(int(relief[at]), Ground.relief_of(int(ground[at])))
+		if capped > 0:
+			heights.append({"pos": at, "height": capped})
 
 	# Obstacles, walked block by block so each gets its own ground's furniture.
 	for by in range(rows):
